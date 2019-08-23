@@ -58,7 +58,7 @@ final class ExportDialog extends BaseControl
         $events = [];
 
         foreach ($this->events as $event) {
-            $events[$event->getId()->toInt()] = $event->getName();
+            $events[$event->getId()] = $event->getName();
         }
 
         $form->addCheckboxList('eventIds', 'Akce', $events)

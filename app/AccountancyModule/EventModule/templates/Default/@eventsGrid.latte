@@ -1,0 +1,51 @@
+{extends $originalTemplate}
+
+{block filters}
+    <div class="input-group mr-2 mb-2">
+        <div class="input-group-prepend">
+            <div class="input-group-text">
+                <label n:name="filter-name">
+                    <i class="fas fa-search"></i>
+                </label>
+            </div>
+        </div>
+        <input n:name="filter-name" class="form-control" placeholder="Hledat podle názvu..."/>
+    </div>
+
+    <div class="input-group mr-2 mb-2">
+        <div class="input-group-prepend">
+            <div class="input-group-text">
+                <label n:name="filter-year">
+                    <i class="fas fa-calendar mr-1"></i>
+                    Rok
+                </label>
+            </div>
+        </div>
+        <select n:name="filter-year" class="form-control custom-select"/>
+    </div>
+
+    <div class="input-group mb-2">
+        <div class="input-group-prepend">
+            <div class="input-group-text">
+                <label n:name="filter-state">Stav</label>
+            </div>
+        </div>
+        <select n:name="filter-state" class="form-control custom-select"/>
+    </div>
+{/block}
+
+{block global-actions}
+    <span n:tag-if="count($rows) === 0"
+            title="Nebyly nalezeny žádné akce" class="d-inline-block" data-toggle="tooltip"
+            data-placement="bottom">
+                <a href="{plink exportDialog:open!}" n:class="count($rows) === 0 ? disabled, btn, btn-light, ajax, mb-2">
+                    <i class="fas fa-arrow-down"></i>
+                    Exportovat&hellip;
+                </a>
+            </span>
+    <a href="{plink NewEvent:}" n:if="$accessCreate" class="btn btn-success ml-2 mb-2"><i class="fas fa-plus"></i> Založit novou akci</a>
+{/block}
+
+{block col-state}
+    {$item->getState()|eventStateLabelNew|noescape}
+{/block}

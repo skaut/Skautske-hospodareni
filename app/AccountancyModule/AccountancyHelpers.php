@@ -70,6 +70,19 @@ abstract class AccountancyHelpers
         //draft, closed, cancelled
     }
 
+    public static function eventStateLabelNew(string $state) : string
+    {
+        if ($state === 'draft') {
+            return '<span class="badge badge-warning">Rozpracováno</span>';
+        }
+
+        if ($state === 'closed') {
+            return '<span class="badge badge-success">Uzavřeno</span>';
+        }
+
+        return '<span class="badge badge-default">Zrušeno</span>';
+    }
+
     /**
      * zobrazuje popisky stavů u táborů
      */

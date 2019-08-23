@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Model\DTO\Event;
 
 use Cake\Chronos\Date;
-use Model\Event\SkautisEventId;
 
 final class EventListItem
 {
-    /** @var SkautisEventId */
+    /** @var int */
     private $id;
 
     /** @var string */
@@ -27,7 +26,7 @@ final class EventListItem
     /** @var string */
     private $state;
 
-    public function __construct(SkautisEventId $id, string $name, Date $startDate, Date $endDate, ?string $prefix, string $state)
+    public function __construct(int $id, string $name, Date $startDate, Date $endDate, ?string $prefix, string $state)
     {
         $this->id        = $id;
         $this->name      = $name;
@@ -37,7 +36,7 @@ final class EventListItem
         $this->state     = $state;
     }
 
-    public function getId() : SkautisEventId
+    public function getId() : int
     {
         return $this->id;
     }
