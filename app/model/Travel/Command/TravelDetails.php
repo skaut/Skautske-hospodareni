@@ -29,21 +29,21 @@ class TravelDetails
     private $date;
 
     /**
-     * @ORM\Column(type="string", name="type")
+     * @ORM\Column(type="string", name="type", length=5)
      *
      * @var string
      */
     private $transportType;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=64)
      *
      * @var string
      */
     private $startPlace;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=64)
      *
      * @var string
      */
