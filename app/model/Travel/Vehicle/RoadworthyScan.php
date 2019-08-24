@@ -35,7 +35,7 @@ class RoadworthyScan
     private $vehicle;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="file_path")
      *
      * @var FilePath
      */

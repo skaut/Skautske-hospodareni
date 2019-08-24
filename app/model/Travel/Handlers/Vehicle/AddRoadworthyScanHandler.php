@@ -28,7 +28,7 @@ final class AddRoadworthyScanHandler
     {
         $vehicle = $this->vehicles->find($command->getVehicleId());
 
-        $path = new FilePath(RoadworthyScan::FILE_PATH_PREFIX, $command->getFileName());
+        $path = FilePath::generate(RoadworthyScan::FILE_PATH_PREFIX, $command->getFileName());
 
         $this->scanStorage->save($path, $command->getScanContents());
 

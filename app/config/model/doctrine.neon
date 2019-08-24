@@ -30,6 +30,7 @@ doctrine:
         cashbook_id: Model\Infrastructure\Types\CashbookIdType
         unit_id: Model\Infrastructure\Types\UnitIdType
         payment_id: Model\Infrastructure\Types\PaymentIdType
+        file_path: Model\Infrastructure\Types\FilePathType
     dql:
         string:
             field: DoctrineExtensions\Query\Mysql\Field

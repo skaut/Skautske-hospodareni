@@ -11,9 +11,19 @@ final class FilePath
     /** @var string */
     private $path;
 
-    public function __construct(string $prefix, string $path)
+    public static function generate(string $prefix, string $path) : self
     {
-        $this->path = $this->generatePath($prefix, $path);
+        return new self(self::generatePath($prefix, $path));
+    }
+
+    public static function fromString(string $path) : self
+    {
+        return new self($path);
+    }
+
+    private function __construct(string $path)
+    {
+        $this->path = $path;
     }
 
     public function getPath() : string
@@ -21,7 +31,7 @@ final class FilePath
         return $this->path;
     }
 
-    private function generatePath(string $prefix, string $originalFileName) : string
+    private static function generatePath(string $prefix, string $originalFileName) : string
     {
         return $prefix . '/' . Date::today()->format('Y/m') . '/' . $originalFileName;
     }
@@ -29,10 +39,5 @@ final class FilePath
     public function equals(self $that) : bool
     {
         return $this->getPath() === $that->getPath();
-    }
-
-    public function equalsValue(string $path) : bool
-    {
-        return $this->getPath() === $path;
     }
 }

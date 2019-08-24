@@ -64,7 +64,7 @@ final class RoadworthyControl extends BaseControl
         $this->assertIsEditable();
 
         try {
-            $this->commandBus->handle(new RemoveRoadworthyScan($this->vehicleId, new FilePath(RoadworthyScan::FILE_PATH_PREFIX, $path)));
+            $this->commandBus->handle(new RemoveRoadworthyScan($this->vehicleId, FilePath::generate(RoadworthyScan::FILE_PATH_PREFIX, $path)));
             $this->presenter->flashMessage('Sken byl odebrán', 'success');
         } catch (ScanNotFound $e) {
         }

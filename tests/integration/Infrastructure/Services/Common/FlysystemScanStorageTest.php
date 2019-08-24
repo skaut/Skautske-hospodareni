@@ -100,6 +100,6 @@ final class FlysystemScanStorageTest extends Unit
 
     private function getFilePath(string $fileName) : FilePath
     {
-        return new FilePath('test', $fileName);
+        return FilePath::generate('test', $fileName);
     }
 }
