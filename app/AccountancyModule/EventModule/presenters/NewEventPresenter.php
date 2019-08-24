@@ -45,7 +45,7 @@ final class NewEventPresenter extends BasePresenter
         );
 
         /** @var Unit $unit */
-        $unit = $this->queryBus->handle (new UnitQuery($unitId));
+        $unit  = $this->queryBus->handle(new UnitQuery($unitId));
         $units = [$unitId => $unit->getSortName()] + $subunits;
 
         $form = new BaseForm();

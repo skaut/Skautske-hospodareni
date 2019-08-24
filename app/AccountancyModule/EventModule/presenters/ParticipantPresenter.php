@@ -15,7 +15,6 @@ use Nette\Application\BadRequestException;
 use Nette\Utils\Strings;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WsdlException;
-use function assert;
 use function date;
 use function in_array;
 
@@ -122,7 +121,6 @@ class ParticipantPresenter extends BasePresenter
     public function actionExportExcel(int $aid) : void
     {
         try {
-            assert($this->event instanceof \Model\Event\Event);
             $participantsDTO = $this->eventService->getParticipants()->getAll($this->event->getId()->toInt());
             $spreadsheet     = $this->excelService->getGeneralParticipants($participantsDTO, $this->event->getStartDate());
 

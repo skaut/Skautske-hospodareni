@@ -85,7 +85,8 @@ class ExportEventsHandler
             $participants                  = $participantService->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
             $data[$aid]['personDays']      = $participantService->getPersonsDays($participants);
-            $pp                            = $participantService->countPragueParticipants(
+
+            $pp = $participantService->countPragueParticipants(
                 $data[$aid]->RegistrationNumber,
                 new Date($data[$aid]->StartDate),
                 $data[$aid]->ID

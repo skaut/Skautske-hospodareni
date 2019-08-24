@@ -19,11 +19,8 @@ use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
 use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\Unit;
-use Skautis\Exception;
 use Skautis\Skautis;
-use Skautis\Wsdl\PermissionException;
 use function assert;
-use function in_array;
 
 class EventService extends MutableBaseService
 {
@@ -42,17 +39,21 @@ class EventService extends MutableBaseService
 
     public function getDisplayName(int $id) : string
     {
-        if($this->type === ObjectType::EVENT) {
-            $event = $this->queryBus->handle (new EventQuery(new SkautisEventId($id)));
-            assert ($event instanceof Event);
+        if ($this->type === ObjectType::EVENT) {
+            $event = $this->queryBus->handle(new EventQuery(new SkautisEventId($id)));
+            assert($event instanceof Event);
 
-            return $event->getUnitName ();
-        } elseif($this->type === ObjectType::CAMP) {
-            $camp = $this->queryBus->handle (new CampQuery(new SkautisCampId($id)));
-            assert ($camp instanceof Camp);
+            return $event->getUnitName();
+        }
 
-            return $camp->getUnitName ();
-        } elseif ($this->type === ObjectType::UNIT) {
+        if ($this->type === ObjectType::CAMP) {
+            $camp = $this->queryBus->handle(new CampQuery(new SkautisCampId($id)));
+            assert($camp instanceof Camp);
+
+            return $camp->getUnitName();
+        }
+
+        if ($this->type === ObjectType::UNIT) {
             $unit = $this->queryBus->handle(new UnitQuery($id));
             assert($unit instanceof Unit);
 

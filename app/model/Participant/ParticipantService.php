@@ -257,8 +257,8 @@ class ParticipantService extends MutableBaseService
     public function getCampTotalPayment(int $campId, string $category, string $isAccount) : float
     {
         $res = 0;
-        /** @var ParticipantDTO $p */
         foreach ($this->getAll($campId) as $p) {
+            assert($p instanceof ParticipantDTO);
             //pokud se alespon v jednom neshodují, tak pokracujte
             if (($category === 'adult' xor preg_match('/^Dospěl/', $p->getCategory()))
                 || ($isAccount === 'Y' xor $p->getOnAccount() === 'Y')
@@ -283,8 +283,9 @@ class ParticipantService extends MutableBaseService
         $between18and26    = 0;
         $personDaysUnder26 = 0;
         $citizensCount     = 0;
-        /** @var ParticipantDTO $p */
+
         foreach ($participants as $p) {
+            assert($p instanceof ParticipantDTO);
             if (stripos($p->getCity(), 'Praha') === false) {
                 continue;
             }

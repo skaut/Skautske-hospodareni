@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\CampModule;
 
-use Model\Auth\Resources\Camp;
+use Model\Auth\Resources\Camp as CampResource;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\DTO\Cashbook\Cashbook;
+use Model\Event\Camp;
 use Model\Event\ReadModel\Queries\CampQuery;
 use Model\Event\SkautisCampId;
 use Model\EventEntity;
@@ -16,7 +17,7 @@ use function assert;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
-    /** @var \Model\Event\Camp */
+    /** @var Camp */
     protected $event;
 
     /** @var EventEntity */
@@ -38,7 +39,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         $cashbook   = $this->queryBus->handle(new CashbookQuery($cashbookId));
         assert($cashbook instanceof Cashbook);
 
-        $this->isEditable = $this->authorizator->isAllowed(Camp::UPDATE_REAL, $this->aid);
+        $this->isEditable = $this->authorizator->isAllowed(CampResource::UPDATE_REAL, $this->aid);
         $this->template->setParameters([
             'event' => $this->event = $this->queryBus->handle(new CampQuery(new SkautisCampId($this->aid))),
             'isEditable' => $this->isEditable,

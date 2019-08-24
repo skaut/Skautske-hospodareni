@@ -13,7 +13,6 @@ use Model\Event\Event;
 use Model\Event\ReadModel\Queries\EventQuery;
 use Model\Event\SkautisEventId;
 use Model\EventEntity;
-use Nette\Utils\ArrayHash;
 use function assert;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter

@@ -13,7 +13,6 @@ use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\Pdf\ExportChits;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
-use Model\Common\ShouldNotHappen;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
 use Model\DTO\Cashbook\ChitItem;
@@ -31,7 +30,6 @@ use function array_filter;
 use function assert;
 use function count;
 use function in_array;
-use function sprintf;
 use function ucfirst;
 
 class ExportChitsHandler
@@ -94,15 +92,8 @@ class ExportChitsHandler
 
         $template = [];
 
-        $skautisId = $this->queryBus->handle(new SkautisIdQuery($query->getCashbookId()));
-
-        if ($cashbookType->isUnit()) {
-            $officialUnit = $this->unitService->getOfficialUnit($skautisId);
-        } elseif (in_array($cashbookType->getValue(), [CashbookType::EVENT, CashbookType::CAMP])) {
-            $officialUnit = $this->queryBus->handle(new CashbookOfficialUnitQuery($query->getCashbookId()));
-        } else {
-            throw new ShouldNotHappen(sprintf('Invalid cashbook type: %s', $cashbookType->getValue()));
-        }
+        $skautisId    = $this->queryBus->handle(new SkautisIdQuery($query->getCashbookId()));
+        $officialUnit = $this->queryBus->handle(new CashbookOfficialUnitQuery($query->getCashbookId()));
         assert($officialUnit instanceof Unit);
         $template['officialName'] = $officialUnit->getFullDisplayNameWithAddress();
         $template['cashbook']     = $cashbook;

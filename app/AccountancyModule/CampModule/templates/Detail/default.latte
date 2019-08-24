@@ -3,8 +3,6 @@
 {block #content}
 {include ../ActionMenu.latte}
 <h2>{$event->getDisplayName()}</h2>
-{dump $event}
-{dump $troops}
 <div class="row event-dashboard">
     <div class="col-md-4" n:if="$accessDetail">
         <div class="panel panel-default">
