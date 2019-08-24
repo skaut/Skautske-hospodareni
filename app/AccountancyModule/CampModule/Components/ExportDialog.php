@@ -57,15 +57,15 @@ final class ExportDialog extends BaseControl
 
         $form->useBootstrap4();
 
-        $events = [];
+        $items = [];
 
         foreach ($this->camps as $camp) {
-            $events[$camp->getId()] = $camp->getName();
+            $items[$camp->getId()] = $camp->getName();
         }
 
-        uasort($events, [Language::class, 'compare']);
+        uasort($items, [Language::class, 'compare']);
 
-        $form->addCheckboxList('campIds', 'Tábory', $events)
+        $form->addCheckboxList('campIds', 'Tábory', $items)
             ->setRequired('Musíte vybrat alespoň jednen tábor');
 
         $form->addSubmit('download', 'Stáhnout export');
