@@ -7,6 +7,7 @@ namespace Model\Skautis\Factory;
 use Cake\Chronos\Date;
 use Model\Common\UnitId;
 use Model\Event\Camp;
+use Model\Event\ParticipantStatistics;
 use Model\Event\SkautisCampId;
 use stdClass;
 use function array_map;
@@ -20,6 +21,18 @@ final class CampFactory
 
     public function create(stdClass $skautisCamp) : Camp
     {
+        if (isset($skautisCamp->RealPersonDays)) {
+            $stats = new ParticipantStatistics(
+                $skautisCamp->RealAdult,
+                $skautisCamp->RealChild,
+                $skautisCamp->RealCount,
+                $skautisCamp->RealChildDays,
+                $skautisCamp->RealPersonDays
+            );
+        } else {
+            $stats = null;
+        }
+
         return new Camp(
             new SkautisCampId($skautisCamp->ID),
             $skautisCamp->DisplayName,
@@ -32,11 +45,7 @@ final class CampFactory
             $skautisCamp->RegistrationNumber,
             $this->getParticipatingUnits($skautisCamp->ID_UnitArray ?? new stdClass()),
             $skautisCamp->TotalDays ?? null,
-            $skautisCamp->RealAdult ?? null,
-            $skautisCamp->RealChild ?? null,
-            $skautisCamp->RealCount ?? null,
-            $skautisCamp->RealChildDays ?? null,
-            $skautisCamp->RealPersonDays ?? null,
+            $stats,
             $skautisCamp->IsRealAutoComputed ?? null
         );
     }

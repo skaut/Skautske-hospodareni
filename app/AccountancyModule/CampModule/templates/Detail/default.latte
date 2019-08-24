@@ -45,26 +45,29 @@
                     <th>Počet dnů</th>
                     <td>{$event->getTotalDays()}</td>
                 </tr>
+                {if $event->getParticipantStatistics() !== null}
+                    {var $stats = $event->getParticipantStatistics()}
                 <tr>
                     <th>Počet dospělých</th>
-                    <td>{$event->getRealAdult()}</td>
+                    <td>{$stats->getRealAdult()}</td>
                 </tr>
                 <tr>
                     <th>Počet dětí</th>
-                    <td>{$event->getRealChild()}</td>
+                    <td>{$stats->getRealChild()}</td>
                 </tr>
                 <tr>
                     <th>Počet celkem</th>
-                    <td>{$event->getRealCount()}</td>
+                    <td>{$stats->getRealCount()}</td>
                 </tr>
                 <tr>
                     <th>Osobodnů</th>
-                    <td>{$event->getRealPersonDays() ?? "-"}</td>
+                    <td>{$stats->getRealPersonDays() ?? "-"}</td>
                 </tr>
                 <tr>
                     <th>Dětodnů</th>
-                    <td>{$event->getRealChildDays() ?? "-"}</td>
+                    <td>{$stats->getRealChildDays() ?? "-"}</td>
                 </tr>
+                {/if}
             </table>
 
         </div>
