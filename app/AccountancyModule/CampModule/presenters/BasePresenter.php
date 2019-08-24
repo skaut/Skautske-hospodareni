@@ -4,14 +4,20 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\CampModule;
 
-use Model\Auth\Resources\Camp;
+use Model\Auth\Resources\Camp as CampResource;
 use Model\Cashbook\ObjectType;
+use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\CashbookQuery;
+use Model\DTO\Cashbook\Cashbook;
+use Model\Event\Camp;
+use Model\Event\ReadModel\Queries\CampQuery;
+use Model\Event\SkautisCampId;
 use Model\EventEntity;
-use stdClass;
+use function assert;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
-    /** @var stdClass */
+    /** @var Camp */
     protected $event;
 
     /** @var EventEntity */
@@ -29,11 +35,15 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         if ($this->aid === null) {
             return;
         }
+        $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($this->aid)));
+        $cashbook   = $this->queryBus->handle(new CashbookQuery($cashbookId));
+        assert($cashbook instanceof Cashbook);
 
-        $this->isEditable = $this->authorizator->isAllowed(Camp::UPDATE_REAL, $this->aid);
+        $this->isEditable = $this->authorizator->isAllowed(CampResource::UPDATE_REAL, $this->aid);
         $this->template->setParameters([
-            'event' => $this->event = $this->eventService->getEvent()->get($this->aid),
-            'isEditable' =>$this->isEditable,
+            'event' => $this->event = $this->queryBus->handle(new CampQuery(new SkautisCampId($this->aid))),
+            'isEditable' => $this->isEditable,
+            'prefix' => $cashbook->getChitNumberPrefix(),
         ]);
     }
 

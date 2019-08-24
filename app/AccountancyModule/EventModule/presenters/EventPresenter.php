@@ -8,7 +8,6 @@ use App\AccountancyModule\EventModule\Components\FunctionsControl;
 use App\AccountancyModule\EventModule\Factories\IFunctionsControlFactory;
 use App\Forms\BaseForm;
 use App\MyValidators;
-use Cake\Chronos\Date;
 use Model\Auth\Resources\Event;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
@@ -70,16 +69,20 @@ class EventPresenter extends BasePresenter
             $form = $this['formEdit'];
             $form->setDefaults([
                 'aid' => $aid,
-                'name' => $this->event->DisplayName,
-                'start' => new Date($this->event->StartDate),
-                'end' => new Date($this->event->EndDate),
-                'location' => $this->event->Location,
-                'type' => $this->event->ID_EventGeneralType,
-                'scope' => $this->event->ID_EventGeneralScope,
+                'name' => $this->event->getDisplayName(),
+                'start' => $this->event->getStartDate(),
+                'end' => $this->event->getEndDate(),
+                'location' => $this->event->getLocation(),
+                'type' => $this->event->getTypeId(),
+                'scope' => $this->event->getScopeId(),
             ]);
         }
 
-        $pragueParticipants = $this->eventService->getParticipants()->countPragueParticipants($this->event);
+        $pragueParticipants = $this->eventService->getParticipants()->countPragueParticipants(
+            $this->event->getRegistrationNumber(),
+            $this->event->getStartDate(),
+            $this->event->getId()->toInt()
+        );
 
         $this->template->setParameters([
             'statistic' => $this->eventService->getParticipants()->getEventStatistic($this->aid),
@@ -88,6 +91,8 @@ class EventPresenter extends BasePresenter
             'accessOpenEvent' => $this->authorizator->isAllowed(Event::OPEN, $aid),
             'accessDetailEvent' => $this->authorizator->isAllowed(Event::ACCESS_DETAIL, $aid),
             'pragueParticipants' => $pragueParticipants,
+            'eventScopes' => $this->queryBus->handle(new EventScopes()),
+            'eventTypes' => $this->queryBus->handle(new EventTypes()),
         ]);
 
         if (! $this->isAjax()) {
@@ -146,12 +151,12 @@ class EventPresenter extends BasePresenter
 
     public function actionPrintAll(int $aid) : void
     {
-        $cashbookId = $this->getCashbookId($aid);
-        $event      = $this->eventService->getEvent()->get($aid);
+        $cashbookId  = $this->getCashbookId($aid);
+        $displayName = $this->eventService->getEvent()->getDisplayName($aid);
 
         $template  = $this->exportService->getEventReport($aid, $this->eventService) . $this->exportService->getNewPage();
         $template .= $this->exportService->getParticipants($aid, $this->eventService) . $this->exportService->getNewPage();
-        $template .= $this->exportService->getCashbook($cashbookId, $event->DisplayName, PaymentMethod::CASH()) . $this->exportService->getNewPage();
+        $template .= $this->exportService->getCashbook($cashbookId, $displayName, PaymentMethod::CASH()) . $this->exportService->getNewPage();
         $template .= $this->queryBus->handle(ExportChits::all($cashbookId));
 
         $this->pdf->render($template, 'all.pdf');

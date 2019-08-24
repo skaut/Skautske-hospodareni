@@ -18,7 +18,6 @@ use Model\Excel\Range;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use stdClass;
 use function assert;
 
 class ExcelService
@@ -43,16 +42,26 @@ class ExcelService
         return $sheet;
     }
 
-    public function getParticipants(EventEntity $service, stdClass $event, string $type) : Spreadsheet
+    /**
+     * @param Participant[] $participantsDTO
+     */
+    public function getGeneralParticipants(array $participantsDTO, Date $startDate) : Spreadsheet
     {
         $spreadsheet = $this->getNewFile();
-        $data        = $service->getParticipants()->getAll($event->ID);
         $sheet       = $spreadsheet->getActiveSheet();
-        if ($type === 'camp') {
-            $this->setSheetParticipantCamp($sheet, $data);
-        } else {//GENERAL EVENT
-            $this->setSheetParticipantGeneral($sheet, $data, $event);
-        }
+        $this->setSheetParticipantGeneral($sheet, $participantsDTO, $startDate);
+
+        return $spreadsheet;
+    }
+
+    /**
+     * @param Participant[] $participantsDTO
+     */
+    public function getCampParticipants(array $participantsDTO) : Spreadsheet
+    {
+        $spreadsheet = $this->getNewFile();
+        $sheet       = $spreadsheet->getActiveSheet();
+        $this->setSheetParticipantCamp($sheet, $participantsDTO);
 
         return $spreadsheet;
     }
@@ -140,9 +149,8 @@ class ExcelService
     /**
      * @param Participant[] $data
      */
-    protected function setSheetParticipantGeneral(Worksheet $sheet, array $data, stdClass $event) : void
+    protected function setSheetParticipantGeneral(Worksheet $sheet, array $data, Date $startDate) : void
     {
-        $startDate = new Date($event->StartDate);
         $sheet->setCellValue('A1', 'P.č.')
             ->setCellValue('B1', 'Jméno')
             ->setCellValue('C1', 'Příjmení')

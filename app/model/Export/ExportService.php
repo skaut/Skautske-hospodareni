@@ -19,8 +19,12 @@ use Model\Cashbook\Repositories\IStaticCategoryRepository;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit;
+use Model\Event\Camp;
+use Model\Event\Event;
 use Model\Event\ReadModel\Queries\CampFunctions;
+use Model\Event\ReadModel\Queries\CampQuery;
 use Model\Event\ReadModel\Queries\EventFunctions;
+use Model\Event\ReadModel\Queries\EventQuery;
 use Model\Event\Repositories\IEventRepository;
 use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
@@ -75,14 +79,24 @@ class ExportService
 
     public function getParticipants(int $aid, EventEntity $service, string $type = 'general') : string
     {
-        $templateFile = __DIR__ . '/templates/participant' . ($type === 'camp' ? 'Camp' : '') . '.latte';
-
-        $info = $service->getEvent()->get($aid);
+        if ($type === 'camp') {
+            $templateFile = __DIR__ . '/templates/participantCamp.latte';
+            $camp         = $this->queryBus->handle(new CampQuery(new SkautisCampId($aid)));
+            assert($camp instanceof Camp);
+            $displayName = $camp->getDisplayName();
+            $unitId      = $camp->getUnitId();
+        } else {
+            $templateFile = __DIR__ . '/templates/participant.latte';
+            $event        = $this->queryBus->handle(new EventQuery(new SkautisEventId($aid)));
+            assert($event instanceof Event);
+            $displayName = $event->getDisplayName();
+            $unitId      = $event->getUnitId();
+        }
 
         return $this->templateFactory->create($templateFile, [
             'list' => $service->getParticipants()->getAll($aid),
-            'info' => $info,
-            'unit' => $this->units->getOfficialUnit($info['ID_Unit']),
+            'displayName' => $displayName,
+            'unitFullNameWithAddress' => $this->units->getOfficialUnit($unitId->toInt())->getFullDisplayNameWithAddress(),
         ]);
     }
 
@@ -119,9 +133,6 @@ class ExportService
         ]);
     }
 
-    /**
-     * @throws Event\EventNotFound
-     */
     public function getEventReport(int $skautisEventId, EventEntity $eventService) : string
     {
         $sums = [
@@ -212,14 +223,12 @@ class ExportService
             $virtualCategory = $category->isVirtual() ? self::CATEGORY_VIRTUAL : self::CATEGORY_REAL;
 
             if ($category->isIncome()) {
-                $key         = $category->isVirtual() ? 'virtualIncome' : 'income';
-                $total[$key] = $total[$key]->add($category->getTotal());
-
+                $key                                  = $category->isVirtual() ? 'virtualIncome' : 'income';
+                $total[$key]                          = $total[$key]->add($category->getTotal());
                 $incomeCategories[$virtualCategory][] = $category;
             } else {
-                $key         = $category->isVirtual() ? 'virtualExpense' : 'expense';
-                $total[$key] = $total[$key]->add($category->getTotal());
-
+                $key                                   = $category->isVirtual() ? 'virtualExpense' : 'expense';
+                $total[$key]                           = $total[$key]->add($category->getTotal());
                 $expenseCategories[$virtualCategory][] = $category;
             }
         }
@@ -229,7 +238,7 @@ class ExportService
         return $this->templateFactory->create(__DIR__ . '/templates/campReport.latte', [
             'participantsCnt' => count($participants),
             'personsDays' => $campService->getParticipants()->getPersonsDays($participants),
-            'a' => $campService->getEvent()->get($skautisCampId),
+            'camp' => $this->queryBus->handle(new CampQuery(new SkautisCampId($skautisCampId))),
             'incomeCategories' => $incomeCategories[self::CATEGORY_REAL],
             'expenseCategories' => $expenseCategories[self::CATEGORY_REAL],
             'totalIncome' => $total['income'],

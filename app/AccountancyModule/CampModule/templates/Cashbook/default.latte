@@ -1,11 +1,11 @@
-{block #title}{$event->DisplayName} - evidence plateb{/block}
+{block #title}{$event->getDisplayName()} - evidence plateb{/block}
 
 {block #content}
 {include ../ActionMenu.latte}
 
 <div class="row">
     <div class="col-sm-12">
-        <h2>{$event->DisplayName}</h2>
+        <h2>{$event->getDisplayName()}</h2>
     </div>
 </div>
 {if $missingCategories}

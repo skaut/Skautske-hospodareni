@@ -12,6 +12,7 @@ use Model\DTO\Travel\Contract;
 use Model\Services\PdfRenderer;
 use Model\Travel\Contract\Passenger;
 use Model\TravelService;
+use Model\Unit\ReadModel\Queries\UnitQuery;
 use Nette\Application\UI\Form;
 use Nette\Security\Identity;
 use function array_column;
@@ -112,7 +113,7 @@ class ContractPresenter extends BasePresenter
         $template->setFile(dirname(__FILE__) . '/../templates/Contract/' . $templateName);
         $template->setParameters([
             'contract' => $contract,
-            'unit'     => $this->unitService->getDetail($contract->getUnitId()),
+            'unit'     => $this->queryBus->handle(new UnitQuery($contract->getUnitId())),
         ]);
 
         $this->pdf->render((string) $template, 'Smlouva-o-proplaceni-cestovnich-nahrad.pdf');

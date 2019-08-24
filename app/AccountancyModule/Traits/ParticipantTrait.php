@@ -12,13 +12,15 @@ use Model\ExcelService;
 use Model\ExportService;
 use Model\Participant\ReadModel\Queries\PotentialParticipantListQuery;
 use Model\Services\PdfRenderer;
+use Model\Unit\ReadModel\Queries\UnitQuery;
+use Model\Unit\Unit;
 use Model\UnitService;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
-use Nette\Utils\Strings;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WsdlException;
 use function array_merge;
+use function assert;
 use function count;
 use function date;
 use function in_array;
@@ -102,12 +104,15 @@ trait ParticipantTrait
             throw $e;
         }
         $this->sortParticipants($participants, $sort);
+        $unit = $this->queryBus->handle(new UnitQuery($this->uid ?? $this->unitService->getUnitId()));
+        assert($unit instanceof Unit);
+
         $this->template->setParameters([
             'list'         => $list,
             'participants' => $participants,
-            'unit'       => $unit = $this->unitService->getDetail($this->uid),
-            'uparrent'   => $this->unitService->getDetail($unit->ID_UnitParent),
-            'uchildrens' => $this->unitService->getSubunits($unit->ID),
+            'unit'       => $unit,
+            'uparrent'   => $this->queryBus->handle(new UnitQuery($unit->getParentId())),
+            'uchildrens' => $this->unitService->getSubunits($unit->getId()),
             'sort'       => $sort,
             'useRegNums' => $regNums,
         ]);
@@ -156,18 +161,6 @@ trait ParticipantTrait
             $this->redirect('default', ['aid' => $this->aid]);
         }
         $this->terminate();
-    }
-
-    public function actionExportExcel(int $aid) : void
-    {
-        $type = $this->eventService->getParticipants()->type; //camp vs general
-        try {
-            $spreadsheet = $this->excelService->getParticipants($this->eventService, $this->event, $type);
-            $this->sendResponse(new ExcelResponse(Strings::webalize($this->event->DisplayName) . '-' . date('Y_n_j'), $spreadsheet));
-        } catch (PermissionException $ex) {
-            $this->flashMessage('Nemáte oprávnění k záznamu osoby! (' . $ex->getMessage() . ')', 'danger');
-            $this->redirect('default', ['aid' => $aid]);
-        }
     }
 
     public function handleRemove(int $pid) : void

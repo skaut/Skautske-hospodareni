@@ -1,4 +1,4 @@
-{block #title}{$event->DisplayName} - rozpočet{/block}
+{block #title}{$event->getDisplayName()} - rozpočet{/block}
 
 {define #budgetTable $entries, $income}
     <table n:ifset="$entries" class="table myTable table-bordered table-condensed">
@@ -49,7 +49,7 @@
 {include ../ActionMenu.latte}
 <div class="row" n:if="!$isConsistent">
     <div class="col-sm-12">
-        <h2>{$event->DisplayName}</h2>
+        <h2>{$event->getDisplayName()}</h2>
     </div>
 </div>
 <div class="row" n:if="!$isConsistent">

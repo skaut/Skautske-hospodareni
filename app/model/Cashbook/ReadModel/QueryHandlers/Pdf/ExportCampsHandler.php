@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Cashbook\ReadModel\QueryHandlers\Pdf;
 
 use eGen\MessageBus\Bus\QueryBus;
+use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
@@ -14,8 +15,10 @@ use Model\Cashbook\ReadModel\Queries\Pdf\ExportCamps;
 use Model\Cashbook\ReadModel\SpreadsheetFactory;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
+use Model\Event\Camp;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\CampFunctions;
+use Model\Event\ReadModel\Queries\CampQuery;
 use Model\Event\SkautisCampId;
 use Model\Excel\Range;
 use Model\IEventServiceFactory;
@@ -25,12 +28,10 @@ use Model\Unit\UnitNotFound;
 use Nette\Utils\ArrayHash;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use stdClass;
 use function assert;
 use function count;
 use function date;
 use function implode;
-use function is_array;
 use function reset;
 use function strtotime;
 use function ucfirst;
@@ -81,9 +82,10 @@ class ExportCampsHandler
         foreach ($query->getCampIds() as $aid) {
             $campId     = new SkautisCampId($aid);
             $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery($campId));
-
-            $camp                          = $eventService->get($aid);
-            $data[$aid]                    = $camp;
+            assert($cashbookId instanceof CashbookId);
+            $camp = $this->queryBus->handle(new CampQuery(new $campId()));
+            assert($camp instanceof Camp);
+            $data[$aid]                    = ArrayHash::from($camp);
             $data[$aid]['cashbookId']      = $cashbookId;
             $data[$aid]['troops']          = implode(', ', $this->getCampTroopNames($camp));
             $data[$aid]['chits']           = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
@@ -212,20 +214,12 @@ class ExportCampsHandler
     /**
      * @return string[]
      */
-    private function getCampTroopNames(stdClass $camp) : array
+    private function getCampTroopNames(Camp $camp) : array
     {
-        if (! isset($camp->ID_UnitArray->string)) {
-            return [];
-        }
-
-        $troopIds = $camp->ID_UnitArray->string;
-        $troopIds = is_array($troopIds) ? $troopIds : [$troopIds];
-
         $troopNames = [];
-
-        foreach ($troopIds as $troopId) {
+        foreach ($camp->getParticipatingUnits() as $troopId) {
             try {
-                $unit = $this->unitRepository->find((int) $troopId);
+                $unit = $this->unitRepository->find($troopId->toInt());
             } catch (UnitNotFound $e) {
                 // Removed troops are returned as well https://github.com/skaut/Skautske-hospodareni/issues/483
                 continue;

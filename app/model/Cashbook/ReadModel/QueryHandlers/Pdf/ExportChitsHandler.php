@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\PaymentMethod;
+use Model\Cashbook\ReadModel\Queries\CashbookOfficialUnitQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\Pdf\ExportChits;
@@ -23,6 +24,7 @@ use Model\Event\SkautisEventId;
 use Model\IEventServiceFactory;
 use Model\IParticipantServiceFactory;
 use Model\Services\TemplateFactory;
+use Model\Unit\Unit;
 use Model\UnitService;
 use function array_filter;
 use function assert;
@@ -90,14 +92,10 @@ class ExportChitsHandler
 
         $template = [];
 
-        $eventService = $this->serviceFactory->create(
-            ucfirst($cashbook->getType()->getSkautisObjectType()->toString())
-        );
-
-        $skautisId                = $this->queryBus->handle(new SkautisIdQuery($query->getCashbookId()));
-        $event                    = $eventService->get($skautisId);
-        $unitId                   = $cashbookType->isUnit() ? $event->ID : $event->ID_Unit;
-        $template['officialName'] = $this->unitService->getOfficialName($unitId);
+        $skautisId    = $this->queryBus->handle(new SkautisIdQuery($query->getCashbookId()));
+        $officialUnit = $this->queryBus->handle(new CashbookOfficialUnitQuery($query->getCashbookId()));
+        assert($officialUnit instanceof Unit);
+        $template['officialName'] = $officialUnit->getFullDisplayNameWithAddress();
         $template['cashbook']     = $cashbook;
 
         //HPD
@@ -119,7 +117,6 @@ class ExportChitsHandler
             $template['list'] = $participantService->getAll($skautisId);
         }
 
-        $template['event']   = $event;
         $template['income']  = $income;
         $template['outcome'] = $outcome;
 

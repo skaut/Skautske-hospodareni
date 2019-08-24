@@ -1,9 +1,8 @@
-{block #title}{$event->DisplayName} - základní ůdaje{/block}
+{block #title}{$event->getDisplayName()} - základní ůdaje{/block}
 
 {block #content}
 {include ../ActionMenu.latte}
-<h2>{$event->DisplayName}</h2>
-
+<h2>{$event->getDisplayName()}</h2>
 <div class="row event-dashboard">
     <div class="col-md-4" n:if="$accessDetail">
         <div class="panel panel-default">
@@ -11,27 +10,27 @@
             <table class="table table-bordered table-condensed">
                 <tr>
                     <th>Jednotka</th>
-                    <td>{$event->Unit}</td>
+                    <td>{$event->getUnitName()}</td>
                 </tr>
-                <tr n:if="isset($troops) && $troops != NULL">
+                <tr n:if="!empty($troops)">
                     <th>Oddíly</th>
-                    <td>{foreach $troops as $t}{$t->DisplayName}{if !$iterator->isLast()}, {/if}{/foreach}</td>
+                    <td>{foreach $troops as $t}{$t->getDisplayName()}{if !$iterator->isLast()}, {/if}{/foreach}</td>
                 </tr>
                 <tr>
                     <th>Datum</th>
-                    <td>{[$event->StartDate, $event->EndDate]|dateRange}</td>
+                    <td>{[$event->getStartDate(), $event->getEndDate()]|dateRange}</td>
                 </tr>
                 <tr>
                     <th>Místo</th>
-                    <td>{$event->Location}</td>
+                    <td>{$event->getLocation()}</td>
                 </tr>
                 <tr>
                     <th>Stav</th>
-                    <td {if $event->ID_EventCampState == closed}title="Uzavřel: {$event->PersonClosed} dne: {$event->DateClosed|date:"j.n.Y"}" {/if}>{$event->ID_EventCampState|campStateLabel|noescape}</td>
+                    <td {if $event->getState() == closed}title="Uzavřel: {$event->getPersonClosed()} dne: {$event->getDateClosed()|date:"j.n.Y"}" {/if}>{$event->getState()|campStateLabel|noescape}</td>
                 </tr>
                 <tr>
                     <th>Prefix <i class="glyphicon glyphicon-question-sign" rel="tooltip" data-original-title='Prefix lze upravit na kartě Evidence plateb.'></i></th>
-                    <td>{$event->prefix}</td>
+                    <td>{$prefix}</td>
                 </tr>
             </table>
         </div>
@@ -44,28 +43,31 @@
             <table class="table table-bordered table-condensed panel-body">
                 <tr>
                     <th>Počet dnů</th>
-                    <td>{$event->TotalDays}</td>
+                    <td>{$event->getTotalDays()}</td>
                 </tr>
+                {if $event->getParticipantStatistics() !== null}
+                    {var $stats = $event->getParticipantStatistics()}
                 <tr>
                     <th>Počet dospělých</th>
-                    <td>{$event->RealAdult}</td>
+                    <td>{$stats->getRealAdult()}</td>
                 </tr>
                 <tr>
                     <th>Počet dětí</th>
-                    <td>{$event->RealChild}</td>
+                    <td>{$stats->getRealChild()}</td>
                 </tr>
                 <tr>
                     <th>Počet celkem</th>
-                    <td>{$event->RealCount}</td>
+                    <td>{$stats->getRealCount()}</td>
                 </tr>
                 <tr>
                     <th>Osobodnů</th>
-                    <td>{$event->RealPersonDays ?? "-"}</td>
+                    <td>{$stats->getRealPersonDays() ?? "-"}</td>
                 </tr>
                 <tr>
                     <th>Dětodnů</th>
-                    <td>{$event->RealChildDays ?? "-"}</td>
+                    <td>{$stats->getRealChildDays() ?? "-"}</td>
                 </tr>
+                {/if}
             </table>
 
         </div>
@@ -123,6 +125,6 @@
         <a n:href="Detail:report 'aid'=>$aid" target="_blank" class="btn btn-info btn-sm"><i class="glyphicon glyphicon-print"></i> Záverečná zpráva</a><br />
     </div>
     <div class="alert alert-info col-sm-6">
-        Pro úpravu údajů táborů použijte <a href="{$skautISUrl}Junak/Events/Camp/Detail.aspx?ID={$event->ID}" target="_blank"><u>SkautIS</u></a>.
+        Pro úpravu údajů táborů použijte <a href="{$skautISUrl}Junak/Events/Camp/Detail.aspx?ID={$event->getID()}" target="_blank"><u>SkautIS</u></a>.
     </div>
 </div>

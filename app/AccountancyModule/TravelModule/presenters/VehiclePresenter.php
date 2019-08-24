@@ -12,6 +12,8 @@ use Model\DTO\Travel\Vehicle as VehicleDTO;
 use Model\Travel\Commands\Vehicle\CreateVehicle;
 use Model\Travel\ReadModel\Queries\Vehicle\RoadworthyScansQuery;
 use Model\TravelService;
+use Model\Unit\ReadModel\Queries\UnitQuery;
+use Model\Unit\Unit;
 use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
@@ -89,7 +91,9 @@ class VehiclePresenter extends BasePresenter
             $subUnitName = null;
             try {
                 if ($vehicle->getSubunitId() !== null) {
-                    $subUnitName = $this->unitService->getDetail($vehicle->getSubunitId())->SortName;
+                    $unit = $this->queryBus->handle(new UnitQuery($vehicle->getSubunitId()));
+                    assert($unit instanceof Unit);
+                    $subUnitName = $unit->getSortName();
                 }
             } catch (PermissionException $exc) {
                 // jednotka může být smazaná a pak na ní nikdo nemá oprávnění

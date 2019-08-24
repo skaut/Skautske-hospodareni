@@ -116,7 +116,7 @@ class CashbookExportPresenter extends BasePresenter
      */
     public function actionPrintCashbook(string $cashbookId, string $paymentMethod) : void
     {
-        $cashbookName = $this->getEventEntity()->getEvent()->get($this->getSkautisId())->DisplayName;
+        $cashbookName = $this->getEventEntity()->getEvent()->getDisplayName($this->getSkautisId());
         $method       = PaymentMethod::get($paymentMethod);
 
         $template = $this->exportService->getCashbook(CashbookId::fromString($cashbookId), $cashbookName, $method);
@@ -131,8 +131,8 @@ class CashbookExportPresenter extends BasePresenter
      */
     public function actionExportCashbook(string $cashbookId, string $paymentMethod) : void
     {
-        $skautisId = $this->getSkautisId();
-        $event     = $this->getEventEntity()->getEvent()->get($skautisId);
+        $skautisId   = $this->getSkautisId();
+        $displayName = $this->getEventEntity()->getEvent()->getDisplayName($skautisId);
 
         if (! PaymentMethod::isValidValue($paymentMethod)) {
             throw new BadRequestException(
@@ -145,7 +145,7 @@ class CashbookExportPresenter extends BasePresenter
             CashbookId::fromString($cashbookId),
             PaymentMethod::get($paymentMethod)
         );
-        $this->sendResponse(new ExcelResponse(Strings::webalize($event->DisplayName) . '-pokladni-kniha-' . date('Y_n_j'), $spreadsheet));
+        $this->sendResponse(new ExcelResponse(Strings::webalize($displayName) . '-pokladni-kniha-' . date('Y_n_j'), $spreadsheet));
     }
 
     /**

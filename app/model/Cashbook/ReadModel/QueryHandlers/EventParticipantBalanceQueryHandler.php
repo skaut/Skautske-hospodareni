@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
-use eGen\MessageBus\QueryBus\IQueryBus;
+use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\ReadModel\Queries\EventParticipantBalanceQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantIncomeQuery;
 use Model\Cashbook\ReadModel\Queries\ParticipantChitSumQuery;
 
 class EventParticipantBalanceQueryHandler
 {
-    /** @var IQueryBus */
+    /** @var QueryBus */
     private $queryBus;
 
-    public function __construct(IQueryBus $queryBus)
+    public function __construct(QueryBus $queryBus)
     {
         $this->queryBus = $queryBus;
     }

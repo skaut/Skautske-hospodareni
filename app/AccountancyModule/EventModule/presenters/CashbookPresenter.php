@@ -6,7 +6,6 @@ namespace App\AccountancyModule\EventModule;
 
 use App\AccountancyModule\Components\CashbookControl;
 use App\AccountancyModule\Factories\ICashbookControlFactory;
-use Cake\Chronos\Date;
 use Model\Auth\Resources\Event;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
@@ -43,7 +42,7 @@ class CashbookPresenter extends BasePresenter
     protected function startup() : void
     {
         parent::startup();
-        $isDraft          = $this->event->ID_EventGeneralState === 'draft';
+        $isDraft          = $this->event->getState() === 'draft';
         $this->isEditable = $isDraft && $this->authorizator->isAllowed(Event::UPDATE_PARTICIPANT, $this->aid);
     }
 
@@ -84,8 +83,7 @@ class CashbookPresenter extends BasePresenter
             $this->redirect('this');
         }
 
-        $functions = $this->queryBus->handle(new EventFunctions(new SkautisEventId($aid)));
-        $date      = $this->eventService->getEvent()->get($aid)->StartDate;
+        $functions = $this->queryBus->handle(new EventFunctions(new SkautisEventId($this->aid)));
 
         assert($functions instanceof Functions);
 
@@ -99,7 +97,7 @@ class CashbookPresenter extends BasePresenter
         $this->commandBus->handle(
             new AddChitToCashbook(
                 $cashbookId,
-                new ChitBody(null, new Date($date), $accountant),
+                new ChitBody(null, $this->event->getStartDate(), $accountant),
                 PaymentMethod::CASH(),
                 [new ChitItem($amount, $categoriesDto[Category::EVENT_PARTICIPANTS_INCOME_CATEGORY_ID], 'účastnické příspěvky')]
             )

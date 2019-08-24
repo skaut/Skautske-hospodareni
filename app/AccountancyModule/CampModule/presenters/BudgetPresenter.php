@@ -31,11 +31,11 @@ class BudgetPresenter extends BasePresenter
     {
         $campId = new SkautisCampId($aid);
 
-        $inconistentTotals = $this->queryBus->handle(new InconsistentCampCategoryTotalsQuery($campId));
+        $inconsistentTotals = $this->queryBus->handle(new InconsistentCampCategoryTotalsQuery($campId));
 
         $this->template->setParameters([
-            'isConsistent'             => count($inconistentTotals) === 0,
-            'toRepair'                 => $inconistentTotals,
+            'isConsistent'             => count($inconsistentTotals) === 0,
+            'toRepair'                 => $inconsistentTotals,
             'budgetEntries'            => $this->queryBus->handle(new CampBudgetQuery($campId)),
             'categories'               => $this->queryBus->handle(new CategoryListQuery($this->getCashbookId($aid))),
             'isUpdateStatementAllowed' => $this->authorizator->isAllowed(Camp::UPDATE_BUDGET, $aid),

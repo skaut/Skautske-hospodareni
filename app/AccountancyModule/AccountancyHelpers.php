@@ -286,16 +286,14 @@ abstract class AccountancyHelpers
     }
 
     /**
-     * @param string[] $dates
+     * @param Date[] $dates
      */
     public static function dateRange(array $dates) : string
     {
         if (count($dates) !== 2) {
             throw new InvalidArgumentException('Filter expect array of 2 items.');
         }
-        $start = new Date($dates[0]);
-        $end   = new Date($dates[1]);
-
+        [$start, $end] = $dates;
         if ($start->year !== $end->year) {
             return sprintf('%s - %s', $start->format(self::DATE_FORMAT_FULL), $end->format(self::DATE_FORMAT_FULL));
         }

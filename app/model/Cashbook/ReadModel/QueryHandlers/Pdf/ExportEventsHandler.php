@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers\Pdf;
 
+use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ObjectType;
@@ -11,8 +12,10 @@ use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\Pdf\ExportEvents;
 use Model\Cashbook\ReadModel\SpreadsheetFactory;
+use Model\Event\Event;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\EventFunctions;
+use Model\Event\ReadModel\Queries\EventQuery;
 use Model\Event\SkautisEventId;
 use Model\Excel\Range;
 use Model\IEventServiceFactory;
@@ -71,7 +74,10 @@ class ExportEventsHandler
             $eventId    = new SkautisEventId($aid);
             $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery($eventId));
 
-            $data[$aid]                    = $eventService->get($aid);
+            $event = $this->queryBus->handle(new EventQuery(new SkautisEventId($aid)));
+            assert($event instanceof Event);
+
+            $data[$aid]                    = ArrayHash::from($event);
             $data[$aid]['cashbookId']      = $cashbookId;
             $data[$aid]['parStatistic']    = $participantService->getEventStatistic($aid);
             $data[$aid]['chits']           = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
@@ -79,7 +85,12 @@ class ExportEventsHandler
             $participants                  = $participantService->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
             $data[$aid]['personDays']      = $participantService->getPersonsDays($participants);
-            $pp                            = $participantService->countPragueParticipants($data[$aid]);
+
+            $pp = $participantService->countPragueParticipants(
+                $data[$aid]->RegistrationNumber,
+                new Date($data[$aid]->StartDate),
+                $data[$aid]->ID
+            );
             if ($pp === null) {
                 continue;
             }

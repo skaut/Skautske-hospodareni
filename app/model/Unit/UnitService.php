@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Model;
 
+use eGen\MessageBus\Bus\QueryBus;
 use Model\Payment\IUnitResolver;
+use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\Repositories\IUnitRepository;
 use Model\Unit\Unit;
 use Model\Unit\UserHasNoUnit;
@@ -12,7 +14,6 @@ use Nette\Application\BadRequestException;
 use Nette\Security\Identity;
 use Nette\Security\User;
 use Skautis;
-use stdClass;
 use function assert;
 
 class UnitService
@@ -26,11 +27,15 @@ class UnitService
     /** @var IUnitResolver */
     private $unitResolver;
 
-    public function __construct(Skautis\Skautis $skautis, IUnitRepository $units, IUnitResolver $unitResolver)
+    /** @var QueryBus */
+    private $queryBus;
+
+    public function __construct(Skautis\Skautis $skautis, IUnitRepository $units, IUnitResolver $unitResolver, QueryBus $queryBus)
     {
         $this->skautis      = $skautis;
         $this->units        = $units;
         $this->unitResolver = $unitResolver;
+        $this->queryBus     = $queryBus;
     }
 
     /**
@@ -48,43 +53,9 @@ class UnitService
         return $unitId;
     }
 
-    /**
-     * @deprecated Use QueryBus with UnitQuery
-     *
-     * vrací detail jednotky
-     *
-     * @throws BadRequestException
-     */
-    public function getDetail(?int $unitId = null) : stdClass
-    {
-        if ($unitId === null) {
-            $unitId = $this->getUnitId();
-        }
-
-        try {
-            return $this->units->findAsStdClass($unitId);
-        } catch (Skautis\Exception $exc) {
-            throw new BadRequestException('Nemáte oprávnění pro získání informací o jednotce.');
-        }
-    }
-
     public function getOfficialUnitId(int $unitId) : int
     {
         return $this->unitResolver->getOfficialUnitId($unitId);
-    }
-
-    /**
-     * @deprecated Use QueryBus with UnitQuery
-     *
-     * @throws BadRequestException
-     */
-    public function getDetailV2(int $unitId) : Unit
-    {
-        try {
-            return $this->units->find($unitId);
-        } catch (Skautis\Exception $exc) {
-            throw new BadRequestException('Nemáte oprávnění pro získání informací o jednotce.');
-        }
     }
 
     /**
@@ -124,23 +95,13 @@ class UnitService
     }
 
     /**
-     * vrací oficiální název organizační jednotky (využití na paragonech)
-     */
-    public function getOfficialName(int $unitId) : string
-    {
-        $unit = $this->getOfficialUnit($unitId);
-
-        return $unit->getFullDisplayNameWithAddress();
-    }
-
-    /**
      * @return Unit[]|array<int, Unit>
      *
      * @throws BadRequestException
      */
     public function getAllUnder(int $ID_Unit) : array
     {
-        $data = [$ID_Unit => $this->getDetailV2($ID_Unit)];
+        $data = [$ID_Unit => $this->queryBus->handle(new UnitQuery($ID_Unit))];
         foreach ($this->units->findByParent($ID_Unit) as $u) {
             $data[$u->getId()] = $u;
             $data             += $this->getAllUnder($u->getId());
@@ -180,7 +141,8 @@ class UnitService
 
         $res = [];
         foreach ($identity->access[$accessType] as $uId => $u) {
-            $res[$uId] = $u instanceof Unit ? $u->getDisplayName() : $u->DisplayName;
+            assert($u instanceof Unit);
+            $res[$uId] = $u->getDisplayName();
         }
 
         return $res;

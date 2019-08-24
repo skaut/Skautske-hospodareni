@@ -51,6 +51,21 @@ class Camp implements ISkautisEvent
     /** @var string */
     private $registrationNumber;
 
+    /** @var UnitId[] */
+    private $participatingUnits;
+
+    /** @var int|null */
+    private $totalDays;
+
+    /** @var ParticipantStatistics|null */
+    private $participantStatistics;
+
+    /** @var bool|null */
+    private $realAutoComputed;
+
+    /**
+     * @param  UnitId[] $participatingUnits
+     */
     public function __construct(
         SkautisCampId $id,
         string $displayName,
@@ -60,17 +75,25 @@ class Camp implements ISkautisEvent
         Date $endDate,
         string $location,
         string $state,
-        string $registrationNumber
+        string $registrationNumber,
+        array $participatingUnits,
+        ?int $totalDays,
+        ?ParticipantStatistics $participantStatistics,
+        ?bool $realAutoComputed
     ) {
-        $this->id                 = $id;
-        $this->displayName        = $displayName;
-        $this->unitId             = $unitId;
-        $this->unitName           = $unitName;
-        $this->startDate          = $startDate;
-        $this->endDate            = $endDate;
-        $this->location           = $location;
-        $this->state              = $state;
-        $this->registrationNumber = $registrationNumber;
+        $this->id                    = $id;
+        $this->displayName           = $displayName;
+        $this->unitId                = $unitId;
+        $this->unitName              = $unitName;
+        $this->startDate             = $startDate;
+        $this->endDate               = $endDate;
+        $this->location              = $location;
+        $this->state                 = $state;
+        $this->registrationNumber    = $registrationNumber;
+        $this->participatingUnits    = $participatingUnits;
+        $this->totalDays             = $totalDays;
+        $this->participantStatistics = $participantStatistics;
+        $this->realAutoComputed      = $realAutoComputed;
     }
 
     public function getId() : SkautisCampId
@@ -116,5 +139,28 @@ class Camp implements ISkautisEvent
     public function getRegistrationNumber() : string
     {
         return $this->registrationNumber;
+    }
+
+    /**
+     * @return UnitId[]
+     */
+    public function getParticipatingUnits() : array
+    {
+        return $this->participatingUnits;
+    }
+
+    public function getTotalDays() : ?int
+    {
+        return $this->totalDays;
+    }
+
+    public function getParticipantStatistics() : ?ParticipantStatistics
+    {
+        return $this->participantStatistics;
+    }
+
+    public function isRealAutoComputed() : ?bool
+    {
+        return $this->realAutoComputed;
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\StatisticsModule;
 
 use Model\StatisticsService;
+use Model\Unit\ReadModel\Queries\UnitQuery;
 use function date;
 
 class DefaultPresenter extends BasePresenter
@@ -23,7 +24,7 @@ class DefaultPresenter extends BasePresenter
         if ($year === null) {
             $year = (int) date('Y');
         }
-        $unitTree = $this->unitService->getTreeUnder($this->unitService->getDetailV2($this->unitId));
+        $unitTree = $this->unitService->getTreeUnder($this->queryBus->handle(new UnitQuery($this->unitId)));
         $data     = $this->statService->getEventStatistics($unitTree, $year);
 
         $this->template->setParameters([

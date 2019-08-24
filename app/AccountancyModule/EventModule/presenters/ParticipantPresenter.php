@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\EventModule;
 
+use App\AccountancyModule\ExcelResponse;
 use App\AccountancyModule\ParticipantTrait;
 use Model\Auth\Resources\Event;
 use Model\ExcelService;
@@ -11,7 +12,10 @@ use Model\ExportService;
 use Model\Services\PdfRenderer;
 use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
+use Nette\Utils\Strings;
+use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WsdlException;
+use function date;
 use function in_array;
 
 class ParticipantPresenter extends BasePresenter
@@ -39,7 +43,7 @@ class ParticipantPresenter extends BasePresenter
         $this->isAllowRepayment = false;
         $this->isAllowIsAccount = false;
 
-        $isDraft      = $this->event->ID_EventGeneralState === 'draft';
+        $isDraft      = $this->event->getState() === 'draft';
         $authorizator = $this->authorizator;
 
         $this->isAllowParticipantDetail = $authorizator->isAllowed(Event::ACCESS_DETAIL, $this->aid);
@@ -112,5 +116,18 @@ class ParticipantPresenter extends BasePresenter
         $this->eventService->getParticipants()->update($id, $aid, [$field => $value]);
         $this->payload->message = 'Success';
         $this->sendPayload();
+    }
+
+    public function actionExportExcel(int $aid) : void
+    {
+        try {
+            $participantsDTO = $this->eventService->getParticipants()->getAll($this->event->getId()->toInt());
+            $spreadsheet     = $this->excelService->getGeneralParticipants($participantsDTO, $this->event->getStartDate());
+
+            $this->sendResponse(new ExcelResponse(Strings::webalize($this->event->getDisplayName()) . '-' . date('Y_n_j'), $spreadsheet));
+        } catch (PermissionException $ex) {
+            $this->flashMessage('Nemáte oprávnění k záznamu osoby! (' . $ex->getMessage() . ')', 'danger');
+            $this->redirect('default', ['aid' => $aid]);
+        }
     }
 }
