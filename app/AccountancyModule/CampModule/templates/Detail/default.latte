@@ -12,7 +12,7 @@
                     <th>Jednotka</th>
                     <td>{$event->getUnitName()}</td>
                 </tr>
-                <tr n:if="isset($troops) && $troops != NULL">
+                <tr n:if="!empty($troops)">
                     <th>Oddíly</th>
                     <td>{foreach $troops as $t}{$t->getDisplayName()}{if !$iterator->isLast()}, {/if}{/foreach}</td>
                 </tr>

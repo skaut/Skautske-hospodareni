@@ -13,6 +13,7 @@ use Model\ExportService;
 use Model\Services\PdfRenderer;
 use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\UnitNotFound;
+use function array_filter;
 use function array_map;
 use function count;
 
@@ -33,16 +34,16 @@ class DetailPresenter extends BasePresenter
 
     public function renderDefault(int $aid) : void
     {
-        $troops = array_map(
+        $troops = array_filter(array_map(
             function (UnitId $id) {
                 try {
                     return $this->queryBus->handle(new UnitQuery($id->toInt()));
                 } catch (UnitNotFound $exc) {
-                    return ['ID' => $id, 'DisplayName' => 'Jednotka (' . $id . ') již neexistuje.'];
+                    return null;
                 }
             },
             $this->event->getParticipatingUnits()
-        );
+        ));
 
         if ($this->isAjax()) {
             $this->redrawControl('contentSnip');
