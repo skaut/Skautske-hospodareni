@@ -17,12 +17,12 @@ interface IScanStorage
     /**
      * @throws InvalidScanFile
      */
-    public function save(string $path, string $contents) : void;
+    public function save(FilePath $path, string $contents) : void;
 
     /**
      * @throws FileNotFound
      */
-    public function get(string $path) : File;
+    public function get(FilePath $path) : File;
 
-    public function delete(string $path) : void;
+    public function delete(FilePath $path) : void;
 }

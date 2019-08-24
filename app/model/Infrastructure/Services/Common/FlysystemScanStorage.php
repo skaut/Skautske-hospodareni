@@ -11,6 +11,7 @@ use League\Flysystem\FilesystemInterface;
 use Model\Common\Exception\InvalidScanFile;
 use Model\Common\File;
 use Model\Common\FileNotFound;
+use Model\Common\FilePath;
 use Model\Common\IScanStorage;
 use const FILEINFO_MIME_TYPE;
 use function GuzzleHttp\Psr7\stream_for;
@@ -26,7 +27,7 @@ final class FlysystemScanStorage implements IScanStorage
         $this->filesystem = $filesystem;
     }
 
-    public function get(string $path) : File
+    public function get(FilePath $path) : File
     {
         try {
             $contents = $this->filesystem->readStream($path);
@@ -39,7 +40,7 @@ final class FlysystemScanStorage implements IScanStorage
         }
     }
 
-    public function save(string $path, string $contents) : void
+    public function save(FilePath $path, string $contents) : void
     {
         $mimeType = $this->detectMimeType($contents);
 
@@ -50,7 +51,7 @@ final class FlysystemScanStorage implements IScanStorage
         $this->filesystem->write($path, $contents);
     }
 
-    public function delete(string $path) : void
+    public function delete(FilePath $path) : void
     {
         try {
             $this->filesystem->delete($path);

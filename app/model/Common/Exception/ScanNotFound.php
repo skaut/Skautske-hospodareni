@@ -9,8 +9,8 @@ use function sprintf;
 
 final class ScanNotFound extends Exception
 {
-    public static function withPath(string $path) : self
+    public static function withPath(FilePath $path) : self
     {
-        return new self(sprintf('Scan "%s" does not exists', $path));
+        return new self(sprintf('Scan "%s" does not exists', $path->getPath()));
     }
 }

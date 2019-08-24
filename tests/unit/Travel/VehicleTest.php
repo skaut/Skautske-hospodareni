@@ -7,6 +7,7 @@ namespace Model\Travel;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use Mockery as m;
+use Model\Common\FilePath;
 use Model\Common\ScanNotFound;
 use Model\Travel\Vehicle\Metadata;
 use Model\Unit\Unit;
@@ -42,7 +43,7 @@ class VehicleTest extends \Codeception\Test\Unit
         $unit    = m::mock(Unit::class, ['getId' => 10]);
         $vehicle = new Vehicle('Test', $unit, null, '333-333', 2, new Metadata(new DateTimeImmutable(), 'FM'));
 
-        $path = 'roadworthy.jpg';
+        $path = $this->getFilePath('roadworthy.jpg');
 
         $vehicle->addRoadworthyScan($path);
 
@@ -58,18 +59,23 @@ class VehicleTest extends \Codeception\Test\Unit
 
         $this->expectException(ScanNotFound::class);
 
-        $vehicle->removeRoadworthyScan('roadworthy.jpg');
+        $vehicle->removeRoadworthyScan($this->getFilePath('roadworthy.jpg'));
     }
 
     public function testRemoveRoadworthyScan() : void
     {
         $unit    = m::mock(Unit::class, ['getId' => 10]);
         $vehicle = new Vehicle('Test', $unit, null, '333-333', 2, new Metadata(new DateTimeImmutable(), 'FM'));
-        $path    = 'roadworthy.jpg';
+        $path    = $this->getFilePath('roadworthy.jpg');
         $vehicle->addRoadworthyScan($path);
 
         $vehicle->removeRoadworthyScan($path);
 
         $this->assertCount(0, $vehicle->getRoadworthyScans());
+    }
+
+    private function getFilePath(string $fileName) : FilePath
+    {
+        return new FilePath('test', $fileName);
     }
 }
