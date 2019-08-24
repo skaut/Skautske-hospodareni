@@ -1,0 +1,23 @@
+{extends $originalTemplate}
+
+{block filters}
+    {include ../../../templates/shared/gridFilters/search.latte}
+    {include ../../../templates/shared/gridFilters/year.latte}
+    {include ../../../templates/shared/gridFilters/state.latte}
+{/block}
+
+{block global-actions}
+    <span n:tag-if="count($rows) === 0"
+            title="Nebyly nalezeny žádné akce" class="d-inline-block" data-toggle="tooltip"
+            data-placement="bottom">
+                <a href="{plink exportDialog:open!}" n:class="count($rows) === 0 ? disabled, btn, btn-light, ajax, mb-2" data-naja-history="off">
+                    <i class="fas fa-arrow-down"></i>
+                    Exportovat&hellip;
+                </a>
+            </span>
+    <a href="{plink NewEvent:}" n:if="$accessCreate" class="btn btn-success ml-2 mb-2"><i class="fas fa-plus"></i> Založit novou akci</a>
+{/block}
+
+{block col-state}
+    {$item->getState()|eventStateLabelNew|noescape}
+{/block}

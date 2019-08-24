@@ -8,6 +8,7 @@ import {SnippetProcessor} from "./SnippetProcessor";
 import {initializeAutoSubmit} from "./autoSubmitForm";
 import {initializeLinksThatRequireConfirmation} from "./confirmDialogs";
 import {initializeCheckAllCheckboxes} from "./checkAllChekboxes";
+import {DataGridExtension} from "./DataGridExtension";
 
 export default function (): void {
     naja.registerExtension(ProgressBar);
@@ -19,6 +20,8 @@ export default function (): void {
         initializeLinksThatRequireConfirmation(snippet, 'data-confirm');
         initializeCheckAllCheckboxes(snippet, 'data-dependent-checkboxes');
     });
+
+    naja.registerExtension(DataGridExtension);
 
     naja.formsHandler.netteForms = netteForms;
 

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Model\DTO\Event;
+namespace Model\DTO\Camp;
 
 use Cake\Chronos\Date;
 
-final class EventListItem
+final class CampListItem
 {
     /** @var int */
     private $id;
@@ -20,18 +20,29 @@ final class EventListItem
     /** @var Date */
     private $endDate;
 
+    /** @var string */
+    private $location;
+
     /** @var string|null */
     private $prefix;
 
     /** @var string */
     private $state;
 
-    public function __construct(int $id, string $name, Date $startDate, Date $endDate, ?string $prefix, string $state)
-    {
+    public function __construct(
+        int $id,
+        string $name,
+        Date $startDate,
+        Date $endDate,
+        string $location,
+        ?string $prefix,
+        string $state
+    ) {
         $this->id        = $id;
         $this->name      = $name;
         $this->startDate = $startDate;
         $this->endDate   = $endDate;
+        $this->location  = $location;
         $this->prefix    = $prefix;
         $this->state     = $state;
     }
@@ -54,6 +65,11 @@ final class EventListItem
     public function getEndDate() : Date
     {
         return $this->endDate;
+    }
+
+    public function getLocation() : string
+    {
+        return $this->location;
     }
 
     public function getPrefix() : ?string

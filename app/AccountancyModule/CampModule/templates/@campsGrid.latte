@@ -1,0 +1,41 @@
+{extends $originalTemplate}
+
+{block filters}
+    {include ../../templates/shared/gridFilters/search.latte}
+    {include ../../templates/shared/gridFilters/year.latte}
+    {include ../../templates/shared/gridFilters/state.latte}
+{/block}
+
+{block global-actions}
+    <span n:tag-if="count($rows) === 0"
+        title="Nebyly nalezeny žádné tábory"
+        class="d-inline-block"
+        data-toggle="tooltip"
+        data-placement="bottom">
+            <a href="{plink exportDialog:open!}" n:class="count($rows) === 0 ? disabled, btn, btn-light, ajax, mb-2" data-naja-history="off">
+                <i class="fas fa-arrow-down"></i>
+                Exportovat&hellip;
+            </a>
+    </span>
+{/block}
+
+{define col-displayName}
+    <a href="{plink Detail:default $item->id->toInt()}">{$item->displayName}</a>
+{/define}
+
+{define col-state}
+    {var $state = $item->getState()}
+
+    {if $state === "draft"}
+        <span class="badge badge-warning">Rozpracováno</span>
+    {elseif $state === "approvedParent"}
+        <span class="badge badge-info">Schválený střediskem</span>
+    {elseif $state === "approvedLeader"}
+        <span class="badge badge-info">Schválený vedoucím</span>
+    {elseif $state === "real"}
+        <span class="badge badge-success">Skutečnost odevzdána</span>
+    {else}
+        <span class="badge badge-default">Zrušený</span>
+    {/if}
+
+{/define}

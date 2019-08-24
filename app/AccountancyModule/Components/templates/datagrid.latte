@@ -1,0 +1,37 @@
+{extends $original_template}
+
+{block table-class}table table-bordered table-striped mt-2{/block}
+
+{block outer-filters}
+    <div class="d-md-flex justify-content-between">
+        <div class="">
+            <form n:name="$form">
+                <div class="form-inline auto-submit">
+                    {ifset #filters}
+                        {include #filters}
+                    {/ifset}
+                </div>
+            </form>
+        </div>
+        <div class="text-right" n:snippet="global-actions">
+            {ifset #global-actions}
+                {include #global-actions}
+            {/ifset}
+        </div>
+    </div>
+{/block}
+
+{block icon-sort-up}
+    <i class="fas fa-sort-up"></i>
+{/block}
+
+{block icon-sort}
+    <i class="fas fa-sort"></i>
+{/block}
+
+{block icon-sort-down}
+    <i class="fas fa-sort-down"></i>
+{/block}
+
+{block tfoot}
+{/block}

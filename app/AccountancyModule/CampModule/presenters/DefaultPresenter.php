@@ -4,143 +4,85 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\CampModule;
 
-use App\AccountancyModule\ExcelResponse;
+use App\AccountancyModule\CampModule\Components\ExportDialog;
+use App\AccountancyModule\CampModule\Factories\IExportDialogFactory;
+use App\AccountancyModule\Components\DataGrid;
 use App\AccountancyModule\Factories\GridFactory;
-use App\Forms\BaseForm;
-use Doctrine\Common\Collections\ArrayCollection;
-use Model\Cashbook\ReadModel\Queries\Pdf\ExportCamps;
-use Model\Event\ReadModel\Queries\CampListQuery;
+use Cake\Chronos\Date;
 use Model\Event\ReadModel\Queries\CampStates;
-use Model\ExcelService;
-use Nette\Application\UI\Form;
-use Nette\Http\SessionSection;
-use Ublaboo\DataGrid\DataGrid;
-use Ublaboo\DataGrid\DataSource\DoctrineCollectionDataSource;
-use function array_keys;
 use function array_merge;
-use function array_reverse;
-use function date;
-use function range;
-use function sprintf;
 
 class DefaultPresenter extends BasePresenter
 {
-    /** @var SessionSection */
-    public $ses;
-
     public const DEFAULT_STATE = 'approvedParent'; //filtrovani zobrazených položek
-
-    /** @var ExcelService */
-    private $excelService;
 
     /** @var GridFactory */
     private $gridFactory;
 
-    public function __construct(ExcelService $excel, GridFactory $gf)
+    /** @var IExportDialogFactory */
+    private $exportDialogFactory;
+
+    public function __construct(GridFactory $gridFactory, IExportDialogFactory $exportDialogFactory)
     {
         parent::__construct();
-        $this->excelService = $excel;
-        $this->gridFactory  = $gf;
+        $this->gridFactory         = $gridFactory;
+        $this->exportDialogFactory = $exportDialogFactory;
     }
 
     protected function startup() : void
     {
         parent::startup();
-        //ochrana $this->aid se provádí již v BasePresenteru
-        $this->ses = $this->session->getSection(self::class);
-        if (! isset($this->ses->state)) {
-            $this->ses->state = self::DEFAULT_STATE;
-        }
-        if (isset($this->ses->year)) {
-            return;
-        }
-
-        $this->ses->year = date('Y');
+        $this->setLayout('layout2');
     }
 
-    protected function createComponentCampGrid() : DataGrid
+    protected function createComponentGrid() : DataGrid
     {
-        //filtrovani zobrazených položek
-        $year  = (int) ($this->ses->year ?? date('Y'));
-        $state = $this->ses->state ?? null;
+        $grid = $this->gridFactory->createSimpleGrid(__DIR__ . '/../templates/@campsGrid.latte');
 
-        $camps = $this->queryBus->handle(new CampListQuery($year, $state === 'all' ? null : $state));
+        $grid->addColumnLink('name', 'Název', 'Detail:', null, ['aid' => 'id'])
+            ->setSortable();
 
-        $grid = $this->gridFactory->create();
+        $grid->addColumnDateTime('startDate', 'Začátek')
+            ->setSortable();
 
-        $grid->setDataSource(new DoctrineCollectionDataSource(new ArrayCollection($camps), 'id'));
-        $grid->addColumnText('displayName', 'Název')
-            ->setSortable()
-            ->setFilterText();
+        $grid->addColumnDateTime('endDate', 'Konec')
+            ->setSortable();
 
-        $grid->addColumnDateTime('startDate', 'Od')->setFormat('d.m.Y')->setSortable();
-        $grid->addColumnDateTime('endDate', 'Do')->setFormat('d.m.Y')->setSortable();
-        $grid->addColumnText('location', 'Místo konání')->setSortable()->setFilterText();
+        $grid->addColumnText('location', 'Místo')
+            ->setSortable();
+
+        $grid->addColumnText('prefix', 'Prefix')
+            ->setSortable();
+
         $grid->addColumnText('state', 'Stav');
 
-        $grid->setTemplateFile(__DIR__ . '/../templates/campsGrid.latte');
+        $grid->addYearFilter('year', 'Rok')
+            ->setCondition(function (CampListDataSource $dataSource, $year) : void {
+                $dataSource->filterByYear($year === DataGrid::OPTION_ALL ? null : (int) ($year ?? Date::today()->year));
+            });
+
+        $states = array_merge([DataGrid::OPTION_ALL => 'Nezrušené'], $this->queryBus->handle(new CampStates()));
+        $grid->addFilterSelect('state', 'Stav', $states)
+            ->setCondition(function (CampListDataSource $dataSource, ?string $state) : void {
+                $dataSource->filterByState($state === DataGrid::OPTION_ALL ? null : $state);
+            });
+
+        $grid->addFilterText('search', 'Název', ['name', 'location'])
+            ->setPlaceholder('Název, místo...');
+
+        $grid->setDataSource(new CampListDataSource($this->queryBus));
+
+        $grid->setDefaultFilter([
+            'search' => '',
+            'year' => (string) Date::today()->year,
+            'state' => self::DEFAULT_STATE,
+        ]);
 
         return $grid;
     }
 
-    public function actionCampSummary() : void
+    protected function createComponentExportDialog() : ExportDialog
     {
-        $year = (int) ($this->ses->year ?? date('Y'));
-        $ids  = array_keys($this->queryBus->handle(new CampListQuery($year, $this->ses->state)));
-        $this->sendResponse(new ExcelResponse(sprintf('Souhrn-táborů-%s', date('Y_n_j')), $this->queryBus->handle(new ExportCamps($ids))));
-    }
-
-    public function handleChangeYear(?int $year) : void
-    {
-        $this->ses->year = $year;
-        if ($this->isAjax()) {
-            $this->redrawControl('camps');
-        } else {
-            $this->redirect('this');
-        }
-    }
-
-    public function handleChangeState(?string $state = null) : void
-    {
-        $this->ses->state = $state;
-        if ($this->isAjax()) {
-            $this->redrawControl('camps');
-        } else {
-            $this->redirect('this');
-        }
-    }
-
-    protected function createComponentFormFilter() : Form
-    {
-        $states = array_merge(['all' => 'Nezrušené'], $this->queryBus->handle(new CampStates()));
-        $years  = ['all' => 'Všechny'];
-        foreach (array_reverse(range(2012, date('Y'))) as $y) {
-            $years[$y] = $y;
-        }
-
-        $form = new BaseForm();
-
-        $form->addSelect('state', 'Stav', $states)
-            ->setDefaultValue($this->ses->state);
-
-        $form->addSelect('year', 'Rok', $years)
-            ->setDefaultValue($this->ses->year);
-
-        $form->addSubmit('send', 'Hledat')
-            ->setAttribute('class', 'btn btn-primary');
-
-        $form->onSuccess[] = function (Form $form) : void {
-            $this->formFilterSubmitted($form);
-        };
-
-        return $form;
-    }
-
-    private function formFilterSubmitted(Form $form) : void
-    {
-        $v                = $form->getValues();
-        $this->ses->year  = $v['year'];
-        $this->ses->state = $v['state'];
-        $this->redirect('default', ['aid' => $this->aid]);
+        return $this->exportDialogFactory->create($this['grid']->getFilteredAndSortedData());
     }
 }

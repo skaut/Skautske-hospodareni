@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\AccountancyModule\EventModule\Components;
+namespace App\AccountancyModule\CampModule\Components;
 
 use App\AccountancyModule\Components\BaseControl;
 use App\AccountancyModule\ExcelResponse;
 use App\Forms\BaseForm;
 use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\QueryBus;
-use Model\Cashbook\ReadModel\Queries\Pdf\ExportEvents;
-use Model\DTO\Event\EventListItem;
+use Model\Cashbook\ReadModel\Queries\Pdf\ExportCamps;
+use Model\DTO\Camp\CampListItem;
 use Model\Services\Language;
 use Nette\Utils\ArrayHash;
 use function sprintf;
@@ -21,19 +21,19 @@ final class ExportDialog extends BaseControl
     /** @var bool @persistent */
     public $opened = false;
 
-    /** @var EventListItem[] */
-    private $events;
+    /** @var CampListItem[] */
+    private $camps;
 
     /** @var QueryBus */
     private $queryBus;
 
     /**
-     * @param EventListItem[] $events
+     * @param CampListItem[] $camps
      */
-    public function __construct(array $events, QueryBus $queryBus)
+    public function __construct(array $camps, QueryBus $queryBus)
     {
         parent::__construct();
-        $this->events   = $events;
+        $this->camps    = $camps;
         $this->queryBus = $queryBus;
     }
 
@@ -57,16 +57,16 @@ final class ExportDialog extends BaseControl
 
         $form->useBootstrap4();
 
-        $events = [];
+        $items = [];
 
-        foreach ($this->events as $event) {
-            $events[$event->getId()] = $event->getName();
+        foreach ($this->camps as $camp) {
+            $items[$camp->getId()] = $camp->getName();
         }
 
-        uasort($events, [Language::class, 'compare']);
+        uasort($items, [Language::class, 'compare']);
 
-        $form->addCheckboxList('eventIds', 'Akce', $events)
-            ->setRequired('Musíte vybrat alespoň jednu akci');
+        $form->addCheckboxList('campIds', 'Tábory', $items)
+            ->setRequired('Musíte vybrat alespoň jednen tábor');
 
         $form->addSubmit('download', 'Stáhnout export');
 
@@ -81,8 +81,8 @@ final class ExportDialog extends BaseControl
     {
         $this->presenter->sendResponse(
             new ExcelResponse(
-                sprintf('Souhrn-akci-%s', Date::today()->format('Y_n_j')),
-                $this->queryBus->handle(new ExportEvents($values->eventIds))
+                sprintf('Souhrn-táborů-%s', Date::today()->format('Y_n_j')),
+                $this->queryBus->handle(new ExportCamps($values->campIds))
             )
         );
     }
