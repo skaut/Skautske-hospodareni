@@ -12,7 +12,6 @@ use Model\DTO\Cashbook\Cashbook;
 use Model\Event\ReadModel\Queries\CampQuery;
 use Model\Event\SkautisCampId;
 use Model\EventEntity;
-use Nette\Utils\ArrayHash;
 use function assert;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter
@@ -43,7 +42,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         $this->template->setParameters([
             'event' => $this->event = $this->queryBus->handle(new CampQuery(new SkautisCampId($this->aid))),
             'isEditable' => $this->isEditable,
-            'cashbookInfo' => ArrayHash::from(['prefix' => $cashbook->getChitNumberPrefix()]),
+            'prefix' => $cashbook->getChitNumberPrefix(),
         ]);
     }
 

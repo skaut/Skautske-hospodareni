@@ -46,7 +46,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         $this->template->setParameters([
             'event' => $this->event,
             'isEditable'=> $this->isEditable = $this->authorizator->isAllowed(ResourceEvent::UPDATE, $this->aid),
-            'cashbookInfo' => ArrayHash::from(['prefix' => $cashbook->getChitNumberPrefix()]),
+            'prefix' => $cashbook->getChitNumberPrefix(),
         ]);
     }
 
