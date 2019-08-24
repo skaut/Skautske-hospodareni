@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Model\Travel;
+namespace Model\Common;
 
 use Exception;
 use function sprintf;
@@ -11,6 +11,6 @@ final class ScanNotFound extends Exception
 {
     public static function withPath(string $path) : self
     {
-        return new self(sprintf('Scan "%s" does not exist in vehicle', $path));
+        return new self(sprintf('Scan "%s" does not exists', $path));
     }
 }

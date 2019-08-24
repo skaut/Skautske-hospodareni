@@ -7,6 +7,7 @@ namespace Model\Travel;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use Mockery as m;
+use Model\Common\ScanNotFound;
 use Model\Travel\Vehicle\Metadata;
 use Model\Unit\Unit;
 
