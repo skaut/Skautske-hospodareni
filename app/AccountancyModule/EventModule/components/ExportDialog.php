@@ -11,8 +11,10 @@ use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\ReadModel\Queries\Pdf\ExportEvents;
 use Model\DTO\Event\EventListItem;
+use Model\Services\Language;
 use Nette\Utils\ArrayHash;
 use function sprintf;
+use function uasort;
 
 final class ExportDialog extends BaseControl
 {
@@ -60,6 +62,8 @@ final class ExportDialog extends BaseControl
         foreach ($this->events as $event) {
             $events[$event->getId()] = $event->getName();
         }
+
+        uasort($events, [Language::class, 'compare']);
 
         $form->addCheckboxList('eventIds', 'Akce', $events)
             ->setRequired('Musíte vybrat alespoň jednu akci');
