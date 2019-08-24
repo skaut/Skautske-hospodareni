@@ -53,6 +53,8 @@ class CashbookTest extends Unit
 
         $I->fillField('Název akce', $this->eventName);
         $I->fillField('Od', $today);
+        $I->click('//body'); // close datepicker
+
         $I->fillField('Do', $today);
 
         $I->click('.ui--createEvent');
