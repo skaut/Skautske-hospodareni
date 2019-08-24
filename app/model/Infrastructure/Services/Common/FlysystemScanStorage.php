@@ -30,7 +30,7 @@ final class FlysystemScanStorage implements IScanStorage
     public function get(FilePath $path) : File
     {
         try {
-            $contents = $this->filesystem->readStream($path);
+            $contents = $this->filesystem->readStream($path->getPath());
 
             Assertion::isResource($contents);
 
@@ -48,13 +48,13 @@ final class FlysystemScanStorage implements IScanStorage
             throw InvalidScanFile::invalidType($mimeType);
         }
 
-        $this->filesystem->write($path, $contents);
+        $this->filesystem->write($path->getPath(), $contents);
     }
 
     public function delete(FilePath $path) : void
     {
         try {
-            $this->filesystem->delete($path);
+            $this->filesystem->delete($path->getPath());
         } catch (FileNotFoundException $e) {
             // File was probably deleted before
         }

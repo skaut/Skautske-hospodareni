@@ -138,7 +138,7 @@ class Vehicle
     public function removeRoadworthyScan(FilePath $filePath) : void
     {
         foreach ($this->roadworthyScans as $key => $scan) {
-            if ($scan->getFilePath() === $filePath) {
+            if ($scan->getFilePath()->equals($filePath)) {
                 $this->roadworthyScans->remove($key);
 
                 return;

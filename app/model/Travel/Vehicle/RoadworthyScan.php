@@ -14,6 +14,8 @@ use Model\Travel\Vehicle;
  */
 class RoadworthyScan
 {
+    public const FILE_PATH_PREFIX = 'roadworthies';
+
     /**
      * @internal only for infrastructure
      *

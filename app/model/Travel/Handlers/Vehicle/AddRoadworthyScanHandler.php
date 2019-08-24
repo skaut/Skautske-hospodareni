@@ -8,11 +8,10 @@ use Model\Common\FilePath;
 use Model\Common\IScanStorage;
 use Model\Travel\Commands\Vehicle\AddRoadworthyScan;
 use Model\Travel\Repositories\IVehicleRepository;
+use Model\Travel\Vehicle\RoadworthyScan;
 
 final class AddRoadworthyScanHandler
 {
-    private const PREFIX = 'roadworthies';
-
     /** @var IVehicleRepository */
     private $vehicles;
 
@@ -29,7 +28,7 @@ final class AddRoadworthyScanHandler
     {
         $vehicle = $this->vehicles->find($command->getVehicleId());
 
-        $path = new FilePath(self::PREFIX, $command->getFileName());
+        $path = new FilePath(RoadworthyScan::FILE_PATH_PREFIX, $command->getFileName());
 
         $this->scanStorage->save($path, $command->getScanContents());
 

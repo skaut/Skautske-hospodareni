@@ -25,4 +25,14 @@ final class FilePath
     {
         return $prefix . '/' . Date::today()->format('Y/m') . '/' . $originalFileName;
     }
+
+    public function equals(self $that) : bool
+    {
+        return $this->getPath() === $that->getPath();
+    }
+
+    public function equalsValue(string $path) : bool
+    {
+        return $this->getPath() === $path;
+    }
 }
