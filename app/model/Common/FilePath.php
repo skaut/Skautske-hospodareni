@@ -31,7 +31,7 @@ final class FilePath
         return $this->path;
     }
 
-    private static function generatePath(string $prefix, string $originalFileName) : string
+    public static function generatePath(string $prefix, string $originalFileName) : string
     {
         return $prefix . '/' . Date::today()->format('Y/m') . '/' . $originalFileName;
     }
