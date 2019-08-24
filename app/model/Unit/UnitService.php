@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model;
 
-use eGen\MessageBus\QueryBus\IQueryBus;
+use eGen\MessageBus\Bus\QueryBus;
 use Model\Payment\IUnitResolver;
 use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\Repositories\IUnitRepository;
@@ -27,10 +27,10 @@ class UnitService
     /** @var IUnitResolver */
     private $unitResolver;
 
-    /** @var IQueryBus */
+    /** @var QueryBus */
     private $queryBus;
 
-    public function __construct(Skautis\Skautis $skautis, IUnitRepository $units, IUnitResolver $unitResolver, IQueryBus $queryBus)
+    public function __construct(Skautis\Skautis $skautis, IUnitRepository $units, IUnitResolver $unitResolver, QueryBus $queryBus)
     {
         $this->skautis      = $skautis;
         $this->units        = $units;

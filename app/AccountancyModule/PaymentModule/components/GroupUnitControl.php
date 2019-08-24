@@ -7,7 +7,7 @@ namespace App\AccountancyModule\PaymentModule\Components;
 use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
 use eGen\MessageBus\Bus\CommandBus;
-use eGen\MessageBus\QueryBus\IQueryBus;
+use eGen\MessageBus\Bus\QueryBus;
 use Model\Auth\IAuthorizator;
 use Model\Auth\Resources\Unit as ResourceUnit;
 use Model\Common\ShouldNotHappen;
@@ -41,10 +41,10 @@ class GroupUnitControl extends BaseControl
     /** @var IAuthorizator */
     private $authorizator;
 
-    /** @var IQueryBus */
+    /** @var QueryBus */
     private $queryBus;
 
-    public function __construct(int $groupId, CommandBus $commandBus, PaymentService $groups, UnitService $units, IAuthorizator $authorizator, IQueryBus $queryBus)
+    public function __construct(int $groupId, CommandBus $commandBus, PaymentService $groups, UnitService $units, IAuthorizator $authorizator, QueryBus $queryBus)
     {
         parent::__construct();
         $this->groupId      = $groupId;

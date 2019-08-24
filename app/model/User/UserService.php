@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model;
 
-use eGen\MessageBus\QueryBus\IQueryBus;
+use eGen\MessageBus\Bus\QueryBus;
 use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\SkautisRole;
@@ -14,10 +14,10 @@ use stdClass;
 
 class UserService extends BaseService
 {
-    /** @var IQueryBus */
+    /** @var QueryBus */
     private $queryBus;
 
-    public function __construct(Skautis $skautis, IQueryBus $queryBus)
+    public function __construct(Skautis $skautis, QueryBus $queryBus)
     {
         parent::__construct($skautis);
         $this->queryBus = $queryBus;

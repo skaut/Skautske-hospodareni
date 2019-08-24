@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model;
 
-use eGen\MessageBus\QueryBus\IQueryBus;
+use eGen\MessageBus\Bus\QueryBus;
 use Model\DTO\Payment\Mail;
 use Model\DTO\Payment\MailFactory;
 use Model\Payment\IUnitResolver;
@@ -27,13 +27,13 @@ class MailService
     /** @var IUnitResolver */
     private $unitResolver;
 
-    /** @var IQueryBus */
+    /** @var QueryBus */
     private $queryBus;
 
     public function __construct(
         IMailCredentialsRepository $credentials,
         IUnitResolver $unitResolver,
-        IQueryBus $queryBus
+        QueryBus $queryBus
     ) {
         $this->credentials  = $credentials;
         $this->unitResolver = $unitResolver;
