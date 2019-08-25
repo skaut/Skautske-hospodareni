@@ -1,15 +1,8 @@
 {extends $originalTemplate}
 
 {block filters}
-    {include ../../../templates/shared/gridFilters/search.latte}
-    <div class="input-group mb-2">
-        <div class="input-group-prepend">
-            <div class="input-group-text">
-                <label n:name="filter-subunit">Oddíl</label>
-            </div>
-        </div>
-        <select n:name="filter-subunit" class="form-control custom-select"/>
-    </div>
+    {include #filter-type-search}
+    {include #filter-type-select name => 'subunit', label => 'Oddíl'}
 
 {/block}
 
