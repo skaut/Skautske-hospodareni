@@ -85,21 +85,6 @@ class PaymentService
         }
     }
 
-    /**
-     * @return DTO\Payment[]
-     */
-    public function findByGroup(int $groupId) : array
-    {
-        $payments = $this->payments->findByGroup($groupId);
-
-        return array_map(
-            function (Payment $payment) {
-                return DTO\PaymentFactory::create($payment);
-            },
-            $payments
-        );
-    }
-
     public function cancelPayment(int $pid) : void
     {
         $payment = $this->payments->find($pid);
