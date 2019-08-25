@@ -77,7 +77,7 @@ class DefaultPresenter extends BasePresenter
             ['accessCreate' => $this->authorizator->isAllowed(EventResource::CREATE, null)]
         );
 
-        $grid->addColumnLink('name', 'Název', 'Event:')
+        $grid->addColumnLink('name', 'Název', 'Event:', null, ['aid' => 'id'])
             ->setSortable();
 
         $grid->addColumnDateTime('startDate', 'Začátek akce')
