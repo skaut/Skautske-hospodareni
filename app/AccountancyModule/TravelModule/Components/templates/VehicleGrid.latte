@@ -1,8 +1,16 @@
-{extends $original_template}
+{extends $originalTemplate}
 
-{define col-action}
-    <a href="{plink Vehicle:detail $item->id}" class="btn btn-sm btn-default"><i class="fa fa-search"></i></a>
-{/define}
+{block filters}
+    {include #filter-type-search}
+    {include #filter-type-select name => 'subunit', label => 'Oddíl'}
+
+{/block}
+
+{block global-actions}
+    <a href="{plink Vehicle:new}" class="btn btn-success">
+        <i class="fas fa-plus"></i> Založit nové vozidlo
+    </a>
+{/block}
 
 {define col-subunit}
     {$units[$item->subunitId] ?? '-'}

@@ -1,9 +1,9 @@
 {extends $originalTemplate}
 
 {block filters}
-    {include ../../../templates/shared/gridFilters/search.latte}
-    {include ../../../templates/shared/gridFilters/year.latte}
-    {include ../../../templates/shared/gridFilters/state.latte}
+    {include #filter-type-search}
+    {include #filter-type-select name => 'year', label => 'Rok', icon => 'fas fa-calendar'}
+    {include #filter-type-select name => 'state', label => 'Stav'}
 {/block}
 
 {block global-actions}

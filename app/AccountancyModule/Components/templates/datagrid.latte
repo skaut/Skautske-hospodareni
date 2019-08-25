@@ -35,3 +35,30 @@
 
 {block tfoot}
 {/block}
+
+{block filter-type-select}
+    <div class="input-group mr-2 mb-2">
+        <div class="input-group-prepend">
+            <div class="input-group-text">
+                <label n:name="filter-$name">
+                    <i n:ifset="$icon" class="{$icon} mr-1"></i>
+                    {$label}
+                </label>
+            </div>
+        </div>
+        <select n:name="filter-$name" class="form-control custom-select"/>
+    </div>
+{/block}
+
+{block filter-type-search}
+    <div class="input-group mr-2 mb-2">
+        <div class="input-group-prepend">
+            <div class="input-group-text">
+                <label n:name="filter-search">
+                    <i class="fas fa-search"></i>
+                </label>
+            </div>
+        </div>
+        <input n:name="filter-search" class="form-control">
+    </div>
+{/block}

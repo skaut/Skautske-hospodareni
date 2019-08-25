@@ -1,16 +1,4 @@
 {block #content}
-{include ../menu.latte}
-<div class="row button-bar">
-    <div class="col-sm-12">
-        <a n:href="Vehicle:new" class="btn btn-success pull-right">
-            <i class="glyphicon glyphicon-plus-sign"></i> Založit nové vozidlo
-        </a>
-        <h2 n:inner-block="title">Vozidla <span class="hidden-xs hidden-sm label label-default">{$unit->getDisplayName()}</span></h2>
-    </div>
-</div>
 
-<div class="row">
-    <div class="col-sm-12">
-        {control grid}
-    </div>
-</div>
+<h1 class="mb-4" n:inner-block="title">Vozidla</h1>
+{control grid}
