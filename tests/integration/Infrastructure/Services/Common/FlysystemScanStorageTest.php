@@ -9,12 +9,15 @@ use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 use Model\Common\Exception\InvalidScanFile;
 use Model\Common\FileNotFound;
+use Model\Common\FilePath;
 use Nette\Utils\FileSystem as FileSystemUtil;
 use Nette\Utils\Image;
 use function uniqid;
 
 final class FlysystemScanStorageTest extends Unit
 {
+    private const FILE_PATH_PREFIX = 'test';
+
     /** @var  string */
     private $directory;
 
@@ -36,11 +39,12 @@ final class FlysystemScanStorageTest extends Unit
     {
         $contents = Image::fromBlank(1, 1)->toString();
 
-        $this->storage->save('foo', $contents);
+        $filename = 'foo';
+        $this->storage->save(FilePath::generate(self::FILE_PATH_PREFIX, $filename), $contents);
 
         $this->assertSame(
             $contents,
-            FileSystemUtil::read($this->directory . '/foo'),
+            FileSystemUtil::read($this->directory . '/' . FilePath::generatePath(self::FILE_PATH_PREFIX, $filename)),
         );
     }
 
@@ -48,31 +52,32 @@ final class FlysystemScanStorageTest extends Unit
     {
         $this->expectException(FileNotFound::class);
 
-        $this->storage->get('unknown-file.jpg');
+        $this->storage->get($this->getFilePath('unknown-file.jpg'));
     }
 
     public function testDeleteRemovesFile() : void
     {
-        $this->storage->save('foo', Image::fromBlank(1, 1)->toString());
-        $this->storage->delete('foo');
+        $this->storage->save($this->getFilePath('foo'), Image::fromBlank(1, 1)->toString());
+        $this->storage->delete($this->getFilePath('foo'));
 
-        $this->assertFileNotExists($this->directory . '/foo');
+        $this->assertFileNotExists($this->directory . '/' . FilePath::generatePath(self::FILE_PATH_PREFIX, 'foo'));
     }
 
     public function testDeleteWithNonexistentFileDoesNothing() : void
     {
-        $this->storage->delete('unknown-file.jpg');
+        $this->storage->delete($this->getFilePath('unknown-file.jpg'));
     }
 
     public function testGetReturnsCorrectFile() : void
     {
         $contents = Image::fromBlank(1, 1)->toString();
-        $this->storage->save('test/foo.jpg', $contents);
+        $filename = 'foo.jpg';
+        $this->storage->save($this->getFilePath($filename), $contents);
 
-        $file = $this->storage->get('test/foo.jpg');
+        $file = $this->storage->get($this->getFilePath($filename));
 
-        $this->assertSame('test/foo.jpg', $file->getPath());
-        $this->assertSame('foo.jpg', $file->getFileName());
+        $this->assertSame(FilePath::generatePath(self::FILE_PATH_PREFIX, $filename), $file->getPath());
+        $this->assertSame($filename, $file->getFileName());
         $this->assertSame($contents, (string) $file->getContents());
     }
 
@@ -83,7 +88,7 @@ final class FlysystemScanStorageTest extends Unit
     {
         $this->expectException(InvalidScanFile::class);
 
-        $this->storage->save('foo', $contents);
+        $this->storage->save($this->getFilePath('foo'), $contents);
     }
 
     /**
@@ -95,5 +100,10 @@ final class FlysystemScanStorageTest extends Unit
             [Image::fromBlank(1, 1)->toString(Image::GIF)],
             [''],
         ];
+    }
+
+    private function getFilePath(string $fileName) : FilePath
+    {
+        return FilePath::generate(self::FILE_PATH_PREFIX, $fileName);
     }
 }

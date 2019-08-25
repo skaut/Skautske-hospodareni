@@ -139,8 +139,8 @@ class VehicleRepositoryTest extends IntegrationTest
 
         $roadworthyScans = $vehicle->getRoadworthyScans();
         $this->assertCount(2, $vehicle->getRoadworthyScans());
-        $this->assertSame($roadworthies[0]['file_path'], $roadworthyScans[0]->getFilePath());
-        $this->assertSame($roadworthies[1]['file_path'], $roadworthyScans[1]->getFilePath());
+        $this->assertSame($roadworthies[0]['file_path'], $roadworthyScans[0]->getFilePath()->getPath());
+        $this->assertSame($roadworthies[1]['file_path'], $roadworthyScans[1]->getFilePath()->getPath());
     }
 
     public function testRemove() : void

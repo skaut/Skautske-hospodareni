@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Model\Travel\Commands\Vehicle;
 
+use Model\Common\FilePath;
+
 final class RemoveRoadworthyScan
 {
     /** @var int */
     private $vehicleId;
 
-    /** @var string */
+    /** @var FilePath */
     private $path;
 
-    public function __construct(int $vehicleId, string $path)
+    public function __construct(int $vehicleId, FilePath $path)
     {
         $this->vehicleId = $vehicleId;
         $this->path      = $path;
@@ -23,7 +25,7 @@ final class RemoveRoadworthyScan
         return $this->vehicleId;
     }
 
-    public function getPath() : string
+    public function getPath() : FilePath
     {
         return $this->path;
     }

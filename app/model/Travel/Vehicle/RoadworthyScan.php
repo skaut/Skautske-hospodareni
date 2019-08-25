@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Travel\Vehicle;
 
 use Doctrine\ORM\Mapping as ORM;
+use Model\Common\FilePath;
 use Model\Travel\Vehicle;
 
 /**
@@ -13,6 +14,8 @@ use Model\Travel\Vehicle;
  */
 class RoadworthyScan
 {
+    public const FILE_PATH_PREFIX = 'roadworthies';
+
     /**
      * @internal only for infrastructure
      *
@@ -32,19 +35,19 @@ class RoadworthyScan
     private $vehicle;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="file_path")
      *
-     * @var string
+     * @var FilePath
      */
     private $filePath;
 
-    public function __construct(Vehicle $vehicle, string $filePath)
+    public function __construct(Vehicle $vehicle, FilePath $filePath)
     {
         $this->vehicle  = $vehicle;
         $this->filePath = $filePath;
     }
 
-    public function getFilePath() : string
+    public function getFilePath() : FilePath
     {
         return $this->filePath;
     }

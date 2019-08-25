@@ -7,6 +7,8 @@ namespace Model\Travel;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
+use Model\Common\FilePath;
+use Model\Common\ScanNotFound;
 use Model\Travel\Vehicle\Metadata;
 use Model\Travel\Vehicle\RoadworthyScan;
 use Model\Unit\Unit;
@@ -128,15 +130,15 @@ class Vehicle
         $this->roadworthyScans = new ArrayCollection();
     }
 
-    public function addRoadworthyScan(string $filePath) : void
+    public function addRoadworthyScan(FilePath $filePath) : void
     {
         $this->roadworthyScans->add(new RoadworthyScan($this, $filePath));
     }
 
-    public function removeRoadworthyScan(string $filePath) : void
+    public function removeRoadworthyScan(FilePath $filePath) : void
     {
         foreach ($this->roadworthyScans as $key => $scan) {
-            if ($scan->getFilePath() === $filePath) {
+            if ($scan->getFilePath()->equals($filePath)) {
                 $this->roadworthyScans->remove($key);
 
                 return;

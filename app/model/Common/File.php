@@ -12,10 +12,10 @@ final class File
     /** @var StreamInterface */
     private $stream;
 
-    /** @var string */
+    /** @var FilePath */
     private $path;
 
-    public function __construct(StreamInterface $stream, string $path)
+    public function __construct(StreamInterface $stream, FilePath $path)
     {
         $this->stream = $stream;
         $this->path   = $path;
@@ -23,12 +23,12 @@ final class File
 
     public function getPath() : string
     {
-        return $this->path;
+        return $this->path->getPath();
     }
 
     public function getFileName() : string
     {
-        return basename($this->path);
+        return basename($this->path->getPath());
     }
 
     public function getContents() : StreamInterface
