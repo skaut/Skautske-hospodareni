@@ -1,8 +1,23 @@
-{extends $original_template}
+{extends $originalTemplate}
 
-{define col-action}
-    <a href="{plink Vehicle:detail $item->id}" class="btn btn-sm btn-default"><i class="fa fa-search"></i></a>
-{/define}
+{block filters}
+    {include ../../../templates/shared/gridFilters/search.latte}
+    <div class="input-group mb-2">
+        <div class="input-group-prepend">
+            <div class="input-group-text">
+                <label n:name="filter-subunit">Oddíl</label>
+            </div>
+        </div>
+        <select n:name="filter-subunit" class="form-control custom-select"/>
+    </div>
+
+{/block}
+
+{block global-actions}
+    <a href="{plink Vehicle:new}" class="btn btn-success">
+        <i class="fas fa-plus"></i> Založit nové vozidlo
+    </a>
+{/block}
 
 {define col-subunit}
     {$units[$item->subunitId] ?? '-'}

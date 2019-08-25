@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\TravelModule\Components;
 
 use App\AccountancyModule\Factories\BaseGridControl;
+use App\AccountancyModule\Factories\GridFactory;
 use Doctrine\Common\Collections\ArrayCollection;
 use Model\TravelService;
 use Model\UnitService;
@@ -22,43 +23,48 @@ class VehicleGrid extends BaseGridControl
     /** @var UnitService */
     private $units;
 
-    public function __construct(int $unitId, TravelService $travel, UnitService $units)
+    /** @var GridFactory */
+    private $gridFactory;
+
+    public function __construct(int $unitId, TravelService $travel, UnitService $units, GridFactory $gridFactory)
     {
         parent::__construct();
-        $this->unitId = $unitId;
-        $this->travel = $travel;
-        $this->units  = $units;
+        $this->unitId      = $unitId;
+        $this->travel      = $travel;
+        $this->units       = $units;
+        $this->gridFactory = $gridFactory;
     }
 
     protected function createComponentGrid() : DataGrid
     {
-        $grid = $this->createGrid();
-        $grid->addColumnText('type', 'Typ');
-        $grid->addColumnText('registration', 'SPZ');
-        $grid->addColumnText('consumption', '	Ø spotřeba (l/100 km)');
-
         $units = $this->units->getSubunitPairs($this->unitId);
 
+        $grid = $this->gridFactory->createSimpleGrid(
+            __DIR__ . '/templates/VehicleGrid.latte',
+            ['units' => $units],
+        );
+
+        $grid->addColumnLink('type', 'Typ', 'Vehicle:detail')
+            ->setSortable();
+
+        $grid->addColumnText('registration', 'SPZ');
+        $grid->addColumnText('consumption', 'Ø spotřeba (l/100 km)');
+
         $grid->addColumnText('subunit', 'Oddíl')
-            ->setFilterSelect($units, 'subunitId')->setPrompt('-');
+            ->setFilterSelect($units, 'subunitId')->setPrompt('Všechny');
 
         $grid->addColumnDateTime('createdAt', 'Vytvořeno')
-            ->setSortable(true);
+            ->setSortable();
 
         $grid->addColumnDateTime('authorName', 'Vytvořil')
             ->setSortable()
             ->setFilterText();
 
-        $grid->addColumnText('action', '');
-        $grid->setPagination(false);
+        $grid->addFilterText('search', '', ['type', 'authorName'])
+            ->setPlaceholder('Typ vozdila, uživatel...');
 
         $vehicles = $this->travel->getAllVehicles($this->unitId);
         $grid->setDataSource(new DoctrineCollectionDataSource(new ArrayCollection($vehicles), 'id'));
-
-        $grid->onRender[] = function (DataGrid $grid) use ($units) : void {
-            $grid->template->units = $units;
-            $grid->setTemplateFile(__DIR__ . '/templates/VehicleGrid.latte');
-        };
 
         return $grid;
     }
