@@ -6,6 +6,12 @@ skautis:
     applicationId: 48104fe2-b447-47f5-9a26-051c710da74e
     testMode: true
 
+#
+# Fixes weird behavior when Session ID is regenerated in request with multipart body
+#
+session:
+    savePath: "%tempDir%/sessions"
+
 parameters:
     sendEmail: FALSE
 
