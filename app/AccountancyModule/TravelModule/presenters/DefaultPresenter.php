@@ -59,6 +59,11 @@ class DefaultPresenter extends BasePresenter
         $this->editTravelDialogFactory = $editTravelDialogFactory;
     }
 
+    public function actionDefault() : void
+    {
+        $this->setLayout('layout.new');
+    }
+
     private function isCommandAccessible(int $commandId) : bool
     {
         $command  = $this->travelService->getCommandDetail($commandId);

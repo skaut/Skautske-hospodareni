@@ -1,4 +1,16 @@
-{extends $original_template}
+{extends $originalTemplate}
+
+{block filters}
+    {include ../../../templates/shared/gridFilters/search.latte}
+    {include ../../../templates/shared/gridFilters/state.latte}
+{/block}
+
+{block global-actions}
+    <a href="{plink Command:}" class="btn btn-success">
+        <span class="fas fa-plus"></span>
+        Založit cestovní příkaz
+    </a>
+{/block}
 
 {define col-passenger}
     {$item->passenger->name}
@@ -8,26 +20,22 @@
     {/if}
 {/define}
 
-{define col-types}
-    {$item->transportTypePairs|implode:', '}
-{/define}
-
 {define col-vehicle}
     {var $vehicleId = $item->vehicleId}
     <a n:if="$vehicleId !== NULL" href="{plink Vehicle:detail $vehicleId}">
         {var $vehicle = $vehicles[$vehicleId]}
         {$vehicle->label} <i n:if="$vehicle->archived" class="fa fa-trash"></i>
     </a>
+
+    <div n:inner-foreach="$item->getTransportTypePairs() as $type">
+        <span class="badge badge-info">{$type}</span>
+    </div>
 {/define}
 
 {define col-total}
-    {if ! $item->total->isZero()}{$item->total|price:false}{else}-{/if}
+    {if ! $item->total->isZero()}{$item->total|price:false} Kč{else}-{/if}
 {/define}
 
 {define col-state}
     {$item->closedAt|commandState|noescape}
-{/define}
-
-{define col-action}
-    <a href="{plink Default:detail $item->id}" class="btn btn-sm btn-default"><i class="fa fa-search"></i></a>
 {/define}

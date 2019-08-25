@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\TravelModule\Components;
 
 use App\AccountancyModule\Factories\BaseGridControl;
+use App\AccountancyModule\Factories\GridFactory;
 use Doctrine\Common\Collections\ArrayCollection;
 use Model\DTO\Travel\Command;
 use Model\TravelService;
@@ -25,23 +26,41 @@ class CommandGrid extends BaseGridControl
     /** @var TravelService */
     private $travel;
 
-    public function __construct(int $unitId, int $userId, TravelService $travel)
-    {
+    /** @var GridFactory */
+    private $gridFactory;
+
+    public function __construct(
+        int $unitId,
+        int $userId,
+        TravelService $travel,
+        GridFactory $gridFactory
+    ) {
         parent::__construct();
-        $this->unitId = $unitId;
-        $this->userId = $userId;
-        $this->travel = $travel;
+        $this->unitId      = $unitId;
+        $this->userId      = $userId;
+        $this->travel      = $travel;
+        $this->gridFactory = $gridFactory;
     }
 
     protected function createComponentGrid() : DataGrid
     {
-        $grid = $this->createGrid();
+        $commands = $this->travel->getAllUserCommands($this->unitId, $this->userId);
+
+        $vehicleIds = array_column($commands, 'vehicleId');
+        $vehicleIds = array_unique(array_filter($vehicleIds));
+
+        $grid = $this->gridFactory->createSimpleGrid(
+            __DIR__ . '/templates/CommandGrid.latte',
+            ['vehicles' => $this->travel->findVehiclesByIds($vehicleIds)]
+        );
 
         $grid->setPrimaryKey('id');
 
-        $grid->addColumnText('purpose', 'Účel cesty')->setSortable()->setFilterText();
-        $grid->addColumnText('passenger', 'Cestující')->setSortable()->setFilterText();
-        $grid->addColumnText('types', 'Prostředek');
+        $grid->addColumnLink('purpose', 'Účel cesty', 'Default:detail')
+            ->setSortable()
+            ->setFilterText();
+
+        $grid->addColumnText('passenger', 'Cestující')->setSortable();
         $grid->addColumnText('vehicle', 'Vozidlo');
         $grid->addColumnDateTime('firstTravelDate', 'První jízda')->setSortable();
         $grid->addColumnNumber('total', 'Cena')->setSortable();
@@ -51,26 +70,16 @@ class CommandGrid extends BaseGridControl
             ->setFilterSelect([
                 Command::STATE_IN_PROGRESS => 'Rozpracovaný',
                 Command::STATE_CLOSED => 'Uzavřený',
-            ])->setPrompt('-');
+            ])->setPrompt('Všechny');
 
-        $grid->addColumnText('action', '');
-
-        $grid->setPagination(false);
+        $grid->addFilterText('search', '', ['purpose', 'passenger'])
+            ->setPlaceholder('Účel cesty, cestující...');
 
         $grid->setDefaultFilter(['state' => Command::STATE_IN_PROGRESS], false);
 
         $commands = $this->travel->getAllUserCommands($this->unitId, $this->userId);
 
         $grid->setDataSource(new DoctrineCollectionDataSource(new ArrayCollection($commands), 'id'));
-
-        $vehicleIds = array_column($commands, 'vehicleId');
-        $vehicleIds = array_unique(array_filter($vehicleIds));
-
-        $grid->onRender[] = function (DataGrid $grid) use ($vehicleIds) : void {
-            $grid->template->vehicles = $this->travel->findVehiclesByIds($vehicleIds);
-
-            $grid->setTemplateFile(__DIR__ . '/templates/CommandGrid.latte');
-        };
 
         return $grid;
     }
