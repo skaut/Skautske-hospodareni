@@ -58,6 +58,11 @@ class CashbookTest extends Unit
         $I->fillField('Do', $today);
 
         $I->click('.ui--createEvent');
+        $I->see('Základní údaje');
+
+        // Go through datagrid
+        $I->click('Akce');
+        $I->click($this->eventName);
     }
 
     private function goToCashbookPage() : void
