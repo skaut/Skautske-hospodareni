@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\CampModule;
 
-use App\AccountancyModule\Components\DataSource;
+use App\AccountancyModule\Grids\DataSource;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
