@@ -36,7 +36,7 @@ final class PaymentDefaults
     private $constantSymbol;
 
     /**
-     * @ORM\Column(type="variable_symbol", nullable=true, name="nextVs", options={"unsigned"=true})
+     * @ORM\Column(type="variable_symbol", nullable=true, name="nextVs")
      *
      * @var VariableSymbol|NULL
      */
