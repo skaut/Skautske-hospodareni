@@ -19,6 +19,8 @@ use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Events\ChitWasAdded;
 use Model\Cashbook\Events\ChitWasRemoved;
 use Model\Cashbook\Events\ChitWasUpdated;
+use Model\Common\FilePath;
+use Model\Common\ScanNotFound;
 
 /**
  * These are in fact unit tests, that can't be tested without database right now, because chit ids are
@@ -380,6 +382,37 @@ class CashbookIntegrationTest extends IntegrationTest
 
         $chitAmount = $sourceCashbook->getChits()[0]->getAmount()->toFloat();
         $this->assertSame([Category::UNDEFINED_INCOME_ID => $chitAmount], $targetCashbook->getCategoryTotals());
+    }
+
+    public function testAddChitScan() : void
+    {
+        $cashbook = $this->createCashbookWithChit();
+        $chit     = $cashbook->getChits()[0];
+        $path     = FilePath::fromString('a/b/s.jpg');
+        $cashbook->addChitScan($chit->getId(), $path);
+        $scans = $chit->getScans();
+        $this->assertCount(1, $scans);
+        $this->assertSame($path, $scans[0]->getFilePath());
+    }
+
+    public function testRemoveChitScanThrowsExceptionIfScanDoesNotExist() : void
+    {
+        $cashbook = $this->createCashbookWithChit();
+        $chit     = $cashbook->getChits()[0];
+
+        $this->expectException(ScanNotFound::class);
+        $cashbook->removeChitScan($chit->getId(), FilePath::fromString('Does/not/exists.jpg'));
+    }
+
+    public function testRemoveChitScan() : void
+    {
+        $cashbook = $this->createCashbookWithChit();
+        $chit     = $cashbook->getChits()[0];
+        $path     = FilePath::fromString('a/b/s.jpg');
+        $cashbook->addChitScan($chit->getId(), $path);
+        $cashbook->removeChitScan($chit->getId(), $path);
+
+        $this->assertCount(0, $chit->getScans());
     }
 
     /**

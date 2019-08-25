@@ -13,6 +13,8 @@ use Model\Cashbook\Cashbook;
 use Model\Cashbook\Category as CategoryAggregate;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
+use Model\Common\FilePath;
+use Model\Common\ScanNotFound;
 use Model\Common\ShouldNotHappen;
 use RuntimeException;
 use function count;
@@ -82,9 +84,22 @@ class Chit
     private $locked;
 
     /**
-     * @param ChitItem[] $items
+     * @ORM\OneToMany(
+     *     targetEntity=ChitScan::class,
+     *     mappedBy="chit",
+     *     cascade={"persist", "remove"},
+     *     orphanRemoval=true
+     * )
+     *
+     * @var ArrayCollection|ChitScan[]
      */
-    private function __construct(Cashbook $cashbook, ChitBody $body, PaymentMethod $paymentMethod, array $items)
+    private $scans;
+
+    /**
+     * @param ChitItem[] $items
+     * @param ChitScan[] $scans
+     */
+    private function __construct(Cashbook $cashbook, ChitBody $body, PaymentMethod $paymentMethod, array $items, array $scans)
     {
         Assertion::notEmpty($items, 'At least one chit item was expected');
 
@@ -92,6 +107,7 @@ class Chit
         $this->body          = $body;
         $this->paymentMethod = $paymentMethod;
         $this->items         = new ArrayCollection($items);
+        $this->scans         = new ArrayCollection($scans);
     }
 
     /**
@@ -102,7 +118,7 @@ class Chit
     {
         self::validateItems($items, $categories);
 
-        return new self($cashbook, $body, $paymentMethod, $items);
+        return new self($cashbook, $body, $paymentMethod, $items, []);
     }
 
     /**
@@ -197,6 +213,9 @@ class Chit
             $this->paymentMethod,
             $this->items->map(function (ChitItem $item) : ChitItem {
                 return clone $item;
+            })->toArray(),
+            $this->scans->map(function (ChitScan $scan) : ChitScan {
+                return clone $scan;
             })->toArray()
         );
     }
@@ -217,7 +236,11 @@ class Chit
             return $item->withCategory($category);
         });
 
-        return new self($newCashbook, $this->body, $this->paymentMethod, $items->toArray());
+        $scans = $this->scans->map(function (ChitScan $scan) : ChitScan {
+            return clone $scan;
+        })->toArray();
+
+        return new self($newCashbook, $this->body, $this->paymentMethod, $items->toArray(), $scans);
     }
 
     public function withCategory(Category $category, Cashbook $cashbook) : self
@@ -226,12 +249,16 @@ class Chit
         foreach ($this->items as $item) {
             $newItems[] = $item->withCategory($category);
         }
+        $scans = $this->scans->map(function (ChitScan $scan) : ChitScan {
+            return clone $scan;
+        })->toArray();
 
         return new self(
             $cashbook,
             $this->body->withoutChitNumber(),
             $this->paymentMethod,
-            $newItems
+            $newItems,
+            $scans
         );
     }
 
@@ -281,5 +308,36 @@ class Chit
                 throw new Cashbook\Chit\SingleItemRestriction(sprintf('Chit with virtual category %d should have just one item!', $item->getCategory()->getId()));
             }
         }
+    }
+
+    public function addScan(FilePath $filePath) : void
+    {
+        $this->scans->add(new ChitScan($this, $filePath));
+    }
+
+    public function removeScan(FilePath $filePath) : void
+    {
+        foreach ($this->scans as $key => $scan) {
+            if ($scan->getFilePath()->equals($filePath)) {
+                $this->scans->remove($key);
+
+                return;
+            }
+        }
+
+        throw ScanNotFound::withPath($filePath);
+    }
+
+    /**
+     * @return ChitScan[]
+     */
+    public function getScans() : array
+    {
+        return $this->scans->toArray();
+    }
+
+    public function removeAllScans() : void
+    {
+        $this->scans->clear();
     }
 }

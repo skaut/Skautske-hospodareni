@@ -9,6 +9,7 @@ use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\ChitBody;
 use Model\Cashbook\Cashbook\ChitNumber;
+use Model\Cashbook\Cashbook\ChitScan;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Operation;
@@ -60,12 +61,25 @@ class Chit
     /** @var Amount */
     private $amount;
 
+    /** @var ChitScan[] */
+    private $scans;
+
     /**
      * @param CashbookType[] $inverseCashbookTypes
      * @param ChitItem[]     $items
+     * @param ChitScan[]     $scans
      */
-    public function __construct(int $id, ChitBody $body, bool $locked, array $inverseCashbookTypes, PaymentMethod $paymentMethod, array $items, Operation $operation, Amount $amount)
-    {
+    public function __construct(
+        int $id,
+        ChitBody $body,
+        bool $locked,
+        array $inverseCashbookTypes,
+        PaymentMethod $paymentMethod,
+        array $items,
+        Operation $operation,
+        Amount $amount,
+        array $scans
+    ) {
         $this->id                   = $id;
         $this->body                 = $body;
         $this->locked               = $locked;
@@ -74,6 +88,7 @@ class Chit
         $this->items                = $items;
         $this->operation            = $operation;
         $this->amount               = $amount;
+        $this->scans                = $scans;
     }
 
     public function getId() : int
@@ -189,5 +204,13 @@ class Chit
     public function getItems() : array
     {
         return $this->items;
+    }
+
+    /**
+     * @return ChitScan[]
+     */
+    public function getScans() : array
+    {
+        return $this->scans;
     }
 }

@@ -19,6 +19,7 @@ use Model\Cashbook\Events\ChitWasAdded;
 use Model\Cashbook\Events\ChitWasRemoved;
 use Model\Cashbook\Events\ChitWasUpdated;
 use Model\Common\Aggregate;
+use Model\Common\FilePath;
 use Nette\Utils\Strings;
 use function array_filter;
 use function array_key_exists;
@@ -158,9 +159,9 @@ class Cashbook extends Aggregate
             $originalChit->getOperation()->getInverseOperation()
         );
 
-        $this->chits->add(
-            $originalChit->withCategory($category, $this)
-        );
+        $copy = $originalChit->withCategory($category, $this);
+        $copy->removeAllScans();
+        $this->chits->add($copy);
 
         $this->raise(new ChitWasAdded($this->id));
     }
@@ -380,6 +381,18 @@ class Cashbook extends Aggregate
             $chit->setBody($newBody);
             $this->raise(new ChitWasUpdated($this->id));
         }
+    }
+
+    public function addChitScan(int $chitId, FilePath $path) : void
+    {
+        $chit = $this->getChit($chitId);
+        $chit->addScan($path);
+    }
+
+    public function removeChitScan(int $chitId, FilePath $path) : void
+    {
+        $chit = $this->getChit($chitId);
+        $chit->removeScan($path);
     }
 
     /**

@@ -14,8 +14,10 @@ use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CashbookDisplayNameQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\Cashbook\ReadModel\Queries\ChitScansQuery;
 use Model\Cashbook\ReadModel\Queries\Pdf\ExportChits;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
+use Model\Common\File;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
 use Model\ExcelService;
@@ -25,6 +27,7 @@ use Nette\Application\BadRequestException;
 use Nette\Http\IResponse;
 use Nette\Utils\Strings;
 use RuntimeException;
+use Ublaboo\Responses\PSR7StreamResponse;
 use function array_filter;
 use function array_map;
 use function array_values;
@@ -170,6 +173,22 @@ class CashbookExportPresenter extends BasePresenter
         );
 
         $this->sendResponse(new ExcelResponse('pokladni-kniha', $spreadsheet));
+    }
+
+    public function actionDownloadScan(string $cashbookId, int $chitId, string $path) : void
+    {
+        $cashbookId = CashbookId::fromString($cashbookId);
+        foreach ($this->queryBus->handle(new ChitScansQuery($cashbookId, $chitId)) as $scan) {
+            assert($scan instanceof File);
+
+            if ($scan->getPath() !== $path) {
+                continue;
+            }
+
+            $this->sendResponse(new PSR7StreamResponse($scan->getContents(), $scan->getFileName()));
+        }
+
+        throw new BadRequestException('Scan not found', IResponse::S404_NOT_FOUND);
     }
 
     /**

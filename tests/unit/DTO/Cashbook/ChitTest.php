@@ -37,6 +37,6 @@ class ChitTest extends Unit
             new ChitItem(new Amount('300'), new Category(1, 'Materiál', Money::CZK(100), 'm', Operation::EXPENSE(), false), 'kleště'),
         ];
 
-        return new Chit(1, new ChitBody(null, new Date(), null), false, [], PaymentMethod::CASH(), $items, Operation::EXPENSE(), new Amount('100+200+300'));
+        return new Chit(1, new ChitBody(null, new Date(), null), false, [], PaymentMethod::CASH(), $items, Operation::EXPENSE(), new Amount('100+200+300'), []);
     }
 }
