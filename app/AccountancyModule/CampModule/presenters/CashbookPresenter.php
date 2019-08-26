@@ -46,7 +46,7 @@ class CashbookPresenter extends BasePresenter
     {
         parent::startup();
         $this->isEditable        = $this->isEditable || $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $this->getCampId());
-        $this->missingCategories = ! $this->event->isRealAutoComputed(); // je aktivní dopočítávání?
+        $this->missingCategories = ! $this->event->isRealTotalCostAutoComputed(); // je aktivní dopočítávání?
     }
 
     public function renderDefault(int $aid) : void
