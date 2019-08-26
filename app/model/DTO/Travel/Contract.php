@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\DTO\Travel;
 
+use Cake\Chronos\Date;
 use DateTimeImmutable;
 use Model\Travel\Contract\Passenger;
 use Nette\SmartObject;
@@ -33,10 +34,10 @@ class Contract
     /** @var string */
     private $unitRepresentative;
 
-    /** @var DateTimeImmutable|NULL */
+    /** @var Date|NULL */
     private $since;
 
-    /** @var DateTimeImmutable|NULL */
+    /** @var Date|NULL */
     private $until;
 
     /** @var int */
@@ -47,8 +48,8 @@ class Contract
         Passenger $passenger,
         int $unitId,
         string $unitRepresentative,
-        ?DateTimeImmutable $since,
-        ?DateTimeImmutable $until,
+        ?Date $since,
+        ?Date $until,
         int $templateVersion
     ) {
         $this->id                 = $id;
@@ -80,12 +81,12 @@ class Contract
         return $this->unitRepresentative;
     }
 
-    public function getSince() : ?DateTimeImmutable
+    public function getSince() : ?Date
     {
         return $this->since;
     }
 
-    public function getUntil() : ?DateTimeImmutable
+    public function getUntil() : ?Date
     {
         return $this->until;
     }

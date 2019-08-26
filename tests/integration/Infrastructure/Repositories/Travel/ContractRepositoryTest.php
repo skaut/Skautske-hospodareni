@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Infrastructure\Repositories\Travel;
 
-use DateTimeImmutable;
+use Cake\Chronos\Date;
 use IntegrationTest;
 use Model\Travel\Contract;
 
@@ -51,8 +51,8 @@ final class ContractRepositoryTest extends IntegrationTest
         $this->assertSame(1, $contract->getId());
         $this->assertSame(self::CONTRACT['unit_id'], $contract->getUnitId());
         $this->assertSame(self::CONTRACT['unit_person'], $contract->getUnitRepresentative());
-        $this->assertEquals(new DateTimeImmutable(self::CONTRACT['start']), $contract->getSince());
-        $this->assertEquals(new DateTimeImmutable(self::CONTRACT['end']), $contract->getUntil());
+        $this->assertEquals(new Date(self::CONTRACT['start']), $contract->getSince());
+        $this->assertEquals(new Date(self::CONTRACT['end']), $contract->getUntil());
         $this->assertSame(self::CONTRACT['template'], $contract->getTemplateVersion());
 
         $passenger = $contract->getPassenger();
