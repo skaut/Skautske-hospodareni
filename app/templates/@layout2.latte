@@ -7,7 +7,7 @@
     <meta name="author" content="">
     <link rel="icon" href="/favicon.ico">
 
-    {if $presenter->context->parameters['productionMode']}
+    {if $productionMode}
         <script n:syntax="off">
             ga = function (){ga.q.push(arguments)};
             ga.q = [];
@@ -92,6 +92,7 @@
             <a href="https://headwayapp.co/skautske-hospodareni-changelog" target="_blank" class="ml-3">Changelog</a>
         </small>
     </footer>
-    <script type="text/javascript" src="/js/app.min.js"></script>
+    {var $jsBundle = '/js/app.min.js'}
+    <script type="text/javascript" src="{$jsBundle}?{md5_file($wwwDir . '/' . $jsBundle)}"></script>
 </body>
 </html>

@@ -122,10 +122,14 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
         $presenterNameParts = explode(':', $this->getName());
 
+        $parameters = $this->context->getParameters();
+
         $this->template->setParameters([
             'module' => $presenterNameParts[1] ?? null,
             'presenterName' => $presenterNameParts[array_key_last($presenterNameParts)],
             'linkGenerator' => $this->linkGenerator,
+            'productionMode' => $parameters['productionMode'],
+            'wwwDir' => $parameters['wwwDir'],
         ]);
 
         if (! $this->getUser()->isLoggedIn()) {
