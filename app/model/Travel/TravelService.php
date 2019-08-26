@@ -287,7 +287,7 @@ class TravelService
         return $result;
     }
 
-    public function createContract(int $unitId, string $unitRepresentative, DateTimeImmutable $since, Contract\Passenger $passenger) : void
+    public function createContract(int $unitId, string $unitRepresentative, Date $since, Contract\Passenger $passenger) : void
     {
         $unit = $this->units->find($unitId);
 
