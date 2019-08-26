@@ -63,6 +63,9 @@ class Camp implements ISkautisEvent
     /** @var bool|null */
     private $realAutoComputed;
 
+    /** @var bool|null */
+    private $realTotalCostAutoComputed;
+
     /**
      * @param  UnitId[] $participatingUnits
      */
@@ -79,21 +82,23 @@ class Camp implements ISkautisEvent
         array $participatingUnits,
         ?int $totalDays,
         ?ParticipantStatistics $participantStatistics,
-        ?bool $realAutoComputed
+        ?bool $realAutoComputed,
+        ?bool $realTotalCostAutoComputed
     ) {
-        $this->id                    = $id;
-        $this->displayName           = $displayName;
-        $this->unitId                = $unitId;
-        $this->unitName              = $unitName;
-        $this->startDate             = $startDate;
-        $this->endDate               = $endDate;
-        $this->location              = $location;
-        $this->state                 = $state;
-        $this->registrationNumber    = $registrationNumber;
-        $this->participatingUnits    = $participatingUnits;
-        $this->totalDays             = $totalDays;
-        $this->participantStatistics = $participantStatistics;
-        $this->realAutoComputed      = $realAutoComputed;
+        $this->id                        = $id;
+        $this->displayName               = $displayName;
+        $this->unitId                    = $unitId;
+        $this->unitName                  = $unitName;
+        $this->startDate                 = $startDate;
+        $this->endDate                   = $endDate;
+        $this->location                  = $location;
+        $this->state                     = $state;
+        $this->registrationNumber        = $registrationNumber;
+        $this->participatingUnits        = $participatingUnits;
+        $this->totalDays                 = $totalDays;
+        $this->participantStatistics     = $participantStatistics;
+        $this->realAutoComputed          = $realAutoComputed;
+        $this->realTotalCostAutoComputed = $realTotalCostAutoComputed;
     }
 
     public function getId() : SkautisCampId
@@ -162,5 +167,10 @@ class Camp implements ISkautisEvent
     public function isRealAutoComputed() : ?bool
     {
         return $this->realAutoComputed;
+    }
+
+    public function isRealTotalCostAutoComputed() : ?bool
+    {
+        return $this->realTotalCostAutoComputed;
     }
 }
