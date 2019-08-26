@@ -77,14 +77,14 @@ class Command
     private $fellowPassengers;
 
     /**
-     * @ORM\Column(type="money", precision=8, scale=2)
+     * @ORM\Column(type="money")
      *
      * @var Money
      */
     private $fuelPrice;
 
     /**
-     * @ORM\Column(type="money", precision=8, scale=2)
+     * @ORM\Column(type="money")
      *
      * @var Money
      */

@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\DecimalType;
 use InvalidArgumentException;
 use Money\Currency;
 use Money\Money;
+use function array_merge;
 use function bcdiv;
 use function bcmul;
 
@@ -43,5 +44,15 @@ class MoneyType extends DecimalType
         }
 
         return bcdiv($value->getAmount(), self::SUBUNITS, 2);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSqlDeclaration(array $fieldDeclaration, AbstractPlatform $platform) : string
+    {
+        $fieldDeclaration = array_merge($fieldDeclaration, ['precision' => 8, 'scale' => 2]);
+
+        return parent::getSqlDeclaration($fieldDeclaration, $platform);
     }
 }
