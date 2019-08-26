@@ -43,7 +43,7 @@ final class Passenger
     private $address;
 
     /**
-     * @ORM\Column(type="date", nullable=true, name="driver_birthday")
+     * @ORM\Column(type="chronos_date", nullable=true, name="driver_birthday")
      *
      * @var Date|NULL
      */
