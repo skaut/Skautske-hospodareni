@@ -25,6 +25,7 @@ use function array_map;
 use function assert;
 use function max;
 use function sprintf;
+use function uasort;
 
 /**
  * @ORM\Entity()
@@ -284,8 +285,6 @@ class Cashbook extends Aggregate
     /**
      * Only for Read model
      *
-     * @deprecated use Doctrine directly in read model
-     *
      * @return Chit[]
      */
     public function getChits() : array
@@ -373,7 +372,7 @@ class Cashbook extends Aggregate
     {
         $maxChitNumber = $this->getMaxChitNumber($paymentMethod);
         /** @var Chit $chit */
-        foreach ($this->chits as $chit) {
+        foreach ($this->sortedChits() as $chit) {
             if (! $chit->getPaymentMethod()->equals($paymentMethod) || $chit->getBody()->getNumber() !== null || $chit->isLocked()) {
                 continue;
             }
@@ -398,5 +397,27 @@ class Cashbook extends Aggregate
         }
 
         return $categoriesById;
+    }
+
+    /**
+     * @return Chit[]
+     */
+    private function sortedChits() : array
+    {
+        $chits = $this->chits->toArray();
+
+        uasort($chits, function (Chit $first, Chit $second) : int {
+            return [
+                $first->getDate(),
+                $first->getOperation()->toString(),
+                $first->getId(),
+            ] <=> [
+                $second->getDate(),
+                $second->getOperation()->toString(),
+                $second->getId(),
+            ];
+        });
+
+        return $chits;
     }
 }
