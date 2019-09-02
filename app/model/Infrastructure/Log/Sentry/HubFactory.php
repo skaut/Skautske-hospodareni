@@ -13,7 +13,7 @@ final class HubFactory
     /**
      * @param callable[] $eventProcessors
      */
-    public static function create(string $dsn, array $eventProcessors) : Hub
+    public static function create(?string $dsn, array $eventProcessors) : Hub
     {
         $client = ClientBuilder::create(['dsn' => $dsn])->getClient();
 

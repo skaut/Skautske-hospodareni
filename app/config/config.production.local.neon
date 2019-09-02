@@ -20,10 +20,5 @@ services:
     # Passes notices and warning to Monolog
     tracy.logger: Tracy\Bridges\Psr\PsrToTracyLoggerAdapter
 
-decorator:
-    Monolog\Logger:
-        setup:
-            - pushHandler(Monolog\Handler\RotatingFileHandler(%logDir%/log.log, 90, Monolog\Logger::INFO))
-
 includes:
     - sentry.neon
