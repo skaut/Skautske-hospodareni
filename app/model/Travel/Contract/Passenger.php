@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Travel\Contract;
 
+use Cake\Chronos\Date;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Nette\SmartObject;
@@ -42,13 +43,13 @@ final class Passenger
     private $address;
 
     /**
-     * @ORM\Column(type="datetime_immutable", nullable=true, name="driver_birthday")
+     * @ORM\Column(type="chronos_date", nullable=true, name="driver_birthday")
      *
-     * @var DateTimeImmutable|NULL
+     * @var Date|NULL
      */
     private $birthday;
 
-    public function __construct(string $name, string $contact, string $address, ?DateTimeImmutable $birthday)
+    public function __construct(string $name, string $contact, string $address, ?Date $birthday)
     {
         $this->name     = $name;
         $this->contact  = $contact;
@@ -71,7 +72,7 @@ final class Passenger
         return $this->address;
     }
 
-    public function getBirthday() : ?DateTimeImmutable
+    public function getBirthday() : ?Date
     {
         return $this->birthday;
     }

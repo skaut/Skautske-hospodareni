@@ -43,14 +43,14 @@ class Vehicle
     private $id;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=64)
      *
      * @var string
      */
     private $type;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", options={"unsigned"=true})
      *
      * @var int
      */
@@ -64,28 +64,28 @@ class Vehicle
     private $subunitId;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=64)
      *
      * @var string
      */
     private $registration;
 
     /**
-     * @ORM\Column(type="float")
+     * @ORM\Column(type="float", options={"unsigned"=true})
      *
      * @var float
      */
     private $consumption;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=64)
      *
      * @var string
      */
     private $note = '';
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", options={"default"=0})
      *
      * @var bool
      */

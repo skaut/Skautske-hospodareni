@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Travel;
 
-use DateTimeImmutable;
+use Cake\Chronos\Date;
 use Doctrine\ORM\Mapping as ORM;
 use Model\Travel\Contract\Passenger as ContractPassenger;
 use Model\Unit\Unit;
@@ -39,16 +39,16 @@ class Contract
     private $unitRepresentative;
 
     /**
-     * @ORM\Column(type="datetime_immutable", nullable=true, name="start")
+     * @ORM\Column(type="chronos_date", nullable=true, name="start")
      *
-     * @var DateTimeImmutable|NULL
+     * @var Date|NULL
      */
     private $since;
 
     /**
-     * @ORM\Column(type="datetime_immutable", nullable=true, name="end")
+     * @ORM\Column(type="chronos_date", nullable=true, name="end")
      *
-     * @var DateTimeImmutable|NULL
+     * @var Date|NULL
      */
     private $until;
 
@@ -66,11 +66,11 @@ class Contract
      */
     private $templateVersion = 2;
 
-    public function __construct(Unit $unit, string $unitRepresentative, DateTimeImmutable $since, ContractPassenger $passenger)
+    public function __construct(Unit $unit, string $unitRepresentative, Date $since, ContractPassenger $passenger)
     {
         $this->unitId             = $unit->getId();
         $this->unitRepresentative = $unitRepresentative;
-        $this->since              = $since->setTime(0, 0, 0);
+        $this->since              = $since;
         $this->until              = $this->since->modify('+ 3 years');
         $this->passenger          = $passenger;
     }
@@ -90,12 +90,12 @@ class Contract
         return $this->unitRepresentative;
     }
 
-    public function getSince() : ?DateTimeImmutable
+    public function getSince() : ?Date
     {
         return $this->since;
     }
 
-    public function getUntil() : ?DateTimeImmutable
+    public function getUntil() : ?Date
     {
         return $this->until;
     }
