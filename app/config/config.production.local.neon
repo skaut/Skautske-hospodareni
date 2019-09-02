@@ -23,10 +23,8 @@ services:
 decorator:
     Monolog\Logger:
         setup:
-            - setHandlers([
-                Monolog\Handler\SyslogUdpHandler(logs6.papertrailapp.com, 21272, 8, Monolog\Logger::ERROR),
-                Monolog\Handler\RotatingFileHandler(%logDir%/log.log, 90, Monolog\Logger::INFO)
-              ])
+            - pushHandler(Monolog\Handler\SyslogUdpHandler(logs6.papertrailapp.com, 21272, 8, Monolog\Logger::ERROR))
+            - pushHandler(Monolog\Handler\RotatingFileHandler(%logDir%/log.log, 90, Monolog\Logger::INFO))
 
 includes:
     - sentry.neon
