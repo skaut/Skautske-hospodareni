@@ -83,7 +83,7 @@ class CashbookOfficialUnitQueryHandler
             return $this->eventRepository->find($eventId)->getUnitId();
         }
 
-        if ($cashbook->getType()->equalsValue(CashbookType::EVENT)) {
+        if ($cashbook->getType()->equalsValue(CashbookType::CAMP)) {
             $campId = new SkautisCampId($this->mapper->getSkautisId($cashbook->getId(), ObjectType::CAMP));
 
             return $this->campRepository->find($campId)->getUnitId();
