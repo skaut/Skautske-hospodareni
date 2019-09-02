@@ -331,12 +331,14 @@ class Cashbook extends Aggregate
         if (! $this->hasOnlyNumericChitNumbers()) {
             throw new NonNumericChitNumbers();
         }
+
         $defaultMax = -1;
         $res        = $defaultMax;
-        /** @var Chit $ch */
-        foreach ($this->chits as $ch) {
-            $number = $ch->getBody()->getNumber();
-            if (! $ch->getPaymentMethod()->equals($paymentMethod) || $number === null || $number->containsLetter()) {
+
+        foreach ($this->chits as $chit) {
+            $number = $chit->getBody()->getNumber();
+
+            if ($number === null || ! $chit->getPaymentMethod()->equals($paymentMethod)) {
                 continue;
             }
 
@@ -352,9 +354,9 @@ class Cashbook extends Aggregate
 
     public function hasOnlyNumericChitNumbers() : bool
     {
-        /** @var Chit $ch */
-        foreach ($this->chits as $ch) {
-            $number = $ch->getBody()->getNumber();
+        foreach ($this->chits as $chit) {
+            $number = $chit->getBody()->getNumber();
+
             if ($number !== null && $number->containsLetter()) {
                 return false;
             }
@@ -370,12 +372,14 @@ class Cashbook extends Aggregate
     public function generateChitNumbers(PaymentMethod $paymentMethod) : void
     {
         $maxChitNumber = $this->getMaxChitNumber($paymentMethod);
-        /** @var Chit $chit */
+
         foreach ($this->sortedChits($paymentMethod) as $chit) {
-            if ($chit->getBody()->getNumber() !== null || $chit->isLocked()) {
+            $body = $chit->getBody();
+
+            if ($body->getNumber() !== null || $chit->isLocked()) {
                 continue;
             }
-            $body    = $chit->getBody();
+
             $newBody = $body->withNewNumber(new ChitNumber((string) (++$maxChitNumber)));
 
             $chit->setBody($newBody);
