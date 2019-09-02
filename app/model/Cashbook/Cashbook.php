@@ -317,11 +317,6 @@ class Cashbook extends Aggregate
         throw new ChitNotFound();
     }
 
-    private function getChitCategory(ICategory $category) : Cashbook\Category
-    {
-        return new Cashbook\Category($category->getId(), $category->getOperationType());
-    }
-
     /**
      * @throws MaxChitNumberNotFound
      * @throws NonNumericChitNumbers
