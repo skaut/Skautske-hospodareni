@@ -93,6 +93,16 @@ class ChitListQueryHandlerTest extends IntegrationTest
         }
     }
 
+    public function testReturnsEmptyListIfCashbookDoesNotExist() : void
+    {
+        $this->assertSame(
+            [],
+            (new ChitListQueryHandler($this->entityManager, $this->prepareQueryBus()))(
+                ChitListQuery::all(Cashbook\CashbookId::generate())
+            )
+        );
+    }
+
     private function prepareQueryBus() : QueryBus
     {
         $bus = m::mock(QueryBus::class);

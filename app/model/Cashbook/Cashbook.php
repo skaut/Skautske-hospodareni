@@ -20,6 +20,7 @@ use Model\Cashbook\Events\ChitWasRemoved;
 use Model\Cashbook\Events\ChitWasUpdated;
 use Model\Common\Aggregate;
 use Nette\Utils\Strings;
+use function array_filter;
 use function array_key_exists;
 use function array_map;
 use function assert;
@@ -287,16 +288,14 @@ class Cashbook extends Aggregate
      *
      * @return Chit[]
      */
-    public function getChits() : array
+    public function getChits(?PaymentMethod $paymentMethodOnly = null) : array
     {
-        return $this->chits
-            ->map(
-                function (Chit $c) : Chit {
-                    // clone to avoid modification of cashbook
-                    return clone $c;
-                }
-            )
-            ->toArray();
+        return array_map(
+            function (Chit $chit) : Chit {
+                return clone $chit;
+            },
+            $this->sortedChits($paymentMethodOnly)
+        );
     }
 
     public function clear() : void
@@ -372,8 +371,8 @@ class Cashbook extends Aggregate
     {
         $maxChitNumber = $this->getMaxChitNumber($paymentMethod);
         /** @var Chit $chit */
-        foreach ($this->sortedChits() as $chit) {
-            if (! $chit->getPaymentMethod()->equals($paymentMethod) || $chit->getBody()->getNumber() !== null || $chit->isLocked()) {
+        foreach ($this->sortedChits($paymentMethod) as $chit) {
+            if ($chit->getBody()->getNumber() !== null || $chit->isLocked()) {
                 continue;
             }
             $body    = $chit->getBody();
@@ -402,9 +401,18 @@ class Cashbook extends Aggregate
     /**
      * @return Chit[]
      */
-    private function sortedChits() : array
+    private function sortedChits(?PaymentMethod $paymentMethodOnly) : array
     {
         $chits = $this->chits->toArray();
+
+        if ($paymentMethodOnly !== null) {
+            $chits = array_filter(
+                $chits,
+                function (Chit $chit) use ($paymentMethodOnly) : bool {
+                    return $chit->getPaymentMethod()->equals($paymentMethodOnly);
+                }
+            );
+        }
 
         uasort($chits, function (Chit $first, Chit $second) : int {
             return [
