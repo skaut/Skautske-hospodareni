@@ -19,6 +19,3 @@ parameters:
 services:
     # Passes notices and warning to Monolog
     tracy.logger: Tracy\Bridges\Psr\PsrToTracyLoggerAdapter
-
-includes:
-    - sentry.neon
