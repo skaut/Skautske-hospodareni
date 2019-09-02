@@ -1,3 +1,7 @@
+parameters:
+    sentry:
+        dsn: null
+
 services:
     - factory: Model\Infrastructure\Log\Sentry\HubFactory::create
       arguments:

@@ -196,11 +196,16 @@ services:
               - Model\Infrastructure\Log\Monolog\FormContextProcessor()
 
 decorator:
-	Doctrine\DBAL\Configuration:
-		setup:
-			- setSQLLogger()
+    Doctrine\DBAL\Configuration:
+        setup:
+            - setSQLLogger()
+
+    Monolog\Logger:
+        setup:
+            - pushHandler(Monolog\Handler\RotatingFileHandler(%logDir%/log.log, 90, Monolog\Logger::INFO))
 
 includes:
     - model/doctrine.neon
     - components.neon
     - webloader.neon
+    - sentry.neon
