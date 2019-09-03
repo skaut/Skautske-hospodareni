@@ -45,7 +45,7 @@ class ErrorPresenter extends Presenter
      *
      * @throws Nette\Application\AbortException
      */
-    public function renderDefault($exception, Request $request) : void
+    public function renderDefault($exception, ?Request $request = null) : void
     {
         if ($exception instanceof SkautisMaintenance || $exception instanceof WsdlException && $this->isSkautisUnavailable($exception)) {
             $this->flashMessage('Nepodařilo se připojit ke Skautisu. Zkuste to prosím za chvíli nebo zkontrolujte, zda neprobíhá jeho údržba.', 'danger');
