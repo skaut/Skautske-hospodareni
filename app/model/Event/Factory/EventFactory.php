@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Skautis\Factory;
 
 use Cake\Chronos\Date;
+use DateTimeImmutable;
 use Model\Common\UnitId;
 use Model\Event\Event;
 use Model\Event\SkautisEventId;
@@ -42,7 +43,9 @@ final class EventFactory
             $skautisEvent->IsStatisticAutoComputed ?? null,
             $skautisEvent->TotalParticipants ?? null,
             $skautisEvent->ChildDays ?? null,
-            $skautisEvent->PersonDays ?? null
+            $skautisEvent->PersonDays ?? null,
+            $skautisEvent->PersonClosed ?? null,
+            isset($skautisEvent->DateClosed) ? new Date(new DateTimeImmutable($skautisEvent->DateClosed)) : null // DateClosed contains microseconds
         );
     }
 }
