@@ -34,7 +34,7 @@
                 </tr>
                 <tr>
                     <th>Stav</th>
-                    <td {if $event->getState() == closed}title="Uzavřel: {$event->PersonClosed} dne: {$event->DateClosed|date:"j.n.Y"}" {/if}>{$event->getState()|eventStateLabel|noescape}</td>
+                    <td {if $event->getState() == closed}title="Uzavřel: {$event->getPersonClosed()} dne: {$event->getDateClosed()|date:"j.n.Y"}" {/if}>{$event->getState()|eventStateLabel|noescape}</td>
                 </tr>
                 <tr>
                     <th>Prefix <i class="glyphicon glyphicon-question-sign" rel="tooltip" data-original-title='Prefix lze upravit na kartě Evidence plateb.'></i></th>

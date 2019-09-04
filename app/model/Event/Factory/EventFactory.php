@@ -8,20 +8,12 @@ use Cake\Chronos\Date;
 use Model\Common\UnitId;
 use Model\Event\Event;
 use Model\Event\SkautisEventId;
-use Model\Skautis\Mapper;
 use stdClass;
+use function explode;
 
 final class EventFactory
 {
     private const DATETIME_FORMAT = 'Y-m-d\TH:i:s';
-
-    /** @var Mapper */
-    private $mapper;
-
-    public function __construct(Mapper $mapper)
-    {
-        $this->mapper = $mapper;
-    }
 
     public function create(stdClass $skautisEvent) : Event
     {
@@ -42,7 +34,9 @@ final class EventFactory
             $skautisEvent->IsStatisticAutoComputed ?? null,
             $skautisEvent->TotalParticipants ?? null,
             $skautisEvent->ChildDays ?? null,
-            $skautisEvent->PersonDays ?? null
+            $skautisEvent->PersonDays ?? null,
+            $skautisEvent->PersonClosed ?? null,
+            isset($skautisEvent->DateClosed) ? Date::createFromFormat('Y-m-d', explode('T', $skautisEvent->DateClosed)[0]) : null
         );
     }
 }

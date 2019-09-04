@@ -79,6 +79,12 @@ class Event implements ISkautisEvent
     /** @var ?int */
     private $realPersonDays;
 
+    /** @var ?string */
+    private $personClosed;
+
+    /** @var ?Date */
+    private $dateClosed;
+
     public function __construct(
         SkautisEventId $id,
         string $displayName,
@@ -96,7 +102,9 @@ class Event implements ISkautisEvent
         ?bool $isStatisticAutoComputed,
         ?int $realCount,
         ?int $realChildDays,
-        ?int $realPersonDays
+        ?int $realPersonDays,
+        ?string $personClosed,
+        ?Date $dateClosed
     ) {
         $this->id                    = $id;
         $this->displayName           = $displayName;
@@ -115,6 +123,8 @@ class Event implements ISkautisEvent
         $this->realCount             = $realCount;
         $this->realChildDays         = $realChildDays;
         $this->realPersonDays        = $realPersonDays;
+        $this->personClosed          = $personClosed;
+        $this->dateClosed            = $dateClosed;
     }
 
     public function update(
@@ -221,5 +231,15 @@ class Event implements ISkautisEvent
     public function getRealPersonDays() : ?int
     {
         return $this->realPersonDays;
+    }
+
+    public function getPersonClosed() : ?string
+    {
+        return $this->personClosed;
+    }
+
+    public function getDateClosed() : ?Date
+    {
+        return $this->dateClosed;
     }
 }
