@@ -76,18 +76,25 @@ class Helpers
         ]);
     }
 
-    public static function addChitToCashbook(Cashbook $cashbook, ?string $chitNumber = null, ?PaymentMethod $paymentMethod = null, ?int $categoryId = null, ?string $amount = null): ChitBody
-    {
+    public static function addChitToCashbook(
+        Cashbook $cashbook,
+        ?string $chitNumber = null,
+        ?PaymentMethod $paymentMethod = null,
+        ?int $categoryId = null,
+        ?string $amount = null,
+        ?Date $date = null,
+        ?Operation $operation = null
+    ): ChitBody {
         $paymentMethod = $paymentMethod ?? PaymentMethod::CASH ();
         $categoryId = $categoryId ?? 1;
         $amount = new Amount($amount ?? '100');
 
         $chitBody = new ChitBody(
             $chitNumber === null ? null : new ChitNumber($chitNumber),
-            new Date(),
+            $date ?? new Date(),
             null
         );
-        $category = self::mockChitItemCategory ($categoryId);
+        $category = self::mockChitItemCategory ($categoryId, $operation ?? null);
 
         $cashbook->addChit (
             $chitBody,

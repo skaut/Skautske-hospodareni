@@ -393,4 +393,25 @@ class CashbookIntegrationTest extends IntegrationTest
             [CashbookType::CAMP, CashbookType::CAMP], // camps may have different categories
         ];
     }
+
+    public function testGenerateChitNumbers() : void
+    {
+        $cashbook = new Cashbook(CashbookId::fromString('10'), CashbookType::get(CashbookType::EVENT));
+
+        Helpers::addChitToCashbook($cashbook, null, PaymentMethod::CASH(), null, null, Date::today());
+        Helpers::addChitToCashbook($cashbook, null, PaymentMethod::BANK());
+        Helpers::addChitToCashbook($cashbook, null, PaymentMethod::CASH(), null, null, Date::yesterday(), Operation::EXPENSE());
+        Helpers::addChitToCashbook($cashbook, null, PaymentMethod::CASH(), null, null, Date::yesterday(), Operation::INCOME());
+        Helpers::addChitToCashbook($cashbook, '1', PaymentMethod::CASH());
+
+        $this->entityManager->persist($cashbook);
+        $this->entityManager->flush();
+
+        $cashbook->generateChitNumbers(PaymentMethod::CASH());
+
+        $this->assertSame('4', $cashbook->getChits()[0]->getBody()->getNumber()->toString());
+        $this->assertNull($cashbook->getChits()[1]->getBody()->getNumber());
+        $this->assertSame('3', $cashbook->getChits()[2]->getBody()->getNumber()->toString());
+        $this->assertSame('2', $cashbook->getChits()[3]->getBody()->getNumber()->toString());
+    }
 }

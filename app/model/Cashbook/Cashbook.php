@@ -20,11 +20,13 @@ use Model\Cashbook\Events\ChitWasRemoved;
 use Model\Cashbook\Events\ChitWasUpdated;
 use Model\Common\Aggregate;
 use Nette\Utils\Strings;
+use function array_filter;
 use function array_key_exists;
 use function array_map;
 use function assert;
 use function max;
 use function sprintf;
+use function uasort;
 
 /**
  * @ORM\Entity()
@@ -284,20 +286,16 @@ class Cashbook extends Aggregate
     /**
      * Only for Read model
      *
-     * @deprecated use Doctrine directly in read model
-     *
      * @return Chit[]
      */
-    public function getChits() : array
+    public function getChits(?PaymentMethod $paymentMethodOnly = null) : array
     {
-        return $this->chits
-            ->map(
-                function (Chit $c) : Chit {
-                    // clone to avoid modification of cashbook
-                    return clone $c;
-                }
-            )
-            ->toArray();
+        return array_map(
+            function (Chit $chit) : Chit {
+                return clone $chit;
+            },
+            $this->sortedChits($paymentMethodOnly)
+        );
     }
 
     public function clear() : void
@@ -319,11 +317,6 @@ class Cashbook extends Aggregate
         throw new ChitNotFound();
     }
 
-    private function getChitCategory(ICategory $category) : Cashbook\Category
-    {
-        return new Cashbook\Category($category->getId(), $category->getOperationType());
-    }
-
     /**
      * @throws MaxChitNumberNotFound
      * @throws NonNumericChitNumbers
@@ -333,12 +326,14 @@ class Cashbook extends Aggregate
         if (! $this->hasOnlyNumericChitNumbers()) {
             throw new NonNumericChitNumbers();
         }
+
         $defaultMax = -1;
         $res        = $defaultMax;
-        /** @var Chit $ch */
-        foreach ($this->chits as $ch) {
-            $number = $ch->getBody()->getNumber();
-            if (! $ch->getPaymentMethod()->equals($paymentMethod) || $number === null || $number->containsLetter()) {
+
+        foreach ($this->chits as $chit) {
+            $number = $chit->getBody()->getNumber();
+
+            if ($number === null || ! $chit->getPaymentMethod()->equals($paymentMethod)) {
                 continue;
             }
 
@@ -354,9 +349,9 @@ class Cashbook extends Aggregate
 
     public function hasOnlyNumericChitNumbers() : bool
     {
-        /** @var Chit $ch */
-        foreach ($this->chits as $ch) {
-            $number = $ch->getBody()->getNumber();
+        foreach ($this->chits as $chit) {
+            $number = $chit->getBody()->getNumber();
+
             if ($number !== null && $number->containsLetter()) {
                 return false;
             }
@@ -372,12 +367,14 @@ class Cashbook extends Aggregate
     public function generateChitNumbers(PaymentMethod $paymentMethod) : void
     {
         $maxChitNumber = $this->getMaxChitNumber($paymentMethod);
-        /** @var Chit $chit */
-        foreach ($this->chits as $chit) {
-            if (! $chit->getPaymentMethod()->equals($paymentMethod) || $chit->getBody()->getNumber() !== null || $chit->isLocked()) {
+
+        foreach ($this->sortedChits($paymentMethod) as $chit) {
+            $body = $chit->getBody();
+
+            if ($body->getNumber() !== null || $chit->isLocked()) {
                 continue;
             }
-            $body    = $chit->getBody();
+
             $newBody = $body->withNewNumber(new ChitNumber((string) (++$maxChitNumber)));
 
             $chit->setBody($newBody);
@@ -398,5 +395,36 @@ class Cashbook extends Aggregate
         }
 
         return $categoriesById;
+    }
+
+    /**
+     * @return Chit[]
+     */
+    private function sortedChits(?PaymentMethod $paymentMethodOnly) : array
+    {
+        $chits = $this->chits->toArray();
+
+        if ($paymentMethodOnly !== null) {
+            $chits = array_filter(
+                $chits,
+                function (Chit $chit) use ($paymentMethodOnly) : bool {
+                    return $chit->getPaymentMethod()->equals($paymentMethodOnly);
+                }
+            );
+        }
+
+        uasort($chits, function (Chit $first, Chit $second) : int {
+            return [
+                $first->getDate(),
+                $first->getOperation()->toString(),
+                $first->getId(),
+            ] <=> [
+                $second->getDate(),
+                $second->getOperation()->toString(),
+                $second->getId(),
+            ];
+        });
+
+        return $chits;
     }
 }

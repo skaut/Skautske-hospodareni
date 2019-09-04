@@ -8,6 +8,7 @@ use Consistence\Enum\Enum;
 
 /**
  * @TODO move to Common BC
+ * @method string getValue()
  */
 class Operation extends Enum
 {
@@ -29,5 +30,10 @@ class Operation extends Enum
     public static function EXPENSE() : self
     {
         return self::get(self::EXPENSE);
+    }
+
+    public function toString() : string
+    {
+        return $this->getValue();
     }
 }
