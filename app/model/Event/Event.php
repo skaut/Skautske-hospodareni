@@ -85,6 +85,9 @@ class Event implements ISkautisEvent
     /** @var ?Date */
     private $dateClosed;
 
+    /** @var string */
+    private $idUnitEducative;
+
     public function __construct(
         SkautisEventId $id,
         string $displayName,
@@ -104,7 +107,8 @@ class Event implements ISkautisEvent
         ?int $realChildDays,
         ?int $realPersonDays,
         ?string $personClosed,
-        ?Date $dateClosed
+        ?Date $dateClosed,
+        ?string $idUnitEducative
     ) {
         $this->id                    = $id;
         $this->displayName           = $displayName;
@@ -125,6 +129,7 @@ class Event implements ISkautisEvent
         $this->realPersonDays        = $realPersonDays;
         $this->personClosed          = $personClosed;
         $this->dateClosed            = $dateClosed;
+        $this->idUnitEducative       = $idUnitEducative;
     }
 
     public function update(
@@ -241,5 +246,10 @@ class Event implements ISkautisEvent
     public function getDateClosed() : ?Date
     {
         return $this->dateClosed;
+    }
+
+    public function getIdUnitEducative() : ?string
+    {
+        return $this->idUnitEducative;
     }
 }

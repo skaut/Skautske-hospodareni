@@ -8,14 +8,18 @@ use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ObjectType;
+use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\Pdf\ExportEvents;
 use Model\Cashbook\ReadModel\SpreadsheetFactory;
+use Model\DTO\Cashbook\Cashbook;
 use Model\Event\Event;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\ReadModel\Queries\EventQuery;
+use Model\Event\ReadModel\Queries\EventScopes;
+use Model\Event\ReadModel\Queries\EventTypes;
 use Model\Event\SkautisEventId;
 use Model\Excel\Range;
 use Model\IEventServiceFactory;
@@ -27,8 +31,6 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use function array_key_first;
 use function assert;
 use function count;
-use function date;
-use function strtotime;
 use function ucfirst;
 
 class ExportEventsHandler
@@ -74,10 +76,14 @@ class ExportEventsHandler
             $eventId    = new SkautisEventId($aid);
             $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery($eventId));
 
+            $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
+            assert($cashbook instanceof Cashbook);
+
             $event = $this->queryBus->handle(new EventQuery(new SkautisEventId($aid)));
             assert($event instanceof Event);
 
-            $data[$aid]                    = ArrayHash::from($event);
+            $data[$aid]                    = new ArrayHash();
+            $data[$aid]['event']           = $event;
             $data[$aid]['cashbookId']      = $cashbookId;
             $data[$aid]['parStatistic']    = $participantService->getEventStatistic($aid);
             $data[$aid]['chits']           = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
@@ -85,11 +91,12 @@ class ExportEventsHandler
             $participants                  = $participantService->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
             $data[$aid]['personDays']      = $participantService->getPersonsDays($participants);
+            $data[$aid]['prefix']          = $cashbook->getChitNumberPrefix();
 
             $pp = $participantService->countPragueParticipants(
-                $data[$aid]->RegistrationNumber,
-                new Date($data[$aid]->StartDate),
-                $data[$aid]->ID
+                $data[$aid]['event']->getRegistrationNumber(),
+                new Date($data[$aid]['event']->getStartDate()),
+                $data[$aid]['event']->getID()->toInt()
             );
             if ($pp === null) {
                 continue;
@@ -112,6 +119,9 @@ class ExportEventsHandler
      */
     private function setSheetEvents(Worksheet $sheet, array $data, bool $allowPragueColumns) : void
     {
+        $scopes = $this->queryBus->handle(new EventScopes());
+        $types  = $this->queryBus->handle(new EventTypes());
+
         $firstElement = $data[array_key_first($data)];
 
         $sheet->setCellValue('A1', 'Pořadatel')
@@ -153,27 +163,26 @@ class ExportEventsHandler
 
             $leader     = $functions->getLeader() !== null ? $functions->getLeader()->getName() : null;
             $accountant = $functions->getAccountant() !== null ? $functions->getAccountant()->getName() : null;
-
-            $sheet->setCellValue('A' . $rowCnt, $row->Unit)
-                ->setCellValue('B' . $rowCnt, $row->DisplayName)
-                ->setCellValue('C' . $rowCnt, $row->ID_UnitEducative !== null ? $row->UnitEducative : '')
-                ->setCellValue('D' . $rowCnt, $row->EventGeneralType)
-                ->setCellValue('E' . $rowCnt, $row->EventGeneralScope)
-                ->setCellValue('F' . $rowCnt, $row->Location)
+            $sheet->setCellValue('A' . $rowCnt, $row['event']->getUnitName())
+                ->setCellValue('B' . $rowCnt, $row['event']->getDisplayName())
+                ->setCellValue('C' . $rowCnt, $row['event']->getIdUnitEducative() !== null ? $row['event']->getUnitEducative() : '')
+                ->setCellValue('D' . $rowCnt, $types[$row['event']->getTypeId()])
+                ->setCellValue('E' . $rowCnt, $scopes[$row['event']->getScopeId()])
+                ->setCellValue('F' . $rowCnt, $row['event']->getLocation())
                 ->setCellValue('G' . $rowCnt, $leader)
                 ->setCellValue('H' . $rowCnt, $accountant)
-                ->setCellValue('I' . $rowCnt, date('d.m.Y', strtotime($row->StartDate)))
-                ->setCellValue('J' . $rowCnt, date('d.m.Y', strtotime($row->EndDate)))
-                ->setCellValue('K' . $rowCnt, $row->TotalDays)
-                ->setCellValue('L' . $rowCnt, $row->TotalParticipants)
-                ->setCellValue('M' . $rowCnt, $row->PersonDays)
-                ->setCellValue('N' . $rowCnt, $row->ChildDays)
+                ->setCellValue('I' . $rowCnt, $row['event']->getStartDate()->format('d.m.Y'))
+                ->setCellValue('J' . $rowCnt, $row['event']->getEndDate()->format('d.m.Y'))
+                ->setCellValue('K' . $rowCnt, $row['event']->getTotalDays())
+                ->setCellValue('L' . $rowCnt, $row['event']->getRealCount())
+                ->setCellValue('M' . $rowCnt, $row['event']->getRealPersonDays())
+                ->setCellValue('N' . $rowCnt, $row['event']->getRealChildDays())
                 ->setCellValue('O' . $rowCnt, $row->parStatistic[1]->Count)
                 ->setCellValue('P' . $rowCnt, $row->parStatistic[2]->Count)
                 ->setCellValue('Q' . $rowCnt, $row->parStatistic[3]->Count)
                 ->setCellValue('R' . $rowCnt, $row->parStatistic[4]->Count)
                 ->setCellValue('S' . $rowCnt, $row->parStatistic[5]->Count)
-                ->setCellValue('T' . $rowCnt, $row->prefix);
+                ->setCellValue('T' . $rowCnt, $row['prefix']);
             if (isset($row->pragueParticipants)) {
                 $pp = $row->pragueParticipants;
 
