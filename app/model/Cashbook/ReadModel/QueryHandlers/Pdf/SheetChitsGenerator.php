@@ -52,7 +52,7 @@ class SheetChitsGenerator
                 $isIncome = $chit->isIncome();
                 $amount   = $chit->getAmount()->toFloat();
 
-                $sheet->setCellValue('A' . $rowCnt, $event->DisplayName)
+                $sheet->setCellValue('A' . $rowCnt, $event['event']->getDisplayName())
                     ->setCellValue('B' . $rowCnt, $chit->getDate()->format('d.m.Y'))
                     ->setCellValue('C' . $rowCnt, $prefix . (string) $chit->getNumber())
                     ->setCellValue('D' . $rowCnt, $chit->getPurpose())
