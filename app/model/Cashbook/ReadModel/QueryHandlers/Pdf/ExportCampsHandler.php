@@ -83,7 +83,7 @@ class ExportCampsHandler
             $campId     = new SkautisCampId($aid);
             $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery($campId));
             assert($cashbookId instanceof CashbookId);
-            $camp = $this->queryBus->handle(new CampQuery(new $campId()));
+            $camp = $this->queryBus->handle(new CampQuery($campId));
             assert($camp instanceof Camp);
             $data[$aid]                    = ArrayHash::from($camp);
             $data[$aid]['cashbookId']      = $cashbookId;
