@@ -158,25 +158,27 @@ class ExportEventsHandler
         $rowCnt = 2;
         foreach ($data as $row) {
             $functions = $row->func;
+            $event     = $row['event'];
 
             assert($functions instanceof Functions);
+            assert($event instanceof Event);
 
             $leader     = $functions->getLeader() !== null ? $functions->getLeader()->getName() : null;
             $accountant = $functions->getAccountant() !== null ? $functions->getAccountant()->getName() : null;
-            $sheet->setCellValue('A' . $rowCnt, $row['event']->getUnitName())
-                ->setCellValue('B' . $rowCnt, $row['event']->getDisplayName())
-                ->setCellValue('C' . $rowCnt, $row['event']->getIdUnitEducative() !== null ? $row['event']->getUnitEducative() : '')
-                ->setCellValue('D' . $rowCnt, $types[$row['event']->getTypeId()])
-                ->setCellValue('E' . $rowCnt, $scopes[$row['event']->getScopeId()])
-                ->setCellValue('F' . $rowCnt, $row['event']->getLocation())
+            $sheet->setCellValue('A' . $rowCnt, $event->getUnitName())
+                ->setCellValue('B' . $rowCnt, $event->getDisplayName())
+                ->setCellValue('C' . $rowCnt, $event->getUnitEducativeName() ?? '')
+                ->setCellValue('D' . $rowCnt, $types[$event->getTypeId()])
+                ->setCellValue('E' . $rowCnt, $scopes[$event->getScopeId()])
+                ->setCellValue('F' . $rowCnt, $event->getLocation())
                 ->setCellValue('G' . $rowCnt, $leader)
                 ->setCellValue('H' . $rowCnt, $accountant)
-                ->setCellValue('I' . $rowCnt, $row['event']->getStartDate()->format('d.m.Y'))
-                ->setCellValue('J' . $rowCnt, $row['event']->getEndDate()->format('d.m.Y'))
-                ->setCellValue('K' . $rowCnt, $row['event']->getTotalDays())
-                ->setCellValue('L' . $rowCnt, $row['event']->getRealCount())
-                ->setCellValue('M' . $rowCnt, $row['event']->getRealPersonDays())
-                ->setCellValue('N' . $rowCnt, $row['event']->getRealChildDays())
+                ->setCellValue('I' . $rowCnt, $event->getStartDate()->format('d.m.Y'))
+                ->setCellValue('J' . $rowCnt, $event->getEndDate()->format('d.m.Y'))
+                ->setCellValue('K' . $rowCnt, $event->getTotalDays())
+                ->setCellValue('L' . $rowCnt, $event->getRealCount())
+                ->setCellValue('M' . $rowCnt, $event->getRealPersonDays())
+                ->setCellValue('N' . $rowCnt, $event->getRealChildDays())
                 ->setCellValue('O' . $rowCnt, $row->parStatistic[1]->Count)
                 ->setCellValue('P' . $rowCnt, $row->parStatistic[2]->Count)
                 ->setCellValue('Q' . $rowCnt, $row->parStatistic[3]->Count)

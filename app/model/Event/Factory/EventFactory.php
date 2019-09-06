@@ -37,7 +37,7 @@ final class EventFactory
             $skautisEvent->PersonDays ?? null,
             $skautisEvent->PersonClosed ?? null,
             isset($skautisEvent->DateClosed) ? Date::createFromFormat('Y-m-d', explode('T', $skautisEvent->DateClosed)[0]) : null,
-            $skautisEvent->ID_UnitEducative ?? null,
+            $skautisEvent->UnitEducative ?? null
         );
     }
 }
