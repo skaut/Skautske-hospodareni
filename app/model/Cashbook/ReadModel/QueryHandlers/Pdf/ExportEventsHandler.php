@@ -6,14 +6,13 @@ namespace Model\Cashbook\ReadModel\QueryHandlers\Pdf;
 
 use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\QueryBus;
-use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
-use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\Pdf\ExportEvents;
 use Model\Cashbook\ReadModel\SpreadsheetFactory;
 use Model\DTO\Cashbook\Cashbook;
+use Model\DTO\Event\ExportedCashbook;
 use Model\Event\Event;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\EventFunctions;
@@ -28,6 +27,7 @@ use Nette\Utils\ArrayHash;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use function array_key_first;
+use function array_map;
 use function assert;
 use function count;
 use function ucfirst;
@@ -79,7 +79,6 @@ class ExportEventsHandler
             $data[$aid]['event']           = $event;
             $data[$aid]['cashbookId']      = $cashbookId;
             $data[$aid]['parStatistic']    = $participantService->getEventStatistic($aid);
-            $data[$aid]['chits']           = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
             $data[$aid]['func']            = $this->queryBus->handle(new EventFunctions($eventId));
             $participants                  = $participantService->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
@@ -102,7 +101,15 @@ class ExportEventsHandler
         $this->setSheetEvents($sheetEvents, $data, $allowPragueColumns);
         $spreadsheet->createSheet(1);
         $sheetChit = $spreadsheet->setActiveSheetIndex(1);
-        ($this->sheetChitsGenerator)($sheetChit, $data);
+        ($this->sheetChitsGenerator)(
+            $sheetChit,
+            array_map(
+                function (ArrayHash $row) : ExportedCashbook {
+                    return new ExportedCashbook($row['cashbookId'], $row['event']->getDisplayName());
+                },
+                $data
+            )
+        );
 
         return $spreadsheet;
     }

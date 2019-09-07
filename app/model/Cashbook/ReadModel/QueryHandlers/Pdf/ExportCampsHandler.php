@@ -6,12 +6,11 @@ namespace Model\Cashbook\ReadModel\QueryHandlers\Pdf;
 
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
-use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\Pdf\ExportCamps;
 use Model\Cashbook\ReadModel\SpreadsheetFactory;
+use Model\DTO\Event\ExportedCashbook;
 use Model\Event\Camp;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\CampFunctions;
@@ -24,6 +23,7 @@ use Model\Unit\UnitNotFound;
 use Nette\Utils\ArrayHash;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use function array_map;
 use function assert;
 use function count;
 use function date;
@@ -77,7 +77,6 @@ class ExportCampsHandler
             $data[$aid]                    = ArrayHash::from($camp);
             $data[$aid]['cashbookId']      = $cashbookId;
             $data[$aid]['troops']          = implode(', ', $this->getCampTroopNames($camp));
-            $data[$aid]['chits']           = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
             $data[$aid]['func']            = $this->queryBus->handle(new CampFunctions(new SkautisCampId($aid)));
             $participants                  = $participantService->getAll($aid);
             $data[$aid]['participantsCnt'] = count($participants);
@@ -86,8 +85,16 @@ class ExportCampsHandler
         $sheetCamps = $spreadsheet->setActiveSheetIndex(0);
         $this->setSheetCamps($sheetCamps, $data);
         $spreadsheet->createSheet(1);
-        $sheetChit = $spreadsheet->setActiveSheetIndex(1);
-        ($this->sheetChitsGenerator)($sheetChit, $data);
+
+        ($this->sheetChitsGenerator)(
+            $spreadsheet->setActiveSheetIndex(1),
+            array_map(
+                function (ArrayHash $row) : ExportedCashbook {
+                    return new ExportedCashbook($row['cashbookId'], $row->DisplayName);
+                },
+                $data
+            )
+        );
 
         return $spreadsheet;
     }
