@@ -190,7 +190,7 @@ class ExportEventsHandler
 
                 assert($pp instanceof PragueParticipants);
 
-                $sheet->setCellValue('U' . $rowCnt, $pp->isSupportable($row->TotalDays) ? 'Ano' : 'Ne')
+                $sheet->setCellValue('U' . $rowCnt, $pp->isSupportable($event->getTotalDays()) ? 'Ano' : 'Ne')
                     ->setCellValue('V' . $rowCnt, $pp->getPersonDaysUnder26())
                     ->setCellValue('W' . $rowCnt, $pp->getUnder18())
                     ->setCellValue('X' . $rowCnt, $pp->getBetween18and26())
