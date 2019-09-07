@@ -153,7 +153,6 @@ class CashbookTest extends Unit
     public function testClearCashbook() : void
     {
         $cashbook = $this->createEventCashbook();
-        $chitBody = new ChitBody(null, new Date(), null);
 
         for ($i = 0; $i < 5; $i++) {
             Helpers::addChitToCashbook($cashbook, null, null, null, null);

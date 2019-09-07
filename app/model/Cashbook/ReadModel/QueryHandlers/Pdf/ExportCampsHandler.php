@@ -9,19 +9,15 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
-use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\Pdf\ExportCamps;
 use Model\Cashbook\ReadModel\SpreadsheetFactory;
-use Model\DTO\Cashbook\Cashbook;
-use Model\DTO\Cashbook\Chit;
 use Model\Event\Camp;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\ReadModel\Queries\CampQuery;
 use Model\Event\SkautisCampId;
 use Model\Excel\Range;
-use Model\IEventServiceFactory;
 use Model\IParticipantServiceFactory;
 use Model\Unit\Repositories\IUnitRepository;
 use Model\Unit\UnitNotFound;
@@ -32,7 +28,6 @@ use function assert;
 use function count;
 use function date;
 use function implode;
-use function reset;
 use function strtotime;
 use function ucfirst;
 
@@ -40,9 +35,6 @@ class ExportCampsHandler
 {
     /** @var IParticipantServiceFactory */
     private $participantServiceFactory;
-
-    /** @var IEventServiceFactory */
-    private $serviceFactory;
 
     /** @var QueryBus */
     private $queryBus;
@@ -58,14 +50,12 @@ class ExportCampsHandler
 
     public function __construct(
         IParticipantServiceFactory $participantServiceFactory,
-        IEventServiceFactory $serviceFactory,
         QueryBus $queryBus,
         SpreadsheetFactory $spreadsheetFactory,
         IUnitRepository $units,
         SheetChitsGenerator $sheetChitsGenerator
     ) {
         $this->participantServiceFactory = $participantServiceFactory;
-        $this->serviceFactory            = $serviceFactory;
         $this->queryBus                  = $queryBus;
         $this->spreadsheetFactory        = $spreadsheetFactory;
         $this->unitRepository            = $units;
@@ -74,7 +64,6 @@ class ExportCampsHandler
 
     public function __invoke(ExportCamps $query) : Spreadsheet
     {
-        $eventService       = $this->serviceFactory->create(ucfirst(ObjectType::CAMP));
         $participantService = $this->participantServiceFactory->create(ucfirst(ObjectType::CAMP));
         $spreadsheet        = $this->spreadsheetFactory->create();
 
@@ -108,8 +97,6 @@ class ExportCampsHandler
      */
     protected function setSheetCamps(Worksheet $sheet, array $data) : void
     {
-        $firstElement = reset($data);
-
         $sheet->setCellValue('A1', 'Pořadatel')
             ->setCellValue('B1', 'Název akce')
             ->setCellValue('C1', 'Oddíly')
@@ -158,57 +145,6 @@ class ExportCampsHandler
         $sheet->getStyle('A1:N1')->getFont()->setBold(true);
         $sheet->setAutoFilter('A1:N' . ($rowCnt - 1));
         $sheet->setTitle('Přehled táborů');
-    }
-
-    /**
-     * @param ArrayHash[] $data
-     */
-    private function setSheetChits(Worksheet $sheet, array $data) : void
-    {
-        $sheet->setCellValue('A1', 'Název akce')
-            ->setCellValue('B1', 'Ze dne')
-            ->setCellValue('C1', 'Číslo dokladu')
-            ->setCellValue('D1', 'Účel výplaty')
-            ->setCellValue('E1', 'Kategorie')
-            ->setCellValue('F1', 'Komu/Od')
-            ->setCellValue('G1', 'Příjem')
-            ->setCellValue('H1', 'Výdej');
-
-        $rowCnt = 2;
-        foreach ($data as $event) {
-            $cashbookId = $event['cashbookId'];
-            $cashbook   = $this->queryBus->handle(new CashbookQuery($cashbookId));
-
-            assert($cashbook instanceof Cashbook);
-
-            $prefix = $cashbook->getChitNumberPrefix();
-
-            foreach ($event['chits'] as $chit) {
-                assert($chit instanceof Chit);
-
-                $isIncome = $chit->isIncome();
-                $amount   = $chit->getAmount()->toFloat();
-
-                $sheet->setCellValue('A' . $rowCnt, $event->DisplayName)
-                    ->setCellValue('B' . $rowCnt, $chit->getDate()->format('d.m.Y'))
-                    ->setCellValue('C' . $rowCnt, $prefix . (string) $chit->getNumber())
-                    ->setCellValue('D' . $rowCnt, $chit->getPurpose())
-                    ->setCellValue('E' . $rowCnt, $chit->getCategories())
-                    ->setCellValue('F' . $rowCnt, (string) $chit->getRecipient())
-                    ->setCellValue('G' . $rowCnt, $isIncome ? $amount : '')
-                    ->setCellValue('H' . $rowCnt, ! $isIncome ? $amount : '');
-
-                $rowCnt++;
-            }
-        }
-
-        //format
-        foreach (Range::letters('A', 'H') as $columnID) {
-            $sheet->getColumnDimension($columnID)->setAutoSize(true);
-        }
-        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
-        $sheet->setAutoFilter('A1:H' . ($rowCnt - 1));
-        $sheet->setTitle('Doklady');
     }
 
     /**

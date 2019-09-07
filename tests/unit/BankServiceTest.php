@@ -100,21 +100,17 @@ final class BankServiceTest extends Unit
             $bankAccountId2 => $bankAccount2,
         ]);
 
-        $today    = new DateTimeImmutable();
-        $amount   = 200.50;
-        $vs1      = new VariableSymbol('123456');
-        $account  = (string) Helpers::createAccountNumber();
-        $vs2      = new VariableSymbol('7854');
-        $account2 = (string) new BankAccount\AccountNumber('19', '2000145399', '0800');
+        $today   = new DateTimeImmutable();
+        $amount  = 200.50;
+        $vs1     = new VariableSymbol('123456');
+        $account = (string) Helpers::createAccountNumber();
+        $vs2     = new VariableSymbol('7854');
 
         $transactions1 = [
             new Transaction('123', $today, $amount, $account, 'František Maša', $vs1->toInt(), null, null),
         ];
 
-        $transactions2 = [
-            new Transaction('456', $today, $amount, $account2, 'František Maša', $vs2->toInt(), null, null),
-        ];
-        $bank          = m::mock(IFioClient::class);
+        $bank = m::mock(IFioClient::class);
         $bank->shouldReceive('getTransactions')
             ->once()
             ->andReturn($transactions1);

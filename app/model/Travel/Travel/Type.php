@@ -27,7 +27,6 @@ class Type
      */
     private $label;
 
-
     /**
      * @ORM\Column(type="boolean", name="hasFuel", options={"default":false})
      *

@@ -159,7 +159,7 @@ class ChitPresenter extends BasePresenter
 
         $cashbooks = [];
 
-        foreach ($this->queryBus->handle(new EventListQuery($this->year)) as $eventId => $event) {
+        foreach ($this->queryBus->handle(new EventListQuery($this->year)) as $event) {
             assert($event instanceof Event);
 
             if (! isset($readableUnits[$event->getUnitId()->toInt()])) {
@@ -188,7 +188,7 @@ class ChitPresenter extends BasePresenter
 
         $cashbooks = [];
 
-        foreach ($this->queryBus->handle(new CampListQuery($this->year)) as $eventId => $event) {
+        foreach ($this->queryBus->handle(new CampListQuery($this->year)) as $event) {
             assert($event instanceof Camp);
 
             if (! isset($readableUnits[$event->getUnitId()->toInt()])) {

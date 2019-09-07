@@ -36,7 +36,6 @@ class Participant
     /** @var int */
     private $personId;
 
-
     /** @var string */
     private $firstName;
 
@@ -63,9 +62,6 @@ class Participant
 
     /** @var string */
     private $state;
-
-    /** @var int|null */
-    private $unitId;
 
     /** @var string */
     private $unit;

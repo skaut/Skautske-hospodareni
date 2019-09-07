@@ -122,7 +122,6 @@ class PairButton extends BaseControl
 
     private function pair(?int $daysBack = null) : void
     {
-        $error = null;
         try {
             $pairingResults = $this->model->pairAllGroups($this->groupIds, $daysBack);
             /** @var PairingResult $p */

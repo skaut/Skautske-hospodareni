@@ -280,7 +280,6 @@ class CashbookIntegrationTest extends IntegrationTest
     {
         $cashbook   = new Cashbook(CashbookId::fromString('10'), CashbookType::get($type));
         $categoryId = 666;
-        $category   = Helpers::mockChitItemCategory($categoryId);
 
         $cashbook->addChit(
             new ChitBody(null, new Date(), null),

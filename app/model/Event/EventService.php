@@ -6,11 +6,7 @@ namespace Model;
 
 use eGen\MessageBus\Bus\QueryBus;
 use InvalidArgumentException;
-use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ObjectType;
-use Model\Cashbook\ReadModel\Queries\CashbookQuery;
-use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
-use Model\DTO\Cashbook\Cashbook;
 use Model\Event\Camp;
 use Model\Event\Event;
 use Model\Event\ReadModel\Queries\CampQuery;
@@ -24,16 +20,12 @@ use function assert;
 
 class EventService extends MutableBaseService
 {
-    /** @var UnitService */
-    private $units;
-
     /** @var QueryBus */
     private $queryBus;
 
-    public function __construct(string $name, Skautis $skautis, UnitService $units, QueryBus $queryBus)
+    public function __construct(string $name, Skautis $skautis, QueryBus $queryBus)
     {
         parent::__construct($name, $skautis);
-        $this->units    = $units;
         $this->queryBus = $queryBus;
     }
 
@@ -61,23 +53,5 @@ class EventService extends MutableBaseService
         }
 
         throw new InvalidArgumentException('Neplatný typ: ' . $this->typeName);
-    }
-
-    /**
-     * @return mixed[]
-     */
-    private function getCashbookData(int $eventId) : array
-    {
-        $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($eventId)));
-
-        assert($cashbookId instanceof CashbookId);
-
-        $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
-
-        assert($cashbook instanceof Cashbook);
-
-        return [
-            'prefix' => $cashbook->getChitNumberPrefix(),
-        ];
     }
 }

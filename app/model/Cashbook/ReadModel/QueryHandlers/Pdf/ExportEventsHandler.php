@@ -22,7 +22,6 @@ use Model\Event\ReadModel\Queries\EventScopes;
 use Model\Event\ReadModel\Queries\EventTypes;
 use Model\Event\SkautisEventId;
 use Model\Excel\Range;
-use Model\IEventServiceFactory;
 use Model\IParticipantServiceFactory;
 use Model\Participant\PragueParticipants;
 use Nette\Utils\ArrayHash;
@@ -38,9 +37,6 @@ class ExportEventsHandler
     /** @var IParticipantServiceFactory */
     private $participantServiceFactory;
 
-    /** @var IEventServiceFactory */
-    private $serviceFactory;
-
     /** @var QueryBus */
     private $queryBus;
 
@@ -52,13 +48,11 @@ class ExportEventsHandler
 
     public function __construct(
         IParticipantServiceFactory $participantServiceFactory,
-        IEventServiceFactory $serviceFactory,
         QueryBus $queryBus,
         SpreadsheetFactory $spreadsheetFactory,
         SheetChitsGenerator $sheetChitsGenerator
     ) {
         $this->participantServiceFactory = $participantServiceFactory;
-        $this->serviceFactory            = $serviceFactory;
         $this->queryBus                  = $queryBus;
         $this->spreadsheetFactory        = $spreadsheetFactory;
         $this->sheetChitsGenerator       = $sheetChitsGenerator;
@@ -66,7 +60,6 @@ class ExportEventsHandler
 
     public function __invoke(ExportEvents $query) : Spreadsheet
     {
-        $eventService       = $this->serviceFactory->create(ucfirst(ObjectType::EVENT));
         $participantService = $this->participantServiceFactory->create(ucfirst(ObjectType::EVENT));
         $spreadsheet        = $this->spreadsheetFactory->create();
 

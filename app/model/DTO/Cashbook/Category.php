@@ -35,9 +35,6 @@ class Category
     private $operationType;
 
     /** @var bool */
-    private $income;
-
-    /** @var bool */
     private $virtual;
 
     public function __construct(int $id, string $name, Money $total, string $shortcut, Operation $operationType, bool $virtual)
