@@ -12,7 +12,6 @@ use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
-use Model\Cashbook\Repositories\IStaticCategoryRepository;
 use Model\DTO\Cashbook\Category;
 use Model\Event\Event;
 use Model\Event\Functions;
@@ -29,8 +28,7 @@ class ExportServiceTest extends Unit
     public function testGetEventReport() : void
     {
         $skautisEventId  = 42;
-        $unitService     = $service = m::mock(UnitService::class);
-        $categories      = m::mock(IStaticCategoryRepository::class);
+        $unitService     = m::mock(UnitService::class);
         $templateFactory = m::mock(TemplateFactory::class);
         $events          = m::mock(IEventRepository::class);
         $events->expects('find')->andReturn(m::mock(Event::class));
@@ -56,7 +54,7 @@ class ExportServiceTest extends Unit
         // handle EventFunctions
         $queryBus->expects('handle')->andReturn(m::mock(Functions::class));
 
-        $exportService      = new ExportService($unitService, $categories, $templateFactory, $events, $queryBus);
+        $exportService      = new ExportService($unitService, $templateFactory, $events, $queryBus);
         $eventService       = m::mock(EventEntity::class);
         $participantService = m::mock(ParticipantService::class);
         $participantService->expects('getAll')->andReturn([]);

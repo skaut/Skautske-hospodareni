@@ -8,19 +8,14 @@ use Model\Cashbook\ReadModel\Queries\EventParticipantIncomeQuery;
 use Model\DTO\Participant\Participant;
 use Model\IParticipantServiceFactory;
 use Model\ParticipantService;
-use Skautis\Skautis;
 
 class EventParticipantIncomeQueryHandler
 {
-    /** @var Skautis */
-    private $skautis;
-
     /** @var ParticipantService */
     private $service;
 
-    public function __construct(Skautis $skautis, IParticipantServiceFactory $participantFactory)
+    public function __construct(IParticipantServiceFactory $participantFactory)
     {
-        $this->skautis = $skautis;
         $this->service = $participantFactory->create('General');
     }
 

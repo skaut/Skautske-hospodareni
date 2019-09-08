@@ -16,9 +16,6 @@
     <exclude-pattern>tests/_*</exclude-pattern>
 
     <rule ref="Doctrine">
-        <!-- We use reconfigured rule (see below) -->
-        <exclude name="SlevomatCodingStandard.Classes.UnusedPrivateElements"/>
-
         <!-- Only because of ParticipantTrait that should be gone in future -->
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousTraitNaming"/>
 
@@ -28,7 +25,13 @@
     <rule ref="SlevomatCodingStandard.Variables.UnusedVariable"/>
     <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements">
         <properties>
-            <property name="alwaysUsedPropertiesAnnotations" value="@ORM\Column"/>
+            <property name="alwaysUsedPropertiesAnnotations" type="array">
+                <element value="@ORM\Column"/>
+                <element value="@ORM\ManyToOne"/>
+                <element value="@ORM\OneToMany"/>
+                <element value="@ORM\ManyToMany"/>
+                <element value="@ORM\Embedded"/>
+            </property>
         </properties>
     </rule>
 </ruleset>

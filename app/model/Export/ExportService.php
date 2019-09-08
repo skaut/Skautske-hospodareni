@@ -16,7 +16,6 @@ use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
-use Model\Cashbook\Repositories\IStaticCategoryRepository;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit;
@@ -48,9 +47,6 @@ class ExportService
     /** @var UnitService */
     private $units;
 
-    /** @var IStaticCategoryRepository */
-    private $categories;
-
     /** @var TemplateFactory */
     private $templateFactory;
 
@@ -62,13 +58,11 @@ class ExportService
 
     public function __construct(
         UnitService $units,
-        IStaticCategoryRepository $categories,
         TemplateFactory $templateFactory,
         IEventRepository $events,
         QueryBus $queryBus
     ) {
         $this->units           = $units;
-        $this->categories      = $categories;
         $this->templateFactory = $templateFactory;
         $this->events          = $events;
         $this->queryBus        = $queryBus;

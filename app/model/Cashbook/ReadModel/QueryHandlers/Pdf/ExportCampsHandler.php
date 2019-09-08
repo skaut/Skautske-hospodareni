@@ -16,7 +16,6 @@ use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\ReadModel\Queries\CampQuery;
 use Model\Event\SkautisCampId;
 use Model\Excel\Range;
-use Model\IParticipantServiceFactory;
 use Model\Unit\Repositories\IUnitRepository;
 use Model\Unit\UnitNotFound;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -27,9 +26,6 @@ use function implode;
 
 class ExportCampsHandler
 {
-    /** @var IParticipantServiceFactory */
-    private $participantServiceFactory;
-
     /** @var QueryBus */
     private $queryBus;
 
