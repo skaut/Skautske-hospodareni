@@ -21,7 +21,6 @@ use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
-use Model\IEventServiceFactory;
 use Model\IParticipantServiceFactory;
 use Model\Services\TemplateFactory;
 use Model\Unit\Unit;
@@ -40,9 +39,6 @@ class ExportChitsHandler
     /** @var QueryBus */
     private $queryBus;
 
-    /** @var IEventServiceFactory */
-    private $serviceFactory;
-
     /** @var UnitService */
     private $unitService;
 
@@ -51,14 +47,12 @@ class ExportChitsHandler
 
     public function __construct(
         IParticipantServiceFactory $participantServiceFactory,
-        IEventServiceFactory $serviceFactory,
         QueryBus $queryBus,
         UnitService $unitService,
         TemplateFactory $templateFactory
     ) {
         $this->participantServiceFactory = $participantServiceFactory;
         $this->queryBus                  = $queryBus;
-        $this->serviceFactory            = $serviceFactory;
         $this->unitService               = $unitService;
         $this->templateFactory           = $templateFactory;
     }
