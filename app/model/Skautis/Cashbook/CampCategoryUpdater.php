@@ -38,7 +38,7 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
     }
 
     /**
-     * @param float[] $cashbookTotals
+     * @param array<int, float> $cashbookTotals
      */
     public function updateCategories(CashbookId $cashbookId, array $cashbookTotals) : void
     {

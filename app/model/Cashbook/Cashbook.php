@@ -21,7 +21,6 @@ use Model\Cashbook\Events\ChitWasUpdated;
 use Model\Common\Aggregate;
 use Nette\Utils\Strings;
 use function array_filter;
-use function array_key_exists;
 use function array_map;
 use function assert;
 use function max;
@@ -197,15 +196,6 @@ class Cashbook extends Aggregate
                 $categoryId                     = $item->getCategory()->getId();
                 $totalByCategories[$categoryId] = ($totalByCategories[$categoryId] ?? 0) + $item->getAmount()->toFloat();
             }
-        }
-
-        if (array_key_exists(ICategory::CATEGORY_HPD_ID, $totalByCategories)) {
-            $totalByCategories[ICategory::CATEGORY_PARTICIPANT_INCOME_ID] = ($totalByCategories[ICategory::CATEGORY_PARTICIPANT_INCOME_ID] ?? 0) + $totalByCategories[ICategory::CATEGORY_HPD_ID];
-            unset($totalByCategories[ICategory::CATEGORY_HPD_ID]);
-        }
-        if (array_key_exists(ICategory::CATEGORY_REFUND_ID, $totalByCategories)) {
-            $totalByCategories[ICategory::CATEGORY_PARTICIPANT_INCOME_ID] = ($totalByCategories[ICategory::CATEGORY_PARTICIPANT_INCOME_ID] ?? 0) - $totalByCategories[ICategory::CATEGORY_REFUND_ID];
-            unset($totalByCategories[ICategory::CATEGORY_REFUND_ID]);
         }
 
         return $totalByCategories;

@@ -96,9 +96,9 @@ class CashbookTest extends Unit
         Helpers::addChitToCashbook($cashbook, null, null, ICategory::CATEGORY_PARTICIPANT_INCOME_ID, '200');
         Helpers::addChitToCashbook($cashbook, null, null, ICategory::CATEGORY_PARTICIPANT_INCOME_ID, '300');
         Helpers::addChitToCashbook($cashbook, null, null, ICategory::CATEGORY_REFUND_ID, '50');
-        Helpers::addChitToCashbook($cashbook, null, null, ICategory::CATEGORY_HPD_ID, '100');
+        Helpers::addChitToCashbook($cashbook, null, null, ICategory::CATEGORY_REFUND_ID, '50');
 
-        $expectedTotals = [ICategory::CATEGORY_PARTICIPANT_INCOME_ID => 550.0];
+        $expectedTotals = [ICategory::CATEGORY_PARTICIPANT_INCOME_ID => 500.0, ICategory::CATEGORY_REFUND_ID => 100.0];
 
         $totals = $cashbook->getCategoryTotals();
 

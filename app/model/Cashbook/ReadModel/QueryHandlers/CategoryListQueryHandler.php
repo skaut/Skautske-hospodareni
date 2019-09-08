@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use Model\Cashbook\CashbookNotFound;
+use Model\Cashbook\ReadModel\CategoryTotalsCalculator;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\Repositories\CategoryRepository;
 use Model\Cashbook\Repositories\ICashbookRepository;
@@ -36,14 +37,16 @@ class CategoryListQueryHandler
 
         $categories = $this->categories->findForCashbook($cashbook->getId(), $cashbook->getType());
 
-        $categoryTotals = $cashbook->getCategoryTotals();
+        $calculator = new CategoryTotalsCalculator();
+
+        $totalByCategories = $calculator->calculate($cashbook);
 
         $categoriesById = [];
         foreach ($categories as $category) {
             $categoriesById[$category->getId()] = new Category(
                 $category->getId(),
                 $category->getName(),
-                MoneyFactory::fromFloat($categoryTotals[$category->getId()] ?? 0),
+                MoneyFactory::fromFloat($totalByCategories[$category->getId()] ?? 0),
                 $category->getShortcut(),
                 $category->getOperationType(),
                 $category->isVirtual()
