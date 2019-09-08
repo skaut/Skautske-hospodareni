@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers\Pdf;
 
+use Assert\Assertion;
 use eGen\MessageBus\Bus\QueryBus;
-use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\Pdf\ExportCamps;
 use Model\Cashbook\ReadModel\SpreadsheetFactory;
@@ -20,16 +19,11 @@ use Model\Excel\Range;
 use Model\IParticipantServiceFactory;
 use Model\Unit\Repositories\IUnitRepository;
 use Model\Unit\UnitNotFound;
-use Nette\Utils\ArrayHash;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use function array_map;
 use function assert;
-use function count;
-use function date;
 use function implode;
-use function strtotime;
-use function ucfirst;
 
 class ExportCampsHandler
 {
@@ -49,50 +43,42 @@ class ExportCampsHandler
     private $sheetChitsGenerator;
 
     public function __construct(
-        IParticipantServiceFactory $participantServiceFactory,
         QueryBus $queryBus,
         SpreadsheetFactory $spreadsheetFactory,
         IUnitRepository $units,
         SheetChitsGenerator $sheetChitsGenerator
     ) {
-        $this->participantServiceFactory = $participantServiceFactory;
-        $this->queryBus                  = $queryBus;
-        $this->spreadsheetFactory        = $spreadsheetFactory;
-        $this->unitRepository            = $units;
-        $this->sheetChitsGenerator       = $sheetChitsGenerator;
+        $this->queryBus            = $queryBus;
+        $this->spreadsheetFactory  = $spreadsheetFactory;
+        $this->unitRepository      = $units;
+        $this->sheetChitsGenerator = $sheetChitsGenerator;
     }
 
     public function __invoke(ExportCamps $query) : Spreadsheet
     {
-        $participantService = $this->participantServiceFactory->create(ucfirst(ObjectType::CAMP));
-        $spreadsheet        = $this->spreadsheetFactory->create();
+        $spreadsheet = $this->spreadsheetFactory->create();
 
-        $data = [];
-        foreach ($query->getCampIds() as $aid) {
-            $campId     = new SkautisCampId($aid);
-            $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery($campId));
-            assert($cashbookId instanceof CashbookId);
-            $camp = $this->queryBus->handle(new CampQuery($campId));
-            assert($camp instanceof Camp);
-            $data[$aid]                    = ArrayHash::from($camp);
-            $data[$aid]['cashbookId']      = $cashbookId;
-            $data[$aid]['troops']          = implode(', ', $this->getCampTroopNames($camp));
-            $data[$aid]['func']            = $this->queryBus->handle(new CampFunctions(new SkautisCampId($aid)));
-            $participants                  = $participantService->getAll($aid);
-            $data[$aid]['participantsCnt'] = count($participants);
-            $data[$aid]['personDays']      = $participantService->getPersonsDays($participants);
-        }
+        $camps = array_map(
+            function (int $campId) : Camp {
+                return $this->queryBus->handle(new CampQuery(new SkautisCampId($campId)));
+            },
+            $query->getCampIds()
+        );
+
         $sheetCamps = $spreadsheet->setActiveSheetIndex(0);
-        $this->setSheetCamps($sheetCamps, $data);
+        $this->setSheetCamps($sheetCamps, $camps);
         $spreadsheet->createSheet(1);
 
         ($this->sheetChitsGenerator)(
-            $spreadsheet->setActiveSheetIndex(1),
+            $spreadsheet->createSheet(1),
             array_map(
-                function (ArrayHash $row) : ExportedCashbook {
-                    return new ExportedCashbook($row['cashbookId'], $row->DisplayName);
+                function (Camp $camp) : ExportedCashbook {
+                    return new ExportedCashbook(
+                        $this->queryBus->handle(new CampCashbookIdQuery($camp->getId())),
+                        $camp->getDisplayName()
+                    );
                 },
-                $data
+                $camps
             )
         );
 
@@ -100,9 +86,9 @@ class ExportCampsHandler
     }
 
     /**
-     * @param ArrayHash[] $data
+     * @param Camp[] $camps
      */
-    protected function setSheetCamps(Worksheet $sheet, array $data) : void
+    protected function setSheetCamps(Worksheet $sheet, array $camps) : void
     {
         $sheet->setCellValue('A1', 'Pořadatel')
             ->setCellValue('B1', 'Název akce')
@@ -120,28 +106,31 @@ class ExportCampsHandler
             ->setCellValue('N1', 'Dětodnů');
 
         $rowCnt = 2;
-        foreach ($data as $row) {
-            $functions = $row->func;
-
+        foreach ($camps as $camp) {
+            $functions = $this->queryBus->handle(new CampFunctions($camp->getId()));
             assert($functions instanceof Functions);
 
             $leader     = $functions->getLeader() !== null ? $functions->getLeader()->getName() : null;
             $accountant = $functions->getAccountant() !== null ? $functions->getAccountant()->getName() : null;
 
-            $sheet->setCellValue('A' . $rowCnt, $row->Unit)
-                ->setCellValue('B' . $rowCnt, $row->DisplayName)
-                ->setCellValue('C' . $rowCnt, $row->troops)
-                ->setCellValue('D' . $rowCnt, $row->Location)
+            $statistics = $camp->getParticipantStatistics();
+
+            Assertion::notNull($statistics);
+
+            $sheet->setCellValue('A' . $rowCnt, $camp->getUnitName())
+                ->setCellValue('B' . $rowCnt, $camp->getDisplayName())
+                ->setCellValue('C' . $rowCnt, implode(', ', $this->getCampTroopNames($camp)))
+                ->setCellValue('D' . $rowCnt, $camp->getLocation())
                 ->setCellValue('E' . $rowCnt, $leader)
                 ->setCellValue('F' . $rowCnt, $accountant)
-                ->setCellValue('G' . $rowCnt, date('d.m.Y', strtotime($row->StartDate)))
-                ->setCellValue('H' . $rowCnt, date('d.m.Y', strtotime($row->EndDate)))
-                ->setCellValue('I' . $rowCnt, $row->TotalDays)
-                ->setCellValue('J' . $rowCnt, $row->RealCount)
-                ->setCellValue('K' . $rowCnt, $row->RealAdult)
-                ->setCellValue('L' . $rowCnt, $row->RealChild)
-                ->setCellValue('M' . $rowCnt, $row->RealPersonDays)
-                ->setCellValue('N' . $rowCnt, $row->RealChildDays);
+                ->setCellValue('G' . $rowCnt, $camp->getStartDate()->format('d.m.Y'))
+                ->setCellValue('H' . $rowCnt, $camp->getEndDate()->format('d.m.Y'))
+                ->setCellValue('I' . $rowCnt, $camp->getTotalDays())
+                ->setCellValue('J' . $rowCnt, $statistics->getRealCount())
+                ->setCellValue('K' . $rowCnt, $statistics->getRealAdult())
+                ->setCellValue('L' . $rowCnt, $statistics->getRealChild())
+                ->setCellValue('M' . $rowCnt, $statistics->getRealPersonDays())
+                ->setCellValue('N' . $rowCnt, $statistics->getRealChildDays());
             $rowCnt++;
         }
 
