@@ -42,7 +42,7 @@ class EventService extends MutableBaseService
             $camp = $this->queryBus->handle(new CampQuery(new SkautisCampId($id)));
             assert($camp instanceof Camp);
 
-            return $camp->getUnitName();
+            return $camp->getDisplayName();
         }
 
         if ($this->type === ObjectType::UNIT) {
