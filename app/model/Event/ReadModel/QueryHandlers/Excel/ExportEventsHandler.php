@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook\ReadModel\QueryHandlers\Pdf;
+namespace Model\Event\ReadModel\QueryHandlers\Excel;
 
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
-use Model\Cashbook\ReadModel\Queries\Pdf\ExportEvents;
+use Model\Cashbook\ReadModel\QueryHandlers\Pdf\SheetChitsGenerator;
 use Model\Cashbook\ReadModel\SpreadsheetFactory;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Event\ExportedCashbook;
@@ -19,6 +19,7 @@ use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\ReadModel\Queries\EventQuery;
 use Model\Event\ReadModel\Queries\EventScopes;
 use Model\Event\ReadModel\Queries\EventTypes;
+use Model\Event\ReadModel\Queries\Excel\ExportEvents;
 use Model\Event\SkautisEventId;
 use Model\Excel\Range;
 use Model\IParticipantServiceFactory;
@@ -32,7 +33,7 @@ use function assert;
 use function count;
 use function ucfirst;
 
-class ExportEventsHandler
+final class ExportEventsHandler
 {
     /** @var IParticipantServiceFactory */
     private $participantServiceFactory;

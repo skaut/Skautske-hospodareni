@@ -2,18 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook\ReadModel\QueryHandlers\Pdf;
+namespace Model\Event\ReadModel\QueryHandlers\Excel;
 
 use Assert\Assertion;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
-use Model\Cashbook\ReadModel\Queries\Pdf\ExportCamps;
+use Model\Cashbook\ReadModel\QueryHandlers\Pdf\SheetChitsGenerator;
 use Model\Cashbook\ReadModel\SpreadsheetFactory;
 use Model\DTO\Event\ExportedCashbook;
 use Model\Event\Camp;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\ReadModel\Queries\CampQuery;
+use Model\Event\ReadModel\Queries\Excel\ExportCamps;
 use Model\Event\SkautisCampId;
 use Model\Excel\Range;
 use Model\Unit\Repositories\IUnitRepository;
@@ -24,7 +25,7 @@ use function array_map;
 use function assert;
 use function implode;
 
-class ExportCampsHandler
+final class ExportCampsHandler
 {
     /** @var QueryBus */
     private $queryBus;
