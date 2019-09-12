@@ -151,12 +151,11 @@ class EventPresenter extends BasePresenter
 
     public function actionPrintAll(int $aid) : void
     {
-        $cashbookId  = $this->getCashbookId($aid);
-        $displayName = $this->eventService->getEvent()->getDisplayName($aid);
+        $cashbookId = $this->getCashbookId($aid);
 
         $template  = $this->exportService->getEventReport($aid, $this->eventService) . $this->exportService->getNewPage();
         $template .= $this->exportService->getParticipants($aid, $this->eventService) . $this->exportService->getNewPage();
-        $template .= $this->exportService->getCashbook($cashbookId, $displayName, PaymentMethod::CASH()) . $this->exportService->getNewPage();
+        $template .= $this->exportService->getCashbook($cashbookId, PaymentMethod::CASH()) . $this->exportService->getNewPage();
         $template .= $this->queryBus->handle(ExportChits::all($cashbookId));
 
         $this->pdf->render($template, 'all.pdf');

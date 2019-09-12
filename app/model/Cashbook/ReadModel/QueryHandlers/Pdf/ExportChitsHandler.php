@@ -21,11 +21,9 @@ use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
-use Model\IEventServiceFactory;
 use Model\IParticipantServiceFactory;
 use Model\Services\TemplateFactory;
 use Model\Unit\Unit;
-use Model\UnitService;
 use function array_filter;
 use function assert;
 use function count;
@@ -40,26 +38,16 @@ class ExportChitsHandler
     /** @var QueryBus */
     private $queryBus;
 
-    /** @var IEventServiceFactory */
-    private $serviceFactory;
-
-    /** @var UnitService */
-    private $unitService;
-
     /** @var TemplateFactory */
     private $templateFactory;
 
     public function __construct(
         IParticipantServiceFactory $participantServiceFactory,
-        IEventServiceFactory $serviceFactory,
         QueryBus $queryBus,
-        UnitService $unitService,
         TemplateFactory $templateFactory
     ) {
         $this->participantServiceFactory = $participantServiceFactory;
         $this->queryBus                  = $queryBus;
-        $this->serviceFactory            = $serviceFactory;
-        $this->unitService               = $unitService;
         $this->templateFactory           = $templateFactory;
     }
 

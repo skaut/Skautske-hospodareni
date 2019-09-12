@@ -11,13 +11,13 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ObjectType;
+use Model\Cashbook\ReadModel\Queries\CashbookDisplayNameQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\Pdf\ExportChits;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
-use Model\EventEntity;
 use Model\ExcelService;
 use Model\ExportService;
 use Model\Services\PdfRenderer;
@@ -116,10 +116,9 @@ class CashbookExportPresenter extends BasePresenter
      */
     public function actionPrintCashbook(string $cashbookId, string $paymentMethod) : void
     {
-        $cashbookName = $this->getEventEntity()->getEvent()->getDisplayName($this->getSkautisId());
-        $method       = PaymentMethod::get($paymentMethod);
+        $method = PaymentMethod::get($paymentMethod);
 
-        $template = $this->exportService->getCashbook(CashbookId::fromString($cashbookId), $cashbookName, $method);
+        $template = $this->exportService->getCashbook(CashbookId::fromString($cashbookId), $method);
         $filename = $method->equals(PaymentMethod::CASH()) ? 'pokladni-kniha' : 'bankovni-transakce';
         $this->pdf->render($template, $filename . '.pdf');
 
@@ -131,8 +130,7 @@ class CashbookExportPresenter extends BasePresenter
      */
     public function actionExportCashbook(string $cashbookId, string $paymentMethod) : void
     {
-        $skautisId   = $this->getSkautisId();
-        $displayName = $this->getEventEntity()->getEvent()->getDisplayName($skautisId);
+        $cashbookId = CashbookId::fromString($cashbookId);
 
         if (! PaymentMethod::isValidValue($paymentMethod)) {
             throw new BadRequestException(
@@ -141,11 +139,17 @@ class CashbookExportPresenter extends BasePresenter
             );
         }
 
-        $spreadsheet = $this->excelService->getCashbook(
-            CashbookId::fromString($cashbookId),
-            PaymentMethod::get($paymentMethod)
+        $spreadsheet = $this->excelService->getCashbook($cashbookId, PaymentMethod::get($paymentMethod));
+        $this->sendResponse(
+            new ExcelResponse(
+                sprintf(
+                    '%s-pokladni-kniha-%s',
+                    Strings::webalize($this->queryBus->handle(new CashbookDisplayNameQuery($cashbookId))),
+                    date('Y_n_j')
+                ),
+                $spreadsheet
+            )
         );
-        $this->sendResponse(new ExcelResponse(Strings::webalize($displayName) . '-pokladni-kniha-' . date('Y_n_j'), $spreadsheet));
     }
 
     /**
@@ -209,19 +213,6 @@ class CashbookExportPresenter extends BasePresenter
         return $this->queryBus->handle(
             new SkautisIdQuery(CashbookId::fromString($this->cashbookId))
         );
-    }
-
-    private function getEventEntity() : EventEntity
-    {
-        $type = $this->getSkautisType()->getValue();
-
-        if ($type === ObjectType::UNIT) {
-            $serviceName = 'unitAccountService';
-        } else {
-            $serviceName = ($type === ObjectType::EVENT ? 'event' : $type) . 'Service';
-        }
-
-        return $this->context->getService($serviceName);
     }
 
     /**

@@ -103,8 +103,6 @@ final class GroupForm extends BaseControl
         $form = new BaseForm();
         $form->useBootstrap4();
 
-        $unitId = $this->unitId->toInt();
-
         $form->addGroup('Základní údaje');
         $form->addText('name', 'Název')
             ->setAttribute('class', 'form-control')

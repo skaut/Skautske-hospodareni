@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Model\Cashbook\ReadModel\QueryHandlers\Pdf;
 
 use eGen\MessageBus\Bus\QueryBus;
+use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
+use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
+use Model\DTO\Event\ExportedCashbook;
 use Model\Excel\Range;
-use Nette\Utils\ArrayHash;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use function assert;
 
@@ -24,9 +26,9 @@ class SheetChitsGenerator
     }
 
     /**
-     * @param ArrayHash[] $data
+     * @param ExportedCashbook[] $cashbooks
      */
-    public function __invoke(Worksheet $sheet, array $data) : void
+    public function __invoke(Worksheet $sheet, array $cashbooks) : void
     {
         $sheet->setCellValue('A1', 'Název akce')
             ->setCellValue('B1', 'Ze dne')
@@ -38,21 +40,21 @@ class SheetChitsGenerator
             ->setCellValue('H1', 'Výdej');
 
         $rowCnt = 2;
-        foreach ($data as $event) {
-            $cashbookId = $event['cashbookId'];
+        foreach ($cashbooks as $item) {
+            $cashbookId = $item->getCashbookId();
             $cashbook   = $this->queryBus->handle(new CashbookQuery($cashbookId));
 
             assert($cashbook instanceof Cashbook);
 
             $prefix = $cashbook->getChitNumberPrefix();
 
-            foreach ($event['chits'] as $chit) {
+            foreach ($this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId)) as $chit) {
                 assert($chit instanceof Chit);
 
                 $isIncome = $chit->isIncome();
                 $amount   = $chit->getAmount()->toFloat();
 
-                $sheet->setCellValue('A' . $rowCnt, $event['event']->getDisplayName())
+                $sheet->setCellValue('A' . $rowCnt, $item->getDisplayName())
                     ->setCellValue('B' . $rowCnt, $chit->getDate()->format('d.m.Y'))
                     ->setCellValue('C' . $rowCnt, $prefix . (string) $chit->getNumber())
                     ->setCellValue('D' . $rowCnt, $chit->getPurpose())

@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook\ReadModel\Queries\Pdf;
+namespace Model\Event\ReadModel\Queries\Excel;
+
+use Model\Event\ReadModel\QueryHandlers\Excel\ExportCampsHandler;
 
 /**
  * @see ExportCampsHandler

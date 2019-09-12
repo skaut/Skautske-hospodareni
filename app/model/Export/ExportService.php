@@ -10,12 +10,12 @@ use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\CashbookDisplayNameQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookOfficialUnitQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
-use Model\Cashbook\Repositories\IStaticCategoryRepository;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit;
@@ -37,6 +37,7 @@ use function array_values;
 use function assert;
 use function count;
 use function in_array;
+use function sprintf;
 
 class ExportService
 {
@@ -45,9 +46,6 @@ class ExportService
 
     /** @var UnitService */
     private $units;
-
-    /** @var IStaticCategoryRepository */
-    private $categories;
 
     /** @var TemplateFactory */
     private $templateFactory;
@@ -60,13 +58,11 @@ class ExportService
 
     public function __construct(
         UnitService $units,
-        IStaticCategoryRepository $categories,
         TemplateFactory $templateFactory,
         IEventRepository $events,
         QueryBus $queryBus
     ) {
         $this->units           = $units;
-        $this->categories      = $categories;
         $this->templateFactory = $templateFactory;
         $this->events          = $events;
         $this->queryBus        = $queryBus;
@@ -103,16 +99,19 @@ class ExportService
     /**
      * vrací pokladní knihu
      */
-    public function getCashbook(CashbookId $cashbookId, string $cashbookName, PaymentMethod $paymentMethod) : string
+    public function getCashbook(CashbookId $cashbookId, PaymentMethod $paymentMethod) : string
     {
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
-
         assert($cashbook instanceof Cashbook);
 
-        $cashbook->getType()->getSkautisObjectType();
+        $header = sprintf(
+            '%s - %s',
+            $paymentMethod->equals(PaymentMethod::CASH()) ? 'Pokladní kniha' : 'Bankovní transakce',
+            $this->queryBus->handle(new CashbookDisplayNameQuery($cashbookId)),
+        );
 
         return $this->templateFactory->create(__DIR__ . '/templates/cashbook.latte', [
-            'header'  => ($paymentMethod->equals(PaymentMethod::CASH()) ? 'Pokladní kniha' : 'Bankovní transakce') . ' - ' . $cashbookName,
+            'header'  => $header,
             'prefix'  => $cashbook->getChitNumberPrefix(),
             'chits'   => $this->queryBus->handle(ChitListQuery::withMethod($paymentMethod, $cashbookId)),
             'unit'    => $this->queryBus->handle(new CashbookOfficialUnitQuery($cashbookId)),
