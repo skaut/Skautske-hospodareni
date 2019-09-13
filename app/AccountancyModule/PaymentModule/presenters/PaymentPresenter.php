@@ -73,7 +73,7 @@ class PaymentPresenter extends BasePresenter
     private $removeGroupDialogFactory;
 
     private const NO_MAILER_MESSAGE       = 'Nemáte nastavený mail pro odesílání u skupiny';
-    private const NO_BANK_ACCOUNT_MESSAGE = 'Vaše jednotka nemá ve Skautisu nastavený bankovní účet';
+    private const NO_BANK_ACCOUNT_MESSAGE = 'Skupina nemá nastavený bankovní účet';
 
     public function __construct(
         PaymentService $model,
