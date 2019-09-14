@@ -10,6 +10,7 @@ use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Model\Event\Camp;
+use Model\Event\Exception\CampNotFound;
 use Model\Event\ReadModel\Queries\CampQuery;
 use Model\Event\SkautisCampId;
 use Model\EventEntity;
@@ -36,8 +37,13 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
             return;
         }
         $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($this->aid)));
-        $cashbook   = $this->queryBus->handle(new CashbookQuery($cashbookId));
-        assert($cashbook instanceof Cashbook);
+        try {
+            $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
+            assert($cashbook instanceof Cashbook);
+        } catch (CampNotFound $exc) {
+            $this->flashMessage('Nemáte oprávnění načíst tábor nebo tábor neexsituje.', 'danger');
+            $this->redirect('Default:');
+        }
 
         $this->isEditable = $this->authorizator->isAllowed(CampResource::UPDATE_REAL, $this->aid);
         $this->template->setParameters([
