@@ -10,6 +10,7 @@ use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Model\Event\Event;
+use Model\Event\EventNotFound;
 use Model\Event\ReadModel\Queries\EventQuery;
 use Model\Event\SkautisEventId;
 use Model\EventEntity;
@@ -40,8 +41,14 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         $cashbook   = $this->queryBus->handle(new CashbookQuery($cashbookId));
         assert($cashbook instanceof Cashbook);
 
-        $this->event = $this->queryBus->handle(new EventQuery(new SkautisEventId($this->aid)));
-        assert($this->event instanceof Event);
+        try {
+            $this->event = $this->queryBus->handle(new EventQuery(new SkautisEventId($this->aid)));
+            assert($this->event instanceof Event);
+        } catch (EventNotFound $exc) {
+            $this->flashMessage('Nemáte oprávnění načíst akci nebo akce neexsituje.', 'danger');
+            $this->redirect('Default:');
+        }
+
         $this->template->setParameters([
             'event' => $this->event,
             'isEditable'=> $this->isEditable = $this->authorizator->isAllowed(ResourceEvent::UPDATE, $this->aid),
