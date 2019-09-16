@@ -6,12 +6,9 @@ namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use Codeception\Test\Unit;
 use Mockery as m;
-use Model\Cashbook\CampCategory;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\ICategory;
-use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\CategoryTotalsCalculator;
-use Model\Utils\MoneyFactory;
 use function array_key_exists;
 
 final class CategoryTotalsCalculatorTest extends Unit
@@ -19,13 +16,6 @@ final class CategoryTotalsCalculatorTest extends Unit
     public function testEventCalculation() : void
     {
         $cashbook   = $this->mockCashbook(Cashbook\CashbookType::get(Cashbook\CashbookType::EVENT));
-        $categories = [
-            new CampCategory(2, Operation::INCOME(), 'prispevek', MoneyFactory::zero(), null),
-            new CampCategory(3, Operation::EXPENSE(), 'neco', MoneyFactory::zero(), null),
-            new CampCategory(ICategory::CATEGORY_HPD_ID, Operation::INCOME(), 'hpd', MoneyFactory::zero(), null),
-            new CampCategory(ICategory::CATEGORY_REFUND_ID, Operation::INCOME(), 'vratky', MoneyFactory::zero(), null),
-            new CampCategory(ICategory::CATEGORY_PARTICIPANT_INCOME_ID, Operation::INCOME(), 'prijmy od ucastniku', MoneyFactory::zero(), null),
-        ];
         $calculator = new CategoryTotalsCalculator();
         $totals     = $calculator->calculate($cashbook);
 
@@ -38,13 +28,6 @@ final class CategoryTotalsCalculatorTest extends Unit
     public function testCampCalculation() : void
     {
         $cashbook   = $this->mockCashbook(Cashbook\CashbookType::get(Cashbook\CashbookType::CAMP));
-        $categories = [
-            new CampCategory(2, Operation::INCOME(), 'prispevek', MoneyFactory::zero(), null),
-            new CampCategory(3, Operation::EXPENSE(), 'neco', MoneyFactory::zero(), null),
-            new CampCategory(ICategory::CATEGORY_HPD_ID, Operation::INCOME(), 'hpd', MoneyFactory::zero(), null),
-            new CampCategory(ICategory::CATEGORY_REFUND_ID, Operation::INCOME(), 'vratky', MoneyFactory::zero(), null),
-            new CampCategory(ICategory::CATEGORY_PARTICIPANT_INCOME_ID, Operation::INCOME(), 'prijmy od ucastniku', MoneyFactory::zero(), null),
-        ];
         $calculator = new CategoryTotalsCalculator();
         $totals     = $calculator->calculate($cashbook);
 

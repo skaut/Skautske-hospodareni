@@ -9,25 +9,20 @@ use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\InconsistentCampCategoryTotalsQuery;
 use Model\Cashbook\Repositories\ICampCategoryRepository;
-use Model\Cashbook\Repositories\ICashbookRepository;
 use Model\DTO\Cashbook\Category;
 use Model\Utils\MoneyFactory;
 use function assert;
 
 class InconsistentCampCategoryTotalsQueryQueryHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
-
     /** @var ICampCategoryRepository */
     private $campCategories;
 
     /** @var QueryBus */
     private $queryBus;
 
-    public function __construct(ICashbookRepository $cashbooks, ICampCategoryRepository $campCategories, QueryBus $queryBus)
+    public function __construct(ICampCategoryRepository $campCategories, QueryBus $queryBus)
     {
-        $this->cashbooks      = $cashbooks;
         $this->campCategories = $campCategories;
         $this->queryBus       = $queryBus;
     }
