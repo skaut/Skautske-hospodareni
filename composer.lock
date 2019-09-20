@@ -6493,16 +6493,16 @@
         },
         {
             "name": "warhuhn/chronos-doctrine",
-            "version": "1.0.2",
+            "version": "1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/warhuhn/chronos-doctrine.git",
-                "reference": "4ff06b5a8d957f38e1500680486304b602608e3a"
+                "reference": "4bafc7ee46249a8ae96088380b41c79687dfade3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/warhuhn/chronos-doctrine/zipball/4ff06b5a8d957f38e1500680486304b602608e3a",
-                "reference": "4ff06b5a8d957f38e1500680486304b602608e3a",
+                "url": "https://api.github.com/repos/warhuhn/chronos-doctrine/zipball/4bafc7ee46249a8ae96088380b41c79687dfade3",
+                "reference": "4bafc7ee46249a8ae96088380b41c79687dfade3",
                 "shasum": ""
             },
             "require": {
@@ -6531,7 +6531,7 @@
                 }
             ],
             "description": "Doctrine DBAL Types to use Chronos' Immutable DateTime Objects",
-            "time": "2017-08-05T13:32:59+00:00"
+            "time": "2019-03-31T17:05:33+00:00"
         },
         {
             "name": "zendframework/zend-code",
