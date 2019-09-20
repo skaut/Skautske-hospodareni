@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\Components;
 
+use Ublaboo\DataGrid\Column\Action;
 use Ublaboo\DataGrid\Filter\FilterSelect;
 use function array_map;
 use function array_reverse;
@@ -14,6 +15,12 @@ use function Safe\array_combine;
 final class DataGrid extends \Ublaboo\DataGrid\DataGrid
 {
     public const OPTION_ALL = 'all';
+
+    public function __construct()
+    {
+        parent::__construct();
+        Action::$data_confirm_attribute_name = 'data-confirm';
+    }
 
     /**
      * Forces datagrid to filter and sort data source and returns inner data
