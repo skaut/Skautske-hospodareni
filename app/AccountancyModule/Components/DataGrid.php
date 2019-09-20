@@ -16,6 +16,9 @@ final class DataGrid extends \Ublaboo\DataGrid\DataGrid
 {
     public const OPTION_ALL = 'all';
 
+    public const SORT_ASC  = 'ASC';
+    public const SORT_DESC = 'DESC';
+
     public function __construct()
     {
         parent::__construct();
