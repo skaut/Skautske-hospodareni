@@ -5,13 +5,11 @@
 {block outer-filters}
     <div class="d-md-flex justify-content-between">
         <div class="">
-            <form n:name="$form">
                 <div class="form-inline auto-submit">
                     {ifset #filters}
                         {include #filters}
                     {/ifset}
                 </div>
-            </form>
         </div>
         <div class="text-right" n:snippet="global-actions">
             {ifset #global-actions}
