@@ -9,6 +9,7 @@ use DateTimeInterface;
 use InvalidArgumentException;
 use Model\Payment\Payment\State;
 use Money\Money;
+use Nette\Utils\Html;
 use RuntimeException;
 use function array_reverse;
 use function array_shift;
@@ -36,8 +37,10 @@ abstract class AccountancyHelpers
      * loader na všechny filtry
      *
      * @param int|float|string|DateTimeInterface|Money|State|null $value
+     *
+     * @return Html|string
      */
-    public static function loader(string $filter, $value) : string
+    public static function loader(string $filter, $value)
     {
         $method = [self::class, $filter];
 
@@ -124,19 +127,18 @@ abstract class AccountancyHelpers
         return $labels[$state][$plural ? 1 : 0] ?? $state;
     }
 
-    /**
-     * @param string|State $s
-     */
-    public static function paymentStateLabel($s) : string
+    public static function paymentStateLabel(State $s) : Html
     {
-        if ($s instanceof State) {
-            $s = self::paymentState($s->getValue(), false);
-        }
-        $long  = $s;
-        $short = mb_substr($s, 0, 5) . '.';
+        $classes = [
+            State::PREPARING => 'info',
+            State::COMPLETED => 'success',
+            State::SENT => 'primary',
+            State::CANCELED => 'danger',
+        ];
 
-        return '<span class=\'d-xs-none d-sm-none d-lg-inline-block\'>' . $long . '</span>' .
-            '<span class=\'d-md-none d-lg-none d-xs-inline-block\'>' . $short . '</span>';
+        return Html::el('span')
+            ->setText(self::paymentState($s->toString(), false))
+            ->setAttribute('class', 'badge badge-' . ($classes[$s->toString()] ?? 'secondary'));
     }
 
     /**
