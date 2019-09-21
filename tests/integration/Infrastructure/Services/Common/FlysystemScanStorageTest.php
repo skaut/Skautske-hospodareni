@@ -12,6 +12,7 @@ use Model\Common\FileNotFound;
 use Model\Common\FilePath;
 use Nette\Utils\FileSystem as FileSystemUtil;
 use Nette\Utils\Image;
+use function explode;
 use function uniqid;
 
 final class FlysystemScanStorageTest extends Unit
@@ -76,8 +77,9 @@ final class FlysystemScanStorageTest extends Unit
 
         $file = $this->storage->get($this->getFilePath($filename));
 
+        $newFilename = explode('_', $file->getFileName(), 2)[1];
         $this->assertSame(FilePath::generatePath(self::FILE_PATH_PREFIX, $filename), $file->getPath());
-        $this->assertSame($filename, $file->getFileName());
+        $this->assertSame($filename, $newFilename);
         $this->assertSame($contents, (string) $file->getContents());
     }
 

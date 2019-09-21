@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Model\Common;
 
 use Cake\Chronos\Date;
+use function sprintf;
+use function uniqid;
 
 final class FilePath
 {
@@ -33,7 +35,7 @@ final class FilePath
 
     public static function generatePath(string $prefix, string $originalFileName) : string
     {
-        return $prefix . '/' . Date::today()->format('Y/m') . '/' . $originalFileName;
+        return sprintf('%s/%s/%d_%s', $prefix, Date::today()->format('Y/m'), uniqid('', true), $originalFileName);
     }
 
     public function equals(self $that) : bool
