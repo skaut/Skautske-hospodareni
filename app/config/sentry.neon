@@ -9,6 +9,9 @@ services:
           - %sentry.dsn%
           - [Model\Infrastructure\Log\UserContextEventProcessor()]
           - %sentry.releaseHash%
+      setup:
+          # Hub needs to be set as current, because RequestIntegration only works with current Hub
+          - Sentry\State\Hub::setCurrent()
 
 decorator:
     Monolog\Logger:
