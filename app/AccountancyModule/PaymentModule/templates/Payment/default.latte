@@ -150,8 +150,8 @@
             <td>{$l->state|paymentStateLabel|noescape}</td>
             <td class="r text-nowrap">
             {if !$l->closed && $isEditable}
-                <a n:href="edit $l->id"
-                        class="btn btn-sm btn-secondary"
+                <a n:href="paymentDialog:open! $l->id"
+                        class="btn btn-sm btn-secondary ajax"
                         title="Upravit platbu"><i class="far fa-edit"></i></a>
                 <a n:href="send! $l->id" n:class="btn, btn-sm, btn-primary, 'ui--sendEmail-'.$iterator->counter, $l->email === NULL ? disabled" title="{$l->email === NULL ? 'Není uveden email' : 'Odeslat email o platbě'}"><i class="far fa-envelope-open"></i></a>
                 <a n:href="complete! $l->id" class="btn btn-sm btn-success" title="Zaplaceno"><i class="fas fa-check"></i></a>
