@@ -52,6 +52,9 @@
                                     target="_blank"
                                     class="btn btn-xs btn-info hidden-xs hidden-sm"><i
                                         class="glyphicon glyphicon-print"></i></a>
+                            <a class="ajax btn btn-xs btn-info hidden-xs hidden-sm" n:href="chitScan:open! $chit->id" title="Skeny dokladů">
+                                <i class="fa fa-folder-open"></i>
+                            </a>
                             <a n:if="$isEditable && ! $chit->locked" n:href="edit! $chit->id"
                                     class="ajax btn btn-xs btn-primary ui--editChit"><i class="glyphicon glyphicon-edit"></i></a>
 
@@ -112,6 +115,7 @@
             {control moveChitsDialog}
         {/if}
         {control invertChitDialog}
+        {control chitScan}
     </div>
     <div class="panel-body info" n:if="count($chits) === 0">
         <div class="text-center">Zatím zde nemáte žádné doklady.</div>

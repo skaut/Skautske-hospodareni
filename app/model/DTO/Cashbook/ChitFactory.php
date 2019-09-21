@@ -32,7 +32,8 @@ final class ChitFactory
             $chit->getPaymentMethod(),
             $items,
             $chit->getOperation(),
-            $chit->getAmount()
+            $chit->getAmount(),
+            $chit->getScans()
         );
     }
 }

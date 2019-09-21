@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\Components\Cashbook;
 
 use App\AccountancyModule\Components\BaseControl;
+use App\AccountancyModule\Factories\Cashbook\IChitScanControlFactory;
 use App\AccountancyModule\Factories\Cashbook\IInvertChitDialogFactory;
 use App\AccountancyModule\Factories\Cashbook\IMoveChitsDialogFactory;
 use App\Forms\BaseForm;
@@ -64,6 +65,9 @@ class ChitListControl extends BaseControl
     /** @var IInvertChitDialogFactory */
     private $invertChitDialogFactory;
 
+    /** @var IChitScanControlFactory */
+    private $chitScanFactory;
+
     public function __construct(
         CashbookId $cashbookId,
         bool $isEditable,
@@ -71,7 +75,8 @@ class ChitListControl extends BaseControl
         CommandBus $commandBus,
         QueryBus $queryBus,
         IMoveChitsDialogFactory $moveChitsDialogFactory,
-        IInvertChitDialogFactory $invertChitDialogFactory
+        IInvertChitDialogFactory $invertChitDialogFactory,
+        IChitScanControlFactory $chitScanControlFactory
     ) {
         parent::__construct();
         $this->cashbookId              = $cashbookId;
@@ -81,6 +86,7 @@ class ChitListControl extends BaseControl
         $this->queryBus                = $queryBus;
         $this->moveChitsDialogFactory  = $moveChitsDialogFactory;
         $this->invertChitDialogFactory = $invertChitDialogFactory;
+        $this->chitScanFactory         = $chitScanControlFactory;
     }
 
     public function render() : void
@@ -202,6 +208,11 @@ class ChitListControl extends BaseControl
     protected function createComponentInvertChitDialog() : InvertChitDialog
     {
         return $this->invertChitDialogFactory->create($this->cashbookId);
+    }
+
+    protected function createComponentChitScan() : ChitScanControl
+    {
+        return $this->chitScanFactory->create($this->cashbookId, $this->isEditable);
     }
 
     /**
