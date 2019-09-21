@@ -70,7 +70,7 @@ $I->see('Dokončena');
 $I->wantTo('send payment email');
 
 $I->amGoingTo('send third payment');
-$I->click('//a[contains(@class, \'ui--sendEmail\')][1]');
+$I->click('//a[contains(@class, \'ui--sendEmail\')]');
 $I->waitForText('Odeslána');
 
 $page->seeNumberOfPaymentsWithState('Připravena', 1);

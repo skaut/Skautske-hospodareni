@@ -19,21 +19,24 @@ class Payment
 
     public function fillName(string $name) : void
     {
-        $this->tester->fillField('(//table//input)[1]', $name);
+        $this->tester->fillField('Název', $name);
     }
 
     public function fillEmail(string $name) : void
     {
-        $this->tester->fillField('(//table//input)[2]', $name);
+        $this->tester->fillField('Email', $name);
     }
 
     public function fillAmount($amount) : void
     {
-        $this->tester->fillField('(//table//input)[3]', $amount);
+        $this->tester->fillField('Částka', $amount);
     }
 
     public function addPayment(string $name, ?string $email, float $amount) : void
     {
+        $this->tester->click('Přidat platbu');
+
+        $this->tester->waitForElementVisible('.modal-dialog');
         $this->fillName($name);
 
         if ($email !== null) {
@@ -53,7 +56,6 @@ class Payment
     public function selectNextWorkdayForDueDate() : void
     {
         $I = $this->tester;
-        $I->click('(//table//input)[6]');
 
         $dayOfWeek = date('N');
 
@@ -61,11 +63,15 @@ class Payment
 
         $date = (new \DateTime())->modify(sprintf('+ %d days', $daysToNextWorkday))->format('d.m. Y');
 
-        $I->fillField('(//table//input)[6]', $date);
+        $I->fillField('Splatnost', $date);
+        $I->click('.modal-dialog'); // Close date picker
     }
 
     public function submitPayment() : void
     {
-        $this->tester->click('Přidat platbu');
+        $this->tester->click('Přidat platbu', '.modal-dialog');
+        $this->tester->waitForElementNotVisible('.modal-dialog');
+        $this->tester->wait(3);
+        $this->tester->waitForElementClickable('(//a[text()=\'Přidat platbu\'])');
     }
 }
