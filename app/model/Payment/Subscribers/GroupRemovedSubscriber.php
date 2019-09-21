@@ -17,7 +17,7 @@ final class GroupRemovedSubscriber
         $this->payments = $payments;
     }
 
-    public function groupWasRemoved(GroupWasRemoved $event) : void
+    public function __invoke(GroupWasRemoved $event) : void
     {
         foreach ($this->payments->findByGroup($event->getGroupId()) as $payment) {
             $this->payments->remove($payment);

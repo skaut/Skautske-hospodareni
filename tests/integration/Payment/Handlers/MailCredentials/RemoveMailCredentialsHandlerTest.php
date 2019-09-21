@@ -6,6 +6,7 @@ namespace Model\Payment\Handlers\MailCredentials;
 
 use CommandHandlerTest;
 use Model\Payment\Commands\RemoveMailCredentials;
+use Model\Payment\Group;
 use Model\Payment\MailCredentials;
 
 class RemoveMailCredentialsHandlerTest extends CommandHandlerTest
@@ -23,12 +24,14 @@ class RemoveMailCredentialsHandlerTest extends CommandHandlerTest
     {
         return [
             MailCredentials::class,
+            Group::class,
         ];
     }
 
     public function testRemoveExistingCredentials() : void
     {
         $this->tester->haveInDatabase('pa_smtp', [
+            'id' => 1,
             'unitId' => 666,
             'host' => 'smtp-hospodareni.loc',
             'secure' => '',

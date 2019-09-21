@@ -143,6 +143,20 @@ final class GroupRepository implements IGroupRepository
             ->getResult();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public function findBySmtp(int $smtpId) : array
+    {
+        return $this->em->createQueryBuilder()
+            ->select('g')
+            ->from(Group::class, 'g')
+            ->where('g.smtpId = :smtpId')
+            ->setParameter('smtpId', $smtpId)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function save(Group $group) : void
     {
         $this->em->persist($group);
