@@ -1,10 +1,12 @@
 {block #title}Logy akce - {$event->getDisplayName()}{/block}
 
 {block #content}
-{include ../ActionMenu.latte}
-<h2>{$event->getDisplayName()}</h2>
+{include ../header.latte}
 
-<h3>Logy akce</h3>
-{foreach $logs as $log}
-    {$log->date->format("Y/m/d H:i:s")} {$log->getDescription()} <br />
-{/foreach}
+<h3>Poslední změny provedené v rámci akce</h3>
+<ul class="list-group" n:inner-foreach="$logs as $log">
+    <li class="list-group-item d-flex align-items-center">
+        <span class="text-muted small mr-2">{$log->date->format("d.m.Y H:i")}</span>
+        {$log->getDescription()}
+    </li>
+</ul>
