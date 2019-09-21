@@ -1,87 +1,152 @@
 {block #title}{$event->getDisplayName()} - základní informace{/block}
 
     {block #content}
-{include ../ActionMenu.latte}
-<h2>{$event->getDisplayName()}</h2>
-<div class="row event-dashboard">
-    <div class="col-md-3" n:if="$accessDetailEvent">
-        <div class="panel panel-default">
-            <div class="panel-heading"><h4>Základní údaje</h4></div>
-            <table class="table table-bordered table-condensed  panel-body">
-                <tr>
-                    <th>Pořadatel</th>
-                    <td>{$event->getUnitName()}</td>
-                </tr>
-                <tr n:ifset="$event->UnitEducative">
-                    <th>Oddíl/Družina</th>
-                    <td>{$event->UnitEducative}</td>
-                </tr>
-                <tr>
-                    <th>Datum</th>
-                    <td>{[$event->getStartDate(), $event->getEndDate()]|dateRange}</td>
-                </tr>
-                <tr>
-                    <th>Místo</th>
-                    <td>{$event->getLocation()}</td>
-                </tr>
-                <tr class="hidden-xs hidden-sm">
-                    <th>Typ</th>
-                    <td>{$eventTypes[$event->getTypeId()]}</td>
-                </tr>
-                <tr class="hidden-xs hidden-sm">
-                    <th>Rozsah</th>
-                    <td>{$eventScopes[$event->getScopeId()]}</td>
-                </tr>
-                <tr>
-                    <th>Stav</th>
-                    <td {if $event->getState() == closed}title="Uzavřel: {$event->getPersonClosed()} dne: {$event->getDateClosed()|date:"j.n.Y"}" {/if}>{$event->getState()|eventStateLabel|noescape}</td>
-                </tr>
-                <tr>
-                    <th>Prefix <i class="glyphicon glyphicon-question-sign" rel="tooltip" data-original-title='Prefix lze upravit na kartě Evidence plateb.'></i></th>
-                    <td>{$prefix}</td>
-                </tr>
-            </table>
+
+<h1 class="mt-5">{$event->getDisplayName()}</h1>
+<nav class="navbar navbar-expand-sm navbar-light bg-light mt-2 mb-4" n:ifcontent>
+    <ul class="navbar-nav mr-auto">
+        <li n:class="nav-item, $presenter->isLinkCurrent('Event:') ? active">
+            <a class="nav-link" n:href="Event: $event->getId()->toInt()"><i class="fas fa-home"></i> Základní
+                údaje</a>
+        </li>
+        <li n:class="nav-item, $presenterName === 'Participant' ? active">
+            <a class="nav-link" n:href="Participant: $event->getId()->toInt()"><i class="fas fa-users"></i>
+                Seznam účastníků</a>
+        </li>
+        <li n:class="nav-item, $presenterName === 'Cashbook' ? active">
+            <a class="nav-link" n:href="Cashbook: $event->getId()->toInt()"><i
+                        class="fas fa-clipboard-list"></i> Evidence plateb</a>
+        </li>
+    </ul>
+    <ul class="navbar-nav">
+        <li n:class="nav-item, $presenterName === 'Privileges' ? active">
+            <a class="nav-link" n:href="Privileges: $event->getId()->toInt()"><i class="fas fa-shield-alt"></i>
+                Oprávnění</a>
+        </li>
+        <li n:class="nav-item, $presenter->isLinkCurrent('Event:logs') ? active">
+            <a class="nav-link" n:href="Event:logs $event->getId()->toInt()"><i class="fas fa-history"></i>
+                Poslední změny</a>
+        </li>
+    </ul>
+</nav>
+
+<div class="row d-flex align-items-center">
+    <div class="col-md-7">
+        {var $state = $event->getState()}
+        <span n:tag-if="$state == 'closed'"
+            data-toggle="tooltip"
+            title="Uzavřel {$event->getPersonClosed()} dne {$event->getDateClosed()|date:"j.n.Y"}"
+        >{$state|eventStateLabel|noescape}</span>
+        <span class="ml-2 mr-2">|</span>
+        {$event->getUnitName()}
+        <span class="ml-2 mr-2">|</span>
+        <i class="fas fa-calendar"></i>
+        {$event->getStartDate()|date:"j.n.Y"} - {$event->getEndDate()|date:"j.n.Y"}
+        <span class="ml-2 mr-2">|</span>
+        <i class="fas fa-map-marker-alt"></i>
+        {if trim($event->getLocation()) === ''}<i class="text-muted">Nevyplněno</i>{else}{$event->getLocation()}{/if}
+    </div>
+    <div class="col-md-5 text-right">
+        <div class="btn-group mr-3">
+            <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+                <i class="fas fa-print"></i> Exportovat
+            </button>
+            <div class="dropdown-menu">
+                <a n:href="Event:report $aid" target="_blank" class="dropdown-item">Záverečná zpráva</a>
+                <div class="dropdown-divider"></div>
+                <a n:href="Event:printAll $aid"
+                        target="_blank"
+                        class="dropdown-item">
+                    Vše
+                    <span class="small d-block text-muted">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        U větších akcí může trvat generování až několik minut.
+                    </span>
+                </a>
+            </div>
+        </div>
+        <a n:if="$accessCloseEvent && $event->getState() == 'draft'" n:href="close! $aid"
+                class="btn btn-light"><i class="fas fa-lock"></i> Uzavřít</a>
+        <a n:if="$accessOpenEvent && $event->getState() == 'closed'"  n:href="open! $aid"
+                class="btn btn-dark"><i class="fas fa-lock-open"></i> Znovu otevřít</a>
+        <a n:if="$accessEditBase" href="#editBasicInfo" class="btn btn-light"
+                                  data-toggle="modal"><i class="far fa-edit"></i> Upravit údaje</a>
+    </div>
+</div>
+
+<div n:if="$accessEditBase" class="modal myModal fade" id="editBasicInfo" role="dialog"
+                            aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"> &times; </span>
+                </button>
+                <h3 class="modal-title" id="myModalLabel">Upravit akci</h3>
+            </div>
+            <div class="modal-body">
+                {control formEdit}
+            </div>
         </div>
     </div>
+</div>
 
-    <div class='col-md-3'>
-        <div class="panel panel-default">
-            <div class="panel-heading"><h4>Statistiky</h4></div>
-            {if $event->isStatisticAutoComputed()}
-                <table class="table table-bordered table-condensed panel-body">
-                    <tr>
-                        <th>Počet dnů</th>
-                        <td>{$event->getTotalDays()}</td>
-                    </tr>
-                    <tr>
-                        <th>Počet účastníků</th>
-                        <td>{$event->getRealCount()}</td>
-                    </tr>
-                    <tr>
-                        <th>Osobodnů/dětodnů</th>
-                        <td>{$event->getRealPersonDays()}/{$event->getRealChildDays()}</td>
-                    </tr>
-                    <tr>
-                        <th colspan='2'>Účastníci podle věku</th>
-                    </tr>
-                    <tr n:foreach="$statistic as $item">
-                        <th>{$item->getLabel()}</th>
-                        <td>{$item->getCount()}</td>
-                    </tr>
-                </table>
-            {else}
-                <div class="panel-body">
-                    <a n:href='activateStatistic!' class='btn btn-primary'>Aktivovat dopočítávání statistik</a>
-                </div>
-            {/if}
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card">
+            <h5 class="card-header">Souhrn</h5>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex">
+                    <div class="font-weight-bold mr-auto">Výsledek hospodaření</div>
+                    <div>{$finalRealBalance|price} Kč</div>
+                </li>
+                <li class="list-group-item d-flex">
+                    <div class="font-weight-bold mr-auto">Prefix čísel dokladů</div>
+                    <div>{$prefix}</div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <h5 class="card-header">Účastníci</h5>
+                {if $event->isStatisticAutocomputed()}
+                    <div class="card-body">
+                        <table class="table table-sm border-bottom">
+                            <tr>
+                                <th class="border-top-0">Počet dnů</th>
+                                <td class="border-top-0">{$event->getTotalDays()}</td>
+                            </tr>
+                            <tr>
+                                <th>Počet účastníků</th>
+                                <td>{$event->getRealCount()}</td>
+                            </tr>
+                            <tr>
+                                <th>Osobodnů/dětodnů</th>
+                                <td>{$event->getRealPersonDays()}/{$event->getRealChildDays()}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2" class="pt-4">Účastníci podle věku</th>
+                            </tr>
+                            <tr n:foreach="$statistic as $item">
+                                <th>{$item->getLabel()}</th>
+                                <td>{$item->getCount()}</td>
+                            </tr>
+                        </table>
+                    </div>
+                {else}
+                    <div class="card-body text-center">
+                        <a n:href="activateStatistic!" class="btn btn-primary">Aktivovat dopočítávání statistik</a>
+                    </div>
+                {/if}
         </div>
 
-        <div class="panel panel-default" n:if="$pragueParticipants !== NULL">
-            <div class="panel-heading"><h4>Pražští účastníci</h4></div>
-            <table class="table table-bordered table-condensed panel-body">
+        <div class="card mt-4" n:if="$pragueParticipants !== NULL">
+            <h5 class="card-header">Pražští účastníci</h5>
+            <table class="table card-body">
                 <tr>
-                    <th>Dotovatelná?</th>
-                    <td>{if $pragueParticipants->isSupportable($event->getTotalDays())}Ano{else}Ne{/if}</td>
+                    <th class="border-top-0">Dotovatelná?</th>
+                    <td class="border-top-0">{if $pragueParticipants->isSupportable($event->getTotalDays())}Ano{else}Ne{/if}</td>
                 </tr>
                 <tr>
                     <th>Osobodnů pod 26</th>
@@ -102,36 +167,11 @@
             </table>
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-4">
     {control functions}
     </div>
 </div>
-
-<div class="row">
-    <div class="col-sm-12">
-        <a n:if="$accessEditBase" href="#editBasicInfo" class="btn btn-primary btn-sm hidden-xs hidden-sm" data-toggle="modal"><i class="glyphicon glyphicon-pencil"></i> Upravit údaje</a>
-        <a n:if="$accessCloseEvent && $event->getState() == 'draft'" n:href="close! $aid" class="btn btn-success btn-sm"><i class="glyphicon glyphicon-folder-close"></i> Uzavřít akci</a>
-        <a n:if="$accessOpenEvent && $event->getState() == 'closed'"  n:href="open! $aid"  class="btn btn-warning btn-sm"><i class="glyphicon glyphicon-refresh"></i> Znovu otevřít</a>
-        <a n:href="Event:report $aid" target="_blank" class="btn btn-info btn-sm"><i class="glyphicon glyphicon-print"></i> Záverečná zpráva</a>
-        <a n:href="Event:printAll $aid" target="_blank" class="btn btn-info btn-sm hidden-xs hidden-sm"><i class="glyphicon glyphicon-print"></i> Vytisknout vše</a>
-
-        <div n:if="$accessEditBase" class="modal myModal fade hidden-xs hidden-sm" id="editBasicInfo" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"> &times; </span></button>
-                        <h3 class="modal-title" id="myModalLabel">Upravit akci</h3>
-                    </div>
-                    <div class="modal-body">
-                        {control formEdit}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div n:if="$accessEditBase" class="modal myModal fade hidden-xs hidden-sm" id="editBasicInfo" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div n:if="$accessEditBase" class="modal myModal fade" id="editBasicInfo" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
