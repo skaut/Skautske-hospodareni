@@ -9,6 +9,7 @@ import {initializeAutoSubmit} from "./autoSubmitForm";
 import {initializeLinksThatRequireConfirmation} from "./confirmDialogs";
 import {initializeCheckAllCheckboxes} from "./checkAllChekboxes";
 import {DataGridExtension} from "./DataGridExtension";
+import {initializeDatePicker} from "./datePicker";
 
 export default function (): void {
     naja.registerExtension(ProgressBar);
@@ -19,6 +20,7 @@ export default function (): void {
         initializeAutoSubmit(naja, snippet, '.auto-submit');
         initializeLinksThatRequireConfirmation(snippet, 'data-confirm');
         initializeCheckAllCheckboxes(snippet, 'data-dependent-checkboxes');
+        snippet.querySelectorAll<HTMLElement>('.date').forEach(initializeDatePicker);
     });
 
     naja.registerExtension(DataGridExtension);
