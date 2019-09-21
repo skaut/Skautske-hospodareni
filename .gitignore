@@ -3,7 +3,6 @@
 !/app/config/config.ci.local.neon
 !/app/config/config.production.local.neon
 !/app/config/config.test.local.neon
-!/vendor/others
 /vendor
 node_modules
 /source

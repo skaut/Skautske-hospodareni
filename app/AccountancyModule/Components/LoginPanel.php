@@ -38,7 +38,8 @@ final class LoginPanel extends BaseControl
 
         assert($identity instanceof Identity);
 
-        $identity->access = $this->userService->getAccessArrays($this->unitService);
+        $identity->access      = $this->userService->getAccessArrays($this->unitService);
+        $identity->currentRole = $this->userService->getActualRole();
 
         $this->redirect('this');
     }

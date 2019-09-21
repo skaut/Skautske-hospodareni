@@ -78,7 +78,7 @@ class UserService extends BaseService
     {
         foreach ($this->getAllSkautisRoles() as $r) {
             if ($r->ID === $this->getRoleId()) {
-                return new SkautisRole($r->Key ?? '', $r->ID_Unit);
+                return new SkautisRole($r->Key ?? '', $r->DisplayName, $r->ID_Unit, $r->Unit);
             }
         }
 

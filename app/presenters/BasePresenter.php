@@ -153,9 +153,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
             throw new Nette\Application\BadRequestException();
         }
 
-        $this->userService->updateSkautISRole($roleId);
-        $this->updateUserAccess();
-        $this->redirect('this');
+        $this['loginPanel']->handleChangeRole($roleId);
     }
 
     protected function createComponentCss() : WebLoader\CssLoader

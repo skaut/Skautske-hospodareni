@@ -19,23 +19,40 @@ class SkautisRole
     /** @var string */
     private $key;
 
+    /** @var string */
+    private $name;
+
     /** @var int */
     private $unitId;
 
-    public function __construct(string $key, int $unitId)
-    {
-        $this->key    = $key;
-        $this->unitId = $unitId;
+    /** @var string */
+    private $unitName;
+
+    public function __construct(
+        string $key,
+        string $name,
+        int $unitId,
+        string $unitName
+    ) {
+        $this->key      = $key;
+        $this->name     = $name;
+        $this->unitId   = $unitId;
+        $this->unitName = $unitName;
     }
 
     public function getName() : string
     {
-        return $this->key;
+        return $this->name;
     }
 
     public function getUnitId() : int
     {
         return $this->unitId;
+    }
+
+    public function getUnitName() : string
+    {
+        return $this->unitName;
     }
 
     public function isLeader() : bool

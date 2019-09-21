@@ -15,6 +15,7 @@ parameters:
     sendEmail: true
     sentry:
         dsn: "__CONFIG_SENTRY_DSN__"
+        releaseHash: "__CONFIG_RELEASE_HASH__"
 
 services:
     # Passes notices and warning to Monolog

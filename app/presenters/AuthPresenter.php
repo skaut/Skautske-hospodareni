@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App;
 
 use Model\AuthService;
-use Sinacek\SkautisAuthenticator;
+use Nette\Security\Identity;
 use Skautis\Wsdl\AuthenticationException;
 use function strlen;
 use function substr;
@@ -60,12 +60,14 @@ class AuthPresenter extends BasePresenter
                 throw new AuthenticationException('Nemáte platné přihlášení do skautisu');
             }
 
-            $this->getUser()->setExpiration('+ 29 minutes'); // nastavíme expiraci
-            $this->getUser()->setAuthenticator(new SkautisAuthenticator());
-            $this->getUser()->login([
-                'user' => $this->userService->getUserDetail(),
-                'roles' => $this->userService->getAllSkautisRoles(),
-            ]);
+            $user = $this->getUser();
+
+            $user->setExpiration('+ 29 minutes'); // nastavíme expiraci
+            $user->login(new Identity(
+                $this->userService->getUserDetail()->ID,
+                $this->userService->getAllSkautisRoles(),
+                ['currentRole' => $this->userService->getActualRole()],
+            ));
 
             $this->updateUserAccess();
 

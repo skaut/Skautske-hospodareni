@@ -40,6 +40,7 @@
                     <token key="CONFIG_DATABASE_PASSWORD" value="${env.CONFIG_DATABASE_PASSWORD}"/>
                     <token key="CONFIG_DATABASE_NAME" value="${env.CONFIG_DATABASE_NAME}"/>
                     <token key="CONFIG_SENTRY_DSN" value="${env.CONFIG_SENTRY_DSN}"/>
+                    <token key="CONFIG_RELEASE_HASH" value="${build.hash}"/>
 
                 </replacetokens>
                 <expandproperties/>
