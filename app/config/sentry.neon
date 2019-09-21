@@ -1,12 +1,14 @@
 parameters:
     sentry:
         dsn: null
+        releaseHash: dev
 
 services:
     - factory: Model\Infrastructure\Log\Sentry\HubFactory::create
       arguments:
           - %sentry.dsn%
           - [Model\Infrastructure\Log\UserContextEventProcessor()]
+          - %sentry.releaseHash%
 
 decorator:
     Monolog\Logger:
