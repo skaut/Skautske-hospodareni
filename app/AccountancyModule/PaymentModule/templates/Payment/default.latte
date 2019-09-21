@@ -36,68 +36,65 @@
     </div>
 </div>
 <div class="mb-3">
-    <div class="mt-4" n:inner-if="$isEditable">
-        {if $group->state =='open'}
-            <div class="dropdown d-inline-block">
-                <button class="btn btn-success dropdown-toggle" type="button" id="addPersons"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                    <i class="fas fa-user-plus"></i> Přidat osoby <span class="caret"></span>
-                </button>
-                <div class="dropdown-menu" aria-labelledby="addPersons">
-                    <a n:if="$group->type === 'camp'"
-                            n:href="Camp:massAdd $group->id" class="dropdown-item">… z účastníků</a>
+    <div class="mt-4" n:inner-if="$isEditable && $group->state === 'open'">
+        <div class="dropdown d-inline-block">
+            <button class="btn btn-success dropdown-toggle" type="button" id="addPersons"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                <i class="fas fa-user-plus"></i> Přidat osoby <span class="caret"></span>
+            </button>
+            <div class="dropdown-menu" aria-labelledby="addPersons">
+                <a n:if="$group->type === 'camp'"
+                        n:href="Camp:massAdd $group->id" class="dropdown-item">… z účastníků</a>
 
-                    <a n:if="$group->type === 'event'"
-                            n:href="Event:massAdd $group->id" class="dropdown-item">… z účastníků akce</a>
+                <a n:if="$group->type === 'event'"
+                        n:href="Event:massAdd $group->id" class="dropdown-item">… z účastníků akce</a>
 
-                    <a n:href="massAdd $group->id" class="dropdown-item">… z členů</a>
+                <a n:href="massAdd $group->id" class="dropdown-item">… z členů</a>
 
-                    <a n:if="$group->type === 'registration'"
-                            n:href="Registration:massAdd $group->id" class="dropdown-item">… z registrace</a>
-                </div>
+                <a n:if="$group->type === 'registration'"
+                        n:href="Registration:massAdd $group->id" class="dropdown-item">… z registrace</a>
             </div>
+        </div>
 
-            {if $group->type === 'registration'}
-                <a n:href="Journal: $group->skautisId" class="btn btn-light"><i class="fas fa-book-reader"></i>
-                    Časopisy</a>
-            {/if}
-
-            <div class="btn-group">
-                <button class="btn btn-light dropdown-toggle" type="button" id="emailsDropd"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                    <i class="far fa-envelope-open"></i> Email <span class="caret"></span>
-                </button>
-                <div class="dropdown-menu" aria-labelledby="emailsDropdown">
-                    <a n:href="sendTest! $group->id" class="dropdown-item">Zaslat testovací email</a>
-                    {if $isGroupSendActive}
-                        <a n:href="sendGroup! $group->id"
-                                class="dropdown-item"
-                                onclick="return confirm('Opravdu chcete rozeslat emaily?')">Rozeslat emaily</a>
-                    {else}
-                        <a href="#" class="disabled dropdown-item"
-                           title="Nejsou žádné platby s vyplněným emailem k odeslání"><s>Rozeslat emaily</s></a>
-                    {/if}
-                </div>
-            </div>
-            {control pairButton:light}
-            <a n:href="Repayment: $group->id" class="btn btn-light">
-                <i class="fas fa-long-arrow-alt-left"></i>
-                Vratky
-            </a>
-            {var $attrs = $nextVS === null
-                        ? [
-                            'data-toggle' => 'tooltip',
-                            'data-placement' => 'bottom',
-                            'title' => 'Pro dogenerování VS je třeba nejdříve vyplňit VS k alespoň k jedné platbě.<br>'
-                                        . ' Další budou podle něj dogenerovány jako +1.'
-                        ]
-                        : []
-            }
-            <span n:attr="$attrs">
-                <a n:href="generateVS!" n:class="$nextVS === null ? disabled, btn, btn-light">Dogenerovat VS</a>
-            </span>
+        {if $group->type === 'registration'}
+            <a n:href="Journal: $group->skautisId" class="btn btn-light"><i class="fas fa-book-reader"></i>
+                Časopisy</a>
         {/if}
 
+        <div class="btn-group">
+            <button class="btn btn-light dropdown-toggle" type="button" id="emailsDropd"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                <i class="far fa-envelope-open"></i> Email <span class="caret"></span>
+            </button>
+            <div class="dropdown-menu" aria-labelledby="emailsDropdown">
+                <a n:href="sendTest! $group->id" class="dropdown-item">Zaslat testovací email</a>
+                {if $isGroupSendActive}
+                    <a n:href="sendGroup! $group->id"
+                            class="dropdown-item"
+                            onclick="return confirm('Opravdu chcete rozeslat emaily?')">Rozeslat emaily</a>
+                {else}
+                    <a href="#" class="disabled dropdown-item"
+                       title="Nejsou žádné platby s vyplněným emailem k odeslání"><s>Rozeslat emaily</s></a>
+                {/if}
+            </div>
+        </div>
+        {control pairButton:light}
+        <a n:href="Repayment: $group->id" class="btn btn-light">
+            <i class="fas fa-long-arrow-alt-left"></i>
+            Vratky
+        </a>
+        {var $attrs = $nextVS === null
+                    ? [
+                        'data-toggle' => 'tooltip',
+                        'data-placement' => 'bottom',
+                        'title' => 'Pro dogenerování VS je třeba nejdříve vyplňit VS k alespoň k jedné platbě.<br>'
+                                    . ' Další budou podle něj dogenerovány jako +1.'
+                    ]
+                    : []
+        }
+        <span n:attr="$attrs">
+            <a n:href="generateVS!" n:class="$nextVS === null ? disabled, btn, btn-light">Dogenerovat VS</a>
+        </span>
     </div>
 </div>
 
