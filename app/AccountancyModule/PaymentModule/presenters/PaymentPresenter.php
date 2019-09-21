@@ -7,10 +7,12 @@ namespace App\AccountancyModule\PaymentModule;
 use App\AccountancyModule\PaymentModule\Components\GroupUnitControl;
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Components\PairButton;
+use App\AccountancyModule\PaymentModule\Components\PaymentDialog;
 use App\AccountancyModule\PaymentModule\Components\RemoveGroupDialog;
 use App\AccountancyModule\PaymentModule\Factories\IGroupUnitControlFactory;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use App\AccountancyModule\PaymentModule\Factories\IPairButtonFactory;
+use App\AccountancyModule\PaymentModule\Factories\IPaymentDialogFactory;
 use App\AccountancyModule\PaymentModule\Factories\IRemoveGroupDialogFactory;
 use App\Forms\BaseForm;
 use DateTimeImmutable;
@@ -72,6 +74,9 @@ class PaymentPresenter extends BasePresenter
     /** @var IRemoveGroupDialogFactory */
     private $removeGroupDialogFactory;
 
+    /** @var IPaymentDialogFactory */
+    private $paymentDialogFactory;
+
     private const NO_MAILER_MESSAGE       = 'Nemáte nastavený mail pro odesílání u skupiny';
     private const NO_BANK_ACCOUNT_MESSAGE = 'Vaše jednotka nemá ve Skautisu nastavený bankovní účet';
 
@@ -82,7 +87,8 @@ class PaymentPresenter extends BasePresenter
         IMassAddFormFactory $massAddFormFactory,
         IPairButtonFactory $pairButtonFactory,
         IGroupUnitControlFactory $unitControlFactory,
-        IRemoveGroupDialogFactory $removeGroupDialogFactory
+        IRemoveGroupDialogFactory $removeGroupDialogFactory,
+        IPaymentDialogFactory $paymentDialogFactory
     ) {
         parent::__construct();
         $this->model                    = $model;
@@ -92,6 +98,7 @@ class PaymentPresenter extends BasePresenter
         $this->pairButtonFactory        = $pairButtonFactory;
         $this->unitControlFactory       = $unitControlFactory;
         $this->removeGroupDialogFactory = $removeGroupDialogFactory;
+        $this->paymentDialogFactory     = $paymentDialogFactory;
     }
 
     protected function startup() : void
@@ -363,6 +370,13 @@ class PaymentPresenter extends BasePresenter
     {
         $dialog = $this['removeGroupDialog'];
         $dialog->open();
+    }
+
+    protected function createComponentPaymentDialog() : PaymentDialog
+    {
+        $this->assertCanEditGroup();
+
+        return $this->paymentDialogFactory->create($this->id);
     }
 
     protected function createComponentPaymentForm() : Form
