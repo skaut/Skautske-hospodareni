@@ -107,13 +107,30 @@ trait ParticipantTrait
         $unit = $this->queryBus->handle(new UnitQuery($this->uid ?? $this->unitService->getUnitId()));
         assert($unit instanceof Unit);
 
+        $sortOptions = [
+            'displayName' => 'Jméno',
+            'unitRegistrationNumber' => 'Jednotka',
+            'onAccount' => 'Na účet?',
+            'days' => 'Dnů',
+            'payment' => 'Částka',
+            'repayment' => 'Vratka',
+            'birthday' => 'Věk',
+        ];
+        if (! $this->isAllowRepayment) {
+            unset($sortOptions['repayment']);
+        }
+        if (! $this->isAllowIsAccount) {
+            unset($sortOptions['onAccount']);
+        }
+
         $this->template->setParameters([
             'list'         => $list,
             'participants' => $participants,
             'unit'       => $unit,
             'uparrent'   => $this->queryBus->handle(new UnitQuery($unit->getParentId())),
             'uchildrens' => $this->unitService->getSubunits($unit->getId()),
-            'sort'       => $sort,
+            'sort'       => $sort ?? 'displayName',
+            'sortOptions' => $sortOptions,
             'useRegNums' => $regNums,
         ]);
     }
@@ -123,15 +140,13 @@ trait ParticipantTrait
      */
     protected function sortParticipants(array &$participants, ?string $sort) : void
     {
-        $textItems   = ['regNum', 'onAccount'];
-        $numberItems = ['days', 'payment', 'repayment'];
+        $textItems   = ['unitRegistrationNumber', 'onAccount'];
+        $numberItems = ['days', 'payment', 'repayment', 'birthday'];
         if (count($participants) <= 0) {
             return;
         }
 
-        if ($sort === 'regNum') {
-            $sort = 'unitRegistrationNumber';
-        } elseif ($sort === null || ! in_array($sort, array_merge($textItems, $numberItems)) || ! (property_exists($participants[0], $sort) || isset($participants[0]->{$sort}))) {
+        if ($sort === null || ! in_array($sort, array_merge($textItems, $numberItems)) || ! (property_exists($participants[0], $sort) || isset($participants[0]->{$sort}))) {
             $sort = 'displayName'; //default sort
         }
         $isNumeric = in_array($sort, $numberItems);

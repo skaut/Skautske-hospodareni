@@ -72,6 +72,16 @@ $useRegNums bool - zobrazovat číslo jednotky
                     <a n:href="export $aid" target="_blank" class="btn btn-info btn-sm{if empty($participants)} disabled{/if}"><i class="glyphicon glyphicon-print hidden-xs hidden-sm"></i> Seznam účastníků (.pdf)</a>
                     <a n:href="exportExcel $aid" target="_blank" class="btn btn-info btn-sm{if empty($participants)} disabled{/if}"><i class="glyphicon glyphicon-file hidden-xs hidden-sm"></i> Seznam účastníků (.xlsx)</a>
                     <a n:href="this regNums=>!$useRegNums" class='btn btn-primary btn-sm'>{if $useRegNums}Skrýt{else}Zobrazit{/if} jednotku</a>
+                    <span class="dropdown">
+                        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
+                            Řadit dle: {$sortOptions[$sort]}
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li n:foreach="$sortOptions as $id => $label"><a n:href="this sort=>$id">{$label}</a></li>
+                        </ul>
+                    </span>
+
                 {else}
                     <p class="alert alert-info">Nemáte oprávnění zobrazit informace o účastnících!</p>
                 {/if}
@@ -80,12 +90,12 @@ $useRegNums bool - zobrazovat číslo jednotky
             <table id="participants-list" class="table table-striped table-condensed table-bordered">
                 <thead class="onlyWithParticipants">
                     <tr>
-                        <th><a n:tag-if='$sort != NULL' n:href="this sort=>NULL">Příjmení a jméno</a> ({= count($participants)})</th>
-                        <th n:if="$useRegNums"><a n:tag-if='$sort != "regNum"' n:href="this sort=>regNum">Jednotka</a></th>
-                        <th><a n:tag-if='$sort != "days"' n:href="this sort=>days">Dnů</a></th>
-                        <th><a n:tag-if='$sort != "payment"' n:href="this sort=>payment">Částka</a></th>
-                        <th n:if="$isAllowRepayment"><a n:tag-if='$sort != "repayment"' n:href="this sort=>repayment">Vratka</a></th>
-                        <th n:if="$isAllowIsAccount"><a n:tag-if='$sort != "isAccount"' n:href="this sort=>isAccount">Na účet?</a></th>
+                        <th>Příjmení a jméno ({= count($participants)})</th>
+                        <th n:if="$useRegNums">Jednotka</th>
+                        <th>Dnů</th>
+                        <th>Částka</th>
+                        <th n:if="$isAllowRepayment">Vratka</th>
+                        <th n:if="$isAllowIsAccount">Na účet?</th>
                         <th n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete" class="nowrap r">
                             <span class="hidden-xs">
                                 <a n:if="$isAllowParticipantUpdate" href="#massEdit" data-toggle="modal" class="btn btn-primary btn-sm dependentButtonParticipant" title="Upravit vybrané"><i class="glyphicon glyphicon-edit"></i></a>
