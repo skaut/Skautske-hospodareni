@@ -63,7 +63,11 @@ class AuthPresenter extends BasePresenter
             $user = $this->getUser();
 
             $user->setExpiration('+ 29 minutes'); // nastavíme expiraci
-            $user->login(new Identity($this->userService->getUserDetail()->ID, $this->userService->getAllSkautisRoles()));
+            $user->login(new Identity(
+                $this->userService->getUserDetail()->ID,
+                $this->userService->getAllSkautisRoles(),
+                ['currentRole' => $this->userService->getActualRole()],
+            ));
 
             $this->updateUserAccess();
 
