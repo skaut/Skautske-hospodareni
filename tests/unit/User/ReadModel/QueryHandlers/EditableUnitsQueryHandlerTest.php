@@ -34,7 +34,7 @@ final class EditableUnitsQueryHandlerTest extends \Codeception\Test\Unit
      */
     public function test(string $roleName, array $expectedUnitIdsInResult) : void
     {
-        $role = new SkautisRole($roleName, 100);
+        $role = new SkautisRole($roleName, '', 100);
 
         $result =$this->handler->__invoke(new EditableUnitsQuery($role));
 

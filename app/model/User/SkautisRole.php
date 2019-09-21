@@ -19,18 +19,25 @@ class SkautisRole
     /** @var string */
     private $key;
 
+    /** @var string */
+    private $name;
+
     /** @var int */
     private $unitId;
 
-    public function __construct(string $key, int $unitId)
-    {
+    public function __construct(
+        string $key,
+        string $name,
+        int $unitId
+    ) {
         $this->key    = $key;
+        $this->name   = $name;
         $this->unitId = $unitId;
     }
 
     public function getName() : string
     {
-        return $this->key;
+        return $this->name;
     }
 
     public function getUnitId() : int
