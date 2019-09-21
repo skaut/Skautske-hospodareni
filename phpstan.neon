@@ -2,7 +2,6 @@ parameters:
     autoload_directories:
         - %rootDir%/../../../app
         - %rootDir%/../../../tests
-        - %rootDir%/../../../vendor/others
         - %rootDir%/../../../code-quality
 
     ignoreErrors:
