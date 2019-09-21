@@ -1,6 +1,5 @@
 import naja from 'naja';
 // @ts-ignore
-import netteForms from 'nette-forms';
 import {ProgressBar} from './ProgressBar';
 import {ModalExtension} from './ModalExtension';
 import {TravelModule} from "../modules/travel";
@@ -10,6 +9,7 @@ import {initializeLinksThatRequireConfirmation} from "./confirmDialogs";
 import {initializeCheckAllCheckboxes} from "./checkAllChekboxes";
 import {DataGridExtension} from "./DataGridExtension";
 import {initializeDatePicker} from "./datePicker";
+import netteForms from "./netteForms";
 
 export default function (): void {
     naja.registerExtension(ProgressBar);
