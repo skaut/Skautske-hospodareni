@@ -79,7 +79,7 @@ final class RemoveMailCredentialsTest extends IntegrationTest
         $this->groups->save($group);
         $this->assertSame(1, $group->getId());
 
-        $this->handler->__invoke(new RemoveMailCredentials($credentialsId));
+        ($this->handler)(new RemoveMailCredentials($credentialsId));
 
         $this->assertNull($this->groups->find($group->getId())->getSmtpId());
 
