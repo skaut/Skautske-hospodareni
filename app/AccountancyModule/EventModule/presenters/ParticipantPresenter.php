@@ -25,9 +25,6 @@ class ParticipantPresenter extends BasePresenter
     /** @var bool */
     protected $isAllowParticipantDetail;
 
-    /** @var bool */
-    protected $isAllowParticipant;
-
     public function __construct(ExportService $export, ExcelService $excel, PdfRenderer $pdf)
     {
         parent::__construct();
