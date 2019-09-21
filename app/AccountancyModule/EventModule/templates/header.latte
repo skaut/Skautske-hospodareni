@@ -1,0 +1,28 @@
+<h1 class="mt-5">{$event->getDisplayName()}</h1>
+
+<nav class="navbar navbar-expand-sm navbar-light bg-light mt-2 mb-4" n:ifcontent>
+    <ul class="navbar-nav mr-auto">
+        <li n:class="nav-item, $presenter->isLinkCurrent('Event:') ? active">
+            <a class="nav-link" n:href="Event: $event->getId()->toInt()"><i class="fas fa-home"></i> Základní
+                údaje</a>
+        </li>
+        <li n:class="nav-item, $presenterName === 'Participant' ? active">
+            <a class="nav-link" n:href="Participant: $event->getId()->toInt()"><i class="fas fa-users"></i>
+                Seznam účastníků</a>
+        </li>
+        <li n:class="nav-item, $presenterName === 'Cashbook' ? active">
+            <a class="nav-link" n:href="Cashbook: $event->getId()->toInt()"><i
+                        class="fas fa-clipboard-list"></i> Evidence plateb</a>
+        </li>
+    </ul>
+    <ul class="navbar-nav">
+        <li n:class="nav-item, $presenterName === 'Privileges' ? active">
+            <a class="nav-link" n:href="Privileges: $event->getId()->toInt()"><i class="fas fa-shield-alt"></i>
+                Oprávnění</a>
+        </li>
+        <li n:class="nav-item, $presenter->isLinkCurrent('Event:logs') ? active">
+            <a class="nav-link" n:href="Event:logs $event->getId()->toInt()"><i class="fas fa-history"></i>
+                Poslední změny</a>
+        </li>
+    </ul>
+</nav>

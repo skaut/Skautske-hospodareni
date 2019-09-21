@@ -48,11 +48,13 @@ library.add(
 
     // Regular icons
     far.faCalendar,
+    far.faCheckCircle,
     far.faClock,
     far.faEdit,
     far.faEnvelopeOpen,
     far.faFrownOpen,
     far.faListAlt,
+    far.faTimesCircle,
     far.faTrashAlt,
     far.faUser,
 
