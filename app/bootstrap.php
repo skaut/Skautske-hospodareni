@@ -16,7 +16,6 @@ $configurator->setTempDirectory($tempDir);
 
 $configurator->createRobotLoader()
     ->addDirectory(__DIR__)
-    ->addDirectory(__DIR__ . '/../vendor/others')
     ->register(true);
 
 $configurator->addConfig(__DIR__ . '/config/config.neon');
