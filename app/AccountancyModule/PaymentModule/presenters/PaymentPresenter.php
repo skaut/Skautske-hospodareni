@@ -336,7 +336,13 @@ class PaymentPresenter extends BasePresenter
     {
         $this->assertCanEditGroup();
 
-        return $this->paymentDialogFactory->create($this->id);
+        $dialog = $this->paymentDialogFactory->create($this->id);
+
+        $dialog->onSuccess[] = function () : void {
+            $this->redrawControl('grid');
+        };
+
+        return $dialog;
     }
 
     protected function createComponentPaymentList() : PaymentList

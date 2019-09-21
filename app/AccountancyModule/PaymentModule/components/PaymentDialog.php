@@ -15,8 +15,14 @@ use Model\PaymentService;
 use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
 
+/**
+ * @method void onSuccess()
+ */
 final class PaymentDialog extends BaseControl
 {
+    /** @var callable[] */
+    public $onSuccess = [];
+
     /**
      * @persistent
      * @var int
@@ -149,6 +155,7 @@ final class PaymentDialog extends BaseControl
             $this->createPayment($v);
         }
 
+        $this->onSuccess();
         $this->close();
     }
 

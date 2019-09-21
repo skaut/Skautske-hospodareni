@@ -97,7 +97,7 @@
                 <a n:href="generateVS!" n:class="$nextVS === null ? disabled, btn, btn-light">Dogenerovat VS</a>
             </span>
         </div>
-        <a n:href="paymentDialog:open!" class="btn btn-success ajax mt-2 mt-lg-0"><i class="fas fa-plus"></i> Přidat platbu</a>
+        <a n:href="paymentDialog:open!" class="btn btn-success ajax mt-2 mt-lg-0">Přidat platbu</a>
     </div>
 </div>
 
@@ -108,4 +108,6 @@
     {/if}
 {/if}
 
-{control paymentList}
+{snippet grid}
+    {control paymentList}
+{/snippet}
