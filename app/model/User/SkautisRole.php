@@ -25,6 +25,9 @@ class SkautisRole
     /** @var int */
     private $unitId;
 
+    /** @var string */
+    private $unitName;
+
     public function __construct(
         string $key,
         string $name,
