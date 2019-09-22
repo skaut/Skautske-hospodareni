@@ -5,7 +5,7 @@
 {include ../header.latte}
 
 <div class="row d-flex align-items-center">
-    <div class="col-md-7">
+    <div class="col-lg-7 text-center text-lg-left">
         {var $state = $event->getState()}
         <span n:tag-if="$state == 'closed'"
             data-toggle="tooltip"
@@ -15,12 +15,12 @@
         {$event->getUnitName()}
         <span class="ml-2 mr-2">|</span>
         <i class="fas fa-calendar"></i>
-        {$event->getStartDate()|date:"j.n.Y"} - {$event->getEndDate()|date:"j.n.Y"}
+        {[$event->getStartDate(), $event->getEndDate()]|dateRange}
         <span class="ml-2 mr-2">|</span>
         <i class="fas fa-map-marker-alt"></i>
         {if trim($event->getLocation()) === ''}<i class="text-muted">Nevyplněno</i>{else}{$event->getLocation()}{/if}
     </div>
-    <div class="col-md-5 text-right">
+    <div class="col-lg-5 text-lg-right text-center mt-3 mt-lg-0">
         <div class="btn-group mr-3">
             <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
                     aria-expanded="false">
@@ -41,11 +41,11 @@
             </div>
         </div>
         <a n:if="$accessCloseEvent && $event->getState() == 'draft'" n:href="close! $aid"
-                class="btn btn-light"><i class="fas fa-lock"></i> Uzavřít</a>
+                class="btn btn-light"><i class="fas fa-lock d-none d-xl-inline-block"></i> Uzavřít</a>
         <a n:if="$accessOpenEvent && $event->getState() == 'closed'"  n:href="open! $aid"
-                class="btn btn-dark"><i class="fas fa-lock-open"></i> Znovu otevřít</a>
+                class="btn btn-dark"><i class="fas fa-lock-open d-none d-xl-inline-block"></i> Znovu otevřít</a>
         <a n:if="$accessEditBase" href="#editBasicInfo" class="btn btn-light"
-                                  data-toggle="modal"><i class="far fa-edit"></i> Upravit údaje</a>
+                                  data-toggle="modal"><i class="far fa-edit d-none d-xl-inline-block"></i> Upravit údaje</a>
     </div>
 </div>
 
@@ -54,9 +54,9 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Upravit akci</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"> &times; </span>
                 </button>
-                <h3 class="modal-title" id="myModalLabel">Upravit akci</h3>
             </div>
             <div class="modal-body">
                 {control formEdit}
