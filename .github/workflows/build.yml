@@ -1,0 +1,44 @@
+name: build
+
+on: [push, pull_request]
+
+_: &defaults
+    runs-on: ubuntu-18.04
+    container:
+        image: fmasa/lebeda:7.3-ci
+
+jobs:
+    composer:
+        name: "Install PHP dependencies"
+        container:
+            image: fmasa/lebeda:7.3-ci
+        steps:
+            - composer install
+
+    tests-unit:
+        <<: *defaults
+        name: "Run unit tests"
+        needs: composer
+        steps:
+            - phing tests-unit
+
+    tests-integrations:
+        <<: *defaults
+        name: "Run integration tests"
+        needs: composer
+        steps:
+            - phing tests-integration
+
+    static-analysis:
+        <<: *defaults
+        name: "Run PHPStan analysis"
+        needs: composer
+        steps:
+            - phing static-analysis
+
+    coding-standard:
+        <<: *defaults
+        name: "Run PHPStan analysis"
+        needs: composer
+        steps:
+            - phing static-analysis
