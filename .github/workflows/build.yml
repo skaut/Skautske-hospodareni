@@ -38,7 +38,7 @@ jobs:
 
     coding-standard:
         <<: *defaults
-        name: "Run PHPStan analysis"
+        name: "Check coding standard"
         needs: composer
         steps:
-            - phing static-analysis
+            - phing coding-standard
