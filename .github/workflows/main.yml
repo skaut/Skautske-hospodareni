@@ -1,0 +1,107 @@
+name: main
+
+on: [push, pull_request]
+
+jobs:
+    workdir:
+        name: "Prepare working directory"
+        runs-on: ubuntu-18.04
+        container:
+            image: fmasa/lebeda:7.3
+        steps:
+            - uses: actions/checkout@v2
+            # Copy & paste from https://github.com/actions/cache/blob/master/examples.md#php---composer
+            - name: Get Composer Cache Directory
+              id: composer-cache
+              run: |
+                  echo "::set-output name=dir::$(composer config cache-files-dir)"
+            - uses: actions/cache@v1
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-composer-
+            - run: composer install
+            - name: Create tarball
+              run: tar -czpf /tmp/workdir.tar.gz . && mv /tmp/workdir.tar.gz .
+            - name: Upload workdir
+              uses: actions/upload-artifact@v1
+              with:
+                  name: workdir
+                  path: workdir.tar.gz
+
+    tests-unit:
+        name: "Run unit tests"
+        runs-on: ubuntu-18.04
+        container:
+            image: fmasa/lebeda:7.3
+        needs: workdir
+        steps:
+            - name: Download workdir
+              uses: actions/download-artifact@v1
+              with:
+                  name: workdir
+                  path: .
+            - name: Extract workdir
+              run: tar -xzf workdir.tar.gz
+            - run: phing tests-unit
+
+    tests-integrations:
+        name: "Run integration tests"
+        runs-on: ubuntu-18.04
+        container:
+            image: fmasa/lebeda:7.3
+        needs: workdir
+
+        services:
+            smtp-hospodareni.loc:
+                image: tophfr/mailcatcher:0.6.5_3
+                env:
+                    SMTP_HOST: smtp-hospodareni.loc
+            mysql-test:
+                image: mysql:5.7
+                env:
+                    MYSQL_ROOT_PASSWORD: 'root'
+                    MYSQL_DATABASE: hskauting
+                options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+        steps:
+            - name: Download workdir
+              uses: actions/download-artifact@v1
+              with:
+                  name: workdir
+                  path: .
+            - name: Extract workdir
+              run: tar -xzf workdir.tar.gz
+            - run: phing tests-integration
+
+    static-analysis:
+        name: "Run PHPStan analysis"
+        runs-on: ubuntu-18.04
+        container:
+            image: fmasa/lebeda:7.3
+        needs: workdir
+        steps:
+            - name: Download workdir
+              uses: actions/download-artifact@v1
+              with:
+                  name: workdir
+                  path: .
+            - name: Extract workdir
+              run: tar -xzf workdir.tar.gz
+            - run: phing static-analysis
+
+    coding-standard:
+        name: "Check coding standard"
+        runs-on: ubuntu-18.04
+        container:
+            image: fmasa/lebeda:7.3
+        needs: workdir
+        steps:
+            - name: Download workdir
+              uses: actions/download-artifact@v1
+              with:
+                  name: workdir
+                  path: .
+            - name: Extract workdir
+              run: tar -xzf workdir.tar.gz
+            - run: phing static-analysis
