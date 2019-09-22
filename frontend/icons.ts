@@ -42,6 +42,7 @@ library.add(
     fas.faSortDown,
     fas.faStickyNote,
     fas.faTimes,
+    fas.faTools,
     fas.faUserPlus,
     fas.faUniversity,
     fas.faUsers,

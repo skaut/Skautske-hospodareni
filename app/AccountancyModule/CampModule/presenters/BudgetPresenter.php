@@ -29,6 +29,7 @@ class BudgetPresenter extends BasePresenter
 
     public function renderDefault(int $aid) : void
     {
+        $this->setLayout('layout2');
         $campId = new SkautisCampId($aid);
 
         $inconsistentTotals = $this->queryBus->handle(new InconsistentCampCategoryTotalsQuery($campId));

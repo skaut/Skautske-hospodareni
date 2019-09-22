@@ -1,7 +1,7 @@
 {block #title}{$event->getDisplayName()} - rozpočet{/block}
 
 {define #budgetTable $entries, $income}
-    <table n:ifset="$entries" class="table myTable table-bordered table-condensed">
+    <table n:ifset="$entries" class="table myTable table-bordered table-sm">
         <thead>
         <tr>
             <th>Položka</th>
@@ -18,7 +18,7 @@
 {/define}
 
 {define #categoriesTable $categories, $income}
-    <table n:ifset="$categories" class="table myTable table-bordered table-condensed">
+    <table n:ifset="$categories" class="table myTable table-bordered table-sm">
         <thead>
         <tr>
             <th>Položka</th>
@@ -29,45 +29,40 @@
         <tr n:foreach="$categories as $category" n:if="$category->isIncome() === $income && ! $category->isVirtual()">
             {php $balance += (float)$category->total->getAmount()/100}
             <td>{$category->name}</td>
-            <td class="r">
-                <span n:if="array_key_exists($category->id, $toRepair)"
-                        class="btn btn-xs btn-danger"
-                        title="Součet paragonů je {$toRepair[$category->id]}">
-                    <i class="glyphicon glyphicon-ban-circle"></i>
-                </span>
+            <td n:class="text-right,text-nowrap, array_key_exists($category->id, $toRepair) ? bg-danger-lighter"
+                n:attr="[title => array_key_exists($category->id, $toRepair) ? 'Součet paragonů je ' . $toRepair[$category->id]]">
                 {$category->total|price}
             </td>
         </tr>
         <tr>
             <td><b>Celkem</b></td>
-            <td class="r"><b>{$balance|price}</b></td>
+            <td class="text-right text-nowrap"><b>{$balance|price}</b></td>
         </tr>
     </table>
 {/define}
 
 {block #content}
-{include ../ActionMenu.latte}
-<div class="row" n:if="!$isConsistent">
-    <div class="col-sm-12">
-        <h2>{$event->getDisplayName()}</h2>
-    </div>
-</div>
-<div class="row" n:if="!$isConsistent">
-    <div class="col-sm-12">
-        <div class="alert alert-danger">
-            <h4 class="alert-heading">Nekonzistentní data!</h4>
-            <p>
-                Součet paragonů v kategoriích neodpovídá částkám uvedených ve SkautISu.
-                {if $isEditable}
-                    {if $isUpdateStatementAllowed}
-                        Chcete sjednotit částky podle paragonů? <a n:href="convert! $aid" class="btn btn-primary">Ano</a>
-                    {else}
-                        Není nemáte oprávnění pro úpravu částek v rozpočtu uvedených ve skautisu.
-                    {/if}
-                {/if}
+
+{include ../header.latte}
+
+<div class="alert alert-warning mb-5">
+    <h4 class="alert-heading">Nekonzistentní data!</h4>
+    <p class="mb-0">Součet paragonů v kategoriích neodpovídá částkám uvedených ve SkautISu.</p>
+    {if $isEditable}
+        <p>Hospodaření může aktualizovat data ve SkautISu tak, aby byla shodná s evidencí plateb.</p>
+        <hr>
+        {if $isUpdateStatementAllowed}
+            <a n:href="convert! $aid" class="alert-link">
+                <i class="fas fa-tools"></i>
+                Aktualizovat data ve SkautISu
+            </a>
+        {else}
+            <p class="text-muted mb-0">
+                <i class="far fa-times-circle"></i>
+                Nemáte oprávnění pro úpravu částek v rozpočtu uvedených ve skautisu.
             </p>
-        </div>
-    </div>
+        {/if}
+    {/if}
 </div>
 
 <div class="row">
