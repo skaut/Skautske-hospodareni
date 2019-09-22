@@ -92,15 +92,15 @@ abstract class AccountancyHelpers
     {
         switch ($s) {
             case 'draft':
-                return '<span class=\'label label-warning\'>Rozpracováno</span>';
+                return '<span class=\'badge badge-warning\'>Rozpracováno</span>';
             case 'approvedParent':
-                return '<span class=\'label label-info\'>Schválený střediskem</span>';
+                return '<span class=\'badge badge-info\'>Schválený střediskem</span>';
             case 'approvedLeader':
-                return '<span class=\'label label-info\'>Schválený vedoucím</span>';
+                return '<span class=\'badge badge-info\'>Schválený vedoucím</span>';
             case 'real':
-                return '<span class=\'label label-success\'>Skutečnost odevzdána</span>';
+                return '<span class=\'badge badge-success\'>Skutečnost odevzdána</span>';
             default:
-                return '<span class=\'label label-default\'>Zrušený</span>';
+                return '<span class=\'badge badge-default\'>Zrušený</span>';
         }
     }
 

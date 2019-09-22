@@ -1,0 +1,24 @@
+<h1 class="mt-5">{$event->getDisplayName()}</h1>
+
+<nav class="navbar navbar-expand-sm navbar-light bg-light mt-2 mb-4">
+    <ul class="navbar-nav align-items-center">
+        <li n:class="nav-item, $presenter->isLinkCurrent('Detail:') ? active">
+            <a class="nav-link" n:href="Detail: $event->getId()->toInt()"><i
+                        class="fas fa-home d-none d-lg-inline-block"></i> Základní
+                údaje</a>
+        </li>
+        <li n:class="nav-item, $presenterName === 'Participant' ? active">
+            <a class="nav-link" n:href="Participant: $event->getId()->toInt()"><i
+                        class="fas fa-users d-none d-lg-inline-block"></i>
+                Seznam účastníků</a>
+        </li>
+        <li n:class="nav-item, $presenterName === 'Cashbook' ? active">
+            <a class="nav-link" n:href="Cashbook: $event->getId()->toInt()"><i
+                        class="fas fa-clipboard-list d-none d-lg-inline-block"></i> Evidence plateb</a>
+        </li>
+        <li n:class="nav-item, $presenterName === 'Budget' ? active">
+            <a class="nav-link" n:href="Budget: $event->getId()->toInt()"><i
+                        class="fas fa-chart-pie d-lg-inline-block"></i> Rozpočet</a>
+        </li>
+    </ul>
+</nav>
