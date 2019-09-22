@@ -5,11 +5,11 @@
             <a class="nav-link" n:href="Default:"><i class="fas fa-route"></i> Cestovní příkazy</a>
         </li>
 
-        <li n:class="in_array($presenterName, ['Vehicle', 'VehicleList'], true) ? active">
+        <li n:class="nav-item, in_array($presenterName, ['Vehicle', 'VehicleList'], true) ? active">
             <a class="nav-link" n:href="VehicleList:"><i class="fas fa-car"></i> Vozidla</a>
         </li>
 
-        <li n:class="$presenterName === 'Contract' ? active">
+        <li n:class="nav-item, $presenterName === 'Contract' ? active">
             <a class="nav-link" n:href="Contract:"><i class="fas fa-file-contract"></i> Smlouvy</a>
         </li>
     </ul>
