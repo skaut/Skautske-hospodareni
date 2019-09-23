@@ -7,18 +7,19 @@ namespace App\AccountancyModule\PaymentModule;
 use App\AccountancyModule\PaymentModule\Components\GroupUnitControl;
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Components\PairButton;
+use App\AccountancyModule\PaymentModule\Components\PaymentDialog;
+use App\AccountancyModule\PaymentModule\Components\PaymentList;
 use App\AccountancyModule\PaymentModule\Components\RemoveGroupDialog;
 use App\AccountancyModule\PaymentModule\Factories\IGroupUnitControlFactory;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use App\AccountancyModule\PaymentModule\Factories\IPairButtonFactory;
+use App\AccountancyModule\PaymentModule\Factories\IPaymentDialogFactory;
+use App\AccountancyModule\PaymentModule\Factories\IPaymentListFactory;
 use App\AccountancyModule\PaymentModule\Factories\IRemoveGroupDialogFactory;
-use App\Forms\BaseForm;
 use DateTimeImmutable;
 use Model\DTO\Payment\Payment;
 use Model\DTO\Payment\Person;
 use Model\Payment\Commands\Mailing\SendPaymentInfo;
-use Model\Payment\Commands\Payment\CreatePayment;
-use Model\Payment\Commands\Payment\UpdatePayment;
 use Model\Payment\EmailNotSet;
 use Model\Payment\GroupNotFound;
 use Model\Payment\InvalidBankAccount;
@@ -32,8 +33,6 @@ use Model\Payment\ReadModel\Queries\MembersWithoutPaymentInGroupQuery;
 use Model\Payment\ReadModel\Queries\PaymentListQuery;
 use Model\PaymentService;
 use Model\UnitService;
-use Nette\Application\UI\Form;
-use Nette\Forms\Controls\SubmitButton;
 use function array_filter;
 use function assert;
 use function count;
@@ -72,6 +71,12 @@ class PaymentPresenter extends BasePresenter
     /** @var IRemoveGroupDialogFactory */
     private $removeGroupDialogFactory;
 
+    /** @var IPaymentDialogFactory */
+    private $paymentDialogFactory;
+
+    /** @var IPaymentListFactory */
+    private $paymentListFactory;
+
     private const NO_MAILER_MESSAGE       = 'Nemáte nastavený mail pro odesílání u skupiny';
     private const NO_BANK_ACCOUNT_MESSAGE = 'Skupina nemá nastavený bankovní účet';
 
@@ -82,7 +87,9 @@ class PaymentPresenter extends BasePresenter
         IMassAddFormFactory $massAddFormFactory,
         IPairButtonFactory $pairButtonFactory,
         IGroupUnitControlFactory $unitControlFactory,
-        IRemoveGroupDialogFactory $removeGroupDialogFactory
+        IRemoveGroupDialogFactory $removeGroupDialogFactory,
+        IPaymentDialogFactory $paymentDialogFactory,
+        IPaymentListFactory $paymentListFactory
     ) {
         parent::__construct();
         $this->model                    = $model;
@@ -92,6 +99,8 @@ class PaymentPresenter extends BasePresenter
         $this->pairButtonFactory        = $pairButtonFactory;
         $this->unitControlFactory       = $unitControlFactory;
         $this->removeGroupDialogFactory = $removeGroupDialogFactory;
+        $this->paymentDialogFactory     = $paymentDialogFactory;
+        $this->paymentListFactory       = $paymentListFactory;
     }
 
     protected function startup() : void
@@ -115,14 +124,6 @@ class PaymentPresenter extends BasePresenter
         }
 
         $nextVS = $this->model->getNextVS($group->getId());
-        $form   = $this['paymentForm'];
-        $form->setDefaults([
-            'amount' => $group->getDefaultAmount(),
-            'maturity' => $group->getDueDate(),
-            'ks' => $group->getConstantSymbol(),
-            'oid' => $group->getId(),
-            'vs' => $nextVS !== null ? (string) $nextVS : '',
-        ]);
 
         $payments = $this->getPaymentsForGroup($id);
 
@@ -141,40 +142,6 @@ class PaymentPresenter extends BasePresenter
             'now'       => new DateTimeImmutable(),
             'isGroupSendActive' => $group->getState() === 'open' && ! empty($paymentsForSendEmail),
         ]);
-    }
-
-    public function actionEdit(int $pid) : void
-    {
-        $payment = $this->model->findPayment($pid);
-
-        if ($payment === null || $payment->isClosed()) {
-            $this->flashMessage('Platba nenalezena', 'warning');
-            $this->redirect('GroupList:');
-        }
-
-        $this->assertCanEditGroup();
-
-        $form = $this['paymentForm'];
-
-        $submit = $form['send'];
-
-        assert($submit instanceof SubmitButton);
-
-        $submit->caption = 'Upravit';
-
-        $form->setDefaults([
-            'name' => $payment->getName(),
-            'email' => $payment->getEmail(),
-            'amount' => $payment->getAmount(),
-            'maturity' => $payment->getDueDate(),
-            'vs' => $payment->getVariableSymbol(),
-            'ks' => $payment->getConstantSymbol(),
-            'note' => $payment->getNote(),
-            'oid' => $payment->getGroupId(),
-            'pid' => $pid,
-        ]);
-
-        $this->template->setParameters(['group' => $this->model->getGroup($payment->getGroupId())]);
     }
 
     /**
@@ -365,84 +332,22 @@ class PaymentPresenter extends BasePresenter
         $dialog->open();
     }
 
-    protected function createComponentPaymentForm() : Form
-    {
-        $form = new BaseForm();
-        $form->useBootstrap4();
-        $form->addText('name', 'Název/účel')
-            ->setAttribute('class', 'form-control')
-            ->addRule(Form::FILLED, 'Musíte zadat název platby');
-        $form->addText('amount', 'Částka')
-            ->setAttribute('class', 'form-control')
-            ->addRule(Form::FILLED, 'Musíte vyplnit částku')
-            ->addRule(Form::FLOAT, 'Částka musí být zadaná jako číslo')
-            ->addRule(Form::MIN, 'Částka musí být větší než 0', 0.01);
-        $form->addText('email', 'Email')
-            ->setAttribute('class', 'form-control')
-            ->addCondition(Form::FILLED)
-            ->addRule(Form::EMAIL, 'Zadaný email nemá platný formát');
-        $form->addDate('maturity', 'Splatnost')
-            ->setRequired('Musíte vyplnit splatnost')
-            ->setAttribute('class', 'form-control');
-        $form->addVariableSymbol('vs', 'VS')
-            ->setRequired(false)
-            ->setAttribute('class', 'form-control')
-            ->addCondition(Form::FILLED);
-        $form->addText('ks', 'KS')
-            ->setMaxLength(4)
-            ->setAttribute('class', 'form-control')
-            ->addCondition(Form::FILLED)->addRule(Form::INTEGER, 'Konstantní symbol musí být číslo');
-        $form->addText('note', 'Poznámka')
-            ->setAttribute('class', 'form-control');
-        $form->addHidden('oid');
-        $form->addHidden('pid');
-        $form->addSubmit('send', 'Přidat platbu')->setAttribute('class', 'btn btn-primary');
-
-        $form->onSuccess[] = function (Form $form) : void {
-            $this->paymentSubmitted($form);
-        };
-
-        return $form;
-    }
-
-    private function paymentSubmitted(Form $form) : void
+    protected function createComponentPaymentDialog() : PaymentDialog
     {
         $this->assertCanEditGroup();
 
-        $v = $form->getValues();
+        $dialog = $this->paymentDialogFactory->create($this->id);
 
-        $id             = $v->pid !== '' ? (int) $v->pid : null;
-        $name           = $v->name;
-        $email          = $v->email !== '' ? $v->email : null;
-        $amount         = (float) $v->amount;
-        $dueDate        = $v->maturity;
-        $variableSymbol = $v->vs;
-        $constantSymbol = $v->ks !== '' ? (int) $v->ks : null;
-        $note           = (string) $v->note;
+        $dialog->onSuccess[] = function () : void {
+            $this->redrawControl('grid');
+        };
 
-        if ($id !== null) {//EDIT
-            $this->commandBus->handle(
-                new UpdatePayment($id, $name, $email, $amount, $dueDate, $variableSymbol, $constantSymbol, $note)
-            );
-            $this->flashMessage('Platba byla upravena');
-        } else {//ADD
-            $this->commandBus->handle(
-                new CreatePayment(
-                    $this->id,
-                    $name,
-                    $email,
-                    $amount,
-                    $dueDate,
-                    null,
-                    $variableSymbol,
-                    $constantSymbol,
-                    $note
-                )
-            );
+        return $dialog;
+    }
 
-            $this->flashMessage('Platba byla přidána');
-        }
-        $this->redirect('default');
+    protected function createComponentPaymentList() : PaymentList
+    {
+        return $this->paymentListFactory->create($this->id, $this->isEditable);
     }
 
     protected function createComponentPairButton() : PairButton

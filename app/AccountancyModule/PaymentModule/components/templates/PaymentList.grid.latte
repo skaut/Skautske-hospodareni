@@ -1,0 +1,54 @@
+{extends $originalTemplate}
+
+{block col-state}
+    <div class="text-center">
+        {$item->getState()|paymentStateLabel|noescape}
+    </div>
+{/block}
+
+{block header}
+    <thead>
+        {include #header-column-row}
+    </thead>
+{/block}
+
+{block col-email}
+    <span class="small">{$item->getEmail()}</span>
+{/block}
+
+{block col-actions}
+    {if !$item->isClosed() && $isEditable}
+        <a href="{plink paymentDialog:open! $item->getId()}"
+           class="btn btn-sm btn-secondary ajax"
+           title="Upravit platbu"><i class="far fa-edit"></i></a>
+        <a href="{plink send! $item->id}"
+                n:class="btn, btn-sm, btn-primary, $item->getEmail() !== null ? 'ui--sendEmail', $item->getEmail() === NULL ? disabled"
+           title="{$item->getEmail() === NULL ? 'Není uveden email' : 'Odeslat email o platbě'}"><i
+                    class="far fa-envelope-open"></i></a>
+        <a href="{plink complete! $item->getId()}" class="btn btn-sm btn-success" title="Zaplaceno"><i
+                    class="fas fa-check"></i></a>
+    {elseif $item->isClosed()}
+        <span title="Datum uzavření platby">{$item->getClosedAt()|date:'j.n.Y'}</span>
+    {var $transaction = $item->getTransaction()}
+        {if $transaction !== NULL}
+            <div class="dropdown d-inline-block">
+                <button class="btn btn-sm btn-light" type="button"
+                        data-toggle="dropdown">
+                    <span class="fas fa-info-circle"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right p-3">
+                    <li><strong>ID:</strong> {$transaction->getId()}</li>
+                    <li><strong>Plátce:</strong> {$transaction->getPayer()}</li>
+                    <li><strong>Účet:</strong> {$transaction->getBankAccount()}</li>
+                    <li><strong>Poznámka:</strong> {$transaction->getNote()}</li>
+                </ul>
+            </div>
+        {/if}
+    {else}&nbsp;{/if}
+    <a href="{plink cancel! $item->getId()}" n:if="$isEditable && ! $item->getState()->equalsValue('canceled')"
+       class="btn btn-sm btn-danger"
+       onclick="return confirm('Opravdu chcete zrušit platbu?');"
+       title="Zrušit"><i class="fas fa-times"></i></a>
+{/block}
+
+{block action-col-classes}w-15{/block}

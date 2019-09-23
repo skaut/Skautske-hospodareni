@@ -44,7 +44,7 @@ $I->click('//option[text()="Vyberte bankovní účet"]');
 $I->click('//option[text()="Acceptance"]');
 $I->click('Založit skupinu');
 
-$I->see('Zatím zde nejsou žádné platby.');
+$I->see('Skupina byla založena');
 
 $page = new Payment($I);
 
@@ -70,7 +70,7 @@ $I->see('Dokončena');
 $I->wantTo('send payment email');
 
 $I->amGoingTo('send third payment');
-$I->click('//a[contains(@class, \'ui--sendEmail-2\')]');
+$I->click('//a[contains(@class, \'ui--sendEmail\')]');
 $I->waitForText('Odeslána');
 
 $page->seeNumberOfPaymentsWithState('Připravena', 1);

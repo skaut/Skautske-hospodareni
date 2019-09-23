@@ -12,6 +12,11 @@ export class ModalExtension {
 
         const modal = new Modal(snippet);
 
+        if (snippet.innerHTML === '') {
+            modal.hide();
+            return;
+        }
+
         this.initializeButtons(snippet);
 
         modal.show();

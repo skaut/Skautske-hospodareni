@@ -12,7 +12,7 @@ final class VariableSymbol
     /** @var string */
     private $value;
 
-    public const PATTERN = '^(?!0)[0-9]{1,10}$';
+    private const PATTERN = '^(?!0)[0-9]{1,10}$';
 
     public function __construct(string $value)
     {

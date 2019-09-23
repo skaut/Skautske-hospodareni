@@ -1,6 +1,5 @@
 import naja from 'naja';
 // @ts-ignore
-import netteForms from 'nette-forms';
 import {ProgressBar} from './ProgressBar';
 import {ModalExtension} from './ModalExtension';
 import {TravelModule} from "../modules/travel";
@@ -9,6 +8,8 @@ import {initializeAutoSubmit} from "./autoSubmitForm";
 import {initializeLinksThatRequireConfirmation} from "./confirmDialogs";
 import {initializeCheckAllCheckboxes} from "./checkAllChekboxes";
 import {DataGridExtension} from "./DataGridExtension";
+import {initializeDatePicker} from "./datePicker";
+import netteForms from "./netteForms";
 
 export default function (): void {
     naja.registerExtension(ProgressBar);
@@ -19,6 +20,7 @@ export default function (): void {
         initializeAutoSubmit(naja, snippet, '.auto-submit');
         initializeLinksThatRequireConfirmation(snippet, 'data-confirm');
         initializeCheckAllCheckboxes(snippet, 'data-dependent-checkboxes');
+        snippet.querySelectorAll<HTMLElement>('.date').forEach(initializeDatePicker);
     });
 
     naja.registerExtension(DataGridExtension);

@@ -4,3 +4,8 @@ DELETE FROM ac_chits_item;
 DELETE FROM ac_object;
 DELETE FROM ac_unit_cashbooks;
 DELETE FROM ac_units;
+DELETE FROM pa_bank_account;
+DELETE FROM pa_group;
+DELETE FROM pa_group_unit;
+DELETE FROM pa_payment;
+DELETE FROM pa_smtp;

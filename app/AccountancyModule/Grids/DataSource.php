@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\AccountancyModule\Components;
+namespace App\AccountancyModule\Grids;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Ublaboo\DataGrid\DataSource\DoctrineCollectionDataSource;
