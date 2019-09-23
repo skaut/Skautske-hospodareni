@@ -10,6 +10,7 @@ import {initializeCheckAllCheckboxes} from "./checkAllChekboxes";
 import {DataGridExtension} from "./DataGridExtension";
 import {initializeDatePicker} from "./datePicker";
 import netteForms from "./netteForms";
+import 'bootstrap.native/dist/bootstrap-native-v4';
 
 export default function (): void {
     naja.registerExtension(ProgressBar);
@@ -21,6 +22,7 @@ export default function (): void {
         initializeLinksThatRequireConfirmation(snippet, 'data-confirm');
         initializeCheckAllCheckboxes(snippet, 'data-dependent-checkboxes');
         snippet.querySelectorAll<HTMLElement>('.date').forEach(initializeDatePicker);
+        window.BSN.initCallback(snippet);
     });
 
     naja.registerExtension(DataGridExtension);

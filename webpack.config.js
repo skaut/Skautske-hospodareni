@@ -17,12 +17,6 @@ module.exports = {
                 exclude: /node_modules/
             },
             {
-                test: /bootstrap\.native/,
-                use: {
-                    loader: 'bootstrap.native-loader'
-                }
-            },
-            {
                 test: /\.js$/,
                 exclude: /node_modules/,
                 use: {
