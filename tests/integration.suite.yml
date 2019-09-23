@@ -19,3 +19,5 @@ modules:
             dsn: 'mysql:host=mysql-test;dbname=hskauting;charset=utf8'
             user: 'root'
             password: 'root'
+
+        - Mockery

@@ -38,7 +38,5 @@ final class MemberNamesQueryHandlerTest extends Unit
             ],
             $handler(new MemberNamesQuery($unitId, 18))
         );
-
-        Mockery::close();
     }
 }
