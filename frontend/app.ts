@@ -1,4 +1,3 @@
-import 'bootstrap.native';
 import moment from 'moment';
 import 'moment/locale/cs';
 import {dom} from './icons';
