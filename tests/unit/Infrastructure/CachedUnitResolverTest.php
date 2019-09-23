@@ -53,9 +53,4 @@ final class CachedUnitResolverTest extends Unit
 
         self::assertSame(2, $cachedResolver->getOfficialUnitId(1));
     }
-
-    protected function _after() : void
-    {
-        Mockery::close();
-    }
 }

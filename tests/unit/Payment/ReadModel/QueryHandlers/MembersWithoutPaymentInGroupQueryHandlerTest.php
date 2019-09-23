@@ -61,7 +61,5 @@ final class MembersWithoutPaymentInGroupQueryHandlerTest extends Unit
 
         self::assertSame(1, $result[1]->getId());
         self::assertSame('Čenda', $result[1]->getName());
-
-        Mockery::close();
     }
 }

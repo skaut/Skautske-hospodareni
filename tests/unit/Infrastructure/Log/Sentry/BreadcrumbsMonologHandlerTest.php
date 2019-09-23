@@ -51,9 +51,4 @@ final class BreadcrumbsMonologHandlerTest extends Unit
         $this->assertSame($record['context'], $breadcrumbs[0]->getMetadata());
         $this->assertSame('default', $breadcrumbs[0]->getType());
     }
-
-    protected function _after() : void
-    {
-        Mockery::close();
-    }
 }

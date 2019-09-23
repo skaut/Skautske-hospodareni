@@ -94,12 +94,12 @@ final class UnitRepositoryTest extends IntegrationTest
 
     public function testSaveDispatchesEvent() : void
     {
-        $unit = new Unit(new UnitId(15), CashbookId::generate(), 2018);
+        $unit = new Unit(new UnitId(15), CashbookId::generate(), 2018);  // There is CashbookWasCreatedEvent for initial cashbook
         $unit->createCashbook(2019); // There is CashbookWasCreatedEvent
 
         $eventBus = Mockery::mock(EventBus::class);
         $eventBus->shouldReceive('handle')
-            ->once()
+            ->twice()
             ->withArgs(static function (CashbookWasCreated $event) {
                 return true;
             });
