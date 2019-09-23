@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Model\Payment\Commands;
 
+/**
+ * @see RemoveMailCredentialsHandler
+ */
 class RemoveMailCredentials
 {
     /** @var int */

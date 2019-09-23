@@ -36,7 +36,7 @@ final class EditableUnitsQueryHandlerTest extends \Codeception\Test\Unit
     {
         $role = new SkautisRole($roleName, '', 100, '');
 
-        $result =$this->handler->__invoke(new EditableUnitsQuery($role));
+        $result = ($this->handler)(new EditableUnitsQuery($role));
 
         $this->assertCount(count($expectedUnitIdsInResult), $result);
 

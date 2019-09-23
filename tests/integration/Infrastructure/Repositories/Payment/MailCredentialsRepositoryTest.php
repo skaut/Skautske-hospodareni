@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Repositories\Payment;
 
 use DateTimeImmutable;
+use eGen\MessageBus\Bus\EventBus;
 use IntegrationTest;
+use Mockery as m;
+use Model\Payment\DomainEvents\MailCredentialsWasRemoved;
 use Model\Payment\MailCredentials;
 use Model\Payment\MailCredentialsNotFound;
 use function array_keys;
@@ -14,6 +17,9 @@ class MailCredentialsRepositoryTest extends IntegrationTest
 {
     /** @var MailCredentialsRepository */
     private $repository;
+
+    /** @var EventBus */
+    private $eventBus;
 
     /**
      * @return string[]
@@ -29,7 +35,8 @@ class MailCredentialsRepositoryTest extends IntegrationTest
     {
         $this->tester->useConfigFiles(['config/doctrine.neon']);
         parent::_before();
-        $this->repository = new MailCredentialsRepository($this->entityManager);
+        $this->eventBus   = m::mock(EventBus::class);
+        $this->repository = new MailCredentialsRepository($this->entityManager, $this->eventBus);
     }
 
     public function testFind() : void
@@ -124,6 +131,12 @@ class MailCredentialsRepositoryTest extends IntegrationTest
 
     public function testRemove() : void
     {
+        $this->eventBus->shouldReceive('handle')
+            ->once()
+            ->withArgs(static function (MailCredentialsWasRemoved $event) : bool {
+                return $event->getCredentialsId() === 1;
+            });
+
         $this->tester->haveInDatabase('pa_smtp', [
             'host' => 'smtp.seznam.cz',
             'username' => 'mail2',

@@ -45,6 +45,11 @@ interface IGroupRepository
      */
     public function findByBankAccount(int $bankAccountId) : array;
 
+    /**
+     * @return Group[]
+     */
+    public function findBySmtp(int $smtpId) : array;
+
     public function save(Group $group) : void;
 
     public function remove(Group $group) : void;

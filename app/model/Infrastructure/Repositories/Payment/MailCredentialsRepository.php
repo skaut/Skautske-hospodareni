@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Repositories\Payment;
 
 use Doctrine\ORM\EntityManager;
+use eGen\MessageBus\Bus\EventBus;
+use Model\Payment\DomainEvents\MailCredentialsWasRemoved;
 use Model\Payment\MailCredentials;
 use Model\Payment\MailCredentialsNotFound;
 use Model\Payment\Repositories\IMailCredentialsRepository;
@@ -17,9 +19,13 @@ final class MailCredentialsRepository implements IMailCredentialsRepository
     /** @var EntityManager */
     private $entityManager;
 
-    public function __construct(EntityManager $entityManager)
+    /** @var EventBus */
+    private $eventBus;
+
+    public function __construct(EntityManager $entityManager, EventBus $eventBus)
     {
         $this->entityManager = $entityManager;
+        $this->eventBus      = $eventBus;
     }
 
     public function find(int $id) : MailCredentials
@@ -60,6 +66,7 @@ final class MailCredentialsRepository implements IMailCredentialsRepository
     public function remove(MailCredentials $credentials) : void
     {
         $this->entityManager->remove($credentials);
+        $this->eventBus->handle(new MailCredentialsWasRemoved($credentials->getId()));
         $this->entityManager->flush();
     }
 

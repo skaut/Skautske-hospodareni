@@ -377,4 +377,9 @@ class Group
 
         return null;
     }
+
+    public function resetSmtp() : void
+    {
+        $this->smtpId = null;
+    }
 }
