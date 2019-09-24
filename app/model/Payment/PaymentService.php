@@ -24,6 +24,7 @@ use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IMemberEmailRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Payment\Services\IBankAccountAccessChecker;
+use Model\Payment\Services\IMailCredentialsAccessChecker;
 use Model\Payment\Summary;
 use Model\Payment\VariableSymbol;
 use Model\Services\Language;
@@ -60,20 +61,25 @@ class PaymentService
     /** @var IMemberEmailRepository */
     private $emails;
 
+    /** @var IMailCredentialsAccessChecker */
+    private $mailCredentialsAccessChecker;
+
     public function __construct(
         Skautis $skautis,
         IGroupRepository $groups,
         IPaymentRepository $payments,
         IBankAccountRepository $bankAccounts,
         IBankAccountAccessChecker $bankAccountAccessChecker,
-        IMemberEmailRepository $emails
+        IMemberEmailRepository $emails,
+        IMailCredentialsAccessChecker $mailCredentialsAccessChecker
     ) {
-        $this->skautis                  = $skautis;
-        $this->groups                   = $groups;
-        $this->payments                 = $payments;
-        $this->bankAccounts             = $bankAccounts;
-        $this->bankAccountAccessChecker = $bankAccountAccessChecker;
-        $this->emails                   = $emails;
+        $this->skautis                      = $skautis;
+        $this->groups                       = $groups;
+        $this->payments                     = $payments;
+        $this->bankAccounts                 = $bankAccounts;
+        $this->bankAccountAccessChecker     = $bankAccountAccessChecker;
+        $this->emails                       = $emails;
+        $this->mailCredentialsAccessChecker = $mailCredentialsAccessChecker;
     }
 
     public function findPayment(int $id) : ?DTO\Payment
@@ -157,7 +163,8 @@ class PaymentService
             $emails,
             $smtpId,
             $bankAccount,
-            $this->bankAccountAccessChecker
+            $this->bankAccountAccessChecker,
+            $this->mailCredentialsAccessChecker,
         );
 
         $this->groups->save($group);
@@ -179,7 +186,7 @@ class PaymentService
         $group       = $this->groups->find($id);
         $bankAccount = $bankAccountId !== null ? $this->bankAccounts->find($bankAccountId) : null;
 
-        $group->update($name, $paymentDefaults, $smtpId, $bankAccount, $this->bankAccountAccessChecker);
+        $group->update($name, $paymentDefaults, $smtpId, $bankAccount, $this->bankAccountAccessChecker, $this->mailCredentialsAccessChecker);
 
         foreach (EmailType::getAvailableValues() as $typeKey) {
             $type = EmailType::get($typeKey);

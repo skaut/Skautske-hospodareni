@@ -15,6 +15,7 @@ use Model\Payment\Payment;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Stubs\BankAccountAccessCheckerStub;
+use Stubs\MailCredentialsAccessCheckerStub;
 
 final class RemoveGroupTest extends IntegrationTest
 {
@@ -60,7 +61,8 @@ final class RemoveGroupTest extends IntegrationTest
             Helpers::createEmails(),
             null,
             null,
-            new BankAccountAccessCheckerStub()
+            new BankAccountAccessCheckerStub(),
+            new MailCredentialsAccessCheckerStub(),
         );
 
         $group->close(''); // only closed groups can be removed

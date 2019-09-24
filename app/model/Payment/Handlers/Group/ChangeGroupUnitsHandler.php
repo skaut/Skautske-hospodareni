@@ -9,6 +9,7 @@ use Model\Payment\Commands\Group\ChangeGroupUnits;
 use Model\Payment\GroupNotFound;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Services\IBankAccountAccessChecker;
+use Model\Payment\Services\IMailCredentialsAccessChecker;
 
 class ChangeGroupUnitsHandler
 {
@@ -16,12 +17,19 @@ class ChangeGroupUnitsHandler
     private $groups;
 
     /** @var IBankAccountAccessChecker */
-    private $accessChecker;
+    private $bankAccountAccessChecker;
 
-    public function __construct(IGroupRepository $groups, IBankAccountAccessChecker $accessChecker)
-    {
-        $this->groups        = $groups;
-        $this->accessChecker = $accessChecker;
+    /** @var IMailCredentialsAccessChecker */
+    private $mailCredentaccessChecker;
+
+    public function __construct(
+        IGroupRepository $groups,
+        IBankAccountAccessChecker $bankAccountAccessChecker,
+        IMailCredentialsAccessChecker $mailCredentialsAccessChecker
+    ) {
+        $this->groups                   = $groups;
+        $this->bankAccountAccessChecker = $bankAccountAccessChecker;
+        $this->mailCredentaccessChecker = $mailCredentialsAccessChecker;
     }
 
     /**
@@ -32,7 +40,11 @@ class ChangeGroupUnitsHandler
     {
         $group = $this->groups->find($command->getGroupId());
 
-        $group->changeUnits($command->getUnitIds(), $this->accessChecker);
+        $group->changeUnits(
+            $command->getUnitIds(),
+            $this->bankAccountAccessChecker,
+            $this->mailCredentaccessChecker,
+        );
 
         $this->groups->save($group);
     }

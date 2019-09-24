@@ -24,6 +24,7 @@ use Model\Payment\Repositories\IPaymentRepository;
 use Model\Payment\VariableSymbol;
 use Nette\Utils\Random;
 use Stubs\BankAccountAccessCheckerStub;
+use Stubs\MailCredentialsAccessCheckerStub;
 use function date;
 use function mt_rand;
 use function reset;
@@ -151,7 +152,8 @@ class BankServiceTest extends IntegrationTest
             $emails,
             null,
             $bankAccount,
-            new BankAccountAccessCheckerStub()
+            new BankAccountAccessCheckerStub(),
+            new MailCredentialsAccessCheckerStub(),
         );
 
         $this->groups->save($group);
