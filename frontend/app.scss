@@ -37,3 +37,16 @@ body > footer {
 .w-18 {
   width: 18%;
 }
+
+.navbar-light {
+  padding-bottom: 0;
+  .nav-item {
+    padding-bottom: $navbar-padding-y;
+
+    &.active {
+      box-sizing: border-box;
+      padding-bottom: $navbar-brand-padding-y;
+      border-bottom: 2px solid $primary;
+    }
+  }
+}

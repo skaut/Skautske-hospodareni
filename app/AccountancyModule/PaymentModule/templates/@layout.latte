@@ -4,7 +4,7 @@
         <li n:class="nav-item, in_array($presenterName, ['Payment', 'Group', 'GroupList', 'Camp', 'Registration']) ? active">
             <a class="nav-link" n:href="GroupList:"><i class="far fa-list-alt"></i> Platební skupiny</a>
         </li>
-        <li n:class="$presenter->isLinkCurrent('BankAccounts:*') ? active">
+        <li n:class="nav-item, $presenter->isLinkCurrent('BankAccounts:*') ? active">
             <a class="nav-link" n:href="BankAccounts: unitId => $unitId"><i class="fas fa-university"></i> Bankovní účty</a>
         </li>
         <li n:class="nav-item, $presenter->isLinkCurrent('Mail:*') ? active">
