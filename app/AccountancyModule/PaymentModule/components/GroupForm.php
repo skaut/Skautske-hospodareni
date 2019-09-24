@@ -14,23 +14,25 @@ use eGen\MessageBus\Bus\QueryBus;
 use Model\Common\UnitId;
 use Model\DTO\Payment\BankAccount;
 use Model\DTO\Payment\GroupEmail;
-use Model\MailService;
+use Model\DTO\Payment\Mail;
 use Model\Payment\EmailTemplate;
 use Model\Payment\EmailType;
 use Model\Payment\Group\PaymentDefaults;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\ReadModel\Queries\BankAccount\BankAccountsAccessibleByUnitsQuery;
 use Model\Payment\ReadModel\Queries\GroupEmailQuery;
+use Model\Payment\ReadModel\Queries\MailCredentials\MailCredentialsAccessibleByGroupsQuery;
 use Model\Payment\ReadModel\Queries\NextVariableSymbolSequenceQuery;
 use Model\PaymentService;
-use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
-use Model\User\ReadModel\Queries\EditableUnitsQuery;
+use Model\Unit\ReadModel\Queries\UnitsDetailQuery;
+use Model\Unit\Unit;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\TextBase;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\FileSystem;
 use function array_filter;
-use function array_keys;
+use function array_map;
+use function array_unique;
 use function assert;
 
 final class GroupForm extends BaseControl
@@ -47,9 +49,6 @@ final class GroupForm extends BaseControl
     /** @var PaymentService */
     private $model;
 
-    /** @var MailService */
-    private $mail;
-
     /** @var QueryBus */
     private $queryBus;
 
@@ -58,7 +57,6 @@ final class GroupForm extends BaseControl
         ?SkautisEntity $skautisEntity,
         ?int $groupId,
         PaymentService $model,
-        MailService $mail,
         QueryBus $queryBus
     ) {
         parent::__construct();
@@ -66,7 +64,6 @@ final class GroupForm extends BaseControl
         $this->skautisEntity = $skautisEntity;
         $this->groupId       = $groupId;
         $this->model         = $model;
-        $this->mail          = $mail;
         $this->queryBus      = $queryBus;
     }
 
@@ -142,10 +139,7 @@ final class GroupForm extends BaseControl
             ->setRequired(false)
             ->setPrompt('Vyberte bankovní účet');
 
-        $role          = $this->queryBus->handle(new ActiveSkautisRoleQuery());
-        $editableUnits = array_keys($this->queryBus->handle(new EditableUnitsQuery($role)));
-
-        $form->addSelect('smtp', 'Email odesílatele', $this->mail->getCredentialsPairsGroupedByUnit($editableUnits))
+        $form->addSelect('smtp', 'Email odesílatele', $this->mailCredentialsItems())
             ->setPrompt('Vyberte email')
             ->setAttribute('class', 'ui--emailSelectbox'); // For acceptance testing
 
@@ -320,6 +314,37 @@ final class GroupForm extends BaseControl
         foreach ($bankAccounts as $bankAccount) {
             assert($bankAccount instanceof BankAccount);
             $items[$bankAccount->getId()] = $bankAccount->getName();
+        }
+
+        return $items;
+    }
+
+    /**
+     * @return array<string, array<int, string>>
+     */
+    private function mailCredentialsItems() : array
+    {
+        $mailCredentials = $this->queryBus->handle(new MailCredentialsAccessibleByGroupsQuery($this->groupUnitIds()));
+
+        $units = $this->queryBus->handle(
+            new UnitsDetailQuery(
+                array_unique(array_map(
+                    function (Mail $credentials) : int {
+                        return $credentials->getUnitId();
+                    },
+                    $mailCredentials
+                ))
+            )
+        );
+
+        $items = [];
+        foreach ($mailCredentials as $credentials) {
+            assert($credentials instanceof Mail);
+
+            $unit = $units[$credentials->getUnitId()];
+            assert($unit instanceof Unit);
+
+            $items[$unit->getDisplayName()][$credentials->getId()] = $credentials->getUsername();
         }
 
         return $items;
