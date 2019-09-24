@@ -18,7 +18,7 @@
         "bootstrap.native": "^2.0.27",
         "moment": "^2.24.0",
         "naja": "^1.6.0",
-        "nette-forms": "^2.4.9",
+        "nette-forms": "^3.0.2",
         "nprogress": "^0.2.0",
         "pikaday": "^1.8.0",
         "postcss-cli": "^6.1.3",
