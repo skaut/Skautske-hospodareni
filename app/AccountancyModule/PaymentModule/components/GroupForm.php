@@ -12,13 +12,14 @@ use Cake\Chronos\Date;
 use DateTimeImmutable;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Common\UnitId;
+use Model\DTO\Payment\BankAccount;
 use Model\DTO\Payment\GroupEmail;
 use Model\MailService;
-use Model\Payment\BankAccountService;
 use Model\Payment\EmailTemplate;
 use Model\Payment\EmailType;
 use Model\Payment\Group\PaymentDefaults;
 use Model\Payment\Group\SkautisEntity;
+use Model\Payment\ReadModel\Queries\BankAccount\BankAccountsAccessibleByUnitsQuery;
 use Model\Payment\ReadModel\Queries\GroupEmailQuery;
 use Model\Payment\ReadModel\Queries\NextVariableSymbolSequenceQuery;
 use Model\PaymentService;
@@ -43,9 +44,6 @@ final class GroupForm extends BaseControl
     /** @var int|null */
     private $groupId;
 
-    /** @var BankAccountService */
-    private $bankAccounts;
-
     /** @var PaymentService */
     private $model;
 
@@ -59,7 +57,6 @@ final class GroupForm extends BaseControl
         UnitId $unitId,
         ?SkautisEntity $skautisEntity,
         ?int $groupId,
-        BankAccountService $bankAccounts,
         PaymentService $model,
         MailService $mail,
         QueryBus $queryBus
@@ -68,7 +65,6 @@ final class GroupForm extends BaseControl
         $this->unitId        = $unitId;
         $this->skautisEntity = $skautisEntity;
         $this->groupId       = $groupId;
-        $this->bankAccounts  = $bankAccounts;
         $this->model         = $model;
         $this->mail          = $mail;
         $this->queryBus      = $queryBus;
@@ -317,14 +313,30 @@ final class GroupForm extends BaseControl
      */
     private function bankAccountItems() : array
     {
-        $bankAccounts = $this->bankAccounts->findByUnit($this->unitId);
+        $bankAccounts = $this->queryBus->handle(new BankAccountsAccessibleByUnitsQuery($this->groupUnitIds()));
 
         $items = [];
 
         foreach ($bankAccounts as $bankAccount) {
+            assert($bankAccount instanceof BankAccount);
             $items[$bankAccount->getId()] = $bankAccount->getName();
         }
 
         return $items;
+    }
+
+    /**
+     * @return int[]
+     */
+    private function groupUnitIds() : array
+    {
+        if ($this->groupId === null) {
+            return [$this->unitId->toInt()]; // New group will be created with user's current unit
+        }
+
+        $group = $this->model->getGroup($this->groupId);
+        assert($group !== null);
+
+        return $group->getUnitIds();
     }
 }
