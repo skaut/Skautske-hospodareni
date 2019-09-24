@@ -1,5 +1,5 @@
 // @ts-ignore
-import netteForms from 'nette-forms';
+import netteForms from '../../vendor/nette/forms/src/assets/netteForms';
 interface NetteForms {
     showFormErrors(form: HTMLFormElement, messages: { element: Element, message: string }[]): void;
 }
