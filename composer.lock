@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c371269fb3d36b596f2dd2fc05954664",
+    "content-hash": "f88e63a555d687784b75d5d22470a1bb",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -4069,35 +4069,35 @@
         },
         {
             "name": "nette/security",
-            "version": "v2.4.4",
+            "version": "v3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/security.git",
-                "reference": "7b8ac90c9ec405bb3b4dab9214bf122d3620fc65"
+                "reference": "55b6f3e7e3defc8e4f1f78c947f53185c51d6147"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/security/zipball/7b8ac90c9ec405bb3b4dab9214bf122d3620fc65",
-                "reference": "7b8ac90c9ec405bb3b4dab9214bf122d3620fc65",
+                "url": "https://api.github.com/repos/nette/security/zipball/55b6f3e7e3defc8e4f1f78c947f53185c51d6147",
+                "reference": "55b6f3e7e3defc8e4f1f78c947f53185c51d6147",
                 "shasum": ""
             },
             "require": {
-                "nette/utils": "~2.4",
-                "php": ">=5.6.0"
+                "nette/utils": "^2.4 || ^3.0",
+                "php": ">=7.1"
             },
             "conflict": {
                 "nette/nette": "<2.2"
             },
             "require-dev": {
-                "nette/di": "~2.4",
-                "nette/http": "~2.4",
-                "nette/tester": "~2.0",
+                "nette/di": "^3.0.0",
+                "nette/http": "^3.0.0",
+                "nette/tester": "^2.0",
                 "tracy/tracy": "^2.4"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.4-dev"
+                    "dev-master": "3.0-dev"
                 }
             },
             "autoload": {
@@ -4129,7 +4129,7 @@
                 "authorization",
                 "nette"
             ],
-            "time": "2018-10-17T15:50:54+00:00"
+            "time": "2019-02-20T06:38:20+00:00"
         },
         {
             "name": "nette/utils",
