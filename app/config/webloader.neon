@@ -42,6 +42,7 @@ webloader:
                 - datagrid.js
                 - datagrid-spinners.js
                 - ajax.modal.js
+                - enter.js
             filters:
                 - @webloader.jsMinFilter
 
