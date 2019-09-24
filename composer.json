@@ -39,7 +39,7 @@
         "mhujer/fio-api-php": "^4.0",
         "egen/message-bus": "^2.0",
         "fmasa/auto-di": "^1.0",
-        "nettrine/migrations": "^0.2.0",
+        "nettrine/migrations": "^0.5",
         "phpoffice/phpspreadsheet": "^1.0",
         "cakephp/chronos": "^1.1",
         "warhuhn/chronos-doctrine": "^1.0",
