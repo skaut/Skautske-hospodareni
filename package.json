@@ -8,6 +8,7 @@
     },
     "dependencies": {
         "@fortawesome/fontawesome-svg-core": "^1.2.17",
+        "@fortawesome/free-brands-svg-icons": "^5.11.1",
         "@fortawesome/free-regular-svg-icons": "^5.11.1",
         "@fortawesome/free-solid-svg-icons": "^5.11.1",
         "@types/nprogress": "^0.2.0",

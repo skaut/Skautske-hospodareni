@@ -1,4 +1,5 @@
-import { library } from '@fortawesome/fontawesome-svg-core';
+import { library, IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { fab } from '@fortawesome/free-brands-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { far }  from '@fortawesome/free-regular-svg-icons';
 
@@ -48,6 +49,9 @@ library.add(
     far.faListAlt,
     far.faTrashAlt,
     far.faUser,
+
+    // Brands
+    fab.faGithub as IconDefinition,
 );
 
 export { dom } from '@fortawesome/fontawesome-svg-core';
