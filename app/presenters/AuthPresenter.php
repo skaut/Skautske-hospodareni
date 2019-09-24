@@ -24,7 +24,7 @@ class AuthPresenter extends BasePresenter
     /**
      * pokud je uziatel uz prihlasen, staci udelat referesh
      */
-    public function actionDefault(string $backlink) : void
+    public function actionDefault(?string $backlink = null) : void
     {
         $this->redirect(':Default:');
     }
