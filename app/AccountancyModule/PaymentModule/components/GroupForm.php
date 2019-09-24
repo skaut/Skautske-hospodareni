@@ -142,13 +142,7 @@ final class GroupForm extends BaseControl
             ->setDisabled($this->groupId !== null && $this->model->getMaxVariableSymbol($this->groupId) !== null)
             ->setNullable();
 
-        $bankAccounts     = $this->bankAccounts->findByUnit($this->unitId);
-        $bankAccountItems = [];
-        foreach ($bankAccounts as $bankAccount) {
-            $bankAccountItems[$bankAccount->getId()] = $bankAccount->getName();
-        }
-
-        $form->addSelect('bankAccount', 'Bankovní účet', $bankAccountItems)
+        $form->addSelect('bankAccount', 'Bankovní účet', $this->bankAccountItems())
             ->setRequired(false)
             ->setPrompt('Vyberte bankovní účet');
 
@@ -316,5 +310,21 @@ final class GroupForm extends BaseControl
             'subject' => $email->getTemplate()->getSubject(),
             'body' => $email->getTemplate()->getBody(),
         ];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function bankAccountItems() : array
+    {
+        $bankAccounts = $this->bankAccounts->findByUnit($this->unitId);
+
+        $items = [];
+
+        foreach ($bankAccounts as $bankAccount) {
+            $items[$bankAccount->getId()] = $bankAccount->getName();
+        }
+
+        return $items;
     }
 }
