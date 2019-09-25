@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Migrations;
 
-use Doctrine\DBAL\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\Migrations\AbstractMigration;
 use const PHP_EOL;
 use function explode;
 use function file_get_contents;

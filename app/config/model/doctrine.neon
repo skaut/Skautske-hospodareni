@@ -50,7 +50,7 @@ services:
       tags: [kdyby.subscriber]
 
 decorator:
-    Doctrine\DBAL\Migrations\Tools\Console\Command\AbstractCommand:
+    Symfony\Component\Console\Command\Command:
         tags: [ kdyby.console.command ]
 
     Symfony\Component\Console\Helper\Helper:
