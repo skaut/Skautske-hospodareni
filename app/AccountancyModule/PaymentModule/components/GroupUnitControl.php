@@ -122,6 +122,13 @@ class GroupUnitControl extends BaseControl
             );
         }
 
+        if ($group->getSmtpId() !== null && $groupAfterChange->getSmtpId() === null) {
+            $this->flashMessage(
+                'Email byl odebrán, protože žádná z aktuálních jednotek k němu nemá přístup',
+                'warning',
+            );
+        }
+
         $this->redrawControl();
     }
 
