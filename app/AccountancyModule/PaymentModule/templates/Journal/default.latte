@@ -6,11 +6,6 @@
         <p>Přehled změn časopisů po registraci <b>{$year}</b> pro jednotku {$units[$unitId]->getDisplayName()} a jí podřízených jednotek.</p>
     </div>
 </div>
-<div class='row'>
-    <div class="col-sm-12 alert alert-warning">
-        <b>Tato funkce je experimentální</b>, tedy si raději vše ověřte a případné nesrovnalosti mi napiště.
-    </div>
-</div>
 
 <div class="row" n:inner-foreach="$changes as $uId=>$unitChanges">
     <div class="col-sm-12" n:if='count($unitChanges["add"]) > 0 || count($unitChanges["remove"]) > 0'>
