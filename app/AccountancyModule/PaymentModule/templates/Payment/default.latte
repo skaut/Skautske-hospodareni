@@ -13,7 +13,6 @@
         {elseif $group->type === "registration"}Registrace{/if}
     </div>
 
-
     <div class="col-12 col-md-auto text-center" n:if="$isEditable">
         {if $group->state === 'open'}
             <a n:href="closeGroup!"
@@ -58,7 +57,7 @@
             </div>
 
             {if $group->type === 'registration'}
-                <a n:href="Journal: $group->skautisId" class="btn btn-light"><i class="fas fa-book-reader"></i>
+                <a n:href="Journal: $group->id" class="btn btn-light"><i class="fas fa-book-reader"></i>
                     Časopisy</a>
             {/if}
 

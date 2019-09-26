@@ -352,6 +352,13 @@ class PaymentService
         return $changes;
     }
 
+    public function getRegistrationYear(int $registrationId) : ?int
+    {
+        $registration = $this->skautis->org->UnitRegistrationDetail(['ID' => $registrationId]);
+
+        return $registration->Year ?? null;
+    }
+
     /**
      * vrací seznam id táborů se založenou aktivní skupinou
      *
