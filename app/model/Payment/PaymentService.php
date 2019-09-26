@@ -340,16 +340,23 @@ class PaymentService
         }
 
         foreach ($registration as $p) {
-            $isRegustredWithJournal = $regCategories[$p->ID_RegistrationCategory];
-            $hasPersonJournal       = array_key_exists($p->ID_Person, $personIdsWithJournal);
-            if ($hasPersonJournal && ! $isRegustredWithJournal) {
+            $isRegisteredWithJournal = $regCategories[$p->ID_RegistrationCategory];
+            $hasPersonJournal        = array_key_exists($p->ID_Person, $personIdsWithJournal);
+            if ($hasPersonJournal && ! $isRegisteredWithJournal) {
                 $changes['remove'][] = $p->Person;
-            } elseif (! $hasPersonJournal && $isRegustredWithJournal) {
+            } elseif (! $hasPersonJournal && $isRegisteredWithJournal) {
                 $changes['add'][] = $p->Person;
             }
         }
 
         return $changes;
+    }
+
+    public function getRegistrationYear(int $registrationId) : ?int
+    {
+        $registration = $this->skautis->org->UnitRegistrationDetail(['ID' => $registrationId]);
+
+        return $registration->Year ?? null;
     }
 
     /**
