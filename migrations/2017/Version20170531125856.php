@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Migrations;
 
-use Doctrine\DBAL\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\Migrations\AbstractMigration;
 
 class Version20170531125856 extends AbstractMigration
 {

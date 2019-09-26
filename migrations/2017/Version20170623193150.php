@@ -6,8 +6,8 @@ namespace Migrations;
 
 use BankAccountValidator\Czech;
 use DateTimeImmutable;
-use Doctrine\DBAL\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\Migrations\AbstractMigration;
 use Nette\Utils\Strings;
 use Skautis\Skautis;
 use stdClass;
