@@ -40,12 +40,4 @@ final class PaymentMethod extends Enum
     {
         return $this->toString();
     }
-
-    /**
-     * @return string[]
-     */
-    protected static function getIgnoredConstantNames() : array
-    {
-        return ['NAMES'];
-    }
 }

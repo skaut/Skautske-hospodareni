@@ -81,15 +81,4 @@ class CashbookType extends Enum
     {
         return (string) $this->getValue();
     }
-
-    /**
-     * @return string[]
-     */
-    protected static function getIgnoredConstantNames() : array
-    {
-        return [
-            'TRANSFER_FROM_CATEGORY_IDS',
-            'TRANSFER_TO_CATEGORY_IDS',
-        ];
-    }
 }
