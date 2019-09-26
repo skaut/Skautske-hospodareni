@@ -12,6 +12,7 @@ use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
 use Model\DTO\Cashbook\Category;
 use Model\Event\Event;
 use Model\Event\Functions;
@@ -51,13 +52,19 @@ class ExportServiceTest extends Unit
             new Category(7, 'Převod do stř. pokladny', MoneyFactory::fromFloat(150.0), 'pr', Operation::EXPENSE(), true),
         ]);
 
+        $queryBus->expects('handle')
+            ->once()
+            ->withArgs(function (EventParticipantListQuery $query) use ($skautisEventId) {
+                return $query->getEventId()->toInt() === $skautisEventId;
+            })
+            ->andReturn([]);
+
         // handle EventFunctions
-        $queryBus->expects('handle')->andReturn(m::mock(Functions::class));
+        $queryBus->expects('handle')->once()->andReturn(m::mock(Functions::class));
 
         $exportService      = new ExportService($unitService, $templateFactory, $events, $queryBus);
         $eventService       = m::mock(EventEntity::class);
         $participantService = m::mock(ParticipantService::class);
-        $participantService->expects('getAll')->andReturn([]);
         $participantService->expects('getPersonsDays')->andReturn(0);
 
         $templateFactory->expects('create')->withArgs(static function (string $templatePath, array $parameters) : bool {

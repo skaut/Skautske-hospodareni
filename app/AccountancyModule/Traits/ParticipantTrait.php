@@ -6,10 +6,16 @@ namespace App\AccountancyModule;
 
 use App\Forms\BaseForm;
 use eGen\MessageBus\Bus\QueryBus;
+use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
+use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
+use Model\Common\ShouldNotHappen;
 use Model\Common\UnitId;
+use Model\Event\SkautisCampId;
+use Model\Event\SkautisEventId;
 use Model\EventEntity;
 use Model\ExcelService;
 use Model\ExportService;
+use Model\Participant\Payment\EventType;
 use Model\Participant\ReadModel\Queries\PotentialParticipantListQuery;
 use Model\Services\PdfRenderer;
 use Model\Unit\ReadModel\Queries\UnitQuery;
@@ -88,7 +94,14 @@ trait ParticipantTrait
 
     protected function traitDefault(bool $dp, ?string $sort, bool $regNums) : void
     {
-        $participants = $this->eventService->getParticipants()->getAll($this->aid);
+        if ($this->type === EventType::GENERAL) {
+            $participants = $this->queryBus->handle(new EventParticipantListQuery(new SkautisEventId($this->aid)));
+        } elseif ($this->type === EventType::CAMP) {
+            $participants = $this->queryBus->handle(new CampParticipantListQuery(new SkautisCampId($this->aid)));
+        } else {
+            throw new ShouldNotHappen('Participants have just general event or camp!');
+        }
+
         try {
             $unitId = $this->uid ?? $this->unitService->getUnitId();
             $list   = $dp

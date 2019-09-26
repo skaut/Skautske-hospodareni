@@ -140,7 +140,6 @@ services:
     - Model\Skautis\Cashbook\Repositories\CampCategoryRepository(@skautis.cached.event)
 
     - class: Model\Cashbook\ReadModel\QueryHandlers\EventParticipantListQueryHandler
-      arguments: [@eventService]
       tags: [queryBus.handler]
 
     # Skautis read model

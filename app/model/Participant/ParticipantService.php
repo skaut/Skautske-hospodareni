@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Model;
 
 use Cake\Chronos\Date;
+use eGen\MessageBus\Bus\QueryBus;
 use InvalidArgumentException;
+use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
+use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
 use Model\DTO\Participant\Participant as ParticipantDTO;
 use Model\DTO\Payment\ParticipantFactory as ParticipantDTOFactory;
+use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
-use Model\Participant\Participant;
 use Model\Participant\Payment;
 use Model\Participant\Payment\Event;
 use Model\Participant\Payment\EventType;
@@ -17,23 +20,16 @@ use Model\Participant\PaymentFactory;
 use Model\Participant\PaymentNotFound;
 use Model\Participant\PragueParticipants;
 use Model\Participant\Repositories\IPaymentRepository;
-use Model\Services\Language;
 use Model\Skautis\Factory\ParticipantFactory;
 use Model\Utils\MoneyFactory;
 use Nette\Utils\Strings;
 use Skautis\Skautis;
 use Skautis\Wsdl\WsdlException;
-use stdClass;
-use function array_diff_key;
 use function array_key_exists;
-use function array_map;
-use function array_reduce;
 use function assert;
-use function is_array;
 use function preg_match;
 use function sprintf;
 use function stripos;
-use function usort;
 
 class ParticipantService extends MutableBaseService
 {
@@ -44,10 +40,14 @@ class ParticipantService extends MutableBaseService
     /** @var IPaymentRepository */
     private $repository;
 
-    public function __construct(string $name, Skautis $skautIS, IPaymentRepository $repository)
+    /** @var QueryBus */
+    private $queryBus;
+
+    public function __construct(string $name, Skautis $skautIS, IPaymentRepository $repository, QueryBus $queryBus)
     {
         parent::__construct($name, $skautIS);
         $this->repository = $repository;
+        $this->queryBus   = $queryBus;
     }
 
     public function get(int $participantId, int $actionId) : ParticipantDTO
@@ -57,50 +57,6 @@ class ParticipantService extends MutableBaseService
         return ParticipantDTOFactory::create(
             ParticipantFactory::create($data, $this->getPayment($participantId, new Event($actionId, EventType::get($this->type))))
         );
-    }
-
-    /**
-     * vrací seznam účastníků
-     * používá lokální úložiště
-     *
-     * @return ParticipantDTO[]
-     */
-    public function getAll(int $ID_Event) : array
-    {
-        $eventId         = new SkautisEventId($ID_Event);
-        $participantsSis = (array) $this->skautis->event->{'Participant' . $this->typeName . 'All'}(['ID_Event' . $this->typeName => $eventId->toInt()]);
-
-        $event = new Payment\Event($ID_Event, Payment\EventType::get($this->type));
-
-        if (! is_array($participantsSis)) {
-            return []; // API returns empty object when there are no results
-        }
-
-        $participantPayments = $this->repository->findByEvent($event);
-        $participants        = [];
-        foreach ($participantsSis as $p) {
-            assert($p instanceof stdClass);
-
-            if (array_key_exists($p->ID, $participantPayments)) {
-                $payment =  $participantPayments[$p->ID];
-            } else {
-                $payment =  PaymentFactory::createDefault($p->ID, $event);
-            }
-            $participants[$p->ID] = ParticipantFactory::create($p, $payment);
-        }
-
-        foreach (array_diff_key($participantPayments, $participants) as $paymentToRemove) {
-            $this->repository->remove($paymentToRemove); //delete zaznam, protoze neexistuje k nemu ucastnik
-        }
-
-        usort(
-            $participants,
-            function (Participant $one, Participant $two) : int {
-                return Language::compare($one->getDisplayName(), $two->getDisplayName());
-            }
-        );
-
-        return array_map([ParticipantDTOFactory::class, 'create'], $participants);
     }
 
     /**
@@ -210,16 +166,6 @@ class ParticipantService extends MutableBaseService
         $this->skautis->event->{'Participant' . $this->typeName . 'Delete'}(['ID' => $participantId, 'DeletePerson' => false]);
     }
 
-    public function getTotalPayment(int $eventId) : float
-    {
-        return (float) array_reduce(
-            $this->getAll($eventId),
-            function ($res, ParticipantDTO $v) {
-                return $res + $v->getPayment();
-            }
-        );
-    }
-
     /**
      * vrací počet osobodní na dané akci
      *
@@ -256,8 +202,9 @@ class ParticipantService extends MutableBaseService
      */
     public function getCampTotalPayment(int $campId, string $category, string $isAccount) : float
     {
-        $res = 0;
-        foreach ($this->getAll($campId) as $p) {
+        $res          = 0;
+        $participants = $this->queryBus->handle(new CampParticipantListQuery(new SkautisCampId($campId)));
+        foreach ($participants as $p) {
             assert($p instanceof ParticipantDTO);
             //pokud se alespon v jednom neshodují, tak pokracujte
             if (($category === 'adult' xor preg_match('/^Dospěl/', $p->getCategory()))
@@ -278,7 +225,7 @@ class ParticipantService extends MutableBaseService
         }
 
         $eventStartDate    = $startDate;
-        $participants      = $this->getAll($eventId);
+        $participants      = $this->queryBus->handle(new EventParticipantListQuery(new SkautisEventId($eventId)));
         $under18           = 0;
         $between18and26    = 0;
         $personDaysUnder26 = 0;

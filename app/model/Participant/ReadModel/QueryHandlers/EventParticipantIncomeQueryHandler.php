@@ -4,28 +4,29 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
+use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\ReadModel\Queries\EventParticipantIncomeQuery;
+use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
 use Model\DTO\Participant\Participant;
-use Model\IParticipantServiceFactory;
-use Model\ParticipantService;
+use function assert;
 
 class EventParticipantIncomeQueryHandler
 {
-    /** @var ParticipantService */
-    private $service;
+    /** @var QueryBus */
+    private $queryBus;
 
-    public function __construct(IParticipantServiceFactory $participantFactory)
+    public function __construct(QueryBus $queryBus)
     {
-        $this->service = $participantFactory->create('General');
+        $this->queryBus = $queryBus;
     }
 
     public function __invoke(EventParticipantIncomeQuery $query) : float
     {
-        $participants = $this->service->getAll($query->getEventId()->toInt());
+        $participants = $this->queryBus->handle(new EventParticipantListQuery($query->getEventId()));
 
         $participantIncome = 0.0;
-        /** @var Participant $p */
         foreach ($participants as $p) {
+            assert($p instanceof Participant);
             $participantIncome += $p->getPayment();
         }
 
