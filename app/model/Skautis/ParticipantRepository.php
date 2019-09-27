@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Model\Skautis;
 
 use Model\Common\Repositories\IParticipantRepository;
+use Model\DTO\Participant\NonMemberParticipant;
 use Model\DTO\Participant\Participant as ParticipantDTO;
-use Model\DTO\Participant\ParticipantCreation;
 use Model\DTO\Payment\ParticipantFactory as ParticipantDTOFactory;
 use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
@@ -99,7 +99,7 @@ final class ParticipantRepository implements IParticipantRepository
         }
     }
 
-    public function createEventParticipant(SkautisEventId $eventId, ParticipantCreation $participant) : void
+    public function createEventParticipant(SkautisEventId $eventId, NonMemberParticipant $participant) : void
     {
         $newParticipantArr = $this->skautis->event->ParticipantGeneralInsert([
             'ID_EventGeneral' => $eventId,
@@ -113,7 +113,7 @@ final class ParticipantRepository implements IParticipantRepository
         $this->fillParticipantInfo($newParticipantArr->ID_Person, $participant);
     }
 
-    public function createCampParticipant(SkautisCampId $eventId, ParticipantCreation $participant) : void
+    public function createCampParticipant(SkautisCampId $eventId, NonMemberParticipant $participant) : void
     {
         $newParticipantArr = $this->skautis->event->ParticipantCampInsert([
             'ID_EventCamp' => $eventId,
@@ -137,7 +137,7 @@ final class ParticipantRepository implements IParticipantRepository
         $this->skautis->event->ParticipantCampDelete(['ID' => $participantId, 'DeletePerson' => false]);
     }
 
-    private function fillParticipantInfo(int $participantId, ParticipantCreation $participant) : void
+    private function fillParticipantInfo(int $participantId, NonMemberParticipant $participant) : void
     {
         $this->skautis->org->PersonUpdateBasic([
             'ID' => $participantId,

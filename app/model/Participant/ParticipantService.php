@@ -27,44 +27,6 @@ class ParticipantService extends MutableBaseService
     }
 
     /**
-     * vytvoří nového účastníka
-     *
-     * @param string[] $person
-     */
-    public function addNew(int $ID, array $person) : void
-    {
-        $newParticipantArr = $this->skautis->event->{'Participant' . $this->typeName . 'Insert'}([
-            'ID_Event' . $this->typeName => $ID,
-            'Person' => [
-                'FirstName' => $person['firstName'],
-                'LastName' => $person['lastName'],
-                'NickName' => $person['nick'],
-                'Note' => '',
-            ],
-        ]);
-        $this->personUpdate($newParticipantArr->ID_Person, $person);
-    }
-
-    /**
-     * upravuje údaje zadané osoby
-     *
-     * @param mixed[] $data
-     */
-    public function personUpdate(int $pid, array $data) : void
-    {
-        $this->skautis->org->PersonUpdateBasic([
-            'ID' => $pid,
-            'FirstName' => $data['firstName'] ?? null,
-            'LastName' => $data['lastName'] ?? null,
-            'IdentificationCode' => null,
-            'Birthday' => $data['Birthday'] ?? null,
-            'Street' => $data['street'] ?? null,
-            'City' => $data['city'] ?? null,
-            'Postcode' => $data['postcode'] ?? null,
-        ]);
-    }
-
-    /**
      * @param mixed[] $arr
      */
     public function update(int $participantId, int $actionId, array $arr) : void

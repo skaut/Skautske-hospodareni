@@ -5,14 +5,18 @@ declare(strict_types=1);
 namespace App\AccountancyModule;
 
 use App\Forms\BaseForm;
+use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Commands\Cashbook\AddCampParticipant;
 use Model\Cashbook\Commands\Cashbook\AddEventParticipant;
+use Model\Cashbook\Commands\Cashbook\CreateCampParticipant;
+use Model\Cashbook\Commands\Cashbook\CreateEventParticipant;
 use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
 use Model\Common\ShouldNotHappen;
 use Model\Common\UnitId;
+use Model\DTO\Participant\NonMemberParticipant;
 use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
 use Model\EventEntity;
@@ -31,13 +35,11 @@ use Skautis\Wsdl\WsdlException;
 use function array_merge;
 use function assert;
 use function count;
-use function date;
 use function in_array;
 use function is_string;
 use function property_exists;
 use function strcasecmp;
 use function strpos;
-use function strtotime;
 use function usort;
 
 trait ParticipantTrait
@@ -379,17 +381,20 @@ trait ParticipantTrait
         }
         $values = $form->getValues();
 
-        $person = [
-            'firstName' => $values['firstName'],
-            'lastName' => $values['lastName'],
-            'nick' => $values['nick'],
-            'Birthday' => is_string($values['birthday']) && strtotime($values['birthday']) !== false ?
-                date('c', strtotime($values['birthday'])): null,
-            'street' => $values['street'],
-            'city' => $values['city'],
-            'postcode' => $values['postcode'],
-        ];
-        $this->eventService->getParticipants()->addNew($this->aid, $person);
+        $person = new NonMemberParticipant(
+            $values['firstName'],
+            $values['lastName'],
+            $values['nick'],
+            is_string($values['birthday']) ? new Date($values['birthday']): null,
+            $values['street'],
+            $values['city'],
+            $values['postcode'],
+        );
+        $this->commandBus->handle(
+            $this->type === 'camp'
+                ? new CreateCampParticipant(new SkautisCampId($this->aid), $person)
+                : new CreateEventParticipant(new SkautisEventId($this->aid), $person)
+        );
         $this->redirect('this');
     }
 
