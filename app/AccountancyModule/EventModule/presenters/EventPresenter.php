@@ -153,7 +153,7 @@ class EventPresenter extends BasePresenter
     {
         $cashbookId = $this->getCashbookId($aid);
 
-        $template  = $this->exportService->getEventReport($aid, $this->eventService) . $this->exportService->getNewPage();
+        $template  = $this->exportService->getEventReport($aid) . $this->exportService->getNewPage();
         $template .= $this->exportService->getParticipants($aid) . $this->exportService->getNewPage();
         $template .= $this->exportService->getCashbook($cashbookId, PaymentMethod::CASH()) . $this->exportService->getNewPage();
         $template .= $this->queryBus->handle(ExportChits::all($cashbookId));
@@ -168,7 +168,7 @@ class EventPresenter extends BasePresenter
             $this->flashMessage('Nemáte právo přistupovat k akci', 'warning');
             $this->redirect('default', ['aid' => $aid]);
         }
-        $template = $this->exportService->getEventReport($aid, $this->eventService);
+        $template = $this->exportService->getEventReport($aid);
 
         $this->pdf->render($template, 'report.pdf');
         $this->terminate();

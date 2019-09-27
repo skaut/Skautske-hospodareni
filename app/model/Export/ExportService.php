@@ -18,9 +18,11 @@ use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
+use Model\Cashbook\ReadModel\Queries\ParticipantStatisticsQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit;
+use Model\DTO\Participant\Statistics;
 use Model\Event\Camp;
 use Model\Event\Event;
 use Model\Event\ReadModel\Queries\CampFunctions;
@@ -39,7 +41,6 @@ use function array_key_exists;
 use function array_sum;
 use function array_values;
 use function assert;
-use function count;
 use function in_array;
 use function sprintf;
 
@@ -138,7 +139,7 @@ class ExportService
         ]);
     }
 
-    public function getEventReport(int $skautisEventId, EventEntity $eventService) : string
+    public function getEventReport(int $skautisEventId) : string
     {
         $sums = [
             self::CATEGORY_VIRTUAL => [
@@ -185,14 +186,14 @@ class ExportService
             array_column($sums[self::CATEGORY_VIRTUAL][Operation::EXPENSE], 'amount')
         );
 
-        $participants = $this->queryBus->handle(new EventParticipantListQuery(new SkautisEventId($skautisEventId)));
-        $personDays   = $eventService->getParticipants()->getPersonsDays($participants);
-        $events       = $this->events->find(new SkautisEventId($skautisEventId));
-        $functions    = $this->queryBus->handle(new EventFunctions(new SkautisEventId($skautisEventId)));
+        $stats = $this->queryBus->handle(new ParticipantStatisticsQuery(new SkautisEventId($skautisEventId)));
+        assert($stats instanceof Statistics);
+        $events    = $this->events->find(new SkautisEventId($skautisEventId));
+        $functions = $this->queryBus->handle(new EventFunctions(new SkautisEventId($skautisEventId)));
 
         return $this->templateFactory->create(__DIR__ . '/templates/eventReport.latte', [
-            'participantsCnt' => count($participants),
-            'personsDays' => $personDays,
+            'participantsCnt' => $stats->getPersonsCount(),
+            'personsDays' => $stats->getPersonDays(),
             'event' => $events,
             'chits' => $sums,
             'functions' => $functions,
@@ -207,7 +208,7 @@ class ExportService
         ]);
     }
 
-    public function getCampReport(int $skautisCampId, EventEntity $campService, bool $areTotalsConsistentWithSkautis) : string
+    public function getCampReport(int $skautisCampId, bool $areTotalsConsistentWithSkautis) : string
     {
         $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($skautisCampId)));
         $categories = $this->queryBus->handle(new CategoryListQuery($cashbookId));
@@ -245,11 +246,12 @@ class ExportService
             $total['income'] = $total['income']->subtract($refund->getTotal());
         }
 
-        $participants = $this->queryBus->handle(new CampParticipantListQuery(new SkautisCampId($skautisCampId)));
+        $stats = $this->queryBus->handle(new ParticipantStatisticsQuery(new SkautisCampId($skautisCampId)));
+        assert($stats instanceof Statistics);
 
         return $this->templateFactory->create(__DIR__ . '/templates/campReport.latte', [
-            'participantsCnt' => count($participants),
-            'personsDays' => $campService->getParticipants()->getPersonsDays($participants),
+            'participantsCnt' => $stats->getPersonsCount(),
+            'personsDays' => $stats->getPersonDays(),
             'camp' => $this->queryBus->handle(new CampQuery(new SkautisCampId($skautisCampId))),
             'incomeCategories' => $incomeCategories[self::CATEGORY_REAL],
             'expenseCategories' => $expenseCategories[self::CATEGORY_REAL],

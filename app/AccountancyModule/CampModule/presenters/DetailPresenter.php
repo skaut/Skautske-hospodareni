@@ -71,7 +71,7 @@ class DetailPresenter extends BasePresenter
             $this->redirect('default', ['aid' => $aid]);
         }
 
-        $template = $this->exportService->getCampReport($aid, $this->eventService, $this->areTotalsConsistentWithSkautis($aid));
+        $template = $this->exportService->getCampReport($aid, $this->areTotalsConsistentWithSkautis($aid));
         $this->pdf->render($template, 'reportCamp.pdf');
         $this->terminate();
     }

@@ -12,14 +12,13 @@ use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
-use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
+use Model\Cashbook\ReadModel\Queries\ParticipantStatisticsQuery;
 use Model\DTO\Cashbook\Category;
+use Model\DTO\Participant\Statistics;
 use Model\Event\Event;
 use Model\Event\Functions;
 use Model\Event\Repositories\IEventRepository;
-use Model\EventEntity;
 use Model\ExportService;
-use Model\ParticipantService;
 use Model\Services\TemplateFactory;
 use Model\UnitService;
 use Model\Utils\MoneyFactory;
@@ -54,18 +53,15 @@ class ExportServiceTest extends Unit
 
         $queryBus->expects('handle')
             ->once()
-            ->withArgs(function (EventParticipantListQuery $query) use ($skautisEventId) {
-                return $query->getEventId()->toInt() === $skautisEventId;
+            ->withArgs(function (ParticipantStatisticsQuery $query) use ($skautisEventId) {
+                return $query->getId()->toInt() === $skautisEventId;
             })
-            ->andReturn([]);
+            ->andReturn(new Statistics(0, 0));
 
         // handle EventFunctions
         $queryBus->expects('handle')->once()->andReturn(m::mock(Functions::class));
 
-        $exportService      = new ExportService($unitService, $templateFactory, $events, $queryBus);
-        $eventService       = m::mock(EventEntity::class);
-        $participantService = m::mock(ParticipantService::class);
-        $participantService->expects('getPersonsDays')->andReturn(0);
+        $exportService = new ExportService($unitService, $templateFactory, $events, $queryBus);
 
         $templateFactory->expects('create')->withArgs(static function (string $templatePath, array $parameters) : bool {
             if ($parameters['participantsCnt'] !== 0) {
@@ -121,7 +117,6 @@ class ExportServiceTest extends Unit
             return $parameters['virtualTotalExpense'] === 150.0;
         });
 
-        $eventService->shouldReceive('getParticipants')->andReturn($participantService);
-        $exportService->getEventReport($skautisEventId, $eventService);
+        $exportService->getEventReport($skautisEventId);
     }
 }
