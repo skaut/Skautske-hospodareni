@@ -182,7 +182,7 @@ trait ParticipantTrait
     {
         $type = $this->eventService->getParticipants()->type; //camp vs general
         try {
-            $template = $this->exportService->getParticipants($aid, $this->eventService, $type);
+            $template = $this->exportService->getParticipants($aid, $type);
             $this->pdf->render($template, 'seznam-ucastniku.pdf', $type === 'camp');
         } catch (PermissionException $ex) {
             $this->flashMessage('Nemáte oprávnění k záznamu osoby! (' . $ex->getMessage() . ')', 'danger');

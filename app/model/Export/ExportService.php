@@ -77,7 +77,7 @@ class ExportService
         return '<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />';
     }
 
-    public function getParticipants(int $aid, EventEntity $service, string $type = EventType::GENERAL) : string
+    public function getParticipants(int $aid, string $type = EventType::GENERAL) : string
     {
         if ($type === EventType::CAMP) {
             $templateFile = __DIR__ . '/templates/participantCamp.latte';

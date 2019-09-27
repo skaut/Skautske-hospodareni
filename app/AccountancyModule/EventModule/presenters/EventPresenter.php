@@ -154,7 +154,7 @@ class EventPresenter extends BasePresenter
         $cashbookId = $this->getCashbookId($aid);
 
         $template  = $this->exportService->getEventReport($aid, $this->eventService) . $this->exportService->getNewPage();
-        $template .= $this->exportService->getParticipants($aid, $this->eventService) . $this->exportService->getNewPage();
+        $template .= $this->exportService->getParticipants($aid) . $this->exportService->getNewPage();
         $template .= $this->exportService->getCashbook($cashbookId, PaymentMethod::CASH()) . $this->exportService->getNewPage();
         $template .= $this->queryBus->handle(ExportChits::all($cashbookId));
 
