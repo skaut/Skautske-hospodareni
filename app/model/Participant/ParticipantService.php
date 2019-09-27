@@ -5,15 +5,12 @@ declare(strict_types=1);
 namespace Model;
 
 use InvalidArgumentException;
-use Model\DTO\Participant\Participant as ParticipantDTO;
-use Model\DTO\Payment\ParticipantFactory as ParticipantDTOFactory;
 use Model\Participant\Payment;
 use Model\Participant\Payment\Event;
 use Model\Participant\Payment\EventType;
 use Model\Participant\PaymentFactory;
 use Model\Participant\PaymentNotFound;
 use Model\Participant\Repositories\IPaymentRepository;
-use Model\Skautis\Factory\ParticipantFactory;
 use Model\Utils\MoneyFactory;
 use Skautis\Skautis;
 use Skautis\Wsdl\WsdlException;
@@ -30,15 +27,6 @@ class ParticipantService extends MutableBaseService
     {
         parent::__construct($name, $skautIS);
         $this->repository = $repository;
-    }
-
-    public function get(int $participantId, int $actionId) : ParticipantDTO
-    {
-        $data = $this->skautis->event->{'Participant' . $this->typeName . 'Detail'}(['ID' => $participantId]);
-
-        return ParticipantDTOFactory::create(
-            ParticipantFactory::create($data, $this->getPayment($participantId, new Event($actionId, EventType::get($this->type))))
-        );
     }
 
     /**
@@ -146,21 +134,6 @@ class ParticipantService extends MutableBaseService
         } catch (PaymentNotFound $exc) {
         }
         $this->skautis->event->{'Participant' . $this->typeName . 'Delete'}(['ID' => $participantId, 'DeletePerson' => false]);
-    }
-
-    /**
-     * vrací počet osobodní na dané akci
-     *
-     * @param ParticipantDTO[] $participants
-     */
-    public function getPersonsDays(array $participants) : int
-    {
-        $days = 0;
-        foreach ($participants as $p) {
-            $days += $p->getDays();
-        }
-
-        return $days;
     }
 
     /**
