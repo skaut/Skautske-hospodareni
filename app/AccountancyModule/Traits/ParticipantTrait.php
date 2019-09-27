@@ -12,6 +12,8 @@ use Model\Cashbook\Commands\Cashbook\AddCampParticipant;
 use Model\Cashbook\Commands\Cashbook\AddEventParticipant;
 use Model\Cashbook\Commands\Cashbook\CreateCampParticipant;
 use Model\Cashbook\Commands\Cashbook\CreateEventParticipant;
+use Model\Cashbook\Commands\Cashbook\RemoveCampParticipant;
+use Model\Cashbook\Commands\Cashbook\RemoveEventParticipant;
 use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
 use Model\Common\ShouldNotHappen;
@@ -205,7 +207,11 @@ trait ParticipantTrait
             $this->flashMessage('Nemáte právo mazat účastníky.', 'danger');
             $this->redirect('this');
         }
-        $this->eventService->getParticipants()->removeParticipant($pid);
+        $this->commandBus->handle(
+            $this->type === 'camp'
+                ? new RemoveCampParticipant($pid)
+                : new RemoveEventParticipant($pid)
+        );
         if ($this->isAjax()) {
             $this->redrawControl('potencialParticipants');
             $this->redrawControl('participants');
@@ -336,7 +342,11 @@ trait ParticipantTrait
         }
 
         foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massParticipants[]') as $id) {
-            $this->eventService->getParticipants()->removeParticipant((int) $id);
+            $this->commandBus->handle(
+                $this->type === 'camp'
+                    ? new RemoveCampParticipant((int) $id)
+                    : new RemoveEventParticipant((int) $id)
+            );
         }
         $this->redirect('this');
     }

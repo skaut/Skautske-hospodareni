@@ -69,13 +69,4 @@ class ParticipantService extends MutableBaseService
         }
         $this->repository->save($payment);
     }
-
-    public function removeParticipant(int $participantId) : void
-    {
-        try {
-            $this->repository->remove($this->repository->findByParticipant($participantId, EventType::get($this->type)));
-        } catch (PaymentNotFound $exc) {
-        }
-        $this->skautis->event->{'Participant' . $this->typeName . 'Delete'}(['ID' => $participantId, 'DeletePerson' => false]);
-    }
 }
