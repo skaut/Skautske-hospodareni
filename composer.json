@@ -25,7 +25,7 @@
         "heureka/bank-account-validator": "1.1.*",
         "nextras/mail-panel": "2.4.0-beta1",
         "kdyby/console": "^2.6",
-        "consistence/consistence": "^1.0",
+        "consistence/consistence": "^2.0",
         "kdyby/doctrine": "^3.1",
         "consistence/consistence-doctrine": "^2.0",
         "beberlei/DoctrineExtensions": "^1.0",
