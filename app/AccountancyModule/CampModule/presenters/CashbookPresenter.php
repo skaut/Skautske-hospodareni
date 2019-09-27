@@ -16,6 +16,7 @@ use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\ParticipantType;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CampParticipantCategoryIdQuery;
+use Model\Cashbook\ReadModel\Queries\CampParticipantIncomeQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\FinalCashBalanceQuery;
@@ -114,9 +115,14 @@ class CashbookPresenter extends BasePresenter
         $this->editableOnly();
         $values = $form->getValues();
 
-        $amount = $this->eventService->getParticipants()->getCampTotalPayment($this->getCampId(), $values->cat, $values->isAccount);
+        $amount = $this->queryBus->handle(new CampParticipantIncomeQuery(
+            new SkautisCampId($this->getCampId()),
+            $values->cat === 'adult',
+            $values->isAccount === 'Y'
+        ));
+        assert($amount instanceof Amount);
 
-        if ($amount === 0.0) {
+        if ($amount->toFloat() === 0.0) {
             $this->flashMessage('Nemáte žádné příjmy od účastníků, které by bylo možné importovat.', 'warning');
             $this->redirect('default', ['aid' => $this->getCampId()]);
         }
@@ -129,7 +135,7 @@ class CashbookPresenter extends BasePresenter
         );
         $categoriesDto = $this->queryBus->handle(new CategoryListQuery($this->getCashbookId()));
 
-        $items = [new ChitItem(Amount::fromFloat($amount), $categoriesDto[$categoryId], $purpose)];
+        $items = [new ChitItem($amount, $categoriesDto[$categoryId], $purpose)];
         $this->commandBus->handle(new AddChitToCashbook($this->getCashbookId(), $body, $values->isAccount === 'Y' ? PaymentMethod::BANK() : PaymentMethod::CASH(), $items));
 
         $this->flashMessage('HPD byl importován');

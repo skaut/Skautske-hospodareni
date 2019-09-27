@@ -7,11 +7,9 @@ namespace Model;
 use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\QueryBus;
 use InvalidArgumentException;
-use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
 use Model\DTO\Participant\Participant as ParticipantDTO;
 use Model\DTO\Payment\ParticipantFactory as ParticipantDTOFactory;
-use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
 use Model\Participant\Payment;
 use Model\Participant\Payment\Event;
@@ -195,27 +193,6 @@ class ParticipantService extends MutableBaseService
         }
 
         return $result;
-    }
-
-    /**
-     * @param string $isAccount 'Y' or 'N'
-     */
-    public function getCampTotalPayment(int $campId, string $category, string $isAccount) : float
-    {
-        $res          = 0;
-        $participants = $this->queryBus->handle(new CampParticipantListQuery(new SkautisCampId($campId)));
-        foreach ($participants as $p) {
-            assert($p instanceof ParticipantDTO);
-            //pokud se alespon v jednom neshodují, tak pokracujte
-            if (($category === 'adult' xor preg_match('/^Dospěl/', $p->getCategory()))
-                || ($isAccount === 'Y' xor $p->getOnAccount() === 'Y')
-            ) {
-                continue;
-            }
-            $res += $p->getPayment();
-        }
-
-        return $res;
     }
 
     public function countPragueParticipants(string $registrationNumber, Date $startDate, int $eventId) : ?PragueParticipants
