@@ -145,6 +145,8 @@ services:
     # Skautis read model
     - class: Model\Skautis\ReadModel\QueryHandlers\CampBudgetQueryHandler(@skautis.cached.event)
       tags: [queryBus.handler]
+    - class: Model\Skautis\ReadModel\QueryHandlers\EventStatisticsQueryHandler(@skautis.cached.event)
+      tags: [queryBus.handler]
 
     unitResolver:
         class: Model\Unit\Services\UnitResolver

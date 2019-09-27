@@ -6,7 +6,6 @@ namespace Model\Event\ReadModel\QueryHandlers\Excel;
 
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\PragueParticipantsQuery;
@@ -14,6 +13,7 @@ use Model\Cashbook\ReadModel\QueryHandlers\Pdf\SheetChitsGenerator;
 use Model\Cashbook\ReadModel\SpreadsheetFactory;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Event\ExportedCashbook;
+use Model\DTO\Event\StatisticsItem;
 use Model\Event\Event;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\EventFunctions;
@@ -23,8 +23,8 @@ use Model\Event\ReadModel\Queries\EventTypes;
 use Model\Event\ReadModel\Queries\Excel\ExportEvents;
 use Model\Event\SkautisEventId;
 use Model\Excel\Range;
-use Model\IParticipantServiceFactory;
 use Model\Participant\PragueParticipants;
+use Model\Skautis\ReadModel\Queries\EventStatisticsQuery;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use function array_filter;
@@ -32,13 +32,9 @@ use function array_key_exists;
 use function array_map;
 use function assert;
 use function count;
-use function ucfirst;
 
 final class ExportEventsHandler
 {
-    /** @var IParticipantServiceFactory */
-    private $participantServiceFactory;
-
     /** @var QueryBus */
     private $queryBus;
 
@@ -49,15 +45,13 @@ final class ExportEventsHandler
     private $sheetChitsGenerator;
 
     public function __construct(
-        IParticipantServiceFactory $participantServiceFactory,
         QueryBus $queryBus,
         SpreadsheetFactory $spreadsheetFactory,
         SheetChitsGenerator $sheetChitsGenerator
     ) {
-        $this->participantServiceFactory = $participantServiceFactory;
-        $this->queryBus                  = $queryBus;
-        $this->spreadsheetFactory        = $spreadsheetFactory;
-        $this->sheetChitsGenerator       = $sheetChitsGenerator;
+        $this->queryBus            = $queryBus;
+        $this->spreadsheetFactory  = $spreadsheetFactory;
+        $this->sheetChitsGenerator = $sheetChitsGenerator;
     }
 
     public function __invoke(ExportEvents $query) : Spreadsheet
@@ -90,8 +84,6 @@ final class ExportEventsHandler
      */
     private function setSheetEvents(Worksheet $sheet, array $events) : void
     {
-        $participantService = $this->participantServiceFactory->create(ucfirst(ObjectType::EVENT));
-
         $scopes                     = $this->queryBus->handle(new EventScopes());
         $types                      = $this->queryBus->handle(new EventTypes());
         $pragueParticipantsPerEvent = $this->getPragueParticipantsForEvents($events);
@@ -99,7 +91,8 @@ final class ExportEventsHandler
         foreach ($events as $index => $event) {
             assert($event instanceof Event);
 
-            $statistics = $participantService->getEventStatistic($event->getId()->toInt());
+            /** @var StatisticsItem[] $statistics */
+            $statistics = $this->queryBus->handle(new EventStatisticsQuery($event->getId()));
 
             if ($index === 0) {
                 $this->addHeader($sheet, $statistics, $pragueParticipantsPerEvent !== []);
@@ -128,11 +121,11 @@ final class ExportEventsHandler
                 ->setCellValue('L' . $row, $event->getRealCount())
                 ->setCellValue('M' . $row, $event->getRealPersonDays())
                 ->setCellValue('N' . $row, $event->getRealChildDays())
-                ->setCellValue('O' . $row, $statistics[1]->Count)
-                ->setCellValue('P' . $row, $statistics[2]->Count)
-                ->setCellValue('Q' . $row, $statistics[3]->Count)
-                ->setCellValue('R' . $row, $statistics[4]->Count)
-                ->setCellValue('S' . $row, $statistics[5]->Count)
+                ->setCellValue('O' . $row, $statistics[1]->getCount())
+                ->setCellValue('P' . $row, $statistics[2]->getCount())
+                ->setCellValue('Q' . $row, $statistics[3]->getCount())
+                ->setCellValue('R' . $row, $statistics[4]->getCount())
+                ->setCellValue('S' . $row, $statistics[5]->getCount())
                 ->setCellValue('T' . $row, $this->getCashbookPrefix($event));
 
             if (! array_key_exists($event->getId()->toInt(), $pragueParticipantsPerEvent)) {
@@ -161,7 +154,7 @@ final class ExportEventsHandler
     }
 
     /**
-     * @param mixed[] $statistics
+     * @param StatisticsItem[] $statistics
      */
     private function addHeader(Worksheet $sheet, array $statistics, bool $allowPragueColumns) : void
     {
@@ -179,11 +172,11 @@ final class ExportEventsHandler
             ->setCellValue('L1', 'Počet účastníků')
             ->setCellValue('M1', 'Osobodnů')
             ->setCellValue('N1', 'Dětodnů')
-            ->setCellValue('O1', $statistics[1]->ParticipantCategory)
-            ->setCellValue('P1', $statistics[2]->ParticipantCategory)
-            ->setCellValue('Q1', $statistics[3]->ParticipantCategory)
-            ->setCellValue('R1', $statistics[4]->ParticipantCategory)
-            ->setCellValue('S1', $statistics[5]->ParticipantCategory)
+            ->setCellValue('O1', $statistics[1]->getLabel())
+            ->setCellValue('P1', $statistics[2]->getLabel())
+            ->setCellValue('Q1', $statistics[3]->getLabel())
+            ->setCellValue('R1', $statistics[4]->getLabel())
+            ->setCellValue('S1', $statistics[5]->getLabel())
             ->setCellValue('T1', 'Prefix');
 
         if (! $allowPragueColumns) {

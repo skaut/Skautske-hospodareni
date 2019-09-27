@@ -136,22 +136,6 @@ class ParticipantService extends MutableBaseService
         $this->skautis->event->{'Participant' . $this->typeName . 'Delete'}(['ID' => $participantId, 'DeletePerson' => false]);
     }
 
-    /**
-     * @return mixed[]
-     */
-    public function getEventStatistic(int $eventId) : array
-    {
-        $skautisData = $this->skautis->event->{'EventStatisticAllEventGeneral'}(['ID_EventGeneral' => $eventId]);
-
-        $result = [];
-
-        foreach ($skautisData as $row) {
-            $result[$row->ID_ParticipantCategory] = $row;
-        }
-
-        return $result;
-    }
-
     private function getPayment(int $participantId, Event $event) : Payment
     {
         try {

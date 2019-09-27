@@ -27,6 +27,7 @@ use Model\ExportService;
 use Model\Logger\Log\Type;
 use Model\LoggerService;
 use Model\Services\PdfRenderer;
+use Model\Skautis\ReadModel\Queries\EventStatisticsQuery;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
 use function assert;
@@ -86,7 +87,7 @@ class EventPresenter extends BasePresenter
         ));
 
         $this->template->setParameters([
-            'statistic' => $this->eventService->getParticipants()->getEventStatistic($this->aid),
+            'statistic' => $this->queryBus->handle(new EventStatisticsQuery(new SkautisEventId($this->aid))),
             'accessEditBase' => $accessEditBase,
             'accessCloseEvent' => $this->authorizator->isAllowed(Event::CLOSE, $aid),
             'accessOpenEvent' => $this->authorizator->isAllowed(Event::OPEN, $aid),
