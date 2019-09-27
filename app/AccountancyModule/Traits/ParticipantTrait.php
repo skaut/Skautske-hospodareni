@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\AccountancyModule;
 
 use App\Forms\BaseForm;
+use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
+use Model\Cashbook\Commands\Cashbook\AddCampParticipant;
+use Model\Cashbook\Commands\Cashbook\AddEventParticipant;
 use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
 use Model\Common\ShouldNotHappen;
@@ -73,6 +76,9 @@ trait ParticipantTrait
 
     /** @var QueryBus */
     protected $queryBus;
+
+    /** @var CommandBus */
+    protected $commandBus;
 
     protected function traitStartup() : void
     {
@@ -216,7 +222,11 @@ trait ParticipantTrait
                 $this->redirect('this');
             }
         }
-        $this->eventService->getParticipants()->add($this->aid, $pid);
+        $this->commandBus->handle(
+            $this->type === 'camp'
+                ? new AddCampParticipant(new SkautisCampId($this->aid), $pid)
+                : new AddEventParticipant(new SkautisEventId($this->aid), $pid)
+        );
         if ($this->isAjax()) {
             $this->redrawControl('potencialParticipants');
             $this->redrawControl('participants');
@@ -256,7 +266,12 @@ trait ParticipantTrait
             $this->redirect('Default:');
         }
         foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massList[]') as $id) {
-            $this->eventService->getParticipants()->add($this->aid, (int) $id);
+            $id = (int) $id;
+            $this->commandBus->handle(
+                $this->type === 'camp'
+                    ? new AddCampParticipant(new SkautisCampId($this->aid), $id)
+                    : new AddEventParticipant(new SkautisEventId($this->aid), $id)
+            );
         }
         $this->redirect('this');
     }

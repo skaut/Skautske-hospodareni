@@ -19,4 +19,8 @@ interface IParticipantRepository
      * @return Participant[]
      */
     public function findByCamp(SkautisCampId $id) : array;
+
+    public function addCampParticipant(SkautisCampId $campId, int $participantId) : void;
+
+    public function addEventParticipant(SkautisEventId $eventId, int $participantId) : void;
 }

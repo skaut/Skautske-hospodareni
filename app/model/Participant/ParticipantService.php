@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Model;
 
 use InvalidArgumentException;
-use Model\Participant\Payment;
 use Model\Participant\Payment\Event;
 use Model\Participant\Payment\EventType;
 use Model\Participant\PaymentFactory;
@@ -13,9 +12,7 @@ use Model\Participant\PaymentNotFound;
 use Model\Participant\Repositories\IPaymentRepository;
 use Model\Utils\MoneyFactory;
 use Skautis\Skautis;
-use Skautis\Wsdl\WsdlException;
 use function array_key_exists;
-use function preg_match;
 use function sprintf;
 
 class ParticipantService extends MutableBaseService
@@ -27,27 +24,6 @@ class ParticipantService extends MutableBaseService
     {
         parent::__construct($name, $skautIS);
         $this->repository = $repository;
-    }
-
-    /**
-     * přidat účastníka k akci
-     *
-     * @throws WsdlException
-     */
-    public function add(int $ID, int $participantId) : bool
-    {
-        try {
-            return (bool) $this->skautis->event->{'Participant' . $this->typeName . 'Insert'}([
-                'ID_Event' . $this->typeName => $ID,
-                'ID_Person' => $participantId,
-            ]);
-        } catch (WsdlException $ex) {
-            if (! preg_match('/Chyba validace \(Participant_PersonIsAllreadyParticipant(General)?\)/', $ex->getMessage())) {
-                throw $ex;
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -107,7 +83,12 @@ class ParticipantService extends MutableBaseService
         }
 
         //@todo: check actionId privileges
-        $payment = $this->getPayment($participantId, new Event($actionId, EventType::get($this->type === 'camp' ? EventType::CAMP : EventType::GENERAL)));
+        $event = new Event($actionId, $this->type === 'camp' ? EventType::CAMP() : EventType::GENERAL());
+        try {
+            $payment = $this->repository->findByParticipant($participantId, $event->getType());
+        } catch (PaymentNotFound $exc) {
+            $payment = PaymentFactory::createDefault($participantId, $event);
+        }
 
         foreach ($arr as $key => $value) {
             switch ($key) {
@@ -134,16 +115,5 @@ class ParticipantService extends MutableBaseService
         } catch (PaymentNotFound $exc) {
         }
         $this->skautis->event->{'Participant' . $this->typeName . 'Delete'}(['ID' => $participantId, 'DeletePerson' => false]);
-    }
-
-    private function getPayment(int $participantId, Event $event) : Payment
-    {
-        try {
-            $payment = $this->repository->findByParticipant($participantId, EventType::get($this->type));
-        } catch (PaymentNotFound $exc) {
-            $payment = PaymentFactory::createDefault($participantId, $event);
-        }
-
-        return $payment;
     }
 }
