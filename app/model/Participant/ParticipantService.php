@@ -4,48 +4,32 @@ declare(strict_types=1);
 
 namespace Model;
 
-use Cake\Chronos\Date;
-use eGen\MessageBus\Bus\QueryBus;
 use InvalidArgumentException;
-use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
 use Model\DTO\Participant\Participant as ParticipantDTO;
 use Model\DTO\Payment\ParticipantFactory as ParticipantDTOFactory;
-use Model\Event\SkautisEventId;
 use Model\Participant\Payment;
 use Model\Participant\Payment\Event;
 use Model\Participant\Payment\EventType;
 use Model\Participant\PaymentFactory;
 use Model\Participant\PaymentNotFound;
-use Model\Participant\PragueParticipants;
 use Model\Participant\Repositories\IPaymentRepository;
 use Model\Skautis\Factory\ParticipantFactory;
 use Model\Utils\MoneyFactory;
-use Nette\Utils\Strings;
 use Skautis\Skautis;
 use Skautis\Wsdl\WsdlException;
 use function array_key_exists;
-use function assert;
 use function preg_match;
 use function sprintf;
-use function stripos;
 
 class ParticipantService extends MutableBaseService
 {
-    private const PRAGUE_SUPPORTABLE_AGE       = 18;
-    private const PRAGUE_SUPPORTABLE_UPPER_AGE = 26;
-    private const PRAGUE_UNIT_PREFIX           = 11;
-
     /** @var IPaymentRepository */
     private $repository;
 
-    /** @var QueryBus */
-    private $queryBus;
-
-    public function __construct(string $name, Skautis $skautIS, IPaymentRepository $repository, QueryBus $queryBus)
+    public function __construct(string $name, Skautis $skautIS, IPaymentRepository $repository)
     {
         parent::__construct($name, $skautIS);
         $this->repository = $repository;
-        $this->queryBus   = $queryBus;
     }
 
     public function get(int $participantId, int $actionId) : ParticipantDTO
@@ -193,52 +177,6 @@ class ParticipantService extends MutableBaseService
         }
 
         return $result;
-    }
-
-    public function countPragueParticipants(string $registrationNumber, Date $startDate, int $eventId) : ?PragueParticipants
-    {
-        if (! Strings::startsWith($registrationNumber, self::PRAGUE_UNIT_PREFIX)) {
-            return null;
-        }
-
-        $eventStartDate    = $startDate;
-        $participants      = $this->queryBus->handle(new EventParticipantListQuery(new SkautisEventId($eventId)));
-        $under18           = 0;
-        $between18and26    = 0;
-        $personDaysUnder26 = 0;
-        $citizensCount     = 0;
-
-        foreach ($participants as $p) {
-            assert($p instanceof ParticipantDTO);
-            if (stripos($p->getCity(), 'Praha') === false) {
-                continue;
-            }
-            $citizensCount += 1;
-
-            $birthday = $p->getBirthday();
-
-            if ($birthday === null) {
-                continue;
-            }
-
-            $ageInYears = $eventStartDate->diffInYears($birthday);
-
-            if ($ageInYears <= self::PRAGUE_SUPPORTABLE_AGE) {
-                $under18 += 1;
-            }
-
-            if (self::PRAGUE_SUPPORTABLE_AGE < $ageInYears && $ageInYears <= self::PRAGUE_SUPPORTABLE_UPPER_AGE) {
-                $between18and26 += 1;
-            }
-
-            if ($ageInYears > self::PRAGUE_SUPPORTABLE_UPPER_AGE) {
-                continue;
-            }
-
-            $personDaysUnder26 += $p->getDays();
-        }
-
-        return new PragueParticipants($under18, $between18and26, $personDaysUnder26, $citizensCount);
     }
 
     private function getPayment(int $participantId, Event $event) : Payment

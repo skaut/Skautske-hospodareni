@@ -9,6 +9,7 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\PragueParticipantsQuery;
 use Model\Cashbook\ReadModel\QueryHandlers\Pdf\SheetChitsGenerator;
 use Model\Cashbook\ReadModel\SpreadsheetFactory;
 use Model\DTO\Cashbook\Cashbook;
@@ -214,16 +215,14 @@ final class ExportEventsHandler
      */
     private function getPragueParticipantsForEvents(array $events) : array
     {
-        $participantService = $this->participantServiceFactory->create(ucfirst(ObjectType::EVENT));
-
         return array_filter(
             array_map(
-                function (Event $event) use ($participantService) : ?PragueParticipants {
-                    return $participantService->countPragueParticipants(
+                function (Event $event) : ?PragueParticipants {
+                    return $this->queryBus->handle(new PragueParticipantsQuery(
+                        $event->getId(),
                         $event->getRegistrationNumber(),
-                        $event->getStartDate(),
-                        $event->getId()->toInt()
-                    );
+                        $event->getStartDate()
+                    ));
                 },
                 $events
             )

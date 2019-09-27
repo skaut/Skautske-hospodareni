@@ -13,6 +13,7 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\Pdf\ExportChits;
+use Model\Cashbook\ReadModel\Queries\PragueParticipantsQuery;
 use Model\Event\Commands\Event\ActivateStatistics;
 use Model\Event\Commands\Event\CloseEvent;
 use Model\Event\Commands\Event\OpenEvent;
@@ -78,11 +79,11 @@ class EventPresenter extends BasePresenter
             ]);
         }
 
-        $pragueParticipants = $this->eventService->getParticipants()->countPragueParticipants(
+        $pragueParticipants = $this->queryBus->handle(new PragueParticipantsQuery(
+            $this->event->getId(),
             $this->event->getRegistrationNumber(),
-            $this->event->getStartDate(),
-            $this->event->getId()->toInt()
-        );
+            $this->event->getStartDate()
+        ));
 
         $this->template->setParameters([
             'statistic' => $this->eventService->getParticipants()->getEventStatistic($this->aid),
