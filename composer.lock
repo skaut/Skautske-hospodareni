@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4d0db329d46007cc5b08a3c6302333da",
+    "content-hash": "179c43e036e9c18bfaa3e8b69dab2a9d",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -4339,7 +4339,7 @@
         },
         {
             "name": "nextras/mail-panel",
-            "version": "v2.4.0-beta1",
+            "version": "v2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nextras/mail-panel.git",
