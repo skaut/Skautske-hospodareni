@@ -23,7 +23,7 @@
         "mpdf/mpdf": "^7.0",
         "nextras/forms": "^2.0",
         "heureka/bank-account-validator": "1.1.*",
-        "nextras/mail-panel": "2.4.0-beta1",
+        "nextras/mail-panel": "2.4.0",
         "kdyby/console": "^2.6",
         "consistence/consistence": "^2.0",
         "kdyby/doctrine": "^3.1",
