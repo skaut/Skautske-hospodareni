@@ -26,7 +26,7 @@ final class CampFactory
                 $skautisCamp->RealAdult,
                 $skautisCamp->RealChild,
                 $skautisCamp->RealCount,
-                $skautisCamp->RealChildDays,
+                $skautisCamp->RealChildDays ?? 0,
                 $skautisCamp->RealPersonDays
             );
         } else {
