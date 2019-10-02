@@ -32,13 +32,17 @@ class Mail
     /** @var string */
     private $secure;
 
-    public function __construct(int $id, int $unitId, string $username, string $host, string $secure)
+    /** @var string */
+    private $sender;
+
+    public function __construct(int $id, int $unitId, string $username, string $host, string $secure, string $sender)
     {
         $this->id       = $id;
         $this->unitId   = $unitId;
         $this->username = $username;
         $this->host     = $host;
         $this->secure   = $secure;
+        $this->sender   = $sender;
     }
 
     public function getId() : int
@@ -64,5 +68,10 @@ class Mail
     public function getSecure() : string
     {
         return $this->secure;
+    }
+
+    public function getSender() : string
+    {
+        return $this->sender;
     }
 }

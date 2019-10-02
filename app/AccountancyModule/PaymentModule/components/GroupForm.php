@@ -344,7 +344,7 @@ final class GroupForm extends BaseControl
             $unit = $units[$credentials->getUnitId()];
             assert($unit instanceof Unit);
 
-            $items[$unit->getDisplayName()][$credentials->getId()] = $credentials->getUsername();
+            $items[$unit->getDisplayName()][$credentials->getId()] = $credentials->getSender();
         }
 
         return $items;

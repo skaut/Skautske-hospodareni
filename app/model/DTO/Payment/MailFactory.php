@@ -15,7 +15,8 @@ class MailFactory
             $credentials->getUnitId(),
             $credentials->getUsername(),
             $credentials->getHost(),
-            $credentials->getProtocol()->getValue()
+            $credentials->getProtocol()->getValue(),
+            $credentials->getSender(),
         );
     }
 }
