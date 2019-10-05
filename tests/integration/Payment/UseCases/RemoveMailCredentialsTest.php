@@ -15,6 +15,7 @@ use Model\Payment\MailCredentialsNotFound;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IMailCredentialsRepository;
 use Stubs\BankAccountAccessCheckerStub;
+use Stubs\MailCredentialsAccessCheckerStub;
 
 final class RemoveMailCredentialsTest extends IntegrationTest
 {
@@ -74,7 +75,8 @@ final class RemoveMailCredentialsTest extends IntegrationTest
             Helpers::createEmails(),
             $credentialsId,
             null,
-            new BankAccountAccessCheckerStub()
+            new BankAccountAccessCheckerStub(),
+            new MailCredentialsAccessCheckerStub(),
         );
         $this->groups->save($group);
         $this->assertSame(1, $group->getId());

@@ -17,6 +17,7 @@ services:
       tags: [commandBus.handler]
 
     - Model\Payment\Services\BankAccountAccessChecker
+    - Stubs\MailCredentialsAccessCheckerStub
 
     - Model\Payment\UnitResolverStub
     - Model\Payment\FioClientStub

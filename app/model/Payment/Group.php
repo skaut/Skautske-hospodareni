@@ -11,11 +11,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Fmasa\DoctrineNullableEmbeddables\Annotations\Nullable;
 use InvalidArgumentException;
+use Model\Payment\Exception\NoAccessToMailCredentials;
 use Model\Payment\Group\Email;
 use Model\Payment\Group\PaymentDefaults;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Unit;
 use Model\Payment\Services\IBankAccountAccessChecker;
+use Model\Payment\Services\IMailCredentialsAccessChecker;
 
 /**
  * @ORM\Entity()
@@ -126,14 +128,14 @@ class Group
         array $emails,
         ?int $smtpId,
         ?BankAccount $bankAccount,
-        IBankAccountAccessChecker $bankAccountAccessChecker
+        IBankAccountAccessChecker $bankAccountAccessChecker,
+        IMailCredentialsAccessChecker $mailCredentialsAccessChecker
     ) {
         Assertion::notEmpty($unitIds);
         $this->object          = $object;
         $this->name            = $name;
         $this->paymentDefaults = $paymentDefaults;
         $this->createdAt       = $createdAt;
-        $this->smtpId          = $smtpId;
 
         $this->emails = new ArrayCollection();
         $this->units  = new ArrayCollection();
@@ -151,6 +153,7 @@ class Group
         }
 
         $this->changeBankAccount($bankAccount, $bankAccountAccessChecker);
+        $this->changeMailCredentials($smtpId, $mailCredentialsAccessChecker);
     }
 
     public function update(
@@ -158,9 +161,11 @@ class Group
         PaymentDefaults $paymentDefaults,
         ?int $smtpId,
         ?BankAccount $bankAccount,
-        IBankAccountAccessChecker $bankAccountAccessChecker
+        IBankAccountAccessChecker $bankAccountAccessChecker,
+        IMailCredentialsAccessChecker $mailCredentialsAccessChecker
     ) : void {
         $this->changeBankAccount($bankAccount, $bankAccountAccessChecker);
+        $this->changeMailCredentials($smtpId, $mailCredentialsAccessChecker);
 
         $this->name            = $name;
         $this->paymentDefaults = $paymentDefaults;
@@ -193,8 +198,11 @@ class Group
     /**
      * @param int[] $unitIds
      */
-    public function changeUnits(array $unitIds, IBankAccountAccessChecker $accessChecker) : void
-    {
+    public function changeUnits(
+        array $unitIds,
+        IBankAccountAccessChecker $bankAccountAccessChecker,
+        IMailCredentialsAccessChecker $mailAccessChecker
+    ) : void {
         $this->units->clear();
         foreach ($unitIds as $unitId) {
             $this->units->add(new Unit($this, $unitId));
@@ -202,11 +210,17 @@ class Group
 
         $bankAccount = $this->bankAccount;
 
-        if ($bankAccount === null || $accessChecker->allUnitsHaveAccessToBankAccount($unitIds, $bankAccount->getId())) {
+        if ($bankAccount !== null && ! $bankAccountAccessChecker->allUnitsHaveAccessToBankAccount($unitIds, $bankAccount->getId())) {
+            $this->bankAccount = null;
+        }
+
+        $credentialsId = $this->smtpId;
+
+        if ($credentialsId === null || $mailAccessChecker->allUnitsHaveAccessToMailCredentials($unitIds, $credentialsId)) {
             return;
         }
 
-        $this->bankAccount = null;
+        $this->smtpId = null;
     }
 
     public function getId() : ?int
@@ -381,5 +395,16 @@ class Group
     public function resetSmtp() : void
     {
         $this->smtpId = null;
+    }
+
+    private function changeMailCredentials(?int $mailCredentialsId, IMailCredentialsAccessChecker $checker) : void
+    {
+        $unitIds = $this->getUnitIds();
+
+        if ($mailCredentialsId !== null && ! $checker->allUnitsHaveAccessToMailCredentials($unitIds, $mailCredentialsId)) {
+            throw NoAccessToMailCredentials::forUnits($unitIds, $mailCredentialsId);
+        }
+
+        $this->smtpId = $mailCredentialsId;
     }
 }

@@ -7,6 +7,7 @@ services:
     - GuzzleHttp\Client
     - Stubs\Skautis
     - Stubs\BankAccountAccessCheckerStub
+    - Stubs\MailCredentialsAccessCheckerStub
 
     - class: Model\Payment\Handlers\Payment\CreatePaymentHandler
       tags: [commandBus.handler]

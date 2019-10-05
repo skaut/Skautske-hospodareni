@@ -14,6 +14,7 @@ use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\UnitResolverStub;
 use Stubs\BankAccountAccessCheckerStub;
+use Stubs\MailCredentialsAccessCheckerStub;
 
 class BankAccountServiceTest extends IntegrationTest
 {
@@ -103,7 +104,8 @@ class BankAccountServiceTest extends IntegrationTest
             $emails,
             null,
             $account,
-            new BankAccountAccessCheckerStub()
+            new BankAccountAccessCheckerStub(),
+            new MailCredentialsAccessCheckerStub(),
         );
 
         $this->groups->save($group);

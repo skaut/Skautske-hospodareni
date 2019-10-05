@@ -4,20 +4,16 @@ declare(strict_types=1);
 
 namespace Model;
 
-use eGen\MessageBus\Bus\QueryBus;
 use Model\DTO\Payment\Mail;
 use Model\DTO\Payment\MailFactory;
 use Model\Payment\IUnitResolver;
 use Model\Payment\MailCredentials;
 use Model\Payment\MailCredentialsNotFound;
 use Model\Payment\Repositories\IMailCredentialsRepository;
-use Model\Unit\ReadModel\Queries\UnitsDetailQuery;
-use Model\Unit\Unit;
 use function array_filter;
 use function array_map;
 use function array_merge;
 use function array_unique;
-use function assert;
 
 class MailService
 {
@@ -27,17 +23,10 @@ class MailService
     /** @var IUnitResolver */
     private $unitResolver;
 
-    /** @var QueryBus */
-    private $queryBus;
-
-    public function __construct(
-        IMailCredentialsRepository $credentials,
-        IUnitResolver $unitResolver,
-        QueryBus $queryBus
-    ) {
+    public function __construct(IMailCredentialsRepository $credentials, IUnitResolver $unitResolver)
+    {
         $this->credentials  = $credentials;
         $this->unitResolver = $unitResolver;
-        $this->queryBus     = $queryBus;
     }
 
     public function get(int $id) : ?Mail
@@ -61,30 +50,6 @@ class MailService
         $mails = $this->findForUnits($unitIds);
 
         return array_map([MailFactory::class, 'create'], array_merge([], ...$mails));
-    }
-
-    /**
-     * @param int[] $unitIds
-     *
-     * @return array<string, array<int, string>>
-     */
-    public function getCredentialsPairsGroupedByUnit(array $unitIds) : array
-    {
-        $unitIds     = $this->getAccessibleUnitIds($unitIds);
-        $credentials = $this->findForUnits($unitIds);
-        $units       = $this->queryBus->handle(new UnitsDetailQuery($unitIds));
-
-        $result = [];
-        foreach ($credentials as $unitId => $items) {
-            $unit = $units[$unitId];
-            assert($unit instanceof Unit);
-            foreach ($items as $credential) {
-                assert($credential instanceof MailCredentials);
-                $result[$unit->getDisplayName()][$credential->getId()] = $credential->getUsername();
-            }
-        }
-
-        return $result;
     }
 
     /**
