@@ -32,7 +32,7 @@
         "lint-staged": "^8.1.7",
         "ts-loader": "^6.1.2",
         "typescript": "^3.6.4",
-        "uglify-js": "^3.6.0",
+        "uglify-js": "^3.6.2",
         "webpack": "^4.41.0",
         "webpack-bundle-analyzer": "^3.5.2",
         "webpack-cli": "^3.3.9"
