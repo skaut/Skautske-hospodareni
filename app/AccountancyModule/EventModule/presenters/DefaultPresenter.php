@@ -99,7 +99,7 @@ class DefaultPresenter extends BasePresenter
         $states = array_merge([DataGrid::OPTION_ALL => 'Nezrušené'], $this->queryBus->handle(new EventStates()));
         $grid->addFilterSelect('state', 'Stav', $states)
             ->setCondition(function (EventListDataSource $dataSource, ?string $state) : void {
-                $dataSource->filterByState($state ?? self::DEFAULT_STATE);
+                $dataSource->filterByState($state === DataGrid::OPTION_ALL ? null : $state);
             });
 
         $grid->addFilterText('search', 'Název', 'name')
