@@ -13,7 +13,7 @@
         "@fortawesome/free-solid-svg-icons": "^5.11.2",
         "@types/nprogress": "^0.2.0",
         "@types/pikaday": "^1.7.4",
-        "autoprefixer": "^9.6.1",
+        "autoprefixer": "^9.7.1",
         "bootstrap": "^4.3.1",
         "bootstrap.native": "^2.0.27",
         "moment": "^2.24.0",
