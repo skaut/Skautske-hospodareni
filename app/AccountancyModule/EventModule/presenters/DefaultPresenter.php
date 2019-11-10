@@ -106,6 +106,7 @@ class DefaultPresenter extends BasePresenter
             ->setPlaceholder('Hledat podle názvu...');
 
         $grid->setDataSource(new EventListDataSource($this->queryBus));
+        $grid->setDefaultSort(['startDate' => 'ASC']);
 
         $grid->setDefaultFilter([
             'search' => '',
