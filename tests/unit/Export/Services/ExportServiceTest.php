@@ -12,7 +12,7 @@ use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
-use Model\Cashbook\ReadModel\Queries\ParticipantStatisticsQuery;
+use Model\Cashbook\ReadModel\Queries\EventParticipantStatisticsQuery;
 use Model\DTO\Cashbook\Category;
 use Model\DTO\Participant\Statistics;
 use Model\Event\Event;
@@ -53,7 +53,7 @@ class ExportServiceTest extends Unit
 
         $queryBus->expects('handle')
             ->once()
-            ->withArgs(function (ParticipantStatisticsQuery $query) use ($skautisEventId) {
+            ->withArgs(function (EventParticipantStatisticsQuery $query) use ($skautisEventId) {
                 return $query->getId()->toInt() === $skautisEventId;
             })
             ->andReturn(new Statistics(0, 0));

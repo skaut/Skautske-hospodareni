@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use eGen\MessageBus\Bus\QueryBus;
-use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
-use Model\Cashbook\ReadModel\Queries\ParticipantStatisticsQuery;
+use Model\Cashbook\ReadModel\Queries\EventParticipantStatisticsQuery;
 use Model\DTO\Participant\Statistics;
-use Model\Event\SkautisEventId;
 use function count;
 
-final class ParticipantStatisticsQueryHandler
+final class EventParticipantStatisticsQueryHandler
 {
     /** @var QueryBus */
     private $queryBus;
@@ -22,13 +20,9 @@ final class ParticipantStatisticsQueryHandler
         $this->queryBus = $queryBus;
     }
 
-    public function __invoke(ParticipantStatisticsQuery $query) : Statistics
+    public function __invoke(EventParticipantStatisticsQuery $query) : Statistics
     {
-        $participants = $this->queryBus->handle(
-            $query->getId() instanceof SkautisEventId
-                ? new EventParticipantListQuery($query->getId())
-                : new CampParticipantListQuery($query->getId())
-        );
+        $participants = $this->queryBus->handle(new EventParticipantListQuery($query->getId()));
         $days         = 0;
         foreach ($participants as $p) {
             $days += $p->getDays();

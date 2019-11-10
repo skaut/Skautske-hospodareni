@@ -11,6 +11,7 @@ use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
+use Model\Cashbook\ReadModel\Queries\CampParticipantStatisticsQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookDisplayNameQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookOfficialUnitQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
@@ -18,7 +19,7 @@ use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
-use Model\Cashbook\ReadModel\Queries\ParticipantStatisticsQuery;
+use Model\Cashbook\ReadModel\Queries\EventParticipantStatisticsQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit;
@@ -186,7 +187,7 @@ class ExportService
             array_column($sums[self::CATEGORY_VIRTUAL][Operation::EXPENSE], 'amount')
         );
 
-        $stats = $this->queryBus->handle(new ParticipantStatisticsQuery(new SkautisEventId($skautisEventId)));
+        $stats = $this->queryBus->handle(new EventParticipantStatisticsQuery(new SkautisEventId($skautisEventId)));
         assert($stats instanceof Statistics);
         $events    = $this->events->find(new SkautisEventId($skautisEventId));
         $functions = $this->queryBus->handle(new EventFunctions(new SkautisEventId($skautisEventId)));
@@ -246,7 +247,7 @@ class ExportService
             $total['income'] = $total['income']->subtract($refund->getTotal());
         }
 
-        $stats = $this->queryBus->handle(new ParticipantStatisticsQuery(new SkautisCampId($skautisCampId)));
+        $stats = $this->queryBus->handle(new CampParticipantStatisticsQuery(new SkautisCampId($skautisCampId)));
         assert($stats instanceof Statistics);
 
         return $this->templateFactory->create(__DIR__ . '/templates/campReport.latte', [
