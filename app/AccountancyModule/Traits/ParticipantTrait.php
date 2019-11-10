@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\AccountancyModule;
 
 use App\Forms\BaseForm;
-use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Commands\Cashbook\AddCampParticipant;
@@ -38,7 +37,6 @@ use function array_merge;
 use function assert;
 use function count;
 use function in_array;
-use function is_string;
 use function property_exists;
 use function strcasecmp;
 use function strpos;
@@ -368,7 +366,7 @@ trait ParticipantTrait
         $form->addText('postcode', 'PSČ*')
             ->addRule(Form::FILLED, 'Musíš vyplnit PSČ.');
         $form->addText('nick', 'Přezdívka');
-        $form->addText('birthday', 'Dat. nar.');
+        $form->addDate('birthday', 'Dat. nar.');
         $form->addSubmit('send', 'Založit účastníka')
             ->setAttribute('class', 'btn btn-primary');
 
@@ -395,7 +393,7 @@ trait ParticipantTrait
             $values['firstName'],
             $values['lastName'],
             $values['nick'],
-            is_string($values['birthday']) ? new Date($values['birthday']): null,
+            $values['birthday'],
             $values['street'],
             $values['city'],
             $values['postcode'],
