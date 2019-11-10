@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\AccountancyModule\CampModule;
 
 use Model\Auth\Resources\Camp;
+use Model\Cashbook\ReadModel\Queries\CampPragueParticipantsQuery;
 use Model\Cashbook\ReadModel\Queries\InconsistentCampCategoryTotalsQuery;
-use Model\Cashbook\ReadModel\Queries\PragueParticipantsQuery;
 use Model\Common\UnitId;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\SkautisCampId;
@@ -57,7 +57,7 @@ class DetailPresenter extends BasePresenter
             'functions' => $this->authorizator->isAllowed(Camp::ACCESS_FUNCTIONS, $aid)
                 ? $this->queryBus->handle(new CampFunctions(new SkautisCampId($aid)))
                 : null,
-            'pragueParticipants' => $this->queryBus->handle(new PragueParticipantsQuery(
+            'pragueParticipants' => $this->queryBus->handle(new CampPragueParticipantsQuery(
                 $this->event->getId(),
                 $this->event->getRegistrationNumber(),
                 $this->event->getStartDate()

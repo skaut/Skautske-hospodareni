@@ -6,14 +6,13 @@ namespace Model\Cashbook\ReadModel\Queries;
 
 use Cake\Chronos\Date;
 use Model\Event\SkautisCampId;
-use Model\Event\SkautisEventId;
 
 /**
- * @see ParticipantStatisticsQueryHandler
+ * @see CampPragueParticipantStatisticsQueryHandler
  */
-final class PragueParticipantsQuery
+final class CampPragueParticipantsQuery
 {
-    /** @var SkautisEventId|SkautisCampId */
+    /** @var SkautisCampId */
     private $id;
 
     /** @var string */
@@ -22,20 +21,14 @@ final class PragueParticipantsQuery
     /** @var Date */
     private $startDate;
 
-    /**
-     * @param SkautisEventId|SkautisCampId $id
-     */
-    public function __construct($id, string $registrationNumber, Date $startDate)
+    public function __construct(SkautisCampId $id, string $registrationNumber, Date $startDate)
     {
         $this->id                 = $id;
         $this->registrationNumber = $registrationNumber;
         $this->startDate          = $startDate;
     }
 
-    /**
-     * @return SkautisCampId|SkautisEventId
-     */
-    public function getId()
+    public function getId() : SkautisCampId
     {
         return $this->id;
     }

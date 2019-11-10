@@ -8,7 +8,7 @@ use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
-use Model\Cashbook\ReadModel\Queries\PragueParticipantsQuery;
+use Model\Cashbook\ReadModel\Queries\EventPragueParticipantsQuery;
 use Model\Cashbook\ReadModel\QueryHandlers\Pdf\SheetChitsGenerator;
 use Model\Cashbook\ReadModel\SpreadsheetFactory;
 use Model\DTO\Cashbook\Cashbook;
@@ -211,7 +211,7 @@ final class ExportEventsHandler
         return array_filter(
             array_map(
                 function (Event $event) : ?PragueParticipants {
-                    return $this->queryBus->handle(new PragueParticipantsQuery(
+                    return $this->queryBus->handle(new EventPragueParticipantsQuery(
                         $event->getId(),
                         $event->getRegistrationNumber(),
                         $event->getStartDate()

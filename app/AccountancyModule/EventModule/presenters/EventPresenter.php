@@ -12,8 +12,8 @@ use Model\Auth\Resources\Event;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\EventPragueParticipantsQuery;
 use Model\Cashbook\ReadModel\Queries\Pdf\ExportChits;
-use Model\Cashbook\ReadModel\Queries\PragueParticipantsQuery;
 use Model\Event\Commands\Event\ActivateStatistics;
 use Model\Event\Commands\Event\CloseEvent;
 use Model\Event\Commands\Event\OpenEvent;
@@ -80,7 +80,7 @@ class EventPresenter extends BasePresenter
             ]);
         }
 
-        $pragueParticipants = $this->queryBus->handle(new PragueParticipantsQuery(
+        $pragueParticipants = $this->queryBus->handle(new EventPragueParticipantsQuery(
             $this->event->getId(),
             $this->event->getRegistrationNumber(),
             $this->event->getStartDate()
