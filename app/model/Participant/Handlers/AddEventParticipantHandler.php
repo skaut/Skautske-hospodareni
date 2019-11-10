@@ -19,6 +19,6 @@ final class AddEventParticipantHandler
 
     public function __invoke(AddEventParticipant $command) : void
     {
-        $this->participants->addEventParticipant($command->getEventId(), $command->getParticipantId());
+        $this->participants->addEventParticipant($command->getEventId(), $command->getPersonId());
     }
 }

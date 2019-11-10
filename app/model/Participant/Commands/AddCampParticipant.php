@@ -15,12 +15,12 @@ final class AddCampParticipant
     private $campId;
 
     /** @var int */
-    private $participantId;
+    private $personId;
 
-    public function __construct(SkautisCampId $campId, int $participantId)
+    public function __construct(SkautisCampId $campId, int $personId)
     {
-        $this->campId        = $campId;
-        $this->participantId = $participantId;
+        $this->campId   = $campId;
+        $this->personId = $personId;
     }
 
     public function getCampId() : SkautisCampId
@@ -28,8 +28,8 @@ final class AddCampParticipant
         return $this->campId;
     }
 
-    public function getParticipantId() : int
+    public function getPersonId() : int
     {
-        return $this->participantId;
+        return $this->personId;
     }
 }

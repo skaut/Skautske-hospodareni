@@ -271,12 +271,12 @@ trait ParticipantTrait
             $this->flashMessage('Nemáte právo přidávat účastníky.', 'danger');
             $this->redirect('Default:');
         }
-        foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massList[]') as $id) {
-            $id = (int) $id;
+        foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massList[]') as $personId) {
+            $personId = (int) $personId;
             $this->commandBus->handle(
                 $this->type === 'camp'
-                    ? new AddCampParticipant(new SkautisCampId($this->aid), $id)
-                    : new AddEventParticipant(new SkautisEventId($this->aid), $id)
+                    ? new AddCampParticipant(new SkautisCampId($this->aid), $personId)
+                    : new AddEventParticipant(new SkautisEventId($this->aid), $personId)
             );
         }
         $this->redirect('this');

@@ -71,12 +71,12 @@ final class ParticipantRepository implements IParticipantRepository
         return $this->processParticipants($participants, $event);
     }
 
-    public function addCampParticipant(SkautisCampId $campId, int $participantId) : void
+    public function addCampParticipant(SkautisCampId $campId, int $personId) : void
     {
         try {
             $this->skautis->event->ParticipantCampInsert([
                 'ID_EventCamp' => $campId,
-                'ID_Person' => $participantId,
+                'ID_Person' => $personId,
             ]);
         } catch (WsdlException $ex) {
             if (! preg_match('/Chyba validace \(Participant_PersonIsAllreadyParticipant\)/', $ex->getMessage())) {
@@ -85,12 +85,12 @@ final class ParticipantRepository implements IParticipantRepository
         }
     }
 
-    public function addEventParticipant(SkautisEventId $eventId, int $participantId) : void
+    public function addEventParticipant(SkautisEventId $eventId, int $personId) : void
     {
         try {
             $this->skautis->event->ParticipantGeneralInsert([
                 'ID_EventGeneral' => $eventId,
-                'ID_Person' => $participantId,
+                'ID_Person' => $personId,
             ]);
         } catch (WsdlException $ex) {
             if (! preg_match('/Chyba validace \(Participant_PersonIsAllreadyParticipantGeneral\)/', $ex->getMessage())) {

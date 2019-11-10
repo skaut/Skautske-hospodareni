@@ -19,6 +19,6 @@ final class AddCampParticipantHandler
 
     public function __invoke(AddCampParticipant $command) : void
     {
-        $this->participants->addCampParticipant($command->getCampId(), $command->getParticipantId());
+        $this->participants->addCampParticipant($command->getCampId(), $command->getPersonId());
     }
 }

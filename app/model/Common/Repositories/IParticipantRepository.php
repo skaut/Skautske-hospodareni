@@ -21,9 +21,9 @@ interface IParticipantRepository
      */
     public function findByCamp(SkautisCampId $id) : array;
 
-    public function addCampParticipant(SkautisCampId $campId, int $participantId) : void;
+    public function addCampParticipant(SkautisCampId $campId, int $personId) : void;
 
-    public function addEventParticipant(SkautisEventId $eventId, int $participantId) : void;
+    public function addEventParticipant(SkautisEventId $eventId, int $personId) : void;
 
     public function createCampParticipant(SkautisCampId $eventId, NonMemberParticipant $participant) : void;
 
