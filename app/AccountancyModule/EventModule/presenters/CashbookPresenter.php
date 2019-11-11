@@ -18,9 +18,9 @@ use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantBalanceQuery;
+use Model\Cashbook\ReadModel\Queries\EventParticipantIncomeQuery;
 use Model\Cashbook\ReadModel\Queries\FinalCashBalanceQuery;
 use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
-use Model\Cashbook\ReadModel\Queries\ParticipantTotalPaymentQuery;
 use Model\DTO\Cashbook\ChitItem;
 use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\EventFunctions;
@@ -76,7 +76,7 @@ class CashbookPresenter extends BasePresenter
             }
         }
 
-        $totalPayment = $this->queryBus->handle(new ParticipantTotalPaymentQuery(new SkautisEventId($this->aid)));
+        $totalPayment = $this->queryBus->handle(new EventParticipantIncomeQuery(new SkautisEventId($this->aid)));
 
         if ($totalPayment === 0.0) {
             $this->flashMessage('Nemáte žádné příjmy od účastníků');

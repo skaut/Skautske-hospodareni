@@ -29,8 +29,8 @@ class CampParticipantIncomeQueryHandler
         foreach ($participants as $p) {
             assert($p instanceof Participant);
             //pokud se alespon v jednom neshodují, tak pokracujte
-            if (($query->isAdult() xor preg_match('/^Dospěl/', $p->getCategory()))
-                || ($query->isOnAccount() xor $p->getOnAccount() === 'Y')
+            if (($query->isAdult() !== null && ($query->isAdult() xor preg_match('/^Dospěl/', $p->getCategory())))
+                || ($query->isOnAccount() !== null && ($query->isOnAccount() xor $p->getOnAccount() === 'Y'))
             ) {
                 continue;
             }

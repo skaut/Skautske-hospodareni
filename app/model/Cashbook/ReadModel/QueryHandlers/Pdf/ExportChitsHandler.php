@@ -8,12 +8,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\PaymentMethod;
+use Model\Cashbook\ReadModel\Queries\CampParticipantIncomeQuery;
 use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookOfficialUnitQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\Cashbook\ReadModel\Queries\EventParticipantIncomeQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
-use Model\Cashbook\ReadModel\Queries\ParticipantTotalPaymentQuery;
 use Model\Cashbook\ReadModel\Queries\Pdf\ExportChits;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
 use Model\DTO\Cashbook\Cashbook;
@@ -89,7 +90,9 @@ class ExportChitsHandler
 
         //HPD
         if ($activeHpd) {
-            $template['totalPayment'] = $this->queryBus->handle(new ParticipantTotalPaymentQuery($skautisId));
+            $template['totalPayment'] = $this->queryBus->handle($skautisId instanceof SkautisCampId
+                    ? CampParticipantIncomeQuery::all($skautisId)
+                    : new EventParticipantIncomeQuery($skautisId));
 
             $functionsQuery = $skautisId instanceof SkautisCampId
                 ? new CampFunctions($skautisId)
