@@ -30,7 +30,7 @@
         "babel-loader": "^8.0.6",
         "husky": "^3.0.9",
         "lint-staged": "^9.4.2",
-        "ts-loader": "^6.1.2",
+        "ts-loader": "^6.2.1",
         "typescript": "^3.6.4",
         "uglify-js": "^3.6.4",
         "webpack": "^4.41.2",
