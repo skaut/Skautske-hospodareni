@@ -71,6 +71,7 @@ class DefaultPresenter extends BasePresenter
             ->setPlaceholder('Název, místo...');
 
         $grid->setDataSource(new CampListDataSource($this->queryBus));
+        $grid->setDefaultSort(['startDate' => 'ASC']);
 
         $grid->setDefaultFilter([
             'search' => '',
