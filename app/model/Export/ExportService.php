@@ -10,15 +10,20 @@ use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
+use Model\Cashbook\ReadModel\Queries\CampParticipantStatisticsQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookDisplayNameQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookOfficialUnitQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
+use Model\Cashbook\ReadModel\Queries\EventParticipantStatisticsQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit;
+use Model\DTO\Participant\Statistics;
 use Model\Event\Camp;
 use Model\Event\Event;
 use Model\Event\ReadModel\Queries\CampFunctions;
@@ -28,6 +33,7 @@ use Model\Event\ReadModel\Queries\EventQuery;
 use Model\Event\Repositories\IEventRepository;
 use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
+use Model\Participant\Payment\EventType;
 use Model\Services\TemplateFactory;
 use Model\Utils\MoneyFactory;
 use function array_column;
@@ -36,7 +42,6 @@ use function array_key_exists;
 use function array_sum;
 use function array_values;
 use function assert;
-use function count;
 use function in_array;
 use function sprintf;
 
@@ -74,24 +79,26 @@ class ExportService
         return '<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />';
     }
 
-    public function getParticipants(int $aid, EventEntity $service, string $type = 'general') : string
+    public function getParticipants(int $aid, string $type = EventType::GENERAL) : string
     {
-        if ($type === 'camp') {
+        if ($type === EventType::CAMP) {
             $templateFile = __DIR__ . '/templates/participantCamp.latte';
             $camp         = $this->queryBus->handle(new CampQuery(new SkautisCampId($aid)));
             assert($camp instanceof Camp);
             $displayName = $camp->getDisplayName();
             $unitId      = $camp->getUnitId();
+            $list        = $this->queryBus->handle(new CampParticipantListQuery($camp->getId()));
         } else {
             $templateFile = __DIR__ . '/templates/participant.latte';
             $event        = $this->queryBus->handle(new EventQuery(new SkautisEventId($aid)));
             assert($event instanceof Event);
             $displayName = $event->getDisplayName();
             $unitId      = $event->getUnitId();
+            $list        = $this->queryBus->handle(new EventParticipantListQuery($event->getId()));
         }
 
         return $this->templateFactory->create($templateFile, [
-            'list' => $service->getParticipants()->getAll($aid),
+            'list' => $list,
             'displayName' => $displayName,
             'unitFullNameWithAddress' => $this->units->getOfficialUnit($unitId->toInt())->getFullDisplayNameWithAddress(),
         ]);
@@ -133,7 +140,7 @@ class ExportService
         ]);
     }
 
-    public function getEventReport(int $skautisEventId, EventEntity $eventService) : string
+    public function getEventReport(int $skautisEventId) : string
     {
         $sums = [
             self::CATEGORY_VIRTUAL => [
@@ -180,14 +187,14 @@ class ExportService
             array_column($sums[self::CATEGORY_VIRTUAL][Operation::EXPENSE], 'amount')
         );
 
-        $participants = $eventService->getParticipants()->getAll($skautisEventId);
-        $personDays   = $eventService->getParticipants()->getPersonsDays($participants);
-        $events       = $this->events->find(new SkautisEventId($skautisEventId));
-        $functions    = $this->queryBus->handle(new EventFunctions(new SkautisEventId($skautisEventId)));
+        $stats = $this->queryBus->handle(new EventParticipantStatisticsQuery(new SkautisEventId($skautisEventId)));
+        assert($stats instanceof Statistics);
+        $events    = $this->events->find(new SkautisEventId($skautisEventId));
+        $functions = $this->queryBus->handle(new EventFunctions(new SkautisEventId($skautisEventId)));
 
         return $this->templateFactory->create(__DIR__ . '/templates/eventReport.latte', [
-            'participantsCnt' => count($participants),
-            'personsDays' => $personDays,
+            'participantsCnt' => $stats->getPersonsCount(),
+            'personsDays' => $stats->getPersonDays(),
             'event' => $events,
             'chits' => $sums,
             'functions' => $functions,
@@ -202,7 +209,7 @@ class ExportService
         ]);
     }
 
-    public function getCampReport(int $skautisCampId, EventEntity $campService, bool $areTotalsConsistentWithSkautis) : string
+    public function getCampReport(int $skautisCampId, bool $areTotalsConsistentWithSkautis) : string
     {
         $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($skautisCampId)));
         $categories = $this->queryBus->handle(new CategoryListQuery($cashbookId));
@@ -240,11 +247,12 @@ class ExportService
             $total['income'] = $total['income']->subtract($refund->getTotal());
         }
 
-        $participants = $campService->getParticipants()->getAll($skautisCampId);
+        $stats = $this->queryBus->handle(new CampParticipantStatisticsQuery(new SkautisCampId($skautisCampId)));
+        assert($stats instanceof Statistics);
 
         return $this->templateFactory->create(__DIR__ . '/templates/campReport.latte', [
-            'participantsCnt' => count($participants),
-            'personsDays' => $campService->getParticipants()->getPersonsDays($participants),
+            'participantsCnt' => $stats->getPersonsCount(),
+            'personsDays' => $stats->getPersonDays(),
             'camp' => $this->queryBus->handle(new CampQuery(new SkautisCampId($skautisCampId))),
             'incomeCategories' => $incomeCategories[self::CATEGORY_REAL],
             'expenseCategories' => $expenseCategories[self::CATEGORY_REAL],

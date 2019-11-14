@@ -12,6 +12,7 @@ use Model\Auth\Resources\Event;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\EventPragueParticipantsQuery;
 use Model\Cashbook\ReadModel\Queries\Pdf\ExportChits;
 use Model\Event\Commands\Event\ActivateStatistics;
 use Model\Event\Commands\Event\CloseEvent;
@@ -26,6 +27,7 @@ use Model\ExportService;
 use Model\Logger\Log\Type;
 use Model\LoggerService;
 use Model\Services\PdfRenderer;
+use Model\Skautis\ReadModel\Queries\EventStatisticsQuery;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
 use function assert;
@@ -78,14 +80,14 @@ class EventPresenter extends BasePresenter
             ]);
         }
 
-        $pragueParticipants = $this->eventService->getParticipants()->countPragueParticipants(
+        $pragueParticipants = $this->queryBus->handle(new EventPragueParticipantsQuery(
+            $this->event->getId(),
             $this->event->getRegistrationNumber(),
-            $this->event->getStartDate(),
-            $this->event->getId()->toInt()
-        );
+            $this->event->getStartDate()
+        ));
 
         $this->template->setParameters([
-            'statistic' => $this->eventService->getParticipants()->getEventStatistic($this->aid),
+            'statistic' => $this->queryBus->handle(new EventStatisticsQuery(new SkautisEventId($this->aid))),
             'accessEditBase' => $accessEditBase,
             'accessCloseEvent' => $this->authorizator->isAllowed(Event::CLOSE, $aid),
             'accessOpenEvent' => $this->authorizator->isAllowed(Event::OPEN, $aid),
@@ -153,8 +155,8 @@ class EventPresenter extends BasePresenter
     {
         $cashbookId = $this->getCashbookId($aid);
 
-        $template  = $this->exportService->getEventReport($aid, $this->eventService) . $this->exportService->getNewPage();
-        $template .= $this->exportService->getParticipants($aid, $this->eventService) . $this->exportService->getNewPage();
+        $template  = $this->exportService->getEventReport($aid) . $this->exportService->getNewPage();
+        $template .= $this->exportService->getParticipants($aid) . $this->exportService->getNewPage();
         $template .= $this->exportService->getCashbook($cashbookId, PaymentMethod::CASH()) . $this->exportService->getNewPage();
         $template .= $this->queryBus->handle(ExportChits::all($cashbookId));
 
@@ -168,7 +170,7 @@ class EventPresenter extends BasePresenter
             $this->flashMessage('Nemáte právo přistupovat k akci', 'warning');
             $this->redirect('default', ['aid' => $aid]);
         }
-        $template = $this->exportService->getEventReport($aid, $this->eventService);
+        $template = $this->exportService->getEventReport($aid);
 
         $this->pdf->render($template, 'report.pdf');
         $this->terminate();

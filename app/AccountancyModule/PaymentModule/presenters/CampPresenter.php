@@ -10,9 +10,10 @@ use App\AccountancyModule\PaymentModule\Factories\IGroupFormFactory;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use Assert\Assertion;
 use Cake\Chronos\Date;
+use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
 use Model\DTO\Participant\Participant;
 use Model\Event\Camp;
-use Model\EventEntity;
+use Model\Event\SkautisCampId;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\ReadModel\Queries\CampsWithoutGroupQuery;
 use Model\Payment\ReadModel\Queries\MemberEmailsQuery;
@@ -27,9 +28,6 @@ class CampPresenter extends BasePresenter
 
     /** @var PaymentService */
     private $model;
-
-    /** @var EventEntity */
-    protected $campService;
 
     /** @var IMassAddFormFactory */
     private $massAddFormFactory;
@@ -60,7 +58,6 @@ class CampPresenter extends BasePresenter
         $this->template->setParameters([
             'unitPairs' => $this->readUnits = $units = $this->unitService->getReadUnits($this->user),
         ]);
-        $this->campService                  = $this->getContext()->getService('campService');
     }
 
     public function actionDefault() : void
@@ -99,7 +96,11 @@ class CampPresenter extends BasePresenter
             $this->redirect('Default:');
         }
 
-        $participants = $this->campService->getParticipants()->getAll($group->getSkautisId());
+        $participants = $this->queryBus->handle(
+            new CampParticipantListQuery(
+                new SkautisCampId($group->getSkautisId())
+            )
+        );
 
         $form = $this['massAddForm'];
         /** @var MassAddForm $form */

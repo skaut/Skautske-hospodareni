@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\CampModule;
 
 use Model\Auth\Resources\Camp;
+use Model\Cashbook\ReadModel\Queries\CampPragueParticipantsQuery;
 use Model\Cashbook\ReadModel\Queries\InconsistentCampCategoryTotalsQuery;
 use Model\Common\UnitId;
 use Model\Event\ReadModel\Queries\CampFunctions;
@@ -56,11 +57,11 @@ class DetailPresenter extends BasePresenter
             'functions' => $this->authorizator->isAllowed(Camp::ACCESS_FUNCTIONS, $aid)
                 ? $this->queryBus->handle(new CampFunctions(new SkautisCampId($aid)))
                 : null,
-            'pragueParticipants' => $this->eventService->getParticipants()->countPragueParticipants(
+            'pragueParticipants' => $this->queryBus->handle(new CampPragueParticipantsQuery(
+                $this->event->getId(),
                 $this->event->getRegistrationNumber(),
-                $this->event->getStartDate(),
-                $this->event->getId()->toInt()
-            ),
+                $this->event->getStartDate()
+            )),
         ]);
     }
 
@@ -71,7 +72,7 @@ class DetailPresenter extends BasePresenter
             $this->redirect('default', ['aid' => $aid]);
         }
 
-        $template = $this->exportService->getCampReport($aid, $this->eventService, $this->areTotalsConsistentWithSkautis($aid));
+        $template = $this->exportService->getCampReport($aid, $this->areTotalsConsistentWithSkautis($aid));
         $this->pdf->render($template, 'reportCamp.pdf');
         $this->terminate();
     }

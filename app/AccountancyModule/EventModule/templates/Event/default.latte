@@ -65,8 +65,8 @@
                         <th colspan='2'>Účastníci podle věku</th>
                     </tr>
                     <tr n:foreach="$statistic as $item">
-                        <th>{$item->ParticipantCategory}</th>
-                        <td>{$item->Count}</td>
+                        <th>{$item->getLabel()}</th>
+                        <td>{$item->getCount()}</td>
                     </tr>
                 </table>
             {else}

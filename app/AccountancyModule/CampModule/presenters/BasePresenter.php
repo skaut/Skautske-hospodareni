@@ -13,7 +13,6 @@ use Model\Event\Camp;
 use Model\Event\Exception\CampNotFound;
 use Model\Event\ReadModel\Queries\CampQuery;
 use Model\Event\SkautisCampId;
-use Model\EventEntity;
 use function assert;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter
@@ -21,14 +20,10 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
     /** @var Camp */
     protected $event;
 
-    /** @var EventEntity */
-    protected $eventService;
-
     protected function startup() : void
     {
         parent::startup();
-        $this->eventService = $this->context->getService('campService');
-        $this->type         = ObjectType::CAMP;
+        $this->type = ObjectType::CAMP;
         $this->template->setParameters([
             'aid' => $this->aid,
         ]);

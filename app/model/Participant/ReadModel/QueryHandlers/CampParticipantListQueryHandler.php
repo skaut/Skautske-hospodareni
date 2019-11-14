@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
-use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
+use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
 use Model\Common\Repositories\IParticipantRepository;
 use Model\DTO\Participant\Participant;
 
-final class EventParticipantListQueryHandler
+final class CampParticipantListQueryHandler
 {
     /** @var IParticipantRepository */
     private $participants;
@@ -21,8 +21,8 @@ final class EventParticipantListQueryHandler
     /**
      * @return Participant[]
      */
-    public function __invoke(EventParticipantListQuery $query) : array
+    public function __invoke(CampParticipantListQuery $query) : array
     {
-        return $this->participants->findByEvent($query->getEventId());
+        return $this->participants->findByCamp($query->getCampId());
     }
 }

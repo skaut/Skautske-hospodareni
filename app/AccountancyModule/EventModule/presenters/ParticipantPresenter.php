@@ -7,6 +7,7 @@ namespace App\AccountancyModule\EventModule;
 use App\AccountancyModule\ExcelResponse;
 use App\AccountancyModule\ParticipantTrait;
 use Model\Auth\Resources\Event;
+use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
 use Model\ExcelService;
 use Model\ExportService;
 use Model\Services\PdfRenderer;
@@ -118,7 +119,7 @@ class ParticipantPresenter extends BasePresenter
     public function actionExportExcel(int $aid) : void
     {
         try {
-            $participantsDTO = $this->eventService->getParticipants()->getAll($this->event->getId()->toInt());
+            $participantsDTO = $this->queryBus->handle(new EventParticipantListQuery($this->event->getId()));
             $spreadsheet     = $this->excelService->getGeneralParticipants($participantsDTO, $this->event->getStartDate());
 
             $this->sendResponse(new ExcelResponse(Strings::webalize($this->event->getDisplayName()) . '-' . date('Y_n_j'), $spreadsheet));

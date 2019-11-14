@@ -8,9 +8,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\PaymentMethod;
+use Model\Cashbook\ReadModel\Queries\CampParticipantIncomeQuery;
+use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookOfficialUnitQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\Cashbook\ReadModel\Queries\EventParticipantIncomeQuery;
+use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
 use Model\Cashbook\ReadModel\Queries\Pdf\ExportChits;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
 use Model\DTO\Cashbook\Cashbook;
@@ -21,20 +25,15 @@ use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
-use Model\IParticipantServiceFactory;
 use Model\Services\TemplateFactory;
 use Model\Unit\Unit;
 use function array_filter;
 use function assert;
 use function count;
 use function in_array;
-use function ucfirst;
 
 class ExportChitsHandler
 {
-    /** @var IParticipantServiceFactory */
-    private $participantServiceFactory;
-
     /** @var QueryBus */
     private $queryBus;
 
@@ -42,13 +41,11 @@ class ExportChitsHandler
     private $templateFactory;
 
     public function __construct(
-        IParticipantServiceFactory $participantServiceFactory,
         QueryBus $queryBus,
         TemplateFactory $templateFactory
     ) {
-        $this->participantServiceFactory = $participantServiceFactory;
-        $this->queryBus                  = $queryBus;
-        $this->templateFactory           = $templateFactory;
+        $this->queryBus        = $queryBus;
+        $this->templateFactory = $templateFactory;
     }
 
     public function __invoke(ExportChits $query) : string
@@ -80,7 +77,12 @@ class ExportChitsHandler
 
         $template = [];
 
-        $skautisId    = $this->queryBus->handle(new SkautisIdQuery($query->getCashbookId()));
+        $skautisId = $this->queryBus->handle(new SkautisIdQuery($query->getCashbookId()));
+
+        $skautisId = $cashbookType->equalsValue(CashbookType::CAMP)
+            ? new SkautisCampId($skautisId)
+            : new SkautisEventId($skautisId);
+
         $officialUnit = $this->queryBus->handle(new CashbookOfficialUnitQuery($query->getCashbookId()));
         assert($officialUnit instanceof Unit);
         $template['officialName'] = $officialUnit->getFullDisplayNameWithAddress();
@@ -88,12 +90,13 @@ class ExportChitsHandler
 
         //HPD
         if ($activeHpd) {
-            $participantService       = $this->participantServiceFactory->create(ucfirst($cashbook->getType()->getValue()));
-            $template['totalPayment'] = $participantService->getTotalPayment($skautisId);
+            $template['totalPayment'] = $this->queryBus->handle($skautisId instanceof SkautisCampId
+                    ? CampParticipantIncomeQuery::all($skautisId)
+                    : new EventParticipantIncomeQuery($skautisId));
 
-            $functionsQuery = $cashbookType->equalsValue(CashbookType::CAMP)
-                ? new CampFunctions(new SkautisCampId($skautisId))
-                : new EventFunctions(new SkautisEventId($skautisId));
+            $functionsQuery = $skautisId instanceof SkautisCampId
+                ? new CampFunctions($skautisId)
+                : new EventFunctions($skautisId);
 
             $functions = $this->queryBus->handle($functionsQuery);
 
@@ -102,7 +105,11 @@ class ExportChitsHandler
             $accountant            = $functions->getAccountant() ?? $functions->getLeader();
             $template['pokladnik'] = $accountant !== null ? $accountant->getName() : '';
 
-            $template['list'] = $participantService->getAll($skautisId);
+            $template['list'] = $this->queryBus->handle(
+                $skautisId instanceof SkautisCampId
+                    ? new CampParticipantListQuery($skautisId)
+                    : new EventParticipantListQuery($skautisId)
+            );
         }
 
         $template['income']  = $income;
