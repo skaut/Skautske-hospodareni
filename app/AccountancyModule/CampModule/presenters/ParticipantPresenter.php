@@ -36,6 +36,7 @@ class ParticipantPresenter extends BasePresenter
     {
         parent::startup();
         $this->traitStartup();
+        $this->eventService     = $this->context->getService('campService');
         $this->isAllowRepayment = true;
         $this->isAllowIsAccount = true;
 

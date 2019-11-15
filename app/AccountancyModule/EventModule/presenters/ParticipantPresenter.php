@@ -40,6 +40,7 @@ class ParticipantPresenter extends BasePresenter
         $this->traitStartup();
         $this->isAllowRepayment = false;
         $this->isAllowIsAccount = false;
+        $this->eventService     = $this->context->getService('eventService');
 
         $isDraft      = $this->event->getState() === 'draft';
         $authorizator = $this->authorizator;
