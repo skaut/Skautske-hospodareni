@@ -9,6 +9,7 @@ use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\ReadModel\Queries\CampParticipantIncomeQuery;
 use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
 use Model\DTO\Participant\Participant;
+use Model\Participant\ZeroParticipantIncome;
 use function assert;
 use function preg_match;
 
@@ -35,6 +36,9 @@ class CampParticipantIncomeQueryHandler
                 continue;
             }
             $res += $p->getPayment();
+        }
+        if ($res === 0.0) {
+            throw new ZeroParticipantIncome();
         }
 
         return Amount::fromFloat($res);

@@ -24,6 +24,7 @@ use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
 use Model\DTO\Cashbook\ChitItem;
 use Model\Event\Commands\Camp\ActivateAutocomputedCashbook;
 use Model\Event\SkautisCampId;
+use Model\Participant\ZeroParticipantIncome;
 use Money\Money;
 use Skautis\Wsdl\PermissionException;
 use function assert;
@@ -115,14 +116,14 @@ class CashbookPresenter extends BasePresenter
         $this->editableOnly();
         $values = $form->getValues();
 
-        $amount = $this->queryBus->handle(new CampParticipantIncomeQuery(
-            new SkautisCampId($this->getCampId()),
-            $values->cat === 'adult',
-            $values->isAccount === 'Y'
-        ));
-        assert($amount instanceof Amount);
-
-        if ($amount->toFloat() === 0.0) {
+        try {
+            $amount = $this->queryBus->handle(new CampParticipantIncomeQuery(
+                new SkautisCampId($this->getCampId()),
+                $values->cat === 'adult',
+                $values->isAccount === 'Y'
+            ));
+            assert($amount instanceof Amount);
+        } catch (ZeroParticipantIncome $exc) {
             $this->flashMessage('Nemáte žádné příjmy od účastníků, které by bylo možné importovat.', 'warning');
             $this->redirect('default', ['aid' => $this->getCampId()]);
         }
