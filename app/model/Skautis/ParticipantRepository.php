@@ -75,7 +75,7 @@ final class ParticipantRepository implements IParticipantRepository
     {
         try {
             $this->skautis->event->ParticipantCampInsert([
-                'ID_EventCamp' => $campId,
+                'ID_EventCamp' => $campId->toInt(),
                 'ID_Person' => $personId,
             ]);
         } catch (WsdlException $ex) {
@@ -89,7 +89,7 @@ final class ParticipantRepository implements IParticipantRepository
     {
         try {
             $this->skautis->event->ParticipantGeneralInsert([
-                'ID_EventGeneral' => $eventId,
+                'ID_EventGeneral' => $eventId->toInt(),
                 'ID_Person' => $personId,
             ]);
         } catch (WsdlException $ex) {
@@ -102,7 +102,7 @@ final class ParticipantRepository implements IParticipantRepository
     public function createEventParticipant(SkautisEventId $eventId, NonMemberParticipant $participant) : void
     {
         $newParticipantArr = $this->skautis->event->ParticipantGeneralInsert([
-            'ID_EventGeneral' => $eventId,
+            'ID_EventGeneral' => $eventId->toInt(),
             'Person' => [
                 'FirstName' => $participant->getFirstName(),
                 'LastName' => $participant->getLastName(),
@@ -116,7 +116,7 @@ final class ParticipantRepository implements IParticipantRepository
     public function createCampParticipant(SkautisCampId $eventId, NonMemberParticipant $participant) : void
     {
         $newParticipantArr = $this->skautis->event->ParticipantCampInsert([
-            'ID_EventCamp' => $eventId,
+            'ID_EventCamp' => $eventId->toInt(),
             'Person' => [
                 'FirstName' => $participant->getFirstName(),
                 'LastName' => $participant->getLastName(),
