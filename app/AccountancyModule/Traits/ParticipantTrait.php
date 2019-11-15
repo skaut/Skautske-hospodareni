@@ -396,7 +396,7 @@ trait ParticipantTrait
             $values['birthday'],
             $values['street'],
             $values['city'],
-            $values['postcode'],
+            (int) $values['postcode'],
         );
         $this->commandBus->handle(
             $this->type === 'camp'

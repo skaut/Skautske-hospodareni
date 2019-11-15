@@ -13,7 +13,6 @@ use Model\Event\Event;
 use Model\Event\EventNotFound;
 use Model\Event\ReadModel\Queries\EventQuery;
 use Model\Event\SkautisEventId;
-use Model\EventEntity;
 use function assert;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter
@@ -21,14 +20,10 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
     /** @var Event */
     protected $event;
 
-    /** @var EventEntity */
-    protected $eventService;
-
     protected function startup() : void
     {
         parent::startup();
-        $this->eventService = $this->context->getService('eventService');
-        $this->type         = ObjectType::EVENT;
+        $this->type = ObjectType::EVENT;
         $this->template->setParameters([
             'aid' => $this->aid,
         ]);
