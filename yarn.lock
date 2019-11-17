@@ -3700,10 +3700,10 @@ ms@^2.1.1:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.1.tgz#30a5864eb3ebb0a66f2ebe6d727af06a09d86e0a"
   integrity sha512-tgp+dl5cGk28utYktBsrFqA7HKgrhgPsg6Z/EfhWI4gl1Hwq8B/GmY/0oXZ6nF8hDVesS/FpnYaD/kOWhYQvyg==
 
-naja@^1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/naja/-/naja-1.6.0.tgz#b773a4247632a653b17cdf9c38de16c1b010c8b9"
-  integrity sha512-D09+NF0PLaRaApuMwmW9Oy+05n4F5w+/nIOtl2hWHmKgE8/wAfqdoJnxuqZLKXkVG38JztQQf29kerAanwKP1Q==
+naja@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/naja/-/naja-1.7.0.tgz#ef53a784bc3638b08e485b10f4451b268b3f90bb"
+  integrity sha512-dVeK26mWXJpC76ukIRkXDqL4TT6jEu8HNpXElYJnZNz0dXGts8jL4YJqpSQ89PxIh98riY4WxKpeMpBvPqWITA==
   dependencies:
     event-target-shim "^2.0.0"
     object-assign "^4.1.0"
