@@ -17,11 +17,13 @@ use Model\Payment\BankAccount\BankAccountId;
 use Model\Payment\BankAccountNotFound;
 use Model\Payment\BankAccountService;
 use Model\Payment\ReadModel\Queries\CountGroupsWithBankAccountQuery;
+use Model\Payment\ReadModel\Queries\GetGroupList;
 use Model\Payment\ReadModel\Queries\PairedPaymentsQuery;
 use Model\Payment\TokenNotSet;
 use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\SkautisRole;
 use Nette\Application\BadRequestException;
+use function array_keys;
 use function assert;
 use function sprintf;
 
@@ -177,6 +179,17 @@ class BankAccountsPresenter extends BasePresenter
 
                 $paymentsByTransaction[$payment->getTransaction()->getId()] = $payment;
             }
+
+            $groups = $this->queryBus->handle(
+                new GetGroupList(array_keys($this->unitService->getReadUnits($this->user)), false)
+            );
+
+            $groupNames = [];
+            foreach ($groups as $g) {
+                $groupNames[$g->getId()] = $g->getName();
+            }
+
+            $templateParameters['groupNames'] = $groupNames;
 
             $templateParameters['payments'] = $paymentsByTransaction;
         } catch (TokenNotSet $e) {
