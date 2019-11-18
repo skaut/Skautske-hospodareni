@@ -131,4 +131,9 @@ class MailCredentials
     {
         return $this->createdAt;
     }
+
+    public function setPassword(string $password) : void
+    {
+        $this->password = $password;
+    }
 }
