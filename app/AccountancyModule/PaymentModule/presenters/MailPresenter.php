@@ -4,27 +4,36 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\PaymentModule;
 
-use App\Forms\BaseForm;
+use App\AccountancyModule\PaymentModule\Components\SmtpAddForm;
+use App\AccountancyModule\PaymentModule\Components\SmtpUpdateForm;
+use App\AccountancyModule\PaymentModule\Factories\ISmtpAddFormFactory;
+use App\AccountancyModule\PaymentModule\Factories\ISmtpUpdateFormFactory;
 use Model\MailService;
-use Model\Payment\Commands\CreateMailCredentials;
 use Model\Payment\Commands\RemoveMailCredentials;
-use Model\Payment\EmailNotSet;
-use Model\Payment\MailCredentials\MailProtocol;
-use Nette\Application\UI\Form;
-use Nette\Mail\SmtpException;
 
 class MailPresenter extends BasePresenter
 {
     /** @var MailService */
     private $model;
 
-    public function __construct(MailService $model)
-    {
+    /** @var ISmtpAddFormFactory */
+    private $smtpAddFormFactory;
+
+    /** @var ISmtpUpdateFormFactory */
+    private $smtpUpdateFormFactory;
+
+    public function __construct(
+        MailService $model,
+        ISmtpAddFormFactory $smtpAddFormFactory,
+        ISmtpUpdateFormFactory $smtpUpdateFormFactory
+    ) {
         parent::__construct();
-        $this->model = $model;
+        $this->model                 = $model;
+        $this->smtpAddFormFactory    = $smtpAddFormFactory;
+        $this->smtpUpdateFormFactory = $smtpUpdateFormFactory;
     }
 
-    public function renderDefault(int $unitId) : void
+    public function actionDefault(int $unitId) : void
     {
         if (! $this->isEditable) {
             $this->flashMessage('Nemáte oprávnění přistupovat ke správě emailů', 'danger');
@@ -58,68 +67,13 @@ class MailPresenter extends BasePresenter
         $this->commandBus->handle(new RemoveMailCredentials($id));
     }
 
-    protected function createComponentFormCreate() : Form
+    protected function createComponentAddForm() : SmtpAddForm
     {
-        $form = new BaseForm();
-        $form->addText('host', 'Host')
-            ->addRule(Form::FILLED, 'Musíte vyplnit pole host.')
-            ->getControlPrototype()->placeholder('např. smtp.gmail.com');
-        $form->addText('username', 'Uživatelské jméno')
-            ->addRule(Form::FILLED, 'Musíte vyplnit uživatelské jméno.')
-            ->getControlPrototype()->placeholder('např. platby@stredisko.cz');
-        $form->addText('password', 'Heslo')
-            ->addRule(Form::FILLED, 'Musíte vyplnit heslo.');
-        $form->addSelect(
-            'secure',
-            'Zabezpečení',
-            [
-                MailProtocol::SSL => 'ssl',
-                MailProtocol::TLS => 'tls',
-            ]
-        );
-        $form->addText('sender', 'Email odesílatele')
-            ->setRequired('Musíte vyplnit email odesílatele')
-            ->addRule($form::EMAIL, 'Email odesílatele není platná emailová adresa')
-            ->getControlPrototype()->placeholder('např. platby@stredisko.cz');
-        $form->addSubmit('send', 'Založit')
-            ->setAttribute('class', 'btn btn-primary');
-
-        $form->onSuccess[] = function (Form $form) : void {
-            $this->formCreateSubmitted($form);
-        };
-
-        return $form;
+        return $this->smtpAddFormFactory->create($this->unitId, (int) $this->getUser()->getId());
     }
 
-    private function formCreateSubmitted(Form $form) : void
+    protected function createComponentUpdateForm() : SmtpUpdateForm
     {
-        if (! $this->isEditable) {
-            $this->flashMessage('Nemáte oprávnění přidávat smtp', 'danger');
-            $this->redirect('GroupList:');
-        }
-        $v = $form->getValues();
-
-        $userId = $this->getUser()->getId();
-        try {
-            $this->commandBus->handle(
-                new CreateMailCredentials(
-                    $this->unitId->toInt(),
-                    $v->host,
-                    $v->username,
-                    $v->password,
-                    MailProtocol::get($v->secure),
-                    $v->sender,
-                    $userId
-                )
-            );
-
-            $this->flashMessage('SMTP účet byl přidán');
-        } catch (SmtpException $e) {
-            $this->flashMessage('K SMTP účtu se nepodařilo připojit (' . $e->getMessage() . ')', 'danger');
-        } catch (EmailNotSet $e) {
-            $this->flashMessage('Nemáte nastavený email ve skautisu, na který by se odeslal testovací email!');
-        }
-
-        $this->redirect('this');
+        return $this->smtpUpdateFormFactory->create($this->unitId);
     }
 }
