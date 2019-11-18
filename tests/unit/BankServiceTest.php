@@ -71,7 +71,7 @@ final class BankServiceTest extends Unit
         $bankService->pairAllGroups([$groupId]);
 
         $transaction = $payments[0]->getTransaction();
-        $this->assertSame(123, $transaction->getId());
+        $this->assertSame('123', $transaction->getId());
         $this->assertSame($account, $transaction->getBankAccount());
         $this->assertSame('note123', $transaction->getNote());
         $this->assertSame('František Maša', $transaction->getPayer());

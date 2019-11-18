@@ -11,7 +11,7 @@ use Nette\SmartObject;
 /**
  * @ORM\Embeddable()
  *
- * @property-read int $id
+ * @property-read string $id
  * @property-read string|NULL $bankAccount
  * @property-read string $payer
  * @property-read string|NULL $note
@@ -21,9 +21,9 @@ class Transaction
     use SmartObject;
 
     /**
-     * @ORM\Column(type="integer", nullable=true, name="transactionId", options={"unsigned"=true})
+     * @ORM\Column(type="string", length=64, nullable=true, name="transactionId")
      *
-     * @var int @todo start using string as does FIO
+     * @var string
      */
     private $id;
 
@@ -48,7 +48,7 @@ class Transaction
      */
     private $note;
 
-    public function __construct(int $id, string $bankAccount, string $payer, ?string $note)
+    public function __construct(string $id, string $bankAccount, string $payer, ?string $note)
     {
         $this->id          = $id;
         $this->bankAccount = $bankAccount;
@@ -59,14 +59,14 @@ class Transaction
     public static function fromFioTransaction(FioTransaction $transaction) : self
     {
         return new self(
-            (int) $transaction->getId(),
+            $transaction->getId(),
             $transaction->getBankAccount(),
             $transaction->getName(),
             $transaction->getNote()
         );
     }
 
-    public function getId() : int
+    public function getId() : string
     {
         return $this->id;
     }
