@@ -66,15 +66,16 @@ class DefaultPresenter extends BasePresenter
 
     private function isCommandAccessible(int $commandId) : bool
     {
-        $command  = $this->travelService->getCommandDetail($commandId);
+        $command = $this->travelService->getCommandDetail($commandId);
+        if ($command === null) {
+            return false;
+        }
         $identity = $this->getUser()->getIdentity();
 
         assert($identity instanceof Identity);
 
-        $unitOrOwner = $command->getOwnerId() === $this->getUser()->getId() ||
+        return $command->getOwnerId() === $this->getUser()->getId() ||
             array_key_exists($command->getUnitId(), $identity->access[BaseService::ACCESS_READ]);
-
-        return $command !== null && $unitOrOwner;
     }
 
     private function isCommandEditable(int $id) : bool
