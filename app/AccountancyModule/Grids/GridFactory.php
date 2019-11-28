@@ -78,7 +78,7 @@ class GridFactory
                 return;
             }
 
-            $grid->redrawControl('global-actions');
+            $grid->redrawControl('grid');
 
             $presenter->payload->url     = $grid->link('this');
             $presenter->payload->postGet = true;
