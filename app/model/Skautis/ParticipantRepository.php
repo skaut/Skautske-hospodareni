@@ -144,7 +144,7 @@ final class ParticipantRepository implements IParticipantRepository
             'FirstName' => $participant->getFirstName(),
             'LastName' => $participant->getLastName(),
             'IdentificationCode' => null,
-            'Birthday' => $participant->getBirthday() !== null ? $participant->getBirthday()->format(self::DATETIME_FORMAT) : '',
+            'Birthday' => $participant->getBirthday() !== null ? $participant->getBirthday()->format(self::DATETIME_FORMAT) : null,
             'Street' => $participant->getStreet(),
             'City' => $participant->getCity(),
             'Postcode' => $participant->getPostcode(),
