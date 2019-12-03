@@ -13,7 +13,7 @@
 <div class="row">
     <div class="col-lg-7">
         <h4 class="mb-3">Seznam SMTP účtů jednotky</h4>
-        <table class="table table-bordered table-striped table-condensed">
+        <table class="table table-bordered table-striped table-sm">
             <tr>
                 <th>&nbsp;</th>
                 <th>Uživatelské jméno</th>
@@ -21,8 +21,11 @@
                 <th>Zabezpečení</th>
             </tr>
             <tr n:foreach="$list as $l">
-                <td>
-                    <a n:if="in_array($l->unitId, $editableUnits)" n:href="remove! $l->id" class="btn btn-danger">Smazat</a>
+                <td n:inner-if="in_array($l->unitId, $editableUnits, true)">
+                    <a n:href="remove! $l->id" class="btn btn-danger btn btn-sm">Smazat</a>
+                    <a class="ajax btn btn-primary btn-sm" n:href="updateForm:open! $l->id" title="Nastavit heslo">
+                        Změnit heslo
+                    </a>
                 </td>
                 <td>{$l->username}</td>
                 <td>{$l->host}</td>
@@ -30,47 +33,8 @@
             </tr>
         </table>
     </div>
-
     <div class="col-lg-5">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title text-center">Přidat nový SMTP účet</h4>
-                <form n:name="formCreate">
-                    <div class="form-row">
-                        <div class="col form-group mb-0">
-                            {label host/}
-                            <input n:name="host" class="form-control">
-                        </div>
-                        <div class="col-xl-auto form-group mb-0">
-                            {label secure/}
-                            <select n:name="secure" class="form-control custom-select"></select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <small class="form-text text-muted">
-                            V případě problémů s odesláním přes Google si aktivujte <a
-                                    href="https://support.google.com/accounts/answer/6010255?hl=cs" target="_blank">použití
-                                adresy méně bezpečným aplikacím</a>.
-                        </small>
-                    </div>
-
-                    <div class="form-group">
-                        {label username/}
-                        <input n:name="username" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        {label password/}
-                        <input n:name="password" class="form-control">
-                    </div>
-
-                    <div class="form-group">
-                        {label sender/}
-                        <input n:name="sender" class="form-control">
-                    </div>
-                    <input n:name="send" class="btn btn-primary">
-                </form>
-            </div>
-        </div>
-
+        {control addForm}
     </div>
+    {control updateForm}
 </div>
