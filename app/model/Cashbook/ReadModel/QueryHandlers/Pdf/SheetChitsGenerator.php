@@ -32,12 +32,13 @@ class SheetChitsGenerator
     {
         $sheet->setCellValue('A1', 'Název akce')
             ->setCellValue('B1', 'Ze dne')
-            ->setCellValue('C1', 'Číslo dokladu')
-            ->setCellValue('D1', 'Účel výplaty')
-            ->setCellValue('E1', 'Kategorie')
-            ->setCellValue('F1', 'Komu/Od')
-            ->setCellValue('G1', 'Příjem')
-            ->setCellValue('H1', 'Výdej');
+            ->setCellValue('C1', 'Způsob')
+            ->setCellValue('D1', 'Číslo dokladu')
+            ->setCellValue('E1', 'Účel výplaty')
+            ->setCellValue('F1', 'Kategorie')
+            ->setCellValue('G1', 'Komu/Od')
+            ->setCellValue('H1', 'Příjem')
+            ->setCellValue('I1', 'Výdej');
 
         $rowCnt = 2;
         foreach ($cashbooks as $item) {
@@ -48,7 +49,7 @@ class SheetChitsGenerator
 
             $prefix = $cashbook->getChitNumberPrefix();
 
-            foreach ($this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId)) as $chit) {
+            foreach ($this->queryBus->handle(ChitListQuery::all($cashbookId)) as $chit) {
                 assert($chit instanceof Chit);
 
                 $isIncome = $chit->isIncome();
@@ -56,12 +57,13 @@ class SheetChitsGenerator
 
                 $sheet->setCellValue('A' . $rowCnt, $item->getDisplayName())
                     ->setCellValue('B' . $rowCnt, $chit->getDate()->format('d.m.Y'))
-                    ->setCellValue('C' . $rowCnt, $prefix . (string) $chit->getNumber())
-                    ->setCellValue('D' . $rowCnt, $chit->getPurpose())
-                    ->setCellValue('E' . $rowCnt, $chit->getCategories())
-                    ->setCellValue('F' . $rowCnt, (string) $chit->getRecipient())
-                    ->setCellValue('G' . $rowCnt, $isIncome ? $amount : '')
-                    ->setCellValue('H' . $rowCnt, ! $isIncome ? $amount : '');
+                    ->setCellValue('C' . $rowCnt, $chit->getPaymentMethod()->equals(PaymentMethod::CASH()) ? 'Pokladna' : 'Banka')
+                    ->setCellValue('D' . $rowCnt, $prefix . (string) $chit->getNumber())
+                    ->setCellValue('E' . $rowCnt, $chit->getPurpose())
+                    ->setCellValue('F' . $rowCnt, $chit->getCategories())
+                    ->setCellValue('G' . $rowCnt, (string) $chit->getRecipient())
+                    ->setCellValue('H' . $rowCnt, $isIncome ? $amount : '')
+                    ->setCellValue('I' . $rowCnt, ! $isIncome ? $amount : '');
 
                 $rowCnt++;
             }
