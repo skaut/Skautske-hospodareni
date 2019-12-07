@@ -14,15 +14,14 @@
         <span class="ml-2 mr-2">|</span>
         {$event->getUnitName()}
         <span class="ml-2 mr-2">|</span>
-        <i class="fas fa-calendar"></i>
-        {[$event->getStartDate(), $event->getEndDate()]|dateRange}
+        <span class="text-nowrap"><i class="fas fa-calendar"></i> {[$event->getStartDate(), $event->getEndDate()]|dateRange}</span>
         <span class="ml-2 mr-2">|</span>
         <i class="fas fa-map-marker-alt"></i>
         {if trim($event->getLocation()) === ''}<i
                 class="text-muted">Nevyplněno</i>{else}{$event->getLocation()}{/if}
     </div>
-    <div class="col-lg-5 text-center text-lg-right mt-3 mt-lg-0">
-        <a n:href="Detail:report 'aid'=>$aid" target="_blank" class="btn btn-info mr-2">
+    <div class="col-lg-5 text-center text-lg-right mt-3 mt-lg-0 d-flex d-md-block flex-column">
+        <a n:href="Detail:report 'aid'=>$aid" target="_blank" class="btn btn-info mr-md-2 mb-2 mb-md-0">
             <i class="fas fa-print"></i>
             Záverečná zpráva
         </a>
@@ -35,7 +34,7 @@
 </div>
 
 <div class="row mt-4">
-    <div class="col-md-4" n:if="$accessDetail">
+    <div class="col-md-4 mb-4" n:if="$accessDetail">
         <div class="card">
             <h5 class="card-header">Základní údaje</h5>
             <ul class="list-group list-group-flush">
@@ -58,7 +57,7 @@
     </div>
 
 
-    <div class="col-md-4" n:if="$accessDetail">
+    <div class="col-md-4 mb-4" n:if="$accessDetail">
         <div class="card">
             <h5 class="card-header">Statistiky</h5>
             <table class="table mb-0">
@@ -115,7 +114,7 @@
         </div>
     </div>
 
-    <div class="col-md-4" n:if="$functions !== NULL">
+    <div class="col-md-4 mb-4" n:if="$functions !== NULL">
         {var $functionLabels = [
             'leader' => 'Vedoucí akce',
             'assistant' => 'Zástupce vedoucího',

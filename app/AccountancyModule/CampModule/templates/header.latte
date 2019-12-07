@@ -1,7 +1,7 @@
 <h1 class="mt-5">{$event->getDisplayName()}</h1>
 
-<nav class="navbar navbar-expand-sm navbar-light bg-light mt-2 mb-4">
-    <ul class="navbar-nav align-items-center">
+<nav class="navbar navbar-expand-sm navbar-light bg-light mt-2 mb-4 d-block d-lg-flex">
+    <ul class="navbar-nav align-items-center justify-content-center">
         <li n:class="nav-item, $presenter->isLinkCurrent('Detail:') ? active">
             <a class="nav-link" n:href="Detail: $event->getId()->toInt()"><i
                         class="fas fa-home d-none d-lg-inline-block"></i> Základní
