@@ -59,7 +59,7 @@ class VehiclePresenter extends BasePresenter
         // Check whether vehicle belongs to unit
         if ($vehicle->getUnitId() !== $this->officialUnit->getId()) {
             $this->flashMessage('Nemáte oprávnění k vozidlu', 'danger');
-            $this->redirect('default');
+            $this->redirect('VehicleList:default');
         }
 
         return $vehicle;
@@ -108,7 +108,7 @@ class VehiclePresenter extends BasePresenter
             ]);
         } catch (BadRequestException $exc) {
             $this->flashMessage($exc->getMessage(), 'danger');
-            $this->redirect('default');
+            $this->redirect('VehicleList:default');
         }
     }
 
@@ -118,7 +118,7 @@ class VehiclePresenter extends BasePresenter
         $vehicle = $this->getVehicle($vehicleId);
         if (! $this->isVehicleEditable($vehicle)) {
             $this->flashMessage('K vozidlu nemáte oprávnění přistupovat!', 'danger');
-            $this->redirect('default');
+            $this->redirect('VehicleList:default');
         }
 
         if ($this->travelService->removeVehicle($vehicleId)) {
@@ -126,7 +126,7 @@ class VehiclePresenter extends BasePresenter
         } else {
             $this->flashMessage('Nelze smazat vozidlo s cestovními příkazy.', 'warning');
         }
-        $this->redirect('default');
+        $this->redirect('VehicleList:default');
     }
 
     public function handleArchive(int $vehicleId) : void
@@ -135,7 +135,7 @@ class VehiclePresenter extends BasePresenter
         $vehicle = $this->getVehicle($vehicleId);
         if (! $this->isVehicleEditable($vehicle)) {
             $this->flashMessage('K vozidlu nemáte oprávnění přistupovat!', 'danger');
-            $this->redirect('default');
+            $this->redirect('VehicleList:default');
         }
 
         $this->travelService->archiveVehicle($vehicleId);
@@ -192,7 +192,7 @@ class VehiclePresenter extends BasePresenter
         );
 
         $this->flashMessage('Vozidlo bylo vytvořeno');
-        $this->redirect('default');
+        $this->redirect('VehicleList:default');
     }
 
     private function isVehicleEditable(?VehicleDTO $vehicle) : bool
