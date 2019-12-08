@@ -5440,16 +5440,16 @@
         },
         {
             "name": "ramsey/uuid",
-            "version": "3.9.0",
+            "version": "3.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ramsey/uuid.git",
-                "reference": "8fde15adcc90190a65e173c34da4ab1f29e05c5b"
+                "reference": "5ac2740e0c8c599d2bbe7f113a939f2b5b216c67"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ramsey/uuid/zipball/8fde15adcc90190a65e173c34da4ab1f29e05c5b",
-                "reference": "8fde15adcc90190a65e173c34da4ab1f29e05c5b",
+                "url": "https://api.github.com/repos/ramsey/uuid/zipball/5ac2740e0c8c599d2bbe7f113a939f2b5b216c67",
+                "reference": "5ac2740e0c8c599d2bbe7f113a939f2b5b216c67",
                 "shasum": ""
             },
             "require": {
@@ -5523,7 +5523,7 @@
                 "identifier",
                 "uuid"
             ],
-            "time": "2019-11-30T23:55:53+00:00"
+            "time": "2019-12-01T04:55:27+00:00"
         },
         {
             "name": "sentry/sentry",
