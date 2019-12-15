@@ -159,9 +159,10 @@ class ExcelService
             ->setCellValue('F1', 'Město')
             ->setCellValue('G1', 'PSČ')
             ->setCellValue('H1', 'Datum narození')
-            ->setCellValue('I1', 'Osobodny')
-            ->setCellValue('J1', 'Dětodny')
-            ->setCellValue('K1', 'Zaplaceno');
+            ->setCellValue('I1', 'Jednotka')
+            ->setCellValue('J1', 'Osobodny')
+            ->setCellValue('K1', 'Dětodny')
+            ->setCellValue('L1', 'Zaplaceno');
 
         $rowCnt = 2;
         foreach ($data as $row) {
@@ -173,17 +174,18 @@ class ExcelService
                 ->setCellValue('F' . $rowCnt, $row->getCity())
                 ->setCellValue('G' . $rowCnt, $row->getPostcode())
                 ->setCellValue('H' . $rowCnt, $row->getBirthday() !== null ? $row->getBirthday()->format('d.m.Y') : '')
-                ->setCellValue('I' . $rowCnt, $row->getDays())
-                ->setCellValue('J' . $rowCnt, $row->getBirthday() !== null && $startDate->diffInYears($row->getBirthday()) < self::ADULT_AGE ? $row->getDays() : 0)
-                ->setCellValue('K' . $rowCnt, $row->getPayment());
+                ->setCellValue('I' . $rowCnt, $row->getUnitRegistrationNumber())
+                ->setCellValue('J' . $rowCnt, $row->getDays())
+                ->setCellValue('K' . $rowCnt, $row->getBirthday() !== null && $startDate->diffInYears($row->getBirthday()) < self::ADULT_AGE ? $row->getDays() : 0)
+                ->setCellValue('L' . $rowCnt, $row->getPayment());
             $rowCnt++;
         }
         //format
-        foreach (Range::letters('A', 'J') as $columnID) {
+        foreach (Range::letters('A', 'L') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
-        $sheet->getStyle('A1:J1')->getFont()->setBold(true);
-        $sheet->setAutoFilter('A1:J' . ($rowCnt - 1));
+        $sheet->getStyle('A1:L1')->getFont()->setBold(true);
+        $sheet->setAutoFilter('A1:L' . ($rowCnt - 1));
         $sheet->setTitle('Seznam účastníků');
     }
 
