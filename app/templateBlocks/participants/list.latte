@@ -25,13 +25,13 @@ $isAllowParticipantInsert
                     Podřízené? <i class="glyphicon {if !$directMemberOnly}glyphicon-ok{else}glyphicon-ban-circle{/if}"></i>
                 </a>
 
-                <a n:if="$isAllowParticipantInsert" class="btn btn-primary btn-sm" href="#addParticipant" data-toggle="modal">Nový účastník</a>
+                <a class="btn btn-primary btn-sm" href="#addParticipant" data-toggle="modal">Nový účastník</a>
             </div>                
               {form formMassList}
             <table class="table table-striped table-bordered table-condensed">
                 <thead class="onlyWithUnitPersons">
                     <tr>
-                        <th n:if="$isAllowParticipantInsert" class="nowrap">
+                        <th class="nowrap">
                             <input type="checkbox" class="hidden-xs" id="massList-all" name="massList-all" onclick="jqCheckAll(this.id, 'massList')" />
                             <button n:name="send" title="Přidat vybrané" class="btn btn-primary btn-sm dependentButtonList hidden-xs" type="submit">
                                 <i class="glyphicon glyphicon-plus"></i>
@@ -43,11 +43,9 @@ $isAllowParticipantInsert
                 <tbody class="dropable" id="{$unitTbodyId}">
                 {if isset($list) && count($list) > 0}
                     <tr n:foreach="$list as $id=>$name" id='unit-par-row-{$id}' data-pid='{$id}'>
-                        <td n:if="$isAllowParticipantInsert">
+                        <td>
                             <input type=checkbox class="hidden-xs" name="massList[]" id="massList-{$id}" value={$id} />
-                            {if $isAllowParticipantInsert}
-                                <a n:href="add! $id" class="btn btn-primary btn-sm addRow"><i class="glyphicon glyphicon-plus"></i></a>
-                            {/if}
+                            <a n:href="add! $id" class="btn btn-primary btn-sm addRow"><i class="glyphicon glyphicon-plus"></i></a>
                         </td>
                         <td><label for="massList-{$id}">{$name}</label></td>
                     </tr>
