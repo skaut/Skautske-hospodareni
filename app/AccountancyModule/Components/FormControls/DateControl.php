@@ -29,6 +29,20 @@ class DateControl extends DatePicker
         return $this;
     }
 
+    public function disableWeekends() : self
+    {
+        $this->addRule(function (self $control) : bool {
+            $value = $control->getValue();
+
+            return $value === null || $value->isWeekday();
+        });
+
+        $this->getControlPrototype()
+            ->setAttribute('data-disable-weekends', 'true');
+
+        return $this;
+    }
+
     public function getValue() : ?Date
     {
         $value = parent::getValue();

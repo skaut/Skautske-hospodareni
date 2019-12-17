@@ -109,14 +109,10 @@ final class GroupForm extends BaseControl
             ->addRule(Form::FLOAT, 'Částka musí být zadaná jako číslo');
 
         $form->addDate('dueDate', 'Výchozí splatnost')
+            ->disableWeekends()
             ->setAttribute('class', 'form-control')
             ->setRequired(false)
-            ->setNullable()
-            ->addRule(function (DateControl $control) : bool {
-                $value = $control->getValue();
-
-                return $value === null || $value->isWeekday();
-            });
+            ->setNullable();
 
         $form->addText('constantSymbol', 'KS')
             ->setMaxLength(4)

@@ -45,6 +45,7 @@ class MassAddForm extends BaseControl
             ->setAttribute('class', 'input-mini');
 
         $form->addDate('dueDate', 'Splatnost:')
+            ->disableWeekends()
             ->setAttribute('class', 'input-small');
         $form->addText('constantSymbol', 'KS:')
             ->setRequired(false)
@@ -113,6 +114,7 @@ class MassAddForm extends BaseControl
             ->addRule($form::MIN, 'Čátka musí být větší než 0', 0.01);
 
         $container->addDate('dueDate', 'Splatnost:')
+            ->disableWeekends()
             ->setAttribute('class', 'input-small')
             ->setRequired(false);
 

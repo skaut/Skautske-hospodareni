@@ -57,6 +57,7 @@ final class RepaymentPresenter extends BasePresenter
         $form = new BaseForm();
 
         $form->addDate('date', 'Datum splatnosti:')
+            ->disableWeekends()
             ->setDefaultValue(Date::now()->addWeekday());
 
         $form->addSubmit('send', 'Odeslat platby do banky')
