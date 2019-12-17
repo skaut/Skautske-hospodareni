@@ -10,6 +10,7 @@ class PrivilegesPresenter extends BasePresenter
 {
     public function renderDefault(int $aid) : void
     {
+        $this->setLayout('layout.new');
         $isDraft = $this->event->getState() === 'draft';
 
         $privileges = [

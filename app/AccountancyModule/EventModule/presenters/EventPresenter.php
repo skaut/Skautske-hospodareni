@@ -13,6 +13,7 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventPragueParticipantsQuery;
+use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
 use Model\Cashbook\ReadModel\Queries\Pdf\ExportChits;
 use Model\Event\Commands\Event\ActivateStatistics;
 use Model\Event\Commands\Event\CloseEvent;
@@ -65,6 +66,8 @@ class EventPresenter extends BasePresenter
             $this->redirect('Default:');
         }
 
+        $this->setLayout('layout.new');
+
         $accessEditBase = $this->authorizator->isAllowed(Event::UPDATE, $aid);
 
         if ($accessEditBase) {
@@ -88,6 +91,7 @@ class EventPresenter extends BasePresenter
 
         $this->template->setParameters([
             'statistic' => $this->queryBus->handle(new EventStatisticsQuery(new SkautisEventId($this->aid))),
+            'finalRealBalance' => $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId($this->aid))),
             'accessEditBase' => $accessEditBase,
             'accessCloseEvent' => $this->authorizator->isAllowed(Event::CLOSE, $aid),
             'accessOpenEvent' => $this->authorizator->isAllowed(Event::OPEN, $aid),
@@ -106,6 +110,7 @@ class EventPresenter extends BasePresenter
 
     public function renderLogs(int $aid) : void
     {
+        $this->setLayout('layout.new');
         $this->template->setParameters([
             'logs' => $this->loggerService->findAllByTypeId(Type::get(Type::OBJECT), $aid),
         ]);
@@ -179,6 +184,8 @@ class EventPresenter extends BasePresenter
     protected function createComponentFormEdit() : Form
     {
         $form = new BaseForm();
+
+        $form->useBootstrap4();
 
         $form->addText('name', 'Název akce')
             ->setRequired('Musíte zadat název akce');

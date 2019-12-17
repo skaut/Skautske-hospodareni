@@ -1,70 +1,43 @@
 {snippet functions}
-        <div class="panel panel-default">
-            <div class="panel-heading">
+    {var $functionLabels = [
+        'leader' => 'Vedoucí akce',
+        'assistant' => 'Zástupce vedoucího',
+        'accountant' => 'Hospodář',
+        'medic' => 'Zdravotník',
+    ]}
+        <div class="card">
+            <div class="card-header d-flex align-items-center">
+                <h5 class="m-0 mr-auto">Vedení akce</h5>
                 {if $editation}
-                    <a n:href="closeEditation!" class="ajax lead close pull-right">&times;</a>
+                    <a n:href="closeEditation!" class="ajax lead close">&times;</a>
                 {elseif $canEdit}
-                <a n:href="edit!" class="btn btn-primary btn-sm ajax pull-right"><i
-                            class="glyphicon glyphicon-pencil"></i> Upravit funkce</a>
+                    <a n:href="edit!" class="btn btn-light btn-sm ajax"><i
+                                class="far fa-edit"></i></a>
                 {/if}
-                <h4>Vedení akce</h4>
             </div>
             {if $editation}
-                <form n:name="form" class="form-horizontal panel-body">
-                    <div n:foreach="$form->errors as $error" class="alert alert-danger">{$error}</div>
-                    <div class="form-group">
-                        <div class="col-sm-3 control-label">{label leader}</div>
-                        <div class="col-sm-9">
-                            {input leader}
-                            <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm fn-info" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"></i>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-3 control-label">{label assistant}</div>
-                        <div class="col-sm-9">
-                            {input assistant}
-                            <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm fn-info" rel="tooltip" title="Dospělá osoba, registrovaná ve SkautISu"></i>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-3 control-label">{label accountant}</div>
-                        <div class="col-sm-9">
-                            {input accountant}
-                            <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm fn-info" rel="tooltip" title="Osoba, registrovaná ve SkautISu"></i>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-3 control-label">{label medic}</div>
-                        <div class="col-sm-9">
-                            {input medic}
-                            <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm fn-info" rel="tooltip" title="Osoba, registrovaná ve SkautISu"></i>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-offset-3 col-sm-9">
-                            {input save}
-                        </div>
+                <form n:name="form">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item" n:foreach="$functionLabels as $functionName => $label">
+                            <div class="form-group">
+                                <label n:name="$functionName" class="font-weight-bold">{$label}</label>
+                                <select n:name="$functionName" class="custom-select"/>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="card-body">
+                        <input n:name="save" class="btn btn-primary w-100">
                     </div>
                 </form>
             {else}
-                <table class="panel-body table table-bordered">
-                    <tr>
-                        <th>Vedoucí akce</th>
-                        <td>{$functions->leader !== NULL ? $functions->leader->name : "-"}</td>
-                    </tr>
-                    <tr>
-                        <th>Zástupce vedoucího</th>
-                        <td>{$functions->assistant !== NULL ? $functions->assistant->name : "-"}</td>
-                    </tr>
-                    <tr>
-                        <th>Hospodář</th>
-                        <td>{$functions->accountant !== NULL ? $functions->accountant->name : "-"}</td>
-                    </tr>
-                    <tr>
-                        <th>Zdravotník</th>
-                        <td>{$functions->medic !== NULL ? $functions->medic->name : "-"}</td>
-                    </tr>
-                </table>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex" n:foreach="$functionLabels as $functionName => $label">
+                        <div class="font-weight-bold mr-auto">{$label}</div>
+                        <div>
+                            {$functions->$functionName !== NULL ? $functions->$functionName->name : "-"}
+                        </div>
+                    </li>
+                </ul>
             {/if}
         </div>
 {/snippet}

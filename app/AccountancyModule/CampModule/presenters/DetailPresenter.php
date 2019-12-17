@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\AccountancyModule\CampModule;
 
 use Model\Auth\Resources\Camp;
+use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CampPragueParticipantsQuery;
+use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
 use Model\Cashbook\ReadModel\Queries\InconsistentCampCategoryTotalsQuery;
 use Model\Common\UnitId;
 use Model\Event\ReadModel\Queries\CampFunctions;
@@ -35,6 +38,8 @@ class DetailPresenter extends BasePresenter
 
     public function renderDefault(int $aid) : void
     {
+        $this->setLayout('layout2');
+
         $troops = array_filter(array_map(
             function (UnitId $id) {
                 try {
@@ -62,6 +67,7 @@ class DetailPresenter extends BasePresenter
                 $this->event->getRegistrationNumber(),
                 $this->event->getStartDate()
             )),
+            'finalRealBalance' => $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId())),
         ]);
     }
 
@@ -82,5 +88,10 @@ class DetailPresenter extends BasePresenter
         $totals = $this->queryBus->handle(new InconsistentCampCategoryTotalsQuery(new SkautisCampId($campId)));
 
         return count($totals) === 0;
+    }
+
+    private function getCashbookId() : CashbookId
+    {
+        return $this->queryBus->handle(new CampCashbookIdQuery($this->event->getId()));
     }
 }

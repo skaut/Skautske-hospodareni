@@ -60,15 +60,14 @@ abstract class AccountancyHelpers
     public static function eventStateLabel(string $s) : string
     {
         if ($s === 'draft') {
-            return '<span class=\'label label-warning hidden-xs hidden-sm\'>Rozpracováno</span>'
-                . '<span class=\'label label-warning visible-xs visible-sm\'>Rozprac.</span>';
+            return '<span class=\'badge badge-warning\'>Rozpracováno</span>';
         }
 
         if ($s === 'closed') {
-            return '<span class=\'label label-success\'>Uzavřeno</span>';
+            return '<span class=\'badge badge-success\'>Uzavřeno</span>';
         }
 
-        return '<span class=\'label label-default\'>Zrušeno</span>';
+        return '<span class=\'badge badge-default\'>Zrušeno</span>';
 
         //draft, closed, cancelled
     }
@@ -93,15 +92,15 @@ abstract class AccountancyHelpers
     {
         switch ($s) {
             case 'draft':
-                return '<span class=\'label label-warning\'>Rozpracováno</span>';
+                return '<span class=\'badge badge-warning\'>Rozpracováno</span>';
             case 'approvedParent':
-                return '<span class=\'label label-info\'>Schválený střediskem</span>';
+                return '<span class=\'badge badge-info\'>Schválený střediskem</span>';
             case 'approvedLeader':
-                return '<span class=\'label label-info\'>Schválený vedoucím</span>';
+                return '<span class=\'badge badge-info\'>Schválený vedoucím</span>';
             case 'real':
-                return '<span class=\'label label-success\'>Skutečnost odevzdána</span>';
+                return '<span class=\'badge badge-success\'>Skutečnost odevzdána</span>';
             default:
-                return '<span class=\'label label-default\'>Zrušený</span>';
+                return '<span class=\'badge badge-default\'>Zrušený</span>';
         }
     }
 

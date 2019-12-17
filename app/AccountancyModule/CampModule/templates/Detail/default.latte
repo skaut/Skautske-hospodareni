@@ -1,83 +1,102 @@
 {block #title}{$event->getDisplayName()} - základní ůdaje{/block}
 
 {block #content}
-{include ../ActionMenu.latte}
-<h2>{$event->getDisplayName()}</h2>
-<div class="row event-dashboard">
-    <div class="col-md-4" n:if="$accessDetail">
-        <div class="panel panel-default">
-            <div class="panel-heading"><h4>Základní údaje</h4></div>
-            <table class="table table-bordered table-condensed">
-                <tr>
-                    <th>Jednotka</th>
-                    <td>{$event->getUnitName()}</td>
-                </tr>
-                <tr n:if="!empty($troops)">
-                    <th>Oddíly</th>
-                    <td>{foreach $troops as $t}{$t->getDisplayName()}{if !$iterator->isLast()}, {/if}{/foreach}</td>
-                </tr>
-                <tr>
-                    <th>Datum</th>
-                    <td>{[$event->getStartDate(), $event->getEndDate()]|dateRange}</td>
-                </tr>
-                <tr>
-                    <th>Místo</th>
-                    <td>{$event->getLocation()}</td>
-                </tr>
-                <tr>
-                    <th>Stav</th>
-                    <td {if $event->getState() == closed}title="Uzavřel: {$event->getPersonClosed()} dne: {$event->getDateClosed()|date:"j.n.Y"}" {/if}>{$event->getState()|campStateLabel|noescape}</td>
-                </tr>
-                <tr>
-                    <th>Prefix <i class="glyphicon glyphicon-question-sign" rel="tooltip" data-original-title='Prefix lze upravit na kartě Evidence plateb.'></i></th>
-                    <td>{$prefix}</td>
-                </tr>
-            </table>
+
+{include ../header.latte}
+
+<div class="row">
+    <div class="col-lg-7 text-center text-lg-left">
+        {var $state = $event->getState()}
+        <span n:tag-if="$state == 'closed'"
+        data-toggle="tooltip"
+        title="Uzavřel {$event->getPersonClosed()} dne {$event->getDateClosed()|date:"j.n.Y"}"
+        >{$state|campStateLabel|noescape}</span>
+        <span class="ml-2 mr-2">|</span>
+        {$event->getUnitName()}
+        <span class="ml-2 mr-2">|</span>
+        <span class="text-nowrap"><i class="fas fa-calendar"></i> {[$event->getStartDate(), $event->getEndDate()]|dateRange}</span>
+        <span class="ml-2 mr-2">|</span>
+        <i class="fas fa-map-marker-alt"></i>
+        {if trim($event->getLocation()) === ''}<i
+                class="text-muted">Nevyplněno</i>{else}{$event->getLocation()}{/if}
+    </div>
+    <div class="col-lg-5 text-center text-lg-right mt-3 mt-lg-0 d-flex d-md-block flex-column">
+        <a n:href="Detail:report 'aid'=>$aid" target="_blank" class="btn btn-info mr-md-2 mb-2 mb-md-0">
+            <i class="fas fa-print"></i>
+            Záverečná zpráva
+        </a>
+
+        <a href="{$skautISUrl}Junak/Events/Camp/Detail.aspx?ID={$event->getID()}" target="_blank" class="btn btn-light">
+            <i class="far fa-edit d-none d-xl-inline-block"></i>
+            Upravit ve SkautISu
+        </a>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-4 mb-4" n:if="$accessDetail">
+        <div class="card">
+            <h5 class="card-header">Základní údaje</h5>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <div class="font-weight-bold mr-auto">Oddíly</div>
+                    {foreach $troops as $troop}
+                        {$troop->getDisplayName()}{if ! $iterator->isLast()},{/if}
+                    {/foreach}
+                </li>
+                <li class="list-group-item d-flex">
+                    <div class="font-weight-bold mr-auto">Výsledek hospodaření</div>
+                    <div>{$finalRealBalance|price} Kč</div>
+                </li>
+                <li class="list-group-item d-flex">
+                    <div class="font-weight-bold mr-auto">Prefix čísel dokladů</div>
+                    <div>{$prefix}</div>
+                </li>
+            </ul>
         </div>
     </div>
 
 
-    <div class='col-md-3' n:if="$accessDetail">
-        <div class="panel panel-default">
-            <div class="panel-heading"><h4>Statistiky</h4></div>
-            <table class="table table-bordered table-condensed panel-body">
-                <tr>
-                    <th>Počet dnů</th>
-                    <td>{$event->getTotalDays()}</td>
-                </tr>
-                {if $event->getParticipantStatistics() !== null}
-                    {var $stats = $event->getParticipantStatistics()}
-                <tr>
-                    <th>Počet dospělých</th>
-                    <td>{$stats->getRealAdult()}</td>
-                </tr>
-                <tr>
-                    <th>Počet dětí</th>
-                    <td>{$stats->getRealChild()}</td>
-                </tr>
-                <tr>
-                    <th>Počet celkem</th>
-                    <td>{$stats->getRealCount()}</td>
-                </tr>
-                <tr>
-                    <th>Osobodnů</th>
-                    <td>{$stats->getRealPersonDays() ?? "-"}</td>
-                </tr>
-                <tr>
-                    <th>Dětodnů</th>
-                    <td>{$stats->getRealChildDays() ?? "-"}</td>
-                </tr>
-                {/if}
-            </table>
-
+    <div class="col-md-4 mb-4" n:if="$accessDetail">
+        <div class="card">
+            <h5 class="card-header">Statistiky</h5>
+            <table class="table mb-0">
+                    <tr>
+                        <th class="border-top-0">Počet dnů</th>
+                        <td class="border-top-0">{$event->getTotalDays()}</td>
+                    </tr>
+                    {if $event->getParticipantStatistics() !== null}
+                        {var $stats = $event->getParticipantStatistics()}
+                        <tr>
+                            <th>Počet dospělých</th>
+                            <td>{$stats->getRealAdult()}</td>
+                        </tr>
+                        <tr>
+                            <th>Počet dětí</th>
+                            <td>{$stats->getRealChild()}</td>
+                        </tr>
+                        <tr>
+                            <th>Počet celkem</th>
+                            <td>{$stats->getRealCount()}</td>
+                        </tr>
+                        <tr>
+                            <th>Osobodnů</th>
+                            <td>{$stats->getRealPersonDays() ?? "-"}</td>
+                        </tr>
+                        <tr>
+                            <th>Dětodnů</th>
+                            <td>{$stats->getRealChildDays() ?? "-"}</td>
+                        </tr>
+                    {/if}
+                </table>
         </div>
 
-        <div class="panel panel-default" n:if="$pragueParticipants !== NULL">
-            <div class="panel-heading"><h4>Pražští účastníci</h4></div>
-            <table class="table table-bordered table-condensed panel-body">
+        <div class="card mt-4" n:if="$pragueParticipants !== NULL">
+            <h5 class="card-header">Pražští účastníci</h5>
+            <table class="table card-body mb-0">
                 <tr>
-                    <th>Osobodnů pod 26</th>
-                    <td>{$pragueParticipants->personDaysUnder26}</td>
+                    <th class="border-top-0">Osobodnů pod 26</th>
+                    <td class="border-top-0">{$pragueParticipants->personDaysUnder26}</td>
                 </tr>
                 <tr>
                     <th>Osob pod 18</th>
@@ -95,36 +114,30 @@
         </div>
     </div>
 
-    <div class="col-md-5" n:if="$functions !== NULL">
-        <div class="panel panel-default">
-            <div class="panel-heading"><h4>Vedení tábora</h4></div>
-            <table class="table table-bordered table-condensed">
-                <tr>
-                    <th>Vedoucí tábora</th>
-                    <td>{$functions->leader !== NULL ? $functions->leader->name : "-"}</td>
-                </tr>
-                <tr>
-                    <th>Zástupce vedoucího tábora</th>
-                    <td>{$functions->assistant !== NULL ? $functions->assistant->name : "-"}</td>
-                </tr>
-                <tr>
-                    <th>Hospodář</th>
-                    <td>{$functions->accountant !== NULL ? $functions->accountant->name : "-"}</td>
-                </tr>
-                <tr>
-                    <th>Zdravotník</th>
-                    <td>{$functions->medic !== NULL ? $functions->medic->name : "-"}</td>
-                </tr>
-            </table>
+    <div class="col-md-4 mb-4" n:if="$functions !== NULL">
+        {var $functionLabels = [
+            'leader' => 'Vedoucí akce',
+            'assistant' => 'Zástupce vedoucího',
+            'accountant' => 'Hospodář',
+            'medic' => 'Zdravotník',
+        ]}
+
+        <div class="card">
+            <div class="card-header d-flex align-items-center">
+                <h5 class="m-0 mr-auto">Vedení tábora</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex" n:foreach="$functionLabels as $functionName => $label">
+                    <div class="font-weight-bold mr-auto">{$label}</div>
+                    <div>
+                        {$functions->$functionName !== NULL ? $functions->$functionName->name : "-"}
+                    </div>
+                </li>
+            </ul>
         </div>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-sm-6">
-        <a n:href="Detail:report 'aid'=>$aid" target="_blank" class="btn btn-info btn-sm"><i class="glyphicon glyphicon-print"></i> Záverečná zpráva</a><br />
-    </div>
-    <div class="alert alert-info col-sm-6">
-        Pro úpravu údajů táborů použijte <a href="{$skautISUrl}Junak/Events/Camp/Detail.aspx?ID={$event->getID()}" target="_blank"><u>SkautIS</u></a>.
-    </div>
+
 </div>
