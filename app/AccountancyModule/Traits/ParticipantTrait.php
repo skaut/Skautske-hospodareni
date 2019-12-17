@@ -26,6 +26,7 @@ use Model\ExportService;
 use Model\Participant\Payment\EventType;
 use Model\Participant\ReadModel\Queries\PotentialParticipantListQuery;
 use Model\Services\PdfRenderer;
+use Model\Unit\ReadModel\Queries\SubunitListQuery;
 use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\Unit;
 use Model\UnitService;
@@ -149,7 +150,7 @@ trait ParticipantTrait
             'participants' => $participants,
             'unit'       => $unit,
             'uparrent'   => $this->queryBus->handle(new UnitQuery($unit->getParentId())),
-            'uchildrens' => $this->unitService->getSubunits($unit->getId()),
+            'uchildrens' => $this->queryBus->handle(new SubunitListQuery(UnitId::fromInt($unit->getId()))),
             'sort'       => $sort ?? 'displayName',
             'sortOptions' => $sortOptions,
             'useRegNums' => $regNums,
