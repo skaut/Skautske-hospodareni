@@ -22,6 +22,6 @@ export function initializeDatePicker(element: HTMLElement): void {
         },
         format: moment.localeData().longDateFormat('L'),
         firstDay: 1,
-        disableWeekends: true,
+        disableWeekends: element.getAttribute('data-disable-weekends') === 'true',
     });
 }

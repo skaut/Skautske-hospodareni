@@ -92,6 +92,7 @@ final class PaymentDialog extends BaseControl
             ->addRule(Form::EMAIL, 'Zadaný email nemá platný formát');
 
         $form->addDate('dueDate', 'Splatnost')
+            ->disableWeekends()
             ->setRequired('Musíte vyplnit splatnost');
 
         $form->addVariableSymbol('variableSymbol', 'VS')
