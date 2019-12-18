@@ -46,6 +46,7 @@ class MassAddForm extends BaseControl
 
         $form->addDate('dueDate', 'Splatnost:')
             ->disableWeekends()
+            ->setRequired(false)
             ->setAttribute('class', 'input-small');
         $form->addText('constantSymbol', 'KS:')
             ->setRequired(false)
