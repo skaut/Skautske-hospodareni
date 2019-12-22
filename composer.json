@@ -48,7 +48,7 @@
         "ramsey/uuid": "^3.8",
         "sentry/sentry": "^2.1",
         "monolog/monolog": "^1.24",
-        "thecodingmachine/safe": "^0.1.15",
+        "thecodingmachine/safe": "^1.0.0",
         "kdyby/forms-replicator": "1.4",
         "league/flysystem": "^1.0",
         "php-http/guzzle6-adapter": "^2.0",
