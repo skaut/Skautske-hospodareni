@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a6a9da295d5866affb9e52d3af8b467f",
+    "content-hash": "a0a98219458fac702f5fd35ab8dbb9e8",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -3200,7 +3200,7 @@
                     "name": "Dusan Hudak"
                 },
                 {
-                    "name": "Aleš Wita",
+                    "name": "Ales Wita",
                     "email": "aleswita+github@gmail.com"
                 },
                 {
@@ -6997,68 +6997,6 @@
     ],
     "packages-dev": [
         {
-            "name": "arachne/codeception",
-            "version": "v0.8.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Arachne/Codeception.git",
-                "reference": "2764209afbeb786500687f4134495085dee1deb1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Arachne/Codeception/zipball/2764209afbeb786500687f4134495085dee1deb1",
-                "reference": "2764209afbeb786500687f4134495085dee1deb1",
-                "shasum": ""
-            },
-            "require": {
-                "codeception/codeception": "^2.3.2",
-                "nette/bootstrap": "^2.4.0",
-                "nette/di": "^2.4.10",
-                "nette/http": "^2.4.0",
-                "nette/utils": "^2.4.0",
-                "php": "^7.1.0"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^2.8.0",
-                "latte/latte": "^2.4.0",
-                "nette/application": "^2.4.0",
-                "nette/caching": "^2.4.0",
-                "phpstan/phpstan": "^0.9.0",
-                "phpstan/phpstan-nette": "^0.9.0",
-                "tracy/tracy": "^2.4.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "0.8-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Arachne\\Codeception\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jáchym Toušek",
-                    "email": "enumag@gmail.com",
-                    "homepage": "http://enumag.cz"
-                }
-            ],
-            "description": "Integration of Nette framework to Codeception.",
-            "keywords": [
-                "arachne",
-                "codeception",
-                "nette"
-            ],
-            "abandoned": "contributte/codeception",
-            "time": "2017-12-12T22:03:25+00:00"
-        },
-        {
             "name": "behat/gherkin",
             "version": "v4.6.0",
             "source": {
@@ -7407,6 +7345,71 @@
                 "performance"
             ],
             "time": "2019-05-27T17:52:04+00:00"
+        },
+        {
+            "name": "contributte/codeception",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/contributte/codeception.git",
+                "reference": "0671e715d27848b3a5c9678dd37bef244afb9d03"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/contributte/codeception/zipball/0671e715d27848b3a5c9678dd37bef244afb9d03",
+                "reference": "0671e715d27848b3a5c9678dd37bef244afb9d03",
+                "shasum": ""
+            },
+            "require": {
+                "codeception/codeception": "^2.5.1|^3.0.2",
+                "nette/bootstrap": "~2.4.6",
+                "nette/di": "~2.4.14",
+                "nette/http": "~2.4.10",
+                "nette/utils": "~2.5.3",
+                "php": ">= 7.1"
+            },
+            "conflict": {
+                "symfony/browser-kit": "<4.0.0"
+            },
+            "require-dev": {
+                "latte/latte": "~2.5.1",
+                "nette/application": "~2.4.12",
+                "nette/caching": "~2.5.8",
+                "ninjify/qa": "^0.8.0",
+                "tracy/tracy": "~2.6.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Contributte\\Codeception\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jáchym Toušek",
+                    "email": "enumag@gmail.com",
+                    "homepage": "http://enumag.cz"
+                }
+            ],
+            "description": "Integration of Nette framework to Codeception.",
+            "homepage": "https://github.com/contributte/codeception",
+            "keywords": [
+                "codeception",
+                "contributte",
+                "integration",
+                "nette",
+                "testing"
+            ],
+            "time": "2019-06-28T21:05:52+00:00"
         },
         {
             "name": "dealerdirect/phpcodesniffer-composer-installer",
