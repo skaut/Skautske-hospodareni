@@ -2403,16 +2403,16 @@
         },
         {
             "name": "latte/latte",
-            "version": "v2.5.3",
+            "version": "v2.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/latte.git",
-                "reference": "7ee09e0d1af1f1e3c7cc85fb5e742ab078f1b7a6"
+                "reference": "211bec057917e1d771aa09fc334cde1229738860"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/latte/zipball/7ee09e0d1af1f1e3c7cc85fb5e742ab078f1b7a6",
-                "reference": "7ee09e0d1af1f1e3c7cc85fb5e742ab078f1b7a6",
+                "url": "https://api.github.com/repos/nette/latte/zipball/211bec057917e1d771aa09fc334cde1229738860",
+                "reference": "211bec057917e1d771aa09fc334cde1229738860",
                 "shasum": ""
             },
             "require": {
@@ -2426,6 +2426,7 @@
             "require-dev": {
                 "nette/tester": "~2.0",
                 "nette/utils": "^3.0",
+                "phpstan/phpstan": "^0.12",
                 "tracy/tracy": "^2.3"
             },
             "suggest": {
@@ -2472,7 +2473,7 @@
                 "template",
                 "twig"
             ],
-            "time": "2019-09-24T10:42:57+00:00"
+            "time": "2019-12-11T19:48:05+00:00"
         },
         {
             "name": "league/flysystem",
