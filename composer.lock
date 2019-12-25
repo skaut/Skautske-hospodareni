@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a6a9da295d5866affb9e52d3af8b467f",
+    "content-hash": "e76ab90a415be9ca23503183423897cc",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -3200,7 +3200,7 @@
                     "name": "Dusan Hudak"
                 },
                 {
-                    "name": "Ales Wita",
+                    "name": "Aleš Wita",
                     "email": "aleswita+github@gmail.com"
                 },
                 {
@@ -6991,44 +6991,45 @@
     "packages-dev": [
         {
             "name": "arachne/codeception",
-            "version": "v0.8.1",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Arachne/Codeception.git",
-                "reference": "2764209afbeb786500687f4134495085dee1deb1"
+                "url": "https://github.com/contributte/codeception.git",
+                "reference": "a9aab1ac858949891669acfdc3a76d4375a608e0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Arachne/Codeception/zipball/2764209afbeb786500687f4134495085dee1deb1",
-                "reference": "2764209afbeb786500687f4134495085dee1deb1",
+                "url": "https://api.github.com/repos/contributte/codeception/zipball/a9aab1ac858949891669acfdc3a76d4375a608e0",
+                "reference": "a9aab1ac858949891669acfdc3a76d4375a608e0",
                 "shasum": ""
             },
             "require": {
-                "codeception/codeception": "^2.3.2",
-                "nette/bootstrap": "^2.4.0",
-                "nette/di": "^2.4.10",
-                "nette/http": "^2.4.0",
-                "nette/utils": "^2.4.0",
-                "php": "^7.1.0"
+                "codeception/codeception": "^2.5.1",
+                "nette/bootstrap": "~2.4.6",
+                "nette/di": "~2.4.14",
+                "nette/http": "~2.4.10",
+                "nette/utils": "~2.5.3",
+                "php": ">= 7.1"
+            },
+            "conflict": {
+                "symfony/browser-kit": "<4.0.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^2.8.0",
-                "latte/latte": "^2.4.0",
-                "nette/application": "^2.4.0",
-                "nette/caching": "^2.4.0",
-                "phpstan/phpstan": "^0.9.0",
-                "phpstan/phpstan-nette": "^0.9.0",
-                "tracy/tracy": "^2.4.0"
+                "latte/latte": "~2.4.8",
+                "nette/application": "~2.4.12",
+                "nette/caching": "~2.5.8",
+                "ninjify/qa": "^0.8.0",
+                "tracy/tracy": "~2.5.5"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.8-dev"
+                    "dev-master": "1.1-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Arachne\\Codeception\\": "src"
+                    "Contributte\\Codeception\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -7043,13 +7044,16 @@
                 }
             ],
             "description": "Integration of Nette framework to Codeception.",
+            "homepage": "https://github.com/contributte/codeception",
             "keywords": [
-                "arachne",
                 "codeception",
-                "nette"
+                "contributte",
+                "integration",
+                "nette",
+                "testing"
             ],
             "abandoned": "contributte/codeception",
-            "time": "2017-12-12T22:03:25+00:00"
+            "time": "2019-01-15T09:32:13+00:00"
         },
         {
             "name": "behat/gherkin",

@@ -60,7 +60,7 @@
         "codeception/codeception": "^2.2",
         "codeception/mockery-module": "^0.3.0",
         "captbaritone/mailcatcher-codeception-module": "^2.1",
-        "arachne/codeception": "^0.8",
+        "arachne/codeception": "^1.0",
         "roave/security-advisories": "dev-master",
         "phpstan/phpstan": "^0.11.5",
         "phpstan/phpstan-nette": "^0.11.0",
