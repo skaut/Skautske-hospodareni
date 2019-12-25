@@ -78,7 +78,7 @@ final class FlysystemScanStorageTest extends Unit
         $file = $this->storage->get($filepath);
 
         $this->assertSame($filepath->getPath(), $file->getPath());
-        $this->assertStringEndsWith($filename, $file->getFilePath());
+        $this->assertStringEndsWith($filename, $file->getPath());
         $this->assertSame($contents, (string) $file->getContents());
     }
 
