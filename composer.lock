@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a6a9da295d5866affb9e52d3af8b467f",
+    "content-hash": "3e0816765cc50586f9868223e88b1599",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -3158,16 +3158,16 @@
         },
         {
             "name": "nasext/dependent-select-box",
-            "version": "3.1.4",
+            "version": "v4.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/NasExt/DependentSelectBox.git",
-                "reference": "1e11dfc35f7a43a53ca7a5b234cc89e163672cbf"
+                "reference": "b5e5d61da1a82df63b02a40da57fff67ca593559"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NasExt/DependentSelectBox/zipball/1e11dfc35f7a43a53ca7a5b234cc89e163672cbf",
-                "reference": "1e11dfc35f7a43a53ca7a5b234cc89e163672cbf",
+                "url": "https://api.github.com/repos/NasExt/DependentSelectBox/zipball/b5e5d61da1a82df63b02a40da57fff67ca593559",
+                "reference": "b5e5d61da1a82df63b02a40da57fff67ca593559",
                 "shasum": ""
             },
             "require": {
@@ -3200,11 +3200,11 @@
                     "name": "Dusan Hudak"
                 },
                 {
-                    "name": "Aleš Wita",
-                    "email": "aleswita+github@gmail.com"
+                    "name": "Jáchym Toušek"
                 },
                 {
-                    "name": "Jáchym Toušek"
+                    "name": "Ales Wita",
+                    "email": "aleswita+github@gmail.com"
                 }
             ],
             "description": "Dependent Select Box for Nette Framework.",
@@ -3213,7 +3213,7 @@
                 "nasext",
                 "nette"
             ],
-            "time": "2018-03-08T05:10:43+00:00"
+            "time": "2019-05-22T15:01:36+00:00"
         },
         {
             "name": "natxet/cssmin",
