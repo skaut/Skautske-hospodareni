@@ -35,7 +35,7 @@ final class FilePath
 
     public static function generatePath(string $prefix, string $originalFileName) : string
     {
-        return sprintf('%s/%s/%d_%s', $prefix, Date::today()->format('Y/m'), uniqid('', true), $originalFileName);
+        return sprintf('%s/%s/%s_%s', $prefix, Date::today()->format('Y/m'), uniqid(), $originalFileName);
     }
 
     public function equals(self $that) : bool
