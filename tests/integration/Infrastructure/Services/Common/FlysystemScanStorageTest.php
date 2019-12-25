@@ -80,6 +80,7 @@ final class FlysystemScanStorageTest extends Unit
         $newFilename = explode('_', $file->getFileName(), 2)[1];
         $this->assertSame(FilePath::generatePath(self::FILE_PATH_PREFIX, $filename), $file->getPath());
         $this->assertSame($filename, $newFilename);
+        $this->assertSame($filename, $file->getOriginalFileName());
         $this->assertSame($contents, (string) $file->getContents());
     }
 
