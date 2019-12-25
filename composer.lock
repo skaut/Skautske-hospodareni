@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0541fdc0d99680171d62969f193708f2",
+    "content-hash": "a6a9da295d5866affb9e52d3af8b467f",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -1504,6 +1504,53 @@
             ],
             "description": "Mechanism for nullable embeddables in Doctrine 2.5+",
             "time": "2018-02-22T11:30:49+00:00"
+        },
+        {
+            "name": "fmasa/sentry-breadcrumbs-monolog-handler",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fmasa/sentry-breadcrumbs-monolog-handler.git",
+                "reference": "f23f841d79a127b74938c81853757aee8863a80a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fmasa/sentry-breadcrumbs-monolog-handler/zipball/f23f841d79a127b74938c81853757aee8863a80a",
+                "reference": "f23f841d79a127b74938c81853757aee8863a80a",
+                "shasum": ""
+            },
+            "require": {
+                "monolog/monolog": "^1.2|^2.0",
+                "php": ">=7.1",
+                "sentry/sentry": "^2.1"
+            },
+            "require-dev": {
+                "doctrine/coding-standard": "^6.0",
+                "guzzlehttp/psr7": "^1.6",
+                "mockery/mockery": "^1.3",
+                "php-http/curl-client": "^2.0",
+                "phpunit/phpcov": "^3.0",
+                "phpunit/phpunit": "^5.7",
+                "satooshi/php-coveralls": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Fmasa\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "František Maša",
+                    "email": "frantisekmasa1@gmail.com"
+                }
+            ],
+            "description": "Monolog handler that transform log entries into breadcrumbs",
+            "time": "2019-12-25T13:57:54+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -3153,7 +3200,7 @@
                     "name": "Dusan Hudak"
                 },
                 {
-                    "name": "Aleš Wita",
+                    "name": "Ales Wita",
                     "email": "aleswita+github@gmail.com"
                 },
                 {

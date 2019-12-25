@@ -17,4 +17,4 @@ decorator:
     Monolog\Logger:
         setup:
             - pushHandler(Sentry\Monolog\Handler(level: Monolog\Logger::ERROR))
-            - pushHandler(Model\Infrastructure\Log\Sentry\BreadcrumbsMonologHandler())
+            - pushHandler(Fmasa\SentryBreadcrumbsMonologHandler\BreadcrumbsHandler())
