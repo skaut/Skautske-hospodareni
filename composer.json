@@ -47,7 +47,7 @@
         "composer/ca-bundle": "^1.1",
         "ramsey/uuid": "^3.8",
         "sentry/sentry": "^2.1",
-        "monolog/monolog": "^1.24",
+        "monolog/monolog": "^2.0",
         "thecodingmachine/safe": "^1.0.0",
         "kdyby/forms-replicator": "1.4",
         "league/flysystem": "^1.0",
