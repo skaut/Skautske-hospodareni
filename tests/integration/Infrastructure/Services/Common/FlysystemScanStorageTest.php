@@ -12,7 +12,6 @@ use Model\Common\FileNotFound;
 use Model\Common\FilePath;
 use Nette\Utils\FileSystem as FileSystemUtil;
 use Nette\Utils\Image;
-use function explode;
 use function uniqid;
 
 final class FlysystemScanStorageTest extends Unit
@@ -40,12 +39,12 @@ final class FlysystemScanStorageTest extends Unit
     {
         $contents = Image::fromBlank(1, 1)->toString();
 
-        $filename = 'foo';
-        $this->storage->save(FilePath::generate(self::FILE_PATH_PREFIX, $filename), $contents);
+        $filepath = $this->getFilePath('foo');
+        $this->storage->save($filepath, $contents);
 
         $this->assertSame(
             $contents,
-            FileSystemUtil::read($this->directory . '/' . FilePath::generatePath(self::FILE_PATH_PREFIX, $filename)),
+            FileSystemUtil::read($this->directory . '/' . $filepath->getPath()),
         );
     }
 
@@ -73,13 +72,13 @@ final class FlysystemScanStorageTest extends Unit
     {
         $contents = Image::fromBlank(1, 1)->toString();
         $filename = 'foo.jpg';
-        $this->storage->save($this->getFilePath($filename), $contents);
+        $filepath = $this->getFilePath($filename);
+        $this->storage->save($filepath, $contents);
 
-        $file = $this->storage->get($this->getFilePath($filename));
+        $file = $this->storage->get($filepath);
 
-        $newFilename = explode('_', $file->getFileName(), 2)[1];
-        $this->assertSame(FilePath::generatePath(self::FILE_PATH_PREFIX, $filename), $file->getPath());
-        $this->assertSame($filename, $newFilename);
+        $this->assertSame($filepath->getPath(), $file->getPath());
+        $this->assertStringEndsWith($filename, $file->getPath());
         $this->assertSame($contents, (string) $file->getContents());
     }
 
