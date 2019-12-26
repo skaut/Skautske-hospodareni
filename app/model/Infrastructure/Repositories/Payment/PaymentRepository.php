@@ -92,8 +92,9 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
         }
 
         return $this->getEntityManager()->createQueryBuilder()
-            ->select('p')
+            ->select('p, e')
             ->from(Payment::class, 'p')
+            ->leftJoin('p.sentEmails', 'e')
             ->where('p.groupId IN (:groupIds)')
             ->orderBy('FIELD (p.state, :states)')
             ->addOrderBy('p.id')

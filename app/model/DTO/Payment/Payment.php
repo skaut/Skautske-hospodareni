@@ -6,6 +6,7 @@ namespace Model\DTO\Payment;
 
 use Cake\Chronos\Date;
 use DateTimeImmutable;
+use Model\Payment\Payment\SentEmail;
 use Model\Payment\Payment\State;
 use Model\Payment\Payment\Transaction;
 use Model\Payment\VariableSymbol;
@@ -73,6 +74,12 @@ class Payment
     /** @var int */
     private $groupId;
 
+    /** @var SentEmail[] */
+    private $sentEmails;
+
+    /**
+     * @param SentEmail[] $sentEmails
+     */
     public function __construct(
         int $id,
         string $name,
@@ -87,7 +94,8 @@ class Payment
         ?Transaction $transaction,
         ?DateTimeImmutable $closedAt,
         ?int $personId,
-        int $groupId
+        int $groupId,
+        array $sentEmails
     ) {
         $this->id             = $id;
         $this->name           = $name;
@@ -103,6 +111,7 @@ class Payment
         $this->closedAt       = $closedAt;
         $this->personId       = $personId;
         $this->groupId        = $groupId;
+        $this->sentEmails     = $sentEmails;
     }
 
     public function getId() : int
@@ -173,5 +182,13 @@ class Payment
     public function getGroupId() : int
     {
         return $this->groupId;
+    }
+
+    /**
+     * @return SentEmail[]
+     */
+    public function getSentEmails() : array
+    {
+        return $this->sentEmails;
     }
 }
