@@ -8,6 +8,7 @@ use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\EventBus;
 use Helpers;
 use IntegrationTest;
+use Model\Payment\EmailType;
 use Model\Payment\Group;
 use Model\Payment\Payment;
 use Model\Payment\PaymentNotFound;
@@ -43,6 +44,7 @@ class PaymentRepositoryTest extends IntegrationTest
         return [
             Payment::class,
             Group::class,
+            Payment\SentEmail::class,
         ];
     }
 
@@ -100,6 +102,26 @@ class PaymentRepositoryTest extends IntegrationTest
         );
 
         $this->assertTrue($expectedTransaction->equals($payment->getTransaction()));
+    }
+
+    public function testFindWithSentEmails() : void
+    {
+        $this->addPayments([self::PAYMENT_ROW]);
+
+        $sentEmail = [
+            'payment_id' => 1,
+            'time' => '2019-12-24 12:45:41',
+            'type' => EmailType::PAYMENT_INFO,
+            'sender_name' => 'Petr Svetr',
+        ];
+        $this->tester->haveInDatabase('pa_payment_sent_emails', $sentEmail);
+
+        $emailRow = $this->repository->find(1)->getSentEmails();
+
+        $this->assertCount(1, $emailRow);
+        $this->assertSame($sentEmail['time'], $emailRow[0]->getTime()->format('Y-m-d H:i:s'));
+        $this->assertSame($sentEmail['type'], $emailRow[0]->getType()->toString());
+        $this->assertSame($sentEmail['sender_name'], $emailRow[0]->getSenderName());
     }
 
     public function testGetMaxVariableSymbolForNoPaymentIsNull() : void

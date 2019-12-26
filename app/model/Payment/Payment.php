@@ -7,6 +7,7 @@ namespace Model\Payment;
 use Cake\Chronos\Date;
 use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Fmasa\DoctrineNullableEmbeddables\Annotations\Nullable;
 use InvalidArgumentException;
@@ -15,6 +16,7 @@ use Model\Payment\DomainEvents\PaymentAmountWasChanged;
 use Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
 use Model\Payment\DomainEvents\PaymentWasCompleted;
 use Model\Payment\DomainEvents\PaymentWasCreated;
+use Model\Payment\Payment\SentEmail;
 use Model\Payment\Payment\State;
 use Model\Payment\Payment\Transaction;
 use RuntimeException;
@@ -121,6 +123,13 @@ class Payment extends Aggregate
      */
     private $state;
 
+    /**
+     * @ORM\OneToMany(targetEntity=SentEmail::class, mappedBy="payment", cascade={"persist", "remove"}, orphanRemoval=true)
+     *
+     * @var ArrayCollection<SentEmail>
+     */
+    private $sentEmails;
+
     public function __construct(
         Group $group,
         string $name,
@@ -142,6 +151,8 @@ class Payment extends Aggregate
         $this->amount   = $amount;
         $this->updateDetails($name, $email, $dueDate, $constantSymbol, $note);
         $this->variableSymbol = $variableSymbol;
+        $this->sentEmails     = new ArrayCollection();
+
         $this->raise(new PaymentWasCreated($group->getId(), $variableSymbol));
     }
 
@@ -190,6 +201,11 @@ class Payment extends Aggregate
         $this->closedAt    = $time;
 
         $this->raise(new PaymentWasCompleted($this->id));
+    }
+
+    public function recordSentEmail(EmailType $type, DateTimeImmutable $time, string $senderName) : void
+    {
+        $this->sentEmails[] = new SentEmail($this, $type, $time, $senderName);
     }
 
     public function markSent() : void
@@ -289,6 +305,14 @@ class Payment extends Aggregate
     public function canBePaired() : bool
     {
         return ! $this->isClosed() && $this->variableSymbol !== null;
+    }
+
+    /**
+     * @return SentEmail[]
+     */
+    public function getSentEmails() : array
+    {
+        return $this->sentEmails->toArray();
     }
 
     /**
