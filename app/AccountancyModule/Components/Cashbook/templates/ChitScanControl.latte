@@ -13,16 +13,16 @@
 
                 {foreach $files as $file}
                     <div>
-                        {$file->getFileName()|substr:0,26}{if strlen($file->getFileName()) > 26}&hellip;{/if}
+                        <a href="{plink :Accountancy:CashbookExport:downloadScan $cashbookId, $chitId, $file->getPath()}"
+                           class="float-right" title="Stáhnout soubor {$file->getFileName()}" data-toggle="tooltip">
+                            <i class="fa fa-arrow-down"></i>
+                            {$file->getOriginalFileName()|truncate:26}
+                        </a>
                         <a n:href="remove! $file->getPath()"
                                 n:if="$isChitEditable"
                                 title="Smazat soubor"
                                 data-toggle="tooltip"
                                 class="text-danger float-right ml-3 ajax"><i class="fa fa-trash-o"></i></a>
-                        <a href="{plink :Accountancy:CashbookExport:downloadScan $cashbookId, $chitId, $file->getPath()}"
-                           class="float-right" title="Stáhnout soubor" data-toggle="tooltip">
-                            <i class="fa fa-arrow-down"></i>
-                        </a>
                     </div>
                 {/foreach}
                 {/if}
