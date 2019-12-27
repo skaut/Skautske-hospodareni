@@ -19,3 +19,19 @@ API těchto služeb nadefinovat jako interface a pro testy implementaci nahrazov
 
 ## Jak testovat presentery
 Akceptační testy, pokud jsou jednoduché (většinou nejsou a je s tím hrozná práce). Pokud nejsou, tak :pray: 
+
+
+## Spouštění testů
+Jednotlivé testy: 
+```bash
+vendor/bin/codecept run <cesta k souboru>
+```
+
+Všechny daného typu: 
+```bash
+phing tests
+phing tests-acceptance
+phing tests-integration
+phing tests-unit
+phing tests-with-coverage
+```
