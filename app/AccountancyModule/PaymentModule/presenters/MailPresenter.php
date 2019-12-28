@@ -59,6 +59,11 @@ class MailPresenter extends BasePresenter
     {
         $mail = $this->model->get($id);
 
+        if ($mail === null) {
+            $this->flashMessage('Zadaný email neexistuje', 'danger');
+            $this->redirect('this');
+        }
+
         if (! $this->isEditable || $mail->getUnitId() !== $this->unitId->toInt()) {
             $this->flashMessage('Nemáte oprávnění mazat smtp', 'danger');
             $this->redirect('GroupList:');
