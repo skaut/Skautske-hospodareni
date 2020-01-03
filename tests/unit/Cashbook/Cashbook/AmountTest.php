@@ -101,7 +101,7 @@ class AmountTest extends Unit
     }
 
     /**
-     * @dataProvider getMultiplications
+     * @dataProvider getExpressions
      */
     public function testIsUsingFormula(string $expression, bool $expectedResult) : void
     {
