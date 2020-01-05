@@ -6606,16 +6606,16 @@
         },
         {
             "name": "tracy/tracy",
-            "version": "v2.6.5",
+            "version": "v2.6.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/tracy.git",
-                "reference": "18c3c0f3d60b6dba0a0d1c513c5dbaef82c947cb"
+                "reference": "d219f53644e1112ffcb62baff13959fa69f1f07a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/tracy/zipball/18c3c0f3d60b6dba0a0d1c513c5dbaef82c947cb",
-                "reference": "18c3c0f3d60b6dba0a0d1c513c5dbaef82c947cb",
+                "url": "https://api.github.com/repos/nette/tracy/zipball/d219f53644e1112ffcb62baff13959fa69f1f07a",
+                "reference": "d219f53644e1112ffcb62baff13959fa69f1f07a",
                 "shasum": ""
             },
             "require": {
@@ -6669,7 +6669,7 @@
                 "nette",
                 "profiler"
             ],
-            "time": "2019-09-24T10:18:10+00:00"
+            "time": "2020-01-02T18:07:31+00:00"
         },
         {
             "name": "ublaboo/datagrid",
