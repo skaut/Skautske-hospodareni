@@ -31,11 +31,14 @@ class DateControl extends DatePicker
 
     public function disableWeekends() : self
     {
-        $this->addRule(function (self $control) : bool {
-            $value = $control->getValue();
+        $this->addRule(
+            function (self $control) : bool {
+                $value = $control->getValue();
 
-            return $value === null || $value->isWeekday();
-        });
+                return $value === null || $value->isWeekday();
+            },
+            'Zadané datum musí být pracovní den',
+        );
 
         $this->getControlPrototype()
             ->setAttribute('data-disable-weekends', 'true');
