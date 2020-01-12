@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Model\Unit;
 
-use Nette\Utils\Strings;
 use function array_key_last;
 use function explode;
 use function in_array;
@@ -80,11 +79,6 @@ class Unit
         $this->type               = $type;
         $this->parentId           = $parentId;
         $this->children           = $children;
-    }
-
-    public function isSubunitOf(Unit $unit) : bool
-    {
-        return Strings::startsWith($this->registrationNumber, $unit->registrationNumber);
     }
 
     public function getId() : int

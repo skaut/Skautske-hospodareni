@@ -159,7 +159,7 @@ class VehicleRepositoryTest extends IntegrationTest
         $row = $this->getVehicleRow();
 
         $unit    = m::mock(Unit::class, ['getId' => $row['unit_id']]);
-        $subunit = m::mock(Unit::class, ['getId' => $row['subunit_id'], 'isSubunitOf' => true]);
+        $subunit = m::mock(Unit::class, ['getId' => $row['subunit_id']]);
 
         $vehicle = new Vehicle(
             $row['type'],

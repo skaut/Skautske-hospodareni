@@ -6,7 +6,6 @@ namespace Model\Travel;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use InvalidArgumentException;
 use Model\Common\FilePath;
 use Model\Common\ScanNotFound;
 use Model\Travel\Vehicle\Metadata;
@@ -116,10 +115,6 @@ class Vehicle
         $this->unitId = $unit->getId();
 
         if ($subunit !== null) {
-            if (! $subunit->isSubunitOf($unit)) {
-                throw new InvalidArgumentException('Unit #{' . $subunit->getId() . '} is not child of #{' . $unit->getId() . '}');
-            }
-
             $this->subunitId = $subunit->getId();
         }
 
