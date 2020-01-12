@@ -6480,16 +6480,16 @@
         },
         {
             "name": "thecodingmachine/safe",
-            "version": "v1.0.0",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thecodingmachine/safe.git",
-                "reference": "25c39690b0e3f976c7177884a1f4980b29096711"
+                "reference": "eb13cdb1378dfb5557413f105b2014b01bcb1aaa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thecodingmachine/safe/zipball/25c39690b0e3f976c7177884a1f4980b29096711",
-                "reference": "25c39690b0e3f976c7177884a1f4980b29096711",
+                "url": "https://api.github.com/repos/thecodingmachine/safe/zipball/eb13cdb1378dfb5557413f105b2014b01bcb1aaa",
+                "reference": "eb13cdb1378dfb5557413f105b2014b01bcb1aaa",
                 "shasum": ""
             },
             "require": {
@@ -6608,7 +6608,7 @@
                 "MIT"
             ],
             "description": "PHP core functions that throw exceptions instead of returning FALSE on error",
-            "time": "2019-12-19T09:25:25+00:00"
+            "time": "2020-01-09T13:27:49+00:00"
         },
         {
             "name": "tracy/tracy",
