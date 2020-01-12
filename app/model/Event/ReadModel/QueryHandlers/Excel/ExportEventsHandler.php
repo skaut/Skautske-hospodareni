@@ -27,7 +27,6 @@ use Model\Participant\PragueParticipants;
 use Model\Skautis\ReadModel\Queries\EventStatisticsQuery;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use function array_filter;
 use function array_key_exists;
 use function array_map;
 use function assert;
@@ -208,18 +207,23 @@ final class ExportEventsHandler
      */
     private function getPragueParticipantsForEvents(array $events) : array
     {
-        return array_filter(
-            array_map(
-                function (Event $event) : ?PragueParticipants {
-                    return $this->queryBus->handle(new EventPragueParticipantsQuery(
-                        $event->getId(),
-                        $event->getRegistrationNumber(),
-                        $event->getStartDate()
-                    ));
-                },
-                $events
-            )
-        );
+        $pragueParticipantsPerEvent = [];
+
+        foreach ($events as $event) {
+            $participants =  $this->queryBus->handle(new EventPragueParticipantsQuery(
+                $event->getId(),
+                $event->getRegistrationNumber(),
+                $event->getStartDate()
+            ));
+
+            if ($participants === null) {
+                continue;
+            }
+
+            $pragueParticipantsPerEvent[$event->getId()->toInt()] = $participants;
+        }
+
+        return $pragueParticipantsPerEvent;
     }
 
     private function getCashbookPrefix(Event $event) : ?string
