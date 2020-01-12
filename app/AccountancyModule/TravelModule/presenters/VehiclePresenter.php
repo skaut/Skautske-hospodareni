@@ -14,12 +14,12 @@ use Model\Travel\ReadModel\Queries\Vehicle\RoadworthyScansQuery;
 use Model\TravelService;
 use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\Unit;
+use Model\Unit\UnitNotFound;
 use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Http\IResponse;
 use Nette\Utils\ArrayHash;
-use Skautis\Wsdl\PermissionException;
 use Ublaboo\Responses\PSR7StreamResponse;
 use function assert;
 use function in_array;
@@ -95,7 +95,7 @@ class VehiclePresenter extends BasePresenter
                     assert($unit instanceof Unit);
                     $subUnitName = $unit->getSortName();
                 }
-            } catch (PermissionException $exc) {
+            } catch (UnitNotFound $exc) {
                 // jednotka může být smazaná a pak na ní nikdo nemá oprávnění
             }
 
