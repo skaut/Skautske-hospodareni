@@ -12,6 +12,8 @@ interface ICategory
     public const CATEGORY_PARTICIPANT_INCOME_ID = 1;
     public const CATEGORY_HPD_ID                = 11;
     public const CATEGORY_REFUND_ID             = 20;
+    public const CATEGORY_REFUND_CHILD_ID       = 21;
+    public const CATEGORY_REFUND_ADULT_ID       = 22;
 
     public function getId() : int;
 
