@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b1ffcf2fd8de641eefefa9c55e3ff635",
+    "content-hash": "16bfc8260e90ce85e979b77d92baff7c",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -7142,20 +7142,20 @@
         },
         {
             "name": "codeception/mockery-module",
-            "version": "0.3.0",
+            "version": "0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codeception/MockeryModule.git",
-                "reference": "19cc51ae4123031d7c93c56a9abbde40697dbc24"
+                "reference": "5c4af8afec81303cb859c27fdc105271caef1d02"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codeception/MockeryModule/zipball/19cc51ae4123031d7c93c56a9abbde40697dbc24",
-                "reference": "19cc51ae4123031d7c93c56a9abbde40697dbc24",
+                "url": "https://api.github.com/repos/Codeception/MockeryModule/zipball/5c4af8afec81303cb859c27fdc105271caef1d02",
+                "reference": "5c4af8afec81303cb859c27fdc105271caef1d02",
                 "shasum": ""
             },
             "require": {
-                "codeception/codeception": "^2.0|^3.0",
+                "codeception/codeception": "^2.4|^3.0|^4.0",
                 "mockery/mockery": "^0.8|^0.9|^1.0"
             },
             "type": "library",
@@ -7179,7 +7179,7 @@
                 }
             ],
             "description": "Mockery Module for Codeception",
-            "time": "2019-04-26T19:47:46+00:00"
+            "time": "2020-01-17T15:08:49+00:00"
         },
         {
             "name": "codeception/phpunit-wrapper",
@@ -7549,6 +7549,7 @@
                 "selenium",
                 "webdriver"
             ],
+            "abandoned": "php-webdriver/webdriver",
             "time": "2019-06-13T08:02:18+00:00"
         },
         {
@@ -8150,16 +8151,16 @@
         },
         {
             "name": "mockery/mockery",
-            "version": "1.2.3",
+            "version": "1.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mockery/mockery.git",
-                "reference": "4eff936d83eb809bde2c57a3cea0ee9643769031"
+                "reference": "f69bbde7d7a75d6b2862d9ca8fab1cd28014b4be"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mockery/mockery/zipball/4eff936d83eb809bde2c57a3cea0ee9643769031",
-                "reference": "4eff936d83eb809bde2c57a3cea0ee9643769031",
+                "url": "https://api.github.com/repos/mockery/mockery/zipball/f69bbde7d7a75d6b2862d9ca8fab1cd28014b4be",
+                "reference": "f69bbde7d7a75d6b2862d9ca8fab1cd28014b4be",
                 "shasum": ""
             },
             "require": {
@@ -8173,7 +8174,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.0.x-dev"
+                    "dev-master": "1.3.x-dev"
                 }
             },
             "autoload": {
@@ -8211,7 +8212,7 @@
                 "test double",
                 "testing"
             ],
-            "time": "2019-08-07T15:01:07+00:00"
+            "time": "2019-12-26T09:49:15+00:00"
         },
         {
             "name": "nikic/php-parser",
