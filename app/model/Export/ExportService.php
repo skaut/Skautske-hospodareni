@@ -38,7 +38,6 @@ use Model\Services\TemplateFactory;
 use Model\Utils\MoneyFactory;
 use function array_column;
 use function array_filter;
-use function array_key_exists;
 use function array_sum;
 use function array_values;
 use function assert;
@@ -240,13 +239,6 @@ class ExportService
             }
         }
 
-        $refund = null;
-        if (array_key_exists(ICategory::CATEGORY_REFUND_ID, $categories)) {
-            $refund = $categories[ICategory::CATEGORY_REFUND_ID];
-            assert($refund instanceof Category);
-            $total['income'] = $total['income']->subtract($refund->getTotal());
-        }
-
         $stats = $this->queryBus->handle(new CampParticipantStatisticsQuery(new SkautisCampId($skautisCampId)));
         assert($stats instanceof Statistics);
 
@@ -264,7 +256,6 @@ class ExportService
             'virtualTotalExpense' => $total['virtualExpense'],
             'functions' => $this->queryBus->handle(new CampFunctions(new SkautisCampId($skautisCampId))),
             'areTotalsConsistentWithSkautis' => $areTotalsConsistentWithSkautis,
-            'refund' => $refund,
         ]);
     }
 }
