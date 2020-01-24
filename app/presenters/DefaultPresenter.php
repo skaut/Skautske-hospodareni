@@ -9,4 +9,9 @@ class DefaultPresenter extends BasePresenter
     public function renderDefault(?string $backlink = null) : void
     {
     }
+
+    public function renderAbout() : void
+    {
+        $this->setLayout('layout2');
+    }
 }
