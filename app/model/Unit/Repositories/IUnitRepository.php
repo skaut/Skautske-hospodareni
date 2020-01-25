@@ -6,7 +6,6 @@ namespace Model\Unit\Repositories;
 
 use Model\Unit\Unit;
 use Model\Unit\UnitNotFound;
-use stdClass;
 
 interface IUnitRepository
 {
@@ -19,9 +18,4 @@ interface IUnitRepository
      * @throws UnitNotFound
      */
     public function find(int $id) : Unit;
-
-    /**
-     * @deprecated Use IUnitRepository::find()
-     */
-    public function findAsStdClass(int $id) : stdClass;
 }
