@@ -75,8 +75,8 @@
                     {/block}
                 {/if}
 
-                <div class="table-responsive">
-                    <table class="{block table-class}table table-hover table-striped table-bordered table-sm{/block}" n:snippet="table" n:block="data">
+                <div class="table-responsive pb-5">
+                    <table class="{block table-class}table table-hover table-striped table-bordered table-sm{/block} mb-5" n:snippet="table" n:block="data">
                         <thead n:block="header">
                         <tr class="row-group-actions" n:if="$hasGroupActions || $exports || $toolbar_buttons || $control->canHideColumns() || $inlineAdd" n:block="group-actions">
                             <th colspan="{$control->getColumnsCount()}" class="ublaboo-datagrid-th-form-inline">
