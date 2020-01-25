@@ -47,6 +47,13 @@ library.add(
     fas.faUniversity,
     fas.faUsers,
     fas.faQuestion,
+    fas.faStepForward,
+    fas.faDownload,
+    fas.faPencilAlt,
+    fas.faTable,
+    fas.faExchangeAlt,
+    fas.faShoppingCart,
+    fas.faThList,
 
     // Regular icons
     far.faCalendar,
@@ -59,6 +66,7 @@ library.add(
     far.faTimesCircle,
     far.faTrashAlt,
     far.faUser,
+    far.faQuestionCircle,
     far.faFolderOpen,
 
     // Brands
