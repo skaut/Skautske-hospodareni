@@ -100,6 +100,7 @@ class CashbookPresenter extends BasePresenter
     protected function createComponentFormImportHpd() : BaseForm
     {
         $form = new BaseForm();
+        $form->useBootstrap4();
         $form->addRadioList('cat', 'Kategorie:', ['child' => 'Od dětí a roverů', 'adult' => 'Od dospělých'])
             ->addRule($form::FILLED, 'Musíte vyplnit kategorii.')
             ->setDefaultValue('child');
