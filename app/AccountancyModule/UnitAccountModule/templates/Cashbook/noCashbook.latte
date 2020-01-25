@@ -1,10 +1,10 @@
 {block #content}
+    {include ../ActionMenu.latte}
     <h2 n:block="title">{$unitPairs[$unitId]} - evidence plateb</h2>
-    {includeblock ../ActionMenu.latte}
     <div class="clearfix"></div>
 
-    <div class="panel panel-warning no-cashbook">
-        <div class="panel-body text-center">
+    <div class="card border-warning no-cashbook">
+        <div class="card-body text-center">
             <h4>Jednotka <strong>{$unitPairs[$unitId]}</strong> zatím nemá žádnou pokladní knihu.</h4>
             <a n:href="createCashbook!" class="ajax btn btn-success">
                 <i class="fa fa-plus"></i>
