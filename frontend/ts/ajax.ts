@@ -29,5 +29,11 @@ export default function (): void {
 
     naja.formsHandler.netteForms = netteForms;
 
+    // Prevents NS_ERROR_ILLEGAL_VALUE on large pages in Firefox
+    (naja as any).historyHandler.historyAdapter = {
+        replaceState: () => {},
+        pushState: () => {},
+    };
+
     naja.initialize({history: false});
 }
