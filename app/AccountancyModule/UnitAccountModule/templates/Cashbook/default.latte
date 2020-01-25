@@ -1,9 +1,12 @@
 {block #content}
 {include ../ActionMenu.latte}
-<h2 n:inner-block="title">{$unitPairs[$unitId]} - evidence plateb</h2>
-
-<div n:snippet="paragony">
-    {control cashbook}
+<div class="row">
+    <div class="col-12">
+        <h2 n:inner-block="title">{$unitPairs[$unitId]} - evidence plateb</h2>
+        <div n:snippet="paragony">
+            {control cashbook}
+        </div>
+    </div>
 </div>
     {control activateCashbookDialog}
     {control createCashbookDialog}
@@ -11,10 +14,9 @@
 
 {block actionMenuToolbar}
     <div class="btn-group">
-        <a n:if="! $isCashbookEmpty"
-                n:href=":Accountancy:CashbookExport:printAllChits $cashbookId" target="_blank"
-                                                                               class="btn btn-sm btn-info btn-group-shifted">
-            <i class="glyphicon glyphicon-print hidden-xs hidden-sm"></i> Seznam dokladů
+        <a n:if="! $isCashbookEmpty" n:href=":Accountancy:CashbookExport:printAllChits $cashbookId"
+                target="_blank" class="btn btn-sm btn-info">
+            <i class="fas fa-print"></i> Seznam dokladů
         </a>
     </div>
 {/block}
