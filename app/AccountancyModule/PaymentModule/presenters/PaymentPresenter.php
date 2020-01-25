@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\PaymentModule;
 
+use App\AccountancyModule\PaymentModule\Components\GroupProgress;
 use App\AccountancyModule\PaymentModule\Components\GroupUnitControl;
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Components\PairButton;
@@ -370,6 +371,11 @@ class PaymentPresenter extends BasePresenter
         $group = $this->model->getGroup($this->id);
 
         return $this->removeGroupDialogFactory->create($this->id, $group !== null && $this->canEditGroup($group));
+    }
+
+    protected function createComponentProgress() : GroupProgress
+    {
+        return new GroupProgress($this->model->getGroupSummaries([$this->id])[$this->id]);
     }
 
     private function smtpError(InvalidSmtp $e) : void

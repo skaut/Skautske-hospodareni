@@ -35,4 +35,9 @@ class Summary
     {
         return $this->amount;
     }
+
+    public function add(self $other) : self
+    {
+        return new self($this->count + $other->count, $this->amount + $other->amount);
+    }
 }

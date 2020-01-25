@@ -29,15 +29,7 @@
 <div class="container">
         <div class="row card mt-3">
             <div class="card-body">
-                {var $completedCount = $summarize['completed']->count}
-                {var $totalCount = $completedCount + $summarize['preparing']->count + $summarize['send']->count}
-                Vybráno <strong>{$completedCount} / {$totalCount} plateb</strong>
-                ({$summarize['completed']->amount|num} / {$summarize['completed']->amount + $summarize['preparing']->amount + $summarize['send']->amount|num} Kč)
-
-                {var $percentage = $totalCount === 0 ? 0 : ceil($completedCount / $totalCount * 100)}
-                <div class="progress">
-                    <div class="progress-bar" style="width: {$percentage}%"></div>
-                </div>
+                {control progress}
             </div>
         </div>
 </div>
