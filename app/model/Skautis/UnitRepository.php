@@ -49,7 +49,7 @@ final class UnitRepository implements IUnitRepository
         );
     }
 
-    public function findAsStdClass(int $id) : stdClass
+    private function findAsStdClass(int $id) : stdClass
     {
         try {
             return $this->webService->call('UnitDetail', [
