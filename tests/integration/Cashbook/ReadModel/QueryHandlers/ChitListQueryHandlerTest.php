@@ -12,7 +12,7 @@ use Mockery as m;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Operation;
-use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
+use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\DTO\Cashbook\Category;
 use function count;
@@ -114,7 +114,7 @@ class ChitListQueryHandlerTest extends IntegrationTest
         }
 
         $bus->shouldReceive('handle')
-            ->withArgs(function (CategoriesSummaryQuery $query) {
+            ->withArgs(function (CategoryListQuery $query) {
                 return $query->getCashbookId()->equals($this->getCashbookId());
             })->andReturn($categories);
 

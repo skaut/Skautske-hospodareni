@@ -14,7 +14,7 @@ use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Category;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
-use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
+use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantBalanceQuery;
@@ -92,7 +92,7 @@ class CashbookPresenter extends BasePresenter
             : null;
         $amount        = new Amount((string) $totalPayment);
         $cashbookId    = $this->getCashbookId();
-        $categoriesDto = $this->queryBus->handle(new CategoriesSummaryQuery($this->getCashbookId()));
+        $categoriesDto = $this->queryBus->handle(new CategoryListQuery($this->getCashbookId()));
 
         $this->commandBus->handle(
             new AddChitToCashbook(

@@ -9,7 +9,7 @@ use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Operation;
-use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
+use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit;
@@ -177,7 +177,7 @@ class CashbookWithCategoriesBuilder
     private function getCategories(CashbookId $cashbookId) : array
     {
         $categories = new ArrayCollection(
-            $this->queryBus->handle(new CategoriesSummaryQuery($cashbookId))
+            $this->queryBus->handle(new CategoryListQuery($cashbookId))
         );
 
         $categoriesByOperation = $categories->partition(function ($_, Category $category) : bool {

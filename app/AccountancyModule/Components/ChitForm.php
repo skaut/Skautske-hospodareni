@@ -22,7 +22,7 @@ use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\Commands\Cashbook\UpdateChit;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
-use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
+use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use Model\Cashbook\ReadModel\Queries\ChitQuery;
 use Model\Common\ReadModel\Queries\MemberNamesQuery;
@@ -298,7 +298,7 @@ final class ChitForm extends BaseControl
         $method        = PaymentMethod::get($values->paymentMethod);
         $items         = [];
         $operation     = Operation::get($values->type);
-        $categoriesDto = $this->queryBus->handle(new CategoriesSummaryQuery($cashbookId));
+        $categoriesDto = $this->queryBus->handle(new CategoryListQuery($cashbookId));
 
         foreach ($values->items as $item) {
             $categoryId = $operation->equals(Operation::INCOME()) ? $item->incomeCategories : $item->expenseCategories;

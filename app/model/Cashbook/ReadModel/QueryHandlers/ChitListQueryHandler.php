@@ -9,7 +9,7 @@ use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\CashbookNotFound;
-use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
+use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\DTO\Cashbook\Chit as ChitDTO;
 use Model\DTO\Cashbook\ChitFactory;
@@ -46,7 +46,7 @@ class ChitListQueryHandler
 
         assert($cashbook instanceof Cashbook);
 
-        $categories = $this->queryBus->handle(new CategoriesSummaryQuery($query->getCashbookId()));
+        $categories = $this->queryBus->handle(new CategoryListQuery($query->getCashbookId()));
 
         return array_map(
             function (Chit $chit) use ($categories) : ChitDTO {

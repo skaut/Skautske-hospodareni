@@ -11,7 +11,7 @@ use Nette\SmartObject;
 /**
  * @property-read int       $id
  * @property-read string    $name
- * @property-read Money     $total
+ * @property-read Money|null     $total
  * @property-read string    $shortcut
  * @property-read Operation $operationType
  */
@@ -25,7 +25,7 @@ class Category
     /** @var string */
     private $name;
 
-    /** @var Money */
+    /** @var Money|null */
     private $total;
 
     /** @var string */
@@ -37,7 +37,7 @@ class Category
     /** @var bool */
     private $virtual;
 
-    public function __construct(int $id, string $name, Money $total, string $shortcut, Operation $operationType, bool $virtual)
+    public function __construct(int $id, string $name, ?Money $total, string $shortcut, Operation $operationType, bool $virtual)
     {
         $this->id            = $id;
         $this->name          = $name;
@@ -57,7 +57,7 @@ class Category
         return $this->name;
     }
 
-    public function getTotal() : Money
+    public function getTotal() : ?Money
     {
         return $this->total;
     }
