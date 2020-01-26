@@ -9,7 +9,7 @@ use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\ReadModel\Queries\InconsistentCampCategoryTotalsQuery;
 use Model\Cashbook\Repositories\ICampCategoryRepository;
-use Model\DTO\Cashbook\Category;
+use Model\DTO\Cashbook\CategorySummary;
 use Model\Utils\MoneyFactory;
 use function assert;
 
@@ -42,7 +42,7 @@ class InconsistentCampCategoryTotalsQueryQueryHandler
             $total    = $campCategory->getTotal();
             $category = $categories[$id];
 
-            assert($category instanceof Category);
+            assert($category instanceof CategorySummary);
 
             $isConsistent = $category->getTotal()->equals($total);
 

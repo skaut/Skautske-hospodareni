@@ -10,7 +10,7 @@ use Model\Cashbook\ReadModel\CategoryTotalsCalculator;
 use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\Repositories\CategoryRepository;
 use Model\Cashbook\Repositories\ICashbookRepository;
-use Model\DTO\Cashbook\Category;
+use Model\DTO\Cashbook\CategorySummary;
 use Model\Utils\MoneyFactory;
 use function array_filter;
 use function in_array;
@@ -30,7 +30,7 @@ class CategoriesSummaryQueryHandler
     }
 
     /**
-     * @return Category[]
+     * @return CategorySummary[]
      *
      * @throws CashbookNotFound
      */
@@ -49,18 +49,17 @@ class CategoriesSummaryQueryHandler
             return ! in_array($category->getId(), [ICategory::CATEGORY_REFUND_CHILD_ID, ICategory::CATEGORY_REFUND_ADULT_ID]);
         });
 
-        $categoriesById = [];
+        $categoriesSummaryById = [];
         foreach ($categories as $category) {
-            $categoriesById[$category->getId()] = new Category(
+            $categoriesSummaryById[$category->getId()] = new CategorySummary(
                 $category->getId(),
                 $category->getName(),
                 MoneyFactory::fromFloat($totalByCategories[$category->getId()] ?? 0),
-                $category->getShortcut(),
                 $category->getOperationType(),
                 $category->isVirtual()
             );
         }
 
-        return $categoriesById;
+        return $categoriesSummaryById;
     }
 }

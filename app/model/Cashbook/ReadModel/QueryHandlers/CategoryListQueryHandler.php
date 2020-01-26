@@ -39,7 +39,6 @@ class CategoryListQueryHandler
             $categoriesById[$category->getId()] = new Category(
                 $category->getId(),
                 $category->getName(),
-                null,
                 $category->getShortcut(),
                 $category->getOperationType(),
                 $category->isVirtual()

@@ -9,7 +9,7 @@ use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotals;
 use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\Repositories\ICashbookRepository;
 use Model\Cashbook\Services\ICampCategoryUpdater;
-use Model\DTO\Cashbook\Category;
+use Model\DTO\Cashbook\CategorySummary;
 use Model\Utils\MoneyFactory;
 use function assert;
 
@@ -37,7 +37,7 @@ class UpdateCampCategoryTotalHandler
 
         $totals = [];
         foreach ($this->queryBus->handle(new CategoriesSummaryQuery($cashbook->getId())) as $category) {
-            assert($category instanceof Category);
+            assert($category instanceof CategorySummary);
             $totals[$category->getId()] = MoneyFactory::toFloat($category->getTotal());
         }
 

@@ -21,7 +21,7 @@ use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantStatisticsQuery;
 use Model\DTO\Cashbook\Cashbook;
-use Model\DTO\Cashbook\Category;
+use Model\DTO\Cashbook\CategorySummary;
 use Model\DTO\Cashbook\Chit;
 use Model\DTO\Participant\Statistics;
 use Model\Event\Camp;
@@ -153,20 +153,20 @@ class ExportService
         ];
 
         $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($skautisEventId)));
-        /** @var Category[] $categories */
-        $categories = $this->queryBus->handle(new CategoriesSummaryQuery($cashbookId));
+        /** @var CategorySummary[] $categoriesSummary */
+        $categoriesSummary = $this->queryBus->handle(new CategoriesSummaryQuery($cashbookId));
 
-        foreach ($categories as $category) {
-            if (in_array($category->getId(), [ICategory::CATEGORY_HPD_ID, ICategory::CATEGORY_REFUND_ID], true)) {
+        foreach ($categoriesSummary as $categorySummary) {
+            if (in_array($categorySummary->getId(), [ICategory::CATEGORY_HPD_ID, ICategory::CATEGORY_REFUND_ID], true)) {
                 continue;
             }
 
-            $virtual   = $category->isVirtual() ? self::CATEGORY_VIRTUAL:self::CATEGORY_REAL;
-            $operation = $category->getOperationType()->getValue();
+            $virtual   = $categorySummary->isVirtual() ? self::CATEGORY_VIRTUAL:self::CATEGORY_REAL;
+            $operation = $categorySummary->getOperationType()->getValue();
 
-            $sums[$virtual][$operation][$category->getId()] = [
-                'amount' => MoneyFactory::toFloat($category->getTotal()),
-                'label' => $category->getName(),
+            $sums[$virtual][$operation][$categorySummary->getId()] = [
+                'amount' => MoneyFactory::toFloat($categorySummary->getTotal()),
+                'label' => $categorySummary->getName(),
             ];
         }
 
@@ -224,7 +224,7 @@ class ExportService
         $expenseCategories = [self::CATEGORY_REAL => [], self::CATEGORY_VIRTUAL => []];
 
         foreach ($categories as $category) {
-            assert($category instanceof Category);
+            assert($category instanceof CategorySummary);
 
             $virtualCategory = $category->isVirtual() ? self::CATEGORY_VIRTUAL : self::CATEGORY_REAL;
 
