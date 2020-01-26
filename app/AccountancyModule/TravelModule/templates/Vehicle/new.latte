@@ -1,44 +1,34 @@
 {block #content}
 {include ../menu.latte}
-<div class="row">
-    <div class="col-lg-8 col-lg-offset-2 main-panel">
-        <div class="panel panel-default">
-            <div class="panel-heading" n:inner-block="title">Nové vozidlo</div>
-            <div class="panel-body">
-                <form n:name="formCreateVehicle" class="form-horizontal">
-                    <div class="form-group required">
-                        <div class="col-sm-3 control-label">{label type}</div>
-                        <div class="col-sm-9">
-                            {input type}
-                        </div>
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div class="card">
+            <div class="card-header"><h3 n:inner-block="title">Nové vozidlo</h3></div>
+            <div class="card-body">
+                <form n:name="formCreateVehicle">
+                    <div class="form-group">
+                        {label type}
+                        {input type}
                     </div>
-                    <div class="form-group required">
-                        <div class="col-sm-3 control-label">{label registration}</div>
-                        <div class="col-sm-9">
-                            {input registration}
-                        </div>
+                    <div class="form-group">
+                        {label registration}
+                        {input registration}
                     </div>
-                    <div class="form-group required">
-                        <div class="col-sm-3 control-label">{label consumption}</div>
-                        <div class="col-sm-9">
-                            <div class="input-group">
-                                {input consumption}
-                                <div class="input-group-btn">
-                                    <button class="btn btn-default" type="button" data-toggle="modal" data-target="#consumptionModal"><i class="fa fa-question-circle"></i></button>
-                                </div>
+                    <div class="form-group">
+                        {label consumption}
+                        <div class="input-group mb-2">
+                            {input consumption}
+                            <div class="input-group-append">
+                                <button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#consumptionModal"><i class="fas fa-question"></i></button>
                             </div>
-
-                        </div>
-                    </div>
-                    <div class="form-group required">
-                        <div class="col-sm-3 control-label">{label subunitId}</div>
-                        <div class="col-sm-9">
-                            {input subunitId}
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-3 control-label"></div>
-                        <div class="col-sm-9">{input send class => [btn, btn-primary]}</div>
+                        {label subunitId}
+                        {input subunitId}
+                    </div>
+                    <div class="form-group">
+                        {input send class => [btn, btn-primary]}
                     </div>
                 </form>
             </div>
@@ -51,9 +41,9 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title">Harmonizovaná spotřeba</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title">Harmonizovaná spotřeba</h4>
             </div>
             <div class="modal-body">
                 <p>Harmonizovaná spotřeba se určuje podle technického průkazu.</p>

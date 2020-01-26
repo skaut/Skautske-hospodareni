@@ -46,6 +46,7 @@ library.add(
     fas.faUserPlus,
     fas.faUniversity,
     fas.faUsers,
+    fas.faQuestion,
 
     // Regular icons
     far.faCalendar,
