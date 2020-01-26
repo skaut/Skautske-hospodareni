@@ -22,6 +22,8 @@ jobs:
                   restore-keys: |
                       ${{ runner.os }}-composer-
             - run: composer install
+            - name: Remove development docker-compose override
+              run: rm docker-compose.override.yml
             - name: Create tarball
               run: tar -czpf /tmp/workdir.tar.gz . && mv /tmp/workdir.tar.gz .
             - name: Upload workdir
@@ -73,6 +75,32 @@ jobs:
             - name: Extract workdir
               run: tar -xzf workdir.tar.gz
             - run: phing tests-integration
+
+    tests-acceptance:
+        name: "Run acceptance tests"
+        runs-on: ubuntu-18.04
+        needs: workdir
+        steps:
+            - name: Download workdir
+              uses: actions/download-artifact@v1
+              with:
+                  name: workdir
+                  path: .
+            - name: Extract workdir
+              run: tar -xzf workdir.tar.gz
+            - name: Start application containers
+              run: docker-compose up -d
+            - run: mv app/config/config.ci.local.neon app/config/config.local.neon
+            - name: Setup correct file permissions
+              run: docker-compose exec -T app bash -c 'chown www-data:www-data . -R; chmod 777 . -R'
+            - name: Prepare database
+              run: docker-compose exec -T -u www-data app php www/index.php migrations:migrate --no-interaction
+            - name: Install Node.js
+              uses: actions/setup-node@v1
+            - run: npm install -g yarn
+            - name: Build frontend assets
+              run: yarn install && yarn build
+            - run: docker-compose exec -T -u www-data app phing tests-acceptance
 
     static-analysis:
         name: "Run PHPStan analysis"
