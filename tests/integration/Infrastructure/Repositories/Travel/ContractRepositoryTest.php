@@ -34,12 +34,9 @@ final class ContractRepositoryTest extends IntegrationTest
     /**
      * @return string[]
      */
-    protected function getTestedEntites() : array
+    protected function getTestedAggregateRoots() : array
     {
-        return [
-            Contract::class,
-            Contract\Passenger::class,
-        ];
+        return [Contract::class];
     }
 
     public function testFindReturnsCorrectlyHydratedAggregate() : void

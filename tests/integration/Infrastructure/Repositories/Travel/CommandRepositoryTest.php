@@ -9,7 +9,6 @@ use DateTimeImmutable;
 use Doctrine\ORM\EntityManager;
 use IntegrationTest;
 use Model\Travel\Command;
-use Model\Travel\Travel\Type;
 use Model\Travel\Vehicle;
 use Model\Utils\MoneyFactory;
 use function array_map;
@@ -64,13 +63,11 @@ class CommandRepositoryTest extends IntegrationTest
     /**
      * @return string[]
      */
-    public function getTestedEntites() : array
+    public function getTestedAggregateRoots() : array
     {
         return [
             Command::class,
-            Command\Travel::class,
             Vehicle::class, // right now there is direct reference between the two
-            Type::class,
         ];
     }
 

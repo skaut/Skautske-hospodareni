@@ -31,12 +31,10 @@ final class RemoveGroupTest extends IntegrationTest
     /**
      * @return string[]
      */
-    protected function getTestedEntites() : array
+    protected function getTestedAggregateRoots() : array
     {
         return [
             Group::class,
-            Group\Email::class,
-            Group\Unit::class,
             Payment::class,
         ];
     }

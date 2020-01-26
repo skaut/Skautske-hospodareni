@@ -20,7 +20,7 @@ class RemoveMailCredentialsHandlerTest extends CommandHandlerTest
     /**
      * @return string[]
      */
-    public function getTestedEntites() : array
+    public function getTestedAggregateRoots() : array
     {
         return [
             MailCredentials::class,

@@ -38,7 +38,7 @@ class PaymentRepositoryTest extends IntegrationTest
     /**
      * @return string[]
      */
-    public function getTestedEntites() : array
+    public function getTestedAggregateRoots() : array
     {
         return [
             Payment::class,

@@ -23,11 +23,9 @@ class CategoryRepositoryTest extends IntegrationTest
     /**
      * @return string[]
      */
-    public function getTestedEntites() : array
+    public function getTestedAggregateRoots() : array
     {
-        return [
-            Category::class,
-        ];
+        return [Category::class];
     }
 
     public function testSaveRootCategory() : void

@@ -23,12 +23,9 @@ class VehicleRepositoryTest extends IntegrationTest
     /**
      * @return string[]
      */
-    public function getTestedEntites() : array
+    public function getTestedAggregateRoots() : array
     {
-        return [
-            Vehicle::class,
-            Vehicle\RoadworthyScan::class,
-        ];
+        return [Vehicle::class];
     }
 
     protected function _before() : void

@@ -27,12 +27,10 @@ class PaymentServiceTest extends IntegrationTest
     /**
      * @return string[]
      */
-    public function getTestedEntites() : array
+    public function getTestedAggregateRoots() : array
     {
         return [
             Group::class,
-            Group\Email::class,
-            Group\Unit::class,
             Payment::class,
         ];
     }

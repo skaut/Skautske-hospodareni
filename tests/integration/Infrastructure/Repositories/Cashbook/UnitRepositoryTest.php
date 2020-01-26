@@ -31,12 +31,9 @@ final class UnitRepositoryTest extends IntegrationTest
     /**
      * @return string[]
      */
-    protected function getTestedEntites() : array
+    protected function getTestedAggregateRoots() : array
     {
-        return [
-            Unit::class,
-            Unit\Cashbook::class,
-        ];
+        return [Unit::class];
     }
 
     public function testSaveAddsRowsToDatabase() : void

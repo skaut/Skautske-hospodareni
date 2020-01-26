@@ -36,13 +36,9 @@ class CashbookRepositoryTest extends IntegrationTest
     /**
      * @return string[]
      */
-    public function getTestedEntites() : array
+    public function getTestedAggregateRoots() : array
     {
-        return [
-            Cashbook::class,
-            Cashbook\Chit::class,
-            Cashbook\ChitItem::class,
-        ];
+        return [Cashbook::class];
     }
 
     public function testFindEmptyCashbook() : void
