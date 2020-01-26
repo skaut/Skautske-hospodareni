@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use eGen\MessageBus\Bus\QueryBus;
-use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
+use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\ReadModel\Queries\ChitQuery;
 use Model\Cashbook\Repositories\ICashbookRepository;
 use Model\DTO\Cashbook\Chit;
@@ -28,7 +28,7 @@ final class ChitQueryHandler
     public function __invoke(ChitQuery $query) : ?Chit
     {
         $cashbook   = $this->cashbooks->find($query->getCashbookId());
-        $categories = $this->queryBus->handle(new CategoryListQuery($query->getCashbookId()));
+        $categories = $this->queryBus->handle(new CategoriesSummaryQuery($query->getCashbookId()));
 
         foreach ($cashbook->getChits() as $chit) {
             if ($chit->getId() === $query->getChitId()) {

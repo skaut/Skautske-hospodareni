@@ -7,7 +7,7 @@ namespace Model\Cashbook\ReadModel\QueryHandlers;
 use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\ReadModel\CategoryTotalsCalculator;
-use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
+use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\Repositories\CategoryRepository;
 use Model\Cashbook\Repositories\ICashbookRepository;
 use Model\DTO\Cashbook\Category;
@@ -15,7 +15,7 @@ use Model\Utils\MoneyFactory;
 use function array_filter;
 use function in_array;
 
-class CategoryListQueryHandler
+class CategoriesSummaryQueryHandler
 {
     /** @var ICashbookRepository */
     private $cashbooks;
@@ -34,7 +34,7 @@ class CategoryListQueryHandler
      *
      * @throws CashbookNotFound
      */
-    public function __invoke(CategoryListQuery $query) : array
+    public function __invoke(CategoriesSummaryQuery $query) : array
     {
         $cashbook = $this->cashbooks->find($query->getCashbookId());
 

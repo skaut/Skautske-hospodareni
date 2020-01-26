@@ -17,7 +17,7 @@ use Model\Cashbook\ParticipantType;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CampParticipantCategoryIdQuery;
 use Model\Cashbook\ReadModel\Queries\CampParticipantIncomeQuery;
-use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
+use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\FinalCashBalanceQuery;
 use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
@@ -134,7 +134,7 @@ class CashbookPresenter extends BasePresenter
         $categoryId    = $this->queryBus->handle(
             new CampParticipantCategoryIdQuery(new SkautisCampId($this->getCampId()), ParticipantType::get($values->cat === 'adult' ? ParticipantType::ADULT : ParticipantType::CHILD))
         );
-        $categoriesDto = $this->queryBus->handle(new CategoryListQuery($this->getCashbookId()));
+        $categoriesDto = $this->queryBus->handle(new CategoriesSummaryQuery($this->getCashbookId()));
 
         $items = [new ChitItem($amount, $categoriesDto[$categoryId], $purpose)];
         $this->commandBus->handle(new AddChitToCashbook($this->getCashbookId(), $body, $values->isAccount === 'Y' ? PaymentMethod::BANK() : PaymentMethod::CASH(), $items));

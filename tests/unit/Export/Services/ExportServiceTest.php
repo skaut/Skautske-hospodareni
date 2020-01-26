@@ -10,7 +10,7 @@ use Mockery as m;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
-use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
+use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantStatisticsQuery;
 use Model\DTO\Cashbook\Category;
@@ -42,7 +42,7 @@ class ExportServiceTest extends Unit
                 return $q->getEventId()->toInt() === $skautisEventId;
             })->andReturn($cashbookId);
 
-        $queryBus->expects('handle')->withArgs(static function (CategoryListQuery $query) use ($cashbookId) : bool {
+        $queryBus->expects('handle')->withArgs(static function (CategoriesSummaryQuery $query) use ($cashbookId) : bool {
             return $query->getCashbookId()->equals($cashbookId);
         })->andReturn([
             new Category(ICategory::CATEGORY_PARTICIPANT_INCOME_ID, 'Přijmy od účastníků', MoneyFactory::fromFloat(700.0), 'pp', Operation::INCOME(), false),

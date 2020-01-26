@@ -15,7 +15,7 @@ use Model\Cashbook\ReadModel\Queries\CampParticipantStatisticsQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookDisplayNameQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookOfficialUnitQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
-use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
+use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
@@ -154,7 +154,7 @@ class ExportService
 
         $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($skautisEventId)));
         /** @var Category[] $categories */
-        $categories = $this->queryBus->handle(new CategoryListQuery($cashbookId));
+        $categories = $this->queryBus->handle(new CategoriesSummaryQuery($cashbookId));
 
         foreach ($categories as $category) {
             if (in_array($category->getId(), [ICategory::CATEGORY_HPD_ID, ICategory::CATEGORY_REFUND_ID], true)) {
@@ -211,7 +211,7 @@ class ExportService
     public function getCampReport(int $skautisCampId, bool $areTotalsConsistentWithSkautis) : string
     {
         $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($skautisCampId)));
-        $categories = $this->queryBus->handle(new CategoryListQuery($cashbookId));
+        $categories = $this->queryBus->handle(new CategoriesSummaryQuery($cashbookId));
 
         $total = [
             'income'  => MoneyFactory::zero(),

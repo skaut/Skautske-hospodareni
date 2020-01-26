@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Model\Cashbook\ReadModel\Queries;
 
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\ReadModel\QueryHandlers\CategoryListQueryHandler;
+use Model\Cashbook\ReadModel\QueryHandlers\CategoriesSummaryQueryHandler;
 
 /**
- * @see CategoryListQueryHandler
+ * @see CategoriesSummaryQueryHandler
  */
-final class CategoryListQuery
+final class CategoriesSummaryQuery
 {
     /** @var CashbookId */
     private $cashbookId;
