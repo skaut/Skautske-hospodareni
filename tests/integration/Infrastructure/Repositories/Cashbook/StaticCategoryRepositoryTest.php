@@ -29,12 +29,9 @@ class StaticCategoryRepositoryTest extends IntegrationTest
     /**
      * @return string[]
      */
-    protected function getTestedEntites() : array
+    protected function getTestedAggregateRoots() : array
     {
-        return [
-            Category::class,
-            Category\ObjectType::class,
-        ];
+        return [Category::class];
     }
 
     public function testFindByObjectType() : void

@@ -31,13 +31,11 @@ final class RemoveMailCredentialsTest extends IntegrationTest
     /**
      * @return string[]
      */
-    protected function getTestedEntites() : array
+    protected function getTestedAggregateRoots() : array
     {
         return [
             MailCredentials::class,
             Group::class,
-            Group\Email::class,
-            Group\Unit::class,
         ];
     }
 

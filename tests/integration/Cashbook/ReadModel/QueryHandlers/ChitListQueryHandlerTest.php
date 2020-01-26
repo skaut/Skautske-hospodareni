@@ -24,13 +24,9 @@ class ChitListQueryHandlerTest extends IntegrationTest
     /**
      * @return string[]
      */
-    protected function getTestedEntites() : array
+    protected function getTestedAggregateRoots() : array
     {
-        return [
-            Cashbook::class,
-            Cashbook\Chit::class,
-            Cashbook\ChitItem::class,
-        ];
+        return [Cashbook::class];
     }
 
     protected function _before() : void

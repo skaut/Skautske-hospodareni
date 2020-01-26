@@ -43,13 +43,11 @@ class BankAccountServiceTest extends IntegrationTest
     /**
      * @return string[]
      */
-    public function getTestedEntites() : array
+    public function getTestedAggregateRoots() : array
     {
         return [
             BankAccount::class,
             Group::class,
-            Group\Email::class,
-            Group\Unit::class,
         ];
     }
 

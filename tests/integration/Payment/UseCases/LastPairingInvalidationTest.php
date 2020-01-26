@@ -30,13 +30,11 @@ final class LastPairingInvalidationTest extends IntegrationTest
     /**
      * @return string[]
      */
-    public function getTestedEntites() : array
+    public function getTestedAggregateRoots() : array
     {
         return [
             BankAccount::class,
             Group::class,
-            Group\Unit::class,
-            Group\Email::class,
             Payment::class,
         ];
     }

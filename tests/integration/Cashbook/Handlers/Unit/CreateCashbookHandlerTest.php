@@ -30,13 +30,11 @@ final class CreateCashbookHandlerTest extends CommandHandlerTest
     /**
      * @return string[]
      */
-    protected function getTestedEntites() : array
+    protected function getTestedAggregateRoots() : array
     {
         return [
             Unit::class,
-            Unit\Cashbook::class,
             Cashbook::class,
-            Cashbook\Chit::class,
         ];
     }
 

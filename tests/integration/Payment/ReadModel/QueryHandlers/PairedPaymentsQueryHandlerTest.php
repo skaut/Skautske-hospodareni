@@ -16,7 +16,7 @@ final class PairedPaymentsQueryHandlerTest extends IntegrationTest
     /**
      * @return string[]
      */
-    protected function getTestedEntites() : array
+    protected function getTestedAggregateRoots() : array
     {
         return [
             Payment::class,

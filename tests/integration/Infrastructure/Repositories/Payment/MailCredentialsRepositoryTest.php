@@ -24,11 +24,9 @@ class MailCredentialsRepositoryTest extends IntegrationTest
     /**
      * @return string[]
      */
-    public function getTestedEntites() : array
+    public function getTestedAggregateRoots() : array
     {
-        return [
-            MailCredentials::class,
-        ];
+        return [MailCredentials::class];
     }
 
     protected function _before() : void

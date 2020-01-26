@@ -10,7 +10,6 @@ use IntegrationTest;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
-use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\Cashbook\ChitBody;
 use Model\Cashbook\Cashbook\ChitItem;
 use Model\Cashbook\Cashbook\ChitNumber;
@@ -31,13 +30,9 @@ class CashbookIntegrationTest extends IntegrationTest
     /**
      * @return string[]
      */
-    public function getTestedEntites() : array
+    public function getTestedAggregateRoots() : array
     {
-        return [
-            Cashbook::class,
-            Chit::class,
-            ChitItem::class,
-        ];
+        return [Cashbook::class];
     }
 
     public function testLockingLockedChitDoesNothing() : void

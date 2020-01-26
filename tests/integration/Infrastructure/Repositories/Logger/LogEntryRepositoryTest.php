@@ -21,11 +21,9 @@ final class LogEntryRepositoryTest extends IntegrationTest
     /**
      * @return string[]
      */
-    public function getTestedEntites() : array
+    public function getTestedAggregateRoots() : array
     {
-        return [
-            LogEntry::class,
-        ];
+        return [LogEntry::class];
     }
 
     protected function _before() : void
