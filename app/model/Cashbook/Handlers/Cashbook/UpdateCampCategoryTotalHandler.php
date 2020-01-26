@@ -6,10 +6,10 @@ namespace Model\Cashbook\Handlers\Cashbook;
 
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotals;
-use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
+use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\Repositories\ICashbookRepository;
 use Model\Cashbook\Services\ICampCategoryUpdater;
-use Model\DTO\Cashbook\Category;
+use Model\DTO\Cashbook\CategorySummary;
 use Model\Utils\MoneyFactory;
 use function assert;
 
@@ -36,8 +36,8 @@ class UpdateCampCategoryTotalHandler
         $cashbook = $this->cashbooks->find($command->getCashbookId());
 
         $totals = [];
-        foreach ($this->queryBus->handle(new CategoryListQuery($cashbook->getId())) as $category) {
-            assert($category instanceof Category);
+        foreach ($this->queryBus->handle(new CategoriesSummaryQuery($cashbook->getId())) as $category) {
+            assert($category instanceof CategorySummary);
             $totals[$category->getId()] = MoneyFactory::toFloat($category->getTotal());
         }
 

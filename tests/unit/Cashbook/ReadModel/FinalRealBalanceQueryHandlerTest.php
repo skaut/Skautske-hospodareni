@@ -16,7 +16,6 @@ use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit;
 use Model\DTO\Cashbook\ChitItem;
 use Model\Utils\MoneyFactory;
-use Money\Currency;
 use Money\Money;
 
 final class FinalRealBalanceQueryHandlerTest extends Unit
@@ -46,7 +45,7 @@ final class FinalRealBalanceQueryHandlerTest extends Unit
             'getSignedAmount' => $amount * ($op->equalsValue(Operation::INCOME) ? 1 : -1),
             'isVirtual' => $virtualCategory,
             'getItems' => [
-                new ChitItem(new Cashbook\Amount($amount), new Category(1, 'catName', new Money($amount, new Currency('CZK')), 'a', $op, $virtualCategory), 'pro test'),
+                new ChitItem(new Cashbook\Amount($amount), new Category(1, 'catName', 'a', $op, $virtualCategory), 'pro test'),
             ],
         ]);
     }

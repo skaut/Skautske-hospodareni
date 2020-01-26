@@ -8,7 +8,7 @@ use Model\Auth\Resources\Camp;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotals;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
-use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
+use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\ReadModel\Queries\InconsistentCampCategoryTotalsQuery;
 use Model\Event\SkautisCampId;
 use Model\Skautis\ReadModel\Queries\CampBudgetQuery;
@@ -38,7 +38,7 @@ class BudgetPresenter extends BasePresenter
             'isConsistent'             => count($inconsistentTotals) === 0,
             'toRepair'                 => $inconsistentTotals,
             'budgetEntries'            => $this->queryBus->handle(new CampBudgetQuery($campId)),
-            'categories'               => $this->queryBus->handle(new CategoryListQuery($this->getCashbookId($aid))),
+            'categoriesSummary'               => $this->queryBus->handle(new CategoriesSummaryQuery($this->getCashbookId($aid))),
             'isUpdateStatementAllowed' => $this->authorizator->isAllowed(Camp::UPDATE_BUDGET, $aid),
         ]);
         if (! $this->isAjax()) {

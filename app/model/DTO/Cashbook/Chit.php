@@ -29,7 +29,6 @@ use function implode;
  * @property-read bool              $locked
  * @property-read CashbookType[]    $inverseCashbookTypes
  * @property-read PaymentMethod     $paymentMethod
- * @property-read Category          $category
  * @property-read string            $categories
  * @property-read string            $categoriesShortcut
  */

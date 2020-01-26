@@ -17,8 +17,8 @@
     </table>
 {/define}
 
-{define #categoriesTable $categories, $income}
-    <table n:ifset="$categories" class="table myTable table-bordered table-sm">
+{define #categoriesTable $categoriesSummary, $income}
+    <table n:ifset="$categoriesSummary" class="table myTable table-bordered table-sm">
         <thead>
         <tr>
             <th>Položka</th>
@@ -26,12 +26,12 @@
         </tr>
         </thead>
         {var balance = 0}
-        <tr n:foreach="$categories as $category" n:if="$category->isIncome() === $income && ! $category->isVirtual()">
-            {php $balance += (float)$category->total->getAmount()/100}
-            <td>{$category->name}</td>
-            <td n:class="text-right,text-nowrap, array_key_exists($category->id, $toRepair) ? bg-danger-lighter"
-                n:attr="[title => array_key_exists($category->id, $toRepair) ? 'Součet paragonů je ' . $toRepair[$category->id]]">
-                {$category->total|price}
+        <tr n:foreach="$categoriesSummary as $categorySummary" n:if="$categorySummary->isIncome() === $income && ! $categorySummary->isVirtual()">
+            {php $balance += (float)$categorySummary->total->getAmount()/100}
+            <td>{$categorySummary->name}</td>
+            <td n:class="text-right,text-nowrap, array_key_exists($categorySummary->id, $toRepair) ? bg-danger-lighter"
+                n:attr="[title => array_key_exists($categorySummary->id, $toRepair) ? 'Součet paragonů je ' . $toRepair[$categorySummary->id]]">
+                {$categorySummary->total|price}
             </td>
         </tr>
         <tr>
@@ -68,11 +68,11 @@
 <div class="row">
     <div class="col-md-3 col-sm-6">
         <h3>Skutečné náklady</h3>
-        {include #categoriesTable $categories, FALSE}
+        {include #categoriesTable $categoriesSummary, FALSE}
     </div>
     <div class="col-md-3 col-sm-6">
         <h3>Skutečné výnosy</h3>
-        {include #categoriesTable $categories, TRUE}
+        {include #categoriesTable $categoriesSummary, TRUE}
     </div>
 
     <div class="clearfix visible-sm-block"></div>

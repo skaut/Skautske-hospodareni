@@ -6,10 +6,10 @@ namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
-use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
+use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\ReadModel\Queries\InconsistentCampCategoryTotalsQuery;
 use Model\Cashbook\Repositories\ICampCategoryRepository;
-use Model\DTO\Cashbook\Category;
+use Model\DTO\Cashbook\CategorySummary;
 use Model\Utils\MoneyFactory;
 use function assert;
 
@@ -33,7 +33,7 @@ class InconsistentCampCategoryTotalsQueryQueryHandler
     public function __invoke(InconsistentCampCategoryTotalsQuery $query) : array
     {
         $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery($query->getCampId()));
-        $categories = $this->queryBus->handle(new CategoryListQuery($cashbookId));
+        $categories = $this->queryBus->handle(new CategoriesSummaryQuery($cashbookId));
 
         $skautisTotals = [];
 
@@ -42,7 +42,7 @@ class InconsistentCampCategoryTotalsQueryQueryHandler
             $total    = $campCategory->getTotal();
             $category = $categories[$id];
 
-            assert($category instanceof Category);
+            assert($category instanceof CategorySummary);
 
             $isConsistent = $category->getTotal()->equals($total);
 

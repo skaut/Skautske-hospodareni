@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace Model\DTO\Cashbook;
 
 use Model\Cashbook\Operation;
+use Money\Money;
 use Nette\SmartObject;
 
 /**
  * @property-read int       $id
  * @property-read string    $name
- * @property-read string    $shortcut
+ * @property-read Money     $total
  * @property-read Operation $operationType
  */
-class Category
+class CategorySummary
 {
     use SmartObject;
 
@@ -23,8 +24,8 @@ class Category
     /** @var string */
     private $name;
 
-    /** @var string */
-    private $shortcut;
+    /** @var Money */
+    private $total;
 
     /** @var Operation */
     private $operationType;
@@ -32,11 +33,11 @@ class Category
     /** @var bool */
     private $virtual;
 
-    public function __construct(int $id, string $name, string $shortcut, Operation $operationType, bool $virtual)
+    public function __construct(int $id, string $name, Money $total, Operation $operationType, bool $virtual)
     {
         $this->id            = $id;
         $this->name          = $name;
-        $this->shortcut      = $shortcut;
+        $this->total         = $total;
         $this->operationType = $operationType;
         $this->virtual       = $virtual;
     }
@@ -51,9 +52,9 @@ class Category
         return $this->name;
     }
 
-    public function getShortcut() : string
+    public function getTotal() : Money
     {
-        return $this->shortcut;
+        return $this->total;
     }
 
     public function getOperationType() : Operation

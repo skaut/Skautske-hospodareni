@@ -10,10 +10,10 @@ use Mockery as m;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
-use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
+use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantStatisticsQuery;
-use Model\DTO\Cashbook\Category;
+use Model\DTO\Cashbook\CategorySummary;
 use Model\DTO\Participant\Statistics;
 use Model\Event\Event;
 use Model\Event\Functions;
@@ -42,13 +42,13 @@ class ExportServiceTest extends Unit
                 return $q->getEventId()->toInt() === $skautisEventId;
             })->andReturn($cashbookId);
 
-        $queryBus->expects('handle')->withArgs(static function (CategoryListQuery $query) use ($cashbookId) : bool {
+        $queryBus->expects('handle')->withArgs(static function (CategoriesSummaryQuery $query) use ($cashbookId) : bool {
             return $query->getCashbookId()->equals($cashbookId);
         })->andReturn([
-            new Category(ICategory::CATEGORY_PARTICIPANT_INCOME_ID, 'Přijmy od účastníků', MoneyFactory::fromFloat(700.0), 'pp', Operation::INCOME(), false),
-            new Category(2, 'Služby', MoneyFactory::fromFloat(50.0), 's', Operation::EXPENSE(), false),
-            new Category(9, 'Převod z pokladny střediska', MoneyFactory::fromFloat(200.0), 'ps', Operation::INCOME(), true),
-            new Category(7, 'Převod do stř. pokladny', MoneyFactory::fromFloat(150.0), 'pr', Operation::EXPENSE(), true),
+            new CategorySummary(ICategory::CATEGORY_PARTICIPANT_INCOME_ID, 'Přijmy od účastníků', MoneyFactory::fromFloat(700.0), Operation::INCOME(), false),
+            new CategorySummary(2, 'Služby', MoneyFactory::fromFloat(50.0), Operation::EXPENSE(), false),
+            new CategorySummary(9, 'Převod z pokladny střediska', MoneyFactory::fromFloat(200.0), Operation::INCOME(), true),
+            new CategorySummary(7, 'Převod do stř. pokladny', MoneyFactory::fromFloat(150.0), Operation::EXPENSE(), true),
         ]);
 
         $queryBus->expects('handle')
