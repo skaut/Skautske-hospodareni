@@ -1,27 +1,28 @@
-<a n:href="generateNumbers! $paymentMethod->toString ()" n:class="btn, btn-sm, btn-warning, ! $hasOnlyNumericChitNumbers ? disabled"
-        rel="tooltip" data-original-title="Generovat čísla dokladů lze když stávající obsahují pouze číslice.">
+<a n:href="generateNumbers! $paymentMethod->toString ()" n:class="btn, btn-sm, btn-warning, mb-2, ! $hasOnlyNumericChitNumbers ? disabled"
+        data-toggle="tooltip" data-placement="top" title="Generovat čísla dokladů lze když stávající obsahují pouze číslice.">
     Dogenerovat čísla dokladů
 </a>
 
 <a n:if="! $cashbookType->isUnit() && count($chits) !== 0"
-        href="{plink :Accountancy:CashbookExport:printCashbook $cashbookId, $paymentMethod->toString ()}" target="_blank" class="btn btn-sm btn-info">
-    <i class="glyphicon glyphicon-print hidden-xs hidden-sm"></i>
+        href="{plink :Accountancy:CashbookExport:printCashbook $cashbookId, $paymentMethod->toString ()}" target="_blank" class="btn btn-sm btn-info mb-2">
+    <i class="fas fa-print d-none d-lg-inline"></i>
     {if $paymentMethod->equalsValue('cash')}
-        Vytisknout pokladní knihu
+        Vytisknout <span class="d-none d-lg-inline">pokladní knihu</span>
     {else}
         Vytisknout bankovní transakce
     {/if}
 </a>
 
-<div class="dropdown inline-block">
-    <button class="btn btn-sm btn-info dropdown-toggle"
-            type="button"
-            id="excelExportButton"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false">
-        <i class="fa fa-table hidden-xs hidden-sm"></i>&nbsp;&nbsp;Exportovat do excelu&nbsp;<span class="caret"></span>
-    </button>
+<div class="btn-group mb-2">
+    <div class="dropdown">
+        <button class="btn btn-sm btn-info dropdown-toggle"
+                type="button"
+                id="excelExportButton"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false">
+            <i class="fas fa-table d-none d-lg-inline"></i>&nbsp;Exportovat do excelu&nbsp;<span class="caret"></span>
+        </button>
 
     <ul class="dropdown-menu" aria-labelledby="excelExportButton">
         <li>

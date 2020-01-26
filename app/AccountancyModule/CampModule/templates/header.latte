@@ -1,4 +1,4 @@
-<h1 class="mt-5">{$event->getDisplayName()}</h1>
+<h1>{$event->getDisplayName()}</h1>
 
 <nav class="navbar navbar-expand-sm navbar-light bg-light mt-2 mb-4 d-block d-lg-flex">
     <ul class="navbar-nav align-items-center justify-content-center">
@@ -18,7 +18,7 @@
         </li>
         <li n:class="nav-item, $presenterName === 'Budget' ? active">
             <a class="nav-link" n:href="Budget: $event->getId()->toInt()"><i
-                        class="fas fa-chart-pie d-lg-inline-block"></i> Rozpočet</a>
+                        class="fas fa-chart-pie d-none d-lg-inline-block"></i> Rozpočet</a>
         </li>
     </ul>
 </nav>

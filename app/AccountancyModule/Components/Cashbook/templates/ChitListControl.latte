@@ -1,9 +1,14 @@
 {var $isCash = $paymentMethod->equalsValue('cash')}
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <div class="pull-right export-panel">
-            {include 'ChitListControl.topPanel.latte'}
+<div class="card bg-light mb-2">
+    <div class="card-header">
+        <div class="row justify-content-between">
+            <div class="col-xl-2 col-md-3">
+                <h4>{$paymentMethod->getName()}</h4>
+            </div>
+            <div class="col-xl-10 col-md-9 export-panel text-right">
+                {include 'ChitListControl.topPanel.latte'}
+            </div>
         </div>
         <h4>{$paymentMethod->getName()}</h4>
     </div>

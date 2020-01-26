@@ -2,7 +2,7 @@
 Menu pro pohyb mezi částmi akce
 *}
 <div class="row mb-2 mt-2">
-    <div class="col-6">
+    <div class="col-7">
         <ul class="nav nav-pills">
             <li class='nav-item'>
                 <a n:href="Cashbook:default $unitId" class="nav-link{ifCurrent Cashbook:default $unitId} active{/ifCurrent}">
@@ -13,7 +13,7 @@ Menu pro pohyb mezi částmi akce
             <li class='nav-item'><a n:href="Budget:default date('Y')" class="nav-link{ifCurrent Budget:default date("Y")} active{/ifCurrent}"><i class="fas fa-th-list hidden-xs hidden-sm"></i> Rozpočet</a></li>
         </ul>
     </div>
-    <div class="col-md-6" n:ifcontent>
+    <div class="col-5" n:ifcontent>
         <div class="btn-toolbar justify-content-end" n:ifcontent>
             {block actionMenuToolbar}{/block}
             <div class="btn-group">
@@ -49,7 +49,7 @@ Menu pro pohyb mezi částmi akce
                         <button class="btn btn-light dropdown-toggle" type="button" id="unit-cashbook-menu"
                                 data-toggle="dropdown"
                                 aria-haspopup="true" aria-expanded="true">
-                            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                            <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
                         </button>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="unit-cashbook-menu">
                             <a n:href="selectActive!" class="ajax dropdown-item">

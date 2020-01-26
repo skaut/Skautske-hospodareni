@@ -1,24 +1,25 @@
 {snippet}
     <script type="text/javascript" src="{$baseUri}/js/nextras.datetimepicker.init.js"></script>{* include kvuli ajaxovým požadavkům *}
-    <div class="well well-sm" n:if="$isEditable">
-        <form n:name="form" class="chit-form">
-            <h3>Nový doklad</h3>
-            <ul class="alert alert-danger" n:if="$form->hasErrors()">
-                <li n:foreach="$form->errors as $error">{$error}</li>
-            </ul>
-            <div class="row">
-                <div class="col-sm-12" id="chit-type">Typ: {input type:in}{label type:in/} {input type:out}{label type:out /}</div>
-            </div>
-            <div class="row">
-                <div class="col-sm-12">Způsob: {input paymentMethod:cash}{label paymentMethod:cash} {input paymentMethod:bank}{label paymentMethod:bank}</div>
-            </div>
-            <div class="row">
-                <div class="col-sm-6">{input date}</div>
-                <div class="col-sm-6">{input num}</div>
-            </div>
-            <div class="row">
-                <div class="col-sm-12">{input recipient}</div>
-            </div>
+    <div class="card bg-light mb-2" n:if="$isEditable">
+        <div class="card-header"><h5>Nový doklad</h5></div>
+        <div class="card-body">
+            <form n:name="form" class="chit-form">
+                <ul class="alert alert-danger" n:if="$form->hasErrors()">
+                    <li n:foreach="$form->errors as $error">{$error}</li>
+                </ul>
+                <div class="form-row">
+                    <div class="col" id="chit-type">Typ: {input type:in}{label type:in/} {input type:out}{label type:out /}</div>
+                </div>
+                <div class="form-row">
+                    <div class="col">Způsob: {input paymentMethod:cash}{label paymentMethod:cash} {input paymentMethod:bank}{label paymentMethod:bank}</div>
+                </div>
+                <div class="form-row mb-1">
+                    <div class="col">{input date}</div>
+                    <div class="col">{input num}</div>
+                </div>
+                <div class="row">
+                    <div class="col">{input recipient}</div>
+                </div>
 
             <h3>Položky</h3>
             {var $itemsCount = iterator_count($form['items']->getContainers())}

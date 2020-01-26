@@ -3,11 +3,6 @@
 {block #content}
 {include ../header.latte}
 
-<div class="row">
-    <div class="col">
-        <h2>{$event->getDisplayName()}</h2>
-    </div>
-</div>
 {if $missingCategories}
     {control categoryAutocomputedControl}
 {else}
@@ -35,7 +30,7 @@
             {/snippet}
         </div>
         <hr />
-        <div class="text-right lead" title="náklady + výnosy">Výsledek hospodaření: {$finalRealBalance|price} Kč</div>
+        <div class="text-right lead mb-sm-2" title="náklady + výnosy">Výsledek hospodaření: {$finalRealBalance|price} Kč</div>
     </div>
 </div>
 
