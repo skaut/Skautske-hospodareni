@@ -23,6 +23,7 @@ class CommandPresenter extends BasePresenter
     public function __construct(ICommandFormFactory $commandFormFactory, TravelService $model)
     {
         parent::__construct();
+        $this->setLayout('layout2');
         $this->commandFormFactory = $commandFormFactory;
         $this->model              = $model;
     }
