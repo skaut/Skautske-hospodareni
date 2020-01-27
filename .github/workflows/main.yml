@@ -54,18 +54,6 @@ jobs:
         container:
             image: fmasa/lebeda:7.4
         needs: workdir
-
-        services:
-            smtp-hospodareni.loc:
-                image: tophfr/mailcatcher:0.6.5_3
-                env:
-                    SMTP_HOST: smtp-hospodareni.loc
-            mysql-test:
-                image: mysql:5.7
-                env:
-                    MYSQL_ROOT_PASSWORD: 'root'
-                    MYSQL_DATABASE: hskauting
-                options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
         steps:
             - name: Download workdir
               uses: actions/download-artifact@v1
@@ -74,7 +62,11 @@ jobs:
                   path: .
             - name: Extract workdir
               run: tar -xzf workdir.tar.gz
-            - run: phing tests-integration
+            - name: Start application containers
+              run: docker-compose up -d app mysql-test smtp
+            - name: Setup correct file permissions
+              run: docker-compose exec -T app bash -c 'chown www-data:www-data . -R; chmod 777 . -R'
+            - run: docker-compose exec -T -u www-data app phing tests-integration
 
     collect-code-coverage:
         name: "Collect code coverage"
