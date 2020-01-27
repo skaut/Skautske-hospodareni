@@ -107,13 +107,13 @@ jobs:
             - name: Start application containers
               run: docker-compose up -d
             - run: mv app/config/config.ci.local.neon app/config/config.local.neon
-            - name: Prepare database
-              run: docker-compose exec -T -u www-data app php www/index.php migrations:migrate --no-interaction
             - name: Install Node.js
               uses: actions/setup-node@v1
             - run: npm install -g yarn
             - name: Build frontend assets
               run: yarn install && yarn build
+            - name: Prepare database
+              run: docker-compose exec -T -u www-data app php www/index.php migrations:migrate --no-interaction
             - run: docker-compose exec -T -u www-data app phing tests-acceptance
 
     static-analysis:
