@@ -43,7 +43,7 @@ class VehiclePresenter extends BasePresenter
         parent::__construct();
         $this->travelService            = $travelService;
         $this->roadworthyControlFactory = $roadworthyControlFactory;
-        $this->setLayout('layout2');
+        $this->setLayout('layout.new');
     }
 
     /**
@@ -85,7 +85,6 @@ class VehiclePresenter extends BasePresenter
 
     public function renderDetail(int $id) : void
     {
-        $this->setLayout('layout.new');
         try {
             $vehicle = $this->getVehicle($id);
 

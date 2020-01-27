@@ -34,7 +34,7 @@ class ContractPresenter extends BasePresenter
         parent::__construct();
         $this->travelService = $travelService;
         $this->pdf           = $pdf;
-        $this->setLayout('layout2');
+        $this->setLayout('layout.new');
     }
 
     private function isContractAccessible(?Contract $contract) : bool

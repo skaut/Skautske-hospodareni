@@ -57,10 +57,6 @@ class DefaultPresenter extends BasePresenter
         $this->pdf                     = $pdf;
         $this->gridFactory             = $gridFactory;
         $this->editTravelDialogFactory = $editTravelDialogFactory;
-    }
-
-    public function actionDefault() : void
-    {
         $this->setLayout('layout.new');
     }
 
