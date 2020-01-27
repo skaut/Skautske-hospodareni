@@ -215,20 +215,17 @@ class DefaultPresenter extends BasePresenter
     protected function createComponentFormAddTravel() : BaseForm
     {
         $form = new BaseForm();
-        $form->getElementPrototype()->class('form-inline');
+        $form->useBootstrap4();
         $form->addHidden('command_id');
         $form->addSelect('type');
         $form->addDate('start_date', 'Datum cesty')
-            ->setAttribute('class', 'form-control input-sm date')
+            ->setAttribute('class', 'date')
             ->addRule(Form::FILLED, 'Musíte vyplnit datum cesty.');
         $form->addText('start_place', 'Z*')
-            ->setAttribute('class', 'form-control input-sm')
             ->addRule(Form::FILLED, 'Musíte vyplnit místo počátku cesty.');
         $form->addText('end_place', 'Do*')
-            ->setAttribute('class', 'form-control input-sm')
             ->addRule(Form::FILLED, 'Musíte vyplnit místo konce cesty.');
         $form->addText('distance', 'Vzdálenost*')
-            ->setAttribute('class', 'form-control input-sm')
             ->addRule(Form::FILLED, 'Musíte vyplnit vzdálenost.')
             ->addRule(Form::FLOAT, 'Vzdálenost musí být číslo!')
             ->addRule(Form::MIN, 'Vzdálenost musí být větší než 0.', 0.01);

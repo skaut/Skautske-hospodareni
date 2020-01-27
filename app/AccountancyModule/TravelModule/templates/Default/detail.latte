@@ -1,22 +1,24 @@
 {block #content}
 <h2 n:inner-block="title">Cestovní příkaz</h2>
 <div class="row">
-    <div class="col-sm-12">
-        <div class="well well-sm">
-            {if $isEditable}
-            <a n:href="Command:edit $command->id" class="btn btn-sm btn-primary">
-                <span class="glyphicon glyphicon-edit"></span>
-                Upravit
-            </a>
-            <a n:href="removeCommand! $command->id" title="Smazat" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu chcete smazat cestovní příkaz?')"><i class="glyphicon glyphicon-remove"></i> Smazat</a>
-            <a n:href="closeCommand! $command->id" class="btn btn-sm btn-warning" onclick="return confirm('Opravdu chcete uzavřít cestovní příaz?')"><i class="glyphicon glyphicon-folder-close"></i> Uzavřít</a>
-            {else}
-            <a n:href="openCommand! $command->id"  class="btn btn-sm btn-success" onclick="return confirm('Opravdu chcete otevřít cestovní příaz?')"><i class="glyphicon glyphicon-folder-close"></i> Otevřít</a>
-            {/if}
-            {if $command->passenger->contractId !== NULL}
-                <a n:href="Contract:detail $command->passenger->contractId" class="btn btn-sm btn-primary hidden-xs"><i class="glyphicon glyphicon-zoom-in"></i> Smlouva</a>
-            {/if}
-            <a n:href="print $command->id" class="btn btn-sm btn-info hidden-xs"><i class="glyphicon glyphicon-print"></i> Vytisknout cestovní příkaz</a>
+    <div class="col">
+        <div class="card mb-2">
+            <div class="card-body">
+                {if $isEditable}
+                <a n:href="Command:edit $command->id" class="btn btn-primary">
+                    <i class="far fa-edit"></i>
+                    Upravit
+                </a>
+                <a n:href="removeCommand! $command->id" class="btn btn-danger" onclick="return confirm('Opravdu chcete smazat cestovní příkaz?')"><i class="far fa-trash-alt"></i> Smazat</a>
+                <a n:href="closeCommand! $command->id" class="btn btn-warning" onclick="return confirm('Opravdu chcete uzavřít cestovní příaz?')"><i class="far fa-folder-open"></i> Uzavřít</a>
+                {else}
+                <a n:href="openCommand! $command->id"  class="btn btn-success" onclick="return confirm('Opravdu chcete otevřít cestovní příaz?')"><i class="far fa-folder-open"></i> Otevřít</a>
+                {/if}
+                {if $command->passenger->contractId !== NULL}
+                    <a n:href="Contract:detail $command->passenger->contractId" class="btn btn-primary d-none d-md-inline"><i class="fas fa-search"></i> Smlouva</a>
+                {/if}
+                <a n:href="print $command->id" class="btn btn-info d-none d-md-inline"><i class="fas fa-print"></i> Vytisknout cestovní příkaz</a>
+            </div>
         </div>
     </div>
 </div>
@@ -40,27 +42,26 @@
             <b>Opotřebení:</b> {$command->amortizationPerKm|price} Kč/km<br/>
             <b>Sazba náhrady:</b> <b>{$command->pricePerKm|price}</b> Kč/km<br/>
         {/if}
-
     </div>
-    <div n:if="$command->passenger->contractId !== NULL" class="col-sm-4 hidden-xs">
+    <div n:if="$command->passenger->contractId !== NULL" class="col-sm-4 d-none d-md-inline">
         <h3>Cestující</h3>
         <b>Jméno:</b> {$command->passenger->name}<br />
         <b>Bydliště:</b> {$command->passenger->address}
     </div>
 </div>
 <div class="row">
-    <div class="col-sm-12">
+    <div class="col">
         <h3>Provedené cesty</h3>
         {form formAddTravel}
-            <table class="table table-bordered table-striped table-condensed">
+            <table class="table table-bordered table-striped table-sm">
                 <tr>
                     <th n:if="$isEditable">&nbsp;</th>
                     <th>Prostředek</th>
                     <th>Datum</th>
                     <th>Z</th>
                     <th>Do</th>
-                    <th>km nebo cena
-                    <i class="glyphicon glyphicon-info-sign hidden-xs hidden-sm" title="" rel="tooltip" data-original-title="Km u vlastního auta nebo motocyklu, jinak cena jízdenky"></i>
+                    <th data-toggle="tooltip" data-placement="top" title="Km u vlastního auta nebo motocyklu, jinak cena jízdenky">
+                        km nebo cena <i class="fas fa-info-circle"></i>
                     </th>
                     <th>&nbsp;</th>
                 </tr>
@@ -80,23 +81,25 @@
                 </tr>
                 {if !empty($travels)}
                     <tr n:foreach="$travels as $t">
-                        <td n:if="$isEditable" class='nowrap'>
-                            <a n:href="editTravel! $t->id" class="ajax btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
-                            <a n:href="removeTravel! $command->id, $t->id" class="btn btn-xs btn-danger" onclick="return confirm('Opravdu chcete smazat cestu?')" title="smazat cestu"><i class="glyphicon glyphicon-remove"></i></a>
+                        <td n:if="$isEditable">
+                            <div class="btn-group">
+                                <a n:href="editTravel! $t->id" class="ajax btn btn-sm btn-primary"><i class="far fa-edit"></i></a>
+                                <a n:href="removeTravel! $command->id, $t->id" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu chcete smazat cestu?')" title="smazat cestu"><i class="far fa-trash-alt"></i></a>
+                            </div>
                         </td>
                         <td>{$types[$t->details->transportType]}</td>
-                        <td>{$t->details->date|date:"j. n. Y"}</td>
+                        <td class="text-right">{$t->details->date|date:"j. n. Y"}</td>
                         <td>{$t->details->startPlace}</td>
                         <td>{$t->details->endPlace}</td>
-                        <td>{if $t->distance !== NULL}{$t->distance}{else}{$t->price|price}{/if}</td>
-                        <td>
+                        <td class="text-right">{if $t->distance !== NULL}{$t->distance}{else}{$t->price|price}{/if}</td>
+                        <td class="text-right">
                             {$t->price|price}
                         </td>
                     </tr>
                     <tr>
                         <th n:if="$isEditable">&nbsp;</th>
-                        <th colspan="5" class="r">Celkem po zaokrouhlení dolu: </th>
-                        <th>{$command->total|price}&nbsp;Kč</th>
+                        <th colspan="5" class="text-right">Celkem po zaokrouhlení dolu: </th>
+                        <th class="text-right">{$command->total|price}&nbsp;Kč</th>
                     </tr>
                 {/if}
             </table>

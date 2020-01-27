@@ -59,6 +59,7 @@ library.add(
     far.faTimesCircle,
     far.faTrashAlt,
     far.faUser,
+    far.faFolderOpen,
 
     // Brands
     fab.faGithub as IconDefinition,
