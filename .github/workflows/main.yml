@@ -24,6 +24,8 @@ jobs:
             - run: composer install
             - name: Remove development docker-compose override
               run: rm docker-compose.override.yml
+            - name: Fix permissions
+              run: chown 1000:1000 . -R && chmod 777 . -R
             - name: Create tarball
               run: tar -czpf /tmp/workdir.tar.gz . && mv /tmp/workdir.tar.gz .
             - name: Upload workdir
@@ -45,7 +47,7 @@ jobs:
                   name: workdir
                   path: .
             - name: Extract workdir
-              run: tar -xzf workdir.tar.gz
+              run: tar -xzpf workdir.tar.gz
             - run: phing tests-unit
 
     tests-integrations:
@@ -61,11 +63,9 @@ jobs:
                   name: workdir
                   path: .
             - name: Extract workdir
-              run: tar -xzf workdir.tar.gz
+              run: tar -xzpf workdir.tar.gz
             - name: Start application containers
               run: docker-compose up -d app mysql-test smtp
-            - name: Setup correct file permissions
-              run: docker-compose exec -T app bash -c 'chown www-data:www-data . -R; chmod 777 . -R'
             - run: docker-compose exec -T -u www-data app phing tests-integration
 
     collect-code-coverage:
@@ -80,11 +80,9 @@ jobs:
                   name: workdir
                   path: .
             - name: Extract workdir
-              run: tar -xzf workdir.tar.gz
+              run: tar -xzpf workdir.tar.gz
             - name: Start application containers
               run: docker-compose up -d app mysql-test smtp
-            - name: Setup correct file permissions
-              run: docker-compose exec -T app bash -c 'chown www-data:www-data . -R; chmod 777 . -R'
             - name: Run tests with coverage
               run: docker-compose exec -T -u www-data app phing tests-with-coverage
             - name: Upload code coverage
@@ -105,12 +103,10 @@ jobs:
                   name: workdir
                   path: .
             - name: Extract workdir
-              run: tar -xzf workdir.tar.gz
+              run: tar -xzpf workdir.tar.gz
             - name: Start application containers
               run: docker-compose up -d
             - run: mv app/config/config.ci.local.neon app/config/config.local.neon
-            - name: Setup correct file permissions
-              run: docker-compose exec -T app bash -c 'chown www-data:www-data . -R; chmod 777 . -R'
             - name: Prepare database
               run: docker-compose exec -T -u www-data app php www/index.php migrations:migrate --no-interaction
             - name: Install Node.js
@@ -133,7 +129,7 @@ jobs:
                   name: workdir
                   path: .
             - name: Extract workdir
-              run: tar -xzf workdir.tar.gz
+              run: tar -xzpf workdir.tar.gz
             - run: phing static-analysis
 
     coding-standard:
@@ -149,7 +145,7 @@ jobs:
                   name: workdir
                   path: .
             - name: Extract workdir
-              run: tar -xzf workdir.tar.gz
+              run: tar -xzpf workdir.tar.gz
             - run: phing coding-standard
 
     latte-lint:
