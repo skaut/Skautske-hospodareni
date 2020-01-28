@@ -88,22 +88,22 @@
                         <table class="table table-sm border-bottom">
                             <tr>
                                 <th class="border-top-0">Počet dnů</th>
-                                <td class="border-top-0">{$event->getTotalDays()}</td>
+                                <td class="border-top-0 text-right">{$event->getTotalDays()}</td>
                             </tr>
                             <tr>
                                 <th>Počet účastníků</th>
-                                <td>{$event->getRealCount()}</td>
+                                <td class="text-right">{$event->getRealCount()}</td>
                             </tr>
                             <tr>
                                 <th>Osobodnů/dětodnů</th>
-                                <td>{$event->getRealPersonDays()}/{$event->getRealChildDays()}</td>
+                                <td class="text-right">{$event->getRealPersonDays()}/{$event->getRealChildDays()}</td>
                             </tr>
                             <tr>
                                 <th colspan="2" class="pt-4">Účastníci podle věku</th>
                             </tr>
                             <tr n:foreach="$statistic as $item">
                                 <th>{$item->getLabel()}</th>
-                                <td>{$item->getCount()}</td>
+                                <td class="text-right">{$item->getCount()}</td>
                             </tr>
                         </table>
                     </div>
@@ -119,23 +119,23 @@
             <table class="table card-body">
                 <tr>
                     <th class="border-top-0">Dotovatelná?</th>
-                    <td class="border-top-0">{if $pragueParticipants->isSupportable($event->getTotalDays())}Ano{else}Ne{/if}</td>
+                    <td class="border-top-0 text-right">{if $pragueParticipants->isSupportable($event->getTotalDays())}Ano{else}Ne{/if}</td>
                 </tr>
                 <tr>
                     <th>Osobodnů pod 26</th>
-                    <td>{$pragueParticipants->personDaysUnder26}</td>
+                    <td class="text-right">{$pragueParticipants->personDaysUnder26}</td>
                 </tr>
                 <tr>
                     <th>Osob pod 18</th>
-                    <td>{$pragueParticipants->under18}</td>
+                    <td class="text-right">{$pragueParticipants->under18}</td>
                 </tr>
                 <tr>
                     <th>Osob mezi 18 a 26</th>
-                    <td>{$pragueParticipants->between18and26} </td>
+                    <td class="text-right">{$pragueParticipants->between18and26} </td>
                 </tr>
                 <tr>
                     <th>Osob celkem</th>
-                    <td>{$pragueParticipants->citizensCount}</td>
+                    <td class="text-right">{$pragueParticipants->citizensCount}</td>
                 </tr>
             </table>
         </div>
