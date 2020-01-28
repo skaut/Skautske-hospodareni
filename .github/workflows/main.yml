@@ -65,8 +65,8 @@ jobs:
             - name: Extract workdir
               run: tar -xzpf workdir.tar.gz
             - name: Start application containers
-              run: docker-compose up -d app mysql-test smtp
-            - run: docker-compose exec -T -u www-data app phing tests-integration
+              run: docker-compose up -d mysql-test smtp
+            - run: docker-compose run -T -u www-data app phing tests-integration
 
     collect-code-coverage:
         name: "Collect code coverage"
