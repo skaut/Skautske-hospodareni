@@ -7,6 +7,7 @@ namespace App\AccountancyModule\CampModule;
 use Model\Auth\Resources\Camp;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotals;
+use Model\Cashbook\MissingCategory;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\ReadModel\Queries\InconsistentCampCategoryTotalsQuery;
@@ -31,21 +32,25 @@ class BudgetPresenter extends BasePresenter
     {
         $this->setLayout('layout2');
         $campId = new SkautisCampId($aid);
+        try {
+            $inconsistentTotals = $this->queryBus->handle(new InconsistentCampCategoryTotalsQuery($campId));
+            $this->template->setParameters([
+                'isConsistent'             => count($inconsistentTotals) === 0,
+                'toRepair'                 => $inconsistentTotals,
+                'budgetEntries'            => $this->queryBus->handle(new CampBudgetQuery($campId)),
+                'categoriesSummary'        => $this->queryBus->handle(new CategoriesSummaryQuery($this->getCashbookId($aid))),
+                'isUpdateStatementAllowed' => $this->authorizator->isAllowed(Camp::UPDATE_BUDGET, $aid),
+            ]);
+            if (! $this->isAjax()) {
+                return;
+            }
 
-        $inconsistentTotals = $this->queryBus->handle(new InconsistentCampCategoryTotalsQuery($campId));
+            $this->redrawControl('contentSnip');
+        } catch (MissingCategory $exc) {
+            $this->setView('missingCategory');
 
-        $this->template->setParameters([
-            'isConsistent'             => count($inconsistentTotals) === 0,
-            'toRepair'                 => $inconsistentTotals,
-            'budgetEntries'            => $this->queryBus->handle(new CampBudgetQuery($campId)),
-            'categoriesSummary'               => $this->queryBus->handle(new CategoriesSummaryQuery($this->getCashbookId($aid))),
-            'isUpdateStatementAllowed' => $this->authorizator->isAllowed(Camp::UPDATE_BUDGET, $aid),
-        ]);
-        if (! $this->isAjax()) {
             return;
         }
-
-        $this->redrawControl('contentSnip');
     }
 
     /**

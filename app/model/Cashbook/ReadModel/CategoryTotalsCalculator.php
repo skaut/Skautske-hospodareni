@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel;
 
-use InvalidArgumentException;
 use Model\Cashbook\CampCategory;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\ICategory;
+use Model\Cashbook\MissingCategory;
 use Model\Cashbook\ParticipantType;
 use function array_key_exists;
 use function sprintf;
@@ -63,6 +63,6 @@ final class CategoryTotalsCalculator
                 return $c->getId();
             }
         }
-        throw new InvalidArgumentException(sprintf('Seznam táborových kategorií neobsahuje požadový typ "%s".', $type->getValue()));
+        throw new MissingCategory(sprintf('Seznam táborových kategorií neobsahuje požadový typ "%s".', $type->getValue()));
     }
 }
