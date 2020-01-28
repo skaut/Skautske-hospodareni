@@ -35,17 +35,17 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         try {
             $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
             assert($cashbook instanceof Cashbook);
+
+            $this->isEditable = $this->authorizator->isAllowed(CampResource::UPDATE_REAL, $this->aid);
+            $this->template->setParameters([
+                'event' => $this->event = $this->queryBus->handle(new CampQuery(new SkautisCampId($this->aid))),
+                'isEditable' => $this->isEditable,
+                'prefix' => $cashbook->getChitNumberPrefix(),
+            ]);
         } catch (CampNotFound $exc) {
             $this->flashMessage('Nemáte oprávnění načíst tábor nebo tábor neexsituje.', 'danger');
             $this->redirect('Default:');
         }
-
-        $this->isEditable = $this->authorizator->isAllowed(CampResource::UPDATE_REAL, $this->aid);
-        $this->template->setParameters([
-            'event' => $this->event = $this->queryBus->handle(new CampQuery(new SkautisCampId($this->aid))),
-            'isEditable' => $this->isEditable,
-            'prefix' => $cashbook->getChitNumberPrefix(),
-        ]);
     }
 
     protected function editableOnly() : void
