@@ -24,6 +24,11 @@ yarn install
 yarn build
 ```
 
+Pro automatické buildování při změně SCSS/TS souboru, lze použít:
+```bash
+yarn build --watch
+```
+
 ## Testy
 Pro testování používáme [Codeception](http://codeception.com/).
 

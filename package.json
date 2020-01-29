@@ -1,9 +1,8 @@
 {
     "private": true,
     "scripts": {
-        "css": "yarn sass frontend/app.scss www/css/app.css && yarn postcss www/css/app.css --use autoprefixer -d www/css/",
-        "build": "yarn webpack && yarn css",
-        "build-production": "webpack --mode=production && yarn css",
+        "build": "yarn webpack",
+        "build-production": "webpack --mode=production",
         "check-types": "yarn tsc --noEmit"
     },
     "dependencies": {
@@ -13,7 +12,6 @@
         "@fortawesome/free-solid-svg-icons": "^5.12.0",
         "@types/nprogress": "^0.2.0",
         "@types/pikaday": "^1.7.4",
-        "autoprefixer": "^9.7.3",
         "bootstrap": "^4.4.1",
         "bootstrap.native": "^2.0.27",
         "moment": "^2.24.0",
@@ -21,15 +19,20 @@
         "nprogress": "^0.2.0",
         "pikaday": "^1.8.0",
         "postcss-cli": "^7.1.0",
-        "sass": "^1.25.0"
+        "postcss-loader": "^3.0.0"
     },
     "devDependencies": {
         "@babel/core": "^7.8.0",
         "@babel/preset-env": "^7.7.7",
         "@types/webpack-env": "^1.15.0",
+        "autoprefixer": "^9.7.4",
         "babel-loader": "^8.0.6",
+        "css-loader": "^3.4.2",
         "husky": "^4.0.6",
         "lint-staged": "^9.5.0",
+        "mini-css-extract-plugin": "^0.9.0",
+        "sass": "^1.25.0",
+        "sass-loader": "^8.0.2",
         "ts-loader": "^6.2.1",
         "typescript": "^3.7.4",
         "uglify-js": "^3.7.4",
