@@ -7,6 +7,7 @@ namespace App\AccountancyModule;
 use Cake\Chronos\Date;
 use DateTimeInterface;
 use InvalidArgumentException;
+use Model\Common\ShouldNotHappen;
 use Model\Payment\Payment\State;
 use Money\Money;
 use Nette\Utils\Html;
@@ -67,22 +68,9 @@ abstract class AccountancyHelpers
             return '<span class=\'badge badge-success\'>Uzavřeno</span>';
         }
 
-        return '<span class=\'badge badge-default\'>Zrušeno</span>';
+        return '<span class=\'badge badge-danger\'>Zrušeno</span>';
 
         //draft, closed, cancelled
-    }
-
-    public static function eventStateLabelNew(string $state) : string
-    {
-        if ($state === 'draft') {
-            return '<span class="badge badge-warning">Rozpracováno</span>';
-        }
-
-        if ($state === 'closed') {
-            return '<span class="badge badge-success">Uzavřeno</span>';
-        }
-
-        return '<span class="badge badge-default">Zrušeno</span>';
     }
 
     /**
@@ -100,7 +88,7 @@ abstract class AccountancyHelpers
             case 'real':
                 return '<span class=\'badge badge-success\'>Skutečnost odevzdána</span>';
             default:
-                return '<span class=\'badge badge-default\'>Zrušený</span>';
+                return '<span class=\'badge badge-danger\'>Zrušený</span>';
         }
     }
 
@@ -292,10 +280,8 @@ abstract class AccountancyHelpers
                 return '<span class=\'badge badge-success\'>Otevřená</span>';
             case 'closed':
                 return '<span class=\'badge badge-warning\'>Uzavřená</span>';
-            case 'canceled':
-                return '<span class=\'badge badge-default\'>Zrušená</span>';
             default:
-                return '<span class=\'badge\'>Neznámý</span>';
+                throw new ShouldNotHappen(sprintf('Unknown group state "%s"', $s));
         }
     }
 
