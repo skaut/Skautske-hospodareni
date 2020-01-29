@@ -14,7 +14,7 @@ final class Event
 
     public const UPDATE_FUNCTION = [self::class, 'EV_EventGeneral_UPDATE_Function'];
     public const UPDATE          = [self::class, 'EV_EventGeneral_UPDATE'];
-    public const DELETE          = [self::class, 'EV_EventGeneral_DELETE'];
+    public const CANCEL          = [self::class, 'EV_EventGeneral_UPDATE_Cancel'];
     public const ACCESS_DETAIL   = [self::class, 'EV_EventGeneral_DETAIL'];
 
     public const ACCESS_PARTICIPANTS = [self::class, 'EV_ParticipantGeneral_ALL_EventGeneral'];

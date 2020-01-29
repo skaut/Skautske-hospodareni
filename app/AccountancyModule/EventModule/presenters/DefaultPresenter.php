@@ -46,7 +46,7 @@ class DefaultPresenter extends BasePresenter
 
     public function handleCancel(int $aid) : void
     {
-        if (! $this->authorizator->isAllowed(EventResource::DELETE, $aid)) {
+        if (! $this->authorizator->isAllowed(EventResource::CANCEL, $aid)) {
             $this->flashMessage('Nemáte právo na zrušení akce.', 'danger');
             $this->redirect('this');
         }
@@ -119,7 +119,7 @@ class DefaultPresenter extends BasePresenter
             ->setTitle('Zrušit akci')
             ->setIcon('far fa-trash-alt')
             ->setRenderCondition(function (EventListItem $event) {
-                return $this->authorizator->isAllowed(EventResource::DELETE, $event->getId());
+                return $this->authorizator->isAllowed(EventResource::CANCEL, $event->getId());
             });
 
         return $grid;
