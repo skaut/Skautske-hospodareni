@@ -4,4 +4,4 @@ $pd-day-hover-bg: $primary;
 $pd-font-family: $font-family-base;
 $pd-day-today-color: $primary;
 
-@import "../../node_modules/pikaday/scss/pikaday";
+@import "~pikaday/scss/pikaday";

@@ -1,6 +1,6 @@
-@import "../node_modules/bootstrap/scss/bootstrap";
+@import "~bootstrap/scss/bootstrap";
 @import "scss/pikaday";
-@import  "../node_modules/nprogress/nprogress";
+@import  "~nprogress/nprogress";
 
 .btn-light {
   @include button-variant($light, darken($light, 30%));
