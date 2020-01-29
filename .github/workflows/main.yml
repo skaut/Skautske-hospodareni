@@ -105,3 +105,22 @@ jobs:
             - name: Extract workdir
               run: tar -xzf workdir.tar.gz
             - run: phing static-analysis
+
+    latte-lint:
+        name: "Lint Latte templates"
+        runs-on: ubuntu-18.04
+        container:
+            image: fmasa/lebeda:7.3
+        needs: workdir
+        env:
+            DEVELOPMENT_MACHINE: true
+        steps:
+            - name: Download workdir
+              uses: actions/download-artifact@v1
+              with:
+                  name: workdir
+                  path: .
+            - name: Extract workdir
+              run: tar -xzf workdir.tar.gz
+            - run: mv app/config/config.ci.local.neon app/config/config.local.neon
+            - run: php www/index.php app:lint-latte

@@ -22,7 +22,11 @@
         <!-- We have no use for it as PHP 7.4 will bring short closures, so we wan't to keep those as short as possible -->
         <exclude name="SlevomatCodingStandard.Functions.StaticClosure"/>
     </rule>
-    <rule ref="SlevomatCodingStandard.Variables.UnusedVariable"/>
+    <rule ref="SlevomatCodingStandard.Variables.UnusedVariable">
+        <properties>
+            <property name="ignoreUnusedValuesWhenOnlyKeysAreUsedInForeach" value="true"/>
+        </properties>
+    </rule>
     <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements">
         <properties>
             <property name="alwaysUsedPropertiesAnnotations" type="array">
