@@ -27,7 +27,6 @@ use Model\Payment\InvalidBankAccount;
 use Model\Payment\InvalidSmtp;
 use Model\Payment\MailCredentialsNotSet;
 use Model\Payment\MailingService;
-use Model\Payment\Payment\State;
 use Model\Payment\PaymentClosed;
 use Model\Payment\PaymentNotFound;
 use Model\Payment\ReadModel\Queries\MembersWithoutPaymentInGroupQuery;
@@ -128,12 +127,7 @@ class PaymentPresenter extends BasePresenter
 
         $payments = $this->getPaymentsForGroup($id);
 
-        $paymentsForSendEmail = array_filter(
-            $payments,
-            function (Payment $p) {
-                return $p->getEmail() !== null && $p->getState()->equalsValue(State::PREPARING);
-            }
-        );
+        $paymentsForSendEmail = $this->paymentsAvailableForGroupInfoSending($payments);
 
         $this->template->setParameters([
             'group' => $group,
@@ -231,14 +225,7 @@ class PaymentPresenter extends BasePresenter
 
         $payments = $this->getPaymentsForGroup($gid);
 
-        $payments = array_filter(
-            $payments,
-            function (Payment $p) {
-                return ! $p->isClosed() && $p->getEmail() !== null && $p->getState()->equalsValue(State::PREPARING);
-            }
-        );
-
-        $this->sendEmailsForPayments($payments);
+        $this->sendEmailsForPayments($this->paymentsAvailableForGroupInfoSending($payments));
     }
 
     public function handleSendTest(int $gid) : void
@@ -425,5 +412,20 @@ class PaymentPresenter extends BasePresenter
     private function getPaymentsForGroup(int $groupId) : array
     {
         return $this->queryBus->handle(new PaymentListQuery($groupId));
+    }
+
+    /**
+     * @param Payment[] $payments
+     *
+     * @return Payment[]
+     */
+    private function paymentsAvailableForGroupInfoSending(array $payments) : array
+    {
+        return array_filter(
+            $payments,
+            function (Payment $p) {
+                return ! $p->isClosed() && $p->getEmail() !== null && $p->getSentEmails() === [];
+            }
+        );
     }
 }

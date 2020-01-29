@@ -107,7 +107,6 @@ abstract class AccountancyHelpers
         $labels = [
             State::PREPARING => ['Nezaplacena', 'Nezaplacené'],
             State::COMPLETED => ['Dokončena', 'Dokončené'],
-            State::SENT => ['Nezaplacena', 'Nezaplacené'],
             State::CANCELED => ['Zrušena', 'Zrušené'],
         ];
 
@@ -119,7 +118,6 @@ abstract class AccountancyHelpers
         $classes = [
             State::PREPARING => 'info',
             State::COMPLETED => 'success',
-            State::SENT => 'primary',
             State::CANCELED => 'danger',
         ];
 

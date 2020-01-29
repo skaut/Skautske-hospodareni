@@ -18,7 +18,6 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
 {
     private const STATE_ORDER = [
         State::PREPARING,
-        State::SENT,
         State::COMPLETED,
         State::CANCELED,
     ];
@@ -39,7 +38,7 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
      */
     public function summarizeByGroup(array $groupIds) : array
     {
-        $states = [State::PREPARING, State::SENT, State::COMPLETED];
+        $states = [State::PREPARING, State::COMPLETED];
 
         $res = $this->getEntityManager()->createQueryBuilder()
             ->select('p.groupId as groupId, p.state as state, SUM(p.amount) as amount, COUNT(p.id) as number')

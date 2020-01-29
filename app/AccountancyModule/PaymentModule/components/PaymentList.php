@@ -20,7 +20,6 @@ final class PaymentList extends BaseControl
 {
     private const STATE_ORDER = [
         State::PREPARING,
-        State::SENT,
         State::COMPLETED,
         State::CANCELED,
     ];

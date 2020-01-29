@@ -208,12 +208,6 @@ class Payment extends Aggregate
         $this->sentEmails[] = new SentEmail($this, $type, $time, $senderName);
     }
 
-    public function markSent() : void
-    {
-        $this->checkNotClosed();
-        $this->state = State::get(State::SENT);
-    }
-
     public function cancel(DateTimeImmutable $time) : void
     {
         if ($this->state->equalsValue(State::CANCELED)) {

@@ -33,6 +33,7 @@ final class Version20200101231338 extends AbstractMigration
             INSERT INTO pa_payment_sent_emails (payment_id, type, time, sender_name)
                 SELECT id, 'payment_info', NOW(), 'Hospodaření' FROM pa_payment WHERE state = 'send'
         SQL);
+        $this->addSql("UPDATE pa_payment SET state = 'preparing' WHERE state = 'send'");
     }
 
     public function down(Schema $schema) : void
