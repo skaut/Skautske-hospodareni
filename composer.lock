@@ -7006,27 +7006,29 @@
         },
         {
             "name": "captbaritone/mailcatcher-codeception-module",
-            "version": "2.1.1",
+            "version": "2.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/captbaritone/codeception-mailcatcher-module.git",
-                "reference": "74a22cf25cc27476fdd328285f97596f5ef5d0d9"
+                "reference": "a2c1ed7cbd279fee6505a4366fc630a2f34f6f57"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/captbaritone/codeception-mailcatcher-module/zipball/74a22cf25cc27476fdd328285f97596f5ef5d0d9",
-                "reference": "74a22cf25cc27476fdd328285f97596f5ef5d0d9",
+                "url": "https://api.github.com/repos/captbaritone/codeception-mailcatcher-module/zipball/a2c1ed7cbd279fee6505a4366fc630a2f34f6f57",
+                "reference": "a2c1ed7cbd279fee6505a4366fc630a2f34f6f57",
                 "shasum": ""
             },
             "require": {
-                "codeception/codeception": "^2.2 || ^3.0",
+                "codeception/codeception": "^2.2 || ^3.0 || ^4.0",
                 "guzzlehttp/guzzle": "^6.0",
                 "php": ">=7.0"
             },
             "require-dev": {
+                "codeception/module-asserts": "^1.1",
                 "phpmailer/phpmailer": "^5.2"
             },
             "suggest": {
+                "codeception/module-asserts": "Required if using Codeception >= 4.0",
                 "php-mime-mail-parser/php-mime-mail-parser": "^2.9"
             },
             "type": "library",
@@ -7036,6 +7038,9 @@
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
             "authors": [
                 {
                     "name": "Jordan Eldredge",
@@ -7043,7 +7048,7 @@
                 }
             ],
             "description": "Test emails in your Codeception acceptance tests",
-            "time": "2019-09-02T21:29:59+00:00"
+            "time": "2020-01-10T15:50:25+00:00"
         },
         {
             "name": "codeception/codeception",
