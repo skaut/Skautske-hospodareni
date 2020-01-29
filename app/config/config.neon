@@ -196,6 +196,8 @@ services:
               - Model\Infrastructure\Log\Monolog\UserContextProcessor()
               - Model\Infrastructure\Log\Monolog\FormContextProcessor()
 
+    - App\Console\LintLatte(%appDir%)
+
 decorator:
     Doctrine\DBAL\Configuration:
         setup:

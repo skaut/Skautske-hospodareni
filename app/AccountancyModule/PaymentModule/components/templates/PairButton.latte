@@ -10,7 +10,7 @@
         <a n:href="pair!" n:class="!$canPair ? disabled, btn, 'btn-' . $style">
             <i class="fas fa-university"></i> Párovat <span class="d-none d-md-inline">platby</span>
         </a>
-        <button n:attr="!$canPair ? [disabled => true]"
+        <button n:attr="!$canPair ? ([disabled => true])"
                 n:class="btn, 'btn-'  . $style, dropdown-toggle" type="button" id="pairPayments"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-persist="true"><span class="caret"></span></button>
 
