@@ -133,7 +133,10 @@ services:
     - Model\Skautis\Auth\SkautisAuthorizator(@skautis.webservice.user)
 
     # Skautis repositories
-    - Model\Skautis\UnitRepository(@skautis.org)
+    unitRepository:
+        factory: Model\Skautis\UnitRepository(@skautis.org)
+        autowired: false
+    - Model\Infrastructure\Services\Unit\CachedUnitRepository(@unitRepository)
     - Model\Skautis\Common\Repositories\UserRepository(@skautis.webservice.user, @skautis.org)
     - Model\Skautis\EventRepository(@skautis.event)
     - Model\Skautis\CampRepository(@skautis.cached.event)
