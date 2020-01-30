@@ -8,6 +8,7 @@ use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\EventBus;
 use Helpers;
 use IntegrationTest;
+use Model\Payment\EmailType;
 use Model\Payment\Group;
 use Model\Payment\Payment;
 use Model\Payment\PaymentNotFound;
@@ -43,6 +44,7 @@ class PaymentRepositoryTest extends IntegrationTest
         return [
             Payment::class,
             Group::class,
+            Payment\SentEmail::class,
         ];
     }
 
@@ -102,6 +104,26 @@ class PaymentRepositoryTest extends IntegrationTest
         $this->assertTrue($expectedTransaction->equals($payment->getTransaction()));
     }
 
+    public function testFindWithSentEmails() : void
+    {
+        $this->addPayments([self::PAYMENT_ROW]);
+
+        $sentEmail = [
+            'payment_id' => 1,
+            'time' => '2019-12-24 12:45:41',
+            'type' => EmailType::PAYMENT_INFO,
+            'sender_name' => 'Petr Svetr',
+        ];
+        $this->tester->haveInDatabase('pa_payment_sent_emails', $sentEmail);
+
+        $emailRow = $this->repository->find(1)->getSentEmails();
+
+        $this->assertCount(1, $emailRow);
+        $this->assertSame($sentEmail['time'], $emailRow[0]->getTime()->format('Y-m-d H:i:s'));
+        $this->assertSame($sentEmail['type'], $emailRow[0]->getType()->toString());
+        $this->assertSame($sentEmail['sender_name'], $emailRow[0]->getSenderName());
+    }
+
     public function testGetMaxVariableSymbolForNoPaymentIsNull() : void
     {
         $this->assertNull($this->repository->getMaxVariableSymbol(10));
@@ -126,15 +148,11 @@ class PaymentRepositoryTest extends IntegrationTest
         $payments = [
             [1, 300, Payment\State::PREPARING],
             [1, 300, Payment\State::PREPARING],
-            [1, 200, Payment\State::SENT],
-            [1, 200, Payment\State::SENT],
             [1, 100, Payment\State::COMPLETED],
             [1, 100, Payment\State::COMPLETED],
 
             [2, 100, Payment\State::PREPARING],
             [2, 100, Payment\State::PREPARING],
-            [2, 200, Payment\State::SENT],
-            [2, 200, Payment\State::SENT],
             [2, 300, Payment\State::COMPLETED],
             [2, 300, Payment\State::COMPLETED],
         ];
@@ -163,18 +181,16 @@ class PaymentRepositoryTest extends IntegrationTest
         $expectedSummaries = [
             1 => [
                 Payment\State::PREPARING => new Summary(2, 600.0),
-                Payment\State::SENT => new Summary(2, 400.0),
                 Payment\State::COMPLETED => new Summary(2, 200.0),
             ],
             2 => [
                 Payment\State::PREPARING => new Summary(2, 200.0),
-                Payment\State::SENT => new Summary(2, 400.0),
                 Payment\State::COMPLETED => new Summary(2, 600.0),
             ],
         ];
 
         foreach ($expectedSummaries as $groupId => $summaries) {
-            $this->assertCount(3, $result[$groupId], 'There should be 3 items for 3 states');
+            $this->assertCount(2, $result[$groupId], 'There should be 2 items for 2 states');
             foreach ($summaries as $state => $expectedSummary) {
                 $actualSummary = $result[$groupId][$state];
                 /** @var $expectedSummary Summary */
@@ -197,7 +213,7 @@ class PaymentRepositoryTest extends IntegrationTest
             'amount' => 120,
             'maturity' => '2017-10-29',
             'note' => '',
-            'state' => Payment\State::SENT,
+            'state' => Payment\State::PREPARING,
             'vs' => '100',
         ]);
 

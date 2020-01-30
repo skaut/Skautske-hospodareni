@@ -56,18 +56,21 @@
     </div>
 
 <div class="table-responsive" n:if="!empty($groups)">
-    <table class="table table-bordered table-striped">
+    <table class="table table-bordered">
         <tr>
             <th>Název</th>
-            <th>Připravené</th>
-            <th>Odeslané</th>
-            <th>Dokončené</th>
-            <th>Stav</th>
+            <th>Jednotky</th>
+            <th>Zaplaceno</th>
+            <th class="text-center">Stav</th>
         </tr>
         <tr n:foreach="$groups as $g">
-            <td><a n:href="Payment:default $g->id">{$g->name}</a></td>
-            <td n:foreach="$summarizations[$g->id] as $s" class="r">{if $s->count > 0}{$s->amount|num} ({$s->count}){else} {/if}</td>
-            <td>
+            <td class="align-middle">
+                <a n:href="Payment:default $g->id">{$g->name}</a>
+            </td>
+            <td class="align-middle">
+                {$groupUnits[$g->id]|implode:', '}</td>
+            <td>{control progress-$g->id}</td>
+            <td class="align-middle text-center">
                 {$g->state|groupState|noescape}
                 <span class="text-success" title="Lze párovat s bankou" n:if="$groupsPairingSupport[$g->id] === TRUE">
                     <span class="fas fa-university"></span>

@@ -6,6 +6,7 @@ namespace Model\Payment;
 
 use Cake\Chronos\Date;
 use Codeception\Test\Unit;
+use DateTimeImmutable;
 use Helpers;
 use InvalidArgumentException;
 use Mockery as m;
@@ -52,6 +53,7 @@ class PaymentTest extends Unit
         $this->assertSame($note, $payment->getNote());
         $this->assertSame(State::get(State::PREPARING), $payment->getState());
         $this->assertSame($groupId, $payment->getGroupId());
+        $this->assertEmpty($payment->getSentEmails());
 
         $events = $payment->extractEventsToDispatch();
         $this->assertCount(1, $events);
@@ -340,6 +342,22 @@ class PaymentTest extends Unit
         $payment->update('name', null, self::AMOUNT, Date::today(), null, null, '');
 
         $this->assertSame([], $payment->extractEventsToDispatch());
+    }
+
+    public function testRecordSentEmail() : void
+    {
+        $payment = $this->createPayment();
+        $type    = EmailType::PAYMENT_COMPLETED;
+        $time    = new DateTimeImmutable();
+        $sender  = 'František Maša';
+
+        $payment->recordSentEmail(EmailType::get($type), $time, $sender);
+
+        $sentEmails = $payment->getSentEmails();
+        $this->assertCount(1, $sentEmails);
+        $this->assertSame($type, $sentEmails[0]->getType()->toString());
+        $this->assertSame($time, $sentEmails[0]->getTime());
+        $this->assertSame($sender, $sentEmails[0]->getSenderName());
     }
 
     private function createPayment() : Payment

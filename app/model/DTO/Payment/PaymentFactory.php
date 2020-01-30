@@ -26,7 +26,8 @@ class PaymentFactory
             $payment->getTransaction(),
             $payment->getClosedAt(),
             $payment->getPersonId(),
-            $payment->getGroupId()
+            $payment->getGroupId(),
+            $payment->getSentEmails(),
         );
     }
 }

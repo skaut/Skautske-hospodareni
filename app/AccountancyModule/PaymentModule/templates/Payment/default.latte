@@ -1,6 +1,6 @@
 {block #content}
 
-<div class="row mb-4 d-flex align-items-center">
+<div class="row mb-3 d-flex align-items-center">
     <div class="col text-center text-md-left mb-2 mb-md-0">
         <h1 n:inner-block="title">{$group->name}</h1>
         {$group->state|groupState|noescape}
@@ -27,12 +27,21 @@
     </div>
 </div>
 <div class="container">
-    <div class="row text-center">
-        <div n:foreach="$summarize as $name => $r" class="col-md-4 border p-2">
-            <strong>{$name|paymentState:TRUE}&nbsp;({$r->count}):</strong>
-            {if $r->amount != null}{$r->amount|num} Kč{else}-{/if}
+        <div class="row card mt-3">
+            <div class="card-body">
+                {control progress}
+            </div>
         </div>
-    </div>
+</div>
+
+{var $preparingCount = $summarize['preparing']->count}
+<div class="alert alert-warning mt-3 text-center" n:if="$preparingCount !== 0">
+    <i class="fas fa-exclamation-triangle"></i>
+    {$preparingCount}
+    {if $preparingCount === 1}nezaplacená platba nemá
+    {elseif $preparingCount < 4}nezaplacené platby
+    {else}nezaplacených plateb nemá{/if}
+    odeslány platební údaje
 </div>
 <div class="mb-3">
     <div class="mt-4 d-lg-flex" n:inner-if="$isEditable && $group->state === 'open'">

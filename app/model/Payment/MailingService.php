@@ -84,6 +84,9 @@ class MailingService
         }
 
         $this->sendForPayment($payment, $group, $template);
+
+        $payment->recordSentEmail($emailType, new DateTimeImmutable(), $this->users->getCurrentUser()->getName());
+
         $this->payments->save($payment);
     }
 

@@ -3,6 +3,37 @@
 {block col-state}
     <div class="text-center">
         {$item->getState()|paymentStateLabel|noescape}
+        {var $emails = $item->getSentEmails()}
+
+        {if count($emails) > 0}
+            <div class="dropdown d-inline-flex">
+                <button class="btn btn-link btn-sm"
+                        type="button"
+                        data-toggle="dropdown"
+                        data-persist="true"
+                        title="Odeslané emaily">
+                    <i class="far fa-envelope-open"></i>&nbsp;{count($emails)}
+                </button>
+                <div class="dropdown-menu dropdown-menu-right p-0 border-0 text-nowrap">
+                    <ul class="list-group" n:inner-foreach="$emails as $email">
+                        <li class="list-group-item align-items-center d-flex">
+                            <div class="flex-grow-1">
+                                <i class="far fa-envelope-open"></i>
+                                {var $emailType = $email->getType()->toString()}
+                                {if $emailType === 'payment_info'}
+                                    Platební údaje
+                                {elseif $emailType === 'payment_completed'}
+                                    Potvrzení o dokončení platby
+                                {/if}
+                            </div>
+                            <div class="small text-muted text-center ml-3">
+                                odeslal {$email->getTime()|date:'d.m.Y'} uživatel {$email->getSenderName()}
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        {/if}
     </div>
 {/block}
 

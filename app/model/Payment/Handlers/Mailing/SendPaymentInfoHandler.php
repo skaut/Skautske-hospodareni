@@ -8,7 +8,6 @@ use Model\Payment\Commands\Mailing\SendPaymentInfo;
 use Model\Payment\EmailType;
 use Model\Payment\InvalidSmtp;
 use Model\Payment\MailingService;
-use Model\Payment\Payment\State;
 use Model\Payment\PaymentClosed;
 use Model\Payment\Repositories\IPaymentRepository;
 
@@ -38,13 +37,5 @@ final class SendPaymentInfoHandler
         }
 
         $this->mailingService->sendEmail($payment->getId(), EmailType::get(EmailType::PAYMENT_INFO));
-
-        if ($payment->getState()->equalsValue(State::SENT)) {
-            return;
-        }
-
-        $payment->markSent();
-
-        $this->payments->save($payment);
     }
 }

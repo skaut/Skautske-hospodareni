@@ -1,0 +1,7 @@
+Zaplaceno <strong>{$completedPayments->count} / {$allPayments->count} plateb</strong>
+({$completedPayments->amount|num} / {$allPayments->amount|num} Kč)
+
+{var $percentage = $allPayments->count === 0 ? 0 : ceil($completedPayments->count / $allPayments->count * 100)}
+<div class="progress">
+    <div class="progress-bar" style="width: {$percentage}%"></div>
+</div>

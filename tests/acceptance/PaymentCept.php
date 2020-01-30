@@ -64,17 +64,16 @@ $I->wantTo('complete payment');
 $I->amGoingTo('mark second payment as complete');
 $I->click('(//*[@title="Zaplaceno"])[2]');
 
-$I->canSeeNumberOfElements('(//*[text()="Připravena"])', 2);
+$I->canSeeNumberOfElements('(//*[text()="Nezaplacena"])', 2);
 $I->see('Dokončena');
 
 $I->wantTo('send payment email');
 
 $I->amGoingTo('send third payment');
 $I->click('//a[contains(@class, \'ui--sendEmail\')]');
-$I->waitForText('Odeslána');
+$I->waitForElement('//*[@title="Odeslané emaily"]');
 
-$page->seeNumberOfPaymentsWithState('Připravena', 1);
-$page->seeNumberOfPaymentsWithState('Odeslána', 1);
+$page->seeNumberOfPaymentsWithState('Nezaplacena', 2);
 $page->seeNumberOfPaymentsWithState('Dokončena', 1);
 
 $I->seeEmailCount(1);

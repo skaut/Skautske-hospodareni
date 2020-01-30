@@ -105,9 +105,8 @@ abstract class AccountancyHelpers
     public static function paymentState(string $state, bool $plural) : string
     {
         $labels = [
-            State::PREPARING => ['Připravena', 'Připravené'],
+            State::PREPARING => ['Nezaplacena', 'Nezaplacené'],
             State::COMPLETED => ['Dokončena', 'Dokončené'],
-            State::SENT => ['Odeslána', 'Odeslané'],
             State::CANCELED => ['Zrušena', 'Zrušené'],
         ];
 
@@ -119,7 +118,6 @@ abstract class AccountancyHelpers
         $classes = [
             State::PREPARING => 'info',
             State::COMPLETED => 'success',
-            State::SENT => 'primary',
             State::CANCELED => 'danger',
         ];
 
