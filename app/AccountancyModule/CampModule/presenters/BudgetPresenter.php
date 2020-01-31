@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\CampModule;
 
+use App\AccountancyModule\EventModule\Components\MissingAutocomputedCategoryControl;
+use App\AccountancyModule\EventModule\Factories\IMissingAutocomputedCategoryControlFactory;
 use Model\Auth\Resources\Camp;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotals;
@@ -17,12 +19,24 @@ use function count;
 
 class BudgetPresenter extends BasePresenter
 {
+    /** @var bool */
+    private $isRealTotalCostAutoComputed;
+
+    /** @var IMissingAutocomputedCategoryControlFactory */
+    private $missingAutocomputedCategoryControlFactory;
+
+    public function __construct(IMissingAutocomputedCategoryControlFactory $missingAutocomputedCategoryControlFactory)
+    {
+        $this->missingAutocomputedCategoryControlFactory = $missingAutocomputedCategoryControlFactory;
+    }
+
     protected function startup() : void
     {
         parent::startup();
         if ($this->aid) {
             return;
         }
+        $this->isRealTotalCostAutoComputed = ! $this->event->isRealTotalCostAutoComputed();
 
         $this->flashMessage('Musíš vybrat akci', 'danger');
         $this->redirect('Default:');
@@ -32,6 +46,7 @@ class BudgetPresenter extends BasePresenter
     {
         $this->setLayout('layout2');
         $campId = new SkautisCampId($aid);
+
         try {
             $inconsistentTotals = $this->queryBus->handle(new InconsistentCampCategoryTotalsQuery($campId));
             $this->template->setParameters([
@@ -47,9 +62,7 @@ class BudgetPresenter extends BasePresenter
 
             $this->redrawControl('contentSnip');
         } catch (MissingCategory $exc) {
-            $this->setView('missingCategory');
-
-            return;
+            $this->template->setParameters(['missingCategories' => true]);
         }
     }
 
@@ -73,5 +86,10 @@ class BudgetPresenter extends BasePresenter
     private function getCashbookId(int $campId) : CashbookId
     {
         return $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($campId)));
+    }
+
+    protected function createComponentCategoryAutocomputedControl() : MissingAutocomputedCategoryControl
+    {
+        return $this->missingAutocomputedCategoryControlFactory->create(new SkautisCampId($this->aid));
     }
 }

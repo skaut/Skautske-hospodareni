@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace Model\Event\Commands\Camp;
 
+use Model\Event\Handlers\Camp\ActivateAutocomputedCashbookHandler;
 use Model\Event\SkautisCampId;
 
-class ActivateAutocomputedCashbook
+/**
+ * @see ActivateAutocomputedCashbookHandler
+ */
+final class ActivateAutocomputedCashbook
 {
     /** @var SkautisCampId */
     private $campId;

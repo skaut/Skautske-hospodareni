@@ -1,0 +1,9 @@
+<div class="alert alert-danger">
+    <h4 class="alert-heading">Chybějící kategorie!</h4>
+    <p>
+        Nepodařilo se načíst všechny rozpočtové kategorie.<br />
+        {if $isApproved} <i class="far fa-check-circle"></i> {else} <i class="far fa-times-circle"></i> {/if} Je tábor schválen střediskovou radou?<br />
+        {if $isEditable} <i class="far fa-check-circle"></i> {else} <i class="far fa-times-circle"></i> {/if} Máte oprávnění upravovat tábor?<br /><br />
+        <a n:href="activate!" class="btn btn-primary{if !$canActivate} disabled{/if}">Aktivovat dopočítávání</a>
+    </p>
+</div>
