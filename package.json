@@ -47,8 +47,7 @@
     },
     "lint-staged": {
         "*.php": [
-            "bin/phpcbf",
-            "git add"
+            "bin/phpcbf"
         ]
     }
 }
