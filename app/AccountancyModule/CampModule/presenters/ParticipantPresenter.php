@@ -4,10 +4,17 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\CampModule;
 
+use App\AccountancyModule\Components\Participants\PersonPicker;
 use App\AccountancyModule\ExcelResponse;
+use App\AccountancyModule\Factories\Participants\IPersonPickerFactory;
 use App\AccountancyModule\ParticipantTrait;
+use Assert\Assertion;
 use Model\Auth\Resources\Camp;
+use Model\Cashbook\Commands\Cashbook\AddCampParticipant;
+use Model\Cashbook\Commands\Cashbook\CreateCampParticipant;
 use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
+use Model\DTO\Participant\NonMemberParticipant;
+use Model\DTO\Participant\Participant;
 use Model\Event\Commands\Camp\ActivateAutocomputedParticipants;
 use Model\Event\SkautisCampId;
 use Model\ExcelService;
@@ -24,12 +31,23 @@ class ParticipantPresenter extends BasePresenter
 {
     use ParticipantTrait;
 
-    public function __construct(ExportService $export, ExcelService $excel, PdfRenderer $pdf)
-    {
+    /** @var bool */
+    private $canAddParticipants;
+
+    /** @var IPersonPickerFactory */
+    private $personPickerFactory;
+
+    public function __construct(
+        ExportService $export,
+        ExcelService $excel,
+        PdfRenderer $pdf,
+        IPersonPickerFactory $personPickerFactory
+    ) {
         parent::__construct();
-        $this->exportService = $export;
-        $this->excelService  = $excel;
-        $this->pdf           = $pdf;
+        $this->exportService       = $export;
+        $this->excelService        = $excel;
+        $this->pdf                 = $pdf;
+        $this->personPickerFactory = $personPickerFactory;
     }
 
     protected function startup() : void
@@ -40,12 +58,12 @@ class ParticipantPresenter extends BasePresenter
         $this->isAllowRepayment = true;
         $this->isAllowIsAccount = true;
 
-        $this->isAllowParticipantInsert = $this->authorizator->isAllowed(Camp::ADD_PARTICIPANT, $this->aid);
+        $this->canAddParticipants       = $this->authorizator->isAllowed(Camp::ADD_PARTICIPANT, $this->aid);
         $this->isAllowParticipantDelete = $this->authorizator->isAllowed(Camp::REMOVE_PARTICIPANT, $this->aid);
         $this->isAllowParticipantUpdate = $this->authorizator->isAllowed(Camp::UPDATE_PARTICIPANT, $this->aid);
 
         $this->template->setParameters([
-            'isAllowParticipantInsert' => $this->isAllowParticipantInsert,
+            'canAddParticipants' => $this->canAddParticipants,
             'isAllowParticipantDelete' => $this->isAllowParticipantDelete,
             'isAllowParticipantUpdate' => $this->isAllowParticipantUpdate,
             'isAllowRepayment' => $this->isAllowRepayment,
@@ -62,7 +80,7 @@ class ParticipantPresenter extends BasePresenter
             $this->redirect('Default:');
         }
 
-        $this->traitDefault($dp, $sort, $regNums);
+        $this->traitDefault($sort, $regNums);
 
         $this->template->setParameters([
             'isAllowParticipantDetail' => $authorizator->isAllowed(Camp::ACCESS_PARTICIPANT_DETAIL, $aid),
@@ -119,12 +137,39 @@ class ParticipantPresenter extends BasePresenter
     public function actionExportExcel(int $aid) : void
     {
         try {
-            $participantsDTO = $this->queryBus->handle(new CampParticipantListQuery($this->event->getId()));
+            $participantsDTO = $this->campParticipants();
             $spreadsheet     = $this->excelService->getCampParticipants($participantsDTO);
             $this->sendResponse(new ExcelResponse(Strings::webalize($this->event->getDisplayName()) . '-' . date('Y_n_j'), $spreadsheet));
         } catch (PermissionException $ex) {
             $this->flashMessage('Nemáte oprávnění k záznamu osoby! (' . $ex->getMessage() . ')', 'danger');
             $this->redirect('default', ['aid' => $aid]);
         }
+    }
+
+    protected function createComponentPersonPicker() : PersonPicker
+    {
+        Assertion::true($this->canAddParticipants);
+
+        $picker = $this->personPickerFactory->create($this->getCurrentUnitId(), $this->campParticipants());
+
+        $picker->onSelect[] = function (array $personIds) : void {
+            foreach ($personIds as $personId) {
+                $this->commandBus->handle(new AddCampParticipant($this->event->getId(), $personId));
+            }
+        };
+
+        $picker->onNonMemberAdd[] = function (NonMemberParticipant $participant) : void {
+            $this->commandBus->handle(new CreateCampParticipant($this->event->getId(), $participant));
+        };
+
+        return $picker;
+    }
+
+    /**
+     * @return Participant[]
+     */
+    private function campParticipants() : array
+    {
+        return $this->queryBus->handle(new CampParticipantListQuery($this->event->getId()));
     }
 }

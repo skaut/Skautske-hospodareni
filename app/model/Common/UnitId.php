@@ -14,6 +14,11 @@ final class UnitId
         $this->id = $id;
     }
 
+    public static function fromInt(int $id) : self
+    {
+        return new self($id);
+    }
+
     public function toInt() : int
     {
         return $this->id;

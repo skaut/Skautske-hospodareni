@@ -59,16 +59,6 @@ class UnitService
     }
 
     /**
-     * nalezne podřízené jednotky
-     *
-     * @return Unit[]
-     */
-    public function getSubunits(int $parentId) : array
-    {
-        return $this->units->findByParent($parentId);
-    }
-
-    /**
      * @return string[]
      */
     public function getSubunitPairs(int $parentId, bool $useDisplayName = false) : array

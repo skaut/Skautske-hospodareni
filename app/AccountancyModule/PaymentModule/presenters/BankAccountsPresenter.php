@@ -8,9 +8,10 @@ use App\AccountancyModule\PaymentModule\Components\PairButton;
 use App\AccountancyModule\PaymentModule\Factories\BankAccountForm;
 use App\AccountancyModule\PaymentModule\Factories\IBankAccountFormFactory;
 use DateTimeImmutable;
-use Model\Auth\Resources\Unit;
+use Model\Auth\Resources\Unit as UnitResource;
 use Model\BankTimeLimit;
 use Model\BankTimeout;
+use Model\Common\UnitId;
 use Model\DTO\Payment\BankAccount;
 use Model\DTO\Payment\Payment;
 use Model\Payment\BankAccount\BankAccountId;
@@ -20,6 +21,8 @@ use Model\Payment\ReadModel\Queries\CountGroupsWithBankAccountQuery;
 use Model\Payment\ReadModel\Queries\GetGroupList;
 use Model\Payment\ReadModel\Queries\PairedPaymentsQuery;
 use Model\Payment\TokenNotSet;
+use Model\Unit\ReadModel\Queries\SubunitListQuery;
+use Model\Unit\Unit;
 use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\SkautisRole;
 use Nette\Application\BadRequestException;
@@ -217,7 +220,7 @@ class BankAccountsPresenter extends BasePresenter
 
     private function canEdit(?int $unitId = null) : bool
     {
-        return $this->authorizator->isAllowed(Unit::EDIT, $unitId ?? $this->getUnitId());
+        return $this->authorizator->isAllowed(UnitResource::EDIT, $unitId ?? $this->getUnitId());
     }
 
     private function canViewBankAccount(BankAccount $account) : bool
@@ -243,7 +246,9 @@ class BankAccountsPresenter extends BasePresenter
     {
         $currentUnitId = $this->getCurrentUnitId()->toInt();
 
-        foreach ($this->unitService->getSubunits($unitId) as $subunit) {
+        foreach ($this->queryBus->handle(new SubunitListQuery(UnitId::fromInt($unitId))) as $subunit) {
+            assert($subunit instanceof Unit);
+
             if ($subunit->getId() === $currentUnitId) {
                 return true;
             }

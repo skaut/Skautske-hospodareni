@@ -4,10 +4,17 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\EventModule;
 
+use App\AccountancyModule\Components\Participants\PersonPicker;
 use App\AccountancyModule\ExcelResponse;
+use App\AccountancyModule\Factories\Participants\IPersonPickerFactory;
 use App\AccountancyModule\ParticipantTrait;
+use Assert\Assertion;
 use Model\Auth\Resources\Event;
+use Model\Cashbook\Commands\Cashbook\AddEventParticipant;
+use Model\Cashbook\Commands\Cashbook\CreateEventParticipant;
 use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
+use Model\DTO\Participant\NonMemberParticipant;
+use Model\DTO\Participant\Participant;
 use Model\ExcelService;
 use Model\ExportService;
 use Model\Services\PdfRenderer;
@@ -26,12 +33,23 @@ class ParticipantPresenter extends BasePresenter
     /** @var bool */
     protected $isAllowParticipantDetail;
 
-    public function __construct(ExportService $export, ExcelService $excel, PdfRenderer $pdf)
-    {
+    /** @var IPersonPickerFactory */
+    private $personPickerFactory;
+
+    /** @var bool */
+    private $canAddParticipants;
+
+    public function __construct(
+        ExportService $export,
+        ExcelService $excel,
+        PdfRenderer $pdf,
+        IPersonPickerFactory $personPickerFactory
+    ) {
         parent::__construct();
-        $this->exportService = $export;
-        $this->excelService  = $excel;
-        $this->pdf           = $pdf;
+        $this->exportService       = $export;
+        $this->excelService        = $excel;
+        $this->pdf                 = $pdf;
+        $this->personPickerFactory = $personPickerFactory;
     }
 
     protected function startup() : void
@@ -47,13 +65,13 @@ class ParticipantPresenter extends BasePresenter
 
         $this->isAllowParticipantDetail = $authorizator->isAllowed(Event::ACCESS_DETAIL, $this->aid);
         $this->isAllowParticipantDelete = $isDraft && $authorizator->isAllowed(Event::REMOVE_PARTICIPANT, $this->aid);
-        $this->isAllowParticipantInsert = $isDraft && $authorizator->isAllowed(Event::UPDATE_PARTICIPANT, $this->aid);
-        $this->isAllowParticipantUpdate = $this->isAllowParticipantInsert;
+        $this->canAddParticipants       = $isDraft && $authorizator->isAllowed(Event::UPDATE_PARTICIPANT, $this->aid);
+        $this->isAllowParticipantUpdate = $this->canAddParticipants;
 
         $this->template->setParameters([
             'isAllowParticipantDetail' => $this->isAllowParticipantDetail,
             'isAllowParticipantDelete' => $this->isAllowParticipantDelete,
-            'isAllowParticipantInsert' => $this->isAllowParticipantInsert,
+            'canAddParticipants' => $this->canAddParticipants,
             'isAllowParticipantUpdate' => $this->isAllowParticipantUpdate,
             'isAllowParticipantUpdateLocal' => $this->isAllowParticipantUpdate,
             'isAllowRepayment' => $this->isAllowRepayment,
@@ -78,7 +96,7 @@ class ParticipantPresenter extends BasePresenter
             $this->redirect('Event:');
         }
 
-        $this->traitDefault($dp, $sort, $regNums);
+        $this->traitDefault($sort, $regNums);
 
         if (! $this->isAjax()) {
             return;
@@ -120,7 +138,7 @@ class ParticipantPresenter extends BasePresenter
     public function actionExportExcel(int $aid) : void
     {
         try {
-            $participantsDTO = $this->queryBus->handle(new EventParticipantListQuery($this->event->getId()));
+            $participantsDTO = $this->eventParticipants();
             $spreadsheet     = $this->excelService->getGeneralParticipants($participantsDTO, $this->event->getStartDate());
 
             $this->sendResponse(new ExcelResponse(Strings::webalize($this->event->getDisplayName()) . '-' . date('Y_n_j'), $spreadsheet));
@@ -128,5 +146,32 @@ class ParticipantPresenter extends BasePresenter
             $this->flashMessage('Nemáte oprávnění k záznamu osoby! (' . $ex->getMessage() . ')', 'danger');
             $this->redirect('default', ['aid' => $aid]);
         }
+    }
+
+    protected function createComponentPersonPicker() : PersonPicker
+    {
+        Assertion::true($this->canAddParticipants);
+
+        $picker = $this->personPickerFactory->create($this->getCurrentUnitId(), $this->eventParticipants());
+
+        $picker->onSelect[] = function (array $personIds) : void {
+            foreach ($personIds as $personId) {
+                $this->commandBus->handle(new AddEventParticipant($this->event->getId(), $personId));
+            }
+        };
+
+        $picker->onNonMemberAdd[] = function (NonMemberParticipant $participant) : void {
+            $this->commandBus->handle(new CreateEventParticipant($this->event->getId(), $participant));
+        };
+
+        return $picker;
+    }
+
+    /**
+     * @return Participant[]
+     */
+    private function eventParticipants() : array
+    {
+        return $this->queryBus->handle(new EventParticipantListQuery($this->event->getId()));
     }
 }

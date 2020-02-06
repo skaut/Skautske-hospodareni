@@ -11,23 +11,10 @@ $participants
 <h2>{$event->getDisplayName()}</h2>
 
 <div class="row">
-    {include $templateBlockDir.'participants/list.latte'}
-    {include $templateBlockDir.'participants/participant.latte'}
-</div>
-{* nový účastník *}
-<div n:if="$isAllowParticipantInsert" class="modal myModal fade" id="addParticipant">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"> &times; </span></button>
-                <h2>Založit nového účastníka</h2>
-                Údaje založeného účastníka nelze editovat, lze ho pouze smazat a znovu založit.
-            </div>
-            <div class="modal-body">
-                {control formAddParticipantNew}
-            </div>
-        </div>
+    <div class="col-sm-5" n:inner-if="$canAddParticipants">
+        {control personPicker}
     </div>
+    {include $templateBlockDir.'participants/participant.latte'}
 </div>
 
 {include $templateBlockDir.'participants/js.latte'}
