@@ -19,14 +19,12 @@ use function count;
 
 class BudgetPresenter extends BasePresenter
 {
-    /** @var bool */
-    private $isRealTotalCostAutoComputed;
-
     /** @var IMissingAutocomputedCategoryControlFactory */
     private $missingAutocomputedCategoryControlFactory;
 
     public function __construct(IMissingAutocomputedCategoryControlFactory $missingAutocomputedCategoryControlFactory)
     {
+        parent::__construct();
         $this->missingAutocomputedCategoryControlFactory = $missingAutocomputedCategoryControlFactory;
     }
 
@@ -36,7 +34,6 @@ class BudgetPresenter extends BasePresenter
         if ($this->aid) {
             return;
         }
-        $this->isRealTotalCostAutoComputed = ! $this->event->isRealTotalCostAutoComputed();
 
         $this->flashMessage('Musíš vybrat akci', 'danger');
         $this->redirect('Default:');
