@@ -10,9 +10,9 @@
                     Upravit
                 </a>
                 <a n:href="removeCommand! $command->id" class="btn btn-danger" onclick="return confirm('Opravdu chcete smazat cestovní příkaz?')"><i class="far fa-trash-alt"></i> Smazat</a>
-                <a n:href="closeCommand! $command->id" class="btn btn-warning" onclick="return confirm('Opravdu chcete uzavřít cestovní příaz?')"><i class="far fa-folder-open"></i> Uzavřít</a>
+                <a n:href="closeCommand! $command->id" class="btn btn-warning" onclick="return confirm('Opravdu chcete uzavřít cestovní příkaz?')"><i class="far fa-folder-open"></i> Uzavřít</a>
                 {else}
-                <a n:href="openCommand! $command->id"  class="btn btn-success" onclick="return confirm('Opravdu chcete otevřít cestovní příaz?')"><i class="far fa-folder-open"></i> Otevřít</a>
+                <a n:href="openCommand! $command->id"  class="btn btn-success" onclick="return confirm('Opravdu chcete otevřít cestovní příkaz?')"><i class="far fa-folder-open"></i> Otevřít</a>
                 {/if}
                 {if $command->passenger->contractId !== NULL}
                     <a n:href="Contract:detail $command->passenger->contractId" class="btn btn-primary d-none d-md-inline"><i class="fas fa-search"></i> Smlouva</a>
@@ -83,6 +83,7 @@
                     <tr n:foreach="$travels as $t">
                         <td n:if="$isEditable">
                             <div class="btn-group">
+                                <a n:href="duplicateTravel! $command->id, $t->id" class="btn btn-sm btn-info" title="duplikovat cestu"><i class="far fa-copy"></i></a>
                                 <a n:href="editTravel! $t->id" class="ajax btn btn-sm btn-primary"><i class="far fa-edit"></i></a>
                                 <a n:href="removeTravel! $command->id, $t->id" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu chcete smazat cestu?')" title="smazat cestu"><i class="far fa-trash-alt"></i></a>
                             </div>

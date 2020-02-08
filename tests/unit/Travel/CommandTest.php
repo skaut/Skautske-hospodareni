@@ -372,6 +372,70 @@ class CommandTest extends Unit
         ];
     }
 
+    public function testTransportTravelIsDuplicated(): void
+    {
+        $passenger = new Passenger('Frantisek Masa', '---', 'Brno');
+        $purpose   = 'Cesta na střediskovku';
+        $command   = new Command(1, null, $passenger, $purpose, 'Brno', '', Money::CZK(0), Money::CZK(0), '', null, [], '');
+
+        $command->addTransportTravel(
+            Money::CZK(100),
+            new Command\TravelDetails(
+                new Date('now'),
+                TransportType::get(TransportType::BUS),
+                'Praha',
+                'Brno',
+            ),
+        );
+
+        $travel = $command->getTravels()[0];
+
+        $command->duplicateTravel($travel->getId());
+
+        $duplicatedTravel = $command->getTravels()[1];
+
+        $travelDetails           = $travel->getDetails();
+        $duplicatedTravelDetails = $duplicatedTravel->getDetails();
+
+        self::assertNotEquals($travel->getId(), $duplicatedTravel->getId());
+        self::assertEquals($travelDetails->getDate(), $duplicatedTravelDetails->getDate());
+        self::assertEquals($travelDetails->getTransportType(), $duplicatedTravelDetails->getTransportType());
+        self::assertEquals($travelDetails->getStartPlace(), $duplicatedTravelDetails->getStartPlace());
+        self::assertEquals($travelDetails->getEndPlace(), $duplicatedTravelDetails->getEndPlace());
+    }
+
+    public function testVehicleTravelIsDuplicated(): void
+    {
+        $passenger = new Passenger('Frantisek Masa', '---', 'Brno');
+        $purpose   = 'Cesta na střediskovku';
+        $command   = new Command(1, null, $passenger, $purpose, 'Brno', '', Money::CZK(3120), Money::CZK(500), '', null, [], '');
+
+        $command->addVehicleTravel(
+            123,
+            new Command\TravelDetails(
+                new Date('now'),
+                TransportType::get(TransportType::CAR),
+                'Praha',
+                'Brno',
+            ),
+        );
+
+        $travel = $command->getTravels()[0];
+
+        $command->duplicateTravel($travel->getId());
+
+        $duplicatedTravel = $command->getTravels()[1];
+
+        $travelDetails           = $travel->getDetails();
+        $duplicatedTravelDetails = $duplicatedTravel->getDetails();
+
+        self::assertNotEquals($travel->getId(), $duplicatedTravel->getId());
+        self::assertEquals($travelDetails->getDate(), $duplicatedTravelDetails->getDate());
+        self::assertEquals($travelDetails->getTransportType(), $duplicatedTravelDetails->getTransportType());
+        self::assertEquals($travelDetails->getStartPlace(), $duplicatedTravelDetails->getStartPlace());
+        self::assertEquals($travelDetails->getEndPlace(), $duplicatedTravelDetails->getEndPlace());
+    }
+
     private function mockVehicle(): m\MockInterface
     {
         return m::mock(Vehicle::class);

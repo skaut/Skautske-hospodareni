@@ -12,6 +12,7 @@ use App\Forms\BaseForm;
 use Assert\Assertion;
 use Model\BaseService;
 use Model\Services\PdfRenderer;
+use Model\Travel\Commands\Command\DuplicateTravel;
 use Model\Travel\Travel\TransportType;
 use Model\TravelService;
 use Nette\Application\BadRequestException;
@@ -167,6 +168,20 @@ class DefaultPresenter extends BasePresenter
 
         $this->travelService->closeCommand($commandId);
         $this->flashMessage('Cestovní příkaz byl uzavřen.');
+        $this->redirect('this');
+    }
+
+    public function handleDuplicateTravel(int $commandId, int $travelId): void
+    {
+        if (! $this->isCommandEditable($commandId)) {
+            $this->flashMessage('Nemáte oprávnění duplikovat cestu.', 'danger');
+            $this->redirect('default');
+        }
+
+        $this->commandBus->handle(new DuplicateTravel($commandId, $travelId));
+
+        $this->flashMessage('Cesta byla duplikována.', 'success');
+
         $this->redirect('this');
     }
 
