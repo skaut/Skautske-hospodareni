@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\AccountancyModule\CampModule;
 
 use App\AccountancyModule\Components\CashbookControl;
+use App\AccountancyModule\EventModule\Components\MissingAutocomputedCategoryControl;
+use App\AccountancyModule\EventModule\Factories\IMissingAutocomputedCategoryControlFactory;
 use App\AccountancyModule\Factories\ICashbookControlFactory;
 use App\Forms\BaseForm;
 use Model\Auth\Resources\Camp;
@@ -33,22 +35,28 @@ use function count;
 class CashbookPresenter extends BasePresenter
 {
     /** @var bool */
-    private $missingCategories;
+    private $isRealTotalCostAutoComputed;
 
     /** @var ICashbookControlFactory */
     private $cashbookFactory;
 
-    public function __construct(ICashbookControlFactory $cashbookFactory)
-    {
+    /** @var IMissingAutocomputedCategoryControlFactory */
+    private $categoryAutocomputedFactory;
+
+    public function __construct(
+        ICashbookControlFactory $cashbookFactory,
+        IMissingAutocomputedCategoryControlFactory $categoryAutocomputedFactory
+    ) {
         parent::__construct();
-        $this->cashbookFactory = $cashbookFactory;
+        $this->cashbookFactory             = $cashbookFactory;
+        $this->categoryAutocomputedFactory = $categoryAutocomputedFactory;
     }
 
     protected function startup() : void
     {
         parent::startup();
-        $this->isEditable        = $this->isEditable || $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $this->getCampId());
-        $this->missingCategories = ! $this->event->isRealTotalCostAutoComputed(); // je aktivní dopočítávání?
+        $this->isEditable                  = $this->isEditable || $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $this->getCampId());
+        $this->isRealTotalCostAutoComputed = ! $this->event->isRealTotalCostAutoComputed();
     }
 
     public function renderDefault(int $aid) : void
@@ -63,7 +71,7 @@ class CashbookPresenter extends BasePresenter
             'cashbookId' => $this->getCashbookId()->toString(),
             'isInMinus' => $finalBalance->isNegative(),
             'isEditable' => $this->isEditable,
-            'missingCategories' => $this->missingCategories,
+            'missingCategories' => $this->isRealTotalCostAutoComputed,
             'finalRealBalance' => $finalRealBalance,
         ]);
     }
@@ -84,7 +92,7 @@ class CashbookPresenter extends BasePresenter
     {
         return $this->cashbookFactory->create(
             $this->getCashbookId(),
-            $this->isEditable && ! $this->missingCategories,
+            $this->isEditable && ! $this->isRealTotalCostAutoComputed,
             $this->getCurrentUnitId()
         );
     }
@@ -154,5 +162,10 @@ class CashbookPresenter extends BasePresenter
         $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $this->getCashbookId()));
 
         return count($chits) === 0;
+    }
+
+    protected function createComponentCategoryAutocomputedControl() : MissingAutocomputedCategoryControl
+    {
+        return $this->categoryAutocomputedFactory->create(new SkautisCampId($this->aid));
     }
 }

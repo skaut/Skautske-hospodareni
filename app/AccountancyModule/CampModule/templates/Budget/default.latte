@@ -45,44 +45,48 @@
 
 {include ../header.latte}
 
-<div class="alert alert-warning mb-5">
-    <h4 class="alert-heading">Nekonzistentní data!</h4>
-    <p class="mb-0">Součet paragonů v kategoriích neodpovídá částkám uvedených ve SkautISu.</p>
-    {if $isEditable}
-        <p>Hospodaření může aktualizovat data ve SkautISu tak, aby byla shodná s evidencí plateb.</p>
-        <hr>
-        {if $isUpdateStatementAllowed}
-            <a n:href="convert! $aid" class="alert-link">
-                <i class="fas fa-tools"></i>
-                Aktualizovat data ve SkautISu
-            </a>
-        {else}
-            <p class="text-muted mb-0">
-                <i class="far fa-times-circle"></i>
-                Nemáte oprávnění pro úpravu částek v rozpočtu uvedených ve skautisu.
-            </p>
+{ifset $missingCategories}
+    {control categoryAutocomputedControl}
+{else}
+    <div class="alert alert-warning mb-5">
+        <h4 class="alert-heading">Nekonzistentní data!</h4>
+        <p class="mb-0">Součet paragonů v kategoriích neodpovídá částkám uvedených ve SkautISu.</p>
+        {if $isEditable}
+            <p>Hospodaření může aktualizovat data ve SkautISu tak, aby byla shodná s evidencí plateb.</p>
+            <hr>
+            {if $isUpdateStatementAllowed}
+                <a n:href="convert! $aid" class="alert-link">
+                    <i class="fas fa-tools"></i>
+                    Aktualizovat data ve SkautISu
+                </a>
+            {else}
+                <p class="text-muted mb-0">
+                    <i class="far fa-times-circle"></i>
+                    Nemáte oprávnění pro úpravu částek v rozpočtu uvedených ve skautisu.
+                </p>
+            {/if}
         {/if}
-    {/if}
-</div>
-
-<div class="row">
-    <div class="col-md-3 col-sm-6">
-        <h3>Skutečné náklady</h3>
-        {include #categoriesTable $categoriesSummary, FALSE}
-    </div>
-    <div class="col-md-3 col-sm-6">
-        <h3>Skutečné výnosy</h3>
-        {include #categoriesTable $categoriesSummary, TRUE}
     </div>
 
-    <div class="clearfix visible-sm-block"></div>
+    <div class="row">
+        <div class="col-md-3 col-sm-6">
+            <h3>Skutečné náklady</h3>
+            {include #categoriesTable $categoriesSummary, FALSE}
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <h3>Skutečné výnosy</h3>
+            {include #categoriesTable $categoriesSummary, TRUE}
+        </div>
 
-    <div class="col-md-3 col-sm-6 ">
-        <h3>Předpokl. náklady</h3>
-        {include #budgetTable $budgetEntries, FALSE}
+        <div class="clearfix visible-sm-block"></div>
+
+        <div class="col-md-3 col-sm-6 ">
+            <h3>Předpokl. náklady</h3>
+            {include #budgetTable $budgetEntries, FALSE}
+        </div>
+        <div class="col-md-3">
+            <h3>Předpokládané výnosy</h3>
+            {include #budgetTable $budgetEntries, TRUE}
+        </div>
     </div>
-    <div class="col-md-3">
-        <h3>Předpokládané výnosy</h3>
-        {include #budgetTable $budgetEntries, TRUE}
-    </div>
-</div>
+{/ifset}

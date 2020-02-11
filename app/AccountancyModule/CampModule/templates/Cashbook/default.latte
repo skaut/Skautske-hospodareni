@@ -9,12 +9,7 @@
     </div>
 </div>
 {if $missingCategories}
-<div class="row">
-    <div class="col-sm-12 alert alert-danger">
-        Nemáte aktivní automatické dopočítání z kategorií, bez kterého nelze přidávat záznamy. Pro aktivaci musí být tábor schválen střediskovou radou.
-        <a n:if="$isEditable" n:href="activateAutocomputedCashbook! $aid" class="btn btn-primary btn-sm">Aktivovat dopočítávání</a>
-    </div>
-</div>
+    {control categoryAutocomputedControl}
 {else}
 <div class="row">
     <div class="col-sm-12">

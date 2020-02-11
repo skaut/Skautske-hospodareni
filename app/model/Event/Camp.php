@@ -24,6 +24,9 @@ class Camp implements ISkautisEvent
 {
     use SmartObject;
 
+    public const STATE_APPROVED_PARENT = 'approvedParent';
+    public const STATE_REAL            = 'real';
+
     /** @var SkautisCampId */
     private $id;
 

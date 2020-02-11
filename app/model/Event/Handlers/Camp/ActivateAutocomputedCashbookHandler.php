@@ -20,7 +20,7 @@ class ActivateAutocomputedCashbookHandler
     public function __invoke(ActivateAutocomputedCashbook $command) : void
     {
         $this->skautis->event->eventCampUpdateRealTotalCostBeforeEnd([
-            'ID' => $command->getCampId()->getValue(),
+            'ID' => $command->getCampId()->toInt(),
             'IsRealTotalCostAutoComputed' => 1,
         ], 'eventCamp');
     }
