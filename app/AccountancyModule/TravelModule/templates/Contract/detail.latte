@@ -1,8 +1,5 @@
 {block #title}Smlouva o proplácení cestovních náhrad{/block}
-
 {block #content}
-{include ../menu.latte}
-
 <div class="row button-bar">
     <div class="col-sm-12">
         <div class="hidden-xs pull-right">
@@ -19,10 +16,9 @@
     </div>
 </div>
 
-<div n:if="!empty($commands)" class="row hidden-sm alert alert-info">
+<div n:if="!empty($commands)" class="col  alert alert-info d-none d-md-block">
     Smazat smlouvu lze jen pokud nemá přidružené cestovní příkazy.
 </div>
-
 
 <div class="row">
     <div class="col-sm-6">

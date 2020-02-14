@@ -78,13 +78,14 @@ class CommandForm extends Control
         );
 
         $form = new BaseForm();
+        $form->useBootstrap4();
 
         $form->addGroup();
-        $form->addText('purpose', 'Účel cesty*')
+        $form->addText('purpose', 'Účel cesty')
             ->setMaxLength(64)
             ->setAttribute('class', 'form-control')
             ->addRule($form::FILLED, 'Musíte vyplnit účel cesty.');
-        $typeSelectBox = $form->addMultiSelect('type', 'Prostředek*', $this->prepareTransportTypeOptions())
+        $typeSelectBox = $form->addMultiSelect('type', 'Prostředek', $this->prepareTransportTypeOptions())
             ->setAttribute('class', 'combobox')
             ->setRequired('Vyberte alespoň jeden dopravní prostředek.');
 
@@ -147,7 +148,8 @@ class CommandForm extends Control
             ->addRule($form::FLOAT, 'Musíte zadat desetinné číslo.');
 
         $form->setCurrentGroup();
-        $form->addSubmit('send', $this->commandId !== null ? 'Upravit' : 'Založit');
+        $form->addSubmit('send', $this->commandId !== null ? 'Upravit' : 'Založit')
+            ->setAttribute('class', 'btn btn-primary');
 
         $form->onSuccess[] = function (BaseForm $form) : void {
             if ($this->commandId === null) {

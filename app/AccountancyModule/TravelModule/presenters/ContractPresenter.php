@@ -34,6 +34,7 @@ class ContractPresenter extends BasePresenter
         parent::__construct();
         $this->travelService = $travelService;
         $this->pdf           = $pdf;
+        $this->setLayout('layout.new');
     }
 
     private function isContractAccessible(?Contract $contract) : bool
@@ -142,16 +143,17 @@ class ContractPresenter extends BasePresenter
     protected function createComponentFormCreateContract() : Form
     {
         $form = new BaseForm();
-        $form->addText('passengerName', 'Jméno a příjmení řidiče*')
+        $form->useBootstrap4();
+        $form->addText('passengerName', 'Jméno a příjmení řidiče')
             ->setAttribute('class', 'form-control')
             ->setRequired('Musíte vyplnit jméno řidiče.');
-        $form->addText('passengerAddress', 'Bydliště řidiče*')
+        $form->addText('passengerAddress', 'Bydliště řidiče')
             ->setAttribute('class', 'form-control')
             ->setRequired('Musíte vyplnit bydliště řidiče.');
-        $form->addDate('passengerBirthday', 'Datum narození řidiče*')
+        $form->addDate('passengerBirthday', 'Datum narození řidiče')
             ->setAttribute('class', 'form-control')
             ->setRequired('Musíte vyplnit datum narození řidiče.');
-        $form->addText('passengerContact', 'Telefon na řidiče (9cifer)*')
+        $form->addText('passengerContact', 'Telefon na řidiče (9cifer)')
             ->setAttribute('class', 'form-control')
             ->setRequired('Musíte vyplnit telefon na řidiče.')
             ->addRule(Form::NUMERIC, 'Telefon musí být číslo.');

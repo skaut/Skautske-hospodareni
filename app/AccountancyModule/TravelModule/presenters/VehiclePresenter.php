@@ -43,6 +43,7 @@ class VehiclePresenter extends BasePresenter
         parent::__construct();
         $this->travelService            = $travelService;
         $this->roadworthyControlFactory = $roadworthyControlFactory;
+        $this->setLayout('layout.new');
     }
 
     /**
@@ -84,7 +85,6 @@ class VehiclePresenter extends BasePresenter
 
     public function renderDetail(int $id) : void
     {
-        $this->setLayout('layout.new');
         try {
             $vehicle = $this->getVehicle($id);
 
@@ -147,7 +147,8 @@ class VehiclePresenter extends BasePresenter
     protected function createComponentFormCreateVehicle() : Form
     {
         $form = new BaseForm();
-        $form->addText('type', 'Typ*')
+        $form->useBootstrap4();
+        $form->addText('type', 'Typ')
             ->setAttribute('class', 'form-control')
             ->addRule(Form::FILLED, 'Musíte vyplnit typ.');
         $form->addText('registration', 'SPZ*')
@@ -161,7 +162,8 @@ class VehiclePresenter extends BasePresenter
             ->setAttribute('class', 'form-control')
             ->setPrompt('Žádný')
             ->setRequired(false);
-        $form->addSubmit('send', 'Založit');
+        $form->addSubmit('send', 'Založit')
+            ->setAttribute('class', 'btn btn-primary');
 
         $form->onSuccess[] = function (Form $form, ArrayHash $values) : void {
             $this->formCreateVehicleSubmitted($values);

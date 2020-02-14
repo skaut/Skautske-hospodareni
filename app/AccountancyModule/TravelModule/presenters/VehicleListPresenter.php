@@ -16,12 +16,12 @@ final class VehicleListPresenter extends BasePresenter
     {
         parent::__construct();
         $this->gridFactory = $gridFactory;
+        $this->setLayout('layout.new');
     }
 
     protected function startup() : void
     {
         parent::startup();
-        $this->setLayout('layout.new');
     }
 
     protected function createComponentGrid() : VehicleGrid

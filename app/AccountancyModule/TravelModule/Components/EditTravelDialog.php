@@ -54,6 +54,7 @@ final class EditTravelDialog extends BaseControl
     protected function createComponentForm() : BaseForm
     {
         $form = new BaseForm();
+        $form->useBootstrap4();
 
         $command = $this->model->getCommandDetail($this->commandId);
 

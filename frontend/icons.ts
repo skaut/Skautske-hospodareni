@@ -46,6 +46,7 @@ library.add(
     fas.faUserPlus,
     fas.faUniversity,
     fas.faUsers,
+    fas.faQuestion,
 
     // Regular icons
     far.faCalendar,
@@ -58,6 +59,7 @@ library.add(
     far.faTimesCircle,
     far.faTrashAlt,
     far.faUser,
+    far.faFolderOpen,
 
     // Brands
     fab.faGithub as IconDefinition,

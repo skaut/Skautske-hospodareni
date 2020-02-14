@@ -1,15 +1,16 @@
 {block #content}
-{include ../menu.latte}
-<div class="row button-bar">
-    <div class="col-sm-12">
-        <a n:href="new" class="btn btn-success pull-right" n:if="$canCreate"><i class="glyphicon glyphicon-plus-sign"></i> Založit novou smlouvu</a>
-        <h2 n:inner-block="title">Smlouvy<span class="hidden-xs hidden-sm"> o proplácení cestovních náhrad</span></h2>
+<div class="row">
+    <div class="col-6 col-sm-4 col-lg-8">
+        <h2 n:inner-block="title">Smlouvy<span class="d-none d-lg-inline"> o proplácení cestovních náhrad</span></h2>
+    </div>
+    <div class="col-6 col-sm-8 col-lg-4 text-right">
+        <a n:href="new" class="btn btn-success pull-right" n:if="$canCreate"><i class="fa fa-plus d-none d-md-inline"></i> Založit smlouvu</a>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-sm-12">
-        <table class="table table-bordered table-condensed table-striped" n:if="!empty($list)">
+<div class="row" n:if="!empty($list)">
+    <div class="col">
+        <table class="table table-bordered table-condensed table-striped">
             <tr>
                 <th>&nbsp;</th>
                 <th>Vykonavatel/Řidič</th>
@@ -19,9 +20,8 @@
             </tr>
             <tr n:foreach="$list as $c">
                 <td>
-                    <a n:href="print $c->id" class="btn btn-info btn-sm hidden-xs hidden-sm"><i class="glyphicon glyphicon-print"></i> Vytisknout</a>
-                    <a n:href="detail $c->id" class="btn btn-primary btn-sm hidden-xs hidden-sm"><i class="glyphicon glyphicon-zoom-in"></i> Detail</a>
-                    <a n:href="detail $c->id" class="btn btn-primary btn-sm visible-xs visible-sm"><i class="glyphicon glyphicon-zoom-in"></i> Detail</a>
+                    <a n:href="print $c->id" class="btn btn-info d-none d-md-inline-block"><i class="fas fa-print d-none d-lg-inline"></i> Vytisknout</a>
+                    <a n:href="detail $c->id" class="btn btn-primary"><i class="fas fa-search d-none d-lg-inline"></i> Detail</a>
                 </td>
                 <td>{$c->passenger->name}</td>
                 <td>{$c->unitRepresentative}</td>
