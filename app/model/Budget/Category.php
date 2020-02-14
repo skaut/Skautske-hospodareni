@@ -39,7 +39,7 @@ class Category
     private $label;
 
     /**
-     * @ORM\Column(type="string_enum", options={"default"="out"})
+     * @ORM\Column(type="string_enum")
      *
      * @var Operation
      * @EnumAnnotation(class=\Model\Cashbook\Operation::class)

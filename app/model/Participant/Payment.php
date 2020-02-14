@@ -54,7 +54,7 @@ class Payment
     private $repayment;
 
     /**
-     * @ORM\Column(type="string", name="isAccount", options={"default"="N", "comment"="placeno na účet?"})
+     * @ORM\Column(type="string", name="isAccount")
      *
      * @var string
      */
