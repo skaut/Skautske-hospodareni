@@ -50,11 +50,9 @@ jobs:
               run: tar -xzpf workdir.tar.gz
             - run: phing tests-unit
 
-    tests-integrations:
+    tests-integration:
         name: "Run integration tests"
         runs-on: ubuntu-18.04
-        container:
-            image: fmasa/lebeda:7.4
         needs: workdir
         steps:
             - name: Download workdir
@@ -204,3 +202,36 @@ jobs:
             - run: mv app/config/config.ci.local.neon app/config/config.local.neon
             - run: php www/index.php migrations:migrate --no-interaction
             - run: "! php www/index.php migrations:diff && php www/index.php migrations:diff --allow-empty-diff"
+
+    deploy:
+        name: "Deploy to test-h.skauting.cz"
+        if: github.ref == 'refs/heads/master'
+        needs: [workdir]
+        runs-on: ubuntu-18.04
+        container:
+            image: fmasa/lebeda:7.4-ci
+        steps:
+            - name: Download workdir
+              uses: actions/download-artifact@v1
+              with:
+                  name: workdir
+                  path: .
+            - name: Extract workdir
+              run: tar -xzpf workdir.tar.gz
+            - name: Deploy to test-h.skauting.cz
+              run: |
+                  eval $(ssh-agent -s)
+                  echo "$DEPLOY_SSH_KEY" | tr -d '\r' | ssh-add -
+                  mkdir -p /root/.ssh
+                  chmod 700 /root/.ssh
+                  mv .github/workflows/known_hosts /root/.ssh/known_hosts
+                  chmod 644 /root/.ssh/known_hosts
+                  phing deploy
+              env:
+                  DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+                  ENVIRONMENT: test
+                  ROOT_DIR: /home/vu009010
+                  SSH_USERNAME: vu009010
+                  CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_TEST_DATABASE_PASSWORD }}
+                  CONFIG_SKAUTIS_APPLICATION_ID: ${{ secrets.CONFIG_TEST_SKAUTIS_APPLICATION_ID }}
+#                  CONFIG_SENTRY_DSN: null

@@ -34,14 +34,9 @@
             <filterchain>
                 <replacetokens begintoken="__" endtoken="__">
                     <token key="CONFIG_SKAUTIS_APPLICATION_ID" value="${env.CONFIG_SKAUTIS_APPLICATION_ID}"/>
-                    <token key="CONFIG_SKAUTIS_TEST_MODE" value="${env.CONFIG_SKAUTIS_TEST_MODE}"/>
-                    <token key="CONFIG_DATABASE_HOST" value="${env.CONFIG_DATABASE_HOST}"/>
-                    <token key="CONFIG_DATABASE_USER" value="${env.CONFIG_DATABASE_USER}"/>
                     <token key="CONFIG_DATABASE_PASSWORD" value="${env.CONFIG_DATABASE_PASSWORD}"/>
-                    <token key="CONFIG_DATABASE_NAME" value="${env.CONFIG_DATABASE_NAME}"/>
                     <token key="CONFIG_SENTRY_DSN" value="${env.CONFIG_SENTRY_DSN}"/>
                     <token key="CONFIG_RELEASE_HASH" value="${build.hash}"/>
-
                 </replacetokens>
                 <expandproperties/>
             </filterchain>
@@ -116,10 +111,12 @@
         <property name="deploy.rootDir" refid="env.ROOT_DIR"/>
         <property name="deploy.releasesDir" value="${deploy.rootDir}/releases"/>
         <exec command="git rev-parse --short HEAD" outputProperty="build.hash"/>
-        <property name="deploy.ssh.host" refid="env.DEPLOY_SSH_HOST"/>
-        <property name="deploy.ssh.username" refid="env.DEPLOY_SSH_USERNAME"/>
-        <property name="deploy.ssh.port" refid="env.DEPLOY_SSH_PORT" fallback="1"/>
+
+        <property name="deploy.ssh.host" value="www.skauting.cz"/>
+        <property name="deploy.ssh.port" value="28"/>
+        <property name="deploy.ssh.username" refid="env.SSH_USERNAME"/>
         <property name="deploy.ssh.target" value="${deploy.ssh.username}@${deploy.ssh.host}"/>
+
         <property name="deploy.releaseHash" value="${DSTAMP}-${TSTAMP}-${build.hash}"/>
         <property name="deploy.release" value="${deploy.releasesDir}/${deploy.releaseHash}"/>
 
