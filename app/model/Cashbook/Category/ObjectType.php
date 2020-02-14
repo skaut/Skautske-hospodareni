@@ -11,7 +11,10 @@ use Model\Cashbook\ObjectType as ObjectTypeEnum;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="ac_chitsCategory_object")
+ * @ORM\Table(
+ *     name="ac_chitsCategory_object",
+ *     indexes={@ORM\Index(name="objectTypeId", columns={"objectTypeId"})}
+ * )
  */
 class ObjectType
 {

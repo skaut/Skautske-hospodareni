@@ -13,7 +13,12 @@ use function in_array;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="ac_participants")
+ * @ORM\Table(
+ *     name="ac_participants",
+ *     indexes={
+ *         @ORM\Index(name="actionId", columns={"event_id"}),
+ *     }
+ * )
  */
 class Payment
 {
