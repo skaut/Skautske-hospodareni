@@ -13,6 +13,9 @@ doctrine:
     user: %database.user%
     password: %database.password%
     dbname: %database.name%
+
+    schemaFilter: '~^(?!ac_object)~'
+
     metadata:
         Model\Cashbook: %domainModelDir%/Cashbook
         Model\Logger: %domainModelDir%/Logger
