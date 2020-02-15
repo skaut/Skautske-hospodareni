@@ -11,7 +11,13 @@ use Model\Logger\Log\Type;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="log")
+ * @ORM\Table(
+ *     name="log",
+ *     indexes={
+ *          @ORM\Index(name="unitId", columns={"unitId"}),
+ *          @ORM\Index(name="typeId", columns={"typeId"}),
+ *      }
+ * )
  */
 class LogEntry
 {
