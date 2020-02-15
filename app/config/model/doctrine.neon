@@ -59,3 +59,7 @@ decorator:
 
     Symfony\Component\Console\Helper\Helper:
         tags: [ kdyby.console.helper ]
+
+    Doctrine\Migrations\Configuration\Configuration:
+        setup:
+            - setCheckDatabasePlatform(false)
