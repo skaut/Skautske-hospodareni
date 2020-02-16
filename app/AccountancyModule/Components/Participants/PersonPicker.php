@@ -68,7 +68,7 @@ final class PersonPicker extends BaseControl
     {
         $this->onSelect([$personId]);
 
-        $this->flashMessage('Účastníci byli přidáni', 'success');
+        $this->flashMessage('Účastník byl přidán', 'success');
 
         $this->redirect('this');
     }

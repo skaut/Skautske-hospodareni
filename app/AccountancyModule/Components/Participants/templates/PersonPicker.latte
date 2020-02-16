@@ -33,7 +33,7 @@
                     <th>Příjmení a jméno</th>
                 </tr>
                 </thead>
-                <tbody class="dropable" id="unit-participants-tbody">
+                <tbody>
                 {if count($form['personIds']->items) > 0}
                     <tr n:foreach="$form['personIds']->items as $id => $name">
                         <td>
@@ -43,7 +43,7 @@
                         <td><label n:name="personIds:$id">{$name}</label></td>
                     </tr>
                 {else}
-                    <tr class="alert info no-unit-persons" draggable="false">
+                    <tr class="alert info no-unit-persons">
                         <td colspan="2">
                             <b>Nejsou žádné nevybrané osoby v jednotce.</b>
                         </td>
