@@ -1368,35 +1368,35 @@
         },
         {
             "name": "egen/message-bus",
-            "version": "2.0.0",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/egendev/message-bus.git",
-                "reference": "adc00738d5ca13f512b2fd7ed3e895a3b96fdbf4"
+                "reference": "0ef98498a70f428b6e54b01e115c26b4fe3b4d33"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/egendev/message-bus/zipball/adc00738d5ca13f512b2fd7ed3e895a3b96fdbf4",
-                "reference": "adc00738d5ca13f512b2fd7ed3e895a3b96fdbf4",
+                "url": "https://api.github.com/repos/egendev/message-bus/zipball/0ef98498a70f428b6e54b01e115c26b4fe3b4d33",
+                "reference": "0ef98498a70f428b6e54b01e115c26b4fe3b4d33",
                 "shasum": ""
             },
             "require": {
-                "nette/di": "^2.4",
-                "nette/utils": "~2.3",
+                "nette/di": "^2.4.10 || ^3.0",
+                "nette/utils": "~2.3 || ^3.0",
                 "php": "^7.1",
                 "simple-bus/message-bus": "^3.0"
             },
             "require-dev": {
-                "nette/bootstrap": "^2.4",
-                "nette/robot-loader": "^3.0",
+                "nette/bootstrap": "^2.4 || ^3.0",
                 "phpunit/phpcov": "^4.0",
                 "phpunit/phpunit": "^6.5",
                 "satooshi/php-coveralls": "^2.0"
             },
             "type": "library",
             "autoload": {
-                "psr-0": {
-                    "eGen\\MessageBus": "src/"
+                "psr-4": {
+                    "eGen\\MessageBus\\": "src/",
+                    "Fixtures\\": "tests/fixtures/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1417,7 +1417,7 @@
                 "nette",
                 "simple-bus"
             ],
-            "time": "2018-03-27T06:24:20+00:00"
+            "time": "2020-02-23T15:07:59+00:00"
         },
         {
             "name": "fmasa/auto-di",
@@ -5675,16 +5675,16 @@
         },
         {
             "name": "simple-bus/message-bus",
-            "version": "v3.0.2",
+            "version": "v3.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SimpleBus/MessageBus.git",
-                "reference": "83f90059b286db91a9e73ff17504b8c16b5f042a"
+                "reference": "12e706f5a3a52ee77c296a53959b71a281da2739"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SimpleBus/MessageBus/zipball/83f90059b286db91a9e73ff17504b8c16b5f042a",
-                "reference": "83f90059b286db91a9e73ff17504b8c16b5f042a",
+                "url": "https://api.github.com/repos/SimpleBus/MessageBus/zipball/12e706f5a3a52ee77c296a53959b71a281da2739",
+                "reference": "12e706f5a3a52ee77c296a53959b71a281da2739",
                 "shasum": ""
             },
             "require": {
@@ -5724,7 +5724,7 @@
                 "message",
                 "message bus"
             ],
-            "time": "2018-12-17T11:39:44+00:00"
+            "time": "2019-07-03T18:41:17+00:00"
         },
         {
             "name": "skautis/nette",
@@ -7507,12 +7507,12 @@
             "version": "1.7.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/facebook/php-webdriver.git",
+                "url": "https://github.com/php-webdriver/php-webdriver.git",
                 "reference": "e43de70f3c7166169d0f14a374505392734160e5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/facebook/php-webdriver/zipball/e43de70f3c7166169d0f14a374505392734160e5",
+                "url": "https://api.github.com/repos/php-webdriver/php-webdriver/zipball/e43de70f3c7166169d0f14a374505392734160e5",
                 "reference": "e43de70f3c7166169d0f14a374505392734160e5",
                 "shasum": ""
             },
@@ -9224,12 +9224,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "1df6b9d09d2b074fd3f0f10a7696d9f797d4772c"
+                "reference": "71174ad65ddde2852b10107ebf2f75d04eb47b43"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/1df6b9d09d2b074fd3f0f10a7696d9f797d4772c",
-                "reference": "1df6b9d09d2b074fd3f0f10a7696d9f797d4772c",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/71174ad65ddde2852b10107ebf2f75d04eb47b43",
+                "reference": "71174ad65ddde2852b10107ebf2f75d04eb47b43",
                 "shasum": ""
             },
             "conflict": {
@@ -9244,6 +9244,7 @@
                 "bagisto/bagisto": "<0.1.5",
                 "bolt/bolt": "<3.6.10",
                 "brightlocal/phpwhois": "<=4.2.5",
+                "buddypress/buddypress": "<5.1.2",
                 "bugsnag/bugsnag-laravel": ">=2,<2.0.2",
                 "cakephp/cakephp": ">=1.3,<1.3.18|>=2,<2.4.99|>=2.5,<2.5.99|>=2.6,<2.6.12|>=2.7,<2.7.6|>=3,<3.5.18|>=3.6,<3.6.15|>=3.7,<3.7.7",
                 "cart2quote/module-quotation": ">=4.1.6,<=4.4.5|>=5,<5.4.4",
@@ -9272,7 +9273,7 @@
                 "drupal/core": ">=7,<7.69|>=8,<8.7.11|>=8.8,<8.8.1",
                 "drupal/drupal": ">=7,<7.69|>=8,<8.7.11|>=8.8,<8.8.1",
                 "endroid/qr-code-bundle": "<3.4.2",
-                "enshrined/svg-sanitize": "<0.12",
+                "enshrined/svg-sanitize": "<0.13.1",
                 "erusev/parsedown": "<1.7.2",
                 "ezsystems/ezfind-ls": ">=5.3,<5.3.6.1|>=5.4,<5.4.11.1|>=2017.12,<2017.12.0.1",
                 "ezsystems/ezplatform": ">=1.7,<1.7.9.1|>=1.13,<1.13.5.1|>=2.5,<2.5.4",
@@ -9418,7 +9419,7 @@
                 "typo3/phar-stream-wrapper": ">=1,<2.1.1|>=3,<3.1.1",
                 "ua-parser/uap-php": "<3.8",
                 "usmanhalalit/pixie": "<1.0.3|>=2,<2.0.2",
-                "verot/class.upload.php": "<1.0.3|>=2,<2.0.4",
+                "verot/class.upload.php": "<=1.0.3|>=2,<=2.0.4",
                 "wallabag/tcpdf": "<6.2.22",
                 "willdurand/js-translation-bundle": "<2.1.1",
                 "yii2mod/yii2-cms": "<1.9.2",
@@ -9475,7 +9476,7 @@
                 }
             ],
             "description": "Prevents installation of composer packages with known security vulnerabilities: no API, simply require it",
-            "time": "2020-02-19T06:23:50+00:00"
+            "time": "2020-02-29T00:01:08+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
