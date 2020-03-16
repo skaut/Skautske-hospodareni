@@ -107,9 +107,9 @@ final class PaymentDialog extends BaseControl
 
         $form->addText('note', 'Poznámka');
 
-        $form->addSubmit('send', 'Přidat platbu');
-
         $payment = $this->payment();
+
+        $form->addSubmit('send', $payment === null ? 'Přidat platbu' : 'Uložit platbu');
 
         if ($payment !== null) {
             $form->setDefaults([
