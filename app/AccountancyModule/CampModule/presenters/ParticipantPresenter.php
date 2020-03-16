@@ -4,59 +4,81 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\CampModule;
 
+use App\AccountancyModule\Components\Participants\ParticipantList;
 use App\AccountancyModule\Components\Participants\PersonPicker;
 use App\AccountancyModule\ExcelResponse;
+use App\AccountancyModule\Factories\Participants\IParticipantListFactory;
 use App\AccountancyModule\Factories\Participants\IPersonPickerFactory;
-use App\AccountancyModule\ParticipantTrait;
 use Assert\Assertion;
 use Model\Auth\Resources\Camp;
 use Model\Cashbook\Commands\Cashbook\AddCampParticipant;
 use Model\Cashbook\Commands\Cashbook\CreateCampParticipant;
+use Model\Cashbook\Commands\Cashbook\RemoveCampParticipant;
 use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
 use Model\DTO\Participant\NonMemberParticipant;
 use Model\DTO\Participant\Participant;
+use Model\DTO\Participant\UpdateParticipant;
 use Model\Event\Commands\Camp\ActivateAutocomputedParticipants;
 use Model\Event\SkautisCampId;
+use Model\EventEntity;
 use Model\ExcelService;
 use Model\ExportService;
+use Model\Participant\Payment\EventType;
 use Model\Services\PdfRenderer;
-use Nette\Application\AbortException;
-use Nette\Application\BadRequestException;
 use Nette\Utils\Strings;
 use Skautis\Wsdl\PermissionException;
 use function date;
 use function in_array;
+use function printf;
 
 class ParticipantPresenter extends BasePresenter
 {
-    use ParticipantTrait;
-
     /** @var bool */
     private $canAddParticipants;
 
+    /** @var ExportService */
+    private $exportService;
+
+    /** @var ExcelService */
+    private $excelService;
+
+    /** @var PdfRenderer     */
+    private $pdf;
+
     /** @var IPersonPickerFactory */
     private $personPickerFactory;
+
+    /** @var IParticipantListFactory */
+    private $participantListFactory;
+
+    /** @var bool */
+    private $isAllowParticipantUpdate;
+
+    /** @var bool */
+    private $isAllowParticipantDelete;
+
+    /** @var EventEntity */
+    private $eventService;
 
     public function __construct(
         ExportService $export,
         ExcelService $excel,
         PdfRenderer $pdf,
-        IPersonPickerFactory $personPickerFactory
+        IPersonPickerFactory $personPickerFactory,
+        IParticipantListFactory $participantListFactory
     ) {
         parent::__construct();
-        $this->exportService       = $export;
-        $this->excelService        = $excel;
-        $this->pdf                 = $pdf;
-        $this->personPickerFactory = $personPickerFactory;
+        $this->exportService          = $export;
+        $this->excelService           = $excel;
+        $this->pdf                    = $pdf;
+        $this->personPickerFactory    = $personPickerFactory;
+        $this->participantListFactory = $participantListFactory;
     }
 
     protected function startup() : void
     {
         parent::startup();
-        $this->traitStartup();
-        $this->eventService     = $this->context->getService('campService');
-        $this->isAllowRepayment = true;
-        $this->isAllowIsAccount = true;
+        $this->eventService = $this->context->getService('campService');
 
         $this->canAddParticipants       = $this->authorizator->isAllowed(Camp::ADD_PARTICIPANT, $this->aid);
         $this->isAllowParticipantDelete = $this->authorizator->isAllowed(Camp::REMOVE_PARTICIPANT, $this->aid);
@@ -64,10 +86,6 @@ class ParticipantPresenter extends BasePresenter
 
         $this->template->setParameters([
             'canAddParticipants' => $this->canAddParticipants,
-            'isAllowParticipantDelete' => $this->isAllowParticipantDelete,
-            'isAllowParticipantUpdate' => $this->isAllowParticipantUpdate,
-            'isAllowRepayment' => $this->isAllowRepayment,
-            'isAllowIsAccount' => $this->isAllowIsAccount,
         ]);
     }
 
@@ -80,10 +98,7 @@ class ParticipantPresenter extends BasePresenter
             $this->redirect('Default:');
         }
 
-        $this->traitDefault($sort, $regNums);
-
         $this->template->setParameters([
-            'isAllowParticipantDetail' => $authorizator->isAllowed(Camp::ACCESS_PARTICIPANT_DETAIL, $aid),
             'isAllowParticipantUpdateLocal' => $this->isAllowParticipantDelete,
             'missingAvailableAutoComputed' => ! $this->event->isRealAutoComputed() && $authorizator->isAllowed(Camp::SET_AUTOMATIC_PARTICIPANTS_CALCULATION, $aid),
         ]);
@@ -93,38 +108,6 @@ class ParticipantPresenter extends BasePresenter
         }
 
         $this->redrawControl('contentSnip');
-    }
-
-    /**
-     * @param int|float|string $value
-     *
-     * @throws AbortException
-     * @throws BadRequestException
-     */
-    public function actionEditField(?int $aid = null, ?int $id = null, ?string $field = null, $value = null) : void
-    {
-        if ($aid === null || $id === null || $field === null || $value === null) {
-            throw new BadRequestException();
-        }
-
-        if (! $this->isAllowParticipantUpdate) {
-            $this->flashMessage('Nemáte oprávnění měnit účastníkův jejich údaje.', 'danger');
-            if ($this->isAjax()) {
-                $this->sendPayload();
-            } else {
-                $this->redirect('Default:');
-            }
-        }
-
-        //@todo: add privileges check to eventId
-
-        if (! in_array($field, ['days', 'payment', 'repayment', 'isAccount'])) {
-            $this->payload->message = 'Error';
-            $this->sendPayload();
-        }
-        $this->eventService->getParticipants()->update($id, $aid, [$field => $value]);
-        $this->payload->message = 'Success';
-        $this->sendPayload();
     }
 
     public function handleActivateAutocomputedParticipants(int $aid) : void
@@ -163,6 +146,50 @@ class ParticipantPresenter extends BasePresenter
         };
 
         return $picker;
+    }
+
+    protected function createComponentParticipantList() : ParticipantList
+    {
+        $control = $this->participantListFactory->create(
+            $this->aid,
+            $this->eventService,
+            $this->campParticipants(),
+            true,
+            true,
+            $this->isAllowParticipantUpdate,
+            $this->isAllowParticipantDelete
+        );
+
+        $control->onUpdate[] = function (array $updates) : void {
+            /** @var UpdateParticipant $u */
+            foreach ($updates as $u) {
+                if (! in_array($u->getField(), UpdateParticipant::getCampFields())) {
+                    $this->flashMessage(printf('Nelze upravit pole: %s', $u->getField()), 'warning');
+                    $this->redirect('this');
+                }
+                $this->eventService->getParticipants()->update($u);
+            }
+        };
+
+        $control->onRemove[] = function (array $participantIds) : void {
+            foreach ($participantIds as $participantId) {
+                $this->commandBus->handle(new RemoveCampParticipant($participantId));
+            }
+        };
+
+        return $control;
+    }
+
+    public function actionExport(int $aid) : void
+    {
+        try {
+            $template = $this->exportService->getParticipants($aid, EventType::CAMP);
+            $this->pdf->render($template, 'seznam-ucastniku.pdf', true);
+        } catch (PermissionException $ex) {
+            $this->flashMessage('Nemáte oprávnění k záznamu osoby! (' . $ex->getMessage() . ')', 'danger');
+            $this->redirect('default', ['aid' => $this->aid]);
+        }
+        $this->terminate();
     }
 
     /**

@@ -13,8 +13,7 @@
     <div class="col-sm-5" n:inner-if="$canAddParticipants">
         {control personPicker}
     </div>
-    {include $templateBlockDir.'participants/participant.latte' type=>"camp"}
+    <div class="col-sm-{if $canAddParticipants}7{else}12{/if}">
+        {control participantList}
+    </div>
 </div>
-
-{include $templateBlockDir.'participants/js.latte'}
-{include $templateBlockDir.'inline-num-edit.latte'}
