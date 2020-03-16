@@ -25,7 +25,7 @@
             <th>Částka</th>
         </tr>
         </thead>
-        {var balance = 0}
+        {var $balance = 0}
         <tr n:foreach="$categoriesSummary as $categorySummary" n:if="$categorySummary->isIncome() === $income && ! $categorySummary->isVirtual()">
             {php $balance += (float)$categorySummary->total->getAmount()/100}
             <td>{$categorySummary->name}</td>
