@@ -2,7 +2,7 @@
     "name": "skautskeHospodareni",
     "type": "project",
     "require": {
-        "php": ">= 7.3",
+        "php": ">= 7.4",
         "nette/application": "~2.4",
         "nette/bootstrap": "~2.4",
         "nette/caching": " ~2.4",
