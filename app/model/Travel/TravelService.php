@@ -172,7 +172,7 @@ class TravelService
         $command       = $this->commands->find($commandId);
         $transportType = $this->types->find($type);
 
-        $details = new Command\TravelDetails($date, $transportType->getShortcut(), $startPlace, $endPlace);
+        $details = new Command\TravelDetails($date, $transportType, $startPlace, $endPlace);
 
         if ($transportType->hasFuel()) {
             $command->addVehicleTravel($distanceOrPrice, $details);
@@ -193,7 +193,7 @@ class TravelService
         string $endPlace
     ) : void {
         $transportType = $this->types->find($type);
-        $details       = new Command\TravelDetails($date, $transportType->getShortcut(), $startPlace, $endPlace);
+        $details       = new Command\TravelDetails($date, $transportType, $startPlace, $endPlace);
 
         $command = $this->commands->find($commandId);
 

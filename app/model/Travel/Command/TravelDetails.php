@@ -7,6 +7,7 @@ namespace Model\Travel\Command;
 use Cake\Chronos\Date;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use Model\Travel\Travel\Type;
 use Nette\SmartObject;
 
 /**
@@ -29,9 +30,10 @@ class TravelDetails
     private $date;
 
     /**
-     * @ORM\Column(type="string", name="type", length=5)
+     * @ManyToOne(targetEntity="Type")
+     * @JoinColumn(name="type", referencedColumnName="type")
      *
-     * @var string
+     * @var Type
      */
     private $transportType;
 
@@ -49,7 +51,7 @@ class TravelDetails
      */
     private $endPlace;
 
-    public function __construct(Date $date, string $transportType, string $startPlace, string $endPlace)
+    public function __construct(Date $date, Type $transportType, string $startPlace, string $endPlace)
     {
         $this->date          = $date;
         $this->transportType = $transportType;
@@ -62,7 +64,7 @@ class TravelDetails
         return $this->date;
     }
 
-    public function getTransportType() : string
+    public function getTransportType() : Type
     {
         return $this->transportType;
     }

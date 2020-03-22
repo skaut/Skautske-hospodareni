@@ -11,6 +11,7 @@ use Mockery as m;
 use Model\Travel\Command\TransportTravel;
 use Model\Travel\Command\TravelDetails;
 use Model\Travel\Command\VehicleTravel;
+use Model\Travel\Travel\Type;
 use Model\Utils\MoneyFactory;
 use Money\Money;
 use Throwable;
@@ -231,7 +232,10 @@ class CommandTest extends Unit
         $command->addVehicleTravel(200, new TravelDetails($date, 'auv', 'Brno', 'Praha'));
         $command->addTransportTravel(MoneyFactory::fromFloat(200), new TravelDetails($date, 'a', 'Brno', 'Praha'));
 
-        $this->assertEquals(['mov', 'auv', 'a'], $command->getUsedTransportTypes());
+        foreach ($command->getUsedTransportTypes() as $type) {
+            $this->assertInstanceOf(Type::class, $type);
+            $this->assertTrue (in_array ($type->getShortcut (), ['mov', 'auv', 'a']));
+        }
     }
 
     public function testCloseCommand() : void

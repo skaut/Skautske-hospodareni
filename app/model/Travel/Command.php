@@ -453,7 +453,7 @@ class Command
      */
     public function getUsedTransportTypes() : array
     {
-        $types = $this->travels->map(function (Travel $travel) {
+        $types = $this->travels->map(function (Travel $travel) : Type {
             return $travel->getDetails()->getTransportType();
         });
 
