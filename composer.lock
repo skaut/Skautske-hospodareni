@@ -2621,16 +2621,16 @@
         },
         {
             "name": "latte/latte",
-            "version": "v2.6.1",
+            "version": "v2.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/latte.git",
-                "reference": "82321e0d039d7b7e3324b5a7cb8f046a69458da9"
+                "reference": "b91c508a3c5a990c84da8daaf41ad165601858e2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/latte/zipball/82321e0d039d7b7e3324b5a7cb8f046a69458da9",
-                "reference": "82321e0d039d7b7e3324b5a7cb8f046a69458da9",
+                "url": "https://api.github.com/repos/nette/latte/zipball/b91c508a3c5a990c84da8daaf41ad165601858e2",
+                "reference": "b91c508a3c5a990c84da8daaf41ad165601858e2",
                 "shasum": ""
             },
             "require": {
@@ -2642,6 +2642,7 @@
                 "nette/application": "<2.4.1"
             },
             "require-dev": {
+                "nette/php-generator": "^3.3.4",
                 "nette/tester": "~2.0",
                 "nette/utils": "^3.0",
                 "phpstan/phpstan": "^0.12",
@@ -2649,13 +2650,15 @@
             },
             "suggest": {
                 "ext-fileinfo": "to use filter |datastream",
+                "ext-iconv": "to use filters |reverse, |substring",
                 "ext-mbstring": "to use filters like lower, upper, capitalize, ...",
+                "nette/php-generator": "to use tag {templatePrint}",
                 "nette/utils": "to use filter |webalize"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.6-dev"
+                    "dev-master": "2.7-dev"
                 }
             },
             "autoload": {
@@ -2691,7 +2694,7 @@
                 "template",
                 "twig"
             ],
-            "time": "2020-01-14T18:32:37+00:00"
+            "time": "2020-03-05T01:19:01+00:00"
         },
         {
             "name": "league/flysystem",
@@ -10802,6 +10805,5 @@
     "platform": {
         "php": ">= 7.4"
     },
-    "platform-dev": [],
-    "plugin-api-version": "1.1.0"
+    "platform-dev": []
 }
