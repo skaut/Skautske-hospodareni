@@ -17,7 +17,7 @@ abstract  class SkautisTest extends Unit
     protected function createSkautis(string $loginId) : Skautis
     {
         $config      = new Config('48104fe2-b447-47f5-9a26-051c710da74e', true, true, true);
-        $wsdlManager = new WsdlManager(new WebServiceFactory(), $config);
+        $wsdlManager = new WsdlManager(new WebServiceFactory(WebServiceWithInterception::class), $config);
         $user        = new User($wsdlManager, new FakeAdapter());
 
         $user->setLoginData($loginId);

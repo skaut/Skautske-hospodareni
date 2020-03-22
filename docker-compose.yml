@@ -3,7 +3,7 @@ version: '3.4'
 services:
     app:
         container_name: hskauting.app
-        image: fmasa/lebeda:7.3
+        image: fmasa/lebeda:7.4
         volumes:
             - www:/var/www
             - .:/var/www/html

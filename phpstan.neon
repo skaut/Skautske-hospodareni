@@ -7,6 +7,7 @@ parameters:
     ignoreErrors:
         # Errors related mostly to usage of assert($x instanceof A || $x === null) and similar asserts
         - '~Result of && is always true\.~'
+        - '~Parameter #1 \$parameters of method Doctrine\\ORM\\AbstractQuery::setParameters\(\).*~'
 
 includes:
     - vendor/phpstan/phpstan-nette/extension.neon

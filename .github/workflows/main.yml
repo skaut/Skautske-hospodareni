@@ -7,7 +7,7 @@ jobs:
         name: "Prepare working directory"
         runs-on: ubuntu-18.04
         container:
-            image: fmasa/lebeda:7.3
+            image: fmasa/lebeda:7.4
         steps:
             - uses: actions/checkout@v2
             # Copy & paste from https://github.com/actions/cache/blob/master/examples.md#php---composer
@@ -34,7 +34,7 @@ jobs:
         name: "Run unit tests"
         runs-on: ubuntu-18.04
         container:
-            image: fmasa/lebeda:7.3
+            image: fmasa/lebeda:7.4
         needs: workdir
         steps:
             - name: Download workdir
@@ -50,7 +50,7 @@ jobs:
         name: "Run integration tests"
         runs-on: ubuntu-18.04
         container:
-            image: fmasa/lebeda:7.3
+            image: fmasa/lebeda:7.4
         needs: workdir
 
         services:
@@ -78,7 +78,7 @@ jobs:
         name: "Run PHPStan analysis"
         runs-on: ubuntu-18.04
         container:
-            image: fmasa/lebeda:7.3
+            image: fmasa/lebeda:7.4
         needs: workdir
         steps:
             - name: Download workdir
@@ -94,7 +94,7 @@ jobs:
         name: "Check coding standard"
         runs-on: ubuntu-18.04
         container:
-            image: fmasa/lebeda:7.3
+            image: fmasa/lebeda:7.4
         needs: workdir
         steps:
             - name: Download workdir
@@ -110,7 +110,7 @@ jobs:
         name: "Lint Latte templates"
         runs-on: ubuntu-18.04
         container:
-            image: fmasa/lebeda:7.3
+            image: fmasa/lebeda:7.4
         needs: workdir
         env:
             DEVELOPMENT_MACHINE: true

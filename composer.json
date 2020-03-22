@@ -2,7 +2,7 @@
     "name": "skautskeHospodareni",
     "type": "project",
     "require": {
-        "php": ">= 7.3",
+        "php": ">= 7.4",
         "nette/application": "~2.4",
         "nette/bootstrap": "~2.4",
         "nette/caching": " ~2.4",
@@ -70,7 +70,7 @@
         "contributte/codeception": "^1.1"
     },
     "autoload-dev": {
-        "classmap": ["code-quality/"]
+        "classmap": ["code-quality/", "tests/_hacks"]
     },
     "prefer-stable": true,
     "minimum-stability": "dev"

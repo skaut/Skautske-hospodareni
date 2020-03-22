@@ -1,7 +1,7 @@
 # Instalace pro lokální vývoj
 
 Aplikace vyžaduje:
-- PHP 7.3
+- PHP 7.4
 - MySQL 5
 - Apache
 - Composer
