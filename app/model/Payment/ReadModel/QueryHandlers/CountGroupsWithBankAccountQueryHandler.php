@@ -21,7 +21,7 @@ final class CountGroupsWithBankAccountQueryHandler
     {
         return (int) $this->entityManager
             ->createQuery(/** @lang DQL */ 'SELECT COUNT(g) FROM Model\Payment\Group g WHERE g.bankAccount.id = :id')
-            ->setParameters(['id' => $query->getBankAccountId()->toInt()])
+            ->setParameter('id', $query->getBankAccountId()->toInt())
             ->getSingleScalarResult();
     }
 }
