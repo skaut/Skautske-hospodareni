@@ -70,7 +70,7 @@
         "contributte/codeception": "^1.1"
     },
     "autoload-dev": {
-        "classmap": ["code-quality/"]
+        "classmap": ["code-quality/", "tests/_hacks"]
     },
     "prefer-stable": true,
     "minimum-stability": "dev"
