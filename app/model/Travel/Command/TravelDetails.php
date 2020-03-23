@@ -32,7 +32,6 @@ class TravelDetails
     /**
      * @ManyToOne(targetEntity="Type")
      * @JoinColumn(name="type", referencedColumnName="type")
-     *
      * @var Type
      */
     private $transportType;
