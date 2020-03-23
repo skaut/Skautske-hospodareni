@@ -5,7 +5,7 @@ build:
     services:
         - name: mysql-test
           id: mysql
-          tag: 5.7
+          tag: 8.0
           env:
             MYSQL_ROOT_PASSWORD: 'root'
             MYSQL_DATABASE: hskauting
