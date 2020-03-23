@@ -51,7 +51,7 @@ class CommandRepositoryTest extends IntegrationTest
         'command_id' => self::COMMAND_ID,
         'start_place' => 'Praha',
         'end_place' => 'Brno',
-        'distance' => 500.0,
+        'price' => 500.0,
         'type' => 'a',
         'has_fuel' => 0,
         'start_date' => '2018-01-01',
@@ -162,7 +162,7 @@ class CommandRepositoryTest extends IntegrationTest
         $this->assertSame(1, $transportTravel->getId());
         $details2 = $transportTravel->getDetails();
         $this->assertInstanceOf(Command\TransportTravel::class, $transportTravel);
-        $this->assertEquals(MoneyFactory::fromFloat(self::TRANSPORT_TRAVEL['distance']), $transportTravel->getPrice());
+        $this->assertEquals(MoneyFactory::fromFloat(self::TRANSPORT_TRAVEL['price']), $transportTravel->getPrice());
         $this->assertTrue($details2->getDate()->eq(new Date(self::TRANSPORT_TRAVEL['start_date'])));
         $this->assertSame(self::TRANSPORT_TRAVEL['start_place'], $details2->getStartPlace());
         $this->assertSame(self::TRANSPORT_TRAVEL['end_place'], $details2->getEndPlace());
