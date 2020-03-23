@@ -289,7 +289,7 @@ class TravelService
     }
 
     /**
-     * @param string[] $types
+     * @param TransportType[] $types
      */
     public function addCommand(
         int $unitId,
@@ -321,7 +321,7 @@ class TravelService
             $amortization,
             $note,
             $ownerId,
-            $this->typesToEntities($types),
+            $types,
             $unit
         );
 
@@ -329,7 +329,7 @@ class TravelService
     }
 
     /**
-     * @param string[] $types
+     * @param TransportType[] $types
      */
     public function updateCommand(
         int $id,
@@ -351,8 +351,6 @@ class TravelService
             ? $this->vehicles->find($vehicleId)
             : null;
 
-        $typesEntities = $this->typesToEntities($types);
-
         $command->update(
             $vehicle,
             $this->selectPassenger($passenger, $contractId),
@@ -362,7 +360,7 @@ class TravelService
             $fuelPrice,
             $amortization,
             $note,
-            array_unique(array_merge($typesEntities, $command->getUsedTransportTypes())),
+            array_unique(array_merge($types, $command->getUsedTransportTypes())),
             $unit
         );
 
@@ -472,15 +470,5 @@ class TravelService
         return $contractId === null
             ? $passenger
             : Passenger::fromContract($this->contracts->find($contractId));
-    }
-
-    /**
-     * @param string[] $types
-     *
-     * @return TransportType[]
-     */
-    private function typesToEntities(array $types) : array
-    {
-        return array_map(fn(string $type) => TransportType::get($type), $types);
     }
 }
