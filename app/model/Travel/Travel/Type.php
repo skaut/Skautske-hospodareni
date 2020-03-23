@@ -4,67 +4,51 @@ declare(strict_types=1);
 
 namespace Model\Travel\Travel;
 
-use Doctrine\ORM\Mapping as ORM;
+use Consistence\Enum\Enum;
+use function in_array;
 
 /**
- * @ORM\Entity()
- * @ORM\Table(name="tc_travelTypes")
+ * @method string getValue()
+ * @method static string[] getAvailableValues()
+ * @method static static[] getAvailableEnums() : iterable()
  */
-class Type
+final class Type extends Enum
 {
-    /**
-     * @ORM\Id()
-     * @ORM\Column(type="string", length=5, name="type")
-     *
-     * @var string
-     */
-    private $shortcut;
+    public const CAR           = 'car';
+    public const BUS           = 'bus';
+    public const EXPRESS_TRAIN = 'express_train';
+    public const TRAIN         = 'train';
+    public const MOTORCYCLE    = 'motorcycle';
+    public const ON_FOOT       = 'on_foot';
+    public const AIRPLANE      = 'airplane';
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     *
-     * @var string
-     */
-    private $label;
-
-    /**
-     * @ORM\Column(type="boolean", name="hasFuel", options={"default":false})
-     *
-     * @var bool
-     */
-    private $hasFuel;
-
-    /**
-     * @ORM\Column(type="smallint", options={"default":10})
-     *
-     * @var int
-     */
-    private $order;
-
-    public function __construct(string $type, string $label, bool $hasFuel)
-    {
-        $this->shortcut = $type;
-        $this->label    = $label;
-        $this->hasFuel  = $hasFuel;
-    }
-
-    public function getShortcut() : string
-    {
-        return $this->shortcut;
-    }
+    private const LABELS = [
+        self::CAR => 'auto vlastní',
+        self::BUS => 'autobus',
+        self::EXPRESS_TRAIN => 'rychlík',
+        self::TRAIN => 'osobní vlak',
+        self::MOTORCYCLE => 'motocykl vlastní',
+        self::ON_FOOT => 'pěšky',
+        self::AIRPLANE => 'letadlo',
+    ];
 
     public function getLabel() : string
     {
-        return $this->label;
+        return self::LABELS[$this->getValue()];
     }
 
     public function hasFuel() : bool
     {
-        return $this->hasFuel;
+        return in_array($this->getValue(), [self::CAR, self::MOTORCYCLE], true);
+    }
+
+    public function toString() : string
+    {
+        return $this->getValue();
     }
 
     public function __toString() : string
     {
-        return $this->getShortcut();
+        return $this->getValue();
     }
 }

@@ -6,6 +6,7 @@ namespace Model\DTO\Travel;
 
 use DateTimeImmutable;
 use Model\Travel\Passenger;
+use Model\Travel\Travel\Type;
 use Money\Money;
 use Nette\SmartObject;
 
@@ -26,7 +27,7 @@ use Nette\SmartObject;
  * @property-read Money                     $pricePerKm
  * @property-read Money                     $fuelPricePerKm
  * @property-read string                    $state
- * @property-read TravelType[]              $transportTypes
+ * @property-read Type[]                    $transportTypes
  * @property-read string[]                  $transportTypePairs
  * @property-read string                    $unit
  */
@@ -88,14 +89,14 @@ class Command
     /** @var int|null */
     private $ownerId;
 
-    /** @var TravelType[] */
+    /** @var Type[] */
     private $transportTypes;
 
     /** @var string */
     private $unit;
 
     /**
-     * @param TravelType[] $transportTypes
+     * @param Type[] $transportTypes
      */
     public function __construct(
         int $id,
@@ -225,7 +226,7 @@ class Command
     }
 
     /**
-     * @return TravelType[]
+     * @return Type[]
      */
     public function getTransportTypes() : array
     {
@@ -238,8 +239,9 @@ class Command
     public function getTransportTypePairs() : array
     {
         $types = [];
+
         foreach ($this->transportTypes as $type) {
-            $types[$type->getShortcut()] = $type->getLabel();
+            $types[$type->toString()] = $type->getLabel();
         }
 
         return $types;

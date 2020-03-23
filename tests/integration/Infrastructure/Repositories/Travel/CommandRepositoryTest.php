@@ -9,8 +9,11 @@ use DateTimeImmutable;
 use Doctrine\ORM\EntityManager;
 use IntegrationTest;
 use Model\Travel\Command;
+use Model\Travel\Travel\Type;
 use Model\Travel\Vehicle;
 use Model\Utils\MoneyFactory;
+use Nette\Utils\Json;
+use function array_diff_key;
 use function array_map;
 
 class CommandRepositoryTest extends IntegrationTest
@@ -30,6 +33,7 @@ class CommandRepositoryTest extends IntegrationTest
         'driver_contact' => '123456789',
         'driver_address' => '---',
         'next_travel_id' => 2,
+        'transport_types' => '[]',
         'contract_id' => 6,
         'closed' => '2018-01-01 10:30:33',
         'unit' => '',
@@ -41,7 +45,7 @@ class CommandRepositoryTest extends IntegrationTest
         'start_place' => 'Brno',
         'end_place' => 'Praha',
         'distance' => 205.0,
-        'type' => 'auv',
+        'type' => Type::CAR,
         'has_fuel' => 1,
         'start_date' => '2018-01-01',
     ];
@@ -52,7 +56,7 @@ class CommandRepositoryTest extends IntegrationTest
         'start_place' => 'Praha',
         'end_place' => 'Brno',
         'price' => 500.0,
-        'type' => 'a',
+        'type' => Type::BUS,
         'has_fuel' => 0,
         'start_date' => '2018-01-01',
     ];
@@ -103,6 +107,7 @@ class CommandRepositoryTest extends IntegrationTest
                 'driver_contact' => '123456789',
                 'driver_address' => '---',
                 'next_travel_id' => 1,
+                'transport_types' => Json::encode([Type::CAR]),
                 'unit' => '',
             ];
 
@@ -155,7 +160,7 @@ class CommandRepositoryTest extends IntegrationTest
         $this->assertTrue($details1->getDate()->eq(new Date(self::VEHICLE_TRAVEL['start_date'])));
         $this->assertSame(self::VEHICLE_TRAVEL['start_place'], $details1->getStartPlace());
         $this->assertSame(self::VEHICLE_TRAVEL['end_place'], $details1->getEndPlace());
-        $this->assertSame(self::VEHICLE_TRAVEL['type'], $details1->getTransportType());
+        $this->assertSame(Type::get(self::VEHICLE_TRAVEL['type']), $details1->getTransportType());
 
         /** @var Command\TransportTravel $transportTravel */
         $transportTravel = $travels[1];
@@ -166,7 +171,7 @@ class CommandRepositoryTest extends IntegrationTest
         $this->assertTrue($details2->getDate()->eq(new Date(self::TRANSPORT_TRAVEL['start_date'])));
         $this->assertSame(self::TRANSPORT_TRAVEL['start_place'], $details2->getStartPlace());
         $this->assertSame(self::TRANSPORT_TRAVEL['end_place'], $details2->getEndPlace());
-        $this->assertSame(self::TRANSPORT_TRAVEL['type'], $details2->getTransportType());
+        $this->assertSame(Type::get(self::TRANSPORT_TRAVEL['type']), $details2->getTransportType());
     }
 
     public function testNextTravelId() : void
@@ -200,7 +205,8 @@ class CommandRepositoryTest extends IntegrationTest
 
         $this->repository->save($command);
 
-        $this->tester->seeInDatabase('tc_commands', ['id' => 2] + self::COMMAND);
+        // Not checking transport_types because Codeception makes weird select there
+        $this->tester->seeInDatabase('tc_commands', ['id' => 2] + array_diff_key(self::COMMAND, ['transport_types' => null]));
     }
 
     public function testTwoCommandsCanHaveTravelsWithSameIds() : void

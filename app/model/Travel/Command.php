@@ -126,13 +126,9 @@ class Command
     private $ownerId = null;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Type::class)
-     * @ORM\JoinTable(name="tc_command_types",
-     *      joinColumns={@ORM\JoinColumn(name="commandId", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="typeId", referencedColumnName="type")}
-     *      )
+     * @ORM\Column(type="transport_types")
      *
-     * @var ArrayCollection|Type[]
+     * @var Type[]
      */
     private $transportTypes;
 
@@ -170,7 +166,7 @@ class Command
         $this->note             = $note;
         $this->travels          = new ArrayCollection();
         $this->ownerId          = $ownerId;
-        $this->transportTypes   = new ArrayCollection($transportTypes);
+        $this->transportTypes   = array_unique($transportTypes);
         $this->unit             = $unit;
     }
 
@@ -197,7 +193,7 @@ class Command
         $this->fuelPrice        = $fuelPrice;
         $this->amortization     = $amortization;
         $this->note             = $note;
-        $this->transportTypes   = new ArrayCollection($transportTypes);
+        $this->transportTypes   = array_unique($transportTypes);
         $this->unit             = $unit;
     }
 
@@ -453,11 +449,9 @@ class Command
      */
     public function getUsedTransportTypes() : array
     {
-        $types = $this->travels->map(function (Travel $travel) {
-            return $travel->getDetails()->getTransportType();
-        });
-
-        return array_unique($types->toArray());
+        return array_unique(
+            $this->travels->map(fn(Travel $travel) => $travel->getDetails()->getTransportType())->toArray()
+        );
     }
 
     private function getTravelId() : int
@@ -475,7 +469,7 @@ class Command
      */
     public function getTransportTypes() : array
     {
-        return $this->transportTypes->toArray();
+        return $this->transportTypes;
     }
 
     public function getUnit() : string

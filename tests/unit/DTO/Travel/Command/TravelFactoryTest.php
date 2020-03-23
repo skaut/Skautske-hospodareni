@@ -8,6 +8,7 @@ use Cake\Chronos\Date;
 use Codeception\Test\Unit;
 use Mockery as m;
 use Model\Travel\Command;
+use Model\Travel\Travel\Type;
 use Money\Money;
 use function array_map;
 
@@ -17,7 +18,7 @@ class TravelFactoryTest extends Unit
     {
         $firstDay      = new Date('2018-01-01');
         $secondDay     = new Date('2018-01-02');
-        $transportType = 'r';
+        $transportType = Type::get(Type::EXPRESS_TRAIN);
 
         $travels = [
             m::mock(Command\TransportTravel::class, [

@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace Model\Travel\Command;
 
 use Cake\Chronos\Date;
+use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use Model\Travel\Travel\Type;
 use Nette\SmartObject;
 
 /**
  * @ORM\Embeddable()
  *
  * @property-read DateTimeImmutable $date
- * @property-read string $transportType
+ * @property-read Type $transportType
  * @property-read string $startPlace
  * @property-read string $endPlace
  */
@@ -29,9 +31,10 @@ class TravelDetails
     private $date;
 
     /**
-     * @ORM\Column(type="string", name="type", length=5)
+     * @ORM\Column(type="string_enum", name="type")
      *
-     * @var string
+     * @Enum(class=Type::class)
+     * @var Type
      */
     private $transportType;
 
@@ -49,7 +52,7 @@ class TravelDetails
      */
     private $endPlace;
 
-    public function __construct(Date $date, string $transportType, string $startPlace, string $endPlace)
+    public function __construct(Date $date, Type $transportType, string $startPlace, string $endPlace)
     {
         $this->date          = $date;
         $this->transportType = $transportType;
@@ -62,7 +65,7 @@ class TravelDetails
         return $this->date;
     }
 
-    public function getTransportType() : string
+    public function getTransportType() : Type
     {
         return $this->transportType;
     }
