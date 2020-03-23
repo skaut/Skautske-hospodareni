@@ -2,7 +2,7 @@
 
 Aplikace vyžaduje:
 - PHP 7.4
-- MySQL 5
+- MySQL 8
 - Apache
 - Composer
 - Yarn
