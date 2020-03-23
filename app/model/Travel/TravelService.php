@@ -19,7 +19,7 @@ use Model\Travel\Passenger;
 use Model\Travel\Repositories\ICommandRepository;
 use Model\Travel\Repositories\IContractRepository;
 use Model\Travel\Repositories\IVehicleRepository;
-use Model\Travel\Travel\Type;
+use Model\Travel\Travel\TransportType;
 use Model\Travel\TravelNotFound;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFound;
@@ -27,6 +27,7 @@ use Model\Unit\Repositories\IUnitRepository;
 use Model\Utils\MoneyFactory;
 use Money\Money;
 use function array_map;
+use function array_merge;
 use function array_unique;
 
 class TravelService
@@ -158,7 +159,7 @@ class TravelService
         );
     }
 
-    public function addTravel(int $commandId, Type $transportType, Date $date, string $startPlace, string $endPlace, float $distanceOrPrice) : void
+    public function addTravel(int $commandId, TransportType $transportType, Date $date, string $startPlace, string $endPlace, float $distanceOrPrice) : void
     {
         $command = $this->commands->find($commandId);
 
@@ -178,7 +179,7 @@ class TravelService
         int $travelId,
         float $distanceOrPrice,
         Date $date,
-        Type $transportType,
+        TransportType $transportType,
         string $startPlace,
         string $endPlace
     ) : void {
@@ -361,7 +362,7 @@ class TravelService
             $fuelPrice,
             $amortization,
             $note,
-            array_unique($typesEntities + $command->getUsedTransportTypes()),
+            array_unique(array_merge($typesEntities, $command->getUsedTransportTypes())),
             $unit
         );
 
@@ -476,10 +477,10 @@ class TravelService
     /**
      * @param string[] $types
      *
-     * @return Type[]
+     * @return TransportType[]
      */
     private function typesToEntities(array $types) : array
     {
-        return array_map(fn(string $type) => Type::get($type), $types);
+        return array_map(fn(string $type) => TransportType::get($type), $types);
     }
 }

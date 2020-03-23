@@ -12,7 +12,7 @@ use function in_array;
  * @method static string[] getAvailableValues()
  * @method static static[] getAvailableEnums() : iterable()
  */
-final class Type extends Enum
+final class TransportType extends Enum
 {
     public const CAR           = 'car';
     public const BUS           = 'bus';

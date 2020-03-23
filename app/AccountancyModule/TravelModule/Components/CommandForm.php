@@ -8,7 +8,7 @@ use App\Forms\BaseForm;
 use App\MyValidators;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Travel\Passenger;
-use Model\Travel\Travel\Type;
+use Model\Travel\Travel\TransportType;
 use Model\TravelService;
 use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\Unit;
@@ -61,8 +61,8 @@ class CommandForm extends Control
         $vehicles = $this->model->getVehiclesPairs($this->unitId);
 
         $vehiclesWithFuel = array_map(
-            fn(Type $t) => $t->toString(),
-            array_filter(Type::getAvailableEnums(), fn(Type $t) => $t->hasFuel())
+            fn(TransportType $t) => $t->toString(),
+            array_filter(TransportType::getAvailableEnums(), fn(TransportType $t) => $t->hasFuel())
         );
 
         $form = new BaseForm();
@@ -281,7 +281,7 @@ class CommandForm extends Control
     {
         $options = [];
 
-        foreach (Type::getAvailableEnums() as $type) {
+        foreach (TransportType::getAvailableEnums() as $type) {
             $options[$type->toString()] = Html::el('option')
                 ->setAttribute('value', $type->toString())
                 ->setHtml($type->getLabel())

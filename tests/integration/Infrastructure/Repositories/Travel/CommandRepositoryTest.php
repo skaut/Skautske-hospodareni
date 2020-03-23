@@ -9,7 +9,7 @@ use DateTimeImmutable;
 use Doctrine\ORM\EntityManager;
 use IntegrationTest;
 use Model\Travel\Command;
-use Model\Travel\Travel\Type;
+use Model\Travel\Travel\TransportType;
 use Model\Travel\Vehicle;
 use Model\Utils\MoneyFactory;
 use Nette\Utils\Json;
@@ -45,7 +45,7 @@ class CommandRepositoryTest extends IntegrationTest
         'start_place' => 'Brno',
         'end_place' => 'Praha',
         'distance' => 205.0,
-        'type' => Type::CAR,
+        'type' => TransportType::CAR,
         'has_fuel' => 1,
         'start_date' => '2018-01-01',
     ];
@@ -56,7 +56,7 @@ class CommandRepositoryTest extends IntegrationTest
         'start_place' => 'Praha',
         'end_place' => 'Brno',
         'price' => 500.0,
-        'type' => Type::BUS,
+        'type' => TransportType::BUS,
         'has_fuel' => 0,
         'start_date' => '2018-01-01',
     ];
@@ -107,7 +107,7 @@ class CommandRepositoryTest extends IntegrationTest
                 'driver_contact' => '123456789',
                 'driver_address' => '---',
                 'next_travel_id' => 1,
-                'transport_types' => Json::encode([Type::CAR]),
+                'transport_types' => Json::encode([TransportType::CAR]),
                 'unit' => '',
             ];
 
@@ -160,7 +160,7 @@ class CommandRepositoryTest extends IntegrationTest
         $this->assertTrue($details1->getDate()->eq(new Date(self::VEHICLE_TRAVEL['start_date'])));
         $this->assertSame(self::VEHICLE_TRAVEL['start_place'], $details1->getStartPlace());
         $this->assertSame(self::VEHICLE_TRAVEL['end_place'], $details1->getEndPlace());
-        $this->assertSame(Type::get(self::VEHICLE_TRAVEL['type']), $details1->getTransportType());
+        $this->assertSame(TransportType::get(self::VEHICLE_TRAVEL['type']), $details1->getTransportType());
 
         /** @var Command\TransportTravel $transportTravel */
         $transportTravel = $travels[1];
@@ -171,7 +171,7 @@ class CommandRepositoryTest extends IntegrationTest
         $this->assertTrue($details2->getDate()->eq(new Date(self::TRANSPORT_TRAVEL['start_date'])));
         $this->assertSame(self::TRANSPORT_TRAVEL['start_place'], $details2->getStartPlace());
         $this->assertSame(self::TRANSPORT_TRAVEL['end_place'], $details2->getEndPlace());
-        $this->assertSame(Type::get(self::TRANSPORT_TRAVEL['type']), $details2->getTransportType());
+        $this->assertSame(TransportType::get(self::TRANSPORT_TRAVEL['type']), $details2->getTransportType());
     }
 
     public function testNextTravelId() : void

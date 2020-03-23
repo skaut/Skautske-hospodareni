@@ -12,7 +12,7 @@ use App\Forms\BaseForm;
 use Assert\Assertion;
 use Model\BaseService;
 use Model\Services\PdfRenderer;
-use Model\Travel\Travel\Type;
+use Model\Travel\Travel\TransportType;
 use Model\TravelService;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
@@ -143,7 +143,7 @@ class DefaultPresenter extends BasePresenter
         $template->setParameters([
             'command' => $command,
             'travels' => $travels,
-            'types' => array_map(fn(Type $t) => $t->getLabel(), $command->getTransportTypes()),
+            'types' => array_map(fn(TransportType $t) => $t->getLabel(), $command->getTransportTypes()),
             'vehicle' => $vehicleId !== null ? $this->travelService->findVehicle($vehicleId) : null,
         ]);
 
@@ -250,7 +250,7 @@ class DefaultPresenter extends BasePresenter
 
         $this->travelService->addTravel(
             $commandId,
-            Type::get($v->type),
+            TransportType::get($v->type),
             $v->start_date,
             $v->start_place,
             $v->end_place,

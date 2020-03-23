@@ -7,7 +7,7 @@ namespace Model\Infrastructure\Types;
 use Assert\Assertion;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Model\Travel\Travel\Type as TransportType;
+use Model\Travel\Travel\TransportType;
 use Nette\Utils\Json;
 use function array_map;
 

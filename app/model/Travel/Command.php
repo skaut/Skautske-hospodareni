@@ -11,7 +11,7 @@ use Model\Travel\Command\TransportTravel;
 use Model\Travel\Command\Travel;
 use Model\Travel\Command\TravelDetails;
 use Model\Travel\Command\VehicleTravel;
-use Model\Travel\Travel\Type;
+use Model\Travel\Travel\TransportType;
 use Model\Utils\MoneyFactory;
 use Money\Money;
 use function array_reduce;
@@ -128,7 +128,7 @@ class Command
     /**
      * @ORM\Column(type="transport_types")
      *
-     * @var Type[]
+     * @var TransportType[]
      */
     private $transportTypes;
 
@@ -139,7 +139,7 @@ class Command
     private $unit;
 
     /**
-     * @param Type[] $transportTypes
+     * @param TransportType[] $transportTypes
      */
     public function __construct(
         int $unitId,
@@ -171,7 +171,7 @@ class Command
     }
 
     /**
-     * @param Type[] $transportTypes
+     * @param TransportType[] $transportTypes
      */
     public function update(
         ?Vehicle $vehicle,
@@ -445,7 +445,7 @@ class Command
     /**
      * Returns all transport types that have at least one travel
      *
-     * @return Type[]
+     * @return TransportType[]
      */
     public function getUsedTransportTypes() : array
     {
@@ -465,7 +465,7 @@ class Command
     }
 
     /**
-     * @return Type[]
+     * @return TransportType[]
      */
     public function getTransportTypes() : array
     {
