@@ -15,6 +15,7 @@ use Model\Travel\Travel\Type;
 use Model\Utils\MoneyFactory;
 use Money\Money;
 use Throwable;
+use function in_array;
 
 class CommandTest extends Unit
 {
@@ -234,7 +235,7 @@ class CommandTest extends Unit
 
         foreach ($command->getUsedTransportTypes() as $type) {
             $this->assertInstanceOf(Type::class, $type);
-            $this->assertTrue (in_array ($type->getShortcut (), ['mov', 'auv', 'a']));
+            $this->assertTrue(in_array($type->getShortcut(), ['mov', 'auv', 'a']));
         }
     }
 
