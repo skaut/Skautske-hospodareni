@@ -7,8 +7,8 @@ namespace App\AccountancyModule\TravelModule\Components;
 use App\Forms\BaseForm;
 use App\MyValidators;
 use eGen\MessageBus\Bus\QueryBus;
-use Model\DTO\Travel\TravelType;
 use Model\Travel\Passenger;
+use Model\Travel\Travel\TransportType;
 use Model\TravelService;
 use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\Unit;
@@ -39,20 +39,16 @@ class CommandForm extends Control
     /** @var QueryBus */
     private $queryBus;
 
-    /** @var TravelType[] */
-    private $transportTypes;
-
     /** @var callable[] */
     public $onSuccess = [];
 
     public function __construct(int $unitId, ?int $commandId, TravelService $model, QueryBus $queryBus)
     {
         parent::__construct();
-        $this->unitId         = $unitId;
-        $this->commandId      = $commandId;
-        $this->model          = $model;
-        $this->queryBus       = $queryBus;
-        $this->transportTypes = $this->model->getTransportTypes();
+        $this->unitId    = $unitId;
+        $this->commandId = $commandId;
+        $this->model     = $model;
+        $this->queryBus  = $queryBus;
     }
 
     public function render() : void
@@ -64,17 +60,9 @@ class CommandForm extends Control
     {
         $vehicles = $this->model->getVehiclesPairs($this->unitId);
 
-        $vehiclesWithFuel = array_filter(
-            $this->transportTypes,
-            function (TravelType $t) {
-                return $t->hasFuel();
-            }
-        );
         $vehiclesWithFuel = array_map(
-            function (TravelType $t) {
-                return $t->getShortcut();
-            },
-            $vehiclesWithFuel
+            fn(TransportType $t) => $t->toString(),
+            array_filter(TransportType::getAvailableEnums(), fn(TransportType $t) => $t->hasFuel())
         );
 
         $form = new BaseForm();
@@ -256,7 +244,7 @@ class CommandForm extends Control
             MoneyFactory::fromFloat((float) $values->fuel_price),
             MoneyFactory::fromFloat((float) $values->amortization),
             $values->note,
-            $values->type,
+            array_map(fn(string $type) => TransportType::get($type), $values->type),
             $this->getPresenter()->getUser()->getId(),
             $values->unit
         );
@@ -277,7 +265,7 @@ class CommandForm extends Control
             MoneyFactory::fromFloat((float) $values->fuel_price),
             MoneyFactory::fromFloat((float) $values->amortization),
             $values->note,
-            $values->type,
+            array_map(fn(string $type) => TransportType::get($type), $values->type),
             $values->unit
         );
 
@@ -292,12 +280,12 @@ class CommandForm extends Control
     private function prepareTransportTypeOptions(array $disabledValues = []) : array
     {
         $options = [];
-        foreach ($this->transportTypes as $type) {
-            $option                        = Html::el('option')
-                ->setAttribute('value', $type->getShortcut())
+
+        foreach (TransportType::getAvailableEnums() as $type) {
+            $options[$type->toString()] = Html::el('option')
+                ->setAttribute('value', $type->toString())
                 ->setHtml($type->getLabel())
-                ->setAttribute('disabled', in_array($type->getShortcut(), $disabledValues, true));
-            $options[$type->getShortcut()] = $option;
+                ->setAttribute('disabled', in_array($type->toString(), $disabledValues, true));
         }
 
         return $options;

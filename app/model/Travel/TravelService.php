@@ -16,22 +16,19 @@ use Model\Travel\CommandNotFound;
 use Model\Travel\Contract;
 use Model\Travel\ContractNotFound;
 use Model\Travel\Passenger;
-use Model\Travel\ReadModel\Queries\TransportTypesQuery;
 use Model\Travel\Repositories\ICommandRepository;
 use Model\Travel\Repositories\IContractRepository;
-use Model\Travel\Repositories\ITypeRepository;
 use Model\Travel\Repositories\IVehicleRepository;
-use Model\Travel\Travel\Type;
+use Model\Travel\Travel\TransportType;
 use Model\Travel\TravelNotFound;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFound;
 use Model\Unit\Repositories\IUnitRepository;
 use Model\Utils\MoneyFactory;
 use Money\Money;
-use function array_filter;
 use function array_map;
+use function array_merge;
 use function array_unique;
-use function in_array;
 
 class TravelService
 {
@@ -47,9 +44,6 @@ class TravelService
     /** @var IUnitRepository */
     private $units;
 
-    /** @var ITypeRepository */
-    private $types;
-
     /** @var QueryBus */
     protected $queryBus;
 
@@ -58,14 +52,12 @@ class TravelService
         ICommandRepository $commands,
         IContractRepository $contracts,
         IUnitRepository $units,
-        ITypeRepository $types,
         QueryBus $queryBus
     ) {
         $this->vehicles  = $vehicles;
         $this->commands  = $commands;
         $this->contracts = $contracts;
         $this->units     = $units;
-        $this->types     = $types;
         $this->queryBus  = $queryBus;
     }
 
@@ -167,12 +159,11 @@ class TravelService
         );
     }
 
-    public function addTravel(int $commandId, string $type, Date $date, string $startPlace, string $endPlace, float $distanceOrPrice) : void
+    public function addTravel(int $commandId, TransportType $transportType, Date $date, string $startPlace, string $endPlace, float $distanceOrPrice) : void
     {
-        $command       = $this->commands->find($commandId);
-        $transportType = $this->types->find($type);
+        $command = $this->commands->find($commandId);
 
-        $details = new Command\TravelDetails($date, $transportType->getShortcut(), $startPlace, $endPlace);
+        $details = new Command\TravelDetails($date, $transportType, $startPlace, $endPlace);
 
         if ($transportType->hasFuel()) {
             $command->addVehicleTravel($distanceOrPrice, $details);
@@ -188,12 +179,11 @@ class TravelService
         int $travelId,
         float $distanceOrPrice,
         Date $date,
-        string $type,
+        TransportType $transportType,
         string $startPlace,
         string $endPlace
     ) : void {
-        $transportType = $this->types->find($type);
-        $details       = new Command\TravelDetails($date, $transportType->getShortcut(), $startPlace, $endPlace);
+        $details = new Command\TravelDetails($date, $transportType, $startPlace, $endPlace);
 
         $command = $this->commands->find($commandId);
 
@@ -214,22 +204,6 @@ class TravelService
         $command->removeTravel($travelId);
 
         $this->commands->save($command);
-    }
-
-    /**
-     * @return mixed[]
-     */
-    public function getTransportTypes() : array
-    {
-        return array_map(
-            [DTO\TypeFactory::class, 'create'],
-            $this->queryBus->handle(new TransportTypesQuery())
-        );
-    }
-
-    public function getTravelType(string $type) : DTO\TravelType
-    {
-        return DTO\TypeFactory::create($this->types->find($type));
     }
 
     /**     CONTRACTS    */
@@ -315,7 +289,7 @@ class TravelService
     }
 
     /**
-     * @param string[] $types
+     * @param TransportType[] $types
      */
     public function addCommand(
         int $unitId,
@@ -347,7 +321,7 @@ class TravelService
             $amortization,
             $note,
             $ownerId,
-            $this->typesToEntities($types),
+            $types,
             $unit
         );
 
@@ -355,7 +329,7 @@ class TravelService
     }
 
     /**
-     * @param string[] $types
+     * @param TransportType[] $types
      */
     public function updateCommand(
         int $id,
@@ -377,8 +351,6 @@ class TravelService
             ? $this->vehicles->find($vehicleId)
             : null;
 
-        $typesEntities = $this->typesToEntities($types);
-
         $command->update(
             $vehicle,
             $this->selectPassenger($passenger, $contractId),
@@ -388,7 +360,7 @@ class TravelService
             $fuelPrice,
             $amortization,
             $note,
-            array_unique($typesEntities + $command->getUsedTransportTypes()),
+            array_unique(array_merge($types, $command->getUsedTransportTypes())),
             $unit
         );
 
@@ -498,17 +470,5 @@ class TravelService
         return $contractId === null
             ? $passenger
             : Passenger::fromContract($this->contracts->find($contractId));
-    }
-
-    /**
-     * @param string[] $types
-     *
-     * @return Type[]
-     */
-    private function typesToEntities(array $types) : array
-    {
-        return array_filter($this->queryBus->handle(new TransportTypesQuery()), function (Type $t) use ($types) {
-            return in_array($t->getShortcut(), $types);
-        });
     }
 }

@@ -11,7 +11,7 @@ use Model\Travel\Command\TransportTravel;
 use Model\Travel\Command\Travel;
 use Model\Travel\Command\TravelDetails;
 use Model\Travel\Command\VehicleTravel;
-use Model\Travel\Travel\Type;
+use Model\Travel\Travel\TransportType;
 use Model\Utils\MoneyFactory;
 use Money\Money;
 use function array_reduce;
@@ -126,13 +126,9 @@ class Command
     private $ownerId = null;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Type::class)
-     * @ORM\JoinTable(name="tc_command_types",
-     *      joinColumns={@ORM\JoinColumn(name="commandId", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="typeId", referencedColumnName="type")}
-     *      )
+     * @ORM\Column(type="transport_types")
      *
-     * @var ArrayCollection|Type[]
+     * @var TransportType[]
      */
     private $transportTypes;
 
@@ -143,7 +139,7 @@ class Command
     private $unit;
 
     /**
-     * @param Type[] $transportTypes
+     * @param TransportType[] $transportTypes
      */
     public function __construct(
         int $unitId,
@@ -170,12 +166,12 @@ class Command
         $this->note             = $note;
         $this->travels          = new ArrayCollection();
         $this->ownerId          = $ownerId;
-        $this->transportTypes   = new ArrayCollection($transportTypes);
+        $this->transportTypes   = array_unique($transportTypes);
         $this->unit             = $unit;
     }
 
     /**
-     * @param Type[] $transportTypes
+     * @param TransportType[] $transportTypes
      */
     public function update(
         ?Vehicle $vehicle,
@@ -197,7 +193,7 @@ class Command
         $this->fuelPrice        = $fuelPrice;
         $this->amortization     = $amortization;
         $this->note             = $note;
-        $this->transportTypes   = new ArrayCollection($transportTypes);
+        $this->transportTypes   = array_unique($transportTypes);
         $this->unit             = $unit;
     }
 
@@ -449,15 +445,13 @@ class Command
     /**
      * Returns all transport types that have at least one travel
      *
-     * @return Type[]
+     * @return TransportType[]
      */
     public function getUsedTransportTypes() : array
     {
-        $types = $this->travels->map(function (Travel $travel) {
-            return $travel->getDetails()->getTransportType();
-        });
-
-        return array_unique($types->toArray());
+        return array_unique(
+            $this->travels->map(fn(Travel $travel) => $travel->getDetails()->getTransportType())->toArray()
+        );
     }
 
     private function getTravelId() : int
@@ -471,11 +465,11 @@ class Command
     }
 
     /**
-     * @return Type[]
+     * @return TransportType[]
      */
     public function getTransportTypes() : array
     {
-        return $this->transportTypes->toArray();
+        return $this->transportTypes;
     }
 
     public function getUnit() : string

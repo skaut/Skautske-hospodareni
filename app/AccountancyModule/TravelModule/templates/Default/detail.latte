@@ -32,7 +32,7 @@
     </div>
     <div class="col-sm-4">
         <h3>Prostředek</h3>
-        <b>Typ:</b> {foreach $command->transportTypes as $t} {$t->label}{if !$iterator->isLast()}, {/if} {/foreach}<br />
+        <b>Typ:</b> {foreach $command->transportTypes as $t} {$t->getLabel()}{if !$iterator->isLast()}, {/if} {/foreach}<br />
         {if $vehicle !== null}
             <b>Vozidlo:</b>
             <a n:href="Vehicle:detail $vehicle->id">{$vehicle->type} ({$vehicle->registration})</a>
@@ -87,7 +87,7 @@
                                 <a n:href="removeTravel! $command->id, $t->id" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu chcete smazat cestu?')" title="smazat cestu"><i class="far fa-trash-alt"></i></a>
                             </div>
                         </td>
-                        <td>{$types[$t->details->transportType]}</td>
+                        <td>{$types[$t->details->transportType->toString()]}</td>
                         <td class="text-right">{$t->details->date|date:"j. n. Y"}</td>
                         <td>{$t->details->startPlace}</td>
                         <td>{$t->details->endPlace}</td>

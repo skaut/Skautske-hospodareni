@@ -7,6 +7,7 @@ namespace App\AccountancyModule\TravelModule\Components;
 use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
 use Assert\Assertion;
+use Model\Travel\Travel\TransportType;
 use Model\TravelService;
 use Model\Utils\MoneyFactory;
 use Nette\Application\UI\Form;
@@ -89,7 +90,7 @@ final class EditTravelDialog extends BaseControl
         Assertion::notNull($travel);
 
         $form->setDefaults([
-            'type' => $travel->getDetails()->getTransportType(),
+            'type' => $travel->getDetails()->getTransportType()->getLabel(),
             'date' => $travel->getDetails()->getDate(),
             'startPlace' => $travel->getDetails()->getStartPlace(),
             'endPlace' => $travel->getDetails()->getEndPlace(),
@@ -110,7 +111,7 @@ final class EditTravelDialog extends BaseControl
             $travelId,
             (float) $values->distanceOrPrice,
             $values->date,
-            $values->type,
+            TransportType::get($values->type),
             $values->startPlace,
             $values->endPlace
         );

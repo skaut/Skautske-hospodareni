@@ -17,7 +17,7 @@ use function sprintf;
 class TransportTravel extends Travel
 {
     /**
-     * @ORM\Column(type="money", name="distance")
+     * @ORM\Column(type="money")
      *
      * @var Money
      */
