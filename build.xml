@@ -186,7 +186,7 @@
     <target name="deploy:app-command">
         <phingcall target="deploy:ssh">
             <property name="command"
-                      value="php73-cli &quot;${deploy.release}/www/index.php ${command}&quot;"/>
+                      value="php74-cli &quot;${deploy.release}/www/index.php ${command}&quot;"/>
         </phingcall>
     </target>
 
