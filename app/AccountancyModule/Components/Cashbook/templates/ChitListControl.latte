@@ -50,22 +50,19 @@
                     {php $balance += $isIncome ? $chit->amount->toFloat() : -$chit->amount->toFloat()}
                     {var $itemsCount = count($chit->items)}
                     <tr>
-                        <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} class="nowrap">
-                            <input type="checkbox" class="hidden-xs hidden-sm" name="chits-{$paymentMethod}[]" value={$chit->id}/>
-                            <a n:if="$isCash"
-                                    href="{plink :Accountancy:CashbookExport:printChits $cashbookId, [$chit->id]}"
-                                    target="_blank"
-                                    class="btn btn-xs btn-info hidden-xs hidden-sm"><i
-                                        class="glyphicon glyphicon-print"></i></a>
-                            <a class="ajax btn btn-xs btn-info hidden-xs hidden-sm" n:href="chitScan:open! $chit->id" title="Skeny dokladů">
-                                <i class="fa fa-folder-open"></i>
-                            </a>
-                            <a n:if="$isEditable && ! $chit->locked" n:href="edit! $chit->id"
-                                    class="ajax btn btn-xs btn-primary ui--editChit"><i class="glyphicon glyphicon-edit"></i></a>
-
-                            <a n:if="$isEditable && ! $chit->locked" n:href="remove! $chit->id"
-                                    onclick="return confirm('Opravdu chcete smazat paragon?')"
-                                    class="btn btn-danger btn-xs ui--removeChit"><i class="glyphicon glyphicon-remove"></i></a>
+                        <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} style="white-space:nowrap">
+                            <input type="checkbox" class="d-none d-lg-inline" name="chits-{$paymentMethod}[]" value={$chit->id}/>
+                            <div class="btn-group">
+                                <a n:if="$isCash"
+                                        href="{plink :Accountancy:CashbookExport:printChits $cashbookId, [$chit->id]}"
+                                        target="_blank"
+                                        class="btn btn-sm btn-info d-none d-lg-inline"><i
+                                            class="fas fa-print"></i></a>
+                                <a class="ajax btn btn-sm btn-info d-none d-md-inline" n:href="chitScan:open! $chit->id" title="Skeny dokladů">
+                                    <i class="far fa-folder-open"></i>
+                                </a>
+                                <a n:if="$isEditable && ! $chit->locked" n:href="edit! $chit->id"
+                                        class="ajax btn btn-sm btn-primary ui--editChit"><i class="far fa-edit"></i></a>
 
                             <a n:if="$isEditable && $chit->locked" n:href="showLocked" title="Paragon je uzamčen."
                                     class="btn btn-warning btn-xs"><i class="glyphicon glyphicon-lock"></i></a>
