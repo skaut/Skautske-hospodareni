@@ -35,24 +35,29 @@
 
             <div class="collapse navbar-collapse" id="navbarMain">
                 <ul class="navbar-nav mr-auto">
-                    <li n:class="nav-item, $module === 'Event' ? active">
-                        <a class="nav-link" href="{$linkGenerator->link('Accountancy:Event:Default:')}">Akce</a>
-                    </li>
-                    <li n:class="nav-item, $module === 'Camp' ? active">
-                        <a class="nav-link" n:href=":Accountancy:Camp:Default:">Tábory</a>
-                    </li>
-                    <li n:class="nav-item, $module === 'Travel' ? active">
-                        <a class="nav-link" n:href=":Accountancy:Travel:Default:">Cesťáky</a>
-                    </li>
-                    <li n:class="nav-item, $module === 'UnitAccount' ? active">
-                        <a class="nav-link" n:href=":Accountancy:UnitAccount:Cashbook:">Jednotka</a>
-                    </li>
-                    <li n:class="nav-item, $module === 'Payment' ? active">
-                        <a class="nav-link" n:href=":Accountancy:Payment:GroupList:">Platby</a>
-                    </li>
+                    {if $user->isLoggedIn()}
+                        <li n:class="nav-item, $module === 'Event' ? active">
+                            <a class="nav-link" href="{$linkGenerator->link('Accountancy:Event:Default:')}">Akce</a>
+                        </li>
+                        <li n:class="nav-item, $module === 'Camp' ? active">
+                            <a class="nav-link" n:href=":Accountancy:Camp:Default:">Tábory</a>
+                        </li>
+                        <li n:class="nav-item, $module === 'Travel' ? active">
+                            <a class="nav-link" n:href=":Accountancy:Travel:Default:">Cesťáky</a>
+                        </li>
+                        <li n:class="nav-item, $module === 'UnitAccount' ? active">
+                            <a class="nav-link" n:href=":Accountancy:UnitAccount:Cashbook:">Jednotka</a>
+                        </li>
+                        <li n:class="nav-item, $module === 'Payment' ? active">
+                            <a class="nav-link" n:href=":Accountancy:Payment:GroupList:">Platby</a>
+                        </li>
+                    {else}
+                        <li n:class="nav-item, $presenter->isLinkCurrent(':Default:about') ? active">
+                            <a class="nav-link" n:href=":Default:about">O projektu</a>
+                        </li>
+                    {/if}
                 </ul>
                 <div class="my-2 my-lg-0">
-
                     {control loginPanel}
                 </div>
             </div>
