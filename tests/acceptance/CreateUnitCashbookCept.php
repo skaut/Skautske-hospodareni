@@ -15,7 +15,7 @@ function fillModalAndSubmit(AcceptanceTester $I, int $year) : void
 {
     $I->waitForText('Vyberte rok');
     $I->selectOption('Rok', $year);
-    $I->click('//input[@value="Založit" and @type="button"]');
+    $I->click('//input[@value="Založit"]');
 
     $I->see('Pokladní kniha byla vytvořena');
     $I->see($year);
