@@ -47,17 +47,18 @@ final class LoginPanel extends BaseControl
     public function render() : void
     {
         $this->template->setFile(__DIR__ . '/templates/LoginPanel.latte');
+        if ($this->user->isLoggedIn()) {
+            $roles = [];
 
-        $roles = [];
+            foreach ($this->userService->getAllSkautisRoles() as $role) {
+                $roles[$role->ID] = isset($role->RegistrationNumber) ? $role->RegistrationNumber . ' - ' . $role->Role : $role->Role;
+            }
 
-        foreach ($this->userService->getAllSkautisRoles() as $role) {
-            $roles[$role->ID] = isset($role->RegistrationNumber) ? $role->RegistrationNumber . ' - ' . $role->Role : $role->Role;
+            $this->template->setParameters([
+                'roles' => $roles,
+                'currentRoleId' => $this->userService->getRoleId(),
+            ]);
         }
-
-        $this->template->setParameters([
-            'roles' => $roles,
-            'currentRoleId' => $this->userService->getRoleId(),
-        ]);
 
         $this->template->render();
     }

@@ -1,16 +1,20 @@
-<span id="timer" class="mr-3 text-white w-auto small p-1 rounded">
-    <i class="far fa-clock"></i>
-    <span id="timer-minutes"></span>
-</span>
-
-<span class="dropdown">
-    <button class="btn btn-light btn-sm dropdown-toggle border-0 mr-sm-3 ui--current-role" type="button"
-            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        {$roles[$currentRoleId]}
-    </button>
-    <span class="dropdown-menu" n:inner-foreach="$roles as $roleId => $roleName">
-        <a n:class="dropdown-item, $roleId === $currentRoleId ? disabled" n:href="changeRole! $roleId">{$roleName}</a>
+{if $user->isLoggedIn()}
+    <span id="timer" class="mr-3 text-white w-auto small p-1 rounded">
+        <i class="far fa-clock"></i>
+        <span id="timer-minutes"></span>
     </span>
-</span>
 
-<a href="{plink :Auth:logoutSis}" class="btn btn-sm btn-secondary my-2 my-sm-0">Odhlásit se</a>
+    <span class="dropdown">
+        <button class="btn btn-light btn-sm dropdown-toggle border-0 mr-sm-3 ui--current-role" type="button"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {$roles[$currentRoleId]}
+        </button>
+        <span class="dropdown-menu" n:inner-foreach="$roles as $roleId => $roleName">
+            <a n:class="dropdown-item, $roleId === $currentRoleId ? disabled" n:href="changeRole! $roleId">{$roleName}</a>
+        </span>
+    </span>
+
+    <a href="{plink :Auth:logoutSis}" class="btn btn-sm btn-secondary my-2 my-sm-0">Odhlásit se</a>
+{else}
+    <a href="{plink :Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL}" class="btn btn-sm btn-secondary my-2 my-sm-0">Přihlásit se</a>
+{/if}
