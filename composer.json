@@ -33,7 +33,6 @@
         "nette/caching": " ~2.4",
         "nette/component-model": " ~2.3",
         "nette/di": " ~2.4",
-        "nette/finder": "^2.5",
         "nette/forms": " ~2.4",
         "nette/http": " ~2.4",
         "nette/mail": " ~2.4",

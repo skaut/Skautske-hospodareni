@@ -7,8 +7,10 @@ namespace App\Console;
 use Nette\Bridges\ApplicationLatte\ILatteFactory;
 use Nette\Bridges\ApplicationLatte\UIMacros;
 use Nette\Bridges\FormsLatte\FormMacros;
-use Nette\Utils\Finder;
 use Nette\Utils\Strings;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use RegexIterator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -45,8 +47,13 @@ final class LintLatte extends Command
 
         $appDir = realpath($this->appDir);
 
-        foreach (Finder::findFiles('*.latte')->from($appDir) as $filePath => $_) {
-            $shortPath = Strings::substring(realpath($filePath), Strings::length(realpath($appDir)));
+        $latteFiles = new RegexIterator(
+            new RecursiveIteratorIterator(new RecursiveDirectoryIterator(realpath($appDir))),
+            '~.latte$~'
+        );
+
+        foreach ($latteFiles as $filePath => $_) {
+            $shortPath = Strings::substring($filePath, Strings::length($appDir));
 
             $output->writeln(sprintf('<fg=yellow>Compiling %s...</>', $shortPath));
             $latte->compile($filePath);
