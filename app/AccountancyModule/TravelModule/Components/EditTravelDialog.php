@@ -90,7 +90,7 @@ final class EditTravelDialog extends BaseControl
         Assertion::notNull($travel);
 
         $form->setDefaults([
-            'type' => $travel->getDetails()->getTransportType()->getLabel(),
+            'type' => $travel->getDetails()->getTransportType()->toString(),
             'date' => $travel->getDetails()->getDate(),
             'startPlace' => $travel->getDetails()->getStartPlace(),
             'endPlace' => $travel->getDetails()->getEndPlace(),
