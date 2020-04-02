@@ -13,12 +13,8 @@ use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
 use function array_filter;
-use function array_merge;
 use function bdump;
-use function count;
-use function in_array;
-use function property_exists;
-use function strcasecmp;
+use function sprintf;
 use function usort;
 
 /**
@@ -27,6 +23,18 @@ use function usort;
  */
 final class ParticipantList extends BaseControl
 {
+    private const SORT_OPTIONS = [
+        'displayName' => 'Jméno',
+        'unitRegistrationNumber' => 'Jednotka',
+        'onAccount' => 'Na účet?',
+        'days' => 'Dnů',
+        'payment' => 'Částka',
+        'repayment' => 'Vratka',
+        'birthday' => 'Věk',
+    ];
+
+    private const DEFAULT_SORT = 'displayName';
+
     /** @var int */
     public $aid;
 
@@ -92,17 +100,9 @@ final class ParticipantList extends BaseControl
     {
         $this->redrawControl(); // Always redraw
 
-        $this->sortParticipants($this->currentParticipants, $this->sort);
+        $this->sortParticipants($this->currentParticipants, $this->sort ?? self::DEFAULT_SORT);
 
-        $sortOptions = [
-            'displayName' => 'Jméno',
-            'unitRegistrationNumber' => 'Jednotka',
-            'onAccount' => 'Na účet?',
-            'days' => 'Dnů',
-            'payment' => 'Částka',
-            'repayment' => 'Vratka',
-            'birthday' => 'Věk',
-        ];
+        $sortOptions = self::SORT_OPTIONS;
         if (! $this->isAllowRepayment) {
             unset($sortOptions['repayment']);
         }
@@ -129,31 +129,13 @@ final class ParticipantList extends BaseControl
     /**
      * @param Participant[] $participants
      */
-    protected function sortParticipants(array &$participants, ?string $sort) : void
+    protected function sortParticipants(array &$participants, string $sort) : void
     {
-        $textItems   = ['unitRegistrationNumber', 'onAccount'];
-        $numberItems = ['days', 'payment', 'repayment', 'birthday'];
-        if (count($participants) <= 0) {
-            return;
+        if (! isset(self::SORT_OPTIONS[$sort])) {
+            throw new BadRequestException(sprintf('Unknown sort option "%s"', $sort), 400);
         }
 
-        if ($sort === null || ! in_array($sort, array_merge($textItems, $numberItems)) || ! (property_exists($participants[0], $sort) || isset($participants[0]->{$sort}))) {
-            $sort = 'displayName'; //default sort
-        }
-        $isNumeric = in_array($sort, $numberItems);
-        usort(
-            $participants,
-            function (Participant $a, Participant $b) use ($sort, $isNumeric) {
-                if (! (property_exists($a, $sort) || isset($a->{$sort}))) {
-                    return true;
-                }
-                if (! (property_exists($b, $sort) || isset($b->{$sort}))) {
-                    return false;
-                }
-
-                return $isNumeric ? $a->{$sort} > $b->{$sort} : strcasecmp($a->{$sort} ?? '', $b->{$sort} ?? '');
-            }
-        );
+        usort($participants, fn(Participant $a, Participant $b) => $a->{$sort} <=> $b->{$sort});
     }
 
     public function handleSort(string $sort) : void
