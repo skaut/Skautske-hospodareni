@@ -1,8 +1,7 @@
 {block #title}{$event->getDisplayName()} - seznam účastníků{/block}
 
 {block #content}
-{include ../ActionMenu.latte}
-<h2>{$event->getDisplayName()}</h2>
+{include ../header.latte}
 
 <div class="row">
     <div class="col-sm-5" n:inner-if="$canAddParticipants">

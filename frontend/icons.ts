@@ -62,6 +62,8 @@ library.add(
     far.faClock,
     far.faEdit,
     far.faEnvelopeOpen,
+    far.faFileExcel,
+    far.faFilePdf,
     far.faFrownOpen,
     far.faListAlt,
     far.faTimesCircle,

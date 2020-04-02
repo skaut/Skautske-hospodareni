@@ -91,6 +91,8 @@ class ParticipantPresenter extends BasePresenter
 
     public function renderDefault(int $aid, ?int $uid = null, bool $dp = false, ?string $sort = null, bool $regNums = false) : void
     {
+        $this->setLayout('layout2');
+
         $authorizator = $this->authorizator;
 
         if (! $authorizator->isAllowed(Camp::ACCESS_PARTICIPANTS, $aid)) {

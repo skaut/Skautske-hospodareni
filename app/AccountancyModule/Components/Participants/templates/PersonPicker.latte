@@ -14,8 +14,8 @@
                 </ul>
             </div>
 
-            <a n:href="this directMemberOnly => !$directMemberOnly" class="ajax btn btn-primary btn-sm" rel="tooltip" data-original-title="Zobrazit členy i z podřízených jednotek?">
-                Podřízené? <i class="glyphicon {if !$directMemberOnly}glyphicon-ok{else}glyphicon-ban-circle{/if}"></i>
+            <a n:href="this directMemberOnly => !$directMemberOnly" class="btn btn-primary btn-sm" rel="tooltip" data-original-title="Zobrazit členy i z podřízených jednotek?">
+                Podřízené? <i n:class="fas, $directMemberOnly ? 'fa-times' : 'fa-check'"></i>
             </a>
 
             <a class="btn btn-primary btn-sm" href="#addParticipant" data-toggle="modal">Nový účastník</a>
@@ -25,9 +25,9 @@
                 <thead class="onlyWithUnitPersons">
                 <tr>
                     <th class="nowrap">
-                        <input type="checkbox" class="hidden-xs" id="personIds-all" name="personIds-all" onclick="jqCheckAll(this.id, 'personIds')" />
+                        <input type="checkbox" class="hidden-xs" data-dependent-checkboxes=".personPicker-person">
                         <button n:name="send" title="Přidat vybrané" class="btn btn-primary btn-sm dependentButtonList hidden-xs" type="submit">
-                            <i class="glyphicon glyphicon-plus"></i>
+                            <i class="fas fa-plus"></i>
                         </button>
                     </th>
                     <th>Příjmení a jméno</th>
@@ -36,9 +36,9 @@
                 <tbody>
                 {if count($form['personIds']->items) > 0}
                     <tr n:foreach="$form['personIds']->items as $id => $name">
-                        <td>
+                        <td class="personPicker-person">
                             <input n:name="personIds:$id" class="hidden-xs" id="personIds-{$id}">
-                            <a n:href="add! $id" class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-plus"></i></a>
+                            <a n:href="add! $id" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i></a>
                         </td>
                         <td><label n:name="personIds:$id">{$name}</label></td>
                     </tr>
