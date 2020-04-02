@@ -177,18 +177,24 @@ final class ParticipantList extends BaseControl
         $form = new BaseForm();
 
         $editCon = $form->addContainer('edit');
-        $editCon->addText('days', 'Dní');
-        $editCon->addText('payment', 'Částka');
-        $editCon->addText('repayment', 'Vratka');
+
+        $editCon->addText('days', 'Dní')
+            ->setNullable()
+            ->setAttribute('placeholder', 'Ponechat původní hodnotu');
+
+        $editCon->addText('payment', 'Částka')
+            ->setNullable()
+            ->setAttribute('placeholder', 'Ponechat původní hodnotu');
+
+        $editCon->addText('repayment', 'Vratka')
+            ->setNullable()
+            ->setAttribute('placeholder', 'Ponechat původní hodnotu');
 
         $form->addCheckboxList('participantIds', null, array_map(fn() => '', $this->participantsById()))
             ->setRequired('Musíte vybrat některého z účastníků');
 
-        $editCon->addRadioList('isAccount', 'Na účet?', ['N' => 'Ne', 'Y' => 'Ano']);
-        $editCon->addCheckbox('daysc');
-        $editCon->addCheckbox('paymentc');
-        $editCon->addCheckbox('repaymentc');
-        $editCon->addCheckbox('isAccountc'); //->setDefaultValue(TRUE);
+        $editCon->addRadioList('isAccount', 'Na účet?', ['N' => 'Ne', 'Y' => 'Ano', '' => 'Ponechat původní hodnotu'])
+            ->setDefaultValue('');
         $editCon->addSubmit('send', 'Upravit')
             ->setAttribute('class', 'btn btn-info btn-small')
             ->onClick[] = [$this, 'massEditSubmitted'];
@@ -210,16 +216,16 @@ final class ParticipantList extends BaseControl
 
         $changes = [];
         foreach ($button->getForm()->getValues()->participantIds as $participantId) {
-            if ($values['daysc']) {
+            if ($values['days'] !== null) {
                 $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_DAYS, $values['days']);
             }
-            if ($values['paymentc']) {
+            if ($values['payment'] !== null) {
                 $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_PAYMENT, $values['payment']);
             }
-            if ($values['repaymentc']) {
+            if ($values['repayment'] !== null) {
                 $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_REPAYMENT, $values['repayment']);
             }
-            if (! $values['isAccountc']) {
+            if ($values['isAccount'] === '') {
                 continue;
             }
 

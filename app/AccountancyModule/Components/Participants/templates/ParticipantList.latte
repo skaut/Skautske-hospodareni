@@ -13,42 +13,38 @@ $showUnits bool - zobrazovat číslo jednotky
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
+                        <h5 class="modal-title">Hromadné nastavení</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"> &times; </span></button>
-                        <h2>Hromadné nastavení</h2>
                     </div>
 
                     {formContainer edit}
                         <div class="modal-body">
-                            <table>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td><b>Upravit?</b></td>
-                                </tr>
-                                <tr class="form-group">
-                                    <td>{label days class=>"ca" /}</td>
-                                    <td>{input days class=>"form-control", style=>"width:60px"}</td>
-                                    <td class="ct">{input daysc}</td>
-                                </tr>
-                                <tr class="form-group">
-                                    <td>{label payment /}</td>
-                                    <td>{input payment class=>"form-control", style=>"width:60px"}</td>
-                                    <td class="ct">{input paymentc}</td>
-                                </tr>
-                                <tr class="form-group" n:if="$isAllowRepayment">
-                                    <td>{label repayment /}</td>
-                                    <td>{input repayment class=>"form-control", style=>"width:60px"}</td>
-                                    <td class="ct">{input repaymentc}</td>
-                                </tr>
-                                <tr class="form-group" n:if="$isAllowIsAccount">
-                                    <td>{label isAccount /}</td>
-                                    <td>{input isAccount class=>"form-control"}</td>
-                                    <td style="text-align: center;">{input isAccountc}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2">{input send}</td>
-                                </tr>
-                            </table>
+                            <div class="form-group">
+                                <label n:name="days"/>
+                                <input n:name="days" class="form-control">
+                            </div>
+
+                            <div class="form-group">
+                                <label n:name="payment"/>
+                                <input n:name="payment" class="form-control">
+                            </div>
+
+                            <div class="form-group" n:if="$isAllowRepayment">
+                                <label n:name="repayment"/>
+                                <input n:name="repayment" class="form-control">
+                            </div>
+
+                            <div class="form-group" n:if="$isAllowIsAccount">
+                                <label n:name="isAccount"/>
+                                <div n:foreach="$form['edit']['isAccount']->items as $key => $label" class="form-check">
+                                    <label>
+                                        <input class="form-check-input" n:name="isAccount:$key">
+                                        {$label}
+                                    </label>
+                                </div>
+                            </div>
+
+                            <input n:name="send" class="btn btn-primary">
                         </div>
                     {/formContainer}
                 </div>
@@ -143,7 +139,7 @@ $showUnits bool - zobrazovat číslo jednotky
                         <td><label for="massParticipants-{$p->id}">{$p->displayName}</label></td>
                         <td n:if="$showUnits">{ifset $p->unitRegistrationNumber}{$p->unitRegistrationNumber}{/ifset}</td>
                         <td class="text-right">{$p->days}</td>
-                        <td class="text-right">{$p->payment|price:false}</td>
+                        <td class="text-right">{$p->payment|price:false}{php $totalPayment += $p->payment}</td>
                         <td class="text-right" n:if="$isAllowRepayment">{$p->repayment|price:false}{php $totalRepayment += $p->repayment}</td>
                         <td n:if="$isAllowIsAccount">{$p->onAccount === 'Y' ? 'Ano'}</td>
                         <td n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete" class="text-center">
