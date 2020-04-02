@@ -10,10 +10,9 @@ use Model\DTO\Participant\Participant;
 use Model\DTO\Participant\UpdateParticipant;
 use Model\EventEntity;
 use Nette\Application\BadRequestException;
-use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
 use function array_filter;
-use function bdump;
+use function array_map;
 use function sprintf;
 use function usort;
 
@@ -181,6 +180,10 @@ final class ParticipantList extends BaseControl
         $editCon->addText('days', 'Dní');
         $editCon->addText('payment', 'Částka');
         $editCon->addText('repayment', 'Vratka');
+
+        $form->addCheckboxList('participantIds', null, array_map(fn() => '', $this->participantsById()))
+            ->setRequired('Musíte vybrat některého z účastníků');
+
         $editCon->addRadioList('isAccount', 'Na účet?', ['N' => 'Ne', 'Y' => 'Ano']);
         $editCon->addCheckbox('daysc');
         $editCon->addCheckbox('paymentc');
@@ -202,12 +205,11 @@ final class ParticipantList extends BaseControl
             $this->flashMessage('Nemáte právo upravovat účastníky.', 'danger');
             $this->redirect('Default:');
         }
+
         $values = $button->getForm()->getValues()['edit'];
-        bdump($values);
 
         $changes = [];
-        foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massParticipants[]') as $participantId) {
-            $participantId = (int) $participantId;
+        foreach ($button->getForm()->getValues()->participantIds as $participantId) {
             if ($values['daysc']) {
                 $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_DAYS, $values['days']);
             }
@@ -236,10 +238,24 @@ final class ParticipantList extends BaseControl
         }
 
         $ids = [];
-        foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massParticipants[]') as $participantId) {
-            $ids[] = (int) $participantId;
+        foreach ($button->getForm()->getValues()->participantIds as $participantId) {
+            $ids[] = $participantId;
         }
         $this->onRemove($ids);
         $this->reload('Účastníci byli odebráni');
+    }
+
+    /**
+     * @return array<int, Participant> Participant's indexed by their ID
+     */
+    private function participantsById() : array
+    {
+        $participants = [];
+
+        foreach ($this->currentParticipants as $participant) {
+            $participants[$participant->getId()] = $participant;
+        }
+
+        return $participants;
     }
 }

@@ -138,7 +138,7 @@ $showUnits bool - zobrazovat číslo jednotky
                     <tr n:foreach="$participants as $p" id='par-list-row-{$p->id}' data-pid='{$p->id}'>
                         {php $participantsNames[] = $p->displayName}
                         <td n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete" class="text-center participantCheckbox">
-                            <input type="checkbox" name="massParticipants[]" id="massParticipants-{$p->id}" class="participantCheckboxInput" value={$p->id}/>
+                            <input n:name="participantIds:$p->id" class="participantCheckboxInput">
                         </td>
                         <td><label for="massParticipants-{$p->id}">{$p->displayName}</label></td>
                         <td n:if="$showUnits">{ifset $p->unitRegistrationNumber}{$p->unitRegistrationNumber}{/ifset}</td>
