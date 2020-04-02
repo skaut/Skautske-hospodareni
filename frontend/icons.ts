@@ -19,6 +19,7 @@ library.add(
     fas.faClipboardList,
     fas.faCloudUploadAlt,
     fas.faEye,
+    fas.faEyeSlash,
     fas.faExclamationTriangle,
     fas.faFileContract,
     fas.faHistory,

@@ -27,3 +27,34 @@ export function initializeCheckAllCheckboxes(container: Element, selectorAttribu
         });
     });
 }
+
+function toggleElement(element: Element, visibility: boolean): void {
+    if (visibility) {
+        element.classList.remove('d-none');
+    } else {
+        element.classList.add('d-none');
+    }
+}
+
+export function initializeCheckboxToggle(container: Element, visibleIfCheckedAttribute: string, visibleIfNotCheckedAttribute: string): void {
+    const toggles = {
+        [visibleIfCheckedAttribute]:
+            (element: Element, allUnchecked: boolean) => toggleElement(element, ! allUnchecked),
+        [visibleIfNotCheckedAttribute]:
+            (element: Element, allUnchecked: boolean) => toggleElement(element, allUnchecked)
+    };
+
+    Object.entries(toggles).forEach(([selectorAttribute, toggle]) => {
+        container.querySelectorAll(`[${selectorAttribute}]`).forEach(element => {
+            const checkboxes = [...container.querySelectorAll<HTMLInputElement>(element.getAttribute(selectorAttribute) as string)];
+
+            toggle(element, checkboxes.every(c => ! c.checked));
+
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    toggle(element, checkboxes.every(c => ! c.checked));
+                })
+            });
+        });
+    });
+}
