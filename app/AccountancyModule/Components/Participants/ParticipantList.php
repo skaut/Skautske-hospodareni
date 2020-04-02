@@ -173,19 +173,6 @@ final class ParticipantList extends BaseControl
         $this->reload('Účastník byl odebrán', 'success');
     }
 
-    public function handleEditField(?int $aid = null, ?int $participantId = null, ?string $field = null, ?string $value = null) : void
-    {
-        if ($aid === null || $participantId === null || $field === null || $value === null) {
-            throw new BadRequestException();
-        }
-
-        if (! $this->isAllowParticipantUpdate) {
-            $this->reload('Nemáte právo upravovat účastníky.', 'danger');
-        }
-        $this->onUpdate([new UpdateParticipant($aid, $participantId, $field, $value)]);
-        $this->reload();
-    }
-
     public function createComponentFormMassParticipants() : BaseForm
     {
         $form = new BaseForm();
