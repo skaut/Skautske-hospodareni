@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\CampModule\Components;
 
-use App\AccountancyModule\Components\BaseControl;
+use App\AccountancyModule\Components\Dialog;
 use App\AccountancyModule\ExcelResponse;
 use App\Forms\BaseForm;
 use Cake\Chronos\Date;
@@ -16,16 +16,12 @@ use Nette\Utils\ArrayHash;
 use function sprintf;
 use function uasort;
 
-final class ExportDialog extends BaseControl
+final class ExportDialog extends Dialog
 {
-    /** @var bool @persistent */
-    public $opened = false;
-
     /** @var CampListItem[] */
-    private $camps;
+    private array $camps;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     /**
      * @param CampListItem[] $camps
@@ -39,16 +35,12 @@ final class ExportDialog extends BaseControl
 
     public function handleOpen() : void
     {
-        $this->opened = true;
-        $this->redrawControl();
+        $this->show();
     }
 
-    public function render() : void
+    protected function beforeRender() : void
     {
         $this->template->setFile(__DIR__ . '/templates/ExportDialog.latte');
-        $this->template->setParameters(['renderModal' => $this->opened]);
-
-        $this->template->render();
     }
 
     protected function createComponentForm() : BaseForm

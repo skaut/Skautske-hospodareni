@@ -69,7 +69,7 @@ class Payment
 
     public function submitPayment() : void
     {
-        $this->tester->click('Přidat platbu', '.modal-dialog');
+        $this->tester->click('Přidat platbu', '.modal-footer');
         $this->tester->waitForElementNotVisible('.modal-dialog');
         $this->tester->wait(3);
         $this->tester->waitForElementClickable('(//a[text()=\'Přidat platbu\'])');

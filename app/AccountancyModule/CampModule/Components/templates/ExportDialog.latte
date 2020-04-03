@@ -1,33 +1,22 @@
-<div n:snippet n:inner-if="$renderModal" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Exportovat souhrn táborů</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Vyberte tábory, které chcete exportovat.
+{layout $layout}
 
-                <div class="mt-2 ml-2">
-                    <div class="form-check mb-1">
-                        <input type="checkbox" class="form-check-input" id="export-check-all"
-                               data-dependent-checkboxes=".export-dependent-checkboxes">
-                        <label for="export-check-all" class="font-weight-bold">Vybrat vše</label>
-                    </div>
-                    <form n:name="form" class="export-dependent-checkboxes">
-                        <div class="form-check" n:foreach="$form['campIds']->items as $key => $label">
-                            <input n:name="campIds:$key" class="form-check-input">
-                            <label n:name="campIds:$key" class="form-check-label">{$label}</label>
-                        </div>
-                        <input n:name="download" class="btn btn-primary">
-                    </form>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-dismiss="modal">Storno</button>
-            </div>
+{block dialog-title}Exportovat souhrn táborů{/block}
+
+{block dialog-body}
+    Vyberte tábory, které chcete exportovat.
+
+    <div class="mt-2 ml-2">
+        <div class="form-check mb-1">
+            <input type="checkbox" class="form-check-input" id="export-check-all"
+                   data-dependent-checkboxes=".export-dependent-checkboxes">
+            <label for="export-check-all" class="font-weight-bold">Vybrat vše</label>
         </div>
+        <form n:name="form" class="export-dependent-checkboxes">
+            <div class="form-check" n:foreach="$form['campIds']->items as $key => $label">
+                <input n:name="campIds:$key" class="form-check-input">
+                <label n:name="campIds:$key" class="form-check-label">{$label}</label>
+            </div>
+            <input n:name="download" class="btn btn-primary">
+        </form>
     </div>
-</div>
+{/block}

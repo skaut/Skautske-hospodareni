@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\PaymentModule\Components;
 
-use App\AccountancyModule\Components\BaseControl;
+use App\AccountancyModule\Components\Dialog;
 use App\Forms\BaseForm;
 use Assert\Assertion;
 use eGen\MessageBus\Bus\CommandBus;
@@ -18,7 +18,7 @@ use Nette\Utils\ArrayHash;
 /**
  * @method void onSuccess()
  */
-final class PaymentDialog extends BaseControl
+final class PaymentDialog extends Dialog
 {
     /** @var callable[] */
     public $onSuccess = [];
@@ -28,12 +28,6 @@ final class PaymentDialog extends BaseControl
      * @var int
      */
     public $paymentId = -1;
-
-    /**
-     * @persistent
-     * @var bool
-     */
-    public $open = false;
 
     /** @var int */
     private $groupId;
@@ -55,21 +49,17 @@ final class PaymentDialog extends BaseControl
     public function handleOpen(int $paymentId = -1) : void
     {
         $this->paymentId = $paymentId;
-        $this->open      = true;
 
-        $this->redrawControl();
+        $this->show();
     }
 
-    public function render() : void
+    protected function beforeRender() : void
     {
+        $this->template->setFile(__DIR__ . '/templates/PaymentDialog.latte');
         $this->template->setParameters([
             'payment' => $this->payment(),
             'editing' => $this->isEditing(),
-            'renderModal' => $this->open,
         ]);
-
-        $this->template->setFile(__DIR__ . '/templates/PaymentDialog.latte');
-        $this->template->render();
     }
 
     protected function createComponentForm() : BaseForm
@@ -157,7 +147,7 @@ final class PaymentDialog extends BaseControl
         }
 
         $this->onSuccess();
-        $this->close();
+        $this->hide();
     }
 
     private function updatePayment(ArrayHash $values) : void
@@ -166,7 +156,7 @@ final class PaymentDialog extends BaseControl
 
         if ($payment === null) {
             $this->presenter->flashMessage('Zadaná platba neexistuje', 'danger');
-            $this->close();
+            $this->hide();
 
             return;
         }
@@ -203,7 +193,7 @@ final class PaymentDialog extends BaseControl
         );
 
         $this->flashMessage('Platba byla přidána', 'success');
-        $this->close();
+        $this->hide();
     }
 
     private function isEditing() : bool
@@ -224,13 +214,5 @@ final class PaymentDialog extends BaseControl
         }
 
         return $payment;
-    }
-
-    private function close() : void
-    {
-        $this->paymentId = -1;
-        $this->open      = false;
-
-        $this->redrawControl();
     }
 }
