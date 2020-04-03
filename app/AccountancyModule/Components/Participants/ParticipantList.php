@@ -197,15 +197,15 @@ final class ParticipantList extends BaseControl
             ->setDefaultValue('');
         $editCon->addSubmit('send', 'Upravit')
             ->setAttribute('class', 'btn btn-info btn-small')
-            ->onClick[] = [$this, 'massEditSubmitted'];
+            ->onClick[] = fn(SubmitButton $button) => $this->massEditSubmitted($button);
 
         $form->addSubmit('send', 'Odebrat vybrané')
-            ->onClick[] = [$this, 'massRemoveSubmitted'];
+            ->onClick[] = fn(SubmitButton $button) => $this->massRemoveSubmitted($button);
 
         return $form;
     }
 
-    public function massEditSubmitted(SubmitButton $button) : void
+    private function massEditSubmitted(SubmitButton $button) : void
     {
         if (! $this->isAllowParticipantUpdate) {
             $this->flashMessage('Nemáte právo upravovat účastníky.', 'danger');
@@ -236,7 +236,7 @@ final class ParticipantList extends BaseControl
         $this->reload('Účastníci byli upraveni.');
     }
 
-    public function massRemoveSubmitted(SubmitButton $button) : void
+    private function massRemoveSubmitted(SubmitButton $button) : void
     {
         if (! $this->isAllowParticipantDelete) {
             $this->flashMessage('Nemáte právo mazat účastníky.', 'danger');
