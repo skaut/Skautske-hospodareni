@@ -23,7 +23,7 @@ final class Version20190321140458 extends AbstractMigration
 SQL
         );
         $this->addSql('ALTER TABLE pa_group_unit ADD CONSTRAINT FK_FB5A0CD6FE54D947 FOREIGN KEY (group_id) REFERENCES pa_group (id)');
-        $this->addSql('INSERT INTO pa_group_unit (unit_id, group_id) SELECT unitId, id FROM hskauting.pa_group');
+        $this->addSql('INSERT INTO pa_group_unit (unit_id, group_id) SELECT unitId, id FROM pa_group');
         $this->addSql('ALTER TABLE pa_group DROP unitId');
     }
 
