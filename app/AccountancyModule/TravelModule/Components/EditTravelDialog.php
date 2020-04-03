@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\TravelModule\Components;
 
-use App\AccountancyModule\Components\BaseControl;
+use App\AccountancyModule\Components\Dialog;
 use App\Forms\BaseForm;
 use Assert\Assertion;
 use Model\Travel\Travel\TransportType;
@@ -14,19 +14,14 @@ use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
 use function assert;
 
-final class EditTravelDialog extends BaseControl
+final class EditTravelDialog extends Dialog
 {
     /** @var int|null @persistent */
     public $travelId;
 
-    /** @var bool @persistent */
-    public $opened = false;
+    private int $commandId;
 
-    /** @var int */
-    private $commandId;
-
-    /** @var TravelService */
-    private $model;
+    private TravelService $model;
 
     public function __construct(int $commandId, TravelService $model)
     {
@@ -38,18 +33,13 @@ final class EditTravelDialog extends BaseControl
     public function open(int $travelId) : void
     {
         $this->travelId = $travelId;
-        $this->opened   = true;
-        $this->redrawControl();
+
+        $this->show();
     }
 
-    public function render() : void
+    protected function beforeRender() : void
     {
         $this->template->setFile(__DIR__ . '/templates/EditTravelDialog.latte');
-        $this->template->setParameters([
-            'renderModal' => $this->opened,
-        ]);
-
-        $this->template->render();
     }
 
     protected function createComponentForm() : BaseForm
@@ -79,7 +69,7 @@ final class EditTravelDialog extends BaseControl
             ->addRule(Form::MIN, 'Vzdálenost musí být větší než 0.', 0.01);
 
         $form->addSubmit('send', 'Upravit')
-            ->setAttribute('class', 'btn btn-primary');
+            ->setAttribute('class', 'btn btn-primary ajax');
 
         $travelId = $this->travelId;
         Assertion::notNull($travelId);
@@ -117,6 +107,6 @@ final class EditTravelDialog extends BaseControl
         );
 
         $this->flashMessage('Cesta byla upravena.');
-        $this->redirect('this');
+        $this->hide();
     }
 }

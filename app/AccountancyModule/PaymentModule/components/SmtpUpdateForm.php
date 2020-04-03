@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\PaymentModule\Components;
 
-use App\AccountancyModule\Components\BaseControl;
+use App\AccountancyModule\Components\Dialog;
 use App\Forms\BaseForm;
 use eGen\MessageBus\Bus\CommandBus;
 use Model\Common\UnitId;
 use Model\Payment\Commands\UpdateMailPassword;
 use Nette\Application\UI\Form;
 
-final class SmtpUpdateForm extends BaseControl
+final class SmtpUpdateForm extends Dialog
 {
     /** @var UnitId */
     private $unitId;
@@ -37,16 +37,13 @@ final class SmtpUpdateForm extends BaseControl
     public function handleOpen(int $smtpId) : void
     {
         $this->smtpId = $smtpId;
-        $this->redrawControl();
+
+        $this->show();
     }
 
-    public function render() : void
+    protected function beforeRender() : void
     {
-        $this->template->setParameters([
-            'renderModal' => $this->smtpId !== null,
-        ]);
         $this->template->setFile(__DIR__ . '/templates/SmtpUpdateForm.latte');
-        $this->template->render();
     }
 
     protected function createComponentForm() : BaseForm
@@ -57,7 +54,7 @@ final class SmtpUpdateForm extends BaseControl
             ->addRule(Form::FILLED, 'Musíte vyplnit heslo.');
         $form->addHidden('smtpId', $this->smtpId);
         $form->addSubmit('send', 'Nastavit heslo')
-            ->setAttribute('class', 'btn btn-primary');
+            ->setAttribute('class', 'btn btn-primary btn-lg w-100 mt-2 ajax');
 
         $form->onSuccess[] = function (BaseForm $form) : void {
             $this->formSucceeded($form);

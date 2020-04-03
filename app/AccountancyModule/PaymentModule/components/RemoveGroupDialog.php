@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\PaymentModule\Components;
 
-use App\AccountancyModule\Components\BaseControl;
+use App\AccountancyModule\Components\Dialog;
 use App\Forms\BaseForm;
 use eGen\MessageBus\Bus\CommandBus;
 use Model\Payment\Commands\Group\RemoveGroup;
@@ -12,11 +12,8 @@ use Model\PaymentService;
 use Nette\Application\BadRequestException;
 use Nette\Http\IResponse;
 
-final class RemoveGroupDialog extends BaseControl
+final class RemoveGroupDialog extends Dialog
 {
-    /** @var bool */
-    private $opened = false;
-
     /** @var int */
     private $groupId;
 
@@ -49,7 +46,7 @@ final class RemoveGroupDialog extends BaseControl
         $this->redrawControl();
     }
 
-    public function render() : void
+    protected function beforeRender() : void
     {
         $group = $this->paymentService->getGroup($this->groupId);
 
@@ -57,13 +54,8 @@ final class RemoveGroupDialog extends BaseControl
             throw new BadRequestException('Skupina plateb neexistuje');
         }
 
-        $this->template->setParameters([
-            'groupName' => $group->getName(),
-            'renderModal' => $this->opened,
-        ]);
-
         $this->template->setFile(__DIR__ . '/templates/RemoveGroupDialog.latte');
-        $this->template->render();
+        $this->template->setParameters(['groupName' => $group->getName()]);
     }
 
     protected function createComponentForm() : BaseForm
