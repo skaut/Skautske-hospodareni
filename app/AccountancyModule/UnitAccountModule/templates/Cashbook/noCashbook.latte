@@ -1,16 +1,14 @@
 {block #content}
-    {include ../ActionMenu.latte}
-    <h2 n:block="title">{$unitPairs[$unitId]} - evidence plateb</h2>
-    <div class="clearfix"></div>
+    <h1 n:block="title">{$unitPairs[$unitId]}</h1>
+    {include ../header.latte}
 
-    <div class="card border-warning no-cashbook">
-        <div class="card-body text-center">
-            <h4>Jednotka <strong>{$unitPairs[$unitId]}</strong> zatím nemá žádnou pokladní knihu.</h4>
-            <a n:href="createCashbook!" class="ajax btn btn-success">
-                <i class="fa fa-plus"></i>
-                Založit novou pokladní knihu
-            </a>
-        </div>
+    <div class="alert alert-warning">
+        Jednotka <strong>{$unitPairs[$unitId]}</strong> zatím nemá žádnou pokladní knihu.
+        <a n:href="createCashbook!" class="ajax btn btn-success">
+            <i class="fa fa-plus"></i>
+            Založit novou pokladní knihu
+        </a>
     </div>
+
     {control createCashbookDialog}
 {/block}

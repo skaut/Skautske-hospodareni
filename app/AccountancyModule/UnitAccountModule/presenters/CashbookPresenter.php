@@ -47,6 +47,7 @@ class CashbookPresenter extends BasePresenter
     protected function startup() : void
     {
         parent::startup();
+        $this->setLayout('layout2');
 
         if ($this->isReadable) {
             return;

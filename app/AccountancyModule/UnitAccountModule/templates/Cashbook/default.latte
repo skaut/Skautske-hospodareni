@@ -1,7 +1,7 @@
 {block #content}
-{include ../ActionMenu.latte}
+    <h1 n:inner-block="title">{$unitPairs[$unitId]}</h1>
+    {include ../header.latte}
 
-    <h2 n:inner-block="title">{$unitPairs[$unitId]} - evidence plateb</h2>
     <div n:snippet="paragony">
         {control cashbook}
     </div>
