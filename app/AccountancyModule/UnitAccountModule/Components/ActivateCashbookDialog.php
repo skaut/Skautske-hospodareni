@@ -69,7 +69,8 @@ final class ActivateCashbookDialog extends BaseControl
             ->setDefaultValue($this->getActiveCashbook()->getId())
             ->setRequired();
 
-        $form->addSubmit('create', 'Vybrat');
+        $form->addSubmit('create', 'Vybrat')
+            ->setAttribute('class', 'btn btn-primary');
 
         $form->onSuccess[] = function ($_, ArrayHash $values) : void {
             $this->formSucceeded($values->cashbookId);

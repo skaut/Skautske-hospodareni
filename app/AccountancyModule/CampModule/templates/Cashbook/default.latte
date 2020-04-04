@@ -6,33 +6,25 @@
 {if $missingCategories}
     {control categoryAutocomputedControl}
 {else}
-<div class="row mb-2" n:if="$isEditable">
-    <div class="col">
-        <div class="card">
-            <div class="card-body">
-                <a n:if="$isEditable" href="#importHpd" role="button" data-toggle="modal" class="btn btn-primary">
-                    <i class="fa fa-user"></i>&nbsp;Načíst příjmy od účastníků
-                </a>
-            </div>
-        </div>
+<div class="mb-2 card" n:if="$isEditable">
+    <div class="card-body">
+        <a n:if="$isEditable" href="#importHpd" role="button" data-toggle="modal" class="btn btn-primary">
+            <i class="fa fa-user"></i>&nbsp;Načíst příjmy od účastníků
+        </a>
     </div>
 </div>
 
-<div class="row">
-    <div class="col">
-        <div n:snippet="paragony">
-            <p n:if="$isInMinus" class="alert alert-danger">
-                Evidence plateb je v záporných číslech a to nesmí nastat! Je importovaný HPD?
-            </p>
+<div n:snippet="paragony">
+    <p n:if="$isInMinus" class="alert alert-danger">
+        Evidence plateb je v záporných číslech a to nesmí nastat! Je importovaný HPD?
+    </p>
 
-            {snippet}
-                {control cashbook}
-            {/snippet}
-        </div>
-        <hr />
-        <div class="text-right lead mb-sm-2" title="náklady + výnosy">Výsledek hospodaření: {$finalRealBalance|price} Kč</div>
-    </div>
+    {snippet}
+        {control cashbook}
+    {/snippet}
 </div>
+<hr />
+<div class="text-right lead mb-sm-2" title="náklady + výnosy">Výsledek hospodaření: {$finalRealBalance|price} Kč</div>
 
 <div id="importHpd" class="modal" tabindex="-1" role="dialog" aria-labelledby="importHpdLabel" aria-hidden="true">
     <div class="modal-dialog">
