@@ -1,5 +1,5 @@
 {block #content}
-    <h1 n:inner-block="title">{$unitPairs[$unitId]}</h1>
+    <h1 n:inner-block="title" class="mt-5">{$unitPairs[$unitId]}</h1>
     {include ../header.latte}
 
     <div n:snippet="paragony">
@@ -7,13 +7,3 @@
     </div>
     {control activateCashbookDialog}
     {control createCashbookDialog}
-{/block}
-
-{block actionMenuToolbar}
-    <div class="btn-group">
-        <a n:if="! $isCashbookEmpty" n:href=":Accountancy:CashbookExport:printAllChits $cashbookId"
-                target="_blank" class="btn btn-sm btn-info">
-            <i class="fas fa-print"></i> Seznam dokladů
-        </a>
-    </div>
-{/block}

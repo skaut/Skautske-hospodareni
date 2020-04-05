@@ -1,6 +1,6 @@
 {snippet}
     <script type="text/javascript" src="{$baseUri}/js/nextras.datetimepicker.init.js"></script>{* include kvuli ajaxovým požadavkům *}
-    <div class="card bg-light mb-2" n:if="$isEditable">
+    <div class="card mb-2" n:if="$isEditable">
         <div class="card-header"><h5>Nový doklad</h5></div>
         <div class="card-body">
             <form n:name="form" class="chit-form">
@@ -20,19 +20,22 @@
                 <div class="row">
                     <div class="col">{input recipient}</div>
                 </div>
-
-            <h3>Položky</h3>
-            {var $itemsCount = iterator_count($form['items']->getContainers())}
-            {foreach $form['items']->getContainers() as $id => $item}
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <div class="row">
-                            <div class="col-sm-12">{input items-$id-purpose}</div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-12 chit-category">
-                                {input items-$id-incomeCategories}
-                                {input items-$id-expenseCategories}
+                <h5 class="card-title mt-2">Položky</h5>
+                {var $itemsCount = iterator_count($form['items']->getContainers())}
+                {foreach $form['items']->getContainers() as $id => $item}
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <div class="form-row mb-1">
+                                <div class="col">{input items-$id-purpose}</div>
+                            </div>
+                            <div class="form-row mb-1">
+                                <div class="col chit-category">
+                                    {input items-$id-incomeCategories}
+                                    {input items-$id-expenseCategories}
+                                </div>
+                            </div>
+                            <div class="form-row mb-1">
+                                <div class="col">{input items-$id-price}</div>
                             </div>
                         </div>
                         <div class="row">

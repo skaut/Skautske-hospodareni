@@ -40,7 +40,7 @@ class BudgetPresenter extends BasePresenter
     {
         /** @var BaseForm $form */
         $form = $this['addCategoryForm'];
-        $form->setDefaultValues([
+        $form->setDefaults([
             'year' => $year ?? date('Y'),
         ]);
     }
