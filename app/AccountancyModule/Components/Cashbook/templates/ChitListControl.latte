@@ -39,7 +39,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {var $balance => 0}
+                {var $balance = 0}
                 {foreach $chits as $chit}
                     {var $isIncome = $chit->isIncome()}
                     {php $balance += $isIncome ? $chit->amount->toFloat() : -$chit->amount->toFloat()}
