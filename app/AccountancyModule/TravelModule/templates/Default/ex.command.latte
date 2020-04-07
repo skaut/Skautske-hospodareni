@@ -121,7 +121,7 @@
                     <td>{$t->details->date|date:"j. n. Y"}</td>
                     <td>{$t->details->startPlace}</td>
                     <td>{$t->details->endPlace}</td>
-                    <td>{$t->details->transportType}</td>
+                    <td>{$t->details->transportType->getLabel()}</td>
                     {if $t->distance !== NULL}
                     <td>{$command->pricePerKm|price}</td>
                     <td>{$t->distance}</td>
