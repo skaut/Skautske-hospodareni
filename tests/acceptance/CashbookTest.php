@@ -135,7 +135,7 @@ class CashbookTest extends Unit
 
         $I->click('Akce');
 
-        $cancelButton = sprintf("//a[text()='%s']/ancestor::tr//a[contains(@class, 'btn-danger')]", $this->eventName);
+        $cancelButton = sprintf("//a[text()='%s']/ancestor::tr//a[contains(@class, 'btn-danger')][1]", $this->eventName);
 
         $I->waitForElement($cancelButton);
         $I->disablePopups();

@@ -1,6 +1,6 @@
 {snippet}
     <script type="text/javascript" src="{$baseUri}/js/nextras.datetimepicker.init.js"></script>{* include kvuli ajaxovým požadavkům *}
-    <div class="card mb-2" n:if="$isEditable">
+    <div class="card bg-light mb-2" n:if="$isEditable">
         <div class="card-header"><h5>Nový doklad</h5></div>
         <div class="card-body">
             <form n:name="form" class="chit-form">
@@ -37,16 +37,13 @@
                             <div class="form-row mb-1">
                                 <div class="col">{input items-$id-price}</div>
                             </div>
+                            {if $itemsCount > 1}
+                                {input items-$id-remove  class=>"btn btn-light btn-sm ajax"}
+                            {/if}
                         </div>
-                        <div class="row">
-                            <div class="col-sm-12">{input items-$id-price}</div>
-                        </div>
-                        {if $itemsCount > 1}
-                            {input items-$id-remove  class=>"btn btn-default btn-sm ajax"}
-                        {/if}
                     </div>
                 {/foreach}
-                {input items-addItem class=>"btn btn-default ajax"}<br /><br />
+                {input items-addItem class=>"btn btn-light ajax"}<br /><br />
                 {input send}
             </form>
         </div>

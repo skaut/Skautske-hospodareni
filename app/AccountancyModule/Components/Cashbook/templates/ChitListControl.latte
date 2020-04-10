@@ -3,14 +3,13 @@
 <div class="card mb-2">
     <div class="card-header">
         <div class="row justify-content-between">
-            <div class="col-xl-2 col-md-3">
+            <div class="col-xl-2 col-md-4">
                 <h4>{$paymentMethod->getName()}</h4>
             </div>
-            <div class="col-xl-10 col-md-9 export-panel text-right">
+            <div class="col-xl-10 col-md-8 export-panel text-right d-none d-md-block">
                 {include 'ChitListControl.topPanel.latte'}
             </div>
         </div>
-        <h4>{$paymentMethod->getName()}</h4>
     </div>
     <div class="panel-body chit-list" n:if="!empty($chits)">
         {form formMass}
@@ -18,20 +17,19 @@
                 <thead>
                 <tr>
                     <th class='col-xs-1'>
-                        <input type="checkbox" name="chits-all" id="chits-all-{$paymentMethod}"
-                               onclick="jqCheckAll(this.id, 'chits-'+{$paymentMethod->toString()})"
-                               class="hidden-xs hidden-sm"/>
+                        <input type="checkbox" name="chits-all"
+                               class="hidden-xs hidden-sm" data-dependent-checkboxes=".dependent-checkbox"/>
                         <button n:if="$isCash" n:name="massPrintSend" title="Vytisknout vybrané"
-                                                       class="btn btn-info btn-xs allDependend-{$paymentMethod} hidden-xs hidden-sm"
+                                                       class="btn btn-info btn-sm allDependend-{$paymentMethod} hidden-xs hidden-sm"
                                                        type="submit">
-                            <i class="glyphicon glyphicon-print"></i>
+                            <i class="fas fa-print"></i>
                         </button>
                         <button n:if="$canMoveChits" n:name="massMoveSend" title="Přesunout vybrané" role="button" data-toggle="modal"
-                           class="btn btn-info btn-xs allDependend-{$paymentMethod} hidden-xs"><i
-                                    class="glyphicon glyphicon-step-forward"></i></button>
+                           class="btn btn-info btn-sm allDependend-{$paymentMethod} hidden-xs"><i
+                                    class="fas fa-step-forward"></i></button>
                         <button n:if="$canMassExport" name="massExportSend" title="Exportovat vybrané"
                                 class="btn btn-info btn-xs allDependend-{$paymentMethod} hidden-xs" type="submit"><i
-                                    class="glyphicon glyphicon-download-alt"></i></button>
+                                    class="fas fa-download"></i></button>
                     </th>
                     <th class="col-xs-1">Ze dne</th>
                     <th class="col-xs-1">Číslo</th>
@@ -50,7 +48,7 @@
                     {php $balance += $isIncome ? $chit->amount->toFloat() : -$chit->amount->toFloat()}
                     {var $itemsCount = count($chit->items)}
                     <tr>
-                        <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} style="white-space:nowrap">
+                        <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} class="dependent-checkbox" style="white-space:nowrap">
                             <input type="checkbox" class="d-none d-lg-inline" name="chits-{$paymentMethod}[]" value={$chit->id}/>
                             <div class="btn-group">
                                 <a n:if="$isCash"
@@ -63,6 +61,10 @@
                                 </a>
                                 <a n:if="$isEditable && ! $chit->locked" n:href="edit! $chit->id"
                                         class="ajax btn btn-sm btn-primary ui--editChit"><i class="far fa-edit"></i></a>
+
+                                <a n:if="$isEditable && ! $chit->locked" n:href="remove! $chit->id"
+                                        onclick="return confirm('Opravdu chcete smazat paragon?')"
+                                        class="btn btn-sm btn-danger ui--removeChit"><i class="far fa-trash-alt"></i></a>
 
                             <a n:if="$isEditable && $chit->locked" n:href="showLocked" title="Paragon je uzamčen."
                                     class="btn btn-warning btn-xs"><i class="glyphicon glyphicon-lock"></i></a>

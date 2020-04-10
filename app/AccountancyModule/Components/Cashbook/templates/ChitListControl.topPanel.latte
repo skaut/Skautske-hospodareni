@@ -24,18 +24,19 @@
             <i class="fas fa-table d-none d-lg-inline"></i>&nbsp;Exportovat do excelu&nbsp;<span class="caret"></span>
         </button>
 
-    <ul class="dropdown-menu" aria-labelledby="excelExportButton">
-        <li>
-            <a class="dropdown-item"
-               href="{plink :Accountancy:CashbookExport:exportCashbook $cashbookId, $paymentMethod->toString()}">
-                Jednoduchá šablona
-            </a>
-        </li>
-        <li>
-            <a class="dropdown-item"
-               href="{plink :Accountancy:CashbookExport:exportCashbookWithCategories $cashbookId, $paymentMethod->toString()}">
-                Šablona s rozepsanými kategoriemi
-            </a>
-        </li>
-    </ul>
+        <ul class="dropdown-menu" aria-labelledby="excelExportButton">
+            <li>
+                <a class="dropdown-item"
+                   href="{plink :Accountancy:CashbookExport:exportCashbook $cashbookId, $paymentMethod->toString()}">
+                    Jednoduchá šablona
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item"
+                   href="{plink :Accountancy:CashbookExport:exportCashbookWithCategories $cashbookId, $paymentMethod->toString()}">
+                    Šablona s rozepsanými kategoriemi
+                </a>
+            </li>
+        </ul>
+    </div>
 </div>
