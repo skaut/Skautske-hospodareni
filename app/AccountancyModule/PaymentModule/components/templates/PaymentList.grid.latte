@@ -61,11 +61,11 @@
     {elseif $item->isClosed()}
         <span title="Datum uzavření platby">{$item->getClosedAt()|date:'j.n.Y'}</span>
     {var $transaction = $item->getTransaction()}
-        {if $transaction !== NULL}
             <div class="dropdown d-inline-block">
                 <button class="btn btn-sm btn-light" type="button"
-                        data-toggle="dropdown">
-                    <span class="fas fa-info-circle"></span>
+                        data-toggle="dropdown" data-persist="true">
+                {if $transaction !== NULL}
+                    <span class="fas fa-university"></span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-right p-3">
                     <li><strong>ID:</strong> {$transaction->getId()}</li>
@@ -73,8 +73,14 @@
                     <li><strong>Účet:</strong> {$transaction->getBankAccount()}</li>
                     <li><strong>Poznámka:</strong> {$transaction->getNote()}</li>
                 </ul>
+                {else}
+                    <span class="far fa-user"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right p-3">
+                    <li><strong>Uzavřel:</strong> {$item->getClosedByUsername()}</li>
+                </ul>
+                {/if}
             </div>
-        {/if}
     {else}&nbsp;{/if}
     <a href="{plink cancel! $item->getId()}" n:if="$isEditable && ! $item->getState()->equalsValue('canceled')"
        class="btn btn-sm btn-danger"

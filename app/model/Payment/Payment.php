@@ -116,6 +116,13 @@ class Payment extends Aggregate
     private $closedAt;
 
     /**
+     * @ORM\Column(type="string", length=64, nullable=true)
+     *
+     * @var string|NULL
+     */
+    private $closedByUsername;
+
+    /**
      * @ORM\Column(type="string_enum", length=20)
      *
      * @var State
@@ -193,13 +200,24 @@ class Payment extends Aggregate
         $this->amount = $amount;
     }
 
-    public function complete(DateTimeImmutable $time, ?Transaction $transaction = null) : void
+    private function complete(DateTimeImmutable $time) : void
     {
         $this->checkNotClosed();
-        $this->transaction = $transaction;
-        $this->state       = State::get(State::COMPLETED);
-        $this->closedAt    = $time;
+        $this->state    = State::get(State::COMPLETED);
+        $this->closedAt = $time;
+    }
 
+    public function completeManually(DateTimeImmutable $time, string $userFullName) : void
+    {
+        $this->complete($time);
+        $this->closedByUsername = $userFullName;
+        $this->raise(new PaymentWasCompleted($this->id));
+    }
+
+    public function pairWithTransaction(DateTimeImmutable $time, Transaction $transaction) : void
+    {
+        $this->complete($time);
+        $this->transaction = $transaction;
         $this->raise(new PaymentWasCompleted($this->id));
     }
 
@@ -282,6 +300,11 @@ class Payment extends Aggregate
     public function getClosedAt() : ?DateTimeImmutable
     {
         return $this->closedAt;
+    }
+
+    public function getClosedByUsername() : ?string
+    {
+        return $this->closedByUsername;
     }
 
     public function getState() : State

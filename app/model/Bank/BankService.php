@@ -188,7 +188,7 @@ class BankService
                     continue;
                 }
 
-                $payment->complete($now, Transaction::fromFioTransaction($transaction));
+                $payment->pairWithTransaction($now, Transaction::fromFioTransaction($transaction));
                 $paired[] = $payment;
                 unset($paymentsByVS[$transaction->getVariableSymbol()][$offset]);
             }

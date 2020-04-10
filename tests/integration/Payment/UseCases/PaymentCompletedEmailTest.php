@@ -56,6 +56,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
 
     public function testWhenEmailIsNotSetNothingHappens() : void
     {
+        $this->users->setUser(new User(10, 'František Maša', 'test@hospodareni.loc'));
         $this->createMailCredentials();
         $this->initEntities();
 
@@ -70,6 +71,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
      */
     public function testWhenPaymentHasNoEmailNothingHappens() : void
     {
+        $this->users->setUser(new User(10, 'František Maša', 'test@hospodareni.loc'));
         $this->createMailCredentials();
         $this->initEntities([
             EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
@@ -87,6 +89,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
      */
     public function testWhenGroupHasNoMailCredentialsSetNothingHappens() : void
     {
+        $this->users->setUser(new User(10, 'František Maša', 'test@hospodareni.loc'));
         $this->initEntities([
             EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
             EmailType::PAYMENT_COMPLETED => new EmailTemplate('subject', 'body'),

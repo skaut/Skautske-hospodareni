@@ -8,6 +8,7 @@ services:
     - Stubs\Skautis
     - Stubs\BankAccountAccessCheckerStub
     - Stubs\MailCredentialsAccessCheckerStub
+    - Model\Payment\UserRepositoryStub
 
     - class: Model\Payment\Handlers\Payment\CreatePaymentHandler
       tags: [commandBus.handler]

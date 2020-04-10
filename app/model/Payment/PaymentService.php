@@ -7,6 +7,7 @@ namespace Model;
 use Assert\Assert;
 use DateTimeImmutable;
 use InvalidArgumentException;
+use Model\Common\Repositories\IUserRepository;
 use Model\DTO\Payment as DTO;
 use Model\Payment\EmailTemplate;
 use Model\Payment\EmailType;
@@ -64,6 +65,9 @@ class PaymentService
     /** @var IMailCredentialsAccessChecker */
     private $mailCredentialsAccessChecker;
 
+    /** @var IUserRepository */
+    private $users;
+
     public function __construct(
         Skautis $skautis,
         IGroupRepository $groups,
@@ -71,7 +75,8 @@ class PaymentService
         IBankAccountRepository $bankAccounts,
         IBankAccountAccessChecker $bankAccountAccessChecker,
         IMemberEmailRepository $emails,
-        IMailCredentialsAccessChecker $mailCredentialsAccessChecker
+        IMailCredentialsAccessChecker $mailCredentialsAccessChecker,
+        IUserRepository $users
     ) {
         $this->skautis                      = $skautis;
         $this->groups                       = $groups;
@@ -80,6 +85,7 @@ class PaymentService
         $this->bankAccountAccessChecker     = $bankAccountAccessChecker;
         $this->emails                       = $emails;
         $this->mailCredentialsAccessChecker = $mailCredentialsAccessChecker;
+        $this->users                        = $users;
     }
 
     public function findPayment(int $id) : ?DTO\Payment
@@ -102,7 +108,7 @@ class PaymentService
     public function completePayment(int $id) : void
     {
         $payment = $this->payments->find($id);
-        $payment->complete(new DateTimeImmutable());
+        $payment->completeManually(new DateTimeImmutable(), $this->users->getCurrentUser()->getName());
 
         $this->payments->save($payment);
     }

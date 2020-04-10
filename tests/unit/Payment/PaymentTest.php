@@ -14,6 +14,7 @@ use Model\Payment\DomainEvents\PaymentAmountWasChanged;
 use Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
 use Model\Payment\DomainEvents\PaymentWasCreated;
 use Model\Payment\Payment\State;
+use Model\Payment\Payment\Transaction;
 
 class PaymentTest extends Unit
 {
@@ -121,7 +122,7 @@ class PaymentTest extends Unit
     {
         $time    = Date::now();
         $payment = $this->createPayment();
-        $payment->complete($time);
+        $payment->completeManually($time, 'John Doe');
 
         $canceledAt = $time->modify('+ 30 minutes');
 
@@ -135,7 +136,7 @@ class PaymentTest extends Unit
     {
         $time    = Date::now();
         $payment = $this->createPayment();
-        $payment->complete($time);
+        $payment->completeManually($time, 'John Doe');
         $this->assertSame(State::get(State::COMPLETED), $payment->getState());
         $this->assertSame($time, $payment->getClosedAt());
     }
@@ -147,7 +148,17 @@ class PaymentTest extends Unit
         $payment->cancel($time);
 
         $this->expectException(PaymentClosed::class);
-        $payment->complete($time);
+        $payment->completeManually($time, 'John Doe');
+    }
+
+    public function testCompletePaymentByUser() : void
+    {
+        $username = 'John Doe';
+        $time     = Date::now();
+        $payment  = $this->createPayment();
+        $payment->completeManually($time, $username);
+        $this->assertSame($username, $payment->getClosedByUsername());
+        $this->assertTrue($payment->isClosed());
     }
 
     /**
@@ -268,11 +279,23 @@ class PaymentTest extends Unit
         $constantSymbol = 123;
         $note           = 'Never pays!';
 
-        $payment->complete(Date::now());
+        $payment->completeManually(Date::now(), 'John Doe');
 
         $this->expectException(PaymentClosed::class);
 
         $payment->update($name, $email, $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
+    }
+
+    public function testPairPaymentWithTransaction() : void
+    {
+        $payment = $this->createPayment();
+
+        $transaction = new Transaction('21924318042', '123456789/0800', 'Joe Doe', 'abc');
+
+        $payment->pairWithTransaction(Date::now(), $transaction);
+
+        $this->assertSame($transaction, $payment->getTransaction());
+        $this->assertTrue($payment->isClosed());
     }
 
     /**
