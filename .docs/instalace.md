@@ -30,3 +30,11 @@ Stačí přidat tento řádek do souboru `/etc/hosts`:
 
 ## Příprava projektu
 V kontejneru stačí spustit příkaz `phing init`.
+
+**Poznámka**: Při commitování se automaticky opravuje coding standard v PHP - to však vyžaduje lokálně nainstalované PHP.
+Pokud nemáte mimo kontejner instalované PHP alespoň ve verzi jako používá Hospodaření,
+je možné automatickou opravu coding standardu vypnout nastavením proměnné `HUSKY_SKIP_INSTALL` na `true` při instalaci
+`yarn` závislostí. Tedy např.:
+
+- `export HUSKY_SKIP_INSTALL=true; phing init`
+- `HUSKY_SKIP_INSTALL=true yarn install`
