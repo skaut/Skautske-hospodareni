@@ -21,8 +21,9 @@ class JournalPresenter extends BasePresenter
     public function renderDefault(int $groupId) : void
     {
         if (! $this->isEditable) {
-            $this->flashMessage('Nemáte oprávnění přistupovat k registraci', 'danger');
-            $this->redirect('GroupList:');
+            $this->setView('accessDenied');
+
+            return;
         }
         $group = $this->model->getGroup($groupId);
         $year  = $this->model->getRegistrationYear($group->getSkautisId());

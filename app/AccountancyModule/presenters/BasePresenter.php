@@ -106,4 +106,9 @@ abstract class BasePresenter extends \App\BasePresenter
 
         return array_keys($editableUnits);
     }
+
+    public function renderAccessDenied() : void
+    {
+        $this->template->setFile(__DIR__ . '/../templates/accessDenied.latte');
+    }
 }

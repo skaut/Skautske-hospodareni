@@ -52,9 +52,7 @@ class BankAccountsPresenter extends BasePresenter
 
     public function handleAllowForSubunits(int $id) : void
     {
-        if (! $this->canEdit()) {
-            $this->noAccess();
-        }
+        $this->assertCanEditBankAccount($id);
 
         try {
             $this->accounts->allowForSubunits($id);
@@ -67,9 +65,7 @@ class BankAccountsPresenter extends BasePresenter
 
     public function handleDisallowForSubunits(int $id) : void
     {
-        if (! $this->canEdit()) {
-            $this->noAccess();
-        }
+        $this->assertCanEditBankAccount($id);
 
         try {
             $this->accounts->disallowForSubunits($id);
@@ -82,9 +78,7 @@ class BankAccountsPresenter extends BasePresenter
 
     public function handleRemove(int $id) : void
     {
-        if (! $this->canEdit()) {
-            $this->noAccess();
-        }
+        $this->assertCanEditBankAccount($id);
 
         try {
             $this->accounts->removeBankAccount($id);
@@ -112,20 +106,7 @@ class BankAccountsPresenter extends BasePresenter
 
     public function actionEdit(int $id) : void
     {
-        if (! $this->canEdit()) {
-            $this->noAccess();
-        }
-
-        $account = $this->findBankAccount($id);
-
-        if ($account === null) {
-            throw new BadRequestException('Bankovní účet neexistuje');
-        }
-
-        if (! $this->canEdit($account->getUnitId())) {
-            $this->noAccess();
-        }
-
+        $this->assertCanEditBankAccount($id);
         $this->id = $id;
     }
 
@@ -147,17 +128,14 @@ class BankAccountsPresenter extends BasePresenter
         ]);
     }
 
+    public function actionDetail(int $id) : void
+    {
+        $this->assertCanViewBankAccount($id);
+    }
+
     public function renderDetail(int $id) : void
     {
         $account = $this->accounts->find($id);
-
-        if ($account === null) {
-            throw new BadRequestException('Bankovní účet neexistuje');
-        }
-
-        if (! $this->canViewBankAccount($account)) {
-            $this->noAccess();
-        }
 
         $templateParameters = [
             'account' => $account,
@@ -213,9 +191,9 @@ class BankAccountsPresenter extends BasePresenter
 
     private function noAccess() : void
     {
-        $this->flashMessage('Na tuto stránku nemáte přistup', 'danger');
-        $this->getHttpResponse()->setCode(403);
-        $this->redirect('default');
+        $this->setView('accessDenied');
+
+        return;
     }
 
     private function canEdit(?int $unitId = null) : bool
@@ -223,23 +201,51 @@ class BankAccountsPresenter extends BasePresenter
         return $this->authorizator->isAllowed(UnitResource::EDIT, $unitId ?? $this->getUnitId());
     }
 
-    private function canViewBankAccount(BankAccount $account) : bool
+    private function assertCanViewBankAccount(int $id) : void
     {
+        $account = $this->accounts->find($id);
+
+        if ($account === null) {
+            throw new BadRequestException('Bankovní účet neexistuje');
+        }
+
         if ($this->canEdit($account->getUnitId())) {
-            return true;
+            return;
         }
 
         if ($account->isAllowedForSubunits() && $this->isSubunitOf($account->getUnitId())) {
-            return true;
+            return;
         }
 
         $role = $this->queryBus->handle(new ActiveSkautisRoleQuery());
 
         assert($role instanceof SkautisRole);
 
-        return $role->getUnitId() === $account->getUnitId()
+        if ($role->getUnitId() === $account->getUnitId()
             && $role->isBasicUnit()
-            && ($role->isAccountant() || $role->isOfficer());
+            && ($role->isAccountant() || $role->isOfficer())) {
+            return;
+        }
+        $this->noAccess();
+    }
+
+    private function assertCanEditBankAccount(int $id) : void
+    {
+        if (! $this->canEdit()) {
+            $this->noAccess();
+        }
+
+        $account = $this->findBankAccount($id);
+
+        if ($account === null) {
+            throw new BadRequestException('Bankovní účet neexistuje');
+        }
+
+        if ($this->canEdit($account->getUnitId())) {
+            return;
+        }
+
+        $this->noAccess();
     }
 
     private function isSubunitOf(int $unitId) : bool

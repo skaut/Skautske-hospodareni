@@ -33,9 +33,8 @@ class GroupPresenter extends BasePresenter
         if ($this->isEditable) {
             return;
         }
-
-        $this->flashMessage('Nemáte oprávnění upravovat skupiny plateb', 'danger');
-        $this->redirect('GroupList:');
+        $this->setView('accessDenied');
+        $this->template->setParameters(['message' => 'Nemáte oprávnění upravovat skupiny plateb.']);
     }
 
     public function actionEdit(int $id) : void

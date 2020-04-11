@@ -78,8 +78,10 @@ class ContractPresenter extends BasePresenter
         $contract = $this->travelService->getContract($id);
 
         if (! $this->isContractAccessible($contract)) {
-            $this->flashMessage('Nemáte oprávnění ke smlouvě o proplácení cestovních náhrad.', 'danger');
-            $this->redirect('default');
+            $this->setView('accessDenied');
+            $this->template->setParameters(['message' => 'Nemáte oprávnění ke smlouvě o proplácení cestovních náhrad.']);
+
+            return;
         }
 
         $commands   = $this->travelService->getAllCommandsByContract($contract->getId());
@@ -96,8 +98,10 @@ class ContractPresenter extends BasePresenter
     {
         $contract = $this->travelService->getContract($contractId);
         if (! $this->isContractAccessible($contract)) {
-            $this->flashMessage('Nemáte oprávnění ke smlouvě o proplácení cestovních náhrad.', 'danger');
-            $this->redirect('default');
+            $this->setView('accessDenied');
+            $this->template->setParameters(['message' => 'Nemáte oprávnění ke smlouvě o proplácení cestovních náhrad.']);
+
+            return;
         }
 
         switch ($contract->getTemplateVersion()) {
@@ -131,8 +135,10 @@ class ContractPresenter extends BasePresenter
 
         $contract = $this->travelService->getContract($contractId);
         if (! $this->isContractEditable($contract)) {
-            $this->flashMessage('Nemáte oprávnění ke smlouvě o proplácení cestovních náhrad.', 'danger');
-            $this->redirect('default');
+            $this->setView('accessDenied');
+            $this->template->setParameters(['message' => 'Nemáte oprávnění ke smlouvě o proplácení cestovních náhrad.']);
+
+            return;
         }
 
         $this->travelService->deleteContract($contractId);

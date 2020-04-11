@@ -39,8 +39,7 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
             return;
         }
 
-        $this->flashMessage('Nemáte oprávnění pro zobrazení stránky', 'warning');
-        $this->redirect(':Accountancy:Default:', ['unitId' => null]);
+        $this->setView('accessDenied');
     }
 
     protected function beforeRender() : void

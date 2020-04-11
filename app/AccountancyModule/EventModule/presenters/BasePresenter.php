@@ -40,8 +40,10 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
             $this->event = $this->queryBus->handle(new EventQuery(new SkautisEventId($this->aid)));
             assert($this->event instanceof Event);
         } catch (EventNotFound $exc) {
-            $this->flashMessage('Nemáte oprávnění načíst akci nebo akce neexsituje.', 'danger');
-            $this->redirect('Default:');
+            $this->setView('accessDenied');
+            $this->template->setParameters(['message' => 'Nemáte oprávnění načíst akci nebo akce neexsituje.']);
+
+            return;
         }
 
         $this->template->setParameters([
