@@ -1,6 +1,6 @@
 parameters:
     uploadDirectory: %appDir%/../uploads
-
+    testBackground: false
 
 php:
     date.timezone: Europe/Prague

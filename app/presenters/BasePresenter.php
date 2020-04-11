@@ -99,6 +99,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         $this->template->setParameters([
             'templateBlockDir' => $this->appDir . '/templateBlocks/',
             'backlink' => $backlink = $this->getParameter('backlink'),
+            'testBackground' => $this->context->getParameters()['testBackground'],
         ]);
 
         if ($this->getUser()->isLoggedIn() && $backlink !== null) {
