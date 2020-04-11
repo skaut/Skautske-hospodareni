@@ -25,6 +25,7 @@ class PaymentFactory
             $payment->getState(),
             $payment->getTransaction(),
             $payment->getClosedAt(),
+            $payment->getClosedByUsername(),
             $payment->getPersonId(),
             $payment->getGroupId(),
             $payment->getSentEmails(),

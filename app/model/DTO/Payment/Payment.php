@@ -25,6 +25,7 @@ use Nette\SmartObject;
  * @property-read State $state
  * @property-read Transaction $transaction
  * @property-read DateTimeImmutable|NULL $closedAt
+ * @property-read string|NULL $closedBy
  * @property-read int|NULL $personId
  * @property-read int $groupId
  */
@@ -68,6 +69,9 @@ class Payment
     /** @var DateTimeImmutable|NULL */
     private $closedAt;
 
+    /** @var string|NULL */
+    private $closedByUsername;
+
     /** @var int|NULL */
     private $personId;
 
@@ -93,25 +97,27 @@ class Payment
         State $state,
         ?Transaction $transaction,
         ?DateTimeImmutable $closedAt,
+        ?string $closedByUsername,
         ?int $personId,
         int $groupId,
         array $sentEmails
     ) {
-        $this->id             = $id;
-        $this->name           = $name;
-        $this->amount         = $amount;
-        $this->email          = $email;
-        $this->dueDate        = $dueDate;
-        $this->variableSymbol = $variableSymbol;
-        $this->constantSymbol = $constantSymbol;
-        $this->note           = $note;
-        $this->closed         = $closed;
-        $this->state          = $state;
-        $this->transaction    = $transaction;
-        $this->closedAt       = $closedAt;
-        $this->personId       = $personId;
-        $this->groupId        = $groupId;
-        $this->sentEmails     = $sentEmails;
+        $this->id               = $id;
+        $this->name             = $name;
+        $this->amount           = $amount;
+        $this->email            = $email;
+        $this->dueDate          = $dueDate;
+        $this->variableSymbol   = $variableSymbol;
+        $this->constantSymbol   = $constantSymbol;
+        $this->note             = $note;
+        $this->closed           = $closed;
+        $this->state            = $state;
+        $this->transaction      = $transaction;
+        $this->closedAt         = $closedAt;
+        $this->closedByUsername = $closedByUsername;
+        $this->personId         = $personId;
+        $this->groupId          = $groupId;
+        $this->sentEmails       = $sentEmails;
     }
 
     public function getId() : int
@@ -172,6 +178,11 @@ class Payment
     public function getClosedAt() : ?DateTimeImmutable
     {
         return $this->closedAt;
+    }
+
+    public function getClosedByUsername() : ?string
+    {
+        return $this->closedByUsername;
     }
 
     public function getPersonId() : ?int
