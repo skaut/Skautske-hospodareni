@@ -3,10 +3,8 @@
 {block #content}
 {include ../header.latte}
 
-<div class="row" n:if="$missingAvailableAutoComputed">
-    <div class="coll-md-6 alert alert-info">
-        Není aktivní dopočítávání osob! <a n:href="activateAutocomputedParticipants! $aid" class="btn btn-primary">Aktivovat</a>
-    </div>
+<div class="alert alert-warning text-center" n:if="$missingAvailableAutoComputed">
+    Není aktivní automatické dopočítávání osobodnů a dětodnů ve Skautisu. <a n:href="activateAutocomputedParticipants! $aid" class="btn btn-primary ml-2">Aktivovat</a>
 </div>
 
 <div class="row">
