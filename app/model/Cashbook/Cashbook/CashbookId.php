@@ -16,16 +16,20 @@ final class CashbookId
     /** @var string */
     private $id;
 
+    /**
+     * @throws InvalidUuidStringException
+     * @throws InvalidArgumentException
+     */
     private function __construct(string $id)
     {
-        $normalizedId = $this->normalize($id);
-
-        if ($normalizedId === null) {
+        $uuid = Uuid::fromString($id);
+        if ($uuid->getVersion() !== 4) {
             throw new InvalidArgumentException(
-                sprintf('Invalid id "%s", valid ID is either UUIDv4 or legacy numeric string', $id)
+                sprintf('Invalid id "%s", valid ID is only UUIDv4', $id)
             );
         }
-        $this->id = $normalizedId;
+
+        $this->id = $uuid->toString(); // valid UUID
     }
 
     public static function generate() : self
@@ -60,22 +64,5 @@ final class CashbookId
     public function equals(self $otherValueObject) : bool
     {
         return $otherValueObject->id === $this->id;
-    }
-
-    private function normalize(string $id) : ?string
-    {
-        try {
-            $uuid = Uuid::fromString($id);
-
-            if ($uuid->getVersion() === 4) {
-                return $uuid->toString(); // valid UUID
-            }
-        } catch (InvalidUuidStringException $e) {
-            if (is_numeric($id)) {
-                return $id; // legacy ID
-            }
-        }
-
-        return null;
     }
 }
