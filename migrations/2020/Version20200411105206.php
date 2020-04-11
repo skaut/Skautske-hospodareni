@@ -24,10 +24,10 @@ final class Version20200411105206 extends AbstractMigration
             foreach ($cashbookIds as $cashbookId) {
                 $ids = [Uuid::uuid4()->toString(), $cashbookId['id']];
 
-                $this->connection->executeUpdate('UPDATE ac_object         SET id = ?          WHERE id = ?', $ids);
-                $this->connection->executeUpdate('UPDATE ac_cashbook       SET id = ?          WHERE id = ?', $ids);
-                $this->connection->executeUpdate('UPDATE ac_chits          SET eventId = ?     WHERE eventId = ?', $ids);
-                $this->connection->executeUpdate('UPDATE ac_unit_cashbooks SET cashbook_id = ? WHERE cashbook_id = ?', $ids);
+                $this->addSql('UPDATE ac_object         SET id = ?          WHERE id = ?', $ids);
+                $this->addSql('UPDATE ac_cashbook       SET id = ?          WHERE id = ?', $ids);
+                $this->addSql('UPDATE ac_chits          SET eventId = ?     WHERE eventId = ?', $ids);
+                $this->addSql('UPDATE ac_unit_cashbooks SET cashbook_id = ? WHERE cashbook_id = ?', $ids);
             }
             $this->connection->commit();
         } catch (Throwable $exc) {

@@ -19,7 +19,7 @@ use function array_merge;
 
 final class CategoryRepositoryTest extends Unit
 {
-    private const CASHBOOK_ID = '123';
+    private const CASHBOOK_ID = '9135cc1c-6299-4435-818a-0b5caca1a07f';
 
     private const CAMP_ID = 456;
 
@@ -52,7 +52,7 @@ final class CategoryRepositoryTest extends Unit
         $queryBus->shouldReceive('handle')
             ->once()
             ->withArgs(static function (SkautisIdQuery $query) : bool {
-                return $query->getCashbookId()->toString() === '123';
+                return $query->getCashbookId()->toString() === self::CASHBOOK_ID;
             })->andReturn(self::CAMP_ID);
 
         $repository = new CategoryRepository($campCategoryRepository, $staticCategoryRepository, $queryBus);

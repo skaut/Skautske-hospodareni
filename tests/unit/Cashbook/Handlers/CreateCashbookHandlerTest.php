@@ -15,18 +15,19 @@ class CreateCashbookHandlerTest extends Unit
 {
     public function test() : void
     {
-        $type = Cashbook\CashbookType::get(Cashbook\CashbookType::CAMP);
+        $type       = Cashbook\CashbookType::get(Cashbook\CashbookType::CAMP);
+        $cashbookId = Cashbook\CashbookId::generate();
 
         $repository = m::mock(ICashbookRepository::class);
         $repository->shouldReceive('save')
             ->once()
-            ->withArgs(static function (Cashbook $cashbook) use ($type) {
-                return $cashbook->getId()->equals(Cashbook\CashbookId::fromString('10'))
+            ->withArgs(static function (Cashbook $cashbook) use ($type, $cashbookId) {
+                return $cashbook->getId()->equals($cashbookId)
                     && $cashbook->getType() === $type;
             });
 
         $handler = new CreateCashbookHandler($repository);
 
-        $handler(new CreateCashbook(Cashbook\CashbookId::fromString('10'), $type));
+        $handler(new CreateCashbook($cashbookId, $type));
     }
 }

@@ -43,9 +43,8 @@ class CashbookRepositoryTest extends IntegrationTest
 
     public function testFindEmptyCashbook() : void
     {
-        $this->tester->haveInDatabase(self::TABLE, ['id' => 10, 'type' => Cashbook\CashbookType::EVENT, 'note' => '']);
-
-        $id = CashbookId::fromString('10');
+        $id = CashbookId::generate();
+        $this->tester->haveInDatabase(self::TABLE, ['id' => $id->toString(), 'type' => Cashbook\CashbookType::EVENT, 'note' => '']);
 
         $cashbook = $this->repository->find($id);
 
@@ -57,13 +56,14 @@ class CashbookRepositoryTest extends IntegrationTest
     {
         $this->expectException(CashbookNotFound::class);
 
-        $this->repository->find(CashbookId::fromString('1'));
+        $this->repository->find(CashbookId::generate());
     }
 
     public function testSaveCashbookWithChits() : void
     {
-        $chit = [
-            'eventId' => 10,
+        $cashbookId = CashbookId::generate();
+        $chit       = [
+            'eventId' => $cashbookId->toString(),
             'date' => '1989-11-17',
             'num' => '123',
             'recipient' => 'František Maša',
@@ -77,8 +77,7 @@ class CashbookRepositoryTest extends IntegrationTest
             'category' => 10,
             'category_operation_type' => Operation::INCOME,
         ];
-
-        $cashbook = new Cashbook(CashbookId::fromString('10'), Cashbook\CashbookType::get(Cashbook\CashbookType::EVENT));
+        $cashbook = new Cashbook($cashbookId, Cashbook\CashbookType::get(Cashbook\CashbookType::EVENT));
         $cashbook->updateChitNumberPrefix('test');
         $cashbook->updateNote('poznamka moje');
         $category = Helpers::mockChitItemCategory($chitItem['category']);
@@ -97,7 +96,7 @@ class CashbookRepositoryTest extends IntegrationTest
         $this->repository->save($cashbook);
 
         $this->tester->seeInDatabase(self::TABLE, [
-            'id' => 10,
+            'id' => $cashbookId->toString(),
             'type' => Cashbook\CashbookType::EVENT,
             'chit_number_prefix' => 'test',
             'note' => 'poznamka moje',

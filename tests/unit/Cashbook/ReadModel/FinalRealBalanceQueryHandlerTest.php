@@ -20,7 +20,7 @@ use Money\Money;
 
 final class FinalRealBalanceQueryHandlerTest extends Unit
 {
-    private const CASHBOOK_ID = '111';
+    private const CASHBOOK_ID = '9a833b92-e507-409a-9459-885ebf505b87';
 
     public function testCashbookWithoutChitsReturnsZero() : void
     {

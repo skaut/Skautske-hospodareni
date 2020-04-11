@@ -19,8 +19,6 @@ use function count;
 
 class ChitListQueryHandlerTest extends IntegrationTest
 {
-    private const CASHBOOK_ID = '123';
-
     /**
      * @return string[]
      */
@@ -119,6 +117,6 @@ class ChitListQueryHandlerTest extends IntegrationTest
 
     private function getCashbookId() : Cashbook\CashbookId
     {
-        return Cashbook\CashbookId::fromString(self::CASHBOOK_ID);
+        return Cashbook\CashbookId::fromString('00db19d0-95ad-4889-8195-3954dd14319b');
     }
 }
