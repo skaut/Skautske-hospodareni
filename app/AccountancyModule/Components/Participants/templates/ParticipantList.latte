@@ -142,7 +142,13 @@ $showUnits bool - zobrazovat číslo jednotky
                         <td class="text-right">{$p->payment|price:false}{php $totalPayment += $p->payment}</td>
                         <td class="text-right" n:if="$isAllowRepayment">{$p->repayment|price:false}{php $totalRepayment += $p->repayment}</td>
                         <td n:if="$isAllowIsAccount">{$p->onAccount === 'Y' ? 'Ano'}</td>
-                        <td n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete" class="text-center">
+                        <td n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete" class="text-right">
+                            <a n:if="$isAllowParticipantUpdate"
+                                    n:href="edit! $p->id"
+                                    class="btn btn-light btn-sm ajax"
+                                    title="Upravit účastníka">
+                                <i class="far fa-edit"></i>
+                            </a>
                             <a n:if="$isAllowParticipantDelete" n:href="remove! $p->id" class="btn btn-danger btn-sm ajax"><i class="far fa-trash-alt"></i></a>
                         </td>
                     </tr>
@@ -170,5 +176,7 @@ $showUnits bool - zobrazovat číslo jednotky
         </div>
     {/form}
 {/snippet}
+
+{control editDialog}
 
 

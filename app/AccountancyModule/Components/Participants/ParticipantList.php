@@ -11,6 +11,7 @@ use Model\DTO\Participant\UpdateParticipant;
 use Model\EventEntity;
 use Nette\Application\BadRequestException;
 use Nette\Forms\Controls\SubmitButton;
+use Nette\Http\IResponse;
 use function array_filter;
 use function array_map;
 use function sprintf;
@@ -170,6 +171,36 @@ final class ParticipantList extends BaseControl
             }
         );
         $this->reload('Účastník byl odebrán', 'success');
+    }
+
+    public function handleEdit(int $participantId) : void
+    {
+        if (! isset($this->participantsById()[$participantId])) {
+            throw new BadRequestException(
+                sprintf('Participant %d does not exist', $participantId),
+                IResponse::S404_NOT_FOUND
+            );
+        }
+
+        $this['editDialog']->editParticipant($participantId);
+    }
+
+    protected function createComponentEditDialog() : EditParticipantDialog
+    {
+        $dialog = new EditParticipantDialog($this->participantsById(), $this->isAllowIsAccount, $this->isAllowRepayment);
+
+        $dialog->onUpdate[] = function (int $participantId, array $fields) : void {
+            $changes = [];
+
+            foreach ($fields as $field => $value) {
+                $changes[] = new UpdateParticipant($this->aid, $participantId, $field, (string) $value);
+            }
+
+            $this->onUpdate($changes);
+            $this->reload('Účastník byli upraven.', 'success');
+        };
+
+        return $dialog;
     }
 
     public function createComponentFormMassParticipants() : BaseForm
