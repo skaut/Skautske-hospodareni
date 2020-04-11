@@ -14,6 +14,7 @@ session:
 
 parameters:
     sendEmail: FALSE
+    testBackground: TRUE
 
     database:
         host: mysql

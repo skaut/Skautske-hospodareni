@@ -8,6 +8,7 @@ skautis:
 
 parameters:
     sendEmail: true
+    testBackground: true
 
     database:
         host: mysql-test

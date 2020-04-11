@@ -10,3 +10,4 @@ parameters:
         name: "__CONFIG_DATABASE_NAME__"
 
     sendEmail: true
+    testBackground: true
