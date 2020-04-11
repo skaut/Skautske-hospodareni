@@ -57,6 +57,7 @@ class CashbookPresenter extends BasePresenter
         parent::startup();
         $this->isEditable                  = $this->isEditable || $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $this->getCampId());
         $this->isRealTotalCostAutoComputed = ! $this->event->isRealTotalCostAutoComputed();
+        $this->setLayout('layout2');
     }
 
     public function renderDefault(int $aid) : void
@@ -100,6 +101,7 @@ class CashbookPresenter extends BasePresenter
     protected function createComponentFormImportHpd() : BaseForm
     {
         $form = new BaseForm();
+        $form->useBootstrap4();
         $form->addRadioList('cat', 'Kategorie:', ['child' => 'Od dětí a roverů', 'adult' => 'Od dospělých'])
             ->addRule($form::FILLED, 'Musíte vyplnit kategorii.')
             ->setDefaultValue('child');

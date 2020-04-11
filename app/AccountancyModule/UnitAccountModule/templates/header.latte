@@ -1,0 +1,75 @@
+<nav class="navbar navbar-expand-sm navbar-light bg-light mt-2 mb-4 d-block d-lg-flex">
+    <ul class="navbar-nav mr-auto align-items-center justify-content-center">
+        <li n:class="nav-item, $presenter->isLinkCurrent('Cashbook:*') ? active">
+            <a class="nav-link" n:href="Cashbook:default $unitId">
+                <i class="fas fa-clipboard-list"></i> Evidence plateb
+            </a>
+        </li>
+        <li n:class="nav-item, $presenter->isLinkCurrent('Chit:*') ? active">
+            <a class="nav-link" n:href="Chit:default date('Y')">
+                <i class="fas fa-book"></i> Přehled dokladů
+            </a>
+        </li>
+        <li n:class="nav-item, $presenter->isLinkCurrent('Budget:*') ? active">
+            <a class="nav-link" n:href="Budget:default date('Y')">
+                <i class="fas fa-chart-pie"></i> Rozpočet
+            </a>
+        </li>
+    </ul>
+    <div class="navbar-nav align-items-center justify-content-center">
+        <div class="btn-group">
+            <div n:ifset="$unitPairs" class="btn-group">
+                <a class="dropdown-toggle btn btn-light" data-toggle="dropdown" href="#">
+                    <i class="fa fa-sitemap"></i>
+                    {$unitPairs[$unitId]}
+                    <b class="caret"></b>
+                </a>
+                <div class="dropdown-menu">
+                    <a n:foreach="$unitPairs as $id=>$label" n:href="this unitId=>$id" class="dropdown-item">{$label}</a>
+                </div>
+            </div>
+            {if $presenter->getName() === 'Accountancy:UnitAccount:Cashbook' && isset($cashbooks)}
+            <div class="btn-group">
+                <button class="btn btn-light dropdown-toggle" type="button" id="unit-cashbook-list"
+                        data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="true">
+                    {$year}
+                    <span class="caret"></span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="unit-cashbook-list">
+                    {include cashbookDropdownItem, cashbook => $activeCashbook, isActive => true}
+                    <div n:if="count($cashbooks)>1" class="dropdown-divider"></div>
+                    {foreach $cashbooks as $cashbook}
+                        {if $cashbook->getCashbookId()->toString() !== $activeCashbook->getCashbookId()->toString()}
+                            {include cashbookDropdownItem, cashbook => $cashbook, isActive => false}
+                        {/if}
+                    {/foreach}
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-light dropdown-toggle" type="button" id="unit-cashbook-menu"
+                        data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="true">
+                    <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="unit-cashbook-menu">
+                    <a n:href="selectActive!" class="ajax dropdown-item">
+                        <i class="fas fa-book"></i>
+                        Vybrat výchozí pokladní knihu</a>
+                    <a n:href="createCashbook!" class="ajax dropdown-item">
+                        <i class="fa fa-plus"></i> Přidat pokladní knihu
+                    </a>
+                </div>
+                {/if}
+            </div>
+        </div>
+
+    </div>
+</nav>
+
+{define cashbookDropdownItem}
+    {var $selected = $cashbook->getCashbookId()->toString() === $cashbookId}
+    <a class="dropdown-item{if $selected} active{/if}" href="{if $selected}#{else}{link this $unitId, $cashbook->year}{/if}">
+        {$cashbook->year}
+    </a>
+{/define}

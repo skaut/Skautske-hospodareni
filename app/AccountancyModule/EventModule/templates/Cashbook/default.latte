@@ -1,21 +1,22 @@
 {block #title}{$event->getDisplayName()} - evidence plateb{/block}
 
 {block #content}
-{include ../ActionMenu.latte}
-<h2>{$event->getDisplayName()}</h2>
+{include ../header.latte}
 
-<div class="row">
-    <div class="col-sm-12">
-        <div class="well well-sm">
-            <a n:if="$isEditable" n:href="importHpd! aid => $aid" class="btn btn-sm btn-primary">
-                <i class="fa fa-user"></i>&nbsp;Načíst příjmy od účastníků
-            </a>
+<div class="row mb-2" n:if="$isEditable">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <a n:if="$isEditable" n:href="importHpd! aid => $aid" class="btn btn-sm btn-primary">
+                    <i class="far fa-user"></i>&nbsp;Načíst příjmy od účastníků
+                </a>
+            </div>
         </div>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-sm-12">
+    <div class="col">
         <div n:snippet="paragony">
             <p n:if="$isInMinus" class="alert alert-danger">
                 Evidence plateb je v záporných číslech a to nesmí nastat! Je importovaný HPD?
@@ -29,6 +30,6 @@
             {/snippet}
         </div>
         <hr />
-        <div class="text-right lead" title="náklady + výnosy">Výsledek hospodaření: {$finalRealBalance|price} Kč</div>
+        <div class="text-right lead mb-2" title="náklady + výnosy">Výsledek hospodaření: {$finalRealBalance|price} Kč</div>
     </div>
 </div>

@@ -24,7 +24,7 @@ class BudgetPresenter extends BasePresenter
     protected function beforeRender() : void
     {
         parent::beforeRender();
-        $this->setLayout('layout.new');
+        $this->setLayout('layout2');
     }
 
     public function renderDefault(?int $year = null) : void
@@ -32,6 +32,16 @@ class BudgetPresenter extends BasePresenter
         $this->template->setParameters([
             'categories' => $this->budgetService->getCategories($this->unitId->toInt()),
             'unitPairs'  => $this->unitService->getReadUnits($this->user),
+            'year'       => $year,
+        ]);
+    }
+
+    public function renderAdd(?int $year = null) : void
+    {
+        /** @var BaseForm $form */
+        $form = $this['addCategoryForm'];
+        $form->setDefaults([
+            'year' => $year ?? date('Y'),
         ]);
     }
 
@@ -69,8 +79,7 @@ class BudgetPresenter extends BasePresenter
             ->setOption('id', 'form-category-value');
 
         $form->addText('year', 'Rok')
-            ->addRule(Form::FILLED, 'Vyplňte rok')
-            ->setDefaultValue(date('Y'));
+            ->addRule(Form::FILLED, 'Vyplňte rok');
 
         $form->addHidden('oid', $this->unitId->toInt());
 

@@ -53,6 +53,7 @@ class ChitPresenter extends BasePresenter
     protected function startup() : void
     {
         parent::startup();
+        $this->setLayout('layout2');
         $this->template->setParameters([
             'onlyUnlocked' => $this->onlyUnlocked,
         ]);
@@ -76,8 +77,6 @@ class ChitPresenter extends BasePresenter
 
     public function actionDefault(?int $year = null) : void
     {
-        $this->setLayout('layout.new');
-
         $this->cashbooks = [
             ObjectType::UNIT => $this->getUnitCashbooks(),
             ObjectType::EVENT => $this->getEventCashbooks(),
