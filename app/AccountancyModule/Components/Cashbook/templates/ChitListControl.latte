@@ -70,9 +70,9 @@
                                     class="btn btn-warning btn-xs"><i class="glyphicon glyphicon-lock"></i></a>
 
                             <a n:if="$isEditable && count(array_intersect($validInverseCashbookTypes, $chit->inverseCashbookTypes))"
-                                    class="ajax btn btn-xs btn-success hidden-xs hidden-sm" n:href="invertChitDialog:open! $chit->id"
+                                    class="ajax btn btn-sm btn-success hidden-xs hidden-sm" n:href="invertChitDialog:open! $chit->id"
                                     title="Vytvořit protidoklad">
-                                <i class="fa fa-exchange"></i>
+                                <i class="fas fa-exchange-alt"></i>
                             </a>
                         </td>
                         <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} class="text-right">
