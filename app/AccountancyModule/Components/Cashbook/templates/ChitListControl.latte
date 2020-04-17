@@ -76,7 +76,7 @@
                             </a>
                         </td>
                         <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} class="text-right">
-                            {$chit->date|date:'d.m'}<span class="d-none d-lg-inline">{$chit->date|date:'Y'}</span>
+                            {$chit->date|date:'d.m'}<span class="d-none d-lg-inline">.{$chit->date|date:'Y'}</span>
                         </td>
                         <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} title="{$prefix}{$chit->number}" n:class="array_key_exists((string)$chit->number, $duplicatesNumbers) ? 'alert alert-danger'">{$chit->number}</td>
                         <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} title="{$chit->purpose}">{$chit->purpose|truncate:"120"}</td>
