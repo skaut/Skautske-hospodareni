@@ -189,7 +189,7 @@ class DefaultPresenter extends BasePresenter
     {
         if (! $this->isCommandEditable($commandId)) {
             $this->flashMessage('Nemáte oprávnění smazat cestu.', 'danger');
-            $this->redirect('default');
+            $this->redirect('this');
         }
 
         $this->travelService->removeTravel($commandId, $travelId);

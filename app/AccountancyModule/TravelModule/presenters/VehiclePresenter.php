@@ -117,8 +117,9 @@ class VehiclePresenter extends BasePresenter
         // Check whether vehicle exists and belongs to unit
         $vehicle = $this->getVehicle($vehicleId);
         if (! $this->isVehicleEditable($vehicle)) {
-            $this->flashMessage('K vozidlu nemáte oprávnění přistupovat!', 'danger');
-            $this->redirect('VehicleList:default');
+            $this->setView('accessDenied');
+
+            return;
         }
 
         if ($this->travelService->removeVehicle($vehicleId)) {
@@ -134,8 +135,9 @@ class VehiclePresenter extends BasePresenter
         // Check whether vehicle exists and belongs to unit
         $vehicle = $this->getVehicle($vehicleId);
         if (! $this->isVehicleEditable($vehicle)) {
-            $this->flashMessage('K vozidlu nemáte oprávnění přistupovat!', 'danger');
-            $this->redirect('VehicleList:default');
+            $this->setView('accessDenied');
+
+            return;
         }
 
         $this->travelService->archiveVehicle($vehicleId);

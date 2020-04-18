@@ -43,8 +43,10 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
                 'prefix' => $cashbook->getChitNumberPrefix(),
             ]);
         } catch (CampNotFound $exc) {
-            $this->flashMessage('Nemáte oprávnění načíst tábor nebo tábor neexsituje.', 'danger');
-            $this->redirect('Default:');
+            $this->setView('accessDenied');
+            $this->template->setParameters(['message' => 'Nemáte oprávnění načíst tábor nebo tábor neexsituje.']);
+
+            return;
         }
     }
 

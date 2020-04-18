@@ -115,8 +115,10 @@ class PaymentPresenter extends BasePresenter
         $group = $this->model->getGroup($id);
 
         if ($group === null || ! $this->hasAccessToGroup($group)) {
-            $this->flashMessage('Nemáte oprávnění zobrazit detail plateb', 'warning');
-            $this->redirect('GroupList:');
+            $this->setView('accessDenied');
+            $this->template->setParameters(['message' => 'Nemáte oprávnění zobrazit detail plateb.']);
+
+            return;
         }
 
         if ($this->canEditGroup($group)) {
@@ -187,8 +189,8 @@ class PaymentPresenter extends BasePresenter
             return;
         }
 
-        $this->flashMessage('Nemáte oprávnění pracovat s touto skupinou!', 'danger');
-        $this->redirect('Payment:default', ['id' => $this->id]);
+        $this->setView('accessDenied');
+        $this->template->setParameters(['message' => 'Nemáte oprávnění pracovat s touto skupinou.']);
     }
 
     public function handleSend(int $pid) : void
