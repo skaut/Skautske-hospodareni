@@ -1,7 +1,7 @@
 {block #title}Statistiky{/block}
 
 {block #unit}
-    {var space = "&nbsp;"}
+    {var $space = "&nbsp;"}
     {if array_key_exists($unit->getId(), $data)}
         <tr>
             <th>{$space|repeat:5*$level|noescape}{$unit->getDisplayName ()}</th>

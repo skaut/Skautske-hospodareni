@@ -24,7 +24,7 @@ table {
         <th style="width: 11%;">Výdej</th>
         <th style="width: 11%;">Zůstatek</th>
     </tr>
-    {var balance = 0}
+    {var $balance = 0}
     <tr n:foreach="$chits as $chit">
         <td style="height:30px;">{$chit->date|date:"d.m.Y"}</td>
         <td>{(string) $prefix}{(string) $chit->number}</td>
