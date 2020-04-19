@@ -1,114 +1,96 @@
 {block title}Skautské hospodaření online{/block}
-{block outOfContainer}
-
-{/block}
-
-{block heroUnit}
-<h1>Skautské<br />hospodaření online</h1>
-<p>Systém pro vyúčtování skautských akcí a cestovních příkazů</p>
-{/block}
 
 {block #content}
 <div class="row">
 
+    <div class="col d-lg-none">
+        <h1 class="display-3">Skautské<br />hospodaření online</h1>
+        <p class="lead">Systém pro vyúčtování skautských akcí, online plateb i cestovních příkazů</p>
+    </div>
 
-
-    <div class="col-sm-8">
-        <div class="row">
-            <div class="well visible-xs-block visible-sm-block">
-                {include #heroUnit}
-            </div>
-
-            <div id="front-carousel" data-ride="carousel" class="carousel slide hidden-sm hidden-xs">
-                <ol class="carousel-indicators">
-                    <li data-target="#front-carousel" data-slide-to="0" class="active"></li>
-                    <li data-target="#front-carousel" data-slide-to="1"></li>
-                    <li data-target="#front-carousel" data-slide-to="2"></li>
-                    <li data-target="#front-carousel" data-slide-to="3"></li>
-                </ol>
-
-                <div role="listbox" class="carousel-inner">
-<!--                    <div class="item">
-                        <div class="hero-unit">
-                            {include #heroUnit}
-                        </div>
-                    </div>-->
-                    <div class="item active">
-                        <img src="{$baseUri}/images/front/prehled-akci.png" alt="Seznamu skautských výprav" />
-                        <div class="carousel-caption">
-                            <h4>Seznam výprav</h4>
-                            <p>Přehled akcí zobrazený podle aktuální role. Výpravy můžete fitrovat podle stavu zpracování a roku konání. <a href="{link :Tutorial:event}#seznam-akci">(info)</a></p>
+    <div class="col d-none d-lg-block">
+        <div id="homepageCarousel" class="carousel slide my-4" data-ride="carousel">
+            <div class="carousel-inner" role="listbox">
+                <div class="carousel-item active">
+                    <img src="{$baseUri}/images/front/prehled-akci.png" alt="Seznamu skautských výprav" />
+                    <div class="carousel-caption">
+                        <div class="">
+                            <p><a href="{link :Tutorial:event}#seznam-akci" class="btn btn-info">Seznam výprav</a></p>
+                            <p>Přehled akcí zobrazený podle aktuální role. Výpravy můžete fitrovat podle stavu zpracování a roku konání.</p>
                         </div>
                     </div>
-                    <div class="item">
-                        <img src="{$baseUri}/images/front/zakladni-udaje-akce.png" a lt="Základní údaje účtované skautské výpravy" />
-                        <div class="carousel-caption">
-                            <h4>Základní údaje</h4>
-                            <p>Základní informace o akci a jejím vedení. Akci zde můžete upravit nebo ji uzavřít a získat výstupy pro tisk. <a href="{link :Tutorial:event}#zakladni-udaje">(info)</a></p>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <img src="{$baseUri}/images/front/seznam-ucastniku-akce.png" alt="Seznam účastníků skautské akce" />
-                        <div class="carousel-caption">
-                            <h4>Seznam účastníků</h4>
-                            <p>Jedním kliknutím přidáte účastníka. Pak jen nastavíte poplatek a máte seznam účastníků se všemi údaji hotový. <a href="{link :Tutorial:event}#seznam-ucastniku">(info)</a></p>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <img src="{$baseUri}/images/front/pokladni-kniha.png" alt="Evidence plateb pro hospodaření výpravy" />
-                        <div class="carousel-caption">
-                            <h4>Evidence plateb</h4>
-                            <p>Příjmy a výdaje s kontrolou nezáporného stavu. Částky lze zadávat i jako výraz (např.: 7*52 + 5). <a href="{link :Tutorial:event}#pokladni-kniha">(info)</a></p>
-                        </div>
-                    </div>
-
                 </div>
-                        
-                <a data-slide="prev" role="button" href="#front-carousel" class="left carousel-control">
-                    <span aria-hidden="true" class="glyphicon glyphicon-chevron-left"></span>
-                    <span class="sr-only">Předchozí</span>
-                </a>
-                <a data-slide="next" role="button" href="#front-carousel" class="right carousel-control">
-                    <span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>
-                    <span class="sr-only">Další</span>
-                </a>
+                <div class="carousel-item">
+                    <img src="{$baseUri}/images/front/zakladni-udaje-akce.png" a lt="Základní údaje účtované skautské výpravy" />
+                    <div class="carousel-caption">
+                        <p><a href="{link :Tutorial:event}#zakladni-udaje" class="btn btn-info">Základní údaje o akci</a></p>
+                        <p>Základní informace o akci a jejím vedení. Akci zde můžete upravit nebo ji uzavřít a získat výstupy pro tisk.</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="{$baseUri}/images/front/seznam-ucastniku-akce.png" alt="Seznam účastníků skautské akce" />
+                    <div class="carousel-caption">
+                        <p><a href="{link :Tutorial:event}#seznam-ucastniku" class="btn btn-info">Seznam účastníků</a></p>
+                        <p>Kliknutím přidáte účastníka, pak nastavíte poplatek a máte seznam účastníků se všemi údaji hotový.</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="{$baseUri}/images/front/pokladni-kniha.png" alt="Evidence plateb pro hospodaření výpravy" />
+                    <div class="carousel-caption">
+                        <p><a href="{link :Tutorial:event}#pokladni-kniha" class="btn btn-info">Evidence plateb</a></p>
+                        <p>Příjmy a výdaje s kontrolou nezáporného stavu. Částky lze zadávat i jako výraz (např.: 7*52 + 5).</p>
+                    </div>
+                </div>
             </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-4 hidden-sm hidden-xs">
-                <h2>O projektu</h2>
-                <p>Chceš se dozvědět více o projektu Skautské hospodaření online? Poznat jeho historii nebo vytvářet jeho budoucnoust?
-                    <a n:href=":Default:about" class="btn btn-info">Chci vědět víc</a></p>
-            </div>
-            <div class="col-md-4">
-                <h2>Jak poprvé?</h2>
-                <p>Chceš vyúčtovat svoji první výpravu a nevíš jak na to? Příručka tě provede jednotlivými kroky a vysvětlí ti co a jak udělat.
-                    <a n:href=":Tutorial:event" class="btn btn-info">Průvodce výpravou</a></p>
-            </div>
-            <div class="col-md-4">
-                <h2>Cestovní příkaz</h2>
-                <p>Chceš jednoduše vytvořit cestovní příkaz za pár minut a neudělat v něm spostu chyb? Projdi si návod a bude to hračka!
-                    <a n:href=":Tutorial:travelCommand" class="btn btn-info">Jak na snadné cesťáky</a></p>
-            </div>
+            <a class="carousel-control-prev" href="#homepageCarousel" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Předchozí</span>
+            </a>
+            <a class="carousel-control-next" href="#homepageCarousel" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Další</span>
+            </a>
         </div>
     </div>
-
-    <div class="col-md-4">
-        <div id="fb-root"></div>
-        <div class="fb-like-box hidden-sm hidden-xs" data-href="https://www.facebook.com/SkautskeOnlineUcetnictvi" data-width="330" data-height="540" data-show-faces="true" data-stream="true" data-border-color="#EEEEEE" data-header="false"></div>
-    </div>
-    <script>
-        (function (d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id))
-                return;
-            js = d.createElement(s);
-            js.id = id;
-            js.src = "//connect.facebook.net/cs_CZ/all.js#xfbml=1&appId=262542393777882";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
-
-    </script>
 </div>
 
+
+<div class="row">
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h4 class="card-title">O projektu</h4>
+                <p class="card-text">Chceš se dozvědět více o projektu Skautské hospodaření online? Poznat jeho historii nebo vytvářet jeho budoucnoust?</p>
+            </div>
+            <div class="card-footer">
+                <a n:href=":Default:about" class="btn btn-primary">Chci vědět víc</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h4 class="card-title">Cestovní příkaz</h4>
+                <p class="card-text">Chceš jednoduše vytvořit cestovní příkaz za pár minut a neudělat v něm spostu chyb? Projdi si návod a bude to hračka!</p>
+            </div>
+            <div class="card-footer">
+                <a n:href=":Tutorial:travelCommand" class="btn btn-primary">Jak na snadné cesťáky</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 col-md-6 mb-4 d-none d-md-block">
+        <div id="fb-root"></div>
+        <div class="fb-page"
+             data-href="https://www.facebook.com/SkautskeOnlineUcetnictvi"
+             data-width="500"
+             data-height="350"
+             data-tabs="timeline"
+             data-show-facepile="true"
+             data-small-header="true"
+             data-adapt-container-width="true"></div>
+    </div>
+</div>
+
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/cs_CZ/sdk.js#xfbml=1&version=v6.0"></script>

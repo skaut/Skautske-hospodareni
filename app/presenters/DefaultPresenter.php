@@ -6,12 +6,13 @@ namespace App;
 
 class DefaultPresenter extends BasePresenter
 {
-    public function renderDefault(?string $backlink = null) : void
+    protected function beforeRender() : void
     {
+        parent::beforeRender();
+        $this->setLayout('layout2');
     }
 
-    public function renderAbout() : void
+    public function renderDefault(?string $backlink = null) : void
     {
-        $this->setLayout('layout2');
     }
 }
