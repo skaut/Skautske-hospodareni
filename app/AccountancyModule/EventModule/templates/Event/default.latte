@@ -28,15 +28,7 @@
             <div class="dropdown-menu">
                 <a n:href="Event:report $aid" target="_blank" class="dropdown-item">Záverečná zpráva</a>
                 <div class="dropdown-divider"></div>
-                <a n:href="Event:printAll $aid"
-                        target="_blank"
-                        class="dropdown-item">
-                    Vše
-                    <span class="small d-block text-muted">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        U větších akcí může trvat generování až několik minut.
-                    </span>
-                </a>
+                <a n:href="Event:printAll $aid" target="_blank" class="dropdown-item">Vše</a>
             </div>
         </div>
         <a n:if="$accessCloseEvent && $event->getState() == 'draft'" n:href="close! $aid"
