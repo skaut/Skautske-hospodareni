@@ -40,7 +40,7 @@
             </div>
         </div>
         <a n:if="$accessCloseEvent && $event->getState() == 'draft'" n:href="close! $aid"
-                class="btn btn-light mt-2"><i class="fas fa-lock d-none d-xl-inline-block"></i> Uzavřít</a>
+                n:class="'btn', 'mt-2', $highlightCloseButton ? 'btn-primary' : 'btn-light'"><i class="fas fa-lock d-none d-xl-inline-block"></i> Uzavřít</a>
         <a n:if="$accessOpenEvent && $event->getState() == 'closed'"  n:href="open! $aid"
                 class="btn btn-dark mt-2"><i class="fas fa-lock-open d-none d-xl-inline-block"></i> Znovu otevřít</a>
         <a n:if="$accessEditBase" href="#editBasicInfo" class="btn btn-light mt-2"
