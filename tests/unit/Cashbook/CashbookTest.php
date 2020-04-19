@@ -25,7 +25,7 @@ class CashbookTest extends Unit
     public function testCreateCashbook() : void
     {
         $type       = CashbookType::get(CashbookType::EVENT);
-        $cashbookId = CashbookId::fromString('100');
+        $cashbookId = CashbookId::generate();
 
         $cashbook = new Cashbook($cashbookId, $type);
 
@@ -35,7 +35,7 @@ class CashbookTest extends Unit
 
     public function testAddingChitRaisesEvent() : void
     {
-        $cashbookId = CashbookId::fromString('10');
+        $cashbookId = CashbookId::generate();
         $cashbook   = $this->createEventCashbook($cashbookId);
 
         Helpers::addChitToCashbook($cashbook, null, null, null, null);
@@ -110,7 +110,7 @@ class CashbookTest extends Unit
 
     public function testAddChitRaisesEvent() : void
     {
-        $cashbookId = CashbookId::fromString('10');
+        $cashbookId = CashbookId::generate();
 
         $cashbook = $this->createEventCashbook($cashbookId);
 
@@ -234,6 +234,6 @@ class CashbookTest extends Unit
 
     private function createEventCashbook(?CashbookId $cashbookId = null) : Cashbook
     {
-        return new Cashbook($cashbookId ?? CashbookId::fromString('1'), CashbookType::get(CashbookType::EVENT));
+        return new Cashbook($cashbookId ?? CashbookId::generate(), CashbookType::get(CashbookType::EVENT));
     }
 }

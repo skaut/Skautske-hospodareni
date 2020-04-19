@@ -55,7 +55,8 @@ class CashbookIntegrationTest extends IntegrationTest
 
     public function testUnlockedChitCanBeUpdated() : void
     {
-        $cashbook      = $this->createCashbookWithLockedChit();
+        $cashbookId    = CashbookId::generate();
+        $cashbook      = $this->createCashbookWithLockedChit($cashbookId);
         $categoryId    = 1;
         $category      = Helpers::mockChitItemCategory($categoryId);
         $categories    = Helpers::mockCashbookCategories($categoryId);
@@ -76,7 +77,7 @@ class CashbookIntegrationTest extends IntegrationTest
         $event = $cashbook->extractEventsToDispatch()[0];
         $this->assertInstanceOf(ChitWasUpdated::class, $event);
         /** @var ChitWasUpdated $event */
-        $this->assertTrue($event->getCashbookId()->equals(CashbookId::fromString('10')));
+        $this->assertTrue($event->getCashbookId()->equals($cashbookId));
     }
 
     public function testUpdateOfLockedChitThrowsException() : void
@@ -122,7 +123,8 @@ class CashbookIntegrationTest extends IntegrationTest
 
     public function testRemoveChit() : void
     {
-        $cashbook = $this->createCashbookWithChit();
+        $cashbookId = CashbookId::generate();
+        $cashbook   = $this->createCashbookWithChit(CashbookType::EVENT, $cashbookId);
 
         $cashbook->removeChit(1);
 
@@ -131,7 +133,7 @@ class CashbookIntegrationTest extends IntegrationTest
         $event = $cashbook->extractEventsToDispatch()[0];
         $this->assertInstanceOf(ChitWasRemoved::class, $event);
         /** @var ChitWasRemoved $event */
-        $this->assertTrue($event->getCashbookId()->equals(CashbookId::fromString('10')));
+        $this->assertTrue($event->getCashbookId()->equals($cashbookId));
         $this->assertSame('purpose', $event->getChitPurpose());
     }
 
@@ -153,9 +155,9 @@ class CashbookIntegrationTest extends IntegrationTest
         $cashbook->removeChit(2);
     }
 
-    private function createCashbookWithLockedChit() : Cashbook
+    private function createCashbookWithLockedChit(?CashbookId $cashbookId = null) : Cashbook
     {
-        $cashbook = $this->createCashbookWithChit();
+        $cashbook = $this->createCashbookWithChit(CashbookType::EVENT, $cashbookId);
         $cashbook->lockChit(1, 10);
         $cashbook->extractEventsToDispatch();
 
@@ -173,7 +175,7 @@ class CashbookIntegrationTest extends IntegrationTest
         int $newCategoryId
     ) : void {
         $body             = new ChitBody(new ChitNumber('123'), new Date(), new Recipient('Maša'));
-        $originalCashbook = new Cashbook(CashbookId::fromString('20'), CashbookType::get($originalCashbookType));
+        $originalCashbook = new Cashbook(CashbookId::generate(), CashbookType::get($originalCashbookType));
         $category         = Helpers::mockChitItemCategory($originalCategoryId, Operation::get($originalOperation));
         $categories       = Helpers::mockCashbookCategories($originalCategoryId);
 
@@ -188,7 +190,8 @@ class CashbookIntegrationTest extends IntegrationTest
         $this->entityManager->persist($originalCashbook);
         $this->entityManager->flush();
 
-        $cashbook = new Cashbook(CashbookId::fromString('10'), CashbookType::get($cashbookType));
+        $cashbookId = CashbookId::generate();
+        $cashbook   = new Cashbook($cashbookId, CashbookType::get($cashbookType));
         $cashbook->addInverseChit($originalCashbook, 1);
         $newChit = $cashbook->getChits()[0];
 
@@ -210,7 +213,7 @@ class CashbookIntegrationTest extends IntegrationTest
 
         /** @var ChitWasAdded $event */
         $event = $events[0];
-        $this->assertTrue($event->getCashbookId()->equals(CashbookId::fromString('10')));
+        $this->assertTrue($event->getCashbookId()->equals($cashbookId));
     }
 
     /**
@@ -241,7 +244,7 @@ class CashbookIntegrationTest extends IntegrationTest
      */
     public function testAddInvalidInverseChitThrowsException(int $invalidCategoryId) : void
     {
-        $originalCashbook = new Cashbook(CashbookId::fromString('20'), CashbookType::get(CashbookType::OFFICIAL_UNIT));
+        $originalCashbook = new Cashbook(CashbookId::generate(), CashbookType::get(CashbookType::OFFICIAL_UNIT));
         $category         = Helpers::mockChitItemCategory($invalidCategoryId, Operation::EXPENSE());
         $categories       = Helpers::mockCashbookCategories($invalidCategoryId);
         $originalCashbook->addChit(
@@ -255,7 +258,7 @@ class CashbookIntegrationTest extends IntegrationTest
         $this->entityManager->persist($originalCashbook);
         $this->entityManager->flush();
 
-        $cashbook = new Cashbook(CashbookId::fromString('10'), CashbookType::get(CashbookType::EVENT));
+        $cashbook = new Cashbook(CashbookId::generate(), CashbookType::get(CashbookType::EVENT));
 
         $this->expectException(InvalidCashbookTransfer::class);
 
@@ -273,9 +276,9 @@ class CashbookIntegrationTest extends IntegrationTest
         ];
     }
 
-    private function createCashbookWithChit(string $type = CashbookType::EVENT) : Cashbook
+    private function createCashbookWithChit(string $type = CashbookType::EVENT, ?CashbookId $cashbookId = null) : Cashbook
     {
-        $cashbook   = new Cashbook(CashbookId::fromString('10'), CashbookType::get($type));
+        $cashbook   = new Cashbook($cashbookId ?? CashbookId::generate(), CashbookType::get($type));
         $categoryId = 666;
 
         $cashbook->addChit(
@@ -295,7 +298,7 @@ class CashbookIntegrationTest extends IntegrationTest
 
     public function testLock() : void
     {
-        $cashbook   = new Cashbook(CashbookId::fromString('11'), CashbookType::get(CashbookType::EVENT));
+        $cashbook   = new Cashbook(CashbookId::generate(), CashbookType::get(CashbookType::EVENT));
         $chitBody   = new ChitBody(null, new Date(), null);
         $categoryId = 666;
         $category   = Helpers::mockChitItemCategory($categoryId);
@@ -327,7 +330,7 @@ class CashbookIntegrationTest extends IntegrationTest
     public function testCopyingChitRaisesEvent() : void
     {
         $sourceCashbook = $this->createCashbookWithChit();
-        $targetCashbook = new Cashbook(CashbookId::fromString('1'), CashbookType::get(CashbookType::EVENT));
+        $targetCashbook = new Cashbook(CashbookId::generate(), CashbookType::get(CashbookType::EVENT));
 
         $targetCashbook->copyChitsFrom([1], $sourceCashbook);
 
@@ -343,7 +346,7 @@ class CashbookIntegrationTest extends IntegrationTest
     public function testCopyChitsBetweenTwoNonCampCashbooksWithSameType(string $cashbookType) : void
     {
         $sourceCashbook = $this->createCashbookWithChit($cashbookType);
-        $targetCashbook = new Cashbook(CashbookId::fromString('2'), CashbookType::get($cashbookType));
+        $targetCashbook = new Cashbook(CashbookId::generate(), CashbookType::get($cashbookType));
 
         $targetCashbook->copyChitsFrom([1], $sourceCashbook);
 
@@ -371,7 +374,7 @@ class CashbookIntegrationTest extends IntegrationTest
     public function testCopyChitsBetweenDifferentCashbooksWithDifferentCategories(string $sourceType, string $targetType) : void
     {
         $sourceCashbook = $this->createCashbookWithChit($sourceType);
-        $targetCashbook = new Cashbook(CashbookId::fromString('2'), CashbookType::get($targetType));
+        $targetCashbook = new Cashbook(CashbookId::generate(), CashbookType::get($targetType));
 
         $targetCashbook->copyChitsFrom([1], $sourceCashbook);
 
@@ -423,7 +426,7 @@ class CashbookIntegrationTest extends IntegrationTest
 
     public function testGenerateChitNumbers() : void
     {
-        $cashbook = new Cashbook(CashbookId::fromString('10'), CashbookType::get(CashbookType::EVENT));
+        $cashbook = new Cashbook(CashbookId::generate(), CashbookType::get(CashbookType::EVENT));
 
         Helpers::addChitToCashbook($cashbook, null, PaymentMethod::CASH(), null, null, Date::today());
         Helpers::addChitToCashbook($cashbook, null, PaymentMethod::BANK());

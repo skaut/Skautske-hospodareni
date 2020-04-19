@@ -25,7 +25,7 @@ final class UnitRepositoryTest extends IntegrationTest
         'id' => 1,
         'unit_id' => 15,
         'year' => 2018,
-        'cashbook_id' => '123',
+        'cashbook_id' => '1e71a1e0-6202-4023-8649-a6068669bb1f',
     ];
 
     /**

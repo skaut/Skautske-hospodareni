@@ -24,7 +24,7 @@ final class CategoryPairsQueryHandlerTest extends Unit
     ];
 
     private const CASHBOOK_TYPE = CashbookType::EVENT;
-    private const CASHBOOK_ID   = '123';
+    private const CASHBOOK_ID   = '49d7d54b-6a14-47be-b809-a16a5dfbe572';
 
     public function testReturnAllCategoriesIfOperationIsNotPassed() : void
     {

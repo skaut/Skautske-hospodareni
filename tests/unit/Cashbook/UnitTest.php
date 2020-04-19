@@ -16,7 +16,7 @@ final class UnitTest extends TestCase
     public function testCreateWithInitialCashbook() : void
     {
         $id         = new UnitId(15);
-        $cashbookId = CashbookId::fromString('123');
+        $cashbookId = CashbookId::generate();
         $year       = 2018;
 
         $unit = new Unit($id, $cashbookId, $year);
