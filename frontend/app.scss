@@ -52,8 +52,23 @@ body > footer {
 }
 
 .bg-test {
-    background-color: #ffff00;
+  background-color: #ffff00;
 }
 .bg-dark #timer {
-    color: #fff;
+  color: #fff;
+}
+
+.carousel {
+  background-color: #ccc;
+}
+.carousel-item{
+  height: 400px;
+}
+.carousel-caption {
+  bottom: 10px;
+  padding-top: 5px;
+  padding-bottom: 0px;
+}
+.carousel-control-prev-icon, .carousel-control-next-icon {
+  background-color: #000000;
 }
