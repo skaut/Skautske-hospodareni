@@ -34,7 +34,8 @@ class Payment
 
     public function addPayment(string $name, ?string $email, float $amount) : void
     {
-        $this->tester->click('Přidat platbu');
+        $this->tester->click('//button[contains(.,\'Přidat platbu\')]');
+        $this->tester->click('… obecnou');
 
         $this->tester->waitForElementVisible('.modal-dialog');
         $this->fillName($name);
@@ -72,6 +73,6 @@ class Payment
         $this->tester->click('Přidat platbu', '.modal-footer');
         $this->tester->waitForElementNotVisible('.modal-dialog');
         $this->tester->wait(3);
-        $this->tester->waitForElementClickable('(//a[text()=\'Přidat platbu\'])');
+        $this->tester->waitForElementClickable('(//button[contains(.,\'Přidat platbu\')])');
     }
 }
