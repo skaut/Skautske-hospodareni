@@ -13,7 +13,12 @@ use function in_array;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="ac_participants")
+ * @ORM\Table(
+ *     name="ac_participants",
+ *     indexes={
+ *         @ORM\Index(name="actionId", columns={"event_id"}),
+ *     }
+ * )
  */
 class Payment
 {
@@ -54,7 +59,7 @@ class Payment
     private $repayment;
 
     /**
-     * @ORM\Column(type="string", name="isAccount", options={"default"="N", "comment"="placeno na účet?"})
+     * @ORM\Column(type="string", name="isAccount")
      *
      * @var string
      */

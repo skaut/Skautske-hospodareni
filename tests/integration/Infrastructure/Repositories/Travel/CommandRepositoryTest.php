@@ -11,7 +11,7 @@ use IntegrationTest;
 use Model\Travel\Command;
 use Model\Travel\Travel\TransportType;
 use Model\Travel\Vehicle;
-use Model\Utils\MoneyFactory;
+use Money\Money;
 use Nette\Utils\Json;
 use function array_diff_key;
 use function array_map;
@@ -26,8 +26,8 @@ class CommandRepositoryTest extends IntegrationTest
         'place' => 'Krno',
         'passengers' => 'František Maša sr.',
         'vehicle_id' => null,
-        'fuel_price' => 15,
-        'amortization' => 3,
+        'fuel_price' => 1500,
+        'amortization' => 300,
         'note' => 'Poznámka',
         'driver_name' => 'František Maša',
         'driver_contact' => '123456789',
@@ -137,8 +137,8 @@ class CommandRepositoryTest extends IntegrationTest
         $this->assertSame(self::COMMAND['unit_id'], $command->getUnitId());
         $this->assertSame(self::COMMAND['purpose'], $command->getPurpose());
         $this->assertSame(self::COMMAND['passengers'], $command->getFellowPassengers());
-        $this->assertEquals(MoneyFactory::fromFloat(self::COMMAND['fuel_price']), $command->getFuelPrice());
-        $this->assertEquals(MoneyFactory::fromFloat(self::COMMAND['amortization']), $command->getAmortization());
+        $this->assertEquals(Money::CZK(self::COMMAND['fuel_price']), $command->getFuelPrice());
+        $this->assertEquals(Money::CZK(self::COMMAND['amortization']), $command->getAmortization());
         $this->assertEquals(new DateTimeImmutable(self::COMMAND['closed']), $command->getClosedAt());
         $this->assertSame(self::COMMAND['note'], $command->getNote());
 
@@ -167,7 +167,7 @@ class CommandRepositoryTest extends IntegrationTest
         $this->assertSame(1, $transportTravel->getId());
         $details2 = $transportTravel->getDetails();
         $this->assertInstanceOf(Command\TransportTravel::class, $transportTravel);
-        $this->assertEquals(MoneyFactory::fromFloat(self::TRANSPORT_TRAVEL['price']), $transportTravel->getPrice());
+        $this->assertEquals(Money::CZK(self::TRANSPORT_TRAVEL['price']), $transportTravel->getPrice());
         $this->assertTrue($details2->getDate()->eq(new Date(self::TRANSPORT_TRAVEL['start_date'])));
         $this->assertSame(self::TRANSPORT_TRAVEL['start_place'], $details2->getStartPlace());
         $this->assertSame(self::TRANSPORT_TRAVEL['end_place'], $details2->getEndPlace());

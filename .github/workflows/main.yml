@@ -124,3 +124,30 @@ jobs:
               run: tar -xzf workdir.tar.gz
             - run: mv app/config/config.ci.local.neon app/config/config.local.neon
             - run: php www/index.php app:lint-latte
+
+    validate-mapping:
+        name: "Validate mapping against migrations"
+        runs-on: ubuntu-18.04
+        container:
+            image: fmasa/lebeda:7.4
+        needs: workdir
+        services:
+            mysql-test:
+                image: mysql:5.7
+                env:
+                    MYSQL_ROOT_PASSWORD: 'root'
+                    MYSQL_DATABASE: hskauting
+                options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+        env:
+            DEVELOPMENT_MACHINE: true
+        steps:
+            - name: Download workdir
+              uses: actions/download-artifact@v1
+              with:
+                  name: workdir
+                  path: .
+            - name: Extract workdir
+              run: tar -xzf workdir.tar.gz
+            - run: mv app/config/config.ci.local.neon app/config/config.local.neon
+            - run: php www/index.php migrations:migrate --no-interaction
+            - run: "! php www/index.php migrations:diff && php www/index.php migrations:diff --allow-empty-diff"

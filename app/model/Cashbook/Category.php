@@ -10,7 +10,13 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="ac_chitsCategory")
+ * @ORM\Table(
+ *     name="ac_chitsCategory",
+ *     indexes={
+ *          @ORM\Index(name="deleted", columns={"deleted"}),
+ *          @ORM\Index(name="orderby", columns={"orderby"}),
+ *     }
+ * )
  * @ORM\Cache()
  */
 class Category implements ICategory
@@ -34,7 +40,7 @@ class Category implements ICategory
     private $name;
 
     /**
-     * @ORM\Column(type="string", name="short", length=64)
+     * @ORM\Column(type="string", name="short", length=64, unique=true)
      *
      * @var string
      */

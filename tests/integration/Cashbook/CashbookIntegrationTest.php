@@ -135,6 +135,10 @@ class CashbookIntegrationTest extends IntegrationTest
         /** @var ChitWasRemoved $event */
         $this->assertTrue($event->getCashbookId()->equals($cashbookId));
         $this->assertSame('purpose', $event->getChitPurpose());
+
+        // Test that everything cascades correctly
+        $this->entityManager->persist($cashbook);
+        $this->entityManager->flush();
     }
 
     public function testRemovalOfLockedChitThrowsException() : void
