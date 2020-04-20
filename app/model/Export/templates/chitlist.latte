@@ -15,7 +15,7 @@ $list - seznam položek
         <th style="width: 70%">Druh výdaje</th>
         <th style="width: 20%">Částka v Kč</th>
     </tr>
-    {var balance = 0}
+    {var $balance = 0}
     <tr n:foreach="$list as $item">
         <td style="text-align:right;height:30px;">{$iterator->getCounter()}. </td> {* height:30px; *}
         <td>{$item->purpose}</td>
