@@ -6,6 +6,8 @@ import { far }  from '@fortawesome/free-regular-svg-icons';
 library.add(
     // Solid icons
     fas.faArrowDown,
+    fas.faArrowRight,
+    fas.faArrowUp,
     fas.faBook,
     fas.faBookReader,
     fas.faCalendar,
@@ -19,6 +21,7 @@ library.add(
     fas.faClipboardList,
     fas.faCloudUploadAlt,
     fas.faEye,
+    fas.faEyeSlash,
     fas.faExclamationTriangle,
     fas.faFileContract,
     fas.faHistory,
@@ -62,6 +65,8 @@ library.add(
     far.faClock,
     far.faEdit,
     far.faEnvelopeOpen,
+    far.faFileExcel,
+    far.faFilePdf,
     far.faFrownOpen,
     far.faListAlt,
     far.faTimesCircle,

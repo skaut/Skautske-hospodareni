@@ -6,7 +6,7 @@ import {TravelModule} from "../modules/travel";
 import {SnippetProcessor} from "./SnippetProcessor";
 import {initializeAutoSubmit} from "./autoSubmitForm";
 import {initializeLinksThatRequireConfirmation} from "./confirmDialogs";
-import {initializeCheckAllCheckboxes} from "./checkAllChekboxes";
+import {initializeCheckAllCheckboxes, initializeCheckboxToggle} from "./checkboxes";
 import {DataGridExtension} from "./DataGridExtension";
 import {initializeDatePicker} from "./datePicker";
 import netteForms from "./netteForms";
@@ -21,6 +21,7 @@ export default function (): void {
         initializeAutoSubmit(naja, snippet, '.auto-submit');
         initializeLinksThatRequireConfirmation(snippet, 'data-confirm');
         initializeCheckAllCheckboxes(snippet, 'data-dependent-checkboxes');
+        initializeCheckboxToggle(snippet, 'data-visible-if-checked', 'data-visible-if-not-checked');
         snippet.querySelectorAll<HTMLElement>('.date').forEach(initializeDatePicker);
         window.BSN.initCallback(snippet);
     });

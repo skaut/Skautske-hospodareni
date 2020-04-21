@@ -14,7 +14,6 @@ use Model\Participant\ReadModel\Queries\PotentialParticipantListQuery;
 use Model\Unit\ReadModel\Queries\SubunitListQuery;
 use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\Unit;
-use Nette\Application\UI\Form;
 use function assert;
 
 /**
@@ -123,21 +122,22 @@ final class PersonPicker extends BaseControl
     protected function createComponentNonMemberParticipantForm() : BaseForm
     {
         $form = new BaseForm();
+        $form->useBootstrap4();
 
-        $form->addText('firstName', 'Jméno*')
-            ->addRule(Form::FILLED, 'Musíš vyplnit křestní jméno.');
+        $form->addText('firstName', 'Jméno')
+            ->setRequired('Musíš vyplnit křestní jméno.');
 
-        $form->addText('lastName', 'Příjmení*')
-            ->addRule(Form::FILLED, 'Musíš vyplnit příjmení.');
+        $form->addText('lastName', 'Příjmení')
+            ->setRequired('Musíš vyplnit příjmení.');
 
-        $form->addText('street', 'Ulice*')
-            ->addRule(Form::FILLED, 'Musíš vyplnit ulici.');
+        $form->addText('street', 'Ulice')
+            ->setRequired('Musíš vyplnit ulici.');
 
-        $form->addText('city', 'Město*')
-            ->addRule(Form::FILLED, 'Musíš vyplnit město.');
+        $form->addText('city', 'Město')
+            ->setRequired('Musíš vyplnit město.');
 
-        $form->addText('postcode', 'PSČ*')
-            ->addRule(Form::FILLED, 'Musíš vyplnit PSČ.');
+        $form->addText('postcode', 'PSČ')
+            ->setRequired('Musíš vyplnit PSČ.');
 
         $form->addText('nick', 'Přezdívka');
 

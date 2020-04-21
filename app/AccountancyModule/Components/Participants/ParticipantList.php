@@ -10,15 +10,11 @@ use Model\DTO\Participant\Participant;
 use Model\DTO\Participant\UpdateParticipant;
 use Model\EventEntity;
 use Nette\Application\BadRequestException;
-use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
+use Nette\Http\IResponse;
 use function array_filter;
-use function array_merge;
-use function bdump;
-use function count;
-use function in_array;
-use function property_exists;
-use function strcasecmp;
+use function array_map;
+use function sprintf;
 use function usort;
 
 /**
@@ -27,6 +23,18 @@ use function usort;
  */
 final class ParticipantList extends BaseControl
 {
+    private const SORT_OPTIONS = [
+        'displayName' => 'Jméno',
+        'unitRegistrationNumber' => 'Jednotka',
+        'onAccount' => 'Na účet?',
+        'days' => 'Dnů',
+        'payment' => 'Částka',
+        'repayment' => 'Vratka',
+        'birthday' => 'Věk',
+    ];
+
+    private const DEFAULT_SORT = 'displayName';
+
     /** @var int */
     public $aid;
 
@@ -92,17 +100,9 @@ final class ParticipantList extends BaseControl
     {
         $this->redrawControl(); // Always redraw
 
-        $this->sortParticipants($this->currentParticipants, $this->sort);
+        $this->sortParticipants($this->currentParticipants, $this->sort ?? self::DEFAULT_SORT);
 
-        $sortOptions = [
-            'displayName' => 'Jméno',
-            'unitRegistrationNumber' => 'Jednotka',
-            'onAccount' => 'Na účet?',
-            'days' => 'Dnů',
-            'payment' => 'Částka',
-            'repayment' => 'Vratka',
-            'birthday' => 'Věk',
-        ];
+        $sortOptions = self::SORT_OPTIONS;
         if (! $this->isAllowRepayment) {
             unset($sortOptions['repayment']);
         }
@@ -129,31 +129,13 @@ final class ParticipantList extends BaseControl
     /**
      * @param Participant[] $participants
      */
-    protected function sortParticipants(array &$participants, ?string $sort) : void
+    protected function sortParticipants(array &$participants, string $sort) : void
     {
-        $textItems   = ['unitRegistrationNumber', 'onAccount'];
-        $numberItems = ['days', 'payment', 'repayment', 'birthday'];
-        if (count($participants) <= 0) {
-            return;
+        if (! isset(self::SORT_OPTIONS[$sort])) {
+            throw new BadRequestException(sprintf('Unknown sort option "%s"', $sort), 400);
         }
 
-        if ($sort === null || ! in_array($sort, array_merge($textItems, $numberItems)) || ! (property_exists($participants[0], $sort) || isset($participants[0]->{$sort}))) {
-            $sort = 'displayName'; //default sort
-        }
-        $isNumeric = in_array($sort, $numberItems);
-        usort(
-            $participants,
-            function (Participant $a, Participant $b) use ($sort, $isNumeric) {
-                if (! (property_exists($a, $sort) || isset($a->{$sort}))) {
-                    return true;
-                }
-                if (! (property_exists($b, $sort) || isset($b->{$sort}))) {
-                    return false;
-                }
-
-                return $isNumeric ? $a->{$sort} > $b->{$sort} : strcasecmp($a->{$sort} ?? '', $b->{$sort} ?? '');
-            }
-        );
+        usort($participants, fn(Participant $a, Participant $b) => $a->{$sort} <=> $b->{$sort});
     }
 
     public function handleSort(string $sort) : void
@@ -191,17 +173,34 @@ final class ParticipantList extends BaseControl
         $this->reload('Účastník byl odebrán', 'success');
     }
 
-    public function handleEditField(?int $aid = null, ?int $participantId = null, ?string $field = null, ?string $value = null) : void
+    public function handleEdit(int $participantId) : void
     {
-        if ($aid === null || $participantId === null || $field === null || $value === null) {
-            throw new BadRequestException();
+        if (! isset($this->participantsById()[$participantId])) {
+            throw new BadRequestException(
+                sprintf('Participant %d does not exist', $participantId),
+                IResponse::S404_NOT_FOUND
+            );
         }
 
-        if (! $this->isAllowParticipantUpdate) {
-            $this->reload('Nemáte právo upravovat účastníky.', 'danger');
-        }
-        $this->onUpdate([new UpdateParticipant($aid, $participantId, $field, $value)]);
-        $this->reload();
+        $this['editDialog']->editParticipant($participantId);
+    }
+
+    protected function createComponentEditDialog() : EditParticipantDialog
+    {
+        $dialog = new EditParticipantDialog($this->participantsById(), $this->isAllowIsAccount, $this->isAllowRepayment);
+
+        $dialog->onUpdate[] = function (int $participantId, array $fields) : void {
+            $changes = [];
+
+            foreach ($fields as $field => $value) {
+                $changes[] = new UpdateParticipant($this->aid, $participantId, $field, (string) $value);
+            }
+
+            $this->onUpdate($changes);
+            $this->reload('Účastník byli upraven.', 'success');
+        };
+
+        return $dialog;
     }
 
     public function createComponentFormMassParticipants() : BaseForm
@@ -209,46 +208,55 @@ final class ParticipantList extends BaseControl
         $form = new BaseForm();
 
         $editCon = $form->addContainer('edit');
-        $editCon->addText('days', 'Dní');
-        $editCon->addText('payment', 'Částka');
-        $editCon->addText('repayment', 'Vratka');
-        $editCon->addRadioList('isAccount', 'Na účet?', ['N' => 'Ne', 'Y' => 'Ano']);
-        $editCon->addCheckbox('daysc');
-        $editCon->addCheckbox('paymentc');
-        $editCon->addCheckbox('repaymentc');
-        $editCon->addCheckbox('isAccountc'); //->setDefaultValue(TRUE);
+
+        $editCon->addText('days', 'Dní')
+            ->setNullable()
+            ->setAttribute('placeholder', 'Ponechat původní hodnotu');
+
+        $editCon->addText('payment', 'Částka')
+            ->setNullable()
+            ->setAttribute('placeholder', 'Ponechat původní hodnotu');
+
+        $editCon->addText('repayment', 'Vratka')
+            ->setNullable()
+            ->setAttribute('placeholder', 'Ponechat původní hodnotu');
+
+        $form->addCheckboxList('participantIds', null, array_map(fn() => '', $this->participantsById()))
+            ->setRequired('Musíte vybrat některého z účastníků');
+
+        $editCon->addRadioList('isAccount', 'Na účet?', ['N' => 'Ne', 'Y' => 'Ano', '' => 'Ponechat původní hodnotu'])
+            ->setDefaultValue('');
         $editCon->addSubmit('send', 'Upravit')
             ->setAttribute('class', 'btn btn-info btn-small')
-            ->onClick[] = [$this, 'massEditSubmitted'];
+            ->onClick[] = fn(SubmitButton $button) => $this->massEditSubmitted($button);
 
         $form->addSubmit('send', 'Odebrat vybrané')
-            ->onClick[] = [$this, 'massRemoveSubmitted'];
+            ->onClick[] = fn(SubmitButton $button) => $this->massRemoveSubmitted($button);
 
         return $form;
     }
 
-    public function massEditSubmitted(SubmitButton $button) : void
+    private function massEditSubmitted(SubmitButton $button) : void
     {
         if (! $this->isAllowParticipantUpdate) {
             $this->flashMessage('Nemáte právo upravovat účastníky.', 'danger');
             $this->redirect('Default:');
         }
+
         $values = $button->getForm()->getValues()['edit'];
-        bdump($values);
 
         $changes = [];
-        foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massParticipants[]') as $participantId) {
-            $participantId = (int) $participantId;
-            if ($values['daysc']) {
+        foreach ($button->getForm()->getValues()->participantIds as $participantId) {
+            if ($values['days'] !== null) {
                 $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_DAYS, $values['days']);
             }
-            if ($values['paymentc']) {
+            if ($values['payment'] !== null) {
                 $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_PAYMENT, $values['payment']);
             }
-            if ($values['repaymentc']) {
+            if ($values['repayment'] !== null) {
                 $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_REPAYMENT, $values['repayment']);
             }
-            if (! $values['isAccountc']) {
+            if ($values['isAccount'] === '') {
                 continue;
             }
 
@@ -259,7 +267,7 @@ final class ParticipantList extends BaseControl
         $this->reload('Účastníci byli upraveni.');
     }
 
-    public function massRemoveSubmitted(SubmitButton $button) : void
+    private function massRemoveSubmitted(SubmitButton $button) : void
     {
         if (! $this->isAllowParticipantDelete) {
             $this->flashMessage('Nemáte právo mazat účastníky.', 'danger');
@@ -267,10 +275,24 @@ final class ParticipantList extends BaseControl
         }
 
         $ids = [];
-        foreach ($button->getForm()->getHttpData(Form::DATA_TEXT, 'massParticipants[]') as $participantId) {
-            $ids[] = (int) $participantId;
+        foreach ($button->getForm()->getValues()->participantIds as $participantId) {
+            $ids[] = $participantId;
         }
         $this->onRemove($ids);
         $this->reload('Účastníci byli odebráni');
+    }
+
+    /**
+     * @return array<int, Participant> Participant's indexed by their ID
+     */
+    private function participantsById() : array
+    {
+        $participants = [];
+
+        foreach ($this->currentParticipants as $participant) {
+            $participants[$participant->getId()] = $participant;
+        }
+
+        return $participants;
     }
 }
