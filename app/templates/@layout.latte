@@ -1,125 +1,104 @@
-<!DOCTYPE html>
-<html lang="cs">
-    <head>
-        <meta charset=utf-8 />
-        <title>{block #title|stripHtml|trim}SkaHos{/block}</title>
-        <meta name="keywords" content="" />
-        <meta name="author" content="www.sinacek.cz" />
-        <meta name="robots" content="{$robots}" n:ifset="$robots">
-        <link rel="shortcut icon" href="{$baseUri}/favicon.ico" />
-        <link rel="apple-touch-icon" href="{$baseUri}/images/logo.png" />
-        <link rel="apple-touch-icon-precomposed" href="{$baseUri}/images/logo57.png" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        {control css}
-        {control js}
-        <script type="text/javascript">
-            {if $presenter->context->parameters['productionMode']}
-            (function (i, s, o, g, r, a, m) {
-                i['GoogleAnalyticsObject'] = r;
-                i[r] = i[r] || function () {
-                    (i[r].q = i[r].q || []).push(arguments)
-                }, i[r].l = 1 * new Date();
-                a = s.createElement(o),
-                        m = s.getElementsByTagName(o)[0];
-                a.async = 1;
-                a.src = g;
-                m.parentNode.insertBefore(a, m)
-            })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-            ga('create', 'UA-50892244-1', 'skauting.cz');
-            ga('require', 'displayfeatures');
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/favicon.ico">
+
+    {if $productionMode}
+        <script n:syntax="off">
+            ga = function (){ga.q.push(arguments)};
+            ga.q = [];
+            ga.l = +new Date;
+            ga('create', 'UA-50892244-1', 'auto');
             ga('send', 'pageview');
-            {/if}
-
-            function changeRole(id) {
-                window.location.href = {link changeRole! } + "\&roleId=" + id;
-            }
-            {if $user->isLoggedIn()}
-            $(document).ready(function () {
-                startLoginTimer();
-            });
-            {/if}
         </script>
-        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
-          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-        <![endif]-->
-    </head>
+        <script src="https://www.google-analytics.com/analytics.js" async defer></script>
+    {/if}
 
-    <body>
-        <div id="topAlertBox">
-            <ul> </ul>
-        </div>
-        <nav class="navbar navbar-inverse navbar-fixed-top" id="topBar">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#mainNavbar" aria-expanded="false" aria-controls="navbar">
-                        <span class="sr-only">Navigace</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" n:href=":Default:">Hospodaření</a>
-                </div>
+    <title>{block #title|stripHtml|trim}Skautské hospodaření{/block}</title>
 
-                <div id="mainNavbar" class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav">
-                        <li n:if="!$user->isLoggedIn()" {ifCurrent :Default:about}class='active'{/ifCurrent}><a n:href=":Default:about">O projektu</a></li>
-                            {if $user->isLoggedIn()}
-                            <li><a n:href=":Accountancy:Event:Default:">Akce</a></li>
-                            <li><a n:href=":Accountancy:Camp:Default:">Tábory{* <sup style="color:red;font-weight: bold;">BETA</sup>*}</a></li>
-                            <li><a n:href=":Accountancy:Travel:Default:">Cesťáky</a></li>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
 
-                            <li><a class="hiddenText" n:href=":Accountancy:UnitAccount:Cashbook:">Jednotka</a></li>
-                            <li><a class="hiddenText" n:href=":Accountancy:Payment:GroupList:">Platby</a></li>
-                            {/if}
-                    </ul>
+<body class="pb-5 position-relative">
 
+    <nav class="navbar navbar-expand-lg {if $testBackground}bg-test navbar-light{else}bg-dark navbar-dark{/if}">
+        <div class="container container-lg">
+            <a class="navbar-brand" n:href=":Default:">Hospodaření</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMain"
+                    aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav mr-auto">
                     {if $user->isLoggedIn()}
-                        <div class="navbar-form pull-right" style="padding-left: 4px;width: 300px;">
-                            <a n:href=":Auth:logoutSis" class="btn btn-primary btn-sm" style="float:right">Odhlásit se</a>
-                            <select onchange="changeRole(this.value)" class="roleSelect input-sm" style="width: 180px;">
-                                <option n:foreach="$myRoles as $r" value="{$r->ID}" {if $r->ID == $myRole}selected="selected"{/if}>{ifset $r->RegistrationNumber}{$r->RegistrationNumber} - {/ifset}{$r->Role}</option>
-                            </select>
-                        </div>
-                        <div id="timer" class="nav pull-right visible-lg" style="width: 100px; margin-top:19px;">
-                            <div class="progress" style="height:7px;">
-                                <div style="width: 100%" role="progressbar" class="progress-bar progress-bar-success"></div>
-                            </div>
-                        </div>
+                        <li n:class="nav-item, $module === 'Event' ? active">
+                            <a class="nav-link" href="{$linkGenerator->link('Accountancy:Event:Default:')}">Akce</a>
+                        </li>
+                        <li n:class="nav-item, $module === 'Camp' ? active">
+                            <a class="nav-link" n:href=":Accountancy:Camp:Default:">Tábory</a>
+                        </li>
+                        <li n:class="nav-item, $module === 'Travel' ? active">
+                            <a class="nav-link" n:href=":Accountancy:Travel:Default:">Cesťáky</a>
+                        </li>
+                        <li n:class="nav-item, $module === 'UnitAccount' ? active">
+                            <a class="nav-link" n:href=":Accountancy:UnitAccount:Cashbook:">Jednotka</a>
+                        </li>
+                        <li n:class="nav-item, $module === 'Payment' ? active">
+                            <a class="nav-link" n:href=":Accountancy:Payment:GroupList:">Platby</a>
+                        </li>
                     {else}
-                        <p class="navbar-btn pull-right">
-                            <a n:href=":Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL" class="btn btn-primary btn-sm">Přihlásit se</a>
-                        </p>
+                        <li n:class="nav-item, $presenter->isLinkCurrent(':Default:about') ? active">
+                            <a class="nav-link" n:href=":Default:about">O projektu</a>
+                        </li>
                     {/if}
-                </div><!--/.navbar-collapse -->
+                </ul>
+                <div class="my-2 my-lg-0">
+                    {control loginPanel}
+                </div>
             </div>
-        </nav>
-        <div class="container">
-            <div id="content">
-                {snippet flash}
-                    {foreach $flashes as $flash}
-                        <div class="alert alert-{$flash->type}">
-                            <a class="close" data-dismiss="alert">×</a>
-                            {if strpos($flash->message, 'html: ') === 0}
-                                {$flash->message|substr:6|noescape}
-                            {else}
-                                {$flash->message}
-                            {/if}
-                        </div>
-                    {/foreach}
-                {/snippet}
-                {snippet contentSnip}
-                    {include #content}
-                {/snippet}
-            </div><!-- /content -->
-            <hr style="clear: both" class="hidden-xs hidden-sm" />
-            <footer class="hidden-xs hidden-sm">
-                <a n:href=":Default:about">O projektu</a> / 
-                Vytváří <a href="http://sinacek.cz">František Hána (Sin)</a> a <a href="https://frantisekmasa.cz/" target="_blank">František Maša</a> /
-                <a href="https://headwayapp.co/skautske-hospodareni-changelog" target="_blank">Changelog</a>
-            </footer>
-        </div> <!-- /container -->
-    </body>
+        </div>
+    </nav>
+
+    <nav class="navbar navbar-expand-sm navbar-light bg-light mb-4 submenu" n:ifcontent>
+        <div class="container" n:ifcontent>
+            {block #subMenu}{/block}
+        </div>
+    </nav>
+
+    <main role="main" class="container">
+        {snippet flash}
+            {foreach $flashes as $flash}
+                <div class="alert alert-{$flash->type} alert-dismissible fade show" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Zavřít">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    {if strpos($flash->message, 'html: ') === 0}
+                        {$flash->message|substr:6|noescape}
+                    {else}
+                        {$flash->message}
+                    {/if}
+                </div>
+            {/foreach}
+        {/snippet}
+
+        {include #content}
+    </main><!-- /.container -->
+
+    <footer class="mt-5 py-2 text-center bg-light">
+        <small class="text-muted">
+            <span class="d-block text-center d-md-inline">Skautské hospodaření</span>
+            <a n:href=":Default:about" class="ml-3">O projektu</a>
+            <a href="https://github.com/skaut/Skautske-hospodareni/graphs/contributors" class="ml-3">Autoři</a>
+            <a href="https://github.com/skaut/Skautske-hospodareni" class="ml-3"><i class="fab fa-github"></i> Pošli PR</a>
+            <a href="https://headwayapp.co/skautske-hospodareni-changelog" target="_blank" class="ml-3">Changelog</a>
+        </small>
+    </footer>
+    {var $jsBundle = '/js/app.min.js'}
+    <script type="text/javascript" src="{$jsBundle}?{md5_file($wwwDir . '/' . $jsBundle)}"></script>
+</body>
 </html>

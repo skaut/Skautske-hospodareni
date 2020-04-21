@@ -47,7 +47,6 @@ class CashbookPresenter extends BasePresenter
     protected function startup() : void
     {
         parent::startup();
-        $this->setLayout('layout2');
 
         if ($this->isReadable) {
             return;
@@ -73,7 +72,6 @@ class CashbookPresenter extends BasePresenter
 
     public function actionDefault(?int $unitId = null, ?int $year = null) : void
     {
-        $this->setLayout('layout2');
         if ($unitId === null) {
             $this->redirect('this', ['unitId' => $this->unitService->getUnitId(), 'year' => $year]);
         }

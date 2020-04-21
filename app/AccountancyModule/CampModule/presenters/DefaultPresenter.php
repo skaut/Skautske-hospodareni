@@ -32,7 +32,6 @@ class DefaultPresenter extends BasePresenter
     protected function startup() : void
     {
         parent::startup();
-        $this->setLayout('layout2');
     }
 
     protected function createComponentGrid() : DataGrid

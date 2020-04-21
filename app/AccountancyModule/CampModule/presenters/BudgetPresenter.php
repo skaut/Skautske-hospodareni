@@ -41,7 +41,6 @@ class BudgetPresenter extends BasePresenter
 
     public function renderDefault(int $aid) : void
     {
-        $this->setLayout('layout2');
         $campId = new SkautisCampId($aid);
 
         try {

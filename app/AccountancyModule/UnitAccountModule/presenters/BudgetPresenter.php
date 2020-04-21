@@ -21,12 +21,6 @@ class BudgetPresenter extends BasePresenter
         $this->budgetService = $budgetService;
     }
 
-    protected function beforeRender() : void
-    {
-        parent::beforeRender();
-        $this->setLayout('layout2');
-    }
-
     public function renderDefault(?int $year = null) : void
     {
         $this->template->setParameters([

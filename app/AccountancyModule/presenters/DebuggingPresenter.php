@@ -10,7 +10,6 @@ final class DebuggingPresenter extends BasePresenter
 {
     public function renderDefault() : void
     {
-        $this->setLayout('layout2');
         $user = $this->getUser();
         $role = $this->userService->getActualRole();
 
