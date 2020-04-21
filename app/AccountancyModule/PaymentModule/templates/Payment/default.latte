@@ -46,25 +46,6 @@
 <div class="mb-3">
     <div class="mt-4 d-lg-flex" n:inner-if="$isEditable && $group->state === 'open'">
         <div class="mr-auto">
-            <div class="dropdown d-inline-block">
-                <button class="btn btn-success dropdown-toggle" type="button" id="addPersons"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                    <i class="fas fa-user-plus"></i> Přidat osoby <span class="caret"></span>
-                </button>
-                <div class="dropdown-menu" aria-labelledby="addPersons">
-                    <a n:if="$group->type === 'camp'"
-                            n:href="Camp:massAdd $group->id" class="dropdown-item">… z účastníků</a>
-
-                    <a n:if="$group->type === 'event'"
-                            n:href="Event:massAdd $group->id" class="dropdown-item">… z účastníků akce</a>
-
-                    <a n:href="massAdd $group->id" class="dropdown-item">… z členů</a>
-
-                    <a n:if="$group->type === 'registration'"
-                            n:href="Registration:massAdd $group->id" class="dropdown-item">… z registrace</a>
-                </div>
-            </div>
-
             {if $group->type === 'registration'}
                 <a n:href="Journal: $group->id" class="btn btn-light"><i class="fas fa-book-reader"></i>
                     Časopisy</a>
@@ -105,7 +86,26 @@
                 <a n:href="generateVS!" n:class="$nextVS === null ? disabled, btn, btn-light">Dogenerovat VS</a>
             </span>
         </div>
-        <a n:href="paymentDialog:open!" class="btn btn-success ajax mt-2 mt-lg-0">Přidat platbu</a>
+        <div class="dropdown d-inline-block">
+            <button class="btn btn-success dropdown-toggle" type="button" id="addPayments"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                <i class="fas fa-plus"></i> Přidat platbu <span class="caret"></span>
+            </button>
+            <div class="dropdown-menu" aria-labelledby="addPayments">
+                <a n:if="$group->type === 'camp'"
+                        n:href="Camp:massAdd $group->id" class="dropdown-item">… za účastníka</a>
+
+                <a n:if="$group->type === 'event'"
+                        n:href="Event:massAdd $group->id" class="dropdown-item">… za účastníka</a>
+
+                <a n:if="$group->type === 'registration'"
+                        n:href="Registration:massAdd $group->id" class="dropdown-item">… za registraci</a>
+
+                <a n:href="massAdd $group->id" class="dropdown-item">… za člena</a>
+
+                <a n:href="paymentDialog:open!" class="dropdown-item ajax">… obecnou</a>
+            </div>
+        </div>
     </div>
 </div>
 
