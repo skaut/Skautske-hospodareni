@@ -149,7 +149,7 @@ class VehiclePresenter extends BasePresenter
     protected function createComponentFormCreateVehicle() : Form
     {
         $form = new BaseForm();
-        $form->useBootstrap4();
+
         $form->addText('type', 'Typ')
             ->setAttribute('class', 'form-control')
             ->addRule(Form::FILLED, 'Musíte vyplnit typ.');

@@ -213,7 +213,7 @@ class DefaultPresenter extends BasePresenter
     protected function createComponentFormAddTravel() : BaseForm
     {
         $form = new BaseForm();
-        $form->useBootstrap4();
+
         $form->addHidden('command_id');
         $form->addSelect('type');
         $form->addDate('start_date', 'Datum cesty')

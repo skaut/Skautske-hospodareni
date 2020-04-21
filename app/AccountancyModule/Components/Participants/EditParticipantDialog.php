@@ -58,7 +58,6 @@ final class EditParticipantDialog extends Dialog
         assert($participant instanceof Participant);
 
         $form = new BaseForm();
-        $form->useBootstrap4();
 
         $form->addInteger('days', 'Počet dní')
             ->setRequired('Musíte vyplnit počet dní')

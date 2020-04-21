@@ -71,7 +71,7 @@ final class PrefixControl extends BaseControl
             throw new BadRequestException('User cannot edit cashbook prefix', IResponse::S403_FORBIDDEN);
         }
 
-        $form = new BaseForm(true);
+        $form = new BaseForm();
 
         $form->addText('prefix')
             ->setRequired(false)

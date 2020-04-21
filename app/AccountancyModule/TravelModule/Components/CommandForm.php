@@ -66,7 +66,6 @@ class CommandForm extends Control
         );
 
         $form = new BaseForm();
-        $form->useBootstrap4();
 
         $form->addGroup();
         $form->addText('purpose', 'Účel cesty')

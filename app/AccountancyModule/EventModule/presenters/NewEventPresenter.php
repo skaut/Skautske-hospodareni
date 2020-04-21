@@ -51,7 +51,6 @@ final class NewEventPresenter extends BasePresenter
         $units = [$unitId => $unit->getSortName()] + $subunits;
 
         $form = new BaseForm();
-        $form->useBootstrap4();
 
         $form->addText('name', 'Název akce')
             ->addRule(Form::FILLED, 'Musíte vyplnit název akce');

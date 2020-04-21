@@ -66,8 +66,6 @@ final class PaymentDialog extends Dialog
     {
         $form = new BaseForm();
 
-        $form->useBootstrap4();
-
         $form->addText('name', 'Název')
             ->addRule(Form::FILLED, 'Musíte zadat název platby');
 

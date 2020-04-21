@@ -189,8 +189,6 @@ class EventPresenter extends BasePresenter
     {
         $form = new BaseForm();
 
-        $form->useBootstrap4();
-
         $form->addText('name', 'Název akce')
             ->setRequired('Musíte zadat název akce');
         $form->addDate('start', 'Od')

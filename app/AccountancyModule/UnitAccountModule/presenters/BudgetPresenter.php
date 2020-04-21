@@ -53,8 +53,6 @@ class BudgetPresenter extends BasePresenter
     {
         $form = new BaseForm();
 
-        $form->useBootstrap4();
-
         $form->addText('label', 'Název')
             ->addRule(Form::FILLED, 'Vyplňte název kategorie');
 

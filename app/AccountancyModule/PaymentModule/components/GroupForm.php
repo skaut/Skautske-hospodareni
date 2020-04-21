@@ -94,7 +94,6 @@ final class GroupForm extends BaseControl
     protected function createComponentForm() : BaseForm
     {
         $form = new BaseForm();
-        $form->useBootstrap4();
 
         $form->addGroup('Základní údaje');
         $form->addText('name', 'Název')

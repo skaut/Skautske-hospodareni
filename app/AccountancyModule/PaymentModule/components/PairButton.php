@@ -77,7 +77,7 @@ class PairButton extends BaseControl
 
     protected function createComponentForm() : BaseForm
     {
-        $form = new BaseForm(true);
+        $form = new BaseForm();
 
         $form->addText('days', 'Počet dní', 2, 2)
             ->setDefaultValue(BankService::DAYS_BACK_DEFAULT)

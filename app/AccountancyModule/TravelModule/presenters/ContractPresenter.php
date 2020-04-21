@@ -149,7 +149,7 @@ class ContractPresenter extends BasePresenter
     protected function createComponentFormCreateContract() : Form
     {
         $form = new BaseForm();
-        $form->useBootstrap4();
+
         $form->addText('passengerName', 'Jméno a příjmení řidiče')
             ->setAttribute('class', 'form-control')
             ->setRequired('Musíte vyplnit jméno řidiče.');
