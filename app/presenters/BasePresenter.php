@@ -18,7 +18,6 @@ use Nette\Application\LinkGenerator;
 use Nette\Security\Identity;
 use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\AuthenticationException;
-use WebLoader\Nette as WebLoader;
 use function array_key_last;
 use function assert;
 use function explode;
@@ -40,9 +39,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
     /** @var int */
     private $unitId;
-
-    /** @var WebLoader\LoaderFactory */
-    private $webLoader;
 
     /** @var CommandBus */
     protected $commandBus;
@@ -66,7 +62,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     protected $linkGenerator;
 
     public function injectAll(
-        WebLoader\LoaderFactory $webLoader,
         UserService $userService,
         UnitService $unitService,
         CommandBus $commandBus,
@@ -77,7 +72,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         LoggerInterface $logger,
         LinkGenerator $linkGenerator
     ) : void {
-        $this->webLoader              = $webLoader;
         $this->userService            = $userService;
         $this->unitService            = $unitService;
         $this->commandBus             = $commandBus;
@@ -155,19 +149,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         }
 
         $this['loginPanel']->handleChangeRole($roleId);
-    }
-
-    protected function createComponentCss() : WebLoader\CssLoader
-    {
-        $control = $this->webLoader->createCssLoader('default');
-        $control->setMedia('screen');
-
-        return $control;
-    }
-
-    protected function createComponentJs() : WebLoader\JavaScriptLoader
-    {
-        return $this->webLoader->createJavaScriptLoader('default');
     }
 
     protected function createComponentLoginPanel() : LoginPanel
