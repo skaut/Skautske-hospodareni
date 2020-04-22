@@ -256,7 +256,7 @@ final class ParticipantList extends BaseControl
             if ($values['repayment'] !== null) {
                 $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_REPAYMENT, $values['repayment']);
             }
-            if ($values['isAccount'] === '') {
+            if ($values['isAccount'] === null) {
                 continue;
             }
 
