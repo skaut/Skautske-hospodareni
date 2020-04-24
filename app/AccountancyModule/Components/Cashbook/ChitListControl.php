@@ -164,7 +164,6 @@ class ChitListControl extends BaseControl
     protected function createComponentFormMass() : BaseForm
     {
         $form = new BaseForm();
-        $form->getElementPrototype()->setAttribute('class', 'ajax');
 
         $printButton     = $form->addSubmit('massPrintSend');
         $exportButton    = $form->addSubmit('massExportSend');
