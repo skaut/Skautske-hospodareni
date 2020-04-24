@@ -15,6 +15,7 @@ use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Operation;
 use Nette\SmartObject;
 use function array_map;
+use function count;
 use function implode;
 
 /**
@@ -31,6 +32,7 @@ use function implode;
  * @property-read PaymentMethod     $paymentMethod
  * @property-read string            $categories
  * @property-read string            $categoriesShortcut
+ * @property-read int               $scansCount
  */
 class Chit
 {
@@ -211,5 +213,10 @@ class Chit
     public function getScans() : array
     {
         return $this->scans;
+    }
+
+    public function getScansCount() : int
+    {
+        return count($this->scans);
     }
 }

@@ -56,8 +56,9 @@
                                         target="_blank"
                                         class="btn btn-sm btn-info d-none d-lg-inline"><i
                                             class="fas fa-print"></i></a>
-                                <a class="ajax btn btn-sm btn-info d-none d-md-inline" n:href="chitScan:open! $chit->id" title="Skeny dokladů">
+                                <a class="ajax btn btn-sm btn-secondary d-none d-md-inline" n:href="chitScan:open! $chit->id" title="Skeny dokladů">
                                     <i class="far fa-folder-open"></i>
+                                    <span n:if="$chit->scansCount > 0" class="badge badge-light">{$chit->scansCount}</span>
                                 </a>
                                 <a n:if="$isEditable && ! $chit->locked" n:href="edit! $chit->id"
                                         class="ajax btn btn-sm btn-primary ui--editChit"><i class="far fa-edit"></i></a>
