@@ -24,12 +24,6 @@ use function implode;
 
 final class ChitScanControl extends BaseControl
 {
-    /**
-     * (string because persistent parameters aren't auto-casted)
-     *
-     * @var        int|string|NULL
-     * @persistent
-     */
     public $chitId;
 
     /** @var CashbookId */
@@ -51,12 +45,6 @@ final class ChitScanControl extends BaseControl
         $this->isEditable = $isEditable;
         $this->commandBus = $commandBus;
         $this->queryBus   = $queryBus;
-    }
-
-    public function handleOpen(int $chitId) : void
-    {
-        $this->chitId = $chitId;
-        $this->redrawControl();
     }
 
     public function render() : void
@@ -150,12 +138,6 @@ final class ChitScanControl extends BaseControl
         );
 
         $this->getPresenter()->flashMessage('Sken byl nahrán', 'success');
-    }
-
-    public function close() : void
-    {
-        $this->chitId = null;
-        $this->redrawControl();
     }
 
     private function isChitEditable() : bool

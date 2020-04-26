@@ -1,38 +1,4 @@
-<div n:snippet n:inner-if="$renderModal" class="modal {if $renderModal}rendered{/if}" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title">Skeny dokladů</h4>
-            </div>
-            <div class="modal-body">
-                {if empty($files)}
-                    Nejsou uloženy žádné naskenované doklady.
-                {else}
 
-                {foreach $files as $file}
-                    <div>
-                        <a href="{plink :Accountancy:CashbookExport:downloadScan $cashbookId, $chitId, $file->getPath()}"
-                           class="float-right" title="Stáhnout soubor {$file->getFileName()}" data-toggle="tooltip">
-                            <i class="fa fa-arrow-down"></i>
-                            {$file->getOriginalFileName()|truncate:26}
-                        </a>
-                        <a n:href="remove! $file->getPath()"
-                                n:if="$isChitEditable"
-                                title="Smazat soubor"
-                                data-toggle="tooltip"
-                                class="text-danger float-right ml-3 ajax"><i class="fa fa-trash-o"></i></a>
-                    </div>
-                {/foreach}
-                {/if}
-                <hr />
-                {control uploadForm}
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Storno</button>
-            </div>
         </div>
     </div>
-
 </div>

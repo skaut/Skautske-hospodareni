@@ -25,6 +25,7 @@ use Model\ExportService;
 use Model\Services\PdfRenderer;
 use Nette\Application\BadRequestException;
 use Nette\Http\IResponse;
+use Nette\Utils\Image;
 use Nette\Utils\Strings;
 use RuntimeException;
 use Ublaboo\Responses\PSR7StreamResponse;
@@ -33,6 +34,7 @@ use function array_map;
 use function array_values;
 use function assert;
 use function date;
+use function GuzzleHttp\Psr7\stream_for;
 use function in_array;
 use function sprintf;
 
@@ -175,7 +177,7 @@ class CashbookExportPresenter extends BasePresenter
         $this->sendResponse(new ExcelResponse('pokladni-kniha', $spreadsheet));
     }
 
-    public function actionDownloadScan(string $cashbookId, int $chitId, string $path) : void
+    public function actionDownloadScan(string $cashbookId, int $chitId, string $path, bool $thumbnail = false) : void
     {
         $cashbookId = CashbookId::fromString($cashbookId);
         foreach ($this->queryBus->handle(new ChitScansQuery($cashbookId, $chitId)) as $scan) {
@@ -184,8 +186,14 @@ class CashbookExportPresenter extends BasePresenter
             if ($scan->getPath() !== $path) {
                 continue;
             }
+            $contents = $scan->getContents();
+            if ($thumbnail) {
+                $image = Image::fromString($contents);
+                $image->resize(150, 150);
+                $contents = stream_for($image->toString());
+            }
 
-            $this->sendResponse(new PSR7StreamResponse($scan->getContents(), $scan->getFileName()));
+            $this->sendResponse(new PSR7StreamResponse($contents, $scan->getFileName()));
         }
 
         throw new BadRequestException('Scan not found', IResponse::S404_NOT_FOUND);
