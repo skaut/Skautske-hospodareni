@@ -16,8 +16,8 @@
         </button>
 
         <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="exportButton">
+            {if ! $cashbookType->isUnit()}
             <a n:class="dropdown-item, count($chits) === 0 ? disabled"
-                    n:if="! $cashbookType->isUnit()"
                     href="{plink :Accountancy:CashbookExport:printCashbook $cashbookId, $paymentMethod->toString ()}" target="_blank">
                 <i class="far fa-file-pdf"></i>
                 {if $paymentMethod->equalsValue('cash')}
@@ -27,6 +27,7 @@
                 {/if}
             </a>
             <div class="dropdown-divider"></div>
+            {/if}
             <a n:class="dropdown-item, count($chits) === 0 ? disabled"
                href="{plink :Accountancy:CashbookExport:exportCashbook $cashbookId, $paymentMethod->toString()}">
                 <i class="far fa-file-excel"></i> Pokladní kniha.xlsx
