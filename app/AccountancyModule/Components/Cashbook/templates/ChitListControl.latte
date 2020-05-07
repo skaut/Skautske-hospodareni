@@ -12,24 +12,25 @@
         </div>
     </div>
     <div class="panel-body chit-list" n:if="!empty($chits)">
-        {form formMass}
             <table class="table table-bordered table-condensed" id="cashbookTable">
                 <thead>
                 <tr>
                     <th class='col-xs-1'>
-                        <input type="checkbox" name="chits-all"
-                               class="hidden-xs hidden-sm" data-dependent-checkboxes=".dependent-checkbox"/>
-                        <button n:if="$isCash" n:name="massPrintSend" title="Vytisknout vybrané"
-                                                       class="btn btn-info btn-sm allDependend-{$paymentMethod} hidden-xs hidden-sm"
-                                                       type="submit">
-                            <i class="fas fa-print"></i>
-                        </button>
-                        <button n:if="$canMoveChits" n:name="massMoveSend" title="Přesunout vybrané" role="button" data-toggle="modal"
-                           class="btn btn-info btn-sm allDependend-{$paymentMethod} hidden-xs"><i
-                                    class="fas fa-step-forward"></i></button>
-                        <button n:if="$canMassExport" name="massExportSend" title="Exportovat vybrané"
-                                class="btn btn-info btn-sm allDependend-{$paymentMethod}" type="submit"><i
-                                    class="fas fa-download"></i></button>
+                        {form formMass class=>'formMass'}
+                            <input type="checkbox" name="chits-all"
+                                   class="hidden-xs hidden-sm" data-dependent-checkboxes=".dependent-checkbox"/>
+                            <button n:if="$isCash" n:name="massPrintSend" title="Vytisknout vybrané"
+                                                           class="btn btn-info btn-sm allDependend-{$paymentMethod} hidden-xs hidden-sm"
+                                                           type="submit">
+                                <i class="fas fa-print"></i>
+                            </button>
+                            <button n:if="$canMoveChits" n:name="massMoveSend" title="Přesunout vybrané" role="button" data-toggle="modal"
+                               class="btn btn-info btn-sm allDependend-{$paymentMethod} hidden-xs"><i
+                                        class="fas fa-step-forward"></i></button>
+                            <button n:if="$canMassExport" name="massExportSend" title="Exportovat vybrané"
+                                    class="btn btn-info btn-sm allDependend-{$paymentMethod}" type="submit"><i
+                                        class="fas fa-download"></i></button>
+                        {/form}
                     </th>
                     <th class="col-xs-1">Ze dne</th>
                     <th class="col-xs-1">Číslo</th>
@@ -56,10 +57,6 @@
                                         target="_blank"
                                         class="btn btn-sm btn-info d-none d-lg-inline"><i
                                             class="fas fa-print"></i></a>
-                                <a class="ajax btn btn-sm btn-secondary d-none d-md-inline" n:href="chitScan:open! $chit->id" title="Skeny dokladů">
-                                    <i class="far fa-folder-open"></i>
-                                    <span n:if="$chit->scansCount > 0" class="badge badge-light">{$chit->scansCount}</span>
-                                </a>
                                 {control chitScan-$chit->id}
                                 <a n:if="$isEditable && ! $chit->locked" n:href="edit! $chit->id"
                                         class="ajax btn btn-sm btn-primary ui--editChit"><i class="far fa-edit"></i></a>
@@ -114,7 +111,6 @@
                 </tr>
                 <tbody>
             </table>
-        {/form}
 
         {if $canMoveChits}
             {control moveChitsDialog}
