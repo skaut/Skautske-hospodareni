@@ -121,7 +121,7 @@ final class ChitScanControl extends BaseControl
         $chitId = $form->getValues()->chitId;
         $chitId = $chitId !== null ? (int) $chitId : $chitId;
 
-        if (! $this->isChitEditable($chitId)) {
+        if (! $this->isChitEditable()) {
             $this->getPresenter()->flashMessage('K dokladu nyní nelze přidávat naskenované doklady!', 'error');
             $this->getPresenter()->redirect('this');
 
