@@ -12,7 +12,6 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Commands\Cashbook\AddChitScan;
 use Model\Cashbook\Commands\Cashbook\RemoveChitScan;
 use Model\Cashbook\ReadModel\Queries\ChitQuery;
-use Model\Cashbook\ReadModel\Queries\ChitScansQuery;
 use Model\Common\FilePath;
 use Model\Common\IScanStorage;
 use Model\Common\ScanNotFound;
@@ -24,6 +23,7 @@ use function implode;
 
 final class ChitScanControl extends BaseControl
 {
+    /** @var int */
     public $chitId;
 
     /** @var CashbookId */
@@ -38,9 +38,10 @@ final class ChitScanControl extends BaseControl
     /** @var QueryBus */
     private $queryBus;
 
-    public function __construct(CashbookId $cashbookId, bool $isEditable, CommandBus $commandBus, QueryBus $queryBus)
+    public function __construct(CashbookId $cashbookId, int $chitId, bool $isEditable, CommandBus $commandBus, QueryBus $queryBus)
     {
         parent::__construct();
+        $this->chitId     = $chitId;
         $this->cashbookId = $cashbookId;
         $this->isEditable = $isEditable;
         $this->commandBus = $commandBus;
@@ -51,23 +52,16 @@ final class ChitScanControl extends BaseControl
     {
         $template = $this->template;
         $template->setFile(__DIR__ . '/templates/ChitScanControl.latte');
+        $this['uploadForm']->setDefaults(['chitId' => $this->chitId]);
 
-        if ($this->chitId === null || ! $this->isEditable) {
-            $template->setParameters(['renderModal' => false]);
-            $template->render();
-
-            return;
-        }
-
-        $chit = $this->queryBus->handle(new ChitQuery($this->cashbookId, (int) $this->chitId));
+        $chit = $this->queryBus->handle(new ChitQuery($this->cashbookId, $this->chitId));
         assert($chit instanceof Chit);
 
         $template->setParameters([
-            'renderModal' => true,
             'cashbookId' => $this->cashbookId->toString(),
-            'chitId' => $this->chitId,
-            'isChitEditable' => $this->isChitEditable(),
-            'files' => $this->queryBus->handle(new ChitScansQuery($this->cashbookId, (int) $this->chitId)),
+            'isEditable' => $this->isChitEditable(),
+            'chitId' => $chit->getId(),
+            'files' => $chit->getScans(),
         ]);
 
         $template->getLatte()->addProvider('formsStack', [$this['uploadForm']]);
@@ -78,24 +72,29 @@ final class ChitScanControl extends BaseControl
     public function handleRemove(string $path) : void
     {
         if (! $this->isChitEditable()) {
-            $this->getPresenter()->flashMessage('U pokldního dokladu nyní nelze odebírat naskenované doklady!', 'error');
+            $this->getPresenter()->flashMessage('U pokladního dokladu nyní nelze odebírat naskenované doklady!', 'error');
 
             return;
         }
 
         try {
-            $this->commandBus->handle(new RemoveChitScan($this->cashbookId, (int) $this->chitId, FilePath::fromString($path)));
+            $this->commandBus->handle(new RemoveChitScan($this->cashbookId, $this->chitId, FilePath::fromString($path)));
             $this->getPresenter()->flashMessage('Sken byl odebrán', 'success');
         } catch (ScanNotFound $e) {
         }
 
-        $this->redrawControl();
+        if ($this->getPresenter()->isAjax()) {
+            $this->redrawControl();
+        } else {
+            $this->getPresenter()->redirect('this');
+        }
     }
 
     protected function createComponentUploadForm() : BaseForm
     {
         $form = new BaseForm();
 
+        $form->addHidden('chitId');
         $form->addUpload('scan', 'Další sken')
             ->setRequired('Musíte vybrat sken dokladu')
             ->addRule(
@@ -104,7 +103,7 @@ final class ChitScanControl extends BaseControl
                 IScanStorage::ALLOWED_MIME_TYPES
             )->addRule(BaseForm::MAX_FILE_SIZE, 'Maximální povolená velikost souboru je 15 MB', 15 * 1024 * 1024);
 
-        $form->addSubmit('submit', 'Ok');
+        $form->addSubmit('submit', 'Nahrát');
 
         $form->onSuccess[] = function (BaseForm $form) : void {
             $this->formSucceeded($form);
@@ -119,8 +118,12 @@ final class ChitScanControl extends BaseControl
 
     private function formSucceeded(BaseForm $form) : void
     {
-        if (! $this->isChitEditable()) {
+        $chitId = $form->getValues()->chitId;
+        $chitId = $chitId !== null ? (int) $chitId : $chitId;
+
+        if (! $this->isChitEditable($chitId)) {
             $this->getPresenter()->flashMessage('K dokladu nyní nelze přidávat naskenované doklady!', 'error');
+            $this->getPresenter()->redirect('this');
 
             return;
         }
@@ -134,10 +137,11 @@ final class ChitScanControl extends BaseControl
         }
 
         $this->commandBus->handle(
-            new AddChitScan($this->cashbookId, (int) $this->chitId, $upload->getSanitizedName(), $upload->getContents())
+            new AddChitScan($this->cashbookId, (int) $chitId, $upload->getSanitizedName(), $upload->getContents())
         );
 
         $this->getPresenter()->flashMessage('Sken byl nahrán', 'success');
+        $this->getPresenter()->redirect('this');
     }
 
     private function isChitEditable() : bool
@@ -145,7 +149,7 @@ final class ChitScanControl extends BaseControl
         if ($this->chitId === null) {
             return false;
         }
-        $chit = $this->queryBus->handle(new ChitQuery($this->cashbookId, (int) $this->chitId));
+        $chit = $this->queryBus->handle(new ChitQuery($this->cashbookId, $this->chitId));
         assert($chit instanceof Chit);
 
         return $this->isEditable && ! $chit->isLocked();

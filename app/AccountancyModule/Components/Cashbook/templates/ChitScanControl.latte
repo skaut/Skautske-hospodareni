@@ -1,4 +1,25 @@
+<div class="dropdown btn-group">
+    <button class="btn btn-sm btn-secondary d-none d-md-inline" type="button" id="chitScanList" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-persist="true">
+        <i class="far fa-folder-open"></i>
+        <span n:if="count($files) > 0" class="badge badge-light">{php echo count($files);}</span>
+    </button>
+    <div class="dropdown-menu">
+        <div n:foreach="$files as $file" class="dropdown-item text-nowrap" title="{$file->getFilePath()->getOriginFilename()}">
+            {$file->getFilePath()->getOriginFilename()|truncate:26}
 
+            <a n:href="remove! $file->getFilePath()->getPath()"
+                    n:if="$isEditable"
+                    title="Smazat soubor"
+                    data-toggle="tooltip"
+                    onclick="return confirm('Opravdu chcete smazat sken?');"
+                    class="text-danger float-right ml-2"><i class="far fa-trash-alt"></i></a>
+            <a href="{plink :Accountancy:CashbookExport:downloadScan $cashbookId, $chitId, $file->getFilePath()->getPath()}"
+               class="float-right " title="Stáhnout soubor" data-toggle="tooltip">
+                <i class="fas fa-arrow-down"></i>
+            </a>
         </div>
+        <div class="dropdown-divider"></div>
+        {control uploadForm}
     </div>
 </div>
+

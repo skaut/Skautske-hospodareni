@@ -60,6 +60,7 @@
                                     <i class="far fa-folder-open"></i>
                                     <span n:if="$chit->scansCount > 0" class="badge badge-light">{$chit->scansCount}</span>
                                 </a>
+                                {control chitScan-$chit->id}
                                 <a n:if="$isEditable && ! $chit->locked" n:href="edit! $chit->id"
                                         class="ajax btn btn-sm btn-primary ui--editChit"><i class="far fa-edit"></i></a>
 
@@ -119,7 +120,6 @@
             {control moveChitsDialog}
         {/if}
         {control invertChitDialog}
-        {control chitScan}
     </div>
     <div class="panel-body info" n:if="count($chits) === 0">
         <div class="text-center">Zatím zde nemáte žádné doklady.</div>
