@@ -18,14 +18,12 @@ use Model\Cashbook\ChitLocked;
 use Model\Cashbook\ChitNotFound;
 use Model\Cashbook\Commands\Cashbook\GenerateChitNumbers;
 use Model\Cashbook\Commands\Cashbook\RemoveChitFromCashbook;
-use Model\Cashbook\Commands\Cashbook\RemoveChitScan;
 use Model\Cashbook\MaxChitNumberNotFound;
 use Model\Cashbook\NonNumericChitNumbers;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
-use Model\Common\FilePath;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
 use Nette\Application\UI\Multiplier;
@@ -151,14 +149,6 @@ class ChitListControl extends BaseControl
         $this->onEditButtonClicked($chitId);
     }
 
-    public function handleRemoveScan(int $chitId, string $path) : void
-    {
-        $this->commandBus->handle(new RemoveChitScan($this->cashbookId, $chitId, FilePath::fromString($path)));
-
-        $this->flashMessage('Sken dokladu byl smazán', 'success');
-        $this->redrawControl();
-    }
-
     public function handleGenerateNumbers(string $paymentMethod) : void
     {
         try {
@@ -223,9 +213,8 @@ class ChitListControl extends BaseControl
     protected function createComponentChitScan() : Multiplier
     {
         return new Multiplier(
-            function (string $chitId) : ChitScanControl {
-                return $this->chitScanFactory->create($this->cashbookId, (int) $chitId, $this->isEditable);
-            }
+            fn (string $chitId) =>
+            $this->chitScanFactory->create($this->cashbookId, (int) $chitId, $this->isEditable)
         );
     }
 

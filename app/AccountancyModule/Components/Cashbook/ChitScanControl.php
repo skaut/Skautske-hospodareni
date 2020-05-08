@@ -24,7 +24,7 @@ use function implode;
 final class ChitScanControl extends BaseControl
 {
     /** @var int */
-    public $chitId;
+    private $chitId;
 
     /** @var CashbookId */
     private $cashbookId;

@@ -16,7 +16,7 @@
                 <thead>
                 <tr>
                     <th class='col-xs-1'>
-                        {form formMass class=>'formMass'}
+                        <form n:name="formMass" class="formMass">
                             <input type="checkbox" name="chits-all"
                                    class="hidden-xs hidden-sm" data-dependent-checkboxes=".dependent-checkbox"/>
                             <button n:if="$isCash" n:name="massPrintSend" title="Vytisknout vybrané"
@@ -30,7 +30,7 @@
                             <button n:if="$canMassExport" name="massExportSend" title="Exportovat vybrané"
                                     class="btn btn-info btn-sm allDependend-{$paymentMethod}" type="submit"><i
                                         class="fas fa-download"></i></button>
-                        {/form}
+                        </form>
                     </th>
                     <th class="col-xs-1">Ze dne</th>
                     <th class="col-xs-1">Číslo</th>

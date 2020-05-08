@@ -197,7 +197,17 @@ class CashbookExportPresenter extends BasePresenter
         $this->sendResponse(new ExcelResponse('pokladni-kniha', $spreadsheet));
     }
 
-    public function actionDownloadScan(string $cashbookId, int $chitId, string $path, bool $thumbnail = false) : void
+    public function actionDownloadScan(string $cashbookId, int $chitId, string $path) : void
+    {
+        $this->downloadScan($cashbookId, $chitId, $path, false);
+    }
+
+    public function actionDownloadScanThumbnail(string $cashbookId, int $chitId, string $path) : void
+    {
+        $this->downloadScan($cashbookId, $chitId, $path, true);
+    }
+
+    private function downloadScan(string $cashbookId, int $chitId, string $path, bool $thumbnail) : void
     {
         $cashbookId = CashbookId::fromString($cashbookId);
         foreach ($this->queryBus->handle(new ChitScansQuery($cashbookId, $chitId)) as $scan) {
