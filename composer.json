@@ -23,6 +23,7 @@
         "latte/latte": " ~2.4",
         "league/flysystem": "^1.0",
         "lookyman/nette-proxy": "^1.2",
+        "maennchen/zipstream-php": "^2.0",
         "mhujer/fio-api-php": "^4.0",
         "moneyphp/money": "^3.0",
         "monolog/monolog": "^2.0",

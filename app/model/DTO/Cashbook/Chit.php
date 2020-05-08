@@ -17,6 +17,8 @@ use Nette\SmartObject;
 use function array_map;
 use function count;
 use function implode;
+use function sprintf;
+use function substr;
 
 /**
  * @property-read int               $id
@@ -218,5 +220,14 @@ class Chit
     public function getScansCount() : int
     {
         return count($this->scans);
+    }
+
+    public function getName() : string
+    {
+        return sprintf(
+            '%s_%s',
+            $this->getDate()->format('Y-m-d'),
+            substr($this->getPurpose(), 0, 30)
+        );
     }
 }

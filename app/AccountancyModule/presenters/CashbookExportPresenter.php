@@ -13,6 +13,7 @@ use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CashbookDisplayNameQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
+use Model\Cashbook\ReadModel\Queries\CashbookScansQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitScansQuery;
 use Model\Cashbook\ReadModel\Queries\Pdf\ExportChits;
@@ -29,6 +30,8 @@ use Nette\Utils\Image;
 use Nette\Utils\Strings;
 use RuntimeException;
 use Ublaboo\Responses\PSR7StreamResponse;
+use ZipStream\Option\Archive;
+use ZipStream\ZipStream;
 use function array_filter;
 use function array_map;
 use function array_values;
@@ -155,6 +158,23 @@ class CashbookExportPresenter extends BasePresenter
                 $spreadsheet
             )
         );
+    }
+
+    public function actionExportScans(string $cashbookId, string $paymentMethod) : void
+    {
+        $method = PaymentMethod::get($paymentMethod);
+
+        $files = $this->queryBus->handle(new CashbookScansQuery(CashbookId::fromString($cashbookId), $method));
+
+        $options = new Archive();
+        $options->setSendHttpHeaders(true);
+        $zip = new ZipStream('Skeny dokladů.zip', $options);
+
+        foreach ($files as $name => $file) {
+            assert($file instanceof File);
+            $zip->addFileFromPsr7Stream($name, $file->getContents());
+        }
+        $zip->finish();
     }
 
     /**
