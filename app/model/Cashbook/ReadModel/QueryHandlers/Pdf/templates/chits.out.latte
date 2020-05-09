@@ -14,7 +14,7 @@ table {
     </tr>
     <tr>
         <td><b>ze dne:</b> {$chit->date|date:"j.n.Y"}</td>
-        <td><b>č.</b> {$cashbook->chitNumberPrefix}{$chit->number}</td>
+        <td><b>č.</b> {$cashbook->getChitNumberPrefix($chit->getPaymentMethod())}{$chit->number}</td>
     </tr>
     <tr>
         <td colspan="3"><b>Vyplaceno komu:</b> {$chit->recipient}</td>

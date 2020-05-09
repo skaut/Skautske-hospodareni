@@ -1,3 +1,8 @@
+<a n:href="prefix:open!" class="btn btn-sm btn-secondary mb-2 ajax">
+    Prefix: {if $prefix !== null}{$prefix}{else}žádný{/if}
+</a>
+{control prefix}
+
 <a n:href="generateNumbers! $paymentMethod->toString ()" n:class="btn, btn-sm, btn-warning, mb-2, ! $hasOnlyNumericChitNumbers ? disabled"
         data-toggle="tooltip" data-placement="top" title="Generovat čísla dokladů lze když stávající obsahují pouze číslice.">
     Dogenerovat čísla dokladů

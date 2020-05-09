@@ -1,14 +1,12 @@
-{snippet}
-    <strong>Prefix:</strong>
-    <i class="glyphicon glyphicon-question-sign" rel="tooltip" data-original-title="Jedná se o označení číselné řady dokladů pro rozlišení jednotlivých akcí."></i>
-    {if $showForm}
-        <form n:name="form" class="form-inline inline-block">
-            <input n:name="prefix" class="form-control">
-            <button n:name="submit" class="btn btn-sm btn-default ajax"><i class="fa fa-check"></i></button>
-            <a n:href="toggleForm false" class="btn btn-sm btn-default ajax"><i class="fa fa-times"></i></a>
-        </form>
-    {else}
-        {if $prefix !== null}{$prefix}{else}<i>žádný</i>{/if}
-        <a n:href="toggleForm true" class="ajax btn btn-xs btn-default"><i class="far fa-edit"></i></a>
+{layout $layout}
+
+{block dialog-title}Nastavit prefix{/block}
+
+{block dialog-body}
+    {if $editing}
+        {control form}
+
     {/if}
-{/snippet}
+{/block}
+
+{block dialog-footer}{/block}
