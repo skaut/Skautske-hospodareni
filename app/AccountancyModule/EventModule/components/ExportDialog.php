@@ -47,8 +47,6 @@ final class ExportDialog extends Dialog
     {
         $form = new BaseForm();
 
-        $form->useBootstrap4();
-
         $events = [];
 
         foreach ($this->events as $event) {

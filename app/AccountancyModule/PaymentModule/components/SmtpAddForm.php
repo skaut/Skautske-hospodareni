@@ -42,7 +42,7 @@ final class SmtpAddForm extends BaseControl
     protected function createComponentForm() : BaseForm
     {
         $form = new BaseForm();
-        $form->useBootstrap4();
+
         $form->addText('host', 'Host')
             ->addRule(Form::FILLED, 'Musíte vyplnit pole host.')
             ->getControlPrototype()->placeholder('např. smtp.gmail.com');

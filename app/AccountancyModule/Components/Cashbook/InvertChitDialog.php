@@ -102,7 +102,6 @@ class InvertChitDialog extends BaseControl
         }
 
         $form = new BaseForm();
-        $form->useBootstrap4();
 
         $form->addSelect('cashbookId', 'Evidence plateb', $this->getCashbooks())
             ->setRequired('Musíte vybrat evidenci plateb');

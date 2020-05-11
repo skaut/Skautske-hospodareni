@@ -122,7 +122,6 @@ final class PersonPicker extends BaseControl
     protected function createComponentNonMemberParticipantForm() : BaseForm
     {
         $form = new BaseForm();
-        $form->useBootstrap4();
 
         $form->addText('firstName', 'Jméno')
             ->setRequired('Musíš vyplnit křestní jméno.');

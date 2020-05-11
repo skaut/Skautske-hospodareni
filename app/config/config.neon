@@ -46,7 +46,6 @@ extensions:
     messageBus: eGen\MessageBus\DI\MessageBusExtension
     console: Kdyby\Console\DI\ConsoleExtension
     proxy: Lookyman\Nette\Proxy\DI\ProxyExtension
-    webloader: WebLoader\Nette\Extension
 
 autoDI:
     services:
@@ -207,5 +206,4 @@ decorator:
 includes:
     - model/doctrine.neon
     - components.neon
-    - webloader.neon
     - sentry.neon

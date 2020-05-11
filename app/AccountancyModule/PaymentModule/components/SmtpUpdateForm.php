@@ -49,7 +49,7 @@ final class SmtpUpdateForm extends Dialog
     protected function createComponentForm() : BaseForm
     {
         $form = new BaseForm();
-        $form->useBootstrap4();
+
         $form->addText('password', 'Nové heslo')
             ->addRule(Form::FILLED, 'Musíte vyplnit heslo.');
         $form->addHidden('smtpId', $this->smtpId);

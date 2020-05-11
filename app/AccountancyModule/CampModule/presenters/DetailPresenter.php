@@ -38,8 +38,6 @@ class DetailPresenter extends BasePresenter
 
     public function renderDefault(int $aid) : void
     {
-        $this->setLayout('layout2');
-
         $troops = array_filter(array_map(
             function (UnitId $id) {
                 try {

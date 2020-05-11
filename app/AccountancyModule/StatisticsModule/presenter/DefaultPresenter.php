@@ -21,7 +21,6 @@ class DefaultPresenter extends BasePresenter
 
     public function renderDefault(?int $year = null) : void
     {
-        $this->setLayout('layout2');
         if ($year === null) {
             $year = (int) date('Y');
         }
