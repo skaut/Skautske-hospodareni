@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace Model\Cashbook\Commands\Cashbook;
 
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Handlers\Cashbook\RemoveChitScanHandler;
 use Model\Common\FilePath;
 
+/**
+ * @see RemoveChitScanHandler
+ */
 final class RemoveChitScan
 {
     /** @var CashbookId */

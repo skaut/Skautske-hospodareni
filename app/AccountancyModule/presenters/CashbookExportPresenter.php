@@ -13,6 +13,7 @@ use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CashbookDisplayNameQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
+use Model\Cashbook\ReadModel\Queries\CashbookScansQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitScansQuery;
 use Model\Cashbook\ReadModel\Queries\Pdf\ExportChits;
@@ -25,14 +26,18 @@ use Model\ExportService;
 use Model\Services\PdfRenderer;
 use Nette\Application\BadRequestException;
 use Nette\Http\IResponse;
+use Nette\Utils\Image;
 use Nette\Utils\Strings;
 use RuntimeException;
 use Ublaboo\Responses\PSR7StreamResponse;
+use ZipStream\Option\Archive;
+use ZipStream\ZipStream;
 use function array_filter;
 use function array_map;
 use function array_values;
 use function assert;
 use function date;
+use function GuzzleHttp\Psr7\stream_for;
 use function in_array;
 use function sprintf;
 
@@ -155,6 +160,23 @@ class CashbookExportPresenter extends BasePresenter
         );
     }
 
+    public function actionExportScans(string $cashbookId, string $paymentMethod) : void
+    {
+        $method = PaymentMethod::get($paymentMethod);
+
+        $files = $this->queryBus->handle(new CashbookScansQuery(CashbookId::fromString($cashbookId), $method));
+
+        $options = new Archive();
+        $options->setSendHttpHeaders(true);
+        $zip = new ZipStream('Skeny dokladů.zip', $options);
+
+        foreach ($files as $name => $file) {
+            assert($file instanceof File);
+            $zip->addFileFromPsr7Stream($name, $file->getContents());
+        }
+        $zip->finish();
+    }
+
     /**
      * Exports cashbook (list of cashbook operations) with category columns as XLS file
      */
@@ -177,6 +199,16 @@ class CashbookExportPresenter extends BasePresenter
 
     public function actionDownloadScan(string $cashbookId, int $chitId, string $path) : void
     {
+        $this->downloadScan($cashbookId, $chitId, $path, false);
+    }
+
+    public function actionDownloadScanThumbnail(string $cashbookId, int $chitId, string $path) : void
+    {
+        $this->downloadScan($cashbookId, $chitId, $path, true);
+    }
+
+    private function downloadScan(string $cashbookId, int $chitId, string $path, bool $thumbnail) : void
+    {
         $cashbookId = CashbookId::fromString($cashbookId);
         foreach ($this->queryBus->handle(new ChitScansQuery($cashbookId, $chitId)) as $scan) {
             assert($scan instanceof File);
@@ -184,8 +216,14 @@ class CashbookExportPresenter extends BasePresenter
             if ($scan->getPath() !== $path) {
                 continue;
             }
+            $contents = $scan->getContents();
+            if ($thumbnail) {
+                $image = Image::fromString($contents);
+                $image->resize(150, 150);
+                $contents = stream_for($image->toString());
+            }
 
-            $this->sendResponse(new PSR7StreamResponse($scan->getContents(), $scan->getFileName()));
+            $this->sendResponse(new PSR7StreamResponse($contents, $scan->getFileName()));
         }
 
         throw new BadRequestException('Scan not found', IResponse::S404_NOT_FOUND);

@@ -26,6 +26,7 @@ use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
+use Nette\Application\UI\Multiplier;
 use Nette\InvalidStateException;
 use function array_count_values;
 use function array_filter;
@@ -209,9 +210,12 @@ class ChitListControl extends BaseControl
         return $this->invertChitDialogFactory->create($this->cashbookId);
     }
 
-    protected function createComponentChitScan() : ChitScanControl
+    protected function createComponentChitScan() : Multiplier
     {
-        return $this->chitScanFactory->create($this->cashbookId, $this->isEditable);
+        return new Multiplier(
+            fn (string $chitId) =>
+            $this->chitScanFactory->create($this->cashbookId, (int) $chitId, $this->isEditable)
+        );
     }
 
     /**

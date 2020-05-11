@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Model\Common;
 
 use Cake\Chronos\Date;
+use function basename;
+use function count;
+use function preg_match;
 use function sprintf;
 use function uniqid;
 
@@ -41,5 +44,12 @@ final class FilePath
     public function equals(self $that) : bool
     {
         return $this->getPath() === $that->getPath();
+    }
+
+    public function getOriginFilename() : string
+    {
+        preg_match('/[0-9a-z]_(.*)/', basename($this->path), $matches);
+
+        return count($matches)> 0 ? $matches[1] : basename($this->path);
     }
 }

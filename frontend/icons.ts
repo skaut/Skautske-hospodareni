@@ -67,13 +67,14 @@ library.add(
     far.faEnvelopeOpen,
     far.faFileExcel,
     far.faFilePdf,
+    far.faFileArchive,
+    far.faFolderOpen,
     far.faFrownOpen,
     far.faListAlt,
     far.faTimesCircle,
     far.faTrashAlt,
     far.faUser,
     far.faQuestionCircle,
-    far.faFolderOpen,
 
     // Brands
     fab.faGithub as IconDefinition,
