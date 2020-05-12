@@ -116,7 +116,6 @@ final class ChitForm extends BaseControl
 
         $this->template->setParameters([
             'isEditable' => $this->isEditable,
-            'chitNumberPrefix' => $cashbook->getChitNumberPrefix(),
         ]);
 
         $this->template->setFile(__DIR__ . '/templates/ChitForm.latte');

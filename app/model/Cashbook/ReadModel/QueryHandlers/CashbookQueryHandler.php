@@ -29,7 +29,8 @@ class CashbookQueryHandler
         return new Cashbook(
             $cashbook->getId(),
             $cashbook->getType(),
-            $cashbook->getChitNumberPrefix(),
+            $cashbook->getCashChitNumberPrefix(),
+            $cashbook->getBankChitNumberPrefix(),
             $cashbook->getNote(),
             $cashbook->hasOnlyNumericChitNumbers()
         );

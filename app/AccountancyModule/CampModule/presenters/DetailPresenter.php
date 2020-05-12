@@ -6,11 +6,14 @@ namespace App\AccountancyModule\CampModule;
 
 use Model\Auth\Resources\Camp;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CampPragueParticipantsQuery;
+use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
 use Model\Cashbook\ReadModel\Queries\InconsistentCampCategoryTotalsQuery;
 use Model\Common\UnitId;
+use Model\DTO\Cashbook\Cashbook;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\SkautisCampId;
 use Model\ExportService;
@@ -19,6 +22,7 @@ use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\UnitNotFound;
 use function array_filter;
 use function array_map;
+use function assert;
 use function count;
 
 class DetailPresenter extends BasePresenter
@@ -53,6 +57,9 @@ class DetailPresenter extends BasePresenter
             $this->redrawControl('contentSnip');
         }
 
+        $cashbook = $this->queryBus->handle(new CashbookQuery($this->getCashbookId()));
+        assert($cashbook instanceof Cashbook);
+
         $this->template->setParameters([
             'troops' => $troops,
             'skautISUrl'   => $this->userService->getSkautisUrl(),
@@ -66,6 +73,7 @@ class DetailPresenter extends BasePresenter
                 $this->event->getStartDate()
             )),
             'finalRealBalance' => $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId())),
+            'prefix' => $cashbook->getChitNumberPrefix(PaymentMethod::CASH()),
         ]);
     }
 

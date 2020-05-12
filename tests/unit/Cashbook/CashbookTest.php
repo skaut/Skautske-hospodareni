@@ -132,11 +132,11 @@ class CashbookTest extends Unit
     {
         $cashbook = $this->createEventCashbook();
 
-        $this->assertNull($cashbook->getChitNumberPrefix());
+        $this->assertNull($cashbook->getCashChitNumberPrefix());
 
-        $cashbook->updateChitNumberPrefix($prefix);
+        $cashbook->updateChitNumberPrefix($prefix, PaymentMethod::CASH());
 
-        $this->assertSame($prefix, $cashbook->getChitNumberPrefix());
+        $this->assertSame($prefix, $cashbook->getCashChitNumberPrefix());
     }
 
     /**

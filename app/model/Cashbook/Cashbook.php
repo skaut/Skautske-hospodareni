@@ -55,7 +55,14 @@ class Cashbook extends Aggregate
      *
      * @var string|NULL
      */
-    private $chitNumberPrefix;
+    private $cashChitNumberPrefix;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     *
+     * @var string|NULL
+     */
+    private $bankChitNumberPrefix;
 
     /**
      * @ORM\OneToMany(targetEntity=Chit::class, mappedBy="cashbook", cascade={"persist", "remove"}, orphanRemoval=true)
@@ -89,9 +96,14 @@ class Cashbook extends Aggregate
         return $this->type;
     }
 
-    public function getChitNumberPrefix() : ?string
+    public function getCashChitNumberPrefix() : ?string
     {
-        return $this->chitNumberPrefix;
+        return $this->cashChitNumberPrefix;
+    }
+
+    public function getBankChitNumberPrefix() : ?string
+    {
+        return $this->bankChitNumberPrefix;
     }
 
     public function getNote() : string
@@ -99,13 +111,17 @@ class Cashbook extends Aggregate
         return $this->note;
     }
 
-    public function updateChitNumberPrefix(?string $chitNumberPrefix) : void
+    public function updateChitNumberPrefix(?string $chitNumberPrefix, PaymentMethod $paymentMethod) : void
     {
         if ($chitNumberPrefix !== null && Strings::length($chitNumberPrefix) > 6) {
             throw new InvalidArgumentException('Chit number prefix too long');
         }
 
-        $this->chitNumberPrefix = $chitNumberPrefix;
+        if ($paymentMethod->equals(PaymentMethod::CASH())) {
+            $this->cashChitNumberPrefix = $chitNumberPrefix;
+        } else {
+            $this->bankChitNumberPrefix = $chitNumberPrefix;
+        }
     }
 
     public function updateNote(string $note) : void

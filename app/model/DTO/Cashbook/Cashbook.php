@@ -6,11 +6,9 @@ namespace Model\DTO\Cashbook;
 
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
+use Model\Cashbook\Cashbook\PaymentMethod;
 use Nette\SmartObject;
 
-/**
- * @property-read string $chitNumberPrefix
- */
 class Cashbook
 {
     use SmartObject;
@@ -22,7 +20,10 @@ class Cashbook
     private $type;
 
     /** @var string|NULL */
-    private $chitNumberPrefix;
+    private $cashChitNumberPrefix;
+
+    /** @var string|NULL */
+    private $bankChitNumberPrefix;
 
     /** @var string */
     private $note;
@@ -33,13 +34,15 @@ class Cashbook
     public function __construct(
         CashbookId $id,
         CashbookType $type,
-        ?string $chitNumberPrefix,
+        ?string $cashChitNumberPrefix,
+        ?string $bankChitNumberPrefix,
         string $note,
         bool $hasOnlyNumericChitNumbers
     ) {
         $this->id                        = $id;
         $this->type                      = $type;
-        $this->chitNumberPrefix          = $chitNumberPrefix;
+        $this->cashChitNumberPrefix      = $cashChitNumberPrefix;
+        $this->bankChitNumberPrefix      = $bankChitNumberPrefix;
         $this->note                      = $note;
         $this->hasOnlyNumericChitNumbers = $hasOnlyNumericChitNumbers;
     }
@@ -54,9 +57,9 @@ class Cashbook
         return $this->type;
     }
 
-    public function getChitNumberPrefix() : ?string
+    public function getChitNumberPrefix(PaymentMethod $paymentMethod) : ?string
     {
-        return $this->chitNumberPrefix;
+        return $paymentMethod->equals(PaymentMethod::CASH()) ? $this->cashChitNumberPrefix : $this->bankChitNumberPrefix;
     }
 
     public function getNote() : string

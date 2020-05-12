@@ -7,6 +7,7 @@ namespace App\AccountancyModule\EventModule;
 use App\AccountancyModule\Grids\DataSource;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\DTO\Cashbook\Cashbook;
@@ -78,6 +79,6 @@ final class EventListDataSource extends DataSource
 
         assert($cashbook instanceof Cashbook);
 
-        return $cashbook->getChitNumberPrefix();
+        return $cashbook->getChitNumberPrefix(PaymentMethod::CASH());
     }
 }

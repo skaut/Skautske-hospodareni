@@ -12,10 +12,12 @@ use Cake\Chronos\Date;
 use Model\Auth\Resources\Event;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
+use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventPragueParticipantsQuery;
 use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
 use Model\Cashbook\ReadModel\Queries\Pdf\ExportChits;
+use Model\DTO\Cashbook\Cashbook;
 use Model\Event\Commands\Event\ActivateStatistics;
 use Model\Event\Commands\Event\CloseEvent;
 use Model\Event\Commands\Event\OpenEvent;
@@ -93,6 +95,9 @@ class EventPresenter extends BasePresenter
             $this->event->getStartDate()
         ));
 
+        $cashbook = $this->queryBus->handle(new CashbookQuery($this->getCashbookId($aid)));
+        assert($cashbook instanceof Cashbook);
+
         $this->template->setParameters([
             'statistic' => $this->queryBus->handle(new EventStatisticsQuery(new SkautisEventId($this->aid))),
             'finalRealBalance' => $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId($this->aid))),
@@ -103,6 +108,7 @@ class EventPresenter extends BasePresenter
             'pragueParticipants' => $pragueParticipants,
             'eventScopes' => $this->queryBus->handle(new EventScopes()),
             'eventTypes' => $this->queryBus->handle(new EventTypes()),
+            'prefix' => $cashbook->getChitNumberPrefix(PaymentMethod::CASH()),
         ]);
 
         if (! $this->isAjax()) {

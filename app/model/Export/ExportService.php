@@ -119,7 +119,7 @@ class ExportService
 
         return $this->templateFactory->create(__DIR__ . '/templates/cashbook.latte', [
             'header'  => $header,
-            'prefix'  => $cashbook->getChitNumberPrefix(),
+            'prefix'  => $cashbook->getChitNumberPrefix($paymentMethod),
             'chits'   => $this->queryBus->handle(ChitListQuery::withMethod($paymentMethod, $cashbookId)),
             'unit'    => $this->queryBus->handle(new CashbookOfficialUnitQuery($cashbookId)),
         ]);
