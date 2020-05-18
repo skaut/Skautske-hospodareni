@@ -21,8 +21,16 @@
                 <include name="migrations/**"/>
                 <include name="temp/**"/>
                 <include name="vendor/**"/>
-                <include name="www/**"/>
                 <include name="composer.*"/>
+                <include name="www/**"/>
+
+                <include name="frontend/**"/>
+                <include name="package.json"/>
+                <include name="postcss.config.js"/>
+                <include name="tsconfig.json"/>
+                <include name="webpack.config.js"/>
+                <include name="yarn.lock"/>
+
                 <exclude name="app/config/*local.neon"/>
                 <exclude name="**/.gitignore"/>
             </fileset>
@@ -50,13 +58,16 @@
               passthru="true"/>
 
         <!-- Build frontend assets -->
-        <exec command="yarn --cwd ${build.dir} install" passthru="true"/>
-        <exec command="yarn --cwd ${build.dir} build" passthru="true"/>
+        <exec dir="${build.dir}" command="yarn install &amp;&amp; yarn build" passthru="true" checkreturn="true"/>
 
         <delete>
             <fileset dir="${build.dir}">
                 <!-- Temp files -->
                 <include name="temp/**"/>
+
+                <!-- Frontend sources -->
+                <include name="frontend/**"/>
+                <include name="node_modules/**"/>
 
                 <!-- Webloader -->
                 <include name="www/webtemp/**"/>
