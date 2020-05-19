@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\EventModule;
 
 use Model\Auth\Resources\Event as ResourceEvent;
+use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
@@ -49,7 +50,8 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         $this->template->setParameters([
             'event' => $this->event,
             'isEditable'=> $this->isEditable = $this->authorizator->isAllowed(ResourceEvent::UPDATE, $this->aid),
-            'prefix' => $cashbook->getChitNumberPrefix(),
+            'cashPrefix' => $cashbook->getChitNumberPrefix(PaymentMethod::CASH()),
+            'bankPrefix' => $cashbook->getChitNumberPrefix(PaymentMethod::BANK()),
         ]);
     }
 

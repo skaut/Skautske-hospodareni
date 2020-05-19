@@ -78,7 +78,7 @@ class CashbookRepositoryTest extends IntegrationTest
             'category_operation_type' => Operation::INCOME,
         ];
         $cashbook = new Cashbook($cashbookId, Cashbook\CashbookType::get(Cashbook\CashbookType::EVENT));
-        $cashbook->updateChitNumberPrefix('test');
+        $cashbook->updateChitNumberPrefix('test', Cashbook\PaymentMethod::CASH());
         $cashbook->updateNote('poznamka moje');
         $category = Helpers::mockChitItemCategory($chitItem['category']);
 
@@ -98,7 +98,7 @@ class CashbookRepositoryTest extends IntegrationTest
         $this->tester->seeInDatabase(self::TABLE, [
             'id' => $cashbookId->toString(),
             'type' => Cashbook\CashbookType::EVENT,
-            'chit_number_prefix' => 'test',
+            'cash_chit_number_prefix' => 'test',
             'note' => 'poznamka moje',
         ]);
         $this->tester->seeInDatabase(self::CHIT_TABLE, $chit);

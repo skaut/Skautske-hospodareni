@@ -205,8 +205,6 @@ class ExcelService
 
         assert($cashbook instanceof Cashbook);
 
-        $prefix = $cashbook->getChitNumberPrefix();
-
         $balance = 0;
         $rowCnt  = 2;
         foreach ($chits as $chit) {
@@ -214,6 +212,7 @@ class ExcelService
 
             $isIncome = $chit->isIncome();
             $amount   = $chit->getAmount()->toFloat();
+            $prefix   = $cashbook->getChitNumberPrefix($chit->getPaymentMethod());
 
             $balance += $isIncome ? $amount : -$amount;
 

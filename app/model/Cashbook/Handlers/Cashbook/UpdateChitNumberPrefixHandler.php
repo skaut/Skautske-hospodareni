@@ -21,7 +21,7 @@ final class UpdateChitNumberPrefixHandler
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
 
-        $cashbook->updateChitNumberPrefix($command->getPrefix());
+        $cashbook->updateChitNumberPrefix($command->getPrefix(), $command->getPaymentMethod());
 
         $this->cashbooks->save($cashbook);
     }

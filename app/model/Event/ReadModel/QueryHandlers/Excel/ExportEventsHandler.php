@@ -6,6 +6,7 @@ namespace Model\Event\ReadModel\QueryHandlers\Excel;
 
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventPragueParticipantsQuery;
@@ -231,6 +232,6 @@ final class ExportEventsHandler
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->getCashbookId($event)));
         assert($cashbook instanceof Cashbook);
 
-        return $cashbook->getChitNumberPrefix();
+        return $cashbook->getChitNumberPrefix(PaymentMethod::CASH());
     }
 }

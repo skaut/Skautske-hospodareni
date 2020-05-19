@@ -7,6 +7,7 @@ namespace App\AccountancyModule\CampModule;
 use App\AccountancyModule\Grids\DataSource;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\DTO\Camp\CampListItem;
@@ -79,6 +80,6 @@ final class CampListDataSource extends DataSource
 
         assert($cashbook instanceof Cashbook);
 
-        return $cashbook->getChitNumberPrefix();
+        return $cashbook->getChitNumberPrefix(PaymentMethod::CASH());
     }
 }

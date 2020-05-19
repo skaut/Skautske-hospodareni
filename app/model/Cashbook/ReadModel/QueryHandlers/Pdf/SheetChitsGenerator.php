@@ -47,13 +47,12 @@ class SheetChitsGenerator
 
             assert($cashbook instanceof Cashbook);
 
-            $prefix = $cashbook->getChitNumberPrefix();
-
             foreach ($this->queryBus->handle(ChitListQuery::all($cashbookId)) as $chit) {
                 assert($chit instanceof Chit);
 
                 $isIncome = $chit->isIncome();
                 $amount   = $chit->getAmount()->toFloat();
+                $prefix   = $cashbook->getChitNumberPrefix($chit->getPaymentMethod());
 
                 $sheet->setCellValue('A' . $rowCnt, $item->getDisplayName())
                     ->setCellValue('B' . $rowCnt, $chit->getDate()->format('d.m.Y'))

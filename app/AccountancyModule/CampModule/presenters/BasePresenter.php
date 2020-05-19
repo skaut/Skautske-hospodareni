@@ -40,7 +40,6 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
             $this->template->setParameters([
                 'event' => $this->event = $this->queryBus->handle(new CampQuery(new SkautisCampId($this->aid))),
                 'isEditable' => $this->isEditable,
-                'prefix' => $cashbook->getChitNumberPrefix(),
             ]);
         } catch (CampNotFound $exc) {
             $this->setView('accessDenied');

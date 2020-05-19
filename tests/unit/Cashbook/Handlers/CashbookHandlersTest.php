@@ -91,10 +91,10 @@ final class CashbookHandlersTest extends Unit
                 [155],
             ],
             [
-                new Commands\UpdateChitNumberPrefix($this->getCashbookId(), 'V123'),
+                new Commands\UpdateChitNumberPrefix($this->getCashbookId(), Cashbook\PaymentMethod::CASH(), 'V123'),
                 UpdateChitNumberPrefixHandler::class,
                 'updateChitNumberPrefix',
-                ['V123'],
+                ['V123', Cashbook\PaymentMethod::CASH()],
             ],
             [
                 new Commands\GenerateChitNumbers($this->getCashbookId(), Cashbook\PaymentMethod::CASH()),

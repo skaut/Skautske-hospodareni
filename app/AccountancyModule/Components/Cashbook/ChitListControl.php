@@ -8,6 +8,7 @@ use App\AccountancyModule\Components\BaseControl;
 use App\AccountancyModule\Factories\Cashbook\IChitScanControlFactory;
 use App\AccountancyModule\Factories\Cashbook\IInvertChitDialogFactory;
 use App\AccountancyModule\Factories\Cashbook\IMoveChitsDialogFactory;
+use App\AccountancyModule\Factories\Cashbook\IPrefixControlFactory;
 use App\Forms\BaseForm;
 use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
@@ -69,6 +70,9 @@ class ChitListControl extends BaseControl
     /** @var IChitScanControlFactory */
     private $chitScanFactory;
 
+    /** @var IPrefixControlFactory */
+    private $prefixFactory;
+
     public function __construct(
         CashbookId $cashbookId,
         bool $isEditable,
@@ -77,7 +81,8 @@ class ChitListControl extends BaseControl
         QueryBus $queryBus,
         IMoveChitsDialogFactory $moveChitsDialogFactory,
         IInvertChitDialogFactory $invertChitDialogFactory,
-        IChitScanControlFactory $chitScanControlFactory
+        IChitScanControlFactory $chitScanControlFactory,
+        IPrefixControlFactory $prefixFactory
     ) {
         parent::__construct();
         $this->cashbookId              = $cashbookId;
@@ -88,6 +93,7 @@ class ChitListControl extends BaseControl
         $this->moveChitsDialogFactory  = $moveChitsDialogFactory;
         $this->invertChitDialogFactory = $invertChitDialogFactory;
         $this->chitScanFactory         = $chitScanControlFactory;
+        $this->prefixFactory           =$prefixFactory;
     }
 
     public function render() : void
@@ -108,7 +114,7 @@ class ChitListControl extends BaseControl
             'aid' => (int) $this->getPresenter()->getParameter('aid'), // TODO: rework actions to use cashbook ID
             'chits' => $chits,
             'paymentMethod' => $this->paymentMethod,
-            'prefix' => $cashbook->getChitNumberPrefix(),
+            'prefix' => $cashbook->getChitNumberPrefix($this->paymentMethod),
             'validInverseCashbookTypes' => InvertChitDialog::getValidInverseCashbookTypes(),
             'totalIncome' => $totals[Operation::INCOME],
             'totalExpense' => $totals[Operation::EXPENSE],
@@ -160,6 +166,11 @@ class ChitListControl extends BaseControl
             $this->getPresenter()->flashMessage('Nepodařilo se určit poslední poslední paragon, od kterého by se pokračovalo s číslováním.', 'error');
         }
         $this->getPresenter()->redirect('this');
+    }
+
+    protected function createComponentPrefix() : PrefixControl
+    {
+        return $this->prefixFactory->create($this->cashbookId, $this->paymentMethod, $this->isEditable);
     }
 
     protected function createComponentFormMass() : BaseForm
