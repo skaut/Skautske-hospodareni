@@ -2,7 +2,7 @@
 # These placeholders are defined in build.xml
 #
 skautis:
-     applicationId: $CONFIG_PRODUCTION_SKAUTIS_APPLICATION_ID
+     applicationId: __CONFIG_SKAUTIS_APPLICATION_ID__
      testMode: false
 
 parameters:
@@ -10,12 +10,12 @@ parameters:
         host: localhost
         name: h
         user: h
-        password: $CONFIG_PRODUCTION_DATABASE_PASSWORD
+        password: __CONFIG_DATABASE_PASSWORD__
 
     sendEmail: true
     sentry:
-        dsn: $CONFIG_PRODUCTION_SENTRY_DSN
-        releaseHash: $RELEASE_HASH
+        dsn: __CONFIG_SENTRY_DSN__
+        releaseHash: __CONFIG_RELEASE_HASH__
 
 services:
     # Passes notices and warning to Monolog
