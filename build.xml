@@ -88,13 +88,13 @@
         <echo message="${comment}..."/>
         <echo message="`${command}`"/>
 
-        <exec command="ssh ${deploy.ssh.target} -p ${deploy.ssh.port} '${command}'"
+        <exec command="ssh ${deploy.ssh.target} -i ${deploy.ssh.privateKeyFile} -p ${deploy.ssh.port} '${command}'"
               passthru="true"
               checkreturn="true" />
     </target>
 
     <target name="deploy:copy-tarball">
-        <property name="command" value="scp -P ${port} ${file} '${target}:${toDirectory}'"/>
+        <property name="command" value="scp -i ${deploy.ssh.privateKeyFile} -P ${port} ${file} '${target}:${toDirectory}'"/>
         <echo message="Copying files to ${deploy.ssh.target"/>
         <echo message="${command}"/>
         <exec command="${command}" passthru="true" checkreturn="true"/>
@@ -126,6 +126,7 @@
         <property name="deploy.ssh.host" value="www.skauting.cz"/>
         <property name="deploy.ssh.port" value="28"/>
         <property name="deploy.ssh.username" refid="env.SSH_USERNAME"/>
+        <property name="deploy.ssh.privateKeyFile" refid="env.SSH_KEY_FILE"/>
         <property name="deploy.ssh.target" value="${deploy.ssh.username}@${deploy.ssh.host}"/>
 
         <property name="deploy.releaseHash" value="${DSTAMP}-${TSTAMP}-${build.hash}"/>
