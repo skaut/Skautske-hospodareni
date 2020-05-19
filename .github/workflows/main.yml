@@ -270,7 +270,7 @@ jobs:
                   DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
                   SSH_KEY_FILE: /root/.ssh/id_key
 
-            - name: Deploy to test-h.skauting.cz
+            - name: Deploy to h.skauting.cz
               run: phing deploy
               env:
                   ENVIRONMENT: production
