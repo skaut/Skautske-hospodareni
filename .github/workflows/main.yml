@@ -248,7 +248,6 @@ jobs:
                   SSH_USERNAME: vu009010
                   SSH_KEY_FILE: /root/.ssh/id_key
                   CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_TEST_DATABASE_PASSWORD }}
-                  CONFIG_SKAUTIS_APPLICATION_ID: ${{ secrets.CONFIG_TEST_SKAUTIS_APPLICATION_ID }}
 
     deploy-production:
         name: "Deploy to h.skauting.cz"
@@ -279,5 +278,4 @@ jobs:
                   SSH_USERNAME: vu008930
                   SSH_KEY_FILE: /root/.ssh/id_key
                   CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_PRODUCTION_DATABASE_PASSWORD }}
-                  CONFIG_SKAUTIS_APPLICATION_ID: ${{ secrets.CONFIG_PRODUCTION_SKAUTIS_APPLICATION_ID }}
                   CONFIG_SENTRY_DSN: ${{ secrets.CONFIG_SENTRY_DSN }}

@@ -2,7 +2,7 @@
 # These placeholders are defined in build.xml
 #
 skautis:
-     applicationId: __CONFIG_SKAUTIS_APPLICATION_ID__
+     applicationId: 08a5328c-4127-4bcb-a9c5-b6945391a6dd
      testMode: false
 
 parameters:

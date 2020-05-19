@@ -1,5 +1,5 @@
 skautis:
-     applicationId: "__CONFIG_SKAUTIS_APPLICATION_ID__"
+     applicationId: 4cc8a3f6-1e11-4386-84c2-95d1e35f4dd1
      testMode: true
 
 parameters:

@@ -41,7 +41,6 @@
         <copy file="./app/config/config.${env.ENVIRONMENT}.local.neon" tofile="${build.dir}/app/config/config.local.neon">
             <filterchain>
                 <replacetokens begintoken="__" endtoken="__">
-                    <token key="CONFIG_SKAUTIS_APPLICATION_ID" value="${env.CONFIG_SKAUTIS_APPLICATION_ID}"/>
                     <token key="CONFIG_DATABASE_PASSWORD" value="${env.CONFIG_DATABASE_PASSWORD}"/>
                     <token key="CONFIG_SENTRY_DSN" value="${env.CONFIG_SENTRY_DSN}"/>
                     <token key="CONFIG_RELEASE_HASH" value="${build.hash}"/>
