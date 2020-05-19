@@ -94,7 +94,7 @@
 
     <target name="deploy:copy-tarball">
         <property name="command" value="scp -i ${deploy.ssh.privateKeyFile} -P ${port} ${file} '${target}:${toDirectory}'"/>
-        <echo message="Copying files to ${deploy.ssh.target"/>
+        <echo message="Copying files to ${deploy.ssh.target}"/>
         <echo message="${command}"/>
         <exec command="${command}" passthru="true" checkreturn="true"/>
     </target>
@@ -149,7 +149,7 @@
 
         <phingcall target="deploy:ssh">
             <property name="comment" value="Extracting tarball to release directory"/>
-            <property name="command" value="tar -xvzf ${tarball} -C ${deploy.releasesDir}"/>
+            <property name="command" value="tar -xzf ${tarball} -C ${deploy.releasesDir}"/>
         </phingcall>
 
         <phingcall target="deploy:ssh">
