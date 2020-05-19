@@ -149,7 +149,7 @@
 
         <phingcall target="deploy:ssh">
             <property name="comment" value="Extracting tarball to release directory"/>
-            <property name="command" value="tar -xvzf ${tarball} -C ${deploy.releasesDir}"/>
+            <property name="command" value="tar -xzf ${tarball} -C ${deploy.releasesDir}"/>
         </phingcall>
 
         <phingcall target="deploy:ssh">
