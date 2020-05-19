@@ -219,13 +219,7 @@ jobs:
             - name: Extract workdir
               run: tar -xzpf workdir.tar.gz
             - name: Setup SSH authentication
-              run: |
-                  mkdir -p /root/.ssh
-                  echo "$DEPLOY_SSH_KEY" > $SSH_KEY_FILE
-                  mv .github/workflows/known_hosts /root/.ssh/known_hosts
-                  chmod 700 /root/.ssh
-                  chmod 644 /root/.ssh/known_hosts
-                  chmod 400 $SSH_KEY_FILE
+              run: .github/workflows/setup_ssh.sh "$DEPLOY_SSH_KEY" "$SSH_KEY_FILE"
               env:
                   DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
                   SSH_KEY_FILE: /root/.ssh/id_key
