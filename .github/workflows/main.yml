@@ -218,16 +218,21 @@ jobs:
                   path: .
             - name: Extract workdir
               run: tar -xzpf workdir.tar.gz
-            - name: Deploy to test-h.skauting.cz
+            - name: Setup SSH authentication
               run: |
                   mkdir -p /root/.ssh
                   echo "$DEPLOY_SSH_KEY" > $SSH_KEY_FILE
-                  chmod 700 /root/.ssh
                   mv .github/workflows/known_hosts /root/.ssh/known_hosts
+                  chmod 700 /root/.ssh
                   chmod 644 /root/.ssh/known_hosts
-                  phing deploy
+                  chmod 400 $SSH_KEY_FILE
               env:
                   DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+                  SSH_KEY_FILE: /root/.ssh/id_key
+
+            - name: Deploy to test-h.skauting.cz
+              run: phing deploy
+              env:
                   ENVIRONMENT: test
                   ROOT_DIR: /home/vu009010
                   SSH_USERNAME: vu009010
