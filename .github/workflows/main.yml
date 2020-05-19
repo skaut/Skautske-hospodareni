@@ -22,6 +22,10 @@ jobs:
                   restore-keys: |
                       ${{ runner.os }}-composer-
             - run: composer install
+            - name: Remove development docker-compose override
+              run: rm docker-compose.override.yml
+            - name: Fix permissions
+              run: chown 1000:1000 . -R && chmod 777 . -R
             - name: Create tarball
               run: tar -czpf /tmp/workdir.tar.gz . && mv /tmp/workdir.tar.gz .
             - name: Upload workdir
@@ -43,27 +47,13 @@ jobs:
                   name: workdir
                   path: .
             - name: Extract workdir
-              run: tar -xzf workdir.tar.gz
+              run: tar -xzpf workdir.tar.gz
             - run: phing tests-unit
 
-    tests-integrations:
+    tests-integration:
         name: "Run integration tests"
         runs-on: ubuntu-18.04
-        container:
-            image: fmasa/lebeda:7.4
         needs: workdir
-
-        services:
-            smtp-hospodareni.loc:
-                image: tophfr/mailcatcher:0.6.5_3
-                env:
-                    SMTP_HOST: smtp-hospodareni.loc
-            mysql-test:
-                image: mysql:5.7
-                env:
-                    MYSQL_ROOT_PASSWORD: 'root'
-                    MYSQL_DATABASE: hskauting
-                options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
         steps:
             - name: Download workdir
               uses: actions/download-artifact@v1
@@ -71,8 +61,69 @@ jobs:
                   name: workdir
                   path: .
             - name: Extract workdir
-              run: tar -xzf workdir.tar.gz
-            - run: phing tests-integration
+              run: tar -xzpf workdir.tar.gz
+            - name: Start application containers
+              run: docker-compose up -d mysql-test smtp
+            - run: docker-compose run -T -u www-data app phing tests-integration
+
+    collect-code-coverage:
+        name: "Collect code coverage"
+        if: github.ref == 'refs/heads/master'
+        runs-on: ubuntu-18.04
+        needs: workdir
+        steps:
+            - name: Download workdir
+              uses: actions/download-artifact@v1
+              with:
+                  name: workdir
+                  path: .
+            - name: Extract workdir
+              run: tar -xzpf workdir.tar.gz
+            - name: Start application containers
+              run: docker-compose up -d app mysql-test smtp
+            - name: Run tests with coverage
+              run: docker-compose exec -T -u www-data app phing tests-with-coverage
+            - name: Upload code coverage
+              uses: codecov/codecov-action@v1
+              with:
+                  token: ${{ secrets.CODECOV_TOKEN }}
+                  file: tests/_output/coverage.xml
+                  fail_ci_if_error: true
+
+    tests-acceptance:
+        name: "Run acceptance tests"
+        runs-on: ubuntu-18.04
+        needs: workdir
+        steps:
+            - name: Download workdir
+              uses: actions/download-artifact@v1
+              with:
+                  name: workdir
+                  path: .
+            - name: Extract workdir
+              run: tar -xzpf workdir.tar.gz
+            - name: Start application containers
+              run: docker-compose up -d
+            - run: mv app/config/config.ci.local.neon app/config/config.local.neon
+            - name: Install Node.js
+              uses: actions/setup-node@v1
+            # Copy & paste from https://github.com/actions/cache/blob/master/examples.md#node---yarn
+            - name: Get yarn cache
+              id: yarn-cache
+              run: echo "::set-output name=dir::$(yarn cache dir)"
+
+            - uses: actions/cache@v1
+              with:
+                  path: ${{ steps.yarn-cache.outputs.dir }}
+                  key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-yarn-
+            - run: npm install -g yarn
+            - name: Build frontend assets
+              run: yarn install && yarn build
+            - name: Prepare database
+              run: docker-compose exec -T -u www-data app php www/index.php migrations:migrate --no-interaction
+            - run: docker-compose exec -T -u www-data app phing tests-acceptance
 
     static-analysis:
         name: "Run PHPStan analysis"
@@ -87,7 +138,7 @@ jobs:
                   name: workdir
                   path: .
             - name: Extract workdir
-              run: tar -xzf workdir.tar.gz
+              run: tar -xzpf workdir.tar.gz
             - run: phing static-analysis
 
     coding-standard:
@@ -103,7 +154,7 @@ jobs:
                   name: workdir
                   path: .
             - name: Extract workdir
-              run: tar -xzf workdir.tar.gz
+              run: tar -xzpf workdir.tar.gz
             - run: phing coding-standard
 
     latte-lint:
@@ -151,3 +202,80 @@ jobs:
             - run: mv app/config/config.ci.local.neon app/config/config.local.neon
             - run: php www/index.php migrations:migrate --no-interaction
             - run: "! php www/index.php migrations:diff && php www/index.php migrations:diff --allow-empty-diff"
+
+    checks-passed:
+        name: "Wait for all checks"
+        needs:
+            - tests-unit
+            - tests-integration
+            - tests-acceptance
+            - coding-standard
+            - static-analysis
+            - latte-lint
+            - validate-mapping
+        runs-on: ubuntu-18.04
+        container:
+            image: fmasa/lebeda:7.4-ci
+        steps:
+            - run: true
+
+    deploy-test:
+        name: "Deploy to test-h.skauting.cz"
+        if: github.ref == 'refs/heads/master'
+        needs: [checks-passed]
+        runs-on: ubuntu-18.04
+        container:
+            image: fmasa/lebeda:7.4-ci
+        steps:
+            - name: Download workdir
+              uses: actions/download-artifact@v1
+              with:
+                  name: workdir
+                  path: .
+            - name: Extract workdir
+              run: tar -xzpf workdir.tar.gz
+            - name: Setup SSH authentication
+              run: .github/workflows/setup_ssh.sh "$DEPLOY_SSH_KEY" "$SSH_KEY_FILE"
+              env:
+                  DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+                  SSH_KEY_FILE: /root/.ssh/id_key
+
+            - name: Deploy to test-h.skauting.cz
+              run: phing deploy
+              env:
+                  ENVIRONMENT: test
+                  ROOT_DIR: /home/vu009010
+                  SSH_USERNAME: vu009010
+                  SSH_KEY_FILE: /root/.ssh/id_key
+                  CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_TEST_DATABASE_PASSWORD }}
+
+    deploy-production:
+        name: "Deploy to h.skauting.cz"
+        if: github.ref == 'refs/heads/master'
+        needs: [checks-passed]
+        runs-on: ubuntu-18.04
+        container:
+            image: fmasa/lebeda:7.4-ci
+        steps:
+            - name: Download workdir
+              uses: actions/download-artifact@v1
+              with:
+                  name: workdir
+                  path: .
+            - name: Extract workdir
+              run: tar -xzpf workdir.tar.gz
+            - name: Setup SSH authentication
+              run: .github/workflows/setup_ssh.sh "$DEPLOY_SSH_KEY" "$SSH_KEY_FILE"
+              env:
+                  DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+                  SSH_KEY_FILE: /root/.ssh/id_key
+
+            - name: Deploy to test-h.skauting.cz
+              run: phing deploy
+              env:
+                  ENVIRONMENT: production
+                  ROOT_DIR: /home/vu008930
+                  SSH_USERNAME: vu008930
+                  SSH_KEY_FILE: /root/.ssh/id_key
+                  CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_PRODUCTION_DATABASE_PASSWORD }}
+                  CONFIG_SENTRY_DSN: ${{ secrets.CONFIG_SENTRY_DSN }}

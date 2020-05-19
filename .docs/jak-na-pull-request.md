@@ -8,9 +8,7 @@ Pro mergnutí je třeba splnit několik náležitostí:
 - Schválený PR od maintainera
 
 ## CI
-Pro každý PR běží ve [Werckeru](http://www.wercker.com/) build. Co vše v buildu běží lze zjistit z [konfiguračního souboru wercker.yml](../wercker.yml).
-
-Pro lokální build lze také využít [Wercker CLI](http://www.wercker.com/wercker-cli) (Mac, Linux).
+Pro každý PR běží ve Github Actions workflow. Co vše v buildu běží lze zjistit z [konfiguračního souboru](../.github/workflows/main.yml).
 
 ## Code review
 Před mergnutím PR je třeba alespoň jedno schválení (*Approve*) od nějakého z maintainerů.
