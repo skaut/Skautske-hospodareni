@@ -94,7 +94,7 @@
 
     <target name="deploy:copy-tarball">
         <property name="command" value="scp -i ${deploy.ssh.privateKeyFile} -P ${port} ${file} '${target}:${toDirectory}'"/>
-        <echo message="Copying files to ${deploy.ssh.target"/>
+        <echo message="Copying files to ${deploy.ssh.target}"/>
         <echo message="${command}"/>
         <exec command="${command}" passthru="true" checkreturn="true"/>
     </target>
