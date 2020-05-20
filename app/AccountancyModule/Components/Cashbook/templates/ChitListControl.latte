@@ -19,17 +19,16 @@
                         <form n:name="formMass" class="formMass">
                             <input type="checkbox" name="chits-all"
                                    class="hidden-xs hidden-sm" data-dependent-checkboxes=".dependent-checkbox"/>
-                            <button n:if="$isCash" n:name="massPrintSend" title="Vytisknout vybrané"
-                                                           class="btn btn-info btn-sm allDependend-{$paymentMethod} hidden-xs hidden-sm"
-                                                           type="submit">
+                            <button n:if="$isCash"
+                                    n:name="massPrintSend" title="Vytisknout vybrané"
+                                    class="btn btn-info btn-sm"
+                                    type="submit">
                                 <i class="fas fa-print"></i>
                             </button>
                             <button n:if="$canMoveChits" n:name="massMoveSend" title="Přesunout vybrané" role="button" data-toggle="modal"
-                               class="btn btn-info btn-sm allDependend-{$paymentMethod} hidden-xs"><i
-                                        class="fas fa-step-forward"></i></button>
+                               class="btn btn-info btn-sm"><i class="fas fa-step-forward"></i></button>
                             <button n:if="$canMassExport" name="massExportSend" title="Exportovat vybrané"
-                                    class="btn btn-info btn-sm allDependend-{$paymentMethod}" type="submit"><i
-                                        class="fas fa-download"></i></button>
+                                    class="btn btn-info btn-sm" type="submit"><i class="fas fa-download"></i></button>
                         </form>
                     </th>
                     <th class="col-xs-1">Ze dne</th>
