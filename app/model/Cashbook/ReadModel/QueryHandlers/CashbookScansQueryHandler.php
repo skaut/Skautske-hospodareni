@@ -41,7 +41,7 @@ final class CashbookScansQueryHandler
                 $filename       = sprintf(
                     '%s_%s',
                     $chit->getName(),
-                    $scan->getFilePath()->getOriginFilename()
+                    $scan->getFilePath()->getOriginalFilename()
                 );
                 $arr[$filename] = $this->storage->get($scan->getFilePath());
             }
