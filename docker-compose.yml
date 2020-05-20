@@ -42,7 +42,7 @@ services:
 
     chrome:
         container_name: hskauting.chrome
-        image: selenium/standalone-chrome
+        image: selenium/standalone-chrome:3.141
         networks:
             main:
                 aliases:
