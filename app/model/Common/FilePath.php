@@ -46,7 +46,7 @@ final class FilePath
         return $this->getPath() === $that->getPath();
     }
 
-    public function getOriginFilename() : string
+    public function getOriginalFilename() : string
     {
         preg_match('/[0-9a-z]_(.*)/', basename($this->path), $matches);
 

@@ -4,8 +4,8 @@
         <span n:if="count($files) > 0" class="badge badge-light">{php echo count($files);}</span>
     </button>
     <div class="dropdown-menu">
-        <div n:foreach="$files as $file" class="dropdown-item text-nowrap" title="{$file->getFilePath()->getOriginFilename()}">
-            {$file->getFilePath()->getOriginFilename()|truncate:26}
+        <div n:foreach="$files as $file" class="dropdown-item text-nowrap" title="{$file->getFilePath()->getOriginalFilename()}">
+            {$file->getFilePath()->getOriginalFilename()|truncate:26}
 
             <a n:href="remove! $file->getFilePath()->getPath()"
                     n:if="$isEditable"

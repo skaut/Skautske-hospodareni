@@ -22,7 +22,7 @@
         <div class="dropdown-menu dropdown-menu-left" style="width: 150%" n:inner-snippet>
             {foreach $files as $file}
             <div class="px-4 py-1">
-                {$file->getOriginFilename()|truncate:26}
+                {$file->getOriginalFilename()|truncate:26}
                 <a n:href="remove! $file->getPath()"
                         n:if="$isEditable"
                         title="Smazat soubor"
