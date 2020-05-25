@@ -34,14 +34,13 @@
         </div>
 </div>
 
-{var $preparingCount = $summarize['preparing']->count}
-<div class="alert alert-warning mt-3 text-center" n:if="$preparingCount !== 0">
+<div class="alert alert-warning mt-3 text-center" n:if="$notSentPaymentsCount !== 0">
     <i class="fas fa-exclamation-triangle"></i>
-    {$preparingCount}
-    {if $preparingCount === 1}nezaplacená platba nemá
-    {elseif $preparingCount < 4}nezaplacené platby
-    {else}nezaplacených plateb nemá{/if}
-    odeslány platební údaje
+    {$notSentPaymentsCount}
+    {if notSentPaymentsCount === 1}nezaplacená platba nemá odeslány
+    {elseif $notSentPaymentsCount < 4}nezaplacené platby nemají odeslány
+    {else}nezaplacených plateb nemá odesláno{/if}
+    platební údaje
 </div>
 <div class="mb-3">
     <div class="mt-4 d-lg-flex" n:inner-if="$isEditable && $group->state === 'open'">

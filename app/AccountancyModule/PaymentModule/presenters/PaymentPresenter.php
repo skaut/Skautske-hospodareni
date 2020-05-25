@@ -138,6 +138,7 @@ class PaymentPresenter extends BasePresenter
             'summarize' => $this->model->getGroupSummaries([$id])[$id],
             'now'       => new DateTimeImmutable(),
             'isGroupSendActive' => $group->getState() === 'open' && ! empty($paymentsForSendEmail),
+            'notSentPaymentsCount' => $this->countNotSentPayments($payments),
         ]);
     }
 
@@ -429,5 +430,13 @@ class PaymentPresenter extends BasePresenter
                 return ! $p->isClosed() && $p->getEmail() !== null && $p->getSentEmails() === [];
             }
         );
+    }
+
+    /**
+     * @param Payment[] $payments
+     */
+    private function countNotSentPayments(array $payments) : int
+    {
+        return count(array_filter($payments, fn (Payment $payment) => $payment->getSentEmails() === []));
     }
 }
