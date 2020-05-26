@@ -110,7 +110,7 @@ $showUnits bool - zobrazovat číslo jednotky
                     <th data-visible-if-not-checked=".participantCheckboxInput, .allParticipantCheckbox">Částka</th>
                     <th n:if="$isAllowRepayment" data-visible-if-not-checked=".participantCheckboxInput, .allParticipantCheckbox">Vratka</th>
                     <th n:if="$isAllowIsAccount" data-visible-if-not-checked=".participantCheckboxInput, .allParticipantCheckbox">Na účet?</th>
-                    <th data-visible-if-not-checked=".participantCheckboxInput, .allParticipantCheckbox"></th>
+                    <th n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete" data-visible-if-not-checked=".participantCheckboxInput, .allParticipantCheckbox"></th>
                     <th n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete"
                             data-visible-if-checked=".participantCheckboxInput, .allParticipantCheckbox" colspan="4" class="text-right">
                         <a n:if="$isAllowParticipantUpdate"
@@ -144,7 +144,7 @@ $showUnits bool - zobrazovat číslo jednotky
                         <td class="text-right">{$p->payment|price:false}{php $totalPayment += $p->payment}</td>
                         <td class="text-right" n:if="$isAllowRepayment">{$p->repayment|price:false}{php $totalRepayment += $p->repayment}</td>
                         <td n:if="$isAllowIsAccount">{$p->onAccount === 'Y' ? 'Ano'}</td>
-                        <td n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete" class="text-right">
+                        <td n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete" class="text-right text-nowrap">
                             <a n:if="$isAllowParticipantUpdate"
                                     n:href="edit! $p->id"
                                     class="btn btn-light btn-sm ajax"
@@ -163,12 +163,12 @@ $showUnits bool - zobrazovat číslo jednotky
                             <td class="font-weight-bold text-right"><span id="total-total">{$total}</span></td>
                             <td></td>
                         {else}
-                        <td></td>
+                        <td n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete"></td>
                     </tr>
                     <tr>
                         <td colspan="{if $showUnits}4{else}3{/if}"></td>
                         <td colspan="3" class="font-weight-bold text-right"><span id="total-total">{$total}</span></td>
-                        <td></td>
+                        <td n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete"></td>
                         {/if}
                     </tr>
                 {else}
