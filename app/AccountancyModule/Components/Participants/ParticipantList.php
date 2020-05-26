@@ -35,6 +35,8 @@ final class ParticipantList extends BaseControl
 
     private const DEFAULT_SORT = 'displayName';
 
+    private const NO_ACTION = '';
+
     /** @var int */
     public $aid;
 
@@ -224,7 +226,7 @@ final class ParticipantList extends BaseControl
         $form->addCheckboxList('participantIds', null, array_map(fn() => '', $this->participantsById()))
             ->setRequired('Musíte vybrat některého z účastníků');
 
-        $editCon->addRadioList('isAccount', 'Na účet?', ['N' => 'Ne', 'Y' => 'Ano', '' => 'Ponechat původní hodnotu'])
+        $editCon->addRadioList('isAccount', 'Na účet?', ['N' => 'Ne', 'Y' => 'Ano', self::NO_ACTION => 'Ponechat původní hodnotu'])
             ->setDefaultValue('');
         $editCon->addSubmit('send', 'Upravit')
             ->setAttribute('class', 'btn btn-info btn-small')
@@ -256,7 +258,7 @@ final class ParticipantList extends BaseControl
             if ($values['repayment'] !== null) {
                 $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_REPAYMENT, $values['repayment']);
             }
-            if ($values['isAccount'] === null) {
+            if ($values['isAccount'] === self::NO_ACTION) {
                 continue;
             }
 
