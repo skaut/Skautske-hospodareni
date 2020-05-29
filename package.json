@@ -18,7 +18,7 @@
         "naja": "^1.7.0",
         "nprogress": "^0.2.0",
         "pikaday": "^1.8.0",
-        "postcss-cli": "^7.1.0",
+        "postcss-cli": "^7.1.1",
         "postcss-loader": "^3.0.0"
     },
     "devDependencies": {
