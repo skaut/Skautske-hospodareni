@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Repositories\Payment;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use eGen\MessageBus\Bus\EventBus;
-use Kdyby\Doctrine\Dql\Join;
 use Model\Google\OAuthId;
 use Model\Payment\DomainEvents\GroupWasRemoved;
 use Model\Payment\Group;
