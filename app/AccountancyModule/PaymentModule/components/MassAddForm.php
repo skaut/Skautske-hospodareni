@@ -109,10 +109,10 @@ class MassAddForm extends BaseControl
             ->setNullable()
             ->setDefaultValue($amount)
             ->addConditionOn($selected, $form::FILLED)
-            ->addConditionOn($defaultAmount, $form::BLANK)
-            ->setRequired('Musíte vyplnit částku')
             ->addRule($form::FLOAT, 'Částka musí být číslo')
-            ->addRule($form::MIN, 'Čátka musí být větší než 0', 0.01);
+            ->addRule($form::MIN, 'Čátka musí být větší než 0', 0.01)
+            ->addConditionOn($defaultAmount, $form::BLANK)
+            ->setRequired('Musíte vyplnit částku');
 
         $container->addDate('dueDate', 'Splatnost:')
             ->disableWeekends()
