@@ -15,6 +15,7 @@ use Nette\Http\IResponse;
 use function array_filter;
 use function array_map;
 use function sprintf;
+use function strcoll;
 use function usort;
 
 /**
@@ -137,7 +138,12 @@ final class ParticipantList extends BaseControl
             throw new BadRequestException(sprintf('Unknown sort option "%s"', $sort), 400);
         }
 
-        usort($participants, fn(Participant $a, Participant $b) => $a->{$sort} <=> $b->{$sort});
+        if ($sort === 'displayName') {
+            $sortFunction = fn(Participant $a, Participant $b) => strcoll($a->{$sort}, $b->{$sort});
+        } else {
+            $sortFunction = fn(Participant $a, Participant $b) => $a->{$sort} <=> $b->{$sort};
+        }
+        usort($participants, $sortFunction);
     }
 
     public function handleSort(string $sort) : void

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 require __DIR__ . '/../vendor/autoload.php';
 
+setlocale(LC_COLLATE, 'cs_CZ.utf8');
+
 $tempDir = dirname(__DIR__) . '/temp';
 $logDir  = __DIR__ . '/../log';
 
