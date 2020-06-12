@@ -14,6 +14,7 @@ use Nette\Forms\Controls\SubmitButton;
 use Nette\Http\IResponse;
 use function array_filter;
 use function array_map;
+use function in_array;
 use function sprintf;
 use function strcoll;
 use function usort;
@@ -264,7 +265,7 @@ final class ParticipantList extends BaseControl
             if ($values['repayment'] !== null) {
                 $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_REPAYMENT, $values['repayment']);
             }
-            if ($values['isAccount'] === self::NO_ACTION) {
+            if (in_array($values['isAccount'], [self::NO_ACTION, null])) {
                 continue;
             }
 
