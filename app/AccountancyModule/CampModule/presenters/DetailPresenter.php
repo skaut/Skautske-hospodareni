@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\CampModule;
 
+use App\AccountancyModule\EventModule\Components\MissingAutocomputedCategoryControl;
+use App\AccountancyModule\EventModule\Factories\IMissingAutocomputedCategoryControlFactory;
 use Model\Auth\Resources\Camp;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
+use Model\Cashbook\MissingCategory;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CampPragueParticipantsQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
@@ -33,14 +36,21 @@ class DetailPresenter extends BasePresenter
     /** @var PdfRenderer */
     private $pdf;
 
-    public function __construct(ExportService $export, PdfRenderer $pdf)
-    {
+    /** @var IMissingAutocomputedCategoryControlFactory */
+    private $missingAutocomputedCategoryControlFactory;
+
+    public function __construct(
+        ExportService $export,
+        PdfRenderer $pdf,
+        IMissingAutocomputedCategoryControlFactory $missingAutocomputedCategoryControlFactory
+    ) {
         parent::__construct();
-        $this->exportService = $export;
-        $this->pdf           = $pdf;
+        $this->exportService                             = $export;
+        $this->pdf                                       = $pdf;
+        $this->missingAutocomputedCategoryControlFactory = $missingAutocomputedCategoryControlFactory;
     }
 
-    public function renderDefault(int $aid) : void
+    public function renderDefault(int $aid, bool $missingCategories = false) : void
     {
         $troops = array_filter(array_map(
             function (UnitId $id) {
@@ -74,6 +84,7 @@ class DetailPresenter extends BasePresenter
             )),
             'finalRealBalance' => $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId())),
             'prefix' => $cashbook->getChitNumberPrefix(PaymentMethod::CASH()),
+            'missingCategories' => $missingCategories,
         ]);
     }
 
@@ -84,9 +95,14 @@ class DetailPresenter extends BasePresenter
             $this->redirect('default', ['aid' => $aid]);
         }
 
-        $template = $this->exportService->getCampReport($aid, $this->areTotalsConsistentWithSkautis($aid));
-        $this->pdf->render($template, 'reportCamp.pdf');
-        $this->terminate();
+        try {
+            $template = $this->exportService->getCampReport($aid, $this->areTotalsConsistentWithSkautis($aid));
+            $this->pdf->render($template, 'reportCamp.pdf');
+            $this->terminate();
+        } catch (MissingCategory $exc) {
+            $this->flashMessage('Chybí základní kategorie. Zapněte si automatické dopočítávání rozpočtu!', 'danger');
+            $this->redirect('default', ['aid' => $this->aid, 'missingCategories' => true]);
+        }
     }
 
     private function areTotalsConsistentWithSkautis(int $campId) : bool
@@ -99,5 +115,10 @@ class DetailPresenter extends BasePresenter
     private function getCashbookId() : CashbookId
     {
         return $this->queryBus->handle(new CampCashbookIdQuery($this->event->getId()));
+    }
+
+    protected function createComponentCategoryAutocomputedControl() : MissingAutocomputedCategoryControl
+    {
+        return $this->missingAutocomputedCategoryControlFactory->create(new SkautisCampId($this->aid));
     }
 }

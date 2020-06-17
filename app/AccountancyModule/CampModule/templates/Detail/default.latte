@@ -4,6 +4,10 @@
 
 {include ../header.latte}
 
+{if $missingCategories}
+    {control categoryAutocomputedControl}
+{/if}
+
 <div class="row">
     <div class="col-lg-7 text-center text-lg-left">
         {var $state = $event->getState()}
