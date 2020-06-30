@@ -223,7 +223,7 @@ class BankAccountsPresenter extends BasePresenter
 
         if ($role->getUnitId() === $account->getUnitId()
             && $role->isBasicUnit()
-            && ($role->isAccountant() || $role->isOfficer())) {
+            && ($role->isAccountant() || $role->isOfficer() || $role->isEventManager())) {
             return;
         }
         $this->noAccess();
