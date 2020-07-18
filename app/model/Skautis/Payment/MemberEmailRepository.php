@@ -13,8 +13,7 @@ use function is_string;
 
 final class MemberEmailRepository implements IMemberEmailRepository
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
     public function __construct(Skautis $skautis)
     {

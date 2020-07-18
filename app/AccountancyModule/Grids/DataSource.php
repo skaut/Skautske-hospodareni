@@ -14,23 +14,19 @@ use function count;
 
 abstract class DataSource implements IDataSource
 {
-    /** @var Sorting|null */
-    private $sorting;
+    private ?Sorting $sorting = null;
 
-    /** @var int|null */
-    private $offset;
+    private ?int $offset = null;
 
-    /** @var int|null */
-    private $limit;
+    private ?int $limit = null;
 
-    /** @var DoctrineCollectionDataSource|null */
-    private $innerDataSource;
+    private ?DoctrineCollectionDataSource $innerDataSource = null;
 
     /** @var Filter[] */
-    private $filters = [];
+    private array $filters = [];
 
     /** @var mixed[] */
-    private $conditions = [];
+    private array $conditions = [];
 
     /**
      * @return object[]

@@ -84,7 +84,7 @@ final class EditParticipantDialog extends Dialog
         $form->addSubmit('save', 'Upravit')
             ->setAttribute('class', 'btn btn-primary');
 
-        $form->onSuccess[] = function ($_, array $values) use ($participant) : void {
+        $form->onSuccess[] = function ($_x, array $values) use ($participant) : void {
             $changes = [];
 
             if ($values['payment'] !== $participant->getPayment()) {

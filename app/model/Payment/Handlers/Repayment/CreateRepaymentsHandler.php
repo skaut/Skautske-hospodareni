@@ -12,8 +12,7 @@ use Model\Utils\MoneyFactory;
 
 final class CreateRepaymentsHandler
 {
-    /** @var ClientInterface */
-    private $http;
+    private ClientInterface $http;
 
     public function __construct(ClientInterface $http)
     {

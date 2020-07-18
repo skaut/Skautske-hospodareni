@@ -7,7 +7,7 @@ namespace Model\Common;
 abstract class Aggregate
 {
     /** @var object[] */
-    private $eventsToDispatch = [];
+    private array $eventsToDispatch = [];
 
     /**
      * Adds event to aggregate event list,

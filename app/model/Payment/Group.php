@@ -29,10 +29,8 @@ class Group
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\OneToMany(
@@ -50,46 +48,28 @@ class Group
     /**
      * @ORM\Embedded(class=SkautisEntity::class, columnPrefix=false)
      *
-     * @var SkautisEntity|NULL
      * @Nullable()
      */
-    private $object;
+    private ?SkautisEntity $object = null;
 
-    /**
-     * @ORM\Column(type="string", name="label", length=64)
-     *
-     * @var string
-     */
-    private $name;
+    /** @ORM\Column(type="string", name="label", length=64) */
+    private string $name;
 
-    /**
-     * @ORM\Embedded(class=PaymentDefaults::class, columnPrefix=false)
-     *
-     * @var PaymentDefaults
-     */
-    private $paymentDefaults;
+    /** @ORM\Embedded(class=PaymentDefaults::class, columnPrefix=false) */
+    private PaymentDefaults $paymentDefaults;
 
-    /**
-     * @ORM\Column(type="string", length=20)
-     *
-     * @var string
-     */
-    private $state = self::STATE_OPEN;
+    /** @ORM\Column(type="string", length=20) */
+    private string $state = self::STATE_OPEN;
 
-    /**
-     * @ORM\Column(type="datetime_immutable", nullable=true)
-     *
-     * @var DateTimeImmutable|NULL
-     */
-    private $createdAt;
+    /** @ORM\Column(type="datetime_immutable", nullable=true) */
+    private ?DateTimeImmutable $createdAt = null;
 
     /**
      * @ORM\Embedded(class=Group\BankAccount::class, columnPrefix=false)
      *
-     * @var Group\BankAccount|NULL
      * @Nullable()
      */
-    private $bankAccount;
+    private ?Group\BankAccount $bankAccount = null;
 
     /**
      * @ORM\OneToMany(targetEntity=Email::class, mappedBy="group", cascade={"persist", "remove"}, orphanRemoval=true)
@@ -98,19 +78,11 @@ class Group
      */
     private $emails;
 
-    /**
-     * @ORM\Column(type="integer", options={"unsigned"=true}, nullable=true)
-     *
-     * @var int|NULL
-     */
-    private $smtpId;
+    /** @ORM\Column(type="integer", options={"unsigned"=true}, nullable=true) */
+    private ?int $smtpId = null;
 
-    /**
-     * @ORM\Column(type="string", name="state_info", length=250)
-     *
-     * @var string
-     */
-    private $note = '';
+    /** @ORM\Column(type="string", name="state_info", length=250) */
+    private string $note = '';
 
     public const STATE_OPEN   = 'open';
     public const STATE_CLOSED = 'closed';
@@ -177,6 +149,7 @@ class Group
         if ($this->state === self::STATE_OPEN) {
             return;
         }
+
         $this->state = self::STATE_OPEN;
         $this->note  = $note;
     }
@@ -186,6 +159,7 @@ class Group
         if ($this->state === self::STATE_CLOSED) {
             return;
         }
+
         $this->state = self::STATE_CLOSED;
         $this->note  = $note;
     }

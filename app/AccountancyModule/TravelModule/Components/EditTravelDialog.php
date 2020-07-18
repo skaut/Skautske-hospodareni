@@ -17,7 +17,7 @@ use function assert;
 final class EditTravelDialog extends Dialog
 {
     /** @var int|null @persistent */
-    public $travelId;
+    public ?int $travelId = null;
 
     private int $commandId;
 

@@ -17,8 +17,7 @@ class VehicleRepositoryTest extends IntegrationTest
     private const TABLE                 = 'tc_vehicle';
     private const TABLE_ROADWORTHY_SCAN = 'tc_vehicle_roadworthy_scan';
 
-    /** @var VehicleRepository */
-    private $repository;
+    private VehicleRepository $repository;
 
     /**
      * @return string[]

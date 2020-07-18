@@ -11,11 +11,9 @@ use Model\Common\UnitId;
  */
 final class CreateUnit
 {
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var int */
-    private $activeCashbookYear;
+    private int $activeCashbookYear;
 
     public function __construct(UnitId $unitId, int $activeCashbookYear)
     {

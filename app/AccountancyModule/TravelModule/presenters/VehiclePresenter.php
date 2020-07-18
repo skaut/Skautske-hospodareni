@@ -26,17 +26,12 @@ use function in_array;
 
 class VehiclePresenter extends BasePresenter
 {
-    /**
-     * @var int
-     * @persistent
-     */
-    public $id = 0;
+    /** @persistent */
+    public int $id = 0;
 
-    /** @var TravelService */
-    private $travelService;
+    private TravelService $travelService;
 
-    /** @var IRoadworthyControlFactory */
-    private $roadworthyControlFactory;
+    private IRoadworthyControlFactory $roadworthyControlFactory;
 
     public function __construct(TravelService $travelService, IRoadworthyControlFactory $roadworthyControlFactory)
     {
@@ -127,6 +122,7 @@ class VehiclePresenter extends BasePresenter
         } else {
             $this->flashMessage('Nelze smazat vozidlo s cestovními příkazy.', 'warning');
         }
+
         $this->redirect('VehicleList:default');
     }
 

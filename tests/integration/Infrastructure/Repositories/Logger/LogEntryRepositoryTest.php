@@ -15,8 +15,7 @@ final class LogEntryRepositoryTest extends IntegrationTest
 {
     private const TABLE = 'log';
 
-    /** @var LogEntryRepository */
-    private $repository;
+    private LogEntryRepository $repository;
 
     /**
      * @return string[]

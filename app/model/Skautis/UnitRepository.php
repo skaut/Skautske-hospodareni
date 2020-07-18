@@ -14,8 +14,7 @@ use function is_object;
 
 final class UnitRepository implements IUnitRepository
 {
-    /** @var WebServiceInterface */
-    private $webService;
+    private WebServiceInterface $webService;
 
     public function __construct(WebServiceInterface $webService)
     {

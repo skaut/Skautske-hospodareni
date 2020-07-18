@@ -9,8 +9,7 @@ use Model\Common\User;
 
 class UserRepositoryStub implements IUserRepository
 {
-    /** @var User */
-    private $user;
+    private User $user;
 
     public function find(int $id) : User
     {

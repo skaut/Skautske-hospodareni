@@ -16,12 +16,8 @@ use function sprintf;
  */
 class TransportTravel extends Travel
 {
-    /**
-     * @ORM\Column(type="money")
-     *
-     * @var Money
-     */
-    private $price;
+    /** @ORM\Column(type="money") */
+    private Money $price;
 
     public function __construct(int $id, Money $price, TravelDetails $details, Command $command)
     {

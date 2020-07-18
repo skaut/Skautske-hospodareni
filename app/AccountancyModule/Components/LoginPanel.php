@@ -13,14 +13,11 @@ use function assert;
 
 final class LoginPanel extends BaseControl
 {
-    /** @var UserService */
-    private $userService;
+    private UserService $userService;
 
-    /** @var UnitService */
-    private $unitService;
+    private UnitService $unitService;
 
-    /** @var User */
-    private $user;
+    private User $user;
 
     public function __construct(UserService $userService, UnitService $unitService, User $user)
     {

@@ -13,8 +13,7 @@ use function strpos;
 
 class UpdateFunctionsHandler
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
     public function __construct(Skautis $skautis)
     {

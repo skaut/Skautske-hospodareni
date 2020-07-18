@@ -26,22 +26,18 @@ final class CreateCashbookDialog extends BaseControl
     private const YEARS_RANGE = [-5, 2];
 
     /** @var bool @persistent */
-    public $opened = false;
+    public bool $opened = false;
 
     /** @var callable[] */
-    public $onSuccess = [];
+    public array $onSuccess = [];
 
-    /** @var bool */
-    private $isEditable;
+    private bool $isEditable;
 
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(bool $isEditable, UnitId $unitId, CommandBus $commandBus, QueryBus $queryBus)
     {

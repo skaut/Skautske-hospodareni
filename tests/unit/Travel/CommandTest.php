@@ -15,6 +15,7 @@ use Model\Travel\Travel\TransportType;
 use Model\Utils\MoneyFactory;
 use Money\Money;
 use Throwable;
+use function assert;
 
 class CommandTest extends Unit
 {
@@ -152,8 +153,8 @@ class CommandTest extends Unit
 
         $command->updateVehicleTravel(0, $distance, $details);
 
-        /** @var VehicleTravel $travel */
         $travel = $command->getTravels()[0];
+        assert($travel instanceof VehicleTravel);
 
         $this->assertSame($distance, $travel->getDistance());
         $this->assertSame($details, $travel->getDetails());
@@ -169,8 +170,8 @@ class CommandTest extends Unit
 
         $command->updateTransportTravel(0, $price, $details);
 
-        /** @var TransportTravel $travel */
         $travel = $command->getTravels()[0];
+        assert($travel instanceof TransportTravel);
 
         $this->assertSame($price, $travel->getPrice());
         $this->assertSame($details, $travel->getDetails());
@@ -204,8 +205,8 @@ class CommandTest extends Unit
 
         $command->updateTransportTravel(0, $price, $details);
 
-        /** @var TransportTravel $travel */
         $travel = $command->getTravels()[0];
+        assert($travel instanceof TransportTravel);
 
         $this->assertSame($price, $travel->getPrice());
         $this->assertSame($details, $travel->getDetails());
@@ -222,8 +223,8 @@ class CommandTest extends Unit
 
         $command->updateVehicleTravel(0, $distance, $details);
 
-        /** @var VehicleTravel $travel */
         $travel = $command->getTravels()[0];
+        assert($travel instanceof VehicleTravel);
 
         $this->assertSame((float) $distance, $travel->getDistance());
         $this->assertSame($details, $travel->getDetails());

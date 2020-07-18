@@ -24,19 +24,11 @@ class Amount
 {
     use SmartObject;
 
-    /**
-     * @ORM\Column(type="string", name="priceText", length=100)
-     *
-     * @var string
-     */
-    private $expression;
+    /** @ORM\Column(type="string", name="priceText", length=100) */
+    private string $expression;
 
-    /**
-     * @ORM\Column(type="float", name="price", options={"unsigned"=true})
-     *
-     * @var float
-     */
-    private $value;
+    /** @ORM\Column(type="float", name="price", options={"unsigned"=true}) */
+    private float $value;
 
     public function __construct(string $expression)
     {

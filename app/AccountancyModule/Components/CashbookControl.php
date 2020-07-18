@@ -14,23 +14,17 @@ use Model\Common\UnitId;
 
 class CashbookControl extends BaseControl
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var bool */
-    private $isEditable;
+    private bool $isEditable;
 
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var IChitFormFactory */
-    private $formFactory;
+    private IChitFormFactory $formFactory;
 
-    /** @var IChitListControlFactory */
-    private $chitListFactory;
+    private IChitListControlFactory $chitListFactory;
 
-    /** @var INoteFormFactory */
-    private $noteFormFactory;
+    private INoteFormFactory $noteFormFactory;
 
     public function __construct(
         CashbookId $cashbookId,

@@ -6,8 +6,7 @@ namespace Model\Payment\ReadModel\Queries;
 
 final class EventParticipantsWithoutPaymentQuery
 {
-    /** @var int */
-    private $groupId;
+    private int $groupId;
 
     public function __construct(int $groupId)
     {

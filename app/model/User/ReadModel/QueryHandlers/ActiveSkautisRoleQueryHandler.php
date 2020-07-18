@@ -11,8 +11,7 @@ use Model\UserService;
 
 final class ActiveSkautisRoleQueryHandler
 {
-    /** @var UserService */
-    private $userService;
+    private UserService $userService;
 
     public function __construct(UserService $userService)
     {
@@ -26,6 +25,7 @@ final class ActiveSkautisRoleQueryHandler
         if ($role !== null) {
             return $role;
         }
+
         throw new MissingCurrentRole();
     }
 }

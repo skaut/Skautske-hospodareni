@@ -22,19 +22,16 @@ class ObjectType
      * @ORM\Id()
      * @ORM\ManyToOne(targetEntity=Category::class)
      * @ORM\JoinColumn(name="categoryId", nullable=false)
-     *
-     * @var Category
      */
-    private $category;
+    private Category $category;
 
     /**
      * @ORM\Id()
      * @ORM\Column(type="string_enum", name="objectTypeId", length=20)
      *
-     * @var ObjectTypeEnum
      * @EnumAnnotation(class=ObjectTypeEnum::class)
      */
-    private $type;
+    private ObjectTypeEnum $type;
 
     public function __construct(Category $category, ObjectTypeEnum $value)
     {

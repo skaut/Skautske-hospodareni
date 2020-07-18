@@ -31,20 +31,15 @@ use function str_replace;
 
 class DefaultPresenter extends BasePresenter
 {
-    /** @var int|null */
-    private $commandId;
+    private ?int $commandId = null;
 
-    /** @var TravelService */
-    private $travelService;
+    private TravelService $travelService;
 
-    /** @var PdfRenderer */
-    private $pdf;
+    private PdfRenderer $pdf;
 
-    /** @var ICommandGridFactory */
-    private $gridFactory;
+    private ICommandGridFactory $gridFactory;
 
-    /** @var IEditTravelDialogFactory */
-    private $editTravelDialogFactory;
+    private IEditTravelDialogFactory $editTravelDialogFactory;
 
     public function __construct(
         TravelService $travelService,
@@ -66,6 +61,7 @@ class DefaultPresenter extends BasePresenter
         if ($command === null) {
             return false;
         }
+
         $identity = $this->getUser()->getIdentity();
 
         assert($identity instanceof Identity);
@@ -246,6 +242,7 @@ class DefaultPresenter extends BasePresenter
             $this->flashMessage('Nelze upravovat cestovní příkaz.', 'danger');
             $this->redirect('default');
         }
+
         $v['distance'] = round((float) str_replace(',', '.', $v['distance']), 2);
 
         $this->travelService->addTravel(

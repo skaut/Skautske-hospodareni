@@ -11,11 +11,9 @@ use Model\Cashbook\Cashbook\CashbookId;
  */
 final class ChitScansQuery
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var int */
-    private $chitId;
+    private int $chitId;
 
     public function __construct(CashbookId $cashbookId, int $chitId)
     {

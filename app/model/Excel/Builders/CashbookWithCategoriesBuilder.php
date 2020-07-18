@@ -28,11 +28,9 @@ use function uasort;
 
 class CashbookWithCategoriesBuilder
 {
-    /** @var Worksheet */
-    private $sheet;
+    private Worksheet $sheet;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     private const HEADER_ROW              = 2;
     private const SUBHEADER_ROW           = 3;
@@ -167,6 +165,7 @@ class CashbookWithCategoriesBuilder
                 $value  = $this->sheet->getCellByColumnAndRow($column, $row)->getValue() + $item->getAmount()->toFloat();
                 $this->sheet->setCellValueByColumnAndRow($column, $row, $value);
             }
+
             $row++;
         }
     }
@@ -180,7 +179,7 @@ class CashbookWithCategoriesBuilder
             $this->queryBus->handle(new CategoryListQuery($cashbookId))
         );
 
-        $categoriesByOperation = $categories->partition(function ($_, Category $category) : bool {
+        $categoriesByOperation = $categories->partition(function ($_x, Category $category) : bool {
             return $category->getOperationType()->equalsValue(Operation::INCOME);
         });
 

@@ -12,8 +12,7 @@ use Nette\Utils\Strings;
 
 final class EventPragueParticipantsQueryHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(QueryBus $queryBus)
     {

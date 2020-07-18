@@ -19,19 +19,11 @@ use function str_replace;
  */
 class EmailTemplate
 {
-    /**
-     * @ORM\Column(type="string")
-     *
-     * @var string
-     */
-    private $subject;
+    /** @ORM\Column(type="string") */
+    private string $subject;
 
-    /**
-     * @ORM\Column(type="text")
-     *
-     * @var string
-     */
-    private $body;
+    /** @ORM\Column(type="text") */
+    private string $body;
 
     public function __construct(string $subject, string $body)
     {
@@ -105,12 +97,15 @@ class EmailTemplate
         if (array_key_exists('prefix', $account) && $account['prefix'] !== '') {
             $params['accountPrefix'] = $account['prefix'];
         }
+
         if ($payment->getVariableSymbol() !== null) {
             $params['vs'] = $payment->getVariableSymbol();
         }
+
         if ($payment->getConstantSymbol() !== null) {
             $params['ks'] = $payment->getConstantSymbol();
         }
+
         if ($payment->getName() !== '') {
             $params['message'] = $payment->getName();
         }

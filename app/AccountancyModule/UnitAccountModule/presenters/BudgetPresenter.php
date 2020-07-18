@@ -8,12 +8,12 @@ use App\Forms\BaseForm;
 use Model\BudgetService;
 use NasExt\Forms\DependentData;
 use Nette\Application\UI\Form;
+use function assert;
 use function date;
 
 class BudgetPresenter extends BasePresenter
 {
-    /** @var BudgetService */
-    protected $budgetService;
+    protected BudgetService $budgetService;
 
     public function __construct(BudgetService $budgetService)
     {
@@ -32,8 +32,8 @@ class BudgetPresenter extends BasePresenter
 
     public function renderAdd(?int $year = null) : void
     {
-        /** @var BaseForm $form */
         $form = $this['addCategoryForm'];
+        assert($form instanceof BaseForm);
         $form->setDefaults([
             'year' => $year ?? date('Y'),
         ]);

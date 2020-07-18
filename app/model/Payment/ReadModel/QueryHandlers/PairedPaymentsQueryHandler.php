@@ -13,8 +13,7 @@ use function array_map;
 
 class PairedPaymentsQueryHandler
 {
-    /** @var EntityManager */
-    private $entityManager;
+    private EntityManager $entityManager;
 
     public function __construct(EntityManager $entityManager)
     {

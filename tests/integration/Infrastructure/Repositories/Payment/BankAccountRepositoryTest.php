@@ -14,8 +14,7 @@ use function array_keys;
 
 class BankAccountRepositoryTest extends IntegrationTest
 {
-    /** @var BankAccountRepository */
-    private $repository;
+    private BankAccountRepository $repository;
 
     /**
      * @return string[]
@@ -112,6 +111,7 @@ class BankAccountRepositoryTest extends IntegrationTest
         foreach ($rows as $row) {
             $this->tester->haveInDatabase('pa_bank_account', $row);
         }
+
         $ids = [1, 3];
 
         $accounts = $this->repository->findByIds($ids);
@@ -133,6 +133,7 @@ class BankAccountRepositoryTest extends IntegrationTest
         foreach ($rows as $row) {
             $this->tester->haveInDatabase('pa_bank_account', $row);
         }
+
         $ids = [1, 3];
 
         $this->expectException(BankAccountNotFound::class);

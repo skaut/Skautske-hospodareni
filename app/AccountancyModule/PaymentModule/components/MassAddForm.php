@@ -16,14 +16,11 @@ use function assert;
 
 class MassAddForm extends BaseControl
 {
-    /** @var int */
-    private $groupId;
+    private int $groupId;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var PaymentService */
-    private $payments;
+    private PaymentService $payments;
 
     public function __construct(int $groupId, PaymentService $payments, CommandBus $commandBus)
     {

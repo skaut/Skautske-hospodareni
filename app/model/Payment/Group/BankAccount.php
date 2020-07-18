@@ -12,19 +12,11 @@ use Doctrine\ORM\Mapping as ORM;
  */
 final class BankAccount
 {
-    /**
-     * @ORM\Column(type="integer", nullable=true, name="bank_account_id")
-     *
-     * @var int
-     */
-    private $id;
+    /** @ORM\Column(type="integer", nullable=true, name="bank_account_id") */
+    private int $id;
 
-    /**
-     * @ORM\Column(type="datetime_immutable", nullable=true)
-     *
-     * @var DateTimeImmutable|NULL
-     */
-    private $lastPairing;
+    /** @ORM\Column(type="datetime_immutable", nullable=true) */
+    private ?DateTimeImmutable $lastPairing = null;
 
     private function __construct(int $id, ?DateTimeImmutable $lastPairing)
     {

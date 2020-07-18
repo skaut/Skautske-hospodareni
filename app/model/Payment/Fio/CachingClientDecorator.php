@@ -11,11 +11,9 @@ use function sprintf;
 
 class CachingClientDecorator implements IFioClient
 {
-    /** @var IFioClient */
-    private $inner;
+    private IFioClient $inner;
 
-    /** @var Cache */
-    private $cache;
+    private Cache $cache;
 
     public function __construct(IFioClient $inner, Cache $cache)
     {

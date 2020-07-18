@@ -137,6 +137,7 @@ abstract class AccountancyHelpers
         if ($price === null || $price === '') {
             return ' '; //je tam nedělitelná mezera
         }
+
         $decimals = $full ? 2 : 0;
 
         if ($price instanceof Money) {
@@ -287,13 +288,16 @@ abstract class AccountancyHelpers
         if (count($dates) !== 2) {
             throw new InvalidArgumentException('Filter expect array of 2 items.');
         }
+
         [$start, $end] = $dates;
         if ($start->year !== $end->year) {
             return sprintf('%s - %s', $start->format(self::DATE_FORMAT_FULL), $end->format(self::DATE_FORMAT_FULL));
         }
+
         if ($start->month !== $end->month) {
             return sprintf('%s - %s', $start->format(self::DATE_FORMAT_DAY_MONTH), $end->format(self::DATE_FORMAT_FULL));
         }
+
         if ($start->day !== $end->day) {
             return sprintf('%s - %s', $start->format(self::DATE_FORMAT_DAY), $end->format(self::DATE_FORMAT_FULL));
         }

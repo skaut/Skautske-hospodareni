@@ -17,17 +17,15 @@ abstract class BaseService
 
     /**
      * slouží pro komunikaci se skautISem
-     *
-     * @var Skautis
      */
-    protected $skautis;
+    protected Skautis $skautis;
 
     /**
      * krátkodobé lokální úložiště pro ukládání odpovědí ze skautISU
      *
      * @var mixed[]
      */
-    private static $storage = [];
+    private static array $storage = [];
 
     public function __construct(Skautis $skautis)
     {

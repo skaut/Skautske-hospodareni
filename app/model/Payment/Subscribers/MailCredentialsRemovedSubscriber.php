@@ -9,8 +9,7 @@ use Model\Payment\Repositories\IGroupRepository;
 
 final class MailCredentialsRemovedSubscriber
 {
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
     public function __construct(IGroupRepository $groups)
     {

@@ -15,14 +15,11 @@ use function sprintf;
 
 class CategoryRepository
 {
-    /** @var ICampCategoryRepository */
-    private $campCategories;
+    private ICampCategoryRepository $campCategories;
 
-    /** @var IStaticCategoryRepository */
-    private $staticCategories;
+    private IStaticCategoryRepository $staticCategories;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(
         ICampCategoryRepository $campCategories,

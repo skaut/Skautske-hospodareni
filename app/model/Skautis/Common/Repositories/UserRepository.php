@@ -13,11 +13,9 @@ use stdClass;
 
 final class UserRepository implements IUserRepository
 {
-    /** @var WebServiceInterface */
-    private $userWebService;
+    private WebServiceInterface $userWebService;
 
-    /** @var WebServiceInterface */
-    private $orgWebService;
+    private WebServiceInterface $orgWebService;
 
     public function __construct(WebServiceInterface $userWebService, WebServiceInterface $orgWebService)
     {
@@ -47,6 +45,7 @@ final class UserRepository implements IUserRepository
             }
         } catch (PermissionException $e) {
         }
+
         throw new UserNotFound();
     }
 }

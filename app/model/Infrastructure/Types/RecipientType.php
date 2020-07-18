@@ -20,7 +20,7 @@ class RecipientType extends StringType
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform) : ?string
     {
-        /** @var $value Recipient */
+        /** @var Recipient $value */
         return $value === null ? null : $value->getName();
     }
 

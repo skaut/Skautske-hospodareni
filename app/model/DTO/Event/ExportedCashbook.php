@@ -8,11 +8,9 @@ use Model\Cashbook\Cashbook\CashbookId;
 
 final class ExportedCashbook
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var string */
-    private $displayName;
+    private string $displayName;
 
     public function __construct(CashbookId $cashbookId, string $displayName)
     {

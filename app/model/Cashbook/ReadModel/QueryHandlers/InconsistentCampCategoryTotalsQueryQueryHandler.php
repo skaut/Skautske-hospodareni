@@ -15,11 +15,9 @@ use function assert;
 
 class InconsistentCampCategoryTotalsQueryQueryHandler
 {
-    /** @var ICampCategoryRepository */
-    private $campCategories;
+    private ICampCategoryRepository $campCategories;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(ICampCategoryRepository $campCategories, QueryBus $queryBus)
     {

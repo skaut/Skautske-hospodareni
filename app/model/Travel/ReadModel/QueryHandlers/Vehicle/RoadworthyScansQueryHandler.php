@@ -13,11 +13,9 @@ use function array_map;
 
 final class RoadworthyScansQueryHandler
 {
-    /** @var IVehicleRepository */
-    private $vehicles;
+    private IVehicleRepository $vehicles;
 
-    /** @var IScanStorage */
-    private $scans;
+    private IScanStorage $scans;
 
     public function __construct(IVehicleRepository $vehicles, IScanStorage $scans)
     {

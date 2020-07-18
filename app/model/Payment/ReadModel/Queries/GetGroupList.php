@@ -12,10 +12,9 @@ use Model\Payment\ReadModel\QueryHandlers\GetGroupListHandler;
 final class GetGroupList
 {
     /** @var int[] */
-    private $unitIds;
+    private array $unitIds;
 
-    /** @var bool */
-    private $onlyOpen;
+    private bool $onlyOpen;
 
     /**
      * @param int[] $unitIds

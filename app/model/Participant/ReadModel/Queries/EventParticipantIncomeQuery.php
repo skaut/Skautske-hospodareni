@@ -11,8 +11,7 @@ use Model\Event\SkautisEventId;
  */
 final class EventParticipantIncomeQuery
 {
-    /** @var SkautisEventId */
-    private $eventId;
+    private SkautisEventId $eventId;
 
     public function __construct(SkautisEventId $eventId)
     {

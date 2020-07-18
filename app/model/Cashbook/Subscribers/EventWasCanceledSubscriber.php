@@ -12,11 +12,9 @@ use Model\Events\Events\EventWasCanceled;
 
 final class EventWasCanceledSubscriber
 {
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(CommandBus $commandBus, QueryBus $queryBus)
     {

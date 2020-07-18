@@ -15,11 +15,8 @@ use function count;
 
 class Version20170623193150 extends AbstractMigration
 {
-    /**
-     * @var Skautis
-     * @inject
-     */
-    public $skautis;
+    /** @inject */
+    public Skautis $skautis;
 
     public function up(Schema $schema) : void
     {

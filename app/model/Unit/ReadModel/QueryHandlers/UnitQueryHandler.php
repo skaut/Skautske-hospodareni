@@ -10,8 +10,7 @@ use Model\Unit\Unit;
 
 class UnitQueryHandler
 {
-    /** @var IUnitRepository */
-    private $units;
+    private IUnitRepository $units;
 
     public function __construct(IUnitRepository $units)
     {

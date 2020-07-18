@@ -18,20 +18,15 @@ class CategorySummary
 {
     use SmartObject;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var Money */
-    private $total;
+    private Money $total;
 
-    /** @var Operation */
-    private $operationType;
+    private Operation $operationType;
 
-    /** @var bool */
-    private $virtual;
+    private bool $virtual;
 
     public function __construct(int $id, string $name, Money $total, Operation $operationType, bool $virtual)
     {

@@ -16,17 +16,13 @@ use Nette\Mail\Message;
 
 class CreateMailCredentialsHandler
 {
-    /** @var IMailCredentialsRepository */
-    private $credentials;
+    private IMailCredentialsRepository $credentials;
 
-    /** @var TemplateFactory */
-    private $templateFactory;
+    private TemplateFactory $templateFactory;
 
-    /** @var IMailerFactory */
-    private $mailerFactory;
+    private IMailerFactory $mailerFactory;
 
-    /** @var IUserRepository */
-    private $users;
+    private IUserRepository $users;
 
     public function __construct(IMailCredentialsRepository $credentials, TemplateFactory $templateFactory, IMailerFactory $mailerFactory, IUserRepository $users)
     {

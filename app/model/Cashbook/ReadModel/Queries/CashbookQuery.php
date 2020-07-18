@@ -11,8 +11,7 @@ use Model\Cashbook\Cashbook\CashbookId;
  */
 class CashbookQuery
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
     public function __construct(CashbookId $cashbookId)
     {

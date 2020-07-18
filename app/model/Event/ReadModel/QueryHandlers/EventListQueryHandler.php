@@ -12,11 +12,9 @@ use function is_object;
 
 class EventListQueryHandler
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
-    /** @var EventFactory */
-    private $eventFactory;
+    private EventFactory $eventFactory;
 
     public function __construct(Skautis $skautis, EventFactory $eventFactory)
     {

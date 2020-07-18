@@ -35,28 +35,20 @@ class MoveChitsDialog extends BaseControl
     /**
      * Comma-separated chit IDS (because persistent parameters don't support arrays)
      *
-     * @var        string
      * @persistent
      */
-    public $chitIds;
+    public string $chitIds;
 
-    /**
-     * @var bool
-     * @persistent
-     */
-    public $opened = false;
+    /** @persistent */
+    public bool $opened = false;
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var IAuthorizator */
-    private $authorizator;
+    private IAuthorizator $authorizator;
 
     public function __construct(
         CashbookId $cashbookId,

@@ -16,8 +16,7 @@ use Model\Payment\UnitResolverStub;
 
 final class BankAccountAccessCheckerTest extends Unit
 {
-    /** @var UnitResolverStub */
-    private $unitResolver;
+    private UnitResolverStub $unitResolver;
 
     protected function setUp() : void
     {

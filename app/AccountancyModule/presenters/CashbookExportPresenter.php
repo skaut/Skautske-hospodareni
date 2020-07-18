@@ -43,20 +43,14 @@ use function sprintf;
 
 class CashbookExportPresenter extends BasePresenter
 {
-    /**
-     * @var string
-     * @persistent
-     */
-    public $cashbookId = ''; // default value type is used for type casting
+    /** @persistent */
+    public string $cashbookId = ''; // default value type is used for type casting
 
-    /** @var ExportService */
-    private $exportService;
+    private ExportService $exportService;
 
-    /** @var ExcelService */
-    private $excelService;
+    private ExcelService $excelService;
 
-    /** @var PdfRenderer */
-    private $pdf;
+    private PdfRenderer $pdf;
 
     public function __construct(ExportService $exportService, ExcelService $excelService, PdfRenderer $pdf)
     {
@@ -174,6 +168,7 @@ class CashbookExportPresenter extends BasePresenter
             assert($file instanceof File);
             $zip->addFileFromPsr7Stream($name, $file->getContents());
         }
+
         $zip->finish();
     }
 
@@ -216,6 +211,7 @@ class CashbookExportPresenter extends BasePresenter
             if ($scan->getPath() !== $path) {
                 continue;
             }
+
             $contents = $scan->getContents();
             if ($thumbnail) {
                 $image = Image::fromString($contents);

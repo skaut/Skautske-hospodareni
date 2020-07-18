@@ -10,8 +10,7 @@ use Kdyby\Events\Subscriber;
 
 class EnumListener implements Subscriber
 {
-    /** @var EnumPostLoadEntityListener */
-    private $listener;
+    private EnumPostLoadEntityListener $listener;
 
     public function __construct(EnumPostLoadEntityListener $listener)
     {

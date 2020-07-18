@@ -29,80 +29,38 @@ class Command
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
-     */
-    private $unitId;
+    /** @ORM\Column(type="integer", options={"unsigned"=true}) */
+    private int $unitId;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Vehicle::class)
-     *
-     * @var Vehicle|NULL
-     */
-    private $vehicle;
+    /** @ORM\ManyToOne(targetEntity=Vehicle::class) */
+    private ?Vehicle $vehicle = null;
 
-    /**
-     * @ORM\Embedded(class=Passenger::class, columnPrefix=false)
-     *
-     * @var Passenger
-     */
-    private $passenger;
+    /** @ORM\Embedded(class=Passenger::class, columnPrefix=false) */
+    private Passenger $passenger;
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     *
-     * @var string
-     */
-    private $purpose;
+    /** @ORM\Column(type="string", length=64) */
+    private string $purpose;
 
-    /**
-     * @ORM\Column(type="string", length=64, nullable=true)
-     *
-     * @var string
-     */
-    private $place;
+    /** @ORM\Column(type="string", length=64, nullable=true) */
+    private string $place;
 
-    /**
-     * @ORM\Column(type="string", name="passengers", length=64)
-     *
-     * @var string
-     */
-    private $fellowPassengers;
+    /** @ORM\Column(type="string", name="passengers", length=64) */
+    private string $fellowPassengers;
 
-    /**
-     * @ORM\Column(type="money")
-     *
-     * @var Money
-     */
-    private $fuelPrice;
+    /** @ORM\Column(type="money") */
+    private Money $fuelPrice;
 
-    /**
-     * @ORM\Column(type="money")
-     *
-     * @var Money
-     */
-    private $amortization;
+    /** @ORM\Column(type="money") */
+    private Money $amortization;
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     *
-     * @var string
-     */
-    private $note;
+    /** @ORM\Column(type="string", length=64) */
+    private string $note;
 
-    /**
-     * @ORM\Column(type="datetime_immutable", nullable=true, name="closed")
-     *
-     * @var DateTimeImmutable|NULL
-     */
-    private $closedAt;
+    /** @ORM\Column(type="datetime_immutable", nullable=true, name="closed") */
+    private ?DateTimeImmutable $closedAt = null;
 
     /**
      * @ORM\OneToMany(targetEntity=Travel::class, indexBy="id", mappedBy="command", cascade={"persist", "remove"}, orphanRemoval=true)
@@ -111,32 +69,24 @@ class Command
      */
     private $travels;
 
-    /**
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
-    private $nextTravelId = 0;
+    /** @ORM\Column(type="integer") */
+    private int $nextTravelId = 0;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     *
-     * @var int|null
-     */
-    private $ownerId = null;
+    /** @ORM\Column(type="integer", nullable=true) */
+    private ?int $ownerId = null;
 
     /**
      * @ORM\Column(type="transport_types")
      *
      * @var TransportType[]
      */
-    private $transportTypes;
+    private array $transportTypes;
 
     /**
      * @var string
      * * @ORM\Column(type="string", length=64)
      */
-    private $unit;
+    private string $unit;
 
     /**
      * @param TransportType[] $transportTypes

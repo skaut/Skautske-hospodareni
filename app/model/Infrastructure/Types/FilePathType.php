@@ -20,7 +20,7 @@ class FilePathType extends StringType
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform) : ?string
     {
-        /** @var $value FilePath */
+        /** @var FilePath $value */
         return $value === null ? null : $value->getPath();
     }
 

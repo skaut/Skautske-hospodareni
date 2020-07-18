@@ -28,65 +28,51 @@ class Event implements ISkautisEvent
 {
     use SmartObject;
 
-    /** @var SkautisEventId */
-    private $id;
+    private SkautisEventId $id;
 
-    /** @var string */
-    private $displayName;
+    private string $displayName;
 
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var string */
-    private $unitName;
+    private string $unitName;
 
-    /** @var string */
-    private $state;
+    private string $state;
 
-    /** @var Date */
-    private $startDate;
+    private Date $startDate;
 
-    /** @var Date */
-    private $endDate;
+    private Date $endDate;
 
-    /** @var int|null */
-    private $totalDays;
+    private ?int $totalDays = null;
 
-    /** @var string */
-    private $location;
+    private string $location;
 
-    /** @var string */
-    private $registrationNumber;
+    private string $registrationNumber;
 
-    /** @var string */
-    private $note;
+    private string $note;
 
-    /** @var int */
-    private $scopeId;
+    private int $scopeId;
 
-    /** @var int */
-    private $typeId;
+    private int $typeId;
 
     /** @var ?bool */
-    private $statisticAutoComputed;
+    private ?bool $statisticAutoComputed = null;
 
     /** @var ?int */
-    private $realCount;
+    private ?int $realCount = null;
 
     /** @var ?int */
-    private $realChildDays;
+    private ?int $realChildDays = null;
 
     /** @var ?int */
-    private $realPersonDays;
+    private ?int $realPersonDays = null;
 
     /** @var ?string */
-    private $personClosed;
+    private ?string $personClosed = null;
 
     /** @var ?Date */
-    private $dateClosed;
+    private ?Date $dateClosed = null;
 
-    /** @var string|null */
-    private $unitEducativeName;
+    private ?string $unitEducativeName = null;
 
     public function __construct(
         SkautisEventId $id,

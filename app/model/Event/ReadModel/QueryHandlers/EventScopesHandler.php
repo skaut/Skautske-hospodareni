@@ -13,11 +13,9 @@ final class EventScopesHandler
 {
     private const CACHE_KEY = 'event_scopes';
 
-    /** @var WebServiceInterface */
-    private $eventWebservice;
+    private WebServiceInterface $eventWebservice;
 
-    /** @var Cache */
-    private $cache;
+    private Cache $cache;
 
     public function __construct(WebServiceInterface $eventWebservice, Cache $cache)
     {

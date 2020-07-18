@@ -25,26 +25,19 @@ use function sprintf;
 
 class CashbookOfficialUnitQueryHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
-    /** @var IEventRepository */
-    private $eventRepository;
+    private IEventRepository $eventRepository;
 
-    /** @var ICampRepository */
-    private $campRepository;
+    private ICampRepository $campRepository;
 
-    /** @var IUnitRepository */
-    private $unitRepository;
+    private IUnitRepository $unitRepository;
 
-    /** @var ISkautisUnitRepository */
-    private $skautisUnitRepository;
+    private ISkautisUnitRepository $skautisUnitRepository;
 
-    /** @var Mapper */
-    private $mapper;
+    private Mapper $mapper;
 
-    /** @var IUnitResolver */
-    private $unitResolver;
+    private IUnitResolver $unitResolver;
 
     public function __construct(
         ICashbookRepository $cashbooks,

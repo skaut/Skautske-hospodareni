@@ -11,8 +11,7 @@ use Model\Skautis\Mapper;
 
 final class EventCashbookIdQueryHandler
 {
-    /** @var Mapper */
-    private $mapper;
+    private Mapper $mapper;
 
     public function __construct(Mapper $mapper)
     {

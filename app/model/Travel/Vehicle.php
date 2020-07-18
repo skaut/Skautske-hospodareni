@@ -36,66 +36,32 @@ class Vehicle
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     *
-     * @var string
-     */
-    private $type;
+    /** @ORM\Column(type="string", length=64) */
+    private string $type;
 
-    /**
-     * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
-     */
-    private $unitId;
+    /** @ORM\Column(type="integer", options={"unsigned"=true}) */
+    private int $unitId;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     *
-     * @var int|NULL
-     */
-    private $subunitId;
+    /** @ORM\Column(type="integer", nullable=true) */
+    private ?int $subunitId = null;
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     *
-     * @var string
-     */
-    private $registration;
+    /** @ORM\Column(type="string", length=64) */
+    private string $registration;
 
-    /**
-     * @ORM\Column(type="float", options={"unsigned"=true})
-     *
-     * @var float
-     */
-    private $consumption;
+    /** @ORM\Column(type="float", options={"unsigned"=true}) */
+    private float $consumption;
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     *
-     * @var string
-     */
-    private $note = '';
+    /** @ORM\Column(type="string", length=64) */
+    private string $note = '';
 
-    /**
-     * @ORM\Column(type="boolean", options={"default"=0})
-     *
-     * @var bool
-     */
-    private $archived = false;
+    /** @ORM\Column(type="boolean", options={"default"=0}) */
+    private bool $archived = false;
 
-    /**
-     * @ORM\Embedded(class=Metadata::class)
-     *
-     * @var Metadata
-     */
-    private $metadata;
+    /** @ORM\Embedded(class=Metadata::class) */
+    private Metadata $metadata;
 
     /**
      * @ORM\OneToMany(

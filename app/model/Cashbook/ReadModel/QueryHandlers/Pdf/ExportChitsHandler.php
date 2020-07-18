@@ -34,11 +34,9 @@ use function in_array;
 
 class ExportChitsHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var TemplateFactory */
-    private $templateFactory;
+    private TemplateFactory $templateFactory;
 
     public function __construct(
         QueryBus $queryBus,
@@ -59,11 +57,11 @@ class ExportChitsHandler
             });
         }
 
-        [$income, $outcome] = $chits->partition(function ($_, Chit $chit) : bool {
+        [$income, $outcome] = $chits->partition(function ($_x, Chit $chit) : bool {
             return $chit->isIncome();
         });
 
-        $activeHpd = $chits->exists(function ($_, Chit $chit) : bool {
+        $activeHpd = $chits->exists(function ($_x, Chit $chit) : bool {
             return 0 < count(array_filter($chit->getItems(), function (ChitItem $item) {
                     return $item->getCategory()->getShortcut() === 'hpd';
             }));

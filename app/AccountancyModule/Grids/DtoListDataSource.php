@@ -13,10 +13,9 @@ use Ublaboo\DataGrid\Utils\Sorting;
 final class DtoListDataSource implements IDataSource
 {
     /** @var ArrayCollection<object> */
-    private $collection;
+    private ArrayCollection $collection;
 
-    /** @var Criteria */
-    private $criteria;
+    private Criteria $criteria;
 
     /**
      * @param array<object> $data

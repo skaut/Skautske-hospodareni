@@ -19,23 +19,18 @@ use function preg_replace;
 final class NoteForm extends BaseControl
 {
     /** @var bool @persistent */
-    public $editation = false;
+    public bool $editation = false;
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
     /**
      * Can current user add/edit chits?
-     *
-     * @var bool
      */
-    private $isEditable;
+    private bool $isEditable;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(
         CashbookId $cashbookId,
@@ -111,6 +106,7 @@ final class NoteForm extends BaseControl
             $this->flashMessage('Nemáte oprávnění upravovat pokladní knihu', 'danger');
             $this->redirect('this');
         }
+
         $this->commandBus->handle(new UpdateNote($this->cashbookId, $form->getValues()->note));
     }
 }

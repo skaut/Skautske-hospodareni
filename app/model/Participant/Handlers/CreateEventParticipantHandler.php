@@ -9,8 +9,7 @@ use Model\Common\Repositories\IParticipantRepository;
 
 final class CreateEventParticipantHandler
 {
-    /** @var IParticipantRepository */
-    private $participants;
+    private IParticipantRepository $participants;
 
     public function __construct(IParticipantRepository $participants)
     {

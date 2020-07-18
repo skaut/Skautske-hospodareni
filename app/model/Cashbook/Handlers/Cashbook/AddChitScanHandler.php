@@ -12,11 +12,9 @@ use Model\Common\IScanStorage;
 
 final class AddChitScanHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbook;
+    private ICashbookRepository $cashbook;
 
-    /** @var IScanStorage */
-    private $scanStorage;
+    private IScanStorage $scanStorage;
 
     public function __construct(
         ICashbookRepository $cashbook,

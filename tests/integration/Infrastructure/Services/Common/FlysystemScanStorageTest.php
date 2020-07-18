@@ -18,11 +18,9 @@ final class FlysystemScanStorageTest extends Unit
 {
     private const FILE_PATH_PREFIX = 'test';
 
-    /** @var  string */
-    private $directory;
+    private string $directory;
 
-    /** @var FlysystemScanStorage */
-    private $storage;
+    private FlysystemScanStorage $storage;
 
     protected function _before() : void
     {

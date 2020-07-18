@@ -23,11 +23,9 @@ use function dirname;
 
 class ContractPresenter extends BasePresenter
 {
-    /** @var TravelService */
-    private $travelService;
+    private TravelService $travelService;
 
-    /** @var PdfRenderer */
-    private $pdf;
+    private PdfRenderer $pdf;
 
     public function __construct(TravelService $travelService, PdfRenderer $pdf)
     {
@@ -114,6 +112,7 @@ class ContractPresenter extends BasePresenter
             default:
                 throw new Exception('Neznámá šablona pro ' . $contract->getTemplateVersion());
         }
+
         $template = $this->template;
         $template->setFile(dirname(__FILE__) . '/../templates/Contract/' . $templateName);
         $template->setParameters([

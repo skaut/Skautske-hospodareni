@@ -9,8 +9,7 @@ use Model\Payment\ReadModel\Queries\CountGroupsWithBankAccountQuery;
 
 final class CountGroupsWithBankAccountQueryHandler
 {
-    /** @var EntityManager */
-    private $entityManager;
+    private EntityManager $entityManager;
 
     public function __construct(EntityManager $entityManager)
     {

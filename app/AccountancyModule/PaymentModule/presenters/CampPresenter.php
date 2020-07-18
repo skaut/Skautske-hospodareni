@@ -19,27 +19,23 @@ use Model\Payment\ReadModel\Queries\CampsWithoutGroupQuery;
 use Model\Payment\ReadModel\Queries\MemberEmailsQuery;
 use Model\PaymentService;
 use function array_filter;
+use function assert;
 use function in_array;
 
 class CampPresenter extends BasePresenter
 {
     /** @var string[] */
-    protected $readUnits;
+    protected array $readUnits;
 
-    /** @var PaymentService */
-    private $model;
+    private PaymentService $model;
 
-    /** @var IMassAddFormFactory */
-    private $massAddFormFactory;
+    private IMassAddFormFactory $massAddFormFactory;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var Camp|null */
-    private $camp;
+    private ?Camp $camp = null;
 
-    /** @var IGroupFormFactory */
-    private $groupFormFactory;
+    private IGroupFormFactory $groupFormFactory;
 
     public function __construct(
         PaymentService $model,
@@ -103,7 +99,7 @@ class CampPresenter extends BasePresenter
         );
 
         $form = $this['massAddForm'];
-        /** @var MassAddForm $form */
+        assert($form instanceof MassAddForm);
 
         $personsWithPayment = $this->model->getPersonsWithActivePayment($id);
 

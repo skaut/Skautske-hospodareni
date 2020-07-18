@@ -13,11 +13,9 @@ use Nette\Application\UI\Form;
 
 final class SmtpUpdateForm extends Dialog
 {
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
     /**
      * (string because persistent parameters aren't auto-casted)

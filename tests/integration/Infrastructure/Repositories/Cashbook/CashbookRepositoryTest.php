@@ -21,8 +21,7 @@ class CashbookRepositoryTest extends IntegrationTest
     private const CHIT_TABLE      = 'ac_chits';
     private const CHIT_ITEM_TABLE = 'ac_chits_item';
 
-    /** @var CashbookRepository */
-    private $repository;
+    private CashbookRepository $repository;
 
     public function _before() : void
     {

@@ -9,12 +9,12 @@ use Model\Budget\Unit\Category;
 use Model\Cashbook\Operation;
 use Model\DTO\Budget\CategoryFactory;
 use function array_map;
+use function assert;
 use function str_replace;
 
 class BudgetService
 {
-    /** @var ICategoryRepository */
-    private $repository;
+    private ICategoryRepository $repository;
 
     public function __construct(ICategoryRepository $budgetRepository)
     {
@@ -51,8 +51,8 @@ class BudgetService
     public function getCategoriesRoot(int $unitId, string $type) : array
     {
         $res = [];
-        /** @var Category $category */
         foreach ($this->repository->findCategories($unitId, Operation::get($type)) as $category) {
+            assert($category instanceof Category);
             $res[$category->getId()] = $category->getLabel();
         }
 

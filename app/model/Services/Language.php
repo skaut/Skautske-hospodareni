@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Model\Services;
 
-use const LC_ALL;
-use const LC_COLLATE;
 use function assert;
 use function is_string;
 use function setlocale;
 use function strcoll;
+use const LC_ALL;
+use const LC_COLLATE;
 
 class Language
 {

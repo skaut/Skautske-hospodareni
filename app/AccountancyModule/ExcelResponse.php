@@ -13,11 +13,9 @@ use function sprintf;
 
 final class ExcelResponse implements IResponse
 {
-    /** @var string */
-    private $filename;
+    private string $filename;
 
-    /** @var Spreadsheet */
-    private $spreadsheet;
+    private Spreadsheet $spreadsheet;
 
     public function __construct(string $filename, Spreadsheet $spreadsheet)
     {

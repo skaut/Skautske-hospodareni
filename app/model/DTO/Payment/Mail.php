@@ -17,23 +17,17 @@ class Mail
 {
     use SmartObject;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var string */
-    private $username;
+    private string $username;
 
-    /** @var string */
-    private $host;
+    private string $host;
 
-    /** @var string */
-    private $secure;
+    private string $secure;
 
-    /** @var string */
-    private $sender;
+    private string $sender;
 
     public function __construct(int $id, int $unitId, string $username, string $host, string $secure, string $sender)
     {

@@ -25,6 +25,7 @@ use Model\Payment\VariableSymbol;
 use Nette\Utils\Random;
 use Stubs\BankAccountAccessCheckerStub;
 use Stubs\MailCredentialsAccessCheckerStub;
+use function assert;
 use function date;
 use function mt_rand;
 use function reset;
@@ -32,20 +33,15 @@ use function sprintf;
 
 class BankServiceTest extends IntegrationTest
 {
-    /** @var IntegrationTester */
-    protected $tester;
+    protected IntegrationTester $tester;
 
-    /** @var BankService */
-    private $bankService;
+    private BankService $bankService;
 
-    /** @var IPaymentRepository */
-    private $payments;
+    private IPaymentRepository $payments;
 
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
-    /** @var IBankAccountRepository */
-    private $bankAccounts;
+    private IBankAccountRepository $bankAccounts;
 
     protected function _before() : void
     {
@@ -103,8 +99,8 @@ class BankServiceTest extends IntegrationTest
         /** @var PairingResult[] $pairingResult */
         $pairingResults = $this->bankService->pairAllGroups([1], $daysBack);
 
-        /** @var PairingResult $pairingResult */
         $pairingResult = reset($pairingResults);
+        assert($pairingResult instanceof PairingResult);
 
         $dateSince = (new DateTimeImmutable(sprintf('- %d days', $daysBack)))->format('j.n.Y');
         $dateUntil = date('j.n.Y');

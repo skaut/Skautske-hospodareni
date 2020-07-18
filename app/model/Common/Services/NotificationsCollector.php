@@ -17,7 +17,7 @@ class NotificationsCollector
      *
      * @var array<string, array<string, int>>
      */
-    private $notifications = [
+    private array $notifications = [
         self::ERROR => [],
     ];
 

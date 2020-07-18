@@ -21,33 +21,17 @@ final class Passenger
 {
     use SmartObject;
 
-    /**
-     * @ORM\Column(type="string", name="driver_name", length=64)
-     *
-     * @var string
-     */
-    private $name;
+    /** @ORM\Column(type="string", name="driver_name", length=64) */
+    private string $name;
 
-    /**
-     * @ORM\Column(type="string", name="driver_contact", length=64, nullable=true)
-     *
-     * @var string
-     */
-    private $contact;
+    /** @ORM\Column(type="string", name="driver_contact", length=64, nullable=true) */
+    private string $contact;
 
-    /**
-     * @ORM\Column(type="string", name="driver_address", length=64)
-     *
-     * @var string
-     */
-    private $address;
+    /** @ORM\Column(type="string", name="driver_address", length=64) */
+    private string $address;
 
-    /**
-     * @ORM\Column(type="chronos_date", nullable=true, name="driver_birthday")
-     *
-     * @var Date|NULL
-     */
-    private $birthday;
+    /** @ORM\Column(type="chronos_date", nullable=true, name="driver_birthday") */
+    private ?Date $birthday = null;
 
     public function __construct(string $name, string $contact, string $address, ?Date $birthday)
     {

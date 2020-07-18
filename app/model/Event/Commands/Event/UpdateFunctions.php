@@ -6,20 +6,15 @@ namespace Model\Event\Commands\Event;
 
 final class UpdateFunctions
 {
-    /** @var int */
-    private $eventId;
+    private int $eventId;
 
-    /** @var int|NULL */
-    private $leaderId;
+    private ?int $leaderId = null;
 
-    /** @var int|NULL */
-    private $assistantId;
+    private ?int $assistantId = null;
 
-    /** @var int|NULL */
-    private $accountantId;
+    private ?int $accountantId = null;
 
-    /** @var int|NULL */
-    private $medicId;
+    private ?int $medicId = null;
 
     public function __construct(int $eventId, ?int $leaderId, ?int $assistantId, ?int $accountantId, ?int $medicId)
     {

@@ -21,29 +21,21 @@ class Transaction
 {
     use Nette\SmartObject;
 
-    /** @var string */
-    private $id;
+    private string $id;
 
-    /** @var DateTimeImmutable */
-    private $date;
+    private DateTimeImmutable $date;
 
-    /** @var float */
-    private $amount;
+    private float $amount;
 
-    /** @var string */
-    private $bankAccount;
+    private string $bankAccount;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var int|NULL */
-    private $variableSymbol;
+    private ?int $variableSymbol = null;
 
-    /** @var int|NULL */
-    private $constantSymbol;
+    private ?int $constantSymbol = null;
 
-    /** @var string|NULL */
-    private $note;
+    private ?string $note = null;
 
     public function __construct(
         string $id,

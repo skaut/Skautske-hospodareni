@@ -11,8 +11,7 @@ use Model\Travel\Repositories\ICommandRepository;
 
 final class CommandRepository implements ICommandRepository
 {
-    /** @var EntityManager */
-    private $em;
+    private EntityManager $em;
 
     public function __construct(EntityManager $em)
     {

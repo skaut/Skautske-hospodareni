@@ -32,20 +32,15 @@ use function array_unique;
 
 class TravelService
 {
-    /** @var IVehicleRepository */
-    private $vehicles;
+    private IVehicleRepository $vehicles;
 
-    /** @var ICommandRepository */
-    private $commands;
+    private ICommandRepository $commands;
 
-    /** @var IContractRepository */
-    private $contracts;
+    private IContractRepository $contracts;
 
-    /** @var IUnitRepository */
-    private $units;
+    private IUnitRepository $units;
 
-    /** @var QueryBus */
-    protected $queryBus;
+    protected QueryBus $queryBus;
 
     public function __construct(
         IVehicleRepository $vehicles,
@@ -193,6 +188,7 @@ class TravelService
             } else {
                 $command->updateTransportTravel($travelId, MoneyFactory::fromFloat($distanceOrPrice), $details);
             }
+
             $this->commands->save($command);
         } catch (TravelNotFound $e) {
         }

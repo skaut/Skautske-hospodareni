@@ -18,17 +18,13 @@ use function assert;
 
 class UnitService
 {
-    /** @var Skautis\Skautis */
-    private $skautis;
+    private Skautis\Skautis $skautis;
 
-    /** @var IUnitRepository */
-    private $units;
+    private IUnitRepository $units;
 
-    /** @var IUnitResolver */
-    private $unitResolver;
+    private IUnitResolver $unitResolver;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(Skautis\Skautis $skautis, IUnitRepository $units, IUnitResolver $unitResolver, QueryBus $queryBus)
     {

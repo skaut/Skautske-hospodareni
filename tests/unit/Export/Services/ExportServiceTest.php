@@ -67,6 +67,7 @@ class ExportServiceTest extends Unit
             if ($parameters['participantsCnt'] !== 0) {
                 return false;
             }
+
             if ($parameters['personsDays'] !== 0) {
                 return false;
             }
@@ -94,6 +95,7 @@ class ExportServiceTest extends Unit
             if ($parameters['expenses'] !== [['amount' => 50.0, 'label' => 'Služby']]) {
                 return false;
             }
+
             if ($parameters['totalIncome'] !== 700.0) {
                 return false;
             }

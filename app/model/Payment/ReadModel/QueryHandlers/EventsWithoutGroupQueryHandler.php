@@ -17,11 +17,9 @@ use function in_array;
 
 final class EventsWithoutGroupQueryHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
     public function __construct(QueryBus $queryBus, IGroupRepository $groups)
     {

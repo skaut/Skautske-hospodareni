@@ -31,8 +31,7 @@ use function is_float;
 
 class CashbookPresenter extends BasePresenter
 {
-    /** @var ICashbookControlFactory */
-    private $cashbookFactory;
+    private ICashbookControlFactory $cashbookFactory;
 
     public function __construct(ICashbookControlFactory $cashbookFactory)
     {

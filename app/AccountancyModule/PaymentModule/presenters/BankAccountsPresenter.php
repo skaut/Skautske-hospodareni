@@ -34,14 +34,11 @@ class BankAccountsPresenter extends BasePresenter
 {
     private const DAYS_BACK = 60;
 
-    /** @var  IBankAccountFormFactory */
-    private $formFactory;
+    private IBankAccountFormFactory $formFactory;
 
-    /** @var BankAccountService */
-    private $accounts;
+    private BankAccountService $accounts;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
     public function __construct(IBankAccountFormFactory $formFactory, BankAccountService $accounts)
     {
@@ -60,6 +57,7 @@ class BankAccountsPresenter extends BasePresenter
         } catch (BankAccountNotFound $e) {
             $this->flashMessage('Bankovní účet neexistuje', 'danger');
         }
+
         $this->redirect('this');
     }
 
@@ -73,6 +71,7 @@ class BankAccountsPresenter extends BasePresenter
         } catch (BankAccountNotFound $e) {
             $this->flashMessage('Bankovní účet neexistuje', 'danger');
         }
+
         $this->redirect('this');
     }
 
@@ -85,6 +84,7 @@ class BankAccountsPresenter extends BasePresenter
             $this->flashMessage('Bankovní účet byl odstraněn', 'success');
         } catch (BankAccountNotFound $e) {
         }
+
         $this->redirect('default');
     }
 
@@ -226,6 +226,7 @@ class BankAccountsPresenter extends BasePresenter
             && ($role->isAccountant() || $role->isOfficer() || $role->isEventManager())) {
             return;
         }
+
         $this->noAccess();
     }
 

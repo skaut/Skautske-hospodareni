@@ -11,14 +11,11 @@ use Model\Travel\Handlers\Vehicle\AddRoadworthyScanHandler;
  */
 final class AddRoadworthyScan
 {
-    /** @var int */
-    private $vehicleId;
+    private int $vehicleId;
 
-    /** @var string */
-    private $fileName;
+    private string $fileName;
 
-    /** @var string */
-    private $scanContents;
+    private string $scanContents;
 
     public function __construct(int $vehicleId, string $fileName, string $scanContents)
     {

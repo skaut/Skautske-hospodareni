@@ -17,14 +17,11 @@ class ChitItem
 {
     use SmartObject;
 
-    /** @var Amount */
-    private $amount;
+    private Amount $amount;
 
-    /** @var Category */
-    private $category;
+    private Category $category;
 
-    /** @var string */
-    private $purpose;
+    private string $purpose;
 
     public function __construct(Amount $amount, Category $category, string $purpose)
     {

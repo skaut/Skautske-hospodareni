@@ -19,22 +19,17 @@ use function count;
 final class ChitListControl extends BaseControl
 {
     /** @var Chit[]|NULL */
-    private $chits;
+    private ?array $chits = null;
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var bool */
-    private $onlyUnlocked;
+    private bool $onlyUnlocked;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var User */
-    private $user;
+    private User $user;
 
     public function __construct(
         CashbookId $cashbookId,

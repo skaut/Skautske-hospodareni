@@ -37,20 +37,15 @@ use function assert;
 
 final class GroupForm extends BaseControl
 {
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var SkautisEntity|null */
-    private $skautisEntity;
+    private ?SkautisEntity $skautisEntity = null;
 
-    /** @var int|null */
-    private $groupId;
+    private ?int $groupId = null;
 
-    /** @var PaymentService */
-    private $model;
+    private PaymentService $model;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(
         UnitId $unitId,
@@ -189,6 +184,7 @@ final class GroupForm extends BaseControl
 
             $this->flashMessage('Skupina byla založena');
         }
+
         $this->getPresenter()->redirect('Payment:default', ['id' => $this->groupId]);
     }
 

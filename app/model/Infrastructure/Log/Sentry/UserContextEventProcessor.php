@@ -8,8 +8,7 @@ use Sentry\Event;
 
 final class UserContextEventProcessor
 {
-    /** @var UserContextProvider */
-    private $userContext;
+    private UserContextProvider $userContext;
 
     public function __construct(UserContextProvider $userContext)
     {

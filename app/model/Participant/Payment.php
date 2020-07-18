@@ -25,45 +25,23 @@ class Payment
     /**
      * @ORM\Id()
      * @ORM\Column(type="payment_id")
-     *
-     * @var PaymentId
      */
-    private $id;
+    private PaymentId $id;
 
-    /**
-     * @ORM\Column(type="integer", name="participantId", options={"unsigned"=true})
-     *
-     * @var int
-     */
-    private $participantId;
+    /** @ORM\Column(type="integer", name="participantId", options={"unsigned"=true}) */
+    private int $participantId;
 
-    /**
-     * @ORM\Embedded(class=Event::class)
-     *
-     * @var Event
-     */
-    private $event;
+    /** @ORM\Embedded(class=Event::class) */
+    private Event $event;
 
-    /**
-     * @ORM\Column(type="money")
-     *
-     * @var Money
-     */
-    private $payment;
+    /** @ORM\Column(type="money") */
+    private Money $payment;
 
-    /**
-     * @ORM\Column(type="money")
-     *
-     * @var Money
-     */
-    private $repayment;
+    /** @ORM\Column(type="money") */
+    private Money $repayment;
 
-    /**
-     * @ORM\Column(type="string", name="isAccount")
-     *
-     * @var string
-     */
-    private $account;
+    /** @ORM\Column(type="string", name="isAccount") */
+    private string $account;
 
     public function __construct(PaymentId $id, int $participantId, Event $event, ?Money $payment = null, ?Money $repayment = null, string $account = 'N')
     {
@@ -115,6 +93,7 @@ class Payment
         if (! in_array($account, ['Y', 'N'])) {
             throw new InvalidArgumentException("Payment attribute account shouldn't be " . $account);
         }
+
         $this->account = $account;
     }
 }

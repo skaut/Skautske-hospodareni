@@ -37,10 +37,8 @@ class Cashbook extends Aggregate
     /**
      * @ORM\Id()
      * @ORM\Column(type="cashbook_id")
-     *
-     * @var CashbookId
      */
-    private $id;
+    private CashbookId $id;
 
     /**
      * @ORM\Column(type="string_enum")
@@ -50,19 +48,11 @@ class Cashbook extends Aggregate
      */
     private $type;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     *
-     * @var string|NULL
-     */
-    private $cashChitNumberPrefix;
+    /** @ORM\Column(type="string", nullable=true) */
+    private ?string $cashChitNumberPrefix = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     *
-     * @var string|NULL
-     */
-    private $bankChitNumberPrefix;
+    /** @ORM\Column(type="string", nullable=true) */
+    private ?string $bankChitNumberPrefix = null;
 
     /**
      * @ORM\OneToMany(targetEntity=Chit::class, mappedBy="cashbook", cascade={"persist", "remove"}, orphanRemoval=true)
@@ -71,12 +61,8 @@ class Cashbook extends Aggregate
      */
     private $chits;
 
-    /**
-     * @ORM\Column(type="text")
-     *
-     * @var string
-     */
-    private $note;
+    /** @ORM\Column(type="text") */
+    private string $note;
 
     public function __construct(CashbookId $id, CashbookType $type)
     {

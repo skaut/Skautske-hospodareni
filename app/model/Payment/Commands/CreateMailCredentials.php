@@ -8,26 +8,19 @@ use Model\Payment\MailCredentials\MailProtocol;
 
 final class CreateMailCredentials
 {
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var string */
-    private $host;
+    private string $host;
 
-    /** @var string */
-    private $username;
+    private string $username;
 
-    /** @var string */
-    private $password;
+    private string $password;
 
-    /** @var MailProtocol */
-    private $protocol;
+    private MailProtocol $protocol;
 
-    /** @var string */
-    private $sender;
+    private string $sender;
 
-    /** @var int */
-    private $userId;
+    private int $userId;
 
     public function __construct(
         int $unitId,

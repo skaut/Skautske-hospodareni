@@ -11,8 +11,7 @@ use Model\Payment\BankAccount\BankAccountId;
  */
 final class CountGroupsWithBankAccountQuery
 {
-    /** @var BankAccountId */
-    private $bankAccountId;
+    private BankAccountId $bankAccountId;
 
     public function __construct(BankAccountId $bankAccountId)
     {

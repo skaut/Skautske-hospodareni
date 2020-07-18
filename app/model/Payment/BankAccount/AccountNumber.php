@@ -13,26 +13,14 @@ use Model\Payment\InvalidBankAccountNumber;
  */
 class AccountNumber
 {
-    /**
-     * @ORM\Column(type="string", nullable=true, length=6)
-     *
-     * @var string|NULL
-     */
-    private $prefix;
+    /** @ORM\Column(type="string", nullable=true, length=6) */
+    private ?string $prefix = null;
 
-    /**
-     * @ORM\Column(type="string", length=10)
-     *
-     * @var string
-     */
-    private $number;
+    /** @ORM\Column(type="string", length=10) */
+    private string $number;
 
-    /**
-     * @ORM\Column(type="string", length=4)
-     *
-     * @var string
-     */
-    private $bankCode;
+    /** @ORM\Column(type="string", length=4) */
+    private string $bankCode;
 
     /**
      * @throws InvalidBankAccountNumber

@@ -38,17 +38,13 @@ use function assert;
 
 class EventPresenter extends BasePresenter
 {
-    /** @var ExportService */
-    protected $exportService;
+    protected ExportService $exportService;
 
-    /** @var IFunctionsControlFactory */
-    private $functionsFactory;
+    private IFunctionsControlFactory $functionsFactory;
 
-    /** @var PdfRenderer */
-    private $pdf;
+    private PdfRenderer $pdf;
 
-    /** @var LoggerService */
-    private $loggerService;
+    private LoggerService $loggerService;
 
     public function __construct(
         ExportService $exportService,
@@ -156,6 +152,7 @@ class EventPresenter extends BasePresenter
         } else {
             $this->flashMessage('Před uzavřením akce musí být vyplněn vedoucí akce', 'danger');
         }
+
         $this->redirect('this');
     }
 
@@ -185,6 +182,7 @@ class EventPresenter extends BasePresenter
             $this->flashMessage('Nemáte právo přistupovat k akci', 'warning');
             $this->redirect('default', ['aid' => $aid]);
         }
+
         $template = $this->exportService->getEventReport($aid);
 
         $this->pdf->render($template, 'report.pdf');

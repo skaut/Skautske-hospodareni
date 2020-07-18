@@ -19,14 +19,11 @@ use function in_array;
 
 final class EventParticipantsWithoutPaymentQueryHandler
 {
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
-    /** @var PaymentService */
-    private $paymentService;
+    private PaymentService $paymentService;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(IGroupRepository $groups, PaymentService $paymentService, QueryBus $queryBus)
     {

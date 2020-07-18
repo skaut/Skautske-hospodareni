@@ -24,8 +24,7 @@ final class EditableUnitsQueryHandlerTest extends \Codeception\Test\Unit
         103 => [],
     ];
 
-    /** @var EditableUnitsQueryHandler */
-    private $handler;
+    private EditableUnitsQueryHandler $handler;
 
     /**
      * @param int[] $expectedUnitIdsInResult

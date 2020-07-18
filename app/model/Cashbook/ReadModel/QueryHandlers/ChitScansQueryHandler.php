@@ -16,11 +16,9 @@ use function assert;
 
 final class ChitScansQueryHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var IScanStorage */
-    private $storage;
+    private IScanStorage $storage;
 
     public function __construct(QueryBus $queryBus, IScanStorage $storage)
     {

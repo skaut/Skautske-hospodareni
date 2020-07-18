@@ -22,35 +22,25 @@ class Vehicle
 {
     use SmartObject;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string */
-    private $type;
+    private string $type;
 
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var string */
-    private $registration;
+    private string $registration;
 
-    /** @var string */
-    private $label;
+    private string $label;
 
-    /** @var int|NULL */
-    private $subunitId;
+    private ?int $subunitId = null;
 
-    /** @var float */
-    private $consumption;
+    private float $consumption;
 
-    /** @var bool */
-    private $archived;
+    private bool $archived;
 
-    /** @var DateTimeImmutable */
-    private $createdAt;
+    private DateTimeImmutable $createdAt;
 
-    /** @var string */
-    private $authorName;
+    private string $authorName;
 
     public function __construct(
         int $id,

@@ -13,11 +13,9 @@ use Model\Cashbook\ReadModel\QueryHandlers\ChitListQueryHandler;
  */
 final class ChitListQuery
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var PaymentMethod|null */
-    private $paymentMethod;
+    private ?PaymentMethod $paymentMethod = null;
 
     /**
      * Use static factory method

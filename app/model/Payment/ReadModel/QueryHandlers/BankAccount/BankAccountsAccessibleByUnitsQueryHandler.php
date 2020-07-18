@@ -15,14 +15,11 @@ use function array_unique;
 
 final class BankAccountsAccessibleByUnitsQueryHandler
 {
-    /** @var IBankAccountAccessChecker */
-    private $accessChecker;
+    private IBankAccountAccessChecker $accessChecker;
 
-    /** @var IBankAccountRepository */
-    private $bankAccounts;
+    private IBankAccountRepository $bankAccounts;
 
-    /** @var IUnitResolver */
-    private $unitResolver;
+    private IUnitResolver $unitResolver;
 
     public function __construct(
         IBankAccountAccessChecker $accessChecker,

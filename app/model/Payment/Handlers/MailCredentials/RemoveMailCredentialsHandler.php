@@ -10,8 +10,7 @@ use Model\Payment\Repositories\IMailCredentialsRepository;
 
 class RemoveMailCredentialsHandler
 {
-    /** @var IMailCredentialsRepository */
-    private $credentials;
+    private IMailCredentialsRepository $credentials;
 
     public function __construct(IMailCredentialsRepository $credentials)
     {

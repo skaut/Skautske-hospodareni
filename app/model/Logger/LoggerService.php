@@ -13,8 +13,7 @@ use function array_map;
 
 class LoggerService
 {
-    /** @var ILogEntryRepository */
-    private $logs;
+    private ILogEntryRepository $logs;
 
     public function __construct(ILogEntryRepository $logs)
     {

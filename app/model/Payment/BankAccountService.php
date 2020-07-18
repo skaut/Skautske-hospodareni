@@ -26,23 +26,17 @@ use function sprintf;
 
 class BankAccountService
 {
-    /** @var IBankAccountRepository */
-    private $bankAccounts;
+    private IBankAccountRepository $bankAccounts;
 
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
-    /** @var IUnitResolver */
-    private $unitResolver;
+    private IUnitResolver $unitResolver;
 
-    /** @var IFioClient */
-    private $fio;
+    private IFioClient $fio;
 
-    /** @var IBankAccountImporter */
-    private $importer;
+    private IBankAccountImporter $importer;
 
-    /** @var Cache */
-    private $fioCache;
+    private Cache $fioCache;
 
     public function __construct(
         IBankAccountRepository $bankAccounts,

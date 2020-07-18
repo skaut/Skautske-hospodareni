@@ -17,8 +17,7 @@ use function assert;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
-    /** @var Camp */
-    protected $event;
+    protected Camp $event;
 
     protected function startup() : void
     {
@@ -31,6 +30,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         if ($this->aid === null) {
             return;
         }
+
         $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($this->aid)));
         try {
             $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));

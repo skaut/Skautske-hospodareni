@@ -6,11 +6,9 @@ namespace Model\DTO\Event;
 
 final class StatisticsItem
 {
-    /** @var string */
-    private $label;
+    private string $label;
 
-    /** @var int */
-    private $count;
+    private int $count;
 
     public function __construct(string $label, int $count)
     {

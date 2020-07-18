@@ -8,11 +8,9 @@ use Model\Common\FilePath;
 
 final class RemoveRoadworthyScan
 {
-    /** @var int */
-    private $vehicleId;
+    private int $vehicleId;
 
-    /** @var FilePath */
-    private $path;
+    private FilePath $path;
 
     public function __construct(int $vehicleId, FilePath $path)
     {

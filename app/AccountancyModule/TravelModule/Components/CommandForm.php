@@ -27,20 +27,16 @@ use function in_array;
 
 class CommandForm extends Control
 {
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var int|NULL */
-    private $commandId;
+    private ?int $commandId = null;
 
-    /** @var TravelService */
-    private $model;
+    private TravelService $model;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     /** @var callable[] */
-    public $onSuccess = [];
+    public array $onSuccess = [];
 
     public function __construct(int $unitId, ?int $commandId, TravelService $model, QueryBus $queryBus)
     {
@@ -144,6 +140,7 @@ class CommandForm extends Control
             } else {
                 $this->updateCommand($form->getValues());
             }
+
             $this->onSuccess();
         };
 

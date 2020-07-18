@@ -21,24 +21,14 @@ class ChitScan
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
-     *
-     * @var      int
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Chit::class, inversedBy="scans")
-     *
-     * @var Chit
-     */
-    private $chit;
+    /** @ORM\ManyToOne(targetEntity=Chit::class, inversedBy="scans") */
+    private Chit $chit;
 
-    /**
-     * @ORM\Column(type="file_path")
-     *
-     * @var FilePath
-     */
-    private $filePath;
+    /** @ORM\Column(type="file_path") */
+    private FilePath $filePath;
 
     public function __construct(Chit $chit, FilePath $filePath)
     {

@@ -15,8 +15,7 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
      */
     public $unitId;
 
-    /** @var Unit */
-    protected $unit;
+    protected Unit $unit;
 
     protected function startup() : void
     {

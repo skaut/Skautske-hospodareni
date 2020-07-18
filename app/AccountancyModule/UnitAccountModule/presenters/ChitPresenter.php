@@ -33,16 +33,12 @@ class ChitPresenter extends BasePresenter
      *
      * @var array<string, array<string, array<string, mixed>>>
      */
-    private $cashbooks = [];
+    private array $cashbooks = [];
 
-    /**
-     * @persistent
-     * @var int
-     */
-    public $onlyUnlocked = 1;
+    /** @persistent */
+    public int $onlyUnlocked = 1;
 
-    /** @var IChitListControlFactory */
-    private $chitListFactory;
+    private IChitListControlFactory $chitListFactory;
 
     public function __construct(IChitListControlFactory $chitListFactory)
     {

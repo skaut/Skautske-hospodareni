@@ -8,11 +8,9 @@ use Money\Money;
 
 class SkautisCategoryTotal
 {
-    /** @var Money */
-    private $amount;
+    private Money $amount;
 
-    /** @var bool */
-    private $consistent;
+    private bool $consistent;
 
     public function __construct(Money $amount, bool $consistent)
     {

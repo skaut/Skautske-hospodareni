@@ -17,17 +17,13 @@ use function array_unique;
 
 class CommandGrid extends BaseGridControl
 {
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var int */
-    private $userId;
+    private int $userId;
 
-    /** @var TravelService */
-    private $travel;
+    private TravelService $travel;
 
-    /** @var GridFactory */
-    private $gridFactory;
+    private GridFactory $gridFactory;
 
     public function __construct(
         int $unitId,

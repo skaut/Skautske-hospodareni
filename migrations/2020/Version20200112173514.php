@@ -62,6 +62,7 @@ final class Version20200112173514 extends AbstractMigration
                 ['id' => $row['id']]
             );
         }
+
         $this->addSql('DELETE FROM `ac_chitsCategory_object` WHERE `categoryId` IN (\'21\', \'22\');');
         $this->addSql('DELETE FROM `ac_chitsCategory` WHERE `id` IN (\'21\', \'22\');');
     }

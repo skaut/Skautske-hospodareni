@@ -9,8 +9,7 @@ use GuzzleHttp\ClientInterface;
 
 final class DownloaderFactory implements IDownloaderFactory
 {
-    /** @var ClientInterface */
-    private $client;
+    private ClientInterface $client;
 
     public function __construct(ClientInterface $client)
     {

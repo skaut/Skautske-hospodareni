@@ -13,20 +13,15 @@ use Model\Cashbook\Operation;
  */
 class Category
 {
-    /**
-     * @ORM\Column(type="integer", name="category", options={"unsigned"=true})
-     *
-     * @var int
-     */
-    private $id;
+    /** @ORM\Column(type="integer", name="category", options={"unsigned"=true}) */
+    private int $id;
 
     /**
      * @ORM\Column(type="string_enum", name="category_operation_type", length=255, nullable=true)
      *
-     * @var Operation
      * @EnumAnnotation(class=Operation::class)
      */
-    private $operationType;
+    private Operation $operationType;
 
     public function __construct(int $id, Operation $operationType)
     {

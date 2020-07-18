@@ -10,8 +10,7 @@ use Model\Cashbook\ObjectType;
 
 final class ObjectTableTest extends IntegrationTest
 {
-    /** @var ObjectTable */
-    private $objectTable;
+    private ObjectTable $objectTable;
 
     protected function _before() : void
     {

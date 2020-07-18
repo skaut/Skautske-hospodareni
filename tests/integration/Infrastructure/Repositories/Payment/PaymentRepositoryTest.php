@@ -33,8 +33,7 @@ class PaymentRepositoryTest extends IntegrationTest
         'vs' => '100',
     ];
 
-    /** @var PaymentRepository */
-    private $repository;
+    private PaymentRepository $repository;
 
     /**
      * @return string[]
@@ -193,7 +192,7 @@ class PaymentRepositoryTest extends IntegrationTest
             $this->assertCount(2, $result[$groupId], 'There should be 2 items for 2 states');
             foreach ($summaries as $state => $expectedSummary) {
                 $actualSummary = $result[$groupId][$state];
-                /** @var $expectedSummary Summary */
+                /** @var Summary $expectedSummary */
                 /** @var Summary $actualSummary */
 
                 $this->assertSame($expectedSummary->getCount(), $actualSummary->getCount());

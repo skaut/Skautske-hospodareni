@@ -27,32 +27,21 @@ class Category implements ICategory
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @ORM\Column(type="string", name="label", length=64)
-     *
-     * @var string
-     */
-    private $name;
+    /** @ORM\Column(type="string", name="label", length=64) */
+    private string $name;
 
-    /**
-     * @ORM\Column(type="string", name="short", length=64, unique=true)
-     *
-     * @var string
-     */
-    private $shortcut;
+    /** @ORM\Column(type="string", name="short", length=64, unique=true) */
+    private string $shortcut;
 
     /**
      * @ORM\Column(type="string_enum", name="type")
      *
-     * @var Operation
      * @EnumAnnotation(class=Operation::class)
      */
-    private $operationType;
+    private Operation $operationType;
 
     /**
      * @ORM\OneToMany(targetEntity=Category\ObjectType::class, mappedBy="category")
@@ -61,26 +50,14 @@ class Category implements ICategory
      */
     private $types;
 
-    /**
-     * @ORM\Column(type="boolean")
-     *
-     * @var bool
-     */
-    private $virtual;
+    /** @ORM\Column(type="boolean") */
+    private bool $virtual;
 
-    /**
-     * @ORM\Column(type="smallint", name="orderby", options={"unsigned"=true})
-     *
-     * @var int
-     */
-    private $priority;
+    /** @ORM\Column(type="smallint", name="orderby", options={"unsigned"=true}) */
+    private int $priority;
 
-    /**
-     * @ORM\Column(type="boolean")
-     *
-     * @var bool
-     */
-    private $deleted = false;
+    /** @ORM\Column(type="boolean") */
+    private bool $deleted = false;
 
     /**
      * @param Category\ObjectType[] $types
@@ -131,7 +108,7 @@ class Category implements ICategory
     public function supportsType(ObjectType $type) : bool
     {
         return $this->types->exists(
-            function ($_, Category\ObjectType $categoryType) use ($type) : bool {
+            function ($_x, Category\ObjectType $categoryType) use ($type) : bool {
                 return $categoryType->getType()->equals($type);
             }
         );

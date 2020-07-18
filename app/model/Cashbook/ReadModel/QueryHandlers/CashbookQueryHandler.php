@@ -11,8 +11,7 @@ use Model\DTO\Cashbook\Cashbook;
 
 class CashbookQueryHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
     public function __construct(ICashbookRepository $cashbooks)
     {

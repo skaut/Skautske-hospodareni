@@ -14,11 +14,9 @@ class Summary
 {
     use SmartObject;
 
-    /** @var int */
-    private $count;
+    private int $count;
 
-    /** @var float */
-    private $amount;
+    private float $amount;
 
     public function __construct(int $count, float $amount)
     {

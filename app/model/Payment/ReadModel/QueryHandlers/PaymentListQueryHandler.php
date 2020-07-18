@@ -12,8 +12,7 @@ use function array_map;
 
 final class PaymentListQueryHandler
 {
-    /** @var IPaymentRepository */
-    private $payments;
+    private IPaymentRepository $payments;
 
     public function __construct(IPaymentRepository $payments)
     {

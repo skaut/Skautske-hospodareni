@@ -11,7 +11,7 @@ use Model\Payment\Fio\IFioClient;
 class FioClientStub implements IFioClient
 {
     /** @var Transaction[] */
-    private $transactions = [];
+    private array $transactions = [];
 
     /**
      * @param Transaction[] $transactions

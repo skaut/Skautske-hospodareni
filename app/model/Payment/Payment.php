@@ -32,110 +32,62 @@ class Payment extends Aggregate
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @ORM\Column(type="integer", name="groupId", options={"unsigned"=true})
-     *
-     * @var int
-     */
-    private $groupId;
+    /** @ORM\Column(type="integer", name="groupId", options={"unsigned"=true}) */
+    private int $groupId;
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     *
-     * @var string
-     */
-    private $name;
+    /** @ORM\Column(type="string", length=64) */
+    private string $name;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     *
-     * @var string|NULL
-     */
-    private $email;
+    /** @ORM\Column(type="text", nullable=true) */
+    private ?string $email = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true, name="personId")
-     *
-     * @var int|NULL
-     */
-    private $personId;
+    /** @ORM\Column(type="integer", nullable=true, name="personId") */
+    private ?int $personId = null;
 
-    /**
-     * @ORM\Column(type="float")
-     *
-     * @var float
-     */
-    private $amount;
+    /** @ORM\Column(type="float") */
+    private float $amount;
 
-    /**
-     * @ORM\Column(type="chronos_date", name="maturity")
-     *
-     * @var Date
-     */
-    private $dueDate;
+    /** @ORM\Column(type="chronos_date", name="maturity") */
+    private Date $dueDate;
 
-    /**
-     * @ORM\Column(type="variable_symbol", nullable=true, length=10, name="vs")
-     *
-     * @var VariableSymbol|NULL
-     */
-    private $variableSymbol;
+    /** @ORM\Column(type="variable_symbol", nullable=true, length=10, name="vs") */
+    private ?VariableSymbol $variableSymbol = null;
 
-    /**
-     * @ORM\Column(type="smallint", nullable=true, name="ks", options={"unsigned"=true})
-     *
-     * @var int|NULL
-     */
-    private $constantSymbol;
+    /** @ORM\Column(type="smallint", nullable=true, name="ks", options={"unsigned"=true}) */
+    private ?int $constantSymbol = null;
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     *
-     * @var string
-     */
-    private $note = '';
+    /** @ORM\Column(type="string", length=64) */
+    private string $note = '';
 
     /**
      * @ORM\Embedded(class=Transaction::class, columnPrefix=false)
      *
-     * @var Transaction|NULL
      * @Nullable()
      */
-    private $transaction;
+    private ?Transaction $transaction = null;
 
-    /**
-     * @ORM\Column(type="datetime_immutable", nullable=true, name="dateClosed")
-     *
-     * @var DateTimeImmutable|NULL
-     */
-    private $closedAt;
+    /** @ORM\Column(type="datetime_immutable", nullable=true, name="dateClosed") */
+    private ?DateTimeImmutable $closedAt = null;
 
-    /**
-     * @ORM\Column(type="string", length=64, nullable=true)
-     *
-     * @var string|NULL
-     */
-    private $closedByUsername;
+    /** @ORM\Column(type="string", length=64, nullable=true) */
+    private ?string $closedByUsername = null;
 
     /**
      * @ORM\Column(type="string_enum", length=20)
      *
-     * @var State
      * @Enum(class=State::class)
      */
-    private $state;
+    private State $state;
 
     /**
      * @ORM\OneToMany(targetEntity=SentEmail::class, mappedBy="payment", cascade={"persist", "remove"}, orphanRemoval=true)
      *
      * @var ArrayCollection<SentEmail>
      */
-    private $sentEmails;
+    private ArrayCollection $sentEmails;
 
     public function __construct(
         Group $group,

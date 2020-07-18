@@ -12,11 +12,9 @@ use Model\Event\SkautisEventId;
  */
 final class EventParticipantBalanceQuery
 {
-    /** @var SkautisEventId */
-    private $eventId;
+    private SkautisEventId $eventId;
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
     public function __construct(SkautisEventId $campId, CashbookId $cashbookId)
     {

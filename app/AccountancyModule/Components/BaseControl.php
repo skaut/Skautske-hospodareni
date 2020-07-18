@@ -47,6 +47,7 @@ abstract class BaseControl extends Control
         if ($message !== null) {
             $this->flashMessage($message, $type);
         }
+
         if ($this->getPresenter()->isAjax()) {
             $this->redrawControl();
         } else {

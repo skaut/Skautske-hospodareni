@@ -13,11 +13,9 @@ use Model\DTO\Cashbook\ChitFactory;
 
 final class ChitQueryHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(ICashbookRepository $cashbooks, QueryBus $queryBus)
     {

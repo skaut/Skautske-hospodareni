@@ -12,7 +12,7 @@ use function array_reduce;
 final class GroupProgress extends BaseControl
 {
     /** @var array<string, Summary> */
-    private $summaries;
+    private array $summaries;
 
     /**
      * @param array<string, Summary> $summaries

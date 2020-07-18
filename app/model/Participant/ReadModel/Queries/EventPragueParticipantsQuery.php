@@ -12,14 +12,11 @@ use Model\Event\SkautisEventId;
  */
 final class EventPragueParticipantsQuery
 {
-    /** @var SkautisEventId */
-    private $id;
+    private SkautisEventId $id;
 
-    /** @var string */
-    private $registrationNumber;
+    private string $registrationNumber;
 
-    /** @var Date */
-    private $startDate;
+    private Date $startDate;
 
     public function __construct(SkautisEventId $id, string $registrationNumber, Date $startDate)
     {

@@ -11,14 +11,11 @@ use Model\Event\SkautisCampId;
  */
 final class CampParticipantIncomeQuery
 {
-    /** @var SkautisCampId */
-    private $campId;
+    private SkautisCampId $campId;
 
-    /** @var bool|null */
-    private $isAdult;
+    private ?bool $isAdult = null;
 
-    /** @var bool|null */
-    private $onAccount;
+    private ?bool $onAccount = null;
 
     public function __construct(SkautisCampId $id, ?bool $isAdult, ?bool $onAccount)
     {

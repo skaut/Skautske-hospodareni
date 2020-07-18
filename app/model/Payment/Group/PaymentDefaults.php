@@ -14,33 +14,17 @@ use Model\Payment\VariableSymbol;
  */
 final class PaymentDefaults
 {
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     *
-     * @var float|NULL
-     */
-    private $amount;
+    /** @ORM\Column(type="float", nullable=true) */
+    private ?float $amount = null;
 
-    /**
-     * @ORM\Column(type="chronos_date", nullable=true, name="maturity")
-     *
-     * @var Date|NULL
-     */
-    private $dueDate;
+    /** @ORM\Column(type="chronos_date", nullable=true, name="maturity") */
+    private ?Date $dueDate = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true, name="ks", options={"unsigned"=true})
-     *
-     * @var int|NULL
-     */
-    private $constantSymbol;
+    /** @ORM\Column(type="integer", nullable=true, name="ks", options={"unsigned"=true}) */
+    private ?int $constantSymbol = null;
 
-    /**
-     * @ORM\Column(type="variable_symbol", nullable=true, name="nextVs")
-     *
-     * @var VariableSymbol|NULL
-     */
-    private $nextVariableSymbol;
+    /** @ORM\Column(type="variable_symbol", nullable=true, name="nextVs") */
+    private ?VariableSymbol $nextVariableSymbol = null;
 
     /**
      * @throws DueDateIsNotWorkday

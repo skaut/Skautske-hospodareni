@@ -18,6 +18,7 @@ use Model\Cashbook\Cashbook\ChitBody;
 use Model\Cashbook\Cashbook\ChitItem;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Events\ChitWasAdded;
+use function assert;
 use function ksort;
 
 class CashbookTest extends Unit
@@ -43,8 +44,8 @@ class CashbookTest extends Unit
         $events = $cashbook->extractEventsToDispatch();
         $this->assertCount(1, $events);
 
-        /** @var ChitWasAdded $event */
         $event = $events[0];
+        assert($event instanceof ChitWasAdded);
         $this->assertInstanceOf(ChitWasAdded::class, $event);
         $this->assertTrue($cashbookId->equals($event->getCashbookId()));
     }
@@ -119,8 +120,8 @@ class CashbookTest extends Unit
         $events = $cashbook->extractEventsToDispatch();
 
         $this->assertCount(1, $events);
-        /** @var ChitWasAdded $event */
         $event = $events[0];
+        assert($event instanceof ChitWasAdded);
         $this->assertInstanceOf(ChitWasAdded::class, $event);
         $this->assertTrue($cashbookId->equals($event->getCashbookId()));
     }

@@ -6,8 +6,7 @@ namespace Model\Payment\DomainEvents;
 
 final class GroupWasRemoved
 {
-    /** @var int */
-    private $groupId;
+    private int $groupId;
 
     public function __construct(int $groupId)
     {

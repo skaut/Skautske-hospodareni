@@ -14,8 +14,7 @@ use Model\Event\SkautisCampId;
  */
 final class InconsistentCampCategoryTotalsQuery
 {
-    /** @var SkautisCampId */
-    private $campId;
+    private SkautisCampId $campId;
 
     public function __construct(SkautisCampId $campId)
     {

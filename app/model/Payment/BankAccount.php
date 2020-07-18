@@ -20,52 +20,26 @@ class BankAccount
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
-    private $unitId;
+    /** @ORM\Column(type="integer") */
+    private int $unitId;
 
-    /**
-     * @ORM\Column(type="string")
-     *
-     * @var string
-     */
-    private $name;
+    /** @ORM\Column(type="string") */
+    private string $name;
 
-    /**
-     * @ORM\Embedded(class=AccountNumber::class)
-     *
-     * @var AccountNumber
-     */
-    private $number;
+    /** @ORM\Embedded(class=AccountNumber::class) */
+    private AccountNumber $number;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     *
-     * @var string|NULL
-     */
-    private $token;
+    /** @ORM\Column(type="string", nullable=true) */
+    private ?string $token = null;
 
-    /**
-     * @ORM\Column(type="datetime_immutable")
-     *
-     * @var DateTimeImmutable
-     */
-    private $createdAt;
+    /** @ORM\Column(type="datetime_immutable") */
+    private DateTimeImmutable $createdAt;
 
-    /**
-     * @ORM\Column(type="boolean")
-     *
-     * @var bool
-     */
-    private $allowedForSubunits = false;
+    /** @ORM\Column(type="boolean") */
+    private bool $allowedForSubunits = false;
 
     public function __construct(
         int $unitId,

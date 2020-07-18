@@ -9,11 +9,9 @@ use Model\Common\UnitId;
 
 final class CashbookWasCreated
 {
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
     public function __construct(UnitId $unitId, CashbookId $cashbookId)
     {

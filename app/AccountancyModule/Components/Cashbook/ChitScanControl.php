@@ -23,20 +23,15 @@ use function implode;
 
 final class ChitScanControl extends BaseControl
 {
-    /** @var int */
-    private $chitId;
+    private int $chitId;
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var bool */
-    private $isEditable;
+    private bool $isEditable;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(CashbookId $cashbookId, int $chitId, bool $isEditable, CommandBus $commandBus, QueryBus $queryBus)
     {
@@ -149,6 +144,7 @@ final class ChitScanControl extends BaseControl
         if ($this->chitId === null) {
             return false;
         }
+
         $chit = $this->queryBus->handle(new ChitQuery($this->cashbookId, $this->chitId));
         assert($chit instanceof Chit);
 

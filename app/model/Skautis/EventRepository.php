@@ -18,14 +18,11 @@ use function max;
 
 final class EventRepository implements IEventRepository
 {
-    /** @var WebServiceInterface */
-    private $webService;
+    private WebServiceInterface $webService;
 
-    /** @var string */
-    private $skautisType = 'eventGeneral';
+    private string $skautisType = 'eventGeneral';
 
-    /** @var EventFactory */
-    private $eventFactory;
+    private EventFactory $eventFactory;
 
     public function __construct(WebServiceInterface $webService, EventFactory $eventFactory)
     {

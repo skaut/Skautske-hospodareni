@@ -9,11 +9,9 @@ namespace Model\Payment\Commands;
  */
 class UpdateMailPassword
 {
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string */
-    private $password;
+    private string $password;
 
     public function __construct(int $id, string $password)
     {

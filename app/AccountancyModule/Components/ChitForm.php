@@ -55,30 +55,22 @@ final class ChitForm extends BaseControl
         Operation::EXPENSE => 'Výdaje',
     ];
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
     /**
      * Can current user add/edit chits?
-     *
-     * @var bool
      */
-    private $isEditable;
+    private bool $isEditable;
 
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /** @var int */
-    private $itemsCount = 0;
+    private int $itemsCount = 0;
 
     public function __construct(
         CashbookId $cashbookId,
@@ -155,6 +147,7 @@ final class ChitForm extends BaseControl
                 $item->getCategory()->isIncome() ? 'incomeCategories' : 'expenseCategories' => $item->getCategory()->getId(),
             ];
         }
+
         $this['form']->setDefaults(['items' => $items]);
 
         $this->redrawControl();
@@ -270,6 +263,7 @@ final class ChitForm extends BaseControl
             if ($form->isSubmitted() !== $form['send']) {
                 return;
             }
+
             $this->formSubmitted($form, $values);
         };
 
@@ -316,6 +310,7 @@ final class ChitForm extends BaseControl
                 $this->commandBus->handle(new AddChitToCashbook($cashbookId, $chitBody, $method, $items));
                 $this->flashMessage('Paragon byl úspěšně přidán do seznamu.');
             }
+
             $this->reload();
         } catch (InvalidArgumentException | CashbookNotFound $exc) {
             $this->flashMessage('Paragon se nepodařilo přidat do seznamu.', 'danger');

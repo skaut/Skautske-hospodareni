@@ -11,6 +11,7 @@ use Model\Cashbook\Commands\Unit\CreateUnit;
 use Model\Cashbook\Unit;
 use Model\Common\UnitId;
 use Model\Payment\UnitResolverStub;
+use function assert;
 
 final class CreateUnitHandlerTest extends CommandHandlerTest
 {
@@ -45,12 +46,12 @@ final class CreateUnitHandlerTest extends CommandHandlerTest
     {
         $this->commandBus->handle(new CreateUnit($unitId, self::YEAR));
 
-        /** @var Unit $unit */
-        $unit       = $this->entityManager->find(Unit::class, $unitId);
+        $unit = $this->entityManager->find(Unit::class, $unitId);
+        assert($unit instanceof Unit);
         $cashbookId = $unit->getCashbooks()[0]->getCashbookId();
 
-        /** @var Cashbook $cashbook */
         $cashbook = $this->entityManager->find(Cashbook::class, $cashbookId);
+        assert($cashbook instanceof Cashbook);
         $this->assertTrue($cashbook->getType()->equals($cashbookType), 'Correct cashbook type is assigned');
     }
 

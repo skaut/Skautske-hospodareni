@@ -32,6 +32,7 @@ final class CategoryTotalsCalculator
                 $totalByCategories[ICategory::CATEGORY_PARTICIPANT_INCOME_ID] = ($totalByCategories[ICategory::CATEGORY_PARTICIPANT_INCOME_ID] ?? 0) + $totalByCategories[ICategory::CATEGORY_HPD_ID];
                 unset($totalByCategories[ICategory::CATEGORY_HPD_ID]);
             }
+
             $totalByCategories = self::categorySubtract($totalByCategories, ICategory::CATEGORY_PARTICIPANT_INCOME_ID, ICategory::CATEGORY_REFUND_ID);
         }
 
@@ -63,6 +64,7 @@ final class CategoryTotalsCalculator
                 return $c->getId();
             }
         }
+
         throw new MissingCategory(sprintf('Seznam táborových kategorií neobsahuje požadový typ "%s".', $type->getValue()));
     }
 }

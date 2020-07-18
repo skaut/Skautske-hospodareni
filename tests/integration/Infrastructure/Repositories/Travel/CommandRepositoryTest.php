@@ -15,6 +15,7 @@ use Money\Money;
 use Nette\Utils\Json;
 use function array_diff_key;
 use function array_map;
+use function assert;
 
 class CommandRepositoryTest extends IntegrationTest
 {
@@ -61,8 +62,7 @@ class CommandRepositoryTest extends IntegrationTest
         'start_date' => '2018-01-01',
     ];
 
-    /** @var CommandRepository */
-    private $repository;
+    private CommandRepository $repository;
 
     /**
      * @return string[]
@@ -151,8 +151,8 @@ class CommandRepositoryTest extends IntegrationTest
         $travels = $command->getTravels();
         $this->assertCount(2, $travels);
 
-        /** @var Command\VehicleTravel $vehicleTravel */
         $vehicleTravel = $travels[0];
+        assert($vehicleTravel instanceof Command\VehicleTravel);
         $this->assertSame(0, $vehicleTravel->getId());
         $details1 = $vehicleTravel->getDetails();
         $this->assertInstanceOf(Command\VehicleTravel::class, $vehicleTravel);
@@ -162,8 +162,8 @@ class CommandRepositoryTest extends IntegrationTest
         $this->assertSame(self::VEHICLE_TRAVEL['end_place'], $details1->getEndPlace());
         $this->assertSame(TransportType::get(self::VEHICLE_TRAVEL['type']), $details1->getTransportType());
 
-        /** @var Command\TransportTravel $transportTravel */
         $transportTravel = $travels[1];
+        assert($transportTravel instanceof Command\TransportTravel);
         $this->assertSame(1, $transportTravel->getId());
         $details2 = $transportTravel->getDetails();
         $this->assertInstanceOf(Command\TransportTravel::class, $transportTravel);

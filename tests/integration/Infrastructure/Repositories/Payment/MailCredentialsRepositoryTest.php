@@ -15,11 +15,9 @@ use function array_keys;
 
 class MailCredentialsRepositoryTest extends IntegrationTest
 {
-    /** @var MailCredentialsRepository */
-    private $repository;
+    private MailCredentialsRepository $repository;
 
-    /** @var EventBus */
-    private $eventBus;
+    private EventBus $eventBus;
 
     /**
      * @return string[]

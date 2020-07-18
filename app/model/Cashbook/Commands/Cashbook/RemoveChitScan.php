@@ -13,14 +13,11 @@ use Model\Common\FilePath;
  */
 final class RemoveChitScan
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var int */
-    private $chitId;
+    private int $chitId;
 
-    /** @var FilePath */
-    private $path;
+    private FilePath $path;
 
     public function __construct(CashbookId $cashbookId, int $chitId, FilePath $path)
     {

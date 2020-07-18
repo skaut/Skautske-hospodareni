@@ -184,6 +184,7 @@ final class BankServiceTest extends Unit
                 ->with([$groupId])
                 ->andReturn($payments);
         }
+
         $repository->shouldReceive('saveMany');
 
         return $repository;

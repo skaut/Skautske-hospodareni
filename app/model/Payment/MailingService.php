@@ -22,26 +22,19 @@ use function rand;
 
 class MailingService
 {
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
-    /** @var IMailerFactory */
-    private $mailerFactory;
+    private IMailerFactory $mailerFactory;
 
-    /** @var IPaymentRepository */
-    private $payments;
+    private IPaymentRepository $payments;
 
-    /** @var IBankAccountRepository */
-    private $bankAccounts;
+    private IBankAccountRepository $bankAccounts;
 
-    /** @var TemplateFactory */
-    private $templateFactory;
+    private TemplateFactory $templateFactory;
 
-    /** @var IUserRepository */
-    private $users;
+    private IUserRepository $users;
 
-    /** @var IMailCredentialsRepository */
-    private $credentials;
+    private IMailCredentialsRepository $credentials;
 
     public function __construct(
         IGroupRepository $groups,

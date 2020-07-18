@@ -8,11 +8,9 @@ use Model\Common\UnitId;
 
 final class MemberNamesQuery
 {
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var int */
-    private $minimalAge;
+    private int $minimalAge;
 
     public function __construct(UnitId $unitId, int $minimalAge)
     {

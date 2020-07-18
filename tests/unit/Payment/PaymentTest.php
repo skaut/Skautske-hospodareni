@@ -15,6 +15,7 @@ use Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
 use Model\Payment\DomainEvents\PaymentWasCreated;
 use Model\Payment\Payment\State;
 use Model\Payment\Payment\Transaction;
+use function assert;
 
 class PaymentTest extends Unit
 {
@@ -58,8 +59,8 @@ class PaymentTest extends Unit
 
         $events = $payment->extractEventsToDispatch();
         $this->assertCount(1, $events);
-        /** @var PaymentWasCreated $event */
         $event = $events[0];
+        assert($event instanceof PaymentWasCreated);
         $this->assertInstanceOf(PaymentWasCreated::class, $event);
         $this->assertSame(29, $event->getGroupId());
         $this->assertSame($variableSymbol, $event->getVariableSymbol());
@@ -174,8 +175,8 @@ class PaymentTest extends Unit
 
         $events = $payment->extractEventsToDispatch();
         $this->assertCount(1, $events);
-        /** @var PaymentVariableSymbolWasChanged $event */
         $event = $events[0];
+        assert($event instanceof PaymentVariableSymbolWasChanged);
         $this->assertInstanceOf(PaymentVariableSymbolWasChanged::class, $event);
         $this->assertSame(29, $event->getGroupId());
         $this->assertSame($new, $event->getVariableSymbol());
@@ -240,14 +241,14 @@ class PaymentTest extends Unit
         $events = $payment->extractEventsToDispatch();
         $this->assertCount(2, $events);
 
-        /** @var PaymentVariableSymbolWasChanged $event */
         $event = $events[0];
+        assert($event instanceof PaymentVariableSymbolWasChanged);
         $this->assertInstanceOf(PaymentVariableSymbolWasChanged::class, $event);
         $this->assertSame(29, $event->getGroupId());
         $this->assertSame($variableSymbol, $event->getVariableSymbol());
 
-        /** @var PaymentAmountWasChanged $event */
         $event = $events[1];
+        assert($event instanceof PaymentAmountWasChanged);
         $this->assertInstanceOf(PaymentAmountWasChanged::class, $event);
         $this->assertSame(29, $event->getGroupId());
         $this->assertSame($variableSymbol, $event->getVariableSymbol());
@@ -312,8 +313,8 @@ class PaymentTest extends Unit
 
         $events = $payment->extractEventsToDispatch();
         $this->assertCount(1, $events);
-        /** @var PaymentVariableSymbolWasChanged $event */
         $event = $events[0];
+        assert($event instanceof PaymentVariableSymbolWasChanged);
         $this->assertInstanceOf(PaymentVariableSymbolWasChanged::class, $event);
         $this->assertSame($payment->getGroupId(), $event->getGroupId());
         $this->assertSame($newVariableSymbol, $event->getVariableSymbol());
@@ -353,8 +354,8 @@ class PaymentTest extends Unit
         $this->assertCount(1, $events);
         $this->assertInstanceOf(PaymentAmountWasChanged::class, $events[0]);
 
-        /** @var PaymentAmountWasChanged $event */
         $event = $events[0];
+        assert($event instanceof PaymentAmountWasChanged);
         $this->assertSame($payment->getGroupId(), $event->getGroupId());
     }
 

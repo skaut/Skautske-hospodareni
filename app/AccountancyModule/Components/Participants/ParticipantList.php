@@ -39,44 +39,32 @@ final class ParticipantList extends BaseControl
 
     private const NO_ACTION = '';
 
-    /** @var int */
-    public $aid;
+    public int $aid;
 
     /** @var callable[] */
-    public $onUpdate = [];
+    public array $onUpdate = [];
 
     /** @var callable[] */
-    public $onRemove = [];
+    public array $onRemove = [];
 
-    /** @var bool */
-    protected $isAllowRepayment;
+    protected bool $isAllowRepayment;
 
-    /** @var bool */
-    protected $isAllowIsAccount;
+    protected bool $isAllowIsAccount;
 
-    /** @var bool */
-    protected $isAllowParticipantUpdate;
+    protected bool $isAllowParticipantUpdate;
 
-    /** @var bool */
-    protected $isAllowParticipantDelete;
+    protected bool $isAllowParticipantDelete;
 
-    /** @var EventEntity */
-    protected $eventService;
+    protected EventEntity $eventService;
 
     /** @var Participant[] */
-    private $currentParticipants;
+    private array $currentParticipants;
 
-    /**
-     * @var bool
-     * @persistent
-     */
-    public $showUnits = false;
+    /** @persistent */
+    public bool $showUnits = false;
 
-    /**
-     * @var string|null
-     * @persistent
-     */
-    public $sort = 'displayName';
+    /** @persistent */
+    public ?string $sort = 'displayName';
 
     /**
      * @param Participant[] $currentParticipants
@@ -110,6 +98,7 @@ final class ParticipantList extends BaseControl
         if (! $this->isAllowRepayment) {
             unset($sortOptions['repayment']);
         }
+
         if (! $this->isAllowIsAccount) {
             unset($sortOptions['onAccount']);
         }
@@ -144,6 +133,7 @@ final class ParticipantList extends BaseControl
         } else {
             $sortFunction = fn(Participant $a, Participant $b) => $a->{$sort} <=> $b->{$sort};
         }
+
         usort($participants, $sortFunction);
     }
 
@@ -172,6 +162,7 @@ final class ParticipantList extends BaseControl
         if (! $this->isAllowParticipantDelete) {
             $this->reload('Nemáte právo mazat účastníky.', 'danger');
         }
+
         $this->onRemove([$participantId]);
         $this->currentParticipants = array_filter(
             $this->currentParticipants,
@@ -259,12 +250,15 @@ final class ParticipantList extends BaseControl
             if ($values['days'] !== null) {
                 $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_DAYS, $values['days']);
             }
+
             if ($values['payment'] !== null) {
                 $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_PAYMENT, $values['payment']);
             }
+
             if ($values['repayment'] !== null) {
                 $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_REPAYMENT, $values['repayment']);
             }
+
             if (in_array($values['isAccount'], [self::NO_ACTION, null])) {
                 continue;
             }
@@ -287,6 +281,7 @@ final class ParticipantList extends BaseControl
         foreach ($button->getForm()->getValues()->participantIds as $participantId) {
             $ids[] = $participantId;
         }
+
         $this->onRemove($ids);
         $this->reload('Účastníci byli odebráni');
     }

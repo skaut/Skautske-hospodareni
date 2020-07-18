@@ -10,8 +10,7 @@ use Model\Event\Repositories\IEventRepository;
 
 class EventQueryHandler
 {
-    /** @var IEventRepository */
-    private $eventRepository;
+    private IEventRepository $eventRepository;
 
     public function __construct(IEventRepository $eventRepository)
     {

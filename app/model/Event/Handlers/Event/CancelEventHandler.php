@@ -11,11 +11,9 @@ use Skautis\Skautis;
 
 final class CancelEventHandler
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
-    /** @var EventBus */
-    private $eventBus;
+    private EventBus $eventBus;
 
     public function __construct(Skautis $skautis, EventBus $eventBus)
     {

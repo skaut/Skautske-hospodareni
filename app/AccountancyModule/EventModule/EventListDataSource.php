@@ -19,14 +19,11 @@ use function assert;
 
 final class EventListDataSource extends DataSource
 {
-    /** @var int|null */
-    private $year;
+    private ?int $year = null;
 
-    /** @var string|null */
-    private $state;
+    private ?string $state = null;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(QueryBus $queryBus)
     {

@@ -32,18 +32,14 @@ class Chit
      * @ORM\Id()
      * @ORM\Column(type="integer", options={"unsigned"=true})
      * @ORM\GeneratedValue()
-     *
-     * @var int|NULL
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\ManyToOne(targetEntity=Cashbook::class, inversedBy="chits")
      * @ORM\JoinColumn(name="eventId")
-     *
-     * @var Cashbook
      */
-    private $cashbook;
+    private Cashbook $cashbook;
 
     /**
      * @ORM\Embedded(class=ChitBody::class, columnPrefix=false)
@@ -78,10 +74,8 @@ class Chit
      * ID of person that locked this
      *
      * @ORM\Column(type="integer", nullable=true, name="`lock`", options={"unsigned"=true})
-     *
-     * @var int|NULL
      */
-    private $locked;
+    private ?int $locked = null;
 
     /**
      * @ORM\OneToMany(
@@ -249,6 +243,7 @@ class Chit
         foreach ($this->items as $item) {
             $newItems[] = $item->withCategory($category);
         }
+
         $scans = $this->scans->map(function (ChitScan $scan) : ChitScan {
             return clone $scan;
         })->toArray();
@@ -296,6 +291,7 @@ class Chit
             if (in_array($item->getCategory()->getId(), $itemCategories)) {
                 throw new Cashbook\Chit\DuplicitCategory(sprintf('Category %d is duplicit', $item->getCategory()->getId()));
             }
+
             $itemCategories[] = $item->getCategory()->getId();
 
             if ($item->getCategory()->getOperationType()->equals(Operation::INCOME()) &&

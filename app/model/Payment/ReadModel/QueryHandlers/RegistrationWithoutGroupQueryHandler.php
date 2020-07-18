@@ -14,11 +14,9 @@ use function count;
 
 final class RegistrationWithoutGroupQueryHandler
 {
-    /** @var IRegistrationRepository */
-    private $registrations;
+    private IRegistrationRepository $registrations;
 
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
     public function __construct(IRegistrationRepository $registrations, IGroupRepository $groups)
     {

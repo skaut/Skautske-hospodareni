@@ -12,8 +12,7 @@ use function str_replace;
 
 class AggregateId
 {
-    /** @var string */
-    private $id;
+    private string $id;
 
     private function __construct(string $id)
     {
@@ -24,6 +23,7 @@ class AggregateId
                 sprintf('Invalid id "%s", valid ID is either UUIDv4 or legacy numeric string', $id)
             );
         }
+
         $this->id = $normalizedId;
     }
 

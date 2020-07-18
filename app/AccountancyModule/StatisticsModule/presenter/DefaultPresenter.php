@@ -10,8 +10,7 @@ use function date;
 
 class DefaultPresenter extends BasePresenter
 {
-    /** @var StatisticsService */
-    private $statService;
+    private StatisticsService $statService;
 
     public function __construct(StatisticsService $statService)
     {
@@ -24,6 +23,7 @@ class DefaultPresenter extends BasePresenter
         if ($year === null) {
             $year = (int) date('Y');
         }
+
         $unitTree = $this->unitService->getTreeUnder($this->queryBus->handle(new UnitQuery($this->unitId)));
         $data     = $this->statService->getEventStatistics($unitTree, $year);
 

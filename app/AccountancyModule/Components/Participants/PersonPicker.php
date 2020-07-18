@@ -22,32 +22,24 @@ use function assert;
  */
 final class PersonPicker extends BaseControl
 {
-    /**
-     * @var string|null
-     * @persistent
-     */
-    public $unitId;
+    /** @persistent */
+    public ?string $unitId = null;
 
-    /**
-     * @var bool
-     * @persistent
-     */
-    public $directMemberOnly = false;
+    /** @persistent */
+    public bool $directMemberOnly = false;
 
     /** @var callable[] */
-    public $onSelect = [];
+    public array $onSelect = [];
 
     /** @var callable[] */
-    public $onNonMemberAdd = [];
+    public array $onNonMemberAdd = [];
 
     /** @var Participant[] */
-    private $currentParticipants;
+    private array $currentParticipants;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var UnitId */
-    private $userUnitId;
+    private UnitId $userUnitId;
 
     /**
      * @param Participant[] $currentParticipants
@@ -110,7 +102,7 @@ final class PersonPicker extends BaseControl
 
         $form->addSubmit('send');
 
-        $form->onSuccess[] = function ($_, array $values) : void {
+        $form->onSuccess[] = function ($_x, array $values) : void {
             $this->onSelect($values['personIds']);
 
             $this->redirect('this');

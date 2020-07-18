@@ -23,34 +23,21 @@ class TravelDetails
 {
     use SmartObject;
 
-    /**
-     * @ORM\Column(type="chronos_date", name="start_date")
-     *
-     * @var Date
-     */
-    private $date;
+    /** @ORM\Column(type="chronos_date", name="start_date") */
+    private Date $date;
 
     /**
      * @ORM\Column(type="string_enum", name="type")
      *
      * @Enum(class=TransportType::class)
-     * @var TransportType
      */
-    private $transportType;
+    private TransportType $transportType;
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     *
-     * @var string
-     */
-    private $startPlace;
+    /** @ORM\Column(type="string", length=64) */
+    private string $startPlace;
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     *
-     * @var string
-     */
-    private $endPlace;
+    /** @ORM\Column(type="string", length=64) */
+    private string $endPlace;
 
     public function __construct(Date $date, TransportType $transportType, string $startPlace, string $endPlace)
     {

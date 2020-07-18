@@ -12,8 +12,7 @@ use function substr;
 
 class AuthPresenter extends BasePresenter
 {
-    /** @var AuthService */
-    protected $authService;
+    protected AuthService $authService;
 
     public function __construct(AuthService $as)
     {
@@ -37,6 +36,7 @@ class AuthPresenter extends BasePresenter
         if ($backlink !== null) {
             $backlink = $this->getHttpRequest()->getUrl()->getBaseUrl() . $backlink;
         }
+
         $this->redirectUrl($this->authService->getLoginUrl($backlink));
     }
 
@@ -49,6 +49,7 @@ class AuthPresenter extends BasePresenter
         if (! isset($post['skautIS_Token'])) { //pokud není nastavený token, tak zde nemá co dělat
             $this->redirect(':Default:');
         }
+
         try {
             $this->authService->setInit(
                 $post['skautIS_Token'],
@@ -78,6 +79,7 @@ class AuthPresenter extends BasePresenter
             $this->flashMessage($e->getMessage(), 'danger');
             $this->redirect(':Auth:');
         }
+
         $this->redirect(':Accountancy:Default:');
     }
 
@@ -108,6 +110,7 @@ class AuthPresenter extends BasePresenter
         } else {
             $this->flashMessage('Odhlášení ze skautisu se nezdařilo', 'danger');
         }
+
         $this->redirect(':Default:');
     }
 }

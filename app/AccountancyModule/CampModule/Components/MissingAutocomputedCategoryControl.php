@@ -12,20 +12,17 @@ use Model\Auth\Resources\Camp;
 use Model\Event\Commands\Camp\ActivateAutocomputedCashbook;
 use Model\Event\ReadModel\Queries\CampQuery;
 use Model\Event\SkautisCampId;
+use function assert;
 use function in_array;
 
 class MissingAutocomputedCategoryControl extends BaseControl
 {
-    /** @var SkautisCampId */
-    private $campId;
+    private SkautisCampId $campId;
 
-    /** @var IAuthorizator */
-    private $authorizator;
-    /** @var QueryBus */
-    private $queryBus;
+    private IAuthorizator $authorizator;
+    private QueryBus $queryBus;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
     public function __construct(
         SkautisCampId $campId,
@@ -48,8 +45,8 @@ class MissingAutocomputedCategoryControl extends BaseControl
 
     public function render() : void
     {
-        /** @var \Model\Event\Camp $camp */
         $camp = $this->queryBus->handle(new CampQuery($this->campId));
+        assert($camp instanceof \Model\Event\Camp);
 
         $this->template->setFile(__DIR__ . '/templates/MissingAutocomputedCategoryControl.latte');
         $this->template->setParameters([

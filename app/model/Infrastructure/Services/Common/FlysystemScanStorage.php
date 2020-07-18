@@ -13,14 +13,13 @@ use Model\Common\File;
 use Model\Common\FileNotFound;
 use Model\Common\FilePath;
 use Model\Common\IScanStorage;
-use const FILEINFO_MIME_TYPE;
 use function GuzzleHttp\Psr7\stream_for;
 use function in_array;
+use const FILEINFO_MIME_TYPE;
 
 final class FlysystemScanStorage implements IScanStorage
 {
-    /** @var FilesystemInterface */
-    private $filesystem;
+    private FilesystemInterface $filesystem;
 
     public function __construct(FilesystemInterface $filesystem)
     {

@@ -12,8 +12,7 @@ use Model\Cashbook\Handlers\Cashbook\ClearCashbookHandler;
  */
 final class ClearCashbook
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
     public function __construct(CashbookId $cashbookId)
     {

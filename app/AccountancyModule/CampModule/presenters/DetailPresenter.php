@@ -30,14 +30,11 @@ use function count;
 
 class DetailPresenter extends BasePresenter
 {
-    /** @var ExportService */
-    protected $exportService;
+    protected ExportService $exportService;
 
-    /** @var PdfRenderer */
-    private $pdf;
+    private PdfRenderer $pdf;
 
-    /** @var IMissingAutocomputedCategoryControlFactory */
-    private $missingAutocomputedCategoryControlFactory;
+    private IMissingAutocomputedCategoryControlFactory $missingAutocomputedCategoryControlFactory;
 
     public function __construct(
         ExportService $export,

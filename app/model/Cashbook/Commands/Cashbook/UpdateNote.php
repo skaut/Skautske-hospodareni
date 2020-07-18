@@ -12,11 +12,9 @@ use Model\Cashbook\Handlers\Cashbook\UpdateNoteHandler;
  */
 final class UpdateNote
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var string */
-    private $note;
+    private string $note;
 
     public function __construct(CashbookId $cashbookId, string $note)
     {

@@ -17,8 +17,7 @@ use function assert;
 
 class SheetChitsGenerator
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(QueryBus $queryBus)
     {
@@ -72,6 +71,7 @@ class SheetChitsGenerator
         foreach (Range::letters('A', 'H') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
+
         $sheet->getStyle('A1:H1')->getFont()->setBold(true);
         $sheet->setAutoFilter('A1:H' . ($rowCnt - 1));
         $sheet->setTitle('Doklady');

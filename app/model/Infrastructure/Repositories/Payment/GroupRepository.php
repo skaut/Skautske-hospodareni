@@ -21,11 +21,9 @@ use function implode;
 
 final class GroupRepository implements IGroupRepository
 {
-    /** @var EntityManager */
-    private $em;
+    private EntityManager $em;
 
-    /** @var EventBus */
-    private $eventBus;
+    private EventBus $eventBus;
 
     public function __construct(EntityManager $em, EventBus $eventBus)
     {
@@ -33,9 +31,6 @@ final class GroupRepository implements IGroupRepository
         $this->eventBus = $eventBus;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function find(int $id) : Group
     {
         $group = $this->em->find(Group::class, $id);

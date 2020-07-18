@@ -22,24 +22,14 @@ class RoadworthyScan
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
-     *
-     * @var      int
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Vehicle::class, inversedBy="roadworthyScans")
-     *
-     * @var Vehicle
-     */
-    private $vehicle;
+    /** @ORM\ManyToOne(targetEntity=Vehicle::class, inversedBy="roadworthyScans") */
+    private Vehicle $vehicle;
 
-    /**
-     * @ORM\Column(type="file_path")
-     *
-     * @var FilePath
-     */
-    private $filePath;
+    /** @ORM\Column(type="file_path") */
+    private FilePath $filePath;
 
     public function __construct(Vehicle $vehicle, FilePath $filePath)
     {

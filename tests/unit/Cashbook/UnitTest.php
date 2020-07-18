@@ -10,6 +10,7 @@ use Model\Cashbook\Events\Unit\CashbookWasCreated;
 use Model\Cashbook\Exception\YearCashbookAlreadyExists;
 use Model\Common\UnitId;
 use Ramsey\Uuid\Uuid;
+use function assert;
 
 final class UnitTest extends TestCase
 {
@@ -30,8 +31,8 @@ final class UnitTest extends TestCase
         $events = $unit->extractEventsToDispatch();
         $this->assertCount(1, $events);
 
-        /** @var CashbookWasCreated $event */
         $event = $events[0];
+        assert($event instanceof CashbookWasCreated);
         $this->assertInstanceOf(CashbookWasCreated::class, $event);
         $this->assertSame($id, $event->getUnitId());
         $this->assertSame($activeCashbook->getCashbookId(), $event->getCashbookId());
@@ -55,8 +56,8 @@ final class UnitTest extends TestCase
         $events = $unit->extractEventsToDispatch();
         $this->assertCount(1, $events);
 
-        /** @var CashbookWasCreated $event */
         $event = $events[0];
+        assert($event instanceof CashbookWasCreated);
         $this->assertInstanceOf(CashbookWasCreated::class, $event);
         $this->assertSame($id, $event->getUnitId());
         $this->assertSame($cashbook->getCashbookId(), $event->getCashbookId());

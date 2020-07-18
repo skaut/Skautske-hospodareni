@@ -9,8 +9,7 @@ use Model\Event\Repositories\IEventRepository;
 
 final class UpdateEventHandler
 {
-    /** @var IEventRepository */
-    private $events;
+    private IEventRepository $events;
 
     public function __construct(IEventRepository $events)
     {

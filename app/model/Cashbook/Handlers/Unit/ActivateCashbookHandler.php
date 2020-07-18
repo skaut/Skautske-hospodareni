@@ -9,8 +9,7 @@ use Model\Cashbook\Repositories\IUnitRepository;
 
 final class ActivateCashbookHandler
 {
-    /** @var IUnitRepository */
-    private $units;
+    private IUnitRepository $units;
 
     public function __construct(IUnitRepository $units)
     {

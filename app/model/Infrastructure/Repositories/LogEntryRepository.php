@@ -11,8 +11,7 @@ use Model\Logger\Repositories\ILogEntryRepository;
 
 final class LogEntryRepository implements ILogEntryRepository
 {
-    /** @var EntityManager */
-    private $em;
+    private EntityManager $em;
 
     public function __construct(EntityManager $em)
     {

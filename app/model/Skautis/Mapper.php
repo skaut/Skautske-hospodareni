@@ -14,19 +14,16 @@ use Model\Payment\IUnitResolver;
 class Mapper
 {
     /** @var int[] */
-    private $skautisIds = [];
+    private array $skautisIds = [];
 
     /** @var CashbookId[] */
-    private $localIds = [];
+    private array $localIds = [];
 
-    /** @var ObjectTable */
-    private $table;
+    private ObjectTable $table;
 
-    /** @var IUnitResolver */
-    private $unitResolver;
+    private IUnitResolver $unitResolver;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
     public const UNIT  = 'unit';
     public const EVENT = 'general';

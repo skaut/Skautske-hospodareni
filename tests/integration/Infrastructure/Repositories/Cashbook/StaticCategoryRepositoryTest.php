@@ -16,8 +16,7 @@ class StaticCategoryRepositoryTest extends IntegrationTest
     private const TABLE_NAME   = 'ac_chitsCategory';
     private const OBJECT_TABLE = 'ac_chitsCategory_object';
 
-    /** @var StaticCategoryRepository */
-    private $repository;
+    private StaticCategoryRepository $repository;
 
     protected function _before() : void
     {

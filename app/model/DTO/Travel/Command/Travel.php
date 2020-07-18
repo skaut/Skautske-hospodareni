@@ -18,17 +18,13 @@ class Travel
 {
     use SmartObject;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var TravelDetails */
-    private $details;
+    private TravelDetails $details;
 
-    /** @var float|NULL */
-    private $distance;
+    private ?float $distance = null;
 
-    /** @var Money */
-    private $price;
+    private Money $price;
 
     public function __construct(int $id, TravelDetails $details, ?float $distance, Money $price)
     {

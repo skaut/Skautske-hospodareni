@@ -19,31 +19,17 @@ class ChitItem
      * @ORM\Id()
      * @ORM\Column(type="integer", options={"unsigned"=true})
      * @ORM\GeneratedValue()
-     *
-     * @var int|null
      */
-    private $id;
+    private ?int $id = null;
 
-    /**
-     * @ORM\Embedded(class=Amount::class, columnPrefix=false)
-     *
-     * @var Amount
-     */
-    private $amount;
+    /** @ORM\Embedded(class=Amount::class, columnPrefix=false) */
+    private Amount $amount;
 
-    /**
-     * @ORM\Embedded(class=Category::class, columnPrefix=false)
-     *
-     * @var Category
-     */
-    private $category;
+    /** @ORM\Embedded(class=Category::class, columnPrefix=false) */
+    private Category $category;
 
-    /**
-     * @ORM\Column(type="string", length=120)
-     *
-     * @var string
-     */
-    private $purpose;
+    /** @ORM\Column(type="string", length=120) */
+    private string $purpose;
 
     public function __construct(Amount $amount, Category $category, string $purpose)
     {

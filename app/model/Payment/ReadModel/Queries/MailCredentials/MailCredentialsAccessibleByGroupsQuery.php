@@ -10,7 +10,7 @@ namespace Model\Payment\ReadModel\Queries\MailCredentials;
 final class MailCredentialsAccessibleByGroupsQuery
 {
     /** @var int[] */
-    private $unitIds;
+    private array $unitIds;
 
     /**
      * @param int[] $unitIds

@@ -38,62 +38,44 @@ class Command
     public const STATE_CLOSED      = 'closed';
     public const STATE_IN_PROGRESS = 'in_progress';
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var int|NULL */
-    private $vehicleId;
+    private ?int $vehicleId = null;
 
-    /** @var Passenger */
-    private $passenger;
+    private Passenger $passenger;
 
-    /** @var string */
-    private $purpose;
+    private string $purpose;
 
-    /** @var string */
-    private $place;
+    private string $place;
 
-    /** @var string */
-    private $fellowPassengers;
+    private string $fellowPassengers;
 
-    /** @var Money */
-    private $fuelPrice;
+    private Money $fuelPrice;
 
-    /** @var Money */
-    private $amortizationPerKm;
+    private Money $amortizationPerKm;
 
-    /** @var string */
-    private $note;
+    private string $note;
 
-    /** @var Money */
-    private $total;
+    private Money $total;
 
-    /** @var DateTimeImmutable|NULL */
-    private $closedAt;
+    private ?DateTimeImmutable $closedAt = null;
 
-    /** @var DateTimeImmutable|NULL */
-    private $firstTravelDate;
+    private ?DateTimeImmutable $firstTravelDate = null;
 
-    /** @var Money */
-    private $pricePerKm;
+    private Money $pricePerKm;
 
-    /** @var Money */
-    private $fuelPricePerKm;
+    private Money $fuelPricePerKm;
 
-    /** @var string */
-    private $state;
+    private string $state;
 
-    /** @var int|null */
-    private $ownerId;
+    private ?int $ownerId = null;
 
     /** @var TransportType[] */
-    private $transportTypes;
+    private array $transportTypes;
 
-    /** @var string */
-    private $unit;
+    private string $unit;
 
     /**
      * @param TransportType[] $transportTypes

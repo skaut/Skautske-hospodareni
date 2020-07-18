@@ -9,8 +9,7 @@ use Nette\Mail\IMailer;
 
 class MailerFactoryStub implements IMailerFactory
 {
-    /** @var IMailer */
-    private $mailer;
+    private IMailer $mailer;
 
     public function create(MailCredentials $credentials) : IMailer
     {

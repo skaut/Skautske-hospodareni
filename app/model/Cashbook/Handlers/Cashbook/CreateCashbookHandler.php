@@ -10,8 +10,7 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 
 final class CreateCashbookHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
     public function __construct(ICashbookRepository $cashbooks)
     {

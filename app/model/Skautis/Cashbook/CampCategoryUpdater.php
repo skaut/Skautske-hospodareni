@@ -12,23 +12,20 @@ use Model\Cashbook\Services\ICampCategoryUpdater;
 use Model\Skautis\Mapper;
 use Model\Utils\MoneyFactory;
 use Skautis\Skautis;
-use const ARRAY_FILTER_USE_BOTH;
 use function array_diff;
 use function array_fill_keys;
 use function array_filter;
 use function array_keys;
 use function count;
+use const ARRAY_FILTER_USE_BOTH;
 
 final class CampCategoryUpdater implements ICampCategoryUpdater
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
-    /** @var Mapper */
-    private $mapper;
+    private Mapper $mapper;
 
-    /** @var ICampCategoryRepository */
-    private $campCategories;
+    private ICampCategoryRepository $campCategories;
 
     public function __construct(Skautis $skautis, Mapper $mapper, ICampCategoryRepository $campCategories)
     {

@@ -22,26 +22,19 @@ class Contract
 {
     use SmartObject;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var Passenger */
-    private $passenger;
+    private Passenger $passenger;
 
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var string */
-    private $unitRepresentative;
+    private string $unitRepresentative;
 
-    /** @var Date|NULL */
-    private $since;
+    private ?Date $since = null;
 
-    /** @var Date|NULL */
-    private $until;
+    private ?Date $until = null;
 
-    /** @var int */
-    private $templateVersion;
+    private int $templateVersion;
 
     public function __construct(
         int $id,

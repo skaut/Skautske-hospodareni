@@ -20,22 +20,18 @@ use function sprintf;
 final class ActivateCashbookDialog extends BaseControl
 {
      /** @var bool @persistent */
-    public $opened = false;
+    public bool $opened = false;
 
     /** @var callable[] */
-    public $onSuccess = [];
+    public array $onSuccess = [];
 
-    /** @var bool */
-    private $isEditable;
+    private bool $isEditable;
 
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(bool $isEditable, UnitId $unitId, CommandBus $commandBus, QueryBus $queryBus)
     {
@@ -72,7 +68,7 @@ final class ActivateCashbookDialog extends BaseControl
         $form->addSubmit('create', 'Vybrat')
             ->setAttribute('class', 'btn btn-primary');
 
-        $form->onSuccess[] = function ($_, ArrayHash $values) : void {
+        $form->onSuccess[] = function ($_x, ArrayHash $values) : void {
             $this->formSucceeded($values->cashbookId);
         };
 

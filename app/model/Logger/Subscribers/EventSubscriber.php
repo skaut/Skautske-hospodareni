@@ -12,11 +12,9 @@ use Model\UserService;
 
 class EventSubscriber
 {
-    /** @var LoggerService */
-    private $loggerService;
+    private LoggerService $loggerService;
 
-    /** @var UserService */
-    private $userService;
+    private UserService $userService;
 
     public function __construct(LoggerService $logger, UserService $userService)
     {

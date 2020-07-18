@@ -24,17 +24,13 @@ final class PaymentList extends BaseControl
         State::CANCELED,
     ];
 
-    /** @var int */
-    private $groupId;
+    private int $groupId;
 
-    /** @var bool */
-    private $isEditable;
+    private bool $isEditable;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var GridFactory */
-    private $gridFactory;
+    private GridFactory $gridFactory;
 
     public function __construct(int $groupId, bool $isEditable, QueryBus $queryBus, GridFactory $gridFactory)
     {

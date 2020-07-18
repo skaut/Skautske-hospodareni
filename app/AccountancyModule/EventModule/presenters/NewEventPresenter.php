@@ -15,6 +15,7 @@ use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\Unit;
 use Nette\Application\UI\Form;
 use function array_map;
+use function assert;
 
 final class NewEventPresenter extends BasePresenter
 {
@@ -46,8 +47,8 @@ final class NewEventPresenter extends BasePresenter
             $subunits
         );
 
-        /** @var Unit $unit */
-        $unit  = $this->queryBus->handle(new UnitQuery($unitId));
+        $unit = $this->queryBus->handle(new UnitQuery($unitId));
+        assert($unit instanceof Unit);
         $units = [$unitId => $unit->getSortName()] + $subunits;
 
         $form = new BaseForm();

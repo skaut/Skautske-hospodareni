@@ -12,8 +12,7 @@ use function array_values;
 
 final class VehicleRepository implements IVehicleRepository
 {
-    /** @var EntityManager */
-    private $em;
+    private EntityManager $em;
 
     public function __construct(EntityManager $em)
     {

@@ -12,8 +12,7 @@ use function count;
 
 final class EventParticipantStatisticsQueryHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(QueryBus $queryBus)
     {

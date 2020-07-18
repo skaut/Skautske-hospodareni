@@ -31,11 +31,9 @@ final class ParticipantRepository implements IParticipantRepository
 {
     private const DATETIME_FORMAT = 'Y-m-d\TH:i:s';
 
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
-    /** @var IPaymentRepository */
-    private $payments;
+    private IPaymentRepository $payments;
 
     public function __construct(Skautis $skautis, IPaymentRepository $payments)
     {
@@ -52,6 +50,7 @@ final class ParticipantRepository implements IParticipantRepository
         if (! is_array($participants)) {
             return []; // API returns empty object when there are no results
         }
+
         $event = new Event($id->toInt(), EventType::GENERAL());
 
         return $this->processParticipants($participants, $event);
@@ -66,6 +65,7 @@ final class ParticipantRepository implements IParticipantRepository
         if (! is_array($participants)) {
             return []; // API returns empty object when there are no results
         }
+
         $event = new Event($id->toInt(), EventType::CAMP());
 
         return $this->processParticipants($participants, $event);
@@ -166,6 +166,7 @@ final class ParticipantRepository implements IParticipantRepository
             } else {
                 $payment =  PaymentFactory::createDefault($p->ID, $event);
             }
+
             $participants[$p->ID] = ParticipantFactory::create($p, $payment);
         }
 

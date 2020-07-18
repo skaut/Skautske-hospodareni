@@ -19,26 +19,18 @@ class Unit
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
     /**
      * @internal for mapping only
      *
      * @ORM\ManyToOne(targetEntity=Group::class, inversedBy="units")
-     *
-     * @var Group
      */
-    private $group;
+    private Group $group;
 
-    /**
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
-    private $unitId;
+    /** @ORM\Column(type="integer") */
+    private int $unitId;
 
     public function __construct(Group $group, int $unitId)
     {

@@ -6,8 +6,7 @@ namespace Model\Payment\BankAccount;
 
 final class BankAccountId
 {
-    /** @var int */
-    private $id;
+    private int $id;
 
     public function __construct(int $id)
     {

@@ -23,11 +23,9 @@ class NextVariableSymbolSequenceQueryHandler
 {
     private const UNIT_PART_LENGTH = 3;
 
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(IGroupRepository $groups, QueryBus $queryBus)
     {

@@ -27,17 +27,13 @@ use function implode;
 
 final class ExportCampsHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var SpreadsheetFactory */
-    private $spreadsheetFactory;
+    private SpreadsheetFactory $spreadsheetFactory;
 
-    /** @var IUnitRepository */
-    private $unitRepository;
+    private IUnitRepository $unitRepository;
 
-    /** @var SheetChitsGenerator */
-    private $sheetChitsGenerator;
+    private SheetChitsGenerator $sheetChitsGenerator;
 
     public function __construct(
         QueryBus $queryBus,
@@ -135,6 +131,7 @@ final class ExportCampsHandler
         foreach (Range::letters('A', 'N') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
+
         $sheet->getStyle('A1:N1')->getFont()->setBold(true);
         $sheet->setAutoFilter('A1:N' . ($rowCnt - 1));
         $sheet->setTitle('Přehled táborů');
@@ -153,6 +150,7 @@ final class ExportCampsHandler
                 // Removed troops are returned as well https://github.com/skaut/Skautske-hospodareni/issues/483
                 continue;
             }
+
             $troopNames[] = $unit->getDisplayName();
         }
 

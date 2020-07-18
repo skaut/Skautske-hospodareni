@@ -40,38 +40,28 @@ use function assert;
 class ChitListControl extends BaseControl
 {
     /** @var callable[] */
-    public $onEditButtonClicked = [];
+    public array $onEditButtonClicked = [];
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
     /**
      * Can current user edit cashbook?
-     *
-     * @var bool
      */
-    private $isEditable;
+    private bool $isEditable;
 
-    /** @var PaymentMethod */
-    private $paymentMethod;
+    private PaymentMethod $paymentMethod;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var IMoveChitsDialogFactory */
-    private $moveChitsDialogFactory;
+    private IMoveChitsDialogFactory $moveChitsDialogFactory;
 
-    /** @var IInvertChitDialogFactory */
-    private $invertChitDialogFactory;
+    private IInvertChitDialogFactory $invertChitDialogFactory;
 
-    /** @var IChitScanControlFactory */
-    private $chitScanFactory;
+    private IChitScanControlFactory $chitScanFactory;
 
-    /** @var IPrefixControlFactory */
-    private $prefixFactory;
+    private IPrefixControlFactory $prefixFactory;
 
     public function __construct(
         CashbookId $cashbookId,
@@ -165,6 +155,7 @@ class ChitListControl extends BaseControl
         } catch (MaxChitNumberNotFound $exc) {
             $this->getPresenter()->flashMessage('Nepodařilo se určit poslední poslední paragon, od kterého by se pokračovalo s číslováním.', 'error');
         }
+
         $this->getPresenter()->redirect('this');
     }
 

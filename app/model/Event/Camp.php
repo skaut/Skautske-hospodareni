@@ -27,47 +27,34 @@ class Camp implements ISkautisEvent
     public const STATE_APPROVED_PARENT = 'approvedParent';
     public const STATE_REAL            = 'real';
 
-    /** @var SkautisCampId */
-    private $id;
+    private SkautisCampId $id;
 
-    /** @var string */
-    private $displayName;
+    private string $displayName;
 
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var string */
-    private $unitName;
+    private string $unitName;
 
-    /** @var Date */
-    private $startDate;
+    private Date $startDate;
 
-    /** @var Date */
-    private $endDate;
+    private Date $endDate;
 
-    /** @var string */
-    private $location;
+    private string $location;
 
-    /** @var string */
-    private $state;
+    private string $state;
 
-    /** @var string */
-    private $registrationNumber;
+    private string $registrationNumber;
 
     /** @var UnitId[] */
-    private $participatingUnits;
+    private array $participatingUnits;
 
-    /** @var int|null */
-    private $totalDays;
+    private ?int $totalDays = null;
 
-    /** @var ParticipantStatistics|null */
-    private $participantStatistics;
+    private ?ParticipantStatistics $participantStatistics = null;
 
-    /** @var bool|null */
-    private $realAutoComputed;
+    private ?bool $realAutoComputed = null;
 
-    /** @var bool|null */
-    private $realTotalCostAutoComputed;
+    private ?bool $realTotalCostAutoComputed = null;
 
     /**
      * @param  UnitId[] $participatingUnits

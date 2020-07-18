@@ -9,8 +9,7 @@ use Model\Payment\Repositories\IMailCredentialsRepository;
 
 class UpdateMailPasswordHandler
 {
-    /** @var IMailCredentialsRepository */
-    private $credentials;
+    private IMailCredentialsRepository $credentials;
 
     public function __construct(IMailCredentialsRepository $credentials)
     {

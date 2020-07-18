@@ -11,11 +11,9 @@ use Model\Events\Events\EventWasClosed;
 
 final class CloseEventHandler
 {
-    /** @var IEventRepository */
-    private $events;
+    private IEventRepository $events;
 
-    /** @var EventBus */
-    private $eventBus;
+    private EventBus $eventBus;
 
     public function __construct(IEventRepository $events, EventBus $eventBus)
     {

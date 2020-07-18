@@ -22,20 +22,15 @@ use function count;
 
 final class EventPresenter extends BasePresenter
 {
-    /** @var Event|null */
-    private $event;
+    private ?Event $event = null;
 
-    /** @var int|null */
-    private $groupId;
+    private ?int $groupId = null;
 
-    /** @var IGroupFormFactory */
-    private $groupFormFactory;
+    private IGroupFormFactory $groupFormFactory;
 
-    /** @var IMassAddFormFactory */
-    private $massAddFormFactory;
+    private IMassAddFormFactory $massAddFormFactory;
 
-    /** @var PaymentService */
-    private $model;
+    private PaymentService $model;
 
     public function __construct(
         IGroupFormFactory $groupFormFactory,

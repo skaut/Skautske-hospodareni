@@ -19,27 +19,23 @@ use Model\Payment\ReadModel\Queries\RegistrationWithoutGroupQuery;
 use Model\PaymentService;
 use function array_keys;
 use function array_slice;
+use function assert;
 use function intdiv;
 
 class RegistrationPresenter extends BasePresenter
 {
-    /** @var Registration|null */
-    private $registration;
+    private ?Registration $registration = null;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
     /** @var string[] */
-    protected $readUnits;
+    protected array $readUnits;
 
-    /** @var PaymentService */
-    private $model;
+    private PaymentService $model;
 
-    /** @var IMassAddFormFactory */
-    private $massAddFormFactory;
+    private IMassAddFormFactory $massAddFormFactory;
 
-    /** @var IGroupFormFactory */
-    private $groupFormFactory;
+    private IGroupFormFactory $groupFormFactory;
 
     private const STS_PRICE = 200;
 
@@ -103,7 +99,7 @@ class RegistrationPresenter extends BasePresenter
         }
 
         $form = $this['massAddForm'];
-        /** @var MassAddForm $form */
+        assert($form instanceof MassAddForm);
 
         // performance issue - při větším množství zobrazených osob se nezpracuje formulář
         $list = array_slice($list, 0, 50);

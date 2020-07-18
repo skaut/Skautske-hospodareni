@@ -8,11 +8,9 @@ use Model\Payment\EmailTemplate;
 
 final class GroupEmail
 {
-    /** @var EmailTemplate */
-    private $template;
+    private EmailTemplate $template;
 
-    /** @var bool */
-    private $enabled;
+    private bool $enabled;
 
     public function __construct(EmailTemplate $template, bool $enabled)
     {

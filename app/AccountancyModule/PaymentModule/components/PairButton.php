@@ -16,6 +16,7 @@ use Model\Payment\InvalidSmtp;
 use Model\PaymentService;
 use function array_filter;
 use function array_map;
+use function assert;
 use function bdump;
 use function count;
 
@@ -24,17 +25,14 @@ class PairButton extends BaseControl
     public const TIMEOUT_MESSAGE    = 'Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.';
     public const TIME_LIMIT_MESSAGE = 'Mezi dotazy na bankovnictví musí být prodleva 1 minuta!';
 
-    /** @var BankService */
-    private $model;
+    private BankService $model;
 
-    /** @var PaymentService */
-    private $payments;
+    private PaymentService $payments;
 
-    /** @var BankAccountService */
-    private $bankAccounts;
+    private BankAccountService $bankAccounts;
 
     /** @var int[] */
-    private $groupIds = [];
+    private array $groupIds = [];
 
     public function __construct(PaymentService $payments, BankService $model, BankAccountService $bankAccounts)
     {
@@ -124,8 +122,8 @@ class PairButton extends BaseControl
     {
         try {
             $pairingResults = $this->model->pairAllGroups($this->groupIds, $daysBack);
-            /** @var PairingResult $p */
             foreach ($pairingResults as $p) {
+                assert($p instanceof PairingResult);
                 $this->flashMessage($p->getMessage(), $p->getCount() > 0 ? 'success' : 'info');
             }
         } catch (BankTimeout $exc) {
@@ -137,6 +135,7 @@ class PairButton extends BaseControl
         } catch (InvalidSmtp $exc) {
             $this->flashMessage('Chyba SMTP serveru: ' . $exc->getMessage(), 'danger');
         }
+
         $this->redirect('this');
     }
 }

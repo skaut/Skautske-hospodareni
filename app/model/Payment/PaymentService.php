@@ -44,29 +44,21 @@ use function usort;
 
 class PaymentService
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
-    /** @var IPaymentRepository */
-    private $payments;
+    private IPaymentRepository $payments;
 
-    /** @var IBankAccountRepository */
-    private $bankAccounts;
+    private IBankAccountRepository $bankAccounts;
 
-    /** @var IBankAccountAccessChecker */
-    private $bankAccountAccessChecker;
+    private IBankAccountAccessChecker $bankAccountAccessChecker;
 
-    /** @var IMemberEmailRepository */
-    private $emails;
+    private IMemberEmailRepository $emails;
 
-    /** @var IMailCredentialsAccessChecker */
-    private $mailCredentialsAccessChecker;
+    private IMailCredentialsAccessChecker $mailCredentialsAccessChecker;
 
-    /** @var IUserRepository */
-    private $users;
+    private IUserRepository $users;
 
     public function __construct(
         Skautis $skautis,
@@ -276,6 +268,7 @@ class PaymentService
         if ($group === null || ! array_intersect($group->getUnitIds(), $units)) {
             throw new InvalidArgumentException('Nebyla nalezena platební skupina');
         }
+
         $persons = $this->getPersonFromRegistration($group->getSkautisId(), true);
 
         if (is_array($persons)) {
@@ -344,6 +337,7 @@ class PaymentService
         foreach ($this->skautis->org->RegistrationCategoryAll(['ID_UnitRegistration' => $registrationId]) as $rc) {
             $regCategories[$rc->ID] = $rc->IsJournal;
         }
+
         $unitJournals = $this->skautis->Journal->PersonJournalAllUnit(['ID_Unit' => $unitId, 'ShowHistory' => false, 'IncludeChild' => true]);
 
         //seznam osob s casopisem

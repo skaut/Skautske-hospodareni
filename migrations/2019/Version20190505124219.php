@@ -15,6 +15,7 @@ final class Version20190505124219 extends AbstractMigration
         foreach ($chits as $chit) {
             $this->addSql('UPDATE `ac_chits_item` SET `purpose` = :purpose WHERE `chit_id` = :id;', $chit);
         }
+
         $this->addSql('ALTER TABLE `ac_chits` CHANGE `purpose` `x_purpose` varchar(120) NULL AFTER `recipient`;');
     }
 

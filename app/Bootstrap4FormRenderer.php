@@ -92,8 +92,6 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
 
     /**
      * @param array $controls
-     *
-     * @return string
      */
     public function renderPairMulti(array $controls) : string
     {
@@ -128,11 +126,6 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
         return parent::renderLabel($control);
     }
 
-    /**
-     * @param Nette\Forms\IControl $control
-     *
-     * @return Nette\Utils\Html
-     */
     public function renderControl(Nette\Forms\IControl $control) : Nette\Utils\Html
     {
         if (! $control instanceof BaseControl) {
@@ -158,6 +151,7 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
             if ($control->hasErrors()) {
                 $control->controlPrototype->appendAttribute('class', 'is-invalid');
             }
+
             $control->controlPrototype->appendAttribute('class', 'form-control');
         }
 

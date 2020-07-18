@@ -13,8 +13,7 @@ use function array_map;
 
 final class CampBudgetQueryHandler
 {
-    /** @var WebServiceInterface */
-    private $eventWebService;
+    private WebServiceInterface $eventWebService;
 
     public function __construct(WebServiceInterface $eventWebService)
     {

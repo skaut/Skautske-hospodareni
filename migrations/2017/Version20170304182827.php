@@ -6,10 +6,10 @@ namespace Migrations;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
-use const PHP_EOL;
 use function explode;
 use function file_get_contents;
 use function trim;
+use const PHP_EOL;
 
 class Version20170304182827 extends AbstractMigration
 {

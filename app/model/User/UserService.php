@@ -14,8 +14,7 @@ use stdClass;
 
 class UserService extends BaseService
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(Skautis $skautis, QueryBus $queryBus)
     {

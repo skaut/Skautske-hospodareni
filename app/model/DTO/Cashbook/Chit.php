@@ -40,32 +40,26 @@ class Chit
 {
     use SmartObject;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var ChitBody */
-    private $body;
+    private ChitBody $body;
 
-    /** @var bool */
-    private $locked;
+    private bool $locked;
 
     /** @var CashbookType[] */
-    private $inverseCashbookTypes;
+    private array $inverseCashbookTypes;
 
-    /** @var PaymentMethod */
-    private $paymentMethod;
+    private PaymentMethod $paymentMethod;
 
     /** @var ChitItem[] */
-    private $items;
+    private array $items;
 
-    /** @var Operation */
-    private $operation;
+    private Operation $operation;
 
-    /** @var Amount */
-    private $amount;
+    private Amount $amount;
 
     /** @var ChitScan[] */
-    private $scans;
+    private array $scans;
 
     /**
      * @param CashbookType[] $inverseCashbookTypes

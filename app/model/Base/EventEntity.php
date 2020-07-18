@@ -10,8 +10,7 @@ namespace Model;
  */
 class EventEntity
 {
-    /** @var ParticipantService */
-    private $participants;
+    private ParticipantService $participants;
 
     public function __construct(string $name, IParticipantServiceFactory $participantFactory)
     {

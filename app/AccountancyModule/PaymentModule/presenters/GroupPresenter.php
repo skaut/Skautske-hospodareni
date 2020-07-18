@@ -12,14 +12,11 @@ use Model\PaymentService;
 
 class GroupPresenter extends BasePresenter
 {
-    /** @var Group|null */
-    private $group;
+    private ?Group $group = null;
 
-    /** @var PaymentService */
-    private $model;
+    private PaymentService $model;
 
-    /** @var IGroupFormFactory */
-    private $groupFormFactory;
+    private IGroupFormFactory $groupFormFactory;
 
     public function __construct(PaymentService $model, IGroupFormFactory $groupFormFactory)
     {
@@ -33,6 +30,7 @@ class GroupPresenter extends BasePresenter
         if ($this->isEditable) {
             return;
         }
+
         $this->setView('accessDenied');
         $this->template->setParameters(['message' => 'Nemáte oprávnění upravovat skupiny plateb.']);
     }

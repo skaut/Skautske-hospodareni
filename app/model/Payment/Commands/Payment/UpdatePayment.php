@@ -9,29 +9,21 @@ use Model\Payment\VariableSymbol;
 
 final class UpdatePayment
 {
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var string|null */
-    private $email;
+    private ?string $email = null;
 
-    /** @var float */
-    private $amount;
+    private float $amount;
 
-    /** @var Date */
-    private $dueDate;
+    private Date $dueDate;
 
-    /** @var VariableSymbol|null */
-    private $variableSymbol;
+    private ?VariableSymbol $variableSymbol = null;
 
-    /** @var int|null */
-    private $constantSymbol;
+    private ?int $constantSymbol = null;
 
-    /** @var string */
-    private $note;
+    private string $note;
 
-    /** @var int */
-    private $paymentId;
+    private int $paymentId;
 
     public function __construct(
         int $paymentId,

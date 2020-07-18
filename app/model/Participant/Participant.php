@@ -8,56 +8,39 @@ use Cake\Chronos\Date;
 
 class Participant
 {
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var int */
-    private $personId;
+    private int $personId;
 
-    /** @var string */
-    private $firstName;
+    private string $firstName;
 
-    /** @var string */
-    private $lastName;
+    private string $lastName;
 
-    /** @var string|null */
-    private $nickName;
+    private ?string $nickName = null;
 
-    /** @var int|null */
-    private $age;
+    private ?int $age = null;
 
-    /** @var Date|null */
-    private $birthday;
+    private ?Date $birthday = null;
 
-    /** @var string */
-    private $street;
+    private string $street;
 
-    /** @var string */
-    private $city;
+    private string $city;
 
-    /** @var int */
-    private $postcode;
+    private int $postcode;
 
-    /** @var string */
-    private $state;
+    private string $state;
 
-    /** @var int|null */
-    private $unitId;
+    private ?int $unitId = null;
 
-    /** @var string */
-    private $unit;
+    private string $unit;
 
-    /** @var string */
-    private $unitRegistrationNumber;
+    private string $unitRegistrationNumber;
 
-    /** @var int */
-    private $days;
+    private int $days;
 
-    /** @var Payment */
-    private $payment;
+    private Payment $payment;
 
-    /** @var string|null */
-    private $category;
+    private ?string $category = null;
 
     public function __construct(
         int $id,

@@ -21,11 +21,9 @@ use function sprintf;
 
 class FioClient implements IFioClient
 {
-    /** @var IDownloaderFactory */
-    private $downloaderFactory;
+    private IDownloaderFactory $downloaderFactory;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(IDownloaderFactory $downloaderFactory, LoggerInterface $logger)
     {
@@ -76,6 +74,7 @@ class FioClient implements IFioClient
             return $api->downloadFromTo($since, $until)->getTransactions();
         } catch (TooGreedyException $e) {
             $this->logger->warning('Bank account #' . $account->getId() . ' hit API limit');
+
             throw new BankTimeLimit('', 0, $e);
         } catch (TransferException | InternalErrorException $e) {
             $this->logger->warning(

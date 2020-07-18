@@ -25,7 +25,7 @@ class ChitNumberType extends StringType
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform) : ?string
     {
-        /** @var $value ChitNumber */
+        /** @var ChitNumber $value */
         return $value === null ? null : $value->toString();
     }
 

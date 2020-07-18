@@ -29,6 +29,7 @@ final class Version20200411105206 extends AbstractMigration
                 $this->addSql('UPDATE ac_chits          SET eventId = ?     WHERE eventId = ?', $ids);
                 $this->addSql('UPDATE ac_unit_cashbooks SET cashbook_id = ? WHERE cashbook_id = ?', $ids);
             }
+
             $this->connection->commit();
         } catch (Throwable $exc) {
             $this->connection->rollBack();

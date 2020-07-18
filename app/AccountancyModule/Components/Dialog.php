@@ -19,7 +19,7 @@ abstract class Dialog extends BaseControl
      *
      * @var bool @persistent
      */
-    public $opened = false;
+    public bool $opened = false;
 
     protected function beforeRender() : void
     {

@@ -27,26 +27,18 @@ use function assert;
 
 class FunctionsControl extends BaseControl
 {
-    /** @var int */
-    private $eventId;
+    private int $eventId;
 
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var IAuthorizator */
-    private $authorizator;
+    private IAuthorizator $authorizator;
 
-    /**
-     * @persistent
-     * @var bool
-     */
-    public $editation = false;
+    /** @persistent */
+    public bool $editation = false;
 
     public function __construct(
         int $eventId,
@@ -133,6 +125,7 @@ class FunctionsControl extends BaseControl
         if (! $this->canEdit()) {
             $this->reload('Nemáte oprávnění upravit vedení akce', 'danger');
         }
+
         try {
             $this->commandBus->handle(
                 new UpdateFunctions(
@@ -158,6 +151,7 @@ class FunctionsControl extends BaseControl
             $form->addError('Zástupce musí být dosplělá osoba.');
             $this->reload();
         }
+
         $this->reload('Nepodařilo se upravit funkce', 'danger');
     }
 

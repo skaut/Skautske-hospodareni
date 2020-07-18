@@ -20,33 +20,17 @@ class Transaction
 {
     use SmartObject;
 
-    /**
-     * @ORM\Column(type="string", length=64, nullable=true, name="transactionId")
-     *
-     * @var string
-     */
-    private $id;
+    /** @ORM\Column(type="string", length=64, nullable=true, name="transactionId") */
+    private string $id;
 
-    /**
-     * @ORM\Column(type="string", length=64, nullable=true, name="paidFrom")
-     *
-     * @var string
-     */
-    private $bankAccount;
+    /** @ORM\Column(type="string", length=64, nullable=true, name="paidFrom") */
+    private string $bankAccount;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, name="transaction_payer")
-     *
-     * @var string
-     */
-    private $payer;
+    /** @ORM\Column(type="string", nullable=true, name="transaction_payer") */
+    private string $payer;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, name="transaction_note")
-     *
-     * @var string|NULL
-     */
-    private $note;
+    /** @ORM\Column(type="string", nullable=true, name="transaction_note") */
+    private ?string $note = null;
 
     public function __construct(string $id, string $bankAccount, string $payer, ?string $note)
     {

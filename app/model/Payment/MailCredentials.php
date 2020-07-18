@@ -19,60 +19,33 @@ class MailCredentials
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @ORM\Column(type="integer", name="unitId", options={"unsigned"=true})
-     *
-     * @var int
-     */
-    private $unitId;
+    /** @ORM\Column(type="integer", name="unitId", options={"unsigned"=true}) */
+    private int $unitId;
 
-    /**
-     * @ORM\Column(type="string")
-     *
-     * @var string
-     */
-    private $host;
+    /** @ORM\Column(type="string") */
+    private string $host;
 
-    /**
-     * @ORM\Column(type="string")
-     *
-     * @var string
-     */
-    private $username;
+    /** @ORM\Column(type="string") */
+    private string $username;
 
-    /**
-     * @ORM\Column(type="string")
-     *
-     * @var string
-     */
-    private $password;
+    /** @ORM\Column(type="string") */
+    private string $password;
 
     /**
      * @ORM\Column(type="string_enum", name="secure", length=64)
      *
-     * @var MailProtocol
      * @Enum(class=MailProtocol::class)
      */
-    private $protocol;
+    private MailProtocol $protocol;
 
-    /**
-     * @ORM\Column(type="string")
-     *
-     * @var string
-     */
-    private $sender;
+    /** @ORM\Column(type="string") */
+    private string $sender;
 
-    /**
-     * @ORM\Column(type="datetime_immutable", name="created")
-     *
-     * @var DateTimeImmutable
-     */
-    private $createdAt;
+    /** @ORM\Column(type="datetime_immutable", name="created") */
+    private DateTimeImmutable $createdAt;
 
     public function __construct(
         int $unitId,

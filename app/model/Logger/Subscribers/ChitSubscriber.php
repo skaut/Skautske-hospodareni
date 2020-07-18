@@ -11,8 +11,7 @@ use Model\LoggerService;
 
 class ChitSubscriber
 {
-    /** @var LoggerService */
-    private $loggerService;
+    private LoggerService $loggerService;
 
     public function __construct(LoggerService $ls)
     {

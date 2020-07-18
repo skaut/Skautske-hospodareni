@@ -20,6 +20,7 @@ use Model\Cashbook\Events\ChitWasRemoved;
 use Model\Cashbook\Events\ChitWasUpdated;
 use Model\Common\FilePath;
 use Model\Common\ScanNotFound;
+use function assert;
 
 /**
  * These are in fact unit tests, that can't be tested without database right now, because chit ids are
@@ -215,8 +216,8 @@ class CashbookIntegrationTest extends IntegrationTest
 
         $this->assertCount(1, $events);
 
-        /** @var ChitWasAdded $event */
         $event = $events[0];
+        assert($event instanceof ChitWasAdded);
         $this->assertTrue($event->getCashbookId()->equals($cashbookId));
     }
 

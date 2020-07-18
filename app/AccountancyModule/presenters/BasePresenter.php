@@ -14,31 +14,25 @@ use function assert;
 
 abstract class BasePresenter extends \App\BasePresenter
 {
-    /** @var string|null */
-    protected $backlink;
+    protected ?string $backlink = null;
 
     /**
      * id volane v url, vetsinou id akce
-     *
-     * @var int|null
      */
-    protected $aid;
+    protected ?int $aid = null;
 
     /** @var UnitId */
     protected $unitId;
 
     /**
      * je akci možné upravovat?
-     *
-     * @var bool
      */
-    protected $isEditable;
+    protected bool $isEditable;
 
-    /** @var SkautisMaintenanceChecker */
-    private $skautisMaintenanceChecker;
+    private SkautisMaintenanceChecker $skautisMaintenanceChecker;
 
     /** @var string camp, event, unit */
-    public $type;
+    public string $type;
 
     public function injectSkautisMaintenanceChecker(SkautisMaintenanceChecker $checker) : void
     {

@@ -20,39 +20,24 @@ class SentEmail
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Payment::class, inversedBy="sentEmails")
-     *
-     * @var Payment
-     */
-    private $payment;
+    /** @ORM\ManyToOne(targetEntity=Payment::class, inversedBy="sentEmails") */
+    private Payment $payment;
 
     /**
      * @ORM\Column(type="string_enum")
      *
-     * @var EmailType
      * @Enum(class=EmailType::class)
      */
-    private $type;
+    private EmailType $type;
 
-    /**
-     * @ORM\Column(type="datetime_immutable")
-     *
-     * @var DateTimeImmutable
-     */
-    private $time;
+    /** @ORM\Column(type="datetime_immutable") */
+    private DateTimeImmutable $time;
 
-    /**
-     * @ORM\Column(type="string")
-     *
-     * @var string
-     */
-    private $senderName;
+    /** @ORM\Column(type="string") */
+    private string $senderName;
 
     public function __construct(Payment $payment, EmailType $type, DateTimeImmutable $time, string $senderName)
     {

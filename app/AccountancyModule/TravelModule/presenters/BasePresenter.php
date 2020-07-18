@@ -9,8 +9,7 @@ use Nette\NotImplementedException;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
-    /** @var Unit */
-    protected $officialUnit;
+    protected Unit $officialUnit;
 
     protected function startup() : void
     {

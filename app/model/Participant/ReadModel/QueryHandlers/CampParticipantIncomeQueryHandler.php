@@ -15,8 +15,7 @@ use function preg_match;
 
 class CampParticipantIncomeQueryHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(QueryBus $queryBus)
     {
@@ -35,8 +34,10 @@ class CampParticipantIncomeQueryHandler
             ) {
                 continue;
             }
+
             $res += $p->getPayment();
         }
+
         if ($res === 0.0) {
             throw new ZeroParticipantIncome();
         }

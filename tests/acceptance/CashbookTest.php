@@ -18,11 +18,9 @@ class CashbookTest extends Unit
     private const BALANCE_SELECTOR = '.ui--balance';
     private const NO_CHITS_MESSAGE = 'žádné doklady';
 
-    /** @var AcceptanceTester */
-    protected $tester;
+    protected AcceptanceTester $tester;
 
-    /** @var string */
-    private $eventName;
+    private string $eventName;
 
     protected function _before() : void
     {

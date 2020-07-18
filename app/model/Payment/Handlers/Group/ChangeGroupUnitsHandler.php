@@ -13,14 +13,11 @@ use Model\Payment\Services\IMailCredentialsAccessChecker;
 
 class ChangeGroupUnitsHandler
 {
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
-    /** @var IBankAccountAccessChecker */
-    private $bankAccountAccessChecker;
+    private IBankAccountAccessChecker $bankAccountAccessChecker;
 
-    /** @var IMailCredentialsAccessChecker */
-    private $mailCredentaccessChecker;
+    private IMailCredentialsAccessChecker $mailCredentaccessChecker;
 
     public function __construct(
         IGroupRepository $groups,

@@ -13,23 +13,17 @@ class Cashbook
 {
     use SmartObject;
 
-    /** @var CashbookId */
-    private $id;
+    private CashbookId $id;
 
-    /** @var CashbookType */
-    private $type;
+    private CashbookType $type;
 
-    /** @var string|NULL */
-    private $cashChitNumberPrefix;
+    private ?string $cashChitNumberPrefix = null;
 
-    /** @var string|NULL */
-    private $bankChitNumberPrefix;
+    private ?string $bankChitNumberPrefix = null;
 
-    /** @var string */
-    private $note;
+    private string $note;
 
-    /** @var bool */
-    private $hasOnlyNumericChitNumbers;
+    private bool $hasOnlyNumericChitNumbers;
 
     public function __construct(
         CashbookId $id,

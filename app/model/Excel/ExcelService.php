@@ -24,8 +24,7 @@ class ExcelService
 {
     private const ADULT_AGE = 18;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(QueryBus $queryBus)
     {
@@ -120,9 +119,9 @@ class ExcelService
 
         $rowCnt = 2;
 
-        /** @var Participant $row */
         foreach ($data as $row) {
-            $sheet->setCellValue('A' . $rowCnt, ($rowCnt - 1))
+            assert($row instanceof Participant);
+            $sheet->setCellValue('A' . $rowCnt, $rowCnt - 1)
                 ->setCellValue('B' . $rowCnt, $row->getFirstName())
                 ->setCellValue('C' . $rowCnt, $row->getLastName())
                 ->setCellValue('D' . $rowCnt, $row->getNickName())
@@ -134,14 +133,16 @@ class ExcelService
                 ->setCellValue('J' . $rowCnt, $row->getAge() < self::ADULT_AGE ? $row->getDays() : 0)
                 ->setCellValue('K' . $rowCnt, $row->getPayment())
                 ->setCellValue('L' . $rowCnt, $row->getRepayment())
-                ->setCellValue('M' . $rowCnt, ($row->getPayment() - $row->getRepayment()))
+                ->setCellValue('M' . $rowCnt, $row->getPayment() - $row->getRepayment())
                 ->setCellValue('N' . $rowCnt, $row->getOnAccount() === 'Y' ? 'Ano' : 'Ne');
             $rowCnt++;
         }
+
         //format
         foreach (Range::letters('A', 'N') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
+
         $sheet->getStyle('A1:N1')->getFont()->setBold(true);
         $sheet->setAutoFilter('A1:N' . ($rowCnt - 1));
     }
@@ -166,7 +167,7 @@ class ExcelService
 
         $rowCnt = 2;
         foreach ($data as $row) {
-            $sheet->setCellValue('A' . $rowCnt, ($rowCnt - 1))
+            $sheet->setCellValue('A' . $rowCnt, $rowCnt - 1)
                 ->setCellValue('B' . $rowCnt, $row->getFirstName())
                 ->setCellValue('C' . $rowCnt, $row->getLastName())
                 ->setCellValue('D' . $rowCnt, $row->getNickName())
@@ -180,10 +181,12 @@ class ExcelService
                 ->setCellValue('L' . $rowCnt, $row->getPayment());
             $rowCnt++;
         }
+
         //format
         foreach (Range::letters('A', 'L') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
+
         $sheet->getStyle('A1:L1')->getFont()->setBold(true);
         $sheet->setAutoFilter('A1:L' . ($rowCnt - 1));
         $sheet->setTitle('Seznam účastníků');
@@ -231,6 +234,7 @@ class ExcelService
         foreach (Range::letters('A', 'H') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
+
         $sheet->getStyle('A1:H1')->getFont()->setBold(true);
         $sheet->getStyle('H1:H' . ($rowCnt - 1))->getFont()->setBold(true);
         // $sheet->setAutoFilter('A1:H' . ($rowCnt - 1));
@@ -272,6 +276,7 @@ class ExcelService
 
             $rowCnt++;
         }
+
         //add border
         $sheet->getStyle('A1:G' . ($rowCnt - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
@@ -281,6 +286,7 @@ class ExcelService
                 ->setCellValue('F' . $rowCnt, $sumIn);
             $sheet->getStyle('E' . $rowCnt)->getFont()->setBold(true);
         }
+
         if ($sumOut > 0) {
             $rowCnt++;
             $sheet->setCellValue('E' . $rowCnt, 'Výdaje')
@@ -292,6 +298,7 @@ class ExcelService
         foreach (Range::letters('A', 'G') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
+
         $sheet->getStyle('A1:G1')->getFont()->setBold(true);
         $sheet->setTitle('Doklady');
     }

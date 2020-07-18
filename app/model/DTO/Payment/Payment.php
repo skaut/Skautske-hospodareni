@@ -33,53 +33,38 @@ class Payment
 {
     use SmartObject;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var float */
-    private $amount;
+    private float $amount;
 
-    /** @var string|NULL */
-    private $email;
+    private ?string $email = null;
 
-    /** @var Date */
-    private $dueDate;
+    private Date $dueDate;
 
-    /** @var VariableSymbol|NULL */
-    private $variableSymbol;
+    private ?VariableSymbol $variableSymbol = null;
 
-    /** @var int|NULL */
-    private $constantSymbol;
+    private ?int $constantSymbol = null;
 
-    /** @var string */
-    private $note;
+    private string $note;
 
-    /** @var bool */
-    private $closed;
+    private bool $closed;
 
-    /** @var State */
-    private $state;
+    private State $state;
 
-    /** @var Transaction|NULL */
-    private $transaction;
+    private ?Transaction $transaction = null;
 
-    /** @var DateTimeImmutable|NULL */
-    private $closedAt;
+    private ?DateTimeImmutable $closedAt = null;
 
-    /** @var string|NULL */
-    private $closedByUsername;
+    private ?string $closedByUsername = null;
 
-    /** @var int|NULL */
-    private $personId;
+    private ?int $personId = null;
 
-    /** @var int */
-    private $groupId;
+    private int $groupId;
 
     /** @var SentEmail[] */
-    private $sentEmails;
+    private array $sentEmails;
 
     /**
      * @param SentEmail[] $sentEmails

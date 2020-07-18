@@ -10,11 +10,9 @@ use Nette\Mail\SmtpMailer;
 
 class MailerFactory implements IMailerFactory
 {
-    /** @var IMailer */
-    private $debugMailer;
+    private IMailer $debugMailer;
 
-    /** @var bool */
-    private $enabled;
+    private bool $enabled;
 
     public function __construct(IMailer $debugMailer, bool $enabled)
     {

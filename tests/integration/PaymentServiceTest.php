@@ -15,14 +15,11 @@ use Model\Payment\VariableSymbol;
 
 class PaymentServiceTest extends IntegrationTest
 {
-    /** @var PaymentService */
-    private $service;
+    private PaymentService $service;
 
-    /** @var IPaymentRepository */
-    private $paymentRepository;
+    private IPaymentRepository $paymentRepository;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
     /**
      * @return string[]

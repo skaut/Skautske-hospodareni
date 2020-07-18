@@ -19,8 +19,7 @@ use function count;
 
 class BudgetPresenter extends BasePresenter
 {
-    /** @var IMissingAutocomputedCategoryControlFactory */
-    private $missingAutocomputedCategoryControlFactory;
+    private IMissingAutocomputedCategoryControlFactory $missingAutocomputedCategoryControlFactory;
 
     public function __construct(IMissingAutocomputedCategoryControlFactory $missingAutocomputedCategoryControlFactory)
     {

@@ -22,32 +22,21 @@ class Category
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     *
-     * @var int
-     */
-    private $unitId;
+    /** @ORM\Column(type="integer", nullable=true) */
+    private int $unitId;
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     *
-     * @var string
-     */
-    private $label;
+    /** @ORM\Column(type="string", length=64) */
+    private string $label;
 
     /**
      * @ORM\Column(type="string_enum")
      *
-     * @var Operation
      * @EnumAnnotation(class=\Model\Cashbook\Operation::class)
      */
-    private $type;
+    private Operation $type;
 
     /**
      * @ORM\OneToMany(targetEntity="Category", mappedBy="parent",cascade={"persist"})
@@ -59,24 +48,14 @@ class Category
     /**
      * @ORM\ManyToOne(targetEntity="Category", inversedBy="children")
      * @ORM\JoinColumn(name="parentId", referencedColumnName="id")
-     *
-     * @var Category
      */
-    private $parent;
+    private Category $parent;
 
-    /**
-     * @ORM\Column(type="float", options={"unsigned"=true, "default"=0})
-     *
-     * @var float
-     */
-    private $value;
+    /** @ORM\Column(type="float", options={"unsigned"=true, "default"=0}) */
+    private float $value;
 
-    /**
-     * @ORM\Column(type="smallint", options={"unsigned"=true})
-     *
-     * @var int
-     */
-    private $year;
+    /** @ORM\Column(type="smallint", options={"unsigned"=true}) */
+    private int $year;
 
     public function __construct(int $unitId, string $label, Operation $type, ?Category $parent, float $value, int $year)
     {
@@ -88,6 +67,7 @@ class Category
             $this->parent = $parent;
             $this->parent->children->add($this);
         }
+
         $this->value = $value;
         $this->year  = $year;
     }

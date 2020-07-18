@@ -21,11 +21,9 @@ use function in_array;
 
 class ErrorPresenter extends Presenter
 {
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /** @var CommandBus */
-    protected $commandBus;
+    protected CommandBus $commandBus;
 
     private const SKAUTIS_UNAVAILABLE_ERRORS = [
         'Server was unable to process request.',
@@ -87,6 +85,7 @@ class ErrorPresenter extends Presenter
         if (! $this->isAjax()) {
             return;
         }
+
         // AJAX request? Note this error in payload.
         $this->payload->error = true;
         $this->sendPayload();

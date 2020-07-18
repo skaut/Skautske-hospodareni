@@ -26,44 +26,32 @@ class Group
 {
     use SmartObject;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string|NULL */
-    private $type;
+    private ?string $type = null;
 
     /** @var int[] */
-    private $unitIds;
+    private array $unitIds;
 
-    /** @var int|NULL */
-    private $skautisId;
+    private ?int $skautisId = null;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var float|NULL */
-    private $defaultAmount;
+    private ?float $defaultAmount = null;
 
-    /** @var Date|NULL */
-    private $dueDate;
+    private ?Date $dueDate = null;
 
-    /** @var int|NULL */
-    private $constantSymbol;
+    private ?int $constantSymbol = null;
 
-    /** @var VariableSymbol|NULL */
-    private $nextVariableSymbol;
+    private ?VariableSymbol $nextVariableSymbol = null;
 
-    /** @var string */
-    private $state;
+    private string $state;
 
-    /** @var int|NULL */
-    private $smtpId;
+    private ?int $smtpId = null;
 
-    /** @var string */
-    private $note;
+    private string $note;
 
-    /** @var int|NULL */
-    private $bankAccountId;
+    private ?int $bankAccountId = null;
 
     /**
      * @param int[] $unitIds
