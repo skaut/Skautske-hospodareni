@@ -42,104 +42,104 @@ class CashbookTest extends Unit
 
     private function createEvent() : void
     {
-        $I = $this->tester;
-        $I->amGoingTo('create event');
+        $i = $this->tester;
+        $i->amGoingTo('create event');
 
-        $I->click('Založit novou akci');
-        $I->waitForText('Název akce');
+        $i->click('Založit novou akci');
+        $i->waitForText('Název akce');
 
         $today = date('d.m. Y');
 
-        $I->fillField('Název akce', $this->eventName);
-        $I->fillField('Od', $today);
-        $I->click('//body'); // close datepicker
+        $i->fillField('Název akce', $this->eventName);
+        $i->fillField('Od', $today);
+        $i->click('//body'); // close datepicker
 
-        $I->fillField('Do', $today);
+        $i->fillField('Do', $today);
 
-        $I->click('.ui--createEvent');
-        $I->see('Základní údaje');
+        $i->click('.ui--createEvent');
+        $i->see('Základní údaje');
 
         // Go through datagrid
-        $I->click('Akce');
-        $I->click($this->eventName);
+        $i->click('Akce');
+        $i->click($this->eventName);
     }
 
     private function goToCashbookPage() : void
     {
-        $I = $this->tester;
-        $I->amGoingTo('open cashbook');
+        $i = $this->tester;
+        $i->amGoingTo('open cashbook');
 
         $cashbookButton = 'Evidence plateb';
-        $I->waitForText($cashbookButton);
-        $I->click($cashbookButton);
+        $i->waitForText($cashbookButton);
+        $i->click($cashbookButton);
 
-        $I->waitForText(self::NO_CHITS_MESSAGE);
+        $i->waitForText(self::NO_CHITS_MESSAGE);
     }
 
     private function createExpenseChit() : void
     {
-        $I = $this->tester;
-        $I->amGoingTo('create expense chit');
+        $i = $this->tester;
+        $i->amGoingTo('create expense chit');
 
         $purpose = 'Nákup chleba';
 
         $this->fillChitForm(new Date(), $purpose, Operation::EXPENSE(), 'Potraviny', 'Testovací skaut', '100 + 1');
-        $I->click('Uložit');
+        $i->click('Uložit');
 
         $this->waitForBalance('-101,00');
     }
 
     private function editExpenseChit() : void
     {
-        $I = $this->tester;
-        $I->wantTo('Update expense chit amount');
+        $i = $this->tester;
+        $i->wantTo('Update expense chit amount');
 
-        $I->click('.ui--editChit');
-        $I->waitForElement('[name="pid"]:not([value=""])');
+        $i->click('.ui--editChit');
+        $i->waitForElement('[name="pid"]:not([value=""])');
 
-        $I->fillField('items[0][price]', '121');
-        $I->click('Uložit');
+        $i->fillField('items[0][price]', '121');
+        $i->click('Uložit');
 
         $this->waitForBalance('-121,00');
     }
 
     private function addIncomeChit() : void
     {
-        $I = $this->tester;
-        $I->amGoingTo('add income chit');
+        $i = $this->tester;
+        $i->amGoingTo('add income chit');
 
         $this->fillChitForm(new Date(), 'Účastnické poplatky', Operation::INCOME(), 'Přijmy od účastníků', 'Testovací skaut 2', '100');
-        $I->click('Uložit');
+        $i->click('Uložit');
 
         $this->waitForBalance('-21,00');
     }
 
     private function removeBothChits() : void
     {
-        $I = $this->tester;
-        $I->amGoingTo('remove both chits');
+        $i = $this->tester;
+        $i->amGoingTo('remove both chits');
 
         $this->removeChit(1);
         $this->waitForBalance('-121,00');
 
         $this->removeChit(1);
-        $I->waitForText(self::NO_CHITS_MESSAGE);
+        $i->waitForText(self::NO_CHITS_MESSAGE);
     }
 
     private function cancelEvent() : void
     {
-        $I = $this->tester;
-        $I->amGoingTo('cancel the event');
+        $i = $this->tester;
+        $i->amGoingTo('cancel the event');
 
-        $I->click('Akce');
+        $i->click('Akce');
 
         $cancelButton = sprintf("//a[text()='%s']/ancestor::tr//a[contains(@class, 'btn-danger')][1]", $this->eventName);
 
-        $I->waitForElement($cancelButton);
-        $I->disablePopups();
-        $I->click($cancelButton);
+        $i->waitForElement($cancelButton);
+        $i->disablePopups();
+        $i->click($cancelButton);
 
-        $I->waitForElementNotVisible($cancelButton);
+        $i->waitForElementNotVisible($cancelButton);
     }
 
     private function fillChitForm(Date $date, string $purpose, Operation $type, string $category, string $recipient, string $amount) : void
