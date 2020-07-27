@@ -16,6 +16,10 @@ parameters:
     sendEmail: FALSE
     testBackground: TRUE
 
+    google:
+        credentials: "%appDir%/config/google-credentials.json"
+        redirectUri: http://moje-hospodareni.cz/google/token
+
     database:
         host: mysql
         user: root

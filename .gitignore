@@ -22,3 +22,4 @@ docker-compose.*.yml
 www/css/app.css
 www/css/app.css.map
 www/js/app.min.js
+app/config/google-credentials*

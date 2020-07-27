@@ -140,6 +140,7 @@ services:
     - Model\Skautis\EventRepository(@skautis.event)
     - Model\Skautis\CampRepository(@skautis.cached.event)
     - Model\Skautis\Cashbook\Repositories\CampCategoryRepository(@skautis.cached.event)
+    - Model\Infrastructure\Repositories\Mail\GoogleRepository(%google.credentials%, %google.redirectUri%)
 
     - class: Model\Cashbook\ReadModel\QueryHandlers\EventParticipantListQueryHandler
       tags: [queryBus.handler]

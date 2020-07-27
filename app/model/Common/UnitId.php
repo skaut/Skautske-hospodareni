@@ -28,4 +28,9 @@ final class UnitId
     {
         return (string) $this->id;
     }
+
+    public function equals(self $that) : bool
+    {
+        return $this->toInt() === $that->toInt();
+    }
 }
