@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Google\ReadModel\QueryHandlers;
 
-use Model\Google\OAuth;
 use Model\DTO\Google\OAuth as OAuthDTO;
-use Model\Google\ReadModel\Queries\UnitOAuthListQuery;
+use Model\Google\ReadModel\Queries\OAuthQuery;
 use Model\Mail\Repositories\IGoogleRepository;
 
-final class UnitOAuthListQueryHandler
+final class OAuthQueryHandler
 {
     /** @var IGoogleRepository */
     private $repository;
@@ -19,16 +18,18 @@ final class UnitOAuthListQueryHandler
         $this->repository = $repository;
     }
 
-    /** @return OAuth[] */
-    public function __invoke(UnitOAuthListQuery $query) : array
+    public function __invoke(OAuthQuery $query) : ?OAuthDTO
     {
-        return array_map(function (OAuth $OAuth) : OAuthDTO {
-            return new OAuthDTO(
-                $OAuth->getId (),
-                $OAuth->getEmail (),
-                $OAuth->getUnitId (),
-                $OAuth->getUpdatedAt ()
-            );
-        }, $this->repository->findByUnitId ($query->getUnitId ()));
+        $oAuth = $this->repository->find($query->getOAuthId());
+        if ($oAuth === null) {
+            return null;
+        }
+
+        return new OAuthDTO(
+            $oAuth->getId(),
+            $oAuth->getEmail(),
+            $oAuth->getUnitId(),
+            $oAuth->getUpdatedAt()
+        );
     }
 }

@@ -4,24 +4,22 @@ declare(strict_types=1);
 
 namespace Model\Google\ReadModel\Queries;
 
-use Model\Common\UnitId;
-use Model\Google\ReadModel\QueryHandlers\UnitOAuthListQueryHandler;
+use Model\Google\OAuthId;
 
 /**
- * @see UnitOAuthListQueryHandler
+ * @see OAuthQueryHandler
  */
-final class UnitOAuthListQuery
+final class OAuthQuery
 {
-    /** @var UnitId */
-    private $unitId;
+    private OAuthId $oAuthId;
 
-    public function __construct(UnitId $unitId)
+    public function __construct(OAuthId $oAuthId)
     {
-        $this->unitId = $unitId;
+        $this->oAuthId = $oAuthId;
     }
 
-    public function getUnitId() : UnitId
+    public function getOAuthId() : OAuthId
     {
-        return $this->unitId;
+        return $this->oAuthId;
     }
 }

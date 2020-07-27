@@ -2,35 +2,28 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook\Handlers\Cashbook;
+namespace Model\Google\Handlers;
 
-use Model\Cashbook\Commands\Cashbook\RemoveEventParticipant;
-use Model\Common\Repositories\IParticipantRepository;
-use Model\Participant\Payment\EventType;
-use Model\Participant\PaymentNotFound;
-use Model\Participant\Repositories\IPaymentRepository;
+use Model\Google\Commands\RemoveOAuth;
+use Model\Mail\Repositories\IGoogleRepository;
 
-final class RemoveEventParticipantHandler
+final class RemoveOAuthHandler
 {
-    /** @var IParticipantRepository */
-    private $participants;
+    /** @var IGoogleRepository */
+    private $repository;
 
-    /** @var IPaymentRepository */
-    private $payments;
-
-    public function __construct(IParticipantRepository $participants, IPaymentRepository $payments)
+    public function __construct(IGoogleRepository $repository)
     {
-        $this->participants = $participants;
-        $this->payments     = $payments;
+        $this->repository = $repository;
     }
 
-    public function __invoke(RemoveEventParticipant $command) : void
+    public function __invoke(RemoveOAuth $command) : void
     {
-        try {
-            $this->payments->remove($this->payments->findByParticipant($command->getParticipantId(), EventType::GENERAL()));
-        } catch (PaymentNotFound $exc) {
+        $oAuth = $this->repository->find($command->getOAuthId());
+        if ($oAuth === null) {
+            return;
         }
 
-        $this->participants->removeEventParticipant($command->getParticipantId());
+        $this->repository->remove($oAuth);
     }
 }

@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace App\AccountancyModule;
 
 use InvalidArgumentException;
+use Model\Common\UnitId;
 use Model\Mail\Repositories\IGoogleRepository;
 
 class GooglePresenter extends BasePresenter
 {
     private IGoogleRepository $googleRepository;
 
-    public function __construct(IGoogleRepository $mailRepository)
+    public function __construct(IGoogleRepository $googleRepository)
     {
-        $this->mailRepository = $mailRepository;
+        parent::__construct();
+        $this->googleRepository = $googleRepository;
     }
 
     public function actionOAuth() : void
@@ -24,12 +26,12 @@ class GooglePresenter extends BasePresenter
     public function actionToken(string $code) : void
     {
         try {
-            $this->mailRepository->saveAuthCode($code, $this->userService->getActualRole()->getUnitId());
+            $this->googleRepository->saveAuthCode($code, new UnitId($this->userService->getActualRole()->getUnitId()));
         } catch (InvalidArgumentException $exc) {
             $this->flashMessage('Neplatná Google autorizace!', 'danger');
-            $this->redirect('this');
+            $this->redirect(':Accountancy:Payment:Mail:');
         }
         $this->flashMessage('Autorizace na Google proběhla úspěšně!');
-        $this->redirect('Default');
+        $this->redirect(':Accountancy:Payment:Mail:');
     }
 }

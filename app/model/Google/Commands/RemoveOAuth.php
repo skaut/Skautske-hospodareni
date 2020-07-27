@@ -4,21 +4,23 @@ declare(strict_types=1);
 
 namespace Model\Google\Commands;
 
+use Model\Google\OAuthId;
+
 /**
  * @see RemoveOAuthHandler
  */
 final class RemoveOAuth
 {
-    /** @var int */
-    private $participantId;
+    /** @var OAuthId */
+    private $oAuthId;
 
-    public function __construct(int $participantId)
+    public function __construct(OAuthId $oAuthId)
     {
-        $this->participantId = $participantId;
+        $this->oAuthId = $oAuthId;
     }
 
-    public function getParticipantId() : int
+    public function getOAuthId() : OAuthId
     {
-        return $this->participantId;
+        return $this->oAuthId;
     }
 }

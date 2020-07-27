@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Model\Google\ReadModel\Queries;
 
 use Model\Common\UnitId;
+use Model\Google\ReadModel\QueryHandlers\UnitOAuthListQueryHandler;
 
 /**
- * @see UnitOAuthsQueryHandler
+ * @see UnitOAuthListQueryHandler
  */
-final class UnitOAuthsQuery
+final class UnitOAuthListQuery
 {
     /** @var UnitId */
     private $unitId;
