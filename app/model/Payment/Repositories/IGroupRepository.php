@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment\Repositories;
 
+use Model\Google\OAuthId;
 use Model\Payment\Group;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Type;
@@ -48,7 +49,7 @@ interface IGroupRepository
     /**
      * @return Group[]
      */
-    public function findBySmtp(int $smtpId) : array;
+    public function findByOAuth(OAuthId $oAuthId) : array;
 
     public function save(Group $group) : void;
 

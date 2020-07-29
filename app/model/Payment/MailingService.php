@@ -7,15 +7,16 @@ namespace Model\Payment;
 use DateTimeImmutable;
 use Model\Common\Repositories\IUserRepository;
 use Model\Common\UserNotFound;
+use Model\Google\InvalidOAuth;
+use Model\Google\OAuthNotFound;
 use Model\Mail\IMailerFactory;
+use Model\Mail\Repositories\IGoogleRepository;
 use Model\Payment\Mailing\Payment as MailPayment;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
-use Model\Payment\Repositories\IMailCredentialsRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Services\TemplateFactory;
 use Nette\Mail\Message;
-use Nette\Mail\SmtpException;
 use Nette\Utils\Validators;
 use function nl2br;
 use function rand;
@@ -40,8 +41,8 @@ class MailingService
     /** @var IUserRepository */
     private $users;
 
-    /** @var IMailCredentialsRepository */
-    private $credentials;
+    /** @var IGoogleRepository */
+    private $googleRepository;
 
     public function __construct(
         IGroupRepository $groups,
@@ -50,15 +51,15 @@ class MailingService
         IBankAccountRepository $bankAccounts,
         TemplateFactory $templateFactory,
         IUserRepository $users,
-        IMailCredentialsRepository $credentials
+        IGoogleRepository $googleRepository
     ) {
-        $this->groups          = $groups;
-        $this->mailerFactory   = $mailerFactory;
-        $this->payments        = $payments;
-        $this->bankAccounts    = $bankAccounts;
-        $this->templateFactory = $templateFactory;
-        $this->users           = $users;
-        $this->credentials     = $credentials;
+        $this->groups           = $groups;
+        $this->mailerFactory    = $mailerFactory;
+        $this->payments         = $payments;
+        $this->bankAccounts     = $bankAccounts;
+        $this->templateFactory  = $templateFactory;
+        $this->users            = $users;
+        $this->googleRepository = $googleRepository;
     }
 
     /**
@@ -66,8 +67,7 @@ class MailingService
      *
      * @throws InvalidEmail
      * @throws PaymentNotFound
-     * @throws InvalidSmtp
-     * @throws MailCredentialsNotSet
+     * @throws InvalidOAuth
      * @throws EmailTemplateNotSet
      */
     public function sendEmail(int $paymentId, EmailType $emailType) : void
@@ -97,9 +97,7 @@ class MailingService
      * @throws EmailNotSet
      * @throws GroupNotFound
      * @throws InvalidBankAccount
-     * @throws InvalidSmtp
-     * @throws MailCredentialsNotFound
-     * @throws MailCredentialsNotSet
+     * @throws InvalidOAuth
      * @throws UserNotFound
      */
     public function sendTestMail(int $groupId) : string
@@ -130,9 +128,7 @@ class MailingService
      * @throws BankAccountNotFound
      * @throws InvalidBankAccount
      * @throws InvalidEmail
-     * @throws MailCredentialsNotFound
-     * @throws MailCredentialsNotSet
-     * @throws InvalidSmtp
+     * @throws InvalidOAuth
      * @throws UserNotFound
      */
     private function sendForPayment(Payment $paymentRow, Group $group, EmailTemplate $template) : void
@@ -147,16 +143,13 @@ class MailingService
 
     /**
      * @throws InvalidBankAccount
-     * @throws MailCredentialsNotFound
-     * @throws MailCredentialsNotSet
      * @throws BankAccountNotFound
-     * @throws InvalidSmtp
      * @throws UserNotFound
      */
     private function send(Group $group, MailPayment $payment, EmailTemplate $emailTemplate) : void
     {
-        if ($group->getSmtpId() === null) {
-            throw new MailCredentialsNotSet();
+        if ($group->getOauthId() === null) {
+            throw new OAuthNotFound();
         }
 
         $user = $this->users->getCurrentUser();
@@ -175,19 +168,14 @@ class MailingService
             ]
         );
 
-        $credentials = $this->credentials->find($group->getSmtpId());
-
-        $mail = (new Message())
+        $oAuth = $this->googleRepository->find($group->getOauthId());
+        $mail  = (new Message())
             ->addTo($payment->getEmail())
-            ->setFrom($credentials->getSender())
+            ->setFrom($oAuth->getEmail())
             ->setSubject($emailTemplate->getSubject())
             ->setHtmlBody($template, __DIR__);
 
-        try {
-            $this->mailerFactory->create($credentials)->send($mail);
-        } catch (SmtpException $e) {
-            throw new InvalidSmtp($e->getMessage(), $e->getCode(), $e);
-        }
+        $this->mailerFactory->create($oAuth)->send($mail);
     }
 
     private function createPayment(Payment $payment) : MailPayment

@@ -12,16 +12,17 @@ use Cake\Chronos\Date;
 use DateTimeImmutable;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Common\UnitId;
+use Model\DTO\Google\OAuth;
 use Model\DTO\Payment\BankAccount;
 use Model\DTO\Payment\GroupEmail;
-use Model\DTO\Payment\Mail;
+use Model\Google\OAuthId;
 use Model\Payment\EmailTemplate;
 use Model\Payment\EmailType;
 use Model\Payment\Group\PaymentDefaults;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\ReadModel\Queries\BankAccount\BankAccountsAccessibleByUnitsQuery;
 use Model\Payment\ReadModel\Queries\GroupEmailQuery;
-use Model\Payment\ReadModel\Queries\MailCredentials\MailCredentialsAccessibleByGroupsQuery;
+use Model\Payment\ReadModel\Queries\MailCredentials\OAuthsAccessibleByGroupsQuery;
 use Model\Payment\ReadModel\Queries\NextVariableSymbolSequenceQuery;
 use Model\PaymentService;
 use Model\Unit\ReadModel\Queries\UnitsDetailQuery;
@@ -134,7 +135,7 @@ final class GroupForm extends BaseControl
             ->setRequired(false)
             ->setPrompt('Vyberte bankovní účet');
 
-        $form->addSelect('smtp', 'Email odesílatele', $this->mailCredentialsItems())
+        $form->addSelect('oAuthId', 'Email odesílatele', $this->mailCredentialsItems())
             ->setPrompt('Vyberte email')
             ->setAttribute('class', 'ui--emailSelectbox'); // For acceptance testing
 
@@ -170,10 +171,18 @@ final class GroupForm extends BaseControl
             EmailType::PAYMENT_COMPLETED => $this->buildEmailTemplate($v, EmailType::PAYMENT_COMPLETED),
         ];
 
-        $emails = array_filter($emails);
+        $emails  = array_filter($emails);
+        $oAuthId = OAuthId::fromStringOrNull($v->oAuthId);
 
         if ($this->groupId !== null) {//EDIT
-            $this->model->updateGroup($this->groupId, $v->name, $paymentDefaults, $emails, $v->smtp, $v->bankAccount);
+            $this->model->updateGroup(
+                $this->groupId,
+                $v->name,
+                $paymentDefaults,
+                $emails,
+                $oAuthId,
+                $v->bankAccount
+            );
 
             $this->flashMessage('Skupina byla upravena');
         } else {//ADD
@@ -183,7 +192,7 @@ final class GroupForm extends BaseControl
                 $v->name,
                 $paymentDefaults,
                 $emails,
-                $v->smtp,
+                $oAuthId,
                 $v->bankAccount
             );
 
@@ -222,7 +231,7 @@ final class GroupForm extends BaseControl
             'dueDate' => $group->getDueDate(),
             'constantSymbol' => $group->getConstantSymbol(),
             'nextVs' => $group->getNextVariableSymbol(),
-            'smtp' => $group->getSmtpId(),
+            'oAuthId' => $group->getOAuthId(),
             'emails' => $emails,
             'groupId' => $this->groupId,
             'bankAccount' => $group->getBankAccountId(),
@@ -319,27 +328,27 @@ final class GroupForm extends BaseControl
      */
     private function mailCredentialsItems() : array
     {
-        $mailCredentials = $this->queryBus->handle(new MailCredentialsAccessibleByGroupsQuery($this->groupUnitIds()));
+        $oAuths = $this->queryBus->handle(new OAuthsAccessibleByGroupsQuery($this->groupUnitIds()));
 
         $units = $this->queryBus->handle(
             new UnitsDetailQuery(
                 array_unique(array_map(
-                    function (Mail $credentials) : int {
-                        return $credentials->getUnitId();
+                    function (OAuth $oAuth) : int {
+                        return $oAuth->getUnitId();
                     },
-                    $mailCredentials
+                    $oAuths
                 ))
             )
         );
 
         $items = [];
-        foreach ($mailCredentials as $credentials) {
-            assert($credentials instanceof Mail);
+        foreach ($oAuths as $oAuth) {
+            assert($oAuth instanceof OAuth);
 
-            $unit = $units[$credentials->getUnitId()];
+            $unit = $units[$oAuth->getUnitId()];
             assert($unit instanceof Unit);
 
-            $items[$unit->getDisplayName()][$credentials->getId()] = $credentials->getSender();
+            $items[$unit->getDisplayName()][$oAuth->getId()] = $oAuth->getEmail();
         }
 
         return $items;

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\PaymentModule;
 
-use App\AccountancyModule\PaymentModule\Components\SmtpUpdateForm;
-use App\AccountancyModule\PaymentModule\Factories\ISmtpUpdateFormFactory;
 use Model\DTO\Google\OAuth;
 use Model\Google\Commands\RemoveOAuth;
 use Model\Google\OAuthId;
@@ -13,7 +11,6 @@ use Model\Google\ReadModel\Queries\OAuthQuery;
 use Model\Google\ReadModel\Queries\UnitOAuthListQuery;
 use Model\Mail\Repositories\IGoogleRepository;
 use Model\MailService;
-use Model\Payment\Commands\RemoveMailCredentials;
 use function assert;
 
 class MailPresenter extends BasePresenter
@@ -21,20 +18,15 @@ class MailPresenter extends BasePresenter
     /** @var MailService */
     private $model;
 
-    /** @var ISmtpUpdateFormFactory */
-    private $smtpUpdateFormFactory;
-
     private IGoogleRepository $googleRepository;
 
     public function __construct(
         MailService $model,
-        ISmtpUpdateFormFactory $smtpUpdateFormFactory,
         IGoogleRepository $googleRepository
     ) {
         parent::__construct();
-        $this->model                 = $model;
-        $this->smtpUpdateFormFactory = $smtpUpdateFormFactory;
-        $this->googleRepository      = $googleRepository;
+        $this->model            = $model;
+        $this->googleRepository = $googleRepository;
     }
 
     public function actionDefault(?int $unitId = null) : void
@@ -55,33 +47,6 @@ class MailPresenter extends BasePresenter
         ]);
     }
 
-    public function handleEdit(int $id) : void
-    {
-        if ($this->isEditable) {
-            return;
-        }
-
-        $this->flashMessage('Nemáte oprávnění měnit smtp', 'danger');
-        $this->redirect('this');
-    }
-
-    public function handleRemove(int $id) : void
-    {
-        $mail = $this->model->get($id);
-
-        if ($mail === null) {
-            $this->flashMessage('Zadaný email neexistuje', 'danger');
-            $this->redirect('this');
-        }
-
-        if (! $this->isEditable || $mail->getUnitId() !== $this->unitId->toInt()) {
-            $this->flashMessage('Nemáte oprávnění mazat smtp', 'danger');
-            $this->redirect('this');
-        }
-
-        $this->commandBus->handle(new RemoveMailCredentials($id));
-    }
-
     public function handleRemoveOAuth(string $id) : void
     {
         $oauthId = OAuthId::fromString($id);
@@ -100,10 +65,5 @@ class MailPresenter extends BasePresenter
         $this->commandBus->handle(new RemoveOAuth($oauthId));
         $this->flashMessage('Google OAuth účet byl smazán.');
         $this->redirect('default');
-    }
-
-    protected function createComponentUpdateForm() : SmtpUpdateForm
-    {
-        return $this->smtpUpdateFormFactory->create($this->unitId);
     }
 }

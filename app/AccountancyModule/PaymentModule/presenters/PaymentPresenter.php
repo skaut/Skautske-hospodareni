@@ -20,11 +20,11 @@ use App\AccountancyModule\PaymentModule\Factories\IRemoveGroupDialogFactory;
 use DateTimeImmutable;
 use Model\DTO\Payment\Payment;
 use Model\DTO\Payment\Person;
+use Model\Google\InvalidOAuth;
 use Model\Payment\Commands\Mailing\SendPaymentInfo;
 use Model\Payment\EmailNotSet;
 use Model\Payment\GroupNotFound;
 use Model\Payment\InvalidBankAccount;
-use Model\Payment\InvalidSmtp;
 use Model\Payment\MailCredentialsNotSet;
 use Model\Payment\MailingService;
 use Model\Payment\Payment\State;
@@ -244,8 +244,8 @@ class PaymentPresenter extends BasePresenter
             $this->flashMessage('Testovací email byl odeslán na ' . $email . '.');
         } catch (MailCredentialsNotSet $e) {
             $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
-        } catch (InvalidSmtp $e) {
-            $this->smtpError($e);
+        } catch (InvalidOAuth $e) {
+            $this->oauthError($e);
         } catch (InvalidBankAccount $e) {
             $this->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
         } catch (EmailNotSet $e) {
@@ -369,10 +369,9 @@ class PaymentPresenter extends BasePresenter
         return new GroupProgress($this->model->getGroupSummaries([$this->id])[$this->id]);
     }
 
-    private function smtpError(InvalidSmtp $e) : void
+    private function oauthError(InvalidOAuth $e) : void
     {
-        $this->flashMessage(sprintf('SMTP server vrátil chybu (%s)', $e->getMessage()), 'danger');
-        $this->flashMessage('V případě problémů s odesláním emailu přes gmail si nastavte možnost použití adresy méně bezpečným aplikacím viz https://support.google.com/accounts/answer/6010255?hl=cs', 'warning');
+        $this->flashMessage(sprintf('OAuth server vrátil chybu (%s)', $e->getMessage()), 'danger');
     }
 
     /**
@@ -393,8 +392,8 @@ class PaymentPresenter extends BasePresenter
         } catch (InvalidBankAccount $e) {
             $this->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
             $this->redirect('this');
-        } catch (InvalidSmtp $e) {
-            $this->smtpError($e);
+        } catch (InvalidOAuth $e) {
+            $this->oauthError($e);
             $this->redirect('this');
         }
 

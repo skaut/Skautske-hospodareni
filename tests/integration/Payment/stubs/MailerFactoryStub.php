@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
+use Model\Google\OAuth;
 use Model\Mail\IMailerFactory;
 use Nette\Mail\IMailer;
 
@@ -12,7 +13,7 @@ class MailerFactoryStub implements IMailerFactory
     /** @var IMailer */
     private $mailer;
 
-    public function create(MailCredentials $credentials) : IMailer
+    public function create(OAuth $credentials) : IMailer
     {
         return $this->mailer;
     }

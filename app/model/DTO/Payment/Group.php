@@ -19,7 +19,7 @@ use Nette\SmartObject;
  * @property-read int|NULL $constantSymbol
  * @property-read VariableSymbol|NULL $nextVariableSymbol
  * @property-read string $state
- * @property-read int|NULL $smtpId
+ * @property-read string|NULL $oAuthId
  * @property-read string $note
  */
 class Group
@@ -56,8 +56,8 @@ class Group
     /** @var string */
     private $state;
 
-    /** @var int|NULL */
-    private $smtpId;
+    /** @var string|NULL */
+    private $oAuthId;
 
     /** @var string */
     private $note;
@@ -79,7 +79,7 @@ class Group
         ?int $constantSymbol,
         ?VariableSymbol $nextVariableSymbol,
         string $state,
-        ?int $smtpId,
+        ?string $oAuthId,
         string $note,
         ?int $bankAccountId
     ) {
@@ -93,7 +93,7 @@ class Group
         $this->constantSymbol     = $constantSymbol;
         $this->nextVariableSymbol = $nextVariableSymbol;
         $this->state              = $state;
-        $this->smtpId             = $smtpId;
+        $this->oAuthId            = $oAuthId;
         $this->note               = $note;
         $this->bankAccountId      = $bankAccountId;
     }
@@ -156,9 +156,9 @@ class Group
         return $this->state;
     }
 
-    public function getSmtpId() : ?int
+    public function getOAuthId() : ?string
     {
-        return $this->smtpId;
+        return $this->oAuthId;
     }
 
     public function getNote() : string

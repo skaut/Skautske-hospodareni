@@ -11,13 +11,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Fmasa\DoctrineNullableEmbeddables\Annotations\Nullable;
 use InvalidArgumentException;
+use Model\Google\OAuthId;
 use Model\Payment\Exception\NoAccessToMailCredentials;
 use Model\Payment\Group\Email;
 use Model\Payment\Group\PaymentDefaults;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Unit;
 use Model\Payment\Services\IBankAccountAccessChecker;
-use Model\Payment\Services\IMailCredentialsAccessChecker;
+use Model\Payment\Services\IOAuthAccessChecker;
 
 /**
  * @ORM\Entity()
@@ -99,18 +100,14 @@ class Group
     private $emails;
 
     /**
-     * @ORM\Column(type="integer", options={"unsigned"=true}, nullable=true)
-     *
-     * @var int|NULL
+     * @ORM\Column(type="ouath_id", nullable=true)
      */
-    private $smtpId;
+    private ?OAuthId $oauthId;
 
     /**
      * @ORM\Column(type="string", name="state_info", length=250)
-     *
-     * @var string
      */
-    private $note = '';
+    private string $note = '';
 
     public const STATE_OPEN   = 'open';
     public const STATE_CLOSED = 'closed';
@@ -126,10 +123,10 @@ class Group
         PaymentDefaults $paymentDefaults,
         DateTimeImmutable $createdAt,
         array $emails,
-        ?int $smtpId,
+        ?OAuthId $oAuthId,
         ?BankAccount $bankAccount,
         IBankAccountAccessChecker $bankAccountAccessChecker,
-        IMailCredentialsAccessChecker $mailCredentialsAccessChecker
+        IOAuthAccessChecker $mailCredentialsAccessChecker
     ) {
         Assertion::notEmpty($unitIds);
         $this->object          = $object;
@@ -153,23 +150,23 @@ class Group
         }
 
         $this->changeBankAccount($bankAccount, $bankAccountAccessChecker);
-        $this->changeMailCredentials($smtpId, $mailCredentialsAccessChecker);
+        $this->changeMailCredentials($oAuthId, $mailCredentialsAccessChecker);
     }
 
     public function update(
         string $name,
         PaymentDefaults $paymentDefaults,
-        ?int $smtpId,
+        ?OAuthId $oAuthId,
         ?BankAccount $bankAccount,
         IBankAccountAccessChecker $bankAccountAccessChecker,
-        IMailCredentialsAccessChecker $mailCredentialsAccessChecker
+        IOAuthAccessChecker $mailCredentialsAccessChecker
     ) : void {
         $this->changeBankAccount($bankAccount, $bankAccountAccessChecker);
-        $this->changeMailCredentials($smtpId, $mailCredentialsAccessChecker);
+        $this->changeMailCredentials($oAuthId, $mailCredentialsAccessChecker);
 
         $this->name            = $name;
         $this->paymentDefaults = $paymentDefaults;
-        $this->smtpId          = $smtpId;
+        $this->oauthId         = $oAuthId;
     }
 
     public function open(string $note) : void
@@ -201,7 +198,7 @@ class Group
     public function changeUnits(
         array $unitIds,
         IBankAccountAccessChecker $bankAccountAccessChecker,
-        IMailCredentialsAccessChecker $mailAccessChecker
+        IOAuthAccessChecker $mailAccessChecker
     ) : void {
         $this->units->clear();
         foreach ($unitIds as $unitId) {
@@ -214,13 +211,13 @@ class Group
             $this->bankAccount = null;
         }
 
-        $credentialsId = $this->smtpId;
+        $credentialsId = $this->oauthId;
 
-        if ($credentialsId === null || $mailAccessChecker->allUnitsHaveAccessToMailCredentials($unitIds, $credentialsId)) {
+        if ($credentialsId === null || $mailAccessChecker->allUnitsHaveAccessToOAuth($unitIds, $credentialsId)) {
             return;
         }
 
-        $this->smtpId = null;
+        $this->oauthId = null;
     }
 
     public function getId() : ?int
@@ -325,9 +322,9 @@ class Group
         return $this->bankAccount !== null ? $this->bankAccount->getLastPairing() : null;
     }
 
-    public function getSmtpId() : ?int
+    public function getOauthId() : ?OAuthId
     {
-        return $this->smtpId;
+        return $this->oauthId;
     }
 
     public function getNote() : string
@@ -392,19 +389,19 @@ class Group
         return null;
     }
 
-    public function resetSmtp() : void
+    public function resetOAuth() : void
     {
-        $this->smtpId = null;
+        $this->oauthId = null;
     }
 
-    private function changeMailCredentials(?int $mailCredentialsId, IMailCredentialsAccessChecker $checker) : void
+    private function changeMailCredentials(?OAuthId $mailCredentialsId, IOAuthAccessChecker $checker) : void
     {
         $unitIds = $this->getUnitIds();
 
-        if ($mailCredentialsId !== null && ! $checker->allUnitsHaveAccessToMailCredentials($unitIds, $mailCredentialsId)) {
+        if ($mailCredentialsId !== null && ! $checker->allUnitsHaveAccessToOAuth($unitIds, $mailCredentialsId)) {
             throw NoAccessToMailCredentials::forUnits($unitIds, $mailCredentialsId);
         }
 
-        $this->smtpId = $mailCredentialsId;
+        $this->oauthId = $mailCredentialsId;
     }
 }

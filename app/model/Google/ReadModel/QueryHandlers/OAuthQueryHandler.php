@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Google\ReadModel\QueryHandlers;
 
 use Model\DTO\Google\OAuth as OAuthDTO;
+use Model\DTO\Google\OAuthFactory;
 use Model\Google\ReadModel\Queries\OAuthQuery;
 use Model\Mail\Repositories\IGoogleRepository;
 
@@ -25,11 +26,6 @@ final class OAuthQueryHandler
             return null;
         }
 
-        return new OAuthDTO(
-            $oAuth->getId(),
-            $oAuth->getEmail(),
-            $oAuth->getUnitId(),
-            $oAuth->getUpdatedAt()
-        );
+        return OAuthFactory::create($oAuth);
     }
 }

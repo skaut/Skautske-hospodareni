@@ -4,9 +4,9 @@
 
 <div class="row">
     <div class="col-lg-7">
-        <h4 class="mb-3">Seznam skautských emailů jednotky</h4>
+        <h4 class="mb-3">Seznam propojených emailů jednotky</h4>
         {if empty($oauthList)}
-            <p>Zatím nejsou k dispozici žádné propojené účty.</p>
+            <p>Zatím nejsou k dispozici žádné propojené emaily.</p>
         {else}
         <table class="table table-bordered table-striped table-sm">
             <tr>
@@ -15,8 +15,8 @@
                 <th>Naposledy upraveno</th>
             </tr>
             <tr n:foreach="$oauthList as $l">
-                <td n:inner-if="in_array($l->getUnitId()->toInt(), $editableUnits, true)">
-                    <a n:href="removeOAuth! $l->id->toString()" class="btn btn-danger btn btn-sm">Smazat</a>
+                <td n:inner-if="in_array($l->unitId, $editableUnits, true)">
+                    <a n:href="removeOAuth! $l->id" class="btn btn-danger btn btn-sm">Smazat</a>
                 </td>
                 <td>{$l->email}</td>
                 <td>{$l->updatedAt|date:"H:i j.n.Y"}</td>
@@ -30,38 +30,9 @@
                 <h5 class="card-title">Přidat účet</h5>
                 <p class="alert-info alert">Nyní lze přidávat pouze emaily do doméně @skaut.cz či @skautka.cz.</p>
                 <p class="card-text">Nově připojený účet bude přiřazen jednotce dle aktuálně užívané role.</p>
-                <a href="{plink :Accountancy:Google:oauth}" class="btn btn-primary card-link"><i class="fab fa-google"></i> Propojit účet</a>
+                <a n:href=":Accountancy:Google:oauth" class="btn btn-primary card-link"><i class="fab fa-google"></i> Propojit účet</a>
             </div>
         </div>
 
     </div>
-</div>
-
-<div class="row">
-    <div class="col-lg-7">
-        <h4 class="mb-3">Seznam historický SMTP účtů jednotky</h4>
-        <table class="table table-bordered table-striped table-sm">
-            <tr>
-                <th>&nbsp;</th>
-                <th>Uživatelské jméno</th>
-                <th>Host</th>
-                <th>Zabezpečení</th>
-            </tr>
-            <tr n:foreach="$list as $l">
-                <td n:inner-if="in_array($l->unitId, $editableUnits, true)">
-                    <a n:href="remove! $l->id" class="btn btn-danger btn btn-sm">Smazat</a>
-                    <a class="ajax btn btn-secondary btn-sm" n:href="updateForm:open! $l->id" title="Nastavit heslo">
-                        Změnit heslo
-                    </a>
-                </td>
-                <td>{$l->username}</td>
-                <td>{$l->host}</td>
-                <td>{$l->secure}</td>
-            </tr>
-        </table>
-    </div>
-    {*}<div class="col-lg-5">
-        {control addForm}
-    </div>{*}
-    {control updateForm}
 </div>

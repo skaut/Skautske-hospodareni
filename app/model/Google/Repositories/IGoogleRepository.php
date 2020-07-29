@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Mail\Repositories;
 
+use Google_Service_Gmail;
 use Model\Common\UnitId;
 use Model\Google\OAuth;
 use Model\Google\OAuthId;
+use Model\Google\OAuthNotFound;
 
 interface IGoogleRepository
 {
@@ -14,10 +16,17 @@ interface IGoogleRepository
 
     public function saveAuthCode(string $code, UnitId $unitId) : void;
 
+    /** @throws OAuthNotFound */
     public function find(OAuthId $oauthId) : ?OAuth;
 
-    /** @return OAuth[] */
-    public function findByUnitId(UnitId $unitId) : array;
+    /**
+     * @param int[] $unitIds
+     *
+     * @return OAuth[]
+     */
+    public function findByUnits(array $unitIds) : array;
 
     public function remove(OAuth $oAuth) : void;
+
+    public function getGmailService(OAuth $oAuth) : Google_Service_Gmail;
 }

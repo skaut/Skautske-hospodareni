@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Model\Payment\Services;
 
 use Codeception\Test\Unit;
-use DateTimeImmutable;
 use Mockery;
-use Model\Payment\MailCredentials;
-use Model\Payment\Repositories\IMailCredentialsRepository;
+use Model\Common\UnitId;
+use Model\Google\OAuth;
+use Model\Mail\Repositories\IGoogleRepository;
 use Model\Payment\UnitResolverStub;
 
-final class MailCredentialsAccessCheckerTest extends Unit
+final class OAuthsAccessCheckerTest extends Unit
 {
     private const MAIL_CREDENTIALS_ID = 1;
 
@@ -33,7 +33,7 @@ final class MailCredentialsAccessCheckerTest extends Unit
     {
         $this->assertTrue(
             $this->createChecker(100)
-                ->allUnitsHaveAccessToMailCredentials([100, 12], self::MAIL_CREDENTIALS_ID)
+                ->allUnitsHaveAccessToOAuth([100, 12], self::MAIL_CREDENTIALS_ID)
         );
     }
 
@@ -41,7 +41,7 @@ final class MailCredentialsAccessCheckerTest extends Unit
     {
         $this->assertTrue(
             $this->createChecker(20)
-                ->allUnitsHaveAccessToMailCredentials([10, 12], self::MAIL_CREDENTIALS_ID)
+                ->allUnitsHaveAccessToOAuth([10, 12], self::MAIL_CREDENTIALS_ID)
         );
     }
 
@@ -49,29 +49,21 @@ final class MailCredentialsAccessCheckerTest extends Unit
     {
         $this->assertFalse(
             $this->createChecker(10)
-                ->allUnitsHaveAccessToMailCredentials([12], self::MAIL_CREDENTIALS_ID)
+                ->allUnitsHaveAccessToOAuth([12], self::MAIL_CREDENTIALS_ID)
         );
     }
 
-    private function createChecker(int $mailCredentialsOwnerUnitId) : MailCredentialsAccessChecker
+    private function createChecker(int $mailCredentialsOwnerUnitId) : OAuthsAccessChecker
     {
-        $repository = Mockery::mock(IMailCredentialsRepository::class);
+        $repository = Mockery::mock(IGoogleRepository::class);
         $repository
             ->shouldReceive('find')
             ->once()
             ->withArgs([self::MAIL_CREDENTIALS_ID])
             ->andReturn(
-                new MailCredentials(
-                    $mailCredentialsOwnerUnitId,
-                    'foo@gmail.com',
-                    'foo',
-                    'bar',
-                    MailCredentials\MailProtocol::TLS(),
-                    'foo@gmail.com',
-                    new DateTimeImmutable()
-                )
+                OAuth::create(new UnitId($mailCredentialsOwnerUnitId), 'code', 'foo@gmail.com')
             );
 
-        return new MailCredentialsAccessChecker($repository, $this->unitResolver);
+        return new OAuthsAccessChecker($repository, $this->unitResolver);
     }
 }

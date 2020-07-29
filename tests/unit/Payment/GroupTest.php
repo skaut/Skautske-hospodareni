@@ -13,7 +13,7 @@ use Mockery as m;
 use Model\Payment\Exception\NoAccessToMailCredentials;
 use Model\Payment\Group\PaymentDefaults;
 use Model\Payment\Services\IBankAccountAccessChecker;
-use Model\Payment\Services\IMailCredentialsAccessChecker;
+use Model\Payment\Services\IOAuthAccessChecker;
 
 class GroupTest extends Unit
 {
@@ -48,7 +48,7 @@ class GroupTest extends Unit
         $this->assertSame($variableSymbol, $group->getNextVariableSymbol());
         $this->assertSame($createdAt, $group->getCreatedAt());
         $this->assertEmailsAreSame($emails, $group);
-        $this->assertSame(15, $group->getSmtpId());
+        $this->assertSame(15, $group->getOauthId());
         $this->assertSame($group::STATE_OPEN, $group->getState());
         $this->assertSame('', $group->getNote());
         $this->assertSame(23, $group->getBankAccountId());
@@ -70,7 +70,7 @@ class GroupTest extends Unit
             null,
             $this->mockBankAccount($bankAccountId),
             $this->mockBankAccountAccessChecker([20, 22], $bankAccountId, false),
-            m::mock(IMailCredentialsAccessChecker::class),
+            m::mock(IOAuthAccessChecker::class),
         );
     }
 
@@ -98,7 +98,7 @@ class GroupTest extends Unit
     {
         $paymentDefaults   = new PaymentDefaults(null, null, null, null);
         $accessChecker     = m::mock(IBankAccountAccessChecker::class);
-        $mailAccessChecker = m::mock(IMailCredentialsAccessChecker::class);
+        $mailAccessChecker = m::mock(IOAuthAccessChecker::class);
 
         $this->expectException(InvalidArgumentException::class);
 
@@ -129,7 +129,7 @@ class GroupTest extends Unit
         $this->assertNull($group->getConstantSymbol());
         $this->assertNull($group->getNextVariableSymbol());
         $this->assertSame($createdAt, $group->getCreatedAt());
-        $this->assertSame(11, $group->getSmtpId());
+        $this->assertSame(11, $group->getOauthId());
         $this->assertSame(33, $group->getBankAccountId());
     }
 
@@ -176,7 +176,7 @@ class GroupTest extends Unit
         $group->changeUnits(
             [20],
             m::mock(IBankAccountAccessChecker::class),
-            m::mock(IMailCredentialsAccessChecker::class),
+            m::mock(IOAuthAccessChecker::class),
         );
 
         $this->assertSame([20], $group->getUnitIds());
@@ -192,7 +192,7 @@ class GroupTest extends Unit
         $group->changeUnits(
             $unitIds,
             $this->mockBankAccountAccessChecker($unitIds, $bankAccountId, false),
-            m::mock(IMailCredentialsAccessChecker::class),
+            m::mock(IOAuthAccessChecker::class),
         );
 
         $this->assertSame($unitIds, $group->getUnitIds());
@@ -209,7 +209,7 @@ class GroupTest extends Unit
         $group->changeUnits(
             $unitIds,
             $this->mockBankAccountAccessChecker($unitIds, $bankAccountId, true),
-            m::mock(IMailCredentialsAccessChecker::class),
+            m::mock(IOAuthAccessChecker::class),
         );
 
         $this->assertSame($unitIds, $group->getUnitIds());
@@ -230,7 +230,7 @@ class GroupTest extends Unit
         );
 
         $this->assertSame($unitIds, $group->getUnitIds());
-        $this->assertNull($group->getSmtpId());
+        $this->assertNull($group->getOauthId());
     }
 
     public function testMailCredentialsAreKeptWhenChangedUnitHasAccessToThem() : void
@@ -247,7 +247,7 @@ class GroupTest extends Unit
         );
 
         $this->assertSame($unitIds, $group->getUnitIds());
-        $this->assertSame($smptId, $group->getSmtpId());
+        $this->assertSame($smptId, $group->getOauthId());
     }
 
     private function mockBankAccount(int $id) : BankAccount
@@ -273,9 +273,9 @@ class GroupTest extends Unit
     /**
      * @param int[] $unitIds
      */
-    private function mockMailCredentialsAccessChecker(array $unitIds, int $mailCredentialsId, bool $hasAccess) : IMailCredentialsAccessChecker
+    private function mockMailCredentialsAccessChecker(array $unitIds, int $mailCredentialsId, bool $hasAccess) : IOAuthAccessChecker
     {
-        $accessChecker = m::mock(IMailCredentialsAccessChecker::class);
+        $accessChecker = m::mock(IOAuthAccessChecker::class);
         $accessChecker
             ->shouldReceive('allUnitsHaveAccessToMailCredentials')
             ->once()
@@ -306,7 +306,7 @@ class GroupTest extends Unit
             $smtpId,
             $bankAccount,
             m::mock(IBankAccountAccessChecker::class, ['allUnitsHaveAccessToBankAccount' => true]),
-            m::mock(IMailCredentialsAccessChecker::class, ['allUnitsHaveAccessToMailCredentials' => true]),
+            m::mock(IOAuthAccessChecker::class, ['allUnitsHaveAccessToMailCredentials' => true]),
         );
     }
 

@@ -11,8 +11,8 @@ use Model\BankTimeLimit;
 use Model\BankTimeout;
 use Model\DTO\Payment\Group;
 use Model\DTO\Payment\PairingResult;
+use Model\Google\InvalidOAuth;
 use Model\Payment\BankAccountService;
-use Model\Payment\InvalidSmtp;
 use Model\PaymentService;
 use function array_filter;
 use function array_map;
@@ -134,8 +134,8 @@ class PairButton extends BaseControl
         } catch (BankTimeLimit $exc) {
             $this->flashMessage(self::TIME_LIMIT_MESSAGE, 'danger');
             bdump(self::TIME_LIMIT_MESSAGE);
-        } catch (InvalidSmtp $exc) {
-            $this->flashMessage('Chyba SMTP serveru: ' . $exc->getMessage(), 'danger');
+        } catch (InvalidOAuth $exc) {
+            $this->flashMessage('Chyba Google OAuth serveru: ' . $exc->getMessage(), 'danger');
         }
         $this->redirect('this');
     }

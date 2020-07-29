@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Google\ReadModel\QueryHandlers;
 
 use Model\DTO\Google\OAuth as OAuthDTO;
-use Model\Google\OAuth;
+use Model\DTO\Google\OAuthFactory;
 use Model\Google\ReadModel\Queries\UnitOAuthListQuery;
 use Model\Mail\Repositories\IGoogleRepository;
 use function array_map;
@@ -23,13 +23,6 @@ final class UnitOAuthListQueryHandler
     /** @return OAuthDTO[] */
     public function __invoke(UnitOAuthListQuery $query) : array
     {
-        return array_map(function (OAuth $OAuth) : OAuthDTO {
-            return new OAuthDTO(
-                $OAuth->getId(),
-                $OAuth->getEmail(),
-                $OAuth->getUnitId(),
-                $OAuth->getUpdatedAt()
-            );
-        }, $this->repository->findByUnitId($query->getUnitId()));
+        return array_map([OAuthFactory::class, 'create'], $this->repository->findByUnit($query->getUnitId()));
     }
 }

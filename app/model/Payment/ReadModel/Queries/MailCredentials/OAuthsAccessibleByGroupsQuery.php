@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Model\Payment\ReadModel\Queries\MailCredentials;
 
 /**
- * @see MailCredentialsAccessibleByGroupsQueryHandler
+ * @see OAuthsAccessibleByGroupsQueryHandler
  */
-final class MailCredentialsAccessibleByGroupsQuery
+final class OAuthsAccessibleByGroupsQuery
 {
     /** @var int[] */
     private $unitIds;

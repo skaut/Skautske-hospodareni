@@ -117,7 +117,7 @@ class GroupRepositoryTest extends IntegrationTest
         $this->assertEquals($createdAt, $group->getCreatedAt());
         $this->assertSame($unitIds, $group->getUnitIds());
         $this->assertEquals($lastPairing, $group->getLastPairing());
-        $this->assertSame($row['smtp_id'], $group->getSmtpId());
+        $this->assertSame($row['smtp_id'], $group->getOauthId());
         $this->assertSame($row['bank_account_id'], $group->getBankAccountId());
         $this->assertSame($paymentDefaults->getAmount(), $group->getPaymentDefaults()->getAmount());
         $this->assertEquals($paymentDefaults->getDueDate(), $group->getPaymentDefaults()->getDueDate());

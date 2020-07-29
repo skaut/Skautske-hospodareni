@@ -7,15 +7,15 @@ namespace Model\Infrastructure\Repositories\Payment;
 use DateTimeImmutable;
 use eGen\MessageBus\Bus\EventBus;
 use IntegrationTest;
-use Mockery as m;
-use Model\Payment\DomainEvents\MailCredentialsWasRemoved;
+use Model\Google\OAuthNotFound;
+use Model\Infrastructure\Repositories\Mail\GoogleRepository;
+use Model\Payment\DomainEvents\OAuthWasRemoved;
 use Model\Payment\MailCredentials;
-use Model\Payment\MailCredentialsNotFound;
 use function array_keys;
 
 class MailCredentialsRepositoryTest extends IntegrationTest
 {
-    /** @var MailCredentialsRepository */
+    /** @var GoogleRepository */
     private $repository;
 
     /** @var EventBus */
@@ -33,8 +33,7 @@ class MailCredentialsRepositoryTest extends IntegrationTest
     {
         $this->tester->useConfigFiles(['config/doctrine.neon']);
         parent::_before();
-        $this->eventBus   = m::mock(EventBus::class);
-        $this->repository = new MailCredentialsRepository($this->entityManager, $this->eventBus);
+        $this->repository = new GoogleRepository('', '', $this->entityManager);
     }
 
     public function testFind() : void
@@ -64,7 +63,7 @@ class MailCredentialsRepositoryTest extends IntegrationTest
 
     public function testFindNotExistingConfigThrowsException() : void
     {
-        $this->expectException(MailCredentialsNotFound::class);
+        $this->expectException(OAuthNotFound::class);
 
         $this->repository->find(19);
     }
@@ -131,8 +130,8 @@ class MailCredentialsRepositoryTest extends IntegrationTest
     {
         $this->eventBus->shouldReceive('handle')
             ->once()
-            ->withArgs(static function (MailCredentialsWasRemoved $event) : bool {
-                return $event->getCredentialsId() === 1;
+            ->withArgs(static function (OAuthWasRemoved $event) : bool {
+                return $event->getOAuthId() === 1;
             });
 
         $this->tester->haveInDatabase('pa_smtp', [

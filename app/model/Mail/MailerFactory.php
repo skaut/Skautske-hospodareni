@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Model\Mail;
 
-use Model\Payment\MailCredentials;
+use Model\Google\OAuth;
+use Model\Google\OAuthMailer;
+use Model\Mail\Repositories\IGoogleRepository;
 use Nette\Mail\IMailer;
-use Nette\Mail\SmtpMailer;
 
 class MailerFactory implements IMailerFactory
 {
@@ -16,23 +17,22 @@ class MailerFactory implements IMailerFactory
     /** @var bool */
     private $enabled;
 
-    public function __construct(IMailer $debugMailer, bool $enabled)
+    /** @var IGoogleRepository */
+    private $googleRepository;
+
+    public function __construct(IMailer $debugMailer, bool $enabled, IGoogleRepository $googleRepository)
     {
-        $this->debugMailer = $debugMailer;
-        $this->enabled     = $enabled;
+        $this->debugMailer      = $debugMailer;
+        $this->enabled          = $enabled;
+        $this->googleRepository = $googleRepository;
     }
 
-    public function create(MailCredentials $credentials) : IMailer
+    public function create(OAuth $oAuth) : IMailer
     {
         if (! $this->enabled) {
             return $this->debugMailer;
         }
 
-        return new SmtpMailer([
-            'host' => $credentials->getHost(),
-            'username' => $credentials->getUsername(),
-            'password' => $credentials->getPassword(),
-            'secure' => $credentials->getProtocol()->getValue(),
-        ]);
+        return new OAuthMailer($this->googleRepository->getGmailService($oAuth));
     }
 }

@@ -9,14 +9,16 @@ use Google_Client;
 use Google_Service_Gmail;
 use Google_Service_Oauth2;
 use Model\Common\UnitId;
+use Model\Google\InvalidOAuth;
 use Model\Google\OAuth;
 use Model\Google\OAuthId;
 use Model\Google\OAuthNotFound;
 use Model\Mail\Repositories\IGoogleRepository;
 use function array_fill_keys;
+use function array_key_exists;
 use function assert;
 use function count;
-use function dump;
+use function sprintf;
 
 final class GoogleRepository implements IGoogleRepository
 {
@@ -108,8 +110,10 @@ final class GoogleRepository implements IGoogleRepository
     {
         $client = $this->getClient();
         $token  = $client->fetchAccessTokenWithRefreshToken($oAuth->getToken());
+        if (array_key_exists('error', $token)) {
+            throw new InvalidOAuth(sprintf('%s => %s', $token['error'], $token['error_description']));
+        }
         $client->setAccessToken($token);
-        dump($client->isAccessTokenExpired());
 
         return new Google_Service_Gmail($client);
     }
