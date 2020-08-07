@@ -14,7 +14,7 @@ services:
         networks:
             main:
                 aliases:
-                    - hospodareni.loc
+                    - moje-hospodareni.cz
 
     mysql:
         container_name: hskauting.mysql
