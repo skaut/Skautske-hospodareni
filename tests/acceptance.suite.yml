@@ -8,7 +8,7 @@ class_name: AcceptanceTester
 modules:
     enabled:
         - WebDriver:
-            url: http://hospodareni.loc
+            url: http://moje-hospodareni.cz
             browser: chrome
             host: chrome
             capabilities:

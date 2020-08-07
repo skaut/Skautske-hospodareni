@@ -20,12 +20,12 @@ docker/ssh
 ```
 
 ## Nastavení hosts
-Skautis při přihlašování přesměrovává na `hospodareni.loc`.
+Skautis při přihlašování přesměrovává na `moje-hospodareni.cz`.
 Proto je třeba nastavit si mapování této domény na localhost.
 
 Stačí přidat tento řádek do souboru `/etc/hosts`:
 ```
-127.0.0.1   hospodareni.loc
+127.0.0.1   moje-hospodareni.cz
 ```
 
 ## Příprava projektu

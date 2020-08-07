@@ -23,6 +23,10 @@ final class DataGrid extends \Ublaboo\DataGrid\DataGrid
     {
         parent::__construct();
         Action::$data_confirm_attribute_name = 'data-confirm';
+        $this->onRender[]                    = function () : void {
+ //disable autocomplete - issue #1443
+            $this['filter']->getElementPrototype()->setAttribute('autocomplete', 'off');
+        };
     }
 
     /**
