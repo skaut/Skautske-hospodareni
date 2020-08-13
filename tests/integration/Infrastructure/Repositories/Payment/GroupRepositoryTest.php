@@ -26,7 +26,7 @@ class GroupRepositoryTest extends IntegrationTest
         'state_info' => 'Test note',
         'created_at' => '2018-01-01 12:34:11',
         'last_pairing' => '2018-02-01 12:34:11',
-        'smtp_id' => 10,
+        'oauth_id' => '42288e92-27fb-453c-9904-36a7ebd14fe2',
         'bank_account_id' => 100,
         'amount' => 100.0,
         'nextVs' => '140',
@@ -81,7 +81,7 @@ class GroupRepositoryTest extends IntegrationTest
             'state_info' => 'Test note',
             'created_at' => $createdAt->format('Y-m-d H:i:s'),
             'last_pairing' => $lastPairing->format('Y-m-d H:i:s'),
-            'smtp_id' => 10,
+            'oauth_id' => '42288e92-27fb-453c-9904-36a7ebd14fe2',
             'bank_account_id' => 100,
             'amount' => $paymentDefaults->getAmount(),
             'nextVs' => $paymentDefaults->getNextVariableSymbol()->toInt(),
@@ -117,7 +117,7 @@ class GroupRepositoryTest extends IntegrationTest
         $this->assertEquals($createdAt, $group->getCreatedAt());
         $this->assertSame($unitIds, $group->getUnitIds());
         $this->assertEquals($lastPairing, $group->getLastPairing());
-        $this->assertSame($row['smtp_id'], $group->getOauthId());
+        $this->assertSame($row['oauth_id'], $group->getOauthId()->toString());
         $this->assertSame($row['bank_account_id'], $group->getBankAccountId());
         $this->assertSame($paymentDefaults->getAmount(), $group->getPaymentDefaults()->getAmount());
         $this->assertEquals($paymentDefaults->getDueDate(), $group->getPaymentDefaults()->getDueDate());
@@ -136,7 +136,7 @@ class GroupRepositoryTest extends IntegrationTest
             'state_info' => 'Test note',
             'created_at' => '2018-01-01 00:00:00',
             'last_pairing' => '2018-01-01 00:00:00',
-            'smtp_id' => 10,
+            'oauth_id' => '42288e92-27fb-453c-9904-36a7ebd14fe2',
             'bank_account_id' => 100,
             'maturity' => '2018-01-01',
             'ks' => null,
@@ -187,7 +187,7 @@ class GroupRepositoryTest extends IntegrationTest
             'state_info' => 'Test note',
             'created_at' => '2018-05-14 00:00:00',
             'last_pairing' => '2018-05-14 00:00:00',
-            'smtp_id' => 10,
+            'oauth_id' => '42288e92-27fb-453c-9904-36a7ebd14fe2',
             'bank_account_id' => 100,
             'amount' => 100.0,
             'nextVs' => 123,

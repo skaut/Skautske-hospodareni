@@ -3,7 +3,6 @@ services:
     - Model\Infrastructure\Repositories\Payment\BankAccountRepository
     - Model\Infrastructure\Repositories\Payment\PaymentRepository
     - Model\Infrastructure\Repositories\Payment\GroupRepository
-    - Model\Infrastructure\Repositories\Payment\MailCredentialsRepository
     - Model\Skautis\Payment\MemberEmailRepository
     - Model\Common\Services\NotificationsCollector
     - GuzzleHttp\Client
@@ -11,12 +10,12 @@ services:
     - Stubs\Skautis
     - Model\Payment\UserRepositoryStub
     - Stubs\BankAccountAccessCheckerStub
-    - Stubs\MailCredentialsAccessCheckerStub
-
+    - Stubs\OAuthsAccessCheckerStub
     - Model\PaymentService
+    - Stubs\GoogleRepositoryStub
 
+    - Model\Mail\MailerFactory(Model\Payment\NullMailer(), false)
     - Model\Services\TemplateFactory
-    - Model\Mail\MailerFactory(Model\Payment\NullMailer(), true)
     - Model\Payment\MailingService
 
     - class: Model\Payment\Handlers\Payment\CreatePaymentHandler

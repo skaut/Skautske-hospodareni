@@ -18,10 +18,6 @@ modules:
 
         - \Helper\Acceptance
 
-        - MailCatcher:
-            url: 'http://smtp-hospodareni.loc'
-            port: 80
-
         - \Helper\WaitForDb
         - Db:
             dsn: 'mysql:host=mysql-test;dbname=hskauting'

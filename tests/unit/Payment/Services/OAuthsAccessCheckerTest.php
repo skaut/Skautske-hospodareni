@@ -8,15 +8,16 @@ use Codeception\Test\Unit;
 use Mockery;
 use Model\Common\UnitId;
 use Model\Google\OAuth;
+use Model\Google\OAuthId;
 use Model\Mail\Repositories\IGoogleRepository;
 use Model\Payment\UnitResolverStub;
 
 final class OAuthsAccessCheckerTest extends Unit
 {
-    private const MAIL_CREDENTIALS_ID = 1;
-
     /** @var UnitResolverStub */
     private $unitResolver;
+
+    private OAuthId $oAuthId;
 
     protected function setUp() : void
     {
@@ -27,13 +28,14 @@ final class OAuthsAccessCheckerTest extends Unit
             11 => 20,
             12 => 30,
         ]);
+        $this->oAuthId = OAuthId::generate();
     }
 
     public function testAtLeastOneUnitSameAsOwnerUnitGivesAccess() : void
     {
         $this->assertTrue(
             $this->createChecker(100)
-                ->allUnitsHaveAccessToOAuth([100, 12], self::MAIL_CREDENTIALS_ID)
+                ->allUnitsHaveAccessToOAuth([100, 12], $this->oAuthId)
         );
     }
 
@@ -41,7 +43,7 @@ final class OAuthsAccessCheckerTest extends Unit
     {
         $this->assertTrue(
             $this->createChecker(20)
-                ->allUnitsHaveAccessToOAuth([10, 12], self::MAIL_CREDENTIALS_ID)
+                ->allUnitsHaveAccessToOAuth([10, 12], $this->oAuthId)
         );
     }
 
@@ -49,19 +51,19 @@ final class OAuthsAccessCheckerTest extends Unit
     {
         $this->assertFalse(
             $this->createChecker(10)
-                ->allUnitsHaveAccessToOAuth([12], self::MAIL_CREDENTIALS_ID)
+                ->allUnitsHaveAccessToOAuth([12], $this->oAuthId)
         );
     }
 
-    private function createChecker(int $mailCredentialsOwnerUnitId) : OAuthsAccessChecker
+    private function createChecker(int $oAuthOwnerUnitId) : OAuthsAccessChecker
     {
         $repository = Mockery::mock(IGoogleRepository::class);
         $repository
             ->shouldReceive('find')
             ->once()
-            ->withArgs([self::MAIL_CREDENTIALS_ID])
+            ->withArgs([$this->oAuthId])
             ->andReturn(
-                OAuth::create(new UnitId($mailCredentialsOwnerUnitId), 'code', 'foo@gmail.com')
+                OAuth::create(new UnitId($oAuthOwnerUnitId), 'code', 'foo@gmail.com')
             );
 
         return new OAuthsAccessChecker($repository, $this->unitResolver);

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Payment\Services;
 
+use Model\Google\Exception\OAuthNotFound;
 use Model\Google\OAuthId;
-use Model\Google\OAuthNotFound;
 use Model\Mail\Repositories\IGoogleRepository;
 use Model\Payment\IUnitResolver;
 

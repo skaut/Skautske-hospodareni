@@ -11,8 +11,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Fmasa\DoctrineNullableEmbeddables\Annotations\Nullable;
 use InvalidArgumentException;
+use Model\Google\Exception\NoAccessToOAuth;
 use Model\Google\OAuthId;
-use Model\Payment\Exception\NoAccessToMailCredentials;
 use Model\Payment\Group\Email;
 use Model\Payment\Group\PaymentDefaults;
 use Model\Payment\Group\SkautisEntity;
@@ -126,7 +126,7 @@ class Group
         ?OAuthId $oAuthId,
         ?BankAccount $bankAccount,
         IBankAccountAccessChecker $bankAccountAccessChecker,
-        IOAuthAccessChecker $mailCredentialsAccessChecker
+        IOAuthAccessChecker $oAuthAccessChecker
     ) {
         Assertion::notEmpty($unitIds);
         $this->object          = $object;
@@ -150,7 +150,7 @@ class Group
         }
 
         $this->changeBankAccount($bankAccount, $bankAccountAccessChecker);
-        $this->changeMailCredentials($oAuthId, $mailCredentialsAccessChecker);
+        $this->changeOAuth($oAuthId, $oAuthAccessChecker);
     }
 
     public function update(
@@ -159,10 +159,10 @@ class Group
         ?OAuthId $oAuthId,
         ?BankAccount $bankAccount,
         IBankAccountAccessChecker $bankAccountAccessChecker,
-        IOAuthAccessChecker $mailCredentialsAccessChecker
+        IOAuthAccessChecker $oAuthAccessChecker
     ) : void {
         $this->changeBankAccount($bankAccount, $bankAccountAccessChecker);
-        $this->changeMailCredentials($oAuthId, $mailCredentialsAccessChecker);
+        $this->changeOAuth($oAuthId, $oAuthAccessChecker);
 
         $this->name            = $name;
         $this->paymentDefaults = $paymentDefaults;
@@ -211,9 +211,7 @@ class Group
             $this->bankAccount = null;
         }
 
-        $credentialsId = $this->oauthId;
-
-        if ($credentialsId === null || $mailAccessChecker->allUnitsHaveAccessToOAuth($unitIds, $credentialsId)) {
+        if ($this->oauthId === null || $mailAccessChecker->allUnitsHaveAccessToOAuth($unitIds, $this->oauthId)) {
             return;
         }
 
@@ -394,14 +392,14 @@ class Group
         $this->oauthId = null;
     }
 
-    private function changeMailCredentials(?OAuthId $mailCredentialsId, IOAuthAccessChecker $checker) : void
+    private function changeOAuth(?OAuthId $oAuthId, IOAuthAccessChecker $checker) : void
     {
         $unitIds = $this->getUnitIds();
 
-        if ($mailCredentialsId !== null && ! $checker->allUnitsHaveAccessToOAuth($unitIds, $mailCredentialsId)) {
-            throw NoAccessToMailCredentials::forUnits($unitIds, $mailCredentialsId);
+        if ($oAuthId !== null && ! $checker->allUnitsHaveAccessToOAuth($unitIds, $oAuthId)) {
+            throw NoAccessToOAuth::forUnits($unitIds, $oAuthId);
         }
 
-        $this->oauthId = $mailCredentialsId;
+        $this->oauthId = $oAuthId;
     }
 }

@@ -64,7 +64,7 @@ class PaymentService
     private $emails;
 
     /** @var IOAuthAccessChecker */
-    private $mailCredentialsAccessChecker;
+    private $oAuthAccessChecker;
 
     /** @var IUserRepository */
     private $users;
@@ -76,17 +76,17 @@ class PaymentService
         IBankAccountRepository $bankAccounts,
         IBankAccountAccessChecker $bankAccountAccessChecker,
         IMemberEmailRepository $emails,
-        IOAuthAccessChecker $mailCredentialsAccessChecker,
+        IOAuthAccessChecker $oAuthAccessChecker,
         IUserRepository $users
     ) {
-        $this->skautis                      = $skautis;
-        $this->groups                       = $groups;
-        $this->payments                     = $payments;
-        $this->bankAccounts                 = $bankAccounts;
-        $this->bankAccountAccessChecker     = $bankAccountAccessChecker;
-        $this->emails                       = $emails;
-        $this->mailCredentialsAccessChecker = $mailCredentialsAccessChecker;
-        $this->users                        = $users;
+        $this->skautis                  = $skautis;
+        $this->groups                   = $groups;
+        $this->payments                 = $payments;
+        $this->bankAccounts             = $bankAccounts;
+        $this->bankAccountAccessChecker = $bankAccountAccessChecker;
+        $this->emails                   = $emails;
+        $this->oAuthAccessChecker       = $oAuthAccessChecker;
+        $this->users                    = $users;
     }
 
     public function findPayment(int $id) : ?DTO\Payment
@@ -171,7 +171,7 @@ class PaymentService
             $oAuthId,
             $bankAccount,
             $this->bankAccountAccessChecker,
-            $this->mailCredentialsAccessChecker,
+            $this->oAuthAccessChecker,
         );
 
         $this->groups->save($group);
@@ -193,7 +193,7 @@ class PaymentService
         $group       = $this->groups->find($id);
         $bankAccount = $bankAccountId !== null ? $this->bankAccounts->find($bankAccountId) : null;
 
-        $group->update($name, $paymentDefaults, $oAuthId, $bankAccount, $this->bankAccountAccessChecker, $this->mailCredentialsAccessChecker);
+        $group->update($name, $paymentDefaults, $oAuthId, $bankAccount, $this->bankAccountAccessChecker, $this->oAuthAccessChecker);
 
         foreach (EmailType::getAvailableValues() as $typeKey) {
             $type = EmailType::get($typeKey);

@@ -6,6 +6,6 @@ namespace Model\Google\Exception;
 
 use Exception;
 
-class OAuthNotFound extends Exception
+class OAuthNotSet extends Exception
 {
 }

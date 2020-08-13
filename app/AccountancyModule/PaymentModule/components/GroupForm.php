@@ -22,8 +22,8 @@ use Model\Payment\Group\PaymentDefaults;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\ReadModel\Queries\BankAccount\BankAccountsAccessibleByUnitsQuery;
 use Model\Payment\ReadModel\Queries\GroupEmailQuery;
-use Model\Payment\ReadModel\Queries\MailCredentials\OAuthsAccessibleByGroupsQuery;
 use Model\Payment\ReadModel\Queries\NextVariableSymbolSequenceQuery;
+use Model\Payment\ReadModel\Queries\OAuthsAccessibleByGroupsQuery;
 use Model\PaymentService;
 use Model\Unit\ReadModel\Queries\UnitsDetailQuery;
 use Model\Unit\Unit;
@@ -135,7 +135,7 @@ final class GroupForm extends BaseControl
             ->setRequired(false)
             ->setPrompt('Vyberte bankovní účet');
 
-        $form->addSelect('oAuthId', 'Email odesílatele', $this->mailCredentialsItems())
+        $form->addSelect('oAuthId', 'Email odesílatele', $this->oAuthItems())
             ->setPrompt('Vyberte email')
             ->setAttribute('class', 'ui--emailSelectbox'); // For acceptance testing
 
@@ -324,9 +324,9 @@ final class GroupForm extends BaseControl
     }
 
     /**
-     * @return array<string, array<int, string>>
+     * @return array<string, array<string, string>>
      */
-    private function mailCredentialsItems() : array
+    private function oAuthItems() : array
     {
         $oAuths = $this->queryBus->handle(new OAuthsAccessibleByGroupsQuery($this->groupUnitIds()));
 

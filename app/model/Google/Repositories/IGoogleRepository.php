@@ -6,9 +6,9 @@ namespace Model\Mail\Repositories;
 
 use Google_Service_Gmail;
 use Model\Common\UnitId;
+use Model\Google\Exception\OAuthNotFound;
 use Model\Google\OAuth;
 use Model\Google\OAuthId;
-use Model\Google\OAuthNotFound;
 
 interface IGoogleRepository
 {
@@ -22,9 +22,12 @@ interface IGoogleRepository
     /**
      * @param int[] $unitIds
      *
-     * @return OAuth[]
+     * @return array<int, OAuth[]> unitId => OAuth[]
      */
     public function findByUnits(array $unitIds) : array;
+
+    /** @return OAuth[] */
+    public function findByUnit(UnitId $unitId) : array;
 
     public function remove(OAuth $oAuth) : void;
 

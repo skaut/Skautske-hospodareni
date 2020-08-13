@@ -9,10 +9,10 @@ use Google_Client;
 use Google_Service_Gmail;
 use Google_Service_Oauth2;
 use Model\Common\UnitId;
+use Model\Google\Exception\OAuthNotFound;
 use Model\Google\InvalidOAuth;
 use Model\Google\OAuth;
 use Model\Google\OAuthId;
-use Model\Google\OAuthNotFound;
 use Model\Mail\Repositories\IGoogleRepository;
 use function array_fill_keys;
 use function array_key_exists;
@@ -79,7 +79,7 @@ final class GoogleRepository implements IGoogleRepository
     /**
      * @param int[] $unitIds
      *
-     * @return OAuth[]
+     * @return array<int, OAuth[]>
      */
     public function findByUnits(array $unitIds) : array
     {
@@ -89,12 +89,12 @@ final class GoogleRepository implements IGoogleRepository
 
         $byUnit = array_fill_keys($unitIds, []);
 
-        $credentialsList = $this->entityManager->getRepository(OAuth::class)->findBy(['unitId IN' => $unitIds]);
+        $oAuthList = $this->entityManager->getRepository(OAuth::class)->findBy(['unitId IN' => $unitIds]);
 
-        foreach ($credentialsList as $credentials) {
-            assert($credentials instanceof OAuth);
+        foreach ($oAuthList as $oAuth) {
+            assert($oAuth instanceof OAuth);
 
-            $byUnit[$credentials->getUnitId()->toInt()][] = $credentials;
+            $byUnit[$oAuth->getUnitId()->toInt()][] = $oAuth;
         }
 
         return $byUnit;

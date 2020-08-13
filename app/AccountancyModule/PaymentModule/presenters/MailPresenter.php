@@ -57,7 +57,7 @@ class MailPresenter extends BasePresenter
         }
         assert($oauth instanceof OAuth);
 
-        if (! $this->isEditable || ! $oauth->getUnitId()->equals($this->unitId)) {
+        if (! $this->isEditable || ! ($oauth->getUnitId() === $this->unitId->toInt())) {
             $this->flashMessage('Nemáte oprávnění mazat OAuth', 'danger');
             $this->redirect('default');
         }

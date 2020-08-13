@@ -25,11 +25,11 @@ class ChangeGroupUnitsHandler
     public function __construct(
         IGroupRepository $groups,
         IBankAccountAccessChecker $bankAccountAccessChecker,
-        IOAuthAccessChecker $mailCredentialsAccessChecker
+        IOAuthAccessChecker $oAuthAccessChecker
     ) {
         $this->groups                   = $groups;
         $this->bankAccountAccessChecker = $bankAccountAccessChecker;
-        $this->mailCredentaccessChecker = $mailCredentialsAccessChecker;
+        $this->mailCredentaccessChecker = $oAuthAccessChecker;
     }
 
     /**

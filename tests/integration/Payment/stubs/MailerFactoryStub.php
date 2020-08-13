@@ -13,7 +13,7 @@ class MailerFactoryStub implements IMailerFactory
     /** @var IMailer */
     private $mailer;
 
-    public function create(OAuth $credentials) : IMailer
+    public function create(OAuth $oAuth) : IMailer
     {
         return $this->mailer;
     }

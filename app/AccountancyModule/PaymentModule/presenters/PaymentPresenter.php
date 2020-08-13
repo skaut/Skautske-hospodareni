@@ -20,12 +20,12 @@ use App\AccountancyModule\PaymentModule\Factories\IRemoveGroupDialogFactory;
 use DateTimeImmutable;
 use Model\DTO\Payment\Payment;
 use Model\DTO\Payment\Person;
+use Model\Google\Exception\OAuthNotSet;
 use Model\Google\InvalidOAuth;
 use Model\Payment\Commands\Mailing\SendPaymentInfo;
 use Model\Payment\EmailNotSet;
 use Model\Payment\GroupNotFound;
 use Model\Payment\InvalidBankAccount;
-use Model\Payment\MailCredentialsNotSet;
 use Model\Payment\MailingService;
 use Model\Payment\Payment\State;
 use Model\Payment\PaymentClosed;
@@ -242,7 +242,7 @@ class PaymentPresenter extends BasePresenter
         try {
             $email = $this->mailing->sendTestMail($gid);
             $this->flashMessage('Testovací email byl odeslán na ' . $email . '.');
-        } catch (MailCredentialsNotSet $e) {
+        } catch (OAuthNotSet $e) {
             $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
         } catch (InvalidOAuth $e) {
             $this->oauthError($e);
@@ -386,7 +386,7 @@ class PaymentPresenter extends BasePresenter
                 $this->commandBus->handle(new SendPaymentInfo($payment->getId()));
                 $sentCount++;
             }
-        } catch (MailCredentialsNotSet $e) {
+        } catch (OAuthNotSet $e) {
             $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
             $this->redirect('this');
         } catch (InvalidBankAccount $e) {

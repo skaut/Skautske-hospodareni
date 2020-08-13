@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Model;
 
-use Model\DTO\Google\OAuth;
+use Model\DTO\Google\OAuth as OAuthDTO;
 use Model\DTO\Google\OAuthFactory;
-use Model\DTO\Payment\Mail;
-use Model\Google\OAuthNotFound;
+use Model\Google\OAuth;
 use Model\Mail\Repositories\IGoogleRepository;
 use Model\Payment\IUnitResolver;
-use Model\Payment\MailCredentials;
 use function array_filter;
 use function array_map;
 use function array_merge;
@@ -30,21 +28,10 @@ class MailService
         $this->unitResolver     = $unitResolver;
     }
 
-    public function get(int $id) : ?OAuth
-    {
-        try {
-            return OAuthFactory::create(
-                $this->googleRepository->find($id)
-            );
-        } catch (OAuthNotFound $e) {
-            return null;
-        }
-    }
-
     /**
      * @param int[] $unitIds
      *
-     * @return Mail[]
+     * @return array<int|string, OAuthDTO>
      */
     public function getAll(array $unitIds) : array
     {
@@ -71,7 +58,7 @@ class MailService
     /**
      * @param int[] $unitIds
      *
-     * @return array<int, MailCredentials[]>
+     * @return array<int, OAuth[]> unitId => OAuth[]
      */
     private function findForUnits(array $unitIds) : array
     {

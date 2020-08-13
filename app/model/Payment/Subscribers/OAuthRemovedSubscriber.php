@@ -7,7 +7,7 @@ namespace Model\Payment\Subscribers;
 use Model\Payment\DomainEvents\OAuthWasRemoved;
 use Model\Payment\Repositories\IGroupRepository;
 
-final class MailCredentialsRemovedSubscriber
+final class OAuthRemovedSubscriber
 {
     /** @var IGroupRepository */
     private $groups;

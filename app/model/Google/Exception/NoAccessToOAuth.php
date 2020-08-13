@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\Exception;
+namespace Model\Google\Exception;
 
 use Exception;
 use Model\Google\OAuthId;
 use function implode;
 use function sprintf;
 
-final class NoAccessToMailCredentials extends Exception
+final class NoAccessToOAuth extends Exception
 {
     /**
      * @param int[] $unitIds
