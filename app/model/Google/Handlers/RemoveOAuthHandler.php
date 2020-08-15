@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Google\Handlers;
 
 use Model\Google\Commands\RemoveOAuth;
+use Model\Google\Exception\OAuthNotFound;
 use Model\Mail\Repositories\IGoogleRepository;
 
 final class RemoveOAuthHandler
@@ -19,8 +20,9 @@ final class RemoveOAuthHandler
 
     public function __invoke(RemoveOAuth $command) : void
     {
-        $oAuth = $this->repository->find($command->getOAuthId());
-        if ($oAuth === null) {
+        try {
+            $oAuth = $this->repository->find($command->getOAuthId());
+        } catch (OAuthNotFound $exc) {
             return;
         }
 

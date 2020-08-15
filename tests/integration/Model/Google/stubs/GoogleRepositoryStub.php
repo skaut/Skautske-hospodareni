@@ -23,9 +23,13 @@ class GoogleRepositoryStub implements IGoogleRepository
     {
     }
 
-    public function find(OAuthId $oauthId) : ?OAuth
+    public function save(OAuth $oAuth) : void
     {
-        return OAuth::create(new UnitId(123), 'XXXX', 'test@hospodareni.loc');
+    }
+
+    public function find(OAuthId $oauthId) : OAuth
+    {
+        return $this->createOAuth();
     }
 
     /**
@@ -44,6 +48,11 @@ class GoogleRepositoryStub implements IGoogleRepository
         return [];
     }
 
+    public function findByUnitAndEmail(UnitId $unitId, string $email) : OAuth
+    {
+        return $this->createOAuth($unitId, $email);
+    }
+
     public function remove(OAuth $oAuth) : void
     {
     }
@@ -51,5 +60,10 @@ class GoogleRepositoryStub implements IGoogleRepository
     public function getGmailService(OAuth $oAuth) : Google_Service_Gmail
     {
          return m::mock(Google_Service_Gmail::class);
+    }
+
+    private function createOAuth(?UnitId $unitId, ?string $email = null) : OAuth
+    {
+        return OAuth::create($unitId ?? new UnitId(123), 'XXXX', $email ?? 'test@hospodareni.loc');
     }
 }

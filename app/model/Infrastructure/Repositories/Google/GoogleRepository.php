@@ -46,21 +46,25 @@ final class GoogleRepository implements IGoogleRepository
         $service = new Google_Service_Oauth2($client);
         $email   = $service->userinfo->get()->getEmail();
 
-        /** @var OAuth|null $oauth */
-        $oauth = $this->entityManager->getRepository(OAuth::class)->findOneBy(['unitId' => $unitId, 'email' => $email]);
-        if ($oauth !== null) {
-            $oauth->setToken($token['refresh_token']);
-        } else {
-            $oauth = OAuth::create($unitId, $code, $email);
+        try {
+            $oAuth = $this->findByUnitAndEmail($unitId, $email);
+            $oAuth->setToken($token['refresh_token']);
+        } catch (OAuthNotFound $exc) {
+            $oAuth = OAuth::create($unitId, $token['refresh_token'], $email);
         }
-        $this->entityManager->persist($oauth);
+        $this->save($oAuth);
+    }
+
+    public function save(OAuth $oAuth) : void
+    {
+        $this->entityManager->persist($oAuth);
         $this->entityManager->flush();
     }
 
     /**
      * @throws OAuthNotFound
      */
-    public function find(OAuthId $oAuthId) : ?OAuth
+    public function find(OAuthId $oAuthId) : OAuth
     {
         $oAuth = $this->entityManager->getRepository(OAuth::class)->find($oAuthId);
         if ($oAuth === null) {
@@ -98,6 +102,17 @@ final class GoogleRepository implements IGoogleRepository
         }
 
         return $byUnit;
+    }
+
+    public function findByUnitAndEmail(UnitId $unitId, string $email) : OAuth
+    {
+        $oAuth = $this->entityManager->getRepository(OAuth::class)->findOneBy(['unitId' => $unitId, 'email' => $email]);
+
+        if ($oAuth === null) {
+            throw new OAuthNotFound();
+        }
+
+        return $oAuth;
     }
 
     public function remove(OAuth $oAuth) : void

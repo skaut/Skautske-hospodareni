@@ -19,6 +19,6 @@ final class SaveOAuthHandler
 
     public function __invoke(SaveOAuth $command) : void
     {
-        $this->googleRepository->saveAuthCode($command->getCode(), $command->getUnitId());
+        $this->repository->saveAuthCode($command->getCode(), $command->getUnitId());
     }
 }

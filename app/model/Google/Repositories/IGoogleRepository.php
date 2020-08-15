@@ -16,8 +16,10 @@ interface IGoogleRepository
 
     public function saveAuthCode(string $code, UnitId $unitId) : void;
 
+    public function save(OAuth $oAuth) : void;
+
     /** @throws OAuthNotFound */
-    public function find(OAuthId $oauthId) : ?OAuth;
+    public function find(OAuthId $oauthId) : OAuth;
 
     /**
      * @param int[] $unitIds
@@ -28,6 +30,8 @@ interface IGoogleRepository
 
     /** @return OAuth[] */
     public function findByUnit(UnitId $unitId) : array;
+
+    public function findByUnitAndEmail(UnitId $unitId, string $email) : OAuth;
 
     public function remove(OAuth $oAuth) : void;
 
