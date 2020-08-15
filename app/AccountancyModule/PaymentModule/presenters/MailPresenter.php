@@ -9,7 +9,6 @@ use Model\Google\Commands\RemoveOAuth;
 use Model\Google\OAuthId;
 use Model\Google\ReadModel\Queries\OAuthQuery;
 use Model\Google\ReadModel\Queries\UnitOAuthListQuery;
-use Model\Mail\Repositories\IGoogleRepository;
 use Model\MailService;
 use function assert;
 
@@ -18,15 +17,11 @@ class MailPresenter extends BasePresenter
     /** @var MailService */
     private $model;
 
-    private IGoogleRepository $googleRepository;
-
     public function __construct(
-        MailService $model,
-        IGoogleRepository $googleRepository
+        MailService $model
     ) {
         parent::__construct();
-        $this->model            = $model;
-        $this->googleRepository = $googleRepository;
+        $this->model = $model;
     }
 
     public function actionDefault(?int $unitId = null) : void
@@ -52,18 +47,18 @@ class MailPresenter extends BasePresenter
         $oauthId = OAuthId::fromString($id);
         $oauth   = $this->queryBus->handle(new OAuthQuery($oauthId));
         if ($oauth === null) {
-            $this->flashMessage('Google OAuth účet nenalezen!', 'warning');
+            $this->flashMessage('Google účet nenalezen!', 'warning');
             $this->redirect('default');
         }
         assert($oauth instanceof OAuth);
 
         if (! $this->isEditable || ! ($oauth->getUnitId() === $this->unitId->toInt())) {
-            $this->flashMessage('Nemáte oprávnění mazat OAuth', 'danger');
+            $this->flashMessage('Nemáte oprávnění odebírat propojený Google účet', 'danger');
             $this->redirect('default');
         }
 
         $this->commandBus->handle(new RemoveOAuth($oauthId));
-        $this->flashMessage('Google OAuth účet byl smazán.');
+        $this->flashMessage('Propojení Google účtu bylo smazáno.');
         $this->redirect('default');
     }
 }

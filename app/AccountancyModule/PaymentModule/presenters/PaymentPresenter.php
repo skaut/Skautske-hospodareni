@@ -371,7 +371,7 @@ class PaymentPresenter extends BasePresenter
 
     private function oauthError(InvalidOAuth $e) : void
     {
-        $this->flashMessage(sprintf('OAuth server vrátil chybu (%s)', $e->getMessage()), 'danger');
+        $this->flashMessage(sprintf('Google vrátil chybu: %s', $e->getMessage()), 'danger');
     }
 
     /**

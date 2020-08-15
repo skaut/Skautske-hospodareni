@@ -6,6 +6,7 @@ namespace App\AccountancyModule;
 
 use InvalidArgumentException;
 use Model\Common\UnitId;
+use Model\Google\Commands\SaveOAuth;
 use Model\Mail\Repositories\IGoogleRepository;
 
 class GooglePresenter extends BasePresenter
@@ -26,12 +27,12 @@ class GooglePresenter extends BasePresenter
     public function actionToken(string $code) : void
     {
         try {
-            $this->googleRepository->saveAuthCode($code, new UnitId($this->userService->getActualRole()->getUnitId()));
+            $this->commandBus->handle(new SaveOAuth($code, new UnitId($this->userService->getActualRole()->getUnitId())));
         } catch (InvalidArgumentException $exc) {
-            $this->flashMessage('Neplatná Google autorizace!', 'danger');
+            $this->flashMessage('Nepodařilo se propojit Google účet!', 'danger');
             $this->redirect(':Accountancy:Payment:Mail:');
         }
-        $this->flashMessage('Autorizace na Google proběhla úspěšně!');
+        $this->flashMessage('Propojení s Google účtem proběhlo úspěšně!');
         $this->redirect(':Accountancy:Payment:Mail:');
     }
 }
