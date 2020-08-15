@@ -23,7 +23,7 @@ class GroupFactory
             $group->getConstantSymbol(),
             $group->getNextVariableSymbol(),
             $group->getState(),
-            $group->getOauthId() !== null ? $group->getOauthId()->toString() : null,
+            $group->getOauthId(),
             $group->getNote(),
             $group->getBankAccountId()
         );

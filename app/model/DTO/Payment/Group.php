@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\DTO\Payment;
 
 use Cake\Chronos\Date;
+use Model\Google\OAuthId;
 use Model\Payment\VariableSymbol;
 use Nette\SmartObject;
 
@@ -56,7 +57,7 @@ class Group
     /** @var string */
     private $state;
 
-    /** @var string|NULL */
+    /** @var OAuthId|NULL */
     private $oAuthId;
 
     /** @var string */
@@ -79,7 +80,7 @@ class Group
         ?int $constantSymbol,
         ?VariableSymbol $nextVariableSymbol,
         string $state,
-        ?string $oAuthId,
+        ?OAuthId $oAuthId,
         string $note,
         ?int $bankAccountId
     ) {
@@ -156,7 +157,7 @@ class Group
         return $this->state;
     }
 
-    public function getOAuthId() : ?string
+    public function getOAuthId() : ?OAuthId
     {
         return $this->oAuthId;
     }
