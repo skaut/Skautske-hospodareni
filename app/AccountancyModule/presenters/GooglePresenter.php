@@ -8,6 +8,7 @@ use InvalidArgumentException;
 use Model\Common\UnitId;
 use Model\Google\Commands\SaveOAuth;
 use Model\Google\ReadModel\Queries\OAuthQuery;
+use Model\Google\ReadModel\Queries\OAuthUrlQuery;
 use Model\Mail\Repositories\IGoogleRepository;
 
 class GooglePresenter extends BasePresenter
@@ -22,7 +23,7 @@ class GooglePresenter extends BasePresenter
 
     public function actionOAuth() : void
     {
-        $this->redirectUrl($this->queryBus->handle(new OAuthQuery()));
+        $this->redirectUrl($this->queryBus->handle(new OAuthUrlQuery()));
     }
 
     public function actionToken(string $code) : void
