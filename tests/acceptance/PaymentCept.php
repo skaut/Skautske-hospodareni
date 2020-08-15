@@ -68,12 +68,9 @@ $I->wantTo('send payment email');
 
 $I->amGoingTo('send third payment');
 $I->click('//a[contains(@class, \'ui--sendEmail\')]');
-//$I->waitForElement('//*[@title="Odeslané emaily"]');
 
 $page->seeNumberOfPaymentsWithState('Nezaplacena', 2);
 $page->seeNumberOfPaymentsWithState('Dokončena', 1);
-
-//$I->seeEmailCount(1);
 
 $I->wantTo('close and reopen group');
 $I->click('Uzavřít');
