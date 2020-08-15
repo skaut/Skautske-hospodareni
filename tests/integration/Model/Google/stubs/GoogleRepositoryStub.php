@@ -62,7 +62,7 @@ class GoogleRepositoryStub implements IGoogleRepository
          return m::mock(Google_Service_Gmail::class);
     }
 
-    private function createOAuth(?UnitId $unitId, ?string $email = null) : OAuth
+    private function createOAuth(?UnitId $unitId = null, ?string $email = null) : OAuth
     {
         return OAuth::create($unitId ?? new UnitId(123), 'XXXX', $email ?? 'test@hospodareni.loc');
     }

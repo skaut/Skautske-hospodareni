@@ -1,0 +1,10 @@
+services:
+    - Model\Infrastructure\Repositories\Mail\GoogleRepository('', '')
+    - Model\Infrastructure\Repositories\Payment\GroupRepository
+    - Model\Google\Handlers\RemoveOAuthHandler
+
+    - class: Model\Payment\Subscribers\OAuthRemovedSubscriber
+      tags: [eventBus.subscriber]
+
+includes:
+    - ../../config/doctrine.neon
