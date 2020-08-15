@@ -221,7 +221,7 @@ jobs:
             - coding-standard
             - static-analysis
             - latte-lint
-#            - validate-mapping
+            - validate-mapping
         runs-on: ubuntu-18.04
         container:
             image: fmasa/lebeda:7.4-ci

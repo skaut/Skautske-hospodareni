@@ -14,7 +14,7 @@ doctrine:
     password: %database.password%
     dbname: %database.name%
 
-    schemaFilter: '~^(?!ac_object)~'
+    schemaFilter: '~^(?!ac_object|pa_smtp|pa_group)~'
 
     metadata:
         Model\Cashbook: %domainModelDir%/Cashbook
