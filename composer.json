@@ -77,7 +77,8 @@
     },
     "extra": {
         "google/apiclient-services": [
-            "Gmail"
+            "Gmail",
+            "Oauth2"
         ]
     }
 }
