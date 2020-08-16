@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Stubs;
 
-use Google_Service_Gmail;
-use Mockery as m;
+use Google_Client;
 use Model\Common\UnitId;
 use Model\Google\OAuth;
 use Model\Google\OAuthId;
@@ -14,15 +13,6 @@ use function array_fill_keys;
 
 class GoogleRepositoryStub implements IGoogleRepository
 {
-    public function getAuthUrl() : string
-    {
-        return '';
-    }
-
-    public function saveAuthCode(string $code, UnitId $unitId) : void
-    {
-    }
-
     public function save(OAuth $oAuth) : void
     {
     }
@@ -57,13 +47,13 @@ class GoogleRepositoryStub implements IGoogleRepository
     {
     }
 
-    public function getGmailService(OAuth $oAuth) : Google_Service_Gmail
-    {
-         return m::mock(Google_Service_Gmail::class);
-    }
-
     private function createOAuth(?UnitId $unitId = null, ?string $email = null) : OAuth
     {
         return OAuth::create($unitId ?? new UnitId(123), 'XXXX', $email ?? 'test@hospodareni.loc');
+    }
+
+    public function getClient() : Google_Client
+    {
+        // TODO: Implement getClient() method.
     }
 }

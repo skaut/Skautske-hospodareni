@@ -7,18 +7,14 @@ namespace Model\Infrastructure\Repositories\Mail;
 use Doctrine\ORM\EntityManager;
 use Google_Client;
 use Google_Service_Gmail;
-use Google_Service_Oauth2;
 use Model\Common\UnitId;
 use Model\Google\Exception\OAuthNotFound;
-use Model\Google\InvalidOAuth;
 use Model\Google\OAuth;
 use Model\Google\OAuthId;
 use Model\Mail\Repositories\IGoogleRepository;
 use function array_fill_keys;
-use function array_key_exists;
 use function assert;
 use function count;
-use function sprintf;
 
 final class GoogleRepository implements IGoogleRepository
 {
@@ -26,33 +22,14 @@ final class GoogleRepository implements IGoogleRepository
     private string $tokenUri;
     private EntityManager $entityManager;
 
+
+    private ?Google_Client $client;
+
     public function __construct(string $credentialsPath, string $tokenUri, EntityManager $em)
     {
         $this->credentialsPath = $credentialsPath;
         $this->tokenUri        = $tokenUri;
         $this->entityManager   = $em;
-    }
-
-    public function getAuthUrl() : string
-    {
-        return $this->getClient()->createAuthUrl();
-    }
-
-    public function saveAuthCode(string $code, UnitId $unitId) : void
-    {
-        $client = $this->getClient();
-        $token  = $client->fetchAccessTokenWithAuthCode($code);
-        $client->setAccessToken($token);
-        $service = new Google_Service_Oauth2($client);
-        $email   = $service->userinfo->get()->getEmail();
-
-        try {
-            $oAuth = $this->findByUnitAndEmail($unitId, $email);
-            $oAuth->setToken($token['refresh_token']);
-        } catch (OAuthNotFound $exc) {
-            $oAuth = OAuth::create($unitId, $token['refresh_token'], $email);
-        }
-        $this->save($oAuth);
     }
 
     public function save(OAuth $oAuth) : void
@@ -121,19 +98,7 @@ final class GoogleRepository implements IGoogleRepository
         $this->entityManager->flush();
     }
 
-    public function getGmailService(OAuth $oAuth) : Google_Service_Gmail
-    {
-        $client = $this->getClient();
-        $token  = $client->fetchAccessTokenWithRefreshToken($oAuth->getToken());
-        if (array_key_exists('error', $token)) {
-            throw new InvalidOAuth(sprintf('%s => %s', $token['error'], $token['error_description']));
-        }
-        $client->setAccessToken($token);
-
-        return new Google_Service_Gmail($client);
-    }
-
-    private function getClient() : Google_Client
+    public function getClient() : Google_Client
     {
         $client = new Google_Client();
         $client->setApplicationName('Skautské hospodaření online');

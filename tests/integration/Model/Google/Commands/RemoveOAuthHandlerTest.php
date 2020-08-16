@@ -6,7 +6,6 @@ namespace Model\Google\Handlers;
 
 use CommandHandlerTest;
 use Model\Google\Commands\RemoveOAuth;
-use Model\Google\Exception\OAuthNotFound;
 use Model\Google\OAuth;
 use Model\Google\OAuthId;
 use Model\Payment\Group;
@@ -48,7 +47,6 @@ class RemoveOAuthHandlerTest extends CommandHandlerTest
 
     public function testRemoveNonexistentOAuthSilentlyProceeds() : void
     {
-        $this->expectException(OAuthNotFound::class);
         $this->commandBus->handle(new RemoveOAuth(OAuthId::generate()));
     }
 }

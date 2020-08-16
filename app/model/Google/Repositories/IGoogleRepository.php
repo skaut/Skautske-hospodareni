@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Mail\Repositories;
 
-use Google_Service_Gmail;
+use Google_Client;
 use Model\Common\UnitId;
 use Model\Google\Exception\OAuthNotFound;
 use Model\Google\OAuth;
@@ -12,10 +12,6 @@ use Model\Google\OAuthId;
 
 interface IGoogleRepository
 {
-    public function getAuthUrl() : string;
-
-    public function saveAuthCode(string $code, UnitId $unitId) : void;
-
     public function save(OAuth $oAuth) : void;
 
     /** @throws OAuthNotFound */
@@ -35,5 +31,5 @@ interface IGoogleRepository
 
     public function remove(OAuth $oAuth) : void;
 
-    public function getGmailService(OAuth $oAuth) : Google_Service_Gmail;
+    public function getClient() : Google_Client;
 }

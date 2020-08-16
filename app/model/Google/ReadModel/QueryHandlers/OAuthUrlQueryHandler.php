@@ -19,6 +19,6 @@ final class OAuthUrlQueryHandler
 
     public function __invoke(OAuthUrlQuery $query) : string
     {
-        return $this->repository->getAuthUrl();
+        return $this->repository->getClient()->createAuthUrl();
     }
 }

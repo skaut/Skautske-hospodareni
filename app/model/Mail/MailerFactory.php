@@ -33,6 +33,6 @@ class MailerFactory implements IMailerFactory
             return $this->debugMailer;
         }
 
-        return new OAuthMailer($this->googleRepository->getGmailService($oAuth));
+        return new OAuthMailer($this->googleRepository, $oAuth);
     }
 }
