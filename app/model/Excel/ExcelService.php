@@ -106,7 +106,7 @@ class ExcelService
         $sheet->setCellValue('A1', 'P.č.')
             ->setCellValue('B1', 'Jméno')
             ->setCellValue('C1', 'Příjmení')
-            ->setCellValue('D1', 'Příjmení')
+            ->setCellValue('D1', 'Přezdívka')
             ->setCellValue('E1', 'Ulice')
             ->setCellValue('F1', 'Město')
             ->setCellValue('G1', 'PSČ')
