@@ -157,17 +157,17 @@ $showUnits bool - zobrazovat číslo jednotky
                     <tr>
                         {var $total = $totalPayment - $totalRepayment}
                         <td colspan="{$showUnits ? 4 : 3}" class="b">Celkem: {= count($participants)} osob</td>
-                        <td n:if="$isAllowRepayment" class="text-right" id="payment-total">{$totalPayment}</td>
-                        <td n:if="$isAllowIsAccount" class="text-right" id="repayment-total">{$totalRepayment}</td>
+                        <td n:if="$isAllowRepayment" class="text-right" id="payment-total">{$totalPayment|price:false}</td>
+                        <td n:if="$isAllowIsAccount" class="text-right" id="repayment-total">{$totalRepayment|price:false}</td>
                         {if !$isAllowRepayment}
-                            <td class="font-weight-bold text-right"><span id="total-total">{$total}</span></td>
+                            <td class="font-weight-bold text-right"><span id="total-total">{$total|price:false}</span></td>
                             <td></td>
                         {else}
                         <td n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete"></td>
                     </tr>
                     <tr>
                         <td colspan="{if $showUnits}4{else}3{/if}"></td>
-                        <td colspan="3" class="font-weight-bold text-right"><span id="total-total">{$total}</span></td>
+                        <td colspan="3" class="font-weight-bold text-right"><span id="total-total">{$total|price:false}</span></td>
                         <td n:if="$isAllowParticipantUpdate || $isAllowParticipantDelete"></td>
                         {/if}
                     </tr>
