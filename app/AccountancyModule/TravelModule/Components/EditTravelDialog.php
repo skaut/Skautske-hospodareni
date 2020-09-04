@@ -104,7 +104,7 @@ final class EditTravelDialog extends Dialog
             $values->startPlace,
             $values->endPlace
         );
-
+        $this->getPresenter()->redrawControl('travelsTable');
         $this->flashMessage('Cesta byla upravena.');
         $this->hide();
     }
