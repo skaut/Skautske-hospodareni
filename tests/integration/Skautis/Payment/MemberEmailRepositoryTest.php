@@ -22,11 +22,10 @@ final class MemberEmailRepositoryTest extends SkautisTest
 
         $this->assertSame(
             [
-                'hlavni@email.cz' => 'hlavni@email.cz – E-mail (hlavní)',
-                'dalsi@email.cz' => 'dalsi@email.cz – E-mail (další)',
-                'matka@email.cz' => 'matka@email.cz – E-mail matky',
+                'matka@ditetova.czz' => 'matka@ditetova.czz – Matka',
+                'jan@dite.czz' => 'jan@dite.czz – E-mail (hlavní)',
             ],
-            $this->getRepository()->findByMember(143550)
+            $this->getRepository()->findByMember(147006)
         );
     }
 

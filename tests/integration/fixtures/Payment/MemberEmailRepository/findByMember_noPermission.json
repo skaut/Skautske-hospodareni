@@ -29,4 +29,35 @@
         },
         "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" xmlns:xsd=\"http:\/\/www.w3.org\/2001\/XMLSchema\"><soap:Body><soap:Fault><soap:Code><soap:Value>soap:Receiver<\/soap:Value><\/soap:Code><soap:Reason><soap:Text xml:lang=\"en\">Server was unable to process request. ---&gt; Nem\u00e1te opr\u00e1vn\u011bn\u00ed k akci OU_PersonContact_ALL_Person nad z\u00e1znamem ID=1!\r\nP\u0159i na\u010dten\u00ed objekt\u016f OU_PersonContact nastala chyba<\/soap:Text><\/soap:Reason><soap:Detail \/><\/soap:Fault><\/soap:Body><\/soap:Envelope>"
     }
+},{
+    "request": {
+        "method": "POST",
+        "url": "https:\/\/test-is.skaut.cz\/JunakWebservice\/OrganizationUnit.asmx",
+        "headers": {
+            "Host": "test-is.skaut.cz",
+            "Content-Type": "application\/soap+xml; charset=utf-8; action=\"https:\/\/is.skaut.cz\/PersonContactAll\""
+        },
+        "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<env:Envelope xmlns:env=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:ns1=\"https:\/\/is.skaut.cz\/\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\"><env:Body><ns1:PersonContactAll><ns1:personContactAllInput><ns1:ID_Login>3eb6605b-4df9-431f-a8a7-3447c308ac77<\/ns1:ID_Login><ns1:ID_Person>1<\/ns1:ID_Person><ns1:IsCatalog xsi:nil=\"true\"\/><ns1:IsMain xsi:nil=\"true\"\/><\/ns1:personContactAllInput><\/ns1:PersonContactAll><\/env:Body><\/env:Envelope>\n"
+    },
+    "response": {
+        "status": {
+            "http_version": "2",
+            "code": "500",
+            "message": ""
+        },
+        "headers": {
+            "cache-control": "private",
+            "content-type": "application\/soap+xml; charset=utf-8",
+            "server": "Microsoft-IIS\/10.0",
+            "x-aspnet-version": "4.0.30319",
+            "x-powered-by": "ASP.NET",
+            "strict-transport-security": "max-age=31536000",
+            "access-control-allow-origin": "*",
+            "access-control-allow-headers": "Content-Type",
+            "access-control-allow-methods": "POST",
+            "date": "Wed, 16 Sep 2020 06:40:34 GMT",
+            "content-length": "586"
+        },
+        "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" xmlns:xsd=\"http:\/\/www.w3.org\/2001\/XMLSchema\"><soap:Body><soap:Fault><soap:Code><soap:Value>soap:Receiver<\/soap:Value><\/soap:Code><soap:Reason><soap:Text xml:lang=\"en\">Server was unable to process request. ---&gt; Nem\u00e1te opr\u00e1vn\u011bn\u00ed k akci OU_PersonContact_ALL_Person nad z\u00e1znamem ID=1!\r\nP\u0159i na\u010dten\u00ed objekt\u016f OU_PersonContact nastala chyba<\/soap:Text><\/soap:Reason><soap:Detail \/><\/soap:Fault><\/soap:Body><\/soap:Envelope>"
+    }
 }]
