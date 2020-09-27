@@ -48,7 +48,7 @@
 {ifset $missingCategories}
     {control categoryAutocomputedControl}
 {else}
-    <div class="alert alert-warning mb-5">
+    <div class="alert alert-warning mb-5" n:if="!$isConsistent">
         <h4 class="alert-heading">Nekonzistentní data!</h4>
         <p class="mb-0">Součet paragonů v kategoriích neodpovídá částkám uvedeným ve SkautISu.</p>
         {if $isEditable}
