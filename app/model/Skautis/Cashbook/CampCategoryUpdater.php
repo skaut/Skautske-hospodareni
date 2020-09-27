@@ -9,15 +9,18 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Repositories\ICampCategoryRepository;
 use Model\Cashbook\Services\ICampCategoryUpdater;
+use Model\Skautis\Exception\AmountMustBeGreaterThanZero;
 use Model\Skautis\Mapper;
 use Model\Utils\MoneyFactory;
 use Skautis\Skautis;
+use Skautis\Wsdl\WsdlException;
 use const ARRAY_FILTER_USE_BOTH;
 use function array_diff;
 use function array_fill_keys;
 use function array_filter;
 use function array_keys;
 use function count;
+use function preg_match;
 
 final class CampCategoryUpdater implements ICampCategoryUpdater
 {
@@ -66,13 +69,20 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
             throw new InvalidArgumentException('Camp #' . $cashbookId . " doesn't exist");
         }
 
-        foreach ($cashbookTotals as $categoryId => $total) {
-            $this->skautis->event->EventCampStatementUpdate([
-                'ID' => $categoryId,
-                'ID_EventCamp' => $campSkautisId,
-                'Ammount' => $total,
-                'IsEstimate' => false,
-            ], 'eventCampStatement');
+        try {
+            foreach ($cashbookTotals as $categoryId => $total) {
+                $this->skautis->event->EventCampStatementUpdate([
+                    'ID' => $categoryId,
+                    'ID_EventCamp' => $campSkautisId,
+                    'Ammount' => $total,
+                    'IsEstimate' => false,
+                ], 'eventCampStatement');
+            }
+        } catch (WsdlException $exc) {
+            if (! preg_match('/Chyba validace \(EventCampStatement_AmmountMustBeGreatherThanZero\)/', $exc->getMessage())) {
+                throw $exc;
+            }
+            throw new AmountMustBeGreaterThanZero();
         }
     }
 

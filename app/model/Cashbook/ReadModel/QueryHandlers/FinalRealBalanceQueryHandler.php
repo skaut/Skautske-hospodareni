@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use eGen\MessageBus\Bus\QueryBus;
-use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
-use Model\DTO\Cashbook\Chit;
+use Model\DTO\Cashbook\CategorySummary;
 use Model\Utils\MoneyFactory;
 use Money\Money;
 use function array_filter;
@@ -26,14 +26,15 @@ class FinalRealBalanceQueryHandler
 
     public function __invoke(FinalRealBalanceQuery $query) : Money
     {
-        $chits = $this->queryBus->handle(ChitListQuery::all($query->getCashbookId()));
+        $categories = $this->queryBus->handle(new CategoriesSummaryQuery($query->getCashbookId()));
 
-        $chits   = array_filter($chits, function (Chit $chit) : bool {
-            return ! $chit->isVirtual();
+        $categories = array_filter($categories, function (CategorySummary $categorySummary) : bool {
+            return ! $categorySummary->isVirtual();
         });
-        $balance = array_sum(array_map(function (Chit $chit) : float {
-            return $chit->getSignedAmount();
-        }, $chits));
+
+        $balance = array_sum(array_map(function (CategorySummary $categorySummary) : float {
+            return ($categorySummary->isIncome() ? 1 : -1) * MoneyFactory::toFloat($categorySummary->getTotal());
+        }, $categories));
 
         return MoneyFactory::fromFloat($balance);
     }

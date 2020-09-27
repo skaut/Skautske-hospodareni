@@ -30,6 +30,7 @@ use Model\Common\UnitId;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
 use Model\DTO\Cashbook\ChitItem;
+use Model\Skautis\Exception\AmountMustBeGreaterThanZero;
 use NasExt\Forms\DependentData;
 use Nette\Application\BadRequestException;
 use Nette\Forms\Container;
@@ -322,6 +323,8 @@ final class ChitForm extends BaseControl
             $this->logger->error(sprintf('Can\'t add chit to cashbook (%s: %s)', get_class($exc), $exc->getMessage()));
         } catch (ChitLocked $e) {
             $this->flashMessage('Nelze upravit zamčený paragon', 'error');
+        } catch (AmountMustBeGreaterThanZero $ex) {
+            $form->addError('Nelze uložit doklad, protože kategorie ve skautisu nemůže být záporná!');
         } catch (WsdlException $se) {
             $this->flashMessage('Nepodařilo se upravit záznamy ve skautisu.', 'danger');
         } catch (DuplicitCategory $e) {
