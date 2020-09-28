@@ -33,6 +33,7 @@ use function array_count_values;
 use function array_filter;
 use function array_map;
 use function assert;
+use function count;
 
 /**
  * @method onEditButtonClicked(int $chitId)
@@ -113,6 +114,7 @@ class ChitListControl extends BaseControl
             'canMassExport' => $this->canMassExport(),
             'aid' => (int) $this->getPresenter()->getParameter('aid'), // TODO: rework actions to use cashbook ID
             'chits' => $chits,
+            'hasExportScans' => count(array_filter($chits, fn (Chit $chit) => $chit->getScansCount() > 0)) > 0,
             'paymentMethod' => $this->paymentMethod,
             'prefix' => $cashbook->getChitNumberPrefix($this->paymentMethod),
             'validInverseCashbookTypes' => InvertChitDialog::getValidInverseCashbookTypes(),
