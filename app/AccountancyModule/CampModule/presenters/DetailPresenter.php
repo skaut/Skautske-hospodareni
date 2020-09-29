@@ -70,6 +70,13 @@ class DetailPresenter extends BasePresenter
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->getCashbookId()));
         assert($cashbook instanceof Cashbook);
 
+        try {
+            $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId()));
+        } catch (MissingCategory $exc) {
+            $finalRealBalance  = null;
+            $missingCategories = true;
+        }
+
         $this->template->setParameters([
             'troops' => $troops,
             'skautISUrl'   => $this->userService->getSkautisUrl(),
@@ -82,7 +89,7 @@ class DetailPresenter extends BasePresenter
                 $this->event->getRegistrationNumber(),
                 $this->event->getStartDate()
             )),
-            'finalRealBalance' => $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId())),
+            'finalRealBalance' => $finalRealBalance,
             'prefix' => $cashbook->getChitNumberPrefix(PaymentMethod::CASH()),
             'missingCategories' => $missingCategories,
         ]);

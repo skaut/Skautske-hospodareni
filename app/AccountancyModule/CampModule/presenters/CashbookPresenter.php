@@ -15,6 +15,7 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\ChitBody;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
+use Model\Cashbook\MissingCategory;
 use Model\Cashbook\ParticipantType;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CampParticipantCategoryIdQuery;
@@ -61,17 +62,23 @@ class CashbookPresenter extends BasePresenter
 
     public function renderDefault(int $aid) : void
     {
-        $finalBalance     = $this->queryBus->handle(new FinalCashBalanceQuery($this->getCashbookId()));
-        $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId()));
-
-        assert($finalBalance instanceof Money && $finalRealBalance instanceof Money);
+        $finalBalance      = $this->queryBus->handle(new FinalCashBalanceQuery($this->getCashbookId()));
+        $missingCategories = $this->isRealTotalCostAutoComputed;
+        try {
+            $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId()));
+            assert($finalRealBalance instanceof Money);
+        } catch (MissingCategory $exc) {
+            $finalRealBalance  = null;
+            $missingCategories = true;
+        }
+        assert($finalBalance instanceof Money);
 
         $this->template->setParameters([
             'isCashbookEmpty' => $this->isCashbookEmpty(),
             'cashbookId' => $this->getCashbookId()->toString(),
             'isInMinus' => $finalBalance->isNegative(),
             'isEditable' => $this->isEditable,
-            'missingCategories' => $this->isRealTotalCostAutoComputed,
+            'missingCategories' => $missingCategories,
             'finalRealBalance' => $finalRealBalance,
         ]);
     }
