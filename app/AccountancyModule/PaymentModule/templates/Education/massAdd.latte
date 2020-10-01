@@ -1,0 +1,24 @@
+{block #content}
+{include '../@groupBackLink.latte', group => $group}
+
+<div class="row">
+    <div class="col-lg">
+        <h1 n:inner-block="title">Přidat osoby z účastníků</h1>
+    </div>
+    <div class="col-lg">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            Účastníci, kteří už mají v této skupině platbu, nejsou zobrazeni.
+        </div>
+    </div>
+</div>
+
+<h3>{$unitPairs[$unitId]}</h3>
+
+{if $showForm}
+    {control massAddForm}
+{else}
+    <span class="alert alert-warning">Nejsou dostupní žádní účastníci, kteří by neměli založenou platbu.</span>
+{/if}
+
+

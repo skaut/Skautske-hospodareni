@@ -8,6 +8,7 @@ use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use Doctrine\ORM\Mapping as ORM;
 use Fmasa\DoctrineNullableEmbeddables\Annotations\Nullable;
 use Model\Event\SkautisCampId;
+use Model\Event\SkautisEducationId;
 use Model\Event\SkautisEventId;
 
 /**
@@ -39,12 +40,17 @@ final class SkautisEntity
 
     public static function fromCampId(SkautisCampId $campId) : self
     {
-        return new self($campId->toInt(), Type::get(Type::CAMP));
+        return new self($campId->toInt(), Type::CAMP());
     }
 
     public static function fromEventId(SkautisEventId $eventId) : self
     {
-        return new self($eventId->toInt(), Type::get(Type::EVENT));
+        return new self($eventId->toInt(), Type::EVENT());
+    }
+
+    public static function fromEducationId(SkautisEducationId $educationId) : self
+    {
+        return new self($educationId->toInt(), Type::EDUCATION());
     }
 
     public function getId() : int

@@ -58,6 +58,7 @@ library.add(
     fas.faShoppingCart,
     fas.faThList,
     fas.faEllipsisV,
+    fas.faUserGraduate,
 
     // Regular icons
     far.faCalendar,
