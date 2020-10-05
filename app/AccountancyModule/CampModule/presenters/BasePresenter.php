@@ -42,10 +42,8 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
                 'isEditable' => $this->isEditable,
             ]);
         } catch (CampNotFound $exc) {
-            $this->setView('accessDenied');
             $this->template->setParameters(['message' => 'Nemáte oprávnění načíst tábor nebo tábor neexsituje.']);
-
-            return;
+            $this->forward('accessDenied');
         }
     }
 
