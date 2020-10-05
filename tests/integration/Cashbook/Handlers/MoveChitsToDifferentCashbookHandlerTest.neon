@@ -2,6 +2,10 @@ services:
     - Model\Infrastructure\Repositories\Cashbook\CashbookRepository
     - class: Model\Cashbook\Handlers\Cashbook\MoveChitsToDifferentCashbookHandler
       tags: [commandBus.handler]
+    - class: Model\Cashbook\Handlers\Cashbook\AddChitScanHandler
+      tags: [commandBus.handler]
+    - Model\Infrastructure\Services\Common\FlysystemScanStorage
+    - League\Flysystem\Filesystem(League\Flysystem\Adapter\NullAdapter())
 
 includes:
     - ../../config/doctrine.neon
