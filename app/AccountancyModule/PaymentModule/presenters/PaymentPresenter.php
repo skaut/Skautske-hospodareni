@@ -27,6 +27,7 @@ use Model\Payment\InvalidBankAccount;
 use Model\Payment\InvalidSmtp;
 use Model\Payment\MailCredentialsNotSet;
 use Model\Payment\MailingService;
+use Model\Payment\Payment\State;
 use Model\Payment\PaymentClosed;
 use Model\Payment\PaymentNotFound;
 use Model\Payment\ReadModel\Queries\MembersWithoutPaymentInGroupQuery;
@@ -437,6 +438,6 @@ class PaymentPresenter extends BasePresenter
      */
     private function countNotSentPayments(array $payments) : int
     {
-        return count(array_filter($payments, fn (Payment $payment) => $payment->getSentEmails() === []));
+        return count(array_filter($payments, fn (Payment $payment) => $payment->getSentEmails() === [] && $payment->getState() === State::PREPARING));
     }
 }
