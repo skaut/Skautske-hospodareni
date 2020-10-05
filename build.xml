@@ -102,7 +102,7 @@
     <target name="deploy:cleanup">
         <echo message="Getting previous releases"/>
 
-        <property name="command" value="echo $(ssh -p ${deploy.ssh.port} ${deploy.ssh.target} 'ls ${deploy.releasesDir}' | grep -v '^${deploy.releaseHash}$')"/>
+        <property name="command" value="echo $(ssh -i ${deploy.ssh.privateKeyFile} -p ${deploy.ssh.port} ${deploy.ssh.target} 'ls ${deploy.releasesDir}' | grep -v '^${deploy.releaseHash}$')"/>
         <echo message="${command}"/>
         <exec outputProperty="previousReleases" command="${command}" checkreturn="true"/>
 
