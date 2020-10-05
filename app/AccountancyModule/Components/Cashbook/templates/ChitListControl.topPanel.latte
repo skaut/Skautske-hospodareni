@@ -21,7 +21,7 @@
         </button>
 
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="exportButton">
-            <a n:class="dropdown-item, count($chits) === 0 ? disabled"
+            <a n:class="dropdown-item, ! $hasExportScans ? disabled"
                     href="{plink :Accountancy:CashbookExport:exportScans $cashbookId, $paymentMethod->toString ()}" target="_blank">
                 <i class="far fa-file-archive"></i>
                 Skeny dokladů.zip
