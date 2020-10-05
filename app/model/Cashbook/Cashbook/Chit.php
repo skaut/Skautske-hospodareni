@@ -17,6 +17,7 @@ use Model\Common\FilePath;
 use Model\Common\ScanNotFound;
 use Model\Common\ShouldNotHappen;
 use RuntimeException;
+use function array_map;
 use function count;
 use function implode;
 use function in_array;
@@ -107,7 +108,7 @@ class Chit
         $this->body          = $body;
         $this->paymentMethod = $paymentMethod;
         $this->items         = new ArrayCollection($items);
-        $this->scans         = new ArrayCollection($scans);
+        $this->scans         = new ArrayCollection(array_map(fn(ChitScan $scan) => new ChitScan($this, $scan->getFilePath()), $scans));
     }
 
     /**
@@ -214,9 +215,7 @@ class Chit
             $this->items->map(function (ChitItem $item) : ChitItem {
                 return clone $item;
             })->toArray(),
-            $this->scans->map(function (ChitScan $scan) : ChitScan {
-                return clone $scan;
-            })->toArray()
+            $this->scans->toArray()
         );
     }
 
@@ -236,9 +235,7 @@ class Chit
             return $item->withCategory($category);
         });
 
-        $scans = $this->scans->map(function (ChitScan $scan) : ChitScan {
-            return clone $scan;
-        })->toArray();
+        $scans = $this->scans->toArray();
 
         return new self($newCashbook, $this->body, $this->paymentMethod, $items->toArray(), $scans);
     }
@@ -249,16 +246,13 @@ class Chit
         foreach ($this->items as $item) {
             $newItems[] = $item->withCategory($category);
         }
-        $scans = $this->scans->map(function (ChitScan $scan) : ChitScan {
-            return clone $scan;
-        })->toArray();
 
         return new self(
             $cashbook,
             $this->body->withoutChitNumber(),
             $this->paymentMethod,
             $newItems,
-            $scans
+            $this->scans->toArray(),
         );
     }
 

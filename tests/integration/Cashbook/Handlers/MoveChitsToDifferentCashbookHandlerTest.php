@@ -11,8 +11,10 @@ use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
+use Model\Cashbook\Commands\Cashbook\AddChitScan;
 use Model\Cashbook\Commands\Cashbook\MoveChitsToDifferentCashbook;
 use Model\Cashbook\Repositories\ICashbookRepository;
+use Nette\Utils\Image;
 
 final class MoveChitsToDifferentCashbookHandlerTest extends CommandHandlerTest
 {
@@ -42,7 +44,16 @@ final class MoveChitsToDifferentCashbookHandlerTest extends CommandHandlerTest
             );
         }
 
+        // https://github.com/skaut/Skautske-hospodareni/issues/1478
         $this->cashbooks->save($sourceCashbook);
+        $this->commandBus->handle(
+            new AddChitScan(
+                $sourceCashbookId,
+                1,
+                'foo.jpg',
+                Image::fromBlank(1, 1)->toString(),
+            )
+        );
 
         $this->commandBus->handle(
             new MoveChitsToDifferentCashbook([1, 3], $sourceCashbookId, $targetCashbookId)
@@ -55,6 +66,7 @@ final class MoveChitsToDifferentCashbookHandlerTest extends CommandHandlerTest
 
         $this->assertCount(1, $sourceCashbook->getChits());
         $this->assertCount(2, $targetCashbook->getChits());
+        $this->assertCount(1, $targetCashbook->getChits()[0]->getScans());
     }
 
     /**
