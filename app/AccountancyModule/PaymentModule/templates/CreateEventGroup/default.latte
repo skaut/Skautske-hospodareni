@@ -1,5 +1,7 @@
+{varType Model\Event\Event $event}
+
 {block content}
 <h1 n:inner-block="title">Nová skupina plateb
-    <small>{$event->displayName}</small>
+    <small>{$event->getDisplayName()}</small>
 </h1>
 {control newGroupForm}
