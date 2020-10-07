@@ -12,7 +12,6 @@ use Model\Payment\ReadModel\Queries\MemberEmailsQuery;
 use Model\PaymentService;
 
 use function assert;
-use function count;
 
 final class AddEventParticipantsPresenter extends BasePresenter
 {
@@ -20,6 +19,9 @@ final class AddEventParticipantsPresenter extends BasePresenter
     private IMassAddFormFactory $formFactory;
 
     private int $groupId;
+
+    /** @var Participant[] */
+    private array $participants;
 
     public function __construct(PaymentService $model, IMassAddFormFactory $formFactory)
     {
@@ -31,7 +33,7 @@ final class AddEventParticipantsPresenter extends BasePresenter
     /**
      * @param int $id ID of payment group
      */
-    public function actionMassAdd(int $id): void
+    public function actionDefault(int $id): void
     {
         $group = $this->model->getGroup($id);
 
@@ -40,14 +42,20 @@ final class AddEventParticipantsPresenter extends BasePresenter
             $this->redirect('GroupList:');
         }
 
-        $this->groupId = $id;
+        $this->groupId      = $id;
+        $this->participants = $this->queryBus->handle(new EventParticipantsWithoutPaymentQuery($id));
 
-        $participants = $this->queryBus->handle(new EventParticipantsWithoutPaymentQuery($id));
+        $this->template->setParameters([
+            'group' => $group,
+            'showForm' => $this->participants !== [],
+        ]);
+    }
 
-        $form = $this['massAddForm'];
-        assert($form instanceof MassAddForm);
+    protected function createComponentMassAddForm(): MassAddForm
+    {
+        $form = $this->formFactory->create($this->groupId);
 
-        foreach ($participants as $participant) {
+        foreach ($this->participants as $participant) {
             assert($participant instanceof Participant);
 
             $amount = $participant->getPayment();
@@ -59,14 +67,6 @@ final class AddEventParticipantsPresenter extends BasePresenter
             );
         }
 
-        $this->template->setParameters([
-            'group' => $group,
-            'showForm' => count($participants) !== 0,
-        ]);
-    }
-
-    protected function createComponentMassAddForm(): MassAddForm
-    {
-        return $this->formFactory->create($this->groupId);
+        return $form;
     }
 }
