@@ -25,7 +25,7 @@ final class CreateCampGroupPresenter extends BasePresenter
 
     public function actionDefault(int $campId): void
     {
-        $camps = $this->getCampIdsWithoutGroup();
+        $camps = $this->queryBus->handle(new CampsWithoutGroupQuery(Date::today()->year));
 
         if (! $this->isEditable || ! isset($camps[$campId])) {
             $this->flashMessage('Pro tento tábor není možné vytvořit skupinu plateb', 'danger');
@@ -38,21 +38,10 @@ final class CreateCampGroupPresenter extends BasePresenter
 
     protected function createComponentForm(): GroupForm
     {
-        $form = $this->formFactory->create(
-            $this->getCurrentUnitId(),
-            SkautisEntity::fromCampId($this->camp->getId())
-        );
+        $form = $this->formFactory->create($this->getCurrentUnitId(), SkautisEntity::fromCampId($this->camp->getId()));
 
         $form->fillName($this->camp->getDisplayName());
 
         return $form;
-    }
-
-    /**
-     * @return array<int, Camp> Camps indexed by ID
-     */
-    private function getCampIdsWithoutGroup(): array
-    {
-        return $this->queryBus->handle(new CampsWithoutGroupQuery(Date::today()->year));
     }
 }
