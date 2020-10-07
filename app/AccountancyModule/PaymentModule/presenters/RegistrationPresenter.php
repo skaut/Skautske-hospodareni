@@ -54,7 +54,7 @@ class RegistrationPresenter extends BasePresenter
     protected function startup(): void
     {
         parent::startup();
-        $this->readUnits = $units = $this->unitService->getReadUnits($this->user);
+        $this->readUnits = $this->unitService->getReadUnits($this->user);
         $this->template->setParameters([
             'unitPairs' => $this->readUnits,
         ]);
