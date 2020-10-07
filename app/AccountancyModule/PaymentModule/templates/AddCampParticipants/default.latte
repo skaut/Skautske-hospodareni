@@ -1,3 +1,7 @@
+{varType Model\Unit\Unit $unit}
+{varType Model\DTO\Payment\Group $group}
+{varType bool $showForm}
+
 {block #content}
 {include '../@groupBackLink.latte', group => $group}
 
@@ -13,7 +17,7 @@
     </div>
 </div>
 
-<h3>{$unitPairs[$unitId]}</h3>
+<h3>{$unit->getDisplayName()}</h3>
 
 {if $showForm}
     {control massAddForm}

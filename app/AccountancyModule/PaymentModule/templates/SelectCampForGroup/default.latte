@@ -1,3 +1,4 @@
+{varType Model\Event\Camp[] $camps}
 {block content}
 <h1 n:inner-block="title">Nová táborová skupina plateb</h1>
 
@@ -19,7 +20,7 @@
                                     <small>{$camp->unitName}</small>
                                 </div>
                                 <div>
-                                    <a n:href="newGroup $camp->id->toInt()" class="btn btn-outline-primary">Vytvořit skupinu</a>
+                                    <a n:href="CreateCampGroup: $camp->id->toInt()" class="btn btn-outline-primary">Vytvořit skupinu</a>
                                 </div>
                             </div>
                         </li>

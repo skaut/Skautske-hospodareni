@@ -92,7 +92,7 @@
             </button>
             <div class="dropdown-menu" aria-labelledby="addPayments">
                 <a n:if="$group->type === 'camp'"
-                        n:href="Camp:massAdd $group->id" class="dropdown-item">… za účastníka</a>
+                        n:href="AddCampParticipants: $group->id" class="dropdown-item">… za účastníka</a>
 
                 <a n:if="$group->type === 'event'"
                         n:href="Event:massAdd $group->id" class="dropdown-item">… za účastníka</a>
