@@ -8,22 +8,24 @@ use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
 use Model\DTO\Participant\Participant;
+use Model\DTO\Payment\Group;
 use Model\Event\SkautisCampId;
 use Model\Payment\ReadModel\Queries\MemberEmailsQuery;
 use Model\PaymentService;
 use Model\Unit\ReadModel\Queries\UnitQuery;
 
 use function array_filter;
-use function assert;
 use function in_array;
 
 final class AddCampParticipantsPresenter extends BasePresenter
 {
-    private int $id;
-
     private PaymentService $model;
-
     private IMassAddFormFactory $formFactory;
+
+    private Group $group;
+
+    /** @var Participant[] */
+    private array $participants;
 
     public function __construct(PaymentService $model, IMassAddFormFactory $formFactory)
     {
@@ -34,8 +36,6 @@ final class AddCampParticipantsPresenter extends BasePresenter
 
     public function actionDefault(int $id): void
     {
-        $this->id = $id;
-
         $group = $this->model->getGroup($id);
 
         if ($group === null || ! $this->isEditable) {
@@ -48,22 +48,27 @@ final class AddCampParticipantsPresenter extends BasePresenter
             $this->redirect('Default:');
         }
 
-        $participants = $this->queryBus->handle(
-            new CampParticipantListQuery(
-                new SkautisCampId($group->getSkautisId())
-            )
+        $this->group        = $group;
+        $this->participants = $this->queryBus->handle(
+            new CampParticipantListQuery(new SkautisCampId($group->getSkautisId()))
         );
 
-        $form = $this['massAddForm'];
-        assert($form instanceof MassAddForm);
+        $this->template->setParameters([
+            'unit' => $this->queryBus->handle(new UnitQuery($this->getCurrentUnitId()->toInt())),
+            'group' => $group,
+            'showForm' => $this->participants !== [],
+        ]);
+    }
 
-        $personsWithPayment = $this->model->getPersonsWithActivePayment($id);
+    protected function createComponentMassAddForm(): MassAddForm
+    {
+        $form = $this->formFactory->create($this->group->getId());
+
+        $personsWithPayment = $this->model->getPersonsWithActivePayment($this->group->getId());
 
         $participants = array_filter(
-            $participants,
-            function (Participant $p) use ($personsWithPayment) {
-                return ! in_array($p->getPersonId(), $personsWithPayment, true);
-            }
+            $this->participants,
+            fn (Participant $p) => ! in_array($p->getPersonId(), $personsWithPayment, true),
         );
 
         foreach ($participants as $p) {
@@ -76,15 +81,6 @@ final class AddCampParticipantsPresenter extends BasePresenter
             );
         }
 
-        $this->template->setParameters([
-            'unit' => $this->queryBus->handle(new UnitQuery($this->getCurrentUnitId()->toInt())),
-            'group'    => $group,
-            'showForm' => ! empty($participants),
-        ]);
-    }
-
-    protected function createComponentMassAddForm(): MassAddForm
-    {
-        return $this->formFactory->create($this->id);
+        return $form;
     }
 }
