@@ -25,9 +25,6 @@ use function in_array;
 
 class CampPresenter extends BasePresenter
 {
-    /** @var string[] */
-    protected array $readUnits;
-
     private PaymentService $model;
 
     private IMassAddFormFactory $massAddFormFactory;
@@ -53,7 +50,7 @@ class CampPresenter extends BasePresenter
     {
         parent::startup();
         $this->template->setParameters([
-            'unitPairs' => $this->readUnits = $units = $this->unitService->getReadUnits($this->user),
+            'unitPairs' => $this->unitService->getReadUnits($this->user),
         ]);
     }
 
