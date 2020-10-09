@@ -62,10 +62,8 @@ final class EducationsWithoutGroupQueryHandler
     private function getEducationWithGroupIds(array $educations) : array
     {
         $skautisEntities = array_map(
-            function (Education $education) : SkautisEntity {
-                return SkautisEntity::fromEducationId($education->getId());
-            },
-            $educations
+            fn(Education $education) => SkautisEntity::fromEducationId($education->getId()),
+            $educations,
         );
 
         return array_map(
