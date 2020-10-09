@@ -144,7 +144,7 @@ class EducationPresenter extends BasePresenter
     }
 
     /**
-     * @return Education[]
+     * @return array<int, Education> (indexed by ID)
      */
     private function getEducationsWithoutGroup() : array
     {
