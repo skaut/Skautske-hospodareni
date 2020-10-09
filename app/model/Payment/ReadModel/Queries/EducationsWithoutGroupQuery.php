@@ -11,8 +11,7 @@ use Model\Payment\ReadModel\QueryHandlers\EducationsWithoutGroupQueryHandler;
  */
 final class EducationsWithoutGroupQuery
 {
-    /** @var int */
-    private $year;
+    private int $year;
 
     public function __construct(int $year)
     {
