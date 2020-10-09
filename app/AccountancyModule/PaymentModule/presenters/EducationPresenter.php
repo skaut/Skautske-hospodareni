@@ -34,8 +34,7 @@ class EducationPresenter extends BasePresenter
 
     private ?Education $education;
 
-    /** @var IGroupFormFactory */
-    private $groupFormFactory;
+    private IGroupFormFactory $groupFormFactory;
 
     public function __construct(
         PaymentService $model,
