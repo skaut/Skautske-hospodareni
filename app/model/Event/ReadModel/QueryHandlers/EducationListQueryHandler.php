@@ -12,8 +12,7 @@ use function is_object;
 
 class EducationListQueryHandler
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
     /** @var EducationFactory */
     private $educationFactory;
