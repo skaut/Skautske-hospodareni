@@ -22,11 +22,9 @@ use function count;
 
 final class EventPresenter extends BasePresenter
 {
-    /** @var Event|null */
-    private $event;
+    private ?Event $event;
 
-    /** @var int|null */
-    private $groupId;
+    private ?int $groupId;
 
     private IGroupFormFactory $groupFormFactory;
 

@@ -38,14 +38,11 @@ class Participant
 
     private string $lastName;
 
-    /** @var string|null */
-    private $nickName;
+    private ?string $nickName;
 
-    /** @var int|null */
-    private $age;
+    private ?int $age;
 
-    /** @var Date|null */
-    private $birthday;
+    private ?Date $birthday;
 
     private string $street;
 
@@ -63,8 +60,7 @@ class Participant
 
     private Payment $paymentObj;
 
-    /** @var string|null */
-    private $category;
+    private ?string $category;
 
     public function __construct(int $id, int $personId, string $firstName, string $lastName, ?string $nickName, ?int $age, ?Date $birthday, string $street, string $city, int $postcode, string $state, string $unit, string $unitRegistrationNumber, int $days, Payment $payment, ?string $category)
     {

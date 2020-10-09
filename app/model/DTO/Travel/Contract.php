@@ -30,11 +30,9 @@ class Contract
 
     private string $unitRepresentative;
 
-    /** @var Date|NULL */
-    private $since;
+    private ?Date $since;
 
-    /** @var Date|NULL */
-    private $until;
+    private ?Date $until;
 
     private int $templateVersion;
 

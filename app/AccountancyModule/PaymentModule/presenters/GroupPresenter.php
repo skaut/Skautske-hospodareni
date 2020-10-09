@@ -12,8 +12,7 @@ use Model\PaymentService;
 
 class GroupPresenter extends BasePresenter
 {
-    /** @var Group|null */
-    private $group;
+    private ?Group $group;
 
     private PaymentService $model;
 

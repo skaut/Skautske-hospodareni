@@ -12,8 +12,7 @@ final class Member
 
     private string $name;
 
-    /** @var Date|null */
-    private $birthday;
+    private ?Date $birthday;
 
     public function __construct(int $id, string $name, ?Date $birthday)
     {

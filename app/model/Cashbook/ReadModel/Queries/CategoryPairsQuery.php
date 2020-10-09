@@ -15,8 +15,7 @@ final class CategoryPairsQuery
 {
     private CashbookId $cashbookId;
 
-    /** @var Operation|NULL */
-    private $operationType;
+    private ?Operation $operationType;
 
     public function __construct(CashbookId $cashbookId, ?Operation $operationType = null)
     {

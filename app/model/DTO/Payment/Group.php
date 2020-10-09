@@ -28,38 +28,30 @@ class Group
 
     private int $id;
 
-    /** @var string|NULL */
-    private $type;
+    private ?string $type;
 
     /** @var int[] */
     private $unitIds;
 
-    /** @var int|NULL */
-    private $skautisId;
+    private ?int $skautisId;
 
     private string $name;
 
-    /** @var float|NULL */
-    private $defaultAmount;
+    private ?float $defaultAmount;
 
-    /** @var Date|NULL */
-    private $dueDate;
+    private ?Date $dueDate;
 
-    /** @var int|NULL */
-    private $constantSymbol;
+    private ?int $constantSymbol;
 
-    /** @var VariableSymbol|NULL */
-    private $nextVariableSymbol;
+    private ?VariableSymbol $nextVariableSymbol;
 
     private string $state;
 
-    /** @var int|NULL */
-    private $smtpId;
+    private ?int $smtpId;
 
     private string $note;
 
-    /** @var int|NULL */
-    private $bankAccountId;
+    private ?int $bankAccountId;
 
     /**
      * @param int[] $unitIds

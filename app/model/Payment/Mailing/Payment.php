@@ -16,11 +16,9 @@ class Payment
 
     private DateTimeImmutable $dueDate;
 
-    /** @var int|NULL */
-    private $variableSymbol;
+    private ?int $variableSymbol;
 
-    /** @var int|NULL */
-    private $constantSymbol;
+    private ?int $constantSymbol;
 
     private string $note;
 

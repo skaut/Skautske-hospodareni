@@ -31,8 +31,7 @@ use function str_replace;
 
 class DefaultPresenter extends BasePresenter
 {
-    /** @var int|null */
-    private $commandId;
+    private ?int $commandId;
 
     private TravelService $travelService;
 

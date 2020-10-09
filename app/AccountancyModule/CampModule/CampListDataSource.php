@@ -19,11 +19,9 @@ use function assert;
 
 final class CampListDataSource extends DataSource
 {
-    /** @var int|null */
-    private $year;
+    private ?int $year;
 
-    /** @var string|null */
-    private $state;
+    private ?string $state;
 
     private QueryBus $queryBus;
 

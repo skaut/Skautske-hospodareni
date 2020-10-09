@@ -15,8 +15,7 @@ class TemplateFactory
 
     private ILatteFactory $latteFactory;
 
-    /** @var Engine|NULL */
-    private $engine = null;
+    private ?Engine $engine = null;
 
     public function __construct(ILatteFactory $latteFactory)
     {

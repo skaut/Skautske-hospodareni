@@ -23,8 +23,7 @@ use function intdiv;
 
 class RegistrationPresenter extends BasePresenter
 {
-    /** @var Registration|null */
-    private $registration;
+    private ?Registration $registration;
 
     private int $id;
 

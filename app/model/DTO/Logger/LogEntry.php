@@ -27,13 +27,11 @@ class LogEntry
 
     private int $userId;
 
-    /** @var  string */
-    private $description;
+    private string $description;
 
     private Type $type;
 
-    /** @var int|NULL */
-    private $typeId;
+    private ?int $typeId;
 
     public function __construct(
         int $unitId,

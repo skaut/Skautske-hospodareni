@@ -29,8 +29,7 @@ class CommandForm extends Control
 {
     private int $unitId;
 
-    /** @var int|NULL */
-    private $commandId;
+    private ?int $commandId;
 
     private TravelService $model;
 

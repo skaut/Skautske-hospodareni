@@ -42,8 +42,7 @@ class Event implements ISkautisEvent
 
     private Date $endDate;
 
-    /** @var int|null */
-    private $totalDays;
+    private ?int $totalDays;
 
     private string $location;
 
@@ -55,26 +54,19 @@ class Event implements ISkautisEvent
 
     private int $typeId;
 
-    /** @var ?bool */
-    private $statisticAutoComputed;
+    private ?bool $statisticAutoComputed;
 
-    /** @var ?int */
-    private $realCount;
+    private ?int $realCount;
 
-    /** @var ?int */
-    private $realChildDays;
+    private ?int $realChildDays;
 
-    /** @var ?int */
-    private $realPersonDays;
+    private ?int $realPersonDays;
 
-    /** @var ?string */
-    private $personClosed;
+    private ?string $personClosed;
 
-    /** @var ?Date */
-    private $dateClosed;
+    private ?Date $dateClosed;
 
-    /** @var string|null */
-    private $unitEducativeName;
+    private ?string $unitEducativeName;
 
     public function __construct(
         SkautisEventId $id,

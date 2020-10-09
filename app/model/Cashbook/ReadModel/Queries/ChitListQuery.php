@@ -15,8 +15,7 @@ final class ChitListQuery
 {
     private CashbookId $cashbookId;
 
-    /** @var PaymentMethod|null */
-    private $paymentMethod;
+    private ?PaymentMethod $paymentMethod;
 
     /**
      * Use static factory method

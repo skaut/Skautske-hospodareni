@@ -9,11 +9,9 @@ namespace Model\Event\ReadModel\Queries;
  */
 final class CampListQuery
 {
-    /** @var int|null */
-    private $year;
+    private ?int $year;
 
-    /** @var string|null */
-    private $state;
+    private ?string $state;
 
     public function __construct(?int $year, ?string $state = null)
     {

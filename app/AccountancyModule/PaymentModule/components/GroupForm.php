@@ -39,11 +39,9 @@ final class GroupForm extends BaseControl
 {
     private UnitId $unitId;
 
-    /** @var SkautisEntity|null */
-    private $skautisEntity;
+    private ?SkautisEntity $skautisEntity;
 
-    /** @var int|null */
-    private $groupId;
+    private ?int $groupId;
 
     private PaymentService $model;
 

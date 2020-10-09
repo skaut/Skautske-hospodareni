@@ -12,11 +12,9 @@ class NonMemberParticipant
 
     private string $lastName;
 
-    /** @var string|null */
-    private $nickName;
+    private ?string $nickName;
 
-    /** @var Date|null */
-    private $birthday;
+    private ?Date $birthday;
 
     private string $street;
 

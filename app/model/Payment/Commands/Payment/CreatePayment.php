@@ -17,21 +17,17 @@ final class CreatePayment
 
     private string $name;
 
-    /** @var string|null */
-    private $email;
+    private ?string $email;
 
     private float $amount;
 
     private Date $dueDate;
 
-    /** @var int|null */
-    private $personId;
+    private ?int $personId;
 
-    /** @var VariableSymbol|null */
-    private $variableSymbol;
+    private ?VariableSymbol $variableSymbol;
 
-    /** @var int|null */
-    private $constantSymbol;
+    private ?int $constantSymbol;
 
     private string $note;
 

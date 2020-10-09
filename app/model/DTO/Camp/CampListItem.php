@@ -18,8 +18,7 @@ final class CampListItem
 
     private string $location;
 
-    /** @var string|null */
-    private $prefix;
+    private ?string $prefix;
 
     private string $state;
 

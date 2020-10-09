@@ -14,8 +14,7 @@ final class CreateBankAccount
 
     private AccountNumber $number;
 
-    /** @var string|null */
-    private $token;
+    private ?string $token;
 
     public function __construct(int $unitId, string $name, AccountNumber $number, ?string $token)
     {

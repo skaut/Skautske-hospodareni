@@ -15,8 +15,7 @@ use Nette\Utils\ArrayHash;
 
 class BankAccountForm extends BaseControl
 {
-    /** @var int|NULL */
-    private $id;
+    private ?int $id;
 
     private BankAccountService $model;
 

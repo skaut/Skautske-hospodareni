@@ -10,8 +10,7 @@ class User
 
     private string $name;
 
-    /** @var string|NULL */
-    private $email;
+    private ?string $email;
 
     public function __construct(int $id, string $name, ?string $email)
     {

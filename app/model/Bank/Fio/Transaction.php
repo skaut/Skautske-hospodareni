@@ -31,14 +31,11 @@ class Transaction
 
     private string $name;
 
-    /** @var int|NULL */
-    private $variableSymbol;
+    private ?int $variableSymbol;
 
-    /** @var int|NULL */
-    private $constantSymbol;
+    private ?int $constantSymbol;
 
-    /** @var string|NULL */
-    private $note;
+    private ?string $note;
 
     public function __construct(
         string $id,

@@ -19,8 +19,8 @@ use function sprintf;
 
 final class ActivateCashbookDialog extends BaseControl
 {
-     /** @var bool @persistent */
-    public $opened = false;
+     /** @persistent */
+    public bool $opened = false;
 
     /** @var callable[] */
     public $onSuccess = [];

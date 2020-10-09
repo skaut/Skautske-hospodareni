@@ -32,8 +32,7 @@ class CampPresenter extends BasePresenter
 
     private int $id;
 
-    /** @var Camp|null */
-    private $camp;
+    private ?Camp $camp;
 
     private IGroupFormFactory $groupFormFactory;
 

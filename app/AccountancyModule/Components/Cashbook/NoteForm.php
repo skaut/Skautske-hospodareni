@@ -18,8 +18,8 @@ use function preg_replace;
 
 final class NoteForm extends BaseControl
 {
-    /** @var bool @persistent */
-    public $editation = false;
+    /** @persistent */
+    public bool $editation = false;
 
     private CashbookId $cashbookId;
 

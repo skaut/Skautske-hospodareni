@@ -20,8 +20,7 @@ final class CreateEvent
 
     private int $unitId;
 
-    /** @var string|NULL */
-    private $location;
+    private ?string $location;
 
     private int $scopeId;
 

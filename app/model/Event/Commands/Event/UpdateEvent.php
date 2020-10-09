@@ -21,8 +21,7 @@ class UpdateEvent
 
     private Date $endDate;
 
-    /** @var string|NULL */
-    private $location;
+    private ?string $location;
 
     private int $scopeId;
 

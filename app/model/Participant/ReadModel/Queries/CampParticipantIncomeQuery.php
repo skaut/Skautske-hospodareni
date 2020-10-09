@@ -13,11 +13,9 @@ final class CampParticipantIncomeQuery
 {
     private SkautisCampId $campId;
 
-    /** @var bool|null */
-    private $isAdult;
+    private ?bool $isAdult;
 
-    /** @var bool|null */
-    private $onAccount;
+    private ?bool $onAccount;
 
     public function __construct(SkautisCampId $id, ?bool $isAdult, ?bool $onAccount)
     {

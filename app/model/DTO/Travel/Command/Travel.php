@@ -22,8 +22,7 @@ class Travel
 
     private TravelDetails $details;
 
-    /** @var float|NULL */
-    private $distance;
+    private ?float $distance;
 
     private Money $price;
 

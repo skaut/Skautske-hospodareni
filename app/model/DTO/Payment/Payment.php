@@ -39,16 +39,13 @@ class Payment
 
     private float $amount;
 
-    /** @var string|NULL */
-    private $email;
+    private ?string $email;
 
     private Date $dueDate;
 
-    /** @var VariableSymbol|NULL */
-    private $variableSymbol;
+    private ?VariableSymbol $variableSymbol;
 
-    /** @var int|NULL */
-    private $constantSymbol;
+    private ?int $constantSymbol;
 
     private string $note;
 
@@ -56,17 +53,13 @@ class Payment
 
     private State $state;
 
-    /** @var Transaction|NULL */
-    private $transaction;
+    private ?Transaction $transaction;
 
-    /** @var DateTimeImmutable|NULL */
-    private $closedAt;
+    private ?DateTimeImmutable $closedAt;
 
-    /** @var string|NULL */
-    private $closedByUsername;
+    private ?string $closedByUsername;
 
-    /** @var int|NULL */
-    private $personId;
+    private ?int $personId;
 
     private int $groupId;
 

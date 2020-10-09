@@ -14,8 +14,7 @@ use function assert;
 
 abstract class BasePresenter extends \App\BasePresenter
 {
-    /** @var string|null */
-    protected $backlink;
+    protected ?string $backlink;
 
     /**
      * id volane v url, vetsinou id akce
@@ -35,8 +34,8 @@ abstract class BasePresenter extends \App\BasePresenter
 
     private SkautisMaintenanceChecker $skautisMaintenanceChecker;
 
-    /** @var string camp, event, unit */
-    public $type;
+    /* camp, event, unit */
+    public string $type;
 
     public function injectSkautisMaintenanceChecker(SkautisMaintenanceChecker $checker) : void
     {

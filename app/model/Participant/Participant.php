@@ -16,14 +16,11 @@ class Participant
 
     private string $lastName;
 
-    /** @var string|null */
-    private $nickName;
+    private ?string $nickName;
 
-    /** @var int|null */
-    private $age;
+    private ?int $age;
 
-    /** @var Date|null */
-    private $birthday;
+    private ?Date $birthday;
 
     private string $street;
 
@@ -33,8 +30,7 @@ class Participant
 
     private string $state;
 
-    /** @var int|null */
-    private $unitId;
+    private ?int $unitId;
 
     private string $unit;
 
@@ -44,8 +40,7 @@ class Participant
 
     private Payment $payment;
 
-    /** @var string|null */
-    private $category;
+    private ?string $category;
 
     public function __construct(
         int $id,

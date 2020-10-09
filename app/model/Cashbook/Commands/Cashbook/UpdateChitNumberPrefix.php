@@ -17,8 +17,7 @@ final class UpdateChitNumberPrefix
 
     private PaymentMethod $paymentMethod;
 
-    /** @var string|NULL */
-    private $prefix;
+    private ?string $prefix;
 
     public function __construct(CashbookId $cashbookId, PaymentMethod $paymentMethod, ?string $prefix)
     {

@@ -17,11 +17,9 @@ class Cashbook
 
     private CashbookType $type;
 
-    /** @var string|NULL */
-    private $cashChitNumberPrefix;
+    private ?string $cashChitNumberPrefix;
 
-    /** @var string|NULL */
-    private $bankChitNumberPrefix;
+    private ?string $bankChitNumberPrefix;
 
     private string $note;
 

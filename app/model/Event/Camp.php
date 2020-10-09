@@ -48,17 +48,13 @@ class Camp implements ISkautisEvent
     /** @var UnitId[] */
     private $participatingUnits;
 
-    /** @var int|null */
-    private $totalDays;
+    private ?int $totalDays;
 
-    /** @var ParticipantStatistics|null */
-    private $participantStatistics;
+    private ?ParticipantStatistics $participantStatistics;
 
-    /** @var bool|null */
-    private $realAutoComputed;
+    private ?bool $realAutoComputed;
 
-    /** @var bool|null */
-    private $realTotalCostAutoComputed;
+    private ?bool $realTotalCostAutoComputed;
 
     /**
      * @param  UnitId[] $participatingUnits

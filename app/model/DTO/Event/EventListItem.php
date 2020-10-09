@@ -16,8 +16,7 @@ final class EventListItem
 
     private Date $endDate;
 
-    /** @var string|null */
-    private $prefix;
+    private ?string $prefix;
 
     private string $state;
 

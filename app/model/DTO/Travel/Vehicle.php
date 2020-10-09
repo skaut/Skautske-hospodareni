@@ -32,8 +32,7 @@ class Vehicle
 
     private string $label;
 
-    /** @var int|NULL */
-    private $subunitId;
+    private ?int $subunitId;
 
     private float $consumption;
 

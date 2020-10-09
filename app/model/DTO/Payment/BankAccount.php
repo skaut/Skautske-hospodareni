@@ -17,8 +17,7 @@ class BankAccount
 
     private AccountNumber $number;
 
-    /** @var string|NULL */
-    private $token;
+    private ?string $token;
 
     private DateTimeImmutable $createdAt;
 

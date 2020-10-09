@@ -15,8 +15,7 @@ final class CreateVehicle
 
     private int $unitId;
 
-    /** @var int|NULL */
-    private $subunitId;
+    private ?int $subunitId;
 
     private string $registration;
 

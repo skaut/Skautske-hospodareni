@@ -8,17 +8,13 @@ final class UpdateFunctions
 {
     private int $eventId;
 
-    /** @var int|NULL */
-    private $leaderId;
+    private ?int $leaderId;
 
-    /** @var int|NULL */
-    private $assistantId;
+    private ?int $assistantId;
 
-    /** @var int|NULL */
-    private $accountantId;
+    private ?int $accountantId;
 
-    /** @var int|NULL */
-    private $medicId;
+    private ?int $medicId;
 
     public function __construct(int $eventId, ?int $leaderId, ?int $assistantId, ?int $accountantId, ?int $medicId)
     {

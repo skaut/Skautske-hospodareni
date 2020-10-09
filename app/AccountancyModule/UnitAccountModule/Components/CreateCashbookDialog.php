@@ -25,8 +25,8 @@ final class CreateCashbookDialog extends BaseControl
 {
     private const YEARS_RANGE = [-5, 2];
 
-    /** @var bool @persistent */
-    public $opened = false;
+    /** @persistent */
+    public bool $opened = false;
 
     /** @var callable[] */
     public $onSuccess = [];

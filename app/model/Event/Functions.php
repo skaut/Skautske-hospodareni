@@ -16,17 +16,13 @@ class Functions
 {
     use SmartObject;
 
-    /** @var Person|NULL */
-    private $leader;
+    private ?Person $leader;
 
-    /** @var Person|NULL */
-    private $assistant;
+    private ?Person $assistant;
 
-    /** @var Person|NULL */
-    private $accountant;
+    private ?Person $accountant;
 
-    /** @var Person|NULL */
-    private $medic;
+    private ?Person $medic;
 
     public function __construct(?Person $leader, ?Person $assistant, ?Person $accountant, ?Person $medic)
     {

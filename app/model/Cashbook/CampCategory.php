@@ -17,8 +17,7 @@ final class CampCategory implements ICategory
 
     private Money $total;
 
-    /** @var ParticipantType|NULL */
-    private $participantType;
+    private ?ParticipantType $participantType;
 
     public function __construct(int $id, Operation $operationType, string $name, Money $total, ?ParticipantType $participantType)
     {

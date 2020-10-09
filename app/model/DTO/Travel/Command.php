@@ -42,8 +42,7 @@ class Command
 
     private int $unitId;
 
-    /** @var int|NULL */
-    private $vehicleId;
+    private ?int $vehicleId;
 
     private Passenger $passenger;
 
@@ -61,11 +60,9 @@ class Command
 
     private Money $total;
 
-    /** @var DateTimeImmutable|NULL */
-    private $closedAt;
+    private ?DateTimeImmutable $closedAt;
 
-    /** @var DateTimeImmutable|NULL */
-    private $firstTravelDate;
+    private ?DateTimeImmutable $firstTravelDate;
 
     private Money $pricePerKm;
 
@@ -73,8 +70,7 @@ class Command
 
     private string $state;
 
-    /** @var int|null */
-    private $ownerId;
+    private ?int $ownerId;
 
     /** @var TransportType[] */
     private $transportTypes;

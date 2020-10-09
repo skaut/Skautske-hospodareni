@@ -25,8 +25,7 @@ class Unit
 
     private string $displayName;
 
-    /** @var string|null */
-    private $ic;
+    private ?string $ic;
 
     private string $street;
 
@@ -38,8 +37,7 @@ class Unit
 
     private string $type;
 
-    /** @var int|NULL */
-    private $parentId;
+    private ?int $parentId;
 
     /** @var Unit[]|null */
     private $children;

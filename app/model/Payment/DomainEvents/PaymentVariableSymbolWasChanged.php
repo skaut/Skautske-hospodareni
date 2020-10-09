@@ -10,8 +10,7 @@ final class PaymentVariableSymbolWasChanged
 {
     private int $groupId;
 
-    /** @var VariableSymbol|NULL */
-    private $variableSymbol;
+    private ?VariableSymbol $variableSymbol;
 
     public function __construct(int $groupId, ?VariableSymbol $variableSymbol)
     {
