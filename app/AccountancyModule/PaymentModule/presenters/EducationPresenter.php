@@ -24,7 +24,7 @@ use function in_array;
 class EducationPresenter extends BasePresenter
 {
     /** @var string[] */
-    protected $readUnits;
+    protected array $readUnits;
 
     /** @var PaymentService */
     private $model;
