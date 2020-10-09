@@ -18,15 +18,13 @@ use Model\Payment\Group\SkautisEntity;
 use Model\Payment\ReadModel\Queries\EducationsWithoutGroupQuery;
 use Model\Payment\ReadModel\Queries\MemberEmailsQuery;
 use Model\PaymentService;
+use Model\Unit\ReadModel\Queries\UnitQuery;
 use function array_filter;
 use function assert;
 use function in_array;
 
 class EducationPresenter extends BasePresenter
 {
-    /** @var string[] */
-    protected array $readUnits;
-
     private PaymentService $model;
 
     private IMassAddFormFactory $massAddFormFactory;
@@ -46,14 +44,6 @@ class EducationPresenter extends BasePresenter
         $this->model              = $model;
         $this->massAddFormFactory = $massAddFormFactory;
         $this->groupFormFactory   = $groupFormFactory;
-    }
-
-    protected function startup() : void
-    {
-        parent::startup();
-        $this->template->setParameters([
-            'unitPairs' => $this->readUnits = $units = $this->unitService->getReadUnits($this->user),
-        ]);
     }
 
     public function actionDefault() : void
@@ -117,10 +107,10 @@ class EducationPresenter extends BasePresenter
                 $amount === 0.0 ? null : $amount
             );
         }
-
         $this->template->setParameters([
             'group'    => $group,
             'showForm' => ! empty($participants),
+            'unit' => $this->queryBus->handle(new UnitQuery($this->getCurrentUnitId()->toInt())),
         ]);
     }
 
