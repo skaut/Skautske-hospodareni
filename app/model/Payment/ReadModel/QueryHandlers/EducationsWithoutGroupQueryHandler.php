@@ -67,10 +67,8 @@ final class EducationsWithoutGroupQueryHandler
         );
 
         return array_map(
-            function (Group $group) : int {
-                return $group->getObject()->getId();
-            },
-            $this->groups->findBySkautisEntities(...$skautisEntities)
+            fn(Group $group) => $group->getObject()->getId(),
+            $this->groups->findBySkautisEntities(...$skautisEntities),
         );
     }
 }
