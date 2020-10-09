@@ -30,8 +30,7 @@ class EducationPresenter extends BasePresenter
 
     private IMassAddFormFactory $massAddFormFactory;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
     /** @var Education|null */
     private $education;
