@@ -28,8 +28,7 @@ class EducationPresenter extends BasePresenter
 
     private PaymentService $model;
 
-    /** @var IMassAddFormFactory */
-    private $massAddFormFactory;
+    private IMassAddFormFactory $massAddFormFactory;
 
     /** @var int */
     private $id;
