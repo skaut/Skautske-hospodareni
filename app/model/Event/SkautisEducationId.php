@@ -6,8 +6,7 @@ namespace Model\Event;
 
 final class SkautisEducationId
 {
-    /** @var int */
-    private $value;
+    private int $value;
 
     public function __construct(int $value)
     {
