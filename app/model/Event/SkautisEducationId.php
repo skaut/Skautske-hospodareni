@@ -18,14 +18,6 @@ final class SkautisEducationId
         return $this->value;
     }
 
-    /**
-     * @deprecated use self::toInt()
-     */
-    public function getValue() : int
-    {
-        return $this->value;
-    }
-
     public function __toString() : string
     {
         return (string) $this->value;
