@@ -104,9 +104,7 @@ class EducationPresenter extends BasePresenter
 
         $participants = array_filter(
             $participants,
-            function (Participant $p) use ($personsWithPayment) {
-                return ! in_array($p->getPersonId(), $personsWithPayment, true);
-            }
+            fn (Participant $p) => ! in_array($p->getPersonId(), $personsWithPayment, true),
         );
 
         foreach ($participants as $p) {
