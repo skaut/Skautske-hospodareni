@@ -37,9 +37,8 @@ class ChitPresenter extends BasePresenter
 
     /**
      * @persistent
-     * @var int
      */
-    public $onlyUnlocked = 1;
+    public int $onlyUnlocked = 1;
 
     private IChitListControlFactory $chitListFactory;
 

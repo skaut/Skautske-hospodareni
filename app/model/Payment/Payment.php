@@ -111,7 +111,7 @@ class Payment extends Aggregate
      *
      * @var ArrayCollection<SentEmail>
      */
-    private $sentEmails;
+    private ArrayCollection $sentEmails;
 
     public function __construct(
         Group $group,

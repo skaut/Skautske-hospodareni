@@ -15,12 +15,7 @@ abstract class BaseService
     public const ACCESS_READ = 'read';
     public const ACCESS_EDIT = 'edit';
 
-    /**
-     * slouží pro komunikaci se skautISem
-     *
-     * @var Skautis
-     */
-    protected $skautis;
+    protected Skautis $skautis;
 
     /**
      * krátkodobé lokální úložiště pro ukládání odpovědí ze skautISU

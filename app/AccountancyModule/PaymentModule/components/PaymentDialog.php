@@ -23,11 +23,8 @@ final class PaymentDialog extends Dialog
     /** @var callable[] */
     public array $onSuccess = [];
 
-    /**
-     * @persistent
-     * @var int
-     */
-    public $paymentId = -1;
+    /** @persistent */
+    public int $paymentId = -1;
 
     private int $groupId;
 

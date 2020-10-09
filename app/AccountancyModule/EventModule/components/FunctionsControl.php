@@ -37,11 +37,8 @@ class FunctionsControl extends BaseControl
 
     private IAuthorizator $authorizator;
 
-    /**
-     * @persistent
-     * @var bool
-     */
-    public $editation = false;
+    /** @persistent */
+    public bool $editation = false;
 
     public function __construct(
         int $eventId,

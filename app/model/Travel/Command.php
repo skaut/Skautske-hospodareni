@@ -104,7 +104,7 @@ class Command
      *
      * @var TransportType[]
      */
-    private $transportTypes;
+    private array $transportTypes;
 
     /**
      * @var string

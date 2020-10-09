@@ -18,19 +18,15 @@ abstract class BasePresenter extends \App\BasePresenter
 
     /**
      * id volane v url, vetsinou id akce
-     *
-     * @var int|null
      */
-    protected $aid;
+    protected ?int $aid;
 
     protected UnitId $unitId;
 
-    /**
+    /*
      * je akci možné upravovat?
-     *
-     * @var bool
      */
-    protected $isEditable;
+    protected bool $isEditable;
 
     private SkautisMaintenanceChecker $skautisMaintenanceChecker;
 
