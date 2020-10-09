@@ -26,8 +26,7 @@ class EducationPresenter extends BasePresenter
     /** @var string[] */
     protected array $readUnits;
 
-    /** @var PaymentService */
-    private $model;
+    private PaymentService $model;
 
     /** @var IMassAddFormFactory */
     private $massAddFormFactory;
