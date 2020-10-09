@@ -98,7 +98,7 @@ class EducationPresenter extends BasePresenter
         );
 
         $form = $this['massAddForm'];
-        /** @var MassAddForm $form */
+        assert($form instanceof MassAddForm);
 
         $personsWithPayment = $this->model->getPersonsWithActivePayment($id);
 
