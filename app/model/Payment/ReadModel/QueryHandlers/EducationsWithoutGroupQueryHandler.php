@@ -37,21 +37,11 @@ final class EducationsWithoutGroupQueryHandler
         $educations = $this->queryBus->handle(new EducationListQuery($query->getYear()));
 
         $educationWithGroupIds  = $this->getEducationWithGroupIds($educations);
-        $educationsWithoutGroup = [];
 
-        foreach ($educations as $education) {
-            assert($education instanceof Education);
-
-            $educationId = $education->getId()->toInt();
-
-            if (in_array($educationId, $educationWithGroupIds, true)) {
-                continue;
-            }
-
-            $educationsWithoutGroup[$educationId] = $education;
-        }
-
-        return $educationsWithoutGroup;
+        return array_filter(
+            $educations,
+            fn (Education $education) => ! in_array($education->getId()->toInt(), $educationWithGroupIds, true),
+        );
     }
 
     /**
