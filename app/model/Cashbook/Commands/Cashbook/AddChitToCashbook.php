@@ -19,7 +19,7 @@ final class AddChitToCashbook
     private ChitBody $body;
 
     /** @var ChitItemDto[] */
-    private $items;
+    private array $items;
 
     private PaymentMethod $paymentMethod;
 

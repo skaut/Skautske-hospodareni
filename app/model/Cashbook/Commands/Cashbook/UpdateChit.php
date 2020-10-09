@@ -23,7 +23,7 @@ final class UpdateChit
     private PaymentMethod $paymentMethod;
 
     /** @var ChitItem[] */
-    private $items;
+    private array $items;
 
     /**
      * @param ChitItem[] $items

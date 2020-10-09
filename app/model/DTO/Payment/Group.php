@@ -31,7 +31,7 @@ class Group
     private ?string $type;
 
     /** @var int[] */
-    private $unitIds;
+    private array $unitIds;
 
     private ?int $skautisId;
 

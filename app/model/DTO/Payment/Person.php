@@ -11,7 +11,7 @@ class Person
     private string $name;
 
     /** @var string[] */
-    private $emails;
+    private array $emails;
 
     /**
      * @param string[] $emails

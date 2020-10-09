@@ -36,7 +36,7 @@ class CommandForm extends Control
     private QueryBus $queryBus;
 
     /** @var callable[] */
-    public $onSuccess = [];
+    public array $onSuccess = [];
 
     public function __construct(int $unitId, ?int $commandId, TravelService $model, QueryBus $queryBus)
     {

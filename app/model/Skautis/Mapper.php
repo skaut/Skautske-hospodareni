@@ -14,10 +14,10 @@ use Model\Payment\IUnitResolver;
 class Mapper
 {
     /** @var int[] */
-    private $skautisIds = [];
+    private array $skautisIds = [];
 
     /** @var CashbookId[] */
-    private $localIds = [];
+    private array $localIds = [];
 
     private ObjectTable $table;
 

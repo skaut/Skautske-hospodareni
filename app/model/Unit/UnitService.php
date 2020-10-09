@@ -18,7 +18,6 @@ use function assert;
 
 class UnitService
 {
-
     private Skautis $skautis;
 
     private IUnitRepository $units;

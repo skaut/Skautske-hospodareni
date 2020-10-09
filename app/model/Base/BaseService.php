@@ -27,7 +27,7 @@ abstract class BaseService
      *
      * @var mixed[]
      */
-    private static $storage = [];
+    private static array $storage = [];
 
     public function __construct(Skautis $skautis)
     {

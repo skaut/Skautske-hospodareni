@@ -13,7 +13,7 @@ use Model\Cashbook\Handlers\Cashbook\MoveChitsToDifferentCashbookHandler;
 final class MoveChitsToDifferentCashbook
 {
     /** @var int[] */
-    private $chitIds;
+    private array $chitIds;
 
     private CashbookId $sourceCashbookId;
 

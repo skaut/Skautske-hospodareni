@@ -49,7 +49,7 @@ class PaymentPresenter extends BasePresenter
     public $id = 0;
 
     /** @var string[] */
-    protected $readUnits;
+    protected array $readUnits;
 
     protected UnitService $unitService;
 

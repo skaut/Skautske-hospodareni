@@ -46,7 +46,7 @@ class Camp implements ISkautisEvent
     private string $registrationNumber;
 
     /** @var UnitId[] */
-    private $participatingUnits;
+    private array $participatingUnits;
 
     private ?int $totalDays;
 

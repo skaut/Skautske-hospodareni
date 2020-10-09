@@ -14,7 +14,7 @@ final class ExportChits
     private CashbookId $cashbookId;
 
     /** @var int[]|NULL */
-    private $chitIds;
+    private array $chitIds;
 
     /**
      * Use static factory method

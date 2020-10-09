@@ -12,7 +12,7 @@ use Model\Payment\ReadModel\QueryHandlers\BankAccount\BankAccountsAccessibleByUn
 final class BankAccountsAccessibleByUnitsQuery
 {
     /** @var int[] */
-    private $unitIds;
+    private array $unitIds;
 
     /**
      * @param int[] $unitIds

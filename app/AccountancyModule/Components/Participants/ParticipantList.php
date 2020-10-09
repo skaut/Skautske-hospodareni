@@ -42,10 +42,10 @@ final class ParticipantList extends BaseControl
     public int $aid;
 
     /** @var callable[] */
-    public $onUpdate = [];
+    public array $onUpdate = [];
 
     /** @var callable[] */
-    public $onRemove = [];
+    public array $onRemove = [];
 
     protected bool $isAllowRepayment;
 
@@ -58,7 +58,7 @@ final class ParticipantList extends BaseControl
     protected EventEntity $eventService;
 
     /** @var Participant[] */
-    private $currentParticipants;
+    private array $currentParticipants;
 
     /**
      * @var bool

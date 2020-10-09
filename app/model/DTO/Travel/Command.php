@@ -73,7 +73,7 @@ class Command
     private ?int $ownerId;
 
     /** @var TransportType[] */
-    private $transportTypes;
+    private array $transportTypes;
 
     private string $unit;
 

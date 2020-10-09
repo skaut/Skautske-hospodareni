@@ -15,7 +15,7 @@ final class CreateRepayments
     private Date $date;
 
     /** @var Repayment[] */
-    private $repayments;
+    private array $repayments;
 
     private string $token;
 

@@ -13,7 +13,7 @@ use function array_map;
 final class EventStatisticsQuery
 {
     /** @var SkautisEventId[] */
-    private $eventIds;
+    private array $eventIds;
 
     private int $year;
 

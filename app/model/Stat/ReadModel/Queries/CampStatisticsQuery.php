@@ -13,7 +13,7 @@ use function array_map;
 final class CampStatisticsQuery
 {
     /** @var SkautisCampId[] */
-    private $campIds;
+    private array $campIds;
 
     private int $year;
 

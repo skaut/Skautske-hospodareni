@@ -31,7 +31,7 @@ class PairButton extends BaseControl
     private BankAccountService $bankAccounts;
 
     /** @var int[] */
-    private $groupIds = [];
+    private array $groupIds = [];
 
     public function __construct(PaymentService $payments, BankService $model, BankAccountService $bankAccounts)
     {

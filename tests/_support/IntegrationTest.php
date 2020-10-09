@@ -11,7 +11,7 @@ abstract class IntegrationTest extends Codeception\Test\Unit
     protected IntegrationTester $tester;
 
     /** @var ClassMetadata[] */
-    private $metadata;
+    private array $metadata;
 
     protected EntityManager $entityManager;
 

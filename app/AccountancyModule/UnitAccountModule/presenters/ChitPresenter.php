@@ -33,7 +33,7 @@ class ChitPresenter extends BasePresenter
      *
      * @var array<string, array<string, array<string, mixed>>>
      */
-    private $cashbooks = [];
+    private array $cashbooks = [];
 
     /**
      * @persistent

@@ -41,7 +41,7 @@ use function count;
 class ChitListControl extends BaseControl
 {
     /** @var callable[] */
-    public $onEditButtonClicked = [];
+    public array $onEditButtonClicked = [];
 
     private CashbookId $cashbookId;
 

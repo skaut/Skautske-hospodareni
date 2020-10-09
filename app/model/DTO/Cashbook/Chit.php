@@ -47,19 +47,19 @@ class Chit
     private bool $locked;
 
     /** @var CashbookType[] */
-    private $inverseCashbookTypes;
+    private array $inverseCashbookTypes;
 
     private PaymentMethod $paymentMethod;
 
     /** @var ChitItem[] */
-    private $items;
+    private array $items;
 
     private Operation $operation;
 
     private Amount $amount;
 
     /** @var ChitScan[] */
-    private $scans;
+    private array $scans;
 
     /**
      * @param CashbookType[] $inverseCashbookTypes

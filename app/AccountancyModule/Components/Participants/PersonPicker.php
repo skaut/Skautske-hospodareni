@@ -35,13 +35,13 @@ final class PersonPicker extends BaseControl
     public $directMemberOnly = false;
 
     /** @var callable[] */
-    public $onSelect = [];
+    public array $onSelect = [];
 
     /** @var callable[] */
-    public $onNonMemberAdd = [];
+    public array $onNonMemberAdd = [];
 
     /** @var Participant[] */
-    private $currentParticipants;
+    private array $currentParticipants;
 
     private QueryBus $queryBus;
 

@@ -29,7 +29,7 @@ final class CreateCashbookDialog extends BaseControl
     public bool $opened = false;
 
     /** @var callable[] */
-    public $onSuccess = [];
+    public array $onSuccess = [];
 
     private bool $isEditable;
 

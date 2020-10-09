@@ -21,7 +21,7 @@ use Nette\Utils\ArrayHash;
 final class PaymentDialog extends Dialog
 {
     /** @var callable[] */
-    public $onSuccess = [];
+    public array $onSuccess = [];
 
     /**
      * @persistent

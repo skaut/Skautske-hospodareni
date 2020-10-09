@@ -16,10 +16,10 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
     protected bool $isReadable;
 
     /** @var int[] */
-    private $editableUnits;
+    private array $editableUnits;
 
     /** @var int[] */
-    private $readableUnits;
+    private array $readableUnits;
 
     protected function startup() : void
     {

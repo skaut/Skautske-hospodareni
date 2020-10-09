@@ -19,7 +19,7 @@ use function count;
 final class ChitListControl extends BaseControl
 {
     /** @var Chit[]|NULL */
-    private $chits;
+    private array $chits;
 
     private CashbookId $cashbookId;
 

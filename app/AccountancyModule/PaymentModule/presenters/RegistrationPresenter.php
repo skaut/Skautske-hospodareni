@@ -28,7 +28,7 @@ class RegistrationPresenter extends BasePresenter
     private int $id;
 
     /** @var string[] */
-    protected $readUnits;
+    protected array $readUnits;
 
     private PaymentService $model;
 

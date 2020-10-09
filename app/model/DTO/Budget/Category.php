@@ -20,7 +20,7 @@ class Category
     private string $label;
 
     /** @var Category[] */
-    private $children;
+    private array $children;
 
     private float $value;
 

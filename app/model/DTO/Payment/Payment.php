@@ -64,7 +64,7 @@ class Payment
     private int $groupId;
 
     /** @var SentEmail[] */
-    private $sentEmails;
+    private array $sentEmails;
 
     /**
      * @param SentEmail[] $sentEmails

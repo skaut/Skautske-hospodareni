@@ -9,7 +9,7 @@ final class ChangeGroupUnits
     private int $groupId;
 
     /** @var int[] */
-    private $unitIds;
+    private array $unitIds;
 
     /**
      * @param int[] $unitIds

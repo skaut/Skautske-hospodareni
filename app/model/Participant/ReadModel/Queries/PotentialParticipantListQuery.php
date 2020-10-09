@@ -18,7 +18,7 @@ final class PotentialParticipantListQuery
     private bool $directMembersOnly;
 
     /** @var Participant[] */
-    private $currentParticipants;
+    private array $currentParticipants;
 
     /**
      * @param Participant[] $currentParticipants

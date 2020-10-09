@@ -23,10 +23,10 @@ abstract class DataSource implements IDataSource
     private ?DoctrineCollectionDataSource $innerDataSource;
 
     /** @var Filter[] */
-    private $filters = [];
+    private array $filters = [];
 
     /** @var mixed[] */
-    private $conditions = [];
+    private array $conditions = [];
 
     /**
      * @return object[]
