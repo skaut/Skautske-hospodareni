@@ -14,8 +14,7 @@ class EducationListQueryHandler
 {
     private Skautis $skautis;
 
-    /** @var EducationFactory */
-    private $educationFactory;
+    private EducationFactory $educationFactory;
 
     public function __construct(Skautis $skautis, EducationFactory $educationFactory)
     {
