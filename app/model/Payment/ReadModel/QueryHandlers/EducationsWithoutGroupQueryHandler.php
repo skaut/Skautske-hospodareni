@@ -19,8 +19,7 @@ final class EducationsWithoutGroupQueryHandler
 {
     private QueryBus $queryBus;
 
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
     public function __construct(QueryBus $queryBus, IGroupRepository $groups)
     {
