@@ -21,20 +21,15 @@ class Education implements ISkautisEvent
 {
     use SmartObject;
 
-    /** @var SkautisEducationId */
-    private $id;
+    private SkautisEducationId $id;
 
-    /** @var string */
-    private $displayName;
+    private string $displayName;
 
-    /** @var Date */
-    private $startDate;
+    private Date $startDate;
 
-    /** @var Date */
-    private $endDate;
+    private Date $endDate;
 
-    /** @var string */
-    private $state;
+    private string $state;
 
     public function __construct(
         SkautisEducationId $id,
