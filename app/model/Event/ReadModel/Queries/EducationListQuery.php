@@ -11,8 +11,7 @@ use Model\Event\ReadModel\QueryHandlers\EducationListQueryHandler;
  */
 final class EducationListQuery
 {
-    /** @var int|null */
-    private $year;
+    private ?int $year;
 
     public function __construct(?int $year)
     {
