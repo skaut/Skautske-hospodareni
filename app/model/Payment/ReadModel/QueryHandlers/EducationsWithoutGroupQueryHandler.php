@@ -17,8 +17,7 @@ use function in_array;
 
 final class EducationsWithoutGroupQueryHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     /** @var IGroupRepository */
     private $groups;
