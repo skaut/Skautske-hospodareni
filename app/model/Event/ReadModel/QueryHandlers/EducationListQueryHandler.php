@@ -8,6 +8,7 @@ use Model\Event\Education;
 use Model\Event\ReadModel\Queries\EducationListQuery;
 use Model\Skautis\Factory\EducationFactory;
 use Skautis\Skautis;
+use function assert;
 use function is_object;
 
 class EducationListQueryHandler
@@ -38,6 +39,7 @@ class EducationListQueryHandler
         $result = [];
         foreach ($educations as $education) {
             $education = $this->educationFactory->create($education);
+            assert($education instanceof Education);
 
             $result[$education->getId()->toInt()] = $education;
         }

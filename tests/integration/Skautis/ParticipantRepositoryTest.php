@@ -8,10 +8,21 @@ use Doctrine\ORM\EntityManager;
 use Hskauting\Tests\SkautisTest;
 use Model\Event\SkautisEducationId;
 use Model\Infrastructure\Repositories\Participant\PaymentRepository;
+use Model\Participant\Payment;
 use VCR\VCR;
 
 final class ParticipantRepositoryTest extends SkautisTest
 {
+    /**
+     * @return string[]
+     */
+    public function getTestedAggregateRoots() : array
+    {
+        return [
+            Payment::class,
+        ];
+    }
+
     public function testFindByEducationReturnsAllParticipants() : void
     {
         VCR::insertCassette('ParticipantRepository/findByEducation_all.json');
