@@ -14,17 +14,13 @@ class Metadata
 {
     /**
      * @ORM\Column(type="datetime_immutable")
-     *
-     * @var DateTimeImmutable
      */
-    private $createdAt;
+    private DateTimeImmutable $createdAt;
 
     /**
      * @ORM\Column(type="string")
-     *
-     * @var string
      */
-    private $authorName;
+    private string $authorName;
 
     public function __construct(DateTimeImmutable $createdAt, string $authorName)
     {

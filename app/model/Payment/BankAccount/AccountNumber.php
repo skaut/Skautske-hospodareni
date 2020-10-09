@@ -15,24 +15,18 @@ class AccountNumber
 {
     /**
      * @ORM\Column(type="string", nullable=true, length=6)
-     *
-     * @var string|NULL
      */
-    private $prefix;
+    private ?string $prefix;
 
     /**
      * @ORM\Column(type="string", length=10)
-     *
-     * @var string
      */
-    private $number;
+    private string $number;
 
     /**
      * @ORM\Column(type="string", length=4)
-     *
-     * @var string
      */
-    private $bankCode;
+    private string $bankCode;
 
     /**
      * @throws InvalidBankAccountNumber

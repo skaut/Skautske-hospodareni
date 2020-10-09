@@ -21,17 +21,13 @@ class EmailTemplate
 {
     /**
      * @ORM\Column(type="string")
-     *
-     * @var string
      */
-    private $subject;
+    private string $subject;
 
     /**
      * @ORM\Column(type="text")
-     *
-     * @var string
      */
-    private $body;
+    private string $body;
 
     public function __construct(string $subject, string $body)
     {

@@ -60,10 +60,8 @@ final class ChitForm extends BaseControl
 
     /**
      * Can current user add/edit chits?
-     *
-     * @var bool
      */
-    private $isEditable;
+    private bool $isEditable;
 
     private UnitId $unitId;
 

@@ -13,17 +13,13 @@ final class Event
 {
     /**
      * @ORM\Column(type="integer")
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="string_enum", length=7)
-     *
-     * @var EventType
      */
-    private $type;
+    private EventType $type;
 
     public function __construct(int $id, EventType $type)
     {

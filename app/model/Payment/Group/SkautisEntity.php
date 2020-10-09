@@ -17,10 +17,8 @@ final class SkautisEntity
 {
     /**
      * @ORM\Column(type="integer", nullable=true, name="sisId", options={"comment": "ID entity ve skautisu"})
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="string_enum", nullable=true, name="groupType", length=20, options={"comment":"typ entity"})

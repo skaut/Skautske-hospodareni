@@ -47,10 +47,8 @@ class ChitListControl extends BaseControl
 
     /**
      * Can current user edit cashbook?
-     *
-     * @var bool
      */
-    private $isEditable;
+    private bool $isEditable;
 
     private PaymentMethod $paymentMethod;
 

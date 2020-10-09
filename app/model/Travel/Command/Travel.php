@@ -19,10 +19,8 @@ abstract class Travel
     /**
      * @ORM\Id()
      * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
     /**
      * @internal - for mapping only
@@ -30,17 +28,13 @@ abstract class Travel
      * @ORM\Id()
      * @ORM\ManyToOne(targetEntity=Command::class, inversedBy="travels")
      * @ORM\JoinColumn(name="command_id", referencedColumnName="id", nullable=false)
-     *
-     * @var Command
      */
-    private $command;
+    private Command $command;
 
     /**
      * @ORM\Embedded(class=TravelDetails::class, columnPrefix=false)
-     *
-     * @var TravelDetails
      */
-    private $details;
+    private TravelDetails $details;
 
     protected function __construct(int $id, Command $command, TravelDetails $details)
     {

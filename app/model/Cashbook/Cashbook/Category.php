@@ -15,10 +15,8 @@ class Category
 {
     /**
      * @ORM\Column(type="integer", name="category", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="string_enum", name="category_operation_type", length=255, nullable=true)

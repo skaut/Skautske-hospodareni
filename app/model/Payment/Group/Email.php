@@ -20,24 +20,18 @@ class Email
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\ManyToOne(targetEntity=Group::class, inversedBy="emails")
-     *
-     * @var Group
      */
-    private $group;
+    private Group $group;
 
     /**
      * @ORM\Column(type="boolean")
-     *
-     * @var bool
      */
-    private $enabled = true;
+    private bool $enabled = true;
 
     /**
      * @ORM\Column(type="string_enum")
@@ -49,10 +43,8 @@ class Email
 
     /**
      * @ORM\Embedded(class=EmailTemplate::class)
-     *
-     * @var EmailTemplate
      */
-    private $template;
+    private EmailTemplate $template;
 
     public function __construct(Group $group, EmailType $type, EmailTemplate $template)
     {

@@ -26,24 +26,18 @@ class ChitItem
 
     /**
      * @ORM\Embedded(class=Amount::class, columnPrefix=false)
-     *
-     * @var Amount
      */
-    private $amount;
+    private Amount $amount;
 
     /**
      * @ORM\Embedded(class=Category::class, columnPrefix=false)
-     *
-     * @var Category
      */
-    private $category;
+    private Category $category;
 
     /**
      * @ORM\Column(type="string", length=120)
-     *
-     * @var string
      */
-    private $purpose;
+    private string $purpose;
 
     public function __construct(Amount $amount, Category $category, string $purpose)
     {

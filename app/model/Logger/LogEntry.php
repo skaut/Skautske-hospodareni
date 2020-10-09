@@ -25,38 +25,28 @@ class LogEntry
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="integer", name="unitId", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $unitId;
+    private int $unitId;
 
     /**
      * @ORM\Column(type="datetime_immutable")
-     *
-     * @var DateTimeImmutable
      */
-    private $date;
+    private DateTimeImmutable $date;
 
     /**
      * @ORM\Column(type="integer", name="userId", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $userId;
+    private int $userId;
 
     /**
      * @ORM\Column(type="text")
-     *
-     * @var string
      */
-    private $description;
+    private string $description;
 
     /**
      * @ORM\Column(type="string_enum", name="type")

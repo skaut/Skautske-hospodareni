@@ -29,17 +29,13 @@ class Command
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $unitId;
+    private int $unitId;
 
     /**
      * @ORM\ManyToOne(targetEntity=Vehicle::class)
@@ -50,52 +46,38 @@ class Command
 
     /**
      * @ORM\Embedded(class=Passenger::class, columnPrefix=false)
-     *
-     * @var Passenger
      */
-    private $passenger;
+    private Passenger $passenger;
 
     /**
      * @ORM\Column(type="string", length=64)
-     *
-     * @var string
      */
-    private $purpose;
+    private string $purpose;
 
     /**
      * @ORM\Column(type="string", length=64, nullable=true)
-     *
-     * @var string
      */
-    private $place;
+    private string $place;
 
     /**
      * @ORM\Column(type="string", name="passengers", length=64)
-     *
-     * @var string
      */
-    private $fellowPassengers;
+    private string $fellowPassengers;
 
     /**
      * @ORM\Column(type="money")
-     *
-     * @var Money
      */
-    private $fuelPrice;
+    private Money $fuelPrice;
 
     /**
      * @ORM\Column(type="money")
-     *
-     * @var Money
      */
-    private $amortization;
+    private Money $amortization;
 
     /**
      * @ORM\Column(type="string", length=64)
-     *
-     * @var string
      */
-    private $note;
+    private string $note;
 
     /**
      * @ORM\Column(type="datetime_immutable", nullable=true, name="closed")
@@ -113,10 +95,8 @@ class Command
 
     /**
      * @ORM\Column(type="integer")
-     *
-     * @var int
      */
-    private $nextTravelId = 0;
+    private int $nextTravelId = 0;
 
     /**
      * @ORM\Column(type="integer", nullable=true)

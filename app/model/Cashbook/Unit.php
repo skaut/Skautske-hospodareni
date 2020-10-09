@@ -23,10 +23,8 @@ class Unit extends Aggregate
     /**
      * @ORM\Id()
      * @ORM\Column(type="unit_id")
-     *
-     * @var UnitId
      */
-    private $id;
+    private UnitId $id;
 
     /**
      * @ORM\OneToMany(targetEntity=Cashbook::class, mappedBy="unit", cascade={"persist", "remove"}, orphanRemoval=true)
@@ -37,17 +35,13 @@ class Unit extends Aggregate
 
     /**
      * @ORM\Column(type="integer")
-     *
-     * @var int
      */
-    private $activeCashbookId;
+    private int $activeCashbookId;
 
     /**
      * @ORM\Column(type="integer")
-     *
-     * @var int
      */
-    private $nextCashbookId = 1;
+    private int $nextCashbookId = 1;
 
     public function __construct(UnitId $id, CashbookId $activeCashbookId, int $activeCashbookYear)
     {

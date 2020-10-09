@@ -29,10 +29,8 @@ class Group
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\OneToMany(
@@ -57,24 +55,18 @@ class Group
 
     /**
      * @ORM\Column(type="string", name="label", length=64)
-     *
-     * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * @ORM\Embedded(class=PaymentDefaults::class, columnPrefix=false)
-     *
-     * @var PaymentDefaults
      */
-    private $paymentDefaults;
+    private PaymentDefaults $paymentDefaults;
 
     /**
      * @ORM\Column(type="string", length=20)
-     *
-     * @var string
      */
-    private $state = self::STATE_OPEN;
+    private string $state = self::STATE_OPEN;
 
     /**
      * @ORM\Column(type="datetime_immutable", nullable=true)
@@ -107,10 +99,8 @@ class Group
 
     /**
      * @ORM\Column(type="string", name="state_info", length=250)
-     *
-     * @var string
      */
-    private $note = '';
+    private string $note = '';
 
     public const STATE_OPEN   = 'open';
     public const STATE_CLOSED = 'closed';

@@ -27,24 +27,18 @@ class Category implements ICategory
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="string", name="label", length=64)
-     *
-     * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * @ORM\Column(type="string", name="short", length=64, unique=true)
-     *
-     * @var string
      */
-    private $shortcut;
+    private string $shortcut;
 
     /**
      * @ORM\Column(type="string_enum", name="type")
@@ -63,24 +57,18 @@ class Category implements ICategory
 
     /**
      * @ORM\Column(type="boolean")
-     *
-     * @var bool
      */
-    private $virtual;
+    private bool $virtual;
 
     /**
      * @ORM\Column(type="smallint", name="orderby", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $priority;
+    private int $priority;
 
     /**
      * @ORM\Column(type="boolean")
-     *
-     * @var bool
      */
-    private $deleted = false;
+    private bool $deleted = false;
 
     /**
      * @param Category\ObjectType[] $types

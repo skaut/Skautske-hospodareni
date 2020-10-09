@@ -37,10 +37,8 @@ class Cashbook extends Aggregate
     /**
      * @ORM\Id()
      * @ORM\Column(type="cashbook_id")
-     *
-     * @var CashbookId
      */
-    private $id;
+    private CashbookId $id;
 
     /**
      * @ORM\Column(type="string_enum")
@@ -73,10 +71,8 @@ class Cashbook extends Aggregate
 
     /**
      * @ORM\Column(type="text")
-     *
-     * @var string
      */
-    private $note;
+    private string $note;
 
     public function __construct(CashbookId $id, CashbookType $type)
     {

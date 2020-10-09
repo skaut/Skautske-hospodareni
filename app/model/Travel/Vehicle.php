@@ -36,24 +36,18 @@ class Vehicle
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="string", length=64)
-     *
-     * @var string
      */
-    private $type;
+    private string $type;
 
     /**
      * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $unitId;
+    private int $unitId;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
@@ -64,38 +58,28 @@ class Vehicle
 
     /**
      * @ORM\Column(type="string", length=64)
-     *
-     * @var string
      */
-    private $registration;
+    private string $registration;
 
     /**
      * @ORM\Column(type="float", options={"unsigned"=true})
-     *
-     * @var float
      */
-    private $consumption;
+    private float $consumption;
 
     /**
      * @ORM\Column(type="string", length=64)
-     *
-     * @var string
      */
-    private $note = '';
+    private string $note = '';
 
     /**
      * @ORM\Column(type="boolean", options={"default"=0})
-     *
-     * @var bool
      */
-    private $archived = false;
+    private bool $archived = false;
 
     /**
      * @ORM\Embedded(class=Metadata::class)
-     *
-     * @var Metadata
      */
-    private $metadata;
+    private Metadata $metadata;
 
     /**
      * @ORM\OneToMany(

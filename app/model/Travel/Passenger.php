@@ -21,24 +21,18 @@ final class Passenger
 
     /**
      * @ORM\Column(type="string", name="driver_name")
-     *
-     * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * @ORM\Column(type="string", name="driver_contact")
-     *
-     * @var string
      */
-    private $contact;
+    private string $contact;
 
     /**
      * @ORM\Column(type="string", name="driver_address")
-     *
-     * @var string
      */
-    private $address;
+    private string $address;
 
     /**
      * @ORM\Column(type="integer", nullable=true, options={"unsigned"=true})

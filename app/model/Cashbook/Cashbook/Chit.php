@@ -41,17 +41,13 @@ class Chit
     /**
      * @ORM\ManyToOne(targetEntity=Cashbook::class, inversedBy="chits")
      * @ORM\JoinColumn(name="eventId")
-     *
-     * @var Cashbook
      */
-    private $cashbook;
+    private Cashbook $cashbook;
 
     /**
      * @ORM\Embedded(class=ChitBody::class, columnPrefix=false)
-     *
-     * @var ChitBody
      */
-    private $body;
+    private ChitBody $body;
 
     /**
      * @ORM\ManyToMany(targetEntity=ChitItem::class, cascade={"persist", "remove"}, orphanRemoval=true)

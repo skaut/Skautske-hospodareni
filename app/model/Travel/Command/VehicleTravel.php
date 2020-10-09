@@ -16,10 +16,8 @@ class VehicleTravel extends Travel
 {
     /**
      * @ORM\Column(type="float", options={"unsigned"=true})
-     *
-     * @var float
      */
-    private $distance;
+    private float $distance;
 
     public function __construct(int $id, float $distance, TravelDetails $details, Command $command)
     {

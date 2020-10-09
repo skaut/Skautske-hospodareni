@@ -21,10 +21,8 @@ final class ChitBody
 
     /**
      * @ORM\Column(type="chronos_date")
-     *
-     * @var Date
      */
-    private $date;
+    private Date $date;
 
     /**
      * @ORM\Column(type="recipient", length=64, nullable=true)

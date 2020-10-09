@@ -14,10 +14,8 @@ final class BankAccount
 {
     /**
      * @ORM\Column(type="integer", nullable=true, name="bank_account_id")
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="datetime_immutable", nullable=true)

@@ -18,10 +18,8 @@ class TransportTravel extends Travel
 {
     /**
      * @ORM\Column(type="money")
-     *
-     * @var Money
      */
-    private $price;
+    private Money $price;
 
     public function __construct(int $id, Money $price, TravelDetails $details, Command $command)
     {

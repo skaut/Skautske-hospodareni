@@ -23,24 +23,18 @@ final class Passenger
 
     /**
      * @ORM\Column(type="string", name="driver_name", length=64)
-     *
-     * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * @ORM\Column(type="string", name="driver_contact", length=64, nullable=true)
-     *
-     * @var string
      */
-    private $contact;
+    private string $contact;
 
     /**
      * @ORM\Column(type="string", name="driver_address", length=64)
-     *
-     * @var string
      */
-    private $address;
+    private string $address;
 
     /**
      * @ORM\Column(type="chronos_date", nullable=true, name="driver_birthday")

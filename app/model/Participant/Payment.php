@@ -25,45 +25,33 @@ class Payment
     /**
      * @ORM\Id()
      * @ORM\Column(type="payment_id")
-     *
-     * @var PaymentId
      */
-    private $id;
+    private PaymentId $id;
 
     /**
      * @ORM\Column(type="integer", name="participantId", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $participantId;
+    private int $participantId;
 
     /**
      * @ORM\Embedded(class=Event::class)
-     *
-     * @var Event
      */
-    private $event;
+    private Event $event;
 
     /**
      * @ORM\Column(type="money")
-     *
-     * @var Money
      */
-    private $payment;
+    private Money $payment;
 
     /**
      * @ORM\Column(type="money")
-     *
-     * @var Money
      */
-    private $repayment;
+    private Money $repayment;
 
     /**
      * @ORM\Column(type="string", name="isAccount")
-     *
-     * @var string
      */
-    private $account;
+    private string $account;
 
     public function __construct(PaymentId $id, int $participantId, Event $event, ?Money $payment = null, ?Money $repayment = null, string $account = 'N')
     {

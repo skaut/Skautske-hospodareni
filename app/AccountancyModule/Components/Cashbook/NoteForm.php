@@ -25,10 +25,8 @@ final class NoteForm extends BaseControl
 
     /**
      * Can current user add/edit chits?
-     *
-     * @var bool
      */
-    private $isEditable;
+    private bool $isEditable;
 
     private CommandBus $commandBus;
 

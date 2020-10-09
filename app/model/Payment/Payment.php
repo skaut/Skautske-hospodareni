@@ -32,24 +32,18 @@ class Payment extends Aggregate
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="integer", name="groupId", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $groupId;
+    private int $groupId;
 
     /**
      * @ORM\Column(type="string", length=64)
-     *
-     * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * @ORM\Column(type="text", nullable=true)
@@ -67,17 +61,13 @@ class Payment extends Aggregate
 
     /**
      * @ORM\Column(type="float")
-     *
-     * @var float
      */
-    private $amount;
+    private float $amount;
 
     /**
      * @ORM\Column(type="chronos_date", name="maturity")
-     *
-     * @var Date
      */
-    private $dueDate;
+    private Date $dueDate;
 
     /**
      * @ORM\Column(type="variable_symbol", nullable=true, length=10, name="vs")
@@ -95,10 +85,8 @@ class Payment extends Aggregate
 
     /**
      * @ORM\Column(type="string", length=64)
-     *
-     * @var string
      */
-    private $note = '';
+    private string $note = '';
 
     /**
      * @ORM\Embedded(class=Transaction::class, columnPrefix=false)

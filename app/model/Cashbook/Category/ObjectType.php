@@ -22,10 +22,8 @@ class ObjectType
      * @ORM\Id()
      * @ORM\ManyToOne(targetEntity=Category::class)
      * @ORM\JoinColumn(name="categoryId", nullable=false)
-     *
-     * @var Category
      */
-    private $category;
+    private Category $category;
 
     /**
      * @ORM\Id()
