@@ -37,10 +37,8 @@ class Transaction
 
     /**
      * @ORM\Column(type="string", nullable=true, name="transaction_note")
-     *
-     * @var string|NULL
      */
-    private $note;
+    private ?string $note;
 
     public function __construct(string $id, string $bankAccount, string $payer, ?string $note)
     {

@@ -40,10 +40,8 @@ class BankAccount
 
     /**
      * @ORM\Column(type="string", nullable=true)
-     *
-     * @var string|NULL
      */
-    private $token;
+    private ?string $token;
 
     /**
      * @ORM\Column(type="datetime_immutable")

@@ -19,10 +19,8 @@ class ChitItem
      * @ORM\Id()
      * @ORM\Column(type="integer", options={"unsigned"=true})
      * @ORM\GeneratedValue()
-     *
-     * @var int|null
      */
-    private $id;
+    private ?int $id;
 
     /**
      * @ORM\Embedded(class=Amount::class, columnPrefix=false)

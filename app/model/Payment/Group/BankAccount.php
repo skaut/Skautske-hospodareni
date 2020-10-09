@@ -19,10 +19,8 @@ final class BankAccount
 
     /**
      * @ORM\Column(type="datetime_immutable", nullable=true)
-     *
-     * @var DateTimeImmutable|NULL
      */
-    private $lastPairing;
+    private ?DateTimeImmutable $lastPairing;
 
     private function __construct(int $id, ?DateTimeImmutable $lastPairing)
     {

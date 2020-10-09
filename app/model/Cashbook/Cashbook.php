@@ -50,17 +50,13 @@ class Cashbook extends Aggregate
 
     /**
      * @ORM\Column(type="string", nullable=true)
-     *
-     * @var string|NULL
      */
-    private $cashChitNumberPrefix;
+    private ?string $cashChitNumberPrefix;
 
     /**
      * @ORM\Column(type="string", nullable=true)
-     *
-     * @var string|NULL
      */
-    private $bankChitNumberPrefix;
+    private ?string $bankChitNumberPrefix;
 
     /**
      * @ORM\OneToMany(targetEntity=Chit::class, mappedBy="cashbook", cascade={"persist", "remove"}, orphanRemoval=true)

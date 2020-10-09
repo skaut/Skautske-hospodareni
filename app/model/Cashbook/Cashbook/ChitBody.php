@@ -14,10 +14,8 @@ final class ChitBody
 {
     /**
      * @ORM\Column(type="chit_number", nullable=true, name="num", length=5)
-     *
-     * @var ChitNumber|NULL
      */
-    private $number;
+    private ?ChitNumber $number;
 
     /**
      * @ORM\Column(type="chronos_date")
@@ -26,10 +24,8 @@ final class ChitBody
 
     /**
      * @ORM\Column(type="recipient", length=64, nullable=true)
-     *
-     * @var Recipient|NULL
      */
-    private $recipient;
+    private ?Recipient $recipient;
 
     public function __construct(?ChitNumber $number, Date $date, ?Recipient $recipient)
     {

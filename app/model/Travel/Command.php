@@ -39,10 +39,8 @@ class Command
 
     /**
      * @ORM\ManyToOne(targetEntity=Vehicle::class)
-     *
-     * @var Vehicle|NULL
      */
-    private $vehicle;
+    private ?Vehicle $vehicle;
 
     /**
      * @ORM\Embedded(class=Passenger::class, columnPrefix=false)
@@ -81,10 +79,8 @@ class Command
 
     /**
      * @ORM\Column(type="datetime_immutable", nullable=true, name="closed")
-     *
-     * @var DateTimeImmutable|NULL
      */
-    private $closedAt;
+    private ?DateTimeImmutable $closedAt;
 
     /**
      * @ORM\OneToMany(targetEntity=Travel::class, indexBy="id", mappedBy="command", cascade={"persist", "remove"}, orphanRemoval=true)
@@ -100,10 +96,8 @@ class Command
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     *
-     * @var int|null
      */
-    private $ownerId = null;
+    private ?int $ownerId = null;
 
     /**
      * @ORM\Column(type="transport_types")

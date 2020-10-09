@@ -33,10 +33,8 @@ class Chit
      * @ORM\Id()
      * @ORM\Column(type="integer", options={"unsigned"=true})
      * @ORM\GeneratedValue()
-     *
-     * @var int|NULL
      */
-    private $id;
+    private ?int $id;
 
     /**
      * @ORM\ManyToOne(targetEntity=Cashbook::class, inversedBy="chits")
@@ -75,10 +73,8 @@ class Chit
      * ID of person that locked this
      *
      * @ORM\Column(type="integer", nullable=true, name="`lock`", options={"unsigned"=true})
-     *
-     * @var int|NULL
      */
-    private $locked;
+    private ?int $locked;
 
     /**
      * @ORM\OneToMany(

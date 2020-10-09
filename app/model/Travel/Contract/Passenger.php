@@ -38,10 +38,8 @@ final class Passenger
 
     /**
      * @ORM\Column(type="chronos_date", nullable=true, name="driver_birthday")
-     *
-     * @var Date|NULL
      */
-    private $birthday;
+    private ?Date $birthday;
 
     public function __construct(string $name, string $contact, string $address, ?Date $birthday)
     {

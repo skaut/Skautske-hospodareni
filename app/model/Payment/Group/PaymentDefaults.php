@@ -16,31 +16,23 @@ final class PaymentDefaults
 {
     /**
      * @ORM\Column(type="float", nullable=true)
-     *
-     * @var float|NULL
      */
-    private $amount;
+    private ?float $amount;
 
     /**
      * @ORM\Column(type="chronos_date", nullable=true, name="maturity")
-     *
-     * @var Date|NULL
      */
-    private $dueDate;
+    private ?Date $dueDate;
 
     /**
      * @ORM\Column(type="integer", nullable=true, name="ks", options={"unsigned"=true})
-     *
-     * @var int|NULL
      */
-    private $constantSymbol;
+    private ?int $constantSymbol;
 
     /**
      * @ORM\Column(type="variable_symbol", nullable=true, name="nextVs")
-     *
-     * @var VariableSymbol|NULL
      */
-    private $nextVariableSymbol;
+    private ?VariableSymbol $nextVariableSymbol;
 
     /**
      * @throws DueDateIsNotWorkday

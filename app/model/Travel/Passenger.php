@@ -36,10 +36,8 @@ final class Passenger
 
     /**
      * @ORM\Column(type="integer", nullable=true, options={"unsigned"=true})
-     *
-     * @var int|NULL
      */
-    private $contractId;
+    private ?int $contractId;
 
     public function __construct(string $name, string $contact, string $address)
     {

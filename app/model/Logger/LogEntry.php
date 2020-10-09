@@ -58,10 +58,8 @@ class LogEntry
 
     /**
      * @ORM\Column(type="integer", nullable=true, name="typeId", options={"unsigned"=true})
-     *
-     * @var int|NULL
      */
-    private $typeId;
+    private ?int $typeId;
 
     public function __construct(
         int $unitId,

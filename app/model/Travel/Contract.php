@@ -34,17 +34,13 @@ class Contract
 
     /**
      * @ORM\Column(type="chronos_date", nullable=true, name="start")
-     *
-     * @var Date|NULL
      */
-    private $since;
+    private ?Date $since;
 
     /**
      * @ORM\Column(type="chronos_date", nullable=true, name="end")
-     *
-     * @var Date|NULL
      */
-    private $until;
+    private ?Date $until;
 
     /**
      * @ORM\Embedded(class=ContractPassenger::class, columnPrefix=false)

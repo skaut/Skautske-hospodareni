@@ -51,10 +51,8 @@ class Vehicle
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     *
-     * @var int|NULL
      */
-    private $subunitId;
+    private ?int $subunitId;
 
     /**
      * @ORM\Column(type="string", length=64)

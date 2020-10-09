@@ -70,10 +70,8 @@ class Group
 
     /**
      * @ORM\Column(type="datetime_immutable", nullable=true)
-     *
-     * @var DateTimeImmutable|NULL
      */
-    private $createdAt;
+    private ?DateTimeImmutable $createdAt;
 
     /**
      * @ORM\Embedded(class=Group\BankAccount::class, columnPrefix=false)
@@ -92,10 +90,8 @@ class Group
 
     /**
      * @ORM\Column(type="integer", options={"unsigned"=true}, nullable=true)
-     *
-     * @var int|NULL
      */
-    private $smtpId;
+    private ?int $smtpId;
 
     /**
      * @ORM\Column(type="string", name="state_info", length=250)

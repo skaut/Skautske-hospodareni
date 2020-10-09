@@ -47,17 +47,13 @@ class Payment extends Aggregate
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     *
-     * @var string|NULL
      */
-    private $email;
+    private ?string $email;
 
     /**
      * @ORM\Column(type="integer", nullable=true, name="personId")
-     *
-     * @var int|NULL
      */
-    private $personId;
+    private ?int $personId;
 
     /**
      * @ORM\Column(type="float")
@@ -71,17 +67,13 @@ class Payment extends Aggregate
 
     /**
      * @ORM\Column(type="variable_symbol", nullable=true, length=10, name="vs")
-     *
-     * @var VariableSymbol|NULL
      */
-    private $variableSymbol;
+    private ?VariableSymbol $variableSymbol;
 
     /**
      * @ORM\Column(type="smallint", nullable=true, name="ks", options={"unsigned"=true})
-     *
-     * @var int|NULL
      */
-    private $constantSymbol;
+    private ?int $constantSymbol;
 
     /**
      * @ORM\Column(type="string", length=64)
@@ -98,17 +90,13 @@ class Payment extends Aggregate
 
     /**
      * @ORM\Column(type="datetime_immutable", nullable=true, name="dateClosed")
-     *
-     * @var DateTimeImmutable|NULL
      */
-    private $closedAt;
+    private ?DateTimeImmutable $closedAt;
 
     /**
      * @ORM\Column(type="string", length=64, nullable=true)
-     *
-     * @var string|NULL
      */
-    private $closedByUsername;
+    private ?string $closedByUsername;
 
     /**
      * @ORM\Column(type="string_enum", length=20)
