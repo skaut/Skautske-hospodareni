@@ -30,7 +30,7 @@ final class EducationsWithoutGroupQueryHandler
     }
 
     /**
-     * @return Education[]
+     * @return array<int, Education> (indexed by ID)
      */
     public function __invoke(EducationsWithoutGroupQuery $query) : array
     {
