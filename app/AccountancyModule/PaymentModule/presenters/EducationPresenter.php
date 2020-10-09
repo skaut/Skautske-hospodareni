@@ -19,6 +19,7 @@ use Model\Payment\ReadModel\Queries\EducationsWithoutGroupQuery;
 use Model\Payment\ReadModel\Queries\MemberEmailsQuery;
 use Model\PaymentService;
 use function array_filter;
+use function assert;
 use function in_array;
 
 class EducationPresenter extends BasePresenter

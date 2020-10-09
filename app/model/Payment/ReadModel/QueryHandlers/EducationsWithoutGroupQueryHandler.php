@@ -11,8 +11,8 @@ use Model\Payment\Group;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\ReadModel\Queries\EducationsWithoutGroupQuery;
 use Model\Payment\Repositories\IGroupRepository;
+use function array_filter;
 use function array_map;
-use function assert;
 use function in_array;
 
 final class EducationsWithoutGroupQueryHandler
@@ -34,7 +34,7 @@ final class EducationsWithoutGroupQueryHandler
     {
         $educations = $this->queryBus->handle(new EducationListQuery($query->getYear()));
 
-        $educationWithGroupIds  = $this->getEducationWithGroupIds($educations);
+        $educationWithGroupIds = $this->getEducationWithGroupIds($educations);
 
         return array_filter(
             $educations,
