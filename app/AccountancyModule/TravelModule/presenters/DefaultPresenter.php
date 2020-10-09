@@ -34,17 +34,13 @@ class DefaultPresenter extends BasePresenter
     /** @var int|null */
     private $commandId;
 
-    /** @var TravelService */
-    private $travelService;
+    private TravelService $travelService;
 
-    /** @var PdfRenderer */
-    private $pdf;
+    private PdfRenderer $pdf;
 
-    /** @var ICommandGridFactory */
-    private $gridFactory;
+    private ICommandGridFactory $gridFactory;
 
-    /** @var IEditTravelDialogFactory */
-    private $editTravelDialogFactory;
+    private IEditTravelDialogFactory $editTravelDialogFactory;
 
     public function __construct(
         TravelService $travelService,

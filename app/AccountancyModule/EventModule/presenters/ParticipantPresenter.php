@@ -31,32 +31,23 @@ use function printf;
 
 class ParticipantPresenter extends BasePresenter
 {
-    /** @var bool */
-    private $canAddParticipants;
+    private bool $canAddParticipants;
 
-    /** @var ExportService */
-    private $exportService;
+    private ExportService $exportService;
 
-    /** @var ExcelService */
-    private $excelService;
+    private ExcelService $excelService;
 
-    /** @var PdfRenderer     */
-    private $pdf;
+    private PdfRenderer $pdf;
 
-    /** @var IPersonPickerFactory */
-    private $personPickerFactory;
+    private IPersonPickerFactory $personPickerFactory;
 
-    /** @var IParticipantListFactory */
-    private $participantListFactory;
+    private IParticipantListFactory $participantListFactory;
 
-    /** @var bool */
-    private $isAllowParticipantUpdate;
+    private bool $isAllowParticipantUpdate;
 
-    /** @var bool */
-    private $isAllowParticipantDelete;
+    private bool $isAllowParticipantDelete;
 
-    /** @var EventEntity */
-    private $eventService;
+    private EventEntity $eventService;
 
     public function __construct(
         ExportService $export,

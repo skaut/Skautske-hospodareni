@@ -10,8 +10,7 @@ use Model\Event\Repositories\ICampRepository;
 
 class CampQueryHandler
 {
-    /** @var ICampRepository */
-    private $campRepository;
+    private ICampRepository $campRepository;
 
     public function __construct(ICampRepository $campRepository)
     {

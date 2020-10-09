@@ -35,14 +35,11 @@ use function count;
 
 class CashbookPresenter extends BasePresenter
 {
-    /** @var bool */
-    private $isRealTotalCostAutoComputed;
+    private bool $isRealTotalCostAutoComputed;
 
-    /** @var ICashbookControlFactory */
-    private $cashbookFactory;
+    private ICashbookControlFactory $cashbookFactory;
 
-    /** @var IMissingAutocomputedCategoryControlFactory */
-    private $categoryAutocomputedFactory;
+    private IMissingAutocomputedCategoryControlFactory $categoryAutocomputedFactory;
 
     public function __construct(
         ICashbookControlFactory $cashbookFactory,

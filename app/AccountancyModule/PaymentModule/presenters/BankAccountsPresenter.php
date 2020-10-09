@@ -34,14 +34,11 @@ class BankAccountsPresenter extends BasePresenter
 {
     private const DAYS_BACK = 60;
 
-    /** @var  IBankAccountFormFactory */
-    private $formFactory;
+    private IBankAccountFormFactory $formFactory;
 
-    /** @var BankAccountService */
-    private $accounts;
+    private BankAccountService $accounts;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
     public function __construct(IBankAccountFormFactory $formFactory, BankAccountService $accounts)
     {

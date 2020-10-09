@@ -24,14 +24,11 @@ use function preg_match;
 
 final class CampCategoryUpdater implements ICampCategoryUpdater
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
-    /** @var Mapper */
-    private $mapper;
+    private Mapper $mapper;
 
-    /** @var ICampCategoryRepository */
-    private $campCategories;
+    private ICampCategoryRepository $campCategories;
 
     public function __construct(Skautis $skautis, Mapper $mapper, ICampCategoryRepository $campCategories)
     {

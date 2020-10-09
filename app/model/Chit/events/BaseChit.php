@@ -6,20 +6,15 @@ namespace Model\Chit\Events;
 
 class BaseChit
 {
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var int */
-    private $userId;
+    private int $userId;
 
-    /** @var string */
-    private $userName;
+    private string $userName;
 
-    /** @var int */
-    private $chitId;
+    private int $chitId;
 
-    /** @var int */
-    private $eventId;
+    private int $eventId;
 
     public function __construct(int $unitId, int $userId, string $userName, int $chitId, int $eventId)
     {

@@ -9,8 +9,7 @@ use Monolog\Processor\ProcessorInterface;
 
 class UserContextProcessor implements ProcessorInterface
 {
-    /** @var UserContextProvider */
-    private $userContext;
+    private UserContextProvider $userContext;
 
     public function __construct(UserContextProvider $userContext)
     {

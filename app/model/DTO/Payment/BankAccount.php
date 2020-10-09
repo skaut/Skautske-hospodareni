@@ -9,26 +9,20 @@ use Model\Payment\BankAccount\AccountNumber;
 
 class BankAccount
 {
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var AccountNumber */
-    private $number;
+    private AccountNumber $number;
 
     /** @var string|NULL */
     private $token;
 
-    /** @var DateTimeImmutable */
-    private $createdAt;
+    private DateTimeImmutable $createdAt;
 
-    /** @var bool */
-    private $allowedForSubunits;
+    private bool $allowedForSubunits;
 
     public function __construct(
         int $id,

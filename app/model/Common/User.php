@@ -6,11 +6,9 @@ namespace Model\Common;
 
 class User
 {
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
     /** @var string|NULL */
     private $email;

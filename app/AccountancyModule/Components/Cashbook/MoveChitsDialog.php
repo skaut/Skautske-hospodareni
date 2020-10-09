@@ -46,17 +46,13 @@ class MoveChitsDialog extends BaseControl
      */
     public $opened = false;
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var IAuthorizator */
-    private $authorizator;
+    private IAuthorizator $authorizator;
 
     public function __construct(
         CashbookId $cashbookId,

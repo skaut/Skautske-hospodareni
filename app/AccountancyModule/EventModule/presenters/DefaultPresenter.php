@@ -23,11 +23,9 @@ class DefaultPresenter extends BasePresenter
 {
     public const DEFAULT_STATE = 'draft'; //filtrovani zobrazených položek
 
-    /** @var IExportDialogFactory */
-    private $exportDialogFactory;
+    private IExportDialogFactory $exportDialogFactory;
 
-    /** @var GridFactory */
-    private $gridFactory;
+    private GridFactory $gridFactory;
 
     public function __construct(IExportDialogFactory $exportDialogFactory, GridFactory $gridFactory)
     {

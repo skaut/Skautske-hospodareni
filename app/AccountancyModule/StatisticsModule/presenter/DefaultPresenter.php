@@ -10,8 +10,7 @@ use function date;
 
 class DefaultPresenter extends BasePresenter
 {
-    /** @var StatisticsService */
-    private $statService;
+    private StatisticsService $statService;
 
     public function __construct(StatisticsService $statService)
     {

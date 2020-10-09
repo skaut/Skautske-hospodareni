@@ -15,8 +15,7 @@ final class ChitNumber
 {
     public const PATTERN = '^[a-zA-Z]{0,3}[0-9]{1,5}(/[0-9]{1,2})?$';
 
-    /** @var string */
-    private $value;
+    private string $value;
 
     public function __construct(string $value)
     {

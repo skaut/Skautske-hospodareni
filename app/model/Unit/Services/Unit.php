@@ -19,32 +19,24 @@ class Unit
         'zvlastniJednotka',
     ];
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string */
-    private $sortName;
+    private string $sortName;
 
-    /** @var string */
-    private $displayName;
+    private string $displayName;
 
     /** @var string|null */
     private $ic;
 
-    /** @var string */
-    private $street;
+    private string $street;
 
-    /** @var string */
-    private $city;
+    private string $city;
 
-    /** @var string */
-    private $postcode;
+    private string $postcode;
 
-    /** @var string */
-    private $registrationNumber;
+    private string $registrationNumber;
 
-    /** @var string */
-    private $type;
+    private string $type;
 
     /** @var int|NULL */
     private $parentId;

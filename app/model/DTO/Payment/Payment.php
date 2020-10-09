@@ -33,20 +33,16 @@ class Payment
 {
     use SmartObject;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var float */
-    private $amount;
+    private float $amount;
 
     /** @var string|NULL */
     private $email;
 
-    /** @var Date */
-    private $dueDate;
+    private Date $dueDate;
 
     /** @var VariableSymbol|NULL */
     private $variableSymbol;
@@ -54,14 +50,11 @@ class Payment
     /** @var int|NULL */
     private $constantSymbol;
 
-    /** @var string */
-    private $note;
+    private string $note;
 
-    /** @var bool */
-    private $closed;
+    private bool $closed;
 
-    /** @var State */
-    private $state;
+    private State $state;
 
     /** @var Transaction|NULL */
     private $transaction;
@@ -75,8 +68,7 @@ class Payment
     /** @var int|NULL */
     private $personId;
 
-    /** @var int */
-    private $groupId;
+    private int $groupId;
 
     /** @var SentEmail[] */
     private $sentEmails;

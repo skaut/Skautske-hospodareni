@@ -17,11 +17,9 @@ use function array_unique;
 
 class MailService
 {
-    /** @var IMailCredentialsRepository */
-    private $credentials;
+    private IMailCredentialsRepository $credentials;
 
-    /** @var IUnitResolver */
-    private $unitResolver;
+    private IUnitResolver $unitResolver;
 
     public function __construct(IMailCredentialsRepository $credentials, IUnitResolver $unitResolver)
     {

@@ -8,8 +8,7 @@ use Skautis\Skautis;
 
 class SkautisMaintenanceChecker
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
     public function __construct(Skautis $skautis)
     {

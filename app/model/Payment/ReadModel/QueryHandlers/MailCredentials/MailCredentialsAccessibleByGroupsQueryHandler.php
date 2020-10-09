@@ -18,14 +18,11 @@ use function assert;
 
 final class MailCredentialsAccessibleByGroupsQueryHandler
 {
-    /** @var IMailCredentialsAccessChecker */
-    private $accessChecker;
+    private IMailCredentialsAccessChecker $accessChecker;
 
-    /** @var IMailCredentialsRepository */
-    private $mailCredentials;
+    private IMailCredentialsRepository $mailCredentials;
 
-    /** @var IUnitResolver */
-    private $unitResolver;
+    private IUnitResolver $unitResolver;
 
     public function __construct(
         IMailCredentialsAccessChecker $accessChecker,

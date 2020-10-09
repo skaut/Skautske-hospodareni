@@ -10,8 +10,7 @@ use Model\Unit\UnitHasNoParent;
 
 final class UnitResolver implements IUnitResolver
 {
-    /** @var IUnitRepository */
-    private $units;
+    private IUnitRepository $units;
 
     public function __construct(IUnitRepository $units)
     {

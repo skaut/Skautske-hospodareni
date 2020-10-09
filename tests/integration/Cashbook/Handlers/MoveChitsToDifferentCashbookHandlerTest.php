@@ -21,8 +21,7 @@ final class MoveChitsToDifferentCashbookHandlerTest extends CommandHandlerTest
     private const TARGET_CASHBOOK_ID = '50f7a570-102b-4d12-aa9f-1391a132b02d';
     private const SOURCE_CASHBOOK_ID = 'b10db507-aed9-4abd-bdc1-95631d775e65';
 
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
     public function testMovingChits() : void
     {

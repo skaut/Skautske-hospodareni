@@ -13,8 +13,7 @@ class TemplateFactory
     public const SMTP_CREDENTIALS_ADDED = __DIR__ . '/../emails/smtpAdded.latte';
     public const PAYMENT_DETAILS        = __DIR__ . '/../emails/payment.base.latte';
 
-    /** @var ILatteFactory */
-    private $latteFactory;
+    private ILatteFactory $latteFactory;
 
     /** @var Engine|NULL */
     private $engine = null;

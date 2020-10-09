@@ -9,17 +9,13 @@ use function sprintf;
 
 class PairingResult
 {
-    /** @var string */
-    private $accountName;
+    private string $accountName;
 
-    /** @var DateTimeImmutable */
-    private $since;
+    private DateTimeImmutable $since;
 
-    /** @var DateTimeImmutable */
-    private $until;
+    private DateTimeImmutable $until;
 
-    /** @var int */
-    private $count;
+    private int $count;
 
     public function __construct(string $accountName, DateTimeImmutable $since, DateTimeImmutable $until, int $count)
     {

@@ -9,8 +9,7 @@ use Skautis\Skautis;
 
 final class CreateEventHandler
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
     public function __construct(Skautis $skautis)
     {

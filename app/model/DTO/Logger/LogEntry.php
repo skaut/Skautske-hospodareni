@@ -21,20 +21,16 @@ class LogEntry
 {
     use SmartObject;
 
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var DateTimeImmutable */
-    private $date;
+    private DateTimeImmutable $date;
 
-    /** @var int */
-    private $userId;
+    private int $userId;
 
     /** @var  string */
     private $description;
 
-    /** @var Type */
-    private $type;
+    private Type $type;
 
     /** @var int|NULL */
     private $typeId;

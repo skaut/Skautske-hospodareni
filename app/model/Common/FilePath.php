@@ -13,8 +13,7 @@ use function uniqid;
 
 final class FilePath
 {
-    /** @var string */
-    private $path;
+    private string $path;
 
     public static function generate(string $prefix, string $path) : self
     {

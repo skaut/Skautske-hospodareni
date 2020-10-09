@@ -12,8 +12,7 @@ use Model\Skautis\ReadModel\QueryHandlers\CampBudgetQueryHandler;
  */
 final class CampBudgetQuery
 {
-    /** @var SkautisCampId */
-    private $campId;
+    private SkautisCampId $campId;
 
     public function __construct(SkautisCampId $campId)
     {

@@ -6,14 +6,11 @@ namespace Model\Common;
 
 final class Registration
 {
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string */
-    private $unitName;
+    private string $unitName;
 
-    /** @var int */
-    private $year;
+    private int $year;
 
     public function __construct(int $id, string $unitName, int $year)
     {

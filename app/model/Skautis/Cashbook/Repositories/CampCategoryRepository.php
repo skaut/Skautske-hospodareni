@@ -21,8 +21,7 @@ final class CampCategoryRepository implements ICampCategoryRepository
         3 => ParticipantType::ADULT,
     ];
 
-    /** @var WebServiceInterface */
-    private $eventWebService;
+    private WebServiceInterface $eventWebService;
 
     public function __construct(WebServiceInterface $eventWebService)
     {

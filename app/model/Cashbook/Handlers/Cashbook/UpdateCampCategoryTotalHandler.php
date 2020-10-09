@@ -15,14 +15,11 @@ use function assert;
 
 class UpdateCampCategoryTotalHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
-    /** @var ICampCategoryUpdater */
-    private $updater;
+    private ICampCategoryUpdater $updater;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(ICashbookRepository $cashbooks, ICampCategoryUpdater $updater, QueryBus $queryBus)
     {

@@ -23,11 +23,9 @@ use function dirname;
 
 class ContractPresenter extends BasePresenter
 {
-    /** @var TravelService */
-    private $travelService;
+    private TravelService $travelService;
 
-    /** @var PdfRenderer */
-    private $pdf;
+    private PdfRenderer $pdf;
 
     public function __construct(TravelService $travelService, PdfRenderer $pdf)
     {

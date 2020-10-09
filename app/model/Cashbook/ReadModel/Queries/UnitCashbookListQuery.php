@@ -12,8 +12,7 @@ use Model\Common\UnitId;
  */
 final class UnitCashbookListQuery
 {
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
     public function __construct(UnitId $unitId)
     {

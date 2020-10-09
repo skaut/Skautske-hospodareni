@@ -14,11 +14,9 @@ final class Counter
 {
     use SmartObject;
 
-    /** @var int */
-    private $events;
+    private int $events;
 
-    /** @var int */
-    private $camps;
+    private int $camps;
 
     public function __construct(int $events = 0, int $camps = 0)
     {

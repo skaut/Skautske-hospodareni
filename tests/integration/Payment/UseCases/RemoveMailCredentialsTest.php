@@ -19,14 +19,11 @@ use Stubs\MailCredentialsAccessCheckerStub;
 
 final class RemoveMailCredentialsTest extends IntegrationTest
 {
-    /** @var IMailCredentialsRepository */
-    private $credentials;
+    private IMailCredentialsRepository $credentials;
 
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
-    /** @var RemoveMailCredentialsHandler */
-    private $handler;
+    private RemoveMailCredentialsHandler $handler;
 
     /**
      * @return string[]

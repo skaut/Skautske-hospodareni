@@ -34,11 +34,9 @@ class GroupRepositoryTest extends IntegrationTest
         'ks' => 123,
     ];
 
-    /** @var GroupRepository */
-    private $repository;
+    private GroupRepository $repository;
 
-    /** @var EventBus */
-    private $eventBus;
+    private EventBus $eventBus;
 
     /**
      * @return string[]

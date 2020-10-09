@@ -24,17 +24,13 @@ use function implode;
 
 final class RoadworthyControl extends BaseControl
 {
-    /** @var int */
-    private $vehicleId;
+    private int $vehicleId;
 
-    /** @var bool */
-    private $isEditable;
+    private bool $isEditable;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(int $vehicleId, bool $isEditable, CommandBus $commandBus, QueryBus $queryBus)
     {

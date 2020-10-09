@@ -61,8 +61,7 @@ class CommandRepositoryTest extends IntegrationTest
         'start_date' => '2018-01-01',
     ];
 
-    /** @var CommandRepository */
-    private $repository;
+    private CommandRepository $repository;
 
     /**
      * @return string[]

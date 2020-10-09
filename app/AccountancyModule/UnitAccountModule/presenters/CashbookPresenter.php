@@ -21,17 +21,13 @@ use function sprintf;
 
 class CashbookPresenter extends BasePresenter
 {
-    /** @var IActivateCashbookDialogFactory */
-    private $activateCashbookDialogFactory;
+    private IActivateCashbookDialogFactory $activateCashbookDialogFactory;
 
-    /** @var ICashbookControlFactory */
-    private $cashbookFactory;
+    private ICashbookControlFactory $cashbookFactory;
 
-    /** @var ICreateCashbookDialogFactory */
-    private $createCashbookDialogFactory;
+    private ICreateCashbookDialogFactory $createCashbookDialogFactory;
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
     public function __construct(
         ICashbookControlFactory $cashbookFactory,

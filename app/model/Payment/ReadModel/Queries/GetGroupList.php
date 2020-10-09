@@ -14,8 +14,7 @@ final class GetGroupList
     /** @var int[] */
     private $unitIds;
 
-    /** @var bool */
-    private $onlyOpen;
+    private bool $onlyOpen;
 
     /**
      * @param int[] $unitIds

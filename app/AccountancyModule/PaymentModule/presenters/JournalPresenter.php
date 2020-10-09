@@ -9,8 +9,7 @@ use function array_keys;
 
 class JournalPresenter extends BasePresenter
 {
-    /** @var PaymentService */
-    private $model;
+    private PaymentService $model;
 
     public function __construct(PaymentService $model)
     {

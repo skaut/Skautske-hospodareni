@@ -27,20 +27,15 @@ use function assert;
 
 class FunctionsControl extends BaseControl
 {
-    /** @var int */
-    private $eventId;
+    private int $eventId;
 
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var IAuthorizator */
-    private $authorizator;
+    private IAuthorizator $authorizator;
 
     /**
      * @persistent

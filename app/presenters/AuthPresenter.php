@@ -12,8 +12,7 @@ use function substr;
 
 class AuthPresenter extends BasePresenter
 {
-    /** @var AuthService */
-    protected $authService;
+    protected AuthService $authService;
 
     public function __construct(AuthService $as)
     {

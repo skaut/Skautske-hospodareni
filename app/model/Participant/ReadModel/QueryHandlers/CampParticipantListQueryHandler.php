@@ -10,8 +10,7 @@ use Model\DTO\Participant\Participant;
 
 final class CampParticipantListQueryHandler
 {
-    /** @var IParticipantRepository */
-    private $participants;
+    private IParticipantRepository $participants;
 
     public function __construct(IParticipantRepository $participants)
     {

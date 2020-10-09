@@ -11,8 +11,7 @@ use Skautis\Skautis;
 
 class BankAccountImporter implements IBankAccountImporter
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
     public function __construct(Skautis $skautis)
     {

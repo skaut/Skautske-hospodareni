@@ -17,8 +17,7 @@ use function sprintf;
 
 class ParticipantService extends MutableBaseService
 {
-    /** @var IPaymentRepository */
-    private $repository;
+    private IPaymentRepository $repository;
 
     public function __construct(string $name, Skautis $skautIS, IPaymentRepository $repository)
     {

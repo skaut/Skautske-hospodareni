@@ -12,17 +12,13 @@ use Model\Cashbook\Handlers\Cashbook\AddChitScanHandler;
  */
 final class AddChitScan
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var int */
-    private $chitId;
+    private int $chitId;
 
-    /** @var string */
-    private $fileName;
+    private string $fileName;
 
-    /** @var string */
-    private $scanContents;
+    private string $scanContents;
 
     public function __construct(CashbookId $cashbookId, int $chitId, string $fileName, string $scanContents)
     {

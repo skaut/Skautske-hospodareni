@@ -12,8 +12,7 @@ use function sprintf;
 
 final class RemoveGroupHandler
 {
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
     public function __construct(IGroupRepository $groups)
     {

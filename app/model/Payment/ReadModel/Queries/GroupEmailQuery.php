@@ -12,11 +12,9 @@ use Model\Payment\ReadModel\QueryHandlers\GroupEmailQueryHandler;
  */
 final class GroupEmailQuery
 {
-    /** @var int */
-    private $groupId;
+    private int $groupId;
 
-    /** @var EmailType */
-    private $emailType;
+    private EmailType $emailType;
 
     public function __construct(int $groupId, EmailType $emailType)
     {

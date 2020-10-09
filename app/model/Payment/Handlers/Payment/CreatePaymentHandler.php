@@ -11,11 +11,9 @@ use Model\Payment\Repositories\IPaymentRepository;
 
 final class CreatePaymentHandler
 {
-    /** @var IPaymentRepository */
-    private $payments;
+    private IPaymentRepository $payments;
 
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
     public function __construct(IPaymentRepository $payments, IGroupRepository $groups)
     {

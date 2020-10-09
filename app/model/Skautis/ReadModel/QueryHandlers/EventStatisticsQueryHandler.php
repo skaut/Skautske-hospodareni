@@ -10,8 +10,7 @@ use Skautis\Wsdl\WebServiceInterface;
 
 final class EventStatisticsQueryHandler
 {
-    /** @var WebServiceInterface */
-    private $eventWebService;
+    private WebServiceInterface $eventWebService;
 
     public function __construct(WebServiceInterface $eventWebService)
     {

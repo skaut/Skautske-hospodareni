@@ -11,17 +11,13 @@ class UpdateParticipant
     public const FIELD_REPAYMENT  = 'repayment';
     public const FIELD_IS_ACCOUNT = 'isAccount';
 
-    /** @var int */
-    private $eventId;
+    private int $eventId;
 
-    /** @var int */
-    private $participantId;
+    private int $participantId;
 
-    /** @var string */
-    private $field;
+    private string $field;
 
-    /** @var string */
-    private $value;
+    private string $value;
 
     public function __construct(int $eventId, int $participantId, string $field, string $value)
     {

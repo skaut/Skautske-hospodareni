@@ -17,11 +17,9 @@ use function array_map;
 
 final class UpdateChitHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
-    /** @var CategoryRepository */
-    private $categories;
+    private CategoryRepository $categories;
 
     public function __construct(ICashbookRepository $cashbooks, CategoryRepository $categories)
     {

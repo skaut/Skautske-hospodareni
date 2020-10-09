@@ -24,8 +24,7 @@ abstract class BasePresenter extends \App\BasePresenter
      */
     protected $aid;
 
-    /** @var UnitId */
-    protected $unitId;
+    protected UnitId $unitId;
 
     /**
      * je akci možné upravovat?
@@ -34,8 +33,7 @@ abstract class BasePresenter extends \App\BasePresenter
      */
     protected $isEditable;
 
-    /** @var SkautisMaintenanceChecker */
-    private $skautisMaintenanceChecker;
+    private SkautisMaintenanceChecker $skautisMaintenanceChecker;
 
     /** @var string camp, event, unit */
     public $type;

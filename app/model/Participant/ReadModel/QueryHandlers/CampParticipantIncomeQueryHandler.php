@@ -15,8 +15,7 @@ use function preg_match;
 
 class CampParticipantIncomeQueryHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(QueryBus $queryBus)
     {

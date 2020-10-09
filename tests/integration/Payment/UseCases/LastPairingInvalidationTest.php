@@ -21,11 +21,9 @@ final class LastPairingInvalidationTest extends IntegrationTest
     private const UNIT_ID         = 101;
     private const ORIGINAL_AMOUNT = 200;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var IGroupRepository */
-    private $groupRepository;
+    private IGroupRepository $groupRepository;
 
     /**
      * @return string[]

@@ -22,8 +22,7 @@ final class ContractRepositoryTest extends IntegrationTest
         'template' => 2,
     ];
 
-    /** @var ContractRepository */
-    private $repository;
+    private ContractRepository $repository;
 
     protected function _before() : void
     {

@@ -11,14 +11,11 @@ use Nette\Application\BadRequestException;
 
 class CommandPresenter extends BasePresenter
 {
-    /** @var ICommandFormFactory */
-    private $commandFormFactory;
+    private ICommandFormFactory $commandFormFactory;
 
-    /** @var TravelService */
-    private $model;
+    private TravelService $model;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
     public function __construct(ICommandFormFactory $commandFormFactory, TravelService $model)
     {

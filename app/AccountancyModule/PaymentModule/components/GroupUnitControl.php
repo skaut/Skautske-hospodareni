@@ -26,23 +26,17 @@ use function sprintf;
 
 class GroupUnitControl extends BaseControl
 {
-    /** @var int */
-    private $groupId;
+    private int $groupId;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var PaymentService */
-    private $groups;
+    private PaymentService $groups;
 
-    /** @var UnitService */
-    private $units;
+    private UnitService $units;
 
-    /** @var IAuthorizator */
-    private $authorizator;
+    private IAuthorizator $authorizator;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(int $groupId, CommandBus $commandBus, PaymentService $groups, UnitService $units, IAuthorizator $authorizator, QueryBus $queryBus)
     {

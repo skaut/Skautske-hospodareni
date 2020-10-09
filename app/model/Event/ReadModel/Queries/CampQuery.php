@@ -11,8 +11,7 @@ use Model\Event\SkautisCampId;
  */
 class CampQuery
 {
-    /** @var SkautisCampId */
-    private $campId;
+    private SkautisCampId $campId;
 
     public function __construct(SkautisCampId $campId)
     {

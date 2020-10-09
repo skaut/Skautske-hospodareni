@@ -10,8 +10,7 @@ use Model\Common\Repositories\IMemberRepository;
 
 final class MemberNamesQueryHandler
 {
-    /** @var IMemberRepository */
-    private $members;
+    private IMemberRepository $members;
 
     public function __construct(IMemberRepository $members)
     {

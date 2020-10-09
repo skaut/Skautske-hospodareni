@@ -38,17 +38,14 @@ class InvertChitDialog extends BaseControl
      */
     public $chitId;
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
     /** @var array<string, string>|NULL */
     private $cashbooks;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(CashbookId $cashbookId, CommandBus $commandBus, QueryBus $queryBus)
     {

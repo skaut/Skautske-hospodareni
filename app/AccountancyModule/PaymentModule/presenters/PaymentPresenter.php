@@ -51,32 +51,23 @@ class PaymentPresenter extends BasePresenter
     /** @var string[] */
     protected $readUnits;
 
-    /** @var UnitService */
-    protected $unitService;
+    protected UnitService $unitService;
 
-    /** @var PaymentService */
-    private $model;
+    private PaymentService $model;
 
-    /** @var MailingService */
-    private $mailing;
+    private MailingService $mailing;
 
-    /** @var IMassAddFormFactory */
-    private $massAddFormFactory;
+    private IMassAddFormFactory $massAddFormFactory;
 
-    /** @var IPairButtonFactory */
-    private $pairButtonFactory;
+    private IPairButtonFactory $pairButtonFactory;
 
-    /** @var IGroupUnitControlFactory */
-    private $unitControlFactory;
+    private IGroupUnitControlFactory $unitControlFactory;
 
-    /** @var IRemoveGroupDialogFactory */
-    private $removeGroupDialogFactory;
+    private IRemoveGroupDialogFactory $removeGroupDialogFactory;
 
-    /** @var IPaymentDialogFactory */
-    private $paymentDialogFactory;
+    private IPaymentDialogFactory $paymentDialogFactory;
 
-    /** @var IPaymentListFactory */
-    private $paymentListFactory;
+    private IPaymentListFactory $paymentListFactory;
 
     private const NO_MAILER_MESSAGE       = 'Nemáte nastavený mail pro odesílání u skupiny';
     private const NO_BANK_ACCOUNT_MESSAGE = 'Skupina nemá nastavený bankovní účet';

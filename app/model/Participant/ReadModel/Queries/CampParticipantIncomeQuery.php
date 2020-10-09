@@ -11,8 +11,7 @@ use Model\Event\SkautisCampId;
  */
 final class CampParticipantIncomeQuery
 {
-    /** @var SkautisCampId */
-    private $campId;
+    private SkautisCampId $campId;
 
     /** @var bool|null */
     private $isAdult;

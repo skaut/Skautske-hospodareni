@@ -43,8 +43,7 @@ class ChitListControl extends BaseControl
     /** @var callable[] */
     public $onEditButtonClicked = [];
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
     /**
      * Can current user edit cashbook?
@@ -53,26 +52,19 @@ class ChitListControl extends BaseControl
      */
     private $isEditable;
 
-    /** @var PaymentMethod */
-    private $paymentMethod;
+    private PaymentMethod $paymentMethod;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var IMoveChitsDialogFactory */
-    private $moveChitsDialogFactory;
+    private IMoveChitsDialogFactory $moveChitsDialogFactory;
 
-    /** @var IInvertChitDialogFactory */
-    private $invertChitDialogFactory;
+    private IInvertChitDialogFactory $invertChitDialogFactory;
 
-    /** @var IChitScanControlFactory */
-    private $chitScanFactory;
+    private IChitScanControlFactory $chitScanFactory;
 
-    /** @var IPrefixControlFactory */
-    private $prefixFactory;
+    private IPrefixControlFactory $prefixFactory;
 
     public function __construct(
         CashbookId $cashbookId,

@@ -16,14 +16,11 @@ use Nette\Mail\SmtpException;
 
 final class SmtpAddForm extends BaseControl
 {
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var int */
-    private $userId;
+    private int $userId;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
     public function __construct(UnitId $unitId, int $userId, CommandBus $commandBus)
     {

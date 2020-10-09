@@ -12,8 +12,7 @@ use function array_map;
 
 final class GetGroupListHandler
 {
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
     public function __construct(IGroupRepository $groups)
     {

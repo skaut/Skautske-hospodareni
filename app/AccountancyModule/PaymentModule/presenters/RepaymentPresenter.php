@@ -24,14 +24,11 @@ use function sprintf;
 
 final class RepaymentPresenter extends BasePresenter
 {
-    /** @var Group */
-    private $group;
+    private Group $group;
 
-    /** @var PaymentService */
-    private $payments;
+    private PaymentService $payments;
 
-    /** @var BankAccountService */
-    private $bankAccounts;
+    private BankAccountService $bankAccounts;
 
     public function __construct(PaymentService $payments, BankAccountService $bankAccounts)
     {

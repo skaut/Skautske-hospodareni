@@ -11,8 +11,7 @@ use Model\Cashbook\ReadModel\Queries\ParticipantChitSumQuery;
 
 class EventParticipantBalanceQueryHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(QueryBus $queryBus)
     {

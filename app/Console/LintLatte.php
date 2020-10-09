@@ -19,11 +19,9 @@ use function sprintf;
 
 final class LintLatte extends Command
 {
-    /** @var string */
-    private $appDir;
+    private string $appDir;
 
-    /** @var ILatteFactory */
-    private $latteFactory;
+    private ILatteFactory $latteFactory;
 
     public function __construct(string $appDir, ILatteFactory $latteFactory)
     {

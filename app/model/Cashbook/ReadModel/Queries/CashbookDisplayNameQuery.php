@@ -8,8 +8,7 @@ use Model\Cashbook\Cashbook\CashbookId;
 
 final class CashbookDisplayNameQuery
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
     public function __construct(CashbookId $cashbookId)
     {

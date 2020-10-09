@@ -22,17 +22,14 @@ final class QueryBusDynamicReturnTypeProvider implements DynamicMethodReturnType
     /** @var array<string, Type> query class => type */
     private $returnTypes;
 
-    /** @var Broker */
-    private $broker;
+    private Broker $broker;
 
     /** @var array<string> */
     private $autoloadDirectories;
 
-    /** @var string */
-    private $tempDir;
+    private string $tempDir;
 
-    /** @var string */
-    private $queryHandlerClassRegex;
+    private string $queryHandlerClassRegex;
 
     /**
      * @param array<string> $autoloadDirectories

@@ -28,11 +28,9 @@ use function uasort;
 
 class CashbookWithCategoriesBuilder
 {
-    /** @var Worksheet */
-    private $sheet;
+    private Worksheet $sheet;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     private const HEADER_ROW              = 2;
     private const SUBHEADER_ROW           = 3;

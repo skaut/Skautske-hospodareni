@@ -10,8 +10,7 @@ use function preg_match;
 // phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 final class SQLLogger implements \Doctrine\DBAL\Logging\SQLLogger
 {
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(LoggerInterface $logger)
     {

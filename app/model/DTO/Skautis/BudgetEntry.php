@@ -15,14 +15,11 @@ final class BudgetEntry
 {
     use SmartObject;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var Money */
-    private $total;
+    private Money $total;
 
-    /** @var bool */
-    private $income;
+    private bool $income;
 
     public function __construct(string $name, Money $total, bool $income)
     {

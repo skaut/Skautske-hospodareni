@@ -26,20 +26,16 @@ class RegistrationPresenter extends BasePresenter
     /** @var Registration|null */
     private $registration;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
     /** @var string[] */
     protected $readUnits;
 
-    /** @var PaymentService */
-    private $model;
+    private PaymentService $model;
 
-    /** @var IMassAddFormFactory */
-    private $massAddFormFactory;
+    private IMassAddFormFactory $massAddFormFactory;
 
-    /** @var IGroupFormFactory */
-    private $groupFormFactory;
+    private IGroupFormFactory $groupFormFactory;
 
     private const STS_PRICE = 200;
 

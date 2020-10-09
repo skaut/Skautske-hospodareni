@@ -39,8 +39,7 @@ final class ParticipantList extends BaseControl
 
     private const NO_ACTION = '';
 
-    /** @var int */
-    public $aid;
+    public int $aid;
 
     /** @var callable[] */
     public $onUpdate = [];
@@ -48,20 +47,15 @@ final class ParticipantList extends BaseControl
     /** @var callable[] */
     public $onRemove = [];
 
-    /** @var bool */
-    protected $isAllowRepayment;
+    protected bool $isAllowRepayment;
 
-    /** @var bool */
-    protected $isAllowIsAccount;
+    protected bool $isAllowIsAccount;
 
-    /** @var bool */
-    protected $isAllowParticipantUpdate;
+    protected bool $isAllowParticipantUpdate;
 
-    /** @var bool */
-    protected $isAllowParticipantDelete;
+    protected bool $isAllowParticipantDelete;
 
-    /** @var EventEntity */
-    protected $eventService;
+    protected EventEntity $eventService;
 
     /** @var Participant[] */
     private $currentParticipants;

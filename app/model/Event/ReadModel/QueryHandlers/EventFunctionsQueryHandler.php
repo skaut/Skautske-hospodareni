@@ -12,8 +12,7 @@ use function array_map;
 
 class EventFunctionsQueryHandler
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
     public function __construct(Skautis $skautis)
     {

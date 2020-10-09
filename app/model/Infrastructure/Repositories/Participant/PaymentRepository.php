@@ -13,8 +13,7 @@ use Model\Participant\Repositories\IPaymentRepository;
 
 final class PaymentRepository implements IPaymentRepository
 {
-    /** @var EntityManager */
-    private $em;
+    private EntityManager $em;
 
     public function __construct(EntityManager $em)
     {

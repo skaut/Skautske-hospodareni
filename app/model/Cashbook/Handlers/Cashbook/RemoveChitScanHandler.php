@@ -10,11 +10,9 @@ use Model\Common\IScanStorage;
 
 final class RemoveChitScanHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
-    /** @var IScanStorage */
-    private $storage;
+    private IScanStorage $storage;
 
     public function __construct(ICashbookRepository $cashbooks, IScanStorage $storage)
     {

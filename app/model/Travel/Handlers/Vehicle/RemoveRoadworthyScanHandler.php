@@ -10,11 +10,9 @@ use Model\Travel\Repositories\IVehicleRepository;
 
 final class RemoveRoadworthyScanHandler
 {
-    /** @var IVehicleRepository */
-    private $vehicles;
+    private IVehicleRepository $vehicles;
 
-    /** @var IScanStorage */
-    private $scans;
+    private IScanStorage $scans;
 
     public function __construct(IVehicleRepository $vehicles, IScanStorage $scans)
     {

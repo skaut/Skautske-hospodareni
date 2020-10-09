@@ -16,11 +16,9 @@ use function count;
 
 final class MailCredentialsRepository implements IMailCredentialsRepository
 {
-    /** @var EntityManager */
-    private $entityManager;
+    private EntityManager $entityManager;
 
-    /** @var EventBus */
-    private $eventBus;
+    private EventBus $eventBus;
 
     public function __construct(EntityManager $entityManager, EventBus $eventBus)
     {

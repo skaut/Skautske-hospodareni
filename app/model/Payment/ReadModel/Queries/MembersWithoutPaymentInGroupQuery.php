@@ -12,11 +12,9 @@ use Model\Payment\ReadModel\QueryHandlers\MembersWithoutPaymentInGroupQueryHandl
  */
 final class MembersWithoutPaymentInGroupQuery
 {
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var int */
-    private $groupId;
+    private int $groupId;
 
     public function __construct(UnitId $unitId, int $groupId)
     {

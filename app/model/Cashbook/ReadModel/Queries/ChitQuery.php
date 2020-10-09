@@ -12,11 +12,9 @@ use Model\Cashbook\ReadModel\QueryHandlers\ChitQueryHandler;
  */
 final class ChitQuery
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var int */
-    private $chitId;
+    private int $chitId;
 
     public function __construct(CashbookId $cashbookId, int $chitId)
     {

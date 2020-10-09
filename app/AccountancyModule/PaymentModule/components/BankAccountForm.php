@@ -18,11 +18,9 @@ class BankAccountForm extends BaseControl
     /** @var int|NULL */
     private $id;
 
-    /** @var BankAccountService */
-    private $model;
+    private BankAccountService $model;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
     public function __construct(?int $id, BankAccountService $model, CommandBus $commandBus)
     {

@@ -21,11 +21,9 @@ use function sprintf;
 
 class FioClient implements IFioClient
 {
-    /** @var IDownloaderFactory */
-    private $downloaderFactory;
+    private IDownloaderFactory $downloaderFactory;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(IDownloaderFactory $downloaderFactory, LoggerInterface $logger)
     {

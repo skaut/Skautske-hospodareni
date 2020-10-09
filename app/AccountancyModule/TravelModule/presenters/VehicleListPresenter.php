@@ -9,8 +9,7 @@ use App\AccountancyModule\TravelModule\Factories\IVehicleGridFactory;
 
 final class VehicleListPresenter extends BasePresenter
 {
-    /** @var IVehicleGridFactory */
-    private $gridFactory;
+    private IVehicleGridFactory $gridFactory;
 
     public function __construct(IVehicleGridFactory $gridFactory)
     {

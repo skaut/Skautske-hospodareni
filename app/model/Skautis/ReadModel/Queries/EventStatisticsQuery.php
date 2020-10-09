@@ -12,8 +12,7 @@ use Model\Skautis\ReadModel\QueryHandlers\EventStatisticsQueryHandler;
  */
 final class EventStatisticsQuery
 {
-    /** @var SkautisEventId */
-    private $eventId;
+    private SkautisEventId $eventId;
 
     public function __construct(SkautisEventId $eventId)
     {

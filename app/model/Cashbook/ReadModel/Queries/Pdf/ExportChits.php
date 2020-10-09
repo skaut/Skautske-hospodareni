@@ -11,8 +11,7 @@ use Model\Cashbook\Cashbook\CashbookId;
  */
 final class ExportChits
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
     /** @var int[]|NULL */
     private $chitIds;

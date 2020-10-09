@@ -14,14 +14,11 @@ use Model\Skautis\Mapper;
 
 class SkautisIdQueryHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
-    /** @var IUnitRepository */
-    private $units;
+    private IUnitRepository $units;
 
-    /** @var Mapper */
-    private $mapper;
+    private Mapper $mapper;
 
     public function __construct(ICashbookRepository $cashbooks, IUnitRepository $units, Mapper $mapper)
     {

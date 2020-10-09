@@ -11,8 +11,7 @@ use Model\DTO\Cashbook\UnitCashbook;
 
 final class ActiveUnitCashbookQueryHandler
 {
-    /** @var EntityManager */
-    private $entityManager;
+    private EntityManager $entityManager;
 
     public function __construct(EntityManager $entityManager)
     {

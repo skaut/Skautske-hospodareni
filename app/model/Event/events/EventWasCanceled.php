@@ -8,8 +8,7 @@ use Model\Event\SkautisEventId;
 
 final class EventWasCanceled
 {
-    /** @var SkautisEventId */
-    private $eventId;
+    private SkautisEventId $eventId;
 
     public function __construct(SkautisEventId $eventId)
     {

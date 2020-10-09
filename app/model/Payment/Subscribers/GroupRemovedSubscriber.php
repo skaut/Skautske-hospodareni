@@ -9,8 +9,7 @@ use Model\Payment\Repositories\IPaymentRepository;
 
 final class GroupRemovedSubscriber
 {
-    /** @var IPaymentRepository */
-    private $payments;
+    private IPaymentRepository $payments;
 
     public function __construct(IPaymentRepository $payments)
     {

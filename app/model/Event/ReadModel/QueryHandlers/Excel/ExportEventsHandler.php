@@ -35,14 +35,11 @@ use function count;
 
 final class ExportEventsHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var SpreadsheetFactory */
-    private $spreadsheetFactory;
+    private SpreadsheetFactory $spreadsheetFactory;
 
-    /** @var SheetChitsGenerator */
-    private $sheetChitsGenerator;
+    private SheetChitsGenerator $sheetChitsGenerator;
 
     public function __construct(
         QueryBus $queryBus,

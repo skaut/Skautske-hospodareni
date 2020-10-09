@@ -26,20 +26,16 @@ class CampPresenter extends BasePresenter
     /** @var string[] */
     protected $readUnits;
 
-    /** @var PaymentService */
-    private $model;
+    private PaymentService $model;
 
-    /** @var IMassAddFormFactory */
-    private $massAddFormFactory;
+    private IMassAddFormFactory $massAddFormFactory;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
     /** @var Camp|null */
     private $camp;
 
-    /** @var IGroupFormFactory */
-    private $groupFormFactory;
+    private IGroupFormFactory $groupFormFactory;
 
     public function __construct(
         PaymentService $model,

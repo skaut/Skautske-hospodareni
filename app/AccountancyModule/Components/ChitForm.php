@@ -56,8 +56,7 @@ final class ChitForm extends BaseControl
         Operation::EXPENSE => 'Výdaje',
     ];
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
     /**
      * Can current user add/edit chits?
@@ -66,20 +65,15 @@ final class ChitForm extends BaseControl
      */
     private $isEditable;
 
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /** @var int */
-    private $itemsCount = 0;
+    private int $itemsCount = 0;
 
     public function __construct(
         CashbookId $cashbookId,

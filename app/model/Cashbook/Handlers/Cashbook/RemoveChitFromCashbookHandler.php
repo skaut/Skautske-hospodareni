@@ -9,8 +9,7 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 
 final class RemoveChitFromCashbookHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
     public function __construct(ICashbookRepository $cashbooks)
     {

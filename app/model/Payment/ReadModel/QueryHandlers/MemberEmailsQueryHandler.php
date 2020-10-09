@@ -9,8 +9,7 @@ use Model\Payment\Repositories\IMemberEmailRepository;
 
 final class MemberEmailsQueryHandler
 {
-    /** @var IMemberEmailRepository */
-    private $emails;
+    private IMemberEmailRepository $emails;
 
     public function __construct(IMemberEmailRepository $emails)
     {

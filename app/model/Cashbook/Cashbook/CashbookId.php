@@ -13,8 +13,7 @@ use function str_replace;
 
 final class CashbookId
 {
-    /** @var string */
-    private $id;
+    private string $id;
 
     /**
      * @throws InvalidUuidStringException

@@ -29,17 +29,13 @@ use function sprintf;
 
 class BankService
 {
-    /** @var IFioClient */
-    private $bank;
+    private IFioClient $bank;
 
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
-    /** @var IPaymentRepository */
-    private $payments;
+    private IPaymentRepository $payments;
 
-    /** @var IBankAccountRepository */
-    private $bankAccounts;
+    private IBankAccountRepository $bankAccounts;
 
     public const DAYS_BACK_DEFAULT = 60;
 

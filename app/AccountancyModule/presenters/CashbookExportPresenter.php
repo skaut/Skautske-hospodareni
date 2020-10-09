@@ -49,14 +49,11 @@ class CashbookExportPresenter extends BasePresenter
      */
     public $cashbookId = ''; // default value type is used for type casting
 
-    /** @var ExportService */
-    private $exportService;
+    private ExportService $exportService;
 
-    /** @var ExcelService */
-    private $excelService;
+    private ExcelService $excelService;
 
-    /** @var PdfRenderer */
-    private $pdf;
+    private PdfRenderer $pdf;
 
     public function __construct(ExportService $exportService, ExcelService $excelService, PdfRenderer $pdf)
     {

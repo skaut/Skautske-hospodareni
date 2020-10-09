@@ -8,11 +8,9 @@ use Cake\Chronos\Date;
 
 final class Member
 {
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
     /** @var Date|null */
     private $birthday;

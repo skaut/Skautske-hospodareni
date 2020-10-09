@@ -9,17 +9,13 @@ use function mb_substr;
 
 final class CampCategory implements ICategory
 {
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var Operation */
-    private $operationType;
+    private Operation $operationType;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var Money */
-    private $total;
+    private Money $total;
 
     /** @var ParticipantType|NULL */
     private $participantType;

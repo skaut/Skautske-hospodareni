@@ -8,14 +8,11 @@ use Model\Event\SkautisEventId;
 
 class BaseEvent
 {
-    /** @var SkautisEventId */
-    private $eventId;
+    private SkautisEventId $eventId;
 
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var string */
-    private $eventName;
+    private string $eventName;
 
     public function __construct(SkautisEventId $eventId, int $unitId, string $eventName)
     {

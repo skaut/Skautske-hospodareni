@@ -9,8 +9,7 @@ use function sprintf;
 
 class Payment
 {
-    /** @var \AcceptanceTester */
-    private $tester;
+    private \AcceptanceTester $tester;
 
     public function __construct(\AcceptanceTester $tester)
     {

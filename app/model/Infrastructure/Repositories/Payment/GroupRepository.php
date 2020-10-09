@@ -21,11 +21,9 @@ use function implode;
 
 final class GroupRepository implements IGroupRepository
 {
-    /** @var EntityManager */
-    private $em;
+    private EntityManager $em;
 
-    /** @var EventBus */
-    private $eventBus;
+    private EventBus $eventBus;
 
     public function __construct(EntityManager $em, EventBus $eventBus)
     {

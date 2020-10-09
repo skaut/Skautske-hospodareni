@@ -8,17 +8,14 @@ use Doctrine\ORM\Tools\SchemaTool;
 
 abstract class IntegrationTest extends Codeception\Test\Unit
 {
-    /** @var IntegrationTester */
-    protected $tester;
+    protected IntegrationTester $tester;
 
     /** @var ClassMetadata[] */
     private $metadata;
 
-    /** @var EntityManager */
-    protected $entityManager;
+    protected EntityManager $entityManager;
 
-    /** @var SchemaTool */
-    private $schemaTool;
+    private SchemaTool $schemaTool;
 
     /**
      * @return string[] FQCN of aggregate roots

@@ -21,20 +21,15 @@ final class PrefixControl extends Dialog
 {
     private const MAX_LENGTH = 6;
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var PaymentMethod */
-    private $paymentMethod;
+    private PaymentMethod $paymentMethod;
 
-    /** @var bool */
-    private $isEditable;
+    private bool $isEditable;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(CashbookId $cashbookId, PaymentMethod $paymentMethod, bool $isEditable, CommandBus $commandBus, QueryBus $queryBus)
     {

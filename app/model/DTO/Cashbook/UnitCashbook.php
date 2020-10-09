@@ -16,14 +16,11 @@ class UnitCashbook
 {
     use SmartObject;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var int */
-    private $year;
+    private int $year;
 
     public function __construct(int $id, CashbookId $cashbookId, int $year)
     {

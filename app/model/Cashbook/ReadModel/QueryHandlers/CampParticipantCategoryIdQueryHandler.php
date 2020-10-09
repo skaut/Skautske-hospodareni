@@ -11,8 +11,7 @@ use function sprintf;
 
 class CampParticipantCategoryIdQueryHandler
 {
-    /** @var ICampCategoryRepository */
-    private $categories;
+    private ICampCategoryRepository $categories;
 
     public function __construct(ICampCategoryRepository $categories)
     {

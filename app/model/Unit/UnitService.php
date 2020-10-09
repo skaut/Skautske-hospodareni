@@ -13,24 +13,21 @@ use Model\Unit\UserHasNoUnit;
 use Nette\Application\BadRequestException;
 use Nette\Security\Identity;
 use Nette\Security\User;
-use Skautis;
+use Skautis\Skautis;
 use function assert;
 
 class UnitService
 {
-    /** @var Skautis\Skautis */
-    private $skautis;
 
-    /** @var IUnitRepository */
-    private $units;
+    private Skautis $skautis;
 
-    /** @var IUnitResolver */
-    private $unitResolver;
+    private IUnitRepository $units;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private IUnitResolver $unitResolver;
 
-    public function __construct(Skautis\Skautis $skautis, IUnitRepository $units, IUnitResolver $unitResolver, QueryBus $queryBus)
+    private QueryBus $queryBus;
+
+    public function __construct(Skautis $skautis, IUnitRepository $units, IUnitResolver $unitResolver, QueryBus $queryBus)
     {
         $this->skautis      = $skautis;
         $this->units        = $units;

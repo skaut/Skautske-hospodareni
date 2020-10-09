@@ -15,17 +15,14 @@ class Category
 {
     use SmartObject;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string */
-    private $label;
+    private string $label;
 
     /** @var Category[] */
     private $children;
 
-    /** @var float */
-    private $value;
+    private float $value;
 
     /**
      * @param Category[] $children

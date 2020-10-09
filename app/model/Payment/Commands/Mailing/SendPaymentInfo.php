@@ -11,8 +11,7 @@ use Model\Event\Handlers\Mailing\SendPaymentInfoHandler;
  */
 final class SendPaymentInfo
 {
-    /** @var int */
-    private $paymentId;
+    private int $paymentId;
 
     public function __construct(int $paymentId)
     {

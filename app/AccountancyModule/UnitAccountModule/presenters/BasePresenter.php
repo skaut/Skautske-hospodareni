@@ -13,11 +13,9 @@ use function explode;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
-    /** @var int */
-    protected $year;
+    protected int $year;
 
-    /** @var bool */
-    protected $isReadable;
+    protected bool $isReadable;
 
     protected function startup() : void
     {

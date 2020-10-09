@@ -12,8 +12,7 @@ use Model\User\SkautisRole;
  */
 final class EditableUnitsQuery
 {
-    /** @var SkautisRole */
-    private $role;
+    private SkautisRole $role;
 
     public function __construct(SkautisRole $role)
     {

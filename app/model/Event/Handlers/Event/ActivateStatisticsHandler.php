@@ -9,8 +9,7 @@ use Skautis\Skautis;
 
 class ActivateStatisticsHandler
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
     public function __construct(Skautis $skautis)
     {

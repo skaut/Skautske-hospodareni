@@ -13,11 +13,9 @@ final class CachedUnitRepository implements IUnitRepository
 {
     private const EXPIRATION = '1 day';
 
-    /** @var IUnitRepository */
-    private $inner;
+    private IUnitRepository $inner;
 
-    /** @var Cache */
-    private $cache;
+    private Cache $cache;
 
     public function __construct(IUnitRepository $inner, IStorage $storage)
     {

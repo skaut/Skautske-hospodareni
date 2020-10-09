@@ -27,17 +27,13 @@ use function implode;
 
 final class ExportCampsHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var SpreadsheetFactory */
-    private $spreadsheetFactory;
+    private SpreadsheetFactory $spreadsheetFactory;
 
-    /** @var IUnitRepository */
-    private $unitRepository;
+    private IUnitRepository $unitRepository;
 
-    /** @var SheetChitsGenerator */
-    private $sheetChitsGenerator;
+    private SheetChitsGenerator $sheetChitsGenerator;
 
     public function __construct(
         QueryBus $queryBus,

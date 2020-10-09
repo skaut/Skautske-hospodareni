@@ -18,17 +18,13 @@ use Stubs\MailCredentialsAccessCheckerStub;
 
 class BankAccountServiceTest extends IntegrationTest
 {
-    /** @var BankAccountService */
-    private $bankAccountService;
+    private BankAccountService $bankAccountService;
 
-    /** @var IBankAccountRepository */
-    private $bankAccounts;
+    private IBankAccountRepository $bankAccounts;
 
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
-    /** @var UnitResolverStub */
-    private $unitResolver;
+    private UnitResolverStub $unitResolver;
 
     protected function _before() : void
     {

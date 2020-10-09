@@ -11,8 +11,7 @@ use Model\Cashbook\Operation;
 
 class CategoryRepositoryTest extends IntegrationTest
 {
-    /** @var CategoryRepository */
-    private $repository;
+    private CategoryRepository $repository;
 
     public function _before() : void
     {

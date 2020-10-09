@@ -9,8 +9,7 @@ use Nette\Utils\Strings;
 
 final class VariableSymbol
 {
-    /** @var string */
-    private $value;
+    private string $value;
 
     private const PATTERN = '^(?!0)[0-9]{1,10}$';
 

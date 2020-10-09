@@ -6,8 +6,7 @@ namespace Model\Payment\ReadModel\Queries;
 
 final class EventsWithoutGroupQuery
 {
-    /** @var int */
-    private $year;
+    private int $year;
 
     public function __construct(int $year)
     {

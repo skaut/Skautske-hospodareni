@@ -32,11 +32,9 @@ class VehiclePresenter extends BasePresenter
      */
     public $id = 0;
 
-    /** @var TravelService */
-    private $travelService;
+    private TravelService $travelService;
 
-    /** @var IRoadworthyControlFactory */
-    private $roadworthyControlFactory;
+    private IRoadworthyControlFactory $roadworthyControlFactory;
 
     public function __construct(TravelService $travelService, IRoadworthyControlFactory $roadworthyControlFactory)
     {

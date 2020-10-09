@@ -28,14 +28,11 @@ final class EventPresenter extends BasePresenter
     /** @var int|null */
     private $groupId;
 
-    /** @var IGroupFormFactory */
-    private $groupFormFactory;
+    private IGroupFormFactory $groupFormFactory;
 
-    /** @var IMassAddFormFactory */
-    private $massAddFormFactory;
+    private IMassAddFormFactory $massAddFormFactory;
 
-    /** @var PaymentService */
-    private $model;
+    private PaymentService $model;
 
     public function __construct(
         IGroupFormFactory $groupFormFactory,

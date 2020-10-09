@@ -15,8 +15,7 @@ final class CampStatisticsQuery
     /** @var SkautisCampId[] */
     private $campIds;
 
-    /** @var int */
-    private $year;
+    private int $year;
 
     /**
      * @param int[] $campIds

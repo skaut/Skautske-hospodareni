@@ -12,8 +12,7 @@ class BaseForm extends Form
 {
     use CustomControlFactories;
 
-    /** @var CsrfProtection */
-    private $protection;
+    private CsrfProtection $protection;
 
     public function __construct()
     {

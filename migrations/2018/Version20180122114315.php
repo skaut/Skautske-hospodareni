@@ -12,8 +12,8 @@ use Model\Unit\UnitHasNoParent;
 
 class Version20180122114315 extends AbstractMigration
 {
-    /** @var IUnitResolver @inject */
-    public $unitResolver;
+    /** @inject */
+    public IUnitResolver $unitResolver;
 
     public function up(Schema $schema) : void
     {

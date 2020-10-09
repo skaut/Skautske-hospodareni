@@ -16,8 +16,7 @@ use function array_sum;
 
 class FinalCashBalanceQueryHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(QueryBus $queryBus)
     {

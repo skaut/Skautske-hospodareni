@@ -13,26 +13,20 @@ use Model\Event\SkautisEventId;
  */
 class UpdateEvent
 {
-    /** @var SkautisEventId */
-    private $eventId;
+    private SkautisEventId $eventId;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var Date */
-    private $startDate;
+    private Date $startDate;
 
-    /** @var Date */
-    private $endDate;
+    private Date $endDate;
 
     /** @var string|NULL */
     private $location;
 
-    /** @var int */
-    private $scopeId;
+    private int $scopeId;
 
-    /** @var int */
-    private $typeId;
+    private int $typeId;
 
     public function __construct(SkautisEventId $eventId, string $name, Date $startDate, Date $endDate, ?string $location, int $scopeId, int $typeId)
     {

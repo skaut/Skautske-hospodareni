@@ -8,14 +8,11 @@ use Model\Payment\BankAccount\AccountNumber;
 
 final class CreateBankAccount
 {
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var AccountNumber */
-    private $number;
+    private AccountNumber $number;
 
     /** @var string|null */
     private $token;

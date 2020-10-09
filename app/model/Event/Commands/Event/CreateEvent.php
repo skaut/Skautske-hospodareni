@@ -12,26 +12,20 @@ use Model\Event\Handlers\Event\CreateEventHandler;
  */
 final class CreateEvent
 {
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var Date */
-    private $startDate;
+    private Date $startDate;
 
-    /** @var Date */
-    private $endDate;
+    private Date $endDate;
 
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
     /** @var string|NULL */
     private $location;
 
-    /** @var int */
-    private $scopeId;
+    private int $scopeId;
 
-    /** @var int */
-    private $typeId;
+    private int $typeId;
 
     public function __construct(
         string $name,

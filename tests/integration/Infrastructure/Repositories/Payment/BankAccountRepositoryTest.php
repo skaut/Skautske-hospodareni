@@ -14,8 +14,7 @@ use function array_keys;
 
 class BankAccountRepositoryTest extends IntegrationTest
 {
-    /** @var BankAccountRepository */
-    private $repository;
+    private BankAccountRepository $repository;
 
     /**
      * @return string[]

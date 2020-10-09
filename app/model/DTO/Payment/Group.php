@@ -26,8 +26,7 @@ class Group
 {
     use SmartObject;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
     /** @var string|NULL */
     private $type;
@@ -38,8 +37,7 @@ class Group
     /** @var int|NULL */
     private $skautisId;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
     /** @var float|NULL */
     private $defaultAmount;
@@ -53,14 +51,12 @@ class Group
     /** @var VariableSymbol|NULL */
     private $nextVariableSymbol;
 
-    /** @var string */
-    private $state;
+    private string $state;
 
     /** @var int|NULL */
     private $smtpId;
 
-    /** @var string */
-    private $note;
+    private string $note;
 
     /** @var int|NULL */
     private $bankAccountId;

@@ -12,11 +12,9 @@ use function is_object;
 
 class CampListQueryHandler
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
-    /** @var CampFactory */
-    private $campFactory;
+    private CampFactory $campFactory;
 
     public function __construct(Skautis $skautis, CampFactory $campFactory)
     {

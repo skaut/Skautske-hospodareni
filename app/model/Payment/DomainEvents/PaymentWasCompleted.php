@@ -6,8 +6,7 @@ namespace Model\Payment\DomainEvents;
 
 final class PaymentWasCompleted
 {
-    /** @var int */
-    private $id;
+    private int $id;
 
     public function __construct(int $id)
     {

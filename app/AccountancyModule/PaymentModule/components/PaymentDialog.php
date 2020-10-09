@@ -29,14 +29,11 @@ final class PaymentDialog extends Dialog
      */
     public $paymentId = -1;
 
-    /** @var int */
-    private $groupId;
+    private int $groupId;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var PaymentService */
-    private $paymentService;
+    private PaymentService $paymentService;
 
     public function __construct(int $groupId, CommandBus $commandBus, PaymentService $paymentService)
     {

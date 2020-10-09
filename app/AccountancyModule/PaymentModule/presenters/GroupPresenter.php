@@ -15,11 +15,9 @@ class GroupPresenter extends BasePresenter
     /** @var Group|null */
     private $group;
 
-    /** @var PaymentService */
-    private $model;
+    private PaymentService $model;
 
-    /** @var IGroupFormFactory */
-    private $groupFormFactory;
+    private IGroupFormFactory $groupFormFactory;
 
     public function __construct(PaymentService $model, IGroupFormFactory $groupFormFactory)
     {

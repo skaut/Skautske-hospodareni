@@ -9,8 +9,7 @@ namespace Model\Cashbook\Commands\Cashbook;
  */
 final class RemoveCampParticipant
 {
-    /** @var int */
-    private $participantId;
+    private int $participantId;
 
     public function __construct(int $participantId)
     {

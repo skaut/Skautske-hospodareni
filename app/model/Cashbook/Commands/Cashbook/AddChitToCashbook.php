@@ -14,17 +14,14 @@ use Model\DTO\Cashbook\ChitItem as ChitItemDto;
  */
 final class AddChitToCashbook
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var ChitBody */
-    private $body;
+    private ChitBody $body;
 
     /** @var ChitItemDto[] */
     private $items;
 
-    /** @var PaymentMethod */
-    private $paymentMethod;
+    private PaymentMethod $paymentMethod;
 
     /**
      * @param ChitItemDto[] $items

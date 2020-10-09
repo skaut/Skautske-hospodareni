@@ -15,8 +15,7 @@ final class MailCredentialsAccessCheckerTest extends Unit
 {
     private const MAIL_CREDENTIALS_ID = 1;
 
-    /** @var UnitResolverStub */
-    private $unitResolver;
+    private UnitResolverStub $unitResolver;
 
     protected function setUp() : void
     {

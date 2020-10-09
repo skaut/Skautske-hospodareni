@@ -13,8 +13,7 @@ use function in_array;
 
 abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
-    /** @var bool */
-    protected $isReadable;
+    protected bool $isReadable;
 
     /** @var int[] */
     private $editableUnits;

@@ -23,17 +23,13 @@ final class PragueParticipants
     private const PRAGUE_SUPPORTABLE_UPPER_AGE = 26;
     public const PRAGUE_UNIT_PREFIX            = 11;
 
-    /** @var int */
-    private $under18;
+    private int $under18;
 
-    /** @var int */
-    private $between18and26;
+    private int $between18and26;
 
-    /** @var int */
-    private $personDaysUnder26;
+    private int $personDaysUnder26;
 
-    /** @var int */
-    private $citizensCount;
+    private int $citizensCount;
 
     /**
      * @param Participant[] $participants

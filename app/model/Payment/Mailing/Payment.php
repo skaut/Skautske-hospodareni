@@ -8,17 +8,13 @@ use DateTimeImmutable;
 
 class Payment
 {
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var float */
-    private $amount;
+    private float $amount;
 
-    /** @var string */
-    private $email;
+    private string $email;
 
-    /** @var DateTimeImmutable */
-    private $dueDate;
+    private DateTimeImmutable $dueDate;
 
     /** @var int|NULL */
     private $variableSymbol;
@@ -26,8 +22,7 @@ class Payment
     /** @var int|NULL */
     private $constantSymbol;
 
-    /** @var string */
-    private $note;
+    private string $note;
 
     public function __construct(string $name, float $amount, string $email, DateTimeImmutable $dueDate, ?int $variableSymbol, ?int $constantSymbol, string $note)
     {

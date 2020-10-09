@@ -15,8 +15,7 @@ final class EventStatisticsQuery
     /** @var SkautisEventId[] */
     private $eventIds;
 
-    /** @var int */
-    private $year;
+    private int $year;
 
     /**
      * @param int[] $eventIds

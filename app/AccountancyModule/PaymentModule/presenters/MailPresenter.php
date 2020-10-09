@@ -13,14 +13,11 @@ use Model\Payment\Commands\RemoveMailCredentials;
 
 class MailPresenter extends BasePresenter
 {
-    /** @var MailService */
-    private $model;
+    private MailService $model;
 
-    /** @var ISmtpAddFormFactory */
-    private $smtpAddFormFactory;
+    private ISmtpAddFormFactory $smtpAddFormFactory;
 
-    /** @var ISmtpUpdateFormFactory */
-    private $smtpUpdateFormFactory;
+    private ISmtpUpdateFormFactory $smtpUpdateFormFactory;
 
     public function __construct(
         MailService $model,

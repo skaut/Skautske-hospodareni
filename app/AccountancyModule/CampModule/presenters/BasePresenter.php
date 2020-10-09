@@ -17,8 +17,7 @@ use function assert;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
-    /** @var Camp */
-    protected $event;
+    protected Camp $event;
 
     protected function startup() : void
     {

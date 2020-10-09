@@ -6,11 +6,9 @@ namespace Model\DTO\Payment;
 
 class Person
 {
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
     /** @var string[] */
     private $emails;

@@ -19,14 +19,11 @@ use Stubs\MailCredentialsAccessCheckerStub;
 
 final class RemoveGroupTest extends IntegrationTest
 {
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
-    /** @var IPaymentRepository */
-    private $payments;
+    private IPaymentRepository $payments;
 
-    /** @var RemoveGroupHandler */
-    private $handler;
+    private RemoveGroupHandler $handler;
 
     /**
      * @return string[]

@@ -15,11 +15,9 @@ use Model\Payment\MailingService;
 
 final class PaymentMailSubscriber
 {
-    /** @var MailingService */
-    private $mailingService;
+    private MailingService $mailingService;
 
-    /** @var NotificationsCollector */
-    private $notificationsCollector;
+    private NotificationsCollector $notificationsCollector;
 
     public function __construct(MailingService $mailingService, NotificationsCollector $notificationsCollector)
     {

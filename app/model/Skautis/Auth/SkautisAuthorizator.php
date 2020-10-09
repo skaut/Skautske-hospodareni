@@ -17,8 +17,7 @@ use function is_array;
 
 final class SkautisAuthorizator implements IAuthorizator
 {
-    /** @var WebServiceInterface */
-    private $userWebservice;
+    private WebServiceInterface $userWebservice;
 
     private const RESOURCE_CLASS_TO_SKAUTIS_TABLE_MAP = [
         Event::class => Event::TABLE,

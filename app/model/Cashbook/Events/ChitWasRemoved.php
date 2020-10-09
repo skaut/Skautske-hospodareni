@@ -11,11 +11,9 @@ use Model\Cashbook\Cashbook\CashbookId;
  */
 class ChitWasRemoved
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var string */
-    private $chitPurpose;
+    private string $chitPurpose;
 
     public function __construct(CashbookId $cashbookId, string $chitPurpose)
     {

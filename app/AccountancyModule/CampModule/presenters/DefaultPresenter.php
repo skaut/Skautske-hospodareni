@@ -16,11 +16,9 @@ class DefaultPresenter extends BasePresenter
 {
     public const DEFAULT_STATE = 'approvedParent'; //filtrovani zobrazených položek
 
-    /** @var GridFactory */
-    private $gridFactory;
+    private GridFactory $gridFactory;
 
-    /** @var IExportDialogFactory */
-    private $exportDialogFactory;
+    private IExportDialogFactory $exportDialogFactory;
 
     public function __construct(GridFactory $gridFactory, IExportDialogFactory $exportDialogFactory)
     {

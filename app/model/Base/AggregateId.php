@@ -12,8 +12,7 @@ use function str_replace;
 
 class AggregateId
 {
-    /** @var string */
-    private $id;
+    private string $id;
 
     private function __construct(string $id)
     {

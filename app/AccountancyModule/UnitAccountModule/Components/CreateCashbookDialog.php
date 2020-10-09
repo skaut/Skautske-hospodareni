@@ -31,17 +31,13 @@ final class CreateCashbookDialog extends BaseControl
     /** @var callable[] */
     public $onSuccess = [];
 
-    /** @var bool */
-    private $isEditable;
+    private bool $isEditable;
 
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(bool $isEditable, UnitId $unitId, CommandBus $commandBus, QueryBus $queryBus)
     {

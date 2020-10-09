@@ -11,8 +11,7 @@ use Model\Unit\ReadModel\QueryHandlers\UnitQueryHandler;
  */
 final class UnitQuery
 {
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
     public function __construct(int $unitId)
     {

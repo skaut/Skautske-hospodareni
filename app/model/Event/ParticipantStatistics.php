@@ -6,20 +6,15 @@ namespace Model\Event;
 
 final class ParticipantStatistics
 {
-    /** @var int */
-    private $realAdult;
+    private int $realAdult;
 
-    /** @var int */
-    private $realChild;
+    private int $realChild;
 
-    /** @var int */
-    private $realCount;
+    private int $realCount;
 
-    /** @var int */
-    private $realChildDays;
+    private int $realChildDays;
 
-    /** @var int */
-    private $realPersonDays;
+    private int $realPersonDays;
 
     public function __construct(
         int $realAdult,

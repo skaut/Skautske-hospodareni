@@ -21,8 +21,7 @@ final class NoteForm extends BaseControl
     /** @var bool @persistent */
     public $editation = false;
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
     /**
      * Can current user add/edit chits?
@@ -31,11 +30,9 @@ final class NoteForm extends BaseControl
      */
     private $isEditable;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(
         CashbookId $cashbookId,

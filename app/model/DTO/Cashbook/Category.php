@@ -17,20 +17,15 @@ class Category
 {
     use SmartObject;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var string */
-    private $shortcut;
+    private string $shortcut;
 
-    /** @var Operation */
-    private $operationType;
+    private Operation $operationType;
 
-    /** @var bool */
-    private $virtual;
+    private bool $virtual;
 
     public function __construct(int $id, string $name, string $shortcut, Operation $operationType, bool $virtual)
     {

@@ -19,8 +19,7 @@ use function in_array;
 
 final class FlysystemScanStorage implements IScanStorage
 {
-    /** @var FilesystemInterface */
-    private $filesystem;
+    private FilesystemInterface $filesystem;
 
     public function __construct(FilesystemInterface $filesystem)
     {

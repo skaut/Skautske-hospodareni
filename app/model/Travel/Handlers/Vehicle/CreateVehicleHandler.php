@@ -13,14 +13,11 @@ use Model\Unit\Repositories\IUnitRepository;
 
 final class CreateVehicleHandler
 {
-    /** @var IVehicleRepository */
-    private $vehicles;
+    private IVehicleRepository $vehicles;
 
-    /** @var IUserRepository */
-    private $users;
+    private IUserRepository $users;
 
-    /** @var IUnitRepository */
-    private $units;
+    private IUnitRepository $units;
 
     public function __construct(IVehicleRepository $vehicles, IUserRepository $users, IUnitRepository $units)
     {

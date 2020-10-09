@@ -19,14 +19,11 @@ class Mapper
     /** @var CashbookId[] */
     private $localIds = [];
 
-    /** @var ObjectTable */
-    private $table;
+    private ObjectTable $table;
 
-    /** @var IUnitResolver */
-    private $unitResolver;
+    private IUnitResolver $unitResolver;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
     public const UNIT  = 'unit';
     public const EVENT = 'general';

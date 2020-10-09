@@ -12,11 +12,9 @@ use Model\Travel\Vehicle\RoadworthyScan;
 
 final class AddRoadworthyScanHandler
 {
-    /** @var IVehicleRepository */
-    private $vehicles;
+    private IVehicleRepository $vehicles;
 
-    /** @var IScanStorage */
-    private $scanStorage;
+    private IScanStorage $scanStorage;
 
     public function __construct(IVehicleRepository $vehicles, IScanStorage $scanStorage)
     {

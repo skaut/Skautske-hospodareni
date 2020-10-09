@@ -12,8 +12,7 @@ use Model\Unit\ReadModel\QueryHandlers\SubunitListQueryHandler;
  */
 final class SubunitListQuery
 {
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
     public function __construct(UnitId $unitId)
     {

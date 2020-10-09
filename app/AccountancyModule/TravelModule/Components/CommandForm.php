@@ -27,17 +27,14 @@ use function in_array;
 
 class CommandForm extends Control
 {
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
     /** @var int|NULL */
     private $commandId;
 
-    /** @var TravelService */
-    private $model;
+    private TravelService $model;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     /** @var callable[] */
     public $onSuccess = [];

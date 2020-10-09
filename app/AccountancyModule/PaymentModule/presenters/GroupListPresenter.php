@@ -20,14 +20,11 @@ use function assert;
 
 final class GroupListPresenter extends BasePresenter
 {
-    /** @var Factories\IPairButtonFactory */
-    private $pairButtonFactory;
+    private Factories\IPairButtonFactory $pairButtonFactory;
 
-    /** @var PaymentService */
-    private $groups;
+    private PaymentService $groups;
 
-    /** @var BankAccountService */
-    private $bankAccounts;
+    private BankAccountService $bankAccounts;
 
     /** @var array<int, array<string, Summary>> */
     private $summaries;

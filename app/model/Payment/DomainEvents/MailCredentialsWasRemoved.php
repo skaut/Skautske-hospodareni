@@ -6,8 +6,7 @@ namespace Model\Payment\DomainEvents;
 
 final class MailCredentialsWasRemoved
 {
-    /** @var int */
-    private $credentialsId;
+    private int $credentialsId;
 
     public function __construct(int $credentialsId)
     {

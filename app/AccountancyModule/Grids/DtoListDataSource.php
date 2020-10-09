@@ -15,8 +15,7 @@ final class DtoListDataSource implements IDataSource
     /** @var ArrayCollection<object> */
     private $collection;
 
-    /** @var Criteria */
-    private $criteria;
+    private Criteria $criteria;
 
     /**
      * @param array<object> $data

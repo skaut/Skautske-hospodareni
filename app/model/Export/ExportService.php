@@ -49,17 +49,13 @@ class ExportService
     public const CATEGORY_VIRTUAL = 'virtual';
     public const CATEGORY_REAL    = 'real';
 
-    /** @var UnitService */
-    private $units;
+    private UnitService $units;
 
-    /** @var TemplateFactory */
-    private $templateFactory;
+    private TemplateFactory $templateFactory;
 
-    /** @var IEventRepository */
-    private $events;
+    private IEventRepository $events;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(
         UnitService $units,

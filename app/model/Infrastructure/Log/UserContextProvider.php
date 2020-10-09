@@ -14,8 +14,7 @@ use function sprintf;
 
 final class UserContextProvider
 {
-    /** @var User */
-    private $user;
+    private User $user;
 
     public function __construct(User $user)
     {

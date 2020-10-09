@@ -13,11 +13,9 @@ use function strtolower;
  */
 abstract class MutableBaseService extends BaseService
 {
-    /** @var string */
-    protected $typeName;
+    protected string $typeName;
 
-    /** @var string */
-    public $type;
+    public string $type;
 
     public function __construct(string $name, Skautis $skautIS)
     {

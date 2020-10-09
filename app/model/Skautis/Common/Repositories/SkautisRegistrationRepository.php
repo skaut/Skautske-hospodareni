@@ -14,8 +14,7 @@ use function is_object;
 
 final class SkautisRegistrationRepository implements IRegistrationRepository
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
     public function __construct(Skautis $skautis)
     {

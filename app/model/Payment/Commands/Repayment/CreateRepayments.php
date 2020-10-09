@@ -10,17 +10,14 @@ use Model\Payment\Repayment;
 
 final class CreateRepayments
 {
-    /** @var AccountNumber */
-    private $sourceAccount;
+    private AccountNumber $sourceAccount;
 
-    /** @var Date */
-    private $date;
+    private Date $date;
 
     /** @var Repayment[] */
     private $repayments;
 
-    /** @var string */
-    private $token;
+    private string $token;
 
     /**
      * @param Repayment[] $repayments

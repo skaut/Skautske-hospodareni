@@ -41,8 +41,7 @@ class ChitPresenter extends BasePresenter
      */
     public $onlyUnlocked = 1;
 
-    /** @var IChitListControlFactory */
-    private $chitListFactory;
+    private IChitListControlFactory $chitListFactory;
 
     public function __construct(IChitListControlFactory $chitListFactory)
     {

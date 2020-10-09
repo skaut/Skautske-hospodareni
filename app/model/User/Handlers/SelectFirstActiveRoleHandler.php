@@ -11,8 +11,7 @@ use function count;
 
 final class SelectFirstActiveRoleHandler
 {
-    /** @var UserService */
-    private $userService;
+    private UserService $userService;
 
     public function __construct(UserService $userService)
     {

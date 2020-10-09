@@ -12,8 +12,7 @@ use function date;
 
 class BudgetPresenter extends BasePresenter
 {
-    /** @var BudgetService */
-    protected $budgetService;
+    protected BudgetService $budgetService;
 
     public function __construct(BudgetService $budgetService)
     {

@@ -9,8 +9,7 @@ namespace Model\Payment\Commands;
  */
 class RemoveMailCredentials
 {
-    /** @var int */
-    private $id;
+    private int $id;
 
     public function __construct(int $id)
     {

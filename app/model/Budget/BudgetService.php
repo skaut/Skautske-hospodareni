@@ -13,8 +13,7 @@ use function str_replace;
 
 class BudgetService
 {
-    /** @var ICategoryRepository */
-    private $repository;
+    private ICategoryRepository $repository;
 
     public function __construct(ICategoryRepository $budgetRepository)
     {

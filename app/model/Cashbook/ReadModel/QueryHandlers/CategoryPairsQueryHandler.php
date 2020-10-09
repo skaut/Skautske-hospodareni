@@ -13,11 +13,9 @@ use function array_filter;
 
 class CategoryPairsQueryHandler
 {
-    /** @var CategoryRepository */
-    private $categories;
+    private CategoryRepository $categories;
 
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
     public function __construct(CategoryRepository $categories, ICashbookRepository $cashbooks)
     {

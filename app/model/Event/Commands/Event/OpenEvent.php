@@ -12,8 +12,7 @@ use Model\Event\SkautisEventId;
  */
 final class OpenEvent
 {
-    /** @var SkautisEventId */
-    private $eventId;
+    private SkautisEventId $eventId;
 
     public function __construct(SkautisEventId $eventId)
     {

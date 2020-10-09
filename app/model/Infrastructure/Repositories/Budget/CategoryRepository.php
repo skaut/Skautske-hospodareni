@@ -13,8 +13,7 @@ use function sprintf;
 
 final class CategoryRepository implements ICategoryRepository
 {
-    /** @var EntityManager */
-    private $em;
+    private EntityManager $em;
 
     public function __construct(EntityManager $em)
     {

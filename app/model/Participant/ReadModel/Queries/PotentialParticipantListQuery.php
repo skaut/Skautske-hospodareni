@@ -13,11 +13,9 @@ use Model\Participant\ReadModel\QueryHandlers\PotentialParticipantListQueryHandl
  */
 final class PotentialParticipantListQuery
 {
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var bool */
-    private $directMembersOnly;
+    private bool $directMembersOnly;
 
     /** @var Participant[] */
     private $currentParticipants;

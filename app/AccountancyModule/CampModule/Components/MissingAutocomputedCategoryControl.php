@@ -16,16 +16,12 @@ use function in_array;
 
 class MissingAutocomputedCategoryControl extends BaseControl
 {
-    /** @var SkautisCampId */
-    private $campId;
+    private SkautisCampId $campId;
 
-    /** @var IAuthorizator */
-    private $authorizator;
-    /** @var QueryBus */
-    private $queryBus;
+    private IAuthorizator $authorizator;
+    private QueryBus $queryBus;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
     public function __construct(
         SkautisCampId $campId,

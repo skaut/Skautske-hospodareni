@@ -14,17 +14,13 @@ use Model\DTO\Cashbook\ChitItem;
  */
 final class UpdateChit
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var int */
-    private $chitId;
+    private int $chitId;
 
-    /** @var ChitBody */
-    private $body;
+    private ChitBody $body;
 
-    /** @var PaymentMethod */
-    private $paymentMethod;
+    private PaymentMethod $paymentMethod;
 
     /** @var ChitItem[] */
     private $items;

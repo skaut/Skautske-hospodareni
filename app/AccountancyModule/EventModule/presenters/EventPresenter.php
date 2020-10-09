@@ -38,17 +38,13 @@ use function assert;
 
 class EventPresenter extends BasePresenter
 {
-    /** @var ExportService */
-    protected $exportService;
+    protected ExportService $exportService;
 
-    /** @var IFunctionsControlFactory */
-    private $functionsFactory;
+    private IFunctionsControlFactory $functionsFactory;
 
-    /** @var PdfRenderer */
-    private $pdf;
+    private PdfRenderer $pdf;
 
-    /** @var LoggerService */
-    private $loggerService;
+    private LoggerService $loggerService;
 
     public function __construct(
         ExportService $exportService,

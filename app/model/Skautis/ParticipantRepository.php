@@ -31,11 +31,9 @@ final class ParticipantRepository implements IParticipantRepository
 {
     private const DATETIME_FORMAT = 'Y-m-d\TH:i:s';
 
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
-    /** @var IPaymentRepository */
-    private $payments;
+    private IPaymentRepository $payments;
 
     public function __construct(Skautis $skautis, IPaymentRepository $payments)
     {

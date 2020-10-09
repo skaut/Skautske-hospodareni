@@ -24,14 +24,11 @@ class PaymentCompletedEmailTest extends IntegrationTest
     private const UNIT_ID = 10;
     private const EMAIL   = 'test@hospodareni.loc';
 
-    /** @var PaymentService */
-    private $paymentService;
+    private PaymentService $paymentService;
 
-    /** @var UserRepositoryStub */
-    private $users;
+    private UserRepositoryStub $users;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
     /**
      * @return string[]

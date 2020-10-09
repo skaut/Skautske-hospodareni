@@ -11,8 +11,7 @@ use Model\Cashbook\Cashbook\CashbookId;
  */
 final class FinalRealBalanceQuery
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
     public function __construct(CashbookId $cashbookId)
     {

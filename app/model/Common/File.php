@@ -11,11 +11,9 @@ use function explode;
 
 final class File
 {
-    /** @var StreamInterface */
-    private $stream;
+    private StreamInterface $stream;
 
-    /** @var FilePath */
-    private $path;
+    private FilePath $path;
 
     public function __construct(StreamInterface $stream, FilePath $path)
     {

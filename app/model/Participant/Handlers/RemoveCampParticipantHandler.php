@@ -12,11 +12,9 @@ use Model\Participant\Repositories\IPaymentRepository;
 
 final class RemoveCampParticipantHandler
 {
-    /** @var IParticipantRepository */
-    private $participants;
+    private IParticipantRepository $participants;
 
-    /** @var IPaymentRepository */
-    private $payments;
+    private IPaymentRepository $payments;
 
     public function __construct(IParticipantRepository $participants, IPaymentRepository $payments)
     {

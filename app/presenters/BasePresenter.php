@@ -28,38 +28,27 @@ use function sprintf;
  */
 abstract class BasePresenter extends Nette\Application\UI\Presenter
 {
-    /** @var UserService */
-    protected $userService;
+    protected UserService $userService;
 
-    /** @var UnitService */
-    protected $unitService;
+    protected UnitService $unitService;
 
-    /** @var string */
-    private $appDir;
+    private string $appDir;
 
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var CommandBus */
-    protected $commandBus;
+    protected CommandBus $commandBus;
 
-    /** @var QueryBus */
-    protected $queryBus;
+    protected QueryBus $queryBus;
 
-    /** @var IAuthorizator */
-    protected $authorizator;
+    protected IAuthorizator $authorizator;
 
-    /** @var ILoginPanelFactory */
-    private $loginPanelFactory;
+    private ILoginPanelFactory $loginPanelFactory;
 
-    /** @var NotificationsCollector */
-    private $notificationsCollector;
+    private NotificationsCollector $notificationsCollector;
 
-    /** @var LoggerInterface */
-    protected $logger;
+    protected LoggerInterface $logger;
 
-    /** @var LinkGenerator */
-    protected $linkGenerator;
+    protected LinkGenerator $linkGenerator;
 
     public function injectAll(
         UserService $userService,

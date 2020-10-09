@@ -9,8 +9,7 @@ use Model\Participant\ReadModel\Queries\PotentialParticipantListQuery;
 
 final class PotentialParticipantListQueryHandler
 {
-    /** @var IMemberRepository */
-    private $members;
+    private IMemberRepository $members;
 
     public function __construct(IMemberRepository $members)
     {

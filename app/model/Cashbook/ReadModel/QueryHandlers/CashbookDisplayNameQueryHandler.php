@@ -24,8 +24,7 @@ use function sprintf;
 
 final class CashbookDisplayNameQueryHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(QueryBus $queryBus)
     {

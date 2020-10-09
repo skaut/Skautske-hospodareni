@@ -6,8 +6,7 @@ namespace Model\Payment\Commands\Group;
 
 final class ChangeGroupUnits
 {
-    /** @var int */
-    private $groupId;
+    private int $groupId;
 
     /** @var int[] */
     private $unitIds;

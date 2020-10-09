@@ -13,11 +13,9 @@ use Model\Cashbook\Handlers\Cashbook\UpdateChitNumberPrefixHandler;
  */
 final class UpdateChitNumberPrefix
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var PaymentMethod */
-    private $paymentMethod;
+    private PaymentMethod $paymentMethod;
 
     /** @var string|NULL */
     private $prefix;

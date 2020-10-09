@@ -12,14 +12,11 @@ use Model\Cashbook\Handlers\Cashbook\LockChitHandler;
  */
 final class LockChit
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var int */
-    private $chitId;
+    private int $chitId;
 
-    /** @var int */
-    private $userId;
+    private int $userId;
 
     public function __construct(CashbookId $cashbookId, int $chitId, int $userId)
     {

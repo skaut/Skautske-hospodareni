@@ -16,17 +16,13 @@ class SkautisRole
     private const BASIC_UNIT_SUFFIX = 'Stredisko';
     private const TROOP_SUFFIX      = 'Oddil';
 
-    /** @var string */
-    private $key;
+    private string $key;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var string */
-    private $unitName;
+    private string $unitName;
 
     public function __construct(
         string $key,

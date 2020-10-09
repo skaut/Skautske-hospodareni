@@ -12,11 +12,9 @@ use Model\Event\SkautisCampId;
  */
 final class CreateCampParticipant
 {
-    /** @var SkautisCampId */
-    private $campId;
+    private SkautisCampId $campId;
 
-    /** @var NonMemberParticipant */
-    private $participant;
+    private NonMemberParticipant $participant;
 
     public function __construct(SkautisCampId $campId, NonMemberParticipant $participant)
     {

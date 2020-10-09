@@ -15,11 +15,9 @@ final class MoveChitsToDifferentCashbook
     /** @var int[] */
     private $chitIds;
 
-    /** @var CashbookId */
-    private $sourceCashbookId;
+    private CashbookId $sourceCashbookId;
 
-    /** @var CashbookId */
-    private $targetCashbookId;
+    private CashbookId $targetCashbookId;
 
     /**
      * @param int[] $chitIds

@@ -14,8 +14,7 @@ use Model\Payment\UserRepositoryStub;
 
 class CreateMailCredentialsHandlerTest extends CommandHandlerTest
 {
-    /** @var UserRepositoryStub */
-    private $users;
+    private UserRepositoryStub $users;
 
     public function _before() : void
     {

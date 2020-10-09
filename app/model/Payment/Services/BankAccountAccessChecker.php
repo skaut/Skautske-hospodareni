@@ -9,11 +9,9 @@ use Model\Payment\Repositories\IBankAccountRepository;
 
 final class BankAccountAccessChecker implements IBankAccountAccessChecker
 {
-    /** @var IBankAccountRepository */
-    private $bankAccounts;
+    private IBankAccountRepository $bankAccounts;
 
-    /** @var IUnitResolver */
-    private $unitResolver;
+    private IUnitResolver $unitResolver;
 
     public function __construct(IBankAccountRepository $bankAccounts, IUnitResolver $unitResolver)
     {

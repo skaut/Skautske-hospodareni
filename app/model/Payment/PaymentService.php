@@ -44,29 +44,21 @@ use function usort;
 
 class PaymentService
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
-    /** @var IPaymentRepository */
-    private $payments;
+    private IPaymentRepository $payments;
 
-    /** @var IBankAccountRepository */
-    private $bankAccounts;
+    private IBankAccountRepository $bankAccounts;
 
-    /** @var IBankAccountAccessChecker */
-    private $bankAccountAccessChecker;
+    private IBankAccountAccessChecker $bankAccountAccessChecker;
 
-    /** @var IMemberEmailRepository */
-    private $emails;
+    private IMemberEmailRepository $emails;
 
-    /** @var IMailCredentialsAccessChecker */
-    private $mailCredentialsAccessChecker;
+    private IMailCredentialsAccessChecker $mailCredentialsAccessChecker;
 
-    /** @var IUserRepository */
-    private $users;
+    private IUserRepository $users;
 
     public function __construct(
         Skautis $skautis,

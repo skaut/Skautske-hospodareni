@@ -11,8 +11,7 @@ use Model\Travel\Repositories\IContractRepository;
 
 final class ContractRepository implements IContractRepository
 {
-    /** @var EntityManager */
-    private $em;
+    private EntityManager $em;
 
     public function __construct(EntityManager $em)
     {

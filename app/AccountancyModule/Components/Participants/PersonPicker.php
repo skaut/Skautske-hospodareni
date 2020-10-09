@@ -43,11 +43,9 @@ final class PersonPicker extends BaseControl
     /** @var Participant[] */
     private $currentParticipants;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var UnitId */
-    private $userUnitId;
+    private UnitId $userUnitId;
 
     /**
      * @param Participant[] $currentParticipants

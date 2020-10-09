@@ -11,8 +11,7 @@ use Model\Payment\ReadModel\QueryHandlers\MemberEmailsQueryHandler;
  */
 final class MemberEmailsQuery
 {
-    /** @var int */
-    private $memberId;
+    private int $memberId;
 
     public function __construct(int $memberId)
     {

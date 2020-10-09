@@ -34,11 +34,9 @@ use function in_array;
 
 class ExportChitsHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var TemplateFactory */
-    private $templateFactory;
+    private TemplateFactory $templateFactory;
 
     public function __construct(
         QueryBus $queryBus,

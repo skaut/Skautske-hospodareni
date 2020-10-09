@@ -33,8 +33,7 @@ class PaymentRepositoryTest extends IntegrationTest
         'vs' => '100',
     ];
 
-    /** @var PaymentRepository */
-    private $repository;
+    private PaymentRepository $repository;
 
     /**
      * @return string[]

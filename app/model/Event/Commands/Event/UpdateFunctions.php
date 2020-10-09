@@ -6,8 +6,7 @@ namespace Model\Event\Commands\Event;
 
 final class UpdateFunctions
 {
-    /** @var int */
-    private $eventId;
+    private int $eventId;
 
     /** @var int|NULL */
     private $leaderId;

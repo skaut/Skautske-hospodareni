@@ -32,20 +32,15 @@ use function sprintf;
 
 class BankServiceTest extends IntegrationTest
 {
-    /** @var IntegrationTester */
-    protected $tester;
+    protected IntegrationTester $tester;
 
-    /** @var BankService */
-    private $bankService;
+    private BankService $bankService;
 
-    /** @var IPaymentRepository */
-    private $payments;
+    private IPaymentRepository $payments;
 
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
-    /** @var IBankAccountRepository */
-    private $bankAccounts;
+    private IBankAccountRepository $bankAccounts;
 
     protected function _before() : void
     {

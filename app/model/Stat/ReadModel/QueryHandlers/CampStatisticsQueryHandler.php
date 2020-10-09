@@ -15,8 +15,7 @@ use function array_map;
 
 class CampStatisticsQueryHandler
 {
-    /** @var Connection */
-    private $db;
+    private Connection $db;
 
     public function __construct(Connection $connection)
     {

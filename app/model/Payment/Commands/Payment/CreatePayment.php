@@ -13,20 +13,16 @@ use Model\Payment\VariableSymbol;
  */
 final class CreatePayment
 {
-    /** @var int */
-    private $groupId;
+    private int $groupId;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
     /** @var string|null */
     private $email;
 
-    /** @var float */
-    private $amount;
+    private float $amount;
 
-    /** @var Date */
-    private $dueDate;
+    private Date $dueDate;
 
     /** @var int|null */
     private $personId;
@@ -37,8 +33,7 @@ final class CreatePayment
     /** @var int|null */
     private $constantSymbol;
 
-    /** @var string */
-    private $note;
+    private string $note;
 
     public function __construct(
         int $groupId,

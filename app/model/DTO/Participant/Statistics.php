@@ -6,11 +6,9 @@ namespace Model\DTO\Participant;
 
 class Statistics
 {
-    /** @var int */
-    private $personDays;
+    private int $personDays;
 
-    /** @var int */
-    private $personsCount;
+    private int $personsCount;
 
     public function __construct(int $personDays, int $personsCount)
     {

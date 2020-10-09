@@ -6,8 +6,7 @@ use eGen\MessageBus\Bus\CommandBus;
 
 abstract class CommandHandlerTest extends IntegrationTest
 {
-    /** @var CommandBus */
-    protected $commandBus;
+    protected CommandBus $commandBus;
 
     protected function _before() : void
     {
