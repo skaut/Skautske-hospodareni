@@ -101,9 +101,10 @@
                         n:href="Registration:massAdd $group->id" class="dropdown-item">… za registraci</a>
 
                 <a n:if="$group->type === 'education'"
-                        n:href="Education:massAdd $group->id" class="dropdown-item">… za účastníka</a>
+                        n:href="AddEducationParticipants: $group->id" class="dropdown-item">… za účastníka</a>
 
-                <a n:href="massAdd $group->id" class="dropdown-item">… za člena</a>
+                <a n:if="$group->type !== 'education'"
+                        n:href="massAdd $group->id" class="dropdown-item">… za člena</a>
 
                 <a n:href="paymentDialog:open!" class="dropdown-item ajax">… obecnou</a>
             </div>
