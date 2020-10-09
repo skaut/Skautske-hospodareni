@@ -32,8 +32,7 @@ class EducationPresenter extends BasePresenter
 
     private int $id;
 
-    /** @var Education|null */
-    private $education;
+    private ?Education $education;
 
     /** @var IGroupFormFactory */
     private $groupFormFactory;
