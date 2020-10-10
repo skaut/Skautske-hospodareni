@@ -32,8 +32,10 @@ class TravelDetails
      * @ORM\Column(type="string_enum", name="type")
      *
      * @Enum(class=TransportType::class)
+     *
+     * @var TransportType
      */
-    private TransportType $transportType;
+    private $transportType;
 
     /**
      * @ORM\Column(type="string", length=64)

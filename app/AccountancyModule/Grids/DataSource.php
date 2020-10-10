@@ -14,13 +14,13 @@ use function count;
 
 abstract class DataSource implements IDataSource
 {
-    private ?Sorting $sorting;
+    private ?Sorting $sorting = null;
 
-    private ?int $offset;
+    private ?int $offset = null;
 
-    private ?int $limit;
+    private ?int $limit = null;
 
-    private ?DoctrineCollectionDataSource $innerDataSource;
+    private ?DoctrineCollectionDataSource $innerDataSource = null;
 
     /** @var Filter[] */
     private array $filters = [];

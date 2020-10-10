@@ -21,8 +21,10 @@ class ChitScan
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
+     *
+     * @var int
      */
-    private int $id;
+    private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity=Chit::class, inversedBy="scans")

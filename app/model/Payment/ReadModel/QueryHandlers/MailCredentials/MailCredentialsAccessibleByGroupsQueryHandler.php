@@ -22,7 +22,8 @@ final class MailCredentialsAccessibleByGroupsQueryHandler
 
     private IMailCredentialsRepository $mailCredentials;
 
-    private IUnitResolver $unitResolver;
+    /** @var IUnitResolver */
+    private $unitResolver;
 
     public function __construct(
         IMailCredentialsAccessChecker $accessChecker,

@@ -36,8 +36,10 @@ class Vehicle
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
+     *
+     * @var int
      */
-    private int $id;
+    private $id;
 
     /**
      * @ORM\Column(type="string", length=64)
@@ -76,8 +78,10 @@ class Vehicle
 
     /**
      * @ORM\Embedded(class=Metadata::class)
+     *
+     * @var Metadata
      */
-    private Metadata $metadata;
+    private $metadata;
 
     /**
      * @ORM\OneToMany(

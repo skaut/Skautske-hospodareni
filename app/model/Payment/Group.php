@@ -29,8 +29,10 @@ class Group
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
+     *
+     * @var int
      */
-    private int $id;
+    private $id;
 
     /**
      * @ORM\OneToMany(
@@ -60,8 +62,10 @@ class Group
 
     /**
      * @ORM\Embedded(class=PaymentDefaults::class, columnPrefix=false)
+     *
+     * @var PaymentDefaults
      */
-    private PaymentDefaults $paymentDefaults;
+    private $paymentDefaults;
 
     /**
      * @ORM\Column(type="string", length=20)

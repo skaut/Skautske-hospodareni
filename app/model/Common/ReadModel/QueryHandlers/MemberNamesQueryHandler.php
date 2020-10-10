@@ -34,7 +34,7 @@ final class MemberNamesQueryHandler
                 continue;
             }
 
-            $names[$member->getId()] = $member->getName();
+            $names[(int) $member->getId()] = $member->getName();
         }
 
         return $names;

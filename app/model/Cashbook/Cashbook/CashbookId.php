@@ -7,7 +7,6 @@ namespace Model\Cashbook\Cashbook;
 use InvalidArgumentException;
 use Ramsey\Uuid\Exception\InvalidUuidStringException;
 use Ramsey\Uuid\Uuid;
-use function is_numeric;
 use function sprintf;
 use function str_replace;
 
@@ -43,10 +42,6 @@ final class CashbookId
 
     public function withoutHyphens() : string
     {
-        if (is_numeric($this->id)) {
-            return $this->id;
-        }
-
         return str_replace('-', '', $this->id);
     }
 

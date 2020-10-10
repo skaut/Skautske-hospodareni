@@ -9,6 +9,7 @@ use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\ReadModel\Queries\EditableUnitsQuery;
 use function array_intersect;
 use function array_keys;
+use function array_map;
 use function in_array;
 
 abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
@@ -30,8 +31,8 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
 
         $role = $this->queryBus->handle(new ActiveSkautisRoleQuery());
 
-        $this->editableUnits = array_keys($this->queryBus->handle(new EditableUnitsQuery($role)));
-        $this->readableUnits = array_keys($readableUnits);
+        $this->editableUnits = array_map('intval', array_keys($this->queryBus->handle(new EditableUnitsQuery($role))));
+        $this->readableUnits = array_map('intval', array_keys($readableUnits));
         $this->isEditable    = in_array($this->unitId->toInt(), $this->editableUnits);
 
         if (isset($readableUnits[$this->unitId->toInt()])) {

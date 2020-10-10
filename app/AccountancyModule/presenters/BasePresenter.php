@@ -55,10 +55,8 @@ abstract class BasePresenter extends \App\BasePresenter
             }
         }
 
-        $this->aid = $this->getParameter('aid', null);
-        if ($this->aid !== null) { // Parameters aren't auto-casted to int
-            $this->aid = (int) $this->aid;
-        }
+        $aid       = $this->getParameter('aid', null);
+        $this->aid = $aid !== null ? (int) $aid : null; // Parameters aren't auto-casted to int
 
         $unitId       = $this->getParameter('unitId', null);
         $this->unitId = new UnitId($unitId !== null ? (int) $unitId : $this->unitService->getUnitId());

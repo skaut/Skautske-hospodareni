@@ -8,6 +8,7 @@ use Model\Event\Camp;
 use Model\Event\ReadModel\Queries\CampListQuery;
 use Model\Skautis\Factory\CampFactory;
 use Skautis\Skautis;
+use function assert;
 use function is_object;
 
 class CampListQueryHandler
@@ -40,7 +41,7 @@ class CampListQueryHandler
 
         foreach ($camps as $camp) {
             $camp = $this->campFactory->create($camp);
-
+            assert($camp instanceof Camp);
             $result[$camp->getId()->toInt()] = $camp;
         }
 

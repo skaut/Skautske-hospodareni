@@ -8,6 +8,7 @@ use Model\Event\Event;
 use Model\Event\ReadModel\Queries\EventListQuery;
 use Model\Skautis\Factory\EventFactory;
 use Skautis\Skautis;
+use function assert;
 use function is_object;
 
 class EventListQueryHandler
@@ -41,7 +42,7 @@ class EventListQueryHandler
 
         foreach ($events as $event) {
             $event = $this->eventFactory->create($event);
-
+            assert($event instanceof Event);
             $result[$event->getId()->toInt()] = $event;
         }
 

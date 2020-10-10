@@ -20,8 +20,10 @@ class Email
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
+     *
+     * @var int
      */
-    private int $id;
+    private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity=Group::class, inversedBy="emails")
@@ -43,8 +45,10 @@ class Email
 
     /**
      * @ORM\Embedded(class=EmailTemplate::class)
+     *
+     * @var EmailTemplate
      */
-    private EmailTemplate $template;
+    private $template;
 
     public function __construct(Group $group, EmailType $type, EmailTemplate $template)
     {

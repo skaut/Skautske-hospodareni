@@ -19,7 +19,8 @@ final class BankAccountsAccessibleByUnitsQueryHandler
 
     private IBankAccountRepository $bankAccounts;
 
-    private IUnitResolver $unitResolver;
+    /** @var IUnitResolver */
+    private $unitResolver;
 
     public function __construct(
         IBankAccountAccessChecker $accessChecker,

@@ -33,8 +33,10 @@ class Chit
      * @ORM\Id()
      * @ORM\Column(type="integer", options={"unsigned"=true})
      * @ORM\GeneratedValue()
+     *
+     * @var int|NULL
      */
-    private ?int $id;
+    private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity=Cashbook::class, inversedBy="chits")
@@ -44,8 +46,10 @@ class Chit
 
     /**
      * @ORM\Embedded(class=ChitBody::class, columnPrefix=false)
+     *
+     * @var ChitBody
      */
-    private ChitBody $body;
+    private $body;
 
     /**
      * @ORM\ManyToMany(targetEntity=ChitItem::class, cascade={"persist", "remove"}, orphanRemoval=true)
@@ -74,7 +78,7 @@ class Chit
      *
      * @ORM\Column(type="integer", nullable=true, name="`lock`", options={"unsigned"=true})
      */
-    private ?int $locked;
+    private ?int $locked = null;
 
     /**
      * @ORM\OneToMany(

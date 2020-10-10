@@ -9,11 +9,12 @@ use Model\Unit\Unit;
 
 abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
+    //@TODO: unify $unitIdInt and $unitId
     /**
      * @var int
      * @persistent
      */
-    public $unitId;
+    public int $unitIdInt;
 
     protected Unit $unit;
 
@@ -21,8 +22,8 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
     {
         parent::startup();
 
-        $this->unitId = $this->unitService->getUnitId();
-        $this->unit   = $this->queryBus->handle(new UnitQuery($this->unitId));
+        $this->unitIdInt = $this->unitService->getUnitId();
+        $this->unit      = $this->queryBus->handle(new UnitQuery($this->unitIdInt));
 
         $this->template->setParameters([
             'unit' => $this->unit,

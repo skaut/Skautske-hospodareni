@@ -22,7 +22,7 @@ use function is_array;
 class Bootstrap4FormRenderer extends DefaultFormRenderer
 {
     /** @var mixed[] */
-    public array $wrappers = [
+    public $wrappers = [
         'form' => ['container' => null],
         'error' => [
             'container' => 'div class="row mb-3"',

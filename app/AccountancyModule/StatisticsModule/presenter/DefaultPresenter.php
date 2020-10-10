@@ -23,7 +23,7 @@ class DefaultPresenter extends BasePresenter
         if ($year === null) {
             $year = (int) date('Y');
         }
-        $unitTree = $this->unitService->getTreeUnder($this->queryBus->handle(new UnitQuery($this->unitId)));
+        $unitTree = $this->unitService->getTreeUnder($this->queryBus->handle(new UnitQuery($this->unitIdInt)));
         $data     = $this->statService->getEventStatistics($unitTree, $year);
 
         $this->template->setParameters([

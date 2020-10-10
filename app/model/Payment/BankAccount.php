@@ -20,8 +20,10 @@ class BankAccount
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
+     *
+     * @var int
      */
-    private int $id;
+    private $id;
 
     /**
      * @ORM\Column(type="integer")
@@ -35,8 +37,10 @@ class BankAccount
 
     /**
      * @ORM\Embedded(class=AccountNumber::class)
+     *
+     * @var AccountNumber
      */
-    private AccountNumber $number;
+    private $number;
 
     /**
      * @ORM\Column(type="string", nullable=true)

@@ -27,6 +27,7 @@ use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\SkautisRole;
 use Nette\Application\BadRequestException;
 use function array_keys;
+use function array_map;
 use function assert;
 use function sprintf;
 
@@ -159,7 +160,7 @@ class BankAccountsPresenter extends BasePresenter
             }
 
             $groups = $this->queryBus->handle(
-                new GetGroupList(array_keys($this->unitService->getReadUnits($this->user)), false)
+                new GetGroupList(array_map('intval', array_keys($this->unitService->getReadUnits($this->user))), false)
             );
 
             $groupNames = [];

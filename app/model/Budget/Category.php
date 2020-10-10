@@ -22,8 +22,10 @@ class Category
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
+     *
+     * @var int
      */
-    private int $id;
+    private $id;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
@@ -53,8 +55,10 @@ class Category
     /**
      * @ORM\ManyToOne(targetEntity="Category", inversedBy="children")
      * @ORM\JoinColumn(name="parentId", referencedColumnName="id")
+     *
+     * @var Category
      */
-    private Category $parent;
+    private $parent;
 
     /**
      * @ORM\Column(type="float", options={"unsigned"=true, "default"=0})

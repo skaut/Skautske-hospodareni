@@ -34,7 +34,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
     private string $appDir;
 
-    private int $unitId;
+    private ?int $unitId = null;
 
     protected CommandBus $commandBus;
 

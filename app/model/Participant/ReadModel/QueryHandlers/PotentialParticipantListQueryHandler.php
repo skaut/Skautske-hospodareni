@@ -36,7 +36,7 @@ final class PotentialParticipantListQueryHandler
                 continue;
             }
 
-            $potentialParticipants[$member->getId()] = $member->getName();
+            $potentialParticipants[(int) $member->getId()] = (string) $member->getName();
         }
 
         return $potentialParticipants;

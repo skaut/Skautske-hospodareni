@@ -19,8 +19,10 @@ class Contract
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
+     *
+     * @var int
      */
-    private int $id;
+    private $id;
 
     /**
      * @ORM\Column(type="integer", options={"unsigned"=true})
@@ -44,8 +46,10 @@ class Contract
 
     /**
      * @ORM\Embedded(class=ContractPassenger::class, columnPrefix=false)
+     *
+     * @var ContractPassenger
      */
-    private ContractPassenger $passenger;
+    private $passenger;
 
     /**
      * @ORM\Column(type="smallint", name="template", options={"comment":"1-old, 2-podle NOZ"})

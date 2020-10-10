@@ -19,18 +19,24 @@ class ChitItem
      * @ORM\Id()
      * @ORM\Column(type="integer", options={"unsigned"=true})
      * @ORM\GeneratedValue()
+     *
+     * @var int|null
      */
-    private ?int $id;
+    private $id;
 
     /**
      * @ORM\Embedded(class=Amount::class, columnPrefix=false)
+     *
+     * @var Amount
      */
-    private Amount $amount;
+    private $amount;
 
     /**
      * @ORM\Embedded(class=Category::class, columnPrefix=false)
+     *
+     * @var Category
      */
-    private Category $category;
+    private $category;
 
     /**
      * @ORM\Column(type="string", length=120)

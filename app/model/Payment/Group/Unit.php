@@ -19,8 +19,10 @@ class Unit
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
+     *
+     * @var int
      */
-    private int $id;
+    private $id;
 
     /**
      * @internal for mapping only

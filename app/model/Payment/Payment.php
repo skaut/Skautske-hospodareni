@@ -32,8 +32,10 @@ class Payment extends Aggregate
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
+     *
+     * @var int
      */
-    private int $id;
+    private $id;
 
     /**
      * @ORM\Column(type="integer", name="groupId", options={"unsigned"=true})
@@ -91,12 +93,12 @@ class Payment extends Aggregate
     /**
      * @ORM\Column(type="datetime_immutable", nullable=true, name="dateClosed")
      */
-    private ?DateTimeImmutable $closedAt;
+    private ?DateTimeImmutable $closedAt = null;
 
     /**
      * @ORM\Column(type="string", length=64, nullable=true)
      */
-    private ?string $closedByUsername;
+    private ?string $closedByUsername = null;
 
     /**
      * @ORM\Column(type="string_enum", length=20)
@@ -111,7 +113,7 @@ class Payment extends Aggregate
      *
      * @var ArrayCollection<SentEmail>
      */
-    private ArrayCollection $sentEmails;
+    private $sentEmails;
 
     public function __construct(
         Group $group,

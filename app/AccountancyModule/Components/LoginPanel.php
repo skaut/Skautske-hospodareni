@@ -13,7 +13,8 @@ use function assert;
 
 final class LoginPanel extends BaseControl
 {
-    private UserService $userService;
+    /** @var UserService */
+    private $userService;
 
     private UnitService $unitService;
 

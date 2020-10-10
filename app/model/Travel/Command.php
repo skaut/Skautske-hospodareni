@@ -29,8 +29,10 @@ class Command
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
+     *
+     * @var int
      */
-    private int $id;
+    private $id;
 
     /**
      * @ORM\Column(type="integer", options={"unsigned"=true})
@@ -44,8 +46,10 @@ class Command
 
     /**
      * @ORM\Embedded(class=Passenger::class, columnPrefix=false)
+     *
+     * @var Passenger
      */
-    private Passenger $passenger;
+    private $passenger;
 
     /**
      * @ORM\Column(type="string", length=64)
@@ -80,7 +84,7 @@ class Command
     /**
      * @ORM\Column(type="datetime_immutable", nullable=true, name="closed")
      */
-    private ?DateTimeImmutable $closedAt;
+    private ?DateTimeImmutable $closedAt = null;
 
     /**
      * @ORM\OneToMany(targetEntity=Travel::class, indexBy="id", mappedBy="command", cascade={"persist", "remove"}, orphanRemoval=true)

@@ -40,7 +40,7 @@ class Unit
     private ?int $parentId;
 
     /** @var Unit[]|null */
-    private array $children;
+    private ?array $children;
 
     /**
      * @param Unit[]|null $children
