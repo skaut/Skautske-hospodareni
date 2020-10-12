@@ -125,6 +125,7 @@ final class ParticipantList extends BaseControl
             'isAllowIsAccount' => $this->isAllowIsAccount,
             'isAllowParticipantUpdate' => $this->isAllowParticipantUpdate,
             'isAllowParticipantDelete' => $this->isAllowParticipantDelete,
+            'isAllowAnyAction' => $this->isAllowParticipantUpdate || $this->isAllowParticipantDelete,
         ]);
 
         $this->template->render();
