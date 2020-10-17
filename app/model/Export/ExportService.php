@@ -20,6 +20,7 @@ use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantStatisticsQuery;
+use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\CategorySummary;
 use Model\DTO\Cashbook\Chit;
@@ -42,6 +43,7 @@ use function array_sum;
 use function array_values;
 use function assert;
 use function in_array;
+use function is_float;
 use function sprintf;
 
 class ExportService
@@ -242,6 +244,9 @@ class ExportService
         $stats = $this->queryBus->handle(new CampParticipantStatisticsQuery(new SkautisCampId($skautisCampId)));
         assert($stats instanceof Statistics);
 
+        $finalRealBalance = MoneyFactory::toFloat($this->queryBus->handle(new FinalRealBalanceQuery($cashbookId)));
+        assert(is_float($finalRealBalance));
+
         return $this->templateFactory->create(__DIR__ . '/templates/campReport.latte', [
             'participantsCnt' => $stats->getPersonsCount(),
             'personsDays' => $stats->getPersonDays(),
@@ -256,6 +261,7 @@ class ExportService
             'virtualTotalExpense' => $total['virtualExpense'],
             'functions' => $this->queryBus->handle(new CampFunctions(new SkautisCampId($skautisCampId))),
             'areTotalsConsistentWithSkautis' => $areTotalsConsistentWithSkautis,
+            'finalRealBalance' => $finalRealBalance,
         ]);
     }
 }
