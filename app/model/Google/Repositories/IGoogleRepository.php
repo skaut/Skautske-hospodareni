@@ -30,6 +30,4 @@ interface IGoogleRepository
     public function findByUnitAndEmail(UnitId $unitId, string $email) : OAuth;
 
     public function remove(OAuth $oAuth) : void;
-
-    public function getClient() : Google_Client;
 }
