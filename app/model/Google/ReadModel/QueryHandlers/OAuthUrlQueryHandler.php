@@ -4,21 +4,20 @@ declare(strict_types=1);
 
 namespace Model\Google\ReadModel\QueryHandlers;
 
+use Model\Google\GoogleService;
 use Model\Google\ReadModel\Queries\OAuthUrlQuery;
-use Model\Mail\Repositories\IGoogleRepository;
 
 final class OAuthUrlQueryHandler
 {
-    /** @var IGoogleRepository */
-    private $repository;
+    private GoogleService $service;
 
-    public function __construct(IGoogleRepository $repository)
+    public function __construct(GoogleService $service)
     {
-        $this->repository = $repository;
+        $this->service = $service;
     }
 
     public function __invoke(OAuthUrlQuery $query) : string
     {
-        return $this->repository->getClient()->createAuthUrl();
+        return $this->service->getClient()->createAuthUrl();
     }
 }

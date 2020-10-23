@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Stubs;
 
-use Google_Client;
 use Model\Common\UnitId;
 use Model\Google\OAuth;
 use Model\Google\OAuthId;
@@ -50,10 +49,5 @@ class GoogleRepositoryStub implements IGoogleRepository
     private function createOAuth(?UnitId $unitId = null, ?string $email = null) : OAuth
     {
         return OAuth::create($unitId ?? new UnitId(123), 'XXXX', $email ?? 'test@hospodareni.loc');
-    }
-
-    public function getClient() : Google_Client
-    {
-        // TODO: Implement getClient() method.
     }
 }

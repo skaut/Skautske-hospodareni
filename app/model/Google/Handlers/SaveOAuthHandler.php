@@ -7,6 +7,7 @@ namespace Model\Google\Handlers;
 use Google_Service_Oauth2;
 use Model\Google\Commands\SaveOAuth;
 use Model\Google\Exception\OAuthNotFound;
+use Model\Google\GoogleService;
 use Model\Google\OAuth;
 use Model\Mail\Repositories\IGoogleRepository;
 
@@ -15,14 +16,17 @@ final class SaveOAuthHandler
     /** @var IGoogleRepository */
     private $repository;
 
-    public function __construct(IGoogleRepository $repository)
+    private $googleService;
+
+    public function __construct(IGoogleRepository $repository, GoogleService $googleService)
     {
-        $this->repository = $repository;
+        $this->repository    = $repository;
+        $this->googleService = $googleService;
     }
 
     public function __invoke(SaveOAuth $command) : void
     {
-        $client = $this->repository->getClient();
+        $client = $this->googleService->getClient();
         $token  = $client->fetchAccessTokenWithAuthCode($command->getCode());
         $client->setAccessToken($token);
         $email = (new Google_Service_Oauth2($client))->userinfo->get()->getEmail();

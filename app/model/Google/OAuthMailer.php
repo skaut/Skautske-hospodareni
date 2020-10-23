@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Model\Google;
 
+use Google_Service;
 use Google_Service_Gmail;
 use Google_Service_Gmail_Message;
-use Model\Mail\Repositories\IGoogleRepository;
 use Nette\Mail\IMailer;
 use Nette\Mail\Message;
 use function array_key_exists;
@@ -18,9 +18,9 @@ class OAuthMailer implements IMailer
 {
     private Google_Service_Gmail $gmailService;
 
-    public function __construct(IGoogleRepository $googleRepository, OAuth $oAuth)
+    public function __construct(Google_Service $googleService, OAuth $oAuth)
     {
-        $client = $googleRepository->getClient();
+        $client = $googleService->getClient();
         $token  = $client->fetchAccessTokenWithRefreshToken($oAuth->getToken());
         if (array_key_exists('error', $token)) {
             throw new InvalidOAuth(sprintf('%s => %s', $token['error'], $token['error_description']));

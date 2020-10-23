@@ -6,7 +6,6 @@ namespace Model\Infrastructure\Repositories\Mail;
 
 use Doctrine\ORM\EntityManager;
 use Google_Client;
-use Google_Service_Gmail;
 use Model\Common\UnitId;
 use Model\Google\Exception\OAuthNotFound;
 use Model\Google\OAuth;
@@ -96,21 +95,5 @@ final class GoogleRepository implements IGoogleRepository
     {
         $this->entityManager->remove($oAuth);
         $this->entityManager->flush();
-    }
-
-    public function getClient() : Google_Client
-    {
-        $client = new Google_Client();
-        $client->setApplicationName('Skautské hospodaření online');
-        $client->setScopes([
-            Google_Service_Gmail::GMAIL_SEND,
-        ]);
-        $client->setAuthConfig($this->credentialsPath);
-        $client->setRedirectUri($this->tokenUri);
-        $client->setAccessType('offline');
-        $client->setIncludeGrantedScopes(true);
-        $client->setPrompt('select_account consent');
-
-        return $client;
     }
 }
