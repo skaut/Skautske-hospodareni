@@ -32,7 +32,12 @@ class OAuthMailer implements IMailer
     public function send(Message $mail) : void
     {
         $gmsg = new Google_Service_Gmail_Message();
-        $gmsg->setRaw(str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($mail->generateMessage())));
+        $gmsg->setRaw($this->urlSafeBase64Encode($mail->generateMessage()));
         $this->gmailService->users_messages->send('me', $gmsg);
+    }
+
+    private function urlSafeBase64Encode(string $msg) : string
+    {
+        return str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($msg));
     }
 }
