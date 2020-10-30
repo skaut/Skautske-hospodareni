@@ -13,10 +13,9 @@ use Model\Mail\Repositories\IGoogleRepository;
 
 final class SaveOAuthHandler
 {
-    /** @var IGoogleRepository */
-    private $repository;
+    private IGoogleRepository $repository;
 
-    private $googleService;
+    private GoogleService $googleService;
 
     public function __construct(IGoogleRepository $repository, GoogleService $googleService)
     {
