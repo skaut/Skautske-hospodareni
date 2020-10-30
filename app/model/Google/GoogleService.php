@@ -9,6 +9,15 @@ use Google_Service_Gmail;
 
 class GoogleService
 {
+    private string $tokenUri;
+    private string $credentialsPath;
+
+    public function __construct(string $tokenUri, string $credentialsPath)
+    {
+        $this->tokenUri        = $tokenUri;
+        $this->credentialsPath = $credentialsPath;
+    }
+
     public function getClient() : Google_Client
     {
         $client = new Google_Client();

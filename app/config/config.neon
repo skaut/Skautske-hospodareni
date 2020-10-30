@@ -111,6 +111,8 @@ services:
     - Model\PaymentService
     - Model\Payment\BankAccountService(fioCache: @fio.cache)
 
+    - Model\Google\GoogleService(%google.credentials%, %google.redirectUri%)
+
     - GuzzleHttp\Client({ timeout: 3 }) # used for API calls to FIO api
 
     fio.client:
@@ -140,7 +142,8 @@ services:
     - Model\Skautis\EventRepository(@skautis.event)
     - Model\Skautis\CampRepository(@skautis.cached.event)
     - Model\Skautis\Cashbook\Repositories\CampCategoryRepository(@skautis.cached.event)
-    - Model\Infrastructure\Repositories\Mail\GoogleRepository(%google.credentials%, %google.redirectUri%)
+    - Model\Infrastructure\Repositories\Mail\GoogleRepository
+
 
     - class: Model\Cashbook\ReadModel\QueryHandlers\EventParticipantListQueryHandler
       tags: [queryBus.handler]

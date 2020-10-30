@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Repositories\Mail;
 
 use Doctrine\ORM\EntityManager;
-use Google_Client;
 use Model\Common\UnitId;
 use Model\Google\Exception\OAuthNotFound;
 use Model\Google\OAuth;
@@ -17,18 +16,11 @@ use function count;
 
 final class GoogleRepository implements IGoogleRepository
 {
-    private string $credentialsPath;
-    private string $tokenUri;
     private EntityManager $entityManager;
 
-
-    private ?Google_Client $client;
-
-    public function __construct(string $credentialsPath, string $tokenUri, EntityManager $em)
+    public function __construct(EntityManager $em)
     {
-        $this->credentialsPath = $credentialsPath;
-        $this->tokenUri        = $tokenUri;
-        $this->entityManager   = $em;
+        $this->entityManager = $em;
     }
 
     public function save(OAuth $oAuth) : void
