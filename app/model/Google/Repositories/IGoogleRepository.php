@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Model\Mail\Repositories;
 
-use Google_Client;
 use Model\Common\UnitId;
 use Model\Google\Exception\OAuthNotFound;
 use Model\Google\OAuth;
