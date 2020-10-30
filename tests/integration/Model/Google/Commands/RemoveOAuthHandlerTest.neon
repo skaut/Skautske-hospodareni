@@ -1,7 +1,6 @@
 
 services:
-    - Model\Infrastructure\Repositories\Mail\GoogleRepository('', '')
-
+    - Model\Infrastructure\Repositories\Mail\GoogleRepository
     - class: Model\Google\Handlers\RemoveOAuthHandler
       tags: [commandBus.handler]
 

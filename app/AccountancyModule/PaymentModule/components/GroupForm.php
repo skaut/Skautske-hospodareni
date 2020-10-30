@@ -231,7 +231,7 @@ final class GroupForm extends BaseControl
             'dueDate' => $group->getDueDate(),
             'constantSymbol' => $group->getConstantSymbol(),
             'nextVs' => $group->getNextVariableSymbol(),
-            'oAuthId' => $group->getOAuthId()->toString(),
+            'oAuthId' => $group->getOAuthId() !== null ? $group->getOAuthId()->toString() : null,
             'emails' => $emails,
             'groupId' => $this->groupId,
             'bankAccount' => $group->getBankAccountId(),

@@ -1,5 +1,6 @@
 services:
-    - Model\Infrastructure\Repositories\Mail\GoogleRepository('', '')
+    - Model\Infrastructure\Repositories\Mail\GoogleRepository
+    - Model\Google\GoogleService('', '')
     - Model\Infrastructure\Repositories\Payment\GroupRepository
     - Model\Google\Handlers\RemoveOAuthHandler
 
