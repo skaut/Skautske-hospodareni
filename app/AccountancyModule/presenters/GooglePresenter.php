@@ -7,7 +7,6 @@ namespace App\AccountancyModule;
 use InvalidArgumentException;
 use Model\Common\UnitId;
 use Model\Google\Commands\SaveOAuth;
-use Model\Google\ReadModel\Queries\OAuthQuery;
 use Model\Google\ReadModel\Queries\OAuthUrlQuery;
 use Model\Mail\Repositories\IGoogleRepository;
 
