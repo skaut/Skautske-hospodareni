@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Google;
 
 use Google_Client;
+use Google_Service_Gmail;
 
 class GoogleService
 {

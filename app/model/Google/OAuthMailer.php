@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Model\Google;
 
-use Google_Service;
 use Google_Service_Gmail;
 use Google_Service_Gmail_Message;
 use Nette\Mail\IMailer;
@@ -18,7 +17,7 @@ class OAuthMailer implements IMailer
 {
     private Google_Service_Gmail $gmailService;
 
-    public function __construct(Google_Service $googleService, OAuth $oAuth)
+    public function __construct(GoogleService $googleService, OAuth $oAuth)
     {
         $client = $googleService->getClient();
         $token  = $client->fetchAccessTokenWithRefreshToken($oAuth->getToken());
