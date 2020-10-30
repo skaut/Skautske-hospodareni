@@ -10,8 +10,8 @@ use DateTimeImmutable;
 use Helpers;
 use InvalidArgumentException;
 use Mockery as m;
+use Model\Google\Exception\NoAccessToOAuth;
 use Model\Google\OAuthId;
-use Model\Payment\Exception\NoAccessToMailCredentials;
 use Model\Payment\Group\PaymentDefaults;
 use Model\Payment\Services\IBankAccountAccessChecker;
 use Model\Payment\Services\IOAuthAccessChecker;
@@ -80,7 +80,7 @@ class GroupTest extends Unit
     {
         $oAuthId = OAuthId::generate();
 
-        $this->expectException(NoAccessToMailCredentials::class);
+        $this->expectException(NoAccessToOAuth::class);
 
         new Group(
             [20, 22],
