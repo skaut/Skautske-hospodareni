@@ -14,6 +14,7 @@ use Model\Payment\Payment\State;
 use Model\Payment\ReadModel\Queries\PaymentListQuery;
 use function array_flip;
 use function array_reverse;
+use function strcoll;
 use function usort;
 
 final class PaymentList extends BaseControl
@@ -60,6 +61,13 @@ final class PaymentList extends BaseControl
 
         $grid->addColumnText('name', 'Název/účel')
             ->setSortable()
+            ->setSortableCallback(function (DtoListDataSource $dataSource, array $sort) : DtoListDataSource {
+                $data = $dataSource->getData();
+
+                usort($data, fn (Payment $a, Payment $b) => strcoll($a->getName(), $b->getName()));
+
+                return new DtoListDataSource($sort['name'] === DataGrid::SORT_ASC ? $data : array_reverse($data));
+            })
             ->getElementPrototype('td')
             ->setAttribute('class', 'w-18');
 
