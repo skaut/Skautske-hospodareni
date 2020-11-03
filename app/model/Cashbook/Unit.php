@@ -13,6 +13,7 @@ use Model\Cashbook\Unit\Cashbook;
 use Model\Common\Aggregate;
 use Model\Common\ShouldNotHappen;
 use Model\Common\UnitId;
+use function assert;
 
 /**
  * @ORM\Entity()
@@ -31,7 +32,7 @@ class Unit extends Aggregate
     /**
      * @ORM\OneToMany(targetEntity=Cashbook::class, mappedBy="unit", cascade={"persist", "remove"}, orphanRemoval=true)
      *
-     * @var ArrayCollection|Cashbook[]
+     * @var ArrayCollection<int, Cashbook>
      */
     private $cashbooks;
 
@@ -98,9 +99,11 @@ class Unit extends Aggregate
         return $this->cashbooks->toArray();
     }
 
-    public function getActiveCashbook() : Unit\Cashbook
+    public function getActiveCashbook() : Cashbook
     {
         foreach ($this->cashbooks as $cashbook) {
+            assert($cashbook instanceof Cashbook);
+
             if ($cashbook->getId() === $this->activeCashbookId) {
                 return $cashbook;
             }

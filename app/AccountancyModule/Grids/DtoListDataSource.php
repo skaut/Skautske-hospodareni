@@ -10,16 +10,20 @@ use Nette\NotImplementedException;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 use Ublaboo\DataGrid\Utils\Sorting;
 
+/**
+ * @template T
+ */
 final class DtoListDataSource implements IDataSource
 {
-    /** @var ArrayCollection<object> */
-    private $collection;
+    /** @phpstan-var ArrayCollection<int, T> */
+    private ArrayCollection $collection;
 
-    /** @var Criteria */
-    private $criteria;
+    private Criteria $criteria;
 
     /**
      * @param array<object> $data
+     *
+     * @phpstan-param array<T> $data
      */
     public function __construct(array $data)
     {
@@ -29,6 +33,8 @@ final class DtoListDataSource implements IDataSource
 
     /**
      * @param mixed[] $filters
+     *
+     * @phpstan-return $this
      */
     public function filter(array $filters) : self
     {
@@ -41,6 +47,8 @@ final class DtoListDataSource implements IDataSource
 
     /**
      * @param array<string, mixed> $condition
+     *
+     * @phpstan-return $this
      */
     public function filterOne(array $condition) : self
     {
@@ -58,6 +66,8 @@ final class DtoListDataSource implements IDataSource
 
     /**
      * @return object[]
+     *
+     * @phpstan-return T[]
      */
     public function getData() : array
     {
@@ -68,6 +78,8 @@ final class DtoListDataSource implements IDataSource
      * @param int $offset
      * @param int $limit
      *
+     * @return $this
+     *
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
      */
     public function limit($offset, $limit) : self
@@ -77,6 +89,9 @@ final class DtoListDataSource implements IDataSource
         return $this;
     }
 
+    /**
+     * @phpstan-return $this
+     */
     public function sort(Sorting $sorting) : self
     {
         $sortCallback = $sorting->getSortCallback();
@@ -90,6 +105,9 @@ final class DtoListDataSource implements IDataSource
         return $this;
     }
 
+    /**
+     * @phpstan-return ArrayCollection<int, T>
+     */
     private function getFilteredCollection() : ArrayCollection
     {
         return $this->collection->matching($this->criteria);

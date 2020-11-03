@@ -6,6 +6,7 @@ namespace Model\Travel;
 
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Model\Travel\Command\TransportTravel;
 use Model\Travel\Command\Travel;
@@ -107,7 +108,8 @@ class Command
     /**
      * @ORM\OneToMany(targetEntity=Travel::class, indexBy="id", mappedBy="command", cascade={"persist", "remove"}, orphanRemoval=true)
      *
-     * @var ArrayCollection|Travel[]
+     * @var Collection|Travel[]
+     * @phpstan-var Collection<int, Travel>
      */
     private $travels;
 
@@ -276,12 +278,7 @@ class Command
     private function getDistance() : float
     {
         $distances = $this->travels
-                    ->filter(function (Travel $t) {
-                        return $t instanceof VehicleTravel;
-                    })
-                    ->map(function (VehicleTravel $t) {
-                        return $t->getDistance();
-                    })
+                    ->map(fn (Travel $t) => $t instanceof VehicleTravel ? $t->getDistance() : 0)
                     ->toArray();
 
         return array_sum($distances);

@@ -238,10 +238,14 @@ final class ParticipantList extends BaseControl
             ->setDefaultValue('');
         $editCon->addSubmit('send', 'Upravit')
             ->setAttribute('class', 'btn btn-info btn-small')
-            ->onClick[] = fn(SubmitButton $button) => $this->massEditSubmitted($button);
+            ->onClick[] = function (SubmitButton $button) : void {
+                $this->massEditSubmitted($button);
+            };
 
         $form->addSubmit('send', 'Odebrat vybrané')
-            ->onClick[] = fn(SubmitButton $button) => $this->massRemoveSubmitted($button);
+            ->onClick[] = function (SubmitButton $button) : void {
+                $this->massRemoveSubmitted($button);
+            };
 
         return $form;
     }

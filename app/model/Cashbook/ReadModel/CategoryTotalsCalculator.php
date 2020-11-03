@@ -56,13 +56,14 @@ final class CategoryTotalsCalculator
     /**
      * @param ICategory[] $categories
      */
-    private static function getCampIncomeCategoryId(array $categories, ParticipantType $type) : ?int
+    private static function getCampIncomeCategoryId(array $categories, ParticipantType $type) : int
     {
         foreach ($categories as $c) {
             if ($c instanceof CampCategory && $c->getParticipantType() !== null && $c->getParticipantType()->equals($type)) {
                 return $c->getId();
             }
         }
+
         throw new MissingCategory(sprintf('Seznam táborových kategorií neobsahuje požadový typ "%s".', $type->getValue()));
     }
 }

@@ -15,7 +15,7 @@ class AggregateId
     /** @var string */
     private $id;
 
-    private function __construct(string $id)
+    final private function __construct(string $id)
     {
         $normalizedId = $this->normalize($id);
 

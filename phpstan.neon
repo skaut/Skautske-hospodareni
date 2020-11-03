@@ -1,13 +1,10 @@
 parameters:
-    autoload_directories:
-        - %rootDir%/../../../app
-        - %rootDir%/../../../tests
-        - %rootDir%/../../../code-quality
-
     ignoreErrors:
         # Errors related mostly to usage of assert($x instanceof A || $x === null) and similar asserts
-        - '~Result of && is always true\.~'
-        - '~Parameter #1 \$parameters of method Doctrine\\ORM\\AbstractQuery::setParameters\(\).*~'
+        - '~Unreachable statement - code above always terminates.~'
+
+        # Nette PHPStan extension is inteded for use with Nette 3.0
+        - '~Nette\\Application\\Routers\\RouteList does not accept .*~'
 
 includes:
     - vendor/phpstan/phpstan-nette/extension.neon

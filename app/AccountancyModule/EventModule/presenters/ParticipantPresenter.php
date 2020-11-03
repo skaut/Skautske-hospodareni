@@ -27,7 +27,7 @@ use Nette\Utils\Strings;
 use Skautis\Wsdl\PermissionException;
 use function date;
 use function in_array;
-use function printf;
+use function sprintf;
 
 class ParticipantPresenter extends BasePresenter
 {
@@ -154,7 +154,7 @@ class ParticipantPresenter extends BasePresenter
             /** @var UpdateParticipant $u */
             foreach ($updates as $u) {
                 if (! in_array($u->getField(), UpdateParticipant::getEventFields())) {
-                    $this->flashMessage(printf('Nelze upravit pole: %s', $u->getField()), 'warning');
+                    $this->flashMessage(sprintf('Nelze upravit pole: %s', $u->getField()), 'warning');
                     $this->redirect('this');
                 }
                 $this->eventService->getParticipants()->update($u);

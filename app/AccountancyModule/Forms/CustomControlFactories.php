@@ -22,7 +22,9 @@ trait CustomControlFactories
     }
 
     /**
-     * {@inheritDoc}
+     * @param string|int $name
+     *
+     * @phpstan-param string|int $name
      */
     public function addContainer($name) : BaseContainer
     {

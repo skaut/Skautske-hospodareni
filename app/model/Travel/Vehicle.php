@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Travel;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Model\Common\FilePath;
 use Model\Common\ScanNotFound;
@@ -105,7 +106,8 @@ class Vehicle
      *     orphanRemoval=true
      * )
      *
-     * @var ArrayCollection|RoadworthyScan[]
+     * @var Collection|RoadworthyScan[]
+     * @phpstan-var Collection<int, RoadworthyScan>
      */
     private $roadworthyScans;
 

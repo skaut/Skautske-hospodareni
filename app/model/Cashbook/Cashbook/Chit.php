@@ -8,6 +8,7 @@ use Assert\Assertion;
 use Cake\Chronos\Date;
 use Consistence\Doctrine\Enum\EnumAnnotation;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Category as CategoryAggregate;
@@ -63,7 +64,8 @@ class Chit
      *     }
      * )
      *
-     * @var ChitItem[]|ArrayCollection
+     * @var Collection|ChitItem[]
+     * @phpstan-var Collection<int, ChitItem>
      */
     private $items;
 
@@ -92,7 +94,8 @@ class Chit
      *     orphanRemoval=true
      * )
      *
-     * @var ArrayCollection|ChitScan[]
+     * @phpstan-var Collection<int, ChitScan>
+     * @var Collection|ChitScan[]
      */
     private $scans;
 

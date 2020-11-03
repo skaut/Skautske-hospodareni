@@ -74,7 +74,10 @@ abstract class BasePresenter extends \App\BasePresenter
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $message
+     * @param string $type
+     *
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
      */
     public function flashMessage($message, $type = 'info') : stdClass
     {

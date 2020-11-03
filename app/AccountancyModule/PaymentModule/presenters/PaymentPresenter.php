@@ -437,6 +437,6 @@ class PaymentPresenter extends BasePresenter
      */
     private function countNotSentPayments(array $payments) : int
     {
-        return count(array_filter($payments, fn (Payment $payment) => $payment->getSentEmails() === [] && $payment->getState() === State::PREPARING));
+        return count(array_filter($payments, fn (Payment $payment) => $payment->getSentEmails() === [] && $payment->getState()->equalsValue(State::PREPARING)));
     }
 }
