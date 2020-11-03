@@ -11,7 +11,6 @@ use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\DTO\Event\EventListItem;
 use Model\Event\ReadModel\Queries\Excel\ExportEvents;
-use Model\Services\Language;
 use Nette\Utils\ArrayHash;
 use function sprintf;
 use function uasort;
@@ -53,7 +52,7 @@ final class ExportDialog extends Dialog
             $events[$event->getId()] = $event->getName();
         }
 
-        uasort($events, [Language::class, 'compare']);
+        uasort($events, 'strcoll');
 
         $form->addCheckboxList('eventIds', 'Akce', $events)
             ->setRequired('Musíte vybrat alespoň jednu akci');
