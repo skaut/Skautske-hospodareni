@@ -13,6 +13,7 @@ services:
     - Stubs\OAuthsAccessCheckerStub
     - Model\PaymentService
     - Stubs\GoogleRepositoryStub
+    - Model\Google\GoogleService('', '')
 
     - Model\Mail\MailerFactory(Model\Payment\NullMailer(), false)
     - Model\Services\TemplateFactory

@@ -109,6 +109,11 @@ class Group
      */
     private string $note = '';
 
+    /**
+     * @ORM\Column(type="integer", options={"unsigned"=true}, nullable=true)
+     */
+    private ?int $smtpId = null;
+
     public const STATE_OPEN   = 'open';
     public const STATE_CLOSED = 'closed';
 
