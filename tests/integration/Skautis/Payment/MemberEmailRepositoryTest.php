@@ -13,7 +13,7 @@ final class MemberEmailRepositoryTest extends SkautisTest
     {
         VCR::insertCassette('Payment/MemberEmailRepository/findByMember_empty.json');
 
-        $this->assertCount(0, $this->getRepository()->findByMember(143550));
+        $this->assertCount(0, $this->getRepository()->findByMember(149580));
     }
 
     public function testFindByMemberReturnsListOfEmails() : void
@@ -38,6 +38,6 @@ final class MemberEmailRepositoryTest extends SkautisTest
 
     private function getRepository() : MemberEmailRepository
     {
-        return new MemberEmailRepository($this->createSkautis('3eb6605b-4df9-431f-a8a7-3447c308ac77'));
+        return new MemberEmailRepository($this->createSkautis('b681d4f1-f1a9-453e-a3c7-c49fb4c20fd1'));
     }
 }
