@@ -14,7 +14,7 @@
         "fmasa/auto-di": "^1.0",
         "fmasa/doctrine-nullable-embeddables": "^1.0",
         "fmasa/sentry-breadcrumbs-monolog-handler": "^2.0",
-        "google/apiclient": "^2.7",
+        "google/apiclient": "^2.8",
         "heureka/bank-account-validator": "1.1.*",
         "kdyby/console": "^2.6",
         "kdyby/doctrine": "^3.1",

@@ -29,7 +29,6 @@ use Model\Payment\Services\IBankAccountAccessChecker;
 use Model\Payment\Services\IOAuthAccessChecker;
 use Model\Payment\Summary;
 use Model\Payment\VariableSymbol;
-use Model\Services\Language;
 use Skautis\Skautis;
 use stdClass;
 use function array_filter;
@@ -41,6 +40,7 @@ use function in_array;
 use function is_array;
 use function reset;
 use function strcmp;
+use function strcoll;
 use function usort;
 
 class PaymentService
@@ -318,9 +318,7 @@ class PaymentService
             return [];
         }
 
-        usort($persons, function ($one, $two) {
-            return Language::compare($one->Person, $two->Person);
-        });
+        usort($persons, fn ($one, $two) => strcoll($one->Person, $two->Person));
 
         return $persons;
     }

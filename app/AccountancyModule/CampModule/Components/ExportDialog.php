@@ -11,7 +11,6 @@ use Cake\Chronos\Date;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\DTO\Camp\CampListItem;
 use Model\Event\ReadModel\Queries\Excel\ExportCamps;
-use Model\Services\Language;
 use Nette\Utils\ArrayHash;
 use function sprintf;
 use function uasort;
@@ -53,7 +52,7 @@ final class ExportDialog extends Dialog
             $items[$camp->getId()] = $camp->getName();
         }
 
-        uasort($items, [Language::class, 'compare']);
+        uasort($items, 'strcoll');
 
         $form->addCheckboxList('campIds', 'Tábory', $items)
             ->setRequired('Musíte vybrat alespoň jednen tábor');

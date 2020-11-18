@@ -8,8 +8,8 @@ use Cake\Chronos\Date;
 use Model\Common\Member;
 use Model\Common\Repositories\IMemberRepository;
 use Model\Common\UnitId;
-use Model\Services\Language;
 use Skautis\Skautis;
+use function strcoll;
 use function usort;
 
 final class MemberRepository implements IMemberRepository
@@ -42,9 +42,7 @@ final class MemberRepository implements IMemberRepository
             );
         }
 
-        usort($members, function (Member $first, Member $second) : int {
-            return Language::compare($first->getName(), $second->getName());
-        });
+        usort($members, fn(Member $first, Member $second) => strcoll($first->getName(), $second->getName()));
 
         return $members;
     }

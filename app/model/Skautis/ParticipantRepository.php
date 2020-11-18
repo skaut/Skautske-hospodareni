@@ -15,7 +15,6 @@ use Model\Participant\Payment\Event;
 use Model\Participant\Payment\EventType;
 use Model\Participant\PaymentFactory;
 use Model\Participant\Repositories\IPaymentRepository;
-use Model\Services\Language;
 use Model\Skautis\Factory\ParticipantFactory;
 use Skautis\Skautis;
 use Skautis\Wsdl\WsdlException;
@@ -25,6 +24,7 @@ use function array_key_exists;
 use function array_map;
 use function is_array;
 use function preg_match;
+use function strcoll;
 use function usort;
 
 final class ParticipantRepository implements IParticipantRepository
@@ -175,9 +175,7 @@ final class ParticipantRepository implements IParticipantRepository
 
         usort(
             $participants,
-            function (Participant $one, Participant $two) : int {
-                return Language::compare($one->getDisplayName(), $two->getDisplayName());
-            }
+            fn (Participant $one, Participant $two) => strcoll($one->getDisplayName(), $two->getDisplayName())
         );
 
         return array_map([ParticipantDTOFactory::class, 'create'], $participants);
