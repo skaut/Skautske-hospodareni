@@ -5,38 +5,42 @@ declare(strict_types=1);
 namespace Model\Mail;
 
 use Codeception\Test\Unit;
+use Google_Client;
 use Mockery as m;
-use Model\Payment\MailCredentials;
+use Model\Google\GoogleService;
+use Model\Google\OAuth;
+use Model\Google\OAuthMailer;
 use Nette\Mail\IMailer;
-use Nette\Mail\SmtpMailer;
 
 class MailerFactoryTest extends Unit
 {
     public function testInDisabledModeReturnsDebugMailer() : void
     {
-        $mailer  = m::mock(IMailer::class);
-        $factory = new MailerFactory($mailer, false);
+        $googleService = m::mock(GoogleService::class);
+        $mailer        = m::mock(IMailer::class);
+        $factory       = new MailerFactory($mailer, false, $googleService);
 
         $this->assertSame($mailer, $factory->create($this->getConfig()));
     }
 
     public function testInEnabledModeReturnsSmtpMailer() : void
     {
-        $mailer  = m::mock(IMailer::class);
-        $factory = new MailerFactory($mailer, true);
+        $googleService = m::mock(GoogleService::class, [
+            'getClient' => m::mock(Google_Client::class, [
+                'fetchAccessTokenWithRefreshToken' => ['token' => 'MyToken'],
+                'setAccessToken' => null,
+            ]),
+        ]);
+        $mailer        = m::mock(IMailer::class);
+        $factory       = new MailerFactory($mailer, true, $googleService);
 
-        $this->assertInstanceOf(SmtpMailer::class, $factory->create($this->getConfig()));
+        $this->assertInstanceOf(OAuthMailer::class, $factory->create($this->getConfig()));
     }
 
-    private function getConfig() : MailCredentials
+    private function getConfig() : OAuth
     {
-        $mock = m::mock(MailCredentials::class);
-        $mock->shouldReceive([
-            'getHost' => 'smtp.gmail.com',
-            'getUsername' => 'platby@skauting.cz',
-            'getPassword' => 'pass',
-            'getProtocol' => MailCredentials\MailProtocol::get(MailCredentials\MailProtocol::SSL),
-        ]);
+        $mock = m::mock(OAuth::class);
+        $mock->shouldReceive(['getToken' => 'XXX']);
 
         return $mock;
     }

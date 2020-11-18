@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Model;
 
-use Model\DTO\Payment\Mail;
-use Model\DTO\Payment\MailFactory;
+use Model\DTO\Google\OAuth as OAuthDTO;
+use Model\DTO\Google\OAuthFactory;
+use Model\Google\OAuth;
+use Model\Mail\Repositories\IGoogleRepository;
 use Model\Payment\IUnitResolver;
-use Model\Payment\MailCredentials;
-use Model\Payment\MailCredentialsNotFound;
-use Model\Payment\Repositories\IMailCredentialsRepository;
 use function array_filter;
 use function array_map;
 use function array_merge;
@@ -17,39 +16,28 @@ use function array_unique;
 
 class MailService
 {
-    /** @var IMailCredentialsRepository */
-    private $credentials;
+    /** @var IGoogleRepository */
+    private $googleRepository;
 
     /** @var IUnitResolver */
     private $unitResolver;
 
-    public function __construct(IMailCredentialsRepository $credentials, IUnitResolver $unitResolver)
+    public function __construct(IGoogleRepository $credentials, IUnitResolver $unitResolver)
     {
-        $this->credentials  = $credentials;
-        $this->unitResolver = $unitResolver;
-    }
-
-    public function get(int $id) : ?Mail
-    {
-        try {
-            return MailFactory::create(
-                $this->credentials->find($id)
-            );
-        } catch (MailCredentialsNotFound $e) {
-            return null;
-        }
+        $this->googleRepository = $credentials;
+        $this->unitResolver     = $unitResolver;
     }
 
     /**
      * @param int[] $unitIds
      *
-     * @return Mail[]
+     * @return array<int|string, OAuthDTO>
      */
     public function getAll(array $unitIds) : array
     {
         $mails = $this->findForUnits($unitIds);
 
-        return array_map([MailFactory::class, 'create'], array_merge([], ...$mails));
+        return array_map([OAuthFactory::class, 'create'], array_merge([], ...$mails));
     }
 
     /**
@@ -70,12 +58,12 @@ class MailService
     /**
      * @param int[] $unitIds
      *
-     * @return array<int, MailCredentials[]>
+     * @return array<int, OAuth[]> unitId => OAuth[]
      */
     private function findForUnits(array $unitIds) : array
     {
         $unitIds = $this->getAccessibleUnitIds($unitIds);
 
-        return array_filter($this->credentials->findByUnits($unitIds));
+        return array_filter($this->googleRepository->findByUnits($unitIds));
     }
 }

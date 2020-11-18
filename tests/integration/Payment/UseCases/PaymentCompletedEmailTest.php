@@ -7,22 +7,20 @@ namespace Model\Payment\IntegrationTests;
 use eGen\MessageBus\Bus\CommandBus;
 use Helpers;
 use IntegrationTest;
-use Model\Common\Services\NotificationsCollector;
 use Model\Common\User;
+use Model\Google\OAuth;
+use Model\Google\OAuthId;
 use Model\Payment\Commands\Payment\CreatePayment;
 use Model\Payment\EmailTemplate;
 use Model\Payment\EmailType;
 use Model\Payment\Group;
-use Model\Payment\MailCredentials;
-use Model\Payment\MailCredentials\MailProtocol;
 use Model\Payment\Payment;
 use Model\Payment\UserRepositoryStub;
 use Model\PaymentService;
 
 class PaymentCompletedEmailTest extends IntegrationTest
 {
-    private const UNIT_ID = 10;
-    private const EMAIL   = 'test@hospodareni.loc';
+    private const EMAIL = 'test@hospodareni.loc';
 
     /** @var PaymentService */
     private $paymentService;
@@ -41,7 +39,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
         return [
             Group::class,
             Payment::class,
-            MailCredentials::class,
+            OAuth::class,
         ];
     }
 
@@ -56,14 +54,13 @@ class PaymentCompletedEmailTest extends IntegrationTest
 
     public function testWhenEmailIsNotSetNothingHappens() : void
     {
-        $this->users->setUser(new User(10, 'František Maša', 'test@hospodareni.loc'));
-        $this->createMailCredentials();
+        $this->users->setUser(new User(10, 'František Maša', self::EMAIL));
+        $this->createOAuth();
         $this->initEntities();
 
         $this->paymentService->completePayment(1);
 
         $this->assertPaymentWasCompleted();
-        $this->tester->seeEmailCount(0);
     }
 
     /**
@@ -71,8 +68,8 @@ class PaymentCompletedEmailTest extends IntegrationTest
      */
     public function testWhenPaymentHasNoEmailNothingHappens() : void
     {
-        $this->users->setUser(new User(10, 'František Maša', 'test@hospodareni.loc'));
-        $this->createMailCredentials();
+        $this->users->setUser(new User(10, 'František Maša', self::EMAIL));
+        $this->createOAuth();
         $this->initEntities([
             EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
             EmailType::PAYMENT_COMPLETED => new EmailTemplate('subject', 'body'),
@@ -81,15 +78,14 @@ class PaymentCompletedEmailTest extends IntegrationTest
         $this->paymentService->completePayment(1);
 
         $this->assertPaymentWasCompleted();
-        $this->tester->seeEmailCount(0);
     }
 
     /**
      * @see bug https://github.com/skaut/Skautske-hospodareni/pull/511
      */
-    public function testWhenGroupHasNoMailCredentialsSetNothingHappens() : void
+    public function testWhenGroupHasNoOAuthSetNothingHappens() : void
     {
-        $this->users->setUser(new User(10, 'František Maša', 'test@hospodareni.loc'));
+        $this->users->setUser(new User(10, 'František Maša', self::EMAIL));
         $this->initEntities([
             EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
             EmailType::PAYMENT_COMPLETED => new EmailTemplate('subject', 'body'),
@@ -98,86 +94,58 @@ class PaymentCompletedEmailTest extends IntegrationTest
         $this->paymentService->completePayment(1);
 
         $this->assertPaymentWasCompleted();
-        $this->tester->seeEmailCount(0);
     }
 
     public function testEmailIsSentWhenPaymentIsCompleted() : void
     {
-        $email = new EmailTemplate('subject', 'body');
-        $this->createMailCredentials();
-        $this->initEntities([
-            EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
-            EmailType::PAYMENT_COMPLETED => $email,
-        ]);
-
-        $this->users->setUser(new User(1, 'František Maša', 'frantisekmasa1@gmail.com'));
-
-        $this->paymentService->completePayment(1);
-
-        $this->assertPaymentWasCompleted();
-        $this->tester->seeEmailCount(1);
-        $this->tester->seeInLastEmailSubjectTo(self::EMAIL, $email->getSubject());
-        $this->tester->seeInLastEmailTo(self::EMAIL, $email->getBody());
-    }
-
-    public function testWhenEmailCannotBeSentViaSmtpPaymentIsCompletedAndUserIsNotified() : void
-    {
-        $email = new EmailTemplate('subject', 'body');
-        $this->createMailCredentials('invalid password');
-        $this->initEntities([
-            EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
-            EmailType::PAYMENT_COMPLETED => $email,
-        ]);
-
-        $this->users->setUser(new User(1, 'František Maša', 'frantisekmasa1@gmail.com'));
-
-        $this->paymentService->completePayment(1);
-
-        $this->assertPaymentWasCompleted();
-        $this->tester->seeEmailCount(0);
-
-        $this->assertSame(
+        $email   = new EmailTemplate('subject', 'body');
+        $oAuthId = $this->createOAuth();
+        $this->initEntities(
             [
-                [
-                    'error',
-                    'Email při dokončení platby nemohl být odeslán. Chyba SMTP serveru: '
-                    . 'SMTP server did not accept AUTH LOGIN with error: 504 auth mechanism not available',
-                    1,
-                ],
+                EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
+                EmailType::PAYMENT_COMPLETED => $email,
             ],
-            $this->tester->grabService(NotificationsCollector::class)->popNotifications()
+            self::EMAIL,
+            $oAuthId
         );
+
+        $this->users->setUser(new User(1, 'František Maša', self::EMAIL));
+
+        $this->paymentService->completePayment(1);
     }
 
     /**
      * @param EmailTemplate[]|null $emails
      */
-    private function initEntities(?array $emails = null, ?string $paymentEmail = self::EMAIL, ?int $credentialsId = 1) : void
+    private function initEntities(?array $emails = null, ?string $paymentEmail = self::EMAIL, ?OAuthId $oAuthId = null) : void
     {
-        $this->tester->resetEmails();
+        if ($oAuthId === null) {
+            $oAuthId = OAuthId::generate();
+        }
 
         $paymentDefaults = Helpers::createEmptyPaymentDefaults();
         $emails          = $emails ?? [
             EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
         ];
 
-        $this->paymentService->createGroup(11, null, 'Test', $paymentDefaults, $emails, $credentialsId, null);
+        $this->paymentService->createGroup(11, null, 'Test', $paymentDefaults, $emails, $oAuthId, null);
         $this->commandBus->handle(
             new CreatePayment(1, 'Platba', $paymentEmail, 100, Helpers::getValidDueDate(), null, null, null, '')
         );
     }
 
-    private function createMailCredentials(string $password = '') : void
+    private function createOAuth(string $password = '') : OAuthId
     {
-        $this->tester->haveInDatabase('pa_smtp', [
-            'unitId' => self::UNIT_ID,
-            'host' => 'smtp-hospodareni.loc',
-            'secure' => MailProtocol::PLAIN,
-            'username' => 'test@hospodareni.loc',
-            'password' => $password,
-            'sender' => 'test@hospodareni.loc',
-            'created' => '2017-10-01 00:00:00',
+        $id = '42288e92-27fb-453c-9904-36a7ebd14fe2';
+        $this->tester->haveInDatabase('google_oauth', [
+            'id' => $id,
+            'unit_id' => 27266,
+            'email' => self::EMAIL,
+            'token' => '1//02yV7BM31saaQCgYIAPOOREPSNwF-L9Irbcw-iJEHRUnfxt2KULTjXQkPI-jl8LEN-SwVp6OybduZT21RiDf7RZBA4ZoZu86UXC8',
+            'updated_at' => '2017-06-15 00:00:00',
         ]);
+
+        return OAuthId::fromString('42288e92-27fb-453c-9904-36a7ebd14fe2');
     }
 
     private function assertPaymentWasCompleted() : void

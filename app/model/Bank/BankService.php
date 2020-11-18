@@ -8,9 +8,9 @@ use Assert\Assert;
 use DateTimeImmutable;
 use Model\Bank\Fio\Transaction as BankTransaction;
 use Model\DTO\Payment\PairingResult;
+use Model\Google\InvalidOAuth;
 use Model\Payment\Fio\IFioClient;
 use Model\Payment\Group;
-use Model\Payment\InvalidSmtp;
 use Model\Payment\Payment;
 use Model\Payment\Payment\Transaction;
 use Model\Payment\Repositories\IBankAccountRepository;
@@ -64,7 +64,7 @@ class BankService
      *
      * @throws BankTimeLimit
      * @throws BankTimeout
-     * @throws InvalidSmtp
+     * @throws InvalidOAuth
      */
     public function pairAllGroups(array $groupIds, ?int $daysBack = null) : array
     {

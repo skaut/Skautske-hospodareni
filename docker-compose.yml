@@ -48,18 +48,6 @@ services:
                 aliases:
                     - chrome
 
-    smtp:
-        container_name: hskauting.smtp
-        image: tophfr/mailcatcher:0.6.5_3
-        environment:
-            SMTP_HOST: smtp-hospodareni.loc
-        networks:
-            main:
-                aliases:
-                    - smtp-hospodareni.loc
-        ports:
-            - 1080:1080
-
 volumes:
     mysql:
     www:

@@ -7,7 +7,7 @@ services:
     - GuzzleHttp\Client
     - Stubs\Skautis
     - Stubs\BankAccountAccessCheckerStub
-    - Stubs\MailCredentialsAccessCheckerStub
+    - Stubs\OAuthsAccessCheckerStub
     - Model\Payment\UserRepositoryStub
 
     - class: Model\Payment\Handlers\Payment\CreatePaymentHandler

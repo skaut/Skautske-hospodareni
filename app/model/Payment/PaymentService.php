@@ -9,6 +9,7 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use Model\Common\Repositories\IUserRepository;
 use Model\DTO\Payment as DTO;
+use Model\Google\OAuthId;
 use Model\Payment\EmailTemplate;
 use Model\Payment\EmailType;
 use Model\Payment\Group;
@@ -25,7 +26,7 @@ use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IMemberEmailRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Payment\Services\IBankAccountAccessChecker;
-use Model\Payment\Services\IMailCredentialsAccessChecker;
+use Model\Payment\Services\IOAuthAccessChecker;
 use Model\Payment\Summary;
 use Model\Payment\VariableSymbol;
 use Skautis\Skautis;
@@ -62,8 +63,8 @@ class PaymentService
     /** @var IMemberEmailRepository */
     private $emails;
 
-    /** @var IMailCredentialsAccessChecker */
-    private $mailCredentialsAccessChecker;
+    /** @var IOAuthAccessChecker */
+    private $oAuthAccessChecker;
 
     /** @var IUserRepository */
     private $users;
@@ -75,17 +76,17 @@ class PaymentService
         IBankAccountRepository $bankAccounts,
         IBankAccountAccessChecker $bankAccountAccessChecker,
         IMemberEmailRepository $emails,
-        IMailCredentialsAccessChecker $mailCredentialsAccessChecker,
+        IOAuthAccessChecker $oAuthAccessChecker,
         IUserRepository $users
     ) {
-        $this->skautis                      = $skautis;
-        $this->groups                       = $groups;
-        $this->payments                     = $payments;
-        $this->bankAccounts                 = $bankAccounts;
-        $this->bankAccountAccessChecker     = $bankAccountAccessChecker;
-        $this->emails                       = $emails;
-        $this->mailCredentialsAccessChecker = $mailCredentialsAccessChecker;
-        $this->users                        = $users;
+        $this->skautis                  = $skautis;
+        $this->groups                   = $groups;
+        $this->payments                 = $payments;
+        $this->bankAccounts             = $bankAccounts;
+        $this->bankAccountAccessChecker = $bankAccountAccessChecker;
+        $this->emails                   = $emails;
+        $this->oAuthAccessChecker       = $oAuthAccessChecker;
+        $this->users                    = $users;
     }
 
     public function findPayment(int $id) : ?DTO\Payment
@@ -154,7 +155,7 @@ class PaymentService
         string $label,
         PaymentDefaults $paymentDefaults,
         array $emails,
-        ?int $smtpId,
+        ?OAuthId $oAuthId,
         ?int $bankAccountId
     ) : int {
         $now         = new DateTimeImmutable();
@@ -167,10 +168,10 @@ class PaymentService
             $paymentDefaults,
             $now,
             $emails,
-            $smtpId,
+            $oAuthId,
             $bankAccount,
             $this->bankAccountAccessChecker,
-            $this->mailCredentialsAccessChecker,
+            $this->oAuthAccessChecker,
         );
 
         $this->groups->save($group);
@@ -186,13 +187,13 @@ class PaymentService
         string $name,
         PaymentDefaults $paymentDefaults,
         array $emails,
-        ?int $smtpId,
+        ?OAuthId $oAuthId,
         ?int $bankAccountId
     ) : void {
         $group       = $this->groups->find($id);
         $bankAccount = $bankAccountId !== null ? $this->bankAccounts->find($bankAccountId) : null;
 
-        $group->update($name, $paymentDefaults, $smtpId, $bankAccount, $this->bankAccountAccessChecker, $this->mailCredentialsAccessChecker);
+        $group->update($name, $paymentDefaults, $oAuthId, $bankAccount, $this->bankAccountAccessChecker, $this->oAuthAccessChecker);
 
         foreach (EmailType::getAvailableValues() as $typeKey) {
             $type = EmailType::get($typeKey);

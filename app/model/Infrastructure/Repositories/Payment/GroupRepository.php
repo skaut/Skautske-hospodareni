@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use eGen\MessageBus\Bus\EventBus;
 use Kdyby\Doctrine\Dql\Join;
+use Model\Google\OAuthId;
 use Model\Payment\DomainEvents\GroupWasRemoved;
 use Model\Payment\Group;
 use Model\Payment\Group\Type;
@@ -146,13 +147,13 @@ final class GroupRepository implements IGroupRepository
     /**
      * {@inheritDoc}
      */
-    public function findBySmtp(int $smtpId) : array
+    public function findByOAuth(OAuthId $oAuthId) : array
     {
         return $this->em->createQueryBuilder()
             ->select('g')
             ->from(Group::class, 'g')
-            ->where('g.smtpId = :smtpId')
-            ->setParameter('smtpId', $smtpId)
+            ->where('g.oauthId = :oauthId')
+            ->setParameter('oauthId', $oAuthId)
             ->getQuery()
             ->getResult();
     }

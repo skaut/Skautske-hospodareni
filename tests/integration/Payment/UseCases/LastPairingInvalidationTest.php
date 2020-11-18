@@ -14,7 +14,7 @@ use Model\Payment\Commands\Payment\CreatePayment;
 use Model\Payment\Commands\Payment\UpdatePayment;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Services\BankAccountAccessChecker;
-use Model\Payment\Services\IMailCredentialsAccessChecker;
+use Model\Payment\Services\IOAuthAccessChecker;
 
 final class LastPairingInvalidationTest extends IntegrationTest
 {
@@ -188,7 +188,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
                 null,
                 $this->entityManager->find(BankAccount::class, 1),
                 $this->tester->grabService(BankAccountAccessChecker::class),
-                $this->tester->grabService(IMailCredentialsAccessChecker::class),
+                $this->tester->grabService(IOAuthAccessChecker::class),
             )
         );
 

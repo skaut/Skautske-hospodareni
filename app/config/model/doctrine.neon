@@ -23,6 +23,7 @@ doctrine:
         Model\Travel: %domainModelDir%/Travel
         Model\Budget: %domainModelDir%/Budget
         Model\Participant: %domainModelDir%/Participant
+        Model\Google: %domainModelDir%/Google
     types:
         string_enum: Consistence\Doctrine\Enum\Type\StringEnumType
         money: Model\Infrastructure\Types\MoneyType
@@ -34,6 +35,7 @@ doctrine:
         unit_id: Model\Infrastructure\Types\UnitIdType
         payment_id: Model\Infrastructure\Types\PaymentIdType
         file_path: Model\Infrastructure\Types\FilePathType
+        oauth_id: Model\Infrastructure\Types\OAuthIdType
         - Model\Infrastructure\Types\TransportTypeListType
     dql:
         string:

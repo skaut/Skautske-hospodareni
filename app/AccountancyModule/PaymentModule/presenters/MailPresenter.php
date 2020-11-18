@@ -4,82 +4,61 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\PaymentModule;
 
-use App\AccountancyModule\PaymentModule\Components\SmtpAddForm;
-use App\AccountancyModule\PaymentModule\Components\SmtpUpdateForm;
-use App\AccountancyModule\PaymentModule\Factories\ISmtpAddFormFactory;
-use App\AccountancyModule\PaymentModule\Factories\ISmtpUpdateFormFactory;
+use Model\DTO\Google\OAuth;
+use Model\Google\Commands\RemoveOAuth;
+use Model\Google\OAuthId;
+use Model\Google\ReadModel\Queries\OAuthQuery;
+use Model\Google\ReadModel\Queries\UnitOAuthListQuery;
 use Model\MailService;
-use Model\Payment\Commands\RemoveMailCredentials;
+use function assert;
 
 class MailPresenter extends BasePresenter
 {
     /** @var MailService */
     private $model;
 
-    /** @var ISmtpAddFormFactory */
-    private $smtpAddFormFactory;
-
-    /** @var ISmtpUpdateFormFactory */
-    private $smtpUpdateFormFactory;
-
     public function __construct(
-        MailService $model,
-        ISmtpAddFormFactory $smtpAddFormFactory,
-        ISmtpUpdateFormFactory $smtpUpdateFormFactory
+        MailService $model
     ) {
         parent::__construct();
-        $this->model                 = $model;
-        $this->smtpAddFormFactory    = $smtpAddFormFactory;
-        $this->smtpUpdateFormFactory = $smtpUpdateFormFactory;
+        $this->model = $model;
     }
 
-    public function actionDefault(int $unitId) : void
+    public function actionDefault(?int $unitId = null) : void
     {
+        if ($unitId === null) {
+            $this->redirect('this', ['unitId' => $this->unitService->getUnitId()]);
+        }
+
         if (! $this->isEditable) {
             $this->setView('accessDenied');
 
             return;
         }
         $this->template->setParameters([
+            'oauthList'     => $this->queryBus->handle(new UnitOAuthListQuery($this->unitId)),
             'list'          => $this->model->getAll($this->getEditableUnitIds()),
             'editableUnits' => $this->getEditableUnits(),
         ]);
     }
 
-    public function handleEdit(int $id) : void
+    public function handleRemoveOAuth(string $id) : void
     {
-        if ($this->isEditable) {
-            return;
+        $oauthId = OAuthId::fromString($id);
+        $oauth   = $this->queryBus->handle(new OAuthQuery($oauthId));
+        if ($oauth === null) {
+            $this->flashMessage('Google účet nenalezen!', 'warning');
+            $this->redirect('default');
+        }
+        assert($oauth instanceof OAuth);
+
+        if (! $this->isEditable || ! ($oauth->getUnitId() === $this->unitId->toInt())) {
+            $this->flashMessage('Nemáte oprávnění odebírat propojený Google účet', 'danger');
+            $this->redirect('default');
         }
 
-        $this->flashMessage('Nemáte oprávnění měnit smtp', 'danger');
-        $this->redirect('this');
-    }
-
-    public function handleRemove(int $id) : void
-    {
-        $mail = $this->model->get($id);
-
-        if ($mail === null) {
-            $this->flashMessage('Zadaný email neexistuje', 'danger');
-            $this->redirect('this');
-        }
-
-        if (! $this->isEditable || $mail->getUnitId() !== $this->unitId->toInt()) {
-            $this->flashMessage('Nemáte oprávnění mazat smtp', 'danger');
-            $this->redirect('this');
-        }
-
-        $this->commandBus->handle(new RemoveMailCredentials($id));
-    }
-
-    protected function createComponentAddForm() : SmtpAddForm
-    {
-        return $this->smtpAddFormFactory->create($this->unitId, (int) $this->getUser()->getId());
-    }
-
-    protected function createComponentUpdateForm() : SmtpUpdateForm
-    {
-        return $this->smtpUpdateFormFactory->create($this->unitId);
+        $this->commandBus->handle(new RemoveOAuth($oauthId));
+        $this->flashMessage('Propojení Google účtu bylo smazáno.');
+        $this->redirect('default');
     }
 }

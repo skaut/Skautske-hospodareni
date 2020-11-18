@@ -6,7 +6,7 @@
             "Host": "test-is.skaut.cz",
             "Content-Type": "application\/soap+xml; charset=utf-8; action=\"https:\/\/is.skaut.cz\/PersonContactAll\""
         },
-        "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<env:Envelope xmlns:env=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:ns1=\"https:\/\/is.skaut.cz\/\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\"><env:Body><ns1:PersonContactAll><ns1:personContactAllInput><ns1:ID_Login>3eb6605b-4df9-431f-a8a7-3447c308ac77<\/ns1:ID_Login><ns1:ID_Person>147006<\/ns1:ID_Person><ns1:IsCatalog xsi:nil=\"true\"\/><ns1:IsMain xsi:nil=\"true\"\/><\/ns1:personContactAllInput><\/ns1:PersonContactAll><\/env:Body><\/env:Envelope>\n"
+        "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<env:Envelope xmlns:env=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:ns1=\"https:\/\/is.skaut.cz\/\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\"><env:Body><ns1:PersonContactAll><ns1:personContactAllInput><ns1:ID_Login>b681d4f1-f1a9-453e-a3c7-c49fb4c20fd1<\/ns1:ID_Login><ns1:ID_Person>147006<\/ns1:ID_Person><ns1:IsCatalog xsi:nil=\"true\"\/><ns1:IsMain xsi:nil=\"true\"\/><ns1:IsHidden xsi:nil=\"true\"\/><\/ns1:personContactAllInput><\/ns1:PersonContactAll><\/env:Body><\/env:Envelope>\n"
     },
     "response": {
         "status": {
@@ -24,10 +24,10 @@
             "access-control-allow-origin": "*",
             "access-control-allow-headers": "Content-Type",
             "access-control-allow-methods": "POST",
-            "date": "Wed, 16 Sep 2020 06:39:21 GMT",
-            "content-length": "992"
+            "date": "Wed, 18 Nov 2020 20:27:43 GMT",
+            "content-length": "1017"
         },
-        "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" xmlns:xsd=\"http:\/\/www.w3.org\/2001\/XMLSchema\"><soap:Body><PersonContactAllResponse xmlns=\"https:\/\/is.skaut.cz\/\"><PersonContactAllResult><PersonContactAllOutput><ID>215268<\/ID><ID_Person>147006<\/ID_Person><Person>D\u00edt\u011b Jan<\/Person><PersonCivilName>D\u00edt\u011b Jan<\/PersonCivilName><ID_ContactType>email_hlavni<\/ID_ContactType><ContactType>E-mail (hlavn\u00ed)<\/ContactType><IsMain>true<\/IsMain><Value>jan@dite.czz<\/Value><Note \/><IsSts>false<\/IsSts><IsGa>false<\/IsGa><IsCatalog>false<\/IsCatalog><IsUsed>false<\/IsUsed><DisplayValue>&lt;a href=\"mailto:jan@dite.czz\"&gt;jan@dite.czz&lt;\/a&gt;<\/DisplayValue><Icon>email_main.png<\/Icon><Help>Zadejte e-mail v platn\u00e9m form\u00e1tu: jmeno@domena.xy<\/Help><ID_PersonContactRequest xsi:nil=\"true\" \/><\/PersonContactAllOutput><\/PersonContactAllResult><\/PersonContactAllResponse><\/soap:Body><\/soap:Envelope>"
+        "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" xmlns:xsd=\"http:\/\/www.w3.org\/2001\/XMLSchema\"><soap:Body><PersonContactAllResponse xmlns=\"https:\/\/is.skaut.cz\/\"><PersonContactAllResult><PersonContactAllOutput><ID>215268<\/ID><ID_Person>147006<\/ID_Person><Person>D\u00edt\u011b Jan<\/Person><PersonCivilName>D\u00edt\u011b Jan<\/PersonCivilName><ID_ContactType>email_hlavni<\/ID_ContactType><ContactType>E-mail (hlavn\u00ed)<\/ContactType><IsMain>true<\/IsMain><Value>jan@dite.czz<\/Value><Note \/><IsSts>false<\/IsSts><IsGa>false<\/IsGa><IsCatalog>false<\/IsCatalog><DisplayValue>&lt;a href=\"mailto:jan@dite.czz\"&gt;jan@dite.czz&lt;\/a&gt;<\/DisplayValue><Icon>email_main.png<\/Icon><Help>Zadejte e-mail v platn\u00e9m form\u00e1tu: jmeno@domena.xy<\/Help><ID_PersonContactRequest xsi:nil=\"true\" \/><IsUsed>false<\/IsUsed><Hideable>true<\/Hideable><\/PersonContactAllOutput><\/PersonContactAllResult><\/PersonContactAllResponse><\/soap:Body><\/soap:Envelope>"
     }
 },{
     "request": {
@@ -37,7 +37,7 @@
             "Host": "test-is.skaut.cz",
             "Content-Type": "application\/soap+xml; charset=utf-8; action=\"https:\/\/is.skaut.cz\/PersonContactAllParent\""
         },
-        "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<env:Envelope xmlns:env=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:ns1=\"https:\/\/is.skaut.cz\/\"><env:Body><ns1:PersonContactAllParent><ns1:personContactAllParentInput><ns1:ID_Login>3eb6605b-4df9-431f-a8a7-3447c308ac77<\/ns1:ID_Login><ns1:ID_Person>147006<\/ns1:ID_Person><\/ns1:personContactAllParentInput><\/ns1:PersonContactAllParent><\/env:Body><\/env:Envelope>\n"
+        "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<env:Envelope xmlns:env=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:ns1=\"https:\/\/is.skaut.cz\/\"><env:Body><ns1:PersonContactAllParent><ns1:personContactAllParentInput><ns1:ID_Login>b681d4f1-f1a9-453e-a3c7-c49fb4c20fd1<\/ns1:ID_Login><ns1:ID_Person>147006<\/ns1:ID_Person><\/ns1:personContactAllParentInput><\/ns1:PersonContactAllParent><\/env:Body><\/env:Envelope>\n"
     },
     "response": {
         "status": {
@@ -55,7 +55,7 @@
             "access-control-allow-origin": "*",
             "access-control-allow-headers": "Content-Type",
             "access-control-allow-methods": "POST",
-            "date": "Wed, 16 Sep 2020 06:39:21 GMT",
+            "date": "Wed, 18 Nov 2020 20:27:43 GMT",
             "content-length": "1040"
         },
         "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" xmlns:xsd=\"http:\/\/www.w3.org\/2001\/XMLSchema\"><soap:Body><PersonContactAllParentResponse xmlns=\"https:\/\/is.skaut.cz\/\"><PersonContactAllParentResult><PersonContactAllParentOutput><ID>213572<\/ID><ID_Person>147006<\/ID_Person><Person>D\u00edt\u011b Jan<\/Person><PersonCivilName>D\u00edt\u011b Jan<\/PersonCivilName><ID_PersonParent>1134<\/ID_PersonParent><ID_PersonPersonParent>150984<\/ID_PersonPersonParent><PersonPersonParent>D\u00ed\u0165etov\u00e1 M\u00e1ma<\/PersonPersonParent><ID_ContactType>email_hlavni<\/ID_ContactType><ContactType>E-mail (hlavn\u00ed)<\/ContactType><Value>matka@ditetova.czz<\/Value><DisplayValue>&lt;a href=\"mailto:matka@ditetova.czz\"&gt;matka@ditetova.czz&lt;\/a&gt;<\/DisplayValue><Icon>email_main.png<\/Icon><ID_ParentType>mother<\/ID_ParentType><ParentType>Matka<\/ParentType><\/PersonContactAllParentOutput><\/PersonContactAllParentResult><\/PersonContactAllParentResponse><\/soap:Body><\/soap:Envelope>"

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\DTO\Payment;
 
 use Cake\Chronos\Date;
+use Model\Google\OAuthId;
 use Model\Payment\VariableSymbol;
 use Nette\SmartObject;
 
@@ -19,7 +20,7 @@ use Nette\SmartObject;
  * @property-read int|NULL $constantSymbol
  * @property-read VariableSymbol|NULL $nextVariableSymbol
  * @property-read string $state
- * @property-read int|NULL $smtpId
+ * @property-read string|NULL $oAuthId
  * @property-read string $note
  */
 class Group
@@ -56,8 +57,8 @@ class Group
     /** @var string */
     private $state;
 
-    /** @var int|NULL */
-    private $smtpId;
+    /** @var OAuthId|NULL */
+    private $oAuthId;
 
     /** @var string */
     private $note;
@@ -79,7 +80,7 @@ class Group
         ?int $constantSymbol,
         ?VariableSymbol $nextVariableSymbol,
         string $state,
-        ?int $smtpId,
+        ?OAuthId $oAuthId,
         string $note,
         ?int $bankAccountId
     ) {
@@ -93,7 +94,7 @@ class Group
         $this->constantSymbol     = $constantSymbol;
         $this->nextVariableSymbol = $nextVariableSymbol;
         $this->state              = $state;
-        $this->smtpId             = $smtpId;
+        $this->oAuthId            = $oAuthId;
         $this->note               = $note;
         $this->bankAccountId      = $bankAccountId;
     }
@@ -156,9 +157,9 @@ class Group
         return $this->state;
     }
 
-    public function getSmtpId() : ?int
+    public function getOAuthId() : ?OAuthId
     {
-        return $this->smtpId;
+        return $this->oAuthId;
     }
 
     public function getNote() : string

@@ -8,4 +8,3 @@ DELETE FROM pa_bank_account;
 DELETE FROM pa_group;
 DELETE FROM pa_group_unit;
 DELETE FROM pa_payment;
-DELETE FROM pa_smtp;

@@ -78,6 +78,7 @@ library.add(
 
     // Brands
     fab.faGithub as IconDefinition,
+    fab.faGoogle,
 );
 
 export { dom } from '@fortawesome/fontawesome-svg-core';

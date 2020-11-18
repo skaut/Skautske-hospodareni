@@ -6,7 +6,7 @@
             "Host": "test-is.skaut.cz",
             "Content-Type": "application\/soap+xml; charset=utf-8; action=\"https:\/\/is.skaut.cz\/PersonContactAll\""
         },
-        "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<env:Envelope xmlns:env=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:ns1=\"https:\/\/is.skaut.cz\/\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\"><env:Body><ns1:PersonContactAll><ns1:personContactAllInput><ns1:ID_Login>3eb6605b-4df9-431f-a8a7-3447c308ac77<\/ns1:ID_Login><ns1:ID_Person>143550<\/ns1:ID_Person><ns1:IsCatalog xsi:nil=\"true\"\/><ns1:IsMain xsi:nil=\"true\"\/><\/ns1:personContactAllInput><\/ns1:PersonContactAll><\/env:Body><\/env:Envelope>\n"
+        "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<env:Envelope xmlns:env=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:ns1=\"https:\/\/is.skaut.cz\/\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\"><env:Body><ns1:PersonContactAll><ns1:personContactAllInput><ns1:ID_Login>b681d4f1-f1a9-453e-a3c7-c49fb4c20fd1<\/ns1:ID_Login><ns1:ID_Person>149580<\/ns1:ID_Person><ns1:IsCatalog xsi:nil=\"true\"\/><ns1:IsMain xsi:nil=\"true\"\/><ns1:IsHidden xsi:nil=\"true\"\/><\/ns1:personContactAllInput><\/ns1:PersonContactAll><\/env:Body><\/env:Envelope>\n"
     },
     "response": {
         "status": {
@@ -24,10 +24,10 @@
             "access-control-allow-origin": "*",
             "access-control-allow-headers": "Content-Type",
             "access-control-allow-methods": "POST",
-            "date": "Wed, 16 Sep 2020 06:41:36 GMT",
-            "content-length": "2401"
+            "date": "Wed, 18 Nov 2020 20:27:43 GMT",
+            "content-length": "352"
         },
-        "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" xmlns:xsd=\"http:\/\/www.w3.org\/2001\/XMLSchema\"><soap:Body><PersonContactAllResponse xmlns=\"https:\/\/is.skaut.cz\/\"><PersonContactAllResult\/><\/PersonContactAllResponse><\/soap:Body><\/soap:Envelope>"
+        "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" xmlns:xsd=\"http:\/\/www.w3.org\/2001\/XMLSchema\"><soap:Body><PersonContactAllResponse xmlns=\"https:\/\/is.skaut.cz\/\"><PersonContactAllResult \/><\/PersonContactAllResponse><\/soap:Body><\/soap:Envelope>"
     }
 },{
     "request": {
@@ -37,7 +37,7 @@
             "Host": "test-is.skaut.cz",
             "Content-Type": "application\/soap+xml; charset=utf-8; action=\"https:\/\/is.skaut.cz\/PersonContactAllParent\""
         },
-        "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<env:Envelope xmlns:env=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:ns1=\"https:\/\/is.skaut.cz\/\"><env:Body><ns1:PersonContactAllParent><ns1:personContactAllParentInput><ns1:ID_Login>3eb6605b-4df9-431f-a8a7-3447c308ac77<\/ns1:ID_Login><ns1:ID_Person>143550<\/ns1:ID_Person><\/ns1:personContactAllParentInput><\/ns1:PersonContactAllParent><\/env:Body><\/env:Envelope>\n"
+        "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<env:Envelope xmlns:env=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:ns1=\"https:\/\/is.skaut.cz\/\"><env:Body><ns1:PersonContactAllParent><ns1:personContactAllParentInput><ns1:ID_Login>b681d4f1-f1a9-453e-a3c7-c49fb4c20fd1<\/ns1:ID_Login><ns1:ID_Person>149580<\/ns1:ID_Person><\/ns1:personContactAllParentInput><\/ns1:PersonContactAllParent><\/env:Body><\/env:Envelope>\n"
     },
     "response": {
         "status": {
@@ -55,9 +55,9 @@
             "access-control-allow-origin": "*",
             "access-control-allow-headers": "Content-Type",
             "access-control-allow-methods": "POST",
-            "date": "Wed, 16 Sep 2020 06:41:36 GMT",
+            "date": "Wed, 18 Nov 2020 20:27:43 GMT",
             "content-length": "597"
         },
-        "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" xmlns:xsd=\"http:\/\/www.w3.org\/2001\/XMLSchema\"><soap:Body><soap:Fault><soap:Code><soap:Value>soap:Receiver<\/soap:Value><\/soap:Code><soap:Reason><soap:Text xml:lang=\"en\">Server was unable to process request. ---&gt; Nem\u00e1te opr\u00e1vn\u011bn\u00ed k akci OU_PersonContact_ALL_PersonParent nad z\u00e1znamem ID=143550!\r\nP\u0159i na\u010dten\u00ed objekt\u016f OU_PersonContact nastala chyba<\/soap:Text><\/soap:Reason><soap:Detail \/><\/soap:Fault><\/soap:Body><\/soap:Envelope>"
+        "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http:\/\/www.w3.org\/2003\/05\/soap-envelope\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" xmlns:xsd=\"http:\/\/www.w3.org\/2001\/XMLSchema\"><soap:Body><soap:Fault><soap:Code><soap:Value>soap:Receiver<\/soap:Value><\/soap:Code><soap:Reason><soap:Text xml:lang=\"en\">Server was unable to process request. ---&gt; Nem\u00e1te opr\u00e1vn\u011bn\u00ed k akci OU_PersonContact_ALL_PersonParent nad z\u00e1znamem ID=149580!\r\nP\u0159i na\u010dten\u00ed objekt\u016f OU_PersonContact nastala chyba<\/soap:Text><\/soap:Reason><soap:Detail \/><\/soap:Fault><\/soap:Body><\/soap:Envelope>"
     }
 }]

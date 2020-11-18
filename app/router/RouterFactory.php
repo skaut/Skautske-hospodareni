@@ -22,6 +22,7 @@ class RouterFactory
         $router[] = new Route('o-projektu', 'Default:about');
         $router[] = new Route('changelog', 'Default:changelog');
         $router[] = new Route('debugging', 'Accountancy:Debugging:default');
+        $router[] = new Route('google/<action>', 'Accountancy:Google:default');
         $router[] = new Route(
             'sign/<action>[/back-<backlink>]',
             [

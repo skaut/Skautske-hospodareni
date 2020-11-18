@@ -10,6 +10,10 @@ parameters:
     sendEmail: true
     testBackground: true
 
+    google:
+        credentials: "%appDir%/config/ci-google-credentials.json"
+        redirectUri: http://moje-hospodareni.cz/google/token
+
     database:
         host: mysql-test
         user: root

@@ -55,7 +55,7 @@ class MailCredentials
     /**
      * @ORM\Column(type="string_enum", name="secure", length=64)
      *
-     * @var MailProtocol
+     * @var string
      * @Enum(class=MailProtocol::class)
      */
     private $protocol;
@@ -79,7 +79,7 @@ class MailCredentials
         string $host,
         string $username,
         string $password,
-        MailProtocol $protocol,
+        string $protocol,
         string $sender,
         DateTimeImmutable $createdAt
     ) {
@@ -117,7 +117,7 @@ class MailCredentials
         return $this->password;
     }
 
-    public function getProtocol() : MailProtocol
+    public function getProtocol() : string
     {
         return $this->protocol;
     }
