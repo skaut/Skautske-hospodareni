@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Google;
 
-use Google_Client;
+use Google\Client;
 use Google_Service_Gmail;
 
 class GoogleService
@@ -18,9 +18,9 @@ class GoogleService
         $this->tokenUri        = $tokenUri;
     }
 
-    public function getClient() : Google_Client
+    public function getClient() : Client
     {
-        $client = new Google_Client();
+        $client = new Client();
         $client->setApplicationName('Skautské hospodaření online');
         $client->setScopes([
             Google_Service_Gmail::GMAIL_SEND,
