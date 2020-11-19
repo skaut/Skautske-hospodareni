@@ -7,7 +7,7 @@ namespace Model\Payment;
 use DateTimeImmutable;
 use Model\Common\Repositories\IUserRepository;
 use Model\Common\UserNotFound;
-use Model\Google\Exception\OAuthNotFound;
+use Model\Google\Exception\OAuthNotSet;
 use Model\Google\InvalidOAuth;
 use Model\Mail\IMailerFactory;
 use Model\Mail\Repositories\IGoogleRepository;
@@ -69,6 +69,7 @@ class MailingService
      * @throws PaymentNotFound
      * @throws InvalidOAuth
      * @throws EmailTemplateNotSet
+     * @throws OAuthNotSet
      */
     public function sendEmail(int $paymentId, EmailType $emailType) : void
     {
@@ -130,6 +131,7 @@ class MailingService
      * @throws InvalidEmail
      * @throws InvalidOAuth
      * @throws UserNotFound
+     * @throws OAuthNotSet
      */
     private function sendForPayment(Payment $paymentRow, Group $group, EmailTemplate $template) : void
     {
@@ -145,11 +147,12 @@ class MailingService
      * @throws InvalidBankAccount
      * @throws BankAccountNotFound
      * @throws UserNotFound
+     * @throws OAuthNotSet
      */
     private function send(Group $group, MailPayment $payment, EmailTemplate $emailTemplate) : void
     {
         if ($group->getOauthId() === null) {
-            throw new OAuthNotFound();
+            throw new OAuthNotSet();
         }
 
         $user = $this->users->getCurrentUser();
