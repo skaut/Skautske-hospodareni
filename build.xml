@@ -48,7 +48,7 @@
                 <expandproperties/>
             </filterchain>
         </copy>
-        <echo file="./app/config/google-credentials.json">`${env.CONFIG_GOOGLE_CREDENTIALS}`</echo>
+        <echo file="${build.dir}/app/config/google-credentials.json">`${env.CONFIG_GOOGLE_CREDENTIALS}`</echo>
 
         <exec command="composer --working-dir=${build.dir} install
                         --no-interaction
