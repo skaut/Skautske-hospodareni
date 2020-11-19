@@ -269,6 +269,7 @@ jobs:
                   SSH_USERNAME: vu009010
                   SSH_KEY_FILE: /root/.ssh/id_key
                   CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_TEST_DATABASE_PASSWORD }}
+                  CONFIG_GOOGLE_CREDENTIALS: ${{ secrets.CONFIG_TEST_GOOGLE_CREDENTIALS }}
 
     deploy-production:
         name: "Deploy to h.skauting.cz"
@@ -312,3 +313,4 @@ jobs:
                   SSH_KEY_FILE: /root/.ssh/id_key
                   CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_PRODUCTION_DATABASE_PASSWORD }}
                   CONFIG_SENTRY_DSN: ${{ secrets.CONFIG_SENTRY_DSN }}
+                  CONFIG_GOOGLE_CREDENTIALS: ${{ secrets.CONFIG_PRODUCTION_GOOGLE_CREDENTIALS }}
