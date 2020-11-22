@@ -121,8 +121,8 @@ final class ChitScanControl extends BaseControl
         $chitId = $form->getValues()->chitId;
         $chitId = $chitId !== null ? (int) $chitId : $chitId;
 
-        if (! $this->isChitEditable()) {
-            $this->getPresenter()->flashMessage('K dokladu nyní nelze přidávat naskenované doklady!', 'error');
+        if (! $this->isChitReadable()) {
+            $this->getPresenter()->flashMessage('Nemáte právo číst doklad!', 'error');
             $this->getPresenter()->redirect('this');
 
             return;
@@ -153,5 +153,16 @@ final class ChitScanControl extends BaseControl
         assert($chit instanceof Chit);
 
         return $this->isEditable && ! $chit->isLocked();
+    }
+
+    private function isChitReadable() : bool
+    {
+        if ($this->chitId === null) {
+            return false;
+        }
+        $chit = $this->queryBus->handle(new ChitQuery($this->cashbookId, $this->chitId));
+        assert($chit instanceof Chit);
+
+        return true;
     }
 }
