@@ -18,6 +18,7 @@ dbal:
         user: %database.user%
         password: %database.password%
         dbname: %database.name%
+        serverVersion: 8.0
 
         types:
             string_enum:
