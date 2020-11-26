@@ -17,7 +17,7 @@ class OAuth extends Aggregate
 {
     /**
      * @ORM\Id()
-     * @ORM\Column(type="ouath_id")
+     * @ORM\Column(type="oauth_id")
      */
     private OAuthId $id;
 

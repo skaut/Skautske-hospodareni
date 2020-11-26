@@ -102,7 +102,7 @@ class Group
     private $emails;
 
     /**
-     * @ORM\Column(type="ouath_id", nullable=true)
+     * @ORM\Column(type="oauth_id", nullable=true)
      */
     private ?OAuthId $oauthId;
 

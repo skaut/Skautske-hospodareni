@@ -12,7 +12,7 @@ final class OAuthIdType extends GuidType
 {
     public function getName() : string
     {
-        return 'ouath_id';
+        return 'oauth_id';
     }
 
     /**
