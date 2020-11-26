@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Hskauting\Tests;
 
-use Codeception\Test\Unit;
 use Skautis\Config;
 use Skautis\SessionAdapter\FakeAdapter;
 use Skautis\Skautis;
@@ -12,7 +11,7 @@ use Skautis\User;
 use Skautis\Wsdl\WebServiceFactory;
 use Skautis\Wsdl\WsdlManager;
 
-abstract  class SkautisTest extends Unit
+abstract  class SkautisTest extends \IntegrationTest
 {
     protected function createSkautis(string $loginId) : Skautis
     {

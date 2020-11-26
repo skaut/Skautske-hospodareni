@@ -11,8 +11,9 @@ use Consistence\Enum\Enum;
  */
 final class EventType extends Enum
 {
-    public const CAMP    = 'camp';
-    public const GENERAL = 'general';
+    public const CAMP      = 'camp';
+    public const GENERAL   = 'general';
+    public const EDUCATION = 'education';
 
     public static function CAMP() : self
     {
@@ -22,6 +23,11 @@ final class EventType extends Enum
     public static function GENERAL() : self
     {
         return self::get(self::GENERAL);
+    }
+
+    public static function EDUCATION() : self
+    {
+        return self::get(self::EDUCATION);
     }
 
     public function toString() : string

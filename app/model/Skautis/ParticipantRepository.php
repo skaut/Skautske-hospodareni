@@ -9,6 +9,7 @@ use Model\DTO\Participant\NonMemberParticipant;
 use Model\DTO\Participant\Participant as ParticipantDTO;
 use Model\DTO\Payment\ParticipantFactory as ParticipantDTOFactory;
 use Model\Event\SkautisCampId;
+use Model\Event\SkautisEducationId;
 use Model\Event\SkautisEventId;
 use Model\Participant\Participant;
 use Model\Participant\Payment\Event;
@@ -67,6 +68,20 @@ final class ParticipantRepository implements IParticipantRepository
             return []; // API returns empty object when there are no results
         }
         $event = new Event($id->toInt(), EventType::CAMP());
+
+        return $this->processParticipants($participants, $event);
+    }
+
+    /**
+     * @return ParticipantDTO[]
+     */
+    public function findByEducation(SkautisEducationId $id) : array
+    {
+        $participants = $this->skautis->event->ParticipantEducationAll(['ID_EventEducation' => $id->toInt()]);
+        if (! is_array($participants)) {
+            return []; // API returns empty object when there are no results
+        }
+        $event = new Event($id->toInt(), EventType::EDUCATION());
 
         return $this->processParticipants($participants, $event);
     }
