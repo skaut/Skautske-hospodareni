@@ -23,9 +23,6 @@ interface IGoogleRepository
      */
     public function findByUnits(array $unitIds) : array;
 
-    /** @return OAuth[] */
-    public function findByUnit(UnitId $unitId) : array;
-
     public function findByUnitAndEmail(UnitId $unitId, string $email) : OAuth;
 
     public function remove(OAuth $oAuth) : void;
