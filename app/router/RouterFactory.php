@@ -74,7 +74,7 @@ class RouterFactory
         return $router;
     }
 
-    private function createCampRoutes() : RouteList
+    private function createCampRoutes() : IRouter
     {
         $router = new RouteList('Camp');
 
@@ -105,7 +105,7 @@ class RouterFactory
         return $router;
     }
 
-    private function createEventRoutes() : RouteList
+    private function createEventRoutes() : IRouter
     {
         $router = new RouteList('Event');
 
@@ -136,7 +136,7 @@ class RouterFactory
         return $router;
     }
 
-    private function createTravelRoutes() : RouteList
+    private function createTravelRoutes() : IRouter
     {
         $router = new RouteList('Travel');
 
@@ -160,7 +160,7 @@ class RouterFactory
         return $router;
     }
 
-    private function createUnitAccountRoutes() : RouteList
+    private function createUnitAccountRoutes() : IRouter
     {
         $router = new RouteList('UnitAccount');
 
@@ -192,7 +192,7 @@ class RouterFactory
         return $router;
     }
 
-    private function createPaymentRoutes() : RouteList
+    private function createPaymentRoutes() : IRouter
     {
         $router = new RouteList('Payment');
 
@@ -221,7 +221,7 @@ class RouterFactory
         return $router;
     }
 
-    private function createStatRoutes() : RouteList
+    private function createStatRoutes() : IRouter
     {
         $router = new RouteList('Statistics');
 

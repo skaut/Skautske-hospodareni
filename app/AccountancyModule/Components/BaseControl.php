@@ -19,7 +19,9 @@ abstract class BaseControl extends Control
     abstract public function render() : void;
 
     /**
-     * {@inheritDoc}
+     * @param bool $throw
+     *
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
      */
     public function getPresenter($throw = true) : ?BasePresenter
     {
@@ -35,7 +37,10 @@ abstract class BaseControl extends Control
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $message
+     * @param string $type
+     *
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
      */
     public function flashMessage($message, $type = 'info') : stdClass
     {

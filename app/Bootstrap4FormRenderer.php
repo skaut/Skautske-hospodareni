@@ -91,7 +91,7 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
     }
 
     /**
-     * @param array $controls
+     * @param BaseControl[] $controls
      *
      * @return string
      */

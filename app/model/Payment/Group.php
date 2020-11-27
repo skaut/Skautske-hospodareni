@@ -8,6 +8,7 @@ use Assert\Assertion;
 use Cake\Chronos\Date;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Fmasa\DoctrineNullableEmbeddables\Annotations\Nullable;
 use InvalidArgumentException;
@@ -19,6 +20,7 @@ use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Unit;
 use Model\Payment\Services\IBankAccountAccessChecker;
 use Model\Payment\Services\IOAuthAccessChecker;
+use function assert;
 
 /**
  * @ORM\Entity()
@@ -44,7 +46,7 @@ class Group
      *     indexBy="index"
      * )
      *
-     * @var ArrayCollection|Unit[]
+     * @var Collection<int, Unit>
      */
     private $units;
 
@@ -95,12 +97,12 @@ class Group
     /**
      * @ORM\OneToMany(targetEntity=Email::class, mappedBy="group", cascade={"persist", "remove"}, orphanRemoval=true)
      *
-     * @var ArrayCollection|Email[]
+     * @var Collection<int, Email>
      */
     private $emails;
 
     /**
-     * @ORM\Column(type="ouath_id", nullable=true)
+     * @ORM\Column(type="oauth_id", nullable=true)
      */
     private ?OAuthId $oauthId;
 
@@ -384,6 +386,8 @@ class Group
     private function getEmail(EmailType $type) : ?Email
     {
         foreach ($this->emails as $email) {
+            assert($email instanceof Email);
+
             if ($email->getType()->equals($type)) {
                 return $email;
             }

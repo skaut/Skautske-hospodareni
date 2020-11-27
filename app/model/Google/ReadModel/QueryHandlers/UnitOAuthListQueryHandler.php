@@ -23,6 +23,9 @@ final class UnitOAuthListQueryHandler
     /** @return OAuthDTO[] */
     public function __invoke(UnitOAuthListQuery $query) : array
     {
-        return array_map([OAuthFactory::class, 'create'], $this->repository->findByUnit($query->getUnitId()));
+        return array_map(
+            [OAuthFactory::class, 'create'],
+            $this->repository->findByUnits([$query->getUnitId()->toInt()])[$query->getUnitId()->toInt()],
+        );
     }
 }

@@ -6,6 +6,7 @@ namespace Model\Cashbook;
 
 use Consistence\Doctrine\Enum\EnumAnnotation;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
 use Model\Cashbook\Cashbook\CashbookId;
@@ -67,7 +68,8 @@ class Cashbook extends Aggregate
     /**
      * @ORM\OneToMany(targetEntity=Chit::class, mappedBy="cashbook", cascade={"persist", "remove"}, orphanRemoval=true)
      *
-     * @var ArrayCollection|Chit[]
+     * @var Collection|Chit[]
+     * @phpstan-var Collection<int, Chit>
      */
     private $chits;
 

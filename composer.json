@@ -9,7 +9,6 @@
         "composer/ca-bundle": "^1.1",
         "consistence/consistence": "^2.0",
         "consistence/consistence-doctrine": "^2.0",
-        "doctrine/migrations": "^2.1",
         "egen/message-bus": "^2.0",
         "fmasa/auto-di": "^1.0",
         "fmasa/doctrine-nullable-embeddables": "^1.0",
@@ -17,7 +16,6 @@
         "google/apiclient": "^2.8",
         "heureka/bank-account-validator": "1.1.*",
         "kdyby/console": "^2.6",
-        "kdyby/doctrine": "^3.1",
         "kdyby/forms-replicator": "1.4",
         "latte/latte": " ~2.4",
         "league/flysystem": "^1.0",
@@ -38,6 +36,7 @@
         "nette/robot-loader": "^3.0",
         "nette/security": " ~2.4",
         "nette/utils": " ~2.4",
+        "nettrine/dbal": "^0.4",
         "nettrine/migrations": "^0.5",
         "nextras/forms": "^2.0",
         "nextras/mail-panel": "2.4.0",
@@ -53,16 +52,16 @@
         "warhuhn/chronos-doctrine": "^1.0"
     },
     "require-dev": {
-        "squizlabs/php_codesniffer": "^3.2",
         "codeception/codeception": "^3.1",
         "codeception/mockery-module": "^0.4.0",
-        "roave/security-advisories": "dev-master",
-        "phpstan/phpstan": "^0.11.5",
-        "phpstan/phpstan-nette": "^0.11.0",
-        "phpstan/phpstan-doctrine": "^0.11.2",
+        "contributte/codeception": "^1.1",
         "doctrine/coding-standard": "^6.0",
         "php-vcr/php-vcr": "^1.4",
-        "contributte/codeception": "^1.1"
+        "phpstan/phpstan": "^0.12.57",
+        "phpstan/phpstan-doctrine": "^0.12.22",
+        "phpstan/phpstan-nette": "^0.12.10",
+        "roave/security-advisories": "dev-master",
+        "squizlabs/php_codesniffer": "^3.2"
     },
     "autoload-dev": {
         "classmap": ["code-quality/", "tests/_hacks"]

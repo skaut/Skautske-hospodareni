@@ -8,6 +8,7 @@ use Cake\Chronos\Date;
 use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Fmasa\DoctrineNullableEmbeddables\Annotations\Nullable;
 use InvalidArgumentException;
@@ -133,7 +134,7 @@ class Payment extends Aggregate
     /**
      * @ORM\OneToMany(targetEntity=SentEmail::class, mappedBy="payment", cascade={"persist", "remove"}, orphanRemoval=true)
      *
-     * @var ArrayCollection<SentEmail>
+     * @var Collection<int, SentEmail>
      */
     private $sentEmails;
 

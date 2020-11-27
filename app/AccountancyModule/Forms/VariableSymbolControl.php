@@ -10,10 +10,7 @@ use Nette\Forms\Form;
 
 class VariableSymbolControl extends TextInput
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function __construct($label = null)
+    public function __construct(string $label)
     {
         parent::__construct($label, 10);
         $this->addRule(Form::PATTERN, 'VS musí být nejvýše 10 číslic', '^[0-9]{1,10}$');

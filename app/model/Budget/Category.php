@@ -6,6 +6,7 @@ namespace Model\Budget\Unit;
 
 use Consistence\Doctrine\Enum\EnumAnnotation;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Model\Cashbook\Operation;
 
@@ -52,7 +53,7 @@ class Category
     /**
      * @ORM\OneToMany(targetEntity="Category", mappedBy="parent",cascade={"persist"})
      *
-     * @var ArrayCollection|Category[]
+     * @var Collection<int, Category>
      */
     private $children;
 

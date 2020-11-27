@@ -4,57 +4,64 @@ parameters:
 
 extensions:
     migrations: Nettrine\Migrations\DI\MigrationsExtension
-    events: Kdyby\Events\DI\EventsExtension
-    kdyby.annotations: Kdyby\Annotations\DI\AnnotationsExtension
-    doctrine: Kdyby\Doctrine\DI\OrmExtension
+    dbal: Nettrine\DBAL\DI\DbalExtension
 
-doctrine:
-    host: %database.host%
-    user: %database.user%
-    password: %database.password%
-    dbname: %database.name%
+dbal:
+    debugger:
+        panel: %debugMode%
 
-    schemaFilter: '~^(?!ac_object)~'
+    configuration:
+        filterSchemaAssetsExpression: '~^(?!ac_object)~'
 
-    metadata:
-        Model\Cashbook: %domainModelDir%/Cashbook
-        Model\Logger: %domainModelDir%/Logger
-        Model\Payment: %domainModelDir%/Payment
-        Model\Travel: %domainModelDir%/Travel
-        Model\Budget: %domainModelDir%/Budget
-        Model\Participant: %domainModelDir%/Participant
-        Model\Google: %domainModelDir%/Google
-    types:
-        string_enum: Consistence\Doctrine\Enum\Type\StringEnumType
-        money: Model\Infrastructure\Types\MoneyType
-        variable_symbol: Model\Infrastructure\Types\VariableSymbolType
-        chit_number: Model\Infrastructure\Types\ChitNumberType
-        recipient: Model\Infrastructure\Types\RecipientType
-        chronos_date: Warhuhn\Doctrine\DBAL\Types\ChronosDateType
-        cashbook_id: Model\Infrastructure\Types\CashbookIdType
-        unit_id: Model\Infrastructure\Types\UnitIdType
-        payment_id: Model\Infrastructure\Types\PaymentIdType
-        file_path: Model\Infrastructure\Types\FilePathType
-        oauth_id: Model\Infrastructure\Types\OAuthIdType
-        - Model\Infrastructure\Types\TransportTypeListType
-    dql:
-        string:
-            field: DoctrineExtensions\Query\Mysql\Field
+    connection:
+        host: %database.host%
+        user: %database.user%
+        password: %database.password%
+        dbname: %database.name%
+        serverVersion: 8.0
 
-    secondLevelCache:
-        enabled: true
+        types:
+            string_enum:
+                class: Consistence\Doctrine\Enum\Type\StringEnumType
+                commented: true
+            money:
+                class: Model\Infrastructure\Types\MoneyType
+                commented: true
+            variable_symbol:
+                class: Model\Infrastructure\Types\VariableSymbolType
+                commented: true
+            chit_number:
+                class: Model\Infrastructure\Types\ChitNumberType
+                commented: true
+            recipient:
+                class: Model\Infrastructure\Types\RecipientType
+                commented: true
+            chronos_date:
+                class: Warhuhn\Doctrine\DBAL\Types\ChronosDateType
+                commented: true
+            cashbook_id:
+                class: Model\Infrastructure\Types\CashbookIdType
+                commented: true
+            unit_id:
+                class: Model\Infrastructure\Types\UnitIdType
+                commented: true
+            payment_id:
+                class: Model\Infrastructure\Types\PaymentIdType
+                commented: true
+            file_path:
+                class: Model\Infrastructure\Types\FilePathType
+                commented: true
+            oauth_id:
+                class: Model\Infrastructure\Types\OAuthIdType
+                commented: true
+            transport_types:
+                class: Model\Infrastructure\Types\TransportTypeListType
+                commented: true
 
 services:
-    annotationsListener: Consistence\Doctrine\Enum\EnumPostLoadEntityListener(@kdyby.annotations.reader)
-
-    - class: Model\Infrastructure\EnumListener
-      arguments: [@annotationsListener]
-      tags: [kdyby.subscriber]
-
-    - class: Fmasa\DoctrineNullableEmbeddables\Subscriber
-      arguments: { reader: @kdyby.annotations.reader }
-      tags: [kdyby.subscriber]
-
+    - Model\Infrastructure\EntityManagerFactory(%debugMode%, %tempDir%)
+    - @Model\Infrastructure\EntityManagerFactory::create()
+    - Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper
 decorator:
     Symfony\Component\Console\Command\Command:
         tags: [ kdyby.console.command ]

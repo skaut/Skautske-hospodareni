@@ -6,6 +6,7 @@ namespace Model\Cashbook\Cashbook;
 
 use Consistence\Enum\Enum;
 use Model\Cashbook\ObjectType;
+use function array_filter;
 use function array_keys;
 use function array_map;
 use function count;
@@ -57,7 +58,10 @@ class CashbookType extends Enum
     public static function getInverseCashbookTypes(int $chitCategoryId) : array
     {
         foreach ([self::TRANSFER_FROM_CATEGORY_IDS, self::TRANSFER_TO_CATEGORY_IDS] as $categoryIdsByType) {
-            $types = array_keys($categoryIdsByType, $chitCategoryId, true);
+            $types = array_filter(
+                array_keys($categoryIdsByType),
+                fn (string $cashbookType) => $categoryIdsByType[$cashbookType] === $chitCategoryId
+            );
 
             if (count($types) !== 0) {
                 return array_map(
