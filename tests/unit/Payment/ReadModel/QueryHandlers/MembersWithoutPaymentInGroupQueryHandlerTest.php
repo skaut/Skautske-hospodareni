@@ -52,7 +52,7 @@ final class MembersWithoutPaymentInGroupQueryHandlerTest extends Unit
 
         $handler = new MembersWithoutPaymentInGroupQueryHandler($members, $emails, $paymentService);
 
-        $result = $handler(new MembersWithoutPaymentInGroupQuery($unitId, $groupId));
+        $result = $handler(new MembersWithoutPaymentInGroupQuery($unitId, $groupId, true));
 
         self::assertCount(2, $result);
 

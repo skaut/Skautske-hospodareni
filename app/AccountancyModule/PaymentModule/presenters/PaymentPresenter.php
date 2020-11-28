@@ -45,6 +45,9 @@ class PaymentPresenter extends BasePresenter
     /** @persistent */
     public int $id = 0;
 
+    /** @persistent */
+    public bool $directMemberOnly = true;
+
     /** @var string[] */
     protected array $readUnits;
 
@@ -134,14 +137,14 @@ class PaymentPresenter extends BasePresenter
     /**
      * @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY
      */
-    public function actionMassAdd(int $id, ?int $unitId = null) : void
+    public function actionMassAdd(int $id, ?int $unitId = null, bool $directMemberOnly = true) : void
     {
         $this->assertCanEditGroup();
 
         $group = $this->model->getGroup($id);
 
         $form = $this['massAddForm'];
-        $list = $this->queryBus->handle(new MembersWithoutPaymentInGroupQuery($this->unitId, $id));
+        $list = $this->queryBus->handle(new MembersWithoutPaymentInGroupQuery($this->unitId, $id, $this->directMemberOnly));
 
         foreach ($list as $p) {
             assert($p instanceof Person);
@@ -154,6 +157,7 @@ class PaymentPresenter extends BasePresenter
             'group'    => $group,
             'id'        => $this->id,
             'showForm'  => count($list) !== 0,
+            'directMemberOnly'=> $this->directMemberOnly,
         ]);
     }
 

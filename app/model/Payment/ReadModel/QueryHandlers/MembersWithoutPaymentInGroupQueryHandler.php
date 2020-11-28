@@ -38,7 +38,7 @@ final class MembersWithoutPaymentInGroupQueryHandler
 
         $persons = [];
 
-        foreach ($this->members->findByUnit($query->getUnitId(), false) as $member) {
+        foreach ($this->members->findByUnit($query->getUnitId(), ! $query->isDirectMemberOnly()) as $member) {
             if (in_array($member->getId(), $personsWithPayment, true)) {
                 continue;
             }
