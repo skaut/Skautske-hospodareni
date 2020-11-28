@@ -7,6 +7,7 @@ namespace Model\Payment\Group;
 use Codeception\Test\Unit;
 use DateTimeImmutable;
 use Mockery as m;
+use Model\Common\EmailAddress;
 use Model\Payment\EmailTemplate;
 use Model\Payment\Group;
 use Model\Payment\Mailing\Payment;
@@ -30,7 +31,7 @@ class EmailTemplateTest extends Unit
 
         $group = m::mock(Group::class);
         $group->shouldReceive('getName')->andReturn('Skupina');
-        $payment = new Payment('František Maša', 200, 'frantisekmasa1@gmail.com', new DateTimeImmutable('2017-04-27'), 4554, 303, 'Poznámka');
+        $payment = new Payment('František Maša', 200, [new EmailAddress('frantisekmasa1@gmail.com')], new DateTimeImmutable('2017-04-27'), 4554, 303, 'Poznámka');
 
         $evaluatedTemplate = $template->evaluate($group, $payment, '123456789/2100', 'Sináček');
 

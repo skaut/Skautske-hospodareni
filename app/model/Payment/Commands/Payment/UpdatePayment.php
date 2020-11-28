@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Payment\Commands\Payment;
 
 use Cake\Chronos\Date;
+use Model\Common\EmailAddress;
 use Model\Payment\VariableSymbol;
 
 final class UpdatePayment
@@ -12,8 +13,8 @@ final class UpdatePayment
     /** @var string */
     private $name;
 
-    /** @var string|null */
-    private $email;
+    /** @var EmailAddress[] */
+    private array $recipients;
 
     /** @var float */
     private $amount;
@@ -33,10 +34,13 @@ final class UpdatePayment
     /** @var int */
     private $paymentId;
 
+    /**
+     * @param EmailAddress[] $recipients
+     */
     public function __construct(
         int $paymentId,
         string $name,
-        ?string $email,
+        array $recipients,
         float $amount,
         Date $dueDate,
         ?VariableSymbol $variableSymbol,
@@ -45,7 +49,7 @@ final class UpdatePayment
     ) {
         $this->paymentId      = $paymentId;
         $this->name           = $name;
-        $this->email          = $email;
+        $this->recipients     = $recipients;
         $this->amount         = $amount;
         $this->dueDate        = $dueDate;
         $this->variableSymbol = $variableSymbol;
@@ -63,9 +67,10 @@ final class UpdatePayment
         return $this->name;
     }
 
-    public function getEmail() : ?string
+    /** @return EmailAddress[] */
+    public function getRecipients() : array
     {
-        return $this->email;
+        return $this->recipients;
     }
 
     public function getAmount() : float

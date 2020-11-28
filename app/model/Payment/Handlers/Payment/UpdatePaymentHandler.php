@@ -9,8 +9,7 @@ use Model\Payment\Repositories\IPaymentRepository;
 
 final class UpdatePaymentHandler
 {
-    /** @var IPaymentRepository */
-    private $payments;
+    private IPaymentRepository $payments;
 
     public function __construct(IPaymentRepository $payments)
     {
@@ -23,14 +22,13 @@ final class UpdatePaymentHandler
 
         $payment->update(
             $command->getName(),
-            $command->getEmail(),
+            $command->getRecipients(),
             $command->getAmount(),
             $command->getDueDate(),
             $command->getVariableSymbol(),
             $command->getConstantSymbol(),
             $command->getNote()
         );
-
         $this->payments->save($payment);
     }
 }

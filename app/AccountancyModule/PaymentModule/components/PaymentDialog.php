@@ -6,14 +6,20 @@ namespace App\AccountancyModule\PaymentModule\Components;
 
 use App\AccountancyModule\Components\Dialog;
 use App\Forms\BaseForm;
+use App\MyValidators;
 use Assert\Assertion;
 use eGen\MessageBus\Bus\CommandBus;
+use Model\Common\EmailAddress;
 use Model\DTO\Payment\Payment;
 use Model\Payment\Commands\Payment\CreatePayment;
 use Model\Payment\Commands\Payment\UpdatePayment;
 use Model\PaymentService;
 use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
+use function array_map;
+use function explode;
+use function implode;
+use function preg_replace;
 
 /**
  * @method void onSuccess()
@@ -75,9 +81,11 @@ final class PaymentDialog extends Dialog
             ->addRule(Form::MIN, 'Částka musí být větší než 0', 0.01);
 
         $form->addText('email', 'Email')
+            ->setRequired(false)
+            ->addFilter(fn (string $value) => preg_replace('/\s+/', '', $value))
             ->setNullable()
             ->addCondition(Form::FILLED)
-            ->addRule(Form::EMAIL, 'Zadaný email nemá platný formát');
+            ->addRule([MyValidators::class, 'isValidEmailList'], 'Zadaný email nemá platný formát. Více adres oddělte pouze čárkou.');
 
         $form->addDate('dueDate', 'Splatnost')
             ->disableWeekends()
@@ -103,7 +111,7 @@ final class PaymentDialog extends Dialog
             $form->setDefaults([
                 'name' => $payment->getName(),
                 'amount' => $payment->getAmount(),
-                'email' => $payment->getEmail(),
+                'email' => implode(MyValidators::EMAIL_SEPARATOR, $payment->getEmailRecipients()),
                 'dueDate' => $payment->getDueDate(),
                 'variableSymbol' => $payment->getVariableSymbol(),
                 'constantSymbol' => $payment->getConstantSymbol(),
@@ -163,7 +171,7 @@ final class PaymentDialog extends Dialog
             new UpdatePayment(
                 $this->paymentId,
                 $values->name,
-                $values->email,
+                $this->processEmails($values->email),
                 $values->amount,
                 $values->dueDate,
                 $values->variableSymbol,
@@ -174,13 +182,28 @@ final class PaymentDialog extends Dialog
         $this->flashMessage('Platba byla upravena', 'success');
     }
 
+    /**
+     * @return EmailAddress[]
+     */
+    private function processEmails(?string $emails) : array
+    {
+        if ($emails === null) {
+            return [];
+        }
+
+        return array_map(
+            fn (string $email) => new EmailAddress($email),
+            explode(MyValidators::EMAIL_SEPARATOR, $emails)
+        );
+    }
+
     private function createPayment(ArrayHash $values) : void
     {
         $this->commandBus->handle(
             new CreatePayment(
                 $this->groupId,
                 $values->name,
-                $values->email,
+                $this->processEmails($values->email),
                 $values->amount,
                 $values->dueDate,
                 null,

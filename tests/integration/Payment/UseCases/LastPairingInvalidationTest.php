@@ -58,7 +58,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
         $this->pairPayments();
 
         $this->commandBus->handle(
-            new CreatePayment(1, 'a', null, 2, Helpers::getValidDueDate(), null, new VariableSymbol('1'), null, '')
+            new CreatePayment(1, 'a', [], 2, Helpers::getValidDueDate(), null, new VariableSymbol('1'), null, '')
         );
 
         $this->assertGroupHasEmptyLastPairing();
@@ -76,7 +76,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
             new UpdatePayment(
                 1,
                 'a',
-                null,
+                [],
                 self::ORIGINAL_AMOUNT + 1,
                 Helpers::getValidDueDate(),
                 $originalVariableSymbol,
@@ -100,7 +100,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
             new UpdatePayment(
                 1,
                 'a',
-                null,
+                [],
                 self::ORIGINAL_AMOUNT,
                 Helpers::getValidDueDate(),
                 $originalVariableSymbol->increment(),
@@ -122,7 +122,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
             new UpdatePayment(
                 1,
                 'a',
-                null,
+                [],
                 self::ORIGINAL_AMOUNT,
                 Helpers::getValidDueDate(),
                 null,
@@ -146,7 +146,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
             new UpdatePayment(
                 1,
                 'a',
-                null,
+                [],
                 self::ORIGINAL_AMOUNT + 1,
                 Helpers::getValidDueDate(),
                 $originalVariableSymbol,
@@ -197,7 +197,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
             new CreatePayment(
                 1,
                 'x',
-                null,
+                [],
                 self::ORIGINAL_AMOUNT,
                 Helpers::getValidDueDate(),
                 null,
@@ -212,7 +212,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
             new CreatePayment(
                 1,
                 'x',
-                null,
+                [],
                 self::ORIGINAL_AMOUNT,
                 Helpers::getValidDueDate(),
                 null,

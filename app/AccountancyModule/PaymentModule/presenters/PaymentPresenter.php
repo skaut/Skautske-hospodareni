@@ -198,7 +198,7 @@ class PaymentPresenter extends BasePresenter
             $this->redirect('this');
         }
 
-        if ($payment->getEmail() === null) {
+        if (empty($payment->getEmailRecipients())) {
             $this->flashMessage('Platba nemá vyplněný email', 'danger');
             $this->redirect('this');
         }
@@ -419,7 +419,7 @@ class PaymentPresenter extends BasePresenter
         return array_filter(
             $payments,
             function (Payment $p) {
-                return ! $p->isClosed() && $p->getEmail() !== null && $p->getSentEmails() === [];
+                return ! $p->isClosed() && ! empty($p->getEmailRecipients()) && $p->getSentEmails() === [];
             }
         );
     }

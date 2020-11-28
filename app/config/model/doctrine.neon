@@ -57,6 +57,9 @@ dbal:
             transport_types:
                 class: Model\Infrastructure\Types\TransportTypeListType
                 commented: true
+            email_address:
+                class: Model\Infrastructure\Types\EmailAddressType
+                commented: true
 
 services:
     - Model\Infrastructure\EntityManagerFactory(%debugMode%, %tempDir%)

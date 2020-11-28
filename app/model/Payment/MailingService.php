@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Payment;
 
 use DateTimeImmutable;
+use Model\Common\EmailAddress;
 use Model\Common\Repositories\IUserRepository;
 use Model\Common\UserNotFound;
 use Model\Google\Exception\OAuthNotSet;
@@ -12,12 +13,14 @@ use Model\Google\InvalidOAuth;
 use Model\Mail\IMailerFactory;
 use Model\Mail\Repositories\IGoogleRepository;
 use Model\Payment\Mailing\Payment as MailPayment;
+use Model\Payment\Payment\EmailRecipient;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Services\TemplateFactory;
 use Nette\Mail\Message;
 use Nette\Utils\Validators;
+use function array_map;
 use function nl2br;
 use function rand;
 
@@ -113,7 +116,7 @@ class MailingService
         $payment = new MailPayment(
             'Testovací účel',
             $group->getDefaultAmount() ?? rand(50, 1000),
-            $user->getEmail(),
+            [new EmailAddress($user->getEmail())],
             $group->getDueDate() ?? new DateTimeImmutable('+ 2 weeks'),
             rand(1000, 100000),
             $group->getConstantSymbol(),
@@ -135,10 +138,12 @@ class MailingService
      */
     private function sendForPayment(Payment $paymentRow, Group $group, EmailTemplate $template) : void
     {
-        $email = $paymentRow->getEmail();
-        if ($email === null || ! Validators::isEmail($email)) {
-            throw new InvalidEmail();
-        }
+        array_map(function (EmailRecipient $emailRecipient) : void {
+            $email = $emailRecipient->getEmailAddress();
+            if (! Validators::isEmail($email)) {
+                throw new InvalidEmail();
+            }
+        }, $paymentRow->getEmailRecipients());
 
         $this->send($group, $this->createPayment($paymentRow), $template);
     }
@@ -173,10 +178,13 @@ class MailingService
 
         $oAuth = $this->googleRepository->find($group->getOauthId());
         $mail  = (new Message())
-            ->addTo($payment->getEmail())
             ->setFrom($oAuth->getEmail())
             ->setSubject($emailTemplate->getSubject())
             ->setHtmlBody($template, __DIR__);
+
+        foreach ($payment->getRecipients() as $emailRecipient) {
+            $mail->addTo($emailRecipient->getValue());
+        }
 
         $this->mailerFactory->create($oAuth)->send($mail);
     }
@@ -186,7 +194,7 @@ class MailingService
         return new MailPayment(
             $payment->getName(),
             $payment->getAmount(),
-            $payment->getEmail(),
+            array_map(fn (EmailRecipient $recipient) => $recipient->getEmailAddress(), $payment->getEmailRecipients()),
             $payment->getDueDate(),
             $payment->getVariableSymbol() !== null ? $payment->getVariableSymbol()->toInt() : null,
             $payment->getConstantSymbol(),

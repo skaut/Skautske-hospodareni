@@ -8,6 +8,7 @@ use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseContainer;
 use App\Forms\BaseForm;
 use eGen\MessageBus\Bus\CommandBus;
+use Model\Common\EmailAddress;
 use Model\Payment\Commands\Payment\CreatePayment;
 use Model\PaymentService;
 use Nette\Forms\Controls\TextBase;
@@ -93,7 +94,7 @@ class MassAddForm extends BaseControl
 
         $selected = $container->addCheckbox('selected');
 
-        $container->addSelect('email', null, $emails)
+        $container->addMultiSelect('email', null, $emails)
             ->setRequired(false);
 
         $container->addText('name')
@@ -177,7 +178,7 @@ class MassAddForm extends BaseControl
                 new CreatePayment(
                     $this->groupId,
                     $person->name,
-                    $person->email,
+                    [new EmailAddress($person->email)],
                     (float) ($person->amount ?? $values->amount),
                     $person->dueDate ?? $values->dueDate,
                     (int) $person->id,
