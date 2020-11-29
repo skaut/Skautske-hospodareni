@@ -13,14 +13,11 @@ use function in_array;
 
 final class MembersWithoutPaymentInGroupQueryHandler
 {
-    /** @var IMemberRepository */
-    private $members;
+    private IMemberRepository $members;
 
-    /** @var IMemberEmailRepository */
-    private $emails;
+    private IMemberEmailRepository $emails;
 
-    /** @var PaymentService */
-    private $paymentService;
+    private PaymentService $paymentService;
 
     public function __construct(
         IMemberRepository $members,
@@ -41,7 +38,7 @@ final class MembersWithoutPaymentInGroupQueryHandler
 
         $persons = [];
 
-        foreach ($this->members->findByUnit($query->getUnitId(), false) as $member) {
+        foreach ($this->members->findByUnit($query->getUnitId(), ! $query->isDirectMemberOnly()) as $member) {
             if (in_array($member->getId(), $personsWithPayment, true)) {
                 continue;
             }

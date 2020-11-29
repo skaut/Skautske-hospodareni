@@ -18,8 +18,18 @@
             aria-haspopup="true" aria-expanded="false">
         <i class="fas fa-eye"></i> {$unitPairs[$unitId]}
     </button>
-    <div class="dropdown-menu" aria-labelledby="unitDropdown" n:inner-foreach="$unitPairs as $pairUnitId => $label">
-        <a n:href="this unitId => $pairUnitId" class="dropdown-item">{$label}</a>
+    <div class="dropdown-menu" aria-labelledby="unitDropdown">
+        <a n:href="this directMemberOnly => !$directMemberOnly" class="dropdown-item">
+                            <span class="form-check-inline">
+                                <input type="checkbox" n:attr="[checked => !$directMemberOnly]" class="form-check-input">
+                                Včetně podjednotek
+                            </span>
+        </a>
+        <div class="dropdown-divider"></div>
+        <a n:foreach="$unitPairs as $pairUnitId => $label" n:href="this unitId => $pairUnitId" class="dropdown-item">{$label}</a>
+    </div>
+    <div class="small text-muted ml-1">
+        {if $directMemberOnly}bez členů podjednotek{else}<strong>včetně členů podjednotek</strong>{/if}
     </div>
 </div>
 

@@ -42,41 +42,32 @@ use function sprintf;
 
 class PaymentPresenter extends BasePresenter
 {
-    /**
-     * @var        int
-     * @persistent
-     */
-    public $id = 0;
+    /** @persistent */
+    public int $id = 0;
+
+    /** @persistent */
+    public bool $directMemberOnly = true;
 
     /** @var string[] */
-    protected $readUnits;
+    protected array $readUnits;
 
-    /** @var UnitService */
-    protected $unitService;
+    protected UnitService $unitService;
 
-    /** @var PaymentService */
-    private $model;
+    private PaymentService $model;
 
-    /** @var MailingService */
-    private $mailing;
+    private MailingService $mailing;
 
-    /** @var IMassAddFormFactory */
-    private $massAddFormFactory;
+    private IMassAddFormFactory $massAddFormFactory;
 
-    /** @var IPairButtonFactory */
-    private $pairButtonFactory;
+    private IPairButtonFactory $pairButtonFactory;
 
-    /** @var IGroupUnitControlFactory */
-    private $unitControlFactory;
+    private IGroupUnitControlFactory $unitControlFactory;
 
-    /** @var IRemoveGroupDialogFactory */
-    private $removeGroupDialogFactory;
+    private IRemoveGroupDialogFactory $removeGroupDialogFactory;
 
-    /** @var IPaymentDialogFactory */
-    private $paymentDialogFactory;
+    private IPaymentDialogFactory $paymentDialogFactory;
 
-    /** @var IPaymentListFactory */
-    private $paymentListFactory;
+    private IPaymentListFactory $paymentListFactory;
 
     private const NO_MAILER_MESSAGE       = 'Nemáte nastavený mail pro odesílání u skupiny';
     private const NO_BANK_ACCOUNT_MESSAGE = 'Skupina nemá nastavený bankovní účet';
@@ -146,14 +137,14 @@ class PaymentPresenter extends BasePresenter
     /**
      * @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY
      */
-    public function actionMassAdd(int $id, ?int $unitId = null) : void
+    public function actionMassAdd(int $id, ?int $unitId = null, bool $directMemberOnly = true) : void
     {
         $this->assertCanEditGroup();
 
         $group = $this->model->getGroup($id);
 
         $form = $this['massAddForm'];
-        $list = $this->queryBus->handle(new MembersWithoutPaymentInGroupQuery($this->unitId, $id));
+        $list = $this->queryBus->handle(new MembersWithoutPaymentInGroupQuery($this->unitId, $id, $this->directMemberOnly));
 
         foreach ($list as $p) {
             assert($p instanceof Person);
@@ -166,6 +157,7 @@ class PaymentPresenter extends BasePresenter
             'group'    => $group,
             'id'        => $this->id,
             'showForm'  => count($list) !== 0,
+            'directMemberOnly'=> $this->directMemberOnly,
         ]);
     }
 

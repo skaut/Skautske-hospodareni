@@ -28,11 +28,9 @@ use function sprintf;
  */
 abstract class BasePresenter extends Nette\Application\UI\Presenter
 {
-    /** @var UserService */
-    protected $userService;
+    protected UserService $userService;
 
-    /** @var UnitService */
-    protected $unitService;
+    protected UnitService $unitService;
 
     /** @var string */
     private $appDir;
