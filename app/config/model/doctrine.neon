@@ -61,13 +61,15 @@ dbal:
 services:
     - Model\Infrastructure\EntityManagerFactory(%debugMode%, %tempDir%)
     - @Model\Infrastructure\EntityManagerFactory::create()
-    - Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper
+    - class: Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper
+      tags: { kdyby.console.helper: em }
+
+
+    - Doctrine\ORM\Tools\Console\Command\GenerateProxiesCommand
+    - Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand
 decorator:
     Symfony\Component\Console\Command\Command:
         tags: [ kdyby.console.command ]
-
-    Symfony\Component\Console\Helper\Helper:
-        tags: [ kdyby.console.helper ]
 
     Doctrine\Migrations\Configuration\Configuration:
         setup:
