@@ -41,9 +41,7 @@ final class RepaymentCandidateListQueryHandler
     {
         $payments   = array_filter(
             $this->queryBus->handle(new PaymentListQuery($query->getGroupId())),
-            function (DTO\Payment $payment) : bool {
-                return $payment->getState()->equalsValue(State::COMPLETED);
-            }
+            fn (DTO\Payment $payment) => $payment->getState()->equalsValue(State::COMPLETED),
         );
         $repayments = array_map([DTO\RepaymentFactory::class, 'create'], $payments);
 
