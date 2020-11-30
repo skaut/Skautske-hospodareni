@@ -62,7 +62,7 @@ final class RepaymentCandidateListQueryHandler
     {
         $participantsPayments = array_filter(
             array_column($this->participants->findByCamp($campId), 'repayment', 'personId'),
-            fn(int $amount) => ($amount > 0)
+            fn(int $amount) => $amount > 0
         );
 
         foreach ($repayments as $repayment) {
