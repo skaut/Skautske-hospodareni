@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\DTO\Payment;
 
-class RepaymentFactory
+class RepaymentCandidateFactory
 {
     public static function create(Payment $payment) : RepaymentCandidate
     {
