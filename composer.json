@@ -43,7 +43,7 @@
         "php-http/guzzle6-adapter": "^2.0",
         "phpoffice/phpspreadsheet": "^1.0",
         "ramsey/uuid": "^4.0",
-        "sentry/sentry": "^2.1",
+        "sentry/sentry": "^3.0",
         "skautis/nette": "^2.1",
         "skautis/skautis": "2.*@dev",
         "thecodingmachine/safe": "^1.0.0",
