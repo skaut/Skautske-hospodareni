@@ -8,12 +8,12 @@ use Doctrine\ORM\EntityManager;
 use Model\Travel\Repositories\IVehicleRepository;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFound;
+
 use function array_values;
 
 final class VehicleRepository implements IVehicleRepository
 {
-    /** @var EntityManager */
-    private $em;
+    private EntityManager $em;
 
     public function __construct(EntityManager $em)
     {
@@ -23,7 +23,7 @@ final class VehicleRepository implements IVehicleRepository
     /**
      * @throws VehicleNotFound
      */
-    public function find(int $id) : Vehicle
+    public function find(int $id): Vehicle
     {
         $vehicle = $this->em->find(Vehicle::class, $id);
 
@@ -39,7 +39,7 @@ final class VehicleRepository implements IVehicleRepository
      *
      * @return Vehicle[]
      */
-    public function findByIds(array $ids) : array
+    public function findByIds(array $ids): array
     {
         if (empty($ids)) {
             return [];
@@ -57,7 +57,7 @@ final class VehicleRepository implements IVehicleRepository
     /**
      * @return Vehicle[]
      */
-    public function findByUnit(int $unitId) : array
+    public function findByUnit(int $unitId): array
     {
         $vehicles = $this->em->createQueryBuilder()
             ->select('v')
@@ -71,13 +71,13 @@ final class VehicleRepository implements IVehicleRepository
         return array_values($vehicles);
     }
 
-    public function save(Vehicle $vehicle) : void
+    public function save(Vehicle $vehicle): void
     {
         $this->em->persist($vehicle);
         $this->em->flush();
     }
 
-    public function remove(Vehicle $vehicle) : void
+    public function remove(Vehicle $vehicle): void
     {
         $this->em->remove($vehicle);
         $this->em->flush();

@@ -5,21 +5,18 @@ declare(strict_types=1);
 namespace Model\DTO\Payment;
 
 use DateTimeImmutable;
+
 use function sprintf;
 
 class PairingResult
 {
-    /** @var string */
-    private $accountName;
+    private string $accountName;
 
-    /** @var DateTimeImmutable */
-    private $since;
+    private DateTimeImmutable $since;
 
-    /** @var DateTimeImmutable */
-    private $until;
+    private DateTimeImmutable $until;
 
-    /** @var int */
-    private $count;
+    private int $count;
 
     public function __construct(string $accountName, DateTimeImmutable $since, DateTimeImmutable $until, int $count)
     {
@@ -29,27 +26,27 @@ class PairingResult
         $this->count       = $count;
     }
 
-    public function getAccountName() : string
+    public function getAccountName(): string
     {
         return $this->accountName;
     }
 
-    public function getSince() : DateTimeImmutable
+    public function getSince(): DateTimeImmutable
     {
         return $this->since;
     }
 
-    public function getUntil() : DateTimeImmutable
+    public function getUntil(): DateTimeImmutable
     {
         return $this->until;
     }
 
-    public function getCount() : int
+    public function getCount(): int
     {
         return $this->count;
     }
 
-    public function getMessage() : string
+    public function getMessage(): string
     {
         if ($this->count > 0) {
             return sprintf(

@@ -6,6 +6,7 @@ namespace App\AccountancyModule\Components;
 
 use Ublaboo\DataGrid\Column\Action;
 use Ublaboo\DataGrid\Filter\FilterSelect;
+
 use function array_map;
 use function array_reverse;
 use function date;
@@ -23,7 +24,7 @@ final class DataGrid extends \Ublaboo\DataGrid\DataGrid
     {
         parent::__construct();
         Action::$data_confirm_attribute_name = 'data-confirm';
-        $this->onRender[]                    = function () : void {
+        $this->onRender[]                    = function (): void {
  //disable autocomplete - issue #1443
             $this['filter']->getElementPrototype()->setAttribute('autocomplete', 'off');
         };
@@ -34,7 +35,7 @@ final class DataGrid extends \Ublaboo\DataGrid\DataGrid
      *
      * @return mixed[]
      */
-    public function getFilteredAndSortedData() : array
+    public function getFilteredAndSortedData(): array
     {
         return $this->dataModel->filterData(
             $this->getPaginator(),
@@ -43,7 +44,7 @@ final class DataGrid extends \Ublaboo\DataGrid\DataGrid
         );
     }
 
-    public function addYearFilter(string $name, string $label) : FilterSelect
+    public function addYearFilter(string $name, string $label): FilterSelect
     {
         return $this->addFilterSelect($name, $label, $this->getYearOptions(), 'year');
     }
@@ -51,10 +52,10 @@ final class DataGrid extends \Ublaboo\DataGrid\DataGrid
     /**
      * @return array<string, string>
      */
-    private function getYearOptions() : array
+    private function getYearOptions(): array
     {
         $years = array_map(
-            function (int $year) : string {
+            function (int $year): string {
                 return (string) $year;
             },
             array_reverse(range(2012, (int) date('Y')))

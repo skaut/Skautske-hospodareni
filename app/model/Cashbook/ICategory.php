@@ -15,13 +15,13 @@ interface ICategory
     public const CATEGORY_REFUND_CHILD_ID       = 21;
     public const CATEGORY_REFUND_ADULT_ID       = 22;
 
-    public function getId() : int;
+    public function getId(): int;
 
-    public function getName() : string;
+    public function getName(): string;
 
-    public function getShortcut() : string;
+    public function getShortcut(): string;
 
-    public function getOperationType() : Operation;
+    public function getOperationType(): Operation;
 
-    public function isVirtual() : bool;
+    public function isVirtual(): bool;
 }

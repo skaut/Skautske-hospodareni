@@ -13,11 +13,9 @@ use Model\Payment\Repositories\IPaymentRepository;
 
 final class SendPaymentInfoHandler
 {
-    /** @var IPaymentRepository */
-    private $payments;
+    private IPaymentRepository $payments;
 
-    /** @var MailingService */
-    private $mailingService;
+    private MailingService $mailingService;
 
     public function __construct(IPaymentRepository $payments, MailingService $mailingService)
     {
@@ -28,7 +26,7 @@ final class SendPaymentInfoHandler
     /**
      * @throws InvalidOAuth
      */
-    public function __invoke(SendPaymentInfo $command) : void
+    public function __invoke(SendPaymentInfo $command): void
     {
         $payment = $this->payments->find($command->getPaymentId());
 

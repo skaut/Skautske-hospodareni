@@ -12,26 +12,19 @@ use Model\Event\Handlers\Event\CreateEventHandler;
  */
 final class CreateEvent
 {
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var Date */
-    private $startDate;
+    private Date $startDate;
 
-    /** @var Date */
-    private $endDate;
+    private Date $endDate;
 
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var string|NULL */
-    private $location;
+    private ?string $location = null;
 
-    /** @var int */
-    private $scopeId;
+    private int $scopeId;
 
-    /** @var int */
-    private $typeId;
+    private int $typeId;
 
     public function __construct(
         string $name,
@@ -51,37 +44,37 @@ final class CreateEvent
         $this->typeId    = $typeId;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getStartDate() : Date
+    public function getStartDate(): Date
     {
         return $this->startDate;
     }
 
-    public function getEndDate() : Date
+    public function getEndDate(): Date
     {
         return $this->endDate;
     }
 
-    public function getUnitId() : int
+    public function getUnitId(): int
     {
         return $this->unitId;
     }
 
-    public function getLocation() : ?string
+    public function getLocation(): ?string
     {
         return $this->location;
     }
 
-    public function getScopeId() : int
+    public function getScopeId(): int
     {
         return $this->scopeId;
     }
 
-    public function getTypeId() : int
+    public function getTypeId(): int
     {
         return $this->typeId;
     }

@@ -14,11 +14,9 @@ class Summary
 {
     use SmartObject;
 
-    /** @var int */
-    private $count;
+    private int $count;
 
-    /** @var float */
-    private $amount;
+    private float $amount;
 
     public function __construct(int $count, float $amount)
     {
@@ -26,17 +24,17 @@ class Summary
         $this->amount = $amount;
     }
 
-    public function getCount() : int
+    public function getCount(): int
     {
         return $this->count;
     }
 
-    public function getAmount() : float
+    public function getAmount(): float
     {
         return $this->amount;
     }
 
-    public function add(self $other) : self
+    public function add(self $other): self
     {
         return new self($this->count + $other->count, $this->amount + $other->amount);
     }

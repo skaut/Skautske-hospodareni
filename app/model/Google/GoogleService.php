@@ -19,7 +19,7 @@ class GoogleService
         $this->tokenUri        = $tokenUri;
     }
 
-    public function getClient() : Client
+    public function getClient(): Client
     {
         $client = new Client();
         $client->setApplicationName('Skautské hospodaření online');

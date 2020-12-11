@@ -12,14 +12,14 @@ interface IContractRepository
     /**
      * @throws ContractNotFound
      */
-    public function find(int $id) : Contract;
+    public function find(int $id): Contract;
 
     /**
      * @return Contract[]
      */
-    public function findByUnit(int $unitId) : array;
+    public function findByUnit(int $unitId): array;
 
-    public function save(Contract $contract) : void;
+    public function save(Contract $contract): void;
 
-    public function remove(Contract $contract) : void;
+    public function remove(Contract $contract): void;
 }

@@ -19,52 +19,26 @@ class Contract
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
-     */
-    private $unitId;
+    /** @ORM\Column(type="integer", options={"unsigned"=true}) */
+    private int $unitId;
 
-    /**
-     * @ORM\Column(type="string", name="unit_person", length=64, options={"comment": "jméno osoby zastupující jednotku"})
-     *
-     * @var string
-     */
-    private $unitRepresentative;
+    /** @ORM\Column(type="string", name="unit_person", length=64, options={"comment": "jméno osoby zastupující jednotku"}) */
+    private string $unitRepresentative;
 
-    /**
-     * @ORM\Column(type="chronos_date", nullable=true, name="start")
-     *
-     * @var Date|NULL
-     */
-    private $since;
+    /** @ORM\Column(type="chronos_date", nullable=true, name="start") */
+    private ?Date $since = null;
 
-    /**
-     * @ORM\Column(type="chronos_date", nullable=true, name="end")
-     *
-     * @var Date|NULL
-     */
-    private $until;
+    /** @ORM\Column(type="chronos_date", nullable=true, name="end") */
+    private ?Date $until = null;
 
-    /**
-     * @ORM\Embedded(class=ContractPassenger::class, columnPrefix=false)
-     *
-     * @var ContractPassenger
-     */
-    private $passenger;
+    /** @ORM\Embedded(class=ContractPassenger::class, columnPrefix=false) */
+    private ContractPassenger $passenger;
 
-    /**
-     * @ORM\Column(type="smallint", name="template", options={"comment":"1-old, 2-podle NOZ"})
-     *
-     * @var int
-     */
-    private $templateVersion = 2;
+    /** @ORM\Column(type="smallint", name="template", options={"comment":"1-old, 2-podle NOZ"}) */
+    private int $templateVersion = 2;
 
     public function __construct(Unit $unit, string $unitRepresentative, Date $since, ContractPassenger $passenger)
     {
@@ -75,37 +49,37 @@ class Contract
         $this->passenger          = $passenger;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getUnitId() : int
+    public function getUnitId(): int
     {
         return $this->unitId;
     }
 
-    public function getUnitRepresentative() : string
+    public function getUnitRepresentative(): string
     {
         return $this->unitRepresentative;
     }
 
-    public function getSince() : ?Date
+    public function getSince(): ?Date
     {
         return $this->since;
     }
 
-    public function getUntil() : ?Date
+    public function getUntil(): ?Date
     {
         return $this->until;
     }
 
-    public function getPassenger() : ContractPassenger
+    public function getPassenger(): ContractPassenger
     {
         return $this->passenger;
     }
 
-    public function getTemplateVersion() : int
+    public function getTemplateVersion(): int
     {
         return $this->templateVersion;
     }

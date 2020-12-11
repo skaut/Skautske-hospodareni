@@ -9,35 +9,32 @@ use Ublaboo\DataGrid\DataSource\DoctrineCollectionDataSource;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 use Ublaboo\DataGrid\Filter\Filter;
 use Ublaboo\DataGrid\Utils\Sorting;
+
 use function call_user_func;
 use function count;
 
 abstract class DataSource implements IDataSource
 {
-    /** @var Sorting|null */
-    private $sorting;
+    private ?Sorting $sorting = null;
 
-    /** @var int|null */
-    private $offset;
+    private ?int $offset = null;
 
-    /** @var int|null */
-    private $limit;
+    private ?int $limit = null;
 
-    /** @var DoctrineCollectionDataSource|null */
-    private $innerDataSource;
+    private ?DoctrineCollectionDataSource $innerDataSource = null;
 
     /** @var Filter[] */
-    private $filters = [];
+    private array $filters = [];
 
     /** @var mixed[] */
-    private $conditions = [];
+    private array $conditions = [];
 
     /**
      * @return object[]
      */
-    abstract protected function loadData() : array;
+    abstract protected function loadData(): array;
 
-    public function getCount() : int
+    public function getCount(): int
     {
         return count($this->getData());
     }
@@ -45,7 +42,7 @@ abstract class DataSource implements IDataSource
     /**
      * @return mixed[]
      */
-    final public function getData() : array
+    final public function getData(): array
     {
         $dataSource = $this->innerDataSource();
 
@@ -68,7 +65,7 @@ abstract class DataSource implements IDataSource
     /**
      * @param Filter[] $filters
      */
-    final public function filter(array $filters) : self
+    final public function filter(array $filters): self
     {
         foreach ($filters as $filter) {
             if ($filter->hasConditionCallback()) {
@@ -85,7 +82,7 @@ abstract class DataSource implements IDataSource
     /**
      * @param mixed[] $filter
      */
-    final public function filterOne(array $filter) : self
+    final public function filterOne(array $filter): self
     {
         $this->conditions[] = $filter;
 
@@ -95,10 +92,9 @@ abstract class DataSource implements IDataSource
     /**
      * @param int $offset
      * @param int $limit
-     *
-     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
      */
-    final public function limit($offset, $limit) : self
+    // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
+    final public function limit($offset, $limit): self
     {
         $this->offset = $offset;
         $this->limit  = $limit;
@@ -106,14 +102,14 @@ abstract class DataSource implements IDataSource
         return $this;
     }
 
-    final public function sort(Sorting $sorting) : self
+    final public function sort(Sorting $sorting): self
     {
         $this->sorting = $sorting;
 
         return $this;
     }
 
-    private function innerDataSource() : IDataSource
+    private function innerDataSource(): IDataSource
     {
         if ($this->innerDataSource === null) {
             $this->innerDataSource = new DoctrineCollectionDataSource(new ArrayCollection($this->loadData()), 'id');

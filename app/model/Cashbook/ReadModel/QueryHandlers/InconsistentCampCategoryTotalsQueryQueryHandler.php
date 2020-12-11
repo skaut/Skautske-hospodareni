@@ -11,15 +11,14 @@ use Model\Cashbook\ReadModel\Queries\InconsistentCampCategoryTotalsQuery;
 use Model\Cashbook\Repositories\ICampCategoryRepository;
 use Model\DTO\Cashbook\CategorySummary;
 use Model\Utils\MoneyFactory;
+
 use function assert;
 
 class InconsistentCampCategoryTotalsQueryQueryHandler
 {
-    /** @var ICampCategoryRepository */
-    private $campCategories;
+    private ICampCategoryRepository $campCategories;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(ICampCategoryRepository $campCategories, QueryBus $queryBus)
     {
@@ -30,7 +29,7 @@ class InconsistentCampCategoryTotalsQueryQueryHandler
     /**
      * @return float[]
      */
-    public function __invoke(InconsistentCampCategoryTotalsQuery $query) : array
+    public function __invoke(InconsistentCampCategoryTotalsQuery $query): array
     {
         $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery($query->getCampId()));
         $categories = $this->queryBus->handle(new CategoriesSummaryQuery($cashbookId));

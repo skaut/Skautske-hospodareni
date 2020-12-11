@@ -9,26 +9,19 @@ use Model\Payment\BankAccount\AccountNumber;
 
 class BankAccount
 {
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var AccountNumber */
-    private $number;
+    private AccountNumber $number;
 
-    /** @var string|NULL */
-    private $token;
+    private ?string $token = null;
 
-    /** @var DateTimeImmutable */
-    private $createdAt;
+    private DateTimeImmutable $createdAt;
 
-    /** @var bool */
-    private $allowedForSubunits;
+    private bool $allowedForSubunits;
 
     public function __construct(
         int $id,
@@ -48,37 +41,37 @@ class BankAccount
         $this->allowedForSubunits = $allowedForSubunits;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getUnitId() : int
+    public function getUnitId(): int
     {
         return $this->unitId;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getNumber() : AccountNumber
+    public function getNumber(): AccountNumber
     {
         return $this->number;
     }
 
-    public function getToken() : ?string
+    public function getToken(): ?string
     {
         return $this->token;
     }
 
-    public function getCreatedAt() : DateTimeImmutable
+    public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function isAllowedForSubunits() : bool
+    public function isAllowedForSubunits(): bool
     {
         return $this->allowedForSubunits;
     }

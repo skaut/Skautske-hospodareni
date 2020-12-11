@@ -9,15 +9,14 @@ use Model\Event\Repositories\IEventRepository;
 
 final class UpdateEventHandler
 {
-    /** @var IEventRepository */
-    private $events;
+    private IEventRepository $events;
 
     public function __construct(IEventRepository $events)
     {
         $this->events = $events;
     }
 
-    public function __invoke(UpdateEvent $command) : void
+    public function __invoke(UpdateEvent $command): void
     {
         $event = $this->events->find($command->getEventId());
 

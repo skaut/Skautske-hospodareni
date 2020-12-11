@@ -18,17 +18,13 @@ class Travel
 {
     use SmartObject;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var TravelDetails */
-    private $details;
+    private TravelDetails $details;
 
-    /** @var float|NULL */
-    private $distance;
+    private ?float $distance = null;
 
-    /** @var Money */
-    private $price;
+    private Money $price;
 
     public function __construct(int $id, TravelDetails $details, ?float $distance, Money $price)
     {
@@ -38,22 +34,22 @@ class Travel
         $this->price    = $price;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getDetails() : TravelDetails
+    public function getDetails(): TravelDetails
     {
         return $this->details;
     }
 
-    public function getDistance() : ?float
+    public function getDistance(): ?float
     {
         return $this->distance;
     }
 
-    public function getPrice() : Money
+    public function getPrice(): Money
     {
         return $this->price;
     }

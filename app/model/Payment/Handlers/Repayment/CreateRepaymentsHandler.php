@@ -12,15 +12,14 @@ use Model\Utils\MoneyFactory;
 
 final class CreateRepaymentsHandler
 {
-    /** @var ClientInterface */
-    private $http;
+    private ClientInterface $http;
 
     public function __construct(ClientInterface $http)
     {
         $this->http = $http;
     }
 
-    public function __invoke(CreateRepayments $command) : void
+    public function __invoke(CreateRepayments $command): void
     {
         try {
             $this->http->request(
@@ -51,7 +50,7 @@ final class CreateRepaymentsHandler
         }
     }
 
-    private function buildRequestBody(CreateRepayments $command) : string
+    private function buildRequestBody(CreateRepayments $command): string
     {
         $ret = '<?xml version="1.0" encoding="UTF-8"?><Import xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.fio.cz/schema/importIB.xsd"> <Orders>';
 

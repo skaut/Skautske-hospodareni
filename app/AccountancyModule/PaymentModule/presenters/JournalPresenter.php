@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\AccountancyModule\PaymentModule;
 
 use Model\PaymentService;
+
 use function array_keys;
 
 class JournalPresenter extends BasePresenter
 {
-    /** @var PaymentService */
-    private $model;
+    private PaymentService $model;
 
     public function __construct(PaymentService $model)
     {
@@ -18,19 +18,21 @@ class JournalPresenter extends BasePresenter
         $this->model = $model;
     }
 
-    public function renderDefault(int $groupId) : void
+    public function renderDefault(int $groupId): void
     {
         if (! $this->isEditable) {
             $this->setView('accessDenied');
 
             return;
         }
+
         $group = $this->model->getGroup($groupId);
         $year  = $this->model->getRegistrationYear($group->getSkautisId());
         if ($year === null) {
             $this->flashMessage('Registrace nebyla nalezena', 'danger');
             $this->redirect('GroupList:');
         }
+
         $units = $this->unitService->getAllUnder($this->unitId->toInt());
 
         $changes      = [];
@@ -40,8 +42,9 @@ class JournalPresenter extends BasePresenter
             $changeExists     = $changeExists || (empty($uch['add']) && $uch['remove']);
             $changes[$unitId] = $uch;
         }
+
         $this->template->setParameters([
-            'year'=> $year,
+            'year' => $year,
             'units' => $units,
             'changes' => $changes,
             'changeExists' => $changeExists,

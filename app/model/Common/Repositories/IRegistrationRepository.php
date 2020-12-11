@@ -14,5 +14,5 @@ interface IRegistrationRepository
      *
      * @return Registration[]
      */
-    public function findByUnit(UnitId $unitId) : array;
+    public function findByUnit(UnitId $unitId): array;
 }

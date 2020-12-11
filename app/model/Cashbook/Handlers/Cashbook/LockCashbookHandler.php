@@ -10,8 +10,7 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 
 class LockCashbookHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
     public function __construct(ICashbookRepository $cashbooks)
     {
@@ -21,7 +20,7 @@ class LockCashbookHandler
     /**
      * @throws CashbookNotFound
      */
-    public function __invoke(LockCashbook $command) : void
+    public function __invoke(LockCashbook $command): void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
 

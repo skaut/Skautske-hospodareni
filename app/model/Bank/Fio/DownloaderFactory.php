@@ -9,15 +9,14 @@ use GuzzleHttp\ClientInterface;
 
 final class DownloaderFactory implements IDownloaderFactory
 {
-    /** @var ClientInterface */
-    private $client;
+    private ClientInterface $client;
 
     public function __construct(ClientInterface $client)
     {
         $this->client = $client;
     }
 
-    public function create(string $token) : Downloader
+    public function create(string $token): Downloader
     {
         return new Downloader($token, $this->client);
     }

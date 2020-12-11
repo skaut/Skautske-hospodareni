@@ -5,17 +5,16 @@ declare(strict_types=1);
 namespace Model\Common;
 
 use Psr\Http\Message\StreamInterface;
+
 use function array_key_last;
 use function basename;
 use function explode;
 
 final class File
 {
-    /** @var StreamInterface */
-    private $stream;
+    private StreamInterface $stream;
 
-    /** @var FilePath */
-    private $path;
+    private FilePath $path;
 
     public function __construct(StreamInterface $stream, FilePath $path)
     {
@@ -23,24 +22,24 @@ final class File
         $this->path   = $path;
     }
 
-    public function getPath() : string
+    public function getPath(): string
     {
         return $this->path->getPath();
     }
 
-    public function getFileName() : string
+    public function getFileName(): string
     {
         return basename($this->path->getPath());
     }
 
-    public function getOriginalFileName() : string
+    public function getOriginalFileName(): string
     {
         $arr = explode('_', $this->getFileName(), 2);
 
         return $arr[array_key_last($arr)];
     }
 
-    public function getContents() : StreamInterface
+    public function getContents(): StreamInterface
     {
         return $this->stream;
     }

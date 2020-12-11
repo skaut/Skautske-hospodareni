@@ -11,15 +11,14 @@ use Model\Cashbook\Unit;
 
 final class CreateUnitHandler
 {
-    /** @var IUnitRepository */
-    private $units;
+    private IUnitRepository $units;
 
     public function __construct(IUnitRepository $units)
     {
         $this->units = $units;
     }
 
-    public function __invoke(CreateUnit $command) : void
+    public function __invoke(CreateUnit $command): void
     {
         $this->units->save(new Unit($command->getUnitId(), CashbookId::generate(), $command->getActiveCashbookYear()));
     }

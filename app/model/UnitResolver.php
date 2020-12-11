@@ -10,8 +10,7 @@ use Model\Unit\UnitHasNoParent;
 
 final class UnitResolver implements IUnitResolver
 {
-    /** @var IUnitRepository */
-    private $units;
+    private IUnitRepository $units;
 
     public function __construct(IUnitRepository $units)
     {
@@ -21,13 +20,14 @@ final class UnitResolver implements IUnitResolver
     /**
      * @throws UnitHasNoParent
      */
-    public function getOfficialUnitId(int $unitId) : int
+    public function getOfficialUnitId(int $unitId): int
     {
         $unit = $this->units->find($unitId);
 
         if ($unit->isOfficial()) {
             return $unitId;
         }
+
         if ($unit->getParentId() === null) {
             throw new UnitHasNoParent('Unit ' . $unit->getId() . " doesn't have set parentID");
         }

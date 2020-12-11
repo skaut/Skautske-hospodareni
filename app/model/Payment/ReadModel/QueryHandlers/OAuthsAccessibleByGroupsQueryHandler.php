@@ -11,6 +11,7 @@ use Model\Mail\Repositories\IGoogleRepository;
 use Model\Payment\IUnitResolver;
 use Model\Payment\ReadModel\Queries\OAuthsAccessibleByGroupsQuery;
 use Model\Payment\Services\IOAuthAccessChecker;
+
 use function array_map;
 use function array_merge;
 use function array_unique;
@@ -18,14 +19,11 @@ use function assert;
 
 final class OAuthsAccessibleByGroupsQueryHandler
 {
-    /** @var IOAuthAccessChecker */
-    private $accessChecker;
+    private IOAuthAccessChecker $accessChecker;
 
-    /** @var IUnitResolver */
-    private $unitResolver;
+    private IUnitResolver $unitResolver;
 
-    /** @var IGoogleRepository */
-    private $googleRepository;
+    private IGoogleRepository $googleRepository;
 
     public function __construct(
         IOAuthAccessChecker $accessChecker,
@@ -40,7 +38,7 @@ final class OAuthsAccessibleByGroupsQueryHandler
     /**
      * @return OAuthDTO[]
      */
-    public function __invoke(OAuthsAccessibleByGroupsQuery $query) : array
+    public function __invoke(OAuthsAccessibleByGroupsQuery $query): array
     {
         $unitIds   = $query->getUnitIds();
         $allOAuths = array_merge([], ...$this->googleRepository->findByUnits($this->unitsOwningOAuth($unitIds)));
@@ -65,7 +63,7 @@ final class OAuthsAccessibleByGroupsQueryHandler
      *
      * @return int[]
      */
-    private function unitsOwningOAuth(array $unitIds) : array
+    private function unitsOwningOAuth(array $unitIds): array
     {
         return array_unique(
             array_merge([], $unitIds, array_map([$this->unitResolver, 'getOfficialUnitId'], $unitIds))

@@ -38,62 +38,44 @@ class Command
     public const STATE_CLOSED      = 'closed';
     public const STATE_IN_PROGRESS = 'in_progress';
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var int|NULL */
-    private $vehicleId;
+    private ?int $vehicleId = null;
 
-    /** @var Passenger */
-    private $passenger;
+    private Passenger $passenger;
 
-    /** @var string */
-    private $purpose;
+    private string $purpose;
 
-    /** @var string */
-    private $place;
+    private string $place;
 
-    /** @var string */
-    private $fellowPassengers;
+    private string $fellowPassengers;
 
-    /** @var Money */
-    private $fuelPrice;
+    private Money $fuelPrice;
 
-    /** @var Money */
-    private $amortizationPerKm;
+    private Money $amortizationPerKm;
 
-    /** @var string */
-    private $note;
+    private string $note;
 
-    /** @var Money */
-    private $total;
+    private Money $total;
 
-    /** @var DateTimeImmutable|NULL */
-    private $closedAt;
+    private ?DateTimeImmutable $closedAt = null;
 
-    /** @var DateTimeImmutable|NULL */
-    private $firstTravelDate;
+    private ?DateTimeImmutable $firstTravelDate = null;
 
-    /** @var Money */
-    private $pricePerKm;
+    private Money $pricePerKm;
 
-    /** @var Money */
-    private $fuelPricePerKm;
+    private Money $fuelPricePerKm;
 
-    /** @var string */
-    private $state;
+    private string $state;
 
-    /** @var int|null */
-    private $ownerId;
+    private ?int $ownerId = null;
 
     /** @var TransportType[] */
-    private $transportTypes;
+    private array $transportTypes;
 
-    /** @var string */
-    private $unit;
+    private string $unit;
 
     /**
      * @param TransportType[] $transportTypes
@@ -140,87 +122,87 @@ class Command
         $this->unit              = $unit;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getUnitId() : int
+    public function getUnitId(): int
     {
         return $this->unitId;
     }
 
-    public function getVehicleId() : ?int
+    public function getVehicleId(): ?int
     {
         return $this->vehicleId;
     }
 
-    public function getPassenger() : Passenger
+    public function getPassenger(): Passenger
     {
         return $this->passenger;
     }
 
-    public function getPurpose() : string
+    public function getPurpose(): string
     {
         return $this->purpose;
     }
 
-    public function getPlace() : string
+    public function getPlace(): string
     {
         return $this->place;
     }
 
-    public function getFellowPassengers() : string
+    public function getFellowPassengers(): string
     {
         return $this->fellowPassengers;
     }
 
-    public function getFuelPrice() : Money
+    public function getFuelPrice(): Money
     {
         return $this->fuelPrice;
     }
 
-    public function getAmortizationPerKm() : Money
+    public function getAmortizationPerKm(): Money
     {
         return $this->amortizationPerKm;
     }
 
-    public function getNote() : string
+    public function getNote(): string
     {
         return $this->note;
     }
 
-    public function getClosedAt() : ?DateTimeImmutable
+    public function getClosedAt(): ?DateTimeImmutable
     {
         return $this->closedAt;
     }
 
-    public function getTotal() : Money
+    public function getTotal(): Money
     {
         return $this->total;
     }
 
-    public function getFirstTravelDate() : ?DateTimeImmutable
+    public function getFirstTravelDate(): ?DateTimeImmutable
     {
         return $this->firstTravelDate;
     }
 
-    public function getPricePerKm() : Money
+    public function getPricePerKm(): Money
     {
         return $this->pricePerKm;
     }
 
-    public function getFuelPricePerKm() : Money
+    public function getFuelPricePerKm(): Money
     {
         return $this->fuelPricePerKm;
     }
 
-    public function getState() : string
+    public function getState(): string
     {
         return $this->state;
     }
 
-    public function getOwnerId() : ?int
+    public function getOwnerId(): ?int
     {
         return $this->ownerId;
     }
@@ -228,7 +210,7 @@ class Command
     /**
      * @return TransportType[]
      */
-    public function getTransportTypes() : array
+    public function getTransportTypes(): array
     {
         return $this->transportTypes;
     }
@@ -236,7 +218,7 @@ class Command
     /**
      * @return string[]
      */
-    public function getTransportTypePairs() : array
+    public function getTransportTypePairs(): array
     {
         $types = [];
 
@@ -247,7 +229,7 @@ class Command
         return $types;
     }
 
-    public function getUnit() : string
+    public function getUnit(): string
     {
         return $this->unit;
     }

@@ -11,15 +11,14 @@ use Model\Payment\Repositories\IGroupRepository;
 
 final class GroupEmailQueryHandler
 {
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
     public function __construct(IGroupRepository $groups)
     {
         $this->groups = $groups;
     }
 
-    public function __invoke(GroupEmailQuery $query) : ?GroupEmail
+    public function __invoke(GroupEmailQuery $query): ?GroupEmail
     {
         try {
             $group    = $this->groups->find($query->getGroupId());

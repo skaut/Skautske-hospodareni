@@ -10,7 +10,7 @@ use Model\Google\OAuthId;
 
 final class OAuthIdType extends GuidType
 {
-    public function getName() : string
+    public function getName(): string
     {
         return 'oauth_id';
     }
@@ -18,7 +18,7 @@ final class OAuthIdType extends GuidType
     /**
      * @param mixed $value
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform) : ?OAuthId
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?OAuthId
     {
         if ($value === null) {
             return null;
@@ -31,7 +31,7 @@ final class OAuthIdType extends GuidType
     /**
      * @param mixed $value
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform) : ?string
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         if ($value === null) {
             return null;

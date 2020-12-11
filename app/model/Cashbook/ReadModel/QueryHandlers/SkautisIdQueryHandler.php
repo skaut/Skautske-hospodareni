@@ -14,14 +14,11 @@ use Model\Skautis\Mapper;
 
 class SkautisIdQueryHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
-    /** @var IUnitRepository */
-    private $units;
+    private IUnitRepository $units;
 
-    /** @var Mapper */
-    private $mapper;
+    private Mapper $mapper;
 
     public function __construct(ICashbookRepository $cashbooks, IUnitRepository $units, Mapper $mapper)
     {
@@ -34,7 +31,7 @@ class SkautisIdQueryHandler
      * @throws CashbookNotFound
      * @throws UnitNotFound
      */
-    public function __invoke(SkautisIdQuery $query) : int
+    public function __invoke(SkautisIdQuery $query): int
     {
         $cashbook   = $this->cashbooks->find($query->getCashbookId());
         $objectType = $cashbook->getType()->getSkautisObjectType();

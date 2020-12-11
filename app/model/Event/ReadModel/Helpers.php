@@ -13,7 +13,7 @@ class Helpers
      *
      * @return string[]
      */
-    public static function getPairs(array $items) : array
+    public static function getPairs(array $items): array
     {
         $pairs = [];
 

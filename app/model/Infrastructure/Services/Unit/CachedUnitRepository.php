@@ -13,11 +13,9 @@ final class CachedUnitRepository implements IUnitRepository
 {
     private const EXPIRATION = '1 day';
 
-    /** @var IUnitRepository */
-    private $inner;
+    private IUnitRepository $inner;
 
-    /** @var Cache */
-    private $cache;
+    private Cache $cache;
 
     public function __construct(IUnitRepository $inner, IStorage $storage)
     {
@@ -28,11 +26,11 @@ final class CachedUnitRepository implements IUnitRepository
     /**
      * @return Unit[]
      */
-    public function findByParent(int $parentId) : array
+    public function findByParent(int $parentId): array
     {
         return $this->cache->load(
             'byParent-' . $parentId,
-            function (?array &$options) use ($parentId) : array {
+            function (?array &$options) use ($parentId): array {
                 $options[Cache::EXPIRE] = self::EXPIRATION;
 
                 return $this->inner->findByParent($parentId);
@@ -40,11 +38,11 @@ final class CachedUnitRepository implements IUnitRepository
         );
     }
 
-    public function find(int $id) : Unit
+    public function find(int $id): Unit
     {
         return $this->cache->load(
             'byId-' . $id,
-            function (?array &$options) use ($id) : Unit {
+            function (?array &$options) use ($id): Unit {
                 $options[Cache::EXPIRE] = self::EXPIRATION;
 
                 return $this->inner->find($id);

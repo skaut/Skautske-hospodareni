@@ -11,14 +11,11 @@ use Model\Event\SkautisCampId;
  */
 final class CampParticipantIncomeQuery
 {
-    /** @var SkautisCampId */
-    private $campId;
+    private SkautisCampId $campId;
 
-    /** @var bool|null */
-    private $isAdult;
+    private ?bool $isAdult = null;
 
-    /** @var bool|null */
-    private $onAccount;
+    private ?bool $onAccount = null;
 
     public function __construct(SkautisCampId $id, ?bool $isAdult, ?bool $onAccount)
     {
@@ -27,22 +24,22 @@ final class CampParticipantIncomeQuery
         $this->onAccount = $onAccount;
     }
 
-    public static function all(SkautisCampId $id) : self
+    public static function all(SkautisCampId $id): self
     {
         return new self($id, null, null);
     }
 
-    public function getCampId() : SkautisCampId
+    public function getCampId(): SkautisCampId
     {
         return $this->campId;
     }
 
-    public function isAdult() : ?bool
+    public function isAdult(): ?bool
     {
         return $this->isAdult;
     }
 
-    public function isOnAccount() : ?bool
+    public function isOnAccount(): ?bool
     {
         return $this->onAccount;
     }

@@ -13,7 +13,7 @@ interface ICashbookRepository
     /**
      * @throws CashbookNotFound
      */
-    public function find(CashbookId $id) : Cashbook;
+    public function find(CashbookId $id): Cashbook;
 
-    public function save(Cashbook $cashbook) : void;
+    public function save(Cashbook $cashbook): void;
 }

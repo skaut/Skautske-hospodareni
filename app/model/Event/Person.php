@@ -15,14 +15,11 @@ class Person
 {
     use SmartObject;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var string|NULL */
-    private $email;
+    private ?string $email = null;
 
     public function __construct(int $id, string $name, ?string $email)
     {
@@ -31,17 +28,17 @@ class Person
         $this->email = $email;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getEmail() : ?string
+    public function getEmail(): ?string
     {
         return $this->email;
     }

@@ -9,6 +9,7 @@ use Model\DTO\Google\OAuthFactory;
 use Model\Google\OAuth;
 use Model\Mail\Repositories\IGoogleRepository;
 use Model\Payment\IUnitResolver;
+
 use function array_filter;
 use function array_map;
 use function array_merge;
@@ -16,11 +17,9 @@ use function array_unique;
 
 class MailService
 {
-    /** @var IGoogleRepository */
-    private $googleRepository;
+    private IGoogleRepository $googleRepository;
 
-    /** @var IUnitResolver */
-    private $unitResolver;
+    private IUnitResolver $unitResolver;
 
     public function __construct(IGoogleRepository $credentials, IUnitResolver $unitResolver)
     {
@@ -33,7 +32,7 @@ class MailService
      *
      * @return array<int|string, OAuthDTO>
      */
-    public function getAll(array $unitIds) : array
+    public function getAll(array $unitIds): array
     {
         $mails = $this->findForUnits($unitIds);
 
@@ -45,7 +44,7 @@ class MailService
      *
      * @return int[]
      */
-    private function getAccessibleUnitIds(array $unitIds) : array
+    private function getAccessibleUnitIds(array $unitIds): array
     {
         $res = $unitIds;
         foreach ($unitIds as $uid) {
@@ -60,7 +59,7 @@ class MailService
      *
      * @return array<int, OAuth[]> unitId => OAuth[]
      */
-    private function findForUnits(array $unitIds) : array
+    private function findForUnits(array $unitIds): array
     {
         $unitIds = $this->getAccessibleUnitIds($unitIds);
 

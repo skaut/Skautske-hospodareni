@@ -12,11 +12,9 @@ use Model\Cashbook\Handlers\Cashbook\LockCashbookHandler;
  */
 final class LockCashbook
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var int */
-    private $userId;
+    private int $userId;
 
     public function __construct(CashbookId $cashbookId, int $userId)
     {
@@ -24,12 +22,12 @@ final class LockCashbook
         $this->userId     = $userId;
     }
 
-    public function getCashbookId() : CashbookId
+    public function getCashbookId(): CashbookId
     {
         return $this->cashbookId;
     }
 
-    public function getUserId() : int
+    public function getUserId(): int
     {
         return $this->userId;
     }

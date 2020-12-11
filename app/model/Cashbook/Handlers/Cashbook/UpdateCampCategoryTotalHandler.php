@@ -11,18 +11,16 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 use Model\Cashbook\Services\ICampCategoryUpdater;
 use Model\DTO\Cashbook\CategorySummary;
 use Model\Utils\MoneyFactory;
+
 use function assert;
 
 class UpdateCampCategoryTotalHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
-    /** @var ICampCategoryUpdater */
-    private $updater;
+    private ICampCategoryUpdater $updater;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(ICashbookRepository $cashbooks, ICampCategoryUpdater $updater, QueryBus $queryBus)
     {
@@ -31,7 +29,7 @@ class UpdateCampCategoryTotalHandler
         $this->queryBus  = $queryBus;
     }
 
-    public function __invoke(UpdateCampCategoryTotals $command) : void
+    public function __invoke(UpdateCampCategoryTotals $command): void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
 

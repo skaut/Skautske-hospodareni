@@ -6,8 +6,7 @@ namespace Model\Event;
 
 final class SkautisCampId
 {
-    /** @var int */
-    private $value;
+    private int $value;
 
     public function __construct(int $value)
     {
@@ -17,17 +16,17 @@ final class SkautisCampId
     /**
      * @deprecated use self::toInt()
      */
-    public function getValue() : int
+    public function getValue(): int
     {
         return $this->value;
     }
 
-    public function toInt() : int
+    public function toInt(): int
     {
         return $this->value;
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         return (string) $this->value;
     }

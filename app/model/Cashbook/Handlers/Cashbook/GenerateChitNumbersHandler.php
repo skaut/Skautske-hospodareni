@@ -12,8 +12,7 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 
 final class GenerateChitNumbersHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
     public function __construct(ICashbookRepository $cashbooks)
     {
@@ -25,7 +24,7 @@ final class GenerateChitNumbersHandler
      * @throws CashbookNotFound
      * @throws NonNumericChitNumbers
      */
-    public function __invoke(GenerateChitNumbers $command) : void
+    public function __invoke(GenerateChitNumbers $command): void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
         $cashbook->generateChitNumbers($command->getPaymentMethod());

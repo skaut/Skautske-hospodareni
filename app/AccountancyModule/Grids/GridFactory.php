@@ -7,6 +7,7 @@ namespace App\AccountancyModule\Factories;
 use App\AccountancyModule\Components\DataGrid;
 use Nette\Bridges\ApplicationLatte\Template;
 use Ublaboo\DataGrid\Localization\SimpleTranslator;
+
 use function assert;
 
 class GridFactory
@@ -33,7 +34,7 @@ class GridFactory
         'Inserted' => 'Vloženo',
     ];
 
-    public function create() : DataGrid
+    public function create(): DataGrid
     {
         $grid = new DataGrid();
         $grid->setDefaultPerPage(20);
@@ -47,7 +48,7 @@ class GridFactory
     /**
      * @param array<string, mixed> $templateParameters
      */
-    public function createSimpleGrid(?string $templateFile = null, array $templateParameters = []) : DataGrid
+    public function createSimpleGrid(?string $templateFile = null, array $templateParameters = []): DataGrid
     {
         $grid = new DataGrid();
 
@@ -59,7 +60,7 @@ class GridFactory
         $grid->setRememberState(false);
         $grid->setRefreshUrl(true);
 
-        $grid->onAnchor[] = function () use ($grid, $templateFile, $templateParameters) : void {
+        $grid->onAnchor[] = function () use ($grid, $templateFile, $templateParameters): void {
             $template = $grid->getTemplate();
             assert($template instanceof Template);
             $baseTemplate = __DIR__ . '/../Components/templates/datagrid.latte';
@@ -71,7 +72,7 @@ class GridFactory
             $template->setParameters($templateParameters);
         };
 
-        $grid->onRedraw[] = function () use ($grid) : void {
+        $grid->onRedraw[] = function () use ($grid): void {
             $presenter = $grid->presenter;
 
             if (! $presenter->isAjax()) {

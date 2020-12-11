@@ -11,12 +11,12 @@ use Model\Cashbook\Operation;
 use Model\Event\ReadModel\Queries\CampStatisticsQuery;
 use Model\Event\SkautisCampId;
 use PDO;
+
 use function array_map;
 
 class CampStatisticsQueryHandler
 {
-    /** @var Connection */
-    private $db;
+    private Connection $db;
 
     public function __construct(Connection $connection)
     {
@@ -26,7 +26,7 @@ class CampStatisticsQueryHandler
     /**
      * @return float[]
      */
-    public function __invoke(CampStatisticsQuery $query) : array
+    public function __invoke(CampStatisticsQuery $query): array
     {
         $params = [
             array_map(function (SkautisCampId $id) {

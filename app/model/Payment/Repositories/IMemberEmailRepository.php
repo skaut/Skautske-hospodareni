@@ -9,5 +9,5 @@ interface IMemberEmailRepository
     /**
      * @return array<string, string> email address => email label
      */
-    public function findByMember(int $memberId) : array;
+    public function findByMember(int $memberId): array;
 }

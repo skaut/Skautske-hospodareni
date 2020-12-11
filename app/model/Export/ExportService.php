@@ -37,6 +37,7 @@ use Model\Event\SkautisEventId;
 use Model\Participant\Payment\EventType;
 use Model\Services\TemplateFactory;
 use Model\Utils\MoneyFactory;
+
 use function array_column;
 use function array_filter;
 use function array_sum;
@@ -51,17 +52,13 @@ class ExportService
     public const CATEGORY_VIRTUAL = 'virtual';
     public const CATEGORY_REAL    = 'real';
 
-    /** @var UnitService */
-    private $units;
+    private UnitService $units;
 
-    /** @var TemplateFactory */
-    private $templateFactory;
+    private TemplateFactory $templateFactory;
 
-    /** @var IEventRepository */
-    private $events;
+    private IEventRepository $events;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(
         UnitService $units,
@@ -75,12 +72,12 @@ class ExportService
         $this->queryBus        = $queryBus;
     }
 
-    public function getNewPage() : string
+    public function getNewPage(): string
     {
         return '<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />';
     }
 
-    public function getParticipants(int $aid, string $type = EventType::GENERAL) : string
+    public function getParticipants(int $aid, string $type = EventType::GENERAL): string
     {
         if ($type === EventType::CAMP) {
             $templateFile = __DIR__ . '/templates/participantCamp.latte';
@@ -108,7 +105,7 @@ class ExportService
     /**
      * vrací pokladní knihu
      */
-    public function getCashbook(CashbookId $cashbookId, PaymentMethod $paymentMethod) : string
+    public function getCashbook(CashbookId $cashbookId, PaymentMethod $paymentMethod): string
     {
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
         assert($cashbook instanceof Cashbook);
@@ -130,18 +127,18 @@ class ExportService
     /**
      * vrací seznam dokladů
      */
-    public function getChitlist(CashbookId $cashbookId) : string
+    public function getChitlist(CashbookId $cashbookId): string
     {
         $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
 
         return $this->templateFactory->create(__DIR__ . '/templates/chitlist.latte', [
-            'list' => array_filter($chits, function (Chit $chit) : bool {
+            'list' => array_filter($chits, function (Chit $chit): bool {
                 return ! $chit->isIncome();
             }),
         ]);
     }
 
-    public function getEventReport(int $skautisEventId) : string
+    public function getEventReport(int $skautisEventId): string
     {
         $sums = [
             self::CATEGORY_VIRTUAL => [
@@ -163,7 +160,7 @@ class ExportService
                 continue;
             }
 
-            $virtual   = $categorySummary->isVirtual() ? self::CATEGORY_VIRTUAL:self::CATEGORY_REAL;
+            $virtual   = $categorySummary->isVirtual() ? self::CATEGORY_VIRTUAL : self::CATEGORY_REAL;
             $operation = $categorySummary->getOperationType()->getValue();
 
             $sums[$virtual][$operation][$categorySummary->getId()] = [
@@ -210,7 +207,7 @@ class ExportService
         ]);
     }
 
-    public function getCampReport(int $skautisCampId, bool $areTotalsConsistentWithSkautis) : string
+    public function getCampReport(int $skautisCampId, bool $areTotalsConsistentWithSkautis): string
     {
         $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($skautisCampId)));
         $categories = $this->queryBus->handle(new CategoriesSummaryQuery($cashbookId));

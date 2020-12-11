@@ -12,5 +12,5 @@ interface IMemberRepository
     /**
      * @return Member[]
      */
-    public function findByUnit(UnitId $unitId, bool $includeSubunitMembers) : array;
+    public function findByUnit(UnitId $unitId, bool $includeSubunitMembers): array;
 }

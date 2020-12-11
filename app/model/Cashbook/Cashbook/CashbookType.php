@@ -6,6 +6,7 @@ namespace Model\Cashbook\Cashbook;
 
 use Consistence\Enum\Enum;
 use Model\Cashbook\ObjectType;
+
 use function array_filter;
 use function array_keys;
 use function array_map;
@@ -33,7 +34,7 @@ class CashbookType extends Enum
         self::CAMP => 16, // "Převod do akce"
     ];
 
-    public function getSkautisObjectType() : ObjectType
+    public function getSkautisObjectType(): ObjectType
     {
         if (in_array($this->getValue(), [self::OFFICIAL_UNIT, self::TROOP], true)) {
             return ObjectType::get(ObjectType::UNIT);
@@ -42,12 +43,12 @@ class CashbookType extends Enum
         return ObjectType::get($this->getValue());
     }
 
-    public function getTransferFromCategoryId() : int
+    public function getTransferFromCategoryId(): int
     {
         return self::TRANSFER_FROM_CATEGORY_IDS[$this->getValue()];
     }
 
-    public function getTransferToCategoryId() : int
+    public function getTransferToCategoryId(): int
     {
         return self::TRANSFER_TO_CATEGORY_IDS[$this->getValue()];
     }
@@ -55,7 +56,7 @@ class CashbookType extends Enum
     /**
      * @return CashbookType[]
      */
-    public static function getInverseCashbookTypes(int $chitCategoryId) : array
+    public static function getInverseCashbookTypes(int $chitCategoryId): array
     {
         foreach ([self::TRANSFER_FROM_CATEGORY_IDS, self::TRANSFER_TO_CATEGORY_IDS] as $categoryIdsByType) {
             $types = array_filter(
@@ -65,7 +66,7 @@ class CashbookType extends Enum
 
             if (count($types) !== 0) {
                 return array_map(
-                    function (string $type) : self {
+                    function (string $type): self {
                         return CashbookType::get($type);
                     },
                     $types
@@ -76,12 +77,12 @@ class CashbookType extends Enum
         return [];
     }
 
-    public function isUnit() : bool
+    public function isUnit(): bool
     {
         return in_array($this->getValue(), [self::OFFICIAL_UNIT, self::TROOP], true);
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         return (string) $this->getValue();
     }

@@ -14,33 +14,31 @@ use Model\DTO\Camp\CampListItem;
 use Model\DTO\Cashbook\Cashbook;
 use Model\Event\Camp;
 use Model\Event\ReadModel\Queries\CampListQuery;
+
 use function array_map;
 use function assert;
 
 final class CampListDataSource extends DataSource
 {
-    /** @var int|null */
-    private $year;
+    private ?int $year = null;
 
-    /** @var string|null */
-    private $state;
+    private ?string $state = null;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(QueryBus $queryBus)
     {
         $this->queryBus = $queryBus;
     }
 
-    public function filterByYear(?int $year) : self
+    public function filterByYear(?int $year): self
     {
         $this->year = $year;
 
         return $this;
     }
 
-    public function filterByState(?string $state) : self
+    public function filterByState(?string $state): self
     {
         $this->state = $state;
 
@@ -50,12 +48,12 @@ final class CampListDataSource extends DataSource
     /**
      * @return CampListItem[]
      */
-    protected function loadData() : array
+    protected function loadData(): array
     {
         $camps = $this->queryBus->handle(new CampListQuery($this->year, $this->state));
 
         return array_map(
-            function (Camp $camp) : CampListItem {
+            function (Camp $camp): CampListItem {
                 return new CampListItem(
                     $camp->getId()->toInt(),
                     $camp->getDisplayName(),
@@ -70,7 +68,7 @@ final class CampListDataSource extends DataSource
         );
     }
 
-    private function chitNumberPrefix(Camp $camp) : ?string
+    private function chitNumberPrefix(Camp $camp): ?string
     {
         $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery($camp->getId()));
 

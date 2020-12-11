@@ -9,14 +9,14 @@ use Nette\Utils\Strings;
 use Skautis\Skautis;
 use Skautis\Wsdl\PermissionException;
 use stdClass;
+
 use function array_merge;
 use function assert;
 use function is_string;
 
 final class MemberEmailRepository implements IMemberEmailRepository
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
     public function __construct(Skautis $skautis)
     {
@@ -26,7 +26,7 @@ final class MemberEmailRepository implements IMemberEmailRepository
     /**
      * @return array<string, string>
      */
-    public function findByMember(int $memberId) : array
+    public function findByMember(int $memberId): array
     {
         try {
             $contacts = $this->toArray($this->skautis->org->PersonContactAll(['ID_Person' => $memberId]));
@@ -61,7 +61,7 @@ final class MemberEmailRepository implements IMemberEmailRepository
      *
      * @return stdClass[]
      */
-    private function toArray($response) : array
+    private function toArray($response): array
     {
         if ($response instanceof stdClass) {
             return [];

@@ -9,15 +9,14 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 
 final class ClearCashbookHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
     public function __construct(ICashbookRepository $cashbooks)
     {
         $this->cashbooks = $cashbooks;
     }
 
-    public function __invoke(ClearCashbook $command) : void
+    public function __invoke(ClearCashbook $command): void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
 

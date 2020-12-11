@@ -11,17 +11,13 @@ class UpdateParticipant
     public const FIELD_REPAYMENT  = 'repayment';
     public const FIELD_IS_ACCOUNT = 'isAccount';
 
-    /** @var int */
-    private $eventId;
+    private int $eventId;
 
-    /** @var int */
-    private $participantId;
+    private int $participantId;
 
-    /** @var string */
-    private $field;
+    private string $field;
 
-    /** @var string */
-    private $value;
+    private string $value;
 
     public function __construct(int $eventId, int $participantId, string $field, string $value)
     {
@@ -31,34 +27,34 @@ class UpdateParticipant
         $this->value         = $value;
     }
 
-    public function getEventId() : int
+    public function getEventId(): int
     {
         return $this->eventId;
     }
 
-    public function getParticipantId() : int
+    public function getParticipantId(): int
     {
         return $this->participantId;
     }
 
-    public function getField() : string
+    public function getField(): string
     {
         return $this->field;
     }
 
-    public function getValue() : string
+    public function getValue(): string
     {
         return $this->value;
     }
 
     /** @return string[] */
-    public static function getCampFields() : array
+    public static function getCampFields(): array
     {
         return [self::FIELD_DAYS, self::FIELD_PAYMENT, self::FIELD_REPAYMENT, self::FIELD_IS_ACCOUNT];
     }
 
     /** @return string[] */
-    public static function getEventFields() : array
+    public static function getEventFields(): array
     {
         return [self::FIELD_DAYS, self::FIELD_PAYMENT];
     }

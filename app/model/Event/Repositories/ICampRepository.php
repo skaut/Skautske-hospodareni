@@ -13,5 +13,5 @@ interface ICampRepository
     /**
      * @throws CampNotFound
      */
-    public function find(SkautisCampId $id) : Camp;
+    public function find(SkautisCampId $id): Camp;
 }

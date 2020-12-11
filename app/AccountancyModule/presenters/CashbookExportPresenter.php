@@ -32,6 +32,7 @@ use RuntimeException;
 use Ublaboo\Responses\PSR7StreamResponse;
 use ZipStream\Option\Archive;
 use ZipStream\ZipStream;
+
 use function array_filter;
 use function array_map;
 use function array_values;
@@ -43,20 +44,14 @@ use function sprintf;
 
 class CashbookExportPresenter extends BasePresenter
 {
-    /**
-     * @var string
-     * @persistent
-     */
-    public $cashbookId = ''; // default value type is used for type casting
+    /** @persistent */
+    public string $cashbookId = ''; // default value type is used for type casting
 
-    /** @var ExportService */
-    private $exportService;
+    private ExportService $exportService;
 
-    /** @var ExcelService */
-    private $excelService;
+    private ExcelService $excelService;
 
-    /** @var PdfRenderer */
-    private $pdf;
+    private PdfRenderer $pdf;
 
     public function __construct(ExportService $exportService, ExcelService $excelService, PdfRenderer $pdf)
     {
@@ -70,7 +65,7 @@ class CashbookExportPresenter extends BasePresenter
      * @throws SkautisMaintenance
      * @throws BadRequestException
      */
-    public function startup() : void
+    public function startup(): void
     {
         parent::startup();
 
@@ -84,7 +79,7 @@ class CashbookExportPresenter extends BasePresenter
      *
      * @param int[] $chitIds
      */
-    public function actionPrintChits(string $cashbookId, array $chitIds) : void
+    public function actionPrintChits(string $cashbookId, array $chitIds): void
     {
         $chitIds  = array_map('\intval', $chitIds);
         $template = $this->queryBus->handle(ExportChits::withChitIds(CashbookId::fromString($cashbookId), $chitIds));
@@ -97,7 +92,7 @@ class CashbookExportPresenter extends BasePresenter
      *
      * @param int[] $chitIds
      */
-    public function actionExportChits(string $cashbookId, array $chitIds) : void
+    public function actionExportChits(string $cashbookId, array $chitIds): void
     {
         $chitIds = array_map('\intval', $chitIds);
 
@@ -112,7 +107,7 @@ class CashbookExportPresenter extends BasePresenter
     /**
      * Exports all chits as PDF for printing
      */
-    public function actionPrintAllChits(string $cashbookId) : void
+    public function actionPrintAllChits(string $cashbookId): void
     {
         $template = $this->exportService->getChitlist(CashbookId::fromString($cashbookId));
         $this->pdf->render($template, 'seznam-dokladu.pdf');
@@ -122,7 +117,7 @@ class CashbookExportPresenter extends BasePresenter
     /**
      * Exports cashbook (list of cashbook operations) as PDF for printing
      */
-    public function actionPrintCashbook(string $cashbookId, string $paymentMethod) : void
+    public function actionPrintCashbook(string $cashbookId, string $paymentMethod): void
     {
         $method = PaymentMethod::get($paymentMethod);
 
@@ -136,7 +131,7 @@ class CashbookExportPresenter extends BasePresenter
     /**
      * Exports cashbook (list of cashbook operations) as XLS file
      */
-    public function actionExportCashbook(string $cashbookId, string $paymentMethod) : void
+    public function actionExportCashbook(string $cashbookId, string $paymentMethod): void
     {
         $cashbookId = CashbookId::fromString($cashbookId);
 
@@ -160,7 +155,7 @@ class CashbookExportPresenter extends BasePresenter
         );
     }
 
-    public function actionExportScans(string $cashbookId, string $paymentMethod) : void
+    public function actionExportScans(string $cashbookId, string $paymentMethod): void
     {
         $method = PaymentMethod::get($paymentMethod);
 
@@ -174,13 +169,14 @@ class CashbookExportPresenter extends BasePresenter
             assert($file instanceof File);
             $zip->addFileFromPsr7Stream($name, $file->getContents());
         }
+
         $zip->finish();
     }
 
     /**
      * Exports cashbook (list of cashbook operations) with category columns as XLS file
      */
-    public function actionExportCashbookWithCategories(string $cashbookId, string $paymentMethod) : void
+    public function actionExportCashbookWithCategories(string $cashbookId, string $paymentMethod): void
     {
         if (! PaymentMethod::isValidValue($paymentMethod)) {
             throw new BadRequestException(
@@ -197,17 +193,17 @@ class CashbookExportPresenter extends BasePresenter
         $this->sendResponse(new ExcelResponse('pokladni-kniha', $spreadsheet));
     }
 
-    public function actionDownloadScan(string $cashbookId, int $chitId, string $path) : void
+    public function actionDownloadScan(string $cashbookId, int $chitId, string $path): void
     {
         $this->downloadScan($cashbookId, $chitId, $path, false);
     }
 
-    public function actionDownloadScanThumbnail(string $cashbookId, int $chitId, string $path) : void
+    public function actionDownloadScanThumbnail(string $cashbookId, int $chitId, string $path): void
     {
         $this->downloadScan($cashbookId, $chitId, $path, true);
     }
 
-    private function downloadScan(string $cashbookId, int $chitId, string $path, bool $thumbnail) : void
+    private function downloadScan(string $cashbookId, int $chitId, string $path, bool $thumbnail): void
     {
         $cashbookId = CashbookId::fromString($cashbookId);
         foreach ($this->queryBus->handle(new ChitScansQuery($cashbookId, $chitId)) as $scan) {
@@ -216,6 +212,7 @@ class CashbookExportPresenter extends BasePresenter
             if ($scan->getPath() !== $path) {
                 continue;
             }
+
             $contents = $scan->getContents();
             if ($thumbnail) {
                 $image = Image::fromString($contents);
@@ -232,7 +229,7 @@ class CashbookExportPresenter extends BasePresenter
     /**
      * @throws BadRequestException
      */
-    private function hasAccessToCashbook() : bool
+    private function hasAccessToCashbook(): bool
     {
         $skautisType = $this->getSkautisType()->getValue();
 
@@ -252,7 +249,7 @@ class CashbookExportPresenter extends BasePresenter
     /**
      * @throws BadRequestException
      */
-    private function getSkautisType() : ObjectType
+    private function getSkautisType(): ObjectType
     {
         try {
             $cashbook = $this->queryBus->handle(new CashbookQuery(CashbookId::fromString($this->cashbookId)));
@@ -265,7 +262,7 @@ class CashbookExportPresenter extends BasePresenter
         }
     }
 
-    private function getSkautisId() : int
+    private function getSkautisId(): int
     {
         return $this->queryBus->handle(
             new SkautisIdQuery(CashbookId::fromString($this->cashbookId))
@@ -277,13 +274,13 @@ class CashbookExportPresenter extends BasePresenter
      *
      * @return Chit[]
      */
-    private function getChitsWithIds(array $ids) : array
+    private function getChitsWithIds(array $ids): array
     {
         $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), CashbookId::fromString($this->cashbookId)));
 
         $filteredChits = array_filter(
             $chits,
-            function (Chit $chit) use ($ids) : bool {
+            function (Chit $chit) use ($ids): bool {
                 return in_array($chit->getId(), $ids, true);
             }
         );

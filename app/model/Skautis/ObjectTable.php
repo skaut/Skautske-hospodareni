@@ -11,15 +11,14 @@ class ObjectTable
 {
     private const TABLE = 'ac_object';
 
-    /** @var Connection */
-    private $connection;
+    private Connection $connection;
 
     public function __construct(Connection $connection)
     {
         $this->connection = $connection;
     }
 
-    public function add(int $skautisId, CashbookId $cashbookId, string $type) : void
+    public function add(int $skautisId, CashbookId $cashbookId, string $type): void
     {
         $this->connection->insert(self::TABLE, [
             'id' => $cashbookId->toString(),
@@ -31,7 +30,7 @@ class ObjectTable
     /**
      * Vyhleda akci|jednotku
      */
-    public function getLocalId(int $skautisEventId, string $type) : ?CashbookId
+    public function getLocalId(int $skautisEventId, string $type): ?CashbookId
     {
         $row = $this->connection->executeQuery(
             'SELECT id FROM ' . self::TABLE . ' WHERE skautisId = :skautisId AND type = :type',
@@ -44,7 +43,7 @@ class ObjectTable
         return $row !== false ? CashbookId::fromString($row['id']) : null;
     }
 
-    public function getSkautisId(CashbookId $cashbookId, string $type) : ?int
+    public function getSkautisId(CashbookId $cashbookId, string $type): ?int
     {
         $row = $this->connection->executeQuery(
             'SELECT skautisId FROM ' . self::TABLE . ' WHERE id = :id AND type = :type',

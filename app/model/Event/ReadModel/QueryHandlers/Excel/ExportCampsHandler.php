@@ -21,23 +21,20 @@ use Model\Unit\Repositories\IUnitRepository;
 use Model\Unit\UnitNotFound;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+
 use function array_map;
 use function assert;
 use function implode;
 
 final class ExportCampsHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var SpreadsheetFactory */
-    private $spreadsheetFactory;
+    private SpreadsheetFactory $spreadsheetFactory;
 
-    /** @var IUnitRepository */
-    private $unitRepository;
+    private IUnitRepository $unitRepository;
 
-    /** @var SheetChitsGenerator */
-    private $sheetChitsGenerator;
+    private SheetChitsGenerator $sheetChitsGenerator;
 
     public function __construct(
         QueryBus $queryBus,
@@ -51,12 +48,12 @@ final class ExportCampsHandler
         $this->sheetChitsGenerator = $sheetChitsGenerator;
     }
 
-    public function __invoke(ExportCamps $query) : Spreadsheet
+    public function __invoke(ExportCamps $query): Spreadsheet
     {
         $spreadsheet = $this->spreadsheetFactory->create();
 
         $camps = array_map(
-            function (int $campId) : Camp {
+            function (int $campId): Camp {
                 return $this->queryBus->handle(new CampQuery(new SkautisCampId($campId)));
             },
             $query->getCampIds()
@@ -69,7 +66,7 @@ final class ExportCampsHandler
         ($this->sheetChitsGenerator)(
             $spreadsheet->createSheet(1),
             array_map(
-                function (Camp $camp) : ExportedCashbook {
+                function (Camp $camp): ExportedCashbook {
                     return new ExportedCashbook(
                         $this->queryBus->handle(new CampCashbookIdQuery($camp->getId())),
                         $camp->getDisplayName()
@@ -85,7 +82,7 @@ final class ExportCampsHandler
     /**
      * @param Camp[] $camps
      */
-    protected function setSheetCamps(Worksheet $sheet, array $camps) : void
+    protected function setSheetCamps(Worksheet $sheet, array $camps): void
     {
         $sheet->setCellValue('A1', 'Pořadatel')
             ->setCellValue('B1', 'Název akce')
@@ -135,6 +132,7 @@ final class ExportCampsHandler
         foreach (Range::letters('A', 'N') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
+
         $sheet->getStyle('A1:N1')->getFont()->setBold(true);
         $sheet->setAutoFilter('A1:N' . ($rowCnt - 1));
         $sheet->setTitle('Přehled táborů');
@@ -143,7 +141,7 @@ final class ExportCampsHandler
     /**
      * @return string[]
      */
-    private function getCampTroopNames(Camp $camp) : array
+    private function getCampTroopNames(Camp $camp): array
     {
         $troopNames = [];
         foreach ($camp->getParticipatingUnits() as $troopId) {
@@ -153,6 +151,7 @@ final class ExportCampsHandler
                 // Removed troops are returned as well https://github.com/skaut/Skautske-hospodareni/issues/483
                 continue;
             }
+
             $troopNames[] = $unit->getDisplayName();
         }
 

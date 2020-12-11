@@ -21,6 +21,7 @@ use Model\Event\ReadModel\Queries\EventListQuery;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Multiplier;
 use Nette\Http\IResponse;
+
 use function assert;
 use function sprintf;
 
@@ -33,16 +34,12 @@ class ChitPresenter extends BasePresenter
      *
      * @var array<string, array<string, array<string, mixed>>>
      */
-    private $cashbooks = [];
+    private array $cashbooks = [];
 
-    /**
-     * @persistent
-     * @var int
-     */
-    public $onlyUnlocked = 1;
+    /** @persistent */
+    public int $onlyUnlocked = 1;
 
-    /** @var IChitListControlFactory */
-    private $chitListFactory;
+    private IChitListControlFactory $chitListFactory;
 
     public function __construct(IChitListControlFactory $chitListFactory)
     {
@@ -50,7 +47,7 @@ class ChitPresenter extends BasePresenter
         $this->chitListFactory = $chitListFactory;
     }
 
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
         $this->template->setParameters([
@@ -66,7 +63,7 @@ class ChitPresenter extends BasePresenter
         $this->redirect('this', ['unitId' => $officialUnitId]);
     }
 
-    public function handleLockCashbook(string $cashbookId) : void
+    public function handleLockCashbook(string $cashbookId): void
     {
         $this->commandBus->handle(new LockCashbook(CashbookId::fromString($cashbookId), $this->getUser()->getId()));
 
@@ -74,7 +71,7 @@ class ChitPresenter extends BasePresenter
         $this->redrawControl();
     }
 
-    public function actionDefault(?int $year = null) : void
+    public function actionDefault(?int $year = null): void
     {
         $this->cashbooks = [
             ObjectType::UNIT => $this->getUnitCashbooks(),
@@ -83,7 +80,7 @@ class ChitPresenter extends BasePresenter
         ];
     }
 
-    public function renderDefault() : void
+    public function renderDefault(): void
     {
         $this->template->setParameters([
             'types' => [
@@ -92,7 +89,7 @@ class ChitPresenter extends BasePresenter
                 ObjectType::UNIT => 'Jednotky',
             ],
             'info'            => $this->cashbooks,
-            'isCashbookEmpty' => function (string $cashbookId) : bool {
+            'isCashbookEmpty' => function (string $cashbookId): bool {
                 $chitList = $this['chitList-' . $cashbookId];
 
                 assert($chitList instanceof ChitListControl);
@@ -102,10 +99,10 @@ class ChitPresenter extends BasePresenter
         ]);
     }
 
-    protected function createComponentChitList() : Multiplier
+    protected function createComponentChitList(): Multiplier
     {
         return new Multiplier(
-            function (string $cashbookId) : ChitListControl {
+            function (string $cashbookId): ChitListControl {
                 $cashbookIdVo = CashbookId::fromString($cashbookId);
                 if (! $this->canEditCashbook($cashbookIdVo)) {
                     throw new BadRequestException(sprintf('Cashbook #%s not found', $cashbookIdVo->toString()), IResponse::S404_NOT_FOUND);
@@ -116,7 +113,7 @@ class ChitPresenter extends BasePresenter
         );
     }
 
-    private function canEditCashbook(CashbookId $cashbookId) : bool
+    private function canEditCashbook(CashbookId $cashbookId): bool
     {
         foreach ($this->cashbooks as $cashbookList) {
             if (isset($cashbookList[$cashbookId->withoutHyphens()])) {
@@ -130,7 +127,7 @@ class ChitPresenter extends BasePresenter
     /**
      * @return array<string, array<string, int|string>>
      */
-    private function getUnitCashbooks() : array
+    private function getUnitCashbooks(): array
     {
         $cashbooks = [];
 
@@ -151,7 +148,7 @@ class ChitPresenter extends BasePresenter
     /**
      * @return array<string, array<string, int|string>>
      */
-    private function getEventCashbooks() : array
+    private function getEventCashbooks(): array
     {
         $readableUnits = $this->unitService->getReadUnits($this->user);
 
@@ -180,7 +177,7 @@ class ChitPresenter extends BasePresenter
     /**
      * @return array<string, array<string, int|string>>
      */
-    private function getCampCashbooks() : array
+    private function getCampCashbooks(): array
     {
         $readableUnits = $this->unitService->getReadUnits($this->user);
 

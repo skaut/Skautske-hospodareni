@@ -10,6 +10,7 @@ use Model\Event\Camp;
 use Model\Event\ParticipantStatistics;
 use Model\Event\SkautisCampId;
 use stdClass;
+
 use function array_map;
 use function is_array;
 use function is_string;
@@ -19,7 +20,7 @@ final class CampFactory
 {
     private const DATETIME_FORMAT = 'Y-m-d\TH:i:s';
 
-    public function create(stdClass $skautisCamp) : Camp
+    public function create(stdClass $skautisCamp): Camp
     {
         if (isset($skautisCamp->RealPersonDays)) {
             $stats = new ParticipantStatistics(
@@ -54,7 +55,7 @@ final class CampFactory
     /**
      * @return UnitId[]
      */
-    private function getParticipatingUnits(stdClass $idUnitArray) : array
+    private function getParticipatingUnits(stdClass $idUnitArray): array
     {
         if (property_exists($idUnitArray, 'string')) {
             $unitIdOrIds = $idUnitArray->string;

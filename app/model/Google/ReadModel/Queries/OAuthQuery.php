@@ -18,7 +18,7 @@ final class OAuthQuery
         $this->oAuthId = $oAuthId;
     }
 
-    public function getOAuthId() : OAuthId
+    public function getOAuthId(): OAuthId
     {
         return $this->oAuthId;
     }

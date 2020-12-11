@@ -13,5 +13,5 @@ interface IPersonPickerFactory
     /**
      * @param Participant[] $currentParticipants
      */
-    public function create(UnitId $userUnitId, array $currentParticipants) : PersonPicker;
+    public function create(UnitId $userUnitId, array $currentParticipants): PersonPicker;
 }

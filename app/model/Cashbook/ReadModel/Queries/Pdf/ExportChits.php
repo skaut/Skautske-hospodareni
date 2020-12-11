@@ -11,11 +11,10 @@ use Model\Cashbook\Cashbook\CashbookId;
  */
 final class ExportChits
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
     /** @var int[]|NULL */
-    private $chitIds;
+    private ?array $chitIds = null;
 
     /**
      * Use static factory method
@@ -31,17 +30,17 @@ final class ExportChits
     /**
      * @param int[]|null $chitIds
      */
-    public static function withChitIds(CashbookId $cashbookId, ?array $chitIds) : self
+    public static function withChitIds(CashbookId $cashbookId, ?array $chitIds): self
     {
         return new self($cashbookId, $chitIds);
     }
 
-    public static function all(CashbookId $cashbookId) : self
+    public static function all(CashbookId $cashbookId): self
     {
         return new self($cashbookId, null);
     }
 
-    public function getCashbookId() : CashbookId
+    public function getCashbookId(): CashbookId
     {
         return $this->cashbookId;
     }
@@ -49,7 +48,7 @@ final class ExportChits
     /**
      * @return int[]|null
      */
-    public function getChitIds() : ?array
+    public function getChitIds(): ?array
     {
         return $this->chitIds;
     }

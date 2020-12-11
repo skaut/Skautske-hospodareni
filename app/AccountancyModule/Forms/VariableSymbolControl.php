@@ -17,7 +17,7 @@ class VariableSymbolControl extends TextInput
         $this->addRule(Form::PATTERN, 'VS nesmí začínat nulou', '^(?!0).*$');
     }
 
-    public function getValue() : ?VariableSymbol
+    public function getValue(): ?VariableSymbol
     {
         $value = parent::getValue();
 

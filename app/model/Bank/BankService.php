@@ -17,6 +17,7 @@ use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Utils\Arrays;
+
 use function array_filter;
 use function array_keys;
 use function array_map;
@@ -29,17 +30,13 @@ use function sprintf;
 
 class BankService
 {
-    /** @var IFioClient */
-    private $bank;
+    private IFioClient $bank;
 
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
-    /** @var IPaymentRepository */
-    private $payments;
+    private IPaymentRepository $payments;
 
-    /** @var IBankAccountRepository */
-    private $bankAccounts;
+    private IBankAccountRepository $bankAccounts;
 
     public const DAYS_BACK_DEFAULT = 60;
 
@@ -66,7 +63,7 @@ class BankService
      * @throws BankTimeout
      * @throws InvalidOAuth
      */
-    public function pairAllGroups(array $groupIds, ?int $daysBack = null) : array
+    public function pairAllGroups(array $groupIds, ?int $daysBack = null): array
     {
         Assert::thatAll($groupIds)->integer();
         Assert::that($daysBack)->nullOr()->min(1);
@@ -129,7 +126,7 @@ class BankService
     /**
      * @param Group[] $groups
      */
-    private function updateLastPairing(array $groups, DateTimeImmutable $time) : void
+    private function updateLastPairing(array $groups, DateTimeImmutable $time): void
     {
         foreach ($groups as $group) {
             $group->updateLastPairing($time);
@@ -140,7 +137,7 @@ class BankService
     /**
      * @param Group[] $groups
      */
-    private function resolveLastPairing(array $groups) : DateTimeImmutable
+    private function resolveLastPairing(array $groups): DateTimeImmutable
     {
         $lastPairings = array_map(
             function (Group $g) {
@@ -163,7 +160,7 @@ class BankService
      *
      * @return Payment[]
      */
-    private function markPaymentsAsComplete(array $transactions, array $payments) : array
+    private function markPaymentsAsComplete(array $transactions, array $payments): array
     {
         $paymentsByVS = Arrays::groupBy(
             $payments,
@@ -183,7 +180,7 @@ class BankService
         $now    = new DateTimeImmutable();
         foreach ($transactions as $transaction) {
             foreach ($paymentsByVS[$transaction->getVariableSymbol()] as $offset => $payment) {
-                /** @var Payment $payment */
+                assert($payment instanceof Payment);
                 if ($payment->getAmount() !== $transaction->getAmount()) {
                     continue;
                 }

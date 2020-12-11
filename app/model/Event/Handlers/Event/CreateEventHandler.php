@@ -9,15 +9,14 @@ use Skautis\Skautis;
 
 final class CreateEventHandler
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
     public function __construct(Skautis $skautis)
     {
         $this->skautis = $skautis;
     }
 
-    public function __invoke(CreateEvent $command) : void
+    public function __invoke(CreateEvent $command): void
     {
         $query = [
             'ID' => 1, // musi byt neco nastavene

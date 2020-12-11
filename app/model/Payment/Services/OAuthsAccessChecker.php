@@ -11,11 +11,9 @@ use Model\Payment\IUnitResolver;
 
 final class OAuthsAccessChecker implements IOAuthAccessChecker
 {
-    /** @var IGoogleRepository */
-    private $googleRepository;
+    private IGoogleRepository $googleRepository;
 
-    /** @var IUnitResolver */
-    private $unitResolver;
+    private IUnitResolver $unitResolver;
 
     public function __construct(IGoogleRepository $googleRepository, IUnitResolver $unitResolver)
     {
@@ -28,7 +26,7 @@ final class OAuthsAccessChecker implements IOAuthAccessChecker
      *
      * @throws OAuthNotFound
      */
-    public function allUnitsHaveAccessToOAuth(array $unitIds, OAuthId $oAuthId) : bool
+    public function allUnitsHaveAccessToOAuth(array $unitIds, OAuthId $oAuthId): bool
     {
         $ownerUnitId = $this->googleRepository->find($oAuthId)->getUnitId();
 

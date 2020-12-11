@@ -8,8 +8,7 @@ use InvalidArgumentException;
 
 final class Recipient
 {
-    /** @var string */
-    private $name;
+    private string $name;
 
     public function __construct(string $name)
     {
@@ -20,12 +19,12 @@ final class Recipient
         $this->name = $name;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         return $this->name;
     }

@@ -16,10 +16,10 @@ interface IStaticCategoryRepository
     /**
      * @return Category[]
      */
-    public function findByObjectType(ObjectType $type) : array;
+    public function findByObjectType(ObjectType $type): array;
 
     /**
      * @throws CategoryNotFound
      */
-    public function find(int $id) : Category;
+    public function find(int $id): Category;
 }

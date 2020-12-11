@@ -12,6 +12,7 @@ use Model\Payment\Summary;
 use Model\PaymentService;
 use Model\Unit\ReadModel\Queries\UnitQuery;
 use Nette\Application\UI\Multiplier;
+
 use function array_filter;
 use function array_keys;
 use function array_map;
@@ -20,17 +21,14 @@ use function assert;
 
 final class GroupListPresenter extends BasePresenter
 {
-    /** @var Factories\IPairButtonFactory */
-    private $pairButtonFactory;
+    private Factories\IPairButtonFactory $pairButtonFactory;
 
-    /** @var PaymentService */
-    private $groups;
+    private PaymentService $groups;
 
-    /** @var BankAccountService */
-    private $bankAccounts;
+    private BankAccountService $bankAccounts;
 
     /** @var array<int, array<string, Summary>> */
-    private $summaries;
+    private array $summaries;
 
     public function __construct(
         Factories\IPairButtonFactory $pairButtonFactory,
@@ -43,7 +41,7 @@ final class GroupListPresenter extends BasePresenter
         $this->bankAccounts      = $bankAccounts;
     }
 
-    public function actionDefault(bool $onlyOpen = true) : void
+    public function actionDefault(bool $onlyOpen = true): void
     {
         $groups = $this->queryBus->handle(
             new GetGroupList(array_keys($this->unitService->getReadUnits($this->user)), $onlyOpen)
@@ -59,7 +57,7 @@ final class GroupListPresenter extends BasePresenter
             $bankAccountIds[] = $group->getBankAccountId();
 
             $unitNamesByGroup[$group->getId()] = array_map(
-                function (int $unitId) : string {
+                function (int $unitId): string {
                     return $this->queryBus->handle(new UnitQuery($unitId))->getDisplayName();
                 },
                 $group->getUnitIds()
@@ -86,14 +84,14 @@ final class GroupListPresenter extends BasePresenter
         ]);
     }
 
-    protected function createComponentPairButton() : Components\PairButton
+    protected function createComponentPairButton(): Components\PairButton
     {
         return $this->pairButtonFactory->create();
     }
 
-    protected function createComponentProgress() : Multiplier
+    protected function createComponentProgress(): Multiplier
     {
-        return new Multiplier(function (string $groupId) : GroupProgress {
+        return new Multiplier(function (string $groupId): GroupProgress {
             return new GroupProgress($this->summaries[(int) $groupId]);
         });
     }

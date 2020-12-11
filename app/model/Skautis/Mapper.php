@@ -14,19 +14,16 @@ use Model\Payment\IUnitResolver;
 class Mapper
 {
     /** @var int[] */
-    private $skautisIds = [];
+    private array $skautisIds = [];
 
     /** @var CashbookId[] */
-    private $localIds = [];
+    private array $localIds = [];
 
-    /** @var ObjectTable */
-    private $table;
+    private ObjectTable $table;
 
-    /** @var IUnitResolver */
-    private $unitResolver;
+    private IUnitResolver $unitResolver;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
     public const UNIT  = 'unit';
     public const EVENT = 'general';
@@ -42,7 +39,7 @@ class Mapper
     /**
      * Returns ID representing unit/event in Skautis
      */
-    public function getSkautisId(CashbookId $cashbookId, string $type) : ?int
+    public function getSkautisId(CashbookId $cashbookId, string $type): ?int
     {
         $key = $type . $cashbookId;
 
@@ -57,7 +54,7 @@ class Mapper
     /**
      * Returns ID representing unit/event in hskauting
      */
-    public function getLocalId(int $skautisId, string $type) : CashbookId
+    public function getLocalId(int $skautisId, string $type): CashbookId
     {
         $key = $type . $skautisId;
 
@@ -69,7 +66,7 @@ class Mapper
         return $this->localIds[$key];
     }
 
-    private function cache(?int $skautisId, ?CashbookId $localId, string $type) : void
+    private function cache(?int $skautisId, ?CashbookId $localId, string $type): void
     {
         $this->skautisIds[$type . $localId] = $skautisId;
 
@@ -80,7 +77,7 @@ class Mapper
         $this->localIds[$type . $skautisId] = $localId;
     }
 
-    private function loadOrCreateLocalId(int $skautisId, string $type) : CashbookId
+    private function loadOrCreateLocalId(int $skautisId, string $type): CashbookId
     {
         $cashbookId = $this->table->getLocalId($skautisId, $type);
 

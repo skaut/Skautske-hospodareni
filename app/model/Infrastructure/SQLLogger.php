@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Model\Infrastructure;
 
 use Psr\Log\LoggerInterface;
+
 use function preg_match;
 
 // phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 final class SQLLogger implements \Doctrine\DBAL\Logging\SQLLogger
 {
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(LoggerInterface $logger)
     {
@@ -23,7 +23,8 @@ final class SQLLogger implements \Doctrine\DBAL\Logging\SQLLogger
      * @param mixed[]|null $params
      * @param mixed[]|null $types
      */
-    public function startQuery($sql, ?array $params = null, ?array $types = null) : void
+    // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
+    public function startQuery($sql, ?array $params = null, ?array $types = null): void
     {
         $context = [
             'sql' => $sql,
@@ -38,7 +39,7 @@ final class SQLLogger implements \Doctrine\DBAL\Logging\SQLLogger
         }
     }
 
-    public function stopQuery() : void
+    public function stopQuery(): void
     {
     }
 }

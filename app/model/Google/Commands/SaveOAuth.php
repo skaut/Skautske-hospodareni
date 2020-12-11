@@ -12,11 +12,9 @@ use Model\Google\Handlers\SaveOAuthHandler;
  */
 final class SaveOAuth
 {
-    /** @var string */
-    private $code;
+    private string $code;
 
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
     public function __construct(string $code, UnitId $unitId)
     {
@@ -24,12 +22,12 @@ final class SaveOAuth
         $this->unitId = $unitId;
     }
 
-    public function getCode() : string
+    public function getCode(): string
     {
         return $this->code;
     }
 
-    public function getUnitId() : UnitId
+    public function getUnitId(): UnitId
     {
         return $this->unitId;
     }

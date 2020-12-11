@@ -20,12 +20,12 @@ class GooglePresenter extends BasePresenter
         $this->googleRepository = $googleRepository;
     }
 
-    public function actionOAuth() : void
+    public function actionOAuth(): void
     {
         $this->redirectUrl($this->queryBus->handle(new OAuthUrlQuery()));
     }
 
-    public function actionToken(string $code) : void
+    public function actionToken(string $code): void
     {
         try {
             $this->commandBus->handle(new SaveOAuth($code, new UnitId($this->userService->getActualRole()->getUnitId())));
@@ -33,6 +33,7 @@ class GooglePresenter extends BasePresenter
             $this->flashMessage('Nepodařilo se propojit Google účet!', 'danger');
             $this->redirect(':Accountancy:Payment:Mail:');
         }
+
         $this->flashMessage('Propojení s Google účtem proběhlo úspěšně!');
         $this->redirect(':Accountancy:Payment:Mail:');
     }

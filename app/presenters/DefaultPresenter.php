@@ -6,7 +6,7 @@ namespace App;
 
 class DefaultPresenter extends BasePresenter
 {
-    public function renderDefault(?string $backlink = null) : void
+    public function renderDefault(?string $backlink = null): void
     {
     }
 }

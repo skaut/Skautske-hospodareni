@@ -17,11 +17,11 @@ class NotificationsCollector
      *
      * @var array<string, array<string, int>>
      */
-    private $notifications = [
+    private array $notifications = [
         self::ERROR => [],
     ];
 
-    public function error(string $message) : void
+    public function error(string $message): void
     {
         $this->notifications[self::ERROR][$message] = ($this->notifications[self::ERROR][$message] ?? 0) + 1;
     }
@@ -31,7 +31,7 @@ class NotificationsCollector
      *
      * @return array<(string|int)[]> Array of (type, message, count) tuples i.e. [["info", "Something happened", 2]]
      */
-    public function popNotifications() : array
+    public function popNotifications(): array
     {
         $result = [];
 

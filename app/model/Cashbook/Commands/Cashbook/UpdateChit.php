@@ -14,20 +14,16 @@ use Model\DTO\Cashbook\ChitItem;
  */
 final class UpdateChit
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var int */
-    private $chitId;
+    private int $chitId;
 
-    /** @var ChitBody */
-    private $body;
+    private ChitBody $body;
 
-    /** @var PaymentMethod */
-    private $paymentMethod;
+    private PaymentMethod $paymentMethod;
 
     /** @var ChitItem[] */
-    private $items;
+    private array $items;
 
     /**
      * @param ChitItem[] $items
@@ -46,22 +42,22 @@ final class UpdateChit
         $this->items         = $items;
     }
 
-    public function getCashbookId() : CashbookId
+    public function getCashbookId(): CashbookId
     {
         return $this->cashbookId;
     }
 
-    public function getChitId() : int
+    public function getChitId(): int
     {
         return $this->chitId;
     }
 
-    public function getBody() : ChitBody
+    public function getBody(): ChitBody
     {
         return $this->body;
     }
 
-    public function getPaymentMethod() : PaymentMethod
+    public function getPaymentMethod(): PaymentMethod
     {
         return $this->paymentMethod;
     }
@@ -69,7 +65,7 @@ final class UpdateChit
     /**
      * @return ChitItem[]
      */
-    public function getItems() : array
+    public function getItems(): array
     {
         return $this->items;
     }

@@ -6,15 +6,14 @@ namespace Model\Payment\BankAccount;
 
 final class BankAccountId
 {
-    /** @var int */
-    private $id;
+    private int $id;
 
     public function __construct(int $id)
     {
         $this->id = $id;
     }
 
-    public function toInt() : int
+    public function toInt(): int
     {
         return $this->id;
     }

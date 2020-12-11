@@ -12,11 +12,9 @@ use Model\UserService;
 
 class EventSubscriber
 {
-    /** @var LoggerService */
-    private $loggerService;
+    private LoggerService $loggerService;
 
-    /** @var UserService */
-    private $userService;
+    private UserService $userService;
 
     public function __construct(LoggerService $logger, UserService $userService)
     {
@@ -24,7 +22,7 @@ class EventSubscriber
         $this->userService   = $userService;
     }
 
-    public function handleOpened(EventWasOpened $event) : void
+    public function handleOpened(EventWasOpened $event): void
     {
         $user = $this->userService->getUserDetail();
         $this->loggerService->log(
@@ -36,7 +34,7 @@ class EventSubscriber
         );
     }
 
-    public function handleClosed(EventWasClosed $event) : void
+    public function handleClosed(EventWasClosed $event): void
     {
         $user = $this->userService->getUserDetail();
 

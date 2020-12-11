@@ -9,5 +9,5 @@ use Nette\Mail\IMailer;
 
 interface IMailerFactory
 {
-    public function create(OAuth $oAuth) : IMailer;
+    public function create(OAuth $oAuth): IMailer;
 }

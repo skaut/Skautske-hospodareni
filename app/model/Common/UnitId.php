@@ -6,30 +6,29 @@ namespace Model\Common;
 
 final class UnitId
 {
-    /** @var int */
-    private $id;
+    private int $id;
 
     public function __construct(int $id)
     {
         $this->id = $id;
     }
 
-    public static function fromInt(int $id) : self
+    public static function fromInt(int $id): self
     {
         return new self($id);
     }
 
-    public function toInt() : int
+    public function toInt(): int
     {
         return $this->id;
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         return (string) $this->id;
     }
 
-    public function equals(self $that) : bool
+    public function equals(self $that): bool
     {
         return $this->toInt() === $that->toInt();
     }

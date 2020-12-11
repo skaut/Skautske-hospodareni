@@ -13,11 +13,9 @@ use Model\Cashbook\Handlers\Cashbook\CreateCashbookHandler;
  */
 final class CreateCashbook
 {
-    /** @var CashbookId */
-    private $id;
+    private CashbookId $id;
 
-    /** @var CashbookType */
-    private $type;
+    private CashbookType $type;
 
     public function __construct(CashbookId $id, CashbookType $type)
     {
@@ -25,12 +23,12 @@ final class CreateCashbook
         $this->type = $type;
     }
 
-    public function getId() : CashbookId
+    public function getId(): CashbookId
     {
         return $this->id;
     }
 
-    public function getType() : CashbookType
+    public function getType(): CashbookType
     {
         return $this->type;
     }

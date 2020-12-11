@@ -11,7 +11,7 @@ final class BankAccountFactory
 {
     use StaticClass;
 
-    public static function create(BankAccountEntity $bankAccount) : BankAccount
+    public static function create(BankAccountEntity $bankAccount): BankAccount
     {
         return new BankAccount(
             $bankAccount->getId(),

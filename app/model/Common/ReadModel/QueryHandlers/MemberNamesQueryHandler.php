@@ -10,8 +10,7 @@ use Model\Common\Repositories\IMemberRepository;
 
 final class MemberNamesQueryHandler
 {
-    /** @var IMemberRepository */
-    private $members;
+    private IMemberRepository $members;
 
     public function __construct(IMemberRepository $members)
     {
@@ -21,7 +20,7 @@ final class MemberNamesQueryHandler
     /**
      * @return array<int, string> Member ID => Member name
      */
-    public function __invoke(MemberNamesQuery $query) : array
+    public function __invoke(MemberNamesQuery $query): array
     {
         $minimalAge = $query->getMinimalAge();
         $today      = Date::today();

@@ -36,7 +36,7 @@ final class EntityManagerFactory
         $this->connection = $connection;
     }
 
-    public function create() : EntityManager
+    public function create(): EntityManager
     {
         $configuration = Setup::createConfiguration(
             $this->debugMode,
@@ -69,14 +69,14 @@ final class EntityManagerFactory
         return $entityManager;
     }
 
-    private function annotationsReader() : CachedReader
+    private function annotationsReader(): CachedReader
     {
         AnnotationRegistry::registerUniqueLoader('class_exists');
 
         return new CachedReader(new AnnotationReader(), $this->cache('annotations'), $this->debugMode);
     }
 
-    private function cache(string $name) : FilesystemCache
+    private function cache(string $name): FilesystemCache
     {
         return new FilesystemCache($this->tempDir . '/cache/doctrine/' . $name);
     }

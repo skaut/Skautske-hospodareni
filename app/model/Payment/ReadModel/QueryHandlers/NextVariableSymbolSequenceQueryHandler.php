@@ -13,6 +13,7 @@ use Model\Payment\VariableSymbol;
 use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\Unit;
 use Nette\Utils\Strings;
+
 use function array_filter;
 use function assert;
 use function count;
@@ -23,11 +24,9 @@ class NextVariableSymbolSequenceQueryHandler
 {
     private const UNIT_PART_LENGTH = 3;
 
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(IGroupRepository $groups, QueryBus $queryBus)
     {
@@ -35,7 +34,7 @@ class NextVariableSymbolSequenceQueryHandler
         $this->queryBus = $queryBus;
     }
 
-    public function __invoke(NextVariableSymbolSequenceQuery $query) : ?VariableSymbol
+    public function __invoke(NextVariableSymbolSequenceQuery $query): ?VariableSymbol
     {
         $now                = $query->getNow();
         $groupIncrementPart = $this->getGroupIncrement($query->getUnitId(), $now);
@@ -49,14 +48,14 @@ class NextVariableSymbolSequenceQueryHandler
         return new VariableSymbol($now->format('y') . $unitPart . $groupIncrementPart . '001');
     }
 
-    private function getGroupIncrement(int $unitId, DateTimeImmutable $now) : string
+    private function getGroupIncrement(int $unitId, DateTimeImmutable $now): string
     {
         $currentYear = $now->format('Y');
 
         $groups = $this->groups->findByUnits([$unitId], false);
         $groups = array_filter(
             $groups,
-            function (Group $group) use ($currentYear) : bool {
+            function (Group $group) use ($currentYear): bool {
                 return $group->getCreatedAt() !== null && $group->getCreatedAt()->format('Y') === $currentYear;
             }
         );
@@ -64,7 +63,7 @@ class NextVariableSymbolSequenceQueryHandler
         return Strings::padLeft((string) (count($groups) + 1), 2, '0');
     }
 
-    private function getLastDigitsOfUnitNumber(int $unitId) : string
+    private function getLastDigitsOfUnitNumber(int $unitId): string
     {
         $unit = $this->queryBus->handle(new UnitQuery($unitId));
 

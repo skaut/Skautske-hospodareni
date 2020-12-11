@@ -12,16 +12,15 @@ use Model\Cashbook\Repositories\CategoryRepository;
 use Model\Cashbook\Repositories\ICashbookRepository;
 use Model\DTO\Cashbook\CategorySummary;
 use Model\Utils\MoneyFactory;
+
 use function array_filter;
 use function in_array;
 
 class CategoriesSummaryQueryHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
-    /** @var CategoryRepository */
-    private $categories;
+    private CategoryRepository $categories;
 
     public function __construct(ICashbookRepository $cashbooks, CategoryRepository $categories)
     {
@@ -34,7 +33,7 @@ class CategoriesSummaryQueryHandler
      *
      * @throws CashbookNotFound
      */
-    public function __invoke(CategoriesSummaryQuery $query) : array
+    public function __invoke(CategoriesSummaryQuery $query): array
     {
         $cashbook = $this->cashbooks->find($query->getCashbookId());
 

@@ -10,15 +10,14 @@ use Model\Event\Repositories\IEventRepository;
 
 class EventQueryHandler
 {
-    /** @var IEventRepository */
-    private $eventRepository;
+    private IEventRepository $eventRepository;
 
     public function __construct(IEventRepository $eventRepository)
     {
         $this->eventRepository = $eventRepository;
     }
 
-    public function __invoke(EventQuery $query) : Event
+    public function __invoke(EventQuery $query): Event
     {
         return $this->eventRepository->find($query->getEventId());
     }

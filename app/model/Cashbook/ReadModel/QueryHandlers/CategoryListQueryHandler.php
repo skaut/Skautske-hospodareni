@@ -12,11 +12,9 @@ use Model\DTO\Cashbook\Category;
 
 class CategoryListQueryHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
-    /** @var CategoryRepository */
-    private $categories;
+    private CategoryRepository $categories;
 
     public function __construct(ICashbookRepository $cashbooks, CategoryRepository $categories)
     {
@@ -29,7 +27,7 @@ class CategoryListQueryHandler
      *
      * @throws CashbookNotFound
      */
-    public function __invoke(CategoryListQuery $query) : array
+    public function __invoke(CategoryListQuery $query): array
     {
         $cashbook   = $this->cashbooks->find($query->getCashbookId());
         $categories = $this->categories->findForCashbook($cashbook->getId(), $cashbook->getType());

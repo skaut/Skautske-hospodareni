@@ -3,8 +3,8 @@
     "type": "project",
     "require": {
         "php": ">= 7.4",
-        "beberlei/doctrineextensions": "^1.0",
         "beberlei/assert": "^2.7",
+        "beberlei/doctrineextensions": "^1.0",
         "cakephp/chronos": "^1.1",
         "composer/ca-bundle": "^1.1",
         "consistence/consistence": "^2.0",
@@ -55,7 +55,7 @@
         "codeception/codeception": "^3.1",
         "codeception/mockery-module": "^0.4.0",
         "contributte/codeception": "^1.1",
-        "doctrine/coding-standard": "^6.0",
+        "doctrine/coding-standard": "^8.2",
         "php-vcr/php-vcr": "^1.4",
         "phpstan/phpstan": "^0.12.57",
         "phpstan/phpstan-doctrine": "^0.12.22",

@@ -9,15 +9,14 @@ use Model\Payment\Repositories\IPaymentRepository;
 
 final class GroupRemovedSubscriber
 {
-    /** @var IPaymentRepository */
-    private $payments;
+    private IPaymentRepository $payments;
 
     public function __construct(IPaymentRepository $payments)
     {
         $this->payments = $payments;
     }
 
-    public function __invoke(GroupWasRemoved $event) : void
+    public function __invoke(GroupWasRemoved $event): void
     {
         foreach ($this->payments->findByGroup($event->getGroupId()) as $payment) {
             $this->payments->remove($payment);

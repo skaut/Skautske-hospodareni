@@ -12,7 +12,7 @@ interface ILogEntryRepository
     /**
      * @return LogEntry[]
      */
-    public function findAllByTypeId(Type $type, int $typeId) : array;
+    public function findAllByTypeId(Type $type, int $typeId): array;
 
-    public function save(LogEntry $log) : void;
+    public function save(LogEntry $log): void;
 }

@@ -10,7 +10,7 @@ use Model\Participant\PaymentId;
 
 final class PaymentIdType extends GuidType
 {
-    public function getName() : string
+    public function getName(): string
     {
         return 'payment_id';
     }
@@ -18,7 +18,7 @@ final class PaymentIdType extends GuidType
     /**
      * @param mixed $value
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform) : ?PaymentId
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?PaymentId
     {
         if ($value === null) {
             return null;
@@ -31,7 +31,7 @@ final class PaymentIdType extends GuidType
     /**
      * @param mixed $value
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform) : ?string
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         if ($value === null) {
             return null;

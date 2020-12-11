@@ -13,26 +13,14 @@ use Model\Payment\InvalidBankAccountNumber;
  */
 class AccountNumber
 {
-    /**
-     * @ORM\Column(type="string", nullable=true, length=6)
-     *
-     * @var string|NULL
-     */
-    private $prefix;
+    /** @ORM\Column(type="string", nullable=true, length=6) */
+    private ?string $prefix = null;
 
-    /**
-     * @ORM\Column(type="string", length=10)
-     *
-     * @var string
-     */
-    private $number;
+    /** @ORM\Column(type="string", length=10) */
+    private string $number;
 
-    /**
-     * @ORM\Column(type="string", length=4)
-     *
-     * @var string
-     */
-    private $bankCode;
+    /** @ORM\Column(type="string", length=4) */
+    private string $bankCode;
 
     /**
      * @throws InvalidBankAccountNumber
@@ -53,7 +41,7 @@ class AccountNumber
     /**
      * @throws InvalidBankAccountNumber
      */
-    public static function fromString(string $number) : self
+    public static function fromString(string $number): self
     {
         $parser = new Czech();
         $number = $parser->parseNumber($number);
@@ -65,7 +53,7 @@ class AccountNumber
         return new self(...$number);
     }
 
-    public static function isValid(string $number) : bool
+    public static function isValid(string $number): bool
     {
         try {
             self::fromString($number);
@@ -76,17 +64,17 @@ class AccountNumber
         }
     }
 
-    public function getPrefix() : ?string
+    public function getPrefix(): ?string
     {
         return $this->prefix;
     }
 
-    public function getNumber() : string
+    public function getNumber(): string
     {
         return $this->number;
     }
 
-    public function getNumberWithPrefix() : string
+    public function getNumberWithPrefix(): string
     {
         if ($this->prefix !== null) {
             return $this->prefix . '-' . $this->number;
@@ -95,12 +83,12 @@ class AccountNumber
         return $this->number;
     }
 
-    public function getBankCode() : string
+    public function getBankCode(): string
     {
         return $this->bankCode;
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         $withoutPrefix = $this->number . '/' . $this->bankCode;
 
@@ -109,7 +97,7 @@ class AccountNumber
             : $withoutPrefix;
     }
 
-    private static function invalidNumber() : InvalidBankAccountNumber
+    private static function invalidNumber(): InvalidBankAccountNumber
     {
         return new InvalidBankAccountNumber('Invalid bank account number');
     }

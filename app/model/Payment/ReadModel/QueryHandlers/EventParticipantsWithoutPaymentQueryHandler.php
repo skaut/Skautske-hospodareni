@@ -13,20 +13,18 @@ use Model\Payment\Group\Type;
 use Model\Payment\ReadModel\Queries\EventParticipantsWithoutPaymentQuery;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\PaymentService;
+
 use function array_filter;
 use function array_values;
 use function in_array;
 
 final class EventParticipantsWithoutPaymentQueryHandler
 {
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
-    /** @var PaymentService */
-    private $paymentService;
+    private PaymentService $paymentService;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(IGroupRepository $groups, PaymentService $paymentService, QueryBus $queryBus)
     {
@@ -38,7 +36,7 @@ final class EventParticipantsWithoutPaymentQueryHandler
     /**
      * @return Participant[]
      */
-    public function __invoke(EventParticipantsWithoutPaymentQuery $query) : array
+    public function __invoke(EventParticipantsWithoutPaymentQuery $query): array
     {
         $skautisEntity = $this->groups->find($query->getGroupId())->getObject();
 

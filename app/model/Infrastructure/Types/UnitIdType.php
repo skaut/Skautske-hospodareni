@@ -10,7 +10,7 @@ use Model\Common\UnitId;
 
 final class UnitIdType extends GuidType
 {
-    public function getName() : string
+    public function getName(): string
     {
         return 'unit_id';
     }
@@ -18,7 +18,7 @@ final class UnitIdType extends GuidType
     /**
      * @param mixed $value
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform) : ?UnitId
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?UnitId
     {
         if ($value === null) {
             return null;
@@ -30,7 +30,7 @@ final class UnitIdType extends GuidType
     /**
      * @param mixed $value
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform) : ?int
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?int
     {
         if ($value === null) {
             return null;

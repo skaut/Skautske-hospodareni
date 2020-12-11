@@ -15,7 +15,7 @@ final class StaticCategoryRepository extends AggregateRepository implements ISta
     /**
      * @return Category[]
      */
-    public function findByObjectType(ObjectType $type) : array
+    public function findByObjectType(ObjectType $type): array
     {
         return $this->getEntityManager()->createQueryBuilder()
             ->select('c')
@@ -32,7 +32,7 @@ final class StaticCategoryRepository extends AggregateRepository implements ISta
     /**
      * @throws CategoryNotFound
      */
-    public function find(int $id) : Category
+    public function find(int $id): Category
     {
         $category = $this->getEntityManager()->find(Category::class, $id);
 

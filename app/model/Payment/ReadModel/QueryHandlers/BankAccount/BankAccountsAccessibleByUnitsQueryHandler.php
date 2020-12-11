@@ -10,19 +10,17 @@ use Model\Payment\IUnitResolver;
 use Model\Payment\ReadModel\Queries\BankAccount\BankAccountsAccessibleByUnitsQuery;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Services\IBankAccountAccessChecker;
+
 use function array_map;
 use function array_unique;
 
 final class BankAccountsAccessibleByUnitsQueryHandler
 {
-    /** @var IBankAccountAccessChecker */
-    private $accessChecker;
+    private IBankAccountAccessChecker $accessChecker;
 
-    /** @var IBankAccountRepository */
-    private $bankAccounts;
+    private IBankAccountRepository $bankAccounts;
 
-    /** @var IUnitResolver */
-    private $unitResolver;
+    private IUnitResolver $unitResolver;
 
     public function __construct(
         IBankAccountAccessChecker $accessChecker,
@@ -37,7 +35,7 @@ final class BankAccountsAccessibleByUnitsQueryHandler
     /**
      * @return BankAccount[]
      */
-    public function __invoke(BankAccountsAccessibleByUnitsQuery $query) : array
+    public function __invoke(BankAccountsAccessibleByUnitsQuery $query): array
     {
         $unitIds         = $query->getUnitIds();
         $officialUnitIds = array_unique(array_map([$this->unitResolver, 'getOfficialUnitId'], $unitIds));

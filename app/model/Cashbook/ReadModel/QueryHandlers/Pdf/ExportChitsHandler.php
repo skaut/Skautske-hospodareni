@@ -27,6 +27,7 @@ use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
 use Model\Services\TemplateFactory;
 use Model\Unit\Unit;
+
 use function array_filter;
 use function assert;
 use function count;
@@ -34,11 +35,9 @@ use function in_array;
 
 class ExportChitsHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var TemplateFactory */
-    private $templateFactory;
+    private TemplateFactory $templateFactory;
 
     public function __construct(
         QueryBus $queryBus,
@@ -48,22 +47,22 @@ class ExportChitsHandler
         $this->templateFactory = $templateFactory;
     }
 
-    public function __invoke(ExportChits $query) : string
+    public function __invoke(ExportChits $query): string
     {
         $chits = new ArrayCollection($this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $query->getCashbookId())));
 
         if ($query->getChitIds() !== null) {
             $ids   = $query->getChitIds();
-            $chits = $chits->filter(function (Chit $chit) use ($ids) : bool {
+            $chits = $chits->filter(function (Chit $chit) use ($ids): bool {
                 return in_array($chit->getId(), $ids, true);
             });
         }
 
-        [$income, $outcome] = $chits->partition(function ($_, Chit $chit) : bool {
+        [$income, $outcome] = $chits->partition(function ($_, Chit $chit): bool {
             return $chit->isIncome();
         });
 
-        $activeHpd = $chits->exists(function ($_, Chit $chit) : bool {
+        $activeHpd = $chits->exists(function ($_, Chit $chit): bool {
             return 0 < count(array_filter($chit->getItems(), function (ChitItem $item) {
                     return $item->getCategory()->getShortcut() === 'hpd';
             }));

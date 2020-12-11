@@ -18,21 +18,21 @@ use Model\Excel\Range;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+
 use function assert;
 
 class ExcelService
 {
     private const ADULT_AGE = 18;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(QueryBus $queryBus)
     {
         $this->queryBus = $queryBus;
     }
 
-    private function getNewFile() : Spreadsheet
+    private function getNewFile(): Spreadsheet
     {
         $sheet = new Spreadsheet();
         $sheet->getProperties()
@@ -45,7 +45,7 @@ class ExcelService
     /**
      * @param Participant[] $participantsDTO
      */
-    public function getGeneralParticipants(array $participantsDTO, Date $startDate) : Spreadsheet
+    public function getGeneralParticipants(array $participantsDTO, Date $startDate): Spreadsheet
     {
         $spreadsheet = $this->getNewFile();
         $sheet       = $spreadsheet->getActiveSheet();
@@ -57,7 +57,7 @@ class ExcelService
     /**
      * @param Participant[] $participantsDTO
      */
-    public function getCampParticipants(array $participantsDTO) : Spreadsheet
+    public function getCampParticipants(array $participantsDTO): Spreadsheet
     {
         $spreadsheet = $this->getNewFile();
         $sheet       = $spreadsheet->getActiveSheet();
@@ -66,7 +66,7 @@ class ExcelService
         return $spreadsheet;
     }
 
-    public function getCashbook(CashbookId $cashbookId, PaymentMethod $paymentMethod) : Spreadsheet
+    public function getCashbook(CashbookId $cashbookId, PaymentMethod $paymentMethod): Spreadsheet
     {
         $spreadsheet = $this->getNewFile();
         $sheet       = $spreadsheet->setActiveSheetIndex(0);
@@ -75,7 +75,7 @@ class ExcelService
         return $spreadsheet;
     }
 
-    public function getCashbookWithCategories(CashbookId $cashbookId, PaymentMethod $paymentMethod) : Spreadsheet
+    public function getCashbookWithCategories(CashbookId $cashbookId, PaymentMethod $paymentMethod): Spreadsheet
     {
         $excel = $this->getNewFile();
         $sheet = $excel->getActiveSheet();
@@ -89,7 +89,7 @@ class ExcelService
     /**
      * @param Chit[] $chits
      */
-    public function getChitsExport(CashbookId $cashbookId, array $chits) : Spreadsheet
+    public function getChitsExport(CashbookId $cashbookId, array $chits): Spreadsheet
     {
         $spreadsheet = $this->getNewFile();
         $sheetChit   = $spreadsheet->setActiveSheetIndex(0);
@@ -101,7 +101,7 @@ class ExcelService
     /**
      * @param Participant[] $data
      */
-    protected function setSheetParticipantCamp(Worksheet $sheet, array $data) : void
+    protected function setSheetParticipantCamp(Worksheet $sheet, array $data): void
     {
         $sheet->setCellValue('A1', 'P.č.')
             ->setCellValue('B1', 'Jméno')
@@ -120,9 +120,9 @@ class ExcelService
 
         $rowCnt = 2;
 
-        /** @var Participant $row */
         foreach ($data as $row) {
-            $sheet->setCellValue('A' . $rowCnt, ($rowCnt - 1))
+            assert($row instanceof Participant);
+            $sheet->setCellValue('A' . $rowCnt, $rowCnt - 1)
                 ->setCellValue('B' . $rowCnt, $row->getFirstName())
                 ->setCellValue('C' . $rowCnt, $row->getLastName())
                 ->setCellValue('D' . $rowCnt, $row->getNickName())
@@ -134,14 +134,16 @@ class ExcelService
                 ->setCellValue('J' . $rowCnt, $row->getAge() < self::ADULT_AGE ? $row->getDays() : 0)
                 ->setCellValue('K' . $rowCnt, $row->getPayment())
                 ->setCellValue('L' . $rowCnt, $row->getRepayment())
-                ->setCellValue('M' . $rowCnt, ($row->getPayment() - $row->getRepayment()))
+                ->setCellValue('M' . $rowCnt, $row->getPayment() - $row->getRepayment())
                 ->setCellValue('N' . $rowCnt, $row->getOnAccount() === 'Y' ? 'Ano' : 'Ne');
             $rowCnt++;
         }
+
         //format
         foreach (Range::letters('A', 'N') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
+
         $sheet->getStyle('A1:N1')->getFont()->setBold(true);
         $sheet->setAutoFilter('A1:N' . ($rowCnt - 1));
     }
@@ -149,7 +151,7 @@ class ExcelService
     /**
      * @param Participant[] $data
      */
-    protected function setSheetParticipantGeneral(Worksheet $sheet, array $data, Date $startDate) : void
+    protected function setSheetParticipantGeneral(Worksheet $sheet, array $data, Date $startDate): void
     {
         $sheet->setCellValue('A1', 'P.č.')
             ->setCellValue('B1', 'Jméno')
@@ -166,7 +168,7 @@ class ExcelService
 
         $rowCnt = 2;
         foreach ($data as $row) {
-            $sheet->setCellValue('A' . $rowCnt, ($rowCnt - 1))
+            $sheet->setCellValue('A' . $rowCnt, $rowCnt - 1)
                 ->setCellValue('B' . $rowCnt, $row->getFirstName())
                 ->setCellValue('C' . $rowCnt, $row->getLastName())
                 ->setCellValue('D' . $rowCnt, $row->getNickName())
@@ -180,16 +182,18 @@ class ExcelService
                 ->setCellValue('L' . $rowCnt, $row->getPayment());
             $rowCnt++;
         }
+
         //format
         foreach (Range::letters('A', 'L') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
+
         $sheet->getStyle('A1:L1')->getFont()->setBold(true);
         $sheet->setAutoFilter('A1:L' . ($rowCnt - 1));
         $sheet->setTitle('Seznam účastníků');
     }
 
-    private function setSheetCashbook(Worksheet $sheet, CashbookId $cashbookId, PaymentMethod $paymentMethod) : void
+    private function setSheetCashbook(Worksheet $sheet, CashbookId $cashbookId, PaymentMethod $paymentMethod): void
     {
         $sheet->setCellValue('A1', 'Ze dne')
             ->setCellValue('B1', 'Číslo dokladu')
@@ -231,6 +235,7 @@ class ExcelService
         foreach (Range::letters('A', 'H') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
+
         $sheet->getStyle('A1:H1')->getFont()->setBold(true);
         $sheet->getStyle('H1:H' . ($rowCnt - 1))->getFont()->setBold(true);
         // $sheet->setAutoFilter('A1:H' . ($rowCnt - 1));
@@ -241,7 +246,7 @@ class ExcelService
     /**
      * @param Chit[] $chits
      */
-    private function setSheetChitsOnly(Worksheet $sheet, array $chits, CashbookId $cashbookId) : void
+    private function setSheetChitsOnly(Worksheet $sheet, array $chits, CashbookId $cashbookId): void
     {
         $sheet->setCellValue('B1', 'Ze dne')
             ->setCellValue('C1', 'Účel výplaty')
@@ -272,6 +277,7 @@ class ExcelService
 
             $rowCnt++;
         }
+
         //add border
         $sheet->getStyle('A1:G' . ($rowCnt - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
@@ -281,6 +287,7 @@ class ExcelService
                 ->setCellValue('F' . $rowCnt, $sumIn);
             $sheet->getStyle('E' . $rowCnt)->getFont()->setBold(true);
         }
+
         if ($sumOut > 0) {
             $rowCnt++;
             $sheet->setCellValue('E' . $rowCnt, 'Výdaje')
@@ -292,6 +299,7 @@ class ExcelService
         foreach (Range::letters('A', 'G') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
+
         $sheet->getStyle('A1:G1')->getFont()->setBold(true);
         $sheet->setTitle('Doklady');
     }

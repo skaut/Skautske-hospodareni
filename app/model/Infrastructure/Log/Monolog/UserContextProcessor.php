@@ -9,8 +9,7 @@ use Monolog\Processor\ProcessorInterface;
 
 class UserContextProcessor implements ProcessorInterface
 {
-    /** @var UserContextProvider */
-    private $userContext;
+    private UserContextProvider $userContext;
 
     public function __construct(UserContextProvider $userContext)
     {
@@ -22,7 +21,7 @@ class UserContextProcessor implements ProcessorInterface
      *
      * @return array<string, mixed>
      */
-    public function __invoke(array $record) : array
+    public function __invoke(array $record): array
     {
         $userData = $this->userContext->getUserData();
 

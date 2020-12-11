@@ -11,7 +11,7 @@ final class ContractFactory
 {
     use StaticClass;
 
-    public static function create(ContractEntity $contract) : Contract
+    public static function create(ContractEntity $contract): Contract
     {
         return new Contract(
             $contract->getId(),

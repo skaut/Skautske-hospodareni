@@ -12,14 +12,11 @@ use Model\Cashbook\Handlers\Cashbook\AddInverseChitHandler;
  */
 final class AddInverseChit
 {
-    /** @var CashbookId */
-    private $originalCashbookId;
+    private CashbookId $originalCashbookId;
 
-    /** @var CashbookId */
-    private $targetCashbookId;
+    private CashbookId $targetCashbookId;
 
-    /** @var int */
-    private $chitId;
+    private int $chitId;
 
     public function __construct(CashbookId $originalCashbookId, CashbookId $targetCashbookId, int $chitId)
     {
@@ -28,17 +25,17 @@ final class AddInverseChit
         $this->chitId             = $chitId;
     }
 
-    public function getOriginalCashbookId() : CashbookId
+    public function getOriginalCashbookId(): CashbookId
     {
         return $this->originalCashbookId;
     }
 
-    public function getTargetCashbookId() : CashbookId
+    public function getTargetCashbookId(): CashbookId
     {
         return $this->targetCashbookId;
     }
 
-    public function getChitId() : int
+    public function getChitId(): int
     {
         return $this->chitId;
     }

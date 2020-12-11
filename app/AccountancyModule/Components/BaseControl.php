@@ -16,14 +16,13 @@ use stdClass;
  */
 abstract class BaseControl extends Control
 {
-    abstract public function render() : void;
+    abstract public function render(): void;
 
     /**
      * @param bool $throw
-     *
-     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
      */
-    public function getPresenter($throw = true) : ?BasePresenter
+    // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
+    public function getPresenter($throw = true): ?BasePresenter
     {
         $presenter = parent::getPresenter($throw);
 
@@ -39,19 +38,19 @@ abstract class BaseControl extends Control
     /**
      * @param string $message
      * @param string $type
-     *
-     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
      */
-    public function flashMessage($message, $type = 'info') : stdClass
+    // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
+    public function flashMessage($message, $type = 'info'): stdClass
     {
         return $this->getPresenter()->flashMessage($message, $type);
     }
 
-    protected function reload(?string $message = null, string $type = 'info') : void
+    protected function reload(?string $message = null, string $type = 'info'): void
     {
         if ($message !== null) {
             $this->flashMessage($message, $type);
         }
+
         if ($this->getPresenter()->isAjax()) {
             $this->redrawControl();
         } else {

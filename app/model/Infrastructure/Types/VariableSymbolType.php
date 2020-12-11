@@ -13,12 +13,12 @@ class VariableSymbolType extends StringType
     public const NAME   = 'variable_symbol';
     public const LENGTH = 10;
 
-    public function getName() : string
+    public function getName(): string
     {
         return self::NAME;
     }
 
-    public function getDefaultLength(AbstractPlatform $platform) : int
+    public function getDefaultLength(AbstractPlatform $platform): int
     {
         return self::LENGTH;
     }
@@ -26,7 +26,7 @@ class VariableSymbolType extends StringType
     /**
      * @param mixed $value
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform) : ?VariableSymbol
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?VariableSymbol
     {
         if ($value === null || $value === '' || $value === '0') {
             return null;
@@ -38,7 +38,7 @@ class VariableSymbolType extends StringType
     /**
      * @param mixed $value
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform) : ?string
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         if ($value === null) {
             return null;

@@ -10,5 +10,5 @@ use Model\Cashbook\Cashbook\PaymentMethod;
 
 interface IChitListControlFactory
 {
-    public function create(CashbookId $cashbookId, bool $isEditable, PaymentMethod $paymentMethod) : ChitListControl;
+    public function create(CashbookId $cashbookId, bool $isEditable, PaymentMethod $paymentMethod): ChitListControl;
 }

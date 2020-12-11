@@ -37,66 +37,32 @@ class Vehicle
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     *
-     * @var string
-     */
-    private $type;
+    /** @ORM\Column(type="string", length=64) */
+    private string $type;
 
-    /**
-     * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
-     */
-    private $unitId;
+    /** @ORM\Column(type="integer", options={"unsigned"=true}) */
+    private int $unitId;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     *
-     * @var int|NULL
-     */
-    private $subunitId;
+    /** @ORM\Column(type="integer", nullable=true) */
+    private ?int $subunitId = null;
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     *
-     * @var string
-     */
-    private $registration;
+    /** @ORM\Column(type="string", length=64) */
+    private string $registration;
 
-    /**
-     * @ORM\Column(type="float", options={"unsigned"=true})
-     *
-     * @var float
-     */
-    private $consumption;
+    /** @ORM\Column(type="float", options={"unsigned"=true}) */
+    private float $consumption;
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     *
-     * @var string
-     */
-    private $note = '';
+    /** @ORM\Column(type="string", length=64) */
+    private string $note = '';
 
-    /**
-     * @ORM\Column(type="boolean", options={"default"=0})
-     *
-     * @var bool
-     */
-    private $archived = false;
+    /** @ORM\Column(type="boolean", options={"default"=0}) */
+    private bool $archived = false;
 
-    /**
-     * @ORM\Embedded(class=Metadata::class)
-     *
-     * @var Metadata
-     */
-    private $metadata;
+    /** @ORM\Embedded(class=Metadata::class) */
+    private Metadata $metadata;
 
     /**
      * @ORM\OneToMany(
@@ -109,7 +75,7 @@ class Vehicle
      * @var Collection|RoadworthyScan[]
      * @phpstan-var Collection<int, RoadworthyScan>
      */
-    private $roadworthyScans;
+    private Collection $roadworthyScans;
 
     public function __construct(string $type, Unit $unit, ?Unit $subunit, string $registration, float $consumption, Metadata $metadata)
     {
@@ -127,12 +93,12 @@ class Vehicle
         $this->roadworthyScans = new ArrayCollection();
     }
 
-    public function addRoadworthyScan(FilePath $filePath) : void
+    public function addRoadworthyScan(FilePath $filePath): void
     {
         $this->roadworthyScans->add(new RoadworthyScan($this, $filePath));
     }
 
-    public function removeRoadworthyScan(FilePath $filePath) : void
+    public function removeRoadworthyScan(FilePath $filePath): void
     {
         foreach ($this->roadworthyScans as $key => $scan) {
             if ($scan->getFilePath()->equals($filePath)) {
@@ -145,57 +111,57 @@ class Vehicle
         throw ScanNotFound::withPath($filePath);
     }
 
-    public function archive() : void
+    public function archive(): void
     {
         $this->archived = true;
     }
 
-    public function getType() : string
+    public function getType(): string
     {
         return $this->type;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getSubunitId() : ?int
+    public function getSubunitId(): ?int
     {
         return $this->subunitId;
     }
 
-    public function getUnitId() : int
+    public function getUnitId(): int
     {
         return $this->unitId;
     }
 
-    public function getRegistration() : string
+    public function getRegistration(): string
     {
         return $this->registration;
     }
 
-    public function getConsumption() : float
+    public function getConsumption(): float
     {
         return $this->consumption;
     }
 
-    public function getNote() : string
+    public function getNote(): string
     {
         return $this->note;
     }
 
-    public function isArchived() : bool
+    public function isArchived(): bool
     {
         return $this->archived;
     }
 
-    public function getLabel() : string
+    public function getLabel(): string
     {
         return $this->type . ' (' . $this->registration . ')';
     }
 
-    public function getMetadata() : Metadata
+    public function getMetadata(): Metadata
     {
         return $this->metadata;
     }
@@ -203,7 +169,7 @@ class Vehicle
     /**
      * @return RoadworthyScan[]
      */
-    public function getRoadworthyScans() : array
+    public function getRoadworthyScans(): array
     {
         return $this->roadworthyScans->toArray();
     }

@@ -17,15 +17,14 @@ use Model\Payment\Repositories\IGroupRepository;
  */
 class PaymentSubscriber
 {
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
     public function __construct(IGroupRepository $groups)
     {
         $this->groups = $groups;
     }
 
-    public function handlePaymentCreated(PaymentWasCreated $event) : void
+    public function handlePaymentCreated(PaymentWasCreated $event): void
     {
         if ($event->getVariableSymbol() === null) {
             return; // no risk of unpaired payment
@@ -34,7 +33,7 @@ class PaymentSubscriber
         $this->invalidateLastPairing($event->getGroupId());
     }
 
-    public function handleVariableSymbolChanged(PaymentVariableSymbolWasChanged $event) : void
+    public function handleVariableSymbolChanged(PaymentVariableSymbolWasChanged $event): void
     {
         if ($event->getVariableSymbol() === null) {
             return; // no risk of unpaired payment
@@ -43,7 +42,7 @@ class PaymentSubscriber
         $this->invalidateLastPairing($event->getGroupId());
     }
 
-    public function handlePaymentAmountChanged(PaymentAmountWasChanged $event) : void
+    public function handlePaymentAmountChanged(PaymentAmountWasChanged $event): void
     {
         if ($event->getVariableSymbol() === null) {
             return; // no risk of unpaired payment
@@ -52,7 +51,7 @@ class PaymentSubscriber
         $this->invalidateLastPairing($event->getGroupId());
     }
 
-    private function invalidateLastPairing(int $groupId) : void
+    private function invalidateLastPairing(int $groupId): void
     {
         $group = $this->groups->find($groupId);
         $group->invalidateLastPairing();

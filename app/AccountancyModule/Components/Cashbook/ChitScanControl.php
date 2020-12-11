@@ -17,26 +17,22 @@ use Model\Common\IScanStorage;
 use Model\Common\ScanNotFound;
 use Model\DTO\Cashbook\Chit;
 use Nette\Http\FileUpload;
+
 use function array_keys;
 use function assert;
 use function implode;
 
 final class ChitScanControl extends BaseControl
 {
-    /** @var int */
-    private $chitId;
+    private int $chitId;
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var bool */
-    private $isEditable;
+    private bool $isEditable;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(CashbookId $cashbookId, int $chitId, bool $isEditable, CommandBus $commandBus, QueryBus $queryBus)
     {
@@ -48,7 +44,7 @@ final class ChitScanControl extends BaseControl
         $this->queryBus   = $queryBus;
     }
 
-    public function render() : void
+    public function render(): void
     {
         $template = $this->template;
         $template->setFile(__DIR__ . '/templates/ChitScanControl.latte');
@@ -69,7 +65,7 @@ final class ChitScanControl extends BaseControl
         $template->render();
     }
 
-    public function handleRemove(string $path) : void
+    public function handleRemove(string $path): void
     {
         if (! $this->isChitEditable()) {
             $this->getPresenter()->flashMessage('U pokladního dokladu nyní nelze odebírat naskenované doklady!', 'error');
@@ -90,7 +86,7 @@ final class ChitScanControl extends BaseControl
         }
     }
 
-    protected function createComponentUploadForm() : BaseForm
+    protected function createComponentUploadForm(): BaseForm
     {
         $form = new BaseForm();
 
@@ -105,18 +101,18 @@ final class ChitScanControl extends BaseControl
 
         $form->addSubmit('submit', 'Nahrát');
 
-        $form->onSuccess[] = function (BaseForm $form) : void {
+        $form->onSuccess[] = function (BaseForm $form): void {
             $this->formSucceeded($form);
         };
 
-        $form->onSubmit[] = function () : void {
+        $form->onSubmit[] = function (): void {
             $this->redrawControl();
         };
 
         return $form;
     }
 
-    private function formSucceeded(BaseForm $form) : void
+    private function formSucceeded(BaseForm $form): void
     {
         $chitId = $form->getValues()->chitId;
         $chitId = $chitId !== null ? (int) $chitId : $chitId;
@@ -144,22 +140,16 @@ final class ChitScanControl extends BaseControl
         $this->getPresenter()->redirect('this');
     }
 
-    private function isChitEditable() : bool
+    private function isChitEditable(): bool
     {
-        if ($this->chitId === null) {
-            return false;
-        }
         $chit = $this->queryBus->handle(new ChitQuery($this->cashbookId, $this->chitId));
         assert($chit instanceof Chit);
 
         return $this->isEditable && ! $chit->isLocked();
     }
 
-    private function isChitReadable() : bool
+    private function isChitReadable(): bool
     {
-        if ($this->chitId === null) {
-            return false;
-        }
         $chit = $this->queryBus->handle(new ChitQuery($this->cashbookId, $this->chitId));
         assert($chit instanceof Chit);
 

@@ -8,14 +8,14 @@ use Model\User\SkautisRole;
 use Nette\Security\Identity;
 use Nette\Security\User;
 use stdClass;
+
 use function array_map;
 use function assert;
 use function sprintf;
 
 final class UserContextProvider
 {
-    /** @var User */
-    private $user;
+    private User $user;
 
     public function __construct(User $user)
     {
@@ -25,7 +25,7 @@ final class UserContextProvider
     /**
      * @return array<string, mixed>
      */
-    public function getUserData() : ?array
+    public function getUserData(): ?array
     {
         $identity = $this->user->getIdentity();
 
@@ -51,7 +51,7 @@ final class UserContextProvider
         ];
     }
 
-    private function formatRole(?SkautisRole $role) : string
+    private function formatRole(?SkautisRole $role): string
     {
         if ($role === null) {
             return '';

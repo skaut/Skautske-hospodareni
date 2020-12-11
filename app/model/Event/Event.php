@@ -28,65 +28,51 @@ class Event implements ISkautisEvent
 {
     use SmartObject;
 
-    /** @var SkautisEventId */
-    private $id;
+    private SkautisEventId $id;
 
-    /** @var string */
-    private $displayName;
+    private string $displayName;
 
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var string */
-    private $unitName;
+    private string $unitName;
 
-    /** @var string */
-    private $state;
+    private string $state;
 
-    /** @var Date */
-    private $startDate;
+    private Date $startDate;
 
-    /** @var Date */
-    private $endDate;
+    private Date $endDate;
 
-    /** @var int|null */
-    private $totalDays;
+    private ?int $totalDays = null;
 
-    /** @var string */
-    private $location;
+    private string $location;
 
-    /** @var string */
-    private $registrationNumber;
+    private string $registrationNumber;
 
-    /** @var string */
-    private $note;
+    private string $note;
 
-    /** @var int */
-    private $scopeId;
+    private int $scopeId;
 
-    /** @var int */
-    private $typeId;
+    private int $typeId;
 
     /** @var ?bool */
-    private $statisticAutoComputed;
+    private ?bool $statisticAutoComputed = null;
 
     /** @var ?int */
-    private $realCount;
+    private ?int $realCount = null;
 
     /** @var ?int */
-    private $realChildDays;
+    private ?int $realChildDays = null;
 
     /** @var ?int */
-    private $realPersonDays;
+    private ?int $realPersonDays = null;
 
     /** @var ?string */
-    private $personClosed;
+    private ?string $personClosed = null;
 
     /** @var ?Date */
-    private $dateClosed;
+    private ?Date $dateClosed = null;
 
-    /** @var string|null */
-    private $unitEducativeName;
+    private ?string $unitEducativeName = null;
 
     public function __construct(
         SkautisEventId $id,
@@ -139,7 +125,7 @@ class Event implements ISkautisEvent
         Date $endDate,
         int $scopeId,
         int $typeId
-    ) : void {
+    ): void {
         $this->displayName = $displayName;
         $this->location    = $location;
         $this->startDate   = $startDate;
@@ -148,107 +134,107 @@ class Event implements ISkautisEvent
         $this->typeId      = $typeId;
     }
 
-    public function getId() : SkautisEventId
+    public function getId(): SkautisEventId
     {
         return $this->id;
     }
 
-    public function getDisplayName() : string
+    public function getDisplayName(): string
     {
         return $this->displayName;
     }
 
-    public function getUnitId() : UnitId
+    public function getUnitId(): UnitId
     {
         return $this->unitId;
     }
 
-    public function getUnitName() : string
+    public function getUnitName(): string
     {
         return $this->unitName;
     }
 
-    public function isOpen() : bool
+    public function isOpen(): bool
     {
         return $this->state === 'draft';
     }
 
-    public function getState() : string
+    public function getState(): string
     {
         return $this->state;
     }
 
-    public function getStartDate() : Date
+    public function getStartDate(): Date
     {
         return $this->startDate;
     }
 
-    public function getEndDate() : Date
+    public function getEndDate(): Date
     {
         return $this->endDate;
     }
 
-    public function getTotalDays() : ?int
+    public function getTotalDays(): ?int
     {
         return $this->totalDays;
     }
 
-    public function getLocation() : string
+    public function getLocation(): string
     {
         return $this->location;
     }
 
-    public function getRegistrationNumber() : string
+    public function getRegistrationNumber(): string
     {
         return $this->registrationNumber;
     }
 
-    public function getNote() : string
+    public function getNote(): string
     {
         return $this->note;
     }
 
-    public function getScopeId() : int
+    public function getScopeId(): int
     {
         return $this->scopeId;
     }
 
-    public function getTypeId() : int
+    public function getTypeId(): int
     {
         return $this->typeId;
     }
 
-    public function isStatisticAutoComputed() : ?bool
+    public function isStatisticAutoComputed(): ?bool
     {
         return $this->statisticAutoComputed;
     }
 
-    public function getRealCount() : ?int
+    public function getRealCount(): ?int
     {
         return $this->realCount;
     }
 
-    public function getRealChildDays() : ?int
+    public function getRealChildDays(): ?int
     {
         return $this->realChildDays;
     }
 
-    public function getRealPersonDays() : ?int
+    public function getRealPersonDays(): ?int
     {
         return $this->realPersonDays;
     }
 
-    public function getPersonClosed() : ?string
+    public function getPersonClosed(): ?string
     {
         return $this->personClosed;
     }
 
-    public function getDateClosed() : ?Date
+    public function getDateClosed(): ?Date
     {
         return $this->dateClosed;
     }
 
-    public function getUnitEducativeName() : ?string
+    public function getUnitEducativeName(): ?string
     {
         return $this->unitEducativeName;
     }

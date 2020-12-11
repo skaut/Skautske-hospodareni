@@ -13,14 +13,14 @@ use Model\Event\Camp;
 use Model\Event\Exception\CampNotFound;
 use Model\Event\ReadModel\Queries\CampQuery;
 use Model\Event\SkautisCampId;
+
 use function assert;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
-    /** @var Camp */
-    protected $event;
+    protected Camp $event;
 
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
         $this->type = ObjectType::CAMP;
@@ -31,6 +31,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         if ($this->aid === null) {
             return;
         }
+
         $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($this->aid)));
         try {
             $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
@@ -47,7 +48,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         }
     }
 
-    protected function editableOnly() : void
+    protected function editableOnly(): void
     {
         if ($this->isEditable) {
             return;
@@ -61,7 +62,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         }
     }
 
-    protected function getCampId() : ?int
+    protected function getCampId(): ?int
     {
         return $this->aid;
     }

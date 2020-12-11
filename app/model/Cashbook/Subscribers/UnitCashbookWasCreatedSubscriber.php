@@ -12,11 +12,9 @@ use Model\Payment\IUnitResolver;
 
 final class UnitCashbookWasCreatedSubscriber
 {
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var IUnitResolver */
-    private $unitResolver;
+    private IUnitResolver $unitResolver;
 
     public function __construct(CommandBus $commandBus, IUnitResolver $unitResolver)
     {
@@ -24,7 +22,7 @@ final class UnitCashbookWasCreatedSubscriber
         $this->unitResolver = $unitResolver;
     }
 
-    public function __invoke(CashbookWasCreated $event) : void
+    public function __invoke(CashbookWasCreated $event): void
     {
         $unitId = $event->getUnitId()->toInt();
 

@@ -11,15 +11,14 @@ use Model\Cashbook\ReadModel\Queries\ParticipantChitSumQuery;
 
 class EventParticipantBalanceQueryHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(QueryBus $queryBus)
     {
         $this->queryBus = $queryBus;
     }
 
-    public function __invoke(EventParticipantBalanceQuery $query) : float
+    public function __invoke(EventParticipantBalanceQuery $query): float
     {
         $participantIncome = $this->queryBus->handle(new EventParticipantIncomeQuery($query->getEventId()));
         $chitSum           = $this->queryBus->handle(new ParticipantChitSumQuery($query->getCashbookId()));

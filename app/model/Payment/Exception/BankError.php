@@ -7,16 +7,17 @@ namespace Model\Payment;
 use Exception;
 use GuzzleHttp\Exception\ServerException;
 use SimpleXMLElement;
+
 use function trim;
 
 final class BankError extends Exception
 {
-    public static function fromServerException(ServerException $exception) : self
+    public static function fromServerException(ServerException $exception): self
     {
         return new self(self::extractMessage($exception), $exception->getCode(), $exception);
     }
 
-    private static function extractMessage(ServerException $exception) : string
+    private static function extractMessage(ServerException $exception): string
     {
         if ($exception->getResponse() === null) {
             return $exception->getMessage();

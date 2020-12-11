@@ -9,11 +9,9 @@ use Model\Payment\Repositories\IBankAccountRepository;
 
 final class BankAccountAccessChecker implements IBankAccountAccessChecker
 {
-    /** @var IBankAccountRepository */
-    private $bankAccounts;
+    private IBankAccountRepository $bankAccounts;
 
-    /** @var IUnitResolver */
-    private $unitResolver;
+    private IUnitResolver $unitResolver;
 
     public function __construct(IBankAccountRepository $bankAccounts, IUnitResolver $unitResolver)
     {
@@ -24,7 +22,7 @@ final class BankAccountAccessChecker implements IBankAccountAccessChecker
     /**
      * @param int[] $unitIds
      */
-    public function allUnitsHaveAccessToBankAccount(array $unitIds, int $bankAccountId) : bool
+    public function allUnitsHaveAccessToBankAccount(array $unitIds, int $bankAccountId): bool
     {
         $bankAccount = $this->bankAccounts->find($bankAccountId);
 

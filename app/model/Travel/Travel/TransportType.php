@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Travel\Travel;
 
 use Consistence\Enum\Enum;
+
 use function in_array;
 
 /**
@@ -32,22 +33,22 @@ final class TransportType extends Enum
         self::AIRPLANE => 'letadlo',
     ];
 
-    public function getLabel() : string
+    public function getLabel(): string
     {
         return self::LABELS[$this->getValue()];
     }
 
-    public function hasFuel() : bool
+    public function hasFuel(): bool
     {
         return in_array($this->getValue(), [self::CAR, self::MOTORCYCLE], true);
     }
 
-    public function toString() : string
+    public function toString(): string
     {
         return $this->getValue();
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         return $this->getValue();
     }

@@ -9,6 +9,7 @@ use Nette\Forms\Controls\BaseControl;
 use Nette\Forms\Controls\Button;
 use Nette\Forms\Rendering\DefaultFormRenderer;
 use Nette\Utils\Strings;
+
 use function array_keys;
 use function implode;
 use function is_array;
@@ -22,6 +23,7 @@ use function is_array;
 class Bootstrap4FormRenderer extends DefaultFormRenderer
 {
     /** @var mixed[] */
+    // phpcs:disable SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
     public $wrappers = [
         'form' => ['container' => null],
         'error' => [
@@ -68,14 +70,15 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
 
     /**
      * @param bool $own
-     *
-     * @return string
      */
-    public function renderErrors(?Nette\Forms\IControl $control = null, $own = true) : string
+    // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
+    public function renderErrors(?Nette\Forms\IControl $control = null, $own = true): string
     {
-        if ($control instanceof Nette\Forms\Controls\Checkbox ||
+        if (
+            $control instanceof Nette\Forms\Controls\Checkbox ||
             $control instanceof Nette\Forms\Controls\RadioList ||
-            $control instanceof Nette\Forms\Controls\UploadControl) {
+            $control instanceof Nette\Forms\Controls\UploadControl
+        ) {
             $originalErrorContainer = $this->wrappers['control']['errorcontainer'];
 
             $this->wrappers['control']['errorcontainer'] = 'div class="invalid-feedback d-block"';
@@ -92,10 +95,8 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
 
     /**
      * @param BaseControl[] $controls
-     *
-     * @return string
      */
-    public function renderPairMulti(array $controls) : string
+    public function renderPairMulti(array $controls): string
     {
         $primary = false;
 
@@ -117,7 +118,7 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
         return parent::renderPairMulti($controls);
     }
 
-    public function renderLabel(Nette\Forms\IControl $control) : Nette\Utils\Html
+    public function renderLabel(Nette\Forms\IControl $control): Nette\Utils\Html
     {
         if ($control instanceof Nette\Forms\Controls\Checkbox || $control instanceof Nette\Forms\Controls\CheckboxList) {
             $control->labelPrototype->appendAttribute('class', 'form-check-label');
@@ -128,12 +129,7 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
         return parent::renderLabel($control);
     }
 
-    /**
-     * @param Nette\Forms\IControl $control
-     *
-     * @return Nette\Utils\Html
-     */
-    public function renderControl(Nette\Forms\IControl $control) : Nette\Utils\Html
+    public function renderControl(Nette\Forms\IControl $control): Nette\Utils\Html
     {
         if (! $control instanceof BaseControl) {
             return parent::renderControl($control);
@@ -158,6 +154,7 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
             if ($control->hasErrors()) {
                 $control->controlPrototype->appendAttribute('class', 'is-invalid');
             }
+
             $control->controlPrototype->appendAttribute('class', 'form-control');
         }
 

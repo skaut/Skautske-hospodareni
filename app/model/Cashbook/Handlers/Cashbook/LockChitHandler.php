@@ -9,15 +9,14 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 
 class LockChitHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
     public function __construct(ICashbookRepository $cashbooks)
     {
         $this->cashbooks = $cashbooks;
     }
 
-    public function __invoke(LockChit $command) : void
+    public function __invoke(LockChit $command): void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
 

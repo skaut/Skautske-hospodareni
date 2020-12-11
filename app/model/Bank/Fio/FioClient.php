@@ -15,17 +15,16 @@ use Model\Payment\BankAccount;
 use Model\Payment\Fio\IFioClient;
 use Model\Payment\TokenNotSet;
 use Psr\Log\LoggerInterface;
+
 use function array_map;
 use function array_reverse;
 use function sprintf;
 
 class FioClient implements IFioClient
 {
-    /** @var IDownloaderFactory */
-    private $downloaderFactory;
+    private IDownloaderFactory $downloaderFactory;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(IDownloaderFactory $downloaderFactory, LoggerInterface $logger)
     {
@@ -36,7 +35,7 @@ class FioClient implements IFioClient
     /**
      * {@inheritDoc}
      */
-    public function getTransactions(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account) : array
+    public function getTransactions(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account): array
     {
         if ($account->getToken() === null) {
             throw new TokenNotSet();
@@ -68,7 +67,7 @@ class FioClient implements IFioClient
      * @throws BankTimeLimit
      * @throws BankTimeout
      */
-    private function loadTransactionsFromApi(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account) : array
+    private function loadTransactionsFromApi(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account): array
     {
         $api = $this->downloaderFactory->create($account->getToken());
 
@@ -76,6 +75,7 @@ class FioClient implements IFioClient
             return $api->downloadFromTo($since, $until)->getTransactions();
         } catch (TooGreedyException $e) {
             $this->logger->warning('Bank account #' . $account->getId() . ' hit API limit');
+
             throw new BankTimeLimit('', 0, $e);
         } catch (TransferException | InternalErrorException $e) {
             $this->logger->warning(

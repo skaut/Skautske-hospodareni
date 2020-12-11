@@ -9,8 +9,7 @@ use App\AccountancyModule\TravelModule\Factories\IVehicleGridFactory;
 
 final class VehicleListPresenter extends BasePresenter
 {
-    /** @var IVehicleGridFactory */
-    private $gridFactory;
+    private IVehicleGridFactory $gridFactory;
 
     public function __construct(IVehicleGridFactory $gridFactory)
     {
@@ -19,12 +18,12 @@ final class VehicleListPresenter extends BasePresenter
         $this->setLayout('layout.new');
     }
 
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
     }
 
-    protected function createComponentGrid() : VehicleGrid
+    protected function createComponentGrid(): VehicleGrid
     {
         return $this->gridFactory->create($this->getUnitId());
     }

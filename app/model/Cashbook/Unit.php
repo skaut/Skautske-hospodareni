@@ -13,6 +13,7 @@ use Model\Cashbook\Unit\Cashbook;
 use Model\Common\Aggregate;
 use Model\Common\ShouldNotHappen;
 use Model\Common\UnitId;
+
 use function assert;
 
 /**
@@ -24,31 +25,22 @@ class Unit extends Aggregate
     /**
      * @ORM\Id()
      * @ORM\Column(type="unit_id")
-     *
-     * @var UnitId
      */
-    private $id;
+    private UnitId $id;
 
     /**
      * @ORM\OneToMany(targetEntity=Cashbook::class, mappedBy="unit", cascade={"persist", "remove"}, orphanRemoval=true)
      *
      * @var ArrayCollection<int, Cashbook>
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
     private $cashbooks;
 
-    /**
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
-    private $activeCashbookId;
+    /** @ORM\Column(type="integer") */
+    private int $activeCashbookId;
 
-    /**
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
-    private $nextCashbookId = 1;
+    /** @ORM\Column(type="integer") */
+    private int $nextCashbookId = 1;
 
     public function __construct(UnitId $id, CashbookId $activeCashbookId, int $activeCashbookYear)
     {
@@ -65,7 +57,7 @@ class Unit extends Aggregate
      *
      * @throws YearCashbookAlreadyExists
      */
-    public function createCashbook(int $year) : void
+    public function createCashbook(int $year): void
     {
         if ($this->cashbookForYearExists($year)) {
             throw YearCashbookAlreadyExists::forYear($year, $this->id);
@@ -77,12 +69,12 @@ class Unit extends Aggregate
         $this->raise(new CashbookWasCreated($this->id, $cashbookId));
     }
 
-    public function getId() : UnitId
+    public function getId(): UnitId
     {
         return $this->id;
     }
 
-    public function activateCashbook(int $cashbookId) : void
+    public function activateCashbook(int $cashbookId): void
     {
         if ($cashbookId >= $this->nextCashbookId) {
             throw UnitCashbookNotFound::withId($cashbookId, $this->id);
@@ -94,12 +86,12 @@ class Unit extends Aggregate
     /**
      * @return Unit\Cashbook[]
      */
-    public function getCashbooks() : array
+    public function getCashbooks(): array
     {
         return $this->cashbooks->toArray();
     }
 
-    public function getActiveCashbook() : Cashbook
+    public function getActiveCashbook(): Cashbook
     {
         foreach ($this->cashbooks as $cashbook) {
             assert($cashbook instanceof Cashbook);
@@ -112,14 +104,14 @@ class Unit extends Aggregate
         throw new ShouldNotHappen('Unit always should have active cashbook set');
     }
 
-    private function cashbookForYearExists(int $year) : bool
+    private function cashbookForYearExists(int $year): bool
     {
-        return $this->cashbooks->exists(function ($_, Cashbook $cashbook) use ($year) : bool {
+        return $this->cashbooks->exists(function ($_, Cashbook $cashbook) use ($year): bool {
             return $cashbook->getYear() === $year;
         });
     }
 
-    private function getCashbookId() : int
+    private function getCashbookId(): int
     {
         return $this->nextCashbookId++;
     }

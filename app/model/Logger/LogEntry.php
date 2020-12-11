@@ -25,53 +25,32 @@ class LogEntry
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @ORM\Column(type="integer", name="unitId", options={"unsigned"=true})
-     *
-     * @var int
-     */
-    private $unitId;
+    /** @ORM\Column(type="integer", name="unitId", options={"unsigned"=true}) */
+    private int $unitId;
 
-    /**
-     * @ORM\Column(type="datetime_immutable")
-     *
-     * @var DateTimeImmutable
-     */
-    private $date;
+    /** @ORM\Column(type="datetime_immutable") */
+    private DateTimeImmutable $date;
 
-    /**
-     * @ORM\Column(type="integer", name="userId", options={"unsigned"=true})
-     *
-     * @var int
-     */
-    private $userId;
+    /** @ORM\Column(type="integer", name="userId", options={"unsigned"=true}) */
+    private int $userId;
 
-    /**
-     * @ORM\Column(type="text")
-     *
-     * @var string
-     */
-    private $description;
+    /** @ORM\Column(type="text") */
+    private string $description;
 
     /**
      * @ORM\Column(type="string_enum", name="type")
      *
-     * @var Type
      * @Enum(class=Type::class)
+     * @var Type
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
     private $type;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true, name="typeId", options={"unsigned"=true})
-     *
-     * @var int|NULL
-     */
-    private $typeId;
+    /** @ORM\Column(type="integer", nullable=true, name="typeId", options={"unsigned"=true}) */
+    private ?int $typeId = null;
 
     public function __construct(
         int $unitId,
@@ -89,37 +68,37 @@ class LogEntry
         $this->typeId      = $typeId;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getUnitId() : int
+    public function getUnitId(): int
     {
         return $this->unitId;
     }
 
-    public function getDate() : DateTimeImmutable
+    public function getDate(): DateTimeImmutable
     {
         return $this->date;
     }
 
-    public function getUserId() : int
+    public function getUserId(): int
     {
         return $this->userId;
     }
 
-    public function getDescription() : string
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-    public function getType() : Type
+    public function getType(): Type
     {
         return $this->type;
     }
 
-    public function getTypeId() : ?int
+    public function getTypeId(): ?int
     {
         return $this->typeId;
     }

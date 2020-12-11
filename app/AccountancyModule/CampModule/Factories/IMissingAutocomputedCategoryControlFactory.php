@@ -9,5 +9,5 @@ use Model\Event\SkautisCampId;
 
 interface IMissingAutocomputedCategoryControlFactory
 {
-    public function create(SkautisCampId $campId) : MissingAutocomputedCategoryControl;
+    public function create(SkautisCampId $campId): MissingAutocomputedCategoryControl;
 }

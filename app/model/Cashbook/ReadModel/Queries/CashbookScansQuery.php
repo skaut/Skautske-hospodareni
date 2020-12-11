@@ -12,11 +12,9 @@ use Model\Cashbook\Cashbook\PaymentMethod;
  */
 final class CashbookScansQuery
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var PaymentMethod */
-    private $paymentMethod;
+    private PaymentMethod $paymentMethod;
 
     public function __construct(CashbookId $cashbookId, PaymentMethod $paymentMethod)
     {
@@ -24,12 +22,12 @@ final class CashbookScansQuery
         $this->paymentMethod = $paymentMethod;
     }
 
-    public function getCashbookId() : CashbookId
+    public function getCashbookId(): CashbookId
     {
         return $this->cashbookId;
     }
 
-    public function getPaymentMethod() : PaymentMethod
+    public function getPaymentMethod(): PaymentMethod
     {
         return $this->paymentMethod;
     }

@@ -11,15 +11,14 @@ use Model\Event\Handlers\Event\ActivateStatisticsHandler;
  */
 final class ActivateStatistics
 {
-    /** @var int */
-    private $eventId;
+    private int $eventId;
 
     public function __construct(int $eventId)
     {
         $this->eventId = $eventId;
     }
 
-    public function getEventId() : int
+    public function getEventId(): int
     {
         return $this->eventId;
     }

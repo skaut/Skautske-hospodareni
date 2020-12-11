@@ -7,6 +7,7 @@ namespace Model\DTO\Travel\Command;
 use Model\Travel\Command;
 use Nette\StaticClass;
 use RuntimeException;
+
 use function array_map;
 use function get_class;
 use function usort;
@@ -18,7 +19,7 @@ class TravelFactory
     /**
      * @return Travel[]
      */
-    public static function createList(Command $command) : array
+    public static function createList(Command $command): array
     {
         $dtos = array_map(
             function (Command\Travel $travel) use ($command) {
@@ -39,7 +40,7 @@ class TravelFactory
         return $dtos;
     }
 
-    public static function create(Command $command, int $travelId) : ?Travel
+    public static function create(Command $command, int $travelId): ?Travel
     {
         foreach ($command->getTravels() as $travel) {
             if ($travel->getId() === $travelId) {
@@ -50,7 +51,7 @@ class TravelFactory
         return null;
     }
 
-    private static function createSingle(Command\Travel $travel, Command $command) : Travel
+    private static function createSingle(Command\Travel $travel, Command $command): Travel
     {
         $id      = $travel->getId();
         $details = $travel->getDetails();

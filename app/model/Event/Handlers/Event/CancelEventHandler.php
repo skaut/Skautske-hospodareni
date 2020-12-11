@@ -11,11 +11,9 @@ use Skautis\Skautis;
 
 final class CancelEventHandler
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
-    /** @var EventBus */
-    private $eventBus;
+    private EventBus $eventBus;
 
     public function __construct(Skautis $skautis, EventBus $eventBus)
     {
@@ -23,7 +21,7 @@ final class CancelEventHandler
         $this->eventBus = $eventBus;
     }
 
-    public function __invoke(CancelEvent $command) : void
+    public function __invoke(CancelEvent $command): void
     {
         $this->skautis->event->EventGeneralUpdateCancel([
             'ID' => $command->getEventId()->toInt(),

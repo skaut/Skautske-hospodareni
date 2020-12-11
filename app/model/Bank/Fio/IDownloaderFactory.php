@@ -8,5 +8,5 @@ use FioApi\Downloader;
 
 interface IDownloaderFactory
 {
-    public function create(string $token) : Downloader;
+    public function create(string $token): Downloader;
 }

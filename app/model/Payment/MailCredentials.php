@@ -19,60 +19,33 @@ class MailCredentials
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @ORM\Column(type="integer", name="unitId", options={"unsigned"=true})
-     *
-     * @var int
-     */
-    private $unitId;
+    /** @ORM\Column(type="integer", name="unitId", options={"unsigned"=true}) */
+    private int $unitId;
 
-    /**
-     * @ORM\Column(type="string")
-     *
-     * @var string
-     */
-    private $host;
+    /** @ORM\Column(type="string") */
+    private string $host;
 
-    /**
-     * @ORM\Column(type="string")
-     *
-     * @var string
-     */
-    private $username;
+    /** @ORM\Column(type="string") */
+    private string $username;
 
-    /**
-     * @ORM\Column(type="string")
-     *
-     * @var string
-     */
-    private $password;
+    /** @ORM\Column(type="string") */
+    private string $password;
 
     /**
      * @ORM\Column(type="string_enum", name="secure", length=64)
      *
-     * @var string
      * @Enum(class=MailProtocol::class)
      */
-    private $protocol;
+    private string $protocol;
 
-    /**
-     * @ORM\Column(type="string")
-     *
-     * @var string
-     */
-    private $sender;
+    /** @ORM\Column(type="string") */
+    private string $sender;
 
-    /**
-     * @ORM\Column(type="datetime_immutable", name="created")
-     *
-     * @var DateTimeImmutable
-     */
-    private $createdAt;
+    /** @ORM\Column(type="datetime_immutable", name="created") */
+    private DateTimeImmutable $createdAt;
 
     public function __construct(
         int $unitId,
@@ -92,47 +65,47 @@ class MailCredentials
         $this->createdAt = $createdAt;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getUnitId() : int
+    public function getUnitId(): int
     {
         return $this->unitId;
     }
 
-    public function getHost() : string
+    public function getHost(): string
     {
         return $this->host;
     }
 
-    public function getUsername() : string
+    public function getUsername(): string
     {
         return $this->username;
     }
 
-    public function getPassword() : string
+    public function getPassword(): string
     {
         return $this->password;
     }
 
-    public function getProtocol() : string
+    public function getProtocol(): string
     {
         return $this->protocol;
     }
 
-    public function getSender() : string
+    public function getSender(): string
     {
         return $this->sender;
     }
 
-    public function getCreatedAt() : DateTimeImmutable
+    public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setPassword(string $password) : void
+    public function setPassword(string $password): void
     {
         $this->password = $password;
     }

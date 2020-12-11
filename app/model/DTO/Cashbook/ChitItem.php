@@ -17,14 +17,11 @@ class ChitItem
 {
     use SmartObject;
 
-    /** @var Amount */
-    private $amount;
+    private Amount $amount;
 
-    /** @var Category */
-    private $category;
+    private Category $category;
 
-    /** @var string */
-    private $purpose;
+    private string $purpose;
 
     public function __construct(Amount $amount, Category $category, string $purpose)
     {
@@ -33,22 +30,22 @@ class ChitItem
         $this->purpose  = $purpose;
     }
 
-    public function getAmount() : Amount
+    public function getAmount(): Amount
     {
         return $this->amount;
     }
 
-    public function getCategory() : Category
+    public function getCategory(): Category
     {
         return $this->category;
     }
 
-    public function getPurpose() : string
+    public function getPurpose(): string
     {
         return $this->purpose;
     }
 
-    public function getSignedAmount() : float
+    public function getSignedAmount(): float
     {
         $amount = $this->amount->toFloat();
 

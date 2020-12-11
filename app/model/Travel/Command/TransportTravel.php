@@ -9,6 +9,7 @@ use InvalidArgumentException;
 use Model\Travel\Command;
 use Model\Utils\MoneyFactory;
 use Money\Money;
+
 use function sprintf;
 
 /**
@@ -16,12 +17,8 @@ use function sprintf;
  */
 class TransportTravel extends Travel
 {
-    /**
-     * @ORM\Column(type="money")
-     *
-     * @var Money
-     */
-    private $price;
+    /** @ORM\Column(type="money") */
+    private Money $price;
 
     public function __construct(int $id, Money $price, TravelDetails $details, Command $command)
     {
@@ -29,18 +26,18 @@ class TransportTravel extends Travel
         $this->setPrice($price);
     }
 
-    public function update(Money $price, TravelDetails $details) : void
+    public function update(Money $price, TravelDetails $details): void
     {
         $this->setPrice($price);
         $this->setDetails($details);
     }
 
-    public function getPrice() : Money
+    public function getPrice(): Money
     {
         return $this->price;
     }
 
-    private function setPrice(Money $price) : void
+    private function setPrice(Money $price): void
     {
         if (! $price->isPositive()) {
             throw new InvalidArgumentException(

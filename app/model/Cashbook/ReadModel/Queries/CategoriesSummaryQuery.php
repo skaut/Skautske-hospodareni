@@ -12,15 +12,14 @@ use Model\Cashbook\ReadModel\QueryHandlers\CategoriesSummaryQueryHandler;
  */
 final class CategoriesSummaryQuery
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
     public function __construct(CashbookId $cashbookId)
     {
         $this->cashbookId = $cashbookId;
     }
 
-    public function getCashbookId() : CashbookId
+    public function getCashbookId(): CashbookId
     {
         return $this->cashbookId;
     }

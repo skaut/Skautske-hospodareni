@@ -8,15 +8,14 @@ use Skautis\Skautis;
 
 class SkautisMaintenanceChecker
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
     public function __construct(Skautis $skautis)
     {
         $this->skautis = $skautis;
     }
 
-    public function isMaintenance() : bool
+    public function isMaintenance(): bool
     {
         return $this->skautis->isMaintenance();
     }

@@ -20,39 +20,26 @@ class Email
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Group::class, inversedBy="emails")
-     *
-     * @var Group
-     */
-    private $group;
+    /** @ORM\ManyToOne(targetEntity=Group::class, inversedBy="emails") */
+    private Group $group;
 
-    /**
-     * @ORM\Column(type="boolean")
-     *
-     * @var bool
-     */
-    private $enabled = true;
+    /** @ORM\Column(type="boolean") */
+    private bool $enabled = true;
 
     /**
      * @ORM\Column(type="string_enum")
      *
-     * @var EmailType
      * @Enum(class=EmailType::class)
+     * @var EmailType
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
     private $type;
 
-    /**
-     * @ORM\Embedded(class=EmailTemplate::class)
-     *
-     * @var EmailTemplate
-     */
-    private $template;
+    /** @ORM\Embedded(class=EmailTemplate::class) */
+    private EmailTemplate $template;
 
     public function __construct(Group $group, EmailType $type, EmailTemplate $template)
     {
@@ -61,38 +48,38 @@ class Email
         $this->template = $template;
     }
 
-    public function updateTemplate(EmailTemplate $template) : void
+    public function updateTemplate(EmailTemplate $template): void
     {
         $this->template = $template;
         $this->enabled  = true;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function disable() : void
+    public function disable(): void
     {
         $this->enabled = false;
     }
 
-    public function getGroup() : Group
+    public function getGroup(): Group
     {
         return $this->group;
     }
 
-    public function getType() : EmailType
+    public function getType(): EmailType
     {
         return $this->type;
     }
 
-    public function getTemplate() : EmailTemplate
+    public function getTemplate(): EmailTemplate
     {
         return $this->template;
     }
 
-    public function isEnabled() : bool
+    public function isEnabled(): bool
     {
         return $this->enabled;
     }

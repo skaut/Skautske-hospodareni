@@ -36,7 +36,7 @@ final class DtoListDataSource implements IDataSource
      *
      * @phpstan-return $this
      */
-    public function filter(array $filters) : self
+    public function filter(array $filters): self
     {
         if ($filters === []) {
             return $this;
@@ -50,7 +50,7 @@ final class DtoListDataSource implements IDataSource
      *
      * @phpstan-return $this
      */
-    public function filterOne(array $condition) : self
+    public function filterOne(array $condition): self
     {
         if ($condition === []) {
             return $this;
@@ -59,7 +59,7 @@ final class DtoListDataSource implements IDataSource
         throw new NotImplementedException('This data source does not support filtering');
     }
 
-    public function getCount() : int
+    public function getCount(): int
     {
         return $this->getFilteredCollection()->count();
     }
@@ -69,7 +69,7 @@ final class DtoListDataSource implements IDataSource
      *
      * @phpstan-return T[]
      */
-    public function getData() : array
+    public function getData(): array
     {
         return $this->getFilteredCollection()->toArray();
     }
@@ -79,10 +79,9 @@ final class DtoListDataSource implements IDataSource
      * @param int $limit
      *
      * @return $this
-     *
-     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
      */
-    public function limit($offset, $limit) : self
+    // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
+    public function limit($offset, $limit): self
     {
         $this->criteria->setFirstResult($offset)->setMaxResults($limit);
 
@@ -92,7 +91,7 @@ final class DtoListDataSource implements IDataSource
     /**
      * @phpstan-return $this
      */
-    public function sort(Sorting $sorting) : self
+    public function sort(Sorting $sorting): self
     {
         $sortCallback = $sorting->getSortCallback();
 
@@ -108,7 +107,7 @@ final class DtoListDataSource implements IDataSource
     /**
      * @phpstan-return ArrayCollection<int, T>
      */
-    private function getFilteredCollection() : ArrayCollection
+    private function getFilteredCollection(): ArrayCollection
     {
         return $this->collection->matching($this->criteria);
     }

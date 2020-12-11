@@ -19,33 +19,17 @@ final class Passenger
 {
     use SmartObject;
 
-    /**
-     * @ORM\Column(type="string", name="driver_name")
-     *
-     * @var string
-     */
-    private $name;
+    /** @ORM\Column(type="string", name="driver_name") */
+    private string $name;
 
-    /**
-     * @ORM\Column(type="string", name="driver_contact")
-     *
-     * @var string
-     */
-    private $contact;
+    /** @ORM\Column(type="string", name="driver_contact") */
+    private string $contact;
 
-    /**
-     * @ORM\Column(type="string", name="driver_address")
-     *
-     * @var string
-     */
-    private $address;
+    /** @ORM\Column(type="string", name="driver_address") */
+    private string $address;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true, options={"unsigned"=true})
-     *
-     * @var int|NULL
-     */
-    private $contractId;
+    /** @ORM\Column(type="integer", nullable=true, options={"unsigned"=true}) */
+    private ?int $contractId = null;
 
     public function __construct(string $name, string $contact, string $address)
     {
@@ -57,12 +41,12 @@ final class Passenger
     /**
      * nezbytné pro řazení v Gridu cestovních příkazů
      */
-    public function __toString() : string
+    public function __toString(): string
     {
         return $this->name;
     }
 
-    public static function fromContract(Contract $contract) : Passenger
+    public static function fromContract(Contract $contract): Passenger
     {
         $contractPassenger = $contract->getPassenger();
 
@@ -76,27 +60,27 @@ final class Passenger
         return $passenger;
     }
 
-    private function setContractId(int $contractId) : void
+    private function setContractId(int $contractId): void
     {
         $this->contractId = $contractId;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getContact() : string
+    public function getContact(): string
     {
         return $this->contact;
     }
 
-    public function getAddress() : string
+    public function getAddress(): string
     {
         return $this->address;
     }
 
-    public function getContractId() : ?int
+    public function getContractId(): ?int
     {
         return $this->contractId;
     }

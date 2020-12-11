@@ -12,21 +12,21 @@ interface IVehicleRepository
     /**
      * @throws VehicleNotFound
      */
-    public function find(int $id) : Vehicle;
+    public function find(int $id): Vehicle;
 
     /**
      * @param int[] $ids
      *
      * @return Vehicle[]
      */
-    public function findByIds(array $ids) : array;
+    public function findByIds(array $ids): array;
 
     /**
      * @return Vehicle[]
      */
-    public function findByUnit(int $unitId) : array;
+    public function findByUnit(int $unitId): array;
 
-    public function save(Vehicle $vehicle) : void;
+    public function save(Vehicle $vehicle): void;
 
-    public function remove(Vehicle $vehicle) : void;
+    public function remove(Vehicle $vehicle): void;
 }

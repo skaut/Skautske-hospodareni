@@ -8,5 +8,5 @@ use App\AccountancyModule\PaymentModule\Components\PaymentDialog;
 
 interface IPaymentDialogFactory
 {
-    public function create(int $groupId) : PaymentDialog;
+    public function create(int $groupId): PaymentDialog;
 }

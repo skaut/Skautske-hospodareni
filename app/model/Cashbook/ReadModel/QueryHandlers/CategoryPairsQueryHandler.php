@@ -9,15 +9,14 @@ use Model\Cashbook\ICategory;
 use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use Model\Cashbook\Repositories\CategoryRepository;
 use Model\Cashbook\Repositories\ICashbookRepository;
+
 use function array_filter;
 
 class CategoryPairsQueryHandler
 {
-    /** @var CategoryRepository */
-    private $categories;
+    private CategoryRepository $categories;
 
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
     public function __construct(CategoryRepository $categories, ICashbookRepository $cashbooks)
     {
@@ -30,7 +29,7 @@ class CategoryPairsQueryHandler
      *
      * @throws CashbookNotFound
      */
-    public function __invoke(CategoryPairsQuery $query) : array
+    public function __invoke(CategoryPairsQuery $query): array
     {
         $cashbook = $this->cashbooks->find($query->getCashbookId());
 
@@ -39,7 +38,7 @@ class CategoryPairsQueryHandler
         if ($query->getOperationType() !== null) {
             $categories = array_filter(
                 $categories,
-                function (ICategory $category) use ($query) : bool {
+                function (ICategory $category) use ($query): bool {
                     return $category->getOperationType()->equals($query->getOperationType());
                 }
             );

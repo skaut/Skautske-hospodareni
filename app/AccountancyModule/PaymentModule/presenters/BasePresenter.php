@@ -7,22 +7,22 @@ namespace App\AccountancyModule\PaymentModule;
 use Model\DTO\Payment\Group;
 use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\ReadModel\Queries\EditableUnitsQuery;
+
 use function array_intersect;
 use function array_keys;
 use function in_array;
 
 abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
-    /** @var bool */
-    protected $isReadable;
+    protected bool $isReadable;
 
     /** @var int[] */
-    private $editableUnits;
+    private array $editableUnits;
 
     /** @var int[] */
-    private $readableUnits;
+    private array $readableUnits;
 
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
 
@@ -42,7 +42,7 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
         $this->setView('accessDenied');
     }
 
-    protected function beforeRender() : void
+    protected function beforeRender(): void
     {
         parent::beforeRender();
 
@@ -52,12 +52,12 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
         ]);
     }
 
-    protected function hasAccessToGroup(Group $group) : bool
+    protected function hasAccessToGroup(Group $group): bool
     {
         return array_intersect($group->getUnitIds(), $this->readableUnits) !== [];
     }
 
-    protected function canEditGroup(Group $group) : bool
+    protected function canEditGroup(Group $group): bool
     {
         return array_intersect($group->getUnitIds(), $this->editableUnits) !== [];
     }
@@ -65,7 +65,7 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
     /**
      * @return int[]
      */
-    protected function getEditableUnits() : array
+    protected function getEditableUnits(): array
     {
         return $this->editableUnits;
     }

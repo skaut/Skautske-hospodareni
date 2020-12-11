@@ -9,8 +9,7 @@ use Model\Participant\ReadModel\Queries\PotentialParticipantListQuery;
 
 final class PotentialParticipantListQueryHandler
 {
-    /** @var IMemberRepository */
-    private $members;
+    private IMemberRepository $members;
 
     public function __construct(IMemberRepository $members)
     {
@@ -20,7 +19,7 @@ final class PotentialParticipantListQueryHandler
     /**
      * @return array<int, string> member ID => member name
      */
-    public function __invoke(PotentialParticipantListQuery $query) : array
+    public function __invoke(PotentialParticipantListQuery $query): array
     {
         $all = $this->members->findByUnit($query->getUnitId(), ! $query->directMembersOnly());
 

@@ -6,11 +6,10 @@ namespace Model\Payment\Commands\Group;
 
 final class ChangeGroupUnits
 {
-    /** @var int */
-    private $groupId;
+    private int $groupId;
 
     /** @var int[] */
-    private $unitIds;
+    private array $unitIds;
 
     /**
      * @param int[] $unitIds
@@ -21,7 +20,7 @@ final class ChangeGroupUnits
         $this->unitIds = $unitIds;
     }
 
-    public function getGroupId() : int
+    public function getGroupId(): int
     {
         return $this->groupId;
     }
@@ -29,7 +28,7 @@ final class ChangeGroupUnits
     /**
      * @return int[]
      */
-    public function getUnitIds() : array
+    public function getUnitIds(): array
     {
         return $this->unitIds;
     }

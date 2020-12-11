@@ -27,44 +27,32 @@ class Group
 {
     use SmartObject;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string|NULL */
-    private $type;
+    private ?string $type = null;
 
     /** @var int[] */
-    private $unitIds;
+    private array $unitIds;
 
-    /** @var int|NULL */
-    private $skautisId;
+    private ?int $skautisId = null;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var float|NULL */
-    private $defaultAmount;
+    private ?float $defaultAmount = null;
 
-    /** @var Date|NULL */
-    private $dueDate;
+    private ?Date $dueDate = null;
 
-    /** @var int|NULL */
-    private $constantSymbol;
+    private ?int $constantSymbol = null;
 
-    /** @var VariableSymbol|NULL */
-    private $nextVariableSymbol;
+    private ?VariableSymbol $nextVariableSymbol = null;
 
-    /** @var string */
-    private $state;
+    private string $state;
 
-    /** @var OAuthId|NULL */
-    private $oAuthId;
+    private ?OAuthId $oAuthId = null;
 
-    /** @var string */
-    private $note;
+    private string $note;
 
-    /** @var int|NULL */
-    private $bankAccountId;
+    private ?int $bankAccountId = null;
 
     /**
      * @param int[] $unitIds
@@ -99,12 +87,12 @@ class Group
         $this->bankAccountId      = $bankAccountId;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getType() : ?string
+    public function getType(): ?string
     {
         return $this->type;
     }
@@ -112,62 +100,62 @@ class Group
     /**
      * @return int[]
      */
-    public function getUnitIds() : array
+    public function getUnitIds(): array
     {
         return $this->unitIds;
     }
 
-    public function getUnitId() : int
+    public function getUnitId(): int
     {
         return $this->unitId;
     }
 
-    public function getSkautisId() : ?int
+    public function getSkautisId(): ?int
     {
         return $this->skautisId;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getDefaultAmount() : ?float
+    public function getDefaultAmount(): ?float
     {
         return $this->defaultAmount;
     }
 
-    public function getDueDate() : ?Date
+    public function getDueDate(): ?Date
     {
         return $this->dueDate;
     }
 
-    public function getConstantSymbol() : ?int
+    public function getConstantSymbol(): ?int
     {
         return $this->constantSymbol;
     }
 
-    public function getNextVariableSymbol() : ?VariableSymbol
+    public function getNextVariableSymbol(): ?VariableSymbol
     {
         return $this->nextVariableSymbol;
     }
 
-    public function getState() : string
+    public function getState(): string
     {
         return $this->state;
     }
 
-    public function getOAuthId() : ?OAuthId
+    public function getOAuthId(): ?OAuthId
     {
         return $this->oAuthId;
     }
 
-    public function getNote() : string
+    public function getNote(): string
     {
         return $this->note;
     }
 
-    public function getBankAccountId() : ?int
+    public function getBankAccountId(): ?int
     {
         return $this->bankAccountId;
     }

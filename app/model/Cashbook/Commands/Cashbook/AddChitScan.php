@@ -12,17 +12,13 @@ use Model\Cashbook\Handlers\Cashbook\AddChitScanHandler;
  */
 final class AddChitScan
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var int */
-    private $chitId;
+    private int $chitId;
 
-    /** @var string */
-    private $fileName;
+    private string $fileName;
 
-    /** @var string */
-    private $scanContents;
+    private string $scanContents;
 
     public function __construct(CashbookId $cashbookId, int $chitId, string $fileName, string $scanContents)
     {
@@ -32,22 +28,22 @@ final class AddChitScan
         $this->scanContents = $scanContents;
     }
 
-    public function getCashbookId() : CashbookId
+    public function getCashbookId(): CashbookId
     {
         return $this->cashbookId;
     }
 
-    public function getChitId() : int
+    public function getChitId(): int
     {
         return $this->chitId;
     }
 
-    public function getFileName() : string
+    public function getFileName(): string
     {
         return $this->fileName;
     }
 
-    public function getScanContents() : string
+    public function getScanContents(): string
     {
         return $this->scanContents;
     }

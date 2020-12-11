@@ -17,25 +17,21 @@ use Model\Payment\ReadModel\Queries\EventParticipantsWithoutPaymentQuery;
 use Model\Payment\ReadModel\Queries\EventsWithoutGroupQuery;
 use Model\Payment\ReadModel\Queries\MemberEmailsQuery;
 use Model\PaymentService;
+
 use function assert;
 use function count;
 
 final class EventPresenter extends BasePresenter
 {
-    /** @var Event|null */
-    private $event;
+    private ?Event $event = null;
 
-    /** @var int|null */
-    private $groupId;
+    private ?int $groupId = null;
 
-    /** @var IGroupFormFactory */
-    private $groupFormFactory;
+    private IGroupFormFactory $groupFormFactory;
 
-    /** @var IMassAddFormFactory */
-    private $massAddFormFactory;
+    private IMassAddFormFactory $massAddFormFactory;
 
-    /** @var PaymentService */
-    private $model;
+    private PaymentService $model;
 
     public function __construct(
         IGroupFormFactory $groupFormFactory,
@@ -48,12 +44,12 @@ final class EventPresenter extends BasePresenter
         $this->model              = $model;
     }
 
-    public function actionDefault() : void
+    public function actionDefault(): void
     {
         $this->template->setParameters(['events' => $this->getEventsWithoutGroup()]);
     }
 
-    public function actionNewGroup(int $eventId) : void
+    public function actionNewGroup(int $eventId): void
     {
         $eventsWithoutGroup = $this->getEventsWithoutGroup();
 
@@ -69,7 +65,7 @@ final class EventPresenter extends BasePresenter
     /**
      * @param int $id ID of payment group
      */
-    public function actionMassAdd(int $id) : void
+    public function actionMassAdd(int $id): void
     {
         $group = $this->model->getGroup($id);
 
@@ -103,7 +99,7 @@ final class EventPresenter extends BasePresenter
         ]);
     }
 
-    protected function createComponentNewGroupForm() : GroupForm
+    protected function createComponentNewGroupForm(): GroupForm
     {
         $event = $this->event;
 
@@ -120,7 +116,7 @@ final class EventPresenter extends BasePresenter
         return $form;
     }
 
-    protected function createComponentMassAddForm() : MassAddForm
+    protected function createComponentMassAddForm(): MassAddForm
     {
         $groupId = $this->groupId;
 
@@ -132,7 +128,7 @@ final class EventPresenter extends BasePresenter
     /**
      * @return Event[]
      */
-    private function getEventsWithoutGroup() : array
+    private function getEventsWithoutGroup(): array
     {
         return $this->queryBus->handle(new EventsWithoutGroupQuery(Date::today()->year));
     }

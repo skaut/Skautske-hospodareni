@@ -6,11 +6,9 @@ namespace Model\DTO\Event;
 
 final class StatisticsItem
 {
-    /** @var string */
-    private $label;
+    private string $label;
 
-    /** @var int */
-    private $count;
+    private int $count;
 
     public function __construct(string $label, int $count)
     {
@@ -18,12 +16,12 @@ final class StatisticsItem
         $this->count = $count;
     }
 
-    public function getLabel() : string
+    public function getLabel(): string
     {
         return $this->label;
     }
 
-    public function getCount() : int
+    public function getCount(): int
     {
         return $this->count;
     }

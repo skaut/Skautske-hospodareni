@@ -12,7 +12,7 @@ final class PersonFactory
 {
     use StaticClass;
 
-    public static function create(stdClass $function) : ?Person
+    public static function create(stdClass $function): ?Person
     {
         if ($function->ID_Person === null) {
             return null;

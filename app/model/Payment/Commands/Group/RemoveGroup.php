@@ -11,15 +11,14 @@ use Model\Payment\Handlers\Group\RemoveGroupHandler;
  */
 final class RemoveGroup
 {
-    /** @var int */
-    private $groupId;
+    private int $groupId;
 
     public function __construct(int $groupId)
     {
         $this->groupId = $groupId;
     }
 
-    public function getGroupId() : int
+    public function getGroupId(): int
     {
         return $this->groupId;
     }

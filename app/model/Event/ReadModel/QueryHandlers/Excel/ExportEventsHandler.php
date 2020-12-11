@@ -28,6 +28,7 @@ use Model\Participant\PragueParticipants;
 use Model\Skautis\ReadModel\Queries\EventStatisticsQuery;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+
 use function array_key_exists;
 use function array_map;
 use function assert;
@@ -35,14 +36,11 @@ use function count;
 
 final class ExportEventsHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var SpreadsheetFactory */
-    private $spreadsheetFactory;
+    private SpreadsheetFactory $spreadsheetFactory;
 
-    /** @var SheetChitsGenerator */
-    private $sheetChitsGenerator;
+    private SheetChitsGenerator $sheetChitsGenerator;
 
     public function __construct(
         QueryBus $queryBus,
@@ -54,12 +52,12 @@ final class ExportEventsHandler
         $this->sheetChitsGenerator = $sheetChitsGenerator;
     }
 
-    public function __invoke(ExportEvents $query) : Spreadsheet
+    public function __invoke(ExportEvents $query): Spreadsheet
     {
         $spreadsheet = $this->spreadsheetFactory->create();
 
         $events = array_map(
-            function (int $eventId) : Event {
+            function (int $eventId): Event {
                 return $this->queryBus->handle(new EventQuery(new SkautisEventId($eventId)));
             },
             $query->getEventIds()
@@ -69,7 +67,7 @@ final class ExportEventsHandler
         ($this->sheetChitsGenerator)(
             $spreadsheet->createSheet(1),
             array_map(
-                function (Event $event) : ExportedCashbook {
+                function (Event $event): ExportedCashbook {
                     return new ExportedCashbook($this->getCashbookId($event), $event->getDisplayName());
                 },
                 $events
@@ -82,7 +80,7 @@ final class ExportEventsHandler
     /**
      * @param array<int, Event> $events
      */
-    private function setSheetEvents(Worksheet $sheet, array $events) : void
+    private function setSheetEvents(Worksheet $sheet, array $events): void
     {
         $scopes                     = $this->queryBus->handle(new EventScopes());
         $types                      = $this->queryBus->handle(new EventTypes());
@@ -156,7 +154,7 @@ final class ExportEventsHandler
     /**
      * @param StatisticsItem[] $statistics
      */
-    private function addHeader(Worksheet $sheet, array $statistics, bool $allowPragueColumns) : void
+    private function addHeader(Worksheet $sheet, array $statistics, bool $allowPragueColumns): void
     {
         $sheet->setCellValue('A1', 'Pořadatel')
             ->setCellValue('B1', 'Název akce')
@@ -196,7 +194,7 @@ final class ExportEventsHandler
             );
     }
 
-    private function getCashbookId(Event $event) : CashbookId
+    private function getCashbookId(Event $event): CashbookId
     {
         return $this->queryBus->handle(new EventCashbookIdQuery($event->getId()));
     }
@@ -206,7 +204,7 @@ final class ExportEventsHandler
      *
      * @return array<int, PragueParticipants> Prague participants for events that has some, indexed by event ID
      */
-    private function getPragueParticipantsForEvents(array $events) : array
+    private function getPragueParticipantsForEvents(array $events): array
     {
         $pragueParticipantsPerEvent = [];
 
@@ -227,7 +225,7 @@ final class ExportEventsHandler
         return $pragueParticipantsPerEvent;
     }
 
-    private function getCashbookPrefix(Event $event) : ?string
+    private function getCashbookPrefix(Event $event): ?string
     {
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->getCashbookId($event)));
         assert($cashbook instanceof Cashbook);

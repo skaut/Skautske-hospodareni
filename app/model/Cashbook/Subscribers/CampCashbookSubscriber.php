@@ -13,6 +13,7 @@ use Model\Cashbook\Events\ChitWasAdded;
 use Model\Cashbook\Events\ChitWasUpdated;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\DTO\Cashbook\Cashbook;
+
 use function assert;
 
 /**
@@ -20,11 +21,9 @@ use function assert;
  */
 final class CampCashbookSubscriber
 {
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(CommandBus $commandBus, QueryBus $queryBus)
     {
@@ -32,7 +31,7 @@ final class CampCashbookSubscriber
         $this->queryBus   = $queryBus;
     }
 
-    public function chitWasAdded(ChitWasAdded $event) : void
+    public function chitWasAdded(ChitWasAdded $event): void
     {
         $id = $event->getCashbookId();
 
@@ -43,7 +42,7 @@ final class CampCashbookSubscriber
         $this->updateCategories($id);
     }
 
-    public function chitWasUpdated(ChitWasUpdated $event) : void
+    public function chitWasUpdated(ChitWasUpdated $event): void
     {
         $id = $event->getCashbookId();
 
@@ -54,12 +53,12 @@ final class CampCashbookSubscriber
         $this->updateCategories($id);
     }
 
-    private function updateCategories(CashbookId $cashbookId) : void
+    private function updateCategories(CashbookId $cashbookId): void
     {
         $this->commandBus->handle(new UpdateCampCategoryTotals($cashbookId));
     }
 
-    private function isCamp(CashbookId $cashbookId) : bool
+    private function isCamp(CashbookId $cashbookId): bool
     {
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
 

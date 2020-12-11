@@ -14,21 +14,18 @@ use Nette\Application\BadRequestException;
 use Nette\Security\Identity;
 use Nette\Security\User;
 use Skautis;
+
 use function assert;
 
 class UnitService
 {
-    /** @var Skautis\Skautis */
-    private $skautis;
+    private Skautis\Skautis $skautis;
 
-    /** @var IUnitRepository */
-    private $units;
+    private IUnitRepository $units;
 
-    /** @var IUnitResolver */
-    private $unitResolver;
+    private IUnitResolver $unitResolver;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(Skautis\Skautis $skautis, IUnitRepository $units, IUnitResolver $unitResolver, QueryBus $queryBus)
     {
@@ -41,7 +38,7 @@ class UnitService
     /**
      * @throws UserHasNoUnit
      */
-    public function getUnitId() : int
+    public function getUnitId(): int
     {
         $user   = $this->skautis->getUser();
         $unitId = $user->getUnitId();
@@ -53,7 +50,7 @@ class UnitService
         return $unitId;
     }
 
-    public function getOfficialUnitId(int $unitId) : int
+    public function getOfficialUnitId(int $unitId): int
     {
         return $this->unitResolver->getOfficialUnitId($unitId);
     }
@@ -61,7 +58,7 @@ class UnitService
     /**
      * @return string[]
      */
-    public function getSubunitPairs(int $parentId, bool $useDisplayName = false) : array
+    public function getSubunitPairs(int $parentId, bool $useDisplayName = false): array
     {
         $subUnits = $this->units->findByParent($parentId);
 
@@ -76,9 +73,9 @@ class UnitService
     /**
      * vrací jednotku, která má právní subjektivitu
      */
-    public function getOfficialUnit(?int $unitId = null) : Unit
+    public function getOfficialUnit(?int $unitId = null): Unit
     {
-        $unitId         = $unitId ?? $this->getUnitId();
+        $unitId       ??= $this->getUnitId();
         $officialUnitId = $this->unitResolver->getOfficialUnitId($unitId);
 
         return $this->units->find($officialUnitId);
@@ -89,7 +86,7 @@ class UnitService
      *
      * @throws BadRequestException
      */
-    public function getAllUnder(int $ID_Unit) : array
+    public function getAllUnder(int $ID_Unit): array
     {
         $data = [$ID_Unit => $this->queryBus->handle(new UnitQuery($ID_Unit))];
         foreach ($this->units->findByParent($ID_Unit) as $u) {
@@ -100,7 +97,7 @@ class UnitService
         return $data;
     }
 
-    public function getTreeUnder(Unit $unit) : Unit
+    public function getTreeUnder(Unit $unit): Unit
     {
         $children = [];
         foreach ($this->units->findByParent($unit->getId()) as $ch) {
@@ -115,7 +112,7 @@ class UnitService
      *
      * @return array<int, string> unit ID => unit name
      */
-    public function getReadUnits(User $user) : array
+    public function getReadUnits(User $user): array
     {
         return $this->getUnits($user, BaseService::ACCESS_READ);
     }
@@ -123,7 +120,7 @@ class UnitService
     /**
      * @return string[]
      */
-    public function getUnits(User $user, string $accessType) : array
+    public function getUnits(User $user, string $accessType): array
     {
         $identity = $user->getIdentity();
 

@@ -13,11 +13,9 @@ final class EventScopesHandler
 {
     private const CACHE_KEY = 'event_scopes';
 
-    /** @var WebServiceInterface */
-    private $eventWebservice;
+    private WebServiceInterface $eventWebservice;
 
-    /** @var Cache */
-    private $cache;
+    private Cache $cache;
 
     public function __construct(WebServiceInterface $eventWebservice, Cache $cache)
     {
@@ -28,7 +26,7 @@ final class EventScopesHandler
     /**
      * @return string[]
      */
-    public function __invoke(EventScopes $query) : array
+    public function __invoke(EventScopes $query): array
     {
         // Scopes doesn't change so it's safe to cache them no matter what
         return $this->cache->load(self::CACHE_KEY, function () {

@@ -13,12 +13,12 @@ final class SkautisEducationId
         $this->value = $value;
     }
 
-    public function toInt() : int
+    public function toInt(): int
     {
         return $this->value;
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         return (string) $this->value;
     }

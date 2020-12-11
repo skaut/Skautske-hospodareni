@@ -23,6 +23,7 @@ use Model\User\ReadModel\Queries\EditableUnitsQuery;
 use Nette\Application\BadRequestException;
 use Nette\Http\IResponse;
 use RuntimeException;
+
 use function assert;
 use function count;
 use function in_array;
@@ -38,17 +39,14 @@ class InvertChitDialog extends BaseControl
      */
     public $chitId;
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
     /** @var array<string, string>|NULL */
-    private $cashbooks;
+    private ?array $cashbooks = null;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(CashbookId $cashbookId, CommandBus $commandBus, QueryBus $queryBus)
     {
@@ -58,13 +56,13 @@ class InvertChitDialog extends BaseControl
         $this->queryBus   = $queryBus;
     }
 
-    public function handleOpen(int $chitId) : void
+    public function handleOpen(int $chitId): void
     {
         $this->chitId = $chitId;
         $this->redrawControl();
     }
 
-    public function render() : void
+    public function render(): void
     {
         if ($this->chitId !== null && ! $this->isChitValid()) {
             throw new BadRequestException(
@@ -87,7 +85,7 @@ class InvertChitDialog extends BaseControl
     /**
      * @return CashbookType[]
      */
-    public static function getValidInverseCashbookTypes() : array
+    public static function getValidInverseCashbookTypes(): array
     {
         return [
             CashbookType::get(CashbookType::TROOP),
@@ -95,7 +93,7 @@ class InvertChitDialog extends BaseControl
         ];
     }
 
-    protected function createComponentForm() : BaseForm
+    protected function createComponentForm(): BaseForm
     {
         if (! $this->isChitValid()) {
             throw new RuntimeException('Chit is not set or is not valid for inverting');
@@ -109,7 +107,7 @@ class InvertChitDialog extends BaseControl
         $form->addSubmit('send', 'Vytvořit protidoklad')
             ->setAttribute('class', 'ajax btn btn-primary');
 
-        $form->onSuccess[] = function (BaseForm $form, array $values) : void {
+        $form->onSuccess[] = function (BaseForm $form, array $values): void {
             $cashbookId = CashbookId::fromString((string) $values['cashbookId']);
             $this->commandBus->handle(new AddInverseChit($this->cashbookId, $cashbookId, (int) $this->chitId));
             $this->flashMessage('Protidoklad byl vytvořen', 'success');
@@ -122,7 +120,7 @@ class InvertChitDialog extends BaseControl
     /**
      * @return string[]
      */
-    private function getCashbooks() : array
+    private function getCashbooks(): array
     {
         if ($this->cashbooks !== null) {
             return $this->cashbooks;
@@ -161,7 +159,7 @@ class InvertChitDialog extends BaseControl
         return $cashbooks;
     }
 
-    private function isChitValid() : bool
+    private function isChitValid(): bool
     {
         // No chit selected -> modal closed
         if ($this->chitId === null) {
@@ -185,12 +183,12 @@ class InvertChitDialog extends BaseControl
         return false;
     }
 
-    private function getChit() : ?Chit
+    private function getChit(): ?Chit
     {
         return $this->queryBus->handle(new ChitQuery($this->cashbookId, (int) $this->chitId));
     }
 
-    private function close() : void
+    private function close(): void
     {
         $this->chitId = null;
         $this->redrawControl();

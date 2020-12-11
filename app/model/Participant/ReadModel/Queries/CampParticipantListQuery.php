@@ -12,15 +12,14 @@ use Model\Event\SkautisCampId;
  */
 final class CampParticipantListQuery
 {
-    /** @var SkautisCampId */
-    private $campId;
+    private SkautisCampId $campId;
 
     public function __construct(SkautisCampId $id)
     {
         $this->campId = $id;
     }
 
-    public function getCampId() : SkautisCampId
+    public function getCampId(): SkautisCampId
     {
         return $this->campId;
     }

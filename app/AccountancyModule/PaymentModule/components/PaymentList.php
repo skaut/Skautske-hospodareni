@@ -12,6 +12,7 @@ use eGen\MessageBus\Bus\QueryBus;
 use Model\DTO\Payment\Payment;
 use Model\Payment\Payment\State;
 use Model\Payment\ReadModel\Queries\PaymentListQuery;
+
 use function array_flip;
 use function array_reverse;
 use function strcoll;
@@ -25,17 +26,13 @@ final class PaymentList extends BaseControl
         State::CANCELED,
     ];
 
-    /** @var int */
-    private $groupId;
+    private int $groupId;
 
-    /** @var bool */
-    private $isEditable;
+    private bool $isEditable;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var GridFactory */
-    private $gridFactory;
+    private GridFactory $gridFactory;
 
     public function __construct(int $groupId, bool $isEditable, QueryBus $queryBus, GridFactory $gridFactory)
     {
@@ -46,13 +43,13 @@ final class PaymentList extends BaseControl
         $this->gridFactory = $gridFactory;
     }
 
-    public function render() : void
+    public function render(): void
     {
         $this->template->setFile(__DIR__ . '/templates/PaymentList.latte');
         $this->template->render();
     }
 
-    protected function createComponentGrid() : DataGrid
+    protected function createComponentGrid(): DataGrid
     {
         $grid = $this->gridFactory->createSimpleGrid(
             __DIR__ . '/templates/PaymentList.grid.latte',
@@ -61,7 +58,7 @@ final class PaymentList extends BaseControl
 
         $grid->addColumnText('name', 'Název/účel')
             ->setSortable()
-            ->setSortableCallback(function (DtoListDataSource $dataSource, array $sort) : DtoListDataSource {
+            ->setSortableCallback(function (DtoListDataSource $dataSource, array $sort): DtoListDataSource {
                 $data = $dataSource->getData();
 
                 usort($data, fn (Payment $a, Payment $b) => strcoll($a->getName(), $b->getName()));
@@ -88,11 +85,11 @@ final class PaymentList extends BaseControl
 
         $grid->addColumnText('state', 'Stav')
             ->setSortable()
-            ->setSortableCallback(function (DtoListDataSource $dataSource, array $sort) : DtoListDataSource {
+            ->setSortableCallback(function (DtoListDataSource $dataSource, array $sort): DtoListDataSource {
                 $statePriority = array_flip(self::STATE_ORDER);
                 $data          = $dataSource->getData();
 
-                usort($data, function (Payment $a, Payment $b) use ($statePriority) : int {
+                usort($data, function (Payment $a, Payment $b) use ($statePriority): int {
                     return $statePriority[$a->getState()->toString()] <=> $statePriority[$b->getState()->toString()];
                 });
 

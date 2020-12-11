@@ -16,14 +16,11 @@ class UnitCashbook
 {
     use SmartObject;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var int */
-    private $year;
+    private int $year;
 
     public function __construct(int $id, CashbookId $cashbookId, int $year)
     {
@@ -32,17 +29,17 @@ class UnitCashbook
         $this->year       = $year;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getCashbookId() : CashbookId
+    public function getCashbookId(): CashbookId
     {
         return $this->cashbookId;
     }
 
-    public function getYear() : int
+    public function getYear(): int
     {
         return $this->year;
     }

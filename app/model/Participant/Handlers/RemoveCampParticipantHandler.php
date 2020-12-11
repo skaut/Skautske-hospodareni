@@ -12,11 +12,9 @@ use Model\Participant\Repositories\IPaymentRepository;
 
 final class RemoveCampParticipantHandler
 {
-    /** @var IParticipantRepository */
-    private $participants;
+    private IParticipantRepository $participants;
 
-    /** @var IPaymentRepository */
-    private $payments;
+    private IPaymentRepository $payments;
 
     public function __construct(IParticipantRepository $participants, IPaymentRepository $payments)
     {
@@ -24,12 +22,13 @@ final class RemoveCampParticipantHandler
         $this->payments     = $payments;
     }
 
-    public function __invoke(RemoveCampParticipant $command) : void
+    public function __invoke(RemoveCampParticipant $command): void
     {
         try {
             $this->payments->remove($this->payments->findByParticipant($command->getParticipantId(), EventType::CAMP()));
         } catch (PaymentNotFound $exc) {
         }
+
         $this->participants->removeCampParticipant($command->getParticipantId());
     }
 }

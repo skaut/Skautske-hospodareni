@@ -14,11 +14,9 @@ final class Counter
 {
     use SmartObject;
 
-    /** @var int */
-    private $events;
+    private int $events;
 
-    /** @var int */
-    private $camps;
+    private int $camps;
 
     public function __construct(int $events = 0, int $camps = 0)
     {
@@ -26,22 +24,22 @@ final class Counter
         $this->camps  = $camps;
     }
 
-    public function getEvents() : int
+    public function getEvents(): int
     {
         return $this->events;
     }
 
-    public function getCamps() : int
+    public function getCamps(): int
     {
         return $this->camps;
     }
 
-    public function isEmpty() : bool
+    public function isEmpty(): bool
     {
         return $this->events === 0 && $this->camps === 0;
     }
 
-    public function takeIn(Counter $counter) : void
+    public function takeIn(Counter $counter): void
     {
         $this->events += $counter->getEvents();
         $this->camps  += $counter->getCamps();

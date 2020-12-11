@@ -8,7 +8,7 @@ use Model\Payment\Group as GroupEntity;
 
 class GroupFactory
 {
-    public static function create(GroupEntity $group) : Group
+    public static function create(GroupEntity $group): Group
     {
         $object = $group->getObject();
 

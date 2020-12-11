@@ -11,11 +11,9 @@ use Model\Events\Events\EventWasOpened;
 
 final class OpenEventHandler
 {
-    /** @var IEventRepository */
-    private $events;
+    private IEventRepository $events;
 
-    /** @var EventBus */
-    private $eventBus;
+    private EventBus $eventBus;
 
     public function __construct(IEventRepository $events, EventBus $eventBus)
     {
@@ -23,7 +21,7 @@ final class OpenEventHandler
         $this->eventBus = $eventBus;
     }
 
-    public function __invoke(OpenEvent $command) : void
+    public function __invoke(OpenEvent $command): void
     {
         $event = $this->events->find($command->getEventId());
 

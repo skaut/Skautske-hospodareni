@@ -10,15 +10,14 @@ use Model\Event\Repositories\ICampRepository;
 
 class CampQueryHandler
 {
-    /** @var ICampRepository */
-    private $campRepository;
+    private ICampRepository $campRepository;
 
     public function __construct(ICampRepository $campRepository)
     {
         $this->campRepository = $campRepository;
     }
 
-    public function __invoke(CampQuery $query) : Camp
+    public function __invoke(CampQuery $query): Camp
     {
         return $this->campRepository->find($query->getCampId());
     }

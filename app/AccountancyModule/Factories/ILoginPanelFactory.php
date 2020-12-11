@@ -8,5 +8,5 @@ use App\Components\LoginPanel;
 
 interface ILoginPanelFactory
 {
-    public function create() : LoginPanel;
+    public function create(): LoginPanel;
 }

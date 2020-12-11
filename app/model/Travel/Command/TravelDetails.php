@@ -23,34 +23,23 @@ class TravelDetails
 {
     use SmartObject;
 
-    /**
-     * @ORM\Column(type="chronos_date", name="start_date")
-     *
-     * @var Date
-     */
-    private $date;
+    /** @ORM\Column(type="chronos_date", name="start_date") */
+    private Date $date;
 
     /**
      * @ORM\Column(type="string_enum", name="type")
      *
      * @Enum(class=TransportType::class)
      * @var TransportType
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
     private $transportType;
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     *
-     * @var string
-     */
-    private $startPlace;
+    /** @ORM\Column(type="string", length=64) */
+    private string $startPlace;
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     *
-     * @var string
-     */
-    private $endPlace;
+    /** @ORM\Column(type="string", length=64) */
+    private string $endPlace;
 
     public function __construct(Date $date, TransportType $transportType, string $startPlace, string $endPlace)
     {
@@ -60,22 +49,22 @@ class TravelDetails
         $this->endPlace      = $endPlace;
     }
 
-    public function getDate() : Date
+    public function getDate(): Date
     {
         return $this->date;
     }
 
-    public function getTransportType() : TransportType
+    public function getTransportType(): TransportType
     {
         return $this->transportType;
     }
 
-    public function getStartPlace() : string
+    public function getStartPlace(): string
     {
         return $this->startPlace;
     }
 
-    public function getEndPlace() : string
+    public function getEndPlace(): string
     {
         return $this->endPlace;
     }

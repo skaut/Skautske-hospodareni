@@ -10,5 +10,5 @@ use Model\Payment\Group\SkautisEntity;
 
 interface IGroupFormFactory
 {
-    public function create(UnitId $unitId, ?SkautisEntity $skautisEntity, ?int $groupId = null) : GroupForm;
+    public function create(UnitId $unitId, ?SkautisEntity $skautisEntity, ?int $groupId = null): GroupForm;
 }

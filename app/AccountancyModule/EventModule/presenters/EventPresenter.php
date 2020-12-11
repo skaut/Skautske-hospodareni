@@ -34,21 +34,18 @@ use Model\Services\PdfRenderer;
 use Model\Skautis\ReadModel\Queries\EventStatisticsQuery;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
+
 use function assert;
 
 class EventPresenter extends BasePresenter
 {
-    /** @var ExportService */
-    protected $exportService;
+    protected ExportService $exportService;
 
-    /** @var IFunctionsControlFactory */
-    private $functionsFactory;
+    private IFunctionsControlFactory $functionsFactory;
 
-    /** @var PdfRenderer */
-    private $pdf;
+    private PdfRenderer $pdf;
 
-    /** @var LoggerService */
-    private $loggerService;
+    private LoggerService $loggerService;
 
     public function __construct(
         ExportService $exportService,
@@ -63,7 +60,7 @@ class EventPresenter extends BasePresenter
         $this->loggerService    = $loggerService;
     }
 
-    public function renderDefault(?int $aid) : void
+    public function renderDefault(?int $aid): void
     {
         if ($aid === null) {
             $this->redirect('Default:');
@@ -118,7 +115,7 @@ class EventPresenter extends BasePresenter
         $this->redrawControl('contentSnip');
     }
 
-    public function renderLogs(int $aid) : void
+    public function renderLogs(int $aid): void
     {
         $this->setLayout('layout.new');
         $this->template->setParameters([
@@ -126,7 +123,7 @@ class EventPresenter extends BasePresenter
         ]);
     }
 
-    public function handleOpen(int $aid) : void
+    public function handleOpen(int $aid): void
     {
         if (! $this->authorizator->isAllowed(Event::OPEN, $aid)) {
             $this->flashMessage('Nemáte právo otevřít akci', 'warning');
@@ -139,7 +136,7 @@ class EventPresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    public function handleClose(int $aid) : void
+    public function handleClose(int $aid): void
     {
         if (! $this->authorizator->isAllowed(Event::CLOSE, $aid)) {
             $this->flashMessage('Nemáte právo akci uzavřít', 'warning');
@@ -156,17 +153,18 @@ class EventPresenter extends BasePresenter
         } else {
             $this->flashMessage('Před uzavřením akce musí být vyplněn vedoucí akce', 'danger');
         }
+
         $this->redirect('this');
     }
 
-    public function handleActivateStatistic() : void
+    public function handleActivateStatistic(): void
     {
         $this->commandBus->handle(new ActivateStatistics($this->aid));
         //flash message?
         $this->redirect('this', ['aid' => $this->aid]);
     }
 
-    public function actionPrintAll(int $aid) : void
+    public function actionPrintAll(int $aid): void
     {
         $cashbookId = $this->getCashbookId($aid);
 
@@ -179,19 +177,20 @@ class EventPresenter extends BasePresenter
         $this->terminate();
     }
 
-    public function renderReport(int $aid) : void
+    public function renderReport(int $aid): void
     {
         if (! $this->authorizator->isAllowed(Event::ACCESS_DETAIL, $aid)) {
             $this->flashMessage('Nemáte právo přistupovat k akci', 'warning');
             $this->redirect('default', ['aid' => $aid]);
         }
+
         $template = $this->exportService->getEventReport($aid);
 
         $this->pdf->render($template, 'report.pdf');
         $this->terminate();
     }
 
-    protected function createComponentFormEdit() : Form
+    protected function createComponentFormEdit(): Form
     {
         $form = new BaseForm();
 
@@ -208,14 +207,14 @@ class EventPresenter extends BasePresenter
         $form->addHidden('aid');
         $form->addSubmit('send', 'Upravit')
             ->setAttribute('class', 'btn btn-primary')
-            ->onClick[] = function (SubmitButton $button) : void {
+            ->onClick[] = function (SubmitButton $button): void {
                 $this->formEditSubmitted($button);
             };
 
         return $form;
     }
 
-    private function formEditSubmitted(SubmitButton $button) : void
+    private function formEditSubmitted(SubmitButton $button): void
     {
         if (! $this->authorizator->isAllowed(Event::UPDATE, $this->aid)) {
             $this->flashMessage('Nemáte oprávnění pro úpravu akce', 'danger');
@@ -241,12 +240,12 @@ class EventPresenter extends BasePresenter
         $this->redirect('default', ['aid' => $id]);
     }
 
-    protected function createComponentFunctions() : FunctionsControl
+    protected function createComponentFunctions(): FunctionsControl
     {
         return $this->functionsFactory->create($this->aid, $this->getCurrentUnitId());
     }
 
-    private function getCashbookId(int $skautisEventId) : CashbookId
+    private function getCashbookId(int $skautisEventId): CashbookId
     {
         return $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($skautisEventId)));
     }

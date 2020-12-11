@@ -18,7 +18,7 @@ final class EducationsWithoutGroupQuery
         $this->year = $year;
     }
 
-    public function getYear() : int
+    public function getYear(): int
     {
         return $this->year;
     }

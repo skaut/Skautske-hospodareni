@@ -34,6 +34,7 @@ use Model\Payment\ReadModel\Queries\MembersWithoutPaymentInGroupQuery;
 use Model\Payment\ReadModel\Queries\PaymentListQuery;
 use Model\PaymentService;
 use Model\UnitService;
+
 use function array_filter;
 use function assert;
 use function count;
@@ -95,14 +96,14 @@ class PaymentPresenter extends BasePresenter
         $this->paymentListFactory       = $paymentListFactory;
     }
 
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
         //Kontrola ověření přístupu
         $this->readUnits = $this->unitService->getReadUnits($this->user);
     }
 
-    public function actionDefault(int $id) : void
+    public function actionDefault(int $id): void
     {
         $group = $this->model->getGroup($id);
 
@@ -137,7 +138,7 @@ class PaymentPresenter extends BasePresenter
     /**
      * @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY
      */
-    public function actionMassAdd(int $id, ?int $unitId = null, bool $directMemberOnly = true) : void
+    public function actionMassAdd(int $id, ?int $unitId = null, bool $directMemberOnly = true): void
     {
         $this->assertCanEditGroup();
 
@@ -157,11 +158,11 @@ class PaymentPresenter extends BasePresenter
             'group'    => $group,
             'id'        => $this->id,
             'showForm'  => count($list) !== 0,
-            'directMemberOnly'=> $this->directMemberOnly,
+            'directMemberOnly' => $this->directMemberOnly,
         ]);
     }
 
-    public function handleCancel(int $pid) : void
+    public function handleCancel(int $pid): void
     {
         $this->assertCanEditGroup();
 
@@ -172,10 +173,11 @@ class PaymentPresenter extends BasePresenter
         } catch (PaymentClosed $e) {
             $this->flashMessage('Tato platba už je uzavřená', 'danger');
         }
+
         $this->redirect('this');
     }
 
-    private function assertCanEditGroup() : void
+    private function assertCanEditGroup(): void
     {
         $group = $this->model->getGroup($this->id);
 
@@ -187,7 +189,7 @@ class PaymentPresenter extends BasePresenter
         $this->template->setParameters(['message' => 'Nemáte oprávnění pracovat s touto skupinou.']);
     }
 
-    public function handleSend(int $pid) : void
+    public function handleSend(int $pid): void
     {
         $this->assertCanEditGroup();
 
@@ -215,7 +217,7 @@ class PaymentPresenter extends BasePresenter
      *
      * @param int $gid groupId
      */
-    public function handleSendGroup(int $gid) : void
+    public function handleSendGroup(int $gid): void
     {
         $this->assertCanEditGroup();
 
@@ -224,7 +226,7 @@ class PaymentPresenter extends BasePresenter
         $this->sendEmailsForPayments($this->paymentsAvailableForGroupInfoSending($payments));
     }
 
-    public function handleSendTest(int $gid) : void
+    public function handleSendTest(int $gid): void
     {
         if (! $this->isEditable) {
             $this->flashMessage('Neplatný požadavek na odeslání testovacího emailu!', 'danger');
@@ -247,7 +249,7 @@ class PaymentPresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    public function handleComplete(int $pid) : void
+    public function handleComplete(int $pid): void
     {
         if (! $this->isEditable) {
             $this->flashMessage('Nejste oprávněni k uzavření platby!', 'danger');
@@ -264,7 +266,7 @@ class PaymentPresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    public function handleGenerateVs() : void
+    public function handleGenerateVs(): void
     {
         $this->assertCanEditGroup();
 
@@ -280,7 +282,7 @@ class PaymentPresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    public function handleCloseGroup() : void
+    public function handleCloseGroup(): void
     {
         $this->assertCanEditGroup();
 
@@ -295,7 +297,7 @@ class PaymentPresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    public function handleOpenGroup() : void
+    public function handleOpenGroup(): void
     {
         $this->assertCanEditGroup();
 
@@ -310,58 +312,58 @@ class PaymentPresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    public function handleOpenRemoveDialog() : void
+    public function handleOpenRemoveDialog(): void
     {
         $dialog = $this['removeGroupDialog'];
         $dialog->open();
     }
 
-    protected function createComponentPaymentDialog() : PaymentDialog
+    protected function createComponentPaymentDialog(): PaymentDialog
     {
         $this->assertCanEditGroup();
 
         $dialog = $this->paymentDialogFactory->create($this->id);
 
-        $dialog->onSuccess[] = function () : void {
+        $dialog->onSuccess[] = function (): void {
             $this->redrawControl('grid');
         };
 
         return $dialog;
     }
 
-    protected function createComponentPaymentList() : PaymentList
+    protected function createComponentPaymentList(): PaymentList
     {
         return $this->paymentListFactory->create($this->id, $this->isEditable);
     }
 
-    protected function createComponentPairButton() : PairButton
+    protected function createComponentPairButton(): PairButton
     {
         return $this->pairButtonFactory->create();
     }
 
-    protected function createComponentMassAddForm() : MassAddForm
+    protected function createComponentMassAddForm(): MassAddForm
     {
         return $this->massAddFormFactory->create($this->id);
     }
 
-    protected function createComponentUnit() : GroupUnitControl
+    protected function createComponentUnit(): GroupUnitControl
     {
         return $this->unitControlFactory->create($this->id);
     }
 
-    protected function createComponentRemoveGroupDialog() : RemoveGroupDialog
+    protected function createComponentRemoveGroupDialog(): RemoveGroupDialog
     {
         $group = $this->model->getGroup($this->id);
 
         return $this->removeGroupDialogFactory->create($this->id, $group !== null && $this->canEditGroup($group));
     }
 
-    protected function createComponentProgress() : GroupProgress
+    protected function createComponentProgress(): GroupProgress
     {
         return new GroupProgress($this->model->getGroupSummaries([$this->id])[$this->id]);
     }
 
-    private function oauthError(InvalidOAuth $e) : void
+    private function oauthError(InvalidOAuth $e): void
     {
         $this->flashMessage(sprintf('Google vrátil chybu: %s', $e->getMessage()), 'danger');
     }
@@ -369,7 +371,7 @@ class PaymentPresenter extends BasePresenter
     /**
      * @param Payment[] $payments
      */
-    private function sendEmailsForPayments(array $payments) : void
+    private function sendEmailsForPayments(array $payments): void
     {
         $sentCount = 0;
 
@@ -404,7 +406,7 @@ class PaymentPresenter extends BasePresenter
     /**
      * @return Payment[]
      */
-    private function getPaymentsForGroup(int $groupId) : array
+    private function getPaymentsForGroup(int $groupId): array
     {
         return $this->queryBus->handle(new PaymentListQuery($groupId));
     }
@@ -414,7 +416,7 @@ class PaymentPresenter extends BasePresenter
      *
      * @return Payment[]
      */
-    private function paymentsAvailableForGroupInfoSending(array $payments) : array
+    private function paymentsAvailableForGroupInfoSending(array $payments): array
     {
         return array_filter(
             $payments,
@@ -427,7 +429,7 @@ class PaymentPresenter extends BasePresenter
     /**
      * @param Payment[] $payments
      */
-    private function countNotSentPayments(array $payments) : int
+    private function countNotSentPayments(array $payments): int
     {
         return count(array_filter($payments, fn (Payment $payment) => $payment->getSentEmails() === [] && $payment->getState()->equalsValue(State::PREPARING)));
     }

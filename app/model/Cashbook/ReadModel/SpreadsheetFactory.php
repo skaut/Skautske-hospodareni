@@ -8,7 +8,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 final class SpreadsheetFactory
 {
-    public function create() : Spreadsheet
+    public function create(): Spreadsheet
     {
         $sheet = new Spreadsheet();
         $sheet->getProperties()

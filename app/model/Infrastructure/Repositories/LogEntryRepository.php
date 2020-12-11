@@ -11,8 +11,7 @@ use Model\Logger\Repositories\ILogEntryRepository;
 
 final class LogEntryRepository implements ILogEntryRepository
 {
-    /** @var EntityManager */
-    private $em;
+    private EntityManager $em;
 
     public function __construct(EntityManager $em)
     {
@@ -22,7 +21,7 @@ final class LogEntryRepository implements ILogEntryRepository
     /**
      * @return LogEntry[]
      */
-    public function findAllByTypeId(Type $type, int $typeId) : array
+    public function findAllByTypeId(Type $type, int $typeId): array
     {
         return $this->em->createQueryBuilder()
             ->select('l')
@@ -35,7 +34,7 @@ final class LogEntryRepository implements ILogEntryRepository
             ->getQuery()->getResult();
     }
 
-    public function save(LogEntry $log) : void
+    public function save(LogEntry $log): void
     {
         $this->em->persist($log);
         $this->em->flush();

@@ -13,13 +13,11 @@ use Model\Cashbook\Handlers\Cashbook\MoveChitsToDifferentCashbookHandler;
 final class MoveChitsToDifferentCashbook
 {
     /** @var int[] */
-    private $chitIds;
+    private array $chitIds;
 
-    /** @var CashbookId */
-    private $sourceCashbookId;
+    private CashbookId $sourceCashbookId;
 
-    /** @var CashbookId */
-    private $targetCashbookId;
+    private CashbookId $targetCashbookId;
 
     /**
      * @param int[] $chitIds
@@ -34,17 +32,17 @@ final class MoveChitsToDifferentCashbook
     /**
      * @return int[]
      */
-    public function getChitIds() : array
+    public function getChitIds(): array
     {
         return $this->chitIds;
     }
 
-    public function getSourceCashbookId() : CashbookId
+    public function getSourceCashbookId(): CashbookId
     {
         return $this->sourceCashbookId;
     }
 
-    public function getTargetCashbookId() : CashbookId
+    public function getTargetCashbookId(): CashbookId
     {
         return $this->targetCashbookId;
     }

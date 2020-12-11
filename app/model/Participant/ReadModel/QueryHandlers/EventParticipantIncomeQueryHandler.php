@@ -8,19 +8,19 @@ use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\ReadModel\Queries\EventParticipantIncomeQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
 use Model\DTO\Participant\Participant;
+
 use function assert;
 
 class EventParticipantIncomeQueryHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(QueryBus $queryBus)
     {
         $this->queryBus = $queryBus;
     }
 
-    public function __invoke(EventParticipantIncomeQuery $query) : float
+    public function __invoke(EventParticipantIncomeQuery $query): float
     {
         $participants = $this->queryBus->handle(new EventParticipantListQuery($query->getEventId()));
 

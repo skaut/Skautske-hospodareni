@@ -13,12 +13,12 @@ use Model\Participant\PaymentNotFound;
 use Model\Participant\Repositories\IPaymentRepository;
 use Model\Utils\MoneyFactory;
 use Skautis\Skautis;
+
 use function sprintf;
 
 class ParticipantService extends MutableBaseService
 {
-    /** @var IPaymentRepository */
-    private $repository;
+    private IPaymentRepository $repository;
 
     public function __construct(string $name, Skautis $skautIS, IPaymentRepository $repository)
     {
@@ -26,7 +26,7 @@ class ParticipantService extends MutableBaseService
         $this->repository = $repository;
     }
 
-    public function update(UpdateParticipant $updateParticipant) : void
+    public function update(UpdateParticipant $updateParticipant): void
     {
         if ($updateParticipant->getField() === 'days') {
             $sisData = [

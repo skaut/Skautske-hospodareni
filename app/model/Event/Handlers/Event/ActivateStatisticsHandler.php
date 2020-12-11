@@ -9,15 +9,14 @@ use Skautis\Skautis;
 
 class ActivateStatisticsHandler
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
     public function __construct(Skautis $skautis)
     {
         $this->skautis = $skautis;
     }
 
-    public function __invoke(ActivateStatistics $command) : void
+    public function __invoke(ActivateStatistics $command): void
     {
         $this->skautis->event->eventGeneralUpdateStatisticAutoComputed([
             'ID' => $command->getEventId(),

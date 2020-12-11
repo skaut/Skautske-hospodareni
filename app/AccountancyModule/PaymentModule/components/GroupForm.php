@@ -31,6 +31,7 @@ use Nette\Application\UI\Form;
 use Nette\Forms\Controls\TextBase;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\FileSystem;
+
 use function array_filter;
 use function array_map;
 use function array_unique;
@@ -38,20 +39,15 @@ use function assert;
 
 final class GroupForm extends BaseControl
 {
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var SkautisEntity|null */
-    private $skautisEntity;
+    private ?SkautisEntity $skautisEntity = null;
 
-    /** @var int|null */
-    private $groupId;
+    private ?int $groupId = null;
 
-    /** @var PaymentService */
-    private $model;
+    private PaymentService $model;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(
         UnitId $unitId,
@@ -68,13 +64,13 @@ final class GroupForm extends BaseControl
         $this->queryBus      = $queryBus;
     }
 
-    public function render() : void
+    public function render(): void
     {
         $this->template->setFile(__DIR__ . '/templates/GroupForm.latte');
         $this->template->render();
     }
 
-    public function fillName(string $name) : void
+    public function fillName(string $name): void
     {
         $nameControl = $this['form']['name'];
 
@@ -83,7 +79,7 @@ final class GroupForm extends BaseControl
         $nameControl->setDefaultValue($name);
     }
 
-    public function fillDueDate(Date $dueDate) : void
+    public function fillDueDate(Date $dueDate): void
     {
         $dueDateControl = $this['form']['dueDate'];
 
@@ -92,7 +88,7 @@ final class GroupForm extends BaseControl
         $dueDateControl->setDefaultValue($dueDate);
     }
 
-    protected function createComponentForm() : BaseForm
+    protected function createComponentForm(): BaseForm
     {
         $form = new BaseForm();
 
@@ -146,14 +142,14 @@ final class GroupForm extends BaseControl
 
         $form->setDefaults($this->buildDefaultsFromGroup());
 
-        $form->onSuccess[] = function (BaseForm $form) : void {
+        $form->onSuccess[] = function (BaseForm $form): void {
             $this->formSucceeded($form);
         };
 
         return $form;
     }
 
-    private function formSucceeded(BaseForm $form) : void
+    private function formSucceeded(BaseForm $form): void
     {
         $v = $form->getValues();
 
@@ -198,10 +194,11 @@ final class GroupForm extends BaseControl
 
             $this->flashMessage('Skupina byla založena');
         }
+
         $this->getPresenter()->redirect('Payment:default', ['id' => $this->groupId]);
     }
 
-    private function getDefaultEmailBody(string $name) : string
+    private function getDefaultEmailBody(string $name): string
     {
         return FileSystem::read(__DIR__ . '/../templates/defaultEmails/' . $name . '.html');
     }
@@ -209,7 +206,7 @@ final class GroupForm extends BaseControl
     /**
      * @return mixed[]
      */
-    private function buildDefaultsFromGroup() : array
+    private function buildDefaultsFromGroup(): array
     {
         if ($this->groupId === null) {
             return [];
@@ -238,7 +235,7 @@ final class GroupForm extends BaseControl
         ];
     }
 
-    private function addEmailsToForm(BaseForm $form) : void
+    private function addEmailsToForm(BaseForm $form): void
     {
         $emailsContainer = $form->addContainer('emails');
 
@@ -275,7 +272,7 @@ final class GroupForm extends BaseControl
         $form->setCurrentGroup();
     }
 
-    private function buildEmailTemplate(ArrayHash $values, string $emailType) : ?EmailTemplate
+    private function buildEmailTemplate(ArrayHash $values, string $emailType): ?EmailTemplate
     {
         $emailValues = $values->emails->{$emailType};
 
@@ -289,7 +286,7 @@ final class GroupForm extends BaseControl
     /**
      * @return mixed[]
      */
-    private function getEmailDefaults(int $groupId, EmailType $type) : array
+    private function getEmailDefaults(int $groupId, EmailType $type): array
     {
         $email = $this->queryBus->handle(new GroupEmailQuery($groupId, $type));
 
@@ -309,7 +306,7 @@ final class GroupForm extends BaseControl
     /**
      * @return array<int, string>
      */
-    private function bankAccountItems() : array
+    private function bankAccountItems(): array
     {
         $bankAccounts = $this->queryBus->handle(new BankAccountsAccessibleByUnitsQuery($this->groupUnitIds()));
 
@@ -326,14 +323,14 @@ final class GroupForm extends BaseControl
     /**
      * @return array<string, array<string, string>>
      */
-    private function oAuthItems() : array
+    private function oAuthItems(): array
     {
         $oAuths = $this->queryBus->handle(new OAuthsAccessibleByGroupsQuery($this->groupUnitIds()));
 
         $units = $this->queryBus->handle(
             new UnitsDetailQuery(
                 array_unique(array_map(
-                    function (OAuth $oAuth) : int {
+                    function (OAuth $oAuth): int {
                         return $oAuth->getUnitId();
                     },
                     $oAuths
@@ -357,7 +354,7 @@ final class GroupForm extends BaseControl
     /**
      * @return int[]
      */
-    private function groupUnitIds() : array
+    private function groupUnitIds(): array
     {
         if ($this->groupId === null) {
             return [$this->unitId->toInt()]; // New group will be created with user's current unit

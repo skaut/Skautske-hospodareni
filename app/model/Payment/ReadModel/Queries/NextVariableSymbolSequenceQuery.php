@@ -8,11 +8,9 @@ use DateTimeImmutable;
 
 class NextVariableSymbolSequenceQuery
 {
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var DateTimeImmutable */
-    private $now;
+    private DateTimeImmutable $now;
 
     public function __construct(int $unitId, DateTimeImmutable $now)
     {
@@ -20,12 +18,12 @@ class NextVariableSymbolSequenceQuery
         $this->now    = $now;
     }
 
-    public function getUnitId() : int
+    public function getUnitId(): int
     {
         return $this->unitId;
     }
 
-    public function getNow() : DateTimeImmutable
+    public function getNow(): DateTimeImmutable
     {
         return $this->now;
     }

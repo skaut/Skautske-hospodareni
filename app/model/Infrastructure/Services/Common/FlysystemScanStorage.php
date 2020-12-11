@@ -13,21 +13,22 @@ use Model\Common\File;
 use Model\Common\FileNotFound;
 use Model\Common\FilePath;
 use Model\Common\IScanStorage;
-use const FILEINFO_MIME_TYPE;
+
 use function GuzzleHttp\Psr7\stream_for;
 use function in_array;
 
+use const FILEINFO_MIME_TYPE;
+
 final class FlysystemScanStorage implements IScanStorage
 {
-    /** @var FilesystemInterface */
-    private $filesystem;
+    private FilesystemInterface $filesystem;
 
     public function __construct(FilesystemInterface $filesystem)
     {
         $this->filesystem = $filesystem;
     }
 
-    public function get(FilePath $path) : File
+    public function get(FilePath $path): File
     {
         try {
             $contents = $this->filesystem->readStream($path->getPath());
@@ -40,7 +41,7 @@ final class FlysystemScanStorage implements IScanStorage
         }
     }
 
-    public function save(FilePath $path, string $contents) : void
+    public function save(FilePath $path, string $contents): void
     {
         $mimeType = $this->detectMimeType($contents);
 
@@ -51,7 +52,7 @@ final class FlysystemScanStorage implements IScanStorage
         $this->filesystem->write($path->getPath(), $contents);
     }
 
-    public function delete(FilePath $path) : void
+    public function delete(FilePath $path): void
     {
         try {
             $this->filesystem->delete($path->getPath());
@@ -60,7 +61,7 @@ final class FlysystemScanStorage implements IScanStorage
         }
     }
 
-    private function detectMimeType(string $contents) : ?string
+    private function detectMimeType(string $contents): ?string
     {
         return (new finfo(FILEINFO_MIME_TYPE))->buffer($contents) ?: null;
     }

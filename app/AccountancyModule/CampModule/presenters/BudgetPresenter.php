@@ -15,12 +15,12 @@ use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\ReadModel\Queries\InconsistentCampCategoryTotalsQuery;
 use Model\Event\SkautisCampId;
 use Model\Skautis\ReadModel\Queries\CampBudgetQuery;
+
 use function count;
 
 class BudgetPresenter extends BasePresenter
 {
-    /** @var IMissingAutocomputedCategoryControlFactory */
-    private $missingAutocomputedCategoryControlFactory;
+    private IMissingAutocomputedCategoryControlFactory $missingAutocomputedCategoryControlFactory;
 
     public function __construct(IMissingAutocomputedCategoryControlFactory $missingAutocomputedCategoryControlFactory)
     {
@@ -28,7 +28,7 @@ class BudgetPresenter extends BasePresenter
         $this->missingAutocomputedCategoryControlFactory = $missingAutocomputedCategoryControlFactory;
     }
 
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
         if ($this->aid) {
@@ -39,7 +39,7 @@ class BudgetPresenter extends BasePresenter
         $this->redirect('Default:');
     }
 
-    public function renderDefault(int $aid) : void
+    public function renderDefault(int $aid): void
     {
         $campId = new SkautisCampId($aid);
 
@@ -65,7 +65,7 @@ class BudgetPresenter extends BasePresenter
     /**
      * přepočte hodnoty v jednotlivých kategorich
      */
-    public function handleConvert(int $aid) : void
+    public function handleConvert(int $aid): void
     {
         $this->editableOnly();
 
@@ -79,12 +79,12 @@ class BudgetPresenter extends BasePresenter
         }
     }
 
-    private function getCashbookId(int $campId) : CashbookId
+    private function getCashbookId(int $campId): CashbookId
     {
         return $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($campId)));
     }
 
-    protected function createComponentCategoryAutocomputedControl() : MissingAutocomputedCategoryControl
+    protected function createComponentCategoryAutocomputedControl(): MissingAutocomputedCategoryControl
     {
         return $this->missingAutocomputedCategoryControlFactory->create(new SkautisCampId($this->aid));
     }

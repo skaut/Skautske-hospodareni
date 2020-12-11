@@ -11,15 +11,14 @@ use Model\Event\SkautisEventId;
  */
 final class EventParticipantStatisticsQuery
 {
-    /** @var SkautisEventId */
-    private $id;
+    private SkautisEventId $id;
 
     public function __construct(SkautisEventId $id)
     {
         $this->id = $id;
     }
 
-    public function getId() : SkautisEventId
+    public function getId(): SkautisEventId
     {
         return $this->id;
     }

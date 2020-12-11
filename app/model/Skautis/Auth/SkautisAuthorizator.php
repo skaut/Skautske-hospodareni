@@ -12,13 +12,13 @@ use Model\Auth\Resources\Unit;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WebServiceInterface;
 use stdClass;
+
 use function count;
 use function is_array;
 
 final class SkautisAuthorizator implements IAuthorizator
 {
-    /** @var WebServiceInterface */
-    private $userWebservice;
+    private WebServiceInterface $userWebservice;
 
     private const RESOURCE_CLASS_TO_SKAUTIS_TABLE_MAP = [
         Event::class => Event::TABLE,
@@ -34,7 +34,7 @@ final class SkautisAuthorizator implements IAuthorizator
     /**
      * @param mixed[] $action
      */
-    public function isAllowed(array $action, ?int $resourceId) : bool
+    public function isAllowed(array $action, ?int $resourceId): bool
     {
         if (count($action) !== 2 || ! isset(self::RESOURCE_CLASS_TO_SKAUTIS_TABLE_MAP[$action[0]])) {
             throw new InvalidArgumentException('Unknown action');
@@ -54,7 +54,7 @@ final class SkautisAuthorizator implements IAuthorizator
     /**
      * @return stdClass[]
      */
-    private function getAvailableActions(string $skautisTable, ?int $id) : array
+    private function getAvailableActions(string $skautisTable, ?int $id): array
     {
         try {
             $result = $this->userWebservice->ActionVerify([

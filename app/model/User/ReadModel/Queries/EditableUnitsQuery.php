@@ -12,15 +12,14 @@ use Model\User\SkautisRole;
  */
 final class EditableUnitsQuery
 {
-    /** @var SkautisRole */
-    private $role;
+    private SkautisRole $role;
 
     public function __construct(SkautisRole $role)
     {
         $this->role = $role;
     }
 
-    public function getRole() : SkautisRole
+    public function getRole(): SkautisRole
     {
         return $this->role;
     }

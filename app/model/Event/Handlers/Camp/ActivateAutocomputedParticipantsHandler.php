@@ -9,15 +9,14 @@ use Skautis\Skautis;
 
 final class ActivateAutocomputedParticipantsHandler
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
     public function __construct(Skautis $skautis)
     {
         $this->skautis = $skautis;
     }
 
-    public function __invoke(ActivateAutocomputedParticipants $command) : void
+    public function __invoke(ActivateAutocomputedParticipants $command): void
     {
         $this->skautis->event->eventCampUpdateAdult(
             [

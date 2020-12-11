@@ -11,6 +11,7 @@ use Model\Payment\Group;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\ReadModel\Queries\EducationsWithoutGroupQuery;
 use Model\Payment\Repositories\IGroupRepository;
+
 use function array_filter;
 use function array_map;
 use function in_array;
@@ -30,7 +31,7 @@ final class EducationsWithoutGroupQueryHandler
     /**
      * @return array<int, Education> (indexed by ID)
      */
-    public function __invoke(EducationsWithoutGroupQuery $query) : array
+    public function __invoke(EducationsWithoutGroupQuery $query): array
     {
         $educations = $this->queryBus->handle(new EducationListQuery($query->getYear()));
 
@@ -47,15 +48,15 @@ final class EducationsWithoutGroupQueryHandler
      *
      * @return int[]
      */
-    private function getEducationWithGroupIds(array $educations) : array
+    private function getEducationWithGroupIds(array $educations): array
     {
         $skautisEntities = array_map(
-            fn(Education $education) => SkautisEntity::fromEducationId($education->getId()),
+            fn (Education $education) => SkautisEntity::fromEducationId($education->getId()),
             $educations,
         );
 
         return array_map(
-            fn(Group $group) => $group->getObject()->getId(),
+            fn (Group $group) => $group->getObject()->getId(),
             $this->groups->findBySkautisEntities(...$skautisEntities),
         );
     }

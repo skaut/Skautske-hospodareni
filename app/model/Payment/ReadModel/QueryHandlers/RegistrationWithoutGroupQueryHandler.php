@@ -10,15 +10,14 @@ use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Type;
 use Model\Payment\ReadModel\Queries\RegistrationWithoutGroupQuery;
 use Model\Payment\Repositories\IGroupRepository;
+
 use function count;
 
 final class RegistrationWithoutGroupQueryHandler
 {
-    /** @var IRegistrationRepository */
-    private $registrations;
+    private IRegistrationRepository $registrations;
 
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
     public function __construct(IRegistrationRepository $registrations, IGroupRepository $groups)
     {
@@ -26,7 +25,7 @@ final class RegistrationWithoutGroupQueryHandler
         $this->groups        = $groups;
     }
 
-    public function __invoke(RegistrationWithoutGroupQuery $query) : ?Registration
+    public function __invoke(RegistrationWithoutGroupQuery $query): ?Registration
     {
         $registrations = $this->registrations->findByUnit($query->getUnitId());
 

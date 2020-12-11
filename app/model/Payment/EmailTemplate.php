@@ -7,6 +7,7 @@ namespace Model\Payment;
 use Doctrine\ORM\Mapping as ORM;
 use Model\Payment\Mailing\Payment;
 use Nette\Utils\Strings;
+
 use function array_key_exists;
 use function array_keys;
 use function array_values;
@@ -19,19 +20,11 @@ use function str_replace;
  */
 class EmailTemplate
 {
-    /**
-     * @ORM\Column(type="string")
-     *
-     * @var string
-     */
-    private $subject;
+    /** @ORM\Column(type="string") */
+    private string $subject;
 
-    /**
-     * @ORM\Column(type="text")
-     *
-     * @var string
-     */
-    private $body;
+    /** @ORM\Column(type="text") */
+    private string $body;
 
     public function __construct(string $subject, string $body)
     {
@@ -39,7 +32,7 @@ class EmailTemplate
         $this->body    = $body;
     }
 
-    public function evaluate(Group $group, Payment $payment, ?string $bankAccount, string $user) : EmailTemplate
+    public function evaluate(Group $group, Payment $payment, ?string $bankAccount, string $user): EmailTemplate
     {
         $accountRequired = Strings::contains($this->body, '%qrcode') || Strings::contains($this->body, '%account');
         if ($bankAccount === null && $accountRequired) {
@@ -69,12 +62,12 @@ class EmailTemplate
         return new EmailTemplate($subject, $body);
     }
 
-    public function getSubject() : string
+    public function getSubject(): string
     {
         return $this->subject;
     }
 
-    public function getBody() : string
+    public function getBody(): string
     {
         return $this->body;
     }
@@ -82,12 +75,12 @@ class EmailTemplate
     /**
      * @param mixed[] $parameters
      */
-    private function replace(array $parameters, string $template) : string
+    private function replace(array $parameters, string $template): string
     {
         return str_replace(array_keys($parameters), array_values($parameters), $template);
     }
 
-    private function getQrHtml(Payment $payment, string $bankAccount) : string
+    private function getQrHtml(Payment $payment, string $bankAccount): string
     {
         $pattern = '#((?P<prefix>[0-9]+)-)?(?P<number>[0-9]+)/(?P<code>[0-9]{4})#';
 
@@ -105,12 +98,15 @@ class EmailTemplate
         if (array_key_exists('prefix', $account) && $account['prefix'] !== '') {
             $params['accountPrefix'] = $account['prefix'];
         }
+
         if ($payment->getVariableSymbol() !== null) {
             $params['vs'] = $payment->getVariableSymbol();
         }
+
         if ($payment->getConstantSymbol() !== null) {
             $params['ks'] = $payment->getConstantSymbol();
         }
+
         if ($payment->getName() !== '') {
             $params['message'] = $payment->getName();
         }
@@ -120,7 +116,7 @@ class EmailTemplate
         return '<img alt="QR platbu se nepodařilo zobrazit" src="' . $file . '">';
     }
 
-    public function equals(EmailTemplate $other) : bool
+    public function equals(EmailTemplate $other): bool
     {
         return $other->subject === $this->subject && $other->body === $this->body;
     }

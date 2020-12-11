@@ -17,15 +17,14 @@ use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\AuthenticationException;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WsdlException;
+
 use function in_array;
 
 class ErrorPresenter extends Presenter
 {
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /** @var CommandBus */
-    protected $commandBus;
+    protected CommandBus $commandBus;
 
     private const SKAUTIS_UNAVAILABLE_ERRORS = [
         'Server was unable to process request.',
@@ -45,7 +44,7 @@ class ErrorPresenter extends Presenter
      *
      * @throws Nette\Application\AbortException
      */
-    public function renderDefault($exception, ?Request $request = null) : void
+    public function renderDefault($exception, ?Request $request = null): void
     {
         if ($exception instanceof SkautisMaintenance || $exception instanceof WsdlException && $this->isSkautisUnavailable($exception)) {
             $this->flashMessage('Nepodařilo se připojit ke Skautisu. Zkuste to prosím za chvíli nebo zkontrolujte, zda neprobíhá jeho údržba.', 'danger');
@@ -87,12 +86,13 @@ class ErrorPresenter extends Presenter
         if (! $this->isAjax()) {
             return;
         }
+
         // AJAX request? Note this error in payload.
         $this->payload->error = true;
         $this->sendPayload();
     }
 
-    private function isSkautisUnavailable(WsdlException $exception) : bool
+    private function isSkautisUnavailable(WsdlException $exception): bool
     {
         foreach (self::SKAUTIS_UNAVAILABLE_ERRORS as $message) {
             if (Nette\Utils\Strings::startsWith($exception->getMessage(), $message)) {

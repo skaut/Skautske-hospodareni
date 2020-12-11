@@ -6,14 +6,11 @@ namespace Model\Common;
 
 final class Registration
 {
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string */
-    private $unitName;
+    private string $unitName;
 
-    /** @var int */
-    private $year;
+    private int $year;
 
     public function __construct(int $id, string $unitName, int $year)
     {
@@ -22,17 +19,17 @@ final class Registration
         $this->year     = $year;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getUnitName() : string
+    public function getUnitName(): string
     {
         return $this->unitName;
     }
 
-    public function getYear() : int
+    public function getYear(): int
     {
         return $this->year;
     }

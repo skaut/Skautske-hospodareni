@@ -15,24 +15,24 @@ class Operation extends Enum
     public const INCOME  = 'in';
     public const EXPENSE = 'out';
 
-    public function getInverseOperation() : self
+    public function getInverseOperation(): self
     {
         return self::get(
             $this->getValue() === self::INCOME ? self::EXPENSE : self::INCOME
         );
     }
 
-    public static function INCOME() : self
+    public static function INCOME(): self
     {
         return self::get(self::INCOME);
     }
 
-    public static function EXPENSE() : self
+    public static function EXPENSE(): self
     {
         return self::get(self::EXPENSE);
     }
 
-    public function toString() : string
+    public function toString(): string
     {
         return $this->getValue();
     }

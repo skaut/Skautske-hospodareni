@@ -13,17 +13,16 @@ use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\DTO\Cashbook\Chit as ChitDTO;
 use Model\DTO\Cashbook\ChitFactory;
+
 use function array_map;
 use function array_values;
 use function assert;
 
 class ChitListQueryHandler
 {
-    /** @var EntityManager */
-    private $entityManager;
+    private EntityManager $entityManager;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(EntityManager $entityManager, QueryBus $queryBus)
     {
@@ -36,7 +35,7 @@ class ChitListQueryHandler
      *
      * @throws CashbookNotFound
      */
-    public function __invoke(ChitListQuery $query) : array
+    public function __invoke(ChitListQuery $query): array
     {
         $cashbook = $this->entityManager->find(Cashbook::class, $query->getCashbookId());
 
@@ -49,7 +48,7 @@ class ChitListQueryHandler
         $categories = $this->queryBus->handle(new CategoryListQuery($query->getCashbookId()));
 
         return array_map(
-            function (Chit $chit) use ($categories) : ChitDTO {
+            function (Chit $chit) use ($categories): ChitDTO {
                 return ChitFactory::create($chit, $categories);
             },
             array_values($cashbook->getChits($query->getPaymentMethod())),

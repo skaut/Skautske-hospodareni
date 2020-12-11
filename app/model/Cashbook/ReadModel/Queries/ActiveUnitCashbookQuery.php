@@ -11,15 +11,14 @@ use Model\Common\UnitId;
  */
 final class ActiveUnitCashbookQuery
 {
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
     public function __construct(UnitId $unitId)
     {
         $this->unitId = $unitId;
     }
 
-    public function getUnitId() : UnitId
+    public function getUnitId(): UnitId
     {
         return $this->unitId;
     }

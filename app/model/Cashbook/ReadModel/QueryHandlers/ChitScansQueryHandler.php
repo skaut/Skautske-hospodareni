@@ -11,16 +11,15 @@ use Model\Cashbook\ReadModel\Queries\ChitScansQuery;
 use Model\Common\File;
 use Model\Common\IScanStorage;
 use Model\DTO\Cashbook\Chit;
+
 use function array_map;
 use function assert;
 
 final class ChitScansQueryHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var IScanStorage */
-    private $storage;
+    private IScanStorage $storage;
 
     public function __construct(QueryBus $queryBus, IScanStorage $storage)
     {
@@ -31,13 +30,13 @@ final class ChitScansQueryHandler
     /**
      * @return File[]
      */
-    public function __invoke(ChitScansQuery $query) : array
+    public function __invoke(ChitScansQuery $query): array
     {
         $chit = $this->queryBus->handle(new ChitQuery($query->getCashbookId(), $query->getChitId()));
         assert($chit instanceof Chit);
 
         return array_map(
-            function (Cashbook\ChitScan $scan) : File {
+            function (Cashbook\ChitScan $scan): File {
                 return $this->storage->get($scan->getFilePath());
             },
             $chit->getScans()

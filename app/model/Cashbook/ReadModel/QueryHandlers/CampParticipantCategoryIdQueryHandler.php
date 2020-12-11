@@ -7,19 +7,19 @@ namespace Model\Cashbook\ReadModel\QueryHandlers;
 use Model\Cashbook\ReadModel\Queries\CampParticipantCategoryIdQuery;
 use Model\Cashbook\Repositories\ICampCategoryRepository;
 use Nette\InvalidStateException;
+
 use function sprintf;
 
 class CampParticipantCategoryIdQueryHandler
 {
-    /** @var ICampCategoryRepository */
-    private $categories;
+    private ICampCategoryRepository $categories;
 
     public function __construct(ICampCategoryRepository $categories)
     {
         $this->categories = $categories;
     }
 
-    public function __invoke(CampParticipantCategoryIdQuery $query) : int
+    public function __invoke(CampParticipantCategoryIdQuery $query): int
     {
         $participantType = $query->getParticipantType();
 

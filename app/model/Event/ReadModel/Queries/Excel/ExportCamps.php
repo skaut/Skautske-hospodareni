@@ -12,7 +12,7 @@ use Model\Event\ReadModel\QueryHandlers\Excel\ExportCampsHandler;
 final class ExportCamps
 {
     /** @var int[] */
-    private $campIds;
+    private array $campIds;
 
     /**
      * @param int[] $eventIds
@@ -25,7 +25,7 @@ final class ExportCamps
     /**
      * @return int[]
      */
-    public function getCampIds() : array
+    public function getCampIds(): array
     {
         return $this->campIds;
     }

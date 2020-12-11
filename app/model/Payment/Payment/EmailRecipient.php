@@ -24,9 +24,7 @@ class EmailRecipient
     /** @ORM\ManyToOne(targetEntity=Payment::class, inversedBy="emailRecipients") */
     private Payment $payment;
 
-    /**
-     * @ORM\Column(type="email_address")
-     */
+    /** @ORM\Column(type="email_address") */
     private EmailAddress $emailAddress;
 
     public function __construct(Payment $payment, EmailAddress $emailAddress)
@@ -35,12 +33,12 @@ class EmailRecipient
         $this->emailAddress = $emailAddress;
     }
 
-    public function getPayment() : Payment
+    public function getPayment(): Payment
     {
         return $this->payment;
     }
 
-    public function getEmailAddress() : EmailAddress
+    public function getEmailAddress(): EmailAddress
     {
         return $this->emailAddress;
     }

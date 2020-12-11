@@ -11,11 +11,9 @@ use Model\Common\UnitId;
  */
 final class CreateUnit
 {
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var int */
-    private $activeCashbookYear;
+    private int $activeCashbookYear;
 
     public function __construct(UnitId $unitId, int $activeCashbookYear)
     {
@@ -23,12 +21,12 @@ final class CreateUnit
         $this->activeCashbookYear = $activeCashbookYear;
     }
 
-    public function getUnitId() : UnitId
+    public function getUnitId(): UnitId
     {
         return $this->unitId;
     }
 
-    public function getActiveCashbookYear() : int
+    public function getActiveCashbookYear(): int
     {
         return $this->activeCashbookYear;
     }

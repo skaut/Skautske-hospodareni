@@ -20,39 +20,26 @@ class SentEmail
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Payment::class, inversedBy="sentEmails")
-     *
-     * @var Payment
-     */
-    private $payment;
+    /** @ORM\ManyToOne(targetEntity=Payment::class, inversedBy="sentEmails") */
+    private Payment $payment;
 
     /**
      * @ORM\Column(type="string_enum")
      *
-     * @var EmailType
      * @Enum(class=EmailType::class)
+     * @var EmailType
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
     private $type;
 
-    /**
-     * @ORM\Column(type="datetime_immutable")
-     *
-     * @var DateTimeImmutable
-     */
-    private $time;
+    /** @ORM\Column(type="datetime_immutable") */
+    private DateTimeImmutable $time;
 
-    /**
-     * @ORM\Column(type="string")
-     *
-     * @var string
-     */
-    private $senderName;
+    /** @ORM\Column(type="string") */
+    private string $senderName;
 
     public function __construct(Payment $payment, EmailType $type, DateTimeImmutable $time, string $senderName)
     {
@@ -62,17 +49,17 @@ class SentEmail
         $this->senderName = $senderName;
     }
 
-    public function getType() : EmailType
+    public function getType(): EmailType
     {
         return $this->type;
     }
 
-    public function getTime() : DateTimeImmutable
+    public function getTime(): DateTimeImmutable
     {
         return $this->time;
     }
 
-    public function getSenderName() : string
+    public function getSenderName(): string
     {
         return $this->senderName;
     }

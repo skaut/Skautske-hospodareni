@@ -13,23 +13,17 @@ class Cashbook
 {
     use SmartObject;
 
-    /** @var CashbookId */
-    private $id;
+    private CashbookId $id;
 
-    /** @var CashbookType */
-    private $type;
+    private CashbookType $type;
 
-    /** @var string|NULL */
-    private $cashChitNumberPrefix;
+    private ?string $cashChitNumberPrefix = null;
 
-    /** @var string|NULL */
-    private $bankChitNumberPrefix;
+    private ?string $bankChitNumberPrefix = null;
 
-    /** @var string */
-    private $note;
+    private string $note;
 
-    /** @var bool */
-    private $hasOnlyNumericChitNumbers;
+    private bool $hasOnlyNumericChitNumbers;
 
     public function __construct(
         CashbookId $id,
@@ -47,27 +41,27 @@ class Cashbook
         $this->hasOnlyNumericChitNumbers = $hasOnlyNumericChitNumbers;
     }
 
-    public function getId() : string
+    public function getId(): string
     {
         return $this->id->toString();
     }
 
-    public function getType() : CashbookType
+    public function getType(): CashbookType
     {
         return $this->type;
     }
 
-    public function getChitNumberPrefix(PaymentMethod $paymentMethod) : ?string
+    public function getChitNumberPrefix(PaymentMethod $paymentMethod): ?string
     {
         return $paymentMethod->equals(PaymentMethod::CASH()) ? $this->cashChitNumberPrefix : $this->bankChitNumberPrefix;
     }
 
-    public function getNote() : string
+    public function getNote(): string
     {
         return $this->note;
     }
 
-    public function hasOnlyNumericChitNumbers() : bool
+    public function hasOnlyNumericChitNumbers(): bool
     {
         return $this->hasOnlyNumericChitNumbers;
     }

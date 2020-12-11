@@ -12,8 +12,7 @@ class BaseForm extends Form
 {
     use CustomControlFactories;
 
-    /** @var CsrfProtection */
-    private $protection;
+    private CsrfProtection $protection;
 
     public function __construct()
     {
@@ -25,7 +24,7 @@ class BaseForm extends Form
     /**
      * @deprecated CSRF protection is auto-enabled for all forms
      */
-    public function getProtection() : CsrfProtection
+    public function getProtection(): CsrfProtection
     {
         return $this->protection;
     }

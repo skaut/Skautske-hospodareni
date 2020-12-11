@@ -10,7 +10,7 @@ use Model\Cashbook\Cashbook\CashbookId;
 
 final class CashbookIdType extends GuidType
 {
-    public function getName() : string
+    public function getName(): string
     {
         return 'cashbook_id';
     }
@@ -18,7 +18,7 @@ final class CashbookIdType extends GuidType
     /**
      * @param mixed $value
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform) : ?CashbookId
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?CashbookId
     {
         if ($value === null) {
             return null;
@@ -31,7 +31,7 @@ final class CashbookIdType extends GuidType
     /**
      * @param mixed $value
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform) : ?string
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         if ($value === null) {
             return null;

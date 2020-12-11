@@ -16,12 +16,12 @@ final class WebserviceFactory
 {
     use StaticClass;
 
-    public static function createCached(string $name, Skautis $skautis) : CacheDecorator
+    public static function createCached(string $name, Skautis $skautis): CacheDecorator
     {
         return new CacheDecorator($skautis->getWebService($name), new ArrayCache());
     }
 
-    public static function createOrg(Skautis $skautis, IStorage $storage) : CacheDecorator
+    public static function createOrg(Skautis $skautis, IStorage $storage): CacheDecorator
     {
         $cache = new CacheAdapter($storage, 'skautis-org');
         $cache->setExpiration('2 hours');
@@ -29,7 +29,7 @@ final class WebserviceFactory
         return new CacheDecorator($skautis->getWebService('org'), $cache);
     }
 
-    public static function create(string $name, Skautis $skautis) : WebService
+    public static function create(string $name, Skautis $skautis): WebService
     {
         return $skautis->getWebService($name);
     }

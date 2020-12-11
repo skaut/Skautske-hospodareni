@@ -11,15 +11,14 @@ use Model\Payment\BankAccount\BankAccountId;
  */
 final class CountGroupsWithBankAccountQuery
 {
-    /** @var BankAccountId */
-    private $bankAccountId;
+    private BankAccountId $bankAccountId;
 
     public function __construct(BankAccountId $bankAccountId)
     {
         $this->bankAccountId = $bankAccountId;
     }
 
-    public function getBankAccountId() : BankAccountId
+    public function getBankAccountId(): BankAccountId
     {
         return $this->bankAccountId;
     }

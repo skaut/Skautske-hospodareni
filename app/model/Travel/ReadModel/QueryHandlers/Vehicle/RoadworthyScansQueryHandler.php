@@ -9,15 +9,14 @@ use Model\Common\IScanStorage;
 use Model\Travel\ReadModel\Queries\Vehicle\RoadworthyScansQuery;
 use Model\Travel\Repositories\IVehicleRepository;
 use Model\Travel\Vehicle\RoadworthyScan;
+
 use function array_map;
 
 final class RoadworthyScansQueryHandler
 {
-    /** @var IVehicleRepository */
-    private $vehicles;
+    private IVehicleRepository $vehicles;
 
-    /** @var IScanStorage */
-    private $scans;
+    private IScanStorage $scans;
 
     public function __construct(IVehicleRepository $vehicles, IScanStorage $scans)
     {
@@ -28,12 +27,12 @@ final class RoadworthyScansQueryHandler
     /**
      * @return File[]
      */
-    public function __invoke(RoadworthyScansQuery $query) : array
+    public function __invoke(RoadworthyScansQuery $query): array
     {
         $vehicle = $this->vehicles->find($query->getVehicleId());
 
         return array_map(
-            function (RoadworthyScan $scan) : File {
+            function (RoadworthyScan $scan): File {
                 return $this->scans->get($scan->getFilePath());
             },
             $vehicle->getRoadworthyScans()

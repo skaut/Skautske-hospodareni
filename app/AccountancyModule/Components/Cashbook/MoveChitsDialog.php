@@ -24,6 +24,7 @@ use Model\Event\Event;
 use Model\Event\ReadModel\Queries\CampListQuery;
 use Model\Event\ReadModel\Queries\EventListQuery;
 use Nette\Utils\ArrayHash;
+
 use function array_map;
 use function assert;
 use function explode;
@@ -35,28 +36,20 @@ class MoveChitsDialog extends BaseControl
     /**
      * Comma-separated chit IDS (because persistent parameters don't support arrays)
      *
-     * @var        string
      * @persistent
      */
-    public $chitIds;
+    public string $chitIds = '';
 
-    /**
-     * @var bool
-     * @persistent
-     */
-    public $opened = false;
+    /** @persistent */
+    public bool $opened = false;
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var IAuthorizator */
-    private $authorizator;
+    private IAuthorizator $authorizator;
 
     public function __construct(
         CashbookId $cashbookId,
@@ -74,14 +67,14 @@ class MoveChitsDialog extends BaseControl
     /**
      * @param int[] $chitIds
      */
-    public function open(array $chitIds) : void
+    public function open(array $chitIds): void
     {
         $this->chitIds = implode(',', $chitIds);
         $this->opened  = true;
         $this->redrawControl();
     }
 
-    public function render() : void
+    public function render(): void
     {
         $this->template->setParameters(['renderModal' => $this->opened]);
 
@@ -89,7 +82,7 @@ class MoveChitsDialog extends BaseControl
         $this->template->render();
     }
 
-    protected function createComponentForm() : BaseForm
+    protected function createComponentForm(): BaseForm
     {
         $form  = new BaseForm();
         $items = [
@@ -103,14 +96,14 @@ class MoveChitsDialog extends BaseControl
         $form->addSubmit('move', 'Přesunout doklady')
             ->setAttribute('class', 'ajax');
 
-        $form->onSuccess[] = function (BaseForm $form, ArrayHash $values) : void {
+        $form->onSuccess[] = function (BaseForm $form, ArrayHash $values): void {
             $this->formSubmitted($form, $values);
         };
 
         return $form;
     }
 
-    private function formSubmitted(BaseForm $form, ArrayHash $values) : void
+    private function formSubmitted(BaseForm $form, ArrayHash $values): void
     {
         $chitIds = $this->getChitIds();
 
@@ -143,7 +136,7 @@ class MoveChitsDialog extends BaseControl
     /**
      * @return int[]
      */
-    private function getChitIds() : array
+    private function getChitIds(): array
     {
         $chitIds = explode(',', $this->chitIds);
 
@@ -153,7 +146,7 @@ class MoveChitsDialog extends BaseControl
     /**
      * @return array<string, string> Cashbook ID => Camp name
      */
-    private function getCampCashbooks() : array
+    private function getCampCashbooks(): array
     {
         $cashbooks = [];
 
@@ -177,7 +170,7 @@ class MoveChitsDialog extends BaseControl
     /**
      * @return array<string, string> Cashbook ID => Event name
      */
-    private function getEventCashbooks() : array
+    private function getEventCashbooks(): array
     {
         $cashbooks = [];
 
@@ -198,7 +191,7 @@ class MoveChitsDialog extends BaseControl
         return $cashbooks;
     }
 
-    private function canEdit(CashbookId $cashbookId) : bool
+    private function canEdit(CashbookId $cashbookId): bool
     {
         $type      = $this->getCashbookType($cashbookId);
         $skautisId = $this->getSkautisId($cashbookId);
@@ -212,7 +205,7 @@ class MoveChitsDialog extends BaseControl
             || $this->authorizator->isAllowed(CampResource::UPDATE_REAL_COST, $skautisId);
     }
 
-    private function getCashbookType(CashbookId $cashbookId) : CashbookType
+    private function getCashbookType(CashbookId $cashbookId): CashbookType
     {
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
 
@@ -221,7 +214,7 @@ class MoveChitsDialog extends BaseControl
         return $cashbook->getType();
     }
 
-    private function getSkautisId(CashbookId $cashbookId) : int
+    private function getSkautisId(CashbookId $cashbookId): int
     {
         return $this->queryBus->handle(new SkautisIdQuery($cashbookId));
     }

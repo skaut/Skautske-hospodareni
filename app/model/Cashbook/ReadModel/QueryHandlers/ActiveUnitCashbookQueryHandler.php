@@ -11,15 +11,14 @@ use Model\DTO\Cashbook\UnitCashbook;
 
 final class ActiveUnitCashbookQueryHandler
 {
-    /** @var EntityManager */
-    private $entityManager;
+    private EntityManager $entityManager;
 
     public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
     }
 
-    public function __invoke(ActiveUnitCashbookQuery $query) : ?UnitCashbook
+    public function __invoke(ActiveUnitCashbookQuery $query): ?UnitCashbook
     {
         $unit = $this->entityManager->find(Unit::class, $query->getUnitId());
 

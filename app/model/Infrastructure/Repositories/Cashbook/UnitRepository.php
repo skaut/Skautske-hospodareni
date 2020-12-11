@@ -14,7 +14,7 @@ use Model\Infrastructure\Repositories\AggregateRepository;
 
 final class UnitRepository extends AggregateRepository implements IUnitRepository
 {
-    public function find(UnitId $id) : Unit
+    public function find(UnitId $id): Unit
     {
         $unit = $this->getEntityManager()->find(Unit::class, $id);
 
@@ -25,7 +25,7 @@ final class UnitRepository extends AggregateRepository implements IUnitRepositor
         return $unit;
     }
 
-    public function findByCashbookId(CashbookId $cashbookId) : Unit
+    public function findByCashbookId(CashbookId $cashbookId): Unit
     {
         $builder = $this->getEntityManager()->createQueryBuilder();
 
@@ -42,7 +42,7 @@ final class UnitRepository extends AggregateRepository implements IUnitRepositor
         }
     }
 
-    public function save(Unit $unit) : void
+    public function save(Unit $unit): void
     {
         $this->saveAndDispatchEvents($unit);
     }

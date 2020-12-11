@@ -12,5 +12,5 @@ interface IExportDialogFactory
     /**
      * @param CampListItem[] $camps
      */
-    public function create(array $camps) : ExportDialog;
+    public function create(array $camps): ExportDialog;
 }

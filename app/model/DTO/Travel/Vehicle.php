@@ -22,35 +22,25 @@ class Vehicle
 {
     use SmartObject;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string */
-    private $type;
+    private string $type;
 
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var string */
-    private $registration;
+    private string $registration;
 
-    /** @var string */
-    private $label;
+    private string $label;
 
-    /** @var int|NULL */
-    private $subunitId;
+    private ?int $subunitId = null;
 
-    /** @var float */
-    private $consumption;
+    private float $consumption;
 
-    /** @var bool */
-    private $archived;
+    private bool $archived;
 
-    /** @var DateTimeImmutable */
-    private $createdAt;
+    private DateTimeImmutable $createdAt;
 
-    /** @var string */
-    private $authorName;
+    private string $authorName;
 
     public function __construct(
         int $id,
@@ -76,52 +66,52 @@ class Vehicle
         $this->authorName   = $authorName;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getType() : string
+    public function getType(): string
     {
         return $this->type;
     }
 
-    public function getUnitId() : int
+    public function getUnitId(): int
     {
         return $this->unitId;
     }
 
-    public function getRegistration() : string
+    public function getRegistration(): string
     {
         return $this->registration;
     }
 
-    public function getLabel() : string
+    public function getLabel(): string
     {
         return $this->label;
     }
 
-    public function getSubunitId() : ?int
+    public function getSubunitId(): ?int
     {
         return $this->subunitId;
     }
 
-    public function getConsumption() : float
+    public function getConsumption(): float
     {
         return $this->consumption;
     }
 
-    public function isArchived() : bool
+    public function isArchived(): bool
     {
         return $this->archived;
     }
 
-    public function getCreatedAt() : DateTimeImmutable
+    public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function getAuthorName() : string
+    public function getAuthorName(): string
     {
         return $this->authorName;
     }

@@ -9,15 +9,14 @@ namespace Model\Cashbook\Commands\Cashbook;
  */
 final class RemoveEventParticipant
 {
-    /** @var int */
-    private $participantId;
+    private int $participantId;
 
     public function __construct(int $participantId)
     {
         $this->participantId = $participantId;
     }
 
-    public function getParticipantId() : int
+    public function getParticipantId(): int
     {
         return $this->participantId;
     }

@@ -8,9 +8,12 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
 use Model\Cashbook\Cashbook\Recipient;
 
+use function assert;
+use function is_string;
+
 class RecipientType extends StringType
 {
-    public function getName() : string
+    public function getName(): string
     {
         return 'recipient';
     }
@@ -18,17 +21,28 @@ class RecipientType extends StringType
     /**
      * @param mixed $value
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform) : ?string
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
-        /** @var $value Recipient */
-        return $value === null ? null : $value->getName();
+        if ($value === null) {
+            return null;
+        }
+
+        assert($value instanceof Recipient);
+
+        return $value->getName();
     }
 
     /**
      * @param mixed $value
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform) : ?Recipient
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?Recipient
     {
-        return $value === null ? null : new Recipient($value);
+        if ($value === null) {
+            return null;
+        }
+
+        assert(is_string($value));
+
+        return new Recipient($value);
     }
 }

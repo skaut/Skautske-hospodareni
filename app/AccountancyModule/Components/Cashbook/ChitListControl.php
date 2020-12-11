@@ -29,6 +29,7 @@ use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
 use Nette\Application\UI\Multiplier;
 use Nette\InvalidStateException;
+
 use function array_count_values;
 use function array_filter;
 use function array_map;
@@ -41,38 +42,28 @@ use function count;
 class ChitListControl extends BaseControl
 {
     /** @var callable[] */
-    public $onEditButtonClicked = [];
+    public array $onEditButtonClicked = [];
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
     /**
      * Can current user edit cashbook?
-     *
-     * @var bool
      */
-    private $isEditable;
+    private bool $isEditable;
 
-    /** @var PaymentMethod */
-    private $paymentMethod;
+    private PaymentMethod $paymentMethod;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var IMoveChitsDialogFactory */
-    private $moveChitsDialogFactory;
+    private IMoveChitsDialogFactory $moveChitsDialogFactory;
 
-    /** @var IInvertChitDialogFactory */
-    private $invertChitDialogFactory;
+    private IInvertChitDialogFactory $invertChitDialogFactory;
 
-    /** @var IChitScanControlFactory */
-    private $chitScanFactory;
+    private IChitScanControlFactory $chitScanFactory;
 
-    /** @var IPrefixControlFactory */
-    private $prefixFactory;
+    private IPrefixControlFactory $prefixFactory;
 
     public function __construct(
         CashbookId $cashbookId,
@@ -94,10 +85,10 @@ class ChitListControl extends BaseControl
         $this->moveChitsDialogFactory  = $moveChitsDialogFactory;
         $this->invertChitDialogFactory = $invertChitDialogFactory;
         $this->chitScanFactory         = $chitScanControlFactory;
-        $this->prefixFactory           =$prefixFactory;
+        $this->prefixFactory           = $prefixFactory;
     }
 
-    public function render() : void
+    public function render(): void
     {
         $cashbook          = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
         $chits             = $this->queryBus->handle(ChitListQuery::withMethod($this->paymentMethod, $this->cashbookId));
@@ -128,7 +119,7 @@ class ChitListControl extends BaseControl
         $this->template->render();
     }
 
-    public function handleRemove(int $chitId) : void
+    public function handleRemove(int $chitId): void
     {
         if (! $this->isEditable) {
             $this->flashMessage('Nemáte oprávnění upravovat pokladní knihu.', 'danger');
@@ -147,17 +138,17 @@ class ChitListControl extends BaseControl
         $this->redirect('this');
     }
 
-    public function handleShowLocked() : void
+    public function handleShowLocked(): void
     {
         $this->getPresenter()->redirect(':Accountancy:UnitAccount:Chit:default', ['onlyUnlocked' => 0]);
     }
 
-    public function handleEdit(int $chitId) : void
+    public function handleEdit(int $chitId): void
     {
         $this->onEditButtonClicked($chitId);
     }
 
-    public function handleGenerateNumbers(string $paymentMethod) : void
+    public function handleGenerateNumbers(string $paymentMethod): void
     {
         try {
             $this->commandBus->handle(new GenerateChitNumbers($this->cashbookId, PaymentMethod::get($paymentMethod)));
@@ -167,15 +158,16 @@ class ChitListControl extends BaseControl
         } catch (MaxChitNumberNotFound $exc) {
             $this->getPresenter()->flashMessage('Nepodařilo se určit poslední poslední paragon, od kterého by se pokračovalo s číslováním.', 'error');
         }
+
         $this->getPresenter()->redirect('this');
     }
 
-    protected function createComponentPrefix() : PrefixControl
+    protected function createComponentPrefix(): PrefixControl
     {
         return $this->prefixFactory->create($this->cashbookId, $this->paymentMethod, $this->isEditable);
     }
 
-    protected function createComponentFormMass() : BaseForm
+    protected function createComponentFormMass(): BaseForm
     {
         $form = new BaseForm();
 
@@ -183,7 +175,7 @@ class ChitListControl extends BaseControl
         $exportButton    = $form->addSubmit('massExportSend');
         $moveChitsButton = $form->addSubmit('massMoveSend');
 
-        $form->onSuccess[] = function (BaseForm $form) use ($printButton, $exportButton, $moveChitsButton) : void {
+        $form->onSuccess[] = function (BaseForm $form) use ($printButton, $exportButton, $moveChitsButton): void {
             $chitIds = $form->getHttpData($form::DATA_TEXT, 'chits-' . $this->paymentMethod . '[]');
             $chitIds = array_map('\intval', $chitIds);
 
@@ -209,7 +201,7 @@ class ChitListControl extends BaseControl
         return $form;
     }
 
-    protected function createComponentMoveChitsDialog() : MoveChitsDialog
+    protected function createComponentMoveChitsDialog(): MoveChitsDialog
     {
         if (! $this->canMoveChits()) {
             throw new InvalidStateException("Can't create move dialog for unit cashbook");
@@ -218,38 +210,37 @@ class ChitListControl extends BaseControl
         return $this->moveChitsDialogFactory->create($this->cashbookId);
     }
 
-    protected function createComponentInvertChitDialog() : InvertChitDialog
+    protected function createComponentInvertChitDialog(): InvertChitDialog
     {
         return $this->invertChitDialogFactory->create($this->cashbookId);
     }
 
-    protected function createComponentChitScan() : Multiplier
+    protected function createComponentChitScan(): Multiplier
     {
         return new Multiplier(
-            fn (string $chitId) =>
-            $this->chitScanFactory->create($this->cashbookId, (int) $chitId, $this->isEditable)
+            fn (string $chitId) => $this->chitScanFactory->create($this->cashbookId, (int) $chitId, $this->isEditable)
         );
     }
 
     /**
      * @param int[] $chitIds
      */
-    private function redirectToExport(string $action, array $chitIds) : void
+    private function redirectToExport(string $action, array $chitIds): void
     {
         $this->getPresenter()->redirect($action, [$this->cashbookId->toString(), $chitIds]);
     }
 
-    private function canMoveChits() : bool
+    private function canMoveChits(): bool
     {
         return ! $this->getSkautisType()->equalsValue(ObjectType::UNIT);
     }
 
-    private function canMassExport() : bool
+    private function canMassExport(): bool
     {
         return $this->getSkautisType()->equalsValue(ObjectType::UNIT);
     }
 
-    private function getSkautisType() : ObjectType
+    private function getSkautisType(): ObjectType
     {
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
 
@@ -263,7 +254,7 @@ class ChitListControl extends BaseControl
      *
      * @return float[]
      */
-    private function getTotals(array $chits) : array
+    private function getTotals(array $chits): array
     {
         $income  = 0;
         $expense = 0;
@@ -286,7 +277,7 @@ class ChitListControl extends BaseControl
      *
      * @return int[]
      */
-    private function findDuplicates(array $chits) : array
+    private function findDuplicates(array $chits): array
     {
         $duplicates = array_filter(array_count_values(array_map(function (Chit $ch) {
             $number = $ch->getBody()->getNumber();

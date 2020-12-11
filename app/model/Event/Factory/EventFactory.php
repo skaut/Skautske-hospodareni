@@ -9,13 +9,14 @@ use Model\Common\UnitId;
 use Model\Event\Event;
 use Model\Event\SkautisEventId;
 use stdClass;
+
 use function explode;
 
 final class EventFactory
 {
     private const DATETIME_FORMAT = 'Y-m-d\TH:i:s';
 
-    public function create(stdClass $skautisEvent) : Event
+    public function create(stdClass $skautisEvent): Event
     {
         return new Event(
             new SkautisEventId($skautisEvent->ID),

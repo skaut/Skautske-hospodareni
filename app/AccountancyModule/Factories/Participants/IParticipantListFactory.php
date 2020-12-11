@@ -21,5 +21,5 @@ interface IParticipantListFactory
         bool $isAllowIsAccount,
         bool $isAllowParticipantUpdate,
         bool $isAllowParticipantDelete
-    ) : ParticipantList;
+    ): ParticipantList;
 }

@@ -12,15 +12,14 @@ use Model\Payment\ReadModel\QueryHandlers\RegistrationWithoutGroupQueryHandler;
  */
 final class RegistrationWithoutGroupQuery
 {
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
     public function __construct(UnitId $unitId)
     {
         $this->unitId = $unitId;
     }
 
-    public function getUnitId() : UnitId
+    public function getUnitId(): UnitId
     {
         return $this->unitId;
     }

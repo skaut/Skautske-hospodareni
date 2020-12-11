@@ -15,22 +15,22 @@ final class EventType extends Enum
     public const GENERAL   = 'general';
     public const EDUCATION = 'education';
 
-    public static function CAMP() : self
+    public static function CAMP(): self
     {
         return self::get(self::CAMP);
     }
 
-    public static function GENERAL() : self
+    public static function GENERAL(): self
     {
         return self::get(self::GENERAL);
     }
 
-    public static function EDUCATION() : self
+    public static function EDUCATION(): self
     {
         return self::get(self::EDUCATION);
     }
 
-    public function toString() : string
+    public function toString(): string
     {
         return $this->getValue();
     }

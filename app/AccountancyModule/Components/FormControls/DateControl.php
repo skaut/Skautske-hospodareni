@@ -8,6 +8,7 @@ use Cake\Chronos\Date;
 use InvalidArgumentException;
 use Nette\Utils\Html;
 use Nextras\Forms\Controls\DatePicker;
+
 use function sprintf;
 
 /**
@@ -18,7 +19,7 @@ class DateControl extends DatePicker
     /**
      * @param mixed $value
      */
-    public function setDefaultValue($value) : self
+    public function setDefaultValue($value): self
     {
         if (! $value instanceof Date && $value !== null) {
             throw new InvalidArgumentException(sprintf('$value must be instance of %s or NULL', Date::class));
@@ -29,10 +30,10 @@ class DateControl extends DatePicker
         return $this;
     }
 
-    public function disableWeekends() : self
+    public function disableWeekends(): self
     {
         $this->addRule(
-            function (self $control) : bool {
+            function (self $control): bool {
                 $value = $control->getValue();
 
                 return $value === null || $value->isWeekday();
@@ -46,7 +47,7 @@ class DateControl extends DatePicker
         return $this;
     }
 
-    public function getValue() : ?Date
+    public function getValue(): ?Date
     {
         $value = parent::getValue();
 
@@ -57,7 +58,7 @@ class DateControl extends DatePicker
         return Date::instance($value);
     }
 
-    public function getControl() : Html
+    public function getControl(): Html
     {
         $control = parent::getControl();
 

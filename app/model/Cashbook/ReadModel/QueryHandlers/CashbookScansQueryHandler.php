@@ -10,16 +10,15 @@ use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Common\File;
 use Model\Common\IScanStorage;
 use Model\DTO\Cashbook\Chit;
+
 use function assert;
 use function sprintf;
 
 final class CashbookScansQueryHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var IScanStorage */
-    private $storage;
+    private IScanStorage $storage;
 
     public function __construct(QueryBus $queryBus, IScanStorage $storage)
     {
@@ -30,7 +29,7 @@ final class CashbookScansQueryHandler
     /**
      * @return File[]
      */
-    public function __invoke(CashbookScansQuery $query) : array
+    public function __invoke(CashbookScansQuery $query): array
     {
         $chits = $this->queryBus->handle(ChitListQuery::withMethod($query->getPaymentMethod(), $query->getCashbookId()));
 

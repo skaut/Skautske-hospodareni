@@ -8,23 +8,17 @@ use Cake\Chronos\Date;
 
 final class EventListItem
 {
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var Date */
-    private $startDate;
+    private Date $startDate;
 
-    /** @var Date */
-    private $endDate;
+    private Date $endDate;
 
-    /** @var string|null */
-    private $prefix;
+    private ?string $prefix = null;
 
-    /** @var string */
-    private $state;
+    private string $state;
 
     public function __construct(int $id, string $name, Date $startDate, Date $endDate, ?string $prefix, string $state)
     {
@@ -36,32 +30,32 @@ final class EventListItem
         $this->state     = $state;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getStartDate() : Date
+    public function getStartDate(): Date
     {
         return $this->startDate;
     }
 
-    public function getEndDate() : Date
+    public function getEndDate(): Date
     {
         return $this->endDate;
     }
 
-    public function getPrefix() : ?string
+    public function getPrefix(): ?string
     {
         return $this->prefix;
     }
 
-    public function getState() : string
+    public function getState(): string
     {
         return $this->state;
     }

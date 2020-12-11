@@ -8,6 +8,7 @@ use Google_Service_Gmail;
 use Google_Service_Gmail_Message;
 use Nette\Mail\IMailer;
 use Nette\Mail\Message;
+
 use function array_key_exists;
 use function base64_encode;
 use function sprintf;
@@ -24,18 +25,19 @@ class OAuthMailer implements IMailer
         if (array_key_exists('error', $token)) {
             throw new InvalidOAuth(sprintf('%s => %s', $token['error'], $token['error_description']));
         }
+
         $client->setAccessToken($token);
         $this->gmailService = new Google_Service_Gmail($client);
     }
 
-    public function send(Message $mail) : void
+    public function send(Message $mail): void
     {
         $gmsg = new Google_Service_Gmail_Message();
         $gmsg->setRaw($this->urlSafeBase64Encode($mail->generateMessage()));
         $this->gmailService->users_messages->send('me', $gmsg);
     }
 
-    private function urlSafeBase64Encode(string $msg) : string
+    private function urlSafeBase64Encode(string $msg): string
     {
         return str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($msg));
     }

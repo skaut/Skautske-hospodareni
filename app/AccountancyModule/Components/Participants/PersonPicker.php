@@ -14,6 +14,7 @@ use Model\Participant\ReadModel\Queries\PotentialParticipantListQuery;
 use Model\Unit\ReadModel\Queries\SubunitListQuery;
 use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\Unit;
+
 use function assert;
 
 /**
@@ -22,32 +23,24 @@ use function assert;
  */
 final class PersonPicker extends BaseControl
 {
-    /**
-     * @var string|null
-     * @persistent
-     */
-    public $unitId;
+    /** @persistent */
+    public ?string $unitId = null;
 
-    /**
-     * @var bool
-     * @persistent
-     */
-    public $directMemberOnly = false;
+    /** @persistent */
+    public bool $directMemberOnly = false;
 
     /** @var callable[] */
-    public $onSelect = [];
+    public array $onSelect = [];
 
     /** @var callable[] */
-    public $onNonMemberAdd = [];
+    public array $onNonMemberAdd = [];
 
     /** @var Participant[] */
-    private $currentParticipants;
+    private array $currentParticipants;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var UnitId */
-    private $userUnitId;
+    private UnitId $userUnitId;
 
     /**
      * @param Participant[] $currentParticipants
@@ -63,7 +56,7 @@ final class PersonPicker extends BaseControl
         $this->queryBus            = $queryBus;
     }
 
-    public function handleAdd(int $personId) : void
+    public function handleAdd(int $personId): void
     {
         $this->onSelect([$personId]);
 
@@ -72,7 +65,7 @@ final class PersonPicker extends BaseControl
         $this->redirect('this');
     }
 
-    public function render() : void
+    public function render(): void
     {
         $this->redrawControl(); // Always redraw
 
@@ -92,7 +85,7 @@ final class PersonPicker extends BaseControl
         $this->template->render();
     }
 
-    private function selectedUnitId() : int
+    private function selectedUnitId(): int
     {
         if ($this->unitId !== null) {
             return (int) $this->unitId;
@@ -101,7 +94,7 @@ final class PersonPicker extends BaseControl
         return $this->userUnitId->toInt();
     }
 
-    protected function createComponentMassAddForm() : BaseForm
+    protected function createComponentMassAddForm(): BaseForm
     {
         $form = new BaseForm();
 
@@ -110,7 +103,7 @@ final class PersonPicker extends BaseControl
 
         $form->addSubmit('send');
 
-        $form->onSuccess[] = function ($_, array $values) : void {
+        $form->onSuccess[] = function ($_, array $values): void {
             $this->onSelect($values['personIds']);
 
             $this->redirect('this');
@@ -119,7 +112,7 @@ final class PersonPicker extends BaseControl
         return $form;
     }
 
-    protected function createComponentNonMemberParticipantForm() : BaseForm
+    protected function createComponentNonMemberParticipantForm(): BaseForm
     {
         $form = new BaseForm();
 
@@ -145,7 +138,7 @@ final class PersonPicker extends BaseControl
         $form->addSubmit('send', 'Založit účastníka')
             ->setAttribute('class', 'btn btn-primary');
 
-        $form->onSuccess[] = function (BaseForm $form) : void {
+        $form->onSuccess[] = function (BaseForm $form): void {
             $values = $form->getValues(true);
 
             $this->onNonMemberAdd(
@@ -170,7 +163,7 @@ final class PersonPicker extends BaseControl
     /**
      * @return array<int, string>
      */
-    private function getPotentialParticipants() : array
+    private function getPotentialParticipants(): array
     {
         $unitId = UnitId::fromInt($this->selectedUnitId());
 

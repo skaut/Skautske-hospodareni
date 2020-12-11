@@ -19,20 +19,20 @@ use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
 use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\Unit;
+
 use function assert;
 use function sprintf;
 
 final class CashbookDisplayNameQueryHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(QueryBus $queryBus)
     {
         $this->queryBus = $queryBus;
     }
 
-    public function __invoke(CashbookDisplayNameQuery $query) : string
+    public function __invoke(CashbookDisplayNameQuery $query): string
     {
         $cashbook  = $this->queryBus->handle(new CashbookQuery($query->getCashbookId()));
         $skautisId = $this->queryBus->handle(new SkautisIdQuery($query->getCashbookId()));

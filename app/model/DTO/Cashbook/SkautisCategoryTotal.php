@@ -8,11 +8,9 @@ use Money\Money;
 
 class SkautisCategoryTotal
 {
-    /** @var Money */
-    private $amount;
+    private Money $amount;
 
-    /** @var bool */
-    private $consistent;
+    private bool $consistent;
 
     public function __construct(Money $amount, bool $consistent)
     {
@@ -20,12 +18,12 @@ class SkautisCategoryTotal
         $this->consistent = $consistent;
     }
 
-    public function getAmount() : Money
+    public function getAmount(): Money
     {
         return $this->amount;
     }
 
-    public function isConsistent() : bool
+    public function isConsistent(): bool
     {
         return $this->consistent;
     }

@@ -9,7 +9,7 @@ use Model\Logger\LogEntry;
 
 class LogFactory
 {
-    public static function create(LogEntry $log) : LogDTO
+    public static function create(LogEntry $log): LogDTO
     {
         return new LogDTO(
             $log->getUnitId(),

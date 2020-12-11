@@ -13,11 +13,9 @@ final class CampStatesHandler
 {
     private const CACHE_KEY = 'camp_states';
 
-    /** @var WebServiceInterface */
-    private $eventWebservice;
+    private WebServiceInterface $eventWebservice;
 
-    /** @var Cache */
-    private $cache;
+    private Cache $cache;
 
     public function __construct(WebServiceInterface $eventWebservice, Cache $cache)
     {
@@ -28,7 +26,7 @@ final class CampStatesHandler
     /**
      * @return string[]
      */
-    public function __invoke(CampStates $query) : array
+    public function __invoke(CampStates $query): array
     {
         return $this->cache->load(self::CACHE_KEY, function () {
             return Helpers::getPairs(

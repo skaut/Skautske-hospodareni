@@ -10,8 +10,7 @@ use Skautis\Wsdl\WebServiceInterface;
 
 final class EventStatisticsQueryHandler
 {
-    /** @var WebServiceInterface */
-    private $eventWebService;
+    private WebServiceInterface $eventWebService;
 
     public function __construct(WebServiceInterface $eventWebService)
     {
@@ -21,7 +20,7 @@ final class EventStatisticsQueryHandler
     /**
      * @return StatisticsItem[]
      */
-    public function __invoke(EventStatisticsQuery $query) : array
+    public function __invoke(EventStatisticsQuery $query): array
     {
         $skautisData = $this->eventWebService->EventStatisticAllEventGeneral(['ID_EventGeneral' => $query->getEventId()->toInt()]);
 

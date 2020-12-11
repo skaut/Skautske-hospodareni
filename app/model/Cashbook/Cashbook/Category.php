@@ -13,18 +13,15 @@ use Model\Cashbook\Operation;
  */
 class Category
 {
-    /**
-     * @ORM\Column(type="integer", name="category", options={"unsigned"=true})
-     *
-     * @var int
-     */
-    private $id;
+    /** @ORM\Column(type="integer", name="category", options={"unsigned"=true}) */
+    private int $id;
 
     /**
      * @ORM\Column(type="string_enum", name="category_operation_type", length=255, nullable=true)
      *
      * @var Operation
      * @EnumAnnotation(class=Operation::class)
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
     private $operationType;
 
@@ -34,12 +31,12 @@ class Category
         $this->operationType = $operationType;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getOperationType() : Operation
+    public function getOperationType(): Operation
     {
         return $this->operationType;
     }

@@ -14,8 +14,10 @@ use Model\DTO\Payment\PairingResult;
 use Model\Google\InvalidOAuth;
 use Model\Payment\BankAccountService;
 use Model\PaymentService;
+
 use function array_filter;
 use function array_map;
+use function assert;
 use function bdump;
 use function count;
 
@@ -24,17 +26,14 @@ class PairButton extends BaseControl
     public const TIMEOUT_MESSAGE    = 'Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.';
     public const TIME_LIMIT_MESSAGE = 'Mezi dotazy na bankovnictví musí být prodleva 1 minuta!';
 
-    /** @var BankService */
-    private $model;
+    private BankService $model;
 
-    /** @var PaymentService */
-    private $payments;
+    private PaymentService $payments;
 
-    /** @var BankAccountService */
-    private $bankAccounts;
+    private BankAccountService $bankAccounts;
 
     /** @var int[] */
-    private $groupIds = [];
+    private array $groupIds = [];
 
     public function __construct(PaymentService $payments, BankService $model, BankAccountService $bankAccounts)
     {
@@ -44,7 +43,7 @@ class PairButton extends BaseControl
         $this->bankAccounts = $bankAccounts;
     }
 
-    public function handlePair() : void
+    public function handlePair(): void
     {
         $this->pair();
     }
@@ -54,12 +53,12 @@ class PairButton extends BaseControl
      *
      * @param int[] $groupIds
      */
-    public function setGroups(array $groupIds) : void
+    public function setGroups(array $groupIds): void
     {
         $this->groupIds = $groupIds;
     }
 
-    public function render() : void
+    public function render(): void
     {
         $this->template->setParameters([
             'canPair'     => $this->canPair(),
@@ -69,13 +68,13 @@ class PairButton extends BaseControl
         $this->template->render();
     }
 
-    public function renderLight() : void
+    public function renderLight(): void
     {
         $this->template->setParameters(['style' => 'light']);
         $this->render();
     }
 
-    protected function createComponentForm() : BaseForm
+    protected function createComponentForm(): BaseForm
     {
         $form = new BaseForm();
 
@@ -86,7 +85,7 @@ class PairButton extends BaseControl
             ->setType('number');
         $form->addSubmit('pair', 'Párovat');
 
-        $form->onSuccess[] = function ($form, $values) : void {
+        $form->onSuccess[] = function ($form, $values): void {
             $this->pair((int) $values->days);
         };
         $this->redrawControl('form');
@@ -94,7 +93,7 @@ class PairButton extends BaseControl
         return $form;
     }
 
-    private function canPair() : bool
+    private function canPair(): bool
     {
         if (empty($this->groupIds)) {
             return false;
@@ -120,12 +119,12 @@ class PairButton extends BaseControl
         return false;
     }
 
-    private function pair(?int $daysBack = null) : void
+    private function pair(?int $daysBack = null): void
     {
         try {
             $pairingResults = $this->model->pairAllGroups($this->groupIds, $daysBack);
-            /** @var PairingResult $p */
             foreach ($pairingResults as $p) {
+                assert($p instanceof PairingResult);
                 $this->flashMessage($p->getMessage(), $p->getCount() > 0 ? 'success' : 'info');
             }
         } catch (BankTimeout $exc) {
@@ -137,6 +136,7 @@ class PairButton extends BaseControl
         } catch (InvalidOAuth $exc) {
             $this->flashMessage('Google vrátil chybu: ' . $exc->getMessage(), 'danger');
         }
+
         $this->redirect('this');
     }
 }

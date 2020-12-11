@@ -12,12 +12,13 @@ use Model\TravelService;
 use Model\Utils\MoneyFactory;
 use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
+
 use function assert;
 
 final class EditTravelDialog extends Dialog
 {
     /** @var int|null @persistent */
-    public $travelId;
+    public ?int $travelId = null;
 
     private int $commandId;
 
@@ -30,19 +31,19 @@ final class EditTravelDialog extends Dialog
         $this->model     = $model;
     }
 
-    public function open(int $travelId) : void
+    public function open(int $travelId): void
     {
         $this->travelId = $travelId;
 
         $this->show();
     }
 
-    protected function beforeRender() : void
+    protected function beforeRender(): void
     {
         $this->template->setFile(__DIR__ . '/templates/EditTravelDialog.latte');
     }
 
-    protected function createComponentForm() : BaseForm
+    protected function createComponentForm(): BaseForm
     {
         $form = new BaseForm();
 
@@ -86,14 +87,14 @@ final class EditTravelDialog extends Dialog
             'distanceOrPrice' => $travel->getDistance() ?? MoneyFactory::toFloat($travel->getPrice()),
         ]);
 
-        $form->onSuccess[] = function (Form $form) use ($travelId) : void {
+        $form->onSuccess[] = function (Form $form) use ($travelId): void {
             $this->formSucceeded($travelId, $form->getValues());
         };
 
         return $form;
     }
 
-    private function formSucceeded(int $travelId, ArrayHash $values) : void
+    private function formSucceeded(int $travelId, ArrayHash $values): void
     {
         $this->model->updateTravel(
             $this->commandId,

@@ -13,11 +13,9 @@ use stdClass;
 
 final class UserRepository implements IUserRepository
 {
-    /** @var WebServiceInterface */
-    private $userWebService;
+    private WebServiceInterface $userWebService;
 
-    /** @var WebServiceInterface */
-    private $orgWebService;
+    private WebServiceInterface $orgWebService;
 
     public function __construct(WebServiceInterface $userWebService, WebServiceInterface $orgWebService)
     {
@@ -25,18 +23,18 @@ final class UserRepository implements IUserRepository
         $this->orgWebService  = $orgWebService;
     }
 
-    public function find(int $id) : User
+    public function find(int $id): User
     {
         return $this->findWithArguments(['ID' => $id]);
     }
 
-    public function getCurrentUser() : User
+    public function getCurrentUser(): User
     {
         return $this->findWithArguments([]);
     }
 
     /** @param mixed[] $arguments */
-    private function findWithArguments(array $arguments) : User
+    private function findWithArguments(array $arguments): User
     {
         try {
             $user = $this->userWebService->UserDetail($arguments);
@@ -47,6 +45,7 @@ final class UserRepository implements IUserRepository
             }
         } catch (PermissionException $e) {
         }
+
         throw new UserNotFound();
     }
 }

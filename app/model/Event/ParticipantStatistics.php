@@ -6,20 +6,15 @@ namespace Model\Event;
 
 final class ParticipantStatistics
 {
-    /** @var int */
-    private $realAdult;
+    private int $realAdult;
 
-    /** @var int */
-    private $realChild;
+    private int $realChild;
 
-    /** @var int */
-    private $realCount;
+    private int $realCount;
 
-    /** @var int */
-    private $realChildDays;
+    private int $realChildDays;
 
-    /** @var int */
-    private $realPersonDays;
+    private int $realPersonDays;
 
     public function __construct(
         int $realAdult,
@@ -35,17 +30,17 @@ final class ParticipantStatistics
         $this->realPersonDays = $realPersonDays;
     }
 
-    public function getRealAdult() : int
+    public function getRealAdult(): int
     {
         return $this->realAdult;
     }
 
-    public function getRealChild() : int
+    public function getRealChild(): int
     {
         return $this->realChild;
     }
 
-    public function getRealCount() : int
+    public function getRealCount(): int
     {
         return $this->realCount;
     }
@@ -53,7 +48,7 @@ final class ParticipantStatistics
     /**
      * Returns number of children x days on camp
      */
-    public function getRealChildDays() : int
+    public function getRealChildDays(): int
     {
         return $this->realChildDays;
     }
@@ -61,7 +56,7 @@ final class ParticipantStatistics
     /**
      * Returns number of persons x days on camp
      */
-    public function getRealPersonDays() : int
+    public function getRealPersonDays(): int
     {
         return $this->realPersonDays;
     }

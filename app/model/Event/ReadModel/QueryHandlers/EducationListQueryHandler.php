@@ -8,6 +8,7 @@ use Model\Event\Education;
 use Model\Event\ReadModel\Queries\EducationListQuery;
 use Model\Skautis\Factory\EducationFactory;
 use Skautis\Skautis;
+
 use function assert;
 use function is_object;
 
@@ -26,7 +27,7 @@ class EducationListQueryHandler
     /**
      * @return array<int, Education> Educations indexed by ID
      */
-    public function __invoke(EducationListQuery $query) : array
+    public function __invoke(EducationListQuery $query): array
     {
         $educations = $this->skautis->event->EventEducationAll([
             'Year' => $query->getYear(),

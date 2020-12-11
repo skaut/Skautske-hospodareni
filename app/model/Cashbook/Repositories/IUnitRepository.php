@@ -14,12 +14,12 @@ interface IUnitRepository
     /**
      * @throws UnitNotFound
      */
-    public function find(UnitId $id) : Unit;
+    public function find(UnitId $id): Unit;
 
     /**
      * @throws UnitNotFound
      */
-    public function findByCashbookId(CashbookId $cashbookId) : Unit;
+    public function findByCashbookId(CashbookId $cashbookId): Unit;
 
-    public function save(Unit $unit) : void;
+    public function save(Unit $unit): void;
 }

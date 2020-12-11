@@ -20,33 +20,17 @@ class Transaction
 {
     use SmartObject;
 
-    /**
-     * @ORM\Column(type="string", length=64, nullable=true, name="transactionId")
-     *
-     * @var string
-     */
-    private $id;
+    /** @ORM\Column(type="string", length=64, nullable=true, name="transactionId") */
+    private string $id;
 
-    /**
-     * @ORM\Column(type="string", length=64, nullable=true, name="paidFrom")
-     *
-     * @var string
-     */
-    private $bankAccount;
+    /** @ORM\Column(type="string", length=64, nullable=true, name="paidFrom") */
+    private string $bankAccount;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, name="transaction_payer")
-     *
-     * @var string
-     */
-    private $payer;
+    /** @ORM\Column(type="string", nullable=true, name="transaction_payer") */
+    private string $payer;
 
-    /**
-     * @ORM\Column(type="string", nullable=true, name="transaction_note")
-     *
-     * @var string|NULL
-     */
-    private $note;
+    /** @ORM\Column(type="string", nullable=true, name="transaction_note") */
+    private ?string $note = null;
 
     public function __construct(string $id, string $bankAccount, string $payer, ?string $note)
     {
@@ -56,7 +40,7 @@ class Transaction
         $this->note        = $note;
     }
 
-    public static function fromFioTransaction(FioTransaction $transaction) : self
+    public static function fromFioTransaction(FioTransaction $transaction): self
     {
         return new self(
             $transaction->getId(),
@@ -66,7 +50,7 @@ class Transaction
         );
     }
 
-    public function getId() : string
+    public function getId(): string
     {
         return $this->id;
     }
@@ -74,22 +58,22 @@ class Transaction
     /**
      * TODO: fix some payment transactions in database, that have NULL bank accounts
      */
-    public function getBankAccount() : ?string
+    public function getBankAccount(): ?string
     {
         return $this->bankAccount;
     }
 
-    public function getPayer() : ?string
+    public function getPayer(): ?string
     {
         return $this->payer;
     }
 
-    public function getNote() : ?string
+    public function getNote(): ?string
     {
         return $this->note;
     }
 
-    public function equals(self $other) : bool
+    public function equals(self $other): bool
     {
         return $other->id === $this->id
             && $other->bankAccount === $this->bankAccount

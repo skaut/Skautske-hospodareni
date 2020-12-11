@@ -15,12 +15,12 @@ class State extends Enum
     public const COMPLETED = 'completed';
     public const PREPARING = 'preparing';
 
-    public function toString() : string
+    public function toString(): string
     {
         return $this->getValue();
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         return $this->getValue();
     }

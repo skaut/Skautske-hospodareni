@@ -10,8 +10,7 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 
 final class UpdateNoteHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
     public function __construct(ICashbookRepository $cashbooks)
     {
@@ -21,7 +20,7 @@ final class UpdateNoteHandler
     /**
      * @throws CashbookNotFound
      */
-    public function __invoke(UpdateNote $command) : void
+    public function __invoke(UpdateNote $command): void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
         $cashbook->updateNote($command->getNote());
