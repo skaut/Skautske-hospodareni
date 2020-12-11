@@ -6,6 +6,7 @@ services:
             - 80:80
         volumes:
             - /var/www/html/temp
+            - /var/www/html/tests/_temp
             - nfsmount:/var/www/html
     mysql:
         ports:
