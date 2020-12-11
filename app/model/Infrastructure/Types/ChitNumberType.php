@@ -8,6 +8,8 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
 use Model\Cashbook\Cashbook\ChitNumber;
 
+use function assert;
+
 class ChitNumberType extends StringType
 {
     public function getName(): string
@@ -25,8 +27,13 @@ class ChitNumberType extends StringType
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
-        /** @var ChitNumber $value */
-        return $value === null ? null : $value->toString();
+        if ($value === null) {
+            return null;
+        }
+
+        assert($value instanceof ChitNumber);
+
+        return $value->toString();
     }
 
     /**

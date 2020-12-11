@@ -8,6 +8,8 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\GuidType;
 use Model\Common\UnitId;
 
+use function assert;
+
 final class UnitIdType extends GuidType
 {
     public function getName(): string
@@ -36,7 +38,8 @@ final class UnitIdType extends GuidType
             return null;
         }
 
-        /** @var UnitId $value */
+        assert($value instanceof UnitId);
+
         return $value->toInt();
     }
 }

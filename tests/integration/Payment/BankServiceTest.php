@@ -34,8 +34,10 @@ use function sprintf;
 
 class BankServiceTest extends IntegrationTest
 {
-    // phpcs:disable SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
-    /** @var IntegrationTester */
+    /**
+     * @var IntegrationTester
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
+     */
     protected $tester;
 
     private BankService $bankService;

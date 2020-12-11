@@ -16,10 +16,9 @@ use function count;
 
 class Version20170623193150 extends AbstractMigration
 {
-    // phpcs:disable SlevomatCodingStandard.TypeHints.PropertyTypeHint.UselessAnnotation
     /**
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      * @inject
-     * @var Skautis
      */
     public Skautis $skautis;
 

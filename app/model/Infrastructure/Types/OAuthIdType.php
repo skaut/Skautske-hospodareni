@@ -8,6 +8,9 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\GuidType;
 use Model\Google\OAuthId;
 
+use function assert;
+use function is_string;
+
 final class OAuthIdType extends GuidType
 {
     public function getName(): string
@@ -24,7 +27,8 @@ final class OAuthIdType extends GuidType
             return null;
         }
 
-        /** @var string $value */
+        assert(is_string($value));
+
         return OAuthId::fromString($value);
     }
 
@@ -37,7 +41,8 @@ final class OAuthIdType extends GuidType
             return null;
         }
 
-        /** @var OAuthId $value */
+        assert($value instanceof OAuthId);
+
         return $value->toString();
     }
 }

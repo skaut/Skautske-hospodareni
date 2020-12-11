@@ -277,7 +277,7 @@ class PaymentService
         if (is_array($persons)) {
             usort(
                 $persons,
-                function ($a, $b) {
+                function (stdClass $a, stdClass $b) {
                     return strcmp($a->Person, $b->Person);
                 }
             );

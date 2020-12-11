@@ -8,6 +8,9 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\GuidType;
 use Model\Cashbook\Cashbook\CashbookId;
 
+use function assert;
+use function is_string;
+
 final class CashbookIdType extends GuidType
 {
     public function getName(): string
@@ -24,7 +27,8 @@ final class CashbookIdType extends GuidType
             return null;
         }
 
-        /** @var string $value */
+        assert(is_string($value));
+
         return CashbookId::fromString($value);
     }
 
@@ -37,7 +41,8 @@ final class CashbookIdType extends GuidType
             return null;
         }
 
-        /** @var CashbookId $value */
+        assert($value instanceof CashbookId);
+
         return $value->toString();
     }
 }

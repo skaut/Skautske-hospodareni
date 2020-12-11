@@ -8,6 +8,9 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\GuidType;
 use Model\Participant\PaymentId;
 
+use function assert;
+use function is_string;
+
 final class PaymentIdType extends GuidType
 {
     public function getName(): string
@@ -24,7 +27,8 @@ final class PaymentIdType extends GuidType
             return null;
         }
 
-        /** @var string $value */
+        assert(is_string($value));
+
         return PaymentId::fromString($value);
     }
 
@@ -37,7 +41,8 @@ final class PaymentIdType extends GuidType
             return null;
         }
 
-        /** @var PaymentId $value */
+        assert($value instanceof PaymentId);
+
         return $value->toString();
     }
 }
