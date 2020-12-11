@@ -22,9 +22,8 @@ final class MemberRepository implements IMemberRepository
         $this->skautis = $skautis;
     }
 
-    /**
-     * @return Member[]
-     */
+    /** @return Member[] */
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     public function findByUnit(UnitId $unitId, bool $includeSubunitMembers): array
     {
         $result = $this->skautis->org->PersonAll([

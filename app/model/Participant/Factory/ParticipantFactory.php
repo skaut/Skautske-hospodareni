@@ -13,6 +13,7 @@ use function preg_match;
 
 final class ParticipantFactory
 {
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     public static function create(stdClass $skautisParticipant, Payment $payment): Participant
     {
         preg_match('/(?P<last>\S+)\s+(?P<first>[^(]+)(\((?P<nick>.*)\))?.*/', $skautisParticipant->Person, $matches);

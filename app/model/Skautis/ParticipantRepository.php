@@ -116,6 +116,7 @@ final class ParticipantRepository implements IParticipantRepository
         }
     }
 
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     public function createEventParticipant(SkautisEventId $eventId, NonMemberParticipant $participant): void
     {
         $newParticipantArr = $this->skautis->event->ParticipantGeneralInsert([

@@ -75,7 +75,7 @@ final class PrefixControl extends Dialog
 
         $form->addSubmit('submit', 'Uložit');
 
-        $form->onSuccess[] = function ($_, array $values): void {
+        $form->onSuccess[] = function ($_x, array $values): void {
             $this->commandBus->handle(new UpdateChitNumberPrefix($this->cashbookId, $this->paymentMethod, $values['prefix']));
             $this->hide();
         };

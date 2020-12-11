@@ -51,7 +51,7 @@ final class LintLatte extends Command
             '~.latte$~'
         );
 
-        foreach ($latteFiles as $filePath => $_) {
+        foreach ($latteFiles as $filePath => $_x) {
             $shortPath = Strings::substring($filePath, Strings::length($appDir));
 
             $output->writeln(sprintf('<fg=yellow>Compiling %s...</>', $shortPath));

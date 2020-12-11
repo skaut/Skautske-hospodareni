@@ -261,6 +261,7 @@ class PaymentService
      *
      * @return mixed[]
      */
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     public function getPersonsFromRegistrationWithoutPayment(array $units, int $groupId): array
     {
         $result = [];

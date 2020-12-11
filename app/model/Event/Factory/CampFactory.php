@@ -16,6 +16,8 @@ use function is_array;
 use function is_string;
 use function property_exists;
 
+// phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+
 final class CampFactory
 {
     private const DATETIME_FORMAT = 'Y-m-d\TH:i:s';

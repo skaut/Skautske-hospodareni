@@ -237,7 +237,7 @@ class DefaultPresenter extends BasePresenter
     private function formAddTravelSubmitted(Form $form): void
     {
         $v         = $form->getValues();
-        $commandId = (int) $v->command_id;
+        $commandId = (int) $v['command_id'];
 
         if (! $this->isCommandEditable($commandId)) {
             $this->flashMessage('Nelze upravovat cestovní příkaz.', 'danger');
@@ -249,10 +249,10 @@ class DefaultPresenter extends BasePresenter
         $this->travelService->addTravel(
             $commandId,
             TransportType::get($v->type),
-            $v->start_date,
-            $v->start_place,
-            $v->end_place,
-            $v->distance
+            $v['start_date'],
+            $v['start_place'],
+            $v['end_place'],
+            $v['distance']
         );
         $this->flashMessage('Cesta byla přidána.');
         $this->redirect('this');

@@ -12,6 +12,8 @@ use stdClass;
 
 use function explode;
 
+// phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+
 final class EventFactory
 {
     private const DATETIME_FORMAT = 'Y-m-d\TH:i:s';

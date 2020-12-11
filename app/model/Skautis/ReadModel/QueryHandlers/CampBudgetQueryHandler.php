@@ -24,6 +24,7 @@ final class CampBudgetQueryHandler
     /**
      * @return BudgetEntry[]
      */
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     public function __invoke(CampBudgetQuery $query): array
     {
         $skautisCategories = $this->eventWebService->EventCampStatementAll([

@@ -22,6 +22,7 @@ class EventSubscriber
         $this->userService   = $userService;
     }
 
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     public function handleOpened(EventWasOpened $event): void
     {
         $user = $this->userService->getUserDetail();

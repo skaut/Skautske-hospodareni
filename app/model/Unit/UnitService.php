@@ -86,10 +86,10 @@ class UnitService
      *
      * @throws BadRequestException
      */
-    public function getAllUnder(int $ID_Unit): array
+    public function getAllUnder(int $unitId): array
     {
-        $data = [$ID_Unit => $this->queryBus->handle(new UnitQuery($ID_Unit))];
-        foreach ($this->units->findByParent($ID_Unit) as $u) {
+        $data = [$unitId => $this->queryBus->handle(new UnitQuery($unitId))];
+        foreach ($this->units->findByParent($unitId) as $u) {
             $data[$u->getId()] = $u;
             $data             += $this->getAllUnder($u->getId());
         }

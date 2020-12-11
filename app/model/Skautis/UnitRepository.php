@@ -23,6 +23,7 @@ final class UnitRepository implements IUnitRepository
     }
 
     /** @return mixed[] */
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     public function findByParent(int $parentId): array
     {
         $units = $this->webService->call('UnitAll', [
@@ -61,6 +62,7 @@ final class UnitRepository implements IUnitRepository
         }
     }
 
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     private function createUnit(stdClass $unit): Unit
     {
         return new Unit(

@@ -180,7 +180,7 @@ class CashbookWithCategoriesBuilder
             $this->queryBus->handle(new CategoryListQuery($cashbookId))
         );
 
-        $categoriesByOperation = $categories->partition(function ($_, Category $category): bool {
+        $categoriesByOperation = $categories->partition(function ($_x, Category $category): bool {
             return $category->getOperationType()->equalsValue(Operation::INCOME);
         });
 

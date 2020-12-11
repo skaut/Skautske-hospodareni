@@ -12,6 +12,7 @@ final class PersonFactory
 {
     use StaticClass;
 
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     public static function create(stdClass $function): ?Person
     {
         if ($function->ID_Person === null) {

@@ -41,6 +41,7 @@ class CampFunctionsHandler
      *
      * @return Person[]
      */
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     private function getFunctionsByType(array $functions): array
     {
         $functionsByType = [];

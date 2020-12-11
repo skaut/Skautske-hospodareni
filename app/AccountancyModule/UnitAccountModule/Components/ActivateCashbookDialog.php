@@ -69,7 +69,7 @@ final class ActivateCashbookDialog extends BaseControl
         $form->addSubmit('create', 'Vybrat')
             ->setAttribute('class', 'btn btn-primary');
 
-        $form->onSuccess[] = function ($_, ArrayHash $values): void {
+        $form->onSuccess[] = function ($_x, ArrayHash $values): void {
             $this->formSucceeded($values->cashbookId);
         };
 

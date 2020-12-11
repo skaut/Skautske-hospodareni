@@ -9,6 +9,8 @@ use Model\Event\Education;
 use Model\Event\SkautisEducationId;
 use stdClass;
 
+// phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+
 final class EducationFactory
 {
     private const DATETIME_FORMAT = 'Y-m-d\TH:i:s';

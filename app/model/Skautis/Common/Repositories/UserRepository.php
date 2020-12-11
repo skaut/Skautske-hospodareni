@@ -34,6 +34,7 @@ final class UserRepository implements IUserRepository
     }
 
     /** @param mixed[] $arguments */
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     private function findWithArguments(array $arguments): User
     {
         try {

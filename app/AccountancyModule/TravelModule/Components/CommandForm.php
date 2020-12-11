@@ -231,7 +231,7 @@ class CommandForm extends Control
     private function createCommand(ArrayHash $values): void
     {
         $this->model->addCommand(
-            $this->unitId,
+            $this['unitId'],
             isset($values['contract_id']) ? (int) $values['contract_id'] : null,
             $this->createPassenger($values),
             $values['vehicle_id'],

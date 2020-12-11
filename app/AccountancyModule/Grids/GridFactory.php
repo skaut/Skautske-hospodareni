@@ -85,7 +85,7 @@ class GridFactory
             $presenter->payload->postGet = true;
         };
 
-        DataGrid::$icon_prefix = '';
+        DataGrid::$icon_prefix = ''; // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 
         return $grid;
     }

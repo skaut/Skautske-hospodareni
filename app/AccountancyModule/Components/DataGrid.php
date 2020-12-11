@@ -23,7 +23,7 @@ final class DataGrid extends \Ublaboo\DataGrid\DataGrid
     public function __construct()
     {
         parent::__construct();
-        Action::$data_confirm_attribute_name = 'data-confirm';
+        Action::$data_confirm_attribute_name = 'data-confirm'; // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
         $this->onRender[]                    = function (): void {
  //disable autocomplete - issue #1443
             $this['filter']->getElementPrototype()->setAttribute('autocomplete', 'off');
@@ -34,6 +34,8 @@ final class DataGrid extends \Ublaboo\DataGrid\DataGrid
      * Forces datagrid to filter and sort data source and returns inner data
      *
      * @return mixed[]
+     *
+     * @phpcsSuppress Squiz.NamingConventions.ValidVariableName.NotCamelCaps
      */
     public function getFilteredAndSortedData(): array
     {

@@ -44,6 +44,7 @@ class AuthPresenter extends BasePresenter
     /**
      * zajistuje zpracovani prihlaseni na skautIS
      */
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     public function actionSkautIS(?string $ReturnUrl = null): void
     {
         $post = $this->getRequest()->getPost();

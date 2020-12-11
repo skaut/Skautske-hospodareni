@@ -103,7 +103,7 @@ final class PersonPicker extends BaseControl
 
         $form->addSubmit('send');
 
-        $form->onSuccess[] = function ($_, array $values): void {
+        $form->onSuccess[] = function ($_x, array $values): void {
             $this->onSelect($values['personIds']);
 
             $this->redirect('this');

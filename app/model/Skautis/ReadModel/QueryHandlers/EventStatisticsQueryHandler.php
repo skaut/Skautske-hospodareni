@@ -20,6 +20,7 @@ final class EventStatisticsQueryHandler
     /**
      * @return StatisticsItem[]
      */
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
     public function __invoke(EventStatisticsQuery $query): array
     {
         $skautisData = $this->eventWebService->EventStatisticAllEventGeneral(['ID_EventGeneral' => $query->getEventId()->toInt()]);
