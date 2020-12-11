@@ -8,14 +8,14 @@ use Codeception\Test\Unit;
 
 class AccountNumberTest extends Unit
 {
-    public function testToString() : void
+    public function testToString(): void
     {
         $number = new AccountNumber(null, '2000942144', '2010');
 
         $this->assertSame('2000942144/2010', (string) $number);
     }
 
-    public function testToStringWithPrefix() : void
+    public function testToStringWithPrefix(): void
     {
         $number = new AccountNumber('19', '17608231', '0100'); // To je E-ON btw
 
@@ -25,7 +25,7 @@ class AccountNumberTest extends Unit
     /**
      * @dataProvider dataGetAccountNumberWithPrefix
      */
-    public function testGetAccountNumberWithPrefix(string $fullAccountNumber, string $expectedNumberWithPrefix) : void
+    public function testGetAccountNumberWithPrefix(string $fullAccountNumber, string $expectedNumberWithPrefix): void
     {
         $this->assertSame(
             $expectedNumberWithPrefix,
@@ -36,7 +36,7 @@ class AccountNumberTest extends Unit
     /**
      * @return string[][]
      */
-    public function dataGetAccountNumberWithPrefix() : array
+    public function dataGetAccountNumberWithPrefix(): array
     {
         return [
             ['2000942144/2010', '2000942144'],
@@ -44,17 +44,17 @@ class AccountNumberTest extends Unit
         ];
     }
 
-    public function testIsValidForValidNumber() : void
+    public function testIsValidForValidNumber(): void
     {
         $this->assertTrue(AccountNumber::isValid('19-17608231/0100'));
     }
 
-    public function testIsValidForInvalidNumber() : void
+    public function testIsValidForInvalidNumber(): void
     {
         $this->assertFalse(AccountNumber::isValid('123'));
     }
 
-    public function testFromString() : void
+    public function testFromString(): void
     {
         $number = AccountNumber::fromString('2000942144/2010');
 

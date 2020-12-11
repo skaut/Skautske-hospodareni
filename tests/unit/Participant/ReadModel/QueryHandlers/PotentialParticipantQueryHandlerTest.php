@@ -17,7 +17,7 @@ final class PotentialParticipantQueryHandlerTest extends Unit
     /**
      * @dataProvider dataDirectMembersOnly
      */
-    public function testReturnAllMembersThatAreNotAlreadyParticipants(bool $directMembersOnly) : void
+    public function testReturnAllMembersThatAreNotAlreadyParticipants(bool $directMembersOnly): void
     {
         $unitId = new UnitId(1);
 
@@ -48,7 +48,7 @@ final class PotentialParticipantQueryHandlerTest extends Unit
     /**
      * @return bool[][]
      */
-    public function dataDirectMembersOnly() : array
+    public function dataDirectMembersOnly(): array
     {
         return [[true], [false]];
     }

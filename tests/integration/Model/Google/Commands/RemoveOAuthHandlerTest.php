@@ -12,7 +12,7 @@ use Model\Payment\Group;
 
 class RemoveOAuthHandlerTest extends CommandHandlerTest
 {
-    public function _before() : void
+    public function _before(): void
     {
         $this->tester->useConfigFiles(['Model/Google/Commands/RemoveOAuthHandlerTest.neon']);
         parent::_before();
@@ -21,7 +21,7 @@ class RemoveOAuthHandlerTest extends CommandHandlerTest
     /**
      * @return string[]
      */
-    public function getTestedAggregateRoots() : array
+    public function getTestedAggregateRoots(): array
     {
         return [
             OAuth::class,
@@ -29,7 +29,7 @@ class RemoveOAuthHandlerTest extends CommandHandlerTest
         ];
     }
 
-    public function testRemoveExistingCredentials() : void
+    public function testRemoveExistingCredentials(): void
     {
         $id = '42288e92-27fb-453c-9904-36a7ebd14fe2';
         $this->tester->haveInDatabase('google_oauth', [
@@ -45,7 +45,7 @@ class RemoveOAuthHandlerTest extends CommandHandlerTest
         $this->tester->dontSeeInDatabase('google_oauth', ['id' => $id]);
     }
 
-    public function testRemoveNonexistentOAuthSilentlyProceeds() : void
+    public function testRemoveNonexistentOAuthSilentlyProceeds(): void
     {
         $this->commandBus->handle(new RemoveOAuth(OAuthId::generate()));
     }

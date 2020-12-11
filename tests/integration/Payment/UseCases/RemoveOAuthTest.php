@@ -20,19 +20,16 @@ use Stubs\OAuthsAccessCheckerStub;
 
 final class RemoveOAuthTest extends IntegrationTest
 {
-    /** @var IGoogleRepository */
-    private $repository;
+    private IGoogleRepository $repository;
 
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
-    /** @var RemoveOAuthHandler */
-    private $handler;
+    private RemoveOAuthHandler $handler;
 
     /**
      * @return string[]
      */
-    protected function getTestedAggregateRoots() : array
+    protected function getTestedAggregateRoots(): array
     {
         return [
             OAuth::class,
@@ -40,7 +37,7 @@ final class RemoveOAuthTest extends IntegrationTest
         ];
     }
 
-    protected function _before() : void
+    protected function _before(): void
     {
         $this->tester->useConfigFiles([__DIR__ . '/RemoveOAuthTest.neon']);
         parent::_before();
@@ -50,7 +47,7 @@ final class RemoveOAuthTest extends IntegrationTest
         $this->handler    = $this->tester->grabService(RemoveOAuthHandler::class);
     }
 
-    public function test() : void
+    public function test(): void
     {
         $oAuth = OAuth::create(new UnitId(123), 'code-xxx', 'test@hospodareni.loc');
         $this->repository->save($oAuth);

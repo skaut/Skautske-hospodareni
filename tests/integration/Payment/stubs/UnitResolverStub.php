@@ -7,9 +7,9 @@ namespace Model\Payment;
 class UnitResolverStub implements IUnitResolver
 {
     /** @var int[] */
-    private $officialUnits = [];
+    private array $officialUnits = [];
 
-    public function getOfficialUnitId(int $unitId) : int
+    public function getOfficialUnitId(int $unitId): int
     {
         return $this->officialUnits[$unitId];
     }
@@ -17,7 +17,7 @@ class UnitResolverStub implements IUnitResolver
     /**
      * @param int[] $officialUnits
      */
-    public function setOfficialUnits(array $officialUnits) : void
+    public function setOfficialUnits(array $officialUnits): void
     {
         $this->officialUnits = $officialUnits;
     }

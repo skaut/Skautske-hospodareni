@@ -11,7 +11,7 @@ use VCR\VCR;
 
 final class UnitRepositoryTest extends SkautisTest
 {
-    public function testFindThrowsExceptionIfUnitDoesNotExist() : void
+    public function testFindThrowsExceptionIfUnitDoesNotExist(): void
     {
         VCR::insertCassette('UnitRepository/find.json');
 
@@ -20,7 +20,7 @@ final class UnitRepositoryTest extends SkautisTest
         $this->getRepository()->find(0);
     }
 
-    public function testFindReturnsCorrectUnitInstance() : void
+    public function testFindReturnsCorrectUnitInstance(): void
     {
         VCR::insertCassette('UnitRepository/find_nonexistent.json');
 
@@ -29,7 +29,7 @@ final class UnitRepositoryTest extends SkautisTest
         self::assertUnitMatchesExpectedData($unit);
     }
 
-    public function testFindByParent() : void
+    public function testFindByParent(): void
     {
         VCR::insertCassette('UnitRepository/findByParent.json');
 
@@ -38,21 +38,21 @@ final class UnitRepositoryTest extends SkautisTest
         self::assertUnitMatchesExpectedData($units[0]);
     }
 
-    public function testFindByParentReturnsEmptyListIfNothingIsReturned() : void
+    public function testFindByParentReturnsEmptyListIfNothingIsReturned(): void
     {
         VCR::insertCassette('UnitRepository/findByParent_empty.json');
 
         self::assertSame([], $this->getRepository()->findByParent(0));
     }
 
-    private function getRepository() : UnitRepository
+    private function getRepository(): UnitRepository
     {
         $skautis = $this->createSkautis('c33aa563-68eb-4697-9834-ec2eb56d17d1');
 
         return new UnitRepository($skautis->getWebService('org'));
     }
 
-    private static function assertUnitMatchesExpectedData(Unit $unit) : void
+    private static function assertUnitMatchesExpectedData(Unit $unit): void
     {
         self::assertSame(27266, $unit->getId());
         self::assertSame('621.66 - Sinovo středisko', $unit->getSortName());

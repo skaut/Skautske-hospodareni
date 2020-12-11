@@ -13,7 +13,7 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 
 class CreateCashbookHandlerTest extends Unit
 {
-    public function test() : void
+    public function test(): void
     {
         $type       = Cashbook\CashbookType::get(Cashbook\CashbookType::CAMP);
         $cashbookId = Cashbook\CashbookId::generate();

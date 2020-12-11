@@ -9,24 +9,24 @@ use Doctrine\ORM\EntityManager;
 use IntegrationTest;
 use Model\Logger\Log\Type;
 use Model\Logger\LogEntry;
+
 use function array_merge;
 
 final class LogEntryRepositoryTest extends IntegrationTest
 {
     private const TABLE = 'log';
 
-    /** @var LogEntryRepository */
-    private $repository;
+    private LogEntryRepository $repository;
 
     /**
      * @return string[]
      */
-    public function getTestedAggregateRoots() : array
+    public function getTestedAggregateRoots(): array
     {
         return [LogEntry::class];
     }
 
-    protected function _before() : void
+    protected function _before(): void
     {
         parent::_before();
         $this->repository = new LogEntryRepository($this->tester->grabService(EntityManager::class));
@@ -35,7 +35,7 @@ final class LogEntryRepositoryTest extends IntegrationTest
     /**
      * @dataProvider dataTypeIds
      */
-    public function testSave(?int $typeId) : void
+    public function testSave(?int $typeId): void
     {
         $row = [
             'unitId' => 15,
@@ -60,7 +60,7 @@ final class LogEntryRepositoryTest extends IntegrationTest
         $this->tester->seeInDatabase(self::TABLE, $row);
     }
 
-    public function testFindAllByTypeId() : void
+    public function testFindAllByTypeId(): void
     {
         $rows = [
             [
@@ -109,7 +109,7 @@ final class LogEntryRepositoryTest extends IntegrationTest
     /**
      * @return int[][]
      */
-    public function dataTypeIds() : array
+    public function dataTypeIds(): array
     {
         return [
             [15],

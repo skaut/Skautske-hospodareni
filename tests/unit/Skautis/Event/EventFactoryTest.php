@@ -13,7 +13,7 @@ use stdClass;
 
 final class EventFactoryTest extends Unit
 {
-    public function testDraftEventCreation() : void
+    public function testDraftEventCreation(): void
     {
         $factory = new EventFactory();
         $event   = $factory->create($this->getDraftEvent());
@@ -23,7 +23,7 @@ final class EventFactoryTest extends Unit
         $this->assertTrue($event->getEndDate() instanceof Date);
     }
 
-    public function testClosedEventCreation() : void
+    public function testClosedEventCreation(): void
     {
         $factory = new EventFactory();
         $event   = $factory->create($this->getClosedEvent());
@@ -31,10 +31,10 @@ final class EventFactoryTest extends Unit
         $this->assertEquals(Date::createFromDate(2019, 9, 3), $event->getDateClosed());
     }
 
-    private function getDraftEvent() : stdClass
+    private function getDraftEvent(): stdClass
     {
         return (object) [
-            'ID_Login'=>'00000000-0000-0000-0000-000000000000',
+            'ID_Login' => '00000000-0000-0000-0000-000000000000',
             'ID' => 1402,
             'ID_Group' => 770448,
             'ID_EventType' => 'general',
@@ -77,7 +77,7 @@ final class EventFactoryTest extends Unit
         ];
     }
 
-    private function getClosedEvent() : stdClass
+    private function getClosedEvent(): stdClass
     {
         return (object) [
             'ID_Login' => '00000000-0000-0000-0000-000000000000',

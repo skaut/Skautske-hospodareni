@@ -13,7 +13,7 @@ use Model\Unit\Unit;
 
 class VehicleTest extends \Codeception\Test\Unit
 {
-    public function testCreateWithSubunit() : void
+    public function testCreateWithSubunit(): void
     {
         $unit     = m::mock(Unit::class, ['getId' => 10]);
         $subunit  = m::mock(Unit::class, ['getId' => 20]);
@@ -25,7 +25,7 @@ class VehicleTest extends \Codeception\Test\Unit
         $this->assertTrue($metadata->equals($vehicle->getMetadata()));
     }
 
-    public function testAddRoadworthyScan() : void
+    public function testAddRoadworthyScan(): void
     {
         $unit    = m::mock(Unit::class, ['getId' => 10]);
         $vehicle = new Vehicle('Test', $unit, null, '333-333', 2, new Metadata(new DateTimeImmutable(), 'FM'));
@@ -39,7 +39,7 @@ class VehicleTest extends \Codeception\Test\Unit
         $this->assertSame($path, $roadworthyScans[0]->getFilePath());
     }
 
-    public function testRemoveRoadworthyScanThrowsExceptionIfScanDoesNotExist() : void
+    public function testRemoveRoadworthyScanThrowsExceptionIfScanDoesNotExist(): void
     {
         $unit    = m::mock(Unit::class, ['getId' => 10]);
         $vehicle = new Vehicle('Test', $unit, null, '333-333', 2, new Metadata(new DateTimeImmutable(), 'FM'));
@@ -49,7 +49,7 @@ class VehicleTest extends \Codeception\Test\Unit
         $vehicle->removeRoadworthyScan($this->getFilePath('roadworthy.jpg'));
     }
 
-    public function testRemoveRoadworthyScan() : void
+    public function testRemoveRoadworthyScan(): void
     {
         $unit    = m::mock(Unit::class, ['getId' => 10]);
         $vehicle = new Vehicle('Test', $unit, null, '333-333', 2, new Metadata(new DateTimeImmutable(), 'FM'));
@@ -61,7 +61,7 @@ class VehicleTest extends \Codeception\Test\Unit
         $this->assertCount(0, $vehicle->getRoadworthyScans());
     }
 
-    private function getFilePath(string $fileName) : FilePath
+    private function getFilePath(string $fileName): FilePath
     {
         return FilePath::generate('test', $fileName);
     }

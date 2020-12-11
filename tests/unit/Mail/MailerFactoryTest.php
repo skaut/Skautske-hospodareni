@@ -14,7 +14,7 @@ use Nette\Mail\IMailer;
 
 class MailerFactoryTest extends Unit
 {
-    public function testInDisabledModeReturnsDebugMailer() : void
+    public function testInDisabledModeReturnsDebugMailer(): void
     {
         $googleService = m::mock(GoogleService::class);
         $mailer        = m::mock(IMailer::class);
@@ -23,7 +23,7 @@ class MailerFactoryTest extends Unit
         $this->assertSame($mailer, $factory->create($this->getConfig()));
     }
 
-    public function testInEnabledModeReturnsSmtpMailer() : void
+    public function testInEnabledModeReturnsSmtpMailer(): void
     {
         $googleService = m::mock(GoogleService::class, [
             'getClient' => m::mock(Google_Client::class, [
@@ -37,7 +37,7 @@ class MailerFactoryTest extends Unit
         $this->assertInstanceOf(OAuthMailer::class, $factory->create($this->getConfig()));
     }
 
-    private function getConfig() : OAuth
+    private function getConfig(): OAuth
     {
         $mock = m::mock(OAuth::class);
         $mock->shouldReceive(['getToken' => 'XXX']);

@@ -14,7 +14,7 @@ use Model\Common\UnitId;
 
 final class MemberNamesQueryHandlerTest extends Unit
 {
-    public function testOnlyMembersWithSameAgeOrOlderAreReturned() : void
+    public function testOnlyMembersWithSameAgeOrOlderAreReturned(): void
     {
         $unitId = new UnitId(1);
 

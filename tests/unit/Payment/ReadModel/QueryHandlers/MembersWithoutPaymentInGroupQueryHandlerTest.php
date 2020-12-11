@@ -15,7 +15,7 @@ use Model\PaymentService;
 
 final class MembersWithoutPaymentInGroupQueryHandlerTest extends Unit
 {
-    public function testMembersWithPaymentAreNotReturned() : void
+    public function testMembersWithPaymentAreNotReturned(): void
     {
         $unitId  = new UnitId(1);
         $groupId = 5;

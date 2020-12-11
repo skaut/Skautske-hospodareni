@@ -20,7 +20,7 @@ final class EventParticipantsWithoutPaymentQueryHandlerTest extends Unit
     private const GROUP_ID = 10;
     private const EVENT_ID = 50;
 
-    public function test() : void
+    public function test(): void
     {
         $paymentService = Mockery::mock(PaymentService::class);
         $paymentService->shouldReceive('getPersonsWithActivePayment')
@@ -35,7 +35,7 @@ final class EventParticipantsWithoutPaymentQueryHandlerTest extends Unit
         $queryBus = Mockery::mock(QueryBus::class);
         $queryBus->shouldReceive('handle')
             ->once()
-            ->withArgs(static function (EventParticipantListQuery $query) : bool {
+            ->withArgs(static function (EventParticipantListQuery $query): bool {
                 return $query->getEventId()->toInt() === self::EVENT_ID;
             })->andReturn([
                 Mockery::mock(Participant::class, ['getPersonId' => 1]),
@@ -56,7 +56,7 @@ final class EventParticipantsWithoutPaymentQueryHandlerTest extends Unit
     /**
      * @dataProvider dataInvalidSkautisEntities
      */
-    public function testThrowsExceptionIfGroupIsNotEventGroup(?Group\SkautisEntity $skautisEntity) : void
+    public function testThrowsExceptionIfGroupIsNotEventGroup(?Group\SkautisEntity $skautisEntity): void
     {
         $handler = new EventParticipantsWithoutPaymentQueryHandler(
             $this->mockGroupRepository($skautisEntity),
@@ -72,7 +72,7 @@ final class EventParticipantsWithoutPaymentQueryHandlerTest extends Unit
     /**
      * @return (SkautisEntity|null)[][]
      */
-    public static function dataInvalidSkautisEntities() : array
+    public static function dataInvalidSkautisEntities(): array
     {
         return [
             [new Group\SkautisEntity(10, Group\Type::get(Group\Type::CAMP))],
@@ -80,7 +80,7 @@ final class EventParticipantsWithoutPaymentQueryHandlerTest extends Unit
         ];
     }
 
-    private function mockGroupRepository(?Group\SkautisEntity $skautisEntity) : IGroupRepository
+    private function mockGroupRepository(?Group\SkautisEntity $skautisEntity): IGroupRepository
     {
         $groups = Mockery::mock(IGroupRepository::class);
         $groups->shouldReceive('find')

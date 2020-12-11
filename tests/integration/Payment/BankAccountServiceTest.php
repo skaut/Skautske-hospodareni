@@ -18,19 +18,15 @@ use Stubs\OAuthsAccessCheckerStub;
 
 class BankAccountServiceTest extends IntegrationTest
 {
-    /** @var BankAccountService */
-    private $bankAccountService;
+    private BankAccountService $bankAccountService;
 
-    /** @var IBankAccountRepository */
-    private $bankAccounts;
+    private IBankAccountRepository $bankAccounts;
 
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
-    /** @var UnitResolverStub */
-    private $unitResolver;
+    private UnitResolverStub $unitResolver;
 
-    protected function _before() : void
+    protected function _before(): void
     {
         $this->tester->useConfigFiles(['Payment/BankAccountServiceTest.neon']);
         parent::_before();
@@ -43,7 +39,7 @@ class BankAccountServiceTest extends IntegrationTest
     /**
      * @return string[]
      */
-    public function getTestedAggregateRoots() : array
+    public function getTestedAggregateRoots(): array
     {
         return [
             BankAccount::class,
@@ -51,7 +47,7 @@ class BankAccountServiceTest extends IntegrationTest
         ];
     }
 
-    public function testDisallowingBankAccountForSubunitsCascadesToGroups() : void
+    public function testDisallowingBankAccountForSubunitsCascadesToGroups(): void
     {
         $this->unitResolver->setOfficialUnits([
             5 => 10,
@@ -76,7 +72,7 @@ class BankAccountServiceTest extends IntegrationTest
         $this->assertSame(1, $group3->getBankAccountId());
     }
 
-    private function createBankAccount() : BankAccount
+    private function createBankAccount(): BankAccount
     {
         return new BankAccount(
             5, // official id is resolved to 10
@@ -88,7 +84,7 @@ class BankAccountServiceTest extends IntegrationTest
         );
     }
 
-    private function addGroup(int $unitId, BankAccount $account) : void
+    private function addGroup(int $unitId, BankAccount $account): void
     {
         $paymentDefaults = new Group\PaymentDefaults(null, null, null, null);
         $emails          = Helpers::createEmails();

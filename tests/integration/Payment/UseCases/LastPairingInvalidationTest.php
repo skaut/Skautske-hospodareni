@@ -21,16 +21,14 @@ final class LastPairingInvalidationTest extends IntegrationTest
     private const UNIT_ID         = 101;
     private const ORIGINAL_AMOUNT = 200;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var IGroupRepository */
-    private $groupRepository;
+    private IGroupRepository $groupRepository;
 
     /**
      * @return string[]
      */
-    public function getTestedAggregateRoots() : array
+    public function getTestedAggregateRoots(): array
     {
         return [
             BankAccount::class,
@@ -39,7 +37,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
         ];
     }
 
-    protected function _before() : void
+    protected function _before(): void
     {
         $this->tester->useConfigFiles([__DIR__ . '/LastPairingInvalidationTest.neon']);
 
@@ -51,7 +49,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
         $this->groupRepository = $this->tester->grabService(IGroupRepository::class);
     }
 
-    public function testLastPairingIsInvalidatedWhenNewPaymentIsCreated() : void
+    public function testLastPairingIsInvalidatedWhenNewPaymentIsCreated(): void
     {
         $this->createBankAccount();
         $this->createGroupWithInitialPayment(new VariableSymbol('123'));
@@ -64,7 +62,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
         $this->assertGroupHasEmptyLastPairing();
     }
 
-    public function testLastPairingIsInvalidatedWhenPaymentAmountIsChanged() : void
+    public function testLastPairingIsInvalidatedWhenPaymentAmountIsChanged(): void
     {
         $originalVariableSymbol = new VariableSymbol('123');
 
@@ -88,7 +86,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
         $this->assertGroupHasEmptyLastPairing();
     }
 
-    public function testLastPairingIsInvalidatedWhenPaymentVariableSymbolIsChanged() : void
+    public function testLastPairingIsInvalidatedWhenPaymentVariableSymbolIsChanged(): void
     {
         $originalVariableSymbol = new VariableSymbol('123');
 
@@ -112,7 +110,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
         $this->assertGroupHasEmptyLastPairing();
     }
 
-    public function testLastPairingIsNotInvalidatedWhenPaymentVariableSymbolIsRemoved() : void
+    public function testLastPairingIsNotInvalidatedWhenPaymentVariableSymbolIsRemoved(): void
     {
         $this->createBankAccount();
         $this->createGroupWithInitialPayment(new VariableSymbol('101'));
@@ -134,7 +132,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
         $this->assertGroupHasLastPairing();
     }
 
-    public function testLastPairingIsNotInvalidatedWhenAmountOfPaymentWithoutVariableSymbolIsChanged() : void
+    public function testLastPairingIsNotInvalidatedWhenAmountOfPaymentWithoutVariableSymbolIsChanged(): void
     {
         $originalVariableSymbol = null;
 
@@ -158,12 +156,12 @@ final class LastPairingInvalidationTest extends IntegrationTest
         $this->assertGroupHasLastPairing();
     }
 
-    private function pairPayments() : void
+    private function pairPayments(): void
     {
         $this->tester->grabService(BankService::class)->pairAllGroups([1]);
     }
 
-    private function createBankAccount() : void
+    private function createBankAccount(): void
     {
         $this->commandBus->handle(
             new CreateBankAccount(
@@ -175,7 +173,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
         );
     }
 
-    private function createGroupWithInitialPayment(?VariableSymbol $variableSymbol) : void
+    private function createGroupWithInitialPayment(?VariableSymbol $variableSymbol): void
     {
         $this->groupRepository->save(
             new Group(
@@ -223,12 +221,12 @@ final class LastPairingInvalidationTest extends IntegrationTest
         );
     }
 
-    private function assertGroupHasEmptyLastPairing() : void
+    private function assertGroupHasEmptyLastPairing(): void
     {
         $this->assertNull($this->groupRepository->find(1)->getLastPairing());
     }
 
-    private function assertGroupHasLastPairing() : void
+    private function assertGroupHasLastPairing(): void
     {
         $this->assertNotNull($this->groupRepository->find(1)->getLastPairing());
     }

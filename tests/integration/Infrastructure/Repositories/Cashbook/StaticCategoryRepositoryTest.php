@@ -9,6 +9,7 @@ use eGen\MessageBus\Bus\EventBus;
 use IntegrationTest;
 use Model\Cashbook\Category;
 use Model\Cashbook\ObjectType;
+
 use function array_map;
 
 class StaticCategoryRepositoryTest extends IntegrationTest
@@ -16,10 +17,9 @@ class StaticCategoryRepositoryTest extends IntegrationTest
     private const TABLE_NAME   = 'ac_chitsCategory';
     private const OBJECT_TABLE = 'ac_chitsCategory_object';
 
-    /** @var StaticCategoryRepository */
-    private $repository;
+    private StaticCategoryRepository $repository;
 
-    protected function _before() : void
+    protected function _before(): void
     {
         $this->tester->useConfigFiles(['config/doctrine.neon']);
         parent::_before();
@@ -29,12 +29,12 @@ class StaticCategoryRepositoryTest extends IntegrationTest
     /**
      * @return string[]
      */
-    protected function getTestedAggregateRoots() : array
+    protected function getTestedAggregateRoots(): array
     {
         return [Category::class];
     }
 
-    public function testFindByObjectType() : void
+    public function testFindByObjectType(): void
     {
         $this->tester->haveInDatabase(self::TABLE_NAME, [
             'label' => 'Category 1',

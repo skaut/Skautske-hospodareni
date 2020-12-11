@@ -21,10 +21,9 @@ class CashbookRepositoryTest extends IntegrationTest
     private const CHIT_TABLE      = 'ac_chits';
     private const CHIT_ITEM_TABLE = 'ac_chits_item';
 
-    /** @var CashbookRepository */
-    private $repository;
+    private CashbookRepository $repository;
 
-    public function _before() : void
+    public function _before(): void
     {
         parent::_before();
         $this->repository = new CashbookRepository(
@@ -36,12 +35,12 @@ class CashbookRepositoryTest extends IntegrationTest
     /**
      * @return string[]
      */
-    public function getTestedAggregateRoots() : array
+    public function getTestedAggregateRoots(): array
     {
         return [Cashbook::class];
     }
 
-    public function testFindEmptyCashbook() : void
+    public function testFindEmptyCashbook(): void
     {
         $id = CashbookId::generate();
         $this->tester->haveInDatabase(self::TABLE, ['id' => $id->toString(), 'type' => Cashbook\CashbookType::EVENT, 'note' => '']);
@@ -52,14 +51,14 @@ class CashbookRepositoryTest extends IntegrationTest
         $this->assertSame(Cashbook\CashbookType::get(Cashbook\CashbookType::EVENT), $cashbook->getType());
     }
 
-    public function testFindNotExistingCashbookThrowsException() : void
+    public function testFindNotExistingCashbookThrowsException(): void
     {
         $this->expectException(CashbookNotFound::class);
 
         $this->repository->find(CashbookId::generate());
     }
 
-    public function testSaveCashbookWithChits() : void
+    public function testSaveCashbookWithChits(): void
     {
         $cashbookId = CashbookId::generate();
         $chit       = [
@@ -108,7 +107,7 @@ class CashbookRepositoryTest extends IntegrationTest
     /**
      * @see https://github.com/skaut/Skautske-hospodareni/issues/914
      */
-    public function testOrphanedChitItemsAreRemoved() : void
+    public function testOrphanedChitItemsAreRemoved(): void
     {
         $cashbook      = new Cashbook(CashbookId::generate(), Cashbook\CashbookType::get(Cashbook\CashbookType::CAMP));
         $body          = new ChitBody(null, Date::today(), null);

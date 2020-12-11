@@ -8,7 +8,7 @@ use Codeception\Test\Unit;
 
 final class NotificationsCollectorTest extends Unit
 {
-    public function testAddErrorNotification() : void
+    public function testAddErrorNotification(): void
     {
         $collector = new NotificationsCollector();
 
@@ -25,7 +25,7 @@ final class NotificationsCollectorTest extends Unit
         );
     }
 
-    public function testPopNotificationsClearsQueue() : void
+    public function testPopNotificationsClearsQueue(): void
     {
         $collector = new NotificationsCollector();
         $collector->error('test');

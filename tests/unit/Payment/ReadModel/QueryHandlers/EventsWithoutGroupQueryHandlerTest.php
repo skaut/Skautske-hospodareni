@@ -20,12 +20,12 @@ final class EventsWithoutGroupQueryHandlerTest extends Unit
 {
     private const YEAR = 2018;
 
-    public function test() : void
+    public function test(): void
     {
         $queryBus = Mockery::mock(QueryBus::class);
         $queryBus->shouldReceive('handle')
             ->once()
-            ->withArgs(static function (EventListQuery $query) : bool {
+            ->withArgs(static function (EventListQuery $query): bool {
                 return $query->getYear() === self::YEAR;
             })
             ->andReturn([
@@ -36,7 +36,7 @@ final class EventsWithoutGroupQueryHandlerTest extends Unit
         $groups = Mockery::mock(IGroupRepository::class);
         $groups->shouldReceive('findBySkautisEntities')
             ->once()
-            ->withArgs(static function (SkautisEntity $first, SkautisEntity $second) : bool {
+            ->withArgs(static function (SkautisEntity $first, SkautisEntity $second): bool {
                 return $first->getType()->equalsValue(Type::EVENT)
                     && $second->getType()->equalsValue(Type::EVENT)
                     && $first->getId() === 4

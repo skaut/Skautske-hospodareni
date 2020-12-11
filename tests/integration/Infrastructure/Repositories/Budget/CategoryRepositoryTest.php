@@ -11,10 +11,9 @@ use Model\Cashbook\Operation;
 
 class CategoryRepositoryTest extends IntegrationTest
 {
-    /** @var CategoryRepository */
-    private $repository;
+    private CategoryRepository $repository;
 
-    public function _before() : void
+    public function _before(): void
     {
         parent::_before();
         $this->repository = new CategoryRepository($this->tester->grabService(EntityManager::class));
@@ -23,12 +22,12 @@ class CategoryRepositoryTest extends IntegrationTest
     /**
      * @return string[]
      */
-    public function getTestedAggregateRoots() : array
+    public function getTestedAggregateRoots(): array
     {
         return [Category::class];
     }
 
-    public function testSaveRootCategory() : void
+    public function testSaveRootCategory(): void
     {
         $category = new Category(1, 'P1 root', Operation::INCOME(), null, 0, 2019);
 
@@ -42,7 +41,7 @@ class CategoryRepositoryTest extends IntegrationTest
         $this->assertSame($category->getValue(), $category2->getValue());
     }
 
-    public function testSaveCategoryTree() : void
+    public function testSaveCategoryTree(): void
     {
         $categoryRoot = new Category(1, 'P1 root', Operation::INCOME(), null, 0, 2019);
         $categoryLeaf = new Category(2, 'P1.2 leaf', Operation::INCOME(), $categoryRoot, 0, 2019);

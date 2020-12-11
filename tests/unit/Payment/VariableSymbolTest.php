@@ -9,19 +9,19 @@ use InvalidArgumentException;
 
 class VariableSymbolTest extends Unit
 {
-    public function testToStringReturnsValue() : void
+    public function testToStringReturnsValue(): void
     {
         $this->assertSame('123', (string) new VariableSymbol('123'));
     }
 
-    public function testVariableSymbolCantBeLongerThanTenSymbols() : void
+    public function testVariableSymbolCantBeLongerThanTenSymbols(): void
     {
         $this->expectException(InvalidArgumentException::class);
 
         new VariableSymbol('12345678910');
     }
 
-    public function testVariableSymbolCantBeEmpty() : void
+    public function testVariableSymbolCantBeEmpty(): void
     {
         $this->expectException(InvalidArgumentException::class);
 
@@ -31,7 +31,7 @@ class VariableSymbolTest extends Unit
     /**
      * @dataProvider getVariableSymbolsStartingWithZero
      */
-    public function testVariableSymbolCantStartWithZero(string $symbol) : void
+    public function testVariableSymbolCantStartWithZero(string $symbol): void
     {
         $this->expectException(InvalidArgumentException::class);
 
@@ -41,7 +41,7 @@ class VariableSymbolTest extends Unit
     /**
      * @dataProvider getNonNumericSymbol
      */
-    public function testVariableSymbolCantContainNonNumericSymbols(string $data) : void
+    public function testVariableSymbolCantContainNonNumericSymbols(string $data): void
     {
         $this->expectException(InvalidArgumentException::class);
 
@@ -51,7 +51,7 @@ class VariableSymbolTest extends Unit
     /**
      * @return string[][]
      */
-    public function getNonNumericSymbol() : array
+    public function getNonNumericSymbol(): array
     {
         return [
             ['a'],
@@ -64,7 +64,7 @@ class VariableSymbolTest extends Unit
     /**
      * @return string[][]
      */
-    public function getVariableSymbolsStartingWithZero() : array
+    public function getVariableSymbolsStartingWithZero(): array
     {
         return [
             ['0123'],
@@ -72,7 +72,7 @@ class VariableSymbolTest extends Unit
         ];
     }
 
-    public function testAreEqual() : void
+    public function testAreEqual(): void
     {
         $first  = new VariableSymbol('123');
         $second = new VariableSymbol('123');
@@ -83,7 +83,7 @@ class VariableSymbolTest extends Unit
         );
     }
 
-    public function areNotEqual(?VariableSymbol $first, ?VariableSymbol $second) : void
+    public function areNotEqual(?VariableSymbol $first, ?VariableSymbol $second): void
     {
         $this->assertFalse(VariableSymbol::areEqual($first, $second));
     }
@@ -91,7 +91,7 @@ class VariableSymbolTest extends Unit
     /**
      * @return mixed[]
      */
-    public function getNotEqualPairs() : array
+    public function getNotEqualPairs(): array
     {
         return [
             [new VariableSymbol('123'), new VariableSymbol('456')],
@@ -100,7 +100,7 @@ class VariableSymbolTest extends Unit
         ];
     }
 
-    public function testIntValue() : void
+    public function testIntValue(): void
     {
         $variableSymbol = new VariableSymbol('123');
 

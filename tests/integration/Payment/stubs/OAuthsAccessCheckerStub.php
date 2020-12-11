@@ -12,7 +12,7 @@ final class OAuthsAccessCheckerStub implements IOAuthAccessChecker
     /**
      * @param int[] $unitIds
      */
-    public function allUnitsHaveAccessToOAuth(array $unitIds, OAuthId $oAuthId) : bool
+    public function allUnitsHaveAccessToOAuth(array $unitIds, OAuthId $oAuthId): bool
     {
         return true;
     }

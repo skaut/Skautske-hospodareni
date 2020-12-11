@@ -13,13 +13,13 @@ use Money\Money;
 
 class AccountancyHelpersTest extends Unit
 {
-    public function testDateRangeOnlyOneArgument() : void
+    public function testDateRangeOnlyOneArgument(): void
     {
         $this->expectException(InvalidArgumentException::class);
         AccountancyHelpers::dateRange([new Date('2019-08-01')]);
     }
 
-    public function testDateRangeToMuchArguments() : void
+    public function testDateRangeToMuchArguments(): void
     {
         $this->expectException(InvalidArgumentException::class);
         AccountancyHelpers::dateRange([
@@ -32,7 +32,7 @@ class AccountancyHelpersTest extends Unit
     /**
      * @return mixed[]
      */
-    public function getDateRanges() : array
+    public function getDateRanges(): array
     {
         return [
             [new Date('2019-08-01'), '1. 8. 2019'],
@@ -45,7 +45,7 @@ class AccountancyHelpersTest extends Unit
     /**
      * @dataProvider getDateRanges
      */
-    public function testDateRange(Date $end, string $expectedResult) : void
+    public function testDateRange(Date $end, string $expectedResult): void
     {
         $res = AccountancyHelpers::dateRange([
             new Date('2019-08-01'),
@@ -57,7 +57,7 @@ class AccountancyHelpersTest extends Unit
     /**
      * @return mixed[]
      */
-    public function getPrices() : array
+    public function getPrices(): array
     {
         return [
             [1.12, '1,12'],
@@ -76,7 +76,7 @@ class AccountancyHelpersTest extends Unit
      *
      * @dataProvider getPrices
      */
-    public function testPrice($price, string $expected) : void
+    public function testPrice($price, string $expected): void
     {
         $this->assertSame($expected, AccountancyHelpers::price($price));
     }
@@ -84,7 +84,7 @@ class AccountancyHelpersTest extends Unit
     /**
      * @return mixed[]
      */
-    public function getNumbers() : array
+    public function getNumbers(): array
     {
         return [
             [1, '1'],
@@ -100,18 +100,18 @@ class AccountancyHelpersTest extends Unit
      *
      * @dataProvider getNumbers
      */
-    public function testNum($number, string $expected) : void
+    public function testNum($number, string $expected): void
     {
         $this->assertSame($expected, AccountancyHelpers::num($number));
     }
 
-    public function testPostCode() : void
+    public function testPostCode(): void
     {
         $this->assertSame('110 00', AccountancyHelpers::postCode('A1 10FJV0 0'));
         $this->assertSame('moje psc', AccountancyHelpers::postCode('moje psc'));
     }
 
-    public function testPriceToString() : void
+    public function testPriceToString(): void
     {
         $this->assertSame('Jedna', AccountancyHelpers::priceToString(1.0));
         $this->assertSame('Dvacetsedm', AccountancyHelpers::priceToString(27.0));

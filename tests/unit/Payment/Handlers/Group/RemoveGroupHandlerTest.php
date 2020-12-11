@@ -13,7 +13,7 @@ use Model\Payment\Repositories\IGroupRepository;
 
 final class RemoveGroupHandlerTest extends Unit
 {
-    public function testAttemptToRemoveOpenGroupThrowsException() : void
+    public function testAttemptToRemoveOpenGroupThrowsException(): void
     {
         $groupRepository = m::mock(IGroupRepository::class);
 
@@ -34,7 +34,7 @@ final class RemoveGroupHandlerTest extends Unit
         $handler(new RemoveGroup($groupId));
     }
 
-    public function testRemovalOfGroupRaisesEvent() : void
+    public function testRemovalOfGroupRaisesEvent(): void
     {
         $groupRepository = m::mock(IGroupRepository::class);
 

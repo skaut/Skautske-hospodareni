@@ -16,7 +16,7 @@ final class PairedPaymentsQueryHandlerTest extends IntegrationTest
     /**
      * @return string[]
      */
-    protected function getTestedAggregateRoots() : array
+    protected function getTestedAggregateRoots(): array
     {
         return [
             Payment::class,
@@ -24,7 +24,7 @@ final class PairedPaymentsQueryHandlerTest extends IntegrationTest
         ];
     }
 
-    public function testHandlerReturnsCorrectData() : void
+    public function testHandlerReturnsCorrectData(): void
     {
         $group = [
             'label' => 'Test',
@@ -61,7 +61,7 @@ final class PairedPaymentsQueryHandlerTest extends IntegrationTest
         $this->assertSame(5, $payments[1]->getId());
     }
 
-    private function insertPaymentToDb(int $groupId, ?string $transactionId, DateTimeImmutable $closedAt) : void
+    private function insertPaymentToDb(int $groupId, ?string $transactionId, DateTimeImmutable $closedAt): void
     {
         $payment = [
             'name' => 'Test',

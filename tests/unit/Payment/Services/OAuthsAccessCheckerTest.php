@@ -14,12 +14,11 @@ use Model\Payment\UnitResolverStub;
 
 final class OAuthsAccessCheckerTest extends Unit
 {
-    /** @var UnitResolverStub */
-    private $unitResolver;
+    private UnitResolverStub $unitResolver;
 
     private OAuthId $oAuthId;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->unitResolver = new UnitResolverStub();
@@ -31,7 +30,7 @@ final class OAuthsAccessCheckerTest extends Unit
         $this->oAuthId = OAuthId::generate();
     }
 
-    public function testAtLeastOneUnitSameAsOwnerUnitGivesAccess() : void
+    public function testAtLeastOneUnitSameAsOwnerUnitGivesAccess(): void
     {
         $this->assertTrue(
             $this->createChecker(100)
@@ -39,7 +38,7 @@ final class OAuthsAccessCheckerTest extends Unit
         );
     }
 
-    public function testAtLeastOneChildUnitOfOwnerUnitGivesAccess() : void
+    public function testAtLeastOneChildUnitOfOwnerUnitGivesAccess(): void
     {
         $this->assertTrue(
             $this->createChecker(20)
@@ -47,7 +46,7 @@ final class OAuthsAccessCheckerTest extends Unit
         );
     }
 
-    public function testDifferentUnitHasNoAccess() : void
+    public function testDifferentUnitHasNoAccess(): void
     {
         $this->assertFalse(
             $this->createChecker(10)
@@ -55,7 +54,7 @@ final class OAuthsAccessCheckerTest extends Unit
         );
     }
 
-    private function createChecker(int $oAuthOwnerUnitId) : OAuthsAccessChecker
+    private function createChecker(int $oAuthOwnerUnitId): OAuthsAccessChecker
     {
         $repository = Mockery::mock(IGoogleRepository::class);
         $repository

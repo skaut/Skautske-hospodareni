@@ -9,7 +9,7 @@ use VCR\VCR;
 
 final class BankAccountImporterTest extends SkautisTest
 {
-    public function testImportReturnsEmptyListWhenUnitHasNoBankAccounts() : void
+    public function testImportReturnsEmptyListWhenUnitHasNoBankAccounts(): void
     {
         VCR::insertCassette('BankAccountImporter/import_empty.json');
         $skautis  = $this->createSkautis('349a8cc1-f893-4e08-927e-8ee4dab26c93');
@@ -20,7 +20,7 @@ final class BankAccountImporterTest extends SkautisTest
         self::assertCount(0, $accountNumbers);
     }
 
-    public function testImportReturnsAccountNumbers() : void
+    public function testImportReturnsAccountNumbers(): void
     {
         VCR::insertCassette('BankAccountImporter/import.json');
         $skautis  = $this->createSkautis('349a8cc1-f893-4e08-927e-8ee4dab26c93');

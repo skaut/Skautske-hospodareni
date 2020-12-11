@@ -11,12 +11,12 @@ use Model\Payment\Fio\IFioClient;
 class FioClientStub implements IFioClient
 {
     /** @var Transaction[] */
-    private $transactions = [];
+    private array $transactions = [];
 
     /**
      * @param Transaction[] $transactions
      */
-    public function setTransactions(array $transactions) : void
+    public function setTransactions(array $transactions): void
     {
         $this->transactions = $transactions;
     }
@@ -24,7 +24,7 @@ class FioClientStub implements IFioClient
     /**
      * @return Transaction[]
      */
-    public function getTransactions(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account) : array
+    public function getTransactions(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account): array
     {
         return $this->transactions;
     }

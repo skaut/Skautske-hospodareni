@@ -8,7 +8,7 @@ use Codeception\Test\Unit;
 
 class CashbookTypeTest extends Unit
 {
-    public function testTransferCategoriesBetweenAllTestsAreDefined() : void
+    public function testTransferCategoriesBetweenAllTestsAreDefined(): void
     {
         foreach (CashbookType::getAvailableValues() as $value) {
             $type = CashbookType::get($value);

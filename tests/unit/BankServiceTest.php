@@ -19,6 +19,7 @@ use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Payment\VariableSymbol;
+
 use function array_keys;
 use function array_map;
 use function count;
@@ -28,7 +29,7 @@ final class BankServiceTest extends Unit
     /**
      * @see https://github.com/skaut/Skautske-hospodareni/pull/508
      */
-    public function testPaymentIsPairedOnlyOnceForDuplicateTransactions() : void
+    public function testPaymentIsPairedOnlyOnceForDuplicateTransactions(): void
     {
         $groupId       = 123;
         $bankAccountId = 456;
@@ -77,7 +78,7 @@ final class BankServiceTest extends Unit
         $this->assertSame('František Maša', $transaction->getPayer());
     }
 
-    public function testPaymentIsPairedOnlyByJoinedAccount() : void
+    public function testPaymentIsPairedOnlyByJoinedAccount(): void
     {
         $groupId1       = 12;
         $bankAccountId1 = 159;
@@ -139,7 +140,7 @@ final class BankServiceTest extends Unit
     /**
      * @param BankAccount[] $bankAccounts
      */
-    public function mockBankAccountRepository(array $bankAccounts) : IBankAccountRepository
+    public function mockBankAccountRepository(array $bankAccounts): IBankAccountRepository
     {
         $repository = m::mock(IBankAccountRepository::class);
         foreach ($bankAccounts as $bankAccountId => $bankAccount) {
@@ -155,7 +156,7 @@ final class BankServiceTest extends Unit
     /**
      * @param Group[] $groups
      */
-    private function mockGroupRepository(array $groups) : IGroupRepository
+    private function mockGroupRepository(array $groups): IGroupRepository
     {
         $repository = m::mock(IGroupRepository::class);
         $repository->shouldReceive('findByIds')
@@ -167,7 +168,7 @@ final class BankServiceTest extends Unit
         return $repository;
     }
 
-    private function mockBankAccount(string $token) : BankAccount
+    private function mockBankAccount(string $token): BankAccount
     {
         return m::mock(BankAccount::class, ['getToken' => $token, 'getName' => 'ucet jednotky']);
     }
@@ -175,7 +176,7 @@ final class BankServiceTest extends Unit
     /**
      * @param Payment[] $paymentsByGroup
      */
-    private function mockPaymentRepository(array $paymentsByGroup) : IPaymentRepository
+    private function mockPaymentRepository(array $paymentsByGroup): IPaymentRepository
     {
         $repository = m::mock(IPaymentRepository::class);
         foreach ($paymentsByGroup as $groupId => $payments) {
@@ -184,12 +185,13 @@ final class BankServiceTest extends Unit
                 ->with([$groupId])
                 ->andReturn($payments);
         }
+
         $repository->shouldReceive('saveMany');
 
         return $repository;
     }
 
-    private function mockGroup(int $groupId, int $bankAccountId, DateTimeImmutable $lastPairing) : Group
+    private function mockGroup(int $groupId, int $bankAccountId, DateTimeImmutable $lastPairing): Group
     {
         return m::mock(Group::class, [
             'getId' => $groupId,

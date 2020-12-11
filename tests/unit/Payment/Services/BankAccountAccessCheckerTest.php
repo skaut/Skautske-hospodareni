@@ -16,10 +16,9 @@ use Model\Payment\UnitResolverStub;
 
 final class BankAccountAccessCheckerTest extends Unit
 {
-    /** @var UnitResolverStub */
-    private $unitResolver;
+    private UnitResolverStub $unitResolver;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->unitResolver = new UnitResolverStub();
@@ -35,7 +34,7 @@ final class BankAccountAccessCheckerTest extends Unit
     /**
      * @return mixed[][]
      */
-    public static function dataValidUnitsToKeepForBankAccount() : array
+    public static function dataValidUnitsToKeepForBankAccount(): array
     {
         return [
             [[20], false, 'official unit for account not allowed for subunits'],
@@ -49,7 +48,7 @@ final class BankAccountAccessCheckerTest extends Unit
      *
      * @dataProvider dataValidUnitsToKeepForBankAccount
      */
-    public function testValidUnitsToKeepForBankAccount(array $unitIds, bool $allowedForSubunits, string $message) : void
+    public function testValidUnitsToKeepForBankAccount(array $unitIds, bool $allowedForSubunits, string $message): void
     {
         $bankAccount = $this->createBankAccount(20, $allowedForSubunits);
 
@@ -71,7 +70,7 @@ final class BankAccountAccessCheckerTest extends Unit
     /**
      * @return mixed[][]
      */
-    public static function dataUnitsWithNoAccessToBankAccount() : array
+    public static function dataUnitsWithNoAccessToBankAccount(): array
     {
         return [
             [[20, 12], true, 'units with different official unit'],
@@ -88,7 +87,7 @@ final class BankAccountAccessCheckerTest extends Unit
         array $unitIds,
         bool $allowedForSubunits,
         string $message
-    ) : void {
+    ): void {
         $bankAccount = $this->createBankAccount(20, $allowedForSubunits);
 
         $bankAccountRepository = Mockery::mock(IBankAccountRepository::class);
@@ -106,7 +105,7 @@ final class BankAccountAccessCheckerTest extends Unit
         );
     }
 
-    public function testExceptionIsThrownIfBankAccountDoesNotExist() : void
+    public function testExceptionIsThrownIfBankAccountDoesNotExist(): void
     {
         $bankAccounts = Mockery::mock(IBankAccountRepository::class);
         $bankAccounts->shouldReceive('find')
@@ -122,7 +121,7 @@ final class BankAccountAccessCheckerTest extends Unit
     /**
      * @param int $unitIds
      */
-    private function createBankAccount(int $unitId, bool $allowedForSubunits) : BankAccount
+    private function createBankAccount(int $unitId, bool $allowedForSubunits): BankAccount
     {
         $accountNumber = Helpers::createAccountNumber();
 

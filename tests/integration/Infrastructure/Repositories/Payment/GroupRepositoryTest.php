@@ -15,6 +15,7 @@ use Model\Payment\EmailType;
 use Model\Payment\Group;
 use Model\Payment\GroupNotFound;
 use Model\Payment\VariableSymbol;
+
 use function array_map;
 use function sort;
 
@@ -34,21 +35,19 @@ class GroupRepositoryTest extends IntegrationTest
         'ks' => 123,
     ];
 
-    /** @var GroupRepository */
-    private $repository;
+    private GroupRepository $repository;
 
-    /** @var EventBus */
-    private $eventBus;
+    private EventBus $eventBus;
 
     /**
      * @return string[]
      */
-    public function getTestedAggregateRoots() : array
+    public function getTestedAggregateRoots(): array
     {
         return [Group::class];
     }
 
-    protected function _before() : void
+    protected function _before(): void
     {
         $this->tester->useConfigFiles(['config/doctrine.neon']);
         parent::_before();
@@ -57,14 +56,14 @@ class GroupRepositoryTest extends IntegrationTest
         $this->repository = new GroupRepository($this->entityManager, $this->eventBus);
     }
 
-    public function testFindNotSavedGroupThrowsException() : void
+    public function testFindNotSavedGroupThrowsException(): void
     {
         $this->expectException(GroupNotFound::class);
 
         $this->repository->find(10);
     }
 
-    public function testFind() : void
+    public function testFind(): void
     {
         $createdAt       = new DateTimeImmutable(self::ROW['created_at']);
         $lastPairing     = new DateTimeImmutable(self::ROW['last_pairing']);
@@ -128,7 +127,7 @@ class GroupRepositoryTest extends IntegrationTest
         $this->assertNull($group->getObject());
     }
 
-    public function testFindByUnits() : void
+    public function testFindByUnits(): void
     {
         $row = [
             'label' => 'Test',
@@ -160,7 +159,7 @@ class GroupRepositoryTest extends IntegrationTest
         $groups = $this->repository->findByUnits([10, 20], false);
 
         $groupIds = array_map(
-            static function (Group $group) : int {
+            static function (Group $group): int {
                 return $group->getId();
             },
             $groups
@@ -171,11 +170,11 @@ class GroupRepositoryTest extends IntegrationTest
         $this->assertSame([1, 3], $groupIds);
     }
 
-    public function testRemoveRemovesGroupFromDatabase() : void
+    public function testRemoveRemovesGroupFromDatabase(): void
     {
         $this->eventBus->shouldReceive('handle')
             ->once()
-            ->withArgs(static function (GroupWasRemoved $event) : bool {
+            ->withArgs(static function (GroupWasRemoved $event): bool {
                 return $event->getGroupId() === 1;
             });
 
@@ -217,7 +216,7 @@ class GroupRepositoryTest extends IntegrationTest
         $I->dontSeeInDatabase('pa_group_unit', ['group_id' => 1]);
     }
 
-    public function testFindBySkautisEntities() : void
+    public function testFindBySkautisEntities(): void
     {
         $I = $this->tester;
 
@@ -245,7 +244,7 @@ class GroupRepositoryTest extends IntegrationTest
         $this->assertSame(5, $groups[1]->getId());
     }
 
-    public function testGetBySkautisEntitiesWithoutArgumentReturnsEmptyArray() : void
+    public function testGetBySkautisEntitiesWithoutArgumentReturnsEmptyArray(): void
     {
         $this->assertSame([], $this->repository->findBySkautisEntities());
     }

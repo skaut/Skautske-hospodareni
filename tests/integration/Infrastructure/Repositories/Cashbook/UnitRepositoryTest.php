@@ -31,12 +31,12 @@ final class UnitRepositoryTest extends IntegrationTest
     /**
      * @return string[]
      */
-    protected function getTestedAggregateRoots() : array
+    protected function getTestedAggregateRoots(): array
     {
         return [Unit::class];
     }
 
-    public function testSaveAddsRowsToDatabase() : void
+    public function testSaveAddsRowsToDatabase(): void
     {
         $unit = new Unit(
             new UnitId(self::UNIT['id']),
@@ -51,14 +51,14 @@ final class UnitRepositoryTest extends IntegrationTest
         $this->tester->seeInDatabase('ac_unit_cashbooks', self::CASHBOOK);
     }
 
-    public function testFindMethodThrowsExceptionIfUnitDoesNotExist() : void
+    public function testFindMethodThrowsExceptionIfUnitDoesNotExist(): void
     {
         $this->expectException(UnitNotFound::class);
 
         $this->getRepository()->find(new UnitId(1));
     }
 
-    public function testFindReturnsCorrectlyHydratedAggregate() : void
+    public function testFindReturnsCorrectlyHydratedAggregate(): void
     {
         $this->tester->haveInDatabase('ac_units', self::UNIT);
         $this->tester->haveInDatabase('ac_unit_cashbooks', self::CASHBOOK);
@@ -72,7 +72,7 @@ final class UnitRepositoryTest extends IntegrationTest
         $this->assertSame(self::CASHBOOK['cashbook_id'], $unit->getCashbooks()[0]->getCashbookId()->toString());
     }
 
-    public function testFindByCashbookIdReturnsCorrectUnit() : void
+    public function testFindByCashbookIdReturnsCorrectUnit(): void
     {
         $this->tester->haveInDatabase('ac_units', self::UNIT);
         $this->tester->haveInDatabase('ac_unit_cashbooks', self::CASHBOOK);
@@ -82,14 +82,14 @@ final class UnitRepositoryTest extends IntegrationTest
         $this->assertSame(self::UNIT['id'], $unit->getId()->toInt());
     }
 
-    public function testFindByCashbookIdThrowsExceptionIfUnitIsNotFound() : void
+    public function testFindByCashbookIdThrowsExceptionIfUnitIsNotFound(): void
     {
         $this->expectException(UnitNotFound::class);
 
         $this->getRepository()->findByCashbookId(CashbookId::generate());
     }
 
-    public function testSaveDispatchesEvent() : void
+    public function testSaveDispatchesEvent(): void
     {
         $unit = new Unit(new UnitId(15), CashbookId::generate(), 2018);  // There is CashbookWasCreatedEvent for initial cashbook
         $unit->createCashbook(2019); // There is CashbookWasCreatedEvent
@@ -104,7 +104,7 @@ final class UnitRepositoryTest extends IntegrationTest
         $this->getRepository($eventBus)->save($unit);
     }
 
-    private function getRepository(?EventBus $eventBus = null) : UnitRepository
+    private function getRepository(?EventBus $eventBus = null): UnitRepository
     {
         return new UnitRepository($this->entityManager, $eventBus ?? new EventBus());
     }

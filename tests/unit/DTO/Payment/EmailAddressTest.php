@@ -12,7 +12,7 @@ class EmailAddressTest extends Unit
 {
     private const VALID_EMAIL = 'test@gmail.com';
 
-    public function testValidation() : void
+    public function testValidation(): void
     {
         $this->assertSame(self::VALID_EMAIL, (new EmailAddress(self::VALID_EMAIL))->getValue());
 
