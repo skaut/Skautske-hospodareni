@@ -8,18 +8,9 @@ use InvalidArgumentException;
 use Model\Common\UnitId;
 use Model\Google\Commands\SaveOAuth;
 use Model\Google\ReadModel\Queries\OAuthUrlQuery;
-use Model\Mail\Repositories\IGoogleRepository;
 
 class GooglePresenter extends BasePresenter
 {
-    private IGoogleRepository $googleRepository;
-
-    public function __construct(IGoogleRepository $googleRepository)
-    {
-        parent::__construct();
-        $this->googleRepository = $googleRepository;
-    }
-
     public function actionOAuth(): void
     {
         $this->redirectUrl($this->queryBus->handle(new OAuthUrlQuery()));
