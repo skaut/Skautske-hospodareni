@@ -19,8 +19,9 @@ class Version20170623193150 extends AbstractMigration
     /**
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      * @inject
+     * @var Skautis
      */
-    public Skautis $skautis;
+    public $skautis;
 
     public function up(Schema $schema): void
     {

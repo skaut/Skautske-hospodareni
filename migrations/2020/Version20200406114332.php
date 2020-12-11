@@ -9,12 +9,12 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20200406114332 extends AbstractMigration
 {
-    public function getDescription() : string
+    public function getDescription(): string
     {
         return 'Map Money objects as integers (amount of cents) in database';
     }
 
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql('UPDATE tc_commands SET fuel_price = fuel_price * 100, amortization = amortization * 100');
         $this->addSql(<<<'SQL'
@@ -36,7 +36,7 @@ final class Version20200406114332 extends AbstractMigration
         SQL);
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql(<<<'SQL'
             ALTER TABLE ac_participants

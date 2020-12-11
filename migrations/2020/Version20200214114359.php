@@ -9,12 +9,12 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20200214114359 extends AbstractMigration
 {
-    public function getDescription() : string
+    public function getDescription(): string
     {
         return 'Unify mapping between Doctrine and ac_* tables';
     }
 
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql('DROP INDEX participantId_event_type ON ac_participants');
         $this->addSql(<<<SQL
@@ -70,7 +70,7 @@ final class Version20200214114359 extends AbstractMigration
         $this->addSql('ALTER TABLE ac_unit_budget_category RENAME INDEX parentid TO IDX_356BCD1F10EE4CEE');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql('ALTER TABLE ac_cashbook CHANGE id id VARCHAR(36) CHARACTER SET utf8 NOT NULL COLLATE `utf8_czech_ci`');
         $this->addSql('ALTER TABLE ac_chit_scan CHANGE chit_id chit_id BIGINT UNSIGNED NOT NULL');

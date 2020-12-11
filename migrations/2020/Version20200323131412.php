@@ -19,12 +19,12 @@ final class Version20200323131412 extends AbstractMigration
         'auv' => 'car',
     ];
 
-    public function getDescription() : string
+    public function getDescription(): string
     {
         return 'Map transport type as regular types instead of entities';
     }
 
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql('ALTER TABLE tc_command_types DROP FOREIGN KEY FK_DC7EBB9BF49490');
         $this->addSql('ALTER TABLE tc_commands ADD transport_types JSON NOT NULL COMMENT \'(DC2Type:transport_types)\'');
@@ -46,7 +46,7 @@ final class Version20200323131412 extends AbstractMigration
         $this->addSql('DROP TABLE tc_travelTypes');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // Since MySQL does not support unnest() function or any equivalent, this would be cumbersome to implement.
         // Backup was performed instead before deployment

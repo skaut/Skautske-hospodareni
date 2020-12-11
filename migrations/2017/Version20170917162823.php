@@ -9,7 +9,7 @@ use Doctrine\Migrations\AbstractMigration;
 
 class Version20170917162823 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql("INSERT INTO `ac_chitsCategory` (`id`, `label`, `short`, `type`, `orderby`, `deleted`) VALUES (13, 'Převod z odd. pokladny', 'zd', 1, '100', '0');");
         $this->addSql("INSERT INTO `ac_chitsCategory` (`id`, `label`, `short`, `type`, `orderby`, `deleted`) VALUES (14, 'Převod do odd. pokladny', 'dd', 2, '100', '0');");
@@ -30,7 +30,7 @@ class Version20170917162823 extends AbstractMigration
             "(2,'unit'),(3,'unit'),(4,'unit'),(5,'unit'),(6,'unit'),(7,'unit'),(8,'unit'),(9,'unit'),(10,'unit'),(12,'unit'),(13,'unit'),(15,'unit'),(16,'unit');");
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
     }
 }

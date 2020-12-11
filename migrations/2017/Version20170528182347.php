@@ -9,7 +9,7 @@ use Doctrine\Migrations\AbstractMigration;
 
 class Version20170528182347 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql('ALTER TABLE tc_commands ADD next_travel_id INT NOT NULL');
         $this->addSql('
@@ -18,7 +18,7 @@ class Version20170528182347 extends AbstractMigration
         ');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql('ALTER TABLE tc_commands DROP next_travel_id');
     }

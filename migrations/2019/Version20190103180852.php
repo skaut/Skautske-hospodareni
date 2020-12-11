@@ -12,12 +12,12 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20190103180852 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql('ALTER TABLE pa_payment CHANGE ks ks SMALLINT UNSIGNED DEFAULT NULL;');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
     }
 }

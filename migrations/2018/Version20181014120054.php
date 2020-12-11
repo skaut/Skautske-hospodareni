@@ -9,7 +9,7 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20181014120054 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql('ALTER TABLE ac_cashbook CONVERT TO CHARACTER SET utf8 COLLATE utf8_czech_ci');
 
@@ -53,7 +53,7 @@ SQL
         $this->addSql('ALTER TABLE ac_unit_cashbooks ADD CONSTRAINT FK_1243558BF8BD700D FOREIGN KEY (unit_id) REFERENCES ac_units (id)');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql('ALTER TABLE ac_unit_cashbooks DROP FOREIGN KEY FK_1243558BF8BD700D');
         $this->addSql('DROP TABLE ac_unit_cashbooks');

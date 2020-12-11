@@ -9,7 +9,7 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20190824173018 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql('ALTER TABLE tc_commands DROP FOREIGN KEY tc_commands_ibfk_1');
         $this->addSql('ALTER TABLE tc_commands DROP FOREIGN KEY tc_commands_ibfk_2');
@@ -36,7 +36,7 @@ final class Version20190824173018 extends AbstractMigration
         $this->addSql('ALTER TABLE tc_command_types RENAME INDEX typeid TO IDX_DC7EBB9BF49490');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql('ALTER TABLE tc_command_types DROP INDEX `PRIMARY`, ADD UNIQUE INDEX unique_relationship (commandId, typeId)');
         $this->addSql('ALTER TABLE tc_command_types DROP FOREIGN KEY FK_DC7EBB8F36C645');

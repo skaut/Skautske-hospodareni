@@ -9,7 +9,7 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20190601191610 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql(<<<'SQL'
         CREATE OR REPLACE VIEW `ac_chitsView` AS
@@ -22,7 +22,7 @@ final class Version20190601191610 extends AbstractMigration
         SQL);
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql('DROP VIEW `ac_chitsView`');
     }

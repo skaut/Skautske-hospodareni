@@ -9,13 +9,13 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20190407182157 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql('ALTER TABLE ac_object DROP FOREIGN KEY ac_object_ibfk_2');
         $this->addSql('DROP TABLE ac_object_type');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql(
             'CREATE TABLE `ac_object_type` ('

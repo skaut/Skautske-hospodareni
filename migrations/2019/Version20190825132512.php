@@ -9,7 +9,7 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20190825132512 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql(<<<SQL
             CREATE TABLE ac_chit_scan (
@@ -23,7 +23,7 @@ final class Version20190825132512 extends AbstractMigration
         $this->addSql('ALTER TABLE ac_chit_scan ADD CONSTRAINT FK_FEC2BFD22AEA3AE4 FOREIGN KEY (chit_id) REFERENCES ac_chits (id)');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql('DROP TABLE ac_chit_scan');
     }

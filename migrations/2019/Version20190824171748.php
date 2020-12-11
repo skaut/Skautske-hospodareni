@@ -9,7 +9,7 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20190824171748 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql('ALTER TABLE tc_travels DROP FOREIGN KEY tc_travels_ibfk_1');
         $this->addSql('ALTER TABLE tc_travels DROP FOREIGN KEY tc_travels_ibfk_3');
@@ -30,7 +30,7 @@ final class Version20190824171748 extends AbstractMigration
         SQL);
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql(<<<'SQL'
             ALTER TABLE tc_travelTypes 

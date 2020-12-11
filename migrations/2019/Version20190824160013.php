@@ -9,7 +9,7 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20190824160013 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql(<<<'SQL'
             ALTER TABLE tc_vehicle 
@@ -22,7 +22,7 @@ final class Version20190824160013 extends AbstractMigration
         SQL);
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql(<<<'SQL'
             ALTER TABLE tc_vehicle 
