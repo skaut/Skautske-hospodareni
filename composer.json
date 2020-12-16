@@ -1,9 +1,9 @@
 {
-    "name": "skautskeHospodareni",
+    "name": "skaut/skautske_hospodareni",
     "type": "project",
     "require": {
         "php": ">= 7.4",
-        "beberlei/DoctrineExtensions": "^1.0",
+        "beberlei/doctrineextensions": "^1.0",
         "beberlei/assert": "^2.7",
         "cakephp/chronos": "^1.1",
         "composer/ca-bundle": "^1.1",
