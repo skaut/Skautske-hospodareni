@@ -72,7 +72,7 @@ final class RemoveGroupTest extends IntegrationTest
 
         for ($i = 1; $i <= 3; $i++) {
             $this->payments->save(
-                new Payment($group, 'test' . $i, null, 120, Helpers::getValidDueDate(), null, null, null, '')
+                new Payment($group, 'test' . $i, [], 120, Helpers::getValidDueDate(), null, null, null, '')
             );
         }
 

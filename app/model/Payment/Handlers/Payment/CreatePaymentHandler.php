@@ -31,7 +31,7 @@ final class CreatePaymentHandler
             new Payment(
                 $group,
                 $command->getName(),
-                $command->getEmail(),
+                $command->getRecipients(),
                 $command->getAmount(),
                 $command->getDueDate(),
                 $command->getVariableSymbol(),

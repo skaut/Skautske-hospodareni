@@ -13,14 +13,18 @@ use Doctrine\ORM\Mapping as ORM;
 use Fmasa\DoctrineNullableEmbeddables\Annotations\Nullable;
 use InvalidArgumentException;
 use Model\Common\Aggregate;
+use Model\Common\EmailAddress;
 use Model\Payment\DomainEvents\PaymentAmountWasChanged;
 use Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
 use Model\Payment\DomainEvents\PaymentWasCompleted;
 use Model\Payment\DomainEvents\PaymentWasCreated;
+use Model\Payment\Payment\EmailRecipient;
 use Model\Payment\Payment\SentEmail;
 use Model\Payment\Payment\State;
 use Model\Payment\Payment\Transaction;
 use RuntimeException;
+use function array_map;
+use function array_unique;
 use function in_array;
 
 /**
@@ -33,95 +37,80 @@ class Payment extends Aggregate
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
-     *
-     * @var int
      */
-    private $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(type="integer", name="groupId", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $groupId;
+    private int $groupId;
 
     /**
      * @ORM\Column(type="string", length=64)
-     *
-     * @var string
      */
-    private $name;
+    private string $name;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
+     * @deprecated - use email recipients
      *
-     * @var string|NULL
+     * @ORM\Column(type="text", nullable=true)
      */
-    private $email;
+    private ?string $email;
+
+    /**
+     * @ORM\OneToMany(targetEntity=EmailRecipient::class, mappedBy="payment", cascade={"persist", "remove"}, orphanRemoval=true)
+     *
+     * @phpstan-var Collection<int, EmailRecipient>
+     * @var Collection<int, EmailRecipient>
+     */
+    private $emailRecipients;
 
     /**
      * @ORM\Column(type="integer", nullable=true, name="personId")
-     *
-     * @var int|NULL
      */
-    private $personId;
+    private ?int $personId;
 
     /**
      * @ORM\Column(type="float")
-     *
-     * @var float
      */
-    private $amount;
+    private float $amount;
 
     /**
      * @ORM\Column(type="chronos_date", name="maturity")
-     *
-     * @var Date
      */
-    private $dueDate;
+    private Date $dueDate;
 
     /**
      * @ORM\Column(type="variable_symbol", nullable=true, length=10, name="vs")
-     *
-     * @var VariableSymbol|NULL
      */
-    private $variableSymbol;
+    private ?VariableSymbol $variableSymbol;
 
     /**
      * @ORM\Column(type="smallint", nullable=true, name="ks", options={"unsigned"=true})
-     *
-     * @var int|NULL
      */
-    private $constantSymbol;
+    private ?int $constantSymbol;
 
     /**
      * @ORM\Column(type="string", length=64)
-     *
-     * @var string
      */
-    private $note = '';
+    private string $note = '';
 
     /**
      * @ORM\Embedded(class=Transaction::class, columnPrefix=false)
      *
-     * @var Transaction|NULL
      * @Nullable()
      */
-    private $transaction;
+    private ?Transaction $transaction = null;
 
     /**
      * @ORM\Column(type="datetime_immutable", nullable=true, name="dateClosed")
-     *
-     * @var DateTimeImmutable|NULL
      */
-    private $closedAt;
+    private ?DateTimeImmutable $closedAt = null;
 
     /**
      * @ORM\Column(type="string", length=64, nullable=true)
-     *
-     * @var string|NULL
      */
-    private $closedByUsername;
+    private ?string $closedByUsername = null;
 
     /**
      * @ORM\Column(type="string_enum", length=20)
@@ -138,10 +127,13 @@ class Payment extends Aggregate
      */
     private $sentEmails;
 
+    /**
+     * @param EmailAddress[] $recipients
+     */
     public function __construct(
         Group $group,
         string $name,
-        ?string $email,
+        array $recipients,
         float $amount,
         Date $dueDate,
         ?VariableSymbol $variableSymbol,
@@ -157,7 +149,7 @@ class Payment extends Aggregate
         $this->personId = $personId;
         $this->state    = State::get(State::PREPARING);
         $this->amount   = $amount;
-        $this->updateDetails($name, $email, $dueDate, $constantSymbol, $note);
+        $this->updateDetails($name, $recipients, $dueDate, $constantSymbol, $note);
         $this->variableSymbol = $variableSymbol;
         $this->sentEmails     = new ArrayCollection();
 
@@ -174,11 +166,13 @@ class Payment extends Aggregate
     }
 
     /**
+     * @param EmailAddress[] $recipients
+     *
      * @throws PaymentClosed
      */
     public function update(
         string $name,
-        ?string $email,
+        array $recipients,
         float $amount,
         Date $dueDate,
         ?VariableSymbol $variableSymbol,
@@ -186,7 +180,7 @@ class Payment extends Aggregate
         string $note
     ) : void {
         $this->checkNotClosed();
-        $this->updateDetails($name, $email, $dueDate, $constantSymbol, $note);
+        $this->updateDetails($name, $recipients, $dueDate, $constantSymbol, $note);
 
         if (! VariableSymbol::areEqual($this->variableSymbol, $variableSymbol)) {
             $this->raise(new PaymentVariableSymbolWasChanged($this->groupId, $variableSymbol));
@@ -261,6 +255,14 @@ class Payment extends Aggregate
     public function getEmail() : ?string
     {
         return $this->email;
+    }
+
+    /**
+     * @return EmailRecipient[]
+     */
+    public function getEmailRecipients() : array
+    {
+        return $this->emailRecipients->toArray();
     }
 
     public function getPersonId() : ?int
@@ -343,17 +345,20 @@ class Payment extends Aggregate
         }
     }
 
+    /**
+     * @param EmailAddress[] $recipients
+     */
     private function updateDetails(
         string $name,
-        ?string $email,
+        array $recipients,
         Date $dueDate,
         ?int $constantSymbol,
         string $note
     ) : void {
-        $this->name           = $name;
-        $this->email          = $email;
-        $this->dueDate        = $dueDate;
-        $this->constantSymbol = $constantSymbol;
-        $this->note           = $note;
+        $this->name            = $name;
+        $this->dueDate         = $dueDate;
+        $this->constantSymbol  = $constantSymbol;
+        $this->note            = $note;
+        $this->emailRecipients = new ArrayCollection(array_map(fn(EmailAddress $emailAddress) => new EmailRecipient($this, $emailAddress), array_unique($recipients)));
     }
 }

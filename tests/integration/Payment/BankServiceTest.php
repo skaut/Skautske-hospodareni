@@ -125,7 +125,7 @@ class BankServiceTest extends IntegrationTest
         $payment = new Payment(
             $group,
             Random::generate(),
-            null,
+            [],
             $amount,
             new Date(),
             $variableSymbol === null ? null : new VariableSymbol($variableSymbol),

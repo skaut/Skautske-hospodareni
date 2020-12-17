@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Payment\Mailing;
 
 use DateTimeImmutable;
+use Model\Common\EmailAddress;
 
 class Payment
 {
@@ -14,8 +15,8 @@ class Payment
     /** @var float */
     private $amount;
 
-    /** @var string */
-    private $email;
+    /** @var EmailAddress[] */
+    private array $recipients;
 
     /** @var DateTimeImmutable */
     private $dueDate;
@@ -29,11 +30,14 @@ class Payment
     /** @var string */
     private $note;
 
-    public function __construct(string $name, float $amount, string $email, DateTimeImmutable $dueDate, ?int $variableSymbol, ?int $constantSymbol, string $note)
+    /**
+     * @param EmailAddress[] $recipients
+     */
+    public function __construct(string $name, float $amount, array $recipients, DateTimeImmutable $dueDate, ?int $variableSymbol, ?int $constantSymbol, string $note)
     {
         $this->name           = $name;
         $this->amount         = $amount;
-        $this->email          = $email;
+        $this->recipients     = $recipients;
         $this->dueDate        = $dueDate;
         $this->variableSymbol = $variableSymbol;
         $this->constantSymbol = $constantSymbol;
@@ -50,9 +54,12 @@ class Payment
         return $this->amount;
     }
 
-    public function getEmail() : string
+    /**
+     * @return EmailAddress[]
+     */
+    public function getRecipients() : array
     {
-        return $this->email;
+        return $this->recipients;
     }
 
     public function getDueDate() : DateTimeImmutable

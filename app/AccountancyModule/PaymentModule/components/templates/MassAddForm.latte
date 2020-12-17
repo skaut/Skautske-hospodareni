@@ -24,7 +24,7 @@
         <tr n:foreach="$form['persons']->getComponents() as $container">
             <td class="dependent-checkbox"><input n:name="$container['selected']"></td>
             <td>{input $container["name"], class=>"input-sm form-control"}</td>
-            <td>{input $container["email"], class=>"input-sm form-control"}</td>
+            <td>{input $container["email"], class=>"input-sm form-control",  size=>2}</td>
             <td>{input $container["amount"], class=>"input-sm form-control"}</td>
             <td>{input $container["dueDate"], class=>"input-sm form-control date"}</td>
             <td>{input $container["variableSymbol"], class=>"input-sm form-control"}</td>

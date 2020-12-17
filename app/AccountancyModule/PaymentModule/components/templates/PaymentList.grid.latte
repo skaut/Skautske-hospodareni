@@ -44,7 +44,9 @@
 {/block}
 
 {block col-email}
-    <span class="small">{$item->getEmail()}</span>
+    <span class="small" n:inner-foreach="$item->getEmailRecipients() as $recipient">
+        {$recipient|truncate:35}{if !$iterator->isLast()}, {/if}
+    </span>
 {/block}
 
 {block col-actions}
@@ -53,8 +55,8 @@
            class="btn btn-sm btn-secondary ajax"
            title="Upravit platbu"><i class="far fa-edit"></i></a>
         <a href="{plink send! $item->id}"
-                n:class="btn, btn-sm, btn-primary, $item->getEmail() !== null ? 'ui--sendEmail', $item->getEmail() === NULL ? disabled"
-           title="{$item->getEmail() === NULL ? 'Není uveden email' : 'Odeslat email o platbě'}"><i
+                n:class="btn, btn-sm, btn-primary, !empty($item->getEmailRecipients()) ? 'ui--sendEmail', empty($item->getEmailRecipients()) ? disabled"
+           title="{empty($item->getEmailRecipients()) ? 'Není uveden email' : 'Odeslat email o platbě'}"><i
                     class="far fa-envelope-open"></i></a>
         <a href="{plink complete! $item->getId()}" class="btn btn-sm btn-success" title="Zaplaceno"><i
                     class="fas fa-check"></i></a>

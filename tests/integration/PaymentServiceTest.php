@@ -71,7 +71,7 @@ class PaymentServiceTest extends IntegrationTest
     private function createPaymentWithoutVariableSymbol(int $groupId) : void
     {
         $this->commandBus->handle(
-            new CreatePayment($groupId, 'test', null, 100, Helpers::getValidDueDate(), null, null, null, '')
+            new CreatePayment($groupId, 'test', [], 100, Helpers::getValidDueDate(), null, null, null, '')
         );
     }
 }

@@ -10,6 +10,7 @@ use DateTimeImmutable;
 use Helpers;
 use InvalidArgumentException;
 use Mockery as m;
+use Model\Common\EmailAddress;
 use Model\Payment\DomainEvents\PaymentAmountWasChanged;
 use Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
 use Model\Payment\DomainEvents\PaymentWasCreated;
@@ -24,7 +25,7 @@ class PaymentTest extends Unit
     {
         $groupId        = 29;
         $name           = 'Jan novák';
-        $email          = 'test@gmail.com';
+        $email          = new EmailAddress('test@gmail.com');
         $dueDate        = new Date();
         $amount         = 450;
         $variableSymbol = new VariableSymbol('454545');
@@ -35,7 +36,7 @@ class PaymentTest extends Unit
         $payment = new Payment(
             $this->mockGroup($groupId),
             $name,
-            $email,
+            [$email],
             $amount,
             $dueDate,
             $variableSymbol,
@@ -45,7 +46,7 @@ class PaymentTest extends Unit
         );
 
         $this->assertSame($name, $payment->getName());
-        $this->assertSame($email, $payment->getEmail());
+        $this->assertSame($email, $payment->getEmailRecipients()[0]->getEmailAddress());
         $this->assertSame((float) $amount, $payment->getAmount());
         $this->assertSame($dueDate, $payment->getDueDate());
         $this->assertSame($variableSymbol, $payment->getVariableSymbol());
@@ -72,7 +73,7 @@ class PaymentTest extends Unit
         new Payment(
             $this->mockGroup(10),
             'František Maša',
-            'frantisekmasa1@gmail.com',
+            [new EmailAddress('frantisekmasa1@gmail.com')],
             -500,
             new Date(),
             null,
@@ -89,7 +90,7 @@ class PaymentTest extends Unit
         new Payment(
             $this->mockGroup(10),
             'František Maša',
-            'frantisekmasa1@gmail.com',
+            [new EmailAddress('frantisekmasa1@gmail.com')],
             0,
             new Date(),
             null,
@@ -221,16 +222,16 @@ class PaymentTest extends Unit
 
         $name           = 'František Maša';
         $amount         = 300;
-        $email          = 'franta@gmail.com';
+        $email          = new EmailAddress('franta@gmail.com');
         $dueDate        = Date::now();
         $variableSymbol = new VariableSymbol('789');
         $constantSymbol = 123;
         $note           = 'Never pays!';
 
-        $payment->update($name, $email, $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
+        $payment->update($name, [$email], $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
 
         $this->assertSame($name, $payment->getName());
-        $this->assertSame($email, $payment->getEmail());
+        $this->assertSame($email, $payment->getEmailRecipients()[0]->getEmailAddress());
         $this->assertSame((float) $amount, $payment->getAmount());
         $this->assertSame($dueDate, $payment->getDueDate());
         $this->assertSame($variableSymbol, $payment->getVariableSymbol());
@@ -273,7 +274,7 @@ class PaymentTest extends Unit
 
         $name           = 'František Maša';
         $amount         = 300;
-        $email          = 'franta@gmail.com';
+        $email          = new EmailAddress('franta@gmail.com');
         $dueDate        = Date::now();
         $variableSymbol = new VariableSymbol('789');
         $constantSymbol = 123;
@@ -283,7 +284,7 @@ class PaymentTest extends Unit
 
         $this->expectException(PaymentClosed::class);
 
-        $payment->update($name, $email, $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
+        $payment->update($name, [$email], $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
     }
 
     public function testPairPaymentWithTransaction() : void
@@ -308,7 +309,7 @@ class PaymentTest extends Unit
 
         $newVariableSymbol = new VariableSymbol('12345');
 
-        $payment->update('name', null, self::AMOUNT, Date::today(), $newVariableSymbol, null, '');
+        $payment->update('name', [], self::AMOUNT, Date::today(), $newVariableSymbol, null, '');
 
         $events = $payment->extractEventsToDispatch();
         $this->assertCount(1, $events);
@@ -326,7 +327,7 @@ class PaymentTest extends Unit
     {
         $payment = $this->createPaymentWithVariableSymbol($variableSymbol);
         $payment->extractEventsToDispatch(); // Clear events
-        $payment->update('name', null, self::AMOUNT, Date::today(), $variableSymbol, null, '');
+        $payment->update('name', [], self::AMOUNT, Date::today(), $variableSymbol, null, '');
 
         $this->assertSame([], $payment->extractEventsToDispatch());
     }
@@ -347,7 +348,7 @@ class PaymentTest extends Unit
         $payment = $this->createPaymentWithVariableSymbol(null);
         $payment->extractEventsToDispatch(); // Clear events
 
-        $payment->update('name', null, self::AMOUNT * 2, Date::today(), null, null, '');
+        $payment->update('name', [], self::AMOUNT * 2, Date::today(), null, null, '');
 
         $events = $payment->extractEventsToDispatch();
         $this->assertCount(1, $events);
@@ -362,7 +363,7 @@ class PaymentTest extends Unit
     {
         $payment = $this->createPaymentWithVariableSymbol(null);
         $payment->extractEventsToDispatch(); // Clear events
-        $payment->update('name', null, self::AMOUNT, Date::today(), null, null, '');
+        $payment->update('name', [], self::AMOUNT, Date::today(), null, null, '');
 
         $this->assertSame([], $payment->extractEventsToDispatch());
     }
@@ -383,6 +384,14 @@ class PaymentTest extends Unit
         $this->assertSame($sender, $sentEmails[0]->getSenderName());
     }
 
+    public function testDucliciteEmailAddress() : void
+    {
+        $email1  = new EmailAddress('test@gmail.com');
+        $email2  = new EmailAddress('test@gmail.com');
+        $payment = new Payment($this->mockGroup(29), 'Jan novák', [$email1, $email2], self::AMOUNT, Date::now(), null, null, null, '');
+        $this->assertCount(1, $payment->getEmailRecipients());
+    }
+
     private function createPayment() : Payment
     {
         return $this->createPaymentWithVariableSymbol(new VariableSymbol('454545'));
@@ -393,7 +402,7 @@ class PaymentTest extends Unit
         $group   = $this->mockGroup(29);
         $dueDate = Date::now();
 
-        $payment = new Payment($group, 'Jan novák', 'test@gmail.com', self::AMOUNT, $dueDate, $symbol, 666, 454, 'Some note');
+        $payment = new Payment($group, 'Jan novák', [new EmailAddress('test@gmail.com')], self::AMOUNT, $dueDate, $symbol, 666, 454, 'Some note');
         Helpers::assignIdentity($payment, 1);
 
         return $payment;

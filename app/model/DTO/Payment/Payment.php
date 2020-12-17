@@ -6,6 +6,7 @@ namespace Model\DTO\Payment;
 
 use Cake\Chronos\Date;
 use DateTimeImmutable;
+use Model\Common\EmailAddress;
 use Model\Payment\Payment\SentEmail;
 use Model\Payment\Payment\State;
 use Model\Payment\Payment\Transaction;
@@ -16,7 +17,7 @@ use Nette\SmartObject;
  * @property-read int $id
  * @property-read string $name
  * @property-read float $amount
- * @property-read string|NULL $email
+ * @property-read EmailAddress[] $recipients
  * @property-read Date $dueDate
  * @property-read VariableSymbol|NULL $variableSymbol
  * @property-read int|NULL $constantSymbol
@@ -33,62 +34,49 @@ class Payment
 {
     use SmartObject;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var float */
-    private $amount;
+    private float $amount;
 
-    /** @var string|NULL */
-    private $email;
+    /** @var EmailAddress[]  */
+    private array $recipients;
 
-    /** @var Date */
-    private $dueDate;
+    private Date $dueDate;
 
-    /** @var VariableSymbol|NULL */
-    private $variableSymbol;
+    private ?VariableSymbol $variableSymbol;
 
-    /** @var int|NULL */
-    private $constantSymbol;
+    private ?int $constantSymbol;
 
-    /** @var string */
-    private $note;
+    private string $note;
 
-    /** @var bool */
-    private $closed;
+    private bool $closed;
 
-    /** @var State */
-    private $state;
+    private State $state;
 
-    /** @var Transaction|NULL */
-    private $transaction;
+    private ?Transaction $transaction;
 
-    /** @var DateTimeImmutable|NULL */
-    private $closedAt;
+    private ?DateTimeImmutable $closedAt;
 
-    /** @var string|NULL */
-    private $closedByUsername;
+    private ?string $closedByUsername;
 
-    /** @var int|NULL */
-    private $personId;
+    private ?int $personId;
 
-    /** @var int */
-    private $groupId;
+    private int $groupId;
 
     /** @var SentEmail[] */
-    private $sentEmails;
+    private array $sentEmails;
 
     /**
-     * @param SentEmail[] $sentEmails
+     * @param EmailAddress[] $recipients
+     * @param SentEmail[]    $sentEmails
      */
     public function __construct(
         int $id,
         string $name,
         float $amount,
-        ?string $email,
+        array $recipients,
         Date $dueDate,
         ?VariableSymbol $variableSymbol,
         ?int $constantSymbol,
@@ -105,7 +93,7 @@ class Payment
         $this->id               = $id;
         $this->name             = $name;
         $this->amount           = $amount;
-        $this->email            = $email;
+        $this->recipients       = $recipients;
         $this->dueDate          = $dueDate;
         $this->variableSymbol   = $variableSymbol;
         $this->constantSymbol   = $constantSymbol;
@@ -135,9 +123,10 @@ class Payment
         return $this->amount;
     }
 
-    public function getEmail() : ?string
+    /** @return EmailAddress[] */
+    public function getEmailRecipients() : array
     {
-        return $this->email;
+        return $this->recipients;
     }
 
     public function getDueDate() : Date
