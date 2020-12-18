@@ -13,6 +13,7 @@ use Model\Payment\Commands\Payment\CreatePayment;
 use Model\PaymentService;
 use Nette\Forms\Controls\TextBase;
 use function array_filter;
+use function array_map;
 use function assert;
 
 class MassAddForm extends BaseControl
@@ -178,7 +179,7 @@ class MassAddForm extends BaseControl
                 new CreatePayment(
                     $this->groupId,
                     $person->name,
-                    [new EmailAddress($person->email)],
+                    array_map(fn (string $email) => new EmailAddress($email), $person->email),
                     (float) ($person->amount ?? $values->amount),
                     $person->dueDate ?? $values->dueDate,
                     (int) $person->id,
