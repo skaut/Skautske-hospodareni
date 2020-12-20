@@ -46,7 +46,7 @@ class PaymentTest extends Unit
         );
 
         $this->assertSame($name, $payment->getName());
-        $this->assertSame($email, $payment->getEmailRecipients()[0]->getEmailAddress());
+        $this->assertSame($email, $payment->getEmailRecipients()[0]);
         $this->assertSame((float) $amount, $payment->getAmount());
         $this->assertSame($dueDate, $payment->getDueDate());
         $this->assertSame($variableSymbol, $payment->getVariableSymbol());
@@ -231,7 +231,7 @@ class PaymentTest extends Unit
         $payment->update($name, [$email], $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
 
         $this->assertSame($name, $payment->getName());
-        $this->assertSame($email, $payment->getEmailRecipients()[0]->getEmailAddress());
+        $this->assertSame($email, $payment->getEmailRecipients()[0]);
         $this->assertSame((float) $amount, $payment->getAmount());
         $this->assertSame($dueDate, $payment->getDueDate());
         $this->assertSame($variableSymbol, $payment->getVariableSymbol());

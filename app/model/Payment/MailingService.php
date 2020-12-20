@@ -13,13 +13,11 @@ use Model\Google\InvalidOAuth;
 use Model\Mail\IMailerFactory;
 use Model\Mail\Repositories\IGoogleRepository;
 use Model\Payment\Mailing\Payment as MailPayment;
-use Model\Payment\Payment\EmailRecipient;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Services\TemplateFactory;
 use Nette\Mail\Message;
-use function array_map;
 use function nl2br;
 use function rand;
 
@@ -191,7 +189,7 @@ class MailingService
         return new MailPayment(
             $payment->getName(),
             $payment->getAmount(),
-            array_map(fn (EmailRecipient $recipient) => $recipient->getEmailAddress(), $payment->getEmailRecipients()),
+            $payment->getEmailRecipients(),
             $payment->getDueDate(),
             $payment->getVariableSymbol() !== null ? $payment->getVariableSymbol()->toInt() : null,
             $payment->getConstantSymbol(),
