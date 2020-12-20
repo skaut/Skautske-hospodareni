@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Model\DTO\Payment;
 
+use Model\Payment\BankAccount\AccountNumber;
+
 class RepaymentCandidate
 {
     private int $personId;
@@ -12,13 +14,13 @@ class RepaymentCandidate
 
     private float $amount;
 
-    private ?string $bankAccount;
+    private ?AccountNumber $bankAccount;
 
     public function __construct(
         int $personId,
         string $name,
         float $amount,
-        ?string $bankAccount
+        ?AccountNumber $bankAccount
     ) {
         $this->personId    = $personId;
         $this->name        = $name;
@@ -41,7 +43,7 @@ class RepaymentCandidate
         return $this->amount;
     }
 
-    public function getBankAccount(): ?string
+    public function getBankAccount(): ?AccountNumber
     {
         return $this->bankAccount;
     }

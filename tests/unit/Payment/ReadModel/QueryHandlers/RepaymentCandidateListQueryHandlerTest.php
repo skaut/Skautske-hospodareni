@@ -41,7 +41,7 @@ final class RepaymentCandidateListQueryHandlerTest extends Unit
             ->andReturn([
                 $this->createPayment(State::CANCELED, 100, 100, null),
                 $this->createPayment(State::COMPLETED, 123, 200.0, null),
-                $this->createPayment(State::COMPLETED, 124, 500.0, '123456789/5500'),
+                $this->createPayment(State::COMPLETED, 124, 500.0, '2000145399/0800'),
                 $this->createPayment(State::COMPLETED, 125, 600.0, null),
             ]);
 
