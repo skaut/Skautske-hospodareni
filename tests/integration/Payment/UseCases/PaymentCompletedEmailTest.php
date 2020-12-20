@@ -53,28 +53,21 @@ class PaymentCompletedEmailTest extends IntegrationTest
         $this->commandBus     = $this->tester->grabService(CommandBus::class);
     }
 
-    public function testWhenEmailIsNotSetNothingHappens() : void
-    {
-        $this->users->setUser(new User(10, 'František Maša', self::EMAIL));
-        $this->createOAuth();
-        $this->initEntities();
-
-        $this->paymentService->completePayment(1);
-
-        $this->assertPaymentWasCompleted();
-    }
-
     /**
      * @see bug https://github.com/skaut/Skautske-hospodareni/pull/511
      */
     public function testWhenPaymentHasNoEmailNothingHappens() : void
     {
         $this->users->setUser(new User(10, 'František Maša', self::EMAIL));
-        $this->createOAuth();
-        $this->initEntities([
-            EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
-            EmailType::PAYMENT_COMPLETED => new EmailTemplate('subject', 'body'),
-        ], null);
+        $oauthId = $this->createOAuth();
+        $this->initEntities(
+            [
+                EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
+                EmailType::PAYMENT_COMPLETED => new EmailTemplate('subject', 'body'),
+            ],
+            null,
+            $oauthId,
+        );
 
         $this->paymentService->completePayment(1);
 
