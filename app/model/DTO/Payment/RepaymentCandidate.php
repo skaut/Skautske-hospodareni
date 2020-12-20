@@ -26,27 +26,27 @@ class RepaymentCandidate
         $this->bankAccount = $bankAccount;
     }
 
-    public function getPersonId() : int
+    public function getPersonId(): int
     {
         return $this->personId;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getAmount() : float
+    public function getAmount(): float
     {
         return $this->amount;
     }
 
-    public function getBankAccount() : ?string
+    public function getBankAccount(): ?string
     {
         return $this->bankAccount;
     }
 
-    public function setAmount(float $amount) : void
+    public function setAmount(float $amount): void
     {
         $this->amount = $amount;
     }

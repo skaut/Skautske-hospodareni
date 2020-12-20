@@ -13,6 +13,7 @@ use Model\Payment\Payment\State;
 use Model\Payment\ReadModel\Queries\PaymentListQuery;
 use Model\Payment\ReadModel\Queries\RepaymentCandidateListQuery;
 use Model\Payment\Repositories\IGroupRepository;
+
 use function array_column;
 use function array_filter;
 use function array_key_exists;
@@ -37,7 +38,7 @@ final class RepaymentCandidateListQueryHandler
     /**
      * @return DTO\RepaymentCandidate[]
      */
-    public function __invoke(RepaymentCandidateListQuery $query) : array
+    public function __invoke(RepaymentCandidateListQuery $query): array
     {
         $payments   = array_filter(
             $this->queryBus->handle(new PaymentListQuery($query->getGroupId())),
@@ -58,11 +59,11 @@ final class RepaymentCandidateListQueryHandler
      *
      * @return DTO\RepaymentCandidate[]
      */
-    private function setRepaymentsFromCamp(SkautisCampId $campId, array $repayments) : array
+    private function setRepaymentsFromCamp(SkautisCampId $campId, array $repayments): array
     {
         $participantsPayments = array_filter(
             array_column($this->participants->findByCamp($campId), 'repayment', 'personId'),
-            fn(int $amount) => $amount > 0
+            fn (int $amount) => $amount > 0
         );
 
         foreach ($repayments as $repayment) {

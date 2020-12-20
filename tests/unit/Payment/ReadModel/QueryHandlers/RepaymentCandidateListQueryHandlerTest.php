@@ -20,6 +20,7 @@ use Model\Payment\Payment\Transaction;
 use Model\Payment\ReadModel\Queries\PaymentListQuery;
 use Model\Payment\ReadModel\Queries\RepaymentCandidateListQuery;
 use Model\Payment\Repositories\IGroupRepository;
+
 use function array_map;
 use function array_sum;
 use function count;
@@ -29,12 +30,12 @@ final class RepaymentCandidateListQueryHandlerTest extends Unit
     private const GROUP_ID = 1;
     private const CAMP_ID  = 7;
 
-    public function test() : void
+    public function test(): void
     {
         $queryBus = Mockery::mock(QueryBus::class);
         $queryBus->shouldReceive('handle')
             ->once()
-            ->withArgs(static function (PaymentListQuery $query) : bool {
+            ->withArgs(static function (PaymentListQuery $query): bool {
                 return $query->getGroupId() === self::GROUP_ID;
             })
             ->andReturn([
@@ -47,7 +48,7 @@ final class RepaymentCandidateListQueryHandlerTest extends Unit
         $groups = Mockery::mock(IGroupRepository::class);
         $groups->shouldReceive('find')
             ->once()
-            ->withArgs(static function (int $groupId) : bool {
+            ->withArgs(static function (int $groupId): bool {
                 return $groupId === self::GROUP_ID;
             })->andReturn(
                 Mockery::mock(Group::class, ['getObject' => new SkautisEntity(self::CAMP_ID, Type::CAMP())]),
@@ -56,7 +57,7 @@ final class RepaymentCandidateListQueryHandlerTest extends Unit
         $participants = Mockery::mock(IParticipantRepository::class);
         $participants->shouldReceive('findByCamp')
             ->once()
-            ->withArgs(static function (SkautisCampId $campId) : bool {
+            ->withArgs(static function (SkautisCampId $campId): bool {
                 return $campId->toInt() === self::CAMP_ID;
             })
             ->andReturn([
@@ -77,7 +78,7 @@ final class RepaymentCandidateListQueryHandlerTest extends Unit
         $this->assertSame(630.0, array_sum(array_map(fn (RepaymentCandidate $candidate) => $candidate->getAmount(), $repaymentCandidates)));
     }
 
-    private function createPayment(string $state, int $personId, float $amount, ?string $bankAccount) : Payment
+    private function createPayment(string $state, int $personId, float $amount, ?string $bankAccount): Payment
     {
         return Mockery::mock(Payment::class, [
             'getState' => State::get($state),
@@ -88,7 +89,7 @@ final class RepaymentCandidateListQueryHandlerTest extends Unit
         ]);
     }
 
-    private function createParticipant(int $personId, float $repayment) : Participant
+    private function createParticipant(int $personId, float $repayment): Participant
     {
         return Mockery::mock(Participant::class, [
             'getPersonId' => $personId,

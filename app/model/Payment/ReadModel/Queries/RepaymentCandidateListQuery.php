@@ -11,15 +11,14 @@ use Model\Payment\ReadModel\QueryHandlers\RepaymentCandidateListQueryHandler;
  */
 final class RepaymentCandidateListQuery
 {
-    /** @var int */
-    private $groupId;
+    private int $groupId;
 
     public function __construct(int $groupId)
     {
         $this->groupId = $groupId;
     }
 
-    public function getGroupId() : int
+    public function getGroupId(): int
     {
         return $this->groupId;
     }

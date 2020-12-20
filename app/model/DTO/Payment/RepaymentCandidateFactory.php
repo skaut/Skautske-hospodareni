@@ -6,7 +6,7 @@ namespace Model\DTO\Payment;
 
 class RepaymentCandidateFactory
 {
-    public static function create(Payment $payment) : RepaymentCandidate
+    public static function create(Payment $payment): RepaymentCandidate
     {
         return new RepaymentCandidate(
             $payment->getPersonId(),
