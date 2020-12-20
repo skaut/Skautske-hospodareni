@@ -68,7 +68,8 @@ final class PaymentList extends BaseControl
             ->getElementPrototype('td')
             ->setAttribute('class', 'w-18');
 
-        $grid->addColumnText('email', 'Email')
+        $grid->addColumnText('recipientsString', 'Email')
+            ->addAttributes(['class' => 'small'])
             ->setSortable();
 
         $grid->addColumnText('amount', 'Částka')

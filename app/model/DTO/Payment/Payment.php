@@ -12,6 +12,10 @@ use Model\Payment\Payment\State;
 use Model\Payment\Payment\Transaction;
 use Model\Payment\VariableSymbol;
 use Nette\SmartObject;
+use Nette\Utils\Strings;
+
+use function array_map;
+use function implode;
 
 /**
  * @property-read int $id
@@ -45,9 +49,9 @@ class Payment
 
     private Date $dueDate;
 
-    private ?VariableSymbol $variableSymbol = null;
+    private ?VariableSymbol $variableSymbol;
 
-    private ?int $constantSymbol = null;
+    private ?int $constantSymbol;
 
     private string $note;
 
@@ -55,13 +59,13 @@ class Payment
 
     private State $state;
 
-    private ?Transaction $transaction = null;
+    private ?Transaction $transaction;
 
-    private ?DateTimeImmutable $closedAt = null;
+    private ?DateTimeImmutable $closedAt;
 
-    private ?string $closedByUsername = null;
+    private ?string $closedByUsername;
 
-    private ?int $personId = null;
+    private ?int $personId;
 
     private int $groupId;
 
@@ -127,6 +131,11 @@ class Payment
     public function getEmailRecipients(): array
     {
         return $this->recipients;
+    }
+
+    public function getRecipientsString(): string
+    {
+        return implode(', ', array_map(fn (EmailAddress $emailAddress) => Strings::truncate($emailAddress, 35), $this->recipients));
     }
 
     public function getDueDate(): Date
