@@ -16,5 +16,5 @@ interface ICampCategoryUpdater
      *
      * @throws InvalidArgumentException
      */
-    public function updateCategories(CashbookId $cashbookId, array $cashbookTotals) : void;
+    public function updateCategories(CashbookId $cashbookId, array $cashbookTotals): void;
 }

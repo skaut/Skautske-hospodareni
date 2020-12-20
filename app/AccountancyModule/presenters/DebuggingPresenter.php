@@ -8,7 +8,7 @@ use Model\User\ReadModel\Queries\EditableUnitsQuery;
 
 final class DebuggingPresenter extends BasePresenter
 {
-    public function renderDefault() : void
+    public function renderDefault(): void
     {
         $user = $this->getUser();
         $role = $this->userService->getActualRole();

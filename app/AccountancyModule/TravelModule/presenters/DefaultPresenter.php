@@ -20,6 +20,7 @@ use Nette\Bridges\ApplicationLatte\Template;
 use Nette\Forms\Controls\SelectBox;
 use Nette\Http\IResponse;
 use Nette\Security\Identity;
+
 use function array_key_exists;
 use function array_map;
 use function array_slice;
@@ -31,20 +32,15 @@ use function str_replace;
 
 class DefaultPresenter extends BasePresenter
 {
-    /** @var int|null */
-    private $commandId;
+    private ?int $commandId = null;
 
-    /** @var TravelService */
-    private $travelService;
+    private TravelService $travelService;
 
-    /** @var PdfRenderer */
-    private $pdf;
+    private PdfRenderer $pdf;
 
-    /** @var ICommandGridFactory */
-    private $gridFactory;
+    private ICommandGridFactory $gridFactory;
 
-    /** @var IEditTravelDialogFactory */
-    private $editTravelDialogFactory;
+    private IEditTravelDialogFactory $editTravelDialogFactory;
 
     public function __construct(
         TravelService $travelService,
@@ -60,12 +56,13 @@ class DefaultPresenter extends BasePresenter
         $this->setLayout('layout.new');
     }
 
-    private function isCommandAccessible(int $commandId) : bool
+    private function isCommandAccessible(int $commandId): bool
     {
         $command = $this->travelService->getCommandDetail($commandId);
         if ($command === null) {
             return false;
         }
+
         $identity = $this->getUser()->getIdentity();
 
         assert($identity instanceof Identity);
@@ -74,7 +71,7 @@ class DefaultPresenter extends BasePresenter
             array_key_exists($command->getUnitId(), $identity->access[BaseService::ACCESS_READ]);
     }
 
-    private function isCommandEditable(int $id) : bool
+    private function isCommandEditable(int $id): bool
     {
         $command  = $this->travelService->getCommandDetail($id);
         $identity = $this->getUser()->getIdentity();
@@ -88,7 +85,7 @@ class DefaultPresenter extends BasePresenter
             $command->getClosedAt() === null && $unitOrOwner;
     }
 
-    public function actionDetail(?int $id) : void
+    public function actionDetail(?int $id): void
     {
         if ($id === null) {
             $this->redirect('default');
@@ -109,7 +106,7 @@ class DefaultPresenter extends BasePresenter
         $form->setDefaults(['command_id' => $id]);
     }
 
-    public function renderDetail(int $id) : void
+    public function renderDetail(int $id): void
     {
         $command = $this->travelService->getCommandDetail($id);
         $vehicle = $command->getVehicleId() !== null
@@ -125,7 +122,7 @@ class DefaultPresenter extends BasePresenter
         ]);
     }
 
-    public function actionPrint(int $commandId) : void
+    public function actionPrint(int $commandId): void
     {
         if (! $this->isCommandAccessible($commandId)) {
             $this->flashMessage('Neoprávněný přístup k záznamu!', 'danger');
@@ -143,7 +140,7 @@ class DefaultPresenter extends BasePresenter
         $template->setParameters([
             'command' => $command,
             'travels' => $travels,
-            'types' => array_map(fn(TransportType $t) => $t->getLabel(), $command->getTransportTypes()),
+            'types' => array_map(fn (TransportType $t) => $t->getLabel(), $command->getTransportTypes()),
             'vehicle' => $vehicleId !== null ? $this->travelService->findVehicle($vehicleId) : null,
         ]);
 
@@ -161,7 +158,7 @@ class DefaultPresenter extends BasePresenter
         $this->terminate();
     }
 
-    public function handleCloseCommand(int $commandId) : void
+    public function handleCloseCommand(int $commandId): void
     {
         if (! $this->isCommandAccessible($commandId)) {
             $this->flashMessage('Nemáte právo uzavřít cestovní příkaz.', 'danger');
@@ -173,7 +170,7 @@ class DefaultPresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    public function handleOpenCommand(int $commandId) : void
+    public function handleOpenCommand(int $commandId): void
     {
         if (! $this->isCommandAccessible($commandId)) {
             $this->flashMessage('Nemáte právo otevřít cestovní příkaz.', 'danger');
@@ -185,7 +182,7 @@ class DefaultPresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    public function handleRemoveTravel(int $commandId, int $travelId) : void
+    public function handleRemoveTravel(int $commandId, int $travelId): void
     {
         if (! $this->isCommandEditable($commandId)) {
             $this->flashMessage('Nemáte oprávnění smazat cestu.', 'danger');
@@ -198,7 +195,7 @@ class DefaultPresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    public function handleRemoveCommand(int $commandId) : void
+    public function handleRemoveCommand(int $commandId): void
     {
         if (! $this->isCommandAccessible($commandId)) {
             $this->flashMessage('Nemáte právo upravovat záznam.', 'danger');
@@ -210,7 +207,7 @@ class DefaultPresenter extends BasePresenter
         $this->redirect('default');
     }
 
-    protected function createComponentFormAddTravel() : BaseForm
+    protected function createComponentFormAddTravel(): BaseForm
     {
         $form = new BaseForm();
 
@@ -230,42 +227,43 @@ class DefaultPresenter extends BasePresenter
         $form->addSubmit('send', 'Přidat')
             ->setAttribute('class', 'btn btn-primary');
 
-        $form->onSuccess[] = function (Form $form) : void {
+        $form->onSuccess[] = function (Form $form): void {
             $this->formAddTravelSubmitted($form);
         };
 
         return $form;
     }
 
-    private function formAddTravelSubmitted(Form $form) : void
+    private function formAddTravelSubmitted(Form $form): void
     {
         $v         = $form->getValues();
-        $commandId = (int) $v->command_id;
+        $commandId = (int) $v['command_id'];
 
         if (! $this->isCommandEditable($commandId)) {
             $this->flashMessage('Nelze upravovat cestovní příkaz.', 'danger');
             $this->redirect('default');
         }
+
         $v['distance'] = round((float) str_replace(',', '.', $v['distance']), 2);
 
         $this->travelService->addTravel(
             $commandId,
             TransportType::get($v->type),
-            $v->start_date,
-            $v->start_place,
-            $v->end_place,
-            $v->distance
+            $v['start_date'],
+            $v['start_place'],
+            $v['end_place'],
+            $v['distance']
         );
         $this->flashMessage('Cesta byla přidána.');
         $this->redirect('this');
     }
 
-    public function handleEditTravel(int $travelId) : void
+    public function handleEditTravel(int $travelId): void
     {
         $this['editTravelDialog']->open($travelId);
     }
 
-    protected function createComponentEditTravelDialog() : EditTravelDialog
+    protected function createComponentEditTravelDialog(): EditTravelDialog
     {
         $commandId = $this->commandId;
 
@@ -278,12 +276,12 @@ class DefaultPresenter extends BasePresenter
         return $this->editTravelDialogFactory->create($commandId);
     }
 
-    protected function createComponentGrid() : CommandGrid
+    protected function createComponentGrid(): CommandGrid
     {
         return $this->gridFactory->create($this->getUnitId(), $this->getUser()->getId());
     }
 
-    private function getTypeSelectBox(BaseForm $form) : SelectBox
+    private function getTypeSelectBox(BaseForm $form): SelectBox
     {
         $selectBox = $form['type'];
 

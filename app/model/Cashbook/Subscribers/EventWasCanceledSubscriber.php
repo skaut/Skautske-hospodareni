@@ -12,11 +12,9 @@ use Model\Events\Events\EventWasCanceled;
 
 final class EventWasCanceledSubscriber
 {
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(CommandBus $commandBus, QueryBus $queryBus)
     {
@@ -24,7 +22,7 @@ final class EventWasCanceledSubscriber
         $this->queryBus   = $queryBus;
     }
 
-    public function __invoke(EventWasCanceled $event) : void
+    public function __invoke(EventWasCanceled $event): void
     {
         $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery($event->getEventId()));
 

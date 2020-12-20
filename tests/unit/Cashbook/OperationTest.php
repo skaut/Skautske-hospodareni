@@ -11,7 +11,7 @@ final class OperationTest extends Unit
     /**
      * @dataProvider getInverseTypes
      */
-    public function testInverse(string $originalType, string $inverseType) : void
+    public function testInverse(string $originalType, string $inverseType): void
     {
         $this->assertTrue(Operation::get($originalType)->getInverseOperation()->equalsValue($inverseType));
     }
@@ -19,7 +19,7 @@ final class OperationTest extends Unit
     /**
      * @return string[][]
      */
-    public function getInverseTypes() : array
+    public function getInverseTypes(): array
     {
         return [
             [Operation::INCOME, Operation::EXPENSE],

@@ -10,8 +10,7 @@ use Model\Unit\Unit;
 
 final class SubunitListQueryHandler
 {
-    /** @var IUnitRepository */
-    private $units;
+    private IUnitRepository $units;
 
     public function __construct(IUnitRepository $units)
     {
@@ -21,7 +20,7 @@ final class SubunitListQueryHandler
     /**
      * @return Unit[]
      */
-    public function __invoke(SubunitListQuery $query) : array
+    public function __invoke(SubunitListQuery $query): array
     {
         return $this->units->findByParent($query->getUnitId()->toInt());
     }

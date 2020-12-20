@@ -18,11 +18,13 @@ use Model\Cashbook\Cashbook\ChitBody;
 use Model\Cashbook\Cashbook\ChitItem;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Events\ChitWasAdded;
+
+use function assert;
 use function ksort;
 
 class CashbookTest extends Unit
 {
-    public function testCreateCashbook() : void
+    public function testCreateCashbook(): void
     {
         $type       = CashbookType::get(CashbookType::EVENT);
         $cashbookId = CashbookId::generate();
@@ -33,7 +35,7 @@ class CashbookTest extends Unit
         $this->assertSame($type, $cashbook->getType());
     }
 
-    public function testAddingChitRaisesEvent() : void
+    public function testAddingChitRaisesEvent(): void
     {
         $cashbookId = CashbookId::generate();
         $cashbook   = $this->createEventCashbook($cashbookId);
@@ -43,13 +45,13 @@ class CashbookTest extends Unit
         $events = $cashbook->extractEventsToDispatch();
         $this->assertCount(1, $events);
 
-        /** @var ChitWasAdded $event */
         $event = $events[0];
+        assert($event instanceof ChitWasAdded);
         $this->assertInstanceOf(ChitWasAdded::class, $event);
         $this->assertTrue($cashbookId->equals($event->getCashbookId()));
     }
 
-    public function testGetCategoryTotalsReturnsCorrectValues() : void
+    public function testGetCategoryTotalsReturnsCorrectValues(): void
     {
         $cashbook = $this->createEventCashbook();
 
@@ -89,7 +91,7 @@ class CashbookTest extends Unit
         $this->assertSame($expectedTotals, $totals);
     }
 
-    public function testGetCategoryTotalsCountCorrectlyIncome() : void
+    public function testGetCategoryTotalsCountCorrectlyIncome(): void
     {
         $cashbook = $this->createEventCashbook();
 
@@ -108,7 +110,7 @@ class CashbookTest extends Unit
         $this->assertSame($expectedTotals, $totals);
     }
 
-    public function testAddChitRaisesEvent() : void
+    public function testAddChitRaisesEvent(): void
     {
         $cashbookId = CashbookId::generate();
 
@@ -119,8 +121,8 @@ class CashbookTest extends Unit
         $events = $cashbook->extractEventsToDispatch();
 
         $this->assertCount(1, $events);
-        /** @var ChitWasAdded $event */
         $event = $events[0];
+        assert($event instanceof ChitWasAdded);
         $this->assertInstanceOf(ChitWasAdded::class, $event);
         $this->assertTrue($cashbookId->equals($event->getCashbookId()));
     }
@@ -128,7 +130,7 @@ class CashbookTest extends Unit
     /**
      * @dataProvider dataValidChitNumberPrefixes
      */
-    public function testUpdateChitNumberPrefix(?string $prefix) : void
+    public function testUpdateChitNumberPrefix(?string $prefix): void
     {
         $cashbook = $this->createEventCashbook();
 
@@ -142,7 +144,7 @@ class CashbookTest extends Unit
     /**
      * @return mixed[]
      */
-    public function dataValidChitNumberPrefixes() : array
+    public function dataValidChitNumberPrefixes(): array
     {
         return [
             ['test'],
@@ -150,7 +152,7 @@ class CashbookTest extends Unit
         ];
     }
 
-    public function testClearCashbook() : void
+    public function testClearCashbook(): void
     {
         $cashbook = $this->createEventCashbook();
 
@@ -163,7 +165,7 @@ class CashbookTest extends Unit
         $this->assertEmpty($cashbook->getChits());
     }
 
-    public function testUpdateNote() : void
+    public function testUpdateNote(): void
     {
         $note     = 'moje poznamka';
         $cashbook = $this->createEventCashbook();
@@ -172,7 +174,7 @@ class CashbookTest extends Unit
         $this->assertSame($note, $cashbook->getNote());
     }
 
-    public function testHasOnlyNumericChitNumbers() : void
+    public function testHasOnlyNumericChitNumbers(): void
     {
         $cashbook = $this->createEventCashbook();
         Helpers::addChitToCashbook($cashbook, '1', PaymentMethod::CASH());
@@ -182,7 +184,7 @@ class CashbookTest extends Unit
         $this->assertFalse($cashbook->hasOnlyNumericChitNumbers());
     }
 
-    public function testGenerateChitNumbersMaxNotFound() : void
+    public function testGenerateChitNumbersMaxNotFound(): void
     {
         $cashbook = $this->createEventCashbook();
         Helpers::addChitToCashbook($cashbook, null, PaymentMethod::CASH());
@@ -190,7 +192,7 @@ class CashbookTest extends Unit
         $cashbook->generateChitNumbers(PaymentMethod::CASH());
     }
 
-    public function testCreateChitWithoutItems() : void
+    public function testCreateChitWithoutItems(): void
     {
         $cashbook = $this->createEventCashbook();
         $chitBody = new ChitBody(null, new Date(), null);
@@ -198,7 +200,7 @@ class CashbookTest extends Unit
         $cashbook->addChit($chitBody, PaymentMethod::CASH(), [], []);
     }
 
-    public function testCreateChitWithDuplicitItemCategory() : void
+    public function testCreateChitWithDuplicitItemCategory(): void
     {
         $cashbook   = $this->createEventCashbook();
         $chitBody   = new ChitBody(null, new Date(), null);
@@ -212,7 +214,7 @@ class CashbookTest extends Unit
         $cashbook->addChit($chitBody, PaymentMethod::CASH(), $items, Helpers::mockCashbookCategories($categoryId));
     }
 
-    public function testCreateChitWithVirtualCategory() : void
+    public function testCreateChitWithVirtualCategory(): void
     {
         $cashbook = $this->createEventCashbook();
         $chitBody = new ChitBody(null, new Date(), null);
@@ -232,7 +234,7 @@ class CashbookTest extends Unit
         $cashbook->addChit($chitBody, PaymentMethod::CASH(), $items, $categories);
     }
 
-    private function createEventCashbook(?CashbookId $cashbookId = null) : Cashbook
+    private function createEventCashbook(?CashbookId $cashbookId = null): Cashbook
     {
         return new Cashbook($cashbookId ?? CashbookId::generate(), CashbookType::get(CashbookType::EVENT));
     }

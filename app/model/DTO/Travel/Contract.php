@@ -22,26 +22,19 @@ class Contract
 {
     use SmartObject;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var Passenger */
-    private $passenger;
+    private Passenger $passenger;
 
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var string */
-    private $unitRepresentative;
+    private string $unitRepresentative;
 
-    /** @var Date|NULL */
-    private $since;
+    private ?Date $since = null;
 
-    /** @var Date|NULL */
-    private $until;
+    private ?Date $until = null;
 
-    /** @var int */
-    private $templateVersion;
+    private int $templateVersion;
 
     public function __construct(
         int $id,
@@ -61,37 +54,37 @@ class Contract
         $this->templateVersion    = $templateVersion;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getPassenger() : Passenger
+    public function getPassenger(): Passenger
     {
         return $this->passenger;
     }
 
-    public function getUnitId() : int
+    public function getUnitId(): int
     {
         return $this->unitId;
     }
 
-    public function getUnitRepresentative() : string
+    public function getUnitRepresentative(): string
     {
         return $this->unitRepresentative;
     }
 
-    public function getSince() : ?Date
+    public function getSince(): ?Date
     {
         return $this->since;
     }
 
-    public function getUntil() : ?Date
+    public function getUntil(): ?Date
     {
         return $this->until;
     }
 
-    public function getTemplateVersion() : int
+    public function getTemplateVersion(): int
     {
         return $this->templateVersion;
     }

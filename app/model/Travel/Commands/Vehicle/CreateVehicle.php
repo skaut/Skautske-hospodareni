@@ -11,23 +11,17 @@ use Model\Travel\Handlers\Vehicle\CreateVehicleHandler;
  */
 final class CreateVehicle
 {
-    /** @var string */
-    private $type;
+    private string $type;
 
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var int|NULL */
-    private $subunitId;
+    private ?int $subunitId = null;
 
-    /** @var string */
-    private $registration;
+    private string $registration;
 
-    /** @var float */
-    private $consumption;
+    private float $consumption;
 
-    /** @var int */
-    private $userId;
+    private int $userId;
 
     public function __construct(
         string $type,
@@ -45,32 +39,32 @@ final class CreateVehicle
         $this->userId       = $userId;
     }
 
-    public function getType() : string
+    public function getType(): string
     {
         return $this->type;
     }
 
-    public function getUnitId() : int
+    public function getUnitId(): int
     {
         return $this->unitId;
     }
 
-    public function getSubunitId() : ?int
+    public function getSubunitId(): ?int
     {
         return $this->subunitId;
     }
 
-    public function getRegistration() : string
+    public function getRegistration(): string
     {
         return $this->registration;
     }
 
-    public function getConsumption() : float
+    public function getConsumption(): float
     {
         return $this->consumption;
     }
 
-    public function getUserId() : int
+    public function getUserId(): int
     {
         return $this->userId;
     }

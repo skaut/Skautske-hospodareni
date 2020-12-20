@@ -23,19 +23,16 @@ class PaymentCompletedEmailTest extends IntegrationTest
 {
     private const EMAIL = 'test@hospodareni.loc';
 
-    /** @var PaymentService */
-    private $paymentService;
+    private PaymentService $paymentService;
 
-    /** @var UserRepositoryStub */
-    private $users;
+    private UserRepositoryStub $users;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
     /**
      * @return string[]
      */
-    protected function getTestedAggregateRoots() : array
+    protected function getTestedAggregateRoots(): array
     {
         return [
             Group::class,
@@ -44,7 +41,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
         ];
     }
 
-    protected function _before() : void
+    protected function _before(): void
     {
         $this->tester->useConfigFiles(['Payment/UseCases/PaymentCompletedEmailTest.neon']);
         parent::_before();
@@ -53,7 +50,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
         $this->commandBus     = $this->tester->grabService(CommandBus::class);
     }
 
-    public function testWhenEmailIsNotSetNothingHappens() : void
+    public function testWhenEmailIsNotSetNothingHappens(): void
     {
         $this->users->setUser(new User(10, 'František Maša', self::EMAIL));
         $this->createOAuth();
@@ -67,7 +64,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
     /**
      * @see bug https://github.com/skaut/Skautske-hospodareni/pull/511
      */
-    public function testWhenPaymentHasNoEmailNothingHappens() : void
+    public function testWhenPaymentHasNoEmailNothingHappens(): void
     {
         $this->users->setUser(new User(10, 'František Maša', self::EMAIL));
         $this->createOAuth();
@@ -84,7 +81,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
     /**
      * @see bug https://github.com/skaut/Skautske-hospodareni/pull/511
      */
-    public function testWhenGroupHasNoOAuthSetNothingHappens() : void
+    public function testWhenGroupHasNoOAuthSetNothingHappens(): void
     {
         $this->users->setUser(new User(10, 'František Maša', self::EMAIL));
         $this->initEntities([
@@ -97,7 +94,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
         $this->assertPaymentWasCompleted();
     }
 
-    public function testEmailIsSentWhenPaymentIsCompleted() : void
+    public function testEmailIsSentWhenPaymentIsCompleted(): void
     {
         $email   = new EmailTemplate('subject', 'body');
         $oAuthId = $this->createOAuth();
@@ -118,14 +115,14 @@ class PaymentCompletedEmailTest extends IntegrationTest
     /**
      * @param EmailTemplate[]|null $emails
      */
-    private function initEntities(?array $emails = null, ?string $paymentEmail = self::EMAIL, ?OAuthId $oAuthId = null) : void
+    private function initEntities(?array $emails = null, ?string $paymentEmail = self::EMAIL, ?OAuthId $oAuthId = null): void
     {
         if ($oAuthId === null) {
             $oAuthId = OAuthId::generate();
         }
 
         $paymentDefaults = Helpers::createEmptyPaymentDefaults();
-        $emails          = $emails ?? [
+        $emails        ??= [
             EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
         ];
 
@@ -135,7 +132,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
         );
     }
 
-    private function createOAuth(string $password = '') : OAuthId
+    private function createOAuth(string $password = ''): OAuthId
     {
         $id = '42288e92-27fb-453c-9904-36a7ebd14fe2';
         $this->tester->haveInDatabase('google_oauth', [
@@ -149,7 +146,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
         return OAuthId::fromString('42288e92-27fb-453c-9904-36a7ebd14fe2');
     }
 
-    private function assertPaymentWasCompleted() : void
+    private function assertPaymentWasCompleted(): void
     {
         $this->tester->seeInDatabase('pa_payment', [
             'id' => 1,

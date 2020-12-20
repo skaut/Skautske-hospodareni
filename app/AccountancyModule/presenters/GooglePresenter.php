@@ -8,24 +8,15 @@ use InvalidArgumentException;
 use Model\Common\UnitId;
 use Model\Google\Commands\SaveOAuth;
 use Model\Google\ReadModel\Queries\OAuthUrlQuery;
-use Model\Mail\Repositories\IGoogleRepository;
 
 class GooglePresenter extends BasePresenter
 {
-    private IGoogleRepository $googleRepository;
-
-    public function __construct(IGoogleRepository $googleRepository)
-    {
-        parent::__construct();
-        $this->googleRepository = $googleRepository;
-    }
-
-    public function actionOAuth() : void
+    public function actionOAuth(): void
     {
         $this->redirectUrl($this->queryBus->handle(new OAuthUrlQuery()));
     }
 
-    public function actionToken(string $code) : void
+    public function actionToken(string $code): void
     {
         try {
             $this->commandBus->handle(new SaveOAuth($code, new UnitId($this->userService->getActualRole()->getUnitId())));
@@ -33,6 +24,7 @@ class GooglePresenter extends BasePresenter
             $this->flashMessage('Nepodařilo se propojit Google účet!', 'danger');
             $this->redirect(':Accountancy:Payment:Mail:');
         }
+
         $this->flashMessage('Propojení s Google účtem proběhlo úspěšně!');
         $this->redirect(':Accountancy:Payment:Mail:');
     }

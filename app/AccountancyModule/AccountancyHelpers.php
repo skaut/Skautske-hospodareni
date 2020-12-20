@@ -12,6 +12,7 @@ use Model\Payment\Payment\State;
 use Money\Money;
 use Nette\Utils\Html;
 use RuntimeException;
+
 use function array_reverse;
 use function array_shift;
 use function count;
@@ -58,7 +59,7 @@ abstract class AccountancyHelpers
     /**
      * zobrazení stavu ve formě ikony
      */
-    public static function eventStateLabel(string $s) : string
+    public static function eventStateLabel(string $s): string
     {
         if ($s === 'draft') {
             return '<span class=\'badge badge-warning\'>Rozpracováno</span>';
@@ -76,23 +77,27 @@ abstract class AccountancyHelpers
     /**
      * zobrazuje popisky stavů u táborů
      */
-    public static function campStateLabel(string $s) : string
+    public static function campStateLabel(string $s): string
     {
         switch ($s) {
             case 'draft':
                 return '<span class=\'badge badge-warning\'>Rozpracováno</span>';
+
             case 'approvedParent':
                 return '<span class=\'badge badge-info\'>Schválený střediskem</span>';
+
             case 'approvedLeader':
                 return '<span class=\'badge badge-info\'>Schválený vedoucím</span>';
+
             case 'real':
                 return '<span class=\'badge badge-success\'>Skutečnost odevzdána</span>';
+
             default:
                 return '<span class=\'badge badge-danger\'>Zrušený</span>';
         }
     }
 
-    public static function commandState(?DateTimeInterface $s) : string
+    public static function commandState(?DateTimeInterface $s): string
     {
         if ($s === null) {
             return '<span class="hidden-xs hidden-sm badge badge-warning">Rozpracovaný</span>';
@@ -102,7 +107,7 @@ abstract class AccountancyHelpers
             $s->format('j.n.Y H:i:s') . '">Uzavřený</span>';
     }
 
-    public static function paymentState(string $state, bool $plural) : string
+    public static function paymentState(string $state, bool $plural): string
     {
         $labels = [
             State::PREPARING => ['Nezaplacena', 'Nezaplacené'],
@@ -113,7 +118,7 @@ abstract class AccountancyHelpers
         return $labels[$state][$plural ? 1 : 0] ?? $state;
     }
 
-    public static function paymentStateLabel(State $s) : Html
+    public static function paymentStateLabel(State $s): Html
     {
         $classes = [
             State::PREPARING => 'info',
@@ -132,11 +137,12 @@ abstract class AccountancyHelpers
      * @param float|string|Money|null $price
      * http://prirucka.ujc.cas.cz/?id=786
      */
-    public static function price($price, bool $full = true) : string
+    public static function price($price, bool $full = true): string
     {
         if ($price === null || $price === '') {
             return ' '; //je tam nedělitelná mezera
         }
+
         $decimals = $full ? 2 : 0;
 
         if ($price instanceof Money) {
@@ -151,12 +157,12 @@ abstract class AccountancyHelpers
      *
      * @param int|float|string $num
      */
-    public static function num($num) : string
+    public static function num($num): string
     {
         return number_format((float) $num, strpos((string) $num, '.') ? 2 : 0, ',', ' ');
     }
 
-    public static function postCode(string $oldPsc) : string
+    public static function postCode(string $oldPsc): string
     {
         $psc = preg_replace('/[^0-9]/', '', $oldPsc);
 
@@ -170,7 +176,7 @@ abstract class AccountancyHelpers
     /**
      * převádí zadané číslo na slovní řetězec
      */
-    public static function priceToString(float $price) : string
+    public static function priceToString(float $price): string
     {
         //@todo ošetření správného tvaru
 
@@ -267,13 +273,15 @@ abstract class AccountancyHelpers
         return mb_strtoupper(mb_substr($string, 0, 1, 'UTF-8'), 'UTF-8') . mb_substr($string, 1, null, 'UTF-8');
     }
 
-    public static function groupState(string $s) : string
+    public static function groupState(string $s): string
     {
         switch ($s) {
             case 'open':
                 return '<span class=\'badge badge-success\'>Otevřená</span>';
+
             case 'closed':
                 return '<span class=\'badge badge-warning\'>Uzavřená</span>';
+
             default:
                 throw new ShouldNotHappen(sprintf('Unknown group state "%s"', $s));
         }
@@ -282,18 +290,21 @@ abstract class AccountancyHelpers
     /**
      * @param Date[] $dates
      */
-    public static function dateRange(array $dates) : string
+    public static function dateRange(array $dates): string
     {
         if (count($dates) !== 2) {
             throw new InvalidArgumentException('Filter expect array of 2 items.');
         }
+
         [$start, $end] = $dates;
         if ($start->year !== $end->year) {
             return sprintf('%s - %s', $start->format(self::DATE_FORMAT_FULL), $end->format(self::DATE_FORMAT_FULL));
         }
+
         if ($start->month !== $end->month) {
             return sprintf('%s - %s', $start->format(self::DATE_FORMAT_DAY_MONTH), $end->format(self::DATE_FORMAT_FULL));
         }
+
         if ($start->day !== $end->day) {
             return sprintf('%s - %s', $start->format(self::DATE_FORMAT_DAY), $end->format(self::DATE_FORMAT_FULL));
         }

@@ -8,19 +8,19 @@ use Model\Payment\Commands\Group\RemoveGroup;
 use Model\Payment\Group;
 use Model\Payment\GroupNotClosed;
 use Model\Payment\Repositories\IGroupRepository;
+
 use function sprintf;
 
 final class RemoveGroupHandler
 {
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
     public function __construct(IGroupRepository $groups)
     {
         $this->groups = $groups;
     }
 
-    public function __invoke(RemoveGroup $command) : void
+    public function __invoke(RemoveGroup $command): void
     {
         $group = $this->groups->find($command->getGroupId());
 

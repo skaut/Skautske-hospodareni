@@ -12,11 +12,9 @@ use Model\Common\IScanStorage;
 
 final class AddChitScanHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbook;
+    private ICashbookRepository $cashbook;
 
-    /** @var IScanStorage */
-    private $scanStorage;
+    private IScanStorage $scanStorage;
 
     public function __construct(
         ICashbookRepository $cashbook,
@@ -26,7 +24,7 @@ final class AddChitScanHandler
         $this->scanStorage = $scanStorage;
     }
 
-    public function __invoke(AddChitScan $command) : void
+    public function __invoke(AddChitScan $command): void
     {
         $path = FilePath::generate(ChitScan::FILE_PATH_PREFIX, $command->getFileName());
         $this->scanStorage->save($path, $command->getScanContents());

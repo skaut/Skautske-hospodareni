@@ -15,6 +15,7 @@ use Model\Event\Commands\CancelEvent;
 use Model\Event\ReadModel\Queries\EventStates;
 use Model\Event\SkautisEventId;
 use Skautis\Exception;
+
 use function array_merge;
 use function get_class;
 use function sprintf;
@@ -23,11 +24,9 @@ class DefaultPresenter extends BasePresenter
 {
     public const DEFAULT_STATE = 'draft'; //filtrovani zobrazených položek
 
-    /** @var IExportDialogFactory */
-    private $exportDialogFactory;
+    private IExportDialogFactory $exportDialogFactory;
 
-    /** @var GridFactory */
-    private $gridFactory;
+    private GridFactory $gridFactory;
 
     public function __construct(IExportDialogFactory $exportDialogFactory, GridFactory $gridFactory)
     {
@@ -36,7 +35,7 @@ class DefaultPresenter extends BasePresenter
         $this->gridFactory         = $gridFactory;
     }
 
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
 
@@ -44,7 +43,7 @@ class DefaultPresenter extends BasePresenter
         $this->setLayout('layout.new');
     }
 
-    public function handleCancel(int $aid) : void
+    public function handleCancel(int $aid): void
     {
         if (! $this->authorizator->isAllowed(EventResource::CANCEL, $aid)) {
             $this->flashMessage('Nemáte právo na zrušení akce.', 'danger');
@@ -65,12 +64,12 @@ class DefaultPresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    protected function createComponentExportDialog() : ExportDialog
+    protected function createComponentExportDialog(): ExportDialog
     {
         return $this->exportDialogFactory->create($this['grid']->getFilteredAndSortedData());
     }
 
-    protected function createComponentGrid() : DataGrid
+    protected function createComponentGrid(): DataGrid
     {
         $grid = $this->gridFactory->createSimpleGrid(
             __DIR__ . '/../templates/Default/@eventsGrid.latte',
@@ -92,13 +91,13 @@ class DefaultPresenter extends BasePresenter
         $grid->addColumnText('state', 'Stav');
 
         $grid->addYearFilter('year', 'Rok')
-            ->setCondition(function (EventListDataSource $dataSource, $year) : void {
+            ->setCondition(function (EventListDataSource $dataSource, $year): void {
                 $dataSource->filterByYear($year === DataGrid::OPTION_ALL ? null : (int) ($year ?? Date::today()->year));
             });
 
         $states = array_merge([DataGrid::OPTION_ALL => 'Nezrušené'], $this->queryBus->handle(new EventStates()));
         $grid->addFilterSelect('state', 'Stav', $states)
-            ->setCondition(function (EventListDataSource $dataSource, ?string $state) : void {
+            ->setCondition(function (EventListDataSource $dataSource, ?string $state): void {
                 $dataSource->filterByState($state === DataGrid::OPTION_ALL ? null : $state);
             });
 

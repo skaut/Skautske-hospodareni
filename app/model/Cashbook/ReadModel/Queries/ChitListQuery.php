@@ -13,11 +13,9 @@ use Model\Cashbook\ReadModel\QueryHandlers\ChitListQueryHandler;
  */
 final class ChitListQuery
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var PaymentMethod|null */
-    private $paymentMethod;
+    private ?PaymentMethod $paymentMethod = null;
 
     /**
      * Use static factory method
@@ -28,22 +26,22 @@ final class ChitListQuery
         $this->paymentMethod = $paymentMethod;
     }
 
-    public static function withMethod(PaymentMethod $paymentMethod, CashbookId $cashbookId) : self
+    public static function withMethod(PaymentMethod $paymentMethod, CashbookId $cashbookId): self
     {
         return new self($cashbookId, $paymentMethod);
     }
 
-    public static function all(CashbookId $cashbookId) : self
+    public static function all(CashbookId $cashbookId): self
     {
         return new self($cashbookId, null);
     }
 
-    public function getCashbookId() : CashbookId
+    public function getCashbookId(): CashbookId
     {
         return $this->cashbookId;
     }
 
-    public function getPaymentMethod() : ?PaymentMethod
+    public function getPaymentMethod(): ?PaymentMethod
     {
         return $this->paymentMethod;
     }

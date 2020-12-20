@@ -45,9 +45,9 @@ class Payment
 
     private Date $dueDate;
 
-    private ?VariableSymbol $variableSymbol;
+    private ?VariableSymbol $variableSymbol = null;
 
-    private ?int $constantSymbol;
+    private ?int $constantSymbol = null;
 
     private string $note;
 
@@ -55,13 +55,13 @@ class Payment
 
     private State $state;
 
-    private ?Transaction $transaction;
+    private ?Transaction $transaction = null;
 
-    private ?DateTimeImmutable $closedAt;
+    private ?DateTimeImmutable $closedAt = null;
 
-    private ?string $closedByUsername;
+    private ?string $closedByUsername = null;
 
-    private ?int $personId;
+    private ?int $personId = null;
 
     private int $groupId;
 
@@ -108,78 +108,78 @@ class Payment
         $this->sentEmails       = $sentEmails;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getAmount() : float
+    public function getAmount(): float
     {
         return $this->amount;
     }
 
     /** @return EmailAddress[] */
-    public function getEmailRecipients() : array
+    public function getEmailRecipients(): array
     {
         return $this->recipients;
     }
 
-    public function getDueDate() : Date
+    public function getDueDate(): Date
     {
         return $this->dueDate;
     }
 
-    public function getVariableSymbol() : ?VariableSymbol
+    public function getVariableSymbol(): ?VariableSymbol
     {
         return $this->variableSymbol;
     }
 
-    public function getConstantSymbol() : ?int
+    public function getConstantSymbol(): ?int
     {
         return $this->constantSymbol;
     }
 
-    public function getNote() : string
+    public function getNote(): string
     {
         return $this->note;
     }
 
-    public function isClosed() : bool
+    public function isClosed(): bool
     {
         return $this->closed;
     }
 
-    public function getState() : State
+    public function getState(): State
     {
         return $this->state;
     }
 
-    public function getTransaction() : ?Transaction
+    public function getTransaction(): ?Transaction
     {
         return $this->transaction;
     }
 
-    public function getClosedAt() : ?DateTimeImmutable
+    public function getClosedAt(): ?DateTimeImmutable
     {
         return $this->closedAt;
     }
 
-    public function getClosedByUsername() : ?string
+    public function getClosedByUsername(): ?string
     {
         return $this->closedByUsername;
     }
 
-    public function getPersonId() : ?int
+    public function getPersonId(): ?int
     {
         return $this->personId;
     }
 
-    public function getGroupId() : int
+    public function getGroupId(): int
     {
         return $this->groupId;
     }
@@ -187,7 +187,7 @@ class Payment
     /**
      * @return SentEmail[]
      */
-    public function getSentEmails() : array
+    public function getSentEmails(): array
     {
         return $this->sentEmails;
     }

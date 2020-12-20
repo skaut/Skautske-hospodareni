@@ -9,15 +9,14 @@ use Skautis\Skautis;
 
 class ActivateAutocomputedCashbookHandler
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
     public function __construct(Skautis $skautis)
     {
         $this->skautis = $skautis;
     }
 
-    public function __invoke(ActivateAutocomputedCashbook $command) : void
+    public function __invoke(ActivateAutocomputedCashbook $command): void
     {
         $this->skautis->event->eventCampUpdateRealTotalCostBeforeEnd([
             'ID' => $command->getCampId()->toInt(),

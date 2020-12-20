@@ -11,5 +11,5 @@ interface IUnitResolver
     /**
      * @throws UnitHasNoParent
      */
-    public function getOfficialUnitId(int $unitId) : int;
+    public function getOfficialUnitId(int $unitId): int;
 }

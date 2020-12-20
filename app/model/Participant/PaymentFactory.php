@@ -12,7 +12,7 @@ final class PaymentFactory
 {
     use StaticClass;
 
-    public static function createDefault(int $participantId, Event $event) : Payment
+    public static function createDefault(int $participantId, Event $event): Payment
     {
         return new Payment(
             PaymentId::generate(),

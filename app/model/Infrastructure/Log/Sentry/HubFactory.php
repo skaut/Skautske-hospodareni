@@ -16,7 +16,7 @@ final class HubFactory
     /**
      * @param callable[] $eventProcessors
      */
-    public static function create(?string $dsn, array $eventProcessors, string $releaseHash) : Hub
+    public static function create(?string $dsn, array $eventProcessors, string $releaseHash): Hub
     {
         $scope = new Scope();
 

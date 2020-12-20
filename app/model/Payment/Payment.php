@@ -22,7 +22,7 @@ use Model\Payment\Payment\EmailRecipient;
 use Model\Payment\Payment\SentEmail;
 use Model\Payment\Payment\State;
 use Model\Payment\Payment\Transaction;
-use RuntimeException;
+
 use function array_map;
 use function array_unique;
 use function in_array;
@@ -38,23 +38,19 @@ class Payment extends Aggregate
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
      */
-    private ?int $id;
+    private int $id;
 
-    /**
-     * @ORM\Column(type="integer", name="groupId", options={"unsigned"=true})
-     */
+    /** @ORM\Column(type="integer", name="groupId", options={"unsigned"=true}) */
     private int $groupId;
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     */
+    /** @ORM\Column(type="string", length=64) */
     private string $name;
 
-    /**
-     * @deprecated - use email recipients
-     *
-     * @ORM\Column(type="text", nullable=true)
-     */
+   /**
+    * @deprecated - use email recipients
+    *
+    * @ORM\Column(type="text", nullable=true)
+    */
     private ?string $email;
 
     /**
@@ -63,36 +59,24 @@ class Payment extends Aggregate
      * @phpstan-var Collection<int, EmailRecipient>
      * @var Collection<int, EmailRecipient>
      */
-    private $emailRecipients;
+    private Collection $emailRecipients;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true, name="personId")
-     */
-    private ?int $personId;
+    /** @ORM\Column(type="integer", nullable=true, name="personId") */
+    private ?int $personId = null;
 
-    /**
-     * @ORM\Column(type="float")
-     */
+    /** @ORM\Column(type="float") */
     private float $amount;
 
-    /**
-     * @ORM\Column(type="chronos_date", name="maturity")
-     */
+    /** @ORM\Column(type="chronos_date", name="maturity") */
     private Date $dueDate;
 
-    /**
-     * @ORM\Column(type="variable_symbol", nullable=true, length=10, name="vs")
-     */
-    private ?VariableSymbol $variableSymbol;
+    /** @ORM\Column(type="variable_symbol", nullable=true, length=10, name="vs") */
+    private ?VariableSymbol $variableSymbol = null;
 
-    /**
-     * @ORM\Column(type="smallint", nullable=true, name="ks", options={"unsigned"=true})
-     */
-    private ?int $constantSymbol;
+    /** @ORM\Column(type="smallint", nullable=true, name="ks", options={"unsigned"=true}) */
+    private ?int $constantSymbol = null;
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     */
+    /** @ORM\Column(type="string", length=64) */
     private string $note = '';
 
     /**
@@ -102,21 +86,18 @@ class Payment extends Aggregate
      */
     private ?Transaction $transaction = null;
 
-    /**
-     * @ORM\Column(type="datetime_immutable", nullable=true, name="dateClosed")
-     */
+    /** @ORM\Column(type="datetime_immutable", nullable=true, name="dateClosed") */
     private ?DateTimeImmutable $closedAt = null;
 
-    /**
-     * @ORM\Column(type="string", length=64, nullable=true)
-     */
+    /** @ORM\Column(type="string", length=64, nullable=true) */
     private ?string $closedByUsername = null;
 
     /**
      * @ORM\Column(type="string_enum", length=20)
      *
-     * @var State
      * @Enum(class=State::class)
+     * @var State
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
     private $state;
 
@@ -125,7 +106,7 @@ class Payment extends Aggregate
      *
      * @var Collection<int, SentEmail>
      */
-    private $sentEmails;
+    private Collection $sentEmails;
 
     /**
      * @param EmailAddress[] $recipients
@@ -156,12 +137,8 @@ class Payment extends Aggregate
         $this->raise(new PaymentWasCreated($group->getId(), $variableSymbol));
     }
 
-    public function getId() : int
+    public function getId(): int
     {
-        if ($this->id === null) {
-            throw new RuntimeException("Can't get ID from not persisted aggregate");
-        }
-
         return $this->id;
     }
 
@@ -178,7 +155,7 @@ class Payment extends Aggregate
         ?VariableSymbol $variableSymbol,
         ?int $constantSymbol,
         string $note
-    ) : void {
+    ): void {
         $this->checkNotClosed();
         $this->updateDetails($name, $recipients, $dueDate, $constantSymbol, $note);
 
@@ -195,33 +172,33 @@ class Payment extends Aggregate
         $this->amount = $amount;
     }
 
-    private function complete(DateTimeImmutable $time) : void
+    private function complete(DateTimeImmutable $time): void
     {
         $this->checkNotClosed();
         $this->state    = State::get(State::COMPLETED);
         $this->closedAt = $time;
     }
 
-    public function completeManually(DateTimeImmutable $time, string $userFullName) : void
+    public function completeManually(DateTimeImmutable $time, string $userFullName): void
     {
         $this->complete($time);
         $this->closedByUsername = $userFullName;
         $this->raise(new PaymentWasCompleted($this->id));
     }
 
-    public function pairWithTransaction(DateTimeImmutable $time, Transaction $transaction) : void
+    public function pairWithTransaction(DateTimeImmutable $time, Transaction $transaction): void
     {
         $this->complete($time);
         $this->transaction = $transaction;
         $this->raise(new PaymentWasCompleted($this->id));
     }
 
-    public function recordSentEmail(EmailType $type, DateTimeImmutable $time, string $senderName) : void
+    public function recordSentEmail(EmailType $type, DateTimeImmutable $time, string $senderName): void
     {
         $this->sentEmails[] = new SentEmail($this, $type, $time, $senderName);
     }
 
-    public function cancel(DateTimeImmutable $time) : void
+    public function cancel(DateTimeImmutable $time): void
     {
         if ($this->state->equalsValue(State::CANCELED)) {
             throw new PaymentClosed('Payment is already canceled!');
@@ -231,7 +208,7 @@ class Payment extends Aggregate
         $this->closedAt = $time;
     }
 
-    public function updateVariableSymbol(VariableSymbol $variableSymbol) : void
+    public function updateVariableSymbol(VariableSymbol $variableSymbol): void
     {
         $this->checkNotClosed();
 
@@ -242,17 +219,17 @@ class Payment extends Aggregate
         $this->variableSymbol = $variableSymbol;
     }
 
-    public function getGroupId() : int
+    public function getGroupId(): int
     {
         return $this->groupId;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getEmail() : ?string
+    public function getEmail(): ?string
     {
         return $this->email;
     }
@@ -260,69 +237,69 @@ class Payment extends Aggregate
     /**
      * @return EmailRecipient[]
      */
-    public function getEmailRecipients() : array
+    public function getEmailRecipients(): array
     {
         return $this->emailRecipients->toArray();
     }
 
-    public function getPersonId() : ?int
+    public function getPersonId(): ?int
     {
         return $this->personId;
     }
 
-    public function getAmount() : float
+    public function getAmount(): float
     {
         return $this->amount;
     }
 
-    public function getDueDate() : Date
+    public function getDueDate(): Date
     {
         return $this->dueDate;
     }
 
-    public function getVariableSymbol() : ?VariableSymbol
+    public function getVariableSymbol(): ?VariableSymbol
     {
         return $this->variableSymbol;
     }
 
-    public function getConstantSymbol() : ?int
+    public function getConstantSymbol(): ?int
     {
         return $this->constantSymbol;
     }
 
-    public function getNote() : string
+    public function getNote(): string
     {
         return $this->note;
     }
 
-    public function getTransaction() : ?Transaction
+    public function getTransaction(): ?Transaction
     {
         return $this->transaction;
     }
 
-    public function getClosedAt() : ?DateTimeImmutable
+    public function getClosedAt(): ?DateTimeImmutable
     {
         return $this->closedAt;
     }
 
-    public function getClosedByUsername() : ?string
+    public function getClosedByUsername(): ?string
     {
         return $this->closedByUsername;
     }
 
-    public function getState() : State
+    public function getState(): State
     {
         return $this->state;
     }
 
-    public function isClosed() : bool
+    public function isClosed(): bool
     {
         $state = $this->state;
 
         return in_array($state->getValue(), [State::COMPLETED, State::CANCELED], true);
     }
 
-    public function canBePaired() : bool
+    public function canBePaired(): bool
     {
         return ! $this->isClosed() && $this->variableSymbol !== null;
     }
@@ -330,7 +307,7 @@ class Payment extends Aggregate
     /**
      * @return SentEmail[]
      */
-    public function getSentEmails() : array
+    public function getSentEmails(): array
     {
         return $this->sentEmails->toArray();
     }
@@ -338,7 +315,7 @@ class Payment extends Aggregate
     /**
      * @throws PaymentClosed
      */
-    private function checkNotClosed() : void
+    private function checkNotClosed(): void
     {
         if ($this->closedAt !== null) {
             throw new PaymentClosed('Already closed!');
@@ -354,11 +331,11 @@ class Payment extends Aggregate
         Date $dueDate,
         ?int $constantSymbol,
         string $note
-    ) : void {
+    ): void {
         $this->name            = $name;
         $this->dueDate         = $dueDate;
         $this->constantSymbol  = $constantSymbol;
         $this->note            = $note;
-        $this->emailRecipients = new ArrayCollection(array_map(fn(EmailAddress $emailAddress) => new EmailRecipient($this, $emailAddress), array_unique($recipients)));
+        $this->emailRecipients = new ArrayCollection(array_map(fn (EmailAddress $emailAddress) => new EmailRecipient($this, $emailAddress), array_unique($recipients)));
     }
 }

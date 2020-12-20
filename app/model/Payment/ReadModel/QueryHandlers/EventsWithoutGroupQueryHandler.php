@@ -11,17 +11,16 @@ use Model\Payment\Group;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\ReadModel\Queries\EventsWithoutGroupQuery;
 use Model\Payment\Repositories\IGroupRepository;
+
 use function array_map;
 use function assert;
 use function in_array;
 
 final class EventsWithoutGroupQueryHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
     public function __construct(QueryBus $queryBus, IGroupRepository $groups)
     {
@@ -32,7 +31,7 @@ final class EventsWithoutGroupQueryHandler
     /**
      * @return Event[]
      */
-    public function __invoke(EventsWithoutGroupQuery $query) : array
+    public function __invoke(EventsWithoutGroupQuery $query): array
     {
         $events = $this->queryBus->handle(new EventListQuery($query->getYear()));
 
@@ -59,17 +58,17 @@ final class EventsWithoutGroupQueryHandler
      *
      * @return int[]
      */
-    private function getEventWithGroupIds(array $events) : array
+    private function getEventWithGroupIds(array $events): array
     {
         $skautisEntities = array_map(
-            function (Event $event) : SkautisEntity {
+            function (Event $event): SkautisEntity {
                 return SkautisEntity::fromEventId($event->getId());
             },
             $events
         );
 
         return array_map(
-            function (Group $group) : int {
+            function (Group $group): int {
                 return $group->getObject()->getId();
             },
             $this->groups->findBySkautisEntities(...$skautisEntities)

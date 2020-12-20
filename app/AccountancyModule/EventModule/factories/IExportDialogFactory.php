@@ -12,5 +12,5 @@ interface IExportDialogFactory
     /**
      * @param EventListItem[] $events
      */
-    public function create(array $events) : ExportDialog;
+    public function create(array $events): ExportDialog;
 }

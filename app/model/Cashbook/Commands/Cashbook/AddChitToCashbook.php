@@ -14,17 +14,14 @@ use Model\DTO\Cashbook\ChitItem as ChitItemDto;
  */
 final class AddChitToCashbook
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var ChitBody */
-    private $body;
+    private ChitBody $body;
 
     /** @var ChitItemDto[] */
-    private $items;
+    private array $items;
 
-    /** @var PaymentMethod */
-    private $paymentMethod;
+    private PaymentMethod $paymentMethod;
 
     /**
      * @param ChitItemDto[] $items
@@ -37,12 +34,12 @@ final class AddChitToCashbook
         $this->items         = $items;
     }
 
-    public function getCashbookId() : CashbookId
+    public function getCashbookId(): CashbookId
     {
         return $this->cashbookId;
     }
 
-    public function getBody() : ChitBody
+    public function getBody(): ChitBody
     {
         return $this->body;
     }
@@ -50,12 +47,12 @@ final class AddChitToCashbook
     /**
      * @return ChitItemDto[]
      */
-    public function getItems() : array
+    public function getItems(): array
     {
         return $this->items;
     }
 
-    public function getPaymentMethod() : PaymentMethod
+    public function getPaymentMethod(): PaymentMethod
     {
         return $this->paymentMethod;
     }

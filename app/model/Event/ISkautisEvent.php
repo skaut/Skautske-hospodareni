@@ -8,5 +8,5 @@ use Model\Common\UnitId;
 
 interface ISkautisEvent
 {
-    public function getUnitId() : UnitId;
+    public function getUnitId(): UnitId;
 }

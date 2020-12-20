@@ -12,20 +12,18 @@ use Model\Common\EmailAddress;
 use Model\Payment\Commands\Payment\CreatePayment;
 use Model\PaymentService;
 use Nette\Forms\Controls\TextBase;
+
 use function array_filter;
 use function array_map;
 use function assert;
 
 class MassAddForm extends BaseControl
 {
-    /** @var int */
-    private $groupId;
+    private int $groupId;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var PaymentService */
-    private $payments;
+    private PaymentService $payments;
 
     public function __construct(int $groupId, PaymentService $payments, CommandBus $commandBus)
     {
@@ -35,7 +33,7 @@ class MassAddForm extends BaseControl
         $this->commandBus = $commandBus;
     }
 
-    protected function createComponentForm() : BaseForm
+    protected function createComponentForm(): BaseForm
     {
         $form = new BaseForm();
 
@@ -65,7 +63,7 @@ class MassAddForm extends BaseControl
         $form->addSubmit('send', 'Přidat vybrané')
             ->setAttribute('class', 'btn btn-primary btn-large');
 
-        $form->onSuccess[] = function (BaseForm $form) : void {
+        $form->onSuccess[] = function (BaseForm $form): void {
             $this->formSubmitted($form);
         };
 
@@ -83,7 +81,7 @@ class MassAddForm extends BaseControl
     /**
      * @param string[] $emails
      */
-    public function addPerson(int $id, array $emails, string $name, ?float $amount = null, string $note = '') : void
+    public function addPerson(int $id, array $emails, string $name, ?float $amount = null, string $note = ''): void
     {
         $form          = $this['form'];
         $persons       = $form['persons'];
@@ -137,13 +135,13 @@ class MassAddForm extends BaseControl
             ->setAttribute('class', 'input-small');
     }
 
-    public function render() : void
+    public function render(): void
     {
         $this->template->setFile(__DIR__ . '/templates/MassAddForm.latte');
         $this->template->render();
     }
 
-    private function formSubmitted(BaseForm $form) : void
+    private function formSubmitted(BaseForm $form): void
     {
         $values = $form->getValues();
 

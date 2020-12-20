@@ -6,11 +6,9 @@ namespace Model\DTO\Participant;
 
 class Statistics
 {
-    /** @var int */
-    private $personDays;
+    private int $personDays;
 
-    /** @var int */
-    private $personsCount;
+    private int $personsCount;
 
     public function __construct(int $personDays, int $personsCount)
     {
@@ -18,12 +16,12 @@ class Statistics
         $this->personsCount = $personsCount;
     }
 
-    public function getPersonDays() : int
+    public function getPersonDays(): int
     {
         return $this->personDays;
     }
 
-    public function getPersonsCount() : int
+    public function getPersonsCount(): int
     {
         return $this->personsCount;
     }

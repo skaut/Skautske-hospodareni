@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace acceptance;
 
 use AcceptanceTester;
+
 use function date;
 
 $I = new AcceptanceTester($scenario);
 
 $I->login(AcceptanceTester::UNIT_LEADER_ROLE);
 
-function fillModalAndSubmit(AcceptanceTester $I, int $year) : void
+function fillModalAndSubmit(AcceptanceTester $I, int $year): void
 {
     $I->waitForText('Vyberte rok');
     $I->selectOption('Rok', $year);

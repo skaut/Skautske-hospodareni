@@ -12,6 +12,7 @@ use Model\EventEntity;
 use Nette\Application\BadRequestException;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Http\IResponse;
+
 use function array_filter;
 use function array_map;
 use function in_array;
@@ -39,44 +40,32 @@ final class ParticipantList extends BaseControl
 
     private const NO_ACTION = '';
 
-    /** @var int */
-    public $aid;
+    public int $aid;
 
     /** @var callable[] */
-    public $onUpdate = [];
+    public array $onUpdate = [];
 
     /** @var callable[] */
-    public $onRemove = [];
+    public array $onRemove = [];
 
-    /** @var bool */
-    protected $isAllowRepayment;
+    protected bool $isAllowRepayment;
 
-    /** @var bool */
-    protected $isAllowIsAccount;
+    protected bool $isAllowIsAccount;
 
-    /** @var bool */
-    protected $isAllowParticipantUpdate;
+    protected bool $isAllowParticipantUpdate;
 
-    /** @var bool */
-    protected $isAllowParticipantDelete;
+    protected bool $isAllowParticipantDelete;
 
-    /** @var EventEntity */
-    protected $eventService;
+    protected EventEntity $eventService;
 
     /** @var Participant[] */
-    private $currentParticipants;
+    private array $currentParticipants;
 
-    /**
-     * @var bool
-     * @persistent
-     */
-    public $showUnits = false;
+    /** @persistent */
+    public bool $showUnits = false;
 
-    /**
-     * @var string|null
-     * @persistent
-     */
-    public $sort = 'displayName';
+    /** @persistent */
+    public ?string $sort = 'displayName';
 
     /**
      * @param Participant[] $currentParticipants
@@ -100,7 +89,7 @@ final class ParticipantList extends BaseControl
         $this->isAllowParticipantDelete = $isAllowParticipantDelete;
     }
 
-    public function render() : void
+    public function render(): void
     {
         $this->redrawControl(); // Always redraw
 
@@ -110,6 +99,7 @@ final class ParticipantList extends BaseControl
         if (! $this->isAllowRepayment) {
             unset($sortOptions['repayment']);
         }
+
         if (! $this->isAllowIsAccount) {
             unset($sortOptions['onAccount']);
         }
@@ -134,21 +124,22 @@ final class ParticipantList extends BaseControl
     /**
      * @param Participant[] $participants
      */
-    protected function sortParticipants(array &$participants, string $sort) : void
+    protected function sortParticipants(array &$participants, string $sort): void
     {
         if (! isset(self::SORT_OPTIONS[$sort])) {
             throw new BadRequestException(sprintf('Unknown sort option "%s"', $sort), 400);
         }
 
         if ($sort === 'displayName') {
-            $sortFunction = fn(Participant $a, Participant $b) => strcoll($a->{$sort}, $b->{$sort});
+            $sortFunction = fn (Participant $a, Participant $b) => strcoll($a->{$sort}, $b->{$sort});
         } else {
-            $sortFunction = fn(Participant $a, Participant $b) => $a->{$sort} <=> $b->{$sort};
+            $sortFunction = fn (Participant $a, Participant $b) => $a->{$sort} <=> $b->{$sort};
         }
+
         usort($participants, $sortFunction);
     }
 
-    public function handleSort(string $sort) : void
+    public function handleSort(string $sort): void
     {
         $this->sort = $sort;
         if ($this->getPresenter()->isAjax()) {
@@ -158,7 +149,7 @@ final class ParticipantList extends BaseControl
         }
     }
 
-    public function handleShowUnits(bool $units) : void
+    public function handleShowUnits(bool $units): void
     {
         $this->showUnits = $units;
         if ($this->getPresenter()->isAjax()) {
@@ -168,11 +159,12 @@ final class ParticipantList extends BaseControl
         }
     }
 
-    public function handleRemove(int $participantId) : void
+    public function handleRemove(int $participantId): void
     {
         if (! $this->isAllowParticipantDelete) {
             $this->reload('Nemáte právo mazat účastníky.', 'danger');
         }
+
         $this->onRemove([$participantId]);
         $this->currentParticipants = array_filter(
             $this->currentParticipants,
@@ -183,7 +175,7 @@ final class ParticipantList extends BaseControl
         $this->reload('Účastník byl odebrán', 'success');
     }
 
-    public function handleEdit(int $participantId) : void
+    public function handleEdit(int $participantId): void
     {
         if (! isset($this->participantsById()[$participantId])) {
             throw new BadRequestException(
@@ -195,11 +187,11 @@ final class ParticipantList extends BaseControl
         $this['editDialog']->editParticipant($participantId);
     }
 
-    protected function createComponentEditDialog() : EditParticipantDialog
+    protected function createComponentEditDialog(): EditParticipantDialog
     {
         $dialog = new EditParticipantDialog($this->participantsById(), $this->isAllowIsAccount, $this->isAllowRepayment);
 
-        $dialog->onUpdate[] = function (int $participantId, array $fields) : void {
+        $dialog->onUpdate[] = function (int $participantId, array $fields): void {
             $changes = [];
 
             foreach ($fields as $field => $value) {
@@ -213,7 +205,7 @@ final class ParticipantList extends BaseControl
         return $dialog;
     }
 
-    public function createComponentFormMassParticipants() : BaseForm
+    public function createComponentFormMassParticipants(): BaseForm
     {
         $form = new BaseForm();
 
@@ -231,26 +223,26 @@ final class ParticipantList extends BaseControl
             ->setNullable()
             ->setAttribute('placeholder', 'Ponechat původní hodnotu');
 
-        $form->addCheckboxList('participantIds', null, array_map(fn() => '', $this->participantsById()))
+        $form->addCheckboxList('participantIds', null, array_map(fn () => '', $this->participantsById()))
             ->setRequired('Musíte vybrat některého z účastníků');
 
         $editCon->addRadioList('isAccount', 'Na účet?', ['N' => 'Ne', 'Y' => 'Ano', self::NO_ACTION => 'Ponechat původní hodnotu'])
             ->setDefaultValue('');
         $editCon->addSubmit('send', 'Upravit')
             ->setAttribute('class', 'btn btn-info btn-small')
-            ->onClick[] = function (SubmitButton $button) : void {
+            ->onClick[] = function (SubmitButton $button): void {
                 $this->massEditSubmitted($button);
             };
 
         $form->addSubmit('send', 'Odebrat vybrané')
-            ->onClick[] = function (SubmitButton $button) : void {
+            ->onClick[] = function (SubmitButton $button): void {
                 $this->massRemoveSubmitted($button);
             };
 
         return $form;
     }
 
-    private function massEditSubmitted(SubmitButton $button) : void
+    private function massEditSubmitted(SubmitButton $button): void
     {
         if (! $this->isAllowParticipantUpdate) {
             $this->flashMessage('Nemáte právo upravovat účastníky.', 'danger');
@@ -264,12 +256,15 @@ final class ParticipantList extends BaseControl
             if ($values['days'] !== null) {
                 $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_DAYS, $values['days']);
             }
+
             if ($values['payment'] !== null) {
                 $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_PAYMENT, $values['payment']);
             }
+
             if ($values['repayment'] !== null) {
                 $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_REPAYMENT, $values['repayment']);
             }
+
             if (in_array($values['isAccount'], [self::NO_ACTION, null])) {
                 continue;
             }
@@ -281,7 +276,7 @@ final class ParticipantList extends BaseControl
         $this->reload('Účastníci byli upraveni.');
     }
 
-    private function massRemoveSubmitted(SubmitButton $button) : void
+    private function massRemoveSubmitted(SubmitButton $button): void
     {
         if (! $this->isAllowParticipantDelete) {
             $this->flashMessage('Nemáte právo mazat účastníky.', 'danger');
@@ -292,6 +287,7 @@ final class ParticipantList extends BaseControl
         foreach ($button->getForm()->getValues()->participantIds as $participantId) {
             $ids[] = $participantId;
         }
+
         $this->onRemove($ids);
         $this->reload('Účastníci byli odebráni');
     }
@@ -299,7 +295,7 @@ final class ParticipantList extends BaseControl
     /**
      * @return array<int, Participant> Participant's indexed by their ID
      */
-    private function participantsById() : array
+    private function participantsById(): array
     {
         $participants = [];
 

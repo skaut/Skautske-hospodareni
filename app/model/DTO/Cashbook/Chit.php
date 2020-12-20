@@ -14,6 +14,7 @@ use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\Operation;
 use Nette\SmartObject;
+
 use function array_map;
 use function count;
 use function implode;
@@ -40,32 +41,26 @@ class Chit
 {
     use SmartObject;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var ChitBody */
-    private $body;
+    private ChitBody $body;
 
-    /** @var bool */
-    private $locked;
+    private bool $locked;
 
     /** @var CashbookType[] */
-    private $inverseCashbookTypes;
+    private array $inverseCashbookTypes;
 
-    /** @var PaymentMethod */
-    private $paymentMethod;
+    private PaymentMethod $paymentMethod;
 
     /** @var ChitItem[] */
-    private $items;
+    private array $items;
 
-    /** @var Operation */
-    private $operation;
+    private Operation $operation;
 
-    /** @var Amount */
-    private $amount;
+    private Amount $amount;
 
     /** @var ChitScan[] */
-    private $scans;
+    private array $scans;
 
     /**
      * @param CashbookType[] $inverseCashbookTypes
@@ -94,12 +89,12 @@ class Chit
         $this->scans                = $scans;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getBody() : ChitBody
+    public function getBody(): ChitBody
     {
         return $this->body;
     }
@@ -107,7 +102,7 @@ class Chit
     /**
      * @deprecated use getBody()
      */
-    public function getNumber() : ?ChitNumber
+    public function getNumber(): ?ChitNumber
     {
         return $this->body->getNumber();
     }
@@ -115,7 +110,7 @@ class Chit
     /**
      * @deprecated use getBody()
      */
-    public function getDate() : Date
+    public function getDate(): Date
     {
         return $this->body->getDate();
     }
@@ -123,12 +118,12 @@ class Chit
     /**
      * @deprecated use getBody()
      */
-    public function getRecipient() : ?Recipient
+    public function getRecipient(): ?Recipient
     {
         return $this->body->getRecipient();
     }
 
-    public function getAmount() : Amount
+    public function getAmount(): Amount
     {
         return $this->amount;
     }
@@ -136,38 +131,38 @@ class Chit
     /**
      * @deprecated use getBody()
      */
-    public function getPurpose() : string
+    public function getPurpose(): string
     {
         return implode(', ', array_map(function (ChitItem $i) {
             return $i->getPurpose();
         }, $this->items));
     }
 
-    public function isVirtual() : bool
+    public function isVirtual(): bool
     {
         return $this->items[0]->getCategory()->isVirtual();
     }
 
-    public function isHpd() : bool
+    public function isHpd(): bool
     {
         return $this->items[0]->getCategory()->getShortcut() === 'hpd';
     }
 
-    public function getCategories() : string
+    public function getCategories(): string
     {
         return implode(', ', array_map(function (ChitItem $item) {
             return $item->getCategory()->getName();
         }, $this->items));
     }
 
-    public function getCategoriesShortcut() : string
+    public function getCategoriesShortcut(): string
     {
         return implode(', ', array_map(function (ChitItem $item) {
             return $item->getCategory()->getShortcut();
         }, $this->items));
     }
 
-    public function isLocked() : bool
+    public function isLocked(): bool
     {
         return $this->locked;
     }
@@ -175,22 +170,22 @@ class Chit
     /**
      * @return CashbookType[]
      */
-    public function getInverseCashbookTypes() : array
+    public function getInverseCashbookTypes(): array
     {
         return $this->inverseCashbookTypes;
     }
 
-    public function isIncome() : bool
+    public function isIncome(): bool
     {
         return $this->operation->equalsValue(Operation::INCOME);
     }
 
-    public function getPaymentMethod() : PaymentMethod
+    public function getPaymentMethod(): PaymentMethod
     {
         return $this->paymentMethod;
     }
 
-    public function getSignedAmount() : float
+    public function getSignedAmount(): float
     {
         $amount = $this->amount->toFloat();
 
@@ -204,7 +199,7 @@ class Chit
     /**
      * @return ChitItem[]
      */
-    public function getItems() : array
+    public function getItems(): array
     {
         return $this->items;
     }
@@ -212,17 +207,17 @@ class Chit
     /**
      * @return ChitScan[]
      */
-    public function getScans() : array
+    public function getScans(): array
     {
         return $this->scans;
     }
 
-    public function getScansCount() : int
+    public function getScansCount(): int
     {
         return count($this->scans);
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return sprintf(
             '%s_%s',

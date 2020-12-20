@@ -8,11 +8,9 @@ use Model\Common\UnitId;
 
 final class MemberNamesQuery
 {
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var int */
-    private $minimalAge;
+    private int $minimalAge;
 
     public function __construct(UnitId $unitId, int $minimalAge)
     {
@@ -20,12 +18,12 @@ final class MemberNamesQuery
         $this->minimalAge = $minimalAge;
     }
 
-    public function getUnitId() : UnitId
+    public function getUnitId(): UnitId
     {
         return $this->unitId;
     }
 
-    public function getMinimalAge() : int
+    public function getMinimalAge(): int
     {
         return $this->minimalAge;
     }

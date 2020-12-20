@@ -13,6 +13,7 @@ use Model\Cashbook\Operation;
 use Model\Cashbook\ParticipantType;
 use Model\Cashbook\ReadModel\CategoryTotalsCalculator;
 use Model\Utils\MoneyFactory;
+
 use function array_key_exists;
 
 final class CategoryTotalsCalculatorTest extends Unit
@@ -20,7 +21,7 @@ final class CategoryTotalsCalculatorTest extends Unit
     private const CATEGORY_INCOME_CHILD_ID = 8888;
     private const CATEGORY_INCOME_ADULT_ID = 9999;
 
-    public function testEventCalculation() : void
+    public function testEventCalculation(): void
     {
         $cashbook   = $this->mockEventCashbook();
         $calculator = new CategoryTotalsCalculator();
@@ -32,7 +33,7 @@ final class CategoryTotalsCalculatorTest extends Unit
         $this->assertSame(200.0, $totals[2]);
     }
 
-    public function testCampCalculation() : void
+    public function testCampCalculation(): void
     {
         $cashbook   = $this->mockCampCashbook();
         $calculator = new CategoryTotalsCalculator();
@@ -48,7 +49,7 @@ final class CategoryTotalsCalculatorTest extends Unit
         $this->assertSame(200.0, $totals[2]);
     }
 
-    private function mockEventCashbook() : Cashbook
+    private function mockEventCashbook(): Cashbook
     {
         $cashbook = m::mock(Cashbook::class);
 
@@ -65,7 +66,7 @@ final class CategoryTotalsCalculatorTest extends Unit
         return $cashbook;
     }
 
-    private function mockCampCashbook() : Cashbook
+    private function mockCampCashbook(): Cashbook
     {
         $cashbook = m::mock(Cashbook::class);
 

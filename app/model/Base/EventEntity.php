@@ -10,15 +10,14 @@ namespace Model;
  */
 class EventEntity
 {
-    /** @var ParticipantService */
-    private $participants;
+    private ParticipantService $participants;
 
     public function __construct(string $name, IParticipantServiceFactory $participantFactory)
     {
         $this->participants = $participantFactory->create($name);
     }
 
-    public function getParticipants() : ParticipantService
+    public function getParticipants(): ParticipantService
     {
         return $this->participants;
     }

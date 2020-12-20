@@ -22,14 +22,14 @@ final class ChitQueryHandlerTest extends Unit
     private const EXISTING_CHIT_ID = 10;
     private const CATEGORY_ID      = 156;
 
-    public function testUnexistingChit() : void
+    public function testUnexistingChit(): void
     {
         $handler = new ChitQueryHandler($this->mockCashbookRepository(), new QueryBus());
 
         $this->assertNull($handler(new ChitQuery($this->getCashbookId(), 5)));
     }
 
-    private function mockCashbookRepository() : ICashbookRepository
+    private function mockCashbookRepository(): ICashbookRepository
     {
         $cashbook = m::mock(Cashbook::class);
 
@@ -46,7 +46,7 @@ final class ChitQueryHandlerTest extends Unit
         return $repository;
     }
 
-    private function getCashbookId() : CashbookId
+    private function getCashbookId(): CashbookId
     {
         return CashbookId::fromString(self::CASHBOOK_ID);
     }

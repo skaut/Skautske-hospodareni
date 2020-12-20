@@ -14,5 +14,5 @@ interface IOAuthAccessChecker
      *
      * @throws OAuthNotFound
      */
-    public function allUnitsHaveAccessToOAuth(array $unitIds, OAuthId $oAuthId) : bool;
+    public function allUnitsHaveAccessToOAuth(array $unitIds, OAuthId $oAuthId): bool;
 }

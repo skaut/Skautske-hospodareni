@@ -30,19 +30,17 @@ use Model\Event\SkautisCampId;
 use Model\Participant\ZeroParticipantIncome;
 use Money\Money;
 use Skautis\Wsdl\PermissionException;
+
 use function assert;
 use function count;
 
 class CashbookPresenter extends BasePresenter
 {
-    /** @var bool */
-    private $isRealTotalCostAutoComputed;
+    private bool $isRealTotalCostAutoComputed;
 
-    /** @var ICashbookControlFactory */
-    private $cashbookFactory;
+    private ICashbookControlFactory $cashbookFactory;
 
-    /** @var IMissingAutocomputedCategoryControlFactory */
-    private $categoryAutocomputedFactory;
+    private IMissingAutocomputedCategoryControlFactory $categoryAutocomputedFactory;
 
     public function __construct(
         ICashbookControlFactory $cashbookFactory,
@@ -53,14 +51,14 @@ class CashbookPresenter extends BasePresenter
         $this->categoryAutocomputedFactory = $categoryAutocomputedFactory;
     }
 
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
         $this->isEditable                  = $this->isEditable || $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $this->getCampId());
         $this->isRealTotalCostAutoComputed = ! $this->event->isRealTotalCostAutoComputed();
     }
 
-    public function renderDefault(int $aid) : void
+    public function renderDefault(int $aid): void
     {
         $finalBalance      = $this->queryBus->handle(new FinalCashBalanceQuery($this->getCashbookId()));
         $missingCategories = $this->isRealTotalCostAutoComputed;
@@ -71,6 +69,7 @@ class CashbookPresenter extends BasePresenter
             $finalRealBalance  = null;
             $missingCategories = true;
         }
+
         assert($finalBalance instanceof Money);
 
         $this->template->setParameters([
@@ -83,7 +82,7 @@ class CashbookPresenter extends BasePresenter
         ]);
     }
 
-    public function handleActivateAutocomputedCashbook(int $aid) : void
+    public function handleActivateAutocomputedCashbook(int $aid): void
     {
         try {
             $this->commandBus->handle(new ActivateAutocomputedCashbook(new SkautisCampId($this->getCampId())));
@@ -95,7 +94,7 @@ class CashbookPresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    protected function createComponentCashbook() : CashbookControl
+    protected function createComponentCashbook(): CashbookControl
     {
         return $this->cashbookFactory->create(
             $this->getCashbookId(),
@@ -104,7 +103,7 @@ class CashbookPresenter extends BasePresenter
         );
     }
 
-    protected function createComponentFormImportHpd() : BaseForm
+    protected function createComponentFormImportHpd(): BaseForm
     {
         $form = new BaseForm();
         $form->addRadioList('cat', 'Kategorie:', ['child' => 'Od dětí a roverů', 'adult' => 'Od dospělých'])
@@ -117,7 +116,7 @@ class CashbookPresenter extends BasePresenter
         $form->addSubmit('send', 'Importovat')
             ->setAttribute('class', 'btn btn-primary');
 
-        $form->onSuccess[] = function (BaseForm $form) : void {
+        $form->onSuccess[] = function (BaseForm $form): void {
             $this->formImportHpdSubmitted($form);
         };
 
@@ -126,7 +125,7 @@ class CashbookPresenter extends BasePresenter
         return $form;
     }
 
-    private function formImportHpdSubmitted(BaseForm $form) : void
+    private function formImportHpdSubmitted(BaseForm $form): void
     {
         $this->editableOnly();
         $values = $form->getValues();
@@ -159,19 +158,19 @@ class CashbookPresenter extends BasePresenter
         $this->redirect('default', $this->getCampId());
     }
 
-    private function getCashbookId() : CashbookId
+    private function getCashbookId(): CashbookId
     {
         return $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($this->getCampId())));
     }
 
-    private function isCashbookEmpty() : bool
+    private function isCashbookEmpty(): bool
     {
         $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $this->getCashbookId()));
 
         return count($chits) === 0;
     }
 
-    protected function createComponentCategoryAutocomputedControl() : MissingAutocomputedCategoryControl
+    protected function createComponentCategoryAutocomputedControl(): MissingAutocomputedCategoryControl
     {
         return $this->categoryAutocomputedFactory->create(new SkautisCampId($this->aid));
     }

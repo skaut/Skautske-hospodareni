@@ -9,11 +9,13 @@ use Model\Event\Education;
 use Model\Event\SkautisEducationId;
 use stdClass;
 
+// phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+
 final class EducationFactory
 {
     private const DATETIME_FORMAT = 'Y-m-d\TH:i:s';
 
-    public function create(stdClass $skautisEducation) : Education
+    public function create(stdClass $skautisEducation): Education
     {
         return new Education(
             new SkautisEducationId($skautisEducation->ID),

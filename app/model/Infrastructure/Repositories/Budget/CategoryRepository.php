@@ -9,19 +9,19 @@ use Model\Budget\CategoryNotFound;
 use Model\Budget\Repositories\ICategoryRepository;
 use Model\Budget\Unit\Category;
 use Model\Cashbook\Operation;
+
 use function sprintf;
 
 final class CategoryRepository implements ICategoryRepository
 {
-    /** @var EntityManager */
-    private $em;
+    private EntityManager $em;
 
     public function __construct(EntityManager $em)
     {
         $this->em = $em;
     }
 
-    public function find(int $id) : Category
+    public function find(int $id): Category
     {
         $category = $this->em->find(Category::class, $id);
         if ($category === null) {
@@ -34,7 +34,7 @@ final class CategoryRepository implements ICategoryRepository
     /**
      * @return Category[]
      */
-    public function findCategories(int $unitId, Operation $operationType) : array
+    public function findCategories(int $unitId, Operation $operationType): array
     {
         return $this->em->getRepository(Category::class)->findBy([
             'type' => $operationType->getValue(),
@@ -43,7 +43,7 @@ final class CategoryRepository implements ICategoryRepository
         ]);
     }
 
-    public function save(Category $category) : void
+    public function save(Category $category): void
     {
         $this->em->persist($category);
         $this->em->flush();

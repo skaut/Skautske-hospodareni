@@ -20,32 +20,26 @@ use Model\Payment\Repositories\IPaymentRepository;
 use Model\Services\TemplateFactory;
 use Nette\Mail\Message;
 use Nette\Utils\Validators;
+
 use function array_map;
 use function nl2br;
 use function rand;
 
 class MailingService
 {
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
-    /** @var IMailerFactory */
-    private $mailerFactory;
+    private IMailerFactory $mailerFactory;
 
-    /** @var IPaymentRepository */
-    private $payments;
+    private IPaymentRepository $payments;
 
-    /** @var IBankAccountRepository */
-    private $bankAccounts;
+    private IBankAccountRepository $bankAccounts;
 
-    /** @var TemplateFactory */
-    private $templateFactory;
+    private TemplateFactory $templateFactory;
 
-    /** @var IUserRepository */
-    private $users;
+    private IUserRepository $users;
 
-    /** @var IGoogleRepository */
-    private $googleRepository;
+    private IGoogleRepository $googleRepository;
 
     public function __construct(
         IGroupRepository $groups,
@@ -74,7 +68,7 @@ class MailingService
      * @throws EmailTemplateNotSet
      * @throws OAuthNotSet
      */
-    public function sendEmail(int $paymentId, EmailType $emailType) : void
+    public function sendEmail(int $paymentId, EmailType $emailType): void
     {
         $payment = $this->payments->find($paymentId);
         $group   = $this->groups->find($payment->getGroupId());
@@ -104,7 +98,7 @@ class MailingService
      * @throws InvalidOAuth
      * @throws UserNotFound
      */
-    public function sendTestMail(int $groupId) : string
+    public function sendTestMail(int $groupId): string
     {
         $group = $this->groups->find($groupId);
         $user  = $this->users->getCurrentUser();
@@ -136,9 +130,9 @@ class MailingService
      * @throws UserNotFound
      * @throws OAuthNotSet
      */
-    private function sendForPayment(Payment $paymentRow, Group $group, EmailTemplate $template) : void
+    private function sendForPayment(Payment $paymentRow, Group $group, EmailTemplate $template): void
     {
-        array_map(function (EmailRecipient $emailRecipient) : void {
+        array_map(function (EmailRecipient $emailRecipient): void {
             $email = $emailRecipient->getEmailAddress();
             if (! Validators::isEmail($email)) {
                 throw new InvalidEmail();
@@ -154,7 +148,7 @@ class MailingService
      * @throws UserNotFound
      * @throws OAuthNotSet
      */
-    private function send(Group $group, MailPayment $payment, EmailTemplate $emailTemplate) : void
+    private function send(Group $group, MailPayment $payment, EmailTemplate $emailTemplate): void
     {
         if ($group->getOauthId() === null) {
             throw new OAuthNotSet();
@@ -189,7 +183,7 @@ class MailingService
         $this->mailerFactory->create($oAuth)->send($mail);
     }
 
-    private function createPayment(Payment $payment) : MailPayment
+    private function createPayment(Payment $payment): MailPayment
     {
         return new MailPayment(
             $payment->getName(),

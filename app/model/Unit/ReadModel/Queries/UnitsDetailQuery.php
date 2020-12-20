@@ -12,7 +12,7 @@ use Model\Unit\ReadModel\QueryHandlers\UnitsDetailQueryHandler;
 final class UnitsDetailQuery
 {
     /** @var int[] */
-    private $unitIds;
+    private array $unitIds;
 
     /**
      * @param int[] $unitIds
@@ -25,7 +25,7 @@ final class UnitsDetailQuery
     /**
      * @return int[]
      */
-    public function getUnitIds() : array
+    public function getUnitIds(): array
     {
         return $this->unitIds;
     }

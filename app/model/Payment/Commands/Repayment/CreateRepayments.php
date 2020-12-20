@@ -10,17 +10,14 @@ use Model\Payment\Repayment;
 
 final class CreateRepayments
 {
-    /** @var AccountNumber */
-    private $sourceAccount;
+    private AccountNumber $sourceAccount;
 
-    /** @var Date */
-    private $date;
+    private Date $date;
 
     /** @var Repayment[] */
-    private $repayments;
+    private array $repayments;
 
-    /** @var string */
-    private $token;
+    private string $token;
 
     /**
      * @param Repayment[] $repayments
@@ -33,12 +30,12 @@ final class CreateRepayments
         $this->token         = $token;
     }
 
-    public function getSourceAccount() : AccountNumber
+    public function getSourceAccount(): AccountNumber
     {
         return $this->sourceAccount;
     }
 
-    public function getDate() : Date
+    public function getDate(): Date
     {
         return $this->date;
     }
@@ -46,12 +43,12 @@ final class CreateRepayments
     /**
      * @return Repayment[]
      */
-    public function getRepayments() : array
+    public function getRepayments(): array
     {
         return $this->repayments;
     }
 
-    public function getToken() : string
+    public function getToken(): string
     {
         return $this->token;
     }

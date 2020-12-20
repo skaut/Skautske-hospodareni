@@ -9,7 +9,7 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20190825053508 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql('ALTER TABLE pa_group DROP FOREIGN KEY pa_group_ibfk_4');
         $this->addSql('DROP TABLE pa_group_state');
@@ -32,7 +32,7 @@ final class Version20190825053508 extends AbstractMigration
         $this->addSql('ALTER TABLE pa_group_unit CHANGE group_id group_id INT UNSIGNED DEFAULT NULL');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql(<<<SQL
             CREATE TABLE pa_group_state (

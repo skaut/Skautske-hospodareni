@@ -12,6 +12,7 @@ use eGen\MessageBus\Bus\QueryBus;
 use Model\DTO\Camp\CampListItem;
 use Model\Event\ReadModel\Queries\Excel\ExportCamps;
 use Nette\Utils\ArrayHash;
+
 use function sprintf;
 use function uasort;
 
@@ -32,17 +33,17 @@ final class ExportDialog extends Dialog
         $this->queryBus = $queryBus;
     }
 
-    public function handleOpen() : void
+    public function handleOpen(): void
     {
         $this->show();
     }
 
-    protected function beforeRender() : void
+    protected function beforeRender(): void
     {
         $this->template->setFile(__DIR__ . '/templates/ExportDialog.latte');
     }
 
-    protected function createComponentForm() : BaseForm
+    protected function createComponentForm(): BaseForm
     {
         $form = new BaseForm();
 
@@ -59,14 +60,14 @@ final class ExportDialog extends Dialog
 
         $form->addSubmit('download', 'Stáhnout export');
 
-        $form->onSuccess[] = function (BaseForm $form) : void {
+        $form->onSuccess[] = function (BaseForm $form): void {
             $this->formSucceeded($form->getValues());
         };
 
         return $form;
     }
 
-    private function formSucceeded(ArrayHash $values) : void
+    private function formSucceeded(ArrayHash $values): void
     {
         $this->presenter->sendResponse(
             new ExcelResponse(

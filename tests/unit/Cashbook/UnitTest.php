@@ -11,9 +11,11 @@ use Model\Cashbook\Exception\YearCashbookAlreadyExists;
 use Model\Common\UnitId;
 use Ramsey\Uuid\Uuid;
 
+use function assert;
+
 final class UnitTest extends TestCase
 {
-    public function testCreateWithInitialCashbook() : void
+    public function testCreateWithInitialCashbook(): void
     {
         $id         = new UnitId(15);
         $cashbookId = CashbookId::generate();
@@ -30,14 +32,14 @@ final class UnitTest extends TestCase
         $events = $unit->extractEventsToDispatch();
         $this->assertCount(1, $events);
 
-        /** @var CashbookWasCreated $event */
         $event = $events[0];
+        assert($event instanceof CashbookWasCreated);
         $this->assertInstanceOf(CashbookWasCreated::class, $event);
         $this->assertSame($id, $event->getUnitId());
         $this->assertSame($activeCashbook->getCashbookId(), $event->getCashbookId());
     }
 
-    public function testCreateCashbook() : void
+    public function testCreateCashbook(): void
     {
         $id   = new UnitId(15);
         $unit = new Unit($id, CashbookId::generate(), 2018);
@@ -55,14 +57,14 @@ final class UnitTest extends TestCase
         $events = $unit->extractEventsToDispatch();
         $this->assertCount(1, $events);
 
-        /** @var CashbookWasCreated $event */
         $event = $events[0];
+        assert($event instanceof CashbookWasCreated);
         $this->assertInstanceOf(CashbookWasCreated::class, $event);
         $this->assertSame($id, $event->getUnitId());
         $this->assertSame($cashbook->getCashbookId(), $event->getCashbookId());
     }
 
-    public function testCannotCreateCashbookWithDuplicateYear() : void
+    public function testCannotCreateCashbookWithDuplicateYear(): void
     {
         $unit = new Unit(new UnitId(15), CashbookId::generate(), 2018);
 
@@ -71,7 +73,7 @@ final class UnitTest extends TestCase
         $unit->createCashbook(2018);
     }
 
-    public function testActivateCashbook() : void
+    public function testActivateCashbook(): void
     {
         $unit = new Unit(new UnitId(15), CashbookId::generate(), 2018);
         $unit->createCashbook(2019);
@@ -81,7 +83,7 @@ final class UnitTest extends TestCase
         $this->assertSame(2, $unit->getActiveCashbook()->getId());
     }
 
-    public function testActivateCashbookForUnexistentCashbookThrowsException() : void
+    public function testActivateCashbookForUnexistentCashbookThrowsException(): void
     {
         $unit = new Unit(new UnitId(15), CashbookId::generate(), 2018);
 

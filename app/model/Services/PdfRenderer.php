@@ -9,8 +9,7 @@ use Mpdf\Output\Destination;
 
 class PdfRenderer
 {
-    /** @var string */
-    private $tempDir;
+    private string $tempDir;
 
     public function __construct(string $tempDir)
     {
@@ -22,7 +21,7 @@ class PdfRenderer
      *
      * @param bool $landscape TRUE for landscape, FALSE for portrait mode
      */
-    public function render(string $template, string $filename, bool $landscape = false) : void
+    public function render(string $template, string $filename, bool $landscape = false): void
     {
         $mpdf = new Mpdf([
             'format' => $landscape ? 'A4-L' : 'A4',

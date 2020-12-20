@@ -9,6 +9,7 @@ use Model\DTO\Payment\Person;
 use Model\Payment\ReadModel\Queries\MembersWithoutPaymentInGroupQuery;
 use Model\Payment\Repositories\IMemberEmailRepository;
 use Model\PaymentService;
+
 use function in_array;
 
 final class MembersWithoutPaymentInGroupQueryHandler
@@ -32,7 +33,7 @@ final class MembersWithoutPaymentInGroupQueryHandler
     /**
      * @return Person[]
      */
-    public function __invoke(MembersWithoutPaymentInGroupQuery $query) : array
+    public function __invoke(MembersWithoutPaymentInGroupQuery $query): array
     {
         $personsWithPayment = $this->paymentService->getPersonsWithActivePayment($query->getGroupId());
 

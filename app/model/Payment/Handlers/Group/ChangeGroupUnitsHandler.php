@@ -13,14 +13,11 @@ use Model\Payment\Services\IOAuthAccessChecker;
 
 class ChangeGroupUnitsHandler
 {
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
-    /** @var IBankAccountAccessChecker */
-    private $bankAccountAccessChecker;
+    private IBankAccountAccessChecker $bankAccountAccessChecker;
 
-    /** @var IOAuthAccessChecker */
-    private $mailCredentaccessChecker;
+    private IOAuthAccessChecker $mailCredentaccessChecker;
 
     public function __construct(
         IGroupRepository $groups,
@@ -36,7 +33,7 @@ class ChangeGroupUnitsHandler
      * @throws GroupNotFound
      * @throws BankAccountNotFound
      */
-    public function __invoke(ChangeGroupUnits $command) : void
+    public function __invoke(ChangeGroupUnits $command): void
     {
         $group = $this->groups->find($command->getGroupId());
 

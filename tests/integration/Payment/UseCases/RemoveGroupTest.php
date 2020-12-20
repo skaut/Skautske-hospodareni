@@ -19,19 +19,16 @@ use Stubs\OAuthsAccessCheckerStub;
 
 final class RemoveGroupTest extends IntegrationTest
 {
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
-    /** @var IPaymentRepository */
-    private $payments;
+    private IPaymentRepository $payments;
 
-    /** @var RemoveGroupHandler */
-    private $handler;
+    private RemoveGroupHandler $handler;
 
     /**
      * @return string[]
      */
-    protected function getTestedAggregateRoots() : array
+    protected function getTestedAggregateRoots(): array
     {
         return [
             Group::class,
@@ -39,7 +36,7 @@ final class RemoveGroupTest extends IntegrationTest
         ];
     }
 
-    protected function _before() : void
+    protected function _before(): void
     {
         $this->tester->useConfigFiles([__DIR__ . '/RemoveGroupTest.neon']);
         parent::_before();
@@ -48,7 +45,7 @@ final class RemoveGroupTest extends IntegrationTest
         $this->handler  = $this->tester->grabService(RemoveGroupHandler::class);
     }
 
-    public function test() : void
+    public function test(): void
     {
         $group = new Group(
             [123],

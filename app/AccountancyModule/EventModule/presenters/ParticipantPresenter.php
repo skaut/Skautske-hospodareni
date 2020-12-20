@@ -25,38 +25,31 @@ use Model\Participant\Payment\EventType;
 use Model\Services\PdfRenderer;
 use Nette\Utils\Strings;
 use Skautis\Wsdl\PermissionException;
+
+use function assert;
 use function date;
 use function in_array;
 use function sprintf;
 
 class ParticipantPresenter extends BasePresenter
 {
-    /** @var bool */
-    private $canAddParticipants;
+    private bool $canAddParticipants;
 
-    /** @var ExportService */
-    private $exportService;
+    private ExportService $exportService;
 
-    /** @var ExcelService */
-    private $excelService;
+    private ExcelService $excelService;
 
-    /** @var PdfRenderer     */
-    private $pdf;
+    private PdfRenderer $pdf;
 
-    /** @var IPersonPickerFactory */
-    private $personPickerFactory;
+    private IPersonPickerFactory $personPickerFactory;
 
-    /** @var IParticipantListFactory */
-    private $participantListFactory;
+    private IParticipantListFactory $participantListFactory;
 
-    /** @var bool */
-    private $isAllowParticipantUpdate;
+    private bool $isAllowParticipantUpdate;
 
-    /** @var bool */
-    private $isAllowParticipantDelete;
+    private bool $isAllowParticipantDelete;
 
-    /** @var EventEntity */
-    private $eventService;
+    private EventEntity $eventService;
 
     public function __construct(
         ExportService $export,
@@ -73,7 +66,7 @@ class ParticipantPresenter extends BasePresenter
         $this->participantListFactory = $participantListFactory;
     }
 
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
         $this->eventService = $this->context->getService('eventService');
@@ -90,7 +83,7 @@ class ParticipantPresenter extends BasePresenter
         ]);
     }
 
-    public function renderDefault(int $aid) : void
+    public function renderDefault(int $aid): void
     {
         $this->setLayout('layout.new');
 
@@ -106,7 +99,7 @@ class ParticipantPresenter extends BasePresenter
         $this->redrawControl('contentSnip');
     }
 
-    public function actionExportExcel(int $aid) : void
+    public function actionExportExcel(int $aid): void
     {
         try {
             $participantsDTO = $this->eventParticipants();
@@ -119,26 +112,26 @@ class ParticipantPresenter extends BasePresenter
         }
     }
 
-    protected function createComponentPersonPicker() : PersonPicker
+    protected function createComponentPersonPicker(): PersonPicker
     {
         Assertion::true($this->canAddParticipants);
 
         $picker = $this->personPickerFactory->create($this->getCurrentUnitId(), $this->eventParticipants());
 
-        $picker->onSelect[] = function (array $personIds) : void {
+        $picker->onSelect[] = function (array $personIds): void {
             foreach ($personIds as $personId) {
                 $this->commandBus->handle(new AddEventParticipant($this->event->getId(), $personId));
             }
         };
 
-        $picker->onNonMemberAdd[] = function (NonMemberParticipant $participant) : void {
+        $picker->onNonMemberAdd[] = function (NonMemberParticipant $participant): void {
             $this->commandBus->handle(new CreateEventParticipant($this->event->getId(), $participant));
         };
 
         return $picker;
     }
 
-    protected function createComponentParticipantList() : ParticipantList
+    protected function createComponentParticipantList(): ParticipantList
     {
         $control = $this->participantListFactory->create(
             $this->aid,
@@ -150,18 +143,19 @@ class ParticipantPresenter extends BasePresenter
             $this->isAllowParticipantDelete
         );
 
-        $control->onUpdate[] = function (array $updates) : void {
-            /** @var UpdateParticipant $u */
+        $control->onUpdate[] = function (array $updates): void {
             foreach ($updates as $u) {
+                assert($u instanceof UpdateParticipant);
                 if (! in_array($u->getField(), UpdateParticipant::getEventFields())) {
                     $this->flashMessage(sprintf('Nelze upravit pole: %s', $u->getField()), 'warning');
                     $this->redirect('this');
                 }
+
                 $this->eventService->getParticipants()->update($u);
             }
         };
 
-        $control->onRemove[] = function (array $participantIds) : void {
+        $control->onRemove[] = function (array $participantIds): void {
             foreach ($participantIds as $participantId) {
                 $this->commandBus->handle(new RemoveEventParticipant($participantId));
             }
@@ -170,7 +164,7 @@ class ParticipantPresenter extends BasePresenter
         return $control;
     }
 
-    public function actionExport(int $aid) : void
+    public function actionExport(int $aid): void
     {
         try {
             $template = $this->exportService->getParticipants($aid, EventType::GENERAL);
@@ -179,13 +173,14 @@ class ParticipantPresenter extends BasePresenter
             $this->flashMessage('Nemáte oprávnění k záznamu osoby! (' . $ex->getMessage() . ')', 'danger');
             $this->redirect('default', ['aid' => $this->aid]);
         }
+
         $this->terminate();
     }
 
     /**
      * @return Participant[]
      */
-    private function eventParticipants() : array
+    private function eventParticipants(): array
     {
         return $this->queryBus->handle(new EventParticipantListQuery($this->event->getId()));
     }

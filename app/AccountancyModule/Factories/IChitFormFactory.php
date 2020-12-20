@@ -10,5 +10,5 @@ use Model\Common\UnitId;
 
 interface IChitFormFactory
 {
-    public function create(CashbookId $cashbookId, bool $isEditable, UnitId $unitId) : ChitForm;
+    public function create(CashbookId $cashbookId, bool $isEditable, UnitId $unitId): ChitForm;
 }

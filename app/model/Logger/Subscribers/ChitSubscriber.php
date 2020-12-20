@@ -11,15 +11,14 @@ use Model\LoggerService;
 
 class ChitSubscriber
 {
-    /** @var LoggerService */
-    private $loggerService;
+    private LoggerService $loggerService;
 
     public function __construct(LoggerService $ls)
     {
         $this->loggerService = $ls;
     }
 
-    public function handleUpdate(ChitWasUpdated $chit) : void
+    public function handleUpdate(ChitWasUpdated $chit): void
     {
         $this->loggerService->log(
             $chit->getUnitId(),
@@ -30,7 +29,7 @@ class ChitSubscriber
         );
     }
 
-    public function handleRemove(ChitWasRemoved $chit) : void
+    public function handleRemove(ChitWasRemoved $chit): void
     {
         $this->loggerService->log(
             $chit->getUnitId(),

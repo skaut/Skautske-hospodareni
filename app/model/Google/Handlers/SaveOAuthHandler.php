@@ -23,7 +23,7 @@ final class SaveOAuthHandler
         $this->googleService = $googleService;
     }
 
-    public function __invoke(SaveOAuth $command) : void
+    public function __invoke(SaveOAuth $command): void
     {
         $client = $this->googleService->getClient();
         $token  = $client->fetchAccessTokenWithAuthCode($command->getCode());
@@ -36,6 +36,7 @@ final class SaveOAuthHandler
         } catch (OAuthNotFound $exc) {
             $oAuth = OAuth::create($command->getUnitId(), $token['refresh_token'], $email);
         }
+
         $this->repository->save($oAuth);
     }
 }

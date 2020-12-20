@@ -8,11 +8,13 @@ use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\BankAccount\IBankAccountImporter;
 use Model\Payment\InvalidBankAccountNumber;
 use Skautis\Skautis;
+use stdClass;
+
+use function assert;
 
 class BankAccountImporter implements IBankAccountImporter
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
     public function __construct(Skautis $skautis)
     {
@@ -22,7 +24,8 @@ class BankAccountImporter implements IBankAccountImporter
     /**
      * @return AccountNumber[]
      */
-    public function import(int $unitId) : array
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    public function import(int $unitId): array
     {
         $accounts = $this->skautis->org->AccountAll([
             'ID_Unit' => $unitId,
@@ -31,6 +34,7 @@ class BankAccountImporter implements IBankAccountImporter
 
         $result = [];
         foreach ($accounts as $account) {
+            assert($account instanceof stdClass);
             try {
                 $result[] = AccountNumber::fromString($account->DisplayName);
             } catch (InvalidBankAccountNumber $e) {

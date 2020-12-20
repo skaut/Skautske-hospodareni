@@ -8,7 +8,7 @@ use Model\Travel\Command as CommandEntity;
 
 class CommandFactory
 {
-    public static function create(CommandEntity $command) : Command
+    public static function create(CommandEntity $command): Command
     {
         return new Command(
             $command->getId(),

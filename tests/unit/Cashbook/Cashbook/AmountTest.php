@@ -12,20 +12,20 @@ class AmountTest extends Unit
     /**
      * @dataProvider getSums
      */
-    public function testCalculateSum(string $expression, float $expectedResult) : void
+    public function testCalculateSum(string $expression, float $expectedResult): void
     {
         $amount = new Amount($expression);
         $this->assertSame($expectedResult, $amount->getValue());
     }
 
-    public function testResultCantBeNegative() : void
+    public function testResultCantBeNegative(): void
     {
         $this->expectException(InvalidArgumentException::class);
 
         new Amount('-100');
     }
 
-    public function testResultCantBeZero() : void
+    public function testResultCantBeZero(): void
     {
         $this->expectException(InvalidArgumentException::class);
 
@@ -35,7 +35,7 @@ class AmountTest extends Unit
     /**
      * @return mixed[]
      */
-    public function getSums() : array
+    public function getSums(): array
     {
         return [
             ['5 + 5', 10.0],
@@ -49,7 +49,7 @@ class AmountTest extends Unit
     /**
      * @dataProvider getMultiplications
      */
-    public function testCalculateMultiplication(string $expression, float $expectedResult) : void
+    public function testCalculateMultiplication(string $expression, float $expectedResult): void
     {
         $amount = new Amount($expression);
         $this->assertSame($expectedResult, $amount->toFloat());
@@ -58,7 +58,7 @@ class AmountTest extends Unit
     /**
      * @return mixed[]
      */
-    public function getMultiplications() : array
+    public function getMultiplications(): array
     {
         return [
             ['5 * 5', 25.0],
@@ -70,7 +70,7 @@ class AmountTest extends Unit
     /**
      * @dataProvider getMultiplications
      */
-    public function testCalculateSumsAndMultiplications(string $expression, float $expectedResult) : void
+    public function testCalculateSumsAndMultiplications(string $expression, float $expectedResult): void
     {
         $amount = new Amount($expression);
         $this->assertSame($expectedResult, $amount->getValue());
@@ -79,7 +79,7 @@ class AmountTest extends Unit
     /**
      * @return mixed[]
      */
-    public function getMultiplicationsWithSums() : array
+    public function getMultiplicationsWithSums(): array
     {
         return [
             ['5*5+5', 30.0],
@@ -91,7 +91,7 @@ class AmountTest extends Unit
     /**
      * @return mixed[]
      */
-    public function getExpressions() : array
+    public function getExpressions(): array
     {
         return [
             ['5 * 5', true],
@@ -103,7 +103,7 @@ class AmountTest extends Unit
     /**
      * @dataProvider getExpressions
      */
-    public function testIsUsingFormula(string $expression, bool $expectedResult) : void
+    public function testIsUsingFormula(string $expression, bool $expectedResult): void
     {
         $amount = new Amount($expression);
         $this->assertSame($expectedResult, $amount->isUsingFormula());

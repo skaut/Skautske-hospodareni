@@ -8,12 +8,13 @@ use App\Forms\BaseForm;
 use Model\BudgetService;
 use NasExt\Forms\DependentData;
 use Nette\Application\UI\Form;
+
+use function assert;
 use function date;
 
 class BudgetPresenter extends BasePresenter
 {
-    /** @var BudgetService */
-    protected $budgetService;
+    protected BudgetService $budgetService;
 
     public function __construct(BudgetService $budgetService)
     {
@@ -21,7 +22,7 @@ class BudgetPresenter extends BasePresenter
         $this->budgetService = $budgetService;
     }
 
-    public function renderDefault(?int $year = null) : void
+    public function renderDefault(?int $year = null): void
     {
         $this->template->setParameters([
             'categories' => $this->budgetService->getCategories($this->unitId->toInt()),
@@ -30,10 +31,10 @@ class BudgetPresenter extends BasePresenter
         ]);
     }
 
-    public function renderAdd(?int $year = null) : void
+    public function renderAdd(?int $year = null): void
     {
-        /** @var BaseForm $form */
         $form = $this['addCategoryForm'];
+        assert($form instanceof BaseForm);
         $form->setDefaults([
             'year' => $year ?? date('Y'),
         ]);
@@ -42,14 +43,14 @@ class BudgetPresenter extends BasePresenter
     /**
      * @param mixed[] $values
      */
-    public function getParentCategories(array $values) : DependentData
+    public function getParentCategories(array $values): DependentData
     {
         $items = $this->budgetService->getCategoriesRoot($this->unitId->toInt(), $values['type']);
 
         return new DependentData($items);
     }
 
-    protected function createComponentAddCategoryForm() : BaseForm
+    protected function createComponentAddCategoryForm(): BaseForm
     {
         $form = new BaseForm();
 
@@ -78,14 +79,14 @@ class BudgetPresenter extends BasePresenter
         $form->addSubmit('submit', 'Založit kategorii')
             ->setAttribute('class', 'btn btn-primary');
 
-        $form->onSuccess[] = function (Form $form) : void {
+        $form->onSuccess[] = function (Form $form): void {
             $this->addCategoryFormSubmitted($form);
         };
 
         return $form;
     }
 
-    private function addCategoryFormSubmitted(Form $form) : void
+    private function addCategoryFormSubmitted(Form $form): void
     {
         if ($form->isSubmitted() !== $form['submit']) {
             return;

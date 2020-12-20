@@ -12,6 +12,8 @@ use Model\Cashbook\Repositories\ICampCategoryRepository;
 use Model\Utils\MoneyFactory;
 use Skautis\Wsdl\WebServiceInterface;
 use stdClass;
+
+use function assert;
 use function is_object;
 
 final class CampCategoryRepository implements ICampCategoryRepository
@@ -21,8 +23,7 @@ final class CampCategoryRepository implements ICampCategoryRepository
         3 => ParticipantType::ADULT,
     ];
 
-    /** @var WebServiceInterface */
-    private $eventWebService;
+    private WebServiceInterface $eventWebService;
 
     public function __construct(WebServiceInterface $eventWebService)
     {
@@ -32,7 +33,8 @@ final class CampCategoryRepository implements ICampCategoryRepository
     /**
      * @return CampCategory[]
      */
-    public function findForCamp(int $campId) : array
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    public function findForCamp(int $campId): array
     {
         $skautisCategories = $this->eventWebService->EventCampStatementAll([
             'ID_EventCamp' => $campId,
@@ -46,6 +48,7 @@ final class CampCategoryRepository implements ICampCategoryRepository
         $categories = [];
 
         foreach ($skautisCategories as $category) {
+            assert($category instanceof stdClass);
             if ($category->ID_EventCampStatementType === ICategory::CAMP_RESERVE_ID) {
                 continue;
             }
@@ -64,7 +67,8 @@ final class CampCategoryRepository implements ICampCategoryRepository
         return $categories;
     }
 
-    private function getParticipantType(stdClass $category) : ?ParticipantType
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    private function getParticipantType(stdClass $category): ?ParticipantType
     {
         $categoryId = $category->ID_EventCampStatementType ?? null;
 

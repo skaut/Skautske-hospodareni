@@ -28,30 +28,21 @@ class Category implements ICategory
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer", options={"unsigned"=true})
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
-    /**
-     * @ORM\Column(type="string", name="label", length=64)
-     *
-     * @var string
-     */
-    private $name;
+    /** @ORM\Column(type="string", name="label", length=64) */
+    private string $name;
 
-    /**
-     * @ORM\Column(type="string", name="short", length=64, unique=true)
-     *
-     * @var string
-     */
-    private $shortcut;
+    /** @ORM\Column(type="string", name="short", length=64, unique=true) */
+    private string $shortcut;
 
     /**
      * @ORM\Column(type="string_enum", name="type")
      *
      * @var Operation
      * @EnumAnnotation(class=Operation::class)
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
     private $operationType;
 
@@ -60,28 +51,16 @@ class Category implements ICategory
      *
      * @var Collection<int, Category\ObjectType>
      */
-    private $types;
+    private Collection $types;
 
-    /**
-     * @ORM\Column(type="boolean")
-     *
-     * @var bool
-     */
-    private $virtual;
+    /** @ORM\Column(type="boolean") */
+    private bool $virtual;
 
-    /**
-     * @ORM\Column(type="smallint", name="orderby", options={"unsigned"=true})
-     *
-     * @var int
-     */
-    private $priority;
+    /** @ORM\Column(type="smallint", name="orderby", options={"unsigned"=true}) */
+    private int $priority;
 
-    /**
-     * @ORM\Column(type="boolean")
-     *
-     * @var bool
-     */
-    private $deleted = false;
+    /** @ORM\Column(type="boolean") */
+    private bool $deleted = false;
 
     /**
      * @param Category\ObjectType[] $types
@@ -104,46 +83,46 @@ class Category implements ICategory
         $this->priority      = $priority;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getShortcut() : string
+    public function getShortcut(): string
     {
         return $this->shortcut;
     }
 
-    public function getOperationType() : Operation
+    public function getOperationType(): Operation
     {
         return $this->operationType;
     }
 
-    public function isIncome() : bool
+    public function isIncome(): bool
     {
         return $this->operationType->equalsValue(Operation::INCOME);
     }
 
-    public function supportsType(ObjectType $type) : bool
+    public function supportsType(ObjectType $type): bool
     {
         return $this->types->exists(
-            function ($_, Category\ObjectType $categoryType) use ($type) : bool {
+            function ($_x, Category\ObjectType $categoryType) use ($type): bool {
                 return $categoryType->getType()->equals($type);
             }
         );
     }
 
-    public function isVirtual() : bool
+    public function isVirtual(): bool
     {
         return $this->virtual;
     }
 
-    public function isDeleted() : bool
+    public function isDeleted(): bool
     {
         return $this->deleted;
     }

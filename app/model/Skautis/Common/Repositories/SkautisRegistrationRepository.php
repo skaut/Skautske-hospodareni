@@ -9,13 +9,13 @@ use Model\Common\Repositories\IRegistrationRepository;
 use Model\Common\UnitId;
 use Skautis\Skautis;
 use stdClass;
+
 use function array_map;
 use function is_object;
 
 final class SkautisRegistrationRepository implements IRegistrationRepository
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
     public function __construct(Skautis $skautis)
     {
@@ -25,7 +25,8 @@ final class SkautisRegistrationRepository implements IRegistrationRepository
     /**
      * {@inheritDoc}
      */
-    public function findByUnit(UnitId $unitId) : array
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    public function findByUnit(UnitId $unitId): array
     {
         $registrations = $this->skautis->org->UnitRegistrationAll(['ID_Unit' => $unitId->toInt()]);
 
@@ -34,7 +35,7 @@ final class SkautisRegistrationRepository implements IRegistrationRepository
         }
 
         return array_map(
-            function (stdClass $registration) : Registration {
+            function (stdClass $registration): Registration {
                 return new Registration($registration->ID, $registration->Unit, $registration->Year);
             },
             $registrations

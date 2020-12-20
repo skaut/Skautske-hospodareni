@@ -31,7 +31,7 @@ final class CashbookHandlersTest extends Unit
         string $handlerClass,
         string $expectedMethodCall,
         array $expectedMethodArguments
-    ) : void {
+    ): void {
         $cashbook = m::mock(Cashbook::class);
         $cashbook->shouldReceive($expectedMethodCall)
             ->once()
@@ -57,7 +57,7 @@ final class CashbookHandlersTest extends Unit
     /**
      * @return mixed[]
      */
-    public function dataHandlers() : array
+    public function dataHandlers(): array
     {
         return [
             [
@@ -105,7 +105,7 @@ final class CashbookHandlersTest extends Unit
         ];
     }
 
-    private function getCashbookId() : Cashbook\CashbookId
+    private function getCashbookId(): Cashbook\CashbookId
     {
         return Cashbook\CashbookId::fromString('4cdc75f1-ed2b-49a0-a596-af44aae19d70');
     }

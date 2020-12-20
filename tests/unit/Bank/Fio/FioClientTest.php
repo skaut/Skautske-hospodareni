@@ -19,7 +19,7 @@ use Psr\Log\NullLogger;
 
 class FioClientTest extends Unit
 {
-    public function testBankAccountWithoutTokenThrowsException() : void
+    public function testBankAccountWithoutTokenThrowsException(): void
     {
         $factory = m::mock(IDownloaderFactory::class);
         $fio     = new FioClient($factory, new NullLogger());
@@ -33,7 +33,7 @@ class FioClientTest extends Unit
         );
     }
 
-    public function testTooGreedyExceptionResultsInLimitException() : void
+    public function testTooGreedyExceptionResultsInLimitException(): void
     {
         $since = new DateTimeImmutable();
         $until = new DateTimeImmutable();
@@ -52,7 +52,7 @@ class FioClientTest extends Unit
         $fio->getTransactions($since, $until, $this->mockAccount());
     }
 
-    public function tesGeneralApiErrorExceptionResultsInTimeoutException() : void
+    public function tesGeneralApiErrorExceptionResultsInTimeoutException(): void
     {
         $since = new DateTimeImmutable();
         $until = new DateTimeImmutable();
@@ -71,7 +71,7 @@ class FioClientTest extends Unit
         $fio->getTransactions($since, $until, $this->mockAccount());
     }
 
-    public function testInternalErrorResultsInTimeoutException() : void
+    public function testInternalErrorResultsInTimeoutException(): void
     {
         $since = new DateTimeImmutable();
         $until = new DateTimeImmutable();
@@ -90,7 +90,7 @@ class FioClientTest extends Unit
         $fio->getTransactions($since, $until, $this->mockAccount());
     }
 
-    private function mockAccount(?string $token = 'token') : BankAccount
+    private function mockAccount(?string $token = 'token'): BankAccount
     {
         return m::mock(BankAccount::class, [
             'getId' => 10,
@@ -98,7 +98,7 @@ class FioClientTest extends Unit
         ]);
     }
 
-    private function buildDownloaderFactory(Downloader $downloader) : IDownloaderFactory
+    private function buildDownloaderFactory(Downloader $downloader): IDownloaderFactory
     {
         $factory = m::mock(IDownloaderFactory::class);
         $factory->shouldReceive('create')

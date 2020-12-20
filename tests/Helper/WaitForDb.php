@@ -7,6 +7,7 @@ namespace Helper;
 use Codeception\Module;
 use PDO;
 use PDOException;
+
 use function sleep;
 
 /**
@@ -14,7 +15,7 @@ use function sleep;
  */
 final class WaitForDb extends Module
 {
-    public function _initialize() : void
+    public function _initialize(): void
     {
         $db = $this->getModule('Db');
 

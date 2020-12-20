@@ -10,7 +10,7 @@ use VCR\VCR;
 
 final class MemberRepositoryTest extends SkautisTest
 {
-    public function testFindByUnitReturnsEmptyArrayIfNoMembersAreFound() : void
+    public function testFindByUnitReturnsEmptyArrayIfNoMembersAreFound(): void
     {
         VCR::insertCassette('MemberRepository/findByUnit_empty.json');
 
@@ -19,7 +19,7 @@ final class MemberRepositoryTest extends SkautisTest
         $this->assertCount(0, $members);
     }
 
-    public function testFindByUnitReturnsAllMembers() : void
+    public function testFindByUnitReturnsAllMembers(): void
     {
         VCR::insertCassette('MemberRepository/findByUnit_allMembers.json');
 
@@ -36,7 +36,7 @@ final class MemberRepositoryTest extends SkautisTest
         $this->assertSame('2003-04-14', $members[1]->getBirthday()->format('Y-m-d'));
     }
 
-    public function testFindByUnitReturnsDirectMembers() : void
+    public function testFindByUnitReturnsDirectMembers(): void
     {
         VCR::insertCassette('MemberRepository/findByUnit_directMembers.json');
 
@@ -49,7 +49,7 @@ final class MemberRepositoryTest extends SkautisTest
         $this->assertSame('2003-04-14', $members[0]->getBirthday()->format('Y-m-d'));
     }
 
-    private function getRepository() : MemberRepository
+    private function getRepository(): MemberRepository
     {
         return new MemberRepository($this->createSkautis('11bf5c4e-a357-43c3-8510-7fd027d3687e'));
     }

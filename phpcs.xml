@@ -22,6 +22,16 @@
         <!-- We have no use for it as PHP 7.4 will bring short closures, so we wan't to keep those as short as possible -->
         <exclude name="SlevomatCodingStandard.Functions.StaticClosure"/>
     </rule>
+
+    <rule ref="Squiz.NamingConventions.ValidVariableName.NotCamelCaps">
+        <exclude-pattern>/tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="PSR2.Methods.MethodDeclaration.Underscore">
+        <exclude-pattern>/tests/*</exclude-pattern>
+    </rule>
+
+
     <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements">
         <properties>
             <property name="alwaysUsedPropertiesAnnotations" type="array">

@@ -11,17 +11,16 @@ use Model\Payment\Group;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\ReadModel\Queries\CampsWithoutGroupQuery;
 use Model\Payment\Repositories\IGroupRepository;
+
 use function array_map;
 use function assert;
 use function in_array;
 
 final class CampsWithoutGroupQueryHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
     public function __construct(QueryBus $queryBus, IGroupRepository $groups)
     {
@@ -32,7 +31,7 @@ final class CampsWithoutGroupQueryHandler
     /**
      * @return Camp[]
      */
-    public function __invoke(CampsWithoutGroupQuery $query) : array
+    public function __invoke(CampsWithoutGroupQuery $query): array
     {
         $camps = $this->queryBus->handle(new CampListQuery($query->getYear()));
 
@@ -59,17 +58,17 @@ final class CampsWithoutGroupQueryHandler
      *
      * @return int[]
      */
-    private function getCampWithGroupIds(array $camps) : array
+    private function getCampWithGroupIds(array $camps): array
     {
         $skautisEntities = array_map(
-            function (Camp $camp) : SkautisEntity {
+            function (Camp $camp): SkautisEntity {
                 return SkautisEntity::fromCampId($camp->getId());
             },
             $camps
         );
 
         return array_map(
-            function (Group $group) : int {
+            function (Group $group): int {
                 return $group->getObject()->getId();
             },
             $this->groups->findBySkautisEntities(...$skautisEntities)

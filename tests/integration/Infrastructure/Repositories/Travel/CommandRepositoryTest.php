@@ -13,8 +13,10 @@ use Model\Travel\Travel\TransportType;
 use Model\Travel\Vehicle;
 use Money\Money;
 use Nette\Utils\Json;
+
 use function array_diff_key;
 use function array_map;
+use function assert;
 
 class CommandRepositoryTest extends IntegrationTest
 {
@@ -61,13 +63,12 @@ class CommandRepositoryTest extends IntegrationTest
         'start_date' => '2018-01-01',
     ];
 
-    /** @var CommandRepository */
-    private $repository;
+    private CommandRepository $repository;
 
     /**
      * @return string[]
      */
-    public function getTestedAggregateRoots() : array
+    public function getTestedAggregateRoots(): array
     {
         return [
             Command::class,
@@ -75,13 +76,13 @@ class CommandRepositoryTest extends IntegrationTest
         ];
     }
 
-    protected function _before() : void
+    protected function _before(): void
     {
         parent::_before();
         $this->repository = new CommandRepository($this->tester->grabService(EntityManager::class));
     }
 
-    public function testFindByContract() : void
+    public function testFindByContract(): void
     {
         $now      = '2018-01-01 00:00:00';
         $commands = [
@@ -128,7 +129,7 @@ class CommandRepositoryTest extends IntegrationTest
         }
     }
 
-    public function testFindReturnsCorrectlyHydratedAggregate() : void
+    public function testFindReturnsCorrectlyHydratedAggregate(): void
     {
         $this->createCommandWithTwoTravels();
 
@@ -151,8 +152,8 @@ class CommandRepositoryTest extends IntegrationTest
         $travels = $command->getTravels();
         $this->assertCount(2, $travels);
 
-        /** @var Command\VehicleTravel $vehicleTravel */
         $vehicleTravel = $travels[0];
+        assert($vehicleTravel instanceof Command\VehicleTravel);
         $this->assertSame(0, $vehicleTravel->getId());
         $details1 = $vehicleTravel->getDetails();
         $this->assertInstanceOf(Command\VehicleTravel::class, $vehicleTravel);
@@ -162,8 +163,8 @@ class CommandRepositoryTest extends IntegrationTest
         $this->assertSame(self::VEHICLE_TRAVEL['end_place'], $details1->getEndPlace());
         $this->assertSame(TransportType::get(self::VEHICLE_TRAVEL['type']), $details1->getTransportType());
 
-        /** @var Command\TransportTravel $transportTravel */
         $transportTravel = $travels[1];
+        assert($transportTravel instanceof Command\TransportTravel);
         $this->assertSame(1, $transportTravel->getId());
         $details2 = $transportTravel->getDetails();
         $this->assertInstanceOf(Command\TransportTravel::class, $transportTravel);
@@ -174,7 +175,7 @@ class CommandRepositoryTest extends IntegrationTest
         $this->assertSame(TransportType::get(self::TRANSPORT_TRAVEL['type']), $details2->getTransportType());
     }
 
-    public function testNextTravelId() : void
+    public function testNextTravelId(): void
     {
         $this->createCommandWithTwoTravels();
         $command = $this->repository->find(1);
@@ -184,7 +185,7 @@ class CommandRepositoryTest extends IntegrationTest
         $this->assertSame(2, $command->getTravels()[2]->getId());
     }
 
-    public function testRemoveDeletesAggregateFromDatabase() : void
+    public function testRemoveDeletesAggregateFromDatabase(): void
     {
         $this->createCommandWithTwoTravels();
 
@@ -197,7 +198,7 @@ class CommandRepositoryTest extends IntegrationTest
         $this->tester->dontSeeInDatabase('tc_travels', ['id' => 2]);
     }
 
-    public function testSaveAddsAggregateToDatabase() : void
+    public function testSaveAddsAggregateToDatabase(): void
     {
         $this->createCommandWithTwoTravels();
         $command = $this->repository->find(1);
@@ -209,7 +210,7 @@ class CommandRepositoryTest extends IntegrationTest
         $this->tester->seeInDatabase('tc_commands', ['id' => 2] + array_diff_key(self::COMMAND, ['transport_types' => null]));
     }
 
-    public function testTwoCommandsCanHaveTravelsWithSameIds() : void
+    public function testTwoCommandsCanHaveTravelsWithSameIds(): void
     {
         $this->createCommandWithTwoTravels(1);
         $this->createCommandWithTwoTravels(2);
@@ -224,7 +225,7 @@ class CommandRepositoryTest extends IntegrationTest
     /**
      * @return mixed[]
      */
-    public function getExpectedReturnedCommandIds() : array
+    public function getExpectedReturnedCommandIds(): array
     {
         return [
             [2, 3, []],
@@ -239,20 +240,20 @@ class CommandRepositoryTest extends IntegrationTest
      *
      * @dataProvider getExpectedReturnedCommandIds
      */
-    public function testFindCommandsByUnitOrUser(int $unitId, int $userId, array $expectedCommandIds) : void
+    public function testFindCommandsByUnitOrUser(int $unitId, int $userId, array $expectedCommandIds): void
     {
         $this->tester->haveInDatabase('tc_commands', ['unit_id' => 1, 'owner_id' => 999, 'id' => 5] + self::COMMAND);
         $this->tester->haveInDatabase('tc_commands', ['unit_id' => 999, 'owner_id' => 4, 'id' => 6] + self::COMMAND);
         $commands = $this->repository->findByUnitAndUser($unitId, $userId);
         $this->assertSame(
             $expectedCommandIds,
-            array_map(static function (Command $command) : int {
+            array_map(static function (Command $command): int {
                 return $command->getId();
             }, $commands)
         );
     }
 
-    private function createCommandWithTwoTravels(int $commandId = self::COMMAND_ID) : void
+    private function createCommandWithTwoTravels(int $commandId = self::COMMAND_ID): void
     {
         $this->tester->haveInDatabase('tc_commands', self::COMMAND);
         $this->tester->haveInDatabase('tc_travels', ['command_id' => $commandId] + self::VEHICLE_TRAVEL);

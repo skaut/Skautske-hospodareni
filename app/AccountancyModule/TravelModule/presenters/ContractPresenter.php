@@ -15,6 +15,7 @@ use Model\TravelService;
 use Model\Unit\ReadModel\Queries\UnitQuery;
 use Nette\Application\UI\Form;
 use Nette\Security\Identity;
+
 use function array_column;
 use function array_filter;
 use function array_key_exists;
@@ -23,11 +24,9 @@ use function dirname;
 
 class ContractPresenter extends BasePresenter
 {
-    /** @var TravelService */
-    private $travelService;
+    private TravelService $travelService;
 
-    /** @var PdfRenderer */
-    private $pdf;
+    private PdfRenderer $pdf;
 
     public function __construct(TravelService $travelService, PdfRenderer $pdf)
     {
@@ -37,7 +36,7 @@ class ContractPresenter extends BasePresenter
         $this->setLayout('layout.new');
     }
 
-    private function isContractAccessible(?Contract $contract) : bool
+    private function isContractAccessible(?Contract $contract): bool
     {
         $identity = $this->getUser()->getIdentity();
 
@@ -46,7 +45,7 @@ class ContractPresenter extends BasePresenter
         return $contract !== null && array_key_exists($contract->getUnitId(), $identity->access[BaseService::ACCESS_READ]);
     }
 
-    private function isContractEditable(?Contract $contract) : bool
+    private function isContractEditable(?Contract $contract): bool
     {
         $identity = $this->getUser()->getIdentity();
 
@@ -55,7 +54,7 @@ class ContractPresenter extends BasePresenter
         return $contract !== null && array_key_exists($contract->getUnitId(), $identity->access[BaseService::ACCESS_EDIT]);
     }
 
-    public function renderDefault() : void
+    public function renderDefault(): void
     {
         $identity = $this->getUser()->getIdentity();
         $unitId   = $this->officialUnit->getId();
@@ -73,7 +72,7 @@ class ContractPresenter extends BasePresenter
         ]);
     }
 
-    public function actionDetail(int $id) : void
+    public function actionDetail(int $id): void
     {
         $contract = $this->travelService->getContract($id);
 
@@ -94,7 +93,7 @@ class ContractPresenter extends BasePresenter
         ]);
     }
 
-    public function actionPrint(int $contractId) : void
+    public function actionPrint(int $contractId): void
     {
         $contract = $this->travelService->getContract($contractId);
         if (! $this->isContractAccessible($contract)) {
@@ -114,6 +113,7 @@ class ContractPresenter extends BasePresenter
             default:
                 throw new Exception('Neznámá šablona pro ' . $contract->getTemplateVersion());
         }
+
         $template = $this->template;
         $template->setFile(dirname(__FILE__) . '/../templates/Contract/' . $templateName);
         $template->setParameters([
@@ -124,7 +124,7 @@ class ContractPresenter extends BasePresenter
         $this->pdf->render((string) $template, 'Smlouva-o-proplaceni-cestovnich-nahrad.pdf');
     }
 
-    public function handleDelete(int $contractId) : void
+    public function handleDelete(int $contractId): void
     {
         $commands = $this->travelService->getAllCommandsByContract($contractId);
 
@@ -146,7 +146,7 @@ class ContractPresenter extends BasePresenter
         $this->redirect('default');
     }
 
-    protected function createComponentFormCreateContract() : Form
+    protected function createComponentFormCreateContract(): Form
     {
         $form = new BaseForm();
 
@@ -175,14 +175,14 @@ class ContractPresenter extends BasePresenter
         $form->addSubmit('send', 'Založit smlouvu')
             ->setAttribute('class', 'btn btn-primary');
 
-        $form->onSuccess[] = function (Form $form) : void {
+        $form->onSuccess[] = function (Form $form): void {
             $this->formCreateContractSubmitted($form);
         };
 
         return $form;
     }
 
-    private function formCreateContractSubmitted(Form $form) : void
+    private function formCreateContractSubmitted(Form $form): void
     {
         $v = $form->getValues();
 

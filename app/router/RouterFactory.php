@@ -14,7 +14,7 @@ use Nette\Application\Routers\SimpleRouter;
  */
 class RouterFactory
 {
-    public function createRouter() : IRouter
+    public function createRouter(): IRouter
     {
         $router = new RouteList();
 
@@ -74,7 +74,7 @@ class RouterFactory
         return $router;
     }
 
-    private function createCampRoutes() : IRouter
+    private function createCampRoutes(): IRouter
     {
         $router = new RouteList('Camp');
 
@@ -105,7 +105,7 @@ class RouterFactory
         return $router;
     }
 
-    private function createEventRoutes() : IRouter
+    private function createEventRoutes(): IRouter
     {
         $router = new RouteList('Event');
 
@@ -136,7 +136,7 @@ class RouterFactory
         return $router;
     }
 
-    private function createTravelRoutes() : IRouter
+    private function createTravelRoutes(): IRouter
     {
         $router = new RouteList('Travel');
 
@@ -160,7 +160,7 @@ class RouterFactory
         return $router;
     }
 
-    private function createUnitAccountRoutes() : IRouter
+    private function createUnitAccountRoutes(): IRouter
     {
         $router = new RouteList('UnitAccount');
 
@@ -192,7 +192,7 @@ class RouterFactory
         return $router;
     }
 
-    private function createPaymentRoutes() : IRouter
+    private function createPaymentRoutes(): IRouter
     {
         $router = new RouteList('Payment');
 
@@ -221,7 +221,7 @@ class RouterFactory
         return $router;
     }
 
-    private function createStatRoutes() : IRouter
+    private function createStatRoutes(): IRouter
     {
         $router = new RouteList('Statistics');
 

@@ -15,6 +15,7 @@ use Model\Cashbook\ReadModel\Queries\UnitCashbookListQuery;
 use Model\Common\UnitId;
 use Model\DTO\Cashbook\UnitCashbook;
 use Nette\Utils\ArrayHash;
+
 use function array_diff;
 use function array_map;
 use function date;
@@ -26,22 +27,18 @@ final class CreateCashbookDialog extends BaseControl
     private const YEARS_RANGE = [-5, 2];
 
     /** @var bool @persistent */
-    public $opened = false;
+    public bool $opened = false;
 
     /** @var callable[] */
-    public $onSuccess = [];
+    public array $onSuccess = [];
 
-    /** @var bool */
-    private $isEditable;
+    private bool $isEditable;
 
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(bool $isEditable, UnitId $unitId, CommandBus $commandBus, QueryBus $queryBus)
     {
@@ -52,7 +49,7 @@ final class CreateCashbookDialog extends BaseControl
         $this->queryBus   = $queryBus;
     }
 
-    public function render() : void
+    public function render(): void
     {
         $this->template->setFile(__DIR__ . '/templates/CreateCashbookDialog.latte');
         $this->template->setParameters([
@@ -61,13 +58,13 @@ final class CreateCashbookDialog extends BaseControl
         $this->template->render();
     }
 
-    public function open() : void
+    public function open(): void
     {
         $this->opened = true;
         $this->redrawControl();
     }
 
-    protected function createComponentForm() : BaseForm
+    protected function createComponentForm(): BaseForm
     {
         $form = new BaseForm();
 
@@ -80,7 +77,7 @@ final class CreateCashbookDialog extends BaseControl
         $form->addSubmit('create', 'Založit')
             ->setAttribute('class', 'btn btn-primary');
 
-        $form->onSuccess[] = function ($form, ArrayHash $values) : void {
+        $form->onSuccess[] = function ($form, ArrayHash $values): void {
             if (! $this->isEditable) {
                 $this->flashMessage('Nemáte oprávnění přidávat pokladní knihy', 'danger');
                 $this->redirect('this', ['opened' => false]);
@@ -100,7 +97,7 @@ final class CreateCashbookDialog extends BaseControl
         return $form;
     }
 
-    private function getYear(int $yearsDifference) : int
+    private function getYear(int $yearsDifference): int
     {
         return (int) date('Y') + $yearsDifference;
     }
@@ -108,16 +105,16 @@ final class CreateCashbookDialog extends BaseControl
     /**
      * @return int[]
      */
-    private function getYearsWithCashbook() : array
+    private function getYearsWithCashbook(): array
     {
         $cashbooks = $this->queryBus->handle(new UnitCashbookListQuery($this->unitId));
 
-        return array_map(function (UnitCashbook $cashbook) : int {
+        return array_map(function (UnitCashbook $cashbook): int {
             return $cashbook->getYear();
         }, $cashbooks);
     }
 
-    private function unitExists() : bool
+    private function unitExists(): bool
     {
         return $this->queryBus->handle(new ActiveUnitCashbookQuery($this->unitId)) !== null;
     }

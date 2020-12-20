@@ -17,29 +17,26 @@ use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Type;
 use Model\Payment\ReadModel\Queries\RegistrationWithoutGroupQuery;
 use Model\PaymentService;
+
 use function array_keys;
 use function array_slice;
+use function assert;
 use function intdiv;
 
 class RegistrationPresenter extends BasePresenter
 {
-    /** @var Registration|null */
-    private $registration;
+    private ?Registration $registration = null;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
     /** @var string[] */
-    protected $readUnits;
+    protected array $readUnits;
 
-    /** @var PaymentService */
-    private $model;
+    private PaymentService $model;
 
-    /** @var IMassAddFormFactory */
-    private $massAddFormFactory;
+    private IMassAddFormFactory $massAddFormFactory;
 
-    /** @var IGroupFormFactory */
-    private $groupFormFactory;
+    private IGroupFormFactory $groupFormFactory;
 
     private const STS_PRICE = 200;
 
@@ -54,16 +51,16 @@ class RegistrationPresenter extends BasePresenter
         $this->groupFormFactory   = $groupFormFactory;
     }
 
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
         $this->readUnits = $units = $this->unitService->getReadUnits($this->user);
         $this->template->setParameters([
-            'unitPairs' =>$this->readUnits,
+            'unitPairs' => $this->readUnits,
         ]);
     }
 
-    public function actionNewGroup() : void
+    public function actionNewGroup(): void
     {
         $registration = $this->queryBus->handle(
             new RegistrationWithoutGroupQuery(new UnitId($this->unitService->getUnitId()))
@@ -81,7 +78,7 @@ class RegistrationPresenter extends BasePresenter
     /**
      * @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY
      */
-    public function actionMassAdd(int $id, ?int $unitId = null) : void
+    public function actionMassAdd(int $id, ?int $unitId = null): void
     {
         $this->id = $id;
 
@@ -103,7 +100,7 @@ class RegistrationPresenter extends BasePresenter
         }
 
         $form = $this['massAddForm'];
-        /** @var MassAddForm $form */
+        assert($form instanceof MassAddForm);
 
         // performance issue - při větším množství zobrazených osob se nezpracuje formulář
         $list = array_slice($list, 0, 50);
@@ -126,12 +123,12 @@ class RegistrationPresenter extends BasePresenter
         ]);
     }
 
-    protected function createComponentMassAddForm() : MassAddForm
+    protected function createComponentMassAddForm(): MassAddForm
     {
         return $this->massAddFormFactory->create($this->id);
     }
 
-    protected function createComponentNewGroupForm() : GroupForm
+    protected function createComponentNewGroupForm(): GroupForm
     {
         $registration = $this->registration;
 

@@ -11,8 +11,7 @@ use Model\DTO\Cashbook\Cashbook;
 
 class CashbookQueryHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
     public function __construct(ICashbookRepository $cashbooks)
     {
@@ -22,7 +21,7 @@ class CashbookQueryHandler
     /**
      * @throws CashbookNotFound
      */
-    public function __invoke(CashbookQuery $query) : Cashbook
+    public function __invoke(CashbookQuery $query): Cashbook
     {
         $cashbook = $this->cashbooks->find($query->getCashbookId());
 

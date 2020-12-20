@@ -12,14 +12,11 @@ use Model\PaymentService;
 
 class GroupPresenter extends BasePresenter
 {
-    /** @var Group|null */
-    private $group;
+    private ?Group $group = null;
 
-    /** @var PaymentService */
-    private $model;
+    private PaymentService $model;
 
-    /** @var IGroupFormFactory */
-    private $groupFormFactory;
+    private IGroupFormFactory $groupFormFactory;
 
     public function __construct(PaymentService $model, IGroupFormFactory $groupFormFactory)
     {
@@ -28,16 +25,17 @@ class GroupPresenter extends BasePresenter
         $this->groupFormFactory = $groupFormFactory;
     }
 
-    public function actionNewGroup() : void
+    public function actionNewGroup(): void
     {
         if ($this->isEditable) {
             return;
         }
+
         $this->setView('accessDenied');
         $this->template->setParameters(['message' => 'Nemáte oprávnění upravovat skupiny plateb.']);
     }
 
-    public function actionEdit(int $id) : void
+    public function actionEdit(int $id): void
     {
         $group = $this->model->getGroup($id);
 
@@ -50,7 +48,7 @@ class GroupPresenter extends BasePresenter
         $this->template->setParameters(['group' => $group]);
     }
 
-    protected function createComponentEditGroupForm() : GroupForm
+    protected function createComponentEditGroupForm(): GroupForm
     {
         $group = $this->group;
 
@@ -60,7 +58,7 @@ class GroupPresenter extends BasePresenter
         return $this->groupFormFactory->create($unitId, null, $group->getId());
     }
 
-    protected function createComponentNewGroupForm() : GroupForm
+    protected function createComponentNewGroupForm(): GroupForm
     {
         $unitId = $this->getCurrentUnitId();
 

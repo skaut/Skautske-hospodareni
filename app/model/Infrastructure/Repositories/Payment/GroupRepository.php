@@ -14,6 +14,7 @@ use Model\Payment\Group;
 use Model\Payment\Group\Type;
 use Model\Payment\GroupNotFound;
 use Model\Payment\Repositories\IGroupRepository;
+
 use function array_diff;
 use function array_fill;
 use function array_keys;
@@ -22,11 +23,9 @@ use function implode;
 
 final class GroupRepository implements IGroupRepository
 {
-    /** @var EntityManager */
-    private $em;
+    private EntityManager $em;
 
-    /** @var EventBus */
-    private $eventBus;
+    private EventBus $eventBus;
 
     public function __construct(EntityManager $em, EventBus $eventBus)
     {
@@ -34,10 +33,7 @@ final class GroupRepository implements IGroupRepository
         $this->eventBus = $eventBus;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function find(int $id) : Group
+    public function find(int $id): Group
     {
         $group = $this->em->find(Group::class, $id);
 
@@ -51,7 +47,7 @@ final class GroupRepository implements IGroupRepository
     /**
      * {@inheritDoc}
      */
-    public function findByIds(array $ids) : array
+    public function findByIds(array $ids): array
     {
         $groups = $this->em->createQueryBuilder()
             ->select('g')
@@ -71,7 +67,7 @@ final class GroupRepository implements IGroupRepository
     /**
      * {@inheritDoc}
      */
-    public function findByUnits(array $unitIds, bool $openOnly) : array
+    public function findByUnits(array $unitIds, bool $openOnly): array
     {
         $qb = $this->em->createQueryBuilder()
             ->select('g')
@@ -90,7 +86,7 @@ final class GroupRepository implements IGroupRepository
     /**
      * {@inheritDoc}
      */
-    public function findBySkautisEntities(Group\SkautisEntity ...$objects) : array
+    public function findBySkautisEntities(Group\SkautisEntity ...$objects): array
     {
         if (count($objects) === 0) {
             return [];
@@ -119,7 +115,7 @@ final class GroupRepository implements IGroupRepository
     /**
      * {@inheritDoc}
      */
-    public function findBySkautisEntityType(Type $type) : array
+    public function findBySkautisEntityType(Type $type): array
     {
         return $this->em->createQueryBuilder()
             ->select('g')
@@ -133,7 +129,7 @@ final class GroupRepository implements IGroupRepository
     /**
      * {@inheritDoc}
      */
-    public function findByBankAccount(int $bankAccountId) : array
+    public function findByBankAccount(int $bankAccountId): array
     {
         return $this->em->createQueryBuilder()
             ->select('g')
@@ -147,7 +143,7 @@ final class GroupRepository implements IGroupRepository
     /**
      * {@inheritDoc}
      */
-    public function findByOAuth(OAuthId $oAuthId) : array
+    public function findByOAuth(OAuthId $oAuthId): array
     {
         return $this->em->createQueryBuilder()
             ->select('g')
@@ -158,16 +154,16 @@ final class GroupRepository implements IGroupRepository
             ->getResult();
     }
 
-    public function save(Group $group) : void
+    public function save(Group $group): void
     {
         $this->em->persist($group);
         $this->em->flush();
     }
 
-    public function remove(Group $group) : void
+    public function remove(Group $group): void
     {
         $this->em->transactional(
-            function (EntityManager $entityManager) use ($group) : void {
+            function (EntityManager $entityManager) use ($group): void {
                 $entityManager->remove($group);
 
                 $this->eventBus->handle(new GroupWasRemoved($group->getId()));

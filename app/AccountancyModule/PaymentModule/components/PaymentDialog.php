@@ -16,6 +16,7 @@ use Model\Payment\Commands\Payment\UpdatePayment;
 use Model\PaymentService;
 use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
+
 use function array_map;
 use function explode;
 use function implode;
@@ -27,22 +28,16 @@ use function preg_replace;
 final class PaymentDialog extends Dialog
 {
     /** @var callable[] */
-    public $onSuccess = [];
+    public array $onSuccess = [];
 
-    /**
-     * @persistent
-     * @var int
-     */
-    public $paymentId = -1;
+    /** @persistent */
+    public int $paymentId = -1;
 
-    /** @var int */
-    private $groupId;
+    private int $groupId;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var PaymentService */
-    private $paymentService;
+    private PaymentService $paymentService;
 
     public function __construct(int $groupId, CommandBus $commandBus, PaymentService $paymentService)
     {
@@ -52,14 +47,14 @@ final class PaymentDialog extends Dialog
         $this->paymentService = $paymentService;
     }
 
-    public function handleOpen(int $paymentId = -1) : void
+    public function handleOpen(int $paymentId = -1): void
     {
         $this->paymentId = $paymentId;
 
         $this->show();
     }
 
-    protected function beforeRender() : void
+    protected function beforeRender(): void
     {
         $this->template->setFile(__DIR__ . '/templates/PaymentDialog.latte');
         $this->template->setParameters([
@@ -68,7 +63,7 @@ final class PaymentDialog extends Dialog
         ]);
     }
 
-    protected function createComponentForm() : BaseForm
+    protected function createComponentForm(): BaseForm
     {
         $form = new BaseForm();
 
@@ -131,18 +126,18 @@ final class PaymentDialog extends Dialog
             ]);
         }
 
-        $form->onSubmit[] = function () : void {
+        $form->onSubmit[] = function (): void {
             $this->redrawControl();
         };
 
-        $form->onSuccess[] = function (Form $form) : void {
+        $form->onSuccess[] = function (Form $form): void {
             $this->paymentSubmitted($form);
         };
 
         return $form;
     }
 
-    private function paymentSubmitted(Form $form) : void
+    private function paymentSubmitted(Form $form): void
     {
         $v = $form->getValues();
 
@@ -156,7 +151,7 @@ final class PaymentDialog extends Dialog
         $this->hide();
     }
 
-    private function updatePayment(ArrayHash $values) : void
+    private function updatePayment(ArrayHash $values): void
     {
         $payment = $this->payment();
 
@@ -185,7 +180,7 @@ final class PaymentDialog extends Dialog
     /**
      * @return EmailAddress[]
      */
-    private function processEmails(?string $emails) : array
+    private function processEmails(?string $emails): array
     {
         if ($emails === null) {
             return [];
@@ -197,7 +192,7 @@ final class PaymentDialog extends Dialog
         );
     }
 
-    private function createPayment(ArrayHash $values) : void
+    private function createPayment(ArrayHash $values): void
     {
         $this->commandBus->handle(
             new CreatePayment(
@@ -217,12 +212,12 @@ final class PaymentDialog extends Dialog
         $this->hide();
     }
 
-    private function isEditing() : bool
+    private function isEditing(): bool
     {
         return $this->paymentId !== -1;
     }
 
-    private function payment() : ?Payment
+    private function payment(): ?Payment
     {
         if ($this->paymentId === -1) {
             return null;

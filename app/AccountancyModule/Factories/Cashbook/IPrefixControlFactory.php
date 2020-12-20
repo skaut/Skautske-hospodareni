@@ -10,5 +10,5 @@ use Model\Cashbook\Cashbook\PaymentMethod;
 
 interface IPrefixControlFactory
 {
-    public function create(CashbookId $cashbookId, PaymentMethod $paymentMethod, bool $isEditable) : PrefixControl;
+    public function create(CashbookId $cashbookId, PaymentMethod $paymentMethod, bool $isEditable): PrefixControl;
 }

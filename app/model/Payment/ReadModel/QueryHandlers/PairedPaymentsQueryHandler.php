@@ -9,12 +9,12 @@ use Model\DTO\Payment\PaymentFactory;
 use Model\Payment\Group;
 use Model\Payment\Payment;
 use Model\Payment\ReadModel\Queries\PairedPaymentsQuery;
+
 use function array_map;
 
 class PairedPaymentsQueryHandler
 {
-    /** @var EntityManager */
-    private $entityManager;
+    private EntityManager $entityManager;
 
     public function __construct(EntityManager $entityManager)
     {
@@ -24,7 +24,7 @@ class PairedPaymentsQueryHandler
     /**
      * @return \Model\DTO\Payment\Payment[]
      */
-    public function __invoke(PairedPaymentsQuery $query) : array
+    public function __invoke(PairedPaymentsQuery $query): array
     {
         $groupIds = $this->entityManager->createQueryBuilder()
             ->select('g.id')

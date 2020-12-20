@@ -10,15 +10,14 @@ use Model\Unit\Unit;
 
 class UnitQueryHandler
 {
-    /** @var IUnitRepository */
-    private $units;
+    private IUnitRepository $units;
 
     public function __construct(IUnitRepository $units)
     {
         $this->units = $units;
     }
 
-    public function __invoke(UnitQuery $query) : Unit
+    public function __invoke(UnitQuery $query): Unit
     {
         return $this->units->find($query->getUnitId());
     }

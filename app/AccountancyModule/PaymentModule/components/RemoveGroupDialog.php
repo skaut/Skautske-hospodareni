@@ -14,17 +14,13 @@ use Nette\Http\IResponse;
 
 final class RemoveGroupDialog extends Dialog
 {
-    /** @var int */
-    private $groupId;
+    private int $groupId;
 
-    /** @var bool */
-    private $isAllowed;
+    private bool $isAllowed;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var PaymentService */
-    private $paymentService;
+    private PaymentService $paymentService;
 
     public function __construct(
         int $groupId,
@@ -40,13 +36,13 @@ final class RemoveGroupDialog extends Dialog
         $this->paymentService = $paymentService;
     }
 
-    public function open() : void
+    public function open(): void
     {
         $this->opened = true;
         $this->redrawControl();
     }
 
-    protected function beforeRender() : void
+    protected function beforeRender(): void
     {
         $group = $this->paymentService->getGroup($this->groupId);
 
@@ -58,17 +54,18 @@ final class RemoveGroupDialog extends Dialog
         $this->template->setParameters(['groupName' => $group->getName()]);
     }
 
-    protected function createComponentForm() : BaseForm
+    protected function createComponentForm(): BaseForm
     {
         $form = new BaseForm();
 
         $form->addSubmit('delete', 'Smazat')
             ->setAttribute('class', 'btn-danger');
 
-        $form->onSuccess[] = function () : void {
+        $form->onSuccess[] = function (): void {
             if (! $this->isAllowed) {
                 throw new BadRequestException('Nemáte oprávnění smazat tuto skupinu', IResponse::S403_FORBIDDEN);
             }
+
             $this->commandBus->handle(new RemoveGroup($this->groupId));
 
             $this->flashMessage('Skupina plateb byla odstraněna', 'success');

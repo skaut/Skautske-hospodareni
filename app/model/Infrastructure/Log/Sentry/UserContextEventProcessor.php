@@ -8,15 +8,14 @@ use Sentry\Event;
 
 final class UserContextEventProcessor
 {
-    /** @var UserContextProvider */
-    private $userContext;
+    private UserContextProvider $userContext;
 
     public function __construct(UserContextProvider $userContext)
     {
         $this->userContext = $userContext;
     }
 
-    public function __invoke(Event $event) : Event
+    public function __invoke(Event $event): Event
     {
         $userData = $this->userContext->getUserData();
 

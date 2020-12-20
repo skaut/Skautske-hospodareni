@@ -19,7 +19,7 @@ final class EducationParticipantListQuery
         $this->educationId = $id;
     }
 
-    public function getEducationId() : SkautisEducationId
+    public function getEducationId(): SkautisEducationId
     {
         return $this->educationId;
     }

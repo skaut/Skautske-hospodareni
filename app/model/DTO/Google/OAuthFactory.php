@@ -6,7 +6,7 @@ namespace Model\DTO\Google;
 
 class OAuthFactory
 {
-    public static function create(\Model\Google\OAuth $origin) : OAuth
+    public static function create(\Model\Google\OAuth $origin): OAuth
     {
         return new OAuth(
             $origin->getId(),

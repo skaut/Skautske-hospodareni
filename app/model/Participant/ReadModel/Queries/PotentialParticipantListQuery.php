@@ -13,14 +13,12 @@ use Model\Participant\ReadModel\QueryHandlers\PotentialParticipantListQueryHandl
  */
 final class PotentialParticipantListQuery
 {
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var bool */
-    private $directMembersOnly;
+    private bool $directMembersOnly;
 
     /** @var Participant[] */
-    private $currentParticipants;
+    private array $currentParticipants;
 
     /**
      * @param Participant[] $currentParticipants
@@ -32,12 +30,12 @@ final class PotentialParticipantListQuery
         $this->currentParticipants = $currentParticipants;
     }
 
-    public function getUnitId() : UnitId
+    public function getUnitId(): UnitId
     {
         return $this->unitId;
     }
 
-    public function directMembersOnly() : bool
+    public function directMembersOnly(): bool
     {
         return $this->directMembersOnly;
     }
@@ -45,7 +43,7 @@ final class PotentialParticipantListQuery
     /**
      * @return Participant[]
      */
-    public function getCurrentParticipants() : array
+    public function getCurrentParticipants(): array
     {
         return $this->currentParticipants;
     }

@@ -25,11 +25,11 @@ final class CreatePayment
 
     private Date $dueDate;
 
-    private ?int $personId;
+    private ?int $personId = null;
 
-    private ?VariableSymbol $variableSymbol;
+    private ?VariableSymbol $variableSymbol = null;
 
-    private ?int $constantSymbol;
+    private ?int $constantSymbol = null;
 
     private string $note;
 
@@ -58,48 +58,48 @@ final class CreatePayment
         $this->note           = $note;
     }
 
-    public function getGroupId() : int
+    public function getGroupId(): int
     {
         return $this->groupId;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
     /** @return EmailAddress[] */
-    public function getRecipients() : array
+    public function getRecipients(): array
     {
         return $this->recipients;
     }
 
-    public function getAmount() : float
+    public function getAmount(): float
     {
         return $this->amount;
     }
 
-    public function getDueDate() : Date
+    public function getDueDate(): Date
     {
         return $this->dueDate;
     }
 
-    public function getPersonId() : ?int
+    public function getPersonId(): ?int
     {
         return $this->personId;
     }
 
-    public function getVariableSymbol() : ?VariableSymbol
+    public function getVariableSymbol(): ?VariableSymbol
     {
         return $this->variableSymbol;
     }
 
-    public function getConstantSymbol() : ?int
+    public function getConstantSymbol(): ?int
     {
         return $this->constantSymbol;
     }
 
-    public function getNote() : string
+    public function getNote(): string
     {
         return $this->note;
     }

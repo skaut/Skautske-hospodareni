@@ -10,17 +10,16 @@ use App\AccountancyModule\Components\DataGrid;
 use App\AccountancyModule\Factories\GridFactory;
 use Cake\Chronos\Date;
 use Model\Event\ReadModel\Queries\CampStates;
+
 use function array_merge;
 
 class DefaultPresenter extends BasePresenter
 {
     public const DEFAULT_STATE = 'approvedParent'; //filtrovani zobrazených položek
 
-    /** @var GridFactory */
-    private $gridFactory;
+    private GridFactory $gridFactory;
 
-    /** @var IExportDialogFactory */
-    private $exportDialogFactory;
+    private IExportDialogFactory $exportDialogFactory;
 
     public function __construct(GridFactory $gridFactory, IExportDialogFactory $exportDialogFactory)
     {
@@ -29,12 +28,12 @@ class DefaultPresenter extends BasePresenter
         $this->exportDialogFactory = $exportDialogFactory;
     }
 
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
     }
 
-    protected function createComponentGrid() : DataGrid
+    protected function createComponentGrid(): DataGrid
     {
         $grid = $this->gridFactory->createSimpleGrid(__DIR__ . '/../templates/@campsGrid.latte');
 
@@ -56,13 +55,13 @@ class DefaultPresenter extends BasePresenter
         $grid->addColumnText('state', 'Stav');
 
         $grid->addYearFilter('year', 'Rok')
-            ->setCondition(function (CampListDataSource $dataSource, $year) : void {
+            ->setCondition(function (CampListDataSource $dataSource, $year): void {
                 $dataSource->filterByYear($year === DataGrid::OPTION_ALL ? null : (int) ($year ?? Date::today()->year));
             });
 
         $states = array_merge([DataGrid::OPTION_ALL => 'Nezrušené'], $this->queryBus->handle(new CampStates()));
         $grid->addFilterSelect('state', 'Stav', $states)
-            ->setCondition(function (CampListDataSource $dataSource, ?string $state) : void {
+            ->setCondition(function (CampListDataSource $dataSource, ?string $state): void {
                 $dataSource->filterByState($state === DataGrid::OPTION_ALL ? null : $state);
             });
 
@@ -81,7 +80,7 @@ class DefaultPresenter extends BasePresenter
         return $grid;
     }
 
-    protected function createComponentExportDialog() : ExportDialog
+    protected function createComponentExportDialog(): ExportDialog
     {
         return $this->exportDialogFactory->create($this['grid']->getFilteredAndSortedData());
     }

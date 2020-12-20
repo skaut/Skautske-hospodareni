@@ -16,22 +16,19 @@ use Model\Cashbook\ReadModel\Queries\ActiveUnitCashbookQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\UnitCashbookListQuery;
 use Model\DTO\Cashbook\UnitCashbook;
+
 use function assert;
 use function sprintf;
 
 class CashbookPresenter extends BasePresenter
 {
-    /** @var IActivateCashbookDialogFactory */
-    private $activateCashbookDialogFactory;
+    private IActivateCashbookDialogFactory $activateCashbookDialogFactory;
 
-    /** @var ICashbookControlFactory */
-    private $cashbookFactory;
+    private ICashbookControlFactory $cashbookFactory;
 
-    /** @var ICreateCashbookDialogFactory */
-    private $createCashbookDialogFactory;
+    private ICreateCashbookDialogFactory $createCashbookDialogFactory;
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
     public function __construct(
         ICashbookControlFactory $cashbookFactory,
@@ -44,7 +41,7 @@ class CashbookPresenter extends BasePresenter
         $this->activateCashbookDialogFactory = $activateCashbookDialogFactory;
     }
 
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
 
@@ -56,21 +53,21 @@ class CashbookPresenter extends BasePresenter
         $this->redirect(':Accountancy:Default:');
     }
 
-    public function handleCreateCashbook() : void
+    public function handleCreateCashbook(): void
     {
         $dialog = $this['createCashbookDialog'];
 
         $dialog->open();
     }
 
-    public function handleSelectActive() : void
+    public function handleSelectActive(): void
     {
         $dialog = $this['activateCashbookDialog'];
 
         $dialog->open();
     }
 
-    public function actionDefault(?int $unitId = null, ?int $year = null) : void
+    public function actionDefault(?int $unitId = null, ?int $year = null): void
     {
         if ($unitId === null) {
             $this->redirect('this', ['unitId' => $this->unitService->getUnitId(), 'year' => $year]);
@@ -114,7 +111,7 @@ class CashbookPresenter extends BasePresenter
         $this->redirect('this', [$this->unitId->toInt(), $activeCashbook->getYear()]);
     }
 
-    public function renderDefault(int $unitId) : void
+    public function renderDefault(int $unitId): void
     {
         $this->template->setParameters([
             'cashbookId' => $this->cashbookId->toString(),
@@ -126,7 +123,7 @@ class CashbookPresenter extends BasePresenter
      * Do not allow direct access to action.
      * This is internal action used inside "default" action when there is no unit yet
      */
-    public function actionNoCashbook(int $unitId) : void
+    public function actionNoCashbook(int $unitId): void
     {
         $activeCashbook = $this->getActiveCashbook();
 
@@ -137,35 +134,35 @@ class CashbookPresenter extends BasePresenter
         $this->redirect('default', [$unitId, $activeCashbook->getYear()]);
     }
 
-    protected function createComponentActivateCashbookDialog() : ActivateCashbookDialog
+    protected function createComponentActivateCashbookDialog(): ActivateCashbookDialog
     {
         return $this->activateCashbookDialogFactory->create($this->isEditable, $this->unitId);
     }
 
-    protected function createComponentCreateCashbookDialog() : CreateCashbookDialog
+    protected function createComponentCreateCashbookDialog(): CreateCashbookDialog
     {
         $dialog = $this->createCashbookDialogFactory->create($this->isEditable, $this->unitId);
 
-        $dialog->onSuccess[] = function (int $year) : void {
+        $dialog->onSuccess[] = function (int $year): void {
             $this->redirect('default', [$this->unitId->toInt(), $year]);
         };
 
         return $dialog;
     }
 
-    protected function createComponentCashbook() : CashbookControl
+    protected function createComponentCashbook(): CashbookControl
     {
         return $this->cashbookFactory->create($this->cashbookId, $this->isEditable, $this->getCurrentUnitId());
     }
 
-    private function isCashbookEmpty() : bool
+    private function isCashbookEmpty(): bool
     {
         $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $this->cashbookId));
 
         return $chits === [];
     }
 
-    private function getActiveCashbook() : ?UnitCashbook
+    private function getActiveCashbook(): ?UnitCashbook
     {
         return $this->queryBus->handle(new ActiveUnitCashbookQuery($this->unitId));
     }

@@ -7,12 +7,12 @@ namespace Model\Google;
 use InvalidArgumentException;
 use Ramsey\Uuid\Exception\InvalidUuidStringException;
 use Ramsey\Uuid\Uuid;
+
 use function sprintf;
 
 final class OAuthId
 {
-    /** @var string */
-    private $id;
+    private string $id;
 
     /**
      * @throws InvalidUuidStringException
@@ -30,17 +30,17 @@ final class OAuthId
         $this->id = $uuid->toString(); // valid UUID
     }
 
-    public static function generate() : self
+    public static function generate(): self
     {
         return new self(Uuid::uuid4()->toString());
     }
 
-    public static function fromString(string $id) : self
+    public static function fromString(string $id): self
     {
         return new self($id);
     }
 
-    public static function fromStringOrNull(?string $id) : ?self
+    public static function fromStringOrNull(?string $id): ?self
     {
         if ($id === null) {
             return null;
@@ -49,17 +49,17 @@ final class OAuthId
         return self::fromString($id);
     }
 
-    public function toString() : string
+    public function toString(): string
     {
         return $this->id;
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         return $this->toString();
     }
 
-    public function equals(self $otherValueObject) : bool
+    public function equals(self $otherValueObject): bool
     {
         return $otherValueObject->id === $this->id;
     }

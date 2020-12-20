@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Utils;
 
 use Nette\StaticClass;
+
 use function array_reduce;
 
 class Arrays
@@ -19,7 +20,7 @@ class Arrays
      *
      * @return mixed[]
      */
-    public static function groupBy(array $collection, callable $keyFunction, bool $excludeNull = false) : array
+    public static function groupBy(array $collection, callable $keyFunction, bool $excludeNull = false): array
     {
         $newCollection = [];
         foreach ($collection as $index => $item) {

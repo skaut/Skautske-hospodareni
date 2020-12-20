@@ -9,5 +9,5 @@ use Model\Common\UnitId;
 
 interface IActivateCashbookDialogFactory
 {
-    public function create(bool $isEditable, UnitId $unitId) : ActivateCashbookDialog;
+    public function create(bool $isEditable, UnitId $unitId): ActivateCashbookDialog;
 }

@@ -12,7 +12,7 @@ class BankAccountImporterStub implements IBankAccountImporter
     /**
      * @return AccountNumber[]
      */
-    public function import(int $unitId) : array
+    public function import(int $unitId): array
     {
         return [];
     }

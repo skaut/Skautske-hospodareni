@@ -11,19 +11,11 @@ use Doctrine\ORM\Mapping as ORM;
  */
 final class Event
 {
-    /**
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
-    private $id;
+    /** @ORM\Column(type="integer") */
+    private int $id;
 
-    /**
-     * @ORM\Column(type="string_enum", length=7)
-     *
-     * @var EventType
-     */
-    private $type;
+    /** @ORM\Column(type="string_enum", length=7) */
+    private EventType $type;
 
     public function __construct(int $id, EventType $type)
     {
@@ -31,12 +23,12 @@ final class Event
         $this->type = $type;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getType() : EventType
+    public function getType(): EventType
     {
         return $this->type;
     }

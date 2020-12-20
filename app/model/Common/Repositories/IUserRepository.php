@@ -12,10 +12,10 @@ interface IUserRepository
     /**
      * @throws UserNotFound
      */
-    public function find(int $id) : User;
+    public function find(int $id): User;
 
     /**
      * @throws UserNotFound
      */
-    public function getCurrentUser() : User;
+    public function getCurrentUser(): User;
 }

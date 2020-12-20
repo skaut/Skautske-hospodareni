@@ -16,7 +16,7 @@ final class UpdatePaymentHandler
         $this->payments = $payments;
     }
 
-    public function __invoke(UpdatePayment $command) : void
+    public function __invoke(UpdatePayment $command): void
     {
         $payment = $this->payments->find($command->getPaymentId());
 

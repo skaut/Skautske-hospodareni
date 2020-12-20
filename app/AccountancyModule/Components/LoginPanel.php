@@ -9,18 +9,16 @@ use Model\UnitService;
 use Model\UserService;
 use Nette\Security\Identity;
 use Nette\Security\User;
+
 use function assert;
 
 final class LoginPanel extends BaseControl
 {
-    /** @var UserService */
-    private $userService;
+    private UserService $userService;
 
-    /** @var UnitService */
-    private $unitService;
+    private UnitService $unitService;
 
-    /** @var User */
-    private $user;
+    private User $user;
 
     public function __construct(UserService $userService, UnitService $unitService, User $user)
     {
@@ -30,7 +28,7 @@ final class LoginPanel extends BaseControl
         $this->user        = $user;
     }
 
-    public function handleChangeRole(int $roleId) : void
+    public function handleChangeRole(int $roleId): void
     {
         $this->userService->updateSkautISRole($roleId);
 
@@ -44,7 +42,8 @@ final class LoginPanel extends BaseControl
         $this->redirect('this');
     }
 
-    public function render() : void
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    public function render(): void
     {
         $this->template->setFile(__DIR__ . '/templates/LoginPanel.latte');
         if ($this->user->isLoggedIn()) {

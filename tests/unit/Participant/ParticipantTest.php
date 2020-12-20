@@ -15,7 +15,7 @@ class ParticipantTest extends Unit
     /**
      * @dataProvider dataSupportability
      */
-    public function testSupportability(int $under18, int $totalDays, bool $result) : void
+    public function testSupportability(int $under18, int $totalDays, bool $result): void
     {
         $pp = new PragueParticipants($under18, 0, 123, 8);
         $this->assertSame($result, $pp->isSupportable($totalDays));
@@ -24,12 +24,12 @@ class ParticipantTest extends Unit
     /**
      * @return mixed[]
      */
-    public function dataSupportability() : array
+    public function dataSupportability(): array
     {
         return [[8, 2, true], [8, 6, true], [8, 7, false], [8, 1, false], [3, 2, false], [3, 8, false]];
     }
 
-    public function testFromListParticipants() : void
+    public function testFromListParticipants(): void
     {
         $pp = PragueParticipants::fromParticipantList(new Date('2018-01-01'), [
             m::mock(Participant::class, ['getCity' => 'Praha', 'getBirthday' => new Date('1980-01-01'), 'getDays' => 3]),

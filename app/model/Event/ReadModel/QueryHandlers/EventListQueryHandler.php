@@ -8,15 +8,14 @@ use Model\Event\Event;
 use Model\Event\ReadModel\Queries\EventListQuery;
 use Model\Skautis\Factory\EventFactory;
 use Skautis\Skautis;
+
 use function is_object;
 
 class EventListQueryHandler
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
-    /** @var EventFactory */
-    private $eventFactory;
+    private EventFactory $eventFactory;
 
     public function __construct(Skautis $skautis, EventFactory $eventFactory)
     {
@@ -27,7 +26,7 @@ class EventListQueryHandler
     /**
      * @return array<int, Event> Events indexed by ID
      */
-    public function __invoke(EventListQuery $query) : array
+    public function __invoke(EventListQuery $query): array
     {
         $events = $this->skautis->event->eventGeneralAll([
             'IsRelation' => true,

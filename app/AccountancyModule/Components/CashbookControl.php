@@ -14,23 +14,17 @@ use Model\Common\UnitId;
 
 class CashbookControl extends BaseControl
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var bool */
-    private $isEditable;
+    private bool $isEditable;
 
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var IChitFormFactory */
-    private $formFactory;
+    private IChitFormFactory $formFactory;
 
-    /** @var IChitListControlFactory */
-    private $chitListFactory;
+    private IChitListControlFactory $chitListFactory;
 
-    /** @var INoteFormFactory */
-    private $noteFormFactory;
+    private INoteFormFactory $noteFormFactory;
 
     public function __construct(
         CashbookId $cashbookId,
@@ -49,7 +43,7 @@ class CashbookControl extends BaseControl
         $this->noteFormFactory = $noteFactory;
     }
 
-    public function render() : void
+    public function render(): void
     {
         $this->template->setParameters([
             'isEditable' => $this->isEditable,
@@ -59,31 +53,31 @@ class CashbookControl extends BaseControl
         $this->template->render();
     }
 
-    protected function createComponentChitForm() : ChitForm
+    protected function createComponentChitForm(): ChitForm
     {
         return $this->formFactory->create($this->cashbookId, $this->isEditable, $this->unitId);
     }
 
-    protected function createComponentChitListCash() : ChitListControl
+    protected function createComponentChitListCash(): ChitListControl
     {
         return $this->createChitList(PaymentMethod::CASH());
     }
 
-    protected function createComponentChitListBank() : ChitListControl
+    protected function createComponentChitListBank(): ChitListControl
     {
         return $this->createChitList(PaymentMethod::BANK());
     }
 
-    protected function createComponentNoteForm() : NoteForm
+    protected function createComponentNoteForm(): NoteForm
     {
         return $this->noteFormFactory->create($this->cashbookId, $this->isEditable);
     }
 
-    private function createChitList(PaymentMethod $paymentMethod) : ChitListControl
+    private function createChitList(PaymentMethod $paymentMethod): ChitListControl
     {
         $control = $this->chitListFactory->create($this->cashbookId, $this->isEditable, $paymentMethod);
 
-        $control->onEditButtonClicked[] = function (int $chitId) : void {
+        $control->onEditButtonClicked[] = function (int $chitId): void {
             $form = $this['chitForm'];
             $form->editChit($chitId);
 

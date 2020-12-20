@@ -12,7 +12,7 @@ final class ParticipantFactory
 {
     use StaticClass;
 
-    public static function create(Participant $participant) : ParticipantDTO
+    public static function create(Participant $participant): ParticipantDTO
     {
         return new ParticipantDTO(
             $participant->getId(),

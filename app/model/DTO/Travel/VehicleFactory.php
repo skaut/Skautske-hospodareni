@@ -8,7 +8,7 @@ use Model\Travel\Vehicle as VehicleEntity;
 
 class VehicleFactory
 {
-    public static function create(VehicleEntity $vehicle) : Vehicle
+    public static function create(VehicleEntity $vehicle): Vehicle
     {
         return new Vehicle(
             $vehicle->getId(),

@@ -11,19 +11,19 @@ use Model\Google\OAuthId;
 
 interface IGoogleRepository
 {
-    public function save(OAuth $oAuth) : void;
+    public function save(OAuth $oAuth): void;
 
     /** @throws OAuthNotFound */
-    public function find(OAuthId $oauthId) : OAuth;
+    public function find(OAuthId $oauthId): OAuth;
 
     /**
      * @param int[] $unitIds
      *
      * @return array<int, OAuth[]> unitId => OAuth[]
      */
-    public function findByUnits(array $unitIds) : array;
+    public function findByUnits(array $unitIds): array;
 
-    public function findByUnitAndEmail(UnitId $unitId, string $email) : OAuth;
+    public function findByUnitAndEmail(UnitId $unitId, string $email): OAuth;
 
-    public function remove(OAuth $oAuth) : void;
+    public function remove(OAuth $oAuth): void;
 }

@@ -15,6 +15,7 @@ use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\DTO\Cashbook\Category;
+
 use function count;
 
 class ChitListQueryHandlerTest extends IntegrationTest
@@ -22,12 +23,12 @@ class ChitListQueryHandlerTest extends IntegrationTest
     /**
      * @return string[]
      */
-    protected function getTestedAggregateRoots() : array
+    protected function getTestedAggregateRoots(): array
     {
         return [Cashbook::class];
     }
 
-    protected function _before() : void
+    protected function _before(): void
     {
         $this->tester->useConfigFiles([__DIR__ . '/../../../config/doctrine.neon']);
 
@@ -57,7 +58,7 @@ class ChitListQueryHandlerTest extends IntegrationTest
         $this->entityManager->flush();
     }
 
-    public function testReturnsSortedChitsWithoutSpecifiedPaymentMethod() : void
+    public function testReturnsSortedChitsWithoutSpecifiedPaymentMethod(): void
     {
         $handler = new ChitListQueryHandler($this->entityManager, $this->prepareQueryBus());
 
@@ -72,7 +73,7 @@ class ChitListQueryHandlerTest extends IntegrationTest
         }
     }
 
-    public function testReturnsSortedChitsOfSpecifiedPaymentMethod() : void
+    public function testReturnsSortedChitsOfSpecifiedPaymentMethod(): void
     {
         $handler = new ChitListQueryHandler($this->entityManager, $this->prepareQueryBus());
 
@@ -87,7 +88,7 @@ class ChitListQueryHandlerTest extends IntegrationTest
         }
     }
 
-    public function testReturnsEmptyListIfCashbookDoesNotExist() : void
+    public function testReturnsEmptyListIfCashbookDoesNotExist(): void
     {
         $this->assertSame(
             [],
@@ -97,14 +98,14 @@ class ChitListQueryHandlerTest extends IntegrationTest
         );
     }
 
-    private function prepareQueryBus() : QueryBus
+    private function prepareQueryBus(): QueryBus
     {
         $bus = m::mock(QueryBus::class);
 
         $ids        = [11, 22, 33, 44];
         $categories = [];
         foreach ($ids as $id) {
-            $categories[$id] =m::mock(Category::class, ['getId' => $id]);
+            $categories[$id] = m::mock(Category::class, ['getId' => $id]);
         }
 
         $bus->shouldReceive('handle')
@@ -115,7 +116,7 @@ class ChitListQueryHandlerTest extends IntegrationTest
         return $bus;
     }
 
-    private function getCashbookId() : Cashbook\CashbookId
+    private function getCashbookId(): Cashbook\CashbookId
     {
         return Cashbook\CashbookId::fromString('00db19d0-95ad-4889-8195-3954dd14319b');
     }

@@ -10,15 +10,14 @@ use Nette\Mail\IMailer;
 
 class MailerFactoryStub implements IMailerFactory
 {
-    /** @var IMailer */
-    private $mailer;
+    private IMailer $mailer;
 
-    public function create(OAuth $oAuth) : IMailer
+    public function create(OAuth $oAuth): IMailer
     {
         return $this->mailer;
     }
 
-    public function setMailer(IMailer $mailer) : void
+    public function setMailer(IMailer $mailer): void
     {
         $this->mailer = $mailer;
     }

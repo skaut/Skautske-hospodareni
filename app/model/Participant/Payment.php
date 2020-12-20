@@ -9,6 +9,7 @@ use InvalidArgumentException;
 use Model\Participant\Payment\Event;
 use Model\Utils\MoneyFactory;
 use Money\Money;
+
 use function in_array;
 
 /**
@@ -25,45 +26,23 @@ class Payment
     /**
      * @ORM\Id()
      * @ORM\Column(type="payment_id")
-     *
-     * @var PaymentId
      */
-    private $id;
+    private PaymentId $id;
 
-    /**
-     * @ORM\Column(type="integer", name="participantId", options={"unsigned"=true})
-     *
-     * @var int
-     */
-    private $participantId;
+    /** @ORM\Column(type="integer", name="participantId", options={"unsigned"=true}) */
+    private int $participantId;
 
-    /**
-     * @ORM\Embedded(class=Event::class)
-     *
-     * @var Event
-     */
-    private $event;
+    /** @ORM\Embedded(class=Event::class) */
+    private Event $event;
 
-    /**
-     * @ORM\Column(type="money")
-     *
-     * @var Money
-     */
-    private $payment;
+    /** @ORM\Column(type="money") */
+    private Money $payment;
 
-    /**
-     * @ORM\Column(type="money")
-     *
-     * @var Money
-     */
-    private $repayment;
+    /** @ORM\Column(type="money") */
+    private Money $repayment;
 
-    /**
-     * @ORM\Column(type="string", name="isAccount")
-     *
-     * @var string
-     */
-    private $account;
+    /** @ORM\Column(type="string", name="isAccount") */
+    private string $account;
 
     public function __construct(PaymentId $id, int $participantId, Event $event, ?Money $payment = null, ?Money $repayment = null, string $account = 'N')
     {
@@ -75,46 +54,47 @@ class Payment
         $this->account       = $account;
     }
 
-    public function getId() : PaymentId
+    public function getId(): PaymentId
     {
         return $this->id;
     }
 
-    public function getParticipantId() : int
+    public function getParticipantId(): int
     {
         return $this->participantId;
     }
 
-    public function getPayment() : Money
+    public function getPayment(): Money
     {
         return $this->payment;
     }
 
-    public function getRepayment() : Money
+    public function getRepayment(): Money
     {
         return $this->repayment;
     }
 
-    public function getAccount() : string
+    public function getAccount(): string
     {
         return $this->account;
     }
 
-    public function setPayment(Money $payment) : void
+    public function setPayment(Money $payment): void
     {
         $this->payment = $payment;
     }
 
-    public function setRepayment(Money $repayment) : void
+    public function setRepayment(Money $repayment): void
     {
         $this->repayment = $repayment;
     }
 
-    public function setAccount(string $account) : void
+    public function setAccount(string $account): void
     {
         if (! in_array($account, ['Y', 'N'])) {
             throw new InvalidArgumentException("Payment attribute account shouldn't be " . $account);
         }
+
         $this->account = $account;
     }
 }

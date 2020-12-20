@@ -12,10 +12,10 @@ interface IUnitRepository
     /**
      * @return Unit[]
      */
-    public function findByParent(int $parentId) : array;
+    public function findByParent(int $parentId): array;
 
     /**
      * @throws UnitNotFound
      */
-    public function find(int $id) : Unit;
+    public function find(int $id): Unit;
 }

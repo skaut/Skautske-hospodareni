@@ -6,14 +6,14 @@ namespace Model;
 
 use InvalidArgumentException;
 use Ramsey\Uuid\Uuid;
+
 use function is_numeric;
 use function sprintf;
 use function str_replace;
 
 class AggregateId
 {
-    /** @var string */
-    private $id;
+    private string $id;
 
     final private function __construct(string $id)
     {
@@ -24,13 +24,14 @@ class AggregateId
                 sprintf('Invalid id "%s", valid ID is either UUIDv4 or legacy numeric string', $id)
             );
         }
+
         $this->id = $normalizedId;
     }
 
     /**
      * @return static
      */
-    public static function generate() : self
+    public static function generate(): self
     {
         return new static(Uuid::uuid4()->toString());
     }
@@ -38,12 +39,12 @@ class AggregateId
     /**
      * @return static
      */
-    public static function fromString(string $id) : self
+    public static function fromString(string $id): self
     {
         return new static($id);
     }
 
-    public function withoutHyphens() : string
+    public function withoutHyphens(): string
     {
         if (is_numeric($this->id)) {
             return $this->id;
@@ -52,22 +53,22 @@ class AggregateId
         return str_replace('-', '', $this->id);
     }
 
-    public function toString() : string
+    public function toString(): string
     {
         return $this->id;
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         return $this->toString();
     }
 
-    public function equals(self $otherValueObject) : bool
+    public function equals(self $otherValueObject): bool
     {
         return $otherValueObject->id === $this->id;
     }
 
-    private function normalize(string $id) : ?string
+    private function normalize(string $id): ?string
     {
         $uuid = Uuid::fromString($id);
 

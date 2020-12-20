@@ -6,7 +6,7 @@ namespace App\AccountancyModule\PaymentModule;
 
 class DefaultPresenter extends BasePresenter
 {
-    public function actionDefault() : void
+    public function actionDefault(): void
     {
         $this->redirect('GroupList:');
     }

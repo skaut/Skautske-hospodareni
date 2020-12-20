@@ -11,15 +11,14 @@ use Model\Unit\ReadModel\QueryHandlers\UnitQueryHandler;
  */
 final class UnitQuery
 {
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
     public function __construct(int $unitId)
     {
         $this->unitId = $unitId;
     }
 
-    public function getUnitId() : int
+    public function getUnitId(): int
     {
         return $this->unitId;
     }

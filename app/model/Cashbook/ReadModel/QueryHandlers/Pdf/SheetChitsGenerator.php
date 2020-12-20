@@ -13,12 +13,12 @@ use Model\DTO\Cashbook\Chit;
 use Model\DTO\Event\ExportedCashbook;
 use Model\Excel\Range;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+
 use function assert;
 
 class SheetChitsGenerator
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(QueryBus $queryBus)
     {
@@ -28,7 +28,7 @@ class SheetChitsGenerator
     /**
      * @param ExportedCashbook[] $cashbooks
      */
-    public function __invoke(Worksheet $sheet, array $cashbooks) : void
+    public function __invoke(Worksheet $sheet, array $cashbooks): void
     {
         $sheet->setCellValue('A1', 'Název akce')
             ->setCellValue('B1', 'Ze dne')
@@ -72,6 +72,7 @@ class SheetChitsGenerator
         foreach (Range::letters('A', 'H') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
+
         $sheet->getStyle('A1:H1')->getFont()->setBold(true);
         $sheet->setAutoFilter('A1:H' . ($rowCnt - 1));
         $sheet->setTitle('Doklady');

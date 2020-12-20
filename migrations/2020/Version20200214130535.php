@@ -9,12 +9,12 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20200214130535 extends AbstractMigration
 {
-    public function getDescription() : string
+    public function getDescription(): string
     {
         return 'Unify log table and tc_* tables mapping';
     }
 
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql('ALTER TABLE tc_vehicle_roadworthy_scan CHANGE file_path file_path VARCHAR(255) NOT NULL COMMENT \'(DC2Type:file_path)\'');
         $this->addSql(<<<'SQL'
@@ -26,7 +26,7 @@ final class Version20200214130535 extends AbstractMigration
         $this->addSql('ALTER TABLE log CHANGE date date DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\'');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql('ALTER TABLE log CHANGE date date DATETIME NOT NULL');
         $this->addSql(<<<'SQL'

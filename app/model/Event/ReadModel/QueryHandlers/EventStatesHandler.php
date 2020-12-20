@@ -13,11 +13,9 @@ final class EventStatesHandler
 {
     private const CACHE_KEY = 'event_states';
 
-    /** @var WebServiceInterface */
-    private $eventWebservice;
+    private WebServiceInterface $eventWebservice;
 
-    /** @var Cache */
-    private $cache;
+    private Cache $cache;
 
     public function __construct(WebServiceInterface $eventWebservice, Cache $cache)
     {
@@ -28,7 +26,7 @@ final class EventStatesHandler
     /**
      * @return string[]
      */
-    public function __invoke(EventStates $query) : array
+    public function __invoke(EventStates $query): array
     {
         return $this->cache->load(self::CACHE_KEY, function () {
             return Helpers::getPairs(

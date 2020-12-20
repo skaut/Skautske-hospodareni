@@ -11,6 +11,7 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Commands\Cashbook\UpdateNote;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\DTO\Cashbook\Cashbook;
+
 use function assert;
 use function htmlspecialchars;
 use function nl2br;
@@ -19,23 +20,18 @@ use function preg_replace;
 final class NoteForm extends BaseControl
 {
     /** @var bool @persistent */
-    public $editation = false;
+    public bool $editation = false;
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
     /**
      * Can current user add/edit chits?
-     *
-     * @var bool
      */
-    private $isEditable;
+    private bool $isEditable;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(
         CashbookId $cashbookId,
@@ -50,19 +46,19 @@ final class NoteForm extends BaseControl
         $this->queryBus   = $queryBus;
     }
 
-    public function handleEdit() : void
+    public function handleEdit(): void
     {
         $this->editation = true;
         $this->redrawControl();
     }
 
-    public function handleCancel() : void
+    public function handleCancel(): void
     {
         $this->editation = false;
         $this->redrawControl();
     }
 
-    public function render() : void
+    public function render(): void
     {
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
 
@@ -84,7 +80,7 @@ final class NoteForm extends BaseControl
         $this->template->render();
     }
 
-    protected function createComponentForm() : BaseForm
+    protected function createComponentForm(): BaseForm
     {
         $form = new BaseForm();
 
@@ -96,7 +92,7 @@ final class NoteForm extends BaseControl
         $form->addSubmit('save')
             ->setAttribute('class', 'btn btn-primary');
 
-        $form->onSuccess[] = function (BaseForm $form) : void {
+        $form->onSuccess[] = function (BaseForm $form): void {
             $this->editation = false;
             $this->formSucceeded($form);
             $this->redrawControl();
@@ -105,12 +101,13 @@ final class NoteForm extends BaseControl
         return $form;
     }
 
-    private function formSucceeded(BaseForm $form) : void
+    private function formSucceeded(BaseForm $form): void
     {
         if (! $this->isEditable) {
             $this->flashMessage('Nemáte oprávnění upravovat pokladní knihu', 'danger');
             $this->redirect('this');
         }
+
         $this->commandBus->handle(new UpdateNote($this->cashbookId, $form->getValues()->note));
     }
 }

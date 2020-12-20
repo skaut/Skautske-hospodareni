@@ -30,53 +30,37 @@ class Participant
 {
     use SmartObject;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var int */
-    private $personId;
+    private int $personId;
 
-    /** @var string */
-    private $firstName;
+    private string $firstName;
 
-    /** @var string */
-    private $lastName;
+    private string $lastName;
 
-    /** @var string|null */
-    private $nickName;
+    private ?string $nickName = null;
 
-    /** @var int|null */
-    private $age;
+    private ?int $age = null;
 
-    /** @var Date|null */
-    private $birthday;
+    private ?Date $birthday = null;
 
-    /** @var string */
-    private $street;
+    private string $street;
 
-    /** @var string */
-    private $city;
+    private string $city;
 
-    /** @var int */
-    private $postcode;
+    private int $postcode;
 
-    /** @var string */
-    private $state;
+    private string $state;
 
-    /** @var string */
-    private $unit;
+    private string $unit;
 
-    /** @var string */
-    private $unitRegistrationNumber;
+    private string $unitRegistrationNumber;
 
-    /** @var int */
-    private $days;
+    private int $days;
 
-    /** @var Payment */
-    private $paymentObj;
+    private Payment $paymentObj;
 
-    /** @var string|null */
-    private $category;
+    private ?string $category = null;
 
     public function __construct(int $id, int $personId, string $firstName, string $lastName, ?string $nickName, ?int $age, ?Date $birthday, string $street, string $city, int $postcode, string $state, string $unit, string $unitRegistrationNumber, int $days, Payment $payment, ?string $category)
     {
@@ -98,97 +82,97 @@ class Participant
         $this->category               = $category;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getPersonId() : int
+    public function getPersonId(): int
     {
         return $this->personId;
     }
 
-    public function getFirstName() : string
+    public function getFirstName(): string
     {
         return $this->firstName;
     }
 
-    public function getLastName() : string
+    public function getLastName(): string
     {
         return $this->lastName;
     }
 
-    public function getNickName() : ?string
+    public function getNickName(): ?string
     {
         return $this->nickName;
     }
 
-    public function getAge() : ?int
+    public function getAge(): ?int
     {
         return $this->age;
     }
 
-    public function getBirthday() : ?Date
+    public function getBirthday(): ?Date
     {
         return $this->birthday;
     }
 
-    public function getUnitRegistrationNumber() : string
+    public function getUnitRegistrationNumber(): string
     {
         return $this->unitRegistrationNumber;
     }
 
-    public function getStreet() : string
+    public function getStreet(): string
     {
         return $this->street;
     }
 
-    public function getCity() : string
+    public function getCity(): string
     {
         return $this->city;
     }
 
-    public function getPostcode() : int
+    public function getPostcode(): int
     {
         return $this->postcode;
     }
 
-    public function getState() : string
+    public function getState(): string
     {
         return $this->state;
     }
 
-    public function getUnit() : string
+    public function getUnit(): string
     {
         return $this->unit;
     }
 
-    public function getDisplayName() : string
+    public function getDisplayName(): string
     {
         return $this->lastName . ' ' . $this->firstName . ($this->nickName !== null ? '(' . $this->nickName . ')' : '');
     }
 
-    public function getDays() : int
+    public function getDays(): int
     {
         return $this->days;
     }
 
-    public function getPayment() : float
+    public function getPayment(): float
     {
         return MoneyFactory::toFloat($this->paymentObj->getPayment());
     }
 
-    public function getRepayment() : float
+    public function getRepayment(): float
     {
         return MoneyFactory::toFloat($this->paymentObj->getRepayment());
     }
 
-    public function getOnAccount() : string
+    public function getOnAccount(): string
     {
         return $this->paymentObj->getAccount();
     }
 
-    public function getCategory() : string
+    public function getCategory(): string
     {
         return $this->category ?? '';
     }

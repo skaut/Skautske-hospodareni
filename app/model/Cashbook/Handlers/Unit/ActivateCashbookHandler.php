@@ -9,15 +9,14 @@ use Model\Cashbook\Repositories\IUnitRepository;
 
 final class ActivateCashbookHandler
 {
-    /** @var IUnitRepository */
-    private $units;
+    private IUnitRepository $units;
 
     public function __construct(IUnitRepository $units)
     {
         $this->units = $units;
     }
 
-    public function __invoke(ActivateCashbook $command) : void
+    public function __invoke(ActivateCashbook $command): void
     {
         $unit = $this->units->find($command->getUnitId());
 

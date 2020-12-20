@@ -11,23 +11,20 @@ use Model\DTO\Travel\Command;
 use Model\TravelService;
 use Ublaboo\DataGrid\DataGrid;
 use Ublaboo\DataGrid\DataSource\DoctrineCollectionDataSource;
+
 use function array_column;
 use function array_filter;
 use function array_unique;
 
 class CommandGrid extends BaseGridControl
 {
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var int */
-    private $userId;
+    private int $userId;
 
-    /** @var TravelService */
-    private $travel;
+    private TravelService $travel;
 
-    /** @var GridFactory */
-    private $gridFactory;
+    private GridFactory $gridFactory;
 
     public function __construct(
         int $unitId,
@@ -42,7 +39,7 @@ class CommandGrid extends BaseGridControl
         $this->gridFactory = $gridFactory;
     }
 
-    protected function createComponentGrid() : DataGrid
+    protected function createComponentGrid(): DataGrid
     {
         $commands = $this->travel->getAllUserCommands($this->unitId, $this->userId);
 

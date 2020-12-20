@@ -10,10 +10,9 @@ use Model\Cashbook\ObjectType;
 
 final class ObjectTableTest extends IntegrationTest
 {
-    /** @var ObjectTable */
-    private $objectTable;
+    private ObjectTable $objectTable;
 
-    protected function _before() : void
+    protected function _before(): void
     {
         parent::_before();
         $connection = $this->entityManager->getConnection();
@@ -34,7 +33,7 @@ SQL
         $this->objectTable = new ObjectTable($connection);
     }
 
-    public function testAdd() : void
+    public function testAdd(): void
     {
         $skautisId  = 15;
         $cashbookId = CashbookId::generate();
@@ -49,7 +48,7 @@ SQL
         ]);
     }
 
-    public function testGetLocalId() : void
+    public function testGetLocalId(): void
     {
         $skautisId  = 25;
         $cashbookId = CashbookId::generate();
@@ -66,12 +65,12 @@ SQL
         $this->assertTrue($localId->equals($cashbookId));
     }
 
-    public function testGetLocalIdReturnsNullIfObjectDoesNotExist() : void
+    public function testGetLocalIdReturnsNullIfObjectDoesNotExist(): void
     {
         $this->assertNull($this->objectTable->getLocalId(3, ObjectType::CAMP));
     }
 
-    public function testGetSkautisId() : void
+    public function testGetSkautisId(): void
     {
         $skautisId  = 25;
         $cashbookId = CashbookId::generate();
@@ -88,12 +87,12 @@ SQL
         $this->assertSame($skautisId, $returnedSkautisId);
     }
 
-    public function testGetSkautisIdReturnsNullIfObjectDoesNotExist() : void
+    public function testGetSkautisIdReturnsNullIfObjectDoesNotExist(): void
     {
         $this->assertNull($this->objectTable->getSkautisId(CashbookId::generate(), ObjectType::CAMP));
     }
 
-    protected function _after() : void
+    protected function _after(): void
     {
         $this->entityManager->getConnection()->executeQuery('DROP TABLE IF EXISTS ac_object');
     }

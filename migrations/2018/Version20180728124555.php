@@ -19,7 +19,7 @@ class Version20180728124555 extends AbstractMigration
         14, // Převod do odd. pokladny
     ];
 
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql(
             'DELETE FROM ac_chitsCategory_object WHERE objectTypeId = \'camp\' AND categoryId NOT IN (?)',
@@ -28,7 +28,7 @@ class Version20180728124555 extends AbstractMigration
         );
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
     }
 }

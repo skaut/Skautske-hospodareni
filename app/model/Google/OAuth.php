@@ -21,19 +21,13 @@ class OAuth extends Aggregate
      */
     private OAuthId $id;
 
-    /**
-     * @ORM\Column(type="unit_id")
-     */
+    /** @ORM\Column(type="unit_id") */
     private UnitId $unitId;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     private string $email;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     private string $token;
 
     /** @ORM\Column(type="datetime_immutable") */
@@ -48,38 +42,38 @@ class OAuth extends Aggregate
         $this->updatedAt = $updatedAt;
     }
 
-    public static function create(UnitId $unitId, string $code, string $email) : self
+    public static function create(UnitId $unitId, string $code, string $email): self
     {
         return new self(OAuthId::generate(), $unitId, $code, $email, new DateTimeImmutable());
     }
 
-    public function setToken(string $token) : void
+    public function setToken(string $token): void
     {
         $this->token     = $token;
         $this->updatedAt = new DateTimeImmutable();
     }
 
-    public function getId() : OAuthId
+    public function getId(): OAuthId
     {
         return $this->id;
     }
 
-    public function getEmail() : string
+    public function getEmail(): string
     {
         return $this->email;
     }
 
-    public function getUnitId() : UnitId
+    public function getUnitId(): UnitId
     {
         return $this->unitId;
     }
 
-    public function getToken() : string
+    public function getToken(): string
     {
         return $this->token;
     }
 
-    public function getUpdatedAt() : DateTimeImmutable
+    public function getUpdatedAt(): DateTimeImmutable
     {
         return $this->updatedAt;
     }

@@ -15,19 +15,16 @@ use Model\Payment\VariableSymbol;
 
 class PaymentServiceTest extends IntegrationTest
 {
-    /** @var PaymentService */
-    private $service;
+    private PaymentService $service;
 
-    /** @var IPaymentRepository */
-    private $paymentRepository;
+    private IPaymentRepository $paymentRepository;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
     /**
      * @return string[]
      */
-    public function getTestedAggregateRoots() : array
+    public function getTestedAggregateRoots(): array
     {
         return [
             Group::class,
@@ -35,7 +32,7 @@ class PaymentServiceTest extends IntegrationTest
         ];
     }
 
-    public function _before() : void
+    public function _before(): void
     {
         $this->tester->useConfigFiles(['PaymentServiceTest.neon']);
         parent::_before();
@@ -47,7 +44,7 @@ class PaymentServiceTest extends IntegrationTest
     /**
      * @see https://github.com/skaut/Skautske-hospodareni/issues/387
      */
-    public function testGenerateVSForMultiplePayments() : void
+    public function testGenerateVSForMultiplePayments(): void
     {
         $paymentDefaults = new Group\PaymentDefaults(null, null, null, new VariableSymbol('1'));
         $emails          = Helpers::createEmails();
@@ -68,7 +65,7 @@ class PaymentServiceTest extends IntegrationTest
         }
     }
 
-    private function createPaymentWithoutVariableSymbol(int $groupId) : void
+    private function createPaymentWithoutVariableSymbol(int $groupId): void
     {
         $this->commandBus->handle(
             new CreatePayment($groupId, 'test', [], 100, Helpers::getValidDueDate(), null, null, null, '')

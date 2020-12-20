@@ -8,26 +8,19 @@ use Cake\Chronos\Date;
 
 class NonMemberParticipant
 {
-    /** @var string */
-    private $firstName;
+    private string $firstName;
 
-    /** @var string */
-    private $lastName;
+    private string $lastName;
 
-    /** @var string|null */
-    private $nickName;
+    private ?string $nickName = null;
 
-    /** @var Date|null */
-    private $birthday;
+    private ?Date $birthday = null;
 
-    /** @var string */
-    private $street;
+    private string $street;
 
-    /** @var string */
-    private $city;
+    private string $city;
 
-    /** @var int */
-    private $postcode;
+    private int $postcode;
 
     public function __construct(string $firstName, string $lastName, ?string $nickName, ?Date $birthday, string $street, string $city, int $postcode)
     {
@@ -40,37 +33,37 @@ class NonMemberParticipant
         $this->postcode  = $postcode;
     }
 
-    public function getFirstName() : string
+    public function getFirstName(): string
     {
         return $this->firstName;
     }
 
-    public function getLastName() : string
+    public function getLastName(): string
     {
         return $this->lastName;
     }
 
-    public function getNickName() : ?string
+    public function getNickName(): ?string
     {
         return $this->nickName;
     }
 
-    public function getBirthday() : ?Date
+    public function getBirthday(): ?Date
     {
         return $this->birthday;
     }
 
-    public function getStreet() : string
+    public function getStreet(): string
     {
         return $this->street;
     }
 
-    public function getCity() : string
+    public function getCity(): string
     {
         return $this->city;
     }
 
-    public function getPostcode() : int
+    public function getPostcode(): int
     {
         return $this->postcode;
     }

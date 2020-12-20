@@ -9,7 +9,7 @@ use Doctrine\Migrations\AbstractMigration;
 
 class Version20170501172634 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql('ALTER TABLE tc_commands ADD driver_name VARCHAR(255) NOT NULL, ADD driver_contact VARCHAR(255) NOT NULL, ADD driver_address VARCHAR(255) NOT NULL');
         $this->addSql('
@@ -21,7 +21,7 @@ class Version20170501172634 extends AbstractMigration
                 tc_commands.driver_address = contract.driver_address;');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql('ALTER TABLE tc_commands DROP driver_name, DROP driver_contact, DROP driver_address');
     }

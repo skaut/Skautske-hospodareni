@@ -13,14 +13,14 @@ interface IPaymentRepository
     /**
      * @throws PaymentNotFound
      */
-    public function findByParticipant(int $id, Payment\EventType $eventType) : Payment;
+    public function findByParticipant(int $id, Payment\EventType $eventType): Payment;
 
     /**
      * @return Payment[]
      */
-    public function findByEvent(Event $event) : array;
+    public function findByEvent(Event $event): array;
 
-    public function save(Payment $payment) : void;
+    public function save(Payment $payment): void;
 
-    public function remove(Payment $payment) : void;
+    public function remove(Payment $payment): void;
 }

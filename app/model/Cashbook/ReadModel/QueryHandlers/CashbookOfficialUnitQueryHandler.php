@@ -21,30 +21,24 @@ use Model\Payment\IUnitResolver;
 use Model\Skautis\Mapper;
 use Model\Unit\Repositories\IUnitRepository as ISkautisUnitRepository;
 use Model\Unit\Unit;
+
 use function sprintf;
 
 class CashbookOfficialUnitQueryHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
-    /** @var IEventRepository */
-    private $eventRepository;
+    private IEventRepository $eventRepository;
 
-    /** @var ICampRepository */
-    private $campRepository;
+    private ICampRepository $campRepository;
 
-    /** @var IUnitRepository */
-    private $unitRepository;
+    private IUnitRepository $unitRepository;
 
-    /** @var ISkautisUnitRepository */
-    private $skautisUnitRepository;
+    private ISkautisUnitRepository $skautisUnitRepository;
 
-    /** @var Mapper */
-    private $mapper;
+    private Mapper $mapper;
 
-    /** @var IUnitResolver */
-    private $unitResolver;
+    private IUnitResolver $unitResolver;
 
     public function __construct(
         ICashbookRepository $cashbooks,
@@ -67,7 +61,7 @@ class CashbookOfficialUnitQueryHandler
     /**
      * @throws CashbookNotFound
      */
-    public function __invoke(CashbookOfficialUnitQuery $query) : Unit
+    public function __invoke(CashbookOfficialUnitQuery $query): Unit
     {
         $cashbook = $this->cashbooks->find($query->getCashbookId());
         $unitId   = $this->resolveUnitThatOwnsCashbook($cashbook);
@@ -75,7 +69,7 @@ class CashbookOfficialUnitQueryHandler
         return $this->skautisUnitRepository->find($this->unitResolver->getOfficialUnitId($unitId->toInt()));
     }
 
-    private function resolveUnitThatOwnsCashbook(Cashbook $cashbook) : UnitId
+    private function resolveUnitThatOwnsCashbook(Cashbook $cashbook): UnitId
     {
         if ($cashbook->getType()->equalsValue(CashbookType::EVENT)) {
             $eventId = new SkautisEventId($this->mapper->getSkautisId($cashbook->getId(), ObjectType::EVENT));

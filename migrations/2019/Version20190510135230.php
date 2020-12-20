@@ -9,7 +9,7 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20190510135230 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql(<<<'SQL'
             CREATE TABLE tc_vehicle_roadworthy_scan (
@@ -29,7 +29,7 @@ final class Version20190510135230 extends AbstractMigration
         $this->addSql('DROP INDEX unit_id ON tc_vehicle');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql('DROP TABLE tc_vehicle_roadworthy_scan');
     }

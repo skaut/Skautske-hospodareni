@@ -16,27 +16,27 @@ final class PaymentMethod extends Enum
         self::BANK => 'Banka',
     ];
 
-    public static function CASH() : self
+    public static function CASH(): self
     {
         return self::get(self::CASH);
     }
 
-    public static function BANK() : self
+    public static function BANK(): self
     {
         return self::get(self::BANK);
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return self::NAMES[$this->toString()];
     }
 
-    public function toString() : string
+    public function toString(): string
     {
         return (string) $this->getValue();
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         return $this->toString();
     }

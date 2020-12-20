@@ -18,20 +18,15 @@ class CategorySummary
 {
     use SmartObject;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var Money */
-    private $total;
+    private Money $total;
 
-    /** @var Operation */
-    private $operationType;
+    private Operation $operationType;
 
-    /** @var bool */
-    private $virtual;
+    private bool $virtual;
 
     public function __construct(int $id, string $name, Money $total, Operation $operationType, bool $virtual)
     {
@@ -42,32 +37,32 @@ class CategorySummary
         $this->virtual       = $virtual;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getTotal() : Money
+    public function getTotal(): Money
     {
         return $this->total;
     }
 
-    public function getOperationType() : Operation
+    public function getOperationType(): Operation
     {
         return $this->operationType;
     }
 
-    public function isIncome() : bool
+    public function isIncome(): bool
     {
         return $this->operationType->equals(Operation::INCOME());
     }
 
-    public function isVirtual() : bool
+    public function isVirtual(): bool
     {
         return $this->virtual;
     }

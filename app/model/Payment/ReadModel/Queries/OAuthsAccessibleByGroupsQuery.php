@@ -12,7 +12,7 @@ use Model\Payment\ReadModel\QueryHandlers\OAuthsAccessibleByGroupsQueryHandler;
 final class OAuthsAccessibleByGroupsQuery
 {
     /** @var int[] */
-    private $unitIds;
+    private array $unitIds;
 
     /**
      * @param int[] $unitIds
@@ -25,7 +25,7 @@ final class OAuthsAccessibleByGroupsQuery
     /**
      * @return int[]
      */
-    public function getUnitIds() : array
+    public function getUnitIds(): array
     {
         return $this->unitIds;
     }

@@ -25,7 +25,7 @@ use Model\Utils\MoneyFactory;
 
 class ExportServiceTest extends Unit
 {
-    public function testGetEventReport() : void
+    public function testGetEventReport(): void
     {
         $skautisEventId  = 42;
         $unitService     = m::mock(UnitService::class);
@@ -38,11 +38,11 @@ class ExportServiceTest extends Unit
 
         // handle EventCashbookIdQuery
         $queryBus->expects('handle')
-            ->withArgs(static function (EventCashbookIdQuery $q) use ($skautisEventId) : bool {
+            ->withArgs(static function (EventCashbookIdQuery $q) use ($skautisEventId): bool {
                 return $q->getEventId()->toInt() === $skautisEventId;
             })->andReturn($cashbookId);
 
-        $queryBus->expects('handle')->withArgs(static function (CategoriesSummaryQuery $query) use ($cashbookId) : bool {
+        $queryBus->expects('handle')->withArgs(static function (CategoriesSummaryQuery $query) use ($cashbookId): bool {
             return $query->getCashbookId()->equals($cashbookId);
         })->andReturn([
             new CategorySummary(ICategory::CATEGORY_PARTICIPANT_INCOME_ID, 'Přijmy od účastníků', MoneyFactory::fromFloat(700.0), Operation::INCOME(), false),
@@ -63,10 +63,11 @@ class ExportServiceTest extends Unit
 
         $exportService = new ExportService($unitService, $templateFactory, $events, $queryBus);
 
-        $templateFactory->expects('create')->withArgs(static function (string $templatePath, array $parameters) : bool {
+        $templateFactory->expects('create')->withArgs(static function (string $templatePath, array $parameters): bool {
             if ($parameters['participantsCnt'] !== 0) {
                 return false;
             }
+
             if ($parameters['personsDays'] !== 0) {
                 return false;
             }
@@ -74,11 +75,11 @@ class ExportServiceTest extends Unit
             $chits = [
                 'virtual' => [
                     'in' => [9 => ['amount' => 200.0, 'label' => 'Převod z pokladny střediska']],
-                    'out'=> [7 => ['amount' => 150.0, 'label' => 'Převod do stř. pokladny']],
+                    'out' => [7 => ['amount' => 150.0, 'label' => 'Převod do stř. pokladny']],
                 ],
                 'real' => [
                     'in' => [1 => ['amount' => 700.0, 'label' => 'Přijmy od účastníků']],
-                    'out'=> [
+                    'out' => [
                         2 => ['amount' => 50.0, 'label' => 'Služby'],
                     ],
                 ],
@@ -94,6 +95,7 @@ class ExportServiceTest extends Unit
             if ($parameters['expenses'] !== [['amount' => 50.0, 'label' => 'Služby']]) {
                 return false;
             }
+
             if ($parameters['totalIncome'] !== 700.0) {
                 return false;
             }

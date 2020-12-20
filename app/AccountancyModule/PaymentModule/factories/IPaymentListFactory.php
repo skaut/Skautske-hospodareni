@@ -8,5 +8,5 @@ use App\AccountancyModule\PaymentModule\Components\PaymentList;
 
 interface IPaymentListFactory
 {
-    public function create(int $groupId, bool $isEditable) : PaymentList;
+    public function create(int $groupId, bool $isEditable): PaymentList;
 }

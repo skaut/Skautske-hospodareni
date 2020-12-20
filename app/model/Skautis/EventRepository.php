@@ -12,20 +12,18 @@ use Model\Skautis\Factory\EventFactory;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WebServiceInterface;
 use stdClass;
+
 use function array_column;
 use function count;
 use function max;
 
 final class EventRepository implements IEventRepository
 {
-    /** @var WebServiceInterface */
-    private $webService;
+    private WebServiceInterface $webService;
 
-    /** @var string */
-    private $skautisType = 'eventGeneral';
+    private string $skautisType = 'eventGeneral';
 
-    /** @var EventFactory */
-    private $eventFactory;
+    private EventFactory $eventFactory;
 
     public function __construct(WebServiceInterface $webService, EventFactory $eventFactory)
     {
@@ -33,7 +31,7 @@ final class EventRepository implements IEventRepository
         $this->eventFactory = $eventFactory;
     }
 
-    public function find(SkautisEventId $id) : Event
+    public function find(SkautisEventId $id): Event
     {
         try {
             $skautisEvent = $this->webService->EventGeneralDetail(['ID' => $id->toInt()]);
@@ -44,17 +42,17 @@ final class EventRepository implements IEventRepository
         }
     }
 
-    public function open(Event $event) : void
+    public function open(Event $event): void
     {
         $this->webService->EventGeneralUpdateOpen(['ID' => $event->getId()->toInt()], $this->skautisType);
     }
 
-    public function close(Event $event) : void
+    public function close(Event $event): void
     {
         $this->webService->EventGeneralUpdateClose(['ID' => $event->getId()->toInt()], $this->skautisType);
     }
 
-    public function update(Event $event) : void
+    public function update(Event $event): void
     {
         $this->webService->eventGeneralUpdate([
             'ID' => $event->getId()->toInt(),
@@ -69,7 +67,7 @@ final class EventRepository implements IEventRepository
         ], 'eventGeneral');
     }
 
-    public function getNewestEventId() : ?int
+    public function getNewestEventId(): ?int
     {
         $events = $this->webService->eventGeneralAll(['IsRelation' => true]);
 
@@ -82,7 +80,7 @@ final class EventRepository implements IEventRepository
         return max($ids);
     }
 
-    private function createEvent(stdClass $skautisEvent) : Event
+    private function createEvent(stdClass $skautisEvent): Event
     {
         return $this->eventFactory->create($skautisEvent);
     }

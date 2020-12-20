@@ -16,14 +16,14 @@ final class ParticipantRepositoryTest extends SkautisTest
     /**
      * @return string[]
      */
-    public function getTestedAggregateRoots() : array
+    public function getTestedAggregateRoots(): array
     {
         return [
             Payment::class,
         ];
     }
 
-    public function testFindByEducationReturnsAllParticipants() : void
+    public function testFindByEducationReturnsAllParticipants(): void
     {
         VCR::insertCassette('ParticipantRepository/findByEducation_all.json');
 
@@ -32,7 +32,7 @@ final class ParticipantRepositoryTest extends SkautisTest
         $this->assertCount(5, $participants);
     }
 
-    private function getRepository() : ParticipantRepository
+    private function getRepository(): ParticipantRepository
     {
         return new ParticipantRepository($this->createSkautis('b5b0267c-3add-4e7a-9524-c5b30e0a4eca'), new PaymentRepository($this->tester->grabService(EntityManager::class)));
     }

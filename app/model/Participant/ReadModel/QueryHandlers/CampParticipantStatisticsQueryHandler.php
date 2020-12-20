@@ -8,19 +8,19 @@ use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
 use Model\Cashbook\ReadModel\Queries\CampParticipantStatisticsQuery;
 use Model\DTO\Participant\Statistics;
+
 use function count;
 
 final class CampParticipantStatisticsQueryHandler
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(QueryBus $queryBus)
     {
         $this->queryBus = $queryBus;
     }
 
-    public function __invoke(CampParticipantStatisticsQuery $query) : Statistics
+    public function __invoke(CampParticipantStatisticsQuery $query): Statistics
     {
         $participants = $this->queryBus->handle(new CampParticipantListQuery($query->getId()));
         $days         = 0;

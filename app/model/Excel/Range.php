@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Excel;
 
 use Nette\StaticClass;
+
 use function range;
 
 final class Range
@@ -18,7 +19,7 @@ final class Range
      *
      * @return string[]
      */
-    public static function letters(string $firstLetter, string $lastLetter) : array
+    public static function letters(string $firstLetter, string $lastLetter): array
     {
         /** @var string[] $range */
         $range = range($firstLetter, $lastLetter);

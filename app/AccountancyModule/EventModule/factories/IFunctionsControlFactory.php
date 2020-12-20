@@ -9,5 +9,5 @@ use Model\Common\UnitId;
 
 interface IFunctionsControlFactory
 {
-    public function create(int $eventId, UnitId $unitId) : FunctionsControl;
+    public function create(int $eventId, UnitId $unitId): FunctionsControl;
 }

@@ -13,15 +13,14 @@ use Model\Participant\Repositories\IPaymentRepository;
 
 final class PaymentRepository implements IPaymentRepository
 {
-    /** @var EntityManager */
-    private $em;
+    private EntityManager $em;
 
     public function __construct(EntityManager $em)
     {
         $this->em = $em;
     }
 
-    public function findByParticipant(int $participantId, Payment\EventType $eventType) : Payment
+    public function findByParticipant(int $participantId, Payment\EventType $eventType): Payment
     {
         try {
             $payment = $this->em->createQueryBuilder()
@@ -43,7 +42,7 @@ final class PaymentRepository implements IPaymentRepository
     /**
      * @return Payment[]
      */
-    public function findByEvent(Event $event) : array
+    public function findByEvent(Event $event): array
     {
         return $this->em
             ->createQuery(<<<'DQL'
@@ -56,13 +55,13 @@ final class PaymentRepository implements IPaymentRepository
             ]);
     }
 
-    public function save(Payment $payment) : void
+    public function save(Payment $payment): void
     {
         $this->em->persist($payment);
         $this->em->flush();
     }
 
-    public function remove(Payment $payment) : void
+    public function remove(Payment $payment): void
     {
         $this->em->remove($payment);
         $this->em->flush();

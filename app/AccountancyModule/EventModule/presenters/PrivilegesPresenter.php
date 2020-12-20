@@ -8,14 +8,14 @@ use Model\Auth\Resources\Event;
 
 class PrivilegesPresenter extends BasePresenter
 {
-    public function renderDefault(int $aid) : void
+    public function renderDefault(int $aid): void
     {
         $this->setLayout('layout.new');
         $isDraft = $this->event->getState() === 'draft';
 
         $privileges = [
             'general' => [
-                'label'=> 'Obecná oprávnění',
+                'label' => 'Obecná oprávnění',
                 'items' => [
                     'create-event' => [
                         'label' => 'Založit novou akci',
@@ -25,7 +25,7 @@ class PrivilegesPresenter extends BasePresenter
                 ],
             ],
             'event' => [
-                'label'=> 'Základní informace o akci',
+                'label' => 'Základní informace o akci',
                 'items' => [
                     [
                         'label' => 'Upravovat tuto akci',
@@ -50,7 +50,7 @@ class PrivilegesPresenter extends BasePresenter
                 ],
             ],
             'participant' => [
-                'label'=> 'Účastníci',
+                'label' => 'Účastníci',
                 'items' => [
                     [
                         'label' => 'Přidávat účastníky',
@@ -64,9 +64,9 @@ class PrivilegesPresenter extends BasePresenter
                     ],
                 ],
             ],
-            'cashbook'=>[
-                'label'=>'Evidence plateb',
-                'items'=> [
+            'cashbook' => [
+                'label' => 'Evidence plateb',
+                'items' => [
                     [
                         'label' => 'Upravovat pokladní knihu',
                         'value' => $isDraft && $this->authorizator->isAllowed(Event::UPDATE_PARTICIPANT, $this->aid),

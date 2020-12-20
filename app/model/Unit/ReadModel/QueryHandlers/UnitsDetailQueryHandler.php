@@ -10,8 +10,7 @@ use Model\Unit\Unit;
 
 class UnitsDetailQueryHandler
 {
-    /** @var IUnitRepository */
-    private $units;
+    private IUnitRepository $units;
 
     public function __construct(IUnitRepository $units)
     {
@@ -21,7 +20,7 @@ class UnitsDetailQueryHandler
     /**
      * @return Unit[]
      */
-    public function __invoke(UnitsDetailQuery $query) : array
+    public function __invoke(UnitsDetailQuery $query): array
     {
         $units = [];
         foreach ($query->getUnitIds() as $unitId) {

@@ -9,12 +9,12 @@ use Model\Event\Commands\Event\UpdateFunctions;
 use Model\Event\LeaderNotAdult;
 use Skautis\Skautis;
 use Skautis\Wsdl\WsdlException;
+
 use function strpos;
 
 class UpdateFunctionsHandler
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
     public function __construct(Skautis $skautis)
     {
@@ -26,7 +26,7 @@ class UpdateFunctionsHandler
      * @throws LeaderNotAdult
      * @throws WsdlException
      */
-    public function __invoke(UpdateFunctions $command) : void
+    public function __invoke(UpdateFunctions $command): void
     {
         $query = [
             'ID' => $command->getEventId(),

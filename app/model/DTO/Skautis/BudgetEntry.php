@@ -15,14 +15,11 @@ final class BudgetEntry
 {
     use SmartObject;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var Money */
-    private $total;
+    private Money $total;
 
-    /** @var bool */
-    private $income;
+    private bool $income;
 
     public function __construct(string $name, Money $total, bool $income)
     {
@@ -31,17 +28,17 @@ final class BudgetEntry
         $this->income = $income;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getTotal() : Money
+    public function getTotal(): Money
     {
         return $this->total;
     }
 
-    public function isIncome() : bool
+    public function isIncome(): bool
     {
         return $this->income;
     }

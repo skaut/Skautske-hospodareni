@@ -19,6 +19,7 @@ use Nette\Forms\Controls\SelectBox;
 use Nette\InvalidStateException;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\Html;
+
 use function array_filter;
 use function array_keys;
 use function array_map;
@@ -27,20 +28,16 @@ use function in_array;
 
 class CommandForm extends Control
 {
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var int|NULL */
-    private $commandId;
+    private ?int $commandId = null;
 
-    /** @var TravelService */
-    private $model;
+    private TravelService $model;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     /** @var callable[] */
-    public $onSuccess = [];
+    public array $onSuccess = [];
 
     public function __construct(int $unitId, ?int $commandId, TravelService $model, QueryBus $queryBus)
     {
@@ -51,18 +48,18 @@ class CommandForm extends Control
         $this->queryBus  = $queryBus;
     }
 
-    public function render() : void
+    public function render(): void
     {
         $this['form']->render();
     }
 
-    protected function createComponentForm() : BaseForm
+    protected function createComponentForm(): BaseForm
     {
         $vehicles = $this->model->getVehiclesPairs($this->unitId);
 
         $vehiclesWithFuel = array_map(
-            fn(TransportType $t) => $t->toString(),
-            array_filter(TransportType::getAvailableEnums(), fn(TransportType $t) => $t->hasFuel())
+            fn (TransportType $t) => $t->toString(),
+            array_filter(TransportType::getAvailableEnums(), fn (TransportType $t) => $t->hasFuel())
         );
 
         $form = new BaseForm();
@@ -138,12 +135,13 @@ class CommandForm extends Control
         $form->addSubmit('send', $this->commandId !== null ? 'Upravit' : 'Založit')
             ->setAttribute('class', 'btn btn-primary');
 
-        $form->onSuccess[] = function (BaseForm $form) : void {
+        $form->onSuccess[] = function (BaseForm $form): void {
             if ($this->commandId === null) {
                 $this->createCommand($form->getValues());
             } else {
                 $this->updateCommand($form->getValues());
             }
+
             $this->onSuccess();
         };
 
@@ -162,7 +160,7 @@ class CommandForm extends Control
         return $form;
     }
 
-    private function loadDefaultValues(BaseForm $form) : void
+    private function loadDefaultValues(BaseForm $form): void
     {
         $command = $this->model->getCommandDetail($this->commandId);
 
@@ -230,42 +228,42 @@ class CommandForm extends Control
         $vehicles->setDefaultValue($vehicleId);
     }
 
-    private function createCommand(ArrayHash $values) : void
+    private function createCommand(ArrayHash $values): void
     {
         $this->model->addCommand(
-            $this->unitId,
-            isset($values->contract_id) ? (int) $values->contract_id : null,
+            $this['unitId'],
+            isset($values['contract_id']) ? (int) $values['contract_id'] : null,
             $this->createPassenger($values),
-            $values->vehicle_id,
-            $values->purpose,
-            $values->place,
-            $values->fellowPassengers,
-            MoneyFactory::fromFloat((float) $values->fuel_price),
-            MoneyFactory::fromFloat((float) $values->amortization),
-            $values->note,
-            array_map(fn(string $type) => TransportType::get($type), $values->type),
+            $values['vehicle_id'],
+            $values['purpose'],
+            $values['place'],
+            $values['fellowPassengers'],
+            MoneyFactory::fromFloat((float) $values['fuel_price']),
+            MoneyFactory::fromFloat((float) $values['amortization']),
+            $values['note'],
+            array_map(fn (string $type) => TransportType::get($type), $values['type']),
             $this->getPresenter()->getUser()->getId(),
-            $values->unit
+            $values['unit']
         );
 
         $this->flashMessage('Cestovní příkaz byl založen.');
     }
 
-    private function updateCommand(ArrayHash $values) : void
+    private function updateCommand(ArrayHash $values): void
     {
         $this->model->updateCommand(
-            $this->commandId,
-            isset($values->contract_id) ? (int) $values->contract_id : null,
+            $this['commandId'],
+            isset($values['contract_id']) ? (int) $values['contract_id'] : null,
             $this->createPassenger($values),
-            $values->vehicle_id,
-            $values->purpose,
-            $values->place,
-            $values->fellowPassengers,
-            MoneyFactory::fromFloat((float) $values->fuel_price),
-            MoneyFactory::fromFloat((float) $values->amortization),
-            $values->note,
-            array_map(fn(string $type) => TransportType::get($type), $values->type),
-            $values->unit
+            $values['vehicle_id'],
+            $values['purpose'],
+            $values['place'],
+            $values['fellowPassengers'],
+            MoneyFactory::fromFloat((float) $values['fuel_price']),
+            MoneyFactory::fromFloat((float) $values['amortization']),
+            $values['note'],
+            array_map(fn (string $type) => TransportType::get($type), $values['type']),
+            $values['unit']
         );
 
         $this->flashMessage('Cestovní příkaz byl upraven.');
@@ -276,7 +274,7 @@ class CommandForm extends Control
      *
      * @return Html[]
      */
-    private function prepareTransportTypeOptions(array $disabledValues = []) : array
+    private function prepareTransportTypeOptions(array $disabledValues = []): array
     {
         $options = [];
 
@@ -293,7 +291,7 @@ class CommandForm extends Control
     /**
      * @return mixed[]
      */
-    private function prepareContracts(?int $includeContractId = null) : array
+    private function prepareContracts(?int $includeContractId = null): array
     {
         $contracts = $this->model->getAllContractsPairs(
             $this->unitId,
@@ -307,9 +305,9 @@ class CommandForm extends Control
         return $contracts['valid'];
     }
 
-    private function createPassenger(ArrayHash $values) : ?Passenger
+    private function createPassenger(ArrayHash $values): ?Passenger
     {
-        return isset($values->contract_id)
+        return isset($values['contract_id'])
             ? null
             : new Passenger($values->passenger->name, $values->passenger->contact, $values->passenger->address);
     }

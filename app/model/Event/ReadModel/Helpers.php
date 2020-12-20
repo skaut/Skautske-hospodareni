@@ -13,7 +13,8 @@ class Helpers
      *
      * @return string[]
      */
-    public static function getPairs(array $items) : array
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    public static function getPairs(array $items): array
     {
         $pairs = [];
 

@@ -23,30 +23,23 @@ use Nette\Forms\Controls\SelectBox;
 use Nette\Forms\Form;
 use Nette\Utils\ArrayHash;
 use Skautis\Wsdl\PermissionException;
+
 use function assert;
 
 class FunctionsControl extends BaseControl
 {
-    /** @var int */
-    private $eventId;
+    private int $eventId;
 
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var IAuthorizator */
-    private $authorizator;
+    private IAuthorizator $authorizator;
 
-    /**
-     * @persistent
-     * @var bool
-     */
-    public $editation = false;
+    /** @persistent */
+    public bool $editation = false;
 
     public function __construct(
         int $eventId,
@@ -63,24 +56,24 @@ class FunctionsControl extends BaseControl
         $this->authorizator = $authorizator;
     }
 
-    private function canEdit() : bool
+    private function canEdit(): bool
     {
         return $this->authorizator->isAllowed(Event::UPDATE_FUNCTION, $this->eventId);
     }
 
-    public function handleEdit() : void
+    public function handleEdit(): void
     {
         $this->editation = $this->canEdit();
         $this->reload();
     }
 
-    public function handleCloseEditation() : void
+    public function handleCloseEditation(): void
     {
         $this->editation = false;
         $this->reload();
     }
 
-    protected function createComponentForm() : BaseForm
+    protected function createComponentForm(): BaseForm
     {
         $form             = new BaseForm();
         $personsOlderThan = $this->getPersonsOlderThan([15, 18]);
@@ -110,14 +103,14 @@ class FunctionsControl extends BaseControl
 
         $this->setDefaultValues($form);
 
-        $form->onSuccess[] = function (BaseForm $form, ArrayHash $values) : void {
+        $form->onSuccess[] = function (BaseForm $form, ArrayHash $values): void {
             $this->formSubmitted($form, $values);
         };
 
         return $form;
     }
 
-    public function render() : void
+    public function render(): void
     {
         $this->template->setFile(__DIR__ . '/templates/FunctionsControl.latte');
         $this->template->setParameters([
@@ -128,11 +121,12 @@ class FunctionsControl extends BaseControl
         $this->template->render();
     }
 
-    private function formSubmitted(BaseForm $form, ArrayHash $values) : void
+    private function formSubmitted(BaseForm $form, ArrayHash $values): void
     {
         if (! $this->canEdit()) {
             $this->reload('Nemáte oprávnění upravit vedení akce', 'danger');
         }
+
         try {
             $this->commandBus->handle(
                 new UpdateFunctions(
@@ -158,10 +152,11 @@ class FunctionsControl extends BaseControl
             $form->addError('Zástupce musí být dosplělá osoba.');
             $this->reload();
         }
+
         $this->reload('Nepodařilo se upravit funkce', 'danger');
     }
 
-    private function setDefaultValues(Form $form) : void
+    private function setDefaultValues(Form $form): void
     {
         $selected = $this->getCurrentFunctions();
 
@@ -186,7 +181,7 @@ class FunctionsControl extends BaseControl
      *
      * @return array<int, array<int, string>> - age => [person id => name, ...]
      */
-    private function getPersonsOlderThan(array $ages) : array
+    private function getPersonsOlderThan(array $ages): array
     {
         $persons = [];
         foreach ($ages as $age) {
@@ -196,7 +191,7 @@ class FunctionsControl extends BaseControl
         return $persons;
     }
 
-    private function getIdOrNull(?Person $person) : ?int
+    private function getIdOrNull(?Person $person): ?int
     {
         if ($person === null) {
             return null;
@@ -205,7 +200,7 @@ class FunctionsControl extends BaseControl
         return $person->getId();
     }
 
-    private function getCurrentFunctions() : Functions
+    private function getCurrentFunctions(): Functions
     {
         return $this->queryBus->handle(new EventFunctions(new SkautisEventId($this->eventId)));
     }

@@ -9,5 +9,5 @@ use Model\Cashbook\Cashbook\CashbookId;
 
 interface IChitScanControlFactory
 {
-    public function create(CashbookId $cashbookId, int $chitId, bool $isEditable) : ChitScanControl;
+    public function create(CashbookId $cashbookId, int $chitId, bool $isEditable): ChitScanControl;
 }

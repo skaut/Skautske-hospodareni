@@ -9,12 +9,12 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20200101231338 extends AbstractMigration
 {
-    public function getDescription() : string
+    public function getDescription(): string
     {
         return 'Adds tables for list of sent emails with payment';
     }
 
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql(<<<SQL
             CREATE TABLE pa_payment_sent_emails (
@@ -36,7 +36,7 @@ final class Version20200101231338 extends AbstractMigration
         $this->addSql("UPDATE pa_payment SET state = 'preparing' WHERE state = 'send'");
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql('DROP TABLE pa_payment_sent_emails');
     }

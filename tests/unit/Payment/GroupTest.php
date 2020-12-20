@@ -18,7 +18,7 @@ use Model\Payment\Services\IOAuthAccessChecker;
 
 class GroupTest extends Unit
 {
-    public function testCreate() : void
+    public function testCreate(): void
     {
         $dueDate         = new Date('2018-01-19'); // friday
         $createdAt       = new DateTimeImmutable();
@@ -56,7 +56,7 @@ class GroupTest extends Unit
         $this->assertSame(23, $group->getBankAccountId());
     }
 
-    public function testCreatingGroupWithBankAccountUnitHasNoAccessToThrowsException() : void
+    public function testCreatingGroupWithBankAccountUnitHasNoAccessToThrowsException(): void
     {
         $bankAccountId = 15;
 
@@ -76,7 +76,7 @@ class GroupTest extends Unit
         );
     }
 
-    public function testCreatingGroupWithMailCredentialsUnitHasNoAccessToThrowsException() : void
+    public function testCreatingGroupWithMailCredentialsUnitHasNoAccessToThrowsException(): void
     {
         $oAuthId = OAuthId::generate();
 
@@ -96,7 +96,7 @@ class GroupTest extends Unit
         );
     }
 
-    public function testCreatingGroupWithNotAllEmailsThrowsException() : void
+    public function testCreatingGroupWithNotAllEmailsThrowsException(): void
     {
         $paymentDefaults   = new PaymentDefaults(null, null, null, null);
         $accessChecker     = m::mock(IBankAccountAccessChecker::class);
@@ -107,7 +107,7 @@ class GroupTest extends Unit
         new Group([1], null, 'Test', $paymentDefaults, new DateTimeImmutable(), [], null, null, $accessChecker, $mailAccessChecker);
     }
 
-    public function testUpdate() : void
+    public function testUpdate(): void
     {
         $dueDate     = new Date('2018-01-19'); // friday
         $createdAt   = new DateTimeImmutable();
@@ -136,7 +136,7 @@ class GroupTest extends Unit
         $this->assertSame(33, $group->getBankAccountId());
     }
 
-    public function testClose() : void
+    public function testClose(): void
     {
         $group = $this->createGroup();
         $note  = 'Closed because of ...';
@@ -147,7 +147,7 @@ class GroupTest extends Unit
         $this->assertSame($note, $group->getNote());
     }
 
-    public function testReopen() : void
+    public function testReopen(): void
     {
         $group = $this->createGroup();
         $group->close('Closed because of ...');
@@ -159,7 +159,7 @@ class GroupTest extends Unit
         $this->assertSame($note, $group->getNote());
     }
 
-    public function testRemoveBankAccount() : void
+    public function testRemoveBankAccount(): void
     {
         $group = $this->createGroup(
             null,
@@ -172,7 +172,7 @@ class GroupTest extends Unit
         $this->assertNull($group->getBankAccountId());
     }
 
-    public function testChangeUnitForGroupWithoutBankAccountAndOAuth() : void
+    public function testChangeUnitForGroupWithoutBankAccountAndOAuth(): void
     {
         $group = $this->createGroup();
 
@@ -185,7 +185,7 @@ class GroupTest extends Unit
         $this->assertSame([20], $group->getUnitIds());
     }
 
-    public function testBankAccountIsRemovedWhenChangedUnitHasNoAccessToIt() : void
+    public function testBankAccountIsRemovedWhenChangedUnitHasNoAccessToIt(): void
     {
         $unitIds       = [50];
         $bankAccountId = 20;
@@ -202,7 +202,7 @@ class GroupTest extends Unit
         $this->assertNull($group->getBankAccountId());
     }
 
-    public function testBankAccountIsKeptWhenChangedUnitHasAccessToIt() : void
+    public function testBankAccountIsKeptWhenChangedUnitHasAccessToIt(): void
     {
         $unitIds       = [50];
         $bankAccountId = 20;
@@ -219,7 +219,7 @@ class GroupTest extends Unit
         $this->assertSame($bankAccountId, $group->getBankAccountId());
     }
 
-    public function testOauthIsRemovedWhenChangedUnitDoesNotHaveAccessToThem() : void
+    public function testOauthIsRemovedWhenChangedUnitDoesNotHaveAccessToThem(): void
     {
         $unitIds = [50];
         $oAuthId = OAuthId::generate();
@@ -236,7 +236,7 @@ class GroupTest extends Unit
         $this->assertNull($group->getOauthId());
     }
 
-    public function testOauthIsKeptWhenChangedUnitHasAccessToThem() : void
+    public function testOauthIsKeptWhenChangedUnitHasAccessToThem(): void
     {
         $unitIds = [50];
         $oAuthId = OAuthId::generate();
@@ -253,7 +253,7 @@ class GroupTest extends Unit
         $this->assertSame($oAuthId, $group->getOauthId());
     }
 
-    private function mockBankAccount(int $id) : BankAccount
+    private function mockBankAccount(int $id): BankAccount
     {
         return m::mock(BankAccount::class, ['getId' => $id, 'getUnitId' => 50, 'isAllowedForSubunits' => true]);
     }
@@ -261,7 +261,7 @@ class GroupTest extends Unit
     /**
      * @param int[] $unitIds
      */
-    private function mockBankAccountAccessChecker(array $unitIds, int $bankAccountId, bool $hasAccess) : IBankAccountAccessChecker
+    private function mockBankAccountAccessChecker(array $unitIds, int $bankAccountId, bool $hasAccess): IBankAccountAccessChecker
     {
         $accessChecker = m::mock(IBankAccountAccessChecker::class);
         $accessChecker
@@ -276,7 +276,7 @@ class GroupTest extends Unit
     /**
      * @param int[] $unitIds
      */
-    private function mockOAuthAccessChecker(array $unitIds, OAuthId $oAuthId, bool $hasAccess) : IOAuthAccessChecker
+    private function mockOAuthAccessChecker(array $unitIds, OAuthId $oAuthId, bool $hasAccess): IOAuthAccessChecker
     {
         $accessChecker = m::mock(IOAuthAccessChecker::class);
         $accessChecker
@@ -293,10 +293,10 @@ class GroupTest extends Unit
         ?DateTimeImmutable $createdAt = null,
         ?BankAccount $bankAccount = null,
         ?OAuthId $oAuthId = null
-    ) : Group {
-        $dueDate         = $dueDate ?? new Date('2018-01-19'); // defaults to friday
+    ): Group {
+        $dueDate       ??= new Date('2018-01-19'); // defaults to friday
         $paymentDefaults = new PaymentDefaults(200.2, $dueDate, 203, new VariableSymbol('666'));
-        $createdAt       = $createdAt ?? new DateTimeImmutable();
+        $createdAt     ??= new DateTimeImmutable();
         $emails          = Helpers::createEmails();
 
         return new Group(
@@ -316,7 +316,7 @@ class GroupTest extends Unit
     /**
      * @param EmailTemplate[] $expected
      */
-    private function assertEmailsAreSame(array $expected, Group $group) : void
+    private function assertEmailsAreSame(array $expected, Group $group): void
     {
         foreach ($expected as $key => $value) {
             $actual = $group->getEmailTemplate(EmailType::get($key));

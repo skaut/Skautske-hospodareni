@@ -8,7 +8,7 @@ use Codeception\Test\Unit;
 
 final class FilePathTest extends Unit
 {
-    public function testGenerateUniqPath() : void
+    public function testGenerateUniqPath(): void
     {
         $prefix = '';
         $path   = '';

@@ -9,43 +9,37 @@ use Model\Common\UnitId;
 use Model\Skautis\SkautisMaintenanceChecker;
 use Nette\Security\Identity;
 use stdClass;
+
 use function array_keys;
 use function assert;
 
 abstract class BasePresenter extends \App\BasePresenter
 {
-    /** @var string|null */
-    protected $backlink;
+    protected ?string $backlink = null;
 
     /**
      * id volane v url, vetsinou id akce
-     *
-     * @var int|null
      */
-    protected $aid;
+    protected ?int $aid = null;
 
-    /** @var UnitId */
-    protected $unitId;
+    protected UnitId $unitId;
 
     /**
      * je akci možné upravovat?
-     *
-     * @var bool
      */
-    protected $isEditable;
+    protected bool $isEditable;
 
-    /** @var SkautisMaintenanceChecker */
-    private $skautisMaintenanceChecker;
+    private SkautisMaintenanceChecker $skautisMaintenanceChecker;
 
     /** @var string camp, event, unit */
-    public $type;
+    public string $type;
 
-    public function injectSkautisMaintenanceChecker(SkautisMaintenanceChecker $checker) : void
+    public function injectSkautisMaintenanceChecker(SkautisMaintenanceChecker $checker): void
     {
         $this->skautisMaintenanceChecker = $checker;
     }
 
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
 
@@ -62,7 +56,8 @@ abstract class BasePresenter extends \App\BasePresenter
             }
         }
 
-        $this->aid = $this->getParameter('aid', null);
+        $aid       = $this->getParameter('aid');
+        $this->aid = $aid === null ? null : (int) $aid;
         if ($this->aid !== null) { // Parameters aren't auto-casted to int
             $this->aid = (int) $this->aid;
         }
@@ -76,17 +71,16 @@ abstract class BasePresenter extends \App\BasePresenter
     /**
      * @param string $message
      * @param string $type
-     *
-     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
      */
-    public function flashMessage($message, $type = 'info') : stdClass
+    // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
+    public function flashMessage($message, $type = 'info'): stdClass
     {
         $this->redrawControl('flash');
 
         return parent::flashMessage($message, $type);
     }
 
-    public function getCurrentUnitId() : UnitId
+    public function getCurrentUnitId(): UnitId
     {
         return $this->unitId;
     }
@@ -94,7 +88,7 @@ abstract class BasePresenter extends \App\BasePresenter
     /**
      * @return int[]
      */
-    protected function getEditableUnitIds() : array
+    protected function getEditableUnitIds(): array
     {
         $identity = $this->getUser()->getIdentity();
 
@@ -110,7 +104,7 @@ abstract class BasePresenter extends \App\BasePresenter
         return array_keys($editableUnits);
     }
 
-    public function renderAccessDenied() : void
+    public function renderAccessDenied(): void
     {
         $this->template->setFile(__DIR__ . '/../templates/accessDenied.latte');
     }

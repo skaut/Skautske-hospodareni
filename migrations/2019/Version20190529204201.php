@@ -9,7 +9,7 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20190529204201 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql(<<<'SQL'
             ALTER TABLE ac_camp_participants
@@ -19,7 +19,7 @@ final class Version20190529204201 extends AbstractMigration
         $this->addSql('UPDATE ac_camp_participants SET event_type = \'camp\'');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql(
             'ALTER TABLE ac_camp_participants CHANGE event_id actionId INT UNSIGNED NOT NULL, DROP event_type'

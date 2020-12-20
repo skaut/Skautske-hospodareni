@@ -12,14 +12,11 @@ use Model\Payment\BankAccount\BankAccountId;
  */
 final class PairedPaymentsQuery
 {
-    /** @var BankAccountId */
-    private $bankAccountId;
+    private BankAccountId $bankAccountId;
 
-    /** @var DateTimeImmutable */
-    private $since;
+    private DateTimeImmutable $since;
 
-    /** @var DateTimeImmutable */
-    private $until;
+    private DateTimeImmutable $until;
 
     public function __construct(BankAccountId $bankAccountId, DateTimeImmutable $since, DateTimeImmutable $until)
     {
@@ -28,17 +25,17 @@ final class PairedPaymentsQuery
         $this->until         = $until;
     }
 
-    public function getBankAccountId() : BankAccountId
+    public function getBankAccountId(): BankAccountId
     {
         return $this->bankAccountId;
     }
 
-    public function getSince() : DateTimeImmutable
+    public function getSince(): DateTimeImmutable
     {
         return $this->since;
     }
 
-    public function getUntil() : DateTimeImmutable
+    public function getUntil(): DateTimeImmutable
     {
         return $this->until;
     }

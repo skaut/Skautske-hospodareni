@@ -12,6 +12,7 @@ use Model\Event\ReadModel\Queries\EventListQuery;
 use Model\Event\ReadModel\Queries\EventStatisticsQuery;
 use Model\Skautis\ISkautisEvent;
 use Model\Unit\Unit;
+
 use function array_filter;
 use function array_key_exists;
 use function array_keys;
@@ -19,8 +20,7 @@ use function in_array;
 
 class StatisticsService
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(QueryBus $queryBus)
     {
@@ -30,7 +30,7 @@ class StatisticsService
     /**
      * @return array<int, Counter>
      */
-    public function getEventStatistics(Unit $unitTree, int $year) : array
+    public function getEventStatistics(Unit $unitTree, int $year): array
     {
         $events     = $this->queryBus->handle(new EventListQuery($year, null));
         $camps      = $this->queryBus->handle(new CampListQuery($year));
@@ -40,7 +40,7 @@ class StatisticsService
         $eventCount = $this->sumUpByEventId($events, array_keys($eventStats));
         $campCount  = $this->sumUpByEventId($camps, array_keys($campStats));
 
-        $keys   = array_keys($eventCount) +array_keys($campCount);
+        $keys   = array_keys($eventCount) + array_keys($campCount);
         $merged = [];
         foreach ($keys as $k) {
             $merged[$k] = new Counter(
@@ -63,7 +63,7 @@ class StatisticsService
      *
      * @return int[]|array<int, int>
      */
-    private function sumUpByEventId(array $objs, array $unitKeys) : array
+    private function sumUpByEventId(array $objs, array $unitKeys): array
     {
         $cnt = [];
         foreach ($objs as $key => $e) {
@@ -87,7 +87,7 @@ class StatisticsService
      *
      * @return Counter[]|array<int, Counter>|null
      */
-    private function countTree(Unit $root, array $cntArr) : ?array
+    private function countTree(Unit $root, array $cntArr): ?array
     {
         $children = $root->getChildren();
 

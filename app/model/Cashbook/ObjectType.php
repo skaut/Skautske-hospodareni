@@ -15,7 +15,7 @@ class ObjectType extends Enum
     public const EVENT = 'general';
     public const UNIT  = 'unit';
 
-    public function toString() : string
+    public function toString(): string
     {
         return $this->getValue();
     }

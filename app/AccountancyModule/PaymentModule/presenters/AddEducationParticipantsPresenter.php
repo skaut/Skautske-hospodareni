@@ -12,6 +12,7 @@ use Model\Event\SkautisEducationId;
 use Model\Payment\ReadModel\Queries\MemberEmailsQuery;
 use Model\PaymentService;
 use Model\Unit\ReadModel\Queries\UnitQuery;
+
 use function array_filter;
 use function assert;
 use function in_array;
@@ -34,7 +35,7 @@ class AddEducationParticipantsPresenter extends BasePresenter
     /**
      * @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY
      */
-    public function actionDefault(int $id, ?int $unitId = null) : void
+    public function actionDefault(int $id, ?int $unitId = null): void
     {
         $this->id = $id;
         $group    = $this->model->getGroup($id);
@@ -74,6 +75,7 @@ class AddEducationParticipantsPresenter extends BasePresenter
                 $amount === 0.0 ? null : $amount
             );
         }
+
         $this->template->setParameters([
             'unit' => $this->queryBus->handle(new UnitQuery($this->getCurrentUnitId()->toInt())),
             'group'    => $group,
@@ -81,7 +83,7 @@ class AddEducationParticipantsPresenter extends BasePresenter
         ]);
     }
 
-    protected function createComponentMassAddForm() : MassAddForm
+    protected function createComponentMassAddForm(): MassAddForm
     {
         return $this->formFactory->create($this->id);
     }

@@ -23,6 +23,7 @@ use Model\ExportService;
 use Model\Services\PdfRenderer;
 use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\UnitNotFound;
+
 use function array_filter;
 use function array_map;
 use function assert;
@@ -30,14 +31,11 @@ use function count;
 
 class DetailPresenter extends BasePresenter
 {
-    /** @var ExportService */
-    protected $exportService;
+    protected ExportService $exportService;
 
-    /** @var PdfRenderer */
-    private $pdf;
+    private PdfRenderer $pdf;
 
-    /** @var IMissingAutocomputedCategoryControlFactory */
-    private $missingAutocomputedCategoryControlFactory;
+    private IMissingAutocomputedCategoryControlFactory $missingAutocomputedCategoryControlFactory;
 
     public function __construct(
         ExportService $export,
@@ -50,7 +48,7 @@ class DetailPresenter extends BasePresenter
         $this->missingAutocomputedCategoryControlFactory = $missingAutocomputedCategoryControlFactory;
     }
 
-    public function renderDefault(int $aid, bool $missingCategories = false) : void
+    public function renderDefault(int $aid, bool $missingCategories = false): void
     {
         $troops = array_filter(array_map(
             function (UnitId $id) {
@@ -95,7 +93,7 @@ class DetailPresenter extends BasePresenter
         ]);
     }
 
-    public function renderReport(int $aid) : void
+    public function renderReport(int $aid): void
     {
         if (! $this->authorizator->isAllowed(Camp::ACCESS_FUNCTIONS, $aid)) {
             $this->flashMessage('Nemáte právo přistupovat k táboru', 'warning');
@@ -112,19 +110,19 @@ class DetailPresenter extends BasePresenter
         }
     }
 
-    private function areTotalsConsistentWithSkautis(int $campId) : bool
+    private function areTotalsConsistentWithSkautis(int $campId): bool
     {
         $totals = $this->queryBus->handle(new InconsistentCampCategoryTotalsQuery(new SkautisCampId($campId)));
 
         return count($totals) === 0;
     }
 
-    private function getCashbookId() : CashbookId
+    private function getCashbookId(): CashbookId
     {
         return $this->queryBus->handle(new CampCashbookIdQuery($this->event->getId()));
     }
 
-    protected function createComponentCategoryAutocomputedControl() : MissingAutocomputedCategoryControl
+    protected function createComponentCategoryAutocomputedControl(): MissingAutocomputedCategoryControl
     {
         return $this->missingAutocomputedCategoryControlFactory->create(new SkautisCampId($this->aid));
     }

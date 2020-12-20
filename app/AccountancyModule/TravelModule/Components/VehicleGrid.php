@@ -14,17 +14,13 @@ use Ublaboo\DataGrid\DataSource\DoctrineCollectionDataSource;
 
 class VehicleGrid extends BaseGridControl
 {
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var TravelService */
-    private $travel;
+    private TravelService $travel;
 
-    /** @var UnitService */
-    private $units;
+    private UnitService $units;
 
-    /** @var GridFactory */
-    private $gridFactory;
+    private GridFactory $gridFactory;
 
     public function __construct(int $unitId, TravelService $travel, UnitService $units, GridFactory $gridFactory)
     {
@@ -35,7 +31,7 @@ class VehicleGrid extends BaseGridControl
         $this->gridFactory = $gridFactory;
     }
 
-    protected function createComponentGrid() : DataGrid
+    protected function createComponentGrid(): DataGrid
     {
         $units = $this->units->getSubunitPairs($this->unitId);
 

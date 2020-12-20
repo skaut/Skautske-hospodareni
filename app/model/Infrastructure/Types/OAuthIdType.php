@@ -8,9 +8,12 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\GuidType;
 use Model\Google\OAuthId;
 
+use function assert;
+use function is_string;
+
 final class OAuthIdType extends GuidType
 {
-    public function getName() : string
+    public function getName(): string
     {
         return 'oauth_id';
     }
@@ -18,26 +21,28 @@ final class OAuthIdType extends GuidType
     /**
      * @param mixed $value
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform) : ?OAuthId
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?OAuthId
     {
         if ($value === null) {
             return null;
         }
 
-        /** @var string $value */
+        assert(is_string($value));
+
         return OAuthId::fromString($value);
     }
 
     /**
      * @param mixed $value
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform) : ?string
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         if ($value === null) {
             return null;
         }
 
-        /** @var OAuthId $value */
+        assert($value instanceof OAuthId);
+
         return $value->toString();
     }
 }

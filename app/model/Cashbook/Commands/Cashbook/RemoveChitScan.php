@@ -13,14 +13,11 @@ use Model\Common\FilePath;
  */
 final class RemoveChitScan
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var int */
-    private $chitId;
+    private int $chitId;
 
-    /** @var FilePath */
-    private $path;
+    private FilePath $path;
 
     public function __construct(CashbookId $cashbookId, int $chitId, FilePath $path)
     {
@@ -29,17 +26,17 @@ final class RemoveChitScan
         $this->path       = $path;
     }
 
-    public function getCashbookId() : CashbookId
+    public function getCashbookId(): CashbookId
     {
         return $this->cashbookId;
     }
 
-    public function getChitId() : int
+    public function getChitId(): int
     {
         return $this->chitId;
     }
 
-    public function getPath() : FilePath
+    public function getPath(): FilePath
     {
         return $this->path;
     }

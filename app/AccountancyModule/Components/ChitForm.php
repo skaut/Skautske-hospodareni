@@ -42,6 +42,7 @@ use Nette\Utils\ArrayHash;
 use Nette\Utils\Json;
 use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\WsdlException;
+
 use function array_values;
 use function assert;
 use function get_class;
@@ -56,30 +57,22 @@ final class ChitForm extends BaseControl
         Operation::EXPENSE => 'Výdaje',
     ];
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
     /**
      * Can current user add/edit chits?
-     *
-     * @var bool
      */
-    private $isEditable;
+    private bool $isEditable;
 
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /** @var int */
-    private $itemsCount = 0;
+    private int $itemsCount = 0;
 
     public function __construct(
         CashbookId $cashbookId,
@@ -98,7 +91,7 @@ final class ChitForm extends BaseControl
         $this->logger     = $logger;
     }
 
-    public function isAmountValid(IControl $control) : bool
+    public function isAmountValid(IControl $control): bool
     {
         try {
             new Amount($control->getValue());
@@ -109,7 +102,7 @@ final class ChitForm extends BaseControl
         }
     }
 
-    public function render() : void
+    public function render(): void
     {
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
 
@@ -123,7 +116,7 @@ final class ChitForm extends BaseControl
         $this->template->render();
     }
 
-    public function editChit(int $chitId) : void
+    public function editChit(int $chitId): void
     {
         $chit = $this->queryBus->handle(new ChitQuery($this->cashbookId, $chitId));
 
@@ -156,6 +149,7 @@ final class ChitForm extends BaseControl
                 $item->getCategory()->isIncome() ? 'incomeCategories' : 'expenseCategories' => $item->getCategory()->getId(),
             ];
         }
+
         $this['form']->setDefaults(['items' => $items]);
 
         $this->redrawControl();
@@ -164,7 +158,7 @@ final class ChitForm extends BaseControl
     /**
      * @param mixed[] $values
      */
-    public function getCategoryItems(array $values) : DependentData
+    public function getCategoryItems(array $values): DependentData
     {
         $type = $values['type'];
 
@@ -180,7 +174,7 @@ final class ChitForm extends BaseControl
         ]);
     }
 
-    protected function createComponentForm() : BaseForm
+    protected function createComponentForm(): BaseForm
     {
         $form = new BaseForm();
 
@@ -216,7 +210,7 @@ final class ChitForm extends BaseControl
             ->setAttribute('placeholder', 'Komu/Od')
             ->setAttribute('class', 'form-control input-sm');
 
-        $items = $form->addDynamic('items', function (Container $container) use ($typePicker) : void {
+        $items = $form->addDynamic('items', function (Container $container) use ($typePicker): void {
             $this->itemsCount++;
             $container->addText('purpose')
                 ->setMaxLength(120)
@@ -247,14 +241,14 @@ final class ChitForm extends BaseControl
 
             $container->addSubmit('remove', 'Odebrat položku')
                 ->setValidationScope(false)
-                ->onClick[] = function (SubmitButton $button) : void {
+                ->onClick[] = function (SubmitButton $button): void {
                     $this->removeItem($button);
                 };
         }, 1);
 
         $items->addSubmit('addItem', 'Přidat další položku')
             ->setValidationScope(false)
-            ->onClick[] = function () use ($items) : void {
+            ->onClick[] = function () use ($items): void {
                 $items->createOne();
                 $this->reload();
             };
@@ -267,17 +261,18 @@ final class ChitForm extends BaseControl
         $form->addSubmit('send', 'Uložit')
             ->setAttribute('class', 'btn btn-primary');
 
-        $form->onSuccess[] = function (BaseForm $form, ArrayHash $values) : void {
+        $form->onSuccess[] = function (BaseForm $form, ArrayHash $values): void {
             if ($form->isSubmitted() !== $form['send']) {
                 return;
             }
+
             $this->formSubmitted($form, $values);
         };
 
         return $form;
     }
 
-    private function removeItem(SubmitButton $button) : void
+    private function removeItem(SubmitButton $button): void
     {
         $container  = $button->getParent();
         $replicator = $container->getParent();
@@ -286,7 +281,7 @@ final class ChitForm extends BaseControl
         $this->reload();
     }
 
-    private function formSubmitted(BaseForm $form, ArrayHash $values) : void
+    private function formSubmitted(BaseForm $form, ArrayHash $values): void
     {
         if (! $this->isEditable) {
             $this->reload('Nemáte oprávnění upravovat pokladní knihu', 'danger');
@@ -317,6 +312,7 @@ final class ChitForm extends BaseControl
                 $this->commandBus->handle(new AddChitToCashbook($cashbookId, $chitBody, $method, $items));
                 $this->flashMessage('Paragon byl úspěšně přidán do seznamu.');
             }
+
             $this->reload();
         } catch (InvalidArgumentException | CashbookNotFound $exc) {
             $this->flashMessage('Paragon se nepodařilo přidat do seznamu.', 'danger');
@@ -337,7 +333,7 @@ final class ChitForm extends BaseControl
     /**
      * @return string[]
      */
-    private function getAdultMemberNames() : array
+    private function getAdultMemberNames(): array
     {
         try {
             return array_values($this->queryBus->handle(new MemberNamesQuery($this->unitId, 15)));
@@ -349,12 +345,12 @@ final class ChitForm extends BaseControl
     /**
      * @return string[]
      */
-    private function getCategoryPairsByType(?Operation $operation) : array
+    private function getCategoryPairsByType(?Operation $operation): array
     {
         return $this->queryBus->handle(new CategoryPairsQuery($this->cashbookId, $operation));
     }
 
-    private function buildChitBodyFromValues(ArrayHash $values) : ChitBody
+    private function buildChitBodyFromValues(ArrayHash $values): ChitBody
     {
         $number    = $values->num !== '' ? new ChitNumber($values->num) : null;
         $recipient = $values->recipient !== '' ? new Recipient($values->recipient) : null;

@@ -9,15 +9,14 @@ use Model\Event\Repositories\IEventRepository;
 
 final class NewestEventIdHandler
 {
-    /** @var IEventRepository */
-    private $events;
+    private IEventRepository $events;
 
     public function __construct(IEventRepository $events)
     {
         $this->events = $events;
     }
 
-    public function __invoke(NewestEventId $query) : ?int
+    public function __invoke(NewestEventId $query): ?int
     {
         return $this->events->getNewestEventId();
     }

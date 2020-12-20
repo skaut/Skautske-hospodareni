@@ -13,11 +13,11 @@ use Model\Common\Services\NotificationsCollector;
 use Model\UnitService;
 use Model\UserService;
 use Nette;
-use Nette\Application\IResponse;
 use Nette\Application\LinkGenerator;
 use Nette\Security\Identity;
 use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\AuthenticationException;
+
 use function array_key_last;
 use function assert;
 use function explode;
@@ -32,32 +32,23 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
     protected UnitService $unitService;
 
-    /** @var string */
-    private $appDir;
+    private string $appDir;
 
-    /** @var int */
-    private $unitId;
+    private ?int $unitId = null;
 
-    /** @var CommandBus */
-    protected $commandBus;
+    protected CommandBus $commandBus;
 
-    /** @var QueryBus */
-    protected $queryBus;
+    protected QueryBus $queryBus;
 
-    /** @var IAuthorizator */
-    protected $authorizator;
+    protected IAuthorizator $authorizator;
 
-    /** @var ILoginPanelFactory */
-    private $loginPanelFactory;
+    private ILoginPanelFactory $loginPanelFactory;
 
-    /** @var NotificationsCollector */
-    private $notificationsCollector;
+    private NotificationsCollector $notificationsCollector;
 
-    /** @var LoggerInterface */
-    protected $logger;
+    protected LoggerInterface $logger;
 
-    /** @var LinkGenerator */
-    protected $linkGenerator;
+    protected LinkGenerator $linkGenerator;
 
     public function injectAll(
         UserService $userService,
@@ -69,7 +60,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         NotificationsCollector $notificationsCollector,
         LoggerInterface $logger,
         LinkGenerator $linkGenerator
-    ) : void {
+    ): void {
         $this->userService            = $userService;
         $this->unitService            = $unitService;
         $this->commandBus             = $commandBus;
@@ -81,7 +72,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         $this->linkGenerator          = $linkGenerator;
     }
 
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
 
@@ -109,7 +100,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         }
     }
 
-    protected function beforeRender() : void
+    protected function beforeRender(): void
     {
         parent::beforeRender();
 
@@ -140,7 +131,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         }
     }
 
-    public function handleChangeRole(?int $roleId = null) : void
+    public function handleChangeRole(?int $roleId = null): void
     {
         if ($roleId === null) {
             throw new Nette\Application\BadRequestException();
@@ -149,12 +140,12 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         $this['loginPanel']->handleChangeRole($roleId);
     }
 
-    protected function createComponentLoginPanel() : LoginPanel
+    protected function createComponentLoginPanel(): LoginPanel
     {
         return $this->loginPanelFactory->create();
     }
 
-    protected function updateUserAccess() : void
+    protected function updateUserAccess(): void
     {
         $identity = $this->user->getIdentity();
 
@@ -166,7 +157,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     /**
      * Returns OFFICIAL unit ID
      */
-    public function getUnitId() : int
+    public function getUnitId(): int
     {
         if ($this->unitId === null) {
             $this->unitId = $this->unitService->getOfficialUnit()->getId();
@@ -176,11 +167,10 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     }
 
     /**
-     * @param IResponse $response
-     *
-     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
+     * @param  Nette\Application\IResponse $response
      */
-    protected function shutdown($response) : void
+    // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
+    protected function shutdown($response): void
     {
         foreach ($this->notificationsCollector->popNotifications() as [$type, $message, $count]) {
             if ($type === NotificationsCollector::ERROR) {

@@ -13,5 +13,5 @@ interface IBankAccountAccessChecker
      *
      * @throws BankAccountNotFound
      */
-    public function allUnitsHaveAccessToBankAccount(array $unitIds, int $bankAccountId) : bool;
+    public function allUnitsHaveAccessToBankAccount(array $unitIds, int $bankAccountId): bool;
 }

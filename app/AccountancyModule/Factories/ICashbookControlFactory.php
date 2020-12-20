@@ -10,5 +10,5 @@ use Model\Common\UnitId;
 
 interface ICashbookControlFactory
 {
-    public function create(CashbookId $cashbookId, bool $isEditable, UnitId $unitId) : CashbookControl;
+    public function create(CashbookId $cashbookId, bool $isEditable, UnitId $unitId): CashbookControl;
 }

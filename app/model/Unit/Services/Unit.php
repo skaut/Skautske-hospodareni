@@ -19,38 +19,28 @@ class Unit
         'zvlastniJednotka',
     ];
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string */
-    private $sortName;
+    private string $sortName;
 
-    /** @var string */
-    private $displayName;
+    private string $displayName;
 
-    /** @var string|null */
-    private $ic;
+    private ?string $ic = null;
 
-    /** @var string */
-    private $street;
+    private string $street;
 
-    /** @var string */
-    private $city;
+    private string $city;
 
-    /** @var string */
-    private $postcode;
+    private string $postcode;
 
-    /** @var string */
-    private $registrationNumber;
+    private string $registrationNumber;
 
-    /** @var string */
-    private $type;
+    private string $type;
 
-    /** @var int|NULL */
-    private $parentId;
+    private ?int $parentId = null;
 
     /** @var Unit[]|null */
-    private $children;
+    private ?array $children = null;
 
     /**
      * @param Unit[]|null $children
@@ -81,22 +71,22 @@ class Unit
         $this->children           = $children;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getSortName() : string
+    public function getSortName(): string
     {
         return $this->sortName;
     }
 
-    public function getDisplayName() : string
+    public function getDisplayName(): string
     {
         return $this->displayName;
     }
 
-    public function getFullDisplayName() : string
+    public function getFullDisplayName(): string
     {
         if ($this->isOfficial()) {
             return sprintf('Junák - český skaut, %s, z. s.', $this->getDisplayName());
@@ -105,54 +95,54 @@ class Unit
         return '';
     }
 
-    public function getFullDisplayNameWithAddress() : string
+    public function getFullDisplayNameWithAddress(): string
     {
         return $this->getFullDisplayName() . ', ' . $this->getAddress() . ', IČO: ' . $this->ic;
     }
 
-    public function getAddress() : string
+    public function getAddress(): string
     {
         return $this->street . ', ' . $this->city . ', ' . $this->postcode;
     }
 
-    public function getIc() : ?string
+    public function getIc(): ?string
     {
         return $this->ic;
     }
 
-    public function getStreet() : string
+    public function getStreet(): string
     {
         return $this->street;
     }
 
-    public function getCity() : string
+    public function getCity(): string
     {
         return $this->city;
     }
 
-    public function getPostcode() : ?string
+    public function getPostcode(): ?string
     {
         return $this->postcode;
     }
 
-    public function getParentId() : ?int
+    public function getParentId(): ?int
     {
         return $this->parentId;
     }
 
-    public function isOfficial() : bool
+    public function isOfficial(): bool
     {
         return in_array($this->type, self::OFFICIAL_UNIT_TYPES, true);
     }
 
-    public function getShortRegistrationNumber() : string
+    public function getShortRegistrationNumber(): string
     {
         $splitNumber = explode('.', $this->registrationNumber);
 
         return $splitNumber[array_key_last($splitNumber)];
     }
 
-    public function getRegistrationNumber() : string
+    public function getRegistrationNumber(): string
     {
         return $this->registrationNumber;
     }
@@ -160,7 +150,7 @@ class Unit
     /**
      * @return Unit[]|null
      */
-    public function getChildren() : ?array
+    public function getChildren(): ?array
     {
         return $this->children;
     }
@@ -168,7 +158,7 @@ class Unit
     /**
      * @param Unit[] $ch
      */
-    public function withChildren(array $ch) : self
+    public function withChildren(array $ch): self
     {
         return new self(
             $this->id,

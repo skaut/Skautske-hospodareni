@@ -15,17 +15,14 @@ class Category
 {
     use SmartObject;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string */
-    private $label;
+    private string $label;
 
     /** @var Category[] */
-    private $children;
+    private array $children;
 
-    /** @var float */
-    private $value;
+    private float $value;
 
     /**
      * @param Category[] $children
@@ -38,17 +35,17 @@ class Category
         $this->children = $children;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getLabel() : string
+    public function getLabel(): string
     {
         return $this->label;
     }
 
-    public function getValue() : float
+    public function getValue(): float
     {
         return $this->value;
     }
@@ -56,7 +53,7 @@ class Category
     /**
      * @return Category[]
      */
-    public function getChildren() : array
+    public function getChildren(): array
     {
         return $this->children;
     }

@@ -9,11 +9,12 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\Repositories\ICashbookRepository;
 use Model\Infrastructure\Repositories\AggregateRepository;
+
 use function sprintf;
 
 final class CashbookRepository extends AggregateRepository implements ICashbookRepository
 {
-    public function find(CashbookId $id) : Cashbook
+    public function find(CashbookId $id): Cashbook
     {
         $cashbook = $this->getEntityManager()->find(Cashbook::class, $id);
 
@@ -24,7 +25,7 @@ final class CashbookRepository extends AggregateRepository implements ICashbookR
         return $cashbook;
     }
 
-    public function save(Cashbook $cashbook) : void
+    public function save(Cashbook $cashbook): void
     {
         $this->saveAndDispatchEvents($cashbook);
     }

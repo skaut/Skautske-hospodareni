@@ -13,7 +13,7 @@ class MoneyType extends IntegerType
 {
     public const NAME = 'money';
 
-    public function getName() : string
+    public function getName(): string
     {
         return self::NAME;
     }
@@ -21,7 +21,7 @@ class MoneyType extends IntegerType
     /**
      * @param mixed $value
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform) : Money
+    public function convertToPHPValue($value, AbstractPlatform $platform): Money
     {
         return Money::CZK(parent::convertToPHPValue($value, $platform));
     }
@@ -29,7 +29,7 @@ class MoneyType extends IntegerType
     /**
      * @param mixed $value
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform) : string
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
         if (! $value instanceof Money) {
             throw new InvalidArgumentException('Only instances of ' . Money::class . 'allowed');

@@ -35,22 +35,22 @@ class OAuth
         $this->updatedAt = $updatedAt;
     }
 
-    public function getId() : string
+    public function getId(): string
     {
         return $this->id->toString();
     }
 
-    public function getEmail() : string
+    public function getEmail(): string
     {
         return $this->email;
     }
 
-    public function getUnitId() : int
+    public function getUnitId(): int
     {
         return $this->unitId->toInt();
     }
 
-    public function getUpdatedAt() : DateTimeImmutable
+    public function getUpdatedAt(): DateTimeImmutable
     {
         return $this->updatedAt;
     }

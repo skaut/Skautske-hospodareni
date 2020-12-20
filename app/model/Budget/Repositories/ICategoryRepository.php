@@ -13,12 +13,12 @@ interface ICategoryRepository
     /**
      * @throws CategoryNotFound
      */
-    public function find(int $id) : Category;
+    public function find(int $id): Category;
 
     /**
      * @return Category[]
      */
-    public function findCategories(int $unitId, Operation $operationType) : array;
+    public function findCategories(int $unitId, Operation $operationType): array;
 
-    public function save(Category $vehicle) : void;
+    public function save(Category $vehicle): void;
 }

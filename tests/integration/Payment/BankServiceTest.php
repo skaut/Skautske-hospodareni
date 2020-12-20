@@ -25,6 +25,8 @@ use Model\Payment\VariableSymbol;
 use Nette\Utils\Random;
 use Stubs\BankAccountAccessCheckerStub;
 use Stubs\OAuthsAccessCheckerStub;
+
+use function assert;
 use function date;
 use function mt_rand;
 use function reset;
@@ -32,22 +34,21 @@ use function sprintf;
 
 class BankServiceTest extends IntegrationTest
 {
-    /** @var IntegrationTester */
+    /**
+     * @var IntegrationTester
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
+     */
     protected $tester;
 
-    /** @var BankService */
-    private $bankService;
+    private BankService $bankService;
 
-    /** @var IPaymentRepository */
-    private $payments;
+    private IPaymentRepository $payments;
 
-    /** @var IGroupRepository */
-    private $groups;
+    private IGroupRepository $groups;
 
-    /** @var IBankAccountRepository */
-    private $bankAccounts;
+    private IBankAccountRepository $bankAccounts;
 
-    protected function _before() : void
+    protected function _before(): void
     {
         $this->tester->useConfigFiles(['Payment/BankServiceTest.neon']);
         parent::_before();
@@ -60,7 +61,7 @@ class BankServiceTest extends IntegrationTest
     /**
      * @return string[]
      */
-    protected function getTestedAggregateRoots() : array
+    protected function getTestedAggregateRoots(): array
     {
         return [
             BankAccount::class,
@@ -69,7 +70,7 @@ class BankServiceTest extends IntegrationTest
         ];
     }
 
-    public function testPairGroups() : void
+    public function testPairGroups(): void
     {
         $I = $this->tester;
 
@@ -100,11 +101,10 @@ class BankServiceTest extends IntegrationTest
 
         $daysBack = 7;
 
-        /** @var PairingResult[] $pairingResult */
         $pairingResults = $this->bankService->pairAllGroups([1], $daysBack);
 
-        /** @var PairingResult $pairingResult */
         $pairingResult = reset($pairingResults);
+        assert($pairingResult instanceof PairingResult);
 
         $dateSince = (new DateTimeImmutable(sprintf('- %d days', $daysBack)))->format('j.n.Y');
         $dateUntil = date('j.n.Y');
@@ -120,7 +120,7 @@ class BankServiceTest extends IntegrationTest
         ), $pairingResult->getMessage());
     }
 
-    private function addPayment(Group $group, float $amount, ?string $variableSymbol) : void
+    private function addPayment(Group $group, float $amount, ?string $variableSymbol): void
     {
         $payment = new Payment(
             $group,
@@ -136,7 +136,7 @@ class BankServiceTest extends IntegrationTest
         $this->payments->save($payment);
     }
 
-    private function addGroup(?BankAccount $bankAccount) : Group
+    private function addGroup(?BankAccount $bankAccount): Group
     {
         $paymentDefaults = new Group\PaymentDefaults(null, null, null, null);
         $emails          = Helpers::createEmails();
@@ -159,7 +159,7 @@ class BankServiceTest extends IntegrationTest
         return $group;
     }
 
-    private function createTransaction(float $amount, ?string $variableSymbol) : Transaction
+    private function createTransaction(float $amount, ?string $variableSymbol): Transaction
     {
         return new Transaction(
             (string) mt_rand(1, 1000),

@@ -11,7 +11,7 @@ final class BankAccountAccessCheckerStub implements IBankAccountAccessChecker
     /**
      * @param int[] $unitIds
      */
-    public function allUnitsHaveAccessToBankAccount(array $unitIds, int $bankAccountId) : bool
+    public function allUnitsHaveAccessToBankAccount(array $unitIds, int $bankAccountId): bool
     {
         return true;
     }

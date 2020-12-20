@@ -8,5 +8,5 @@ use App\AccountancyModule\TravelModule\Components\EditTravelDialog;
 
 interface IEditTravelDialogFactory
 {
-    public function create(int $commandId) : EditTravelDialog;
+    public function create(int $commandId): EditTravelDialog;
 }

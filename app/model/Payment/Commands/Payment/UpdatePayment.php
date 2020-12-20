@@ -10,29 +10,22 @@ use Model\Payment\VariableSymbol;
 
 final class UpdatePayment
 {
-    /** @var string */
-    private $name;
+    private string $name;
 
     /** @var EmailAddress[] */
     private array $recipients;
 
-    /** @var float */
-    private $amount;
+    private float $amount;
 
-    /** @var Date */
-    private $dueDate;
+    private Date $dueDate;
 
-    /** @var VariableSymbol|null */
-    private $variableSymbol;
+    private ?VariableSymbol $variableSymbol = null;
 
-    /** @var int|null */
-    private $constantSymbol;
+    private ?int $constantSymbol = null;
 
-    /** @var string */
-    private $note;
+    private string $note;
 
-    /** @var int */
-    private $paymentId;
+    private int $paymentId;
 
     /**
      * @param EmailAddress[] $recipients
@@ -57,43 +50,43 @@ final class UpdatePayment
         $this->note           = $note;
     }
 
-    public function getPaymentId() : int
+    public function getPaymentId(): int
     {
         return $this->paymentId;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
     /** @return EmailAddress[] */
-    public function getRecipients() : array
+    public function getRecipients(): array
     {
         return $this->recipients;
     }
 
-    public function getAmount() : float
+    public function getAmount(): float
     {
         return $this->amount;
     }
 
-    public function getDueDate() : Date
+    public function getDueDate(): Date
     {
         return $this->dueDate;
     }
 
-    public function getVariableSymbol() : ?VariableSymbol
+    public function getVariableSymbol(): ?VariableSymbol
     {
         return $this->variableSymbol;
     }
 
-    public function getConstantSymbol() : ?int
+    public function getConstantSymbol(): ?int
     {
         return $this->constantSymbol;
     }
 
-    public function getNote() : string
+    public function getNote(): string
     {
         return $this->note;
     }

@@ -21,29 +21,21 @@ class Transaction
 {
     use Nette\SmartObject;
 
-    /** @var string */
-    private $id;
+    private string $id;
 
-    /** @var DateTimeImmutable */
-    private $date;
+    private DateTimeImmutable $date;
 
-    /** @var float */
-    private $amount;
+    private float $amount;
 
-    /** @var string */
-    private $bankAccount;
+    private string $bankAccount;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var int|NULL */
-    private $variableSymbol;
+    private ?int $variableSymbol = null;
 
-    /** @var int|NULL */
-    private $constantSymbol;
+    private ?int $constantSymbol = null;
 
-    /** @var string|NULL */
-    private $note;
+    private ?string $note = null;
 
     public function __construct(
         string $id,
@@ -65,42 +57,42 @@ class Transaction
         $this->note           = $note;
     }
 
-    public function getId() : string
+    public function getId(): string
     {
         return $this->id;
     }
 
-    public function getDate() : DateTimeImmutable
+    public function getDate(): DateTimeImmutable
     {
         return $this->date;
     }
 
-    public function getAmount() : float
+    public function getAmount(): float
     {
         return $this->amount;
     }
 
-    public function getBankAccount() : string
+    public function getBankAccount(): string
     {
         return $this->bankAccount;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getVariableSymbol() : ?int
+    public function getVariableSymbol(): ?int
     {
         return $this->variableSymbol;
     }
 
-    public function getConstantSymbol() : ?int
+    public function getConstantSymbol(): ?int
     {
         return $this->constantSymbol;
     }
 
-    public function getNote() : ?string
+    public function getNote(): ?string
     {
         return $this->note;
     }

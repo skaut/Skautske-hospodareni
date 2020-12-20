@@ -22,10 +22,8 @@ class ObjectType
      * @ORM\Id()
      * @ORM\ManyToOne(targetEntity=Category::class)
      * @ORM\JoinColumn(name="categoryId", nullable=false)
-     *
-     * @var Category
      */
-    private $category;
+    private Category $category;
 
     /**
      * @ORM\Id()
@@ -33,6 +31,7 @@ class ObjectType
      *
      * @var ObjectTypeEnum
      * @EnumAnnotation(class=ObjectTypeEnum::class)
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
     private $type;
 
@@ -42,12 +41,12 @@ class ObjectType
         $this->type     = $value;
     }
 
-    public function getType() : ObjectTypeEnum
+    public function getType(): ObjectTypeEnum
     {
         return $this->type;
     }
 
-    public function getCategory() : Category
+    public function getCategory(): Category
     {
         return $this->category;
     }

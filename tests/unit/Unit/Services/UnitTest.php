@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Model\Unit\Services;
 
 use Model\Unit\Unit;
+
 use function sprintf;
 
 class UnitTest extends \Codeception\Test\Unit
 {
-    public function testGetFullDisplayNameForOfficialUnit() : void
+    public function testGetFullDisplayNameForOfficialUnit(): void
     {
         $unitName = 'Moje krásné středisko';
         $unit     = $this->createUnit($unitName, 'stredisko');
@@ -17,7 +18,7 @@ class UnitTest extends \Codeception\Test\Unit
         $this->assertSame(sprintf('Junák - český skaut, %s, z. s.', $unitName), $unit->getFullDisplayName());
     }
 
-    public function testGetFullDisplayNameForNonOfficialUnit() : void
+    public function testGetFullDisplayNameForNonOfficialUnit(): void
     {
         $unitName = 'Muj oddíl';
         $unit     = $this->createUnit($unitName, 'oddil');
@@ -25,7 +26,7 @@ class UnitTest extends \Codeception\Test\Unit
         $this->assertSame('', $unit->getFullDisplayName());
     }
 
-    public function testGetFullDisplayNameWithAddressFullDisplayNameForOfficialUnit() : void
+    public function testGetFullDisplayNameWithAddressFullDisplayNameForOfficialUnit(): void
     {
         $regNumber = '123';
         $unitName  = 'Moje krásné středisko';
@@ -49,7 +50,7 @@ class UnitTest extends \Codeception\Test\Unit
         $this->assertSame(sprintf('Junák - český skaut, %s, z. s., %s, %s, %s, IČO: %s', $unitName, $street, $city, $postcode, $ic), $unit->getFullDisplayNameWithAddress());
     }
 
-    private function createUnit(string $unitName, string $type) : Unit
+    private function createUnit(string $unitName, string $type): Unit
     {
         $regNumber = '123';
 

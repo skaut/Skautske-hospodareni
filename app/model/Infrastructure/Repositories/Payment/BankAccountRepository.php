@@ -8,20 +8,20 @@ use Doctrine\ORM\EntityManager;
 use Model\Payment\BankAccount;
 use Model\Payment\BankAccountNotFound;
 use Model\Payment\Repositories\IBankAccountRepository;
+
 use function array_unique;
 use function count;
 
 final class BankAccountRepository implements IBankAccountRepository
 {
-    /** @var EntityManager */
-    private $entityManager;
+    private EntityManager $entityManager;
 
     public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
     }
 
-    public function find(int $id) : BankAccount
+    public function find(int $id): BankAccount
     {
         $account = $this->entityManager->find(BankAccount::class, $id);
 
@@ -35,7 +35,7 @@ final class BankAccountRepository implements IBankAccountRepository
     /**
      * {@inheritDoc}
      */
-    public function findByIds(array $ids) : array
+    public function findByIds(array $ids): array
     {
         $ids = array_unique($ids);
 
@@ -54,7 +54,7 @@ final class BankAccountRepository implements IBankAccountRepository
         return $accounts;
     }
 
-    public function save(BankAccount $account) : void
+    public function save(BankAccount $account): void
     {
         $this->entityManager->persist($account);
         $this->entityManager->flush();
@@ -63,12 +63,12 @@ final class BankAccountRepository implements IBankAccountRepository
     /**
      * {@inheritDoc}
      */
-    public function findByUnit(int $unitId) : array
+    public function findByUnit(int $unitId): array
     {
         return $this->entityManager->getRepository(BankAccount::class)->findBy(['unitId' => $unitId]);
     }
 
-    public function remove(BankAccount $account) : void
+    public function remove(BankAccount $account): void
     {
         $this->entityManager->remove($account);
         $this->entityManager->flush();

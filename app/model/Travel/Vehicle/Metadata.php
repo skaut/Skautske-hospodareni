@@ -12,19 +12,11 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Metadata
 {
-    /**
-     * @ORM\Column(type="datetime_immutable")
-     *
-     * @var DateTimeImmutable
-     */
-    private $createdAt;
+    /** @ORM\Column(type="datetime_immutable") */
+    private DateTimeImmutable $createdAt;
 
-    /**
-     * @ORM\Column(type="string")
-     *
-     * @var string
-     */
-    private $authorName;
+    /** @ORM\Column(type="string") */
+    private string $authorName;
 
     public function __construct(DateTimeImmutable $createdAt, string $authorName)
     {
@@ -32,17 +24,17 @@ class Metadata
         $this->authorName = $authorName;
     }
 
-    public function getCreatedAt() : DateTimeImmutable
+    public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function getAuthorName() : string
+    public function getAuthorName(): string
     {
         return $this->authorName;
     }
 
-    public function equals(Metadata $metadata) : bool
+    public function equals(Metadata $metadata): bool
     {
         $dateTimeFormat = 'Y-m-d H:i:s';
 

@@ -5,24 +5,20 @@ declare(strict_types=1);
 namespace Model\Cashbook;
 
 use Money\Money;
+
 use function mb_substr;
 
 final class CampCategory implements ICategory
 {
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var Operation */
-    private $operationType;
+    private Operation $operationType;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var Money */
-    private $total;
+    private Money $total;
 
-    /** @var ParticipantType|NULL */
-    private $participantType;
+    private ?ParticipantType $participantType = null;
 
     public function __construct(int $id, Operation $operationType, string $name, Money $total, ?ParticipantType $participantType)
     {
@@ -33,37 +29,37 @@ final class CampCategory implements ICategory
         $this->participantType = $participantType;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getOperationType() : Operation
+    public function getOperationType(): Operation
     {
         return $this->operationType;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getShortcut() : string
+    public function getShortcut(): string
     {
         return mb_substr($this->name, 0, 5, 'UTF-8');
     }
 
-    public function getTotal() : Money
+    public function getTotal(): Money
     {
         return $this->total;
     }
 
-    public function getParticipantType() : ?ParticipantType
+    public function getParticipantType(): ?ParticipantType
     {
         return $this->participantType;
     }
 
-    public function isVirtual() : bool
+    public function isVirtual(): bool
     {
         return false;
     }

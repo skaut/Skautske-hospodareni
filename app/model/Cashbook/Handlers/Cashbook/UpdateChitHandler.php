@@ -13,15 +13,14 @@ use Model\Cashbook\Commands\Cashbook\UpdateChit;
 use Model\Cashbook\Repositories\CategoryRepository;
 use Model\Cashbook\Repositories\ICashbookRepository;
 use Model\DTO\Cashbook\ChitItem as ChitItemDTO;
+
 use function array_map;
 
 final class UpdateChitHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
-    /** @var CategoryRepository */
-    private $categories;
+    private CategoryRepository $categories;
 
     public function __construct(ICashbookRepository $cashbooks, CategoryRepository $categories)
     {
@@ -34,12 +33,12 @@ final class UpdateChitHandler
      * @throws ChitNotFound
      * @throws ChitLocked
      */
-    public function __invoke(UpdateChit $command) : void
+    public function __invoke(UpdateChit $command): void
     {
         $cashbook   = $this->cashbooks->find($command->getCashbookId());
         $categories = $this->categories->findForCashbook($command->getCashbookId(), $cashbook->getType());
 
-        $items = array_map(function (ChitItemDTO $item) : ChitItem {
+        $items = array_map(function (ChitItemDTO $item): ChitItem {
             $category = new Category($item->getCategory()->getId(), $item->getCategory()->getOperationType());
 
             return new ChitItem($item->getAmount(), $category, $item->getPurpose());

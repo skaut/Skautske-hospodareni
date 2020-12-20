@@ -10,12 +10,12 @@ use Model\Google\OAuthId;
 use Model\Google\ReadModel\Queries\OAuthQuery;
 use Model\Google\ReadModel\Queries\UnitOAuthListQuery;
 use Model\MailService;
+
 use function assert;
 
 class MailPresenter extends BasePresenter
 {
-    /** @var MailService */
-    private $model;
+    private MailService $model;
 
     public function __construct(
         MailService $model
@@ -24,7 +24,7 @@ class MailPresenter extends BasePresenter
         $this->model = $model;
     }
 
-    public function actionDefault(?int $unitId = null) : void
+    public function actionDefault(?int $unitId = null): void
     {
         if ($unitId === null) {
             $this->redirect('this', ['unitId' => $this->unitService->getUnitId()]);
@@ -35,6 +35,7 @@ class MailPresenter extends BasePresenter
 
             return;
         }
+
         $this->template->setParameters([
             'oauthList'     => $this->queryBus->handle(new UnitOAuthListQuery($this->unitId)),
             'list'          => $this->model->getAll($this->getEditableUnitIds()),
@@ -42,7 +43,7 @@ class MailPresenter extends BasePresenter
         ]);
     }
 
-    public function handleRemoveOAuth(string $id) : void
+    public function handleRemoveOAuth(string $id): void
     {
         $oauthId = OAuthId::fromString($id);
         $oauth   = $this->queryBus->handle(new OAuthQuery($oauthId));
@@ -50,6 +51,7 @@ class MailPresenter extends BasePresenter
             $this->flashMessage('Google účet nenalezen!', 'warning');
             $this->redirect('default');
         }
+
         assert($oauth instanceof OAuth);
 
         if (! $this->isEditable || ! ($oauth->getUnitId() === $this->unitId->toInt())) {

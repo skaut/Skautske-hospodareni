@@ -13,15 +13,14 @@ use stdClass;
 
 class CampFunctionsHandler
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
     public function __construct(Skautis $skautis)
     {
         $this->skautis = $skautis;
     }
 
-    public function __invoke(CampFunctions $query) : Functions
+    public function __invoke(CampFunctions $query): Functions
     {
         $functions = $this->skautis->event->eventFunctionAllCamp([
             'ID_EventCamp' => $query->getCampId()->toInt(),
@@ -42,7 +41,8 @@ class CampFunctionsHandler
      *
      * @return Person[]
      */
-    private function getFunctionsByType(array $functions) : array
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    private function getFunctionsByType(array $functions): array
     {
         $functionsByType = [];
 

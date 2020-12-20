@@ -9,7 +9,7 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20190521142825 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql(<<<'SQL'
             CREATE TABLE ac_chit_to_item (
@@ -30,7 +30,7 @@ final class Version20190521142825 extends AbstractMigration
         $this->addSql('ALTER TABLE ac_chits_item DROP chit_id');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql('DROP TABLE ac_chit_to_item');
         $this->addSql('ALTER TABLE ac_chits_item ADD chit_id BIGINT UNSIGNED NOT NULL');

@@ -14,11 +14,9 @@ use Skautis\Wsdl\WebServiceInterface;
 
 final class CampRepository implements ICampRepository
 {
-    /** @var WebServiceInterface */
-    private $webService;
+    private WebServiceInterface $webService;
 
-    /** @var CampFactory */
-    private $campFactory;
+    private CampFactory $campFactory;
 
     public function __construct(WebServiceInterface $webService, CampFactory $campFactory)
     {
@@ -26,7 +24,7 @@ final class CampRepository implements ICampRepository
         $this->campFactory = $campFactory;
     }
 
-    public function find(SkautisCampId $id) : Camp
+    public function find(SkautisCampId $id): Camp
     {
         try {
             $skautisEvent = $this->webService->EventCampDetail(['ID' => $id->toInt()]);

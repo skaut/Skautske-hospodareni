@@ -11,15 +11,14 @@ use Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use Model\Cashbook\Repositories\CategoryRepository;
 use Model\Cashbook\Repositories\ICashbookRepository;
 use Model\DTO\Cashbook\ChitItem as ChitItemDTO;
+
 use function array_map;
 
 final class AddChitToCashbookHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
-    /** @var CategoryRepository */
-    private $categories;
+    private CategoryRepository $categories;
 
     public function __construct(ICashbookRepository $cashbooks, CategoryRepository $categories)
     {
@@ -30,11 +29,11 @@ final class AddChitToCashbookHandler
     /**
      * @throws CashbookNotFound
      */
-    public function __invoke(AddChitToCashbook $command) : void
+    public function __invoke(AddChitToCashbook $command): void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());
 
-        $items = array_map(function (ChitItemDTO $item) : ChitItem {
+        $items = array_map(function (ChitItemDTO $item): ChitItem {
             $category = new Category($item->getCategory()->getId(), $item->getCategory()->getOperationType());
 
             return new ChitItem($item->getAmount(), $category, $item->getPurpose());

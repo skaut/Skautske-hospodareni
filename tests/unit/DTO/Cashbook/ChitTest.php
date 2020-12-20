@@ -16,19 +16,19 @@ use Model\DTO\Cashbook\ChitItem;
 
 class ChitTest extends Unit
 {
-    public function testCategories() : void
+    public function testCategories(): void
     {
         $chit = $this->mockChit();
         $this->assertSame('Potraviny, Jízdné, Materiál', $chit->getCategories());
     }
 
-    public function testCategoriesShortcut() : void
+    public function testCategoriesShortcut(): void
     {
         $chit = $this->mockChit();
         $this->assertSame('p, j, m', $chit->getCategoriesShortcut());
     }
 
-    private function mockChit() : Chit
+    private function mockChit(): Chit
     {
         $items = [
             new ChitItem(new Amount('100'), new Category(1, 'Potraviny', 'p', Operation::EXPENSE(), false), 'chleba, vajíčka'),

@@ -10,29 +10,29 @@ use Mockery as m;
 use Model\Payment\BankAccount;
 use Model\Payment\BankAccountNotFound;
 use Model\Payment\IUnitResolver;
+
 use function array_keys;
 
 class BankAccountRepositoryTest extends IntegrationTest
 {
-    /** @var BankAccountRepository */
-    private $repository;
+    private BankAccountRepository $repository;
 
     /**
      * @return string[]
      */
-    public function getTestedAggregateRoots() : array
+    public function getTestedAggregateRoots(): array
     {
         return [BankAccount::class];
     }
 
-    protected function _before() : void
+    protected function _before(): void
     {
         $this->tester->useConfigFiles(['config/doctrine.neon']);
         parent::_before();
         $this->repository = new BankAccountRepository($this->entityManager);
     }
 
-    public function testSaveSetsId() : void
+    public function testSaveSetsId(): void
     {
         $account = $this->createAccount();
 
@@ -41,7 +41,7 @@ class BankAccountRepositoryTest extends IntegrationTest
         $this->assertSame(1, $account->getId());
     }
 
-    public function testSavedAccountIsInDatabase() : void
+    public function testSavedAccountIsInDatabase(): void
     {
         $createdAt = new DateTimeImmutable();
         $account   = $this->createAccount(5, $createdAt);
@@ -51,7 +51,7 @@ class BankAccountRepositoryTest extends IntegrationTest
         $this->tester->seeInDatabase('pa_bank_account', $this->getRow(1, 5, $createdAt));
     }
 
-    public function testFindSavedAccount() : void
+    public function testFindSavedAccount(): void
     {
         $this->tester->haveInDatabase('pa_bank_account', $this->getRow(1, 5));
         $account = $this->createAccount();
@@ -63,14 +63,14 @@ class BankAccountRepositoryTest extends IntegrationTest
         $this->assertInstanceOf(BankAccount::class, $foundAccount);
     }
 
-    public function testFindNotSavedAccountThrowsException() : void
+    public function testFindNotSavedAccountThrowsException(): void
     {
         $this->expectException(BankAccountNotFound::class);
 
         $this->repository->find(1);
     }
 
-    public function testFindByUnit() : void
+    public function testFindByUnit(): void
     {
         $unitId = 5;
         $this->tester->haveInDatabase('pa_bank_account', $this->getRow(1, $unitId));
@@ -88,7 +88,7 @@ class BankAccountRepositoryTest extends IntegrationTest
         $this->assertSame(1, $accounts[0]->getId());
     }
 
-    public function testRemove() : void
+    public function testRemove(): void
     {
         $notDeletedRow = $this->getRow(1, 5);
         $row           = $this->getRow(2, 5);
@@ -102,7 +102,7 @@ class BankAccountRepositoryTest extends IntegrationTest
         $this->tester->dontSeeInDatabase('pa_bank_account', $row);
     }
 
-    public function testFindByIds() : void
+    public function testFindByIds(): void
     {
         $rows = [
             $this->getRow(1, 2),
@@ -112,6 +112,7 @@ class BankAccountRepositoryTest extends IntegrationTest
         foreach ($rows as $row) {
             $this->tester->haveInDatabase('pa_bank_account', $row);
         }
+
         $ids = [1, 3];
 
         $accounts = $this->repository->findByIds($ids);
@@ -124,7 +125,7 @@ class BankAccountRepositoryTest extends IntegrationTest
         }
     }
 
-    public function testFindByIdsWithOneAccountThatDoesntExist() : void
+    public function testFindByIdsWithOneAccountThatDoesntExist(): void
     {
         $rows = [
             $this->getRow(1, 2),
@@ -133,6 +134,7 @@ class BankAccountRepositoryTest extends IntegrationTest
         foreach ($rows as $row) {
             $this->tester->haveInDatabase('pa_bank_account', $row);
         }
+
         $ids = [1, 3];
 
         $this->expectException(BankAccountNotFound::class);
@@ -140,14 +142,14 @@ class BankAccountRepositoryTest extends IntegrationTest
         $this->repository->findByIds($ids);
     }
 
-    public function testFindByIdsWithEmptyArgument() : void
+    public function testFindByIdsWithEmptyArgument(): void
     {
         $accounts = $this->repository->findByIds([]);
 
         $this->assertSame([], $accounts);
     }
 
-    private function createAccount(int $unitId = 1, ?DateTimeImmutable $createdAt = null) : BankAccount
+    private function createAccount(int $unitId = 1, ?DateTimeImmutable $createdAt = null): BankAccount
     {
         return new BankAccount(
             1,
@@ -162,7 +164,7 @@ class BankAccountRepositoryTest extends IntegrationTest
     /**
      * @return mixed[]
      */
-    private function getRow(int $id, int $unitId, ?DateTimeImmutable $createdAt = null) : array
+    private function getRow(int $id, int $unitId, ?DateTimeImmutable $createdAt = null): array
     {
         return [
             'id' => $id,

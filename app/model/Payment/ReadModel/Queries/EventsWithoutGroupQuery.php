@@ -6,15 +6,14 @@ namespace Model\Payment\ReadModel\Queries;
 
 final class EventsWithoutGroupQuery
 {
-    /** @var int */
-    private $year;
+    private int $year;
 
     public function __construct(int $year)
     {
         $this->year = $year;
     }
 
-    public function getYear() : int
+    public function getYear(): int
     {
         return $this->year;
     }

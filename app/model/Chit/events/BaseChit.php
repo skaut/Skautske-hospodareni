@@ -6,20 +6,15 @@ namespace Model\Chit\Events;
 
 class BaseChit
 {
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var int */
-    private $userId;
+    private int $userId;
 
-    /** @var string */
-    private $userName;
+    private string $userName;
 
-    /** @var int */
-    private $chitId;
+    private int $chitId;
 
-    /** @var int */
-    private $eventId;
+    private int $eventId;
 
     public function __construct(int $unitId, int $userId, string $userName, int $chitId, int $eventId)
     {
@@ -30,27 +25,27 @@ class BaseChit
         $this->eventId  = $eventId;
     }
 
-    public function getUnitId() : int
+    public function getUnitId(): int
     {
         return $this->unitId;
     }
 
-    public function getUserId() : int
+    public function getUserId(): int
     {
         return $this->userId;
     }
 
-    public function getUserName() : string
+    public function getUserName(): string
     {
         return $this->userName;
     }
 
-    public function getChitId() : int
+    public function getChitId(): int
     {
         return $this->chitId;
     }
 
-    public function getEventId() : int
+    public function getEventId(): int
     {
         return $this->eventId;
     }

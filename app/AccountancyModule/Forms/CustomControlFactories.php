@@ -11,12 +11,12 @@ use Nette\Forms\IControl;
 
 trait CustomControlFactories
 {
-    public function addDate(string $name, ?string $label = null) : DateControl
+    public function addDate(string $name, ?string $label = null): DateControl
     {
         return $this[$name] = new DateControl($label);
     }
 
-    public function addVariableSymbol(string $name, string $label) : VariableSymbolControl
+    public function addVariableSymbol(string $name, string $label): VariableSymbolControl
     {
         return $this[$name] = new VariableSymbolControl($label);
     }
@@ -26,7 +26,7 @@ trait CustomControlFactories
      *
      * @phpstan-param string|int $name
      */
-    public function addContainer($name) : BaseContainer
+    public function addContainer($name): BaseContainer
     {
         $control               = new BaseContainer();
         $control->currentGroup = $this->currentGroup;
@@ -34,12 +34,12 @@ trait CustomControlFactories
         return $this[$name] = $control;
     }
 
-    public function addDependentSelectBox(string $name, ?string $label, IControl ...$parents) : DependentSelectBox
+    public function addDependentSelectBox(string $name, ?string $label, IControl ...$parents): DependentSelectBox
     {
         return $this[$name] = new DependentSelectBox($label, $parents);
     }
 
-    public function addDynamic(string $name, callable $factory, int $createDefault = 0, bool $forceDefault = false) : Container
+    public function addDynamic(string $name, callable $factory, int $createDefault = 0, bool $forceDefault = false): Container
     {
         $control               = new Container($factory, $createDefault, $forceDefault);
         $control->currentGroup = $this->currentGroup;

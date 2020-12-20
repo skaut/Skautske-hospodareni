@@ -9,7 +9,7 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20190825050311 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql('DROP INDEX unit_id ON tc_contracts');
         $this->addSql(<<<SQL
@@ -20,7 +20,7 @@ final class Version20190825050311 extends AbstractMigration
             SQL);
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql(<<<SQL
             ALTER TABLE tc_contracts 

@@ -14,8 +14,7 @@ use stdClass;
 
 class UserService extends BaseService
 {
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(Skautis $skautis, QueryBus $queryBus)
     {
@@ -26,7 +25,7 @@ class UserService extends BaseService
     /**
      * varcí ID role aktuálně přihlášeného uživatele
      */
-    public function getRoleId() : ?int
+    public function getRoleId(): ?int
     {
         return $this->skautis->getUser()->getRoleId();
     }
@@ -36,14 +35,14 @@ class UserService extends BaseService
      *
      * @return stdClass[]
      */
-    public function getAllSkautisRoles(bool $activeOnly = true) : array
+    public function getAllSkautisRoles(bool $activeOnly = true): array
     {
         $res = $this->skautis->user->UserRoleAll(['ID_User' => $this->getUserDetail()->ID, 'IsActive' => $activeOnly]);
 
         return $res instanceof stdClass ? [] : $res;
     }
 
-    public function getUserDetail() : stdClass
+    public function getUserDetail(): stdClass
     {
         $id  = __FUNCTION__;
         $res = $this->loadSes($id);
@@ -57,7 +56,8 @@ class UserService extends BaseService
     /**
      * změní přihlášenou roli do skautISu
      */
-    public function updateSkautISRole(int $id) : void
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    public function updateSkautISRole(int $id): void
     {
         $response = $this->skautis->user->LoginUpdate(['ID_UserRole' => $id, 'ID' => $this->skautis->getUser()->getLoginId()]);
         if (! $response) {
@@ -74,7 +74,8 @@ class UserService extends BaseService
      *
      * @see ActiveSkautisRoleQuery
      */
-    public function getActualRole() : ?SkautisRole
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    public function getActualRole(): ?SkautisRole
     {
         foreach ($this->getAllSkautisRoles() as $r) {
             if ($r->ID === $this->getRoleId()) {
@@ -88,7 +89,7 @@ class UserService extends BaseService
     /**
      * vrací kompletní seznam informací o přihlášené osobě
      */
-    public function getPersonalDetail() : stdClass
+    public function getPersonalDetail(): stdClass
     {
         $user = $this->getUserDetail();
 
@@ -98,12 +99,12 @@ class UserService extends BaseService
     /**
      * kontroluje jestli je přihlášení platné
      */
-    public function isLoggedIn() : bool
+    public function isLoggedIn(): bool
     {
         return $this->skautis->getUser()->isLoggedIn();
     }
 
-    public function updateLogoutTime() : void
+    public function updateLogoutTime(): void
     {
         $this->skautis->getUser()->updateLogoutTime()->getLogoutDate();
     }
@@ -113,7 +114,7 @@ class UserService extends BaseService
      *
      * @throws BadRequestException
      */
-    public function getAccessArrays(UnitService $us) : array
+    public function getAccessArrays(UnitService $us): array
     {
         $role = $this->getActualRole();
 
@@ -146,7 +147,7 @@ class UserService extends BaseService
     /**
      * vrací adresu skautisu např.: https://is.skaut.cz/
      */
-    public function getSkautisUrl() : string
+    public function getSkautisUrl(): string
     {
         return $this->skautis->getConfig()->getBaseUrl();
     }

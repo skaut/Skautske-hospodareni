@@ -26,13 +26,13 @@ use Model\Event\Functions;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\SkautisEventId;
 use Money\Money;
+
 use function assert;
 use function is_float;
 
 class CashbookPresenter extends BasePresenter
 {
-    /** @var ICashbookControlFactory */
-    private $cashbookFactory;
+    private ICashbookControlFactory $cashbookFactory;
 
     public function __construct(ICashbookControlFactory $cashbookFactory)
     {
@@ -40,14 +40,14 @@ class CashbookPresenter extends BasePresenter
         $this->cashbookFactory = $cashbookFactory;
     }
 
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
         $isDraft          = $this->event->getState() === 'draft';
         $this->isEditable = $isDraft && $this->authorizator->isAllowed(Event::UPDATE_PARTICIPANT, $this->aid);
     }
 
-    public function renderDefault(int $aid) : void
+    public function renderDefault(int $aid): void
     {
         $incomeBalance    = $this->queryBus->handle(new EventParticipantBalanceQuery(new SkautisEventId($aid), $this->getCashbookId()));
         $finalBalance     = $this->queryBus->handle(new FinalCashBalanceQuery($this->getCashbookId()));
@@ -65,7 +65,7 @@ class CashbookPresenter extends BasePresenter
         ]);
     }
 
-    public function handleImportHpd(int $aid) : void
+    public function handleImportHpd(int $aid): void
     {
         if (! $this->isEditable) {
             $this->flashMessage('Akce je uzavřena a nelze ji upravovat.', 'danger');
@@ -107,19 +107,19 @@ class CashbookPresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    protected function createComponentCashbook() : CashbookControl
+    protected function createComponentCashbook(): CashbookControl
     {
         return $this->cashbookFactory->create($this->getCashbookId(), $this->isEditable, $this->getCurrentUnitId());
     }
 
-    private function isCashbookEmpty() : bool
+    private function isCashbookEmpty(): bool
     {
         $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $this->getCashbookId()));
 
         return $chits === [];
     }
 
-    private function getCashbookId() : CashbookId
+    private function getCashbookId(): CashbookId
     {
         return $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($this->aid)));
     }

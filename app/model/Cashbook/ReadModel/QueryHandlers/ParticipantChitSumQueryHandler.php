@@ -7,6 +7,7 @@ namespace Model\Cashbook\ReadModel\QueryHandlers;
 use Doctrine\ORM\EntityManager;
 use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\ReadModel\Queries\ParticipantChitSumQuery;
+
 use function array_map;
 use function array_sum;
 
@@ -14,15 +15,14 @@ class ParticipantChitSumQueryHandler
 {
     private const PARTICIPANT_INCOME_CATEGORY_IDS = [1, 11];
 
-    /** @var EntityManager */
-    private $entityManager;
+    private EntityManager $entityManager;
 
     public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
     }
 
-    public function __invoke(ParticipantChitSumQuery $query) : float
+    public function __invoke(ParticipantChitSumQuery $query): float
     {
         $queryBuilder = $this->entityManager->createQueryBuilder()
             ->select('c')

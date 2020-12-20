@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model;
 
 use Skautis\Skautis;
+
 use function array_key_exists;
 
 /**
@@ -17,17 +18,15 @@ abstract class BaseService
 
     /**
      * slouží pro komunikaci se skautISem
-     *
-     * @var Skautis
      */
-    protected $skautis;
+    protected Skautis $skautis;
 
     /**
      * krátkodobé lokální úložiště pro ukládání odpovědí ze skautISU
      *
      * @var mixed[]
      */
-    private static $storage = [];
+    private static array $storage = [];
 
     public function __construct(Skautis $skautis)
     {

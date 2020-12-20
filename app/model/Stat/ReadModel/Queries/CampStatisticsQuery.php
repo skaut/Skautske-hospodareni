@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Event\ReadModel\Queries;
 
 use Model\Event\SkautisCampId;
+
 use function array_map;
 
 /**
@@ -13,10 +14,9 @@ use function array_map;
 final class CampStatisticsQuery
 {
     /** @var SkautisCampId[] */
-    private $campIds;
+    private array $campIds;
 
-    /** @var int */
-    private $year;
+    private int $year;
 
     /**
      * @param int[] $campIds
@@ -32,12 +32,12 @@ final class CampStatisticsQuery
     /**
      * @return SkautisCampId[]
      */
-    public function getCampIds() : array
+    public function getCampIds(): array
     {
         return $this->campIds;
     }
 
-    public function getYear() : int
+    public function getYear(): int
     {
         return $this->year;
     }

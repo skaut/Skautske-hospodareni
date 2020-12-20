@@ -6,14 +6,12 @@ namespace Model\DTO\Payment;
 
 class Person
 {
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
     /** @var string[] */
-    private $emails;
+    private array $emails;
 
     /**
      * @param string[] $emails
@@ -25,12 +23,12 @@ class Person
         $this->emails = $emails;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -38,7 +36,7 @@ class Person
     /**
      * @return string[]
      */
-    public function getEmails() : array
+    public function getEmails(): array
     {
         return $this->emails;
     }

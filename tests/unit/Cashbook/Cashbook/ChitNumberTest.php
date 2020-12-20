@@ -6,6 +6,7 @@ namespace Model\Cashbook\Cashbook;
 
 use Codeception\Test\Unit;
 use InvalidArgumentException;
+
 use function strtoupper;
 
 class ChitNumberTest extends Unit
@@ -13,7 +14,7 @@ class ChitNumberTest extends Unit
     /**
      * @dataProvider getInvalidNumbers
      */
-    public function testInvalidChitNumbersThrowException(string $value, string $reason) : void
+    public function testInvalidChitNumbersThrowException(string $value, string $reason): void
     {
         $this->expectException(InvalidArgumentException::class);
 
@@ -25,21 +26,21 @@ class ChitNumberTest extends Unit
     /**
      * @dataProvider getValidNumbers
      */
-    public function testValidNumbers(string $value) : void
+    public function testValidNumbers(string $value): void
     {
         $number = new ChitNumber($value);
 
         $this->assertSame($value, $number->toString());
     }
 
-    public function testToString() : void
+    public function testToString(): void
     {
         $value = 'A123';
 
         $this->assertSame($value, (string) new ChitNumber($value));
     }
 
-    public function testUpperCase() : void
+    public function testUpperCase(): void
     {
         $value = 'a123';
 
@@ -49,7 +50,7 @@ class ChitNumberTest extends Unit
     /**
      * @return mixed[]
      */
-    public function getInvalidNumbers() : array
+    public function getInvalidNumbers(): array
     {
         return [
             ['123456', 'longer than 6 symbols'],
@@ -67,7 +68,7 @@ class ChitNumberTest extends Unit
     /**
      * @return string[][]
      */
-    public function getValidNumbers() : array
+    public function getValidNumbers(): array
     {
         return [
             ['12345'],

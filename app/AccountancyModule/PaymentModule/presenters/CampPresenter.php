@@ -18,28 +18,25 @@ use Model\Payment\Group\SkautisEntity;
 use Model\Payment\ReadModel\Queries\CampsWithoutGroupQuery;
 use Model\Payment\ReadModel\Queries\MemberEmailsQuery;
 use Model\PaymentService;
+
 use function array_filter;
+use function assert;
 use function in_array;
 
 class CampPresenter extends BasePresenter
 {
     /** @var string[] */
-    protected $readUnits;
+    protected array $readUnits;
 
-    /** @var PaymentService */
-    private $model;
+    private PaymentService $model;
 
-    /** @var IMassAddFormFactory */
-    private $massAddFormFactory;
+    private IMassAddFormFactory $massAddFormFactory;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
-    /** @var Camp|null */
-    private $camp;
+    private ?Camp $camp = null;
 
-    /** @var IGroupFormFactory */
-    private $groupFormFactory;
+    private IGroupFormFactory $groupFormFactory;
 
     public function __construct(
         PaymentService $model,
@@ -52,7 +49,7 @@ class CampPresenter extends BasePresenter
         $this->groupFormFactory   = $groupFormFactory;
     }
 
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
         $this->template->setParameters([
@@ -60,12 +57,12 @@ class CampPresenter extends BasePresenter
         ]);
     }
 
-    public function actionDefault() : void
+    public function actionDefault(): void
     {
         $this->template->setParameters(['camps' => $this->getCampsWithoutGroup()]);
     }
 
-    public function actionNewGroup(int $campId) : void
+    public function actionNewGroup(int $campId): void
     {
         $camps = $this->getCampsWithoutGroup();
 
@@ -81,7 +78,7 @@ class CampPresenter extends BasePresenter
     /**
      * @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY
      */
-    public function actionMassAdd(int $id, ?int $unitId = null) : void
+    public function actionMassAdd(int $id, ?int $unitId = null): void
     {
         $this->id = $id;
         $group    = $this->model->getGroup($id);
@@ -103,7 +100,7 @@ class CampPresenter extends BasePresenter
         );
 
         $form = $this['massAddForm'];
-        /** @var MassAddForm $form */
+        assert($form instanceof MassAddForm);
 
         $personsWithPayment = $this->model->getPersonsWithActivePayment($id);
 
@@ -130,12 +127,12 @@ class CampPresenter extends BasePresenter
         ]);
     }
 
-    protected function createComponentMassAddForm() : MassAddForm
+    protected function createComponentMassAddForm(): MassAddForm
     {
         return $this->massAddFormFactory->create($this->id);
     }
 
-    protected function createComponentNewGroupForm() : GroupForm
+    protected function createComponentNewGroupForm(): GroupForm
     {
         Assertion::notNull($this->camp);
         $unitId = $this->getCurrentUnitId();
@@ -153,7 +150,7 @@ class CampPresenter extends BasePresenter
     /**
      * @return Camp[]
      */
-    private function getCampsWithoutGroup() : array
+    private function getCampsWithoutGroup(): array
     {
         return $this->queryBus->handle(new CampsWithoutGroupQuery(Date::today()->year));
     }

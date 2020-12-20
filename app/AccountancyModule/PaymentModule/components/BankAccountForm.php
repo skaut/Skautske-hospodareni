@@ -15,14 +15,11 @@ use Nette\Utils\ArrayHash;
 
 class BankAccountForm extends BaseControl
 {
-    /** @var int|NULL */
-    private $id;
+    private ?int $id = null;
 
-    /** @var BankAccountService */
-    private $model;
+    private BankAccountService $model;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
     public function __construct(?int $id, BankAccountService $model, CommandBus $commandBus)
     {
@@ -32,7 +29,7 @@ class BankAccountForm extends BaseControl
         $this->commandBus = $commandBus;
     }
 
-    protected function createComponentForm() : BaseForm
+    protected function createComponentForm(): BaseForm
     {
         $form = new BaseForm();
         $form->addText('name', 'Název')
@@ -65,14 +62,14 @@ class BankAccountForm extends BaseControl
             ]);
         }
 
-        $form->onSuccess[] = function (BaseForm $form, ArrayHash $values) : void {
+        $form->onSuccess[] = function (BaseForm $form, ArrayHash $values): void {
             $this->formSucceeded($form, $values);
         };
 
         return $form;
     }
 
-    private function formSucceeded(BaseForm $form, ArrayHash $values) : void
+    private function formSucceeded(BaseForm $form, ArrayHash $values): void
     {
         try {
             $prefix   = (string) $values->prefix;
@@ -103,7 +100,7 @@ class BankAccountForm extends BaseControl
         }
     }
 
-    public function render() : void
+    public function render(): void
     {
         $this->template->setFile(__DIR__ . '/templates/BankAccountForm.latte');
         $this->template->render();

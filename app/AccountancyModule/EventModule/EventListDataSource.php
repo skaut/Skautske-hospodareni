@@ -14,33 +14,31 @@ use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Event\EventListItem;
 use Model\Event\Event;
 use Model\Event\ReadModel\Queries\EventListQuery;
+
 use function array_map;
 use function assert;
 
 final class EventListDataSource extends DataSource
 {
-    /** @var int|null */
-    private $year;
+    private ?int $year = null;
 
-    /** @var string|null */
-    private $state;
+    private ?string $state = null;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(QueryBus $queryBus)
     {
         $this->queryBus = $queryBus;
     }
 
-    public function filterByYear(?int $year) : self
+    public function filterByYear(?int $year): self
     {
         $this->year = $year;
 
         return $this;
     }
 
-    public function filterByState(?string $state) : self
+    public function filterByState(?string $state): self
     {
         $this->state = $state;
 
@@ -50,12 +48,12 @@ final class EventListDataSource extends DataSource
     /**
      * @return EventListItem[]
      */
-    protected function loadData() : array
+    protected function loadData(): array
     {
         $events = $this->queryBus->handle(new EventListQuery($this->year, $this->state));
 
         return array_map(
-            function (Event $event) : EventListItem {
+            function (Event $event): EventListItem {
                 return new EventListItem(
                     $event->getId()->toInt(),
                     $event->getDisplayName(),
@@ -69,7 +67,7 @@ final class EventListDataSource extends DataSource
         );
     }
 
-    private function chitNumberPrefix(Event $event) : ?string
+    private function chitNumberPrefix(Event $event): ?string
     {
         $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery($event->getId()));
 

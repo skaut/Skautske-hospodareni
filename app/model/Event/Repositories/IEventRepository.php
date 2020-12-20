@@ -13,13 +13,13 @@ interface IEventRepository
     /**
      * @throws EventNotFound
      */
-    public function find(SkautisEventId $id) : Event;
+    public function find(SkautisEventId $id): Event;
 
-    public function open(Event $event) : void;
+    public function open(Event $event): void;
 
-    public function close(Event $event) : void;
+    public function close(Event $event): void;
 
-    public function update(Event $event) : void;
+    public function update(Event $event): void;
 
-    public function getNewestEventId() : ?int;
+    public function getNewestEventId(): ?int;
 }

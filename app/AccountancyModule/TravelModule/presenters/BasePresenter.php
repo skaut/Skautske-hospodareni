@@ -9,10 +9,9 @@ use Nette\NotImplementedException;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
-    /** @var Unit */
-    protected $officialUnit;
+    protected Unit $officialUnit;
 
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
         $this->officialUnit = $this->unitService->getOfficialUnit();
@@ -21,7 +20,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         ]);
     }
 
-    protected function editableOnly() : void
+    protected function editableOnly(): void
     {
         throw new NotImplementedException('todo');
     }

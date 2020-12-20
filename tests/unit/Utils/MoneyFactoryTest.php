@@ -10,7 +10,7 @@ use Money\Money;
 
 class MoneyFactoryTest extends Unit
 {
-    public function testFromFloatCreatesInstanceWithCorrectAmountAndCurrency() : void
+    public function testFromFloatCreatesInstanceWithCorrectAmountAndCurrency(): void
     {
         $money = MoneyFactory::fromFloat(69.99);
 
@@ -19,14 +19,14 @@ class MoneyFactoryTest extends Unit
         $this->assertSame('CZK', $money->getCurrency()->getCode());
     }
 
-    public function testToFloatReturnsCorrectValue() : void
+    public function testToFloatReturnsCorrectValue(): void
     {
         $money = new Money('4599', new Currency('CZK'));
 
         $this->assertSame(45.99, MoneyFactory::toFloat($money));
     }
 
-    public function testZeroReturnsInstanceWithZeroValueAndCorrectCurrency() : void
+    public function testZeroReturnsInstanceWithZeroValueAndCorrectCurrency(): void
     {
         $money = MoneyFactory::zero();
 
@@ -37,7 +37,7 @@ class MoneyFactoryTest extends Unit
     /**
      * @dataProvider dataFloor
      */
-    public function testFloor(float $amount, float $flooredAmount) : void
+    public function testFloor(float $amount, float $flooredAmount): void
     {
         $money = MoneyFactory::fromFloat($amount);
 
@@ -49,7 +49,7 @@ class MoneyFactoryTest extends Unit
     /**
      * @return mixed[]
      */
-    public function dataFloor() : array
+    public function dataFloor(): array
     {
         return [
             [15.1, 15],

@@ -11,6 +11,7 @@ use Model\Cashbook\Operation;
 use Model\Utils\MoneyFactory;
 use Skautis\Wsdl\WebServiceInterface;
 use stdClass;
+
 use function array_map;
 use function array_slice;
 use function count;
@@ -54,9 +55,9 @@ final class CampCategoryRepositoryTest extends Unit
         ],
     ];
 
-    public function test() : void
+    public function test(): void
     {
-        $webserviceResult = array_map(static function (array $category) : stdClass {
+        $webserviceResult = array_map(static function (array $category): stdClass {
             return (object) $category;
         }, self::CATEGORIES);
 
@@ -85,7 +86,7 @@ final class CampCategoryRepositoryTest extends Unit
      * IMHO this is seems very improbable, but WSDL states, that no response may be returned.
      * Skautis client returns empty stdClass in that case.
      */
-    public function testReturnEmptyResponse() : void
+    public function testReturnEmptyResponse(): void
     {
         $repository = $this->prepareRepository(new stdClass());
 
@@ -97,12 +98,12 @@ final class CampCategoryRepositoryTest extends Unit
     /**
      * @param stdClass|stdClass[] $webserviceResult
      */
-    private function prepareRepository($webserviceResult) : CampCategoryRepository
+    private function prepareRepository($webserviceResult): CampCategoryRepository
     {
         $service = m::mock(WebServiceInterface::class);
 
         $service->expects('EventCampStatementAll')
-            ->withArgs(static function (array $parameters) : bool {
+            ->withArgs(static function (array $parameters): bool {
                 $expectedParameters = [
                     'ID_EventCamp' => self::CAMP_ID,
                     'IsEstimate' => false,

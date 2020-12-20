@@ -11,15 +11,14 @@ use Model\Travel\Repositories\ICommandRepository;
 
 final class CommandRepository implements ICommandRepository
 {
-    /** @var EntityManager */
-    private $em;
+    private EntityManager $em;
 
     public function __construct(EntityManager $em)
     {
         $this->em = $em;
     }
 
-    public function find(int $id) : Command
+    public function find(int $id): Command
     {
         $command = $this->em->find(Command::class, $id);
 
@@ -33,7 +32,7 @@ final class CommandRepository implements ICommandRepository
     /**
      * @return Command[]
      */
-    public function findByUnit(int $unitId) : array
+    public function findByUnit(int $unitId): array
     {
         return $this->em->getRepository(Command::class)->findBy(['unitId' => $unitId]);
     }
@@ -41,7 +40,7 @@ final class CommandRepository implements ICommandRepository
     /**
      * @return Command[]
      */
-    public function findByUnitAndUser(int $unitId, int $userId) : array
+    public function findByUnitAndUser(int $unitId, int $userId): array
     {
         return $this->em->createQueryBuilder()
             ->select('c')
@@ -57,7 +56,7 @@ final class CommandRepository implements ICommandRepository
     /**
      * @return Command[]
      */
-    public function findByVehicle(int $vehicleId) : array
+    public function findByVehicle(int $vehicleId): array
     {
         return $this->em->getRepository(Command::class)->findBy(['vehicle' => $vehicleId]);
     }
@@ -65,7 +64,7 @@ final class CommandRepository implements ICommandRepository
     /**
      * @return Command[]
      */
-    public function findByContract(int $contractId) : array
+    public function findByContract(int $contractId): array
     {
         return $this->em->createQueryBuilder()
             ->select('c')
@@ -78,7 +77,7 @@ final class CommandRepository implements ICommandRepository
             ->getResult();
     }
 
-    public function countByVehicle(int $vehicleId) : int
+    public function countByVehicle(int $vehicleId): int
     {
         return (int) $this->em->getRepository(Command::class)
             ->createQueryBuilder('c')
@@ -89,13 +88,13 @@ final class CommandRepository implements ICommandRepository
             ->getSingleScalarResult();
     }
 
-    public function remove(Command $command) : void
+    public function remove(Command $command): void
     {
         $this->em->remove($command);
         $this->em->flush();
     }
 
-    public function save(Command $command) : void
+    public function save(Command $command): void
     {
         $this->em->persist($command);
         $this->em->flush();

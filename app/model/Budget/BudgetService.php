@@ -8,13 +8,14 @@ use Model\Budget\Repositories\ICategoryRepository;
 use Model\Budget\Unit\Category;
 use Model\Cashbook\Operation;
 use Model\DTO\Budget\CategoryFactory;
+
 use function array_map;
+use function assert;
 use function str_replace;
 
 class BudgetService
 {
-    /** @var ICategoryRepository */
-    private $repository;
+    private ICategoryRepository $repository;
 
     public function __construct(ICategoryRepository $budgetRepository)
     {
@@ -24,7 +25,7 @@ class BudgetService
     /**
      * @return mixed[]
      */
-    public function getCategories(int $unitId) : array
+    public function getCategories(int $unitId): array
     {
         return [
             'in' => array_map([CategoryFactory::class, 'create'], $this->repository->findCategories($unitId, Operation::INCOME())),
@@ -32,7 +33,7 @@ class BudgetService
         ];
     }
 
-    public function addCategory(int $unitId, string $label, string $type, ?int $parentId, string $value, int $year) : void
+    public function addCategory(int $unitId, string $label, string $type, ?int $parentId, string $value, int $year): void
     {
         $category = new Category(
             $unitId,
@@ -48,11 +49,11 @@ class BudgetService
     /**
      * @return string[]
      */
-    public function getCategoriesRoot(int $unitId, string $type) : array
+    public function getCategoriesRoot(int $unitId, string $type): array
     {
         $res = [];
-        /** @var Category $category */
         foreach ($this->repository->findCategories($unitId, Operation::get($type)) as $category) {
+            assert($category instanceof Category);
             $res[$category->getId()] = $category->getLabel();
         }
 

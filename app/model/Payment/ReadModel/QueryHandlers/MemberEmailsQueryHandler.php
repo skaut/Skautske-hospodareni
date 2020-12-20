@@ -9,8 +9,7 @@ use Model\Payment\Repositories\IMemberEmailRepository;
 
 final class MemberEmailsQueryHandler
 {
-    /** @var IMemberEmailRepository */
-    private $emails;
+    private IMemberEmailRepository $emails;
 
     public function __construct(IMemberEmailRepository $emails)
     {
@@ -20,7 +19,7 @@ final class MemberEmailsQueryHandler
     /**
      * @return array<string, string> email address => email label
      */
-    public function __invoke(MemberEmailsQuery $query) : array
+    public function __invoke(MemberEmailsQuery $query): array
     {
         return $this->emails->findByMember($query->getMemberId());
     }

@@ -8,12 +8,12 @@ use Model\DTO\Google\OAuth as OAuthDTO;
 use Model\DTO\Google\OAuthFactory;
 use Model\Google\ReadModel\Queries\UnitOAuthListQuery;
 use Model\Mail\Repositories\IGoogleRepository;
+
 use function array_map;
 
 final class UnitOAuthListQueryHandler
 {
-    /** @var IGoogleRepository */
-    private $repository;
+    private IGoogleRepository $repository;
 
     public function __construct(IGoogleRepository $repository)
     {
@@ -21,7 +21,7 @@ final class UnitOAuthListQueryHandler
     }
 
     /** @return OAuthDTO[] */
-    public function __invoke(UnitOAuthListQuery $query) : array
+    public function __invoke(UnitOAuthListQuery $query): array
     {
         return array_map(
             [OAuthFactory::class, 'create'],

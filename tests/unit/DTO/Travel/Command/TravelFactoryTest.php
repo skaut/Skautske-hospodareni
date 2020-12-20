@@ -10,11 +10,12 @@ use Mockery as m;
 use Model\Travel\Command;
 use Model\Travel\Travel\TransportType;
 use Money\Money;
+
 use function array_map;
 
 class TravelFactoryTest extends Unit
 {
-    public function testCreateListCorrectOrder() : void
+    public function testCreateListCorrectOrder(): void
     {
         $firstDay      = new Date('2018-01-01');
         $secondDay     = new Date('2018-01-02');

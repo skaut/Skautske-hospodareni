@@ -8,15 +8,14 @@ use Model\Event\Camp;
 use Model\Event\ReadModel\Queries\CampListQuery;
 use Model\Skautis\Factory\CampFactory;
 use Skautis\Skautis;
+
 use function is_object;
 
 class CampListQueryHandler
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
-    /** @var CampFactory */
-    private $campFactory;
+    private CampFactory $campFactory;
 
     public function __construct(Skautis $skautis, CampFactory $campFactory)
     {
@@ -27,7 +26,7 @@ class CampListQueryHandler
     /**
      * @return array<int, Camp> Camps indexed by ID
      */
-    public function __invoke(CampListQuery $query) : array
+    public function __invoke(CampListQuery $query): array
     {
         $camps = $this->skautis->event->EventCampAll([
             'Year' => $query->getYear(),

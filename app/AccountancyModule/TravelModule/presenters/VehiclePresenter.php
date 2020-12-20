@@ -21,22 +21,18 @@ use Nette\Application\UI\Form;
 use Nette\Http\IResponse;
 use Nette\Utils\ArrayHash;
 use Ublaboo\Responses\PSR7StreamResponse;
+
 use function assert;
 use function in_array;
 
 class VehiclePresenter extends BasePresenter
 {
-    /**
-     * @var int
-     * @persistent
-     */
-    public $id = 0;
+    /** @persistent */
+    public int $id = 0;
 
-    /** @var TravelService */
-    private $travelService;
+    private TravelService $travelService;
 
-    /** @var IRoadworthyControlFactory */
-    private $roadworthyControlFactory;
+    private IRoadworthyControlFactory $roadworthyControlFactory;
 
     public function __construct(TravelService $travelService, IRoadworthyControlFactory $roadworthyControlFactory)
     {
@@ -50,7 +46,7 @@ class VehiclePresenter extends BasePresenter
      * @throws BadRequestException
      * @throws AbortException
      */
-    private function getVehicle(int $id) : VehicleDTO
+    private function getVehicle(int $id): VehicleDTO
     {
         $vehicle = $this->travelService->getVehicleDTO($id);
         if ($vehicle === null) {
@@ -66,7 +62,7 @@ class VehiclePresenter extends BasePresenter
         return $vehicle;
     }
 
-    public function actionDownloadScan(int $id, string $path) : void
+    public function actionDownloadScan(int $id, string $path): void
     {
         $this->getVehicle($id); // Check access
 
@@ -83,7 +79,7 @@ class VehiclePresenter extends BasePresenter
         throw new BadRequestException('Scan not found', IResponse::S404_NOT_FOUND);
     }
 
-    public function renderDetail(int $id) : void
+    public function renderDetail(int $id): void
     {
         try {
             $vehicle = $this->getVehicle($id);
@@ -112,7 +108,7 @@ class VehiclePresenter extends BasePresenter
         }
     }
 
-    public function handleRemove(int $vehicleId) : void
+    public function handleRemove(int $vehicleId): void
     {
         // Check whether vehicle exists and belongs to unit
         $vehicle = $this->getVehicle($vehicleId);
@@ -127,10 +123,11 @@ class VehiclePresenter extends BasePresenter
         } else {
             $this->flashMessage('Nelze smazat vozidlo s cestovními příkazy.', 'warning');
         }
+
         $this->redirect('VehicleList:default');
     }
 
-    public function handleArchive(int $vehicleId) : void
+    public function handleArchive(int $vehicleId): void
     {
         // Check whether vehicle exists and belongs to unit
         $vehicle = $this->getVehicle($vehicleId);
@@ -146,7 +143,7 @@ class VehiclePresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    protected function createComponentFormCreateVehicle() : Form
+    protected function createComponentFormCreateVehicle(): Form
     {
         $form = new BaseForm();
 
@@ -167,14 +164,14 @@ class VehiclePresenter extends BasePresenter
         $form->addSubmit('send', 'Založit')
             ->setAttribute('class', 'btn btn-primary');
 
-        $form->onSuccess[] = function (Form $form, ArrayHash $values) : void {
+        $form->onSuccess[] = function (Form $form, ArrayHash $values): void {
             $this->formCreateVehicleSubmitted($values);
         };
 
         return $form;
     }
 
-    protected function createComponentRoadworthy() : RoadworthyControl
+    protected function createComponentRoadworthy(): RoadworthyControl
     {
         return $this->roadworthyControlFactory->create(
             $this->id,
@@ -182,7 +179,7 @@ class VehiclePresenter extends BasePresenter
         );
     }
 
-    private function formCreateVehicleSubmitted(ArrayHash $values) : void
+    private function formCreateVehicleSubmitted(ArrayHash $values): void
     {
         $this->commandBus->handle(
             new CreateVehicle(
@@ -199,7 +196,7 @@ class VehiclePresenter extends BasePresenter
         $this->redirect('VehicleList:default');
     }
 
-    private function isVehicleEditable(?VehicleDTO $vehicle) : bool
+    private function isVehicleEditable(?VehicleDTO $vehicle): bool
     {
         if ($vehicle === null) {
             return false;

@@ -19,12 +19,12 @@ final class FinalRealBalanceQueryHandlerTest extends Unit
 {
     private const CASHBOOK_ID = '9a833b92-e507-409a-9459-885ebf505b87';
 
-    public function testCashbookWithoutChitsReturnsZero() : void
+    public function testCashbookWithoutChitsReturnsZero(): void
     {
         $this->assertBalance(Money::CZK(0), []);
     }
 
-    public function testCashbookWithPositiveAndNegativeChitsReturnsCorrectBalance() : void
+    public function testCashbookWithPositiveAndNegativeChitsReturnsCorrectBalance(): void
     {
         $this->assertBalance(MoneyFactory::fromFloat(-900), [
 
@@ -34,7 +34,7 @@ final class FinalRealBalanceQueryHandlerTest extends Unit
         ]);
     }
 
-    private function mockCategorySummary(float $amount, string $operation, bool $virtualCategory) : CategorySummary
+    private function mockCategorySummary(float $amount, string $operation, bool $virtualCategory): CategorySummary
     {
         return m::mock(CategorySummary::class, [
             'getTotal' => MoneyFactory::fromFloat($amount),
@@ -46,7 +46,7 @@ final class FinalRealBalanceQueryHandlerTest extends Unit
     /**
      * @param CategorySummary[] $summaries
      */
-    private function assertBalance(Money $expectedBalance, array $summaries) : void
+    private function assertBalance(Money $expectedBalance, array $summaries): void
     {
         $cashbookId = Cashbook\CashbookId::fromString(self::CASHBOOK_ID);
 

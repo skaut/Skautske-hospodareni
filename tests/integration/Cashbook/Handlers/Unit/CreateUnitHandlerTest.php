@@ -12,6 +12,8 @@ use Model\Cashbook\Unit;
 use Model\Common\UnitId;
 use Model\Payment\UnitResolverStub;
 
+use function assert;
+
 final class CreateUnitHandlerTest extends CommandHandlerTest
 {
     private const YEAR           = 2019;
@@ -20,7 +22,7 @@ final class CreateUnitHandlerTest extends CommandHandlerTest
         2 => 1,
     ];
 
-    protected function _before() : void
+    protected function _before(): void
     {
         $this->tester->useConfigFiles([__DIR__ . '/CreateUnitHandlerTest.neon']);
         parent::_before();
@@ -30,7 +32,7 @@ final class CreateUnitHandlerTest extends CommandHandlerTest
     /**
      * @return string[]
      */
-    protected function getTestedAggregateRoots() : array
+    protected function getTestedAggregateRoots(): array
     {
         return [
             Unit::class,
@@ -41,23 +43,23 @@ final class CreateUnitHandlerTest extends CommandHandlerTest
     /**
      * @dataProvider dataCashbookTypes
      */
-    public function testUnitCashbookAndCashbookAggregateAreCreated(CashbookType $cashbookType, UnitId $unitId) : void
+    public function testUnitCashbookAndCashbookAggregateAreCreated(CashbookType $cashbookType, UnitId $unitId): void
     {
         $this->commandBus->handle(new CreateUnit($unitId, self::YEAR));
 
-        /** @var Unit $unit */
-        $unit       = $this->entityManager->find(Unit::class, $unitId);
+        $unit = $this->entityManager->find(Unit::class, $unitId);
+        assert($unit instanceof Unit);
         $cashbookId = $unit->getCashbooks()[0]->getCashbookId();
 
-        /** @var Cashbook $cashbook */
         $cashbook = $this->entityManager->find(Cashbook::class, $cashbookId);
+        assert($cashbook instanceof Cashbook);
         $this->assertTrue($cashbook->getType()->equals($cashbookType), 'Correct cashbook type is assigned');
     }
 
     /**
      * @return mixed[][]
      */
-    public function dataCashbookTypes() : array
+    public function dataCashbookTypes(): array
     {
         return [
             [CashbookType::get(CashbookType::OFFICIAL_UNIT), new UnitId(1)],

@@ -22,6 +22,7 @@ use Model\Cashbook\Events\ChitWasUpdated;
 use Model\Common\Aggregate;
 use Model\Common\FilePath;
 use Nette\Utils\Strings;
+
 use function array_filter;
 use function array_map;
 use function assert;
@@ -38,32 +39,23 @@ class Cashbook extends Aggregate
     /**
      * @ORM\Id()
      * @ORM\Column(type="cashbook_id")
-     *
-     * @var CashbookId
      */
-    private $id;
+    private CashbookId $id;
 
     /**
      * @ORM\Column(type="string_enum")
      *
      * @var CashbookType
      * @EnumAnnotation(class=CashbookType::class)
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
     private $type;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     *
-     * @var string|NULL
-     */
-    private $cashChitNumberPrefix;
+    /** @ORM\Column(type="string", nullable=true) */
+    private ?string $cashChitNumberPrefix = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     *
-     * @var string|NULL
-     */
-    private $bankChitNumberPrefix;
+    /** @ORM\Column(type="string", nullable=true) */
+    private ?string $bankChitNumberPrefix = null;
 
     /**
      * @ORM\OneToMany(targetEntity=Chit::class, mappedBy="cashbook", cascade={"persist", "remove"}, orphanRemoval=true)
@@ -71,14 +63,10 @@ class Cashbook extends Aggregate
      * @var Collection|Chit[]
      * @phpstan-var Collection<int, Chit>
      */
-    private $chits;
+    private Collection $chits;
 
-    /**
-     * @ORM\Column(type="text")
-     *
-     * @var string
-     */
-    private $note;
+    /** @ORM\Column(type="text") */
+    private string $note;
 
     public function __construct(CashbookId $id, CashbookType $type)
     {
@@ -88,32 +76,32 @@ class Cashbook extends Aggregate
         $this->note  = '';
     }
 
-    public function getId() : CashbookId
+    public function getId(): CashbookId
     {
         return $this->id;
     }
 
-    public function getType() : CashbookType
+    public function getType(): CashbookType
     {
         return $this->type;
     }
 
-    public function getCashChitNumberPrefix() : ?string
+    public function getCashChitNumberPrefix(): ?string
     {
         return $this->cashChitNumberPrefix;
     }
 
-    public function getBankChitNumberPrefix() : ?string
+    public function getBankChitNumberPrefix(): ?string
     {
         return $this->bankChitNumberPrefix;
     }
 
-    public function getNote() : string
+    public function getNote(): string
     {
         return $this->note;
     }
 
-    public function updateChitNumberPrefix(?string $chitNumberPrefix, PaymentMethod $paymentMethod) : void
+    public function updateChitNumberPrefix(?string $chitNumberPrefix, PaymentMethod $paymentMethod): void
     {
         if ($chitNumberPrefix !== null && Strings::length($chitNumberPrefix) > 6) {
             throw new InvalidArgumentException('Chit number prefix too long');
@@ -126,7 +114,7 @@ class Cashbook extends Aggregate
         }
     }
 
-    public function updateNote(string $note) : void
+    public function updateNote(string $note): void
     {
         $this->note = $note;
     }
@@ -135,7 +123,7 @@ class Cashbook extends Aggregate
      * @param ChitItem[]  $items
      * @param ICategory[] $categories
      */
-    public function addChit(ChitBody $chitBody, PaymentMethod $paymentMethod, array $items, array $categories) : void
+    public function addChit(ChitBody $chitBody, PaymentMethod $paymentMethod, array $items, array $categories): void
     {
         $this->chits->add(
             Chit::create(
@@ -154,7 +142,7 @@ class Cashbook extends Aggregate
      *
      * @throws InvalidCashbookTransfer
      */
-    public function addInverseChit(Cashbook $cashbook, int $chitId) : void
+    public function addInverseChit(Cashbook $cashbook, int $chitId): void
     {
         $originalChit       = $cashbook->getChit($chitId);
         $originalCategoryId = $originalChit->getCategoryId();
@@ -190,7 +178,7 @@ class Cashbook extends Aggregate
      * @throws ChitNotFound
      * @throws ChitLocked
      */
-    public function updateChit(int $chitId, ChitBody $chitBody, PaymentMethod $paymentMethod, array $items, array $categories) : void
+    public function updateChit(int $chitId, ChitBody $chitBody, PaymentMethod $paymentMethod, array $items, array $categories): void
     {
         $chit = $this->getChit($chitId);
 
@@ -206,7 +194,7 @@ class Cashbook extends Aggregate
     /**
      * @return float[] Category totals indexed by category IDs
      */
-    public function getCategoryTotals() : array
+    public function getCategoryTotals(): array
     {
         $totalByCategories = [];
 
@@ -220,7 +208,7 @@ class Cashbook extends Aggregate
         return $totalByCategories;
     }
 
-    public function removeChit(int $chitId) : void
+    public function removeChit(int $chitId): void
     {
         $chit = $this->getChit($chitId);
 
@@ -232,7 +220,7 @@ class Cashbook extends Aggregate
         $this->raise(new ChitWasRemoved($this->id, $chit->getPurpose()));
     }
 
-    public function lockChit(int $chitId, int $userId) : void
+    public function lockChit(int $chitId, int $userId): void
     {
         $chit = $this->getChit($chitId);
 
@@ -243,7 +231,7 @@ class Cashbook extends Aggregate
         $chit->lock($userId);
     }
 
-    public function unlockChit(int $chitId) : void
+    public function unlockChit(int $chitId): void
     {
         $chit = $this->getChit($chitId);
 
@@ -254,7 +242,7 @@ class Cashbook extends Aggregate
         $chit->unlock();
     }
 
-    public function lock(int $userId) : void
+    public function lock(int $userId): void
     {
         foreach ($this->chits as $chit) {
             if ($chit->isLocked()) {
@@ -270,10 +258,10 @@ class Cashbook extends Aggregate
      *
      * @throws ChitNotFound
      */
-    public function copyChitsFrom(array $chitIds, Cashbook $sourceCashbook) : void
+    public function copyChitsFrom(array $chitIds, Cashbook $sourceCashbook): void
     {
         $chits = array_map(
-            function (int $chitId) use ($sourceCashbook) : Chit {
+            function (int $chitId) use ($sourceCashbook): Chit {
                 return $sourceCashbook->getChit($chitId);
             },
             $chitIds
@@ -297,17 +285,17 @@ class Cashbook extends Aggregate
      *
      * @return Chit[]
      */
-    public function getChits(?PaymentMethod $paymentMethodOnly = null) : array
+    public function getChits(?PaymentMethod $paymentMethodOnly = null): array
     {
         return array_map(
-            function (Chit $chit) : Chit {
+            function (Chit $chit): Chit {
                 return clone $chit;
             },
             $this->sortedChits($paymentMethodOnly)
         );
     }
 
-    public function clear() : void
+    public function clear(): void
     {
         $this->chits->clear();
     }
@@ -315,7 +303,7 @@ class Cashbook extends Aggregate
     /**
      * @throws ChitNotFound
      */
-    private function getChit(int $id) : Chit
+    private function getChit(int $id): Chit
     {
         foreach ($this->chits as $chit) {
             if ($chit->getId() === $id) {
@@ -330,7 +318,7 @@ class Cashbook extends Aggregate
      * @throws MaxChitNumberNotFound
      * @throws NonNumericChitNumbers
      */
-    private function getMaxChitNumber(PaymentMethod $paymentMethod) : int
+    private function getMaxChitNumber(PaymentMethod $paymentMethod): int
     {
         if (! $this->hasOnlyNumericChitNumbers()) {
             throw new NonNumericChitNumbers();
@@ -356,7 +344,7 @@ class Cashbook extends Aggregate
         return $res;
     }
 
-    public function hasOnlyNumericChitNumbers() : bool
+    public function hasOnlyNumericChitNumbers(): bool
     {
         foreach ($this->chits as $chit) {
             $number = $chit->getBody()->getNumber();
@@ -373,7 +361,7 @@ class Cashbook extends Aggregate
      * @throws MaxChitNumberNotFound
      * @throws NonNumericChitNumbers
      */
-    public function generateChitNumbers(PaymentMethod $paymentMethod) : void
+    public function generateChitNumbers(PaymentMethod $paymentMethod): void
     {
         $maxChitNumber = $this->getMaxChitNumber($paymentMethod);
 
@@ -391,13 +379,13 @@ class Cashbook extends Aggregate
         }
     }
 
-    public function addChitScan(int $chitId, FilePath $path) : void
+    public function addChitScan(int $chitId, FilePath $path): void
     {
         $chit = $this->getChit($chitId);
         $chit->addScan($path);
     }
 
-    public function removeChitScan(int $chitId, FilePath $path) : void
+    public function removeChitScan(int $chitId, FilePath $path): void
     {
         $chit = $this->getChit($chitId);
         $chit->removeScan($path);
@@ -408,7 +396,7 @@ class Cashbook extends Aggregate
      *
      * @return ICategory[]
      */
-    private function reindexCategories(array $categories) : array
+    private function reindexCategories(array $categories): array
     {
         $categoriesById = [];
         foreach ($categories as $category) {
@@ -421,20 +409,20 @@ class Cashbook extends Aggregate
     /**
      * @return Chit[]
      */
-    private function sortedChits(?PaymentMethod $paymentMethodOnly) : array
+    private function sortedChits(?PaymentMethod $paymentMethodOnly): array
     {
         $chits = $this->chits->toArray();
 
         if ($paymentMethodOnly !== null) {
             $chits = array_filter(
                 $chits,
-                function (Chit $chit) use ($paymentMethodOnly) : bool {
+                function (Chit $chit) use ($paymentMethodOnly): bool {
                     return $chit->getPaymentMethod()->equals($paymentMethodOnly);
                 }
             );
         }
 
-        uasort($chits, function (Chit $first, Chit $second) : int {
+        uasort($chits, function (Chit $first, Chit $second): int {
             return [
                 $first->getDate(),
                 $first->getOperation()->toString(),

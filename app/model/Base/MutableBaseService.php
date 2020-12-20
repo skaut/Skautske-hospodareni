@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model;
 
 use Skautis\Skautis;
+
 use function strtolower;
 
 /**
@@ -13,11 +14,9 @@ use function strtolower;
  */
 abstract class MutableBaseService extends BaseService
 {
-    /** @var string */
-    protected $typeName;
+    protected string $typeName;
 
-    /** @var string */
-    public $type;
+    public string $type;
 
     public function __construct(string $name, Skautis $skautIS)
     {

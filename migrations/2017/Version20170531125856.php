@@ -9,7 +9,7 @@ use Doctrine\Migrations\AbstractMigration;
 
 class Version20170531125856 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql('ALTER TABLE `tc_command_types` ADD UNIQUE `unique_relationship` (`commandId`, `typeId`)');
         $this->addSql('
@@ -18,7 +18,7 @@ class Version20170531125856 extends AbstractMigration
         ');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql('ALTER TABLE `tc_command_types` DROP INDEX `unique_relationship`');
     }

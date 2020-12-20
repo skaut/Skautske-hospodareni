@@ -20,6 +20,7 @@ use Model\Skautis\Factory\ParticipantFactory;
 use Skautis\Skautis;
 use Skautis\Wsdl\WsdlException;
 use stdClass;
+
 use function array_diff_key;
 use function array_key_exists;
 use function array_map;
@@ -32,11 +33,9 @@ final class ParticipantRepository implements IParticipantRepository
 {
     private const DATETIME_FORMAT = 'Y-m-d\TH:i:s';
 
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
-    /** @var IPaymentRepository */
-    private $payments;
+    private IPaymentRepository $payments;
 
     public function __construct(Skautis $skautis, IPaymentRepository $payments)
     {
@@ -47,12 +46,13 @@ final class ParticipantRepository implements IParticipantRepository
     /**
      * @return ParticipantDTO[]
      */
-    public function findByEvent(SkautisEventId $id) : array
+    public function findByEvent(SkautisEventId $id): array
     {
         $participants = $this->skautis->event->ParticipantGeneralAll(['ID_EventGeneral' => $id->toInt()]);
         if (! is_array($participants)) {
             return []; // API returns empty object when there are no results
         }
+
         $event = new Event($id->toInt(), EventType::GENERAL());
 
         return $this->processParticipants($participants, $event);
@@ -61,12 +61,13 @@ final class ParticipantRepository implements IParticipantRepository
     /**
      * @return ParticipantDTO[]
      */
-    public function findByCamp(SkautisCampId $id) : array
+    public function findByCamp(SkautisCampId $id): array
     {
         $participants = $this->skautis->event->ParticipantCampAll(['ID_EventCamp' => $id->toInt()]);
         if (! is_array($participants)) {
             return []; // API returns empty object when there are no results
         }
+
         $event = new Event($id->toInt(), EventType::CAMP());
 
         return $this->processParticipants($participants, $event);
@@ -75,18 +76,19 @@ final class ParticipantRepository implements IParticipantRepository
     /**
      * @return ParticipantDTO[]
      */
-    public function findByEducation(SkautisEducationId $id) : array
+    public function findByEducation(SkautisEducationId $id): array
     {
         $participants = $this->skautis->event->ParticipantEducationAll(['ID_EventEducation' => $id->toInt()]);
         if (! is_array($participants)) {
             return []; // API returns empty object when there are no results
         }
+
         $event = new Event($id->toInt(), EventType::EDUCATION());
 
         return $this->processParticipants($participants, $event);
     }
 
-    public function addCampParticipant(SkautisCampId $campId, int $personId) : void
+    public function addCampParticipant(SkautisCampId $campId, int $personId): void
     {
         try {
             $this->skautis->event->ParticipantCampInsert([
@@ -100,7 +102,7 @@ final class ParticipantRepository implements IParticipantRepository
         }
     }
 
-    public function addEventParticipant(SkautisEventId $eventId, int $personId) : void
+    public function addEventParticipant(SkautisEventId $eventId, int $personId): void
     {
         try {
             $this->skautis->event->ParticipantGeneralInsert([
@@ -114,7 +116,8 @@ final class ParticipantRepository implements IParticipantRepository
         }
     }
 
-    public function createEventParticipant(SkautisEventId $eventId, NonMemberParticipant $participant) : void
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    public function createEventParticipant(SkautisEventId $eventId, NonMemberParticipant $participant): void
     {
         $newParticipantArr = $this->skautis->event->ParticipantGeneralInsert([
             'ID_EventGeneral' => $eventId->toInt(),
@@ -128,7 +131,7 @@ final class ParticipantRepository implements IParticipantRepository
         $this->fillParticipantInfo($newParticipantArr->ID_Person, $participant);
     }
 
-    public function createCampParticipant(SkautisCampId $eventId, NonMemberParticipant $participant) : void
+    public function createCampParticipant(SkautisCampId $eventId, NonMemberParticipant $participant): void
     {
         $newParticipantArr = $this->skautis->event->ParticipantCampInsert([
             'ID_EventCamp' => $eventId->toInt(),
@@ -142,17 +145,17 @@ final class ParticipantRepository implements IParticipantRepository
         $this->fillParticipantInfo($newParticipantArr->ID_Person, $participant);
     }
 
-    public function removeEventParticipant(int $participantId) : void
+    public function removeEventParticipant(int $participantId): void
     {
         $this->skautis->event->ParticipantGeneralDelete(['ID' => $participantId, 'DeletePerson' => false]);
     }
 
-    public function removeCampParticipant(int $participantId) : void
+    public function removeCampParticipant(int $participantId): void
     {
         $this->skautis->event->ParticipantCampDelete(['ID' => $participantId, 'DeletePerson' => false]);
     }
 
-    private function fillParticipantInfo(int $participantId, NonMemberParticipant $participant) : void
+    private function fillParticipantInfo(int $participantId, NonMemberParticipant $participant): void
     {
         $this->skautis->org->PersonUpdateBasic([
             'ID' => $participantId,
@@ -171,7 +174,7 @@ final class ParticipantRepository implements IParticipantRepository
      *
      * @return ParticipantDTO[]
      */
-    private function processParticipants(array $participantsSis, Event $event) : array
+    private function processParticipants(array $participantsSis, Event $event): array
     {
         $participantPayments = $this->payments->findByEvent($event);
         $participants        = [];
@@ -181,6 +184,7 @@ final class ParticipantRepository implements IParticipantRepository
             } else {
                 $payment =  PaymentFactory::createDefault($p->ID, $event);
             }
+
             $participants[$p->ID] = ParticipantFactory::create($p, $payment);
         }
 

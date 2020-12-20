@@ -19,13 +19,13 @@ abstract class Dialog extends BaseControl
      *
      * @var bool @persistent
      */
-    public $opened = false;
+    public bool $opened = false;
 
-    protected function beforeRender() : void
+    protected function beforeRender(): void
     {
     }
 
-    final public function render() : void
+    final public function render(): void
     {
         $this->beforeRender();
 
@@ -41,13 +41,13 @@ abstract class Dialog extends BaseControl
         $this->template->render();
     }
 
-    protected function show() : void
+    protected function show(): void
     {
         $this->opened = true;
         $this->redrawControl();
     }
 
-    protected function hide() : void
+    protected function hide(): void
     {
         $this->opened = false;
         $this->redrawControl();

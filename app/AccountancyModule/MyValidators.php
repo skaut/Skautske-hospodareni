@@ -9,6 +9,7 @@ use Nette\Forms\Controls\MultiChoiceControl;
 use Nette\StaticClass;
 use Nette\Utils\Validators;
 use Nextras\Forms\Controls\DatePicker;
+
 use function array_intersect;
 use function count;
 use function explode;
@@ -24,12 +25,12 @@ class MyValidators
     /**
      * @param mixed $control
      */
-    public static function isValidDate($control) : bool
+    public static function isValidDate($control): bool
     {
         return $control->value !== null;
     }
 
-    public static function isValidRange(DatePicker $end, DateTimeInterface $start) : bool
+    public static function isValidRange(DatePicker $end, DateTimeInterface $start): bool
     {
         return $start <= $end->getValue();
     }
@@ -37,7 +38,7 @@ class MyValidators
     /**
      * @param mixed[] $values
      */
-    public static function hasSelectedAny(MultiChoiceControl $control, array $values) : bool
+    public static function hasSelectedAny(MultiChoiceControl $control, array $values): bool
     {
         return count(array_intersect($control->getValue(), $values)) !== 0;
     }
@@ -45,7 +46,7 @@ class MyValidators
     /**
      * @param mixed $control
      */
-    public static function isValidEmailList($control) : bool
+    public static function isValidEmailList($control): bool
     {
         $value = preg_replace('/\s+/', '', $control->value);
         foreach (explode(self::EMAIL_SEPARATOR, $value) as $email) {

@@ -25,17 +25,17 @@ final class MembersWithoutPaymentInGroupQuery
         $this->directMemberOnly = $directMemberOnly;
     }
 
-    public function getUnitId() : UnitId
+    public function getUnitId(): UnitId
     {
         return $this->unitId;
     }
 
-    public function getGroupId() : int
+    public function getGroupId(): int
     {
         return $this->groupId;
     }
 
-    public function isDirectMemberOnly() : bool
+    public function isDirectMemberOnly(): bool
     {
         return $this->directMemberOnly;
     }

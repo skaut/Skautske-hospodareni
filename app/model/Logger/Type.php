@@ -11,7 +11,7 @@ class Type extends Enum
     public const OBJECT  = 'object';
     public const PAYMENT = 'payment';
 
-    public function __toString() : string
+    public function __toString(): string
     {
         return $this->getValue();
     }

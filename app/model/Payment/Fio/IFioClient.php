@@ -20,5 +20,5 @@ interface IFioClient
      * @throws BankTimeout
      * @throws BankTimeLimit
      */
-    public function getTransactions(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account) : array;
+    public function getTransactions(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account): array;
 }

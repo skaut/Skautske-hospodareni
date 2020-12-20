@@ -8,5 +8,5 @@ use App\AccountancyModule\PaymentModule\Components\RemoveGroupDialog;
 
 interface IRemoveGroupDialogFactory
 {
-    public function create(int $groupId, bool $isAllowed) : RemoveGroupDialog;
+    public function create(int $groupId, bool $isAllowed): RemoveGroupDialog;
 }

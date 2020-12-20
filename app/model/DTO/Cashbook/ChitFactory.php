@@ -8,6 +8,7 @@ use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\Chit as ChitEntity;
 use Model\Cashbook\MissingCategory;
 use Nette\StaticClass;
+
 use function array_key_exists;
 use function count;
 use function sprintf;
@@ -19,7 +20,7 @@ final class ChitFactory
     /**
      * @param Category[] $categories
      */
-    public static function create(ChitEntity $chit, array $categories) : Chit
+    public static function create(ChitEntity $chit, array $categories): Chit
     {
         /** @var ChitItem[] $items */
         $items = [];
@@ -27,6 +28,7 @@ final class ChitFactory
             if (! array_key_exists($item->getCategory()->getId(), $categories)) {
                 throw new MissingCategory(sprintf("Kategorie dokladu '%d' nebyla nalezena!", $item->getCategory()->getId()));
             }
+
             $category = $categories[$item->getCategory()->getId()];
 
             $items[] = new ChitItem($item->getAmount(), $category, $item->getPurpose());
@@ -36,7 +38,7 @@ final class ChitFactory
             $chit->getId(),
             $chit->getBody(),
             $chit->isLocked(),
-            count($items)=== 1 ? CashbookType::getInverseCashbookTypes($items[0]->getCategory()->getId()) : [],
+            count($items) === 1 ? CashbookType::getInverseCashbookTypes($items[0]->getCategory()->getId()) : [],
             $chit->getPaymentMethod(),
             $items,
             $chit->getOperation(),

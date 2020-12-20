@@ -17,29 +17,28 @@ class VehicleRepositoryTest extends IntegrationTest
     private const TABLE                 = 'tc_vehicle';
     private const TABLE_ROADWORTHY_SCAN = 'tc_vehicle_roadworthy_scan';
 
-    /** @var VehicleRepository */
-    private $repository;
+    private VehicleRepository $repository;
 
     /**
      * @return string[]
      */
-    public function getTestedAggregateRoots() : array
+    public function getTestedAggregateRoots(): array
     {
         return [Vehicle::class];
     }
 
-    protected function _before() : void
+    protected function _before(): void
     {
         parent::_before();
         $this->repository = new VehicleRepository($this->tester->grabService(EntityManager::class));
     }
 
-    public function testFindByUnitWithNoVehiclesReturnsEmptyArray() : void
+    public function testFindByUnitWithNoVehiclesReturnsEmptyArray(): void
     {
         $this->assertEmpty($this->repository->findByUnit(10));
     }
 
-    public function testFindByUnitReturnsOnlyVehiclesWithCorrectUnit() : void
+    public function testFindByUnitReturnsOnlyVehiclesWithCorrectUnit(): void
     {
         $I = $this->tester;
 
@@ -87,14 +86,14 @@ class VehicleRepositoryTest extends IntegrationTest
         $this->assertSame(2, $vehicles[1]->getId());
     }
 
-    public function testFindNonExistentVehicleThrowsException() : void
+    public function testFindNonExistentVehicleThrowsException(): void
     {
         $this->expectException(VehicleNotFound::class);
 
         $this->repository->find(1);
     }
 
-    public function testFindReturnsCorrectlyMappedEntity() : void
+    public function testFindReturnsCorrectlyMappedEntity(): void
     {
         $row = $this->getVehicleRow();
 
@@ -140,7 +139,7 @@ class VehicleRepositoryTest extends IntegrationTest
         $this->assertSame($roadworthies[1]['file_path'], $roadworthyScans[1]->getFilePath()->getPath());
     }
 
-    public function testRemove() : void
+    public function testRemove(): void
     {
         $this->tester->haveInDatabase(self::TABLE, $this->getVehicleRow());
 
@@ -151,7 +150,7 @@ class VehicleRepositoryTest extends IntegrationTest
         $this->tester->dontSeeInDatabase(self::TABLE, ['id' => 1]);
     }
 
-    public function testSave() : void
+    public function testSave(): void
     {
         $row = $this->getVehicleRow();
 
@@ -175,7 +174,7 @@ class VehicleRepositoryTest extends IntegrationTest
     /**
      * @return mixed[]
      */
-    private function getVehicleRow() : array
+    private function getVehicleRow(): array
     {
         return [
             'type' => 'Car 3',

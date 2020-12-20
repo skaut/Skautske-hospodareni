@@ -6,6 +6,7 @@ namespace App\AccountancyModule\UnitAccountModule;
 
 use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\ReadModel\Queries\EditableUnitsQuery;
+
 use function array_key_exists;
 use function array_key_last;
 use function date;
@@ -13,13 +14,11 @@ use function explode;
 
 class BasePresenter extends \App\AccountancyModule\BasePresenter
 {
-    /** @var int */
-    protected $year;
+    protected int $year;
 
-    /** @var bool */
-    protected $isReadable;
+    protected bool $isReadable;
 
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
         $this->type = 'unit';
@@ -36,10 +35,11 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         if ($this->isEditable) {
             return;
         }
+
         $this->setView('accessDenied');
     }
 
-    protected function beforeRender() : void
+    protected function beforeRender(): void
     {
         parent::beforeRender();
 
@@ -53,7 +53,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         ]);
     }
 
-    protected function editableOnly() : void
+    protected function editableOnly(): void
     {
         if ($this->isEditable) {
             return;

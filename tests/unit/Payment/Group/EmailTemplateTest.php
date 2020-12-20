@@ -11,18 +11,19 @@ use Model\Common\EmailAddress;
 use Model\Payment\EmailTemplate;
 use Model\Payment\Group;
 use Model\Payment\Mailing\Payment;
+
 use function urlencode;
 
 class EmailTemplateTest extends Unit
 {
-    public function testCreate() : void
+    public function testCreate(): void
     {
         $template = new EmailTemplate('subject', 'body');
         $this->assertSame('subject', $template->getSubject());
         $this->assertSame('body', $template->getBody());
     }
 
-    public function testEvaluate() : void
+    public function testEvaluate(): void
     {
         $subject = '%groupname% | %name% | %account% | %amount% | %maturity% | %vs% | %ks% | %note% | %user%';
         $body    = 'Body: ' . $subject . ' | %qrcode%';

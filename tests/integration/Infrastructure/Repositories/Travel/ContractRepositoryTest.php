@@ -22,10 +22,9 @@ final class ContractRepositoryTest extends IntegrationTest
         'template' => 2,
     ];
 
-    /** @var ContractRepository */
-    private $repository;
+    private ContractRepository $repository;
 
-    protected function _before() : void
+    protected function _before(): void
     {
         parent::_before();
         $this->repository = new ContractRepository($this->entityManager);
@@ -34,12 +33,12 @@ final class ContractRepositoryTest extends IntegrationTest
     /**
      * @return string[]
      */
-    protected function getTestedAggregateRoots() : array
+    protected function getTestedAggregateRoots(): array
     {
         return [Contract::class];
     }
 
-    public function testFindReturnsCorrectlyHydratedAggregate() : void
+    public function testFindReturnsCorrectlyHydratedAggregate(): void
     {
         $this->addContractToDatabase();
 
@@ -59,7 +58,7 @@ final class ContractRepositoryTest extends IntegrationTest
         $this->assertSame(self::CONTRACT['driver_contact'], $passenger->getContact());
     }
 
-    public function testRemoveDeletesRowFromDatabase() : void
+    public function testRemoveDeletesRowFromDatabase(): void
     {
         $this->addContractToDatabase();
         $contract = $this->repository->find(1);
@@ -69,7 +68,7 @@ final class ContractRepositoryTest extends IntegrationTest
         $this->tester->dontSeeInDatabase('tc_contracts', ['id' => 1]);
     }
 
-    public function testSaveAddsRowToDatabase() : void
+    public function testSaveAddsRowToDatabase(): void
     {
         $this->addContractToDatabase();
         $contract = $this->repository->find(1);
@@ -80,7 +79,7 @@ final class ContractRepositoryTest extends IntegrationTest
         $this->tester->seeInDatabase('tc_contracts', ['id' => 2] + self::CONTRACT);
     }
 
-    private function addContractToDatabase() : void
+    private function addContractToDatabase(): void
     {
         $this->tester->haveInDatabase('tc_contracts', self::CONTRACT);
     }

@@ -11,21 +11,21 @@ use Model\UserService;
 
 final class ActiveSkautisRoleQueryHandler
 {
-    /** @var UserService */
-    private $userService;
+    private UserService $userService;
 
     public function __construct(UserService $userService)
     {
         $this->userService = $userService;
     }
 
-    public function __invoke(ActiveSkautisRoleQuery $_) : SkautisRole
+    public function __invoke(ActiveSkautisRoleQuery $_x): SkautisRole
     {
         $role = $this->userService->getActualRole();
 
         if ($role !== null) {
             return $role;
         }
+
         throw new MissingCurrentRole();
     }
 }

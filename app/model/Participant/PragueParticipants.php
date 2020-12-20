@@ -7,6 +7,7 @@ namespace Model\Participant;
 use Cake\Chronos\Date;
 use Model\DTO\Participant\Participant;
 use Nette\SmartObject;
+
 use function stripos;
 
 /**
@@ -23,22 +24,18 @@ final class PragueParticipants
     private const PRAGUE_SUPPORTABLE_UPPER_AGE = 26;
     public const PRAGUE_UNIT_PREFIX            = 11;
 
-    /** @var int */
-    private $under18;
+    private int $under18;
 
-    /** @var int */
-    private $between18and26;
+    private int $between18and26;
 
-    /** @var int */
-    private $personDaysUnder26;
+    private int $personDaysUnder26;
 
-    /** @var int */
-    private $citizensCount;
+    private int $citizensCount;
 
     /**
      * @param Participant[] $participants
      */
-    public static function fromParticipantList(Date $eventStartDate, array $participants) : self
+    public static function fromParticipantList(Date $eventStartDate, array $participants): self
     {
         $under18           = 0;
         $between18and26    = 0;
@@ -49,6 +46,7 @@ final class PragueParticipants
             if (stripos($p->getCity(), 'Praha') === false) {
                 continue;
             }
+
             $citizensCount += 1;
 
             $birthday = $p->getBirthday();
@@ -85,27 +83,27 @@ final class PragueParticipants
         $this->citizensCount     = $citizensCount;
     }
 
-    public function getUnder18() : int
+    public function getUnder18(): int
     {
         return $this->under18;
     }
 
-    public function getBetween18and26() : int
+    public function getBetween18and26(): int
     {
         return $this->between18and26;
     }
 
-    public function getPersonDaysUnder26() : int
+    public function getPersonDaysUnder26(): int
     {
         return $this->personDaysUnder26;
     }
 
-    public function getCitizensCount() : int
+    public function getCitizensCount(): int
     {
         return $this->citizensCount;
     }
 
-    public function isSupportable(int $totalDays) : bool
+    public function isSupportable(int $totalDays): bool
     {
         return $this->under18 >= 8 && $totalDays >= 2 && $totalDays <= 6;
     }

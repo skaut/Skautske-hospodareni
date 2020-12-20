@@ -9,14 +9,11 @@ use Money\Money;
 
 final class Repayment
 {
-    /** @var AccountNumber */
-    private $targetAccount;
+    private AccountNumber $targetAccount;
 
-    /** @var Money */
-    private $amount;
+    private Money $amount;
 
-    /** @var string */
-    private $messageForRecipient;
+    private string $messageForRecipient;
 
     public function __construct(AccountNumber $targetAccount, Money $amount, string $messageForRecipient)
     {
@@ -25,17 +22,17 @@ final class Repayment
         $this->messageForRecipient = $messageForRecipient;
     }
 
-    public function getTargetAccount() : AccountNumber
+    public function getTargetAccount(): AccountNumber
     {
         return $this->targetAccount;
     }
 
-    public function getAmount() : Money
+    public function getAmount(): Money
     {
         return $this->amount;
     }
 
-    public function getMessageForRecipient() : string
+    public function getMessageForRecipient(): string
     {
         return $this->messageForRecipient;
     }

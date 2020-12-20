@@ -11,6 +11,7 @@ use Cake\Chronos\Date;
 use Model\Event\Education;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\ReadModel\Queries\EducationsWithoutGroupQuery;
+
 use function array_key_exists;
 
 class CreateEducationGroupPresenter extends BasePresenter
@@ -25,7 +26,7 @@ class CreateEducationGroupPresenter extends BasePresenter
         $this->formFactory = $formFactory;
     }
 
-    public function actionDefault(int $educationId) : void
+    public function actionDefault(int $educationId): void
     {
         $educations = $this->queryBus->handle(new EducationsWithoutGroupQuery(Date::today()->year));
 
@@ -38,7 +39,7 @@ class CreateEducationGroupPresenter extends BasePresenter
         $this->template->setParameters(['education' => $this->education]);
     }
 
-    protected function createComponentForm() : GroupForm
+    protected function createComponentForm(): GroupForm
     {
         Assertion::notNull($this->education);
 

@@ -26,6 +26,7 @@ use Model\Unit\Unit;
 use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\SkautisRole;
 use Nette\Application\BadRequestException;
+
 use function array_keys;
 use function assert;
 use function sprintf;
@@ -34,14 +35,11 @@ class BankAccountsPresenter extends BasePresenter
 {
     private const DAYS_BACK = 60;
 
-    /** @var  IBankAccountFormFactory */
-    private $formFactory;
+    private IBankAccountFormFactory $formFactory;
 
-    /** @var BankAccountService */
-    private $accounts;
+    private BankAccountService $accounts;
 
-    /** @var int */
-    private $id;
+    private int $id;
 
     public function __construct(IBankAccountFormFactory $formFactory, BankAccountService $accounts)
     {
@@ -50,7 +48,7 @@ class BankAccountsPresenter extends BasePresenter
         $this->accounts    = $accounts;
     }
 
-    public function handleAllowForSubunits(int $id) : void
+    public function handleAllowForSubunits(int $id): void
     {
         $this->assertCanEditBankAccount($id);
 
@@ -60,10 +58,11 @@ class BankAccountsPresenter extends BasePresenter
         } catch (BankAccountNotFound $e) {
             $this->flashMessage('Bankovní účet neexistuje', 'danger');
         }
+
         $this->redirect('this');
     }
 
-    public function handleDisallowForSubunits(int $id) : void
+    public function handleDisallowForSubunits(int $id): void
     {
         $this->assertCanEditBankAccount($id);
 
@@ -73,10 +72,11 @@ class BankAccountsPresenter extends BasePresenter
         } catch (BankAccountNotFound $e) {
             $this->flashMessage('Bankovní účet neexistuje', 'danger');
         }
+
         $this->redirect('this');
     }
 
-    public function handleRemove(int $id) : void
+    public function handleRemove(int $id): void
     {
         $this->assertCanEditBankAccount($id);
 
@@ -85,10 +85,11 @@ class BankAccountsPresenter extends BasePresenter
             $this->flashMessage('Bankovní účet byl odstraněn', 'success');
         } catch (BankAccountNotFound $e) {
         }
+
         $this->redirect('default');
     }
 
-    public function handleImport() : void
+    public function handleImport(): void
     {
         if (! $this->canEdit()) {
             $this->noAccess();
@@ -104,13 +105,13 @@ class BankAccountsPresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    public function actionEdit(int $id) : void
+    public function actionEdit(int $id): void
     {
         $this->assertCanEditBankAccount($id);
         $this->id = $id;
     }
 
-    public function renderEdit(int $id) : void
+    public function renderEdit(int $id): void
     {
         $this->template->setParameters([
             'account' => $this->findBankAccount($id),
@@ -118,7 +119,7 @@ class BankAccountsPresenter extends BasePresenter
         ]);
     }
 
-    public function actionDefault() : void
+    public function actionDefault(): void
     {
         $accounts = $this->accounts->findByUnit($this->getCurrentUnitId());
 
@@ -128,12 +129,12 @@ class BankAccountsPresenter extends BasePresenter
         ]);
     }
 
-    public function actionDetail(int $id) : void
+    public function actionDetail(int $id): void
     {
         $this->assertCanViewBankAccount($id);
     }
 
-    public function renderDetail(int $id) : void
+    public function renderDetail(int $id): void
     {
         $account = $this->accounts->find($id);
 
@@ -184,24 +185,24 @@ class BankAccountsPresenter extends BasePresenter
         $this->template->setParameters($templateParameters);
     }
 
-    protected function createComponentForm() : BankAccountForm
+    protected function createComponentForm(): BankAccountForm
     {
         return $this->formFactory->create($this->id);
     }
 
-    private function noAccess() : void
+    private function noAccess(): void
     {
         $this->setView('accessDenied');
 
         return;
     }
 
-    private function canEdit(?int $unitId = null) : bool
+    private function canEdit(?int $unitId = null): bool
     {
         return $this->authorizator->isAllowed(UnitResource::EDIT, $unitId ?? $this->getUnitId());
     }
 
-    private function assertCanViewBankAccount(int $id) : void
+    private function assertCanViewBankAccount(int $id): void
     {
         $account = $this->accounts->find($id);
 
@@ -221,15 +222,18 @@ class BankAccountsPresenter extends BasePresenter
 
         assert($role instanceof SkautisRole);
 
-        if ($role->getUnitId() === $account->getUnitId()
+        if (
+            $role->getUnitId() === $account->getUnitId()
             && $role->isBasicUnit()
-            && ($role->isAccountant() || $role->isOfficer() || $role->isEventManager())) {
+            && ($role->isAccountant() || $role->isOfficer() || $role->isEventManager())
+        ) {
             return;
         }
+
         $this->noAccess();
     }
 
-    private function assertCanEditBankAccount(int $id) : void
+    private function assertCanEditBankAccount(int $id): void
     {
         if (! $this->canEdit()) {
             $this->noAccess();
@@ -248,7 +252,7 @@ class BankAccountsPresenter extends BasePresenter
         $this->noAccess();
     }
 
-    private function isSubunitOf(int $unitId) : bool
+    private function isSubunitOf(int $unitId): bool
     {
         $currentUnitId = $this->getCurrentUnitId()->toInt();
 
@@ -263,7 +267,7 @@ class BankAccountsPresenter extends BasePresenter
         return false;
     }
 
-    private function findBankAccount(int $id) : ?BankAccount
+    private function findBankAccount(int $id): ?BankAccount
     {
         return $this->accounts->find($id);
     }

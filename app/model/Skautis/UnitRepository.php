@@ -10,12 +10,12 @@ use Model\Unit\UnitNotFound;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WebServiceInterface;
 use stdClass;
+
 use function is_object;
 
 final class UnitRepository implements IUnitRepository
 {
-    /** @var WebServiceInterface */
-    private $webService;
+    private WebServiceInterface $webService;
 
     public function __construct(WebServiceInterface $webService)
     {
@@ -23,7 +23,8 @@ final class UnitRepository implements IUnitRepository
     }
 
     /** @return mixed[] */
-    public function findByParent(int $parentId) : array
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    public function findByParent(int $parentId): array
     {
         $units = $this->webService->call('UnitAll', [
             ['ID_UnitParent' => $parentId],
@@ -33,7 +34,7 @@ final class UnitRepository implements IUnitRepository
             return []; // API returns empty object when there are no results
         }
 
-        $res =[];
+        $res = [];
         foreach ($units as $u) {
             $u->ID_UnitParent = $parentId;
             $res[]            = $this->createUnit($u);
@@ -42,14 +43,14 @@ final class UnitRepository implements IUnitRepository
         return $res;
     }
 
-    public function find(int $id) : Unit
+    public function find(int $id): Unit
     {
         return $this->createUnit(
             $this->findAsStdClass($id)
         );
     }
 
-    private function findAsStdClass(int $id) : stdClass
+    private function findAsStdClass(int $id): stdClass
     {
         try {
             return $this->webService->call('UnitDetail', [
@@ -61,7 +62,8 @@ final class UnitRepository implements IUnitRepository
         }
     }
 
-    private function createUnit(stdClass $unit) : Unit
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    private function createUnit(stdClass $unit): Unit
     {
         return new Unit(
             $unit->ID,

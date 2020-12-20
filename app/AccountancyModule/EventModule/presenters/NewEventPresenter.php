@@ -14,11 +14,13 @@ use Model\Event\ReadModel\Queries\NewestEventId;
 use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\Unit;
 use Nette\Application\UI\Form;
+
 use function array_map;
+use function assert;
 
 final class NewEventPresenter extends BasePresenter
 {
-    protected function startup() : void
+    protected function startup(): void
     {
         parent::startup();
 
@@ -32,7 +34,7 @@ final class NewEventPresenter extends BasePresenter
         $this->setLayout('layout.new');
     }
 
-    protected function createComponentForm() : BaseForm
+    protected function createComponentForm(): BaseForm
     {
         $scopes = $this->queryBus->handle(new EventScopes());
         $types  = $this->queryBus->handle(new EventTypes());
@@ -40,14 +42,14 @@ final class NewEventPresenter extends BasePresenter
 
         $subunits = $this->unitService->getSubunitPairs($unitId);
         $subunits = array_map(
-            function (string $name) : string {
+            function (string $name): string {
                 return '» ' . $name;
             },
             $subunits
         );
 
-        /** @var Unit $unit */
-        $unit  = $this->queryBus->handle(new UnitQuery($unitId));
+        $unit = $this->queryBus->handle(new UnitQuery($unitId));
+        assert($unit instanceof Unit);
         $units = [$unitId => $unit->getSortName()] + $subunits;
 
         $form = new BaseForm();
@@ -70,14 +72,14 @@ final class NewEventPresenter extends BasePresenter
         $form->addSubmit('send', 'Založit novou akci')
             ->setAttribute('class', 'btn btn-primary btn-large, ui--createEvent');
 
-        $form->onSuccess[] = function (Form $form) : void {
+        $form->onSuccess[] = function (Form $form): void {
             $this->formCreateSubmitted($form);
         };
 
         return $form;
     }
 
-    private function formCreateSubmitted(Form $form) : void
+    private function formCreateSubmitted(Form $form): void
     {
         if (! $this->authorizator->isAllowed(EventResource::CREATE, null)) {
             $this->flashMessage('Nemáte oprávnění pro založení akce', 'danger');

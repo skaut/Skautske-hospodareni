@@ -9,6 +9,7 @@ use Model\Unit\Repositories\IUnitRepository;
 use Model\Unit\Unit;
 use Model\User\ReadModel\Queries\EditableUnitsQuery;
 use Model\User\SkautisRole;
+
 use function array_map;
 use function count;
 
@@ -24,15 +25,14 @@ final class EditableUnitsQueryHandlerTest extends \Codeception\Test\Unit
         103 => [],
     ];
 
-    /** @var EditableUnitsQueryHandler */
-    private $handler;
+    private EditableUnitsQueryHandler $handler;
 
     /**
      * @param int[] $expectedUnitIdsInResult
      *
      * @dataProvider getExpectedReturnedUnits
      */
-    public function test(string $roleName, array $expectedUnitIdsInResult) : void
+    public function test(string $roleName, array $expectedUnitIdsInResult): void
     {
         $role = new SkautisRole($roleName, '', 100, '');
 
@@ -53,7 +53,7 @@ final class EditableUnitsQueryHandlerTest extends \Codeception\Test\Unit
     /**
      * @return mixed[]
      */
-    public function getExpectedReturnedUnits() : array
+    public function getExpectedReturnedUnits(): array
     {
         return [
             ['cinovnikStredisko', []],
@@ -66,12 +66,12 @@ final class EditableUnitsQueryHandlerTest extends \Codeception\Test\Unit
         ];
     }
 
-    protected function _before() : void
+    protected function _before(): void
     {
         $unitsRepository = m::mock(IUnitRepository::class);
 
         foreach (self::UNITS_TREE as $parentUnitId => $subUnitIds) {
-            $subUnits = array_map(static function (int $id) : Unit {
+            $subUnits = array_map(static function (int $id): Unit {
                 return m::mock(Unit::class, ['getId' => $id]);
             }, $subUnitIds);
 

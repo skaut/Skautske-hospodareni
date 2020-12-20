@@ -12,6 +12,7 @@ use Model\Payment\PaymentNotFound;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Payment\Summary;
 use Model\Payment\VariableSymbol;
+
 use function array_fill_keys;
 
 final class PaymentRepository extends AggregateRepository implements IPaymentRepository
@@ -22,7 +23,7 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
         State::CANCELED,
     ];
 
-    public function find(int $id) : Payment
+    public function find(int $id): Payment
     {
         $payment = $this->getEntityManager()->find(Payment::class, $id);
 
@@ -36,7 +37,7 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
     /**
      * {@inheritDoc}
      */
-    public function summarizeByGroup(array $groupIds) : array
+    public function summarizeByGroup(array $groupIds): array
     {
         $states = [State::PREPARING, State::COMPLETED];
 
@@ -74,7 +75,7 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
     /**
      * {@inheritDoc}
      */
-    public function findByGroup(int $groupId) : array
+    public function findByGroup(int $groupId): array
     {
         return $this->findByMultipleGroups([$groupId]);
     }
@@ -82,7 +83,7 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
     /**
      * {@inheritDoc}
      */
-    public function findByMultipleGroups(array $groupIds) : array
+    public function findByMultipleGroups(array $groupIds): array
     {
         Assert::thatAll($groupIds)->integer();
 
@@ -103,7 +104,7 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
             ->getResult();
     }
 
-    public function save(Payment $payment) : void
+    public function save(Payment $payment): void
     {
         $this->saveAndDispatchEvents($payment);
     }
@@ -111,7 +112,7 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
     /**
      * {@inheritDoc}
      */
-    public function saveMany(array $payments) : void
+    public function saveMany(array $payments): void
     {
         if (empty($payments)) {
             return;
@@ -124,7 +125,7 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
         }
     }
 
-    public function remove(Payment $payment) : void
+    public function remove(Payment $payment): void
     {
         $entityManager = $this->getEntityManager();
 
@@ -132,7 +133,7 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
         $entityManager->flush();
     }
 
-    public function getMaxVariableSymbol(int $groupId) : ?VariableSymbol
+    public function getMaxVariableSymbol(int $groupId): ?VariableSymbol
     {
         $result = $this->getEntityManager()->createQueryBuilder()
             ->select('MAX(p.variableSymbol) as vs')

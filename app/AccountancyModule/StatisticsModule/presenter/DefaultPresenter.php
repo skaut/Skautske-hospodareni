@@ -6,12 +6,12 @@ namespace App\AccountancyModule\StatisticsModule;
 
 use Model\StatisticsService;
 use Model\Unit\ReadModel\Queries\UnitQuery;
+
 use function date;
 
 class DefaultPresenter extends BasePresenter
 {
-    /** @var StatisticsService */
-    private $statService;
+    private StatisticsService $statService;
 
     public function __construct(StatisticsService $statService)
     {
@@ -19,15 +19,18 @@ class DefaultPresenter extends BasePresenter
         $this->statService = $statService;
     }
 
-    public function renderDefault(?int $year = null) : void
+    public function renderDefault(?int $year = null): void
     {
         if ($year === null) {
             $year = (int) date('Y');
         }
-        $unitTree = $this->unitService->getTreeUnder($this->queryBus->handle(new UnitQuery($this->unitId)));
+
+        $unit     = $this->queryBus->handle(new UnitQuery($this->unitId->toInt()));
+        $unitTree = $this->unitService->getTreeUnder($unit);
         $data     = $this->statService->getEventStatistics($unitTree, $year);
 
         $this->template->setParameters([
+            'unit' => $unit,
             'unitTree' => $unitTree,
             'data' => $data,
         ]);

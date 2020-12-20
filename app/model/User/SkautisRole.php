@@ -16,17 +16,13 @@ class SkautisRole
     private const BASIC_UNIT_SUFFIX = 'Stredisko';
     private const TROOP_SUFFIX      = 'Oddil';
 
-    /** @var string */
-    private $key;
+    private string $key;
 
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var int */
-    private $unitId;
+    private int $unitId;
 
-    /** @var string */
-    private $unitName;
+    private string $unitName;
 
     public function __construct(
         string $key,
@@ -40,47 +36,47 @@ class SkautisRole
         $this->unitName = $unitName;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getUnitId() : int
+    public function getUnitId(): int
     {
         return $this->unitId;
     }
 
-    public function getUnitName() : string
+    public function getUnitName(): string
     {
         return $this->unitName;
     }
 
-    public function isLeader() : bool
+    public function isLeader(): bool
     {
         return Strings::startsWith($this->key, self::LEADER_PREFIX);
     }
 
-    public function isAccountant() : bool
+    public function isAccountant(): bool
     {
         return Strings::startsWith($this->key, self::ACCOUNTANT_PREFIX);
     }
 
-    public function isOfficer() : bool
+    public function isOfficer(): bool
     {
         return Strings::startsWith($this->key, self::OFFICER_PREFIX);
     }
 
-    public function isEventManager() : bool
+    public function isEventManager(): bool
     {
         return Strings::startsWith($this->key, self::EVENT_MANAGER_PREFIX);
     }
 
-    public function isBasicUnit() : bool
+    public function isBasicUnit(): bool
     {
         return Strings::endsWith($this->key, self::BASIC_UNIT_SUFFIX);
     }
 
-    public function isTroop() : bool
+    public function isTroop(): bool
     {
         return Strings::endsWith($this->key, self::TROOP_SUFFIX);
     }

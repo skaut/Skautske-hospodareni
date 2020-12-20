@@ -9,12 +9,12 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20200112173514 extends AbstractMigration
 {
-    public function getDescription() : string
+    public function getDescription(): string
     {
         return 'Rozdělení vratek u tábora na dětské a dospělé';
     }
 
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql(<<<SQL
             INSERT INTO `ac_chitsCategory` (`id`, `label`, `short`, `type`, `virtual`, `orderby`, `deleted`) VALUES
@@ -43,7 +43,7 @@ final class Version20200112173514 extends AbstractMigration
         $this->addSql('DELETE FROM `ac_chitsCategory_object` WHERE `categoryId` = \'20\' AND `objectTypeId` = \'camp\';');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql('INSERT INTO `ac_chitsCategory_object` (`categoryId`, `objectTypeId`) VALUES (20, \'camp\');');
         $ids = $this->connection->fetchAll(<<<SQL
@@ -62,6 +62,7 @@ final class Version20200112173514 extends AbstractMigration
                 ['id' => $row['id']]
             );
         }
+
         $this->addSql('DELETE FROM `ac_chitsCategory_object` WHERE `categoryId` IN (\'21\', \'22\');');
         $this->addSql('DELETE FROM `ac_chitsCategory` WHERE `id` IN (\'21\', \'22\');');
     }

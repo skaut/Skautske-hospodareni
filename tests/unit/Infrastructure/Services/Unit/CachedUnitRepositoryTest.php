@@ -13,7 +13,7 @@ use Nette\Caching\Storages\MemoryStorage;
 
 final class CachedUnitRepositoryTest extends TestCase
 {
-    public function testFindResultIsCached() : void
+    public function testFindResultIsCached(): void
     {
         $id   = 1;
         $unit = $this->unit($id);
@@ -30,7 +30,7 @@ final class CachedUnitRepositoryTest extends TestCase
         $this->assertSame($unit, $cachedRepository->find($id));
     }
 
-    public function testFindExceptionIsRethrown() : void
+    public function testFindExceptionIsRethrown(): void
     {
         $exception = new UnitNotFound();
 
@@ -45,7 +45,7 @@ final class CachedUnitRepositoryTest extends TestCase
         (new CachedUnitRepository($repository, new MemoryStorage()))->find(1);
     }
 
-    public function testFindByParentResultIsCached() : void
+    public function testFindByParentResultIsCached(): void
     {
         $units = [$this->unit(2)];
 
@@ -61,7 +61,7 @@ final class CachedUnitRepositoryTest extends TestCase
         $this->assertSame($units, $cachedRepository->findByParent(1));
     }
 
-    private function unit(int $id) : Unit
+    private function unit(int $id): Unit
     {
         return new Unit($id, '', '', null, '', '', '', '', '', null, []);
     }

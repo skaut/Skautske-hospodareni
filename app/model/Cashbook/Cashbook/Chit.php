@@ -18,6 +18,7 @@ use Model\Common\FilePath;
 use Model\Common\ScanNotFound;
 use Model\Common\ShouldNotHappen;
 use RuntimeException;
+
 use function array_map;
 use function count;
 use function implode;
@@ -34,25 +35,17 @@ class Chit
      * @ORM\Id()
      * @ORM\Column(type="integer", options={"unsigned"=true})
      * @ORM\GeneratedValue()
-     *
-     * @var int|NULL
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\ManyToOne(targetEntity=Cashbook::class, inversedBy="chits")
      * @ORM\JoinColumn(name="eventId")
-     *
-     * @var Cashbook
      */
-    private $cashbook;
+    private Cashbook $cashbook;
 
-    /**
-     * @ORM\Embedded(class=ChitBody::class, columnPrefix=false)
-     *
-     * @var ChitBody
-     */
-    private $body;
+    /** @ORM\Embedded(class=ChitBody::class, columnPrefix=false) */
+    private ChitBody $body;
 
     /**
      * @ORM\ManyToMany(targetEntity=ChitItem::class, cascade={"persist", "remove"}, orphanRemoval=true)
@@ -67,13 +60,14 @@ class Chit
      * @var Collection|ChitItem[]
      * @phpstan-var Collection<int, ChitItem>
      */
-    private $items;
+    private Collection $items;
 
     /**
      * @ORM\Column(type="string_enum", length=13)
      *
      * @var PaymentMethod
      * @EnumAnnotation(class=PaymentMethod::class)
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
     private $paymentMethod;
 
@@ -81,10 +75,8 @@ class Chit
      * ID of person that locked this
      *
      * @ORM\Column(type="integer", nullable=true, name="`lock`", options={"unsigned"=true})
-     *
-     * @var int|NULL
      */
-    private $locked;
+    private ?int $locked = null;
 
     /**
      * @ORM\OneToMany(
@@ -97,7 +89,7 @@ class Chit
      * @phpstan-var Collection<int, ChitScan>
      * @var Collection|ChitScan[]
      */
-    private $scans;
+    private Collection $scans;
 
     /**
      * @param ChitItem[] $items
@@ -111,14 +103,14 @@ class Chit
         $this->body          = $body;
         $this->paymentMethod = $paymentMethod;
         $this->items         = new ArrayCollection($items);
-        $this->scans         = new ArrayCollection(array_map(fn(ChitScan $scan) => new ChitScan($this, $scan->getFilePath()), $scans));
+        $this->scans         = new ArrayCollection(array_map(fn (ChitScan $scan) => new ChitScan($this, $scan->getFilePath()), $scans));
     }
 
     /**
      * @param ChitItem[]  $items
      * @param ICategory[] $categories
      */
-    public static function create(Cashbook $cashbook, ChitBody $body, PaymentMethod $paymentMethod, array $items, array $categories) : self
+    public static function create(Cashbook $cashbook, ChitBody $body, PaymentMethod $paymentMethod, array $items, array $categories): self
     {
         self::validateItems($items, $categories);
 
@@ -129,7 +121,7 @@ class Chit
      * @param ChitItem[]  $items
      * @param ICategory[] $categories
      */
-    public function update(ChitBody $body, PaymentMethod $paymentMethod, array $items, array $categories) : void
+    public function update(ChitBody $body, PaymentMethod $paymentMethod, array $items, array $categories): void
     {
         Assertion::notEmpty($items, 'At least one chit item was expected');
 
@@ -144,17 +136,17 @@ class Chit
         }
     }
 
-    public function lock(int $userId) : void
+    public function lock(int $userId): void
     {
         $this->locked = $userId;
     }
 
-    public function unlock() : void
+    public function unlock(): void
     {
         $this->locked = null;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         if ($this->id === null) {
             throw new RuntimeException('ID not set');
@@ -163,12 +155,12 @@ class Chit
         return $this->id;
     }
 
-    public function getBody() : ChitBody
+    public function getBody(): ChitBody
     {
         return $this->body;
     }
 
-    public function getAmount() : Amount
+    public function getAmount(): Amount
     {
         $exps = [];
         foreach ($this->items as $item) {
@@ -178,19 +170,19 @@ class Chit
         return new Amount(implode('+', $exps));
     }
 
-    public function getPurpose() : string
+    public function getPurpose(): string
     {
         return implode(', ', $this->items->map(function (ChitItem $item) {
             return $item->getPurpose();
         })->toArray());
     }
 
-    public function getDate() : Date
+    public function getDate(): Date
     {
         return $this->body->getDate();
     }
 
-    public function getCategoryId() : int
+    public function getCategoryId(): int
     {
         if ($this->items->count() !== 1) {
             throw new ShouldNotHappen('This should be call just for chit with one item!');
@@ -199,37 +191,37 @@ class Chit
         return $this->getFirstItem()->getCategory()->getId();
     }
 
-    public function isLocked() : bool
+    public function isLocked(): bool
     {
         return $this->locked !== null;
     }
 
-    public function getOperation() : Operation
+    public function getOperation(): Operation
     {
         return $this->getFirstItem()->getCategory()->getOperationType();
     }
 
-    public function copyToCashbook(Cashbook $newCashbook) : self
+    public function copyToCashbook(Cashbook $newCashbook): self
     {
         return new self(
             $newCashbook,
             $this->body,
             $this->paymentMethod,
-            $this->items->map(function (ChitItem $item) : ChitItem {
+            $this->items->map(function (ChitItem $item): ChitItem {
                 return clone $item;
             })->toArray(),
             $this->scans->toArray()
         );
     }
 
-    public function isIncome() : bool
+    public function isIncome(): bool
     {
         return $this->getFirstItem()->getCategory()->getOperationType()->equalsValue(Operation::INCOME);
     }
 
-    public function copyToCashbookWithUndefinedCategory(Cashbook $newCashbook) : self
+    public function copyToCashbookWithUndefinedCategory(Cashbook $newCashbook): self
     {
-        $items = $this->items->map(function (ChitItem $item) : ChitItem {
+        $items = $this->items->map(function (ChitItem $item): ChitItem {
             $category = new Category(
                 $this->isIncome() ? CategoryAggregate::UNDEFINED_INCOME_ID : CategoryAggregate::UNDEFINED_EXPENSE_ID,
                 $item->getCategory()->getOperationType()
@@ -243,7 +235,7 @@ class Chit
         return new self($newCashbook, $this->body, $this->paymentMethod, $items->toArray(), $scans);
     }
 
-    public function withCategory(Category $category, Cashbook $cashbook) : self
+    public function withCategory(Category $category, Cashbook $cashbook): self
     {
         $newItems = [];
         foreach ($this->items as $item) {
@@ -259,7 +251,7 @@ class Chit
         );
     }
 
-    public function getPaymentMethod() : PaymentMethod
+    public function getPaymentMethod(): PaymentMethod
     {
         return $this->paymentMethod;
     }
@@ -267,17 +259,17 @@ class Chit
     /**
      * @return ChitItem[]
      */
-    public function getItems() : array
+    public function getItems(): array
     {
         return $this->items->toArray();
     }
 
-    public function setBody(ChitBody $body) : void
+    public function setBody(ChitBody $body): void
     {
         $this->body = $body;
     }
 
-    private function getFirstItem() : ChitItem
+    private function getFirstItem(): ChitItem
     {
         return $this->items->first();
     }
@@ -286,18 +278,21 @@ class Chit
      * @param ChitItem[]  $items
      * @param ICategory[] $categories
      */
-    private static function validateItems(array $items, array $categories) : void
+    private static function validateItems(array $items, array $categories): void
     {
         $itemCategories = [];
         foreach ($items as $item) {
             if (in_array($item->getCategory()->getId(), $itemCategories)) {
                 throw new Cashbook\Chit\DuplicitCategory(sprintf('Category %d is duplicit', $item->getCategory()->getId()));
             }
+
             $itemCategories[] = $item->getCategory()->getId();
 
-            if ($item->getCategory()->getOperationType()->equals(Operation::INCOME()) &&
+            if (
+                $item->getCategory()->getOperationType()->equals(Operation::INCOME()) &&
                 $item->getCategory()->getId() === ICategory::CATEGORY_HPD_ID &&
-                count($items) > 1) {
+                count($items) > 1
+            ) {
                 throw new Cashbook\Chit\SingleItemRestriction(sprintf('Chit with category %d should have just one item!', $item->getCategory()->getId()));
             }
 
@@ -307,12 +302,12 @@ class Chit
         }
     }
 
-    public function addScan(FilePath $filePath) : void
+    public function addScan(FilePath $filePath): void
     {
         $this->scans->add(new ChitScan($this, $filePath));
     }
 
-    public function removeScan(FilePath $filePath) : void
+    public function removeScan(FilePath $filePath): void
     {
         foreach ($this->scans as $key => $scan) {
             if ($scan->getFilePath()->equals($filePath)) {
@@ -328,12 +323,12 @@ class Chit
     /**
      * @return ChitScan[]
      */
-    public function getScans() : array
+    public function getScans(): array
     {
         return $this->scans->toArray();
     }
 
-    public function removeAllScans() : void
+    public function removeAllScans(): void
     {
         $this->scans->clear();
     }

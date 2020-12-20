@@ -14,12 +14,12 @@ final class CountGroupsWithBankAccountQueryHandlerTest extends IntegrationTest
     /**
      * @return string[]
      */
-    protected function getTestedAggregateRoots() : array
+    protected function getTestedAggregateRoots(): array
     {
         return [Group::class];
     }
 
-    public function test() : void
+    public function test(): void
     {
         for ($i = 0; $i < 3; $i++) {
             $this->tester->haveInDatabase('pa_group', [

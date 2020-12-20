@@ -11,15 +11,14 @@ use Model\Travel\Repositories\IContractRepository;
 
 final class ContractRepository implements IContractRepository
 {
-    /** @var EntityManager */
-    private $em;
+    private EntityManager $em;
 
     public function __construct(EntityManager $em)
     {
         $this->em = $em;
     }
 
-    public function find(int $id) : Contract
+    public function find(int $id): Contract
     {
         $contract = $this->em->find(Contract::class, $id);
 
@@ -33,18 +32,18 @@ final class ContractRepository implements IContractRepository
     /**
      * @return Contract[]
      */
-    public function findByUnit(int $unitId) : array
+    public function findByUnit(int $unitId): array
     {
         return $this->em->getRepository(Contract::class)->findBy(['unitId' => $unitId]);
     }
 
-    public function save(Contract $contract) : void
+    public function save(Contract $contract): void
     {
         $this->em->persist($contract);
         $this->em->flush($contract);
     }
 
-    public function remove(Contract $contract) : void
+    public function remove(Contract $contract): void
     {
         $this->em->remove($contract);
         $this->em->flush();

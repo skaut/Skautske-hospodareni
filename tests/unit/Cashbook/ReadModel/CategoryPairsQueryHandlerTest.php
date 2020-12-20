@@ -14,6 +14,7 @@ use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use Model\Cashbook\Repositories\CategoryRepository;
 use Model\Cashbook\Repositories\ICashbookRepository;
+
 use function array_map;
 
 final class CategoryPairsQueryHandlerTest extends Unit
@@ -26,7 +27,7 @@ final class CategoryPairsQueryHandlerTest extends Unit
     private const CASHBOOK_TYPE = CashbookType::EVENT;
     private const CASHBOOK_ID   = '49d7d54b-6a14-47be-b809-a16a5dfbe572';
 
-    public function testReturnAllCategoriesIfOperationIsNotPassed() : void
+    public function testReturnAllCategoriesIfOperationIsNotPassed(): void
     {
         $handler = $this->createHandler();
 
@@ -36,7 +37,7 @@ final class CategoryPairsQueryHandlerTest extends Unit
         ], $handler(new CategoryPairsQuery(CashbookId::fromString(self::CASHBOOK_ID))));
     }
 
-    public function testReturnOnlyIncomeCategoriesWhenOperationTypeIsPassed() : void
+    public function testReturnOnlyIncomeCategoriesWhenOperationTypeIsPassed(): void
     {
         $handler = $this->createHandler();
 
@@ -45,9 +46,9 @@ final class CategoryPairsQueryHandlerTest extends Unit
         ));
     }
 
-    private function createHandler() : CategoryPairsQueryHandler
+    private function createHandler(): CategoryPairsQueryHandler
     {
-        $categories = array_map(static function (array $category) : ICategory {
+        $categories = array_map(static function (array $category): ICategory {
             return m::mock(ICategory::class, [
                 'getId' => $category[0],
                 'getName' => $category[1],
@@ -58,7 +59,7 @@ final class CategoryPairsQueryHandlerTest extends Unit
         $categoryRepository = m::mock(CategoryRepository::class);
         $categoryRepository->shouldReceive('findForCashbook')
             ->once()
-            ->withArgs(static function (CashbookId $cashbookId, CashbookType $type) : bool {
+            ->withArgs(static function (CashbookId $cashbookId, CashbookType $type): bool {
                 return $cashbookId->equals(CashbookId::fromString(self::CASHBOOK_ID))
                     && $type->equalsValue(self::CASHBOOK_TYPE);
             })

@@ -10,7 +10,7 @@ use Model\Participant\PaymentId;
 
 final class Version20190604213432 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql(<<<'SQL'
             ALTER TABLE `ac_participants`
@@ -19,7 +19,7 @@ final class Version20190604213432 extends AbstractMigration
         SQL);
     }
 
-    public function postUp(Schema $schema) : void
+    public function postUp(Schema $schema): void
     {
         parent::postUp($schema);
 
@@ -33,7 +33,7 @@ final class Version20190604213432 extends AbstractMigration
         }
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql(<<<'SQL'
             ALTER TABLE `ac_participants`

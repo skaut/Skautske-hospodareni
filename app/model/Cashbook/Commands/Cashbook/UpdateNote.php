@@ -12,11 +12,9 @@ use Model\Cashbook\Handlers\Cashbook\UpdateNoteHandler;
  */
 final class UpdateNote
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var string */
-    private $note;
+    private string $note;
 
     public function __construct(CashbookId $cashbookId, string $note)
     {
@@ -24,12 +22,12 @@ final class UpdateNote
         $this->note       = $note;
     }
 
-    public function getCashbookId() : CashbookId
+    public function getCashbookId(): CashbookId
     {
         return $this->cashbookId;
     }
 
-    public function getNote() : string
+    public function getNote(): string
     {
         return $this->note;
     }

@@ -12,15 +12,14 @@ use Model\Google\ReadModel\QueryHandlers\UnitOAuthListQueryHandler;
  */
 final class UnitOAuthListQuery
 {
-    /** @var UnitId */
-    private $unitId;
+    private UnitId $unitId;
 
     public function __construct(UnitId $unitId)
     {
         $this->unitId = $unitId;
     }
 
-    public function getUnitId() : UnitId
+    public function getUnitId(): UnitId
     {
         return $this->unitId;
     }

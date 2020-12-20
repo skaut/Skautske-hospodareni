@@ -6,6 +6,7 @@ namespace Model\Cashbook\Cashbook;
 
 use InvalidArgumentException;
 use Nette\Utils\Strings;
+
 use function ctype_digit;
 use function sprintf;
 use function strlen;
@@ -15,8 +16,7 @@ final class ChitNumber
 {
     public const PATTERN = '^[a-zA-Z]{0,3}[0-9]{1,5}(/[0-9]{1,2})?$';
 
-    /** @var string */
-    private $value;
+    private string $value;
 
     public function __construct(string $value)
     {
@@ -30,17 +30,17 @@ final class ChitNumber
         $this->value = $value;
     }
 
-    public function containsLetter() : bool
+    public function containsLetter(): bool
     {
         return ! ctype_digit($this->value);
     }
 
-    public function toString() : string
+    public function toString(): string
     {
         return $this->value;
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         return $this->toString();
     }

@@ -15,26 +15,22 @@ use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Nette\Application\BadRequestException;
 use Nette\Http\IResponse;
+
 use function assert;
 
 final class PrefixControl extends Dialog
 {
     private const MAX_LENGTH = 6;
 
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
-    /** @var PaymentMethod */
-    private $paymentMethod;
+    private PaymentMethod $paymentMethod;
 
-    /** @var bool */
-    private $isEditable;
+    private bool $isEditable;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(CashbookId $cashbookId, PaymentMethod $paymentMethod, bool $isEditable, CommandBus $commandBus, QueryBus $queryBus)
     {
@@ -46,12 +42,12 @@ final class PrefixControl extends Dialog
         $this->queryBus      = $queryBus;
     }
 
-    public function handleOpen() : void
+    public function handleOpen(): void
     {
         $this->show();
     }
 
-    public function beforeRender() : void
+    public function beforeRender(): void
     {
         $this->template->setFile(__DIR__ . '/templates/PrefixControl.latte');
         $this->template->setParameters([
@@ -61,7 +57,7 @@ final class PrefixControl extends Dialog
         ]);
     }
 
-    protected function createComponentForm() : BaseForm
+    protected function createComponentForm(): BaseForm
     {
         if (! $this->isEditable) {
             throw new BadRequestException('User cannot edit cashbook prefix', IResponse::S403_FORBIDDEN);
@@ -79,7 +75,7 @@ final class PrefixControl extends Dialog
 
         $form->addSubmit('submit', 'Uložit');
 
-        $form->onSuccess[] = function ($_, array $values) : void {
+        $form->onSuccess[] = function ($_x, array $values): void {
             $this->commandBus->handle(new UpdateChitNumberPrefix($this->cashbookId, $this->paymentMethod, $values['prefix']));
             $this->hide();
         };
@@ -87,7 +83,7 @@ final class PrefixControl extends Dialog
         return $form;
     }
 
-    private function getPrefix() : ?string
+    private function getPrefix(): ?string
     {
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
 

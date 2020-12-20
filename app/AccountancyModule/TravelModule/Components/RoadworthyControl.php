@@ -18,23 +18,20 @@ use Model\Travel\Vehicle\RoadworthyScan;
 use Nette\Application\BadRequestException;
 use Nette\Http\FileUpload;
 use Nette\Http\IResponse;
+
 use function array_keys;
 use function assert;
 use function implode;
 
 final class RoadworthyControl extends BaseControl
 {
-    /** @var int */
-    private $vehicleId;
+    private int $vehicleId;
 
-    /** @var bool */
-    private $isEditable;
+    private bool $isEditable;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(int $vehicleId, bool $isEditable, CommandBus $commandBus, QueryBus $queryBus)
     {
@@ -45,7 +42,7 @@ final class RoadworthyControl extends BaseControl
         $this->queryBus   = $queryBus;
     }
 
-    public function render() : void
+    public function render(): void
     {
         $this->template->setParameters([
             'files' => $this->queryBus->handle(new RoadworthyScansQuery($this->vehicleId)),
@@ -59,7 +56,7 @@ final class RoadworthyControl extends BaseControl
         $this->template->render();
     }
 
-    public function handleRemove(string $path) : void
+    public function handleRemove(string $path): void
     {
         $this->assertIsEditable();
 
@@ -72,7 +69,7 @@ final class RoadworthyControl extends BaseControl
         $this->redrawControl();
     }
 
-    protected function createComponentUploadForm() : BaseForm
+    protected function createComponentUploadForm(): BaseForm
     {
         $form = new BaseForm();
 
@@ -86,18 +83,18 @@ final class RoadworthyControl extends BaseControl
 
         $form->addSubmit('submit', 'Ok');
 
-        $form->onSuccess[] = function (BaseForm $form) : void {
+        $form->onSuccess[] = function (BaseForm $form): void {
             $this->formSucceeded($form);
         };
 
-        $form->onSubmit[] = function () : void {
+        $form->onSubmit[] = function (): void {
             $this->redrawControl();
         };
 
         return $form;
     }
 
-    private function formSucceeded(BaseForm $form) : void
+    private function formSucceeded(BaseForm $form): void
     {
         $this->assertIsEditable();
 
@@ -116,7 +113,7 @@ final class RoadworthyControl extends BaseControl
         $this->presenter->flashMessage('Sken byl nahrán', 'success');
     }
 
-    private function assertIsEditable() : void
+    private function assertIsEditable(): void
     {
         if ($this->isEditable) {
             return;

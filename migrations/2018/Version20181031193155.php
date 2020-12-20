@@ -9,7 +9,7 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20181031193155 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql('INSERT INTO `ac_chitsCategory` (`id`, `label`, `short`, `type`, `virtual`, `orderby`, `deleted`) VALUES ' .
             "('17', 'Příspěvky samosprávy', 'sa', 1, '0', '100', '0'), " .
@@ -21,7 +21,7 @@ final class Version20181031193155 extends AbstractMigration
             "('19', 'general');");
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql('DELETE FROM `ac_chitsCategory_object` WHERE `categoryId` IN (17, 18, 19);');
         $this->addSql('DELETE FROM `ac_chitsCategory` WHERE `id` IN (17, 18, 19);');

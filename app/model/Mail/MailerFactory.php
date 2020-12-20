@@ -24,7 +24,7 @@ class MailerFactory implements IMailerFactory
         $this->googleService = $googleService;
     }
 
-    public function create(OAuth $oAuth) : IMailer
+    public function create(OAuth $oAuth): IMailer
     {
         if (! $this->enabled) {
             return $this->debugMailer;

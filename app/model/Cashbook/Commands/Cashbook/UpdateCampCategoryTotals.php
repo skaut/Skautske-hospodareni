@@ -14,15 +14,14 @@ use Model\Cashbook\Handlers\Cashbook\UpdateCampCategoryTotalHandler;
  */
 final class UpdateCampCategoryTotals
 {
-    /** @var CashbookId */
-    private $cashbookId;
+    private CashbookId $cashbookId;
 
     public function __construct(CashbookId $cashbookId)
     {
         $this->cashbookId = $cashbookId;
     }
 
-    public function getCashbookId() : CashbookId
+    public function getCashbookId(): CashbookId
     {
         return $this->cashbookId;
     }

@@ -21,10 +21,9 @@ final class MoveChitsToDifferentCashbookHandlerTest extends CommandHandlerTest
     private const TARGET_CASHBOOK_ID = '50f7a570-102b-4d12-aa9f-1391a132b02d';
     private const SOURCE_CASHBOOK_ID = 'b10db507-aed9-4abd-bdc1-95631d775e65';
 
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
-    public function testMovingChits() : void
+    public function testMovingChits(): void
     {
         $sourceCashbookId = CashbookId::fromString(self::SOURCE_CASHBOOK_ID);
         $targetCashbookId = CashbookId::fromString(self::TARGET_CASHBOOK_ID);
@@ -72,12 +71,12 @@ final class MoveChitsToDifferentCashbookHandlerTest extends CommandHandlerTest
     /**
      * @return string[]
      */
-    protected function getTestedAggregateRoots() : array
+    protected function getTestedAggregateRoots(): array
     {
         return [Cashbook::class];
     }
 
-    protected function _before() : void
+    protected function _before(): void
     {
         $this->tester->useConfigFiles([__DIR__ . '/MoveChitsToDifferentCashbookHandlerTest.neon']);
         parent::_before();

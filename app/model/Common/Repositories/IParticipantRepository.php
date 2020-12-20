@@ -15,27 +15,27 @@ interface IParticipantRepository
     /**
      * @return Participant[]
      */
-    public function findByEvent(SkautisEventId $id) : array;
+    public function findByEvent(SkautisEventId $id): array;
 
     /**
      * @return Participant[]
      */
-    public function findByCamp(SkautisCampId $id) : array;
+    public function findByCamp(SkautisCampId $id): array;
 
     /**
      * @return Participant[]
      */
-    public function findByEducation(SkautisEducationId $id) : array;
+    public function findByEducation(SkautisEducationId $id): array;
 
-    public function addCampParticipant(SkautisCampId $campId, int $personId) : void;
+    public function addCampParticipant(SkautisCampId $campId, int $personId): void;
 
-    public function addEventParticipant(SkautisEventId $eventId, int $personId) : void;
+    public function addEventParticipant(SkautisEventId $eventId, int $personId): void;
 
-    public function createCampParticipant(SkautisCampId $eventId, NonMemberParticipant $participant) : void;
+    public function createCampParticipant(SkautisCampId $eventId, NonMemberParticipant $participant): void;
 
-    public function createEventParticipant(SkautisEventId $eventId, NonMemberParticipant $participant) : void;
+    public function createEventParticipant(SkautisEventId $eventId, NonMemberParticipant $participant): void;
 
-    public function removeCampParticipant(int $participantId) : void;
+    public function removeCampParticipant(int $participantId): void;
 
-    public function removeEventParticipant(int $participantId) : void;
+    public function removeEventParticipant(int $participantId): void;
 }

@@ -8,9 +8,11 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\GuidType;
 use Model\Common\UnitId;
 
+use function assert;
+
 final class UnitIdType extends GuidType
 {
-    public function getName() : string
+    public function getName(): string
     {
         return 'unit_id';
     }
@@ -18,7 +20,7 @@ final class UnitIdType extends GuidType
     /**
      * @param mixed $value
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform) : ?UnitId
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?UnitId
     {
         if ($value === null) {
             return null;
@@ -30,13 +32,14 @@ final class UnitIdType extends GuidType
     /**
      * @param mixed $value
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform) : ?int
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?int
     {
         if ($value === null) {
             return null;
         }
 
-        /** @var UnitId $value */
+        assert($value instanceof UnitId);
+
         return $value->toInt();
     }
 }

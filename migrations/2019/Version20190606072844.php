@@ -9,7 +9,7 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20190606072844 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql(<<<'SQL'
             ALTER TABLE `ac_participants`
@@ -20,7 +20,7 @@ final class Version20190606072844 extends AbstractMigration
         $this->addSql('ALTER TABLE `ac_participants` ADD UNIQUE `participantId_event_type` (`participantId`, `event_type`);');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql(<<<'SQL'
             ALTER TABLE `ac_participants`

@@ -13,9 +13,9 @@ use Model\Unit\UnitHasNoParent;
 class Version20180122114315 extends AbstractMigration
 {
     /** @var IUnitResolver @inject */
-    public $unitResolver;
+    public IUnitResolver $unitResolver;
 
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql('ALTER TABLE ac_cashbook ADD type VARCHAR(255) NOT NULL COMMENT \'(DC2Type:string_enum)\'');
         $this->addSql('UPDATE ac_cashbook c JOIN ac_object o ON o.id = c.id SET c.type = o.type');
@@ -30,7 +30,7 @@ class Version20180122114315 extends AbstractMigration
         ");
     }
 
-    public function postUp(Schema $schema) : void
+    public function postUp(Schema $schema): void
     {
         $unitCashbooks = $this->connection->fetchAll(
             "SELECT c.id as id, o.skautisId as unit_id FROM ac_cashbook c JOIN ac_object o ON o.id = c.id WHERE c.type = 'unit'"
@@ -49,7 +49,7 @@ class Version20180122114315 extends AbstractMigration
         }
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql('ALTER TABLE ac_cashbook DROP type');
     }

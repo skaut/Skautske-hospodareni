@@ -45,32 +45,32 @@ class Education implements ISkautisEvent
         $this->state       = $state;
     }
 
-    public function getId() : SkautisEducationId
+    public function getId(): SkautisEducationId
     {
         return $this->id;
     }
 
-    public function getDisplayName() : string
+    public function getDisplayName(): string
     {
         return $this->displayName;
     }
 
-    public function getUnitId() : UnitId
+    public function getUnitId(): UnitId
     {
         throw new NotImplementedException('For education events is not implemented UnitID');
     }
 
-    public function getState() : string
+    public function getState(): string
     {
         return $this->state;
     }
 
-    public function getStartDate() : Date
+    public function getStartDate(): Date
     {
         return $this->startDate;
     }
 
-    public function getEndDate() : Date
+    public function getEndDate(): Date
     {
         return $this->endDate;
     }

@@ -18,20 +18,18 @@ use Model\Payment\Repayment;
 use Model\PaymentService;
 use Model\Utils\MoneyFactory;
 use Nette\Forms\IControl;
+
 use function array_filter;
 use function count;
 use function sprintf;
 
 final class RepaymentPresenter extends BasePresenter
 {
-    /** @var Group */
-    private $group;
+    private Group $group;
 
-    /** @var PaymentService */
-    private $payments;
+    private PaymentService $payments;
 
-    /** @var BankAccountService */
-    private $bankAccounts;
+    private BankAccountService $bankAccounts;
 
     public function __construct(PaymentService $payments, BankAccountService $bankAccounts)
     {
@@ -40,7 +38,7 @@ final class RepaymentPresenter extends BasePresenter
         $this->bankAccounts = $bankAccounts;
     }
 
-    public function actionDefault(int $id) : void
+    public function actionDefault(int $id): void
     {
         $group = $this->group = $this->payments->getGroup($id);
 
@@ -52,7 +50,7 @@ final class RepaymentPresenter extends BasePresenter
         $this->template->setParameters(['group' => $group]);
     }
 
-    protected function createComponentForm() : BaseForm
+    protected function createComponentForm(): BaseForm
     {
         $form = new BaseForm();
 
@@ -100,14 +98,14 @@ final class RepaymentPresenter extends BasePresenter
                 );
         }
 
-        $form->onSuccess[] = function (BaseForm $form) : void {
+        $form->onSuccess[] = function (BaseForm $form): void {
             $this->repaymentFormSubmitted($form);
         };
 
         return $form;
     }
 
-    private function repaymentFormSubmitted(BaseForm $form) : void
+    private function repaymentFormSubmitted(BaseForm $form): void
     {
         $values = $form->getValues();
 
@@ -169,11 +167,11 @@ final class RepaymentPresenter extends BasePresenter
     /**
      * @return Payment[]
      */
-    private function getRepaymentCandidates(int $groupId) : array
+    private function getRepaymentCandidates(int $groupId): array
     {
         return array_filter(
             $this->queryBus->handle(new PaymentListQuery($groupId)),
-            function (Payment $payment) : bool {
+            function (Payment $payment): bool {
                 return $payment->getState()->equalsValue(State::COMPLETED);
             }
         );

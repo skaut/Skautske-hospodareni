@@ -9,12 +9,12 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20200214111513 extends AbstractMigration
 {
-    public function getDescription() : string
+    public function getDescription(): string
     {
         return 'Remap enums as varchars';
     }
 
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql(<<<'SQL'
             ALTER TABLE ac_participants CHANGE isAccount isAccount VARCHAR(255) NOT NULL COMMENT '(DC2Type:string_enum)'
@@ -30,7 +30,7 @@ final class Version20200214111513 extends AbstractMigration
         SQL);
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql("ALTER TABLE ac_participants CHANGE isAccount isAccount ENUM('N', 'Y') COLLATE utf8_czech_ci DEFAULT 'N' COMMENT 'placeno na účet?'");
         $this->addSql("ALTER TABLE ac_chitsCategory CHANGE type type ENUM('in', 'out')  COLLATE utf8_czech_ci NOT NULL DEFAULT 'out'");

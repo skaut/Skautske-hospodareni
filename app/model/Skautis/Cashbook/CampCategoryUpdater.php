@@ -14,7 +14,7 @@ use Model\Skautis\Mapper;
 use Model\Utils\MoneyFactory;
 use Skautis\Skautis;
 use Skautis\Wsdl\WsdlException;
-use const ARRAY_FILTER_USE_BOTH;
+
 use function array_diff;
 use function array_fill_keys;
 use function array_filter;
@@ -22,16 +22,15 @@ use function array_keys;
 use function count;
 use function preg_match;
 
+use const ARRAY_FILTER_USE_BOTH;
+
 final class CampCategoryUpdater implements ICampCategoryUpdater
 {
-    /** @var Skautis */
-    private $skautis;
+    private Skautis $skautis;
 
-    /** @var Mapper */
-    private $mapper;
+    private Mapper $mapper;
 
-    /** @var ICampCategoryRepository */
-    private $campCategories;
+    private ICampCategoryRepository $campCategories;
 
     public function __construct(Skautis $skautis, Mapper $mapper, ICampCategoryRepository $campCategories)
     {
@@ -43,7 +42,7 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
     /**
      * @param array<int, float> $cashbookTotals
      */
-    public function updateCategories(CashbookId $cashbookId, array $cashbookTotals) : void
+    public function updateCategories(CashbookId $cashbookId, array $cashbookTotals): void
     {
         $campSkautisId = $this->mapper->getSkautisId($cashbookId, ObjectType::CAMP);
         $skautisTotals = $this->getSkautisTotals($campSkautisId);
@@ -82,6 +81,7 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
             if (! preg_match('/Chyba validace \(EventCampStatement_AmmountMustBeGreatherThanZero\)/', $exc->getMessage())) {
                 throw $exc;
             }
+
             throw new AmountMustBeGreaterThanZero();
         }
     }
@@ -89,7 +89,7 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
     /**
      * @return float[]
      */
-    private function getSkautisTotals(int $campSkautisId) : array
+    private function getSkautisTotals(int $campSkautisId): array
     {
         $categories = $this->campCategories->findForCamp($campSkautisId);
         $totals     = [];

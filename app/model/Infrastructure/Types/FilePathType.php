@@ -8,9 +8,11 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
 use Model\Common\FilePath;
 
+use function assert;
+
 class FilePathType extends StringType
 {
-    public function getName() : string
+    public function getName(): string
     {
         return 'file_path';
     }
@@ -18,16 +20,21 @@ class FilePathType extends StringType
     /**
      * @param mixed $value
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform) : ?string
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
-        /** @var $value FilePath */
-        return $value === null ? null : $value->getPath();
+        if ($value === null) {
+            return null;
+        }
+
+        assert($value instanceof FilePath);
+
+        return $value->getPath();
     }
 
     /**
      * @param mixed $value
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform) : ?FilePath
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?FilePath
     {
         return $value === null ? null : FilePath::fromString($value);
     }

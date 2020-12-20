@@ -11,12 +11,12 @@ use Model\Cashbook\Operation;
 use Model\Event\ReadModel\Queries\EventStatisticsQuery;
 use Model\Event\SkautisEventId;
 use PDO;
+
 use function array_map;
 
 class EventStatisticsQueryHandler
 {
-    /** @var Connection */
-    private $db;
+    private Connection $db;
 
     public function __construct(Connection $connection)
     {
@@ -26,7 +26,7 @@ class EventStatisticsQueryHandler
     /**
      * @return float[]
      */
-    public function __invoke(EventStatisticsQuery $query) : array
+    public function __invoke(EventStatisticsQuery $query): array
     {
         $params = [
             array_map(function (SkautisEventId $id) {

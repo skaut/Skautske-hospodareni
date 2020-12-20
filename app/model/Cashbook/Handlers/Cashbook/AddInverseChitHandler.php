@@ -9,15 +9,14 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 
 final class AddInverseChitHandler
 {
-    /** @var ICashbookRepository */
-    private $cashbooks;
+    private ICashbookRepository $cashbooks;
 
     public function __construct(ICashbookRepository $cashbooks)
     {
         $this->cashbooks = $cashbooks;
     }
 
-    public function __invoke(AddInverseChit $command) : void
+    public function __invoke(AddInverseChit $command): void
     {
         $cashbook         = $this->cashbooks->find($command->getTargetCashbookId());
         $originalCashbook = $this->cashbooks->find($command->getOriginalCashbookId());

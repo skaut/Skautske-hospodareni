@@ -11,14 +11,11 @@ use Nette\Application\BadRequestException;
 
 class CommandPresenter extends BasePresenter
 {
-    /** @var ICommandFormFactory */
-    private $commandFormFactory;
+    private ICommandFormFactory $commandFormFactory;
 
-    /** @var TravelService */
-    private $model;
+    private TravelService $model;
 
-    /** @var int */
-    private $id;
+    private ?int $id = null;
 
     public function __construct(ICommandFormFactory $commandFormFactory, TravelService $model)
     {
@@ -28,7 +25,7 @@ class CommandPresenter extends BasePresenter
         $this->model              = $model;
     }
 
-    public function actionEdit(int $id) : void
+    public function actionEdit(int $id): void
     {
         $command = $this->model->getCommandDetail($id);
         if ($command === null || $command->getUnitId() !== $this->getUnitId() || $command->getClosedAt() !== null) {
@@ -38,13 +35,14 @@ class CommandPresenter extends BasePresenter
         $this->id = $id;
     }
 
-    protected function createComponentForm() : CommandForm
+    protected function createComponentForm(): CommandForm
     {
         $form              = $this->commandFormFactory->create($this->getUnitId(), $this->id);
-        $form->onSuccess[] = function () : void {
+        $form->onSuccess[] = function (): void {
             if ($this->id !== null) {
                 $this->redirect('Default:detail', ['id' => $this->id]);
             }
+
             $this->redirect('Default:');
         };
 

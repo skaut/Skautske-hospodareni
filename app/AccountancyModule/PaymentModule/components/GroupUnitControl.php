@@ -19,6 +19,7 @@ use Model\Unit\Unit;
 use Model\UnitService;
 use Nette\Application\BadRequestException;
 use Nette\Utils\ArrayHash;
+
 use function array_map;
 use function array_replace;
 use function assert;
@@ -26,23 +27,17 @@ use function sprintf;
 
 class GroupUnitControl extends BaseControl
 {
-    /** @var int */
-    private $groupId;
+    private int $groupId;
 
-    /** @var CommandBus */
-    private $commandBus;
+    private CommandBus $commandBus;
 
-    /** @var PaymentService */
-    private $groups;
+    private PaymentService $groups;
 
-    /** @var UnitService */
-    private $units;
+    private UnitService $units;
 
-    /** @var IAuthorizator */
-    private $authorizator;
+    private IAuthorizator $authorizator;
 
-    /** @var QueryBus */
-    private $queryBus;
+    private QueryBus $queryBus;
 
     public function __construct(int $groupId, CommandBus $commandBus, PaymentService $groups, UnitService $units, IAuthorizator $authorizator, QueryBus $queryBus)
     {
@@ -58,12 +53,12 @@ class GroupUnitControl extends BaseControl
     /**
      * @throws BadRequestException
      */
-    public function render() : void
+    public function render(): void
     {
         $group = $this->getGroup($this->groupId);
 
         $unitNames = array_map(
-            function (int $unitId) : string {
+            function (int $unitId): string {
                 return $this->queryBus->handle(new UnitQuery($unitId))->getDisplayName();
             },
             $group->getUnitIds()
@@ -80,7 +75,7 @@ class GroupUnitControl extends BaseControl
     /**
      * @throws BadRequestException
      */
-    protected function createComponentForm() : BaseForm
+    protected function createComponentForm(): BaseForm
     {
         $form = new BaseForm();
 
@@ -94,20 +89,21 @@ class GroupUnitControl extends BaseControl
         $form->addButton('save')
             ->setAttribute('type', 'submit');
 
-        $form->onSuccess[] = function ($form, ArrayHash $values) use ($group) : void {
+        $form->onSuccess[] = function ($form, ArrayHash $values) use ($group): void {
             if (! $this->canEdit($group)) {
                 $this->flashMessage('Nemáte oprávnění pro změnu jednotky', 'danger');
                 $this->redrawControl();
 
                 return;
             }
+
             $this->formSucceeded($values, $group->getId());
         };
 
         return $form;
     }
 
-    private function formSucceeded(ArrayHash $values, int $groupId) : void
+    private function formSucceeded(ArrayHash $values, int $groupId): void
     {
         $group = $this->getGroup($groupId);
 
@@ -132,7 +128,7 @@ class GroupUnitControl extends BaseControl
         $this->redrawControl();
     }
 
-    private function canEdit(Group $group) : bool
+    private function canEdit(Group $group): bool
     {
         foreach ($group->getUnitIds() as $unitId) {
             if ($this->authorizator->isAllowed(ResourceUnit::EDIT, $unitId)) {
@@ -148,7 +144,7 @@ class GroupUnitControl extends BaseControl
      *
      * @return string[]
      */
-    private function buildUnitPairs(array $groupUnitIds) : array
+    private function buildUnitPairs(array $groupUnitIds): array
     {
         $officialUnitPairs = [];
 
@@ -169,7 +165,7 @@ class GroupUnitControl extends BaseControl
         return array_replace(...$officialUnitPairs);
     }
 
-    private function getGroup(int $groupId) : Group
+    private function getGroup(int $groupId): Group
     {
         $group = $this->groups->getGroup($groupId);
 

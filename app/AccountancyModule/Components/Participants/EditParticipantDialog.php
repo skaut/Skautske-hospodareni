@@ -10,6 +10,7 @@ use Assert\Assertion;
 use Closure;
 use Model\DTO\Participant\Participant;
 use Model\DTO\Participant\UpdateParticipant;
+
 use function assert;
 
 final class EditParticipantDialog extends Dialog
@@ -38,18 +39,18 @@ final class EditParticipantDialog extends Dialog
         $this->isRepaymentAllowed = $isRepaymentAllowed;
     }
 
-    public function editParticipant(int $participantId) : void
+    public function editParticipant(int $participantId): void
     {
         $this->participantId = $participantId;
         $this->show();
     }
 
-    protected function beforeRender() : void
+    protected function beforeRender(): void
     {
         $this->template->setFile(__DIR__ . '/templates/EditParticipantDialog.latte');
     }
 
-    protected function createComponentForm() : BaseForm
+    protected function createComponentForm(): BaseForm
     {
         Assertion::notNull($this->participantId);
         Assertion::keyExists($this->participants, $this->participantId);
@@ -84,7 +85,7 @@ final class EditParticipantDialog extends Dialog
         $form->addSubmit('save', 'Upravit')
             ->setAttribute('class', 'btn btn-primary');
 
-        $form->onSuccess[] = function ($_, array $values) use ($participant) : void {
+        $form->onSuccess[] = function ($_x, array $values) use ($participant): void {
             $changes = [];
 
             if ($values['payment'] !== $participant->getPayment()) {

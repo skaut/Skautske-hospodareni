@@ -9,7 +9,7 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20181228133626 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql('ALTER TABLE tc_contracts DROP deleted;'); //uz se v ORM kodu nepouziva
         $this->addSql('ALTER TABLE tc_contracts CHANGE template template SMALLINT NOT NULL;');
@@ -17,7 +17,7 @@ final class Version20181228133626 extends AbstractMigration
         $this->addSql('ALTER TABLE ac_chitsCategory CHANGE orderby orderby SMALLINT unsigned NOT NULL;');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql('ALTER TABLE `tc_contracts` ADD `deleted` tinyint(3) unsigned NOT NULL DEFAULT 0;');
         $this->addSql('ALTER TABLE tc_contracts CHANGE template template int(11) NOT NULL DEFAULT 2 COMMENT \'1-old, 2-podle NOZ\';');
