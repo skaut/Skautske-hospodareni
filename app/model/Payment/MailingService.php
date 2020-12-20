@@ -13,15 +13,12 @@ use Model\Google\InvalidOAuth;
 use Model\Mail\IMailerFactory;
 use Model\Mail\Repositories\IGoogleRepository;
 use Model\Payment\Mailing\Payment as MailPayment;
-use Model\Payment\Payment\EmailRecipient;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Services\TemplateFactory;
 use Nette\Mail\Message;
-use Nette\Utils\Validators;
 
-use function array_map;
 use function nl2br;
 use function rand;
 
@@ -62,7 +59,7 @@ class MailingService
     /**
      * Sends email to single payment address
      *
-     * @throws InvalidEmail
+     * @throws PaymentHasNoEmails
      * @throws PaymentNotFound
      * @throws InvalidOAuth
      * @throws EmailTemplateNotSet
@@ -125,20 +122,13 @@ class MailingService
     /**
      * @throws BankAccountNotFound
      * @throws InvalidBankAccount
-     * @throws InvalidEmail
+     * @throws PaymentHasNoEmails
      * @throws InvalidOAuth
      * @throws UserNotFound
      * @throws OAuthNotSet
      */
     private function sendForPayment(Payment $paymentRow, Group $group, EmailTemplate $template): void
     {
-        array_map(function (EmailRecipient $emailRecipient): void {
-            $email = $emailRecipient->getEmailAddress();
-            if (! Validators::isEmail($email)) {
-                throw new InvalidEmail();
-            }
-        }, $paymentRow->getEmailRecipients());
-
         $this->send($group, $this->createPayment($paymentRow), $template);
     }
 
@@ -147,11 +137,16 @@ class MailingService
      * @throws BankAccountNotFound
      * @throws UserNotFound
      * @throws OAuthNotSet
+     * @throws PaymentHasNoEmails
      */
     private function send(Group $group, MailPayment $payment, EmailTemplate $emailTemplate): void
     {
         if ($group->getOauthId() === null) {
             throw new OAuthNotSet();
+        }
+
+        if ($payment->getRecipients() === []) {
+            throw PaymentHasNoEmails::withName($payment->getName());
         }
 
         $user = $this->users->getCurrentUser();
@@ -188,7 +183,7 @@ class MailingService
         return new MailPayment(
             $payment->getName(),
             $payment->getAmount(),
-            array_map(fn (EmailRecipient $recipient) => $recipient->getEmailAddress(), $payment->getEmailRecipients()),
+            $payment->getEmailRecipients(),
             $payment->getDueDate(),
             $payment->getVariableSymbol() !== null ? $payment->getVariableSymbol()->toInt() : null,
             $payment->getConstantSymbol(),

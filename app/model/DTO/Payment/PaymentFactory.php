@@ -8,8 +8,6 @@ use Cake\Chronos\Date;
 use Model\DTO\Payment\Payment as PaymentDTO;
 use Model\Payment\Payment;
 
-use function array_map;
-
 class PaymentFactory
 {
     public static function create(Payment $payment): PaymentDTO
@@ -18,7 +16,7 @@ class PaymentFactory
             $payment->getId(),
             $payment->getName(),
             $payment->getAmount(),
-            array_map(fn (Payment\EmailRecipient $recipient) => $recipient->getEmailAddress(), $payment->getEmailRecipients()),
+            $payment->getEmailRecipients(),
             Date::instance($payment->getDueDate()),
             $payment->getVariableSymbol(),
             $payment->getConstantSymbol(),

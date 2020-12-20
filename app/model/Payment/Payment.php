@@ -235,11 +235,13 @@ class Payment extends Aggregate
     }
 
     /**
-     * @return EmailRecipient[]
+     * @return list<EmailAddress>
      */
     public function getEmailRecipients(): array
     {
-        return $this->emailRecipients->toArray();
+        return $this->emailRecipients
+            ->map(fn (EmailRecipient $recipient) => $recipient->getEmailAddress())
+            ->getValues();
     }
 
     public function getPersonId(): ?int
