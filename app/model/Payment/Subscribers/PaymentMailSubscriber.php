@@ -8,8 +8,8 @@ use Model\Google\Exception\OAuthNotSet;
 use Model\Payment\DomainEvents\PaymentWasCompleted;
 use Model\Payment\EmailTemplateNotSet;
 use Model\Payment\EmailType;
-use Model\Payment\InvalidEmail;
 use Model\Payment\MailingService;
+use Model\Payment\PaymentHasNoEmails;
 
 final class PaymentMailSubscriber
 {
@@ -24,7 +24,7 @@ final class PaymentMailSubscriber
     {
         try {
             $this->mailingService->sendEmail($event->getId(), EmailType::get(EmailType::PAYMENT_COMPLETED));
-        } catch (EmailTemplateNotSet | OAuthNotSet | InvalidEmail $e) {
+        } catch (EmailTemplateNotSet | OAuthNotSet | PaymentHasNoEmails $e) {
         }
     }
 }

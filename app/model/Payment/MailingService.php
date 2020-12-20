@@ -61,7 +61,7 @@ class MailingService
     /**
      * Sends email to single payment address
      *
-     * @throws InvalidEmail
+     * @throws PaymentHasNoEmails
      * @throws PaymentNotFound
      * @throws InvalidOAuth
      * @throws EmailTemplateNotSet
@@ -124,7 +124,7 @@ class MailingService
     /**
      * @throws BankAccountNotFound
      * @throws InvalidBankAccount
-     * @throws InvalidEmail
+     * @throws PaymentHasNoEmails
      * @throws InvalidOAuth
      * @throws UserNotFound
      * @throws OAuthNotSet
@@ -139,11 +139,16 @@ class MailingService
      * @throws BankAccountNotFound
      * @throws UserNotFound
      * @throws OAuthNotSet
+     * @throws PaymentHasNoEmails
      */
     private function send(Group $group, MailPayment $payment, EmailTemplate $emailTemplate): void
     {
         if ($group->getOauthId() === null) {
             throw new OAuthNotSet();
+        }
+
+        if ($payment->getRecipients() === []) {
+            throw PaymentHasNoEmails::withName($payment->getName());
         }
 
         $user = $this->users->getCurrentUser();
