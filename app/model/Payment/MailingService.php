@@ -19,7 +19,6 @@ use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Services\TemplateFactory;
 use Nette\Mail\Message;
-use Nette\Utils\Validators;
 use function array_map;
 use function nl2br;
 use function rand;
@@ -138,13 +137,6 @@ class MailingService
      */
     private function sendForPayment(Payment $paymentRow, Group $group, EmailTemplate $template) : void
     {
-        array_map(function (EmailRecipient $emailRecipient) : void {
-            $email = $emailRecipient->getEmailAddress();
-            if (! Validators::isEmail($email)) {
-                throw new InvalidEmail();
-            }
-        }, $paymentRow->getEmailRecipients());
-
         $this->send($group, $this->createPayment($paymentRow), $template);
     }
 
