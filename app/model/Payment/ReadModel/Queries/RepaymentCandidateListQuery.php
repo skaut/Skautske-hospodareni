@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Model\Payment\ReadModel\Queries;
 
-use Model\Payment\ReadModel\QueryHandlers\PaymentListQueryHandler;
+use Model\Payment\ReadModel\QueryHandlers\RepaymentCandidateListQueryHandler;
 
 /**
- * @see PaymentListQueryHandler
+ * @see RepaymentCandidateListQueryHandler
  */
-final class PaymentListQuery
+final class RepaymentCandidateListQuery
 {
     private int $groupId;
 

@@ -11,6 +11,7 @@ use Nette\SmartObject;
 
 /**
  * @property-read int $id
+ * @property-read int $personId
  * @property-read string $firstName
  * @property-read string $lastName
  * @property-read string $nickName

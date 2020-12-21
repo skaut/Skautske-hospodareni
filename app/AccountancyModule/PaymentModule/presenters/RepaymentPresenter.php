@@ -7,19 +7,18 @@ namespace App\AccountancyModule\PaymentModule;
 use App\Forms\BaseForm;
 use Cake\Chronos\Date;
 use Model\DTO\Payment\Group;
-use Model\DTO\Payment\Payment;
+use Model\DTO\Payment\RepaymentCandidate;
 use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\BankAccountService;
 use Model\Payment\BankError;
 use Model\Payment\Commands\Repayment\CreateRepayments;
-use Model\Payment\Payment\State;
-use Model\Payment\ReadModel\Queries\PaymentListQuery;
+use Model\Payment\ReadModel\Queries\RepaymentCandidateListQuery;
 use Model\Payment\Repayment;
 use Model\PaymentService;
 use Model\Utils\MoneyFactory;
 use Nette\Forms\IControl;
 
-use function array_filter;
+use function assert;
 use function count;
 use function sprintf;
 
@@ -64,28 +63,26 @@ final class RepaymentPresenter extends BasePresenter
 
         $paymentsContainer = $form->addContainer('payments');
 
-        foreach ($this->getRepaymentCandidates($this->group->getId()) as $payment) {
-            $container = $paymentsContainer->addContainer('payment' . $payment->getId());
+        foreach ($this->queryBus->handle(new RepaymentCandidateListQuery($this->group->getId())) as $repayment) {
+            assert($repayment instanceof RepaymentCandidate);
+            $container = $paymentsContainer->addContainer('payment' . $repayment->getPersonId());
 
             $checkbox = $container->addCheckbox('selected');
 
             $container->addText('name')
-                ->setDefaultValue('Vratka - ' . $payment->getName() . ' - ' . $this->group->getName())
+                ->setDefaultValue('Vratka - ' . $repayment->getName() . ' - ' . $this->group->getName())
                 ->addConditionOn($checkbox, $form::EQUAL, true)
                 ->setRequired('Zadejte název vratky!');
 
             $container->addText('amount')
-                ->setDefaultValue($payment->getAmount())
+                ->setDefaultValue($repayment->getAmount())
                 ->addConditionOn($checkbox, $form::EQUAL, true)
-                ->setRequired('Zadejte částku vratky u ' . $payment->getName())
+                ->setRequired('Zadejte částku vratky u ' . $repayment->getName())
                 ->addRule($form::NUMERIC, 'Vratka musí být číslo!');
 
-            $transaction = $payment->getTransaction();
-            $account     = $transaction !== null ? (string) $transaction->getBankAccount() : '';
-
-            $invalidBankAccountMessage = 'Zadejte platný bankovní účet u ' . $payment->getName();
+            $invalidBankAccountMessage = 'Zadejte platný bankovní účet u ' . $repayment->getName();
             $container->addText('account')
-                ->setDefaultValue($account)
+                ->setDefaultValue($repayment->getBankAccount() ?? '')
                 ->setRequired(false)
                 ->addConditionOn($checkbox, $form::EQUAL, true)
                 ->setRequired('Musíte vyplnit bankovní účet')
@@ -162,18 +159,5 @@ final class RepaymentPresenter extends BasePresenter
         } catch (BankError $e) {
             $form->addError(sprintf('Chyba z banky %s', $e->getMessage()));
         }
-    }
-
-    /**
-     * @return Payment[]
-     */
-    private function getRepaymentCandidates(int $groupId): array
-    {
-        return array_filter(
-            $this->queryBus->handle(new PaymentListQuery($groupId)),
-            function (Payment $payment): bool {
-                return $payment->getState()->equalsValue(State::COMPLETED);
-            }
-        );
     }
 }
