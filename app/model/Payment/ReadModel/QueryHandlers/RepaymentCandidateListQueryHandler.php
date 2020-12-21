@@ -46,8 +46,9 @@ final class RepaymentCandidateListQueryHandler
         );
         $repayments = array_map([DTO\RepaymentCandidateFactory::class, 'create'], $payments);
 
-        $group = $this->groups->find($query->getGroupId());
-        if ($group->getObject()->getType()->equals(Type::CAMP())) {
+        $group  = $this->groups->find($query->getGroupId());
+        $object = $group->getObject();
+        if ($object !== null && $object->getType()->equals(Type::CAMP())) {
             $this->setRepaymentsFromCamp(new SkautisCampId($group->getObject()->getId()), $repayments);
         }
 
