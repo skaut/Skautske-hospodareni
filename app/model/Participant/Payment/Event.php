@@ -14,8 +14,13 @@ final class Event
     /** @ORM\Column(type="integer") */
     private int $id;
 
-    /** @ORM\Column(type="string_enum", length=7) */
-    private EventType $type;
+    /**
+     * @ORM\Column(type="string_enum", length=7)
+     *
+     * @var EventType
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
+     */
+    private $type;
 
     public function __construct(int $id, EventType $type)
     {
