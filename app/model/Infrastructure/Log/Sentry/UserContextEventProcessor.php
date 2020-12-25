@@ -19,8 +19,8 @@ final class UserContextEventProcessor
     {
         $userData = $this->userContext->getUserData();
 
-        if ($this->userContext->getUserData() !== null) {
-            $event->getUserContext()->setData($userData);
+        if ($userData !== null) {
+            $event->getUser()->createFromArray($userData);
         }
 
         return $event;
