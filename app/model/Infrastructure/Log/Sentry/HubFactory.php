@@ -26,7 +26,7 @@ final class HubFactory
 
         $options = new Options(['dsn' => $dsn]);
         $options->setRelease($releaseHash);
-        $options->setIntegrations([new RequestIntegration($options), new ModulesIntegration()]);
+        $options->setIntegrations([new RequestIntegration(), new ModulesIntegration()]);
 
         return new Hub((new ClientBuilder($options))->getClient(), $scope);
     }

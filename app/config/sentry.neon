@@ -11,7 +11,7 @@ services:
           - %sentry.releaseHash%
       setup:
           # Hub needs to be set as current, because RequestIntegration only works with current Hub
-          - Sentry\State\Hub::setCurrent()
+          - Sentry\SentrySdk::setCurrentHub()
 
 decorator:
     Monolog\Logger:
