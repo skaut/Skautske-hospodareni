@@ -18,11 +18,11 @@
 
 <div class="row">
     <div class="col-sm-12">
-        <h3>{$unitPairs[$unitId]}</h3>
+        <h3>{$unitName}</h3>
 
         {if $showForm}
             <p>Z výkonostních důvodů je zobrazeno pouze prvních 50 osob.</p>
-            {control massAddForm}
+            {control form}
         {else}
             <div class="text-muted text-center mt-5">
                 <i class="fas fa-clipboard-check fa-6x mb-3"></i>
