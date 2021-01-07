@@ -36,16 +36,11 @@ messageBus:
     eventBus:
     queryBus:
 
-proxy:
-    default: off
-    proxyDir: %tempDir%/proxies
-
 extensions:
     autoDI: Fmasa\AutoDI\DI\AutoDIExtension
     skautis: Skautis\Nette\SkautisExtension
     messageBus: eGen\MessageBus\DI\MessageBusExtension
     console: Kdyby\Console\DI\ConsoleExtension
-    proxy: Lookyman\Nette\Proxy\DI\ProxyExtension
 
 autoDI:
     services:
@@ -158,17 +153,10 @@ services:
     - Model\Infrastructure\Services\Common\FlysystemScanStorage
 
     # Skautis webservices
-    skautis.org:
-        factory: Model\Skautis\WebserviceFactory::createCached('org')
-        tags: [lookyman.lazy]
-    skautis.event:
-        factory: Model\Skautis\WebserviceFactory::create('event')
-        tags: [lookyman.lazy]
-    skautis.webservice.user:
-        factory: Model\Skautis\WebserviceFactory::createCached('user')
-        tags: [lookyman.lazy]
-    skautis.cached.event:
-        factory: Model\Skautis\WebserviceFactory::createCached('event')
+    skautis.org: Model\Skautis\WebserviceFactory::createCached('org')
+    skautis.event: Model\Skautis\WebserviceFactory::create('event')
+    skautis.webservice.user: Model\Skautis\WebserviceFactory::createCached('user')
+    skautis.cached.event: Model\Skautis\WebserviceFactory::createCached('event')
 
     nette.latteFactory:
         setup:
