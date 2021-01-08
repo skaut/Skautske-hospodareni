@@ -174,11 +174,6 @@
         </phingcall>
 
         <phingcall target="deploy:app-command">
-            <property name="comment" value="Generating nette proxies"/>
-            <property name="command" value="lookyman:nette-proxy:generate"/>
-        </phingcall>
-
-        <phingcall target="deploy:app-command">
             <property name="comment" value="Running database migrations"/>
             <property name="command" value="migrations:migrate --no-interaction"/>
         </phingcall>
