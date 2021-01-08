@@ -6,11 +6,9 @@ namespace Model\Event\ReadModel\QueryHandlers;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
-use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
 use Model\Event\ReadModel\Queries\CampStatisticsQuery;
 use Model\Event\SkautisCampId;
-use PDO;
 
 use function array_map;
 
@@ -32,7 +30,6 @@ class CampStatisticsQueryHandler
             array_map(function (SkautisCampId $id) {
                 return $id->toInt();
             }, $query->getCampIds()),
-            ObjectType::CAMP,
             Operation::EXPENSE,
             $query->getYear(),
         ];
@@ -42,14 +39,13 @@ class CampStatisticsQueryHandler
             FROM `ac_chits` c
             LEFT JOIN `ac_chit_to_item` cti ON c.id = cti.chit_id
             LEFT JOIN `ac_chits_item` ci ON cti.item_id = ci.id
-            JOIN ac_object o ON c.eventId = o.id
-            WHERE o.skautisId IN (?) AND o.type = ? AND category_operation_type = ?
-            AND YEAR(date) = ?
+            JOIN ac_camp_cashbooks o ON c.eventId = o.cashbookId
+            WHERE o.id IN (?) AND category_operation_type = ? AND YEAR(date) = ?
             GROUP BY eventId
 SQL;
 
         $stmt = $this->db->executeQuery($sql, $params, $types);
 
-        return array_map('floatval', $stmt->fetchAll(PDO::FETCH_KEY_PAIR));
+        return array_map('floatval', $stmt->fetchAll());
     }
 }

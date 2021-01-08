@@ -1,7 +1,8 @@
 DELETE FROM ac_cashbook;
 DELETE FROM ac_chits;
 DELETE FROM ac_chits_item;
-DELETE FROM ac_object;
+DELETE FROM ac_camp_cashbooks;
+DELETE FROM ac_event_cashbooks;
 DELETE FROM ac_unit_cashbooks;
 DELETE FROM ac_units;
 DELETE FROM pa_bank_account;

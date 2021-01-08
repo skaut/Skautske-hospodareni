@@ -7,18 +7,16 @@ namespace Model\Cashbook\ReadModel\QueryHandlers;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\CashbookNotFound;
-use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CashbookOfficialUnitQuery;
+use Model\Cashbook\Repositories\ICampRepository as ICashbookCampRepository;
 use Model\Cashbook\Repositories\ICashbookRepository;
+use Model\Cashbook\Repositories\IEventRepository as ICashbookEventRepository;
 use Model\Cashbook\Repositories\IUnitRepository;
 use Model\Common\ShouldNotHappen;
 use Model\Common\UnitId;
 use Model\Event\Repositories\ICampRepository;
 use Model\Event\Repositories\IEventRepository;
-use Model\Event\SkautisCampId;
-use Model\Event\SkautisEventId;
 use Model\Payment\IUnitResolver;
-use Model\Skautis\Mapper;
 use Model\Unit\Repositories\IUnitRepository as ISkautisUnitRepository;
 use Model\Unit\Unit;
 
@@ -36,26 +34,30 @@ class CashbookOfficialUnitQueryHandler
 
     private ISkautisUnitRepository $skautisUnitRepository;
 
-    private Mapper $mapper;
-
     private IUnitResolver $unitResolver;
+
+    private ICashbookEventRepository $eventCashbookRepository;
+
+    private ICashbookCampRepository $campCashbookRepository;
 
     public function __construct(
         ICashbookRepository $cashbooks,
         IEventRepository $eventRepository,
         ICampRepository $campRepository,
         IUnitRepository $unitRepository,
-        Mapper $mapper,
         IUnitResolver $unitResolver,
-        ISkautisUnitRepository $skautisUnitRepository
+        ISkautisUnitRepository $skautisUnitRepository,
+        ICashbookEventRepository $eventCashbookRepository,
+        ICashbookCampRepository $campCashbookRepository
     ) {
-        $this->cashbooks             = $cashbooks;
-        $this->eventRepository       = $eventRepository;
-        $this->unitRepository        = $unitRepository;
-        $this->mapper                = $mapper;
-        $this->campRepository        = $campRepository;
-        $this->unitResolver          = $unitResolver;
-        $this->skautisUnitRepository = $skautisUnitRepository;
+        $this->cashbooks               = $cashbooks;
+        $this->eventRepository         = $eventRepository;
+        $this->unitRepository          = $unitRepository;
+        $this->campRepository          = $campRepository;
+        $this->unitResolver            = $unitResolver;
+        $this->skautisUnitRepository   = $skautisUnitRepository;
+        $this->eventCashbookRepository = $eventCashbookRepository;
+        $this->campCashbookRepository  = $campCashbookRepository;
     }
 
     /**
@@ -72,13 +74,13 @@ class CashbookOfficialUnitQueryHandler
     private function resolveUnitThatOwnsCashbook(Cashbook $cashbook): UnitId
     {
         if ($cashbook->getType()->equalsValue(CashbookType::EVENT)) {
-            $eventId = new SkautisEventId($this->mapper->getSkautisId($cashbook->getId(), ObjectType::EVENT));
+            $eventId = $this->eventCashbookRepository->findByCashbookId($cashbook->getId())->getSkautisId();
 
             return $this->eventRepository->find($eventId)->getUnitId();
         }
 
         if ($cashbook->getType()->equalsValue(CashbookType::CAMP)) {
-            $campId = new SkautisCampId($this->mapper->getSkautisId($cashbook->getId(), ObjectType::CAMP));
+            $campId = $this->campCashbookRepository->findByCashbookId($cashbook->getId())->getSkautisId();
 
             return $this->campRepository->find($campId)->getUnitId();
         }
