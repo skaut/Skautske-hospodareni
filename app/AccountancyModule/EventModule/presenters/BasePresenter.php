@@ -5,11 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\EventModule;
 
 use Model\Auth\Resources\Event as ResourceEvent;
-use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ObjectType;
-use Model\Cashbook\ReadModel\Queries\CashbookQuery;
-use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
-use Model\DTO\Cashbook\Cashbook;
 use Model\Event\Event;
 use Model\Event\EventNotFound;
 use Model\Event\ReadModel\Queries\EventQuery;
@@ -34,10 +30,6 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
             return;
         }
 
-        $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($this->aid)));
-        $cashbook   = $this->queryBus->handle(new CashbookQuery($cashbookId));
-        assert($cashbook instanceof Cashbook);
-
         try {
             $this->event = $this->queryBus->handle(new EventQuery(new SkautisEventId($this->aid)));
             assert($this->event instanceof Event);
@@ -49,8 +41,6 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         $this->template->setParameters([
             'event' => $this->event,
             'isEditable' => $this->isEditable = $this->authorizator->isAllowed(ResourceEvent::UPDATE, $this->aid),
-            'cashPrefix' => $cashbook->getChitNumberPrefix(PaymentMethod::CASH()),
-            'bankPrefix' => $cashbook->getChitNumberPrefix(PaymentMethod::BANK()),
         ]);
     }
 
