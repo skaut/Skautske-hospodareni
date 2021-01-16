@@ -95,7 +95,7 @@
                         n:href="Camp:AddParticipants: $group->id" class="dropdown-item">… za účastníka</a>
 
                 <a n:if="$group->type === 'event'"
-                        n:href="AddEventParticipants: $group->id" class="dropdown-item">… za účastníka</a>
+                        n:href="Event:AddParticipants: $group->id" class="dropdown-item">… za účastníka</a>
 
                 <a n:if="$group->type === 'registration'"
                         n:href="AddRegistrationMembers: $group->id" class="dropdown-item">… za registraci</a>

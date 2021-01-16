@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\AccountancyModule\PaymentModule;
+namespace App\AccountancyModule\PaymentModule\EventModule;
 
+use App\AccountancyModule\PaymentModule\BasePresenter;
 use App\AccountancyModule\PaymentModule\Components\GroupForm;
 use App\AccountancyModule\PaymentModule\Factories\IGroupFormFactory;
 use Cake\Chronos\Date;
@@ -11,7 +12,7 @@ use Model\Event\Event;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\ReadModel\Queries\EventsWithoutGroupQuery;
 
-final class CreateEventGroupPresenter extends BasePresenter
+final class CreateGroupPresenter extends BasePresenter
 {
     private IGroupFormFactory $formFactory;
 
@@ -29,7 +30,7 @@ final class CreateEventGroupPresenter extends BasePresenter
 
         if (! $this->isEditable || ! isset($eventsWithoutGroup[$eventId])) {
             $this->flashMessage('Pro tuto akci není možné vytvořit skupinu plateb', 'danger');
-            $this->redirect('SelectEventForGroup:');
+            $this->redirect('Event:SelectForGroup:');
         }
 
         $this->event = $eventsWithoutGroup[$eventId];

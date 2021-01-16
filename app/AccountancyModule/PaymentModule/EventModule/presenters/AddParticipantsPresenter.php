@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\AccountancyModule\PaymentModule;
+namespace App\AccountancyModule\PaymentModule\EventModule;
 
+use App\AccountancyModule\PaymentModule\BasePresenter;
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use Model\DTO\Participant\Participant;
@@ -13,7 +14,7 @@ use Model\PaymentService;
 
 use function assert;
 
-final class AddEventParticipantsPresenter extends BasePresenter
+final class AddParticipantsPresenter extends BasePresenter
 {
     private PaymentService $model;
     private IMassAddFormFactory $formFactory;
