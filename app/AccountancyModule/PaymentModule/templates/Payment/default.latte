@@ -46,7 +46,7 @@
     <div class="mt-4 d-lg-flex" n:inner-if="$isEditable && $group->state === 'open'">
         <div class="mr-auto">
             {if $group->type === 'registration'}
-                <a n:href="Journal: $group->id" class="btn btn-light"><i class="fas fa-book-reader"></i>
+                <a n:href="Registration:Journal: $group->id" class="btn btn-light"><i class="fas fa-book-reader"></i>
                     Časopisy</a>
             {/if}
 
@@ -98,7 +98,7 @@
                         n:href="Event:AddParticipants: $group->id" class="dropdown-item">… za účastníka</a>
 
                 <a n:if="$group->type === 'registration'"
-                        n:href="AddRegistrationMembers: $group->id" class="dropdown-item">… za registraci</a>
+                        n:href="Registration:AddMembers: $group->id" class="dropdown-item">… za registraci</a>
 
                 <a n:if="$group->type === 'education'"
                         n:href="Education:AddParticipants: $group->id" class="dropdown-item">… za účastníka</a>

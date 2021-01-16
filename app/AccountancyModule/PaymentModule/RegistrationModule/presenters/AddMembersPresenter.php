@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\AccountancyModule\PaymentModule;
+namespace App\AccountancyModule\PaymentModule\RegistrationModule;
 
+use App\AccountancyModule\PaymentModule\BasePresenter;
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use InvalidArgumentException;
@@ -14,7 +15,7 @@ use function array_slice;
 use function assert;
 use function intdiv;
 
-class AddRegistrationMembersPresenter extends BasePresenter
+class AddMembersPresenter extends BasePresenter
 {
     private int $id;
 
@@ -52,7 +53,7 @@ class AddRegistrationMembersPresenter extends BasePresenter
             $list = $this->model->getPersonsFromRegistrationWithoutPayment(array_keys($this->readUnits), $id);
         } catch (InvalidArgumentException $exc) {
             $this->flashMessage('Neoprávněný přístup ke skupině.', 'danger');
-            $this->redirect('GroupList:');
+            $this->redirect(':Accountancy:Payment:GroupList:');
 
             return;
         }
