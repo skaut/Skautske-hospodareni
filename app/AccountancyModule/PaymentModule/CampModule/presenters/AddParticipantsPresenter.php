@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\AccountancyModule\PaymentModule;
+namespace App\AccountancyModule\PaymentModule\CampModule;
 
+use App\AccountancyModule\PaymentModule\BasePresenter;
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
@@ -17,7 +18,7 @@ use Model\Unit\ReadModel\Queries\UnitQuery;
 use function array_filter;
 use function in_array;
 
-final class AddCampParticipantsPresenter extends BasePresenter
+final class AddParticipantsPresenter extends BasePresenter
 {
     private PaymentService $model;
     private IMassAddFormFactory $formFactory;
