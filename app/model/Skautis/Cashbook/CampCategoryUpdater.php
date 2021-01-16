@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Model\Skautis\Cashbook;
 
-use InvalidArgumentException;
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\ObjectType;
 use Model\Cashbook\Repositories\ICampCategoryRepository;
+use Model\Cashbook\Repositories\ICampRepository;
 use Model\Cashbook\Services\ICampCategoryUpdater;
+use Model\Event\SkautisCampId;
 use Model\Skautis\Exception\AmountMustBeGreaterThanZero;
-use Model\Skautis\Mapper;
 use Model\Utils\MoneyFactory;
 use Skautis\Skautis;
 use Skautis\Wsdl\WsdlException;
@@ -28,14 +27,17 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
 {
     private Skautis $skautis;
 
-    private Mapper $mapper;
+    private ICampRepository $campRepository;
 
     private ICampCategoryRepository $campCategories;
 
-    public function __construct(Skautis $skautis, Mapper $mapper, ICampCategoryRepository $campCategories)
-    {
+    public function __construct(
+        Skautis $skautis,
+        ICampRepository $campRepository,
+        ICampCategoryRepository $campCategories
+    ) {
         $this->skautis        = $skautis;
-        $this->mapper         = $mapper;
+        $this->campRepository = $campRepository;
         $this->campCategories = $campCategories;
     }
 
@@ -44,7 +46,7 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
      */
     public function updateCategories(CashbookId $cashbookId, array $cashbookTotals): void
     {
-        $campSkautisId = $this->mapper->getSkautisId($cashbookId, ObjectType::CAMP);
+        $campSkautisId = $this->campRepository->findByCashbookId($cashbookId)->getSkautisId();
         $skautisTotals = $this->getSkautisTotals($campSkautisId);
 
         // Update categories that are not in cashbook, has total > 0 in Skautis
@@ -62,10 +64,6 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
 
         if (count($cashbookTotals) === 0) {
             return;
-        }
-
-        if ($campSkautisId === null) {
-            throw new InvalidArgumentException('Camp #' . $cashbookId . " doesn't exist");
         }
 
         try {
@@ -89,9 +87,9 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
     /**
      * @return float[]
      */
-    private function getSkautisTotals(int $campSkautisId): array
+    private function getSkautisTotals(SkautisCampId $campSkautisId): array
     {
-        $categories = $this->campCategories->findForCamp($campSkautisId);
+        $categories = $this->campCategories->findForCamp($campSkautisId->toInt());
         $totals     = [];
 
         foreach ($categories as $category) {

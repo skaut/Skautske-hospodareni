@@ -8,9 +8,11 @@ use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\Exception\UnitNotFound;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
+use Model\Cashbook\Repositories\ICampRepository;
 use Model\Cashbook\Repositories\ICashbookRepository;
+use Model\Cashbook\Repositories\IEventRepository;
 use Model\Cashbook\Repositories\IUnitRepository;
-use Model\Skautis\Mapper;
+use Model\Common\ShouldNotHappen;
 
 class SkautisIdQueryHandler
 {
@@ -18,13 +20,20 @@ class SkautisIdQueryHandler
 
     private IUnitRepository $units;
 
-    private Mapper $mapper;
+    private IEventRepository $eventRepository;
 
-    public function __construct(ICashbookRepository $cashbooks, IUnitRepository $units, Mapper $mapper)
-    {
-        $this->cashbooks = $cashbooks;
-        $this->units     = $units;
-        $this->mapper    = $mapper;
+    private ICampRepository $campRepository;
+
+    public function __construct(
+        ICashbookRepository $cashbooks,
+        IUnitRepository $units,
+        IEventRepository $eventRepository,
+        ICampRepository $campRepository
+    ) {
+        $this->cashbooks       = $cashbooks;
+        $this->units           = $units;
+        $this->eventRepository = $eventRepository;
+        $this->campRepository  = $campRepository;
     }
 
     /**
@@ -40,6 +49,14 @@ class SkautisIdQueryHandler
             return $this->units->findByCashbookId($query->getCashbookId())->getId()->toInt();
         }
 
-        return $this->mapper->getSkautisId($cashbook->getId(), $objectType->toString());
+        if ($objectType->equalsValue(ObjectType::EVENT)) {
+            return $this->eventRepository->findByCashbookId($query->getCashbookId())->getSkautisId()->toInt();
+        }
+
+        if ($objectType->equalsValue(ObjectType::CAMP)) {
+            return $this->campRepository->findByCashbookId($query->getCashbookId())->getSkautisId()->toInt();
+        }
+
+        throw new ShouldNotHappen();
     }
 }

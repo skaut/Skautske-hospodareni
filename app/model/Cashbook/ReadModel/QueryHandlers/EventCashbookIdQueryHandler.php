@@ -5,21 +5,20 @@ declare(strict_types=1);
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
-use Model\Skautis\Mapper;
+use Model\Cashbook\Repositories\IEventRepository;
 
 final class EventCashbookIdQueryHandler
 {
-    private Mapper $mapper;
+    private IEventRepository $eventRepository;
 
-    public function __construct(Mapper $mapper)
+    public function __construct(IEventRepository $eventRepository)
     {
-        $this->mapper = $mapper;
+        $this->eventRepository = $eventRepository;
     }
 
     public function __invoke(EventCashbookIdQuery $query): CashbookId
     {
-        return $this->mapper->getLocalId($query->getEventId()->toInt(), ObjectType::EVENT);
+        return $this->eventRepository->findBySkautisId($query->getEventId())->getCashbookId();
     }
 }

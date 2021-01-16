@@ -10,9 +10,6 @@ dbal:
     debugger:
         panel: %debugMode%
 
-    configuration:
-        filterSchemaAssetsExpression: '~^(?!ac_object)~'
-
     connection:
         host: %database.host%
         user: %database.user%
@@ -59,6 +56,12 @@ dbal:
                 commented: true
             email_address:
                 class: Model\Infrastructure\Types\EmailAddressType
+                commented: true
+            skautis_event_id:
+                class: Model\Infrastructure\Types\SkautisEventIdType
+                commented: true
+            skautis_camp_id:
+                class: Model\Infrastructure\Types\SkautisCampIdType
                 commented: true
 
 services:

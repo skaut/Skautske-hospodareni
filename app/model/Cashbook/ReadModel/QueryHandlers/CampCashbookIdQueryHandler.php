@@ -5,21 +5,20 @@ declare(strict_types=1);
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
-use Model\Skautis\Mapper;
+use Model\Cashbook\Repositories\ICampRepository;
 
 final class CampCashbookIdQueryHandler
 {
-    private Mapper $mapper;
+    private ICampRepository $campRepository;
 
-    public function __construct(Mapper $mapper)
+    public function __construct(ICampRepository $campRepository)
     {
-        $this->mapper = $mapper;
+        $this->campRepository = $campRepository;
     }
 
     public function __invoke(CampCashbookIdQuery $query): CashbookId
     {
-        return $this->mapper->getLocalId($query->getCampId()->toInt(), ObjectType::CAMP);
+        return $this->campRepository->findBySkautisId($query->getCampId())->getCashbookId();
     }
 }
