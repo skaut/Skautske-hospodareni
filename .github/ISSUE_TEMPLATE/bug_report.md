@@ -18,7 +18,7 @@ Kroky pro nasimulování chyby:
 Příklad: Číslo by mělo být formátováno s desetinnou čárkou.
 
 ### Snímky obrazovky
-Pokud máš, přidej snímek obrazovky.
+Pokud máš, přidej snímek obrazovky. (**Tento Github repozitář je veřejný, nevkládejte tedy osobní údaje**)
 
 ### Uživatelské informace:
  - Sekce: (příklad: Tábory/účastníci)
