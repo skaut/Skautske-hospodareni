@@ -40,7 +40,7 @@ final class AddParticipantsPresenter extends BasePresenter
 
         if ($group === null || ! $this->isEditable) {
             $this->flashMessage('Neoprávněný přístup ke skupině.', 'danger');
-            $this->redirect('GroupList:');
+            $this->redirect(':Accountancy:Payment:GroupList:');
         }
 
         $this->groupId      = $id;
