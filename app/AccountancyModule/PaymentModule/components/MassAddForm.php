@@ -14,7 +14,9 @@ use Model\PaymentService;
 use Nette\Forms\Controls\TextBase;
 
 use function array_filter;
+use function array_keys;
 use function array_map;
+use function array_slice;
 use function assert;
 
 class MassAddForm extends BaseControl
@@ -94,6 +96,7 @@ class MassAddForm extends BaseControl
         $selected = $container->addCheckbox('selected');
 
         $container->addMultiSelect('email', null, $emails)
+            ->setDefaultValue(array_slice(array_keys($emails), 0, 1))
             ->setRequired(false);
 
         $container->addText('name')
