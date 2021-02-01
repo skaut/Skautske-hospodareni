@@ -212,7 +212,7 @@
     </target>
 
     <target name="tests-with-coverage">
-        <exec command="php -d php -d zend_extension=xdebug.so vendor/bin/codecept run unit,integration --coverage-xml"
+        <exec command="php -d php -d zend_extension=xdebug.so -d xdebug.mode=coverage vendor/bin/codecept run unit,integration --coverage-xml"
               passthru="true"
               checkreturn="true"/>
     </target>
