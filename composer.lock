@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9340ff8e60a2e44c7af810073ffe412f",
+    "content-hash": "cbb10fd08a9eeb05ddd43cd8d01923c3",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -3637,32 +3637,32 @@
         },
         {
             "name": "nasext/dependent-select-box",
-            "version": "3.1.4",
+            "version": "v5.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/NasExt/DependentSelectBox.git",
-                "reference": "1e11dfc35f7a43a53ca7a5b234cc89e163672cbf"
+                "reference": "4fe9e6bf1ecdb12b2a497aa84079c1f3f6fd0592"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NasExt/DependentSelectBox/zipball/1e11dfc35f7a43a53ca7a5b234cc89e163672cbf",
-                "reference": "1e11dfc35f7a43a53ca7a5b234cc89e163672cbf",
+                "url": "https://api.github.com/repos/NasExt/DependentSelectBox/zipball/4fe9e6bf1ecdb12b2a497aa84079c1f3f6fd0592",
+                "reference": "4fe9e6bf1ecdb12b2a497aa84079c1f3f6fd0592",
                 "shasum": ""
             },
             "require": {
-                "nette/application": "^2.4 || ~3.0.0",
-                "nette/forms": "^2.4 || ~3.0.0",
-                "nette/utils": "^2.4 || ~3.0.0",
-                "php": "~5.6.0 || ^7.0"
+                "nette/application": "^2.4 || ^3.0.0",
+                "nette/forms": "^2.4 || ^3.0.0",
+                "nette/utils": "^2.4 || ^3.0.0",
+                "php": "^7.1"
             },
             "require-dev": {
-                "latte/latte": "^2.4 || ~3.0.0",
-                "nette/bootstrap": "^2.4 || ~3.0.0",
-                "nette/di": "^2.4.6 || ~3.0.0",
-                "nette/http": "^2.4 || ~3.0.0",
-                "nette/robot-loader": "^2.4 || ~3.0.0",
+                "latte/latte": "^2.4 || ^3.0.0",
+                "nette/bootstrap": "^2.4 || ^3.0.0",
+                "nette/di": "^2.4.6 || ^3.0.0",
+                "nette/http": "^2.4 || ^3.0.0",
+                "nette/robot-loader": "^2.4 || ^3.0.0",
                 "nette/tester": "^2.0",
-                "tracy/tracy": "^2.4 || ~3.0.0"
+                "tracy/tracy": "^2.4 || ^3.0.0"
             },
             "type": "library",
             "autoload": {
@@ -3679,11 +3679,11 @@
                     "name": "Dusan Hudak"
                 },
                 {
-                    "name": "Aleš Wita",
-                    "email": "aleswita+github@gmail.com"
+                    "name": "Jáchym Toušek"
                 },
                 {
-                    "name": "Jáchym Toušek"
+                    "name": "Ales Wita",
+                    "email": "aleswita+github@gmail.com"
                 }
             ],
             "description": "Dependent Select Box for Nette Framework.",
@@ -3692,7 +3692,7 @@
                 "nasext",
                 "nette"
             ],
-            "time": "2018-03-08T05:10:43+00:00"
+            "time": "2020-02-27T11:41:15+00:00"
         },
         {
             "name": "nette/application",

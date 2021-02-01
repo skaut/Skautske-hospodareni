@@ -25,7 +25,7 @@
         "moneyphp/money": "^3.0",
         "monolog/monolog": "^2.0",
         "mpdf/mpdf": "^8.0",
-        "nasext/dependent-select-box": "^3.1",
+        "nasext/dependent-select-box": "^5.0",
         "nette/application": "~2.4",
         "nette/bootstrap": "~2.4",
         "nette/caching": " ~3.0",
