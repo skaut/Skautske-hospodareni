@@ -1784,31 +1784,29 @@
         },
         {
             "name": "fmasa/sentry-breadcrumbs-monolog-handler",
-            "version": "2.2.0",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fmasa/sentry-breadcrumbs-monolog-handler.git",
-                "reference": "557f8fb854b4def05b99cdc0df501527482d26c2"
+                "reference": "86dc5f681cec975802d4abecfae31e92e1a87a47"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fmasa/sentry-breadcrumbs-monolog-handler/zipball/557f8fb854b4def05b99cdc0df501527482d26c2",
-                "reference": "557f8fb854b4def05b99cdc0df501527482d26c2",
+                "url": "https://api.github.com/repos/fmasa/sentry-breadcrumbs-monolog-handler/zipball/86dc5f681cec975802d4abecfae31e92e1a87a47",
+                "reference": "86dc5f681cec975802d4abecfae31e92e1a87a47",
                 "shasum": ""
             },
             "require": {
                 "monolog/monolog": "^1.2|^2.0",
-                "php": ">=7.1",
-                "sentry/sentry": "^2.1|^3.0"
+                "php": "^7.4 || ^8.0",
+                "sentry/sentry": "^3.0"
             },
             "require-dev": {
-                "doctrine/coding-standard": "^6.0",
+                "doctrine/coding-standard": "^8.1",
                 "guzzlehttp/psr7": "^1.6",
                 "mockery/mockery": "^1.3",
                 "php-http/curl-client": "^2.0",
-                "phpunit/phpcov": "^3.0",
-                "phpunit/phpunit": "^5.7",
-                "satooshi/php-coveralls": "^1.0"
+                "phpunit/phpunit": "^9.5"
             },
             "type": "library",
             "autoload": {
@@ -1827,7 +1825,85 @@
                 }
             ],
             "description": "Monolog handler that transform log entries into breadcrumbs",
-            "time": "2020-10-16T09:48:25+00:00"
+            "time": "2021-01-06T17:10:25+00:00"
+        },
+        {
+            "name": "friendsofphp/proxy-manager-lts",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/FriendsOfPHP/proxy-manager-lts.git",
+                "reference": "aa76978a8feaf7ddffaf346ba4f409efbfe5f9a9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/FriendsOfPHP/proxy-manager-lts/zipball/aa76978a8feaf7ddffaf346ba4f409efbfe5f9a9",
+                "reference": "aa76978a8feaf7ddffaf346ba4f409efbfe5f9a9",
+                "shasum": ""
+            },
+            "require": {
+                "laminas/laminas-code": "^3.4.1|^4.0",
+                "php": ">=7.1",
+                "symfony/filesystem": "^4.4.17|^5.0"
+            },
+            "conflict": {
+                "laminas/laminas-stdlib": "<3.2.1",
+                "zendframework/zend-stdlib": "<3.2.1"
+            },
+            "replace": {
+                "ocramius/proxy-manager": "^2.1"
+            },
+            "require-dev": {
+                "ext-phar": "*",
+                "symfony/phpunit-bridge": "^5.2"
+            },
+            "type": "library",
+            "extra": {
+                "thanks": {
+                    "name": "ocramius/proxy-manager",
+                    "url": "https://github.com/Ocramius/ProxyManager"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProxyManager\\": "src/ProxyManager"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marco Pivetta",
+                    "email": "ocramius@gmail.com",
+                    "homepage": "http://ocramius.github.io/"
+                },
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                }
+            ],
+            "description": "Adding support for a wider range of PHP versions to ocramius/proxy-manager",
+            "homepage": "https://github.com/FriendsOfPHP/proxy-manager-lts",
+            "keywords": [
+                "aop",
+                "lazy loading",
+                "proxy",
+                "proxy pattern",
+                "service proxies"
+            ],
+            "funding": [
+                {
+                    "url": "https://github.com/Ocramius",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/ocramius/proxy-manager",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2020-12-28T10:50:10+00:00"
         },
         {
             "name": "friendsofphp/proxy-manager-lts",
