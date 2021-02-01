@@ -71,13 +71,18 @@ class AddRegistrationMembersPresenter extends BasePresenter
         $list = array_slice($list, 0, 50);
 
         foreach ($list as $p) {
+            $totalAmount = (float) $p['AmountTotal'];
+            if ($totalAmount === 0.0) {
+                continue;
+            }
+
             $stsCount = intdiv((int) $p['AmountServices'], self::STS_PRICE);
 
             $form->addPerson(
                 $p['ID_Person'],
                 $p['emails'],
                 $p['Person'],
-                (float) $p['AmountTotal'],
+                $totalAmount,
                 $stsCount !== 0 ? $stsCount . 'x STS' : ''
             );
         }
