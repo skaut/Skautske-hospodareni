@@ -2,15 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\AccountancyModule\PaymentModule\CampModule;
+namespace App\AccountancyModule\PaymentModule;
 
-use App\AccountancyModule\PaymentModule\BasePresenter;
 use Cake\Chronos\Date;
 use Model\Payment\ReadModel\Queries\CampsWithoutGroupQuery;
 
 use function array_values;
 
-final class SelectForGroupPresenter extends BasePresenter
+final class SelectCampForGroupPresenter extends BasePresenter
 {
     public function renderDefault(): void
     {

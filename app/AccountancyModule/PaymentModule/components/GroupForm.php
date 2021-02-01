@@ -195,7 +195,7 @@ final class GroupForm extends BaseControl
             $this->flashMessage('Skupina byla založena');
         }
 
-        $this->getPresenter()->redirect(':Accountancy:Payment:Payment:default', ['id' => $this->groupId]);
+        $this->getPresenter()->redirect('Payment:default', ['id' => $this->groupId]);
     }
 
     private function getDefaultEmailBody(string $name): string

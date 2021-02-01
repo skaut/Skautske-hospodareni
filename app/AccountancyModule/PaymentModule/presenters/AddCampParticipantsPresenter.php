@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace App\AccountancyModule\PaymentModule\CampModule;
+namespace App\AccountancyModule\PaymentModule;
 
-use App\AccountancyModule\PaymentModule\BasePresenter;
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
@@ -18,7 +17,7 @@ use Model\Unit\ReadModel\Queries\UnitQuery;
 use function array_filter;
 use function in_array;
 
-final class AddParticipantsPresenter extends BasePresenter
+final class AddCampParticipantsPresenter extends BasePresenter
 {
     private PaymentService $model;
     private IMassAddFormFactory $formFactory;
@@ -41,12 +40,12 @@ final class AddParticipantsPresenter extends BasePresenter
 
         if ($group === null || ! $this->isEditable) {
             $this->flashMessage('Neoprávněný přístup ke skupině.', 'danger');
-            $this->redirect(':Accountancy:Payment:GroupList:');
+            $this->redirect('GroupList:');
         }
 
         if ($group->getSkautisId() === null) {
             $this->flashMessage('Neplatné propojení skupiny plateb s táborem.', 'warning');
-            $this->redirect(':Accountancy:Payment:Default:');
+            $this->redirect('Default:');
         }
 
         $this->group        = $group;

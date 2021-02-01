@@ -2,11 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\AccountancyModule\PaymentModule\RegistrationModule;
+namespace App\AccountancyModule\PaymentModule;
 
-use App\AccountancyModule\PaymentModule\BasePresenter;
 use App\AccountancyModule\PaymentModule\Components\GroupForm;
-use App\AccountancyModule\PaymentModule\Factories;
 use App\AccountancyModule\PaymentModule\Factories\IGroupFormFactory;
 use Assert\Assertion;
 use Cake\Chronos\Date;
@@ -16,7 +14,7 @@ use Model\Payment\Group\SkautisEntity;
 use Model\Payment\Group\Type;
 use Model\Payment\ReadModel\Queries\RegistrationWithoutGroupQuery;
 
-class CreateGroupPresenter extends BasePresenter
+class CreateRegistrationGroupPresenter extends BasePresenter
 {
     private Registration $registration;
 
@@ -36,7 +34,7 @@ class CreateGroupPresenter extends BasePresenter
 
         if ($registration === null) {
             $this->flashMessage('Nemáte založenou žádnou otevřenou registraci', 'warning');
-            $this->redirect(':Accountancy:Payment:GroupList:');
+            $this->redirect('GroupList:');
         }
 
         $this->registration = $registration;

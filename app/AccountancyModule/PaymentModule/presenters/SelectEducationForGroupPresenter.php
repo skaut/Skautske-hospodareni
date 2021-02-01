@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\AccountancyModule\PaymentModule\EducationModule;
+namespace App\AccountancyModule\PaymentModule;
 
-use App\AccountancyModule\PaymentModule\BasePresenter;
 use Cake\Chronos\Date;
 use Model\Payment\ReadModel\Queries\EducationsWithoutGroupQuery;
 
-class SelectForGroupPresenter extends BasePresenter
+class SelectEducationForGroupPresenter extends BasePresenter
 {
     public function actionDefault(): void
     {
