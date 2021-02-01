@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\AccountancyModule\PaymentModule;
+namespace App\AccountancyModule\PaymentModule\CampModule;
 
+use App\AccountancyModule\PaymentModule\BasePresenter;
 use App\AccountancyModule\PaymentModule\Components\GroupForm;
 use App\AccountancyModule\PaymentModule\Factories\IGroupFormFactory;
 use Cake\Chronos\Date;
@@ -11,7 +12,7 @@ use Model\Event\Camp;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\ReadModel\Queries\CampsWithoutGroupQuery;
 
-final class CreateCampGroupPresenter extends BasePresenter
+final class CreateGroupPresenter extends BasePresenter
 {
     private IGroupFormFactory $formFactory;
 
@@ -29,7 +30,7 @@ final class CreateCampGroupPresenter extends BasePresenter
 
         if (! $this->isEditable || ! isset($camps[$campId])) {
             $this->flashMessage('Pro tento tábor není možné vytvořit skupinu plateb', 'danger');
-            $this->redirect('SelectCampForGroup:');
+            $this->redirect('SelectForGroup:');
         }
 
         $this->camp = $camps[$campId];

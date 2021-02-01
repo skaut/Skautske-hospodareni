@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\AccountancyModule\PaymentModule;
+namespace App\AccountancyModule\PaymentModule\RegistrationModule;
 
+use App\AccountancyModule\PaymentModule\BasePresenter;
 use Model\PaymentService;
 
 use function array_keys;
@@ -30,7 +31,7 @@ class JournalPresenter extends BasePresenter
         $year  = $this->model->getRegistrationYear($group->getSkautisId());
         if ($year === null) {
             $this->flashMessage('Registrace nebyla nalezena', 'danger');
-            $this->redirect('GroupList:');
+            $this->redirect(':Accountancy:Payment:GroupList:');
         }
 
         $units = $this->unitService->getAllUnder($this->unitId->toInt());

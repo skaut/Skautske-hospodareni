@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\AccountancyModule\PaymentModule;
+namespace App\AccountancyModule\PaymentModule\EducationModule;
 
+use App\AccountancyModule\PaymentModule\BasePresenter;
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use Model\Cashbook\ReadModel\Queries\EducationParticipantListQuery;
@@ -17,7 +18,7 @@ use function array_filter;
 use function assert;
 use function in_array;
 
-class AddEducationParticipantsPresenter extends BasePresenter
+class AddParticipantsPresenter extends BasePresenter
 {
     private PaymentService $model;
 
@@ -42,7 +43,7 @@ class AddEducationParticipantsPresenter extends BasePresenter
 
         if ($group === null || ! $this->isEditable) {
             $this->flashMessage('Neoprávněný přístup ke skupině.', 'danger');
-            $this->redirect('GroupList:');
+            $this->redirect(':Accountancy:Payment:GroupList:');
         }
 
         if ($group->getSkautisId() === null) {

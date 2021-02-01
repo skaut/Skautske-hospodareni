@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\AccountancyModule\PaymentModule;
+namespace App\AccountancyModule\PaymentModule\EducationModule;
 
+use App\AccountancyModule\PaymentModule\BasePresenter;
 use App\AccountancyModule\PaymentModule\Components\GroupForm;
 use App\AccountancyModule\PaymentModule\Factories\IGroupFormFactory;
 use Assert\Assertion;
@@ -14,7 +15,7 @@ use Model\Payment\ReadModel\Queries\EducationsWithoutGroupQuery;
 
 use function array_key_exists;
 
-class CreateEducationGroupPresenter extends BasePresenter
+class CreateGroupPresenter extends BasePresenter
 {
     private IGroupFormFactory $formFactory;
 
@@ -32,7 +33,7 @@ class CreateEducationGroupPresenter extends BasePresenter
 
         if (! $this->isEditable || ! array_key_exists($educationId, $educations)) {
             $this->flashMessage('Pro tuto vzdělávací akci není možné vytvořit skupinu plateb', 'danger');
-            $this->redirect('SelectEducationForGroup:');
+            $this->redirect('Education:SelectForGroup:');
         }
 
         $this->education = $educations[$educationId];
