@@ -1906,84 +1906,6 @@
             "time": "2020-12-28T10:50:10+00:00"
         },
         {
-            "name": "friendsofphp/proxy-manager-lts",
-            "version": "v1.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/FriendsOfPHP/proxy-manager-lts.git",
-                "reference": "aa76978a8feaf7ddffaf346ba4f409efbfe5f9a9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfPHP/proxy-manager-lts/zipball/aa76978a8feaf7ddffaf346ba4f409efbfe5f9a9",
-                "reference": "aa76978a8feaf7ddffaf346ba4f409efbfe5f9a9",
-                "shasum": ""
-            },
-            "require": {
-                "laminas/laminas-code": "^3.4.1|^4.0",
-                "php": ">=7.1",
-                "symfony/filesystem": "^4.4.17|^5.0"
-            },
-            "conflict": {
-                "laminas/laminas-stdlib": "<3.2.1",
-                "zendframework/zend-stdlib": "<3.2.1"
-            },
-            "replace": {
-                "ocramius/proxy-manager": "^2.1"
-            },
-            "require-dev": {
-                "ext-phar": "*",
-                "symfony/phpunit-bridge": "^5.2"
-            },
-            "type": "library",
-            "extra": {
-                "thanks": {
-                    "name": "ocramius/proxy-manager",
-                    "url": "https://github.com/Ocramius/ProxyManager"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "ProxyManager\\": "src/ProxyManager"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Marco Pivetta",
-                    "email": "ocramius@gmail.com",
-                    "homepage": "http://ocramius.github.io/"
-                },
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                }
-            ],
-            "description": "Adding support for a wider range of PHP versions to ocramius/proxy-manager",
-            "homepage": "https://github.com/FriendsOfPHP/proxy-manager-lts",
-            "keywords": [
-                "aop",
-                "lazy loading",
-                "proxy",
-                "proxy pattern",
-                "service proxies"
-            ],
-            "funding": [
-                {
-                    "url": "https://github.com/Ocramius",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/ocramius/proxy-manager",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2020-12-28T10:50:10+00:00"
-        },
-        {
             "name": "google/apiclient",
             "version": "v2.9.1",
             "source": {
@@ -4586,23 +4508,23 @@
         },
         {
             "name": "nette/robot-loader",
-            "version": "v3.1.1",
+            "version": "v3.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/robot-loader.git",
-                "reference": "3e8d75d6d976e191bdf46752ca40a286671219d2"
+                "reference": "6f9cea738178dbb1b5fba6387a715b0da1a4e0d4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/robot-loader/zipball/3e8d75d6d976e191bdf46752ca40a286671219d2",
-                "reference": "3e8d75d6d976e191bdf46752ca40a286671219d2",
+                "url": "https://api.github.com/repos/nette/robot-loader/zipball/6f9cea738178dbb1b5fba6387a715b0da1a4e0d4",
+                "reference": "6f9cea738178dbb1b5fba6387a715b0da1a4e0d4",
                 "shasum": ""
             },
             "require": {
                 "ext-tokenizer": "*",
                 "nette/finder": "^2.3 || ^3.0",
                 "nette/utils": "^2.4 || ^3.0",
-                "php": ">=5.6.0"
+                "php": ">=5.6 <8.1"
             },
             "conflict": {
                 "nette/nette": "<2.2"
@@ -4638,7 +4560,7 @@
                     "homepage": "https://nette.org/contributors"
                 }
             ],
-            "description": "? Nette RobotLoader: high performance and comfortable autoloader that will search and autoload classes within your application.",
+            "description": "🍀 Nette RobotLoader: high performance and comfortable autoloader that will search and autoload classes within your application.",
             "homepage": "https://nette.org",
             "keywords": [
                 "autoload",
@@ -4647,7 +4569,7 @@
                 "nette",
                 "trait"
             ],
-            "time": "2019-03-01T20:23:02+00:00"
+            "time": "2020-11-06T00:02:37+00:00"
         },
         {
             "name": "nette/security",
