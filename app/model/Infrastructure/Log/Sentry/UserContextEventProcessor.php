@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Log;
 
 use Sentry\Event;
+use Sentry\UserDataBag;
 
 final class UserContextEventProcessor
 {
@@ -20,7 +21,7 @@ final class UserContextEventProcessor
         $userData = $this->userContext->getUserData();
 
         if ($userData !== null) {
-            $event->getUser()->createFromArray($userData);
+            $event->setUser(UserDataBag::createFromArray($userData));
         }
 
         return $event;
