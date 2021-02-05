@@ -40,7 +40,7 @@ class Payment extends Aggregate
      */
     private int $id;
 
-    /** @ORM\Column(type="integer", name="groupId", options={"unsigned"=true}) */
+    /** @ORM\Column(type="integer") */
     private int $groupId;
 
     /** @ORM\Column(type="string", length=64) */
@@ -61,19 +61,19 @@ class Payment extends Aggregate
      */
     private Collection $emailRecipients;
 
-    /** @ORM\Column(type="integer", nullable=true, name="personId") */
+    /** @ORM\Column(type="integer", nullable=true) */
     private ?int $personId = null;
 
     /** @ORM\Column(type="float") */
     private float $amount;
 
-    /** @ORM\Column(type="chronos_date", name="maturity") */
+    /** @ORM\Column(type="chronos_date") */
     private Date $dueDate;
 
-    /** @ORM\Column(type="variable_symbol", nullable=true, length=10, name="vs") */
+    /** @ORM\Column(type="variable_symbol", nullable=true, length=10) */
     private ?VariableSymbol $variableSymbol = null;
 
-    /** @ORM\Column(type="smallint", nullable=true, name="ks", options={"unsigned"=true}) */
+    /** @ORM\Column(type="smallint", nullable=true) */
     private ?int $constantSymbol = null;
 
     /** @ORM\Column(type="string", length=64) */
@@ -86,7 +86,7 @@ class Payment extends Aggregate
      */
     private ?Transaction $transaction = null;
 
-    /** @ORM\Column(type="datetime_immutable", nullable=true, name="dateClosed") */
+    /** @ORM\Column(type="datetime_immutable", nullable=true) */
     private ?DateTimeImmutable $closedAt = null;
 
     /** @ORM\Column(type="string", length=64, nullable=true) */

@@ -49,7 +49,7 @@ class Command
     /** @ORM\Column(type="string", length=64, nullable=true) */
     private string $place;
 
-    /** @ORM\Column(type="string", name="passengers", length=64) */
+    /** @ORM\Column(type="string", length=64) */
     private string $fellowPassengers;
 
     /** @ORM\Column(type="money") */
@@ -61,7 +61,7 @@ class Command
     /** @ORM\Column(type="string", length=64) */
     private string $note;
 
-    /** @ORM\Column(type="datetime_immutable", nullable=true, name="closed") */
+    /** @ORM\Column(type="datetime_immutable", nullable=true) */
     private ?DateTimeImmutable $closedAt = null;
 
     /**

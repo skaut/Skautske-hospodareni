@@ -56,7 +56,7 @@ class Group
      */
     private ?SkautisEntity $object = null;
 
-    /** @ORM\Column(type="string", name="label", length=64) */
+    /** @ORM\Column(type="string", length=64) */
     private string $name;
 
     /** @ORM\Embedded(class=PaymentDefaults::class, columnPrefix=false) */
@@ -85,7 +85,7 @@ class Group
     /** @ORM\Column(type="oauth_id", nullable=true) */
     private ?OAuthId $oauthId;
 
-    /** @ORM\Column(type="string", name="state_info", length=250) */
+    /** @ORM\Column(type="string", length=250) */
     private string $note = '';
 
     /** @ORM\Column(type="integer", options={"unsigned"=true}, nullable=true) */

@@ -26,7 +26,7 @@ class CommandRepositoryTest extends IntegrationTest
         'unit_id' => 10,
         'purpose' => 'Převoz materiálu na tábor',
         'place' => 'Krno',
-        'passengers' => 'František Maša sr.',
+        'fellow_passengers' => 'František Maša sr.',
         'vehicle_id' => null,
         'fuel_price' => 1500,
         'amortization' => 300,
@@ -37,7 +37,7 @@ class CommandRepositoryTest extends IntegrationTest
         'next_travel_id' => 2,
         'transport_types' => '[]',
         'contract_id' => 6,
-        'closed' => '2018-01-01 10:30:33',
+        'closed_at' => '2018-01-01 10:30:33',
         'unit' => '',
     ];
 
@@ -47,7 +47,7 @@ class CommandRepositoryTest extends IntegrationTest
         'start_place' => 'Brno',
         'end_place' => 'Praha',
         'distance' => 205.0,
-        'type' => TransportType::CAR,
+        'transport_type' => TransportType::CAR,
         'has_fuel' => 1,
         'start_date' => '2018-01-01',
     ];
@@ -58,7 +58,7 @@ class CommandRepositoryTest extends IntegrationTest
         'start_place' => 'Praha',
         'end_place' => 'Brno',
         'price' => 500.0,
-        'type' => TransportType::BUS,
+        'transport_type' => TransportType::BUS,
         'has_fuel' => 0,
         'start_date' => '2018-01-01',
     ];
@@ -86,12 +86,12 @@ class CommandRepositoryTest extends IntegrationTest
     {
         $now      = '2018-01-01 00:00:00';
         $commands = [
-            ['contract_id' => 1, 'closed' => $now],    // command #1
-            ['contract_id' => 2, 'closed' => null],    // command #2
-            ['contract_id' => 1, 'closed' => null],    // command #3
-            ['contract_id' => 1, 'closed' => $now],    // command #4
-            ['contract_id' => 1, 'closed' => null],    // command #5
-            ['contract_id' => null, 'closed' => null],  // command #6
+            ['contract_id' => 1, 'closed_at' => $now],    // command #1
+            ['contract_id' => 2, 'closed_at' => null],    // command #2
+            ['contract_id' => 1, 'closed_at' => null],    // command #3
+            ['contract_id' => 1, 'closed_at' => $now],    // command #4
+            ['contract_id' => 1, 'closed_at' => null],    // command #5
+            ['contract_id' => null, 'closed_at' => null],  // command #6
         ];
 
         foreach ($commands as $command) {
@@ -99,7 +99,7 @@ class CommandRepositoryTest extends IntegrationTest
                 'unit_id' => 10,
                 'purpose' => 'Převoz materiálu na tábor',
                 'place' => 'Krno',
-                'passengers' => 'František Maša sr.',
+                'fellow_passengers' => 'František Maša sr.',
                 'vehicle_id' => null,
                 'fuel_price' => 0,
                 'amortization' => 0,
@@ -137,10 +137,10 @@ class CommandRepositoryTest extends IntegrationTest
 
         $this->assertSame(self::COMMAND['unit_id'], $command->getUnitId());
         $this->assertSame(self::COMMAND['purpose'], $command->getPurpose());
-        $this->assertSame(self::COMMAND['passengers'], $command->getFellowPassengers());
+        $this->assertSame(self::COMMAND['fellow_passengers'], $command->getFellowPassengers());
         $this->assertEquals(Money::CZK(self::COMMAND['fuel_price']), $command->getFuelPrice());
         $this->assertEquals(Money::CZK(self::COMMAND['amortization']), $command->getAmortization());
-        $this->assertEquals(new DateTimeImmutable(self::COMMAND['closed']), $command->getClosedAt());
+        $this->assertEquals(new DateTimeImmutable(self::COMMAND['closed_at']), $command->getClosedAt());
         $this->assertSame(self::COMMAND['note'], $command->getNote());
 
         $passenger = $command->getPassenger();
@@ -161,7 +161,7 @@ class CommandRepositoryTest extends IntegrationTest
         $this->assertTrue($details1->getDate()->eq(new Date(self::VEHICLE_TRAVEL['start_date'])));
         $this->assertSame(self::VEHICLE_TRAVEL['start_place'], $details1->getStartPlace());
         $this->assertSame(self::VEHICLE_TRAVEL['end_place'], $details1->getEndPlace());
-        $this->assertSame(TransportType::get(self::VEHICLE_TRAVEL['type']), $details1->getTransportType());
+        $this->assertSame(TransportType::get(self::VEHICLE_TRAVEL['transport_type']), $details1->getTransportType());
 
         $transportTravel = $travels[1];
         assert($transportTravel instanceof Command\TransportTravel);
@@ -172,7 +172,7 @@ class CommandRepositoryTest extends IntegrationTest
         $this->assertTrue($details2->getDate()->eq(new Date(self::TRANSPORT_TRAVEL['start_date'])));
         $this->assertSame(self::TRANSPORT_TRAVEL['start_place'], $details2->getStartPlace());
         $this->assertSame(self::TRANSPORT_TRAVEL['end_place'], $details2->getEndPlace());
-        $this->assertSame(TransportType::get(self::TRANSPORT_TRAVEL['type']), $details2->getTransportType());
+        $this->assertSame(TransportType::get(self::TRANSPORT_TRAVEL['transport_type']), $details2->getTransportType());
     }
 
     public function testNextTravelId(): void

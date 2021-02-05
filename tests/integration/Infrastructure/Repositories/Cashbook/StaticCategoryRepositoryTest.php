@@ -37,37 +37,37 @@ class StaticCategoryRepositoryTest extends IntegrationTest
     public function testFindByObjectType(): void
     {
         $this->tester->haveInDatabase(self::TABLE_NAME, [
-            'label' => 'Category 1',
-            'short' => 'c1',
-            'type' => 'in',
+            'name' => 'Category 1',
+            'shortcut' => 'c1',
+            'operation_type' => 'in',
             'virtual' => false,
-            'orderby' => 300,
+            'priority' => 300,
             'deleted' => 0,
         ]);
         $this->tester->haveInDatabase(self::TABLE_NAME, [
-            'label' => 'Category 2',
-            'short' => 'c2',
-            'type' => 'out',
+            'name' => 'Category 2',
+            'shortcut' => 'c2',
+            'operation_type' => 'out',
             'virtual' => false,
-            'orderby' => 400,
+            'priority' => 400,
             'deleted' => 0,
         ]);
         $this->tester->haveInDatabase(self::TABLE_NAME, [
-            'label' => 'Category 3',
-            'short' => 'c3',
-            'type' => 'out',
+            'name' => 'Category 3',
+            'shortcut' => 'c3',
+            'operation_type' => 'out',
             'virtual' => false,
-            'orderby' => 400,
+            'priority' => 400,
             'deleted' => 0,
         ]);
 
         $this->tester->haveInDatabase(self::OBJECT_TABLE, [
-            'categoryId' => 1,
-            'objectTypeId' => ObjectType::EVENT,
+            'category_id' => 1,
+            'type' => ObjectType::EVENT,
         ]);
         $this->tester->haveInDatabase(self::OBJECT_TABLE, [
-            'categoryId' => 3,
-            'objectTypeId' => ObjectType::EVENT,
+            'category_id' => 3,
+            'type' => ObjectType::EVENT,
         ]);
 
         $categories = $this->repository->findByObjectType(ObjectType::get(ObjectType::EVENT));

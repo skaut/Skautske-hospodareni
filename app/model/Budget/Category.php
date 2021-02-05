@@ -14,7 +14,7 @@ use Model\Cashbook\Operation;
  * @ORM\Entity()
  * @ORM\Table(
  *     name="ac_unit_budget_category",
- *     indexes={@ORM\Index(name="objectId_year", columns={"unit_id", "year"})}
+ *     indexes={@ORM\Index(name="unitId_year", columns={"unit_id", "year"})}
  * )
  */
 class Category

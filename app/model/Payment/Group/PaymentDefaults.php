@@ -17,13 +17,13 @@ final class PaymentDefaults
     /** @ORM\Column(type="float", nullable=true) */
     private ?float $amount = null;
 
-    /** @ORM\Column(type="chronos_date", nullable=true, name="maturity") */
+    /** @ORM\Column(type="chronos_date", nullable=true) */
     private ?Date $dueDate = null;
 
-    /** @ORM\Column(type="integer", nullable=true, name="ks", options={"unsigned"=true}) */
+    /** @ORM\Column(type="integer", nullable=true) */
     private ?int $constantSymbol = null;
 
-    /** @ORM\Column(type="variable_symbol", nullable=true, name="nextVs") */
+    /** @ORM\Column(type="variable_symbol", nullable=true) */
     private ?VariableSymbol $nextVariableSymbol = null;
 
     /**

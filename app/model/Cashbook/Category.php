@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  *     name="ac_chitsCategory",
  *     indexes={
  *          @ORM\Index(name="deleted", columns={"deleted"}),
- *          @ORM\Index(name="orderby", columns={"orderby"}),
+ *          @ORM\Index(name="priority", columns={"priority"}),
  *     }
  * )
  * @ORM\Cache()
@@ -31,14 +31,14 @@ class Category implements ICategory
      */
     private int $id;
 
-    /** @ORM\Column(type="string", name="label", length=64) */
+    /** @ORM\Column(type="string", length=64) */
     private string $name;
 
-    /** @ORM\Column(type="string", name="short", length=64, unique=true) */
+    /** @ORM\Column(type="string", length=64, unique=true) */
     private string $shortcut;
 
     /**
-     * @ORM\Column(type="string_enum", name="type")
+     * @ORM\Column(type="string_enum", length=64)
      *
      * @var Operation
      * @EnumAnnotation(class=Operation::class)
@@ -56,7 +56,7 @@ class Category implements ICategory
     /** @ORM\Column(type="boolean") */
     private bool $virtual;
 
-    /** @ORM\Column(type="smallint", name="orderby", options={"unsigned"=true}) */
+    /** @ORM\Column(type="smallint") */
     private int $priority;
 
     /** @ORM\Column(type="boolean") */

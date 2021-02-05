@@ -12,14 +12,14 @@ final class ContractRepositoryTest extends IntegrationTest
 {
     private const CONTRACT = [
         'unit_id' => 10,
-        'unit_person' => 'František Maša',
+        'unit_representative' => 'František Maša',
         'driver_name' => 'František Hána',
         'driver_address' => 'Praha',
         'driver_birthday' => '2018-01-01',
         'driver_contact' => '777777777',
-        'start' => '2018-01-01',
-        'end' => '2018-01-20',
-        'template' => 2,
+        'since' => '2018-01-01',
+        'until' => '2018-01-20',
+        'template_version' => 2,
     ];
 
     private ContractRepository $repository;
@@ -46,10 +46,10 @@ final class ContractRepositoryTest extends IntegrationTest
 
         $this->assertSame(1, $contract->getId());
         $this->assertSame(self::CONTRACT['unit_id'], $contract->getUnitId());
-        $this->assertSame(self::CONTRACT['unit_person'], $contract->getUnitRepresentative());
-        $this->assertEquals(new Date(self::CONTRACT['start']), $contract->getSince());
-        $this->assertEquals(new Date(self::CONTRACT['end']), $contract->getUntil());
-        $this->assertSame(self::CONTRACT['template'], $contract->getTemplateVersion());
+        $this->assertSame(self::CONTRACT['unit_representative'], $contract->getUnitRepresentative());
+        $this->assertEquals(new Date(self::CONTRACT['since']), $contract->getSince());
+        $this->assertEquals(new Date(self::CONTRACT['until']), $contract->getUntil());
+        $this->assertSame(self::CONTRACT['template_version'], $contract->getTemplateVersion());
 
         $passenger = $contract->getPassenger();
         $this->assertSame(self::CONTRACT['driver_name'], $passenger->getName());
