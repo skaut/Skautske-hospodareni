@@ -32,7 +32,7 @@ class Group
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer", options={"unsigned"=true})
+     * @ORM\Column(type="integer")
      */
     private int $id;
 
@@ -88,7 +88,7 @@ class Group
     /** @ORM\Column(type="string", length=250) */
     private string $note = '';
 
-    /** @ORM\Column(type="integer", options={"unsigned"=true}, nullable=true) */
+    /** @ORM\Column(type="integer", nullable=true) */
     private ?int $smtpId = null;
 
     public const STATE_OPEN   = 'open';

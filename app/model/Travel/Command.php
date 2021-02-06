@@ -30,11 +30,11 @@ class Command
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer", options={"unsigned"=true})
+     * @ORM\Column(type="integer")
      */
     private int $id;
 
-    /** @ORM\Column(type="integer", options={"unsigned"=true}) */
+    /** @ORM\Column(type="integer") */
     private int $unitId;
 
     /** @ORM\ManyToOne(targetEntity=Vehicle::class) */

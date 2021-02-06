@@ -22,7 +22,7 @@ class Category
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer", options={"unsigned"=true})
+     * @ORM\Column(type="integer")
      */
     private int $id;
 
@@ -54,10 +54,10 @@ class Category
      */
     private Category $parent;
 
-    /** @ORM\Column(type="float", options={"unsigned"=true, "default"=0}) */
+    /** @ORM\Column(type="float", options={"default"=0}) */
     private float $value;
 
-    /** @ORM\Column(type="smallint", options={"unsigned"=true}) */
+    /** @ORM\Column(type="smallint") */
     private int $year;
 
     public function __construct(int $unitId, string $label, Operation $type, ?Category $parent, float $value, int $year)

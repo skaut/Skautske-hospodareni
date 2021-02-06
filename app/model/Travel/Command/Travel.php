@@ -18,7 +18,7 @@ abstract class Travel
 {
     /**
      * @ORM\Id()
-     * @ORM\Column(type="integer", options={"unsigned"=true})
+     * @ORM\Column(type="integer")
      */
     private int $id;
 
