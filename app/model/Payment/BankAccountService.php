@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Payment;
 
 use Assert\Assert;
+use Cake\Chronos\Date;
 use DateTimeImmutable;
 use Model\Bank\Fio\Transaction;
 use Model\BankTimeLimit;
@@ -23,7 +24,6 @@ use function array_filter;
 use function array_map;
 use function count;
 use function in_array;
-use function sprintf;
 
 class BankAccountService
 {
@@ -180,9 +180,9 @@ class BankAccountService
     {
         Assert::that($daysBack)->greaterThan(0);
         $account = $this->bankAccounts->find($bankAccountId);
-        $now     = new DateTimeImmutable();
+        $today   = Date::today();
 
-        return $this->fio->getTransactions($now->modify(sprintf('- %d days', $daysBack)), $now, $account);
+        return $this->fio->getTransactions($today->subDays($daysBack), $today, $account);
     }
 
     /**
