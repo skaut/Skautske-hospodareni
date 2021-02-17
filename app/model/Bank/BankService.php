@@ -103,7 +103,7 @@ class BankService
                 continue;
             }
 
-            $pairSince = $daysBack === null ? $this->resolveLastPairing($groups) : Date::today()->subDays($daysBack);
+            $pairSince = $daysBack === null ? $this->resolvePairingIntervalStart($groups) : Date::today()->subDays($daysBack);
 
             $transactions = $this->bank->getTransactions($pairSince, new Date($now), $bankAccount);
             $paired       = $this->markPaymentsAsComplete($transactions, $payments);
@@ -137,21 +137,19 @@ class BankService
     /**
      * @param Group[] $groups
      */
-    private function resolveLastPairing(array $groups): Date
+    private function resolvePairingIntervalStart(array $groups): Date
     {
-        $lastPairings = array_map(
-            function (Group $g) {
-                return $g->getLastPairing();
-            },
-            $groups
-        );
-        $lastPairings = array_filter($lastPairings);
+        $defaultStart = Date::today()->subDays(self::DAYS_BACK_DEFAULT);
 
-        if (count($lastPairings) !== 0) {
-            return new Date(min($lastPairings));
+        if ($groups === []) {
+            return $defaultStart;
         }
 
-        return new Date('- ' . self::DAYS_BACK_DEFAULT . ' days');
+        return new Date(
+            min(
+                array_map(fn (Group $g) => $g->getLastPairing() ?? $defaultStart, $groups)
+            )
+        );
     }
 
     /**
