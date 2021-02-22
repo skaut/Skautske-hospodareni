@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model;
 
 use Assert\Assert;
+use Cake\Chronos\Date;
 use DateTimeImmutable;
 use Model\Bank\Fio\Transaction as BankTransaction;
 use Model\DTO\Payment\PairingResult;
@@ -26,7 +27,6 @@ use function count;
 use function is_array;
 use function is_int;
 use function min;
-use function sprintf;
 
 class BankService
 {
@@ -103,9 +103,9 @@ class BankService
                 continue;
             }
 
-            $pairSince = $daysBack === null ? $this->resolveLastPairing($groups) : new DateTimeImmutable(sprintf('- %d days', $daysBack));
+            $pairSince = $daysBack === null ? $this->resolvePairingIntervalStart($groups) : Date::today()->subDays($daysBack);
 
-            $transactions = $this->bank->getTransactions($pairSince, $now, $bankAccount);
+            $transactions = $this->bank->getTransactions($pairSince, new Date($now), $bankAccount);
             $paired       = $this->markPaymentsAsComplete($transactions, $payments);
 
             $this->payments->saveMany($paired);
@@ -137,21 +137,19 @@ class BankService
     /**
      * @param Group[] $groups
      */
-    private function resolveLastPairing(array $groups): DateTimeImmutable
+    private function resolvePairingIntervalStart(array $groups): Date
     {
-        $lastPairings = array_map(
-            function (Group $g) {
-                return $g->getLastPairing();
-            },
-            $groups
-        );
-        $lastPairings = array_filter($lastPairings);
+        $defaultStart = Date::today()->subDays(self::DAYS_BACK_DEFAULT);
 
-        if (count($lastPairings) !== 0) {
-            return min($lastPairings);
+        if ($groups === []) {
+            return $defaultStart;
         }
 
-        return new DateTimeImmutable('- ' . self::DAYS_BACK_DEFAULT . ' days');
+        return new Date(
+            min(
+                array_map(fn (Group $g) => $g->getLastPairing() ?? $defaultStart, $groups)
+            )
+        );
     }
 
     /**

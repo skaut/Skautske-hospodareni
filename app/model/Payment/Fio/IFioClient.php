@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment\Fio;
 
-use DateTimeImmutable;
+use Cake\Chronos\Date;
 use Model\Bank\Fio\Transaction;
 use Model\BankTimeLimit;
 use Model\BankTimeout;
@@ -20,5 +20,5 @@ interface IFioClient
      * @throws BankTimeout
      * @throws BankTimeLimit
      */
-    public function getTransactions(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account): array;
+    public function getTransactions(Date $since, Date $until, BankAccount $account): array;
 }

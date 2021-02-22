@@ -12,6 +12,8 @@ use Mockery as m;
 use Model\Bank\Fio\Transaction;
 use Model\DTO\Payment\PairingResult;
 use Model\Payment\BankAccount;
+use Model\Payment\EmailTemplate;
+use Model\Payment\EmailType;
 use Model\Payment\Fio\IFioClient;
 use Model\Payment\Group;
 use Model\Payment\Payment;
@@ -19,9 +21,12 @@ use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
 use Model\Payment\VariableSymbol;
+use Stubs\BankAccountAccessCheckerStub;
+use Stubs\OAuthsAccessCheckerStub;
 
 use function array_keys;
 use function array_map;
+use function array_merge;
 use function count;
 
 final class BankServiceTest extends Unit
@@ -34,10 +39,10 @@ final class BankServiceTest extends Unit
         $groupId       = 123;
         $bankAccountId = 456;
 
-        $group  = $this->mockGroup($groupId, $bankAccountId, new DateTimeImmutable('- 5 days'));
+        $group  = $this->group($groupId, $bankAccountId, new DateTimeImmutable('- 5 days'));
         $groups = $this->mockGroupRepository([$groupId => $group]);
 
-        $bankAccount = $this->mockBankAccount('123');
+        $bankAccount = $this->mockBankAccount($bankAccountId, '123');
 
         $bankAccounts = $this->mockBankAccountRepository([$bankAccountId => $bankAccount]);
 
@@ -84,17 +89,17 @@ final class BankServiceTest extends Unit
         $bankAccountId1 = 159;
         $lastPairing    = new DateTimeImmutable('- 5 days');
 
-        $group1 = $this->mockGroup($groupId1, $bankAccountId1, $lastPairing);
+        $group1 = $this->group($groupId1, $bankAccountId1, $lastPairing);
 
         $groupId2       = 34;
         $bankAccountId2 = 357;
 
-        $group2 = $this->mockGroup($groupId2, $bankAccountId2, $lastPairing);
+        $group2 = $this->group($groupId2, $bankAccountId2, $lastPairing);
 
         $groups = $this->mockGroupRepository([$groupId1 => $group1, $groupId2 => $group2]);
 
-        $bankAccount1 = $this->mockBankAccount('123');
-        $bankAccount2 = $this->mockBankAccount('852');
+        $bankAccount1 = $this->mockBankAccount($bankAccountId1, '123');
+        $bankAccount2 = $this->mockBankAccount($bankAccountId2, '852');
 
         $bankAccounts = $this->mockBankAccountRepository([
             $bankAccountId1 => $bankAccount1,
@@ -138,6 +143,86 @@ final class BankServiceTest extends Unit
     }
 
     /**
+     * @see https://github.com/skaut/Skautske-hospodareni/issues/1608
+     */
+    public function testDefaultIntervalIsUsedForGroupThatIsNotPairedYetWhenPairingMultipleGroups(): void
+    {
+        $group1 = $this->group(1, 12, new DateTimeImmutable('- 5 days'));
+        $group2 = $this->group(2, 12, null);
+
+        $bankAccounts = $this->mockBankAccountRepository([12 => $this->mockBankAccount(12, '123')]);
+
+        $transactions1 = [
+            new Transaction(
+                '123',
+                new DateTimeImmutable(),
+                200.50,
+                (string) Helpers::createAccountNumber(),
+                'František Maša',
+                123456,
+                null,
+                null
+            ),
+        ];
+
+        $payments1 = [
+            new Payment($group1, '-', [], 100, Date::now(), new VariableSymbol('123456'), null, null, ''),
+            new Payment($group2, '-', [], 100, Date::now(), new VariableSymbol('7854'), null, null, ''),
+        ];
+
+        $payments2 = [];
+
+        $paymentRepository = m::mock(IPaymentRepository::class);
+        $paymentRepository->shouldReceive('findByMultipleGroups')
+            ->once()
+            ->with([$group1->getId()])
+            ->andReturn($payments1);
+        $paymentRepository->shouldReceive('findByMultipleGroups')
+            ->once()
+            ->with([$group1->getId(), $group2->getId()])
+            ->andReturn(array_merge($payments1, $payments2));
+
+        // Pair group #1
+        $bank = m::mock(IFioClient::class);
+        $bank->shouldReceive('getTransactions')
+            ->once()
+            ->andReturn($transactions1);
+
+        $paymentRepository->shouldReceive('saveMany');
+
+        $bankService = new BankService(
+            $this->mockGroupRepository([$group1->getId() => $group1]),
+            $bank,
+            $paymentRepository,
+            $bankAccounts,
+        );
+        $bankService->pairAllGroups([$group1->getId()]);
+
+        // Pair group 1# and #2
+        $bank = m::mock(IFioClient::class);
+        $bank->shouldReceive('getTransactions')
+            ->once()
+            ->withArgs(
+                fn (Date $since, Date $until) => $since->equals(Date::today()->subDays(60))
+                    && $until->equals(Date::today())
+            )
+            ->andReturn($transactions1);
+
+        $paymentRepository->shouldReceive('saveMany');
+
+        $bankService = new BankService(
+            $this->mockGroupRepository([
+                $group1->getId() => $group1,
+                $group2->getId() => $group2,
+            ]),
+            $bank,
+            $paymentRepository,
+            $bankAccounts,
+        );
+        $bankService->pairAllGroups([$group1->getId(), $group2->getId()]);
+    }
+
+    /**
      * @param BankAccount[] $bankAccounts
      */
     public function mockBankAccountRepository(array $bankAccounts): IBankAccountRepository
@@ -145,7 +230,6 @@ final class BankServiceTest extends Unit
         $repository = m::mock(IBankAccountRepository::class);
         foreach ($bankAccounts as $bankAccountId => $bankAccount) {
             $repository->shouldReceive('find')
-                ->once()
                 ->with($bankAccountId)
                 ->andReturn($bankAccount);
         }
@@ -168,9 +252,13 @@ final class BankServiceTest extends Unit
         return $repository;
     }
 
-    private function mockBankAccount(string $token): BankAccount
+    private function mockBankAccount(int $id, string $token): BankAccount
     {
-        return m::mock(BankAccount::class, ['getToken' => $token, 'getName' => 'ucet jednotky']);
+        return m::mock(BankAccount::class, [
+            'getId' => $id,
+            'getToken' => $token,
+            'getName' => 'ucet jednotky',
+        ]);
     }
 
     /**
@@ -191,13 +279,27 @@ final class BankServiceTest extends Unit
         return $repository;
     }
 
-    private function mockGroup(int $groupId, int $bankAccountId, DateTimeImmutable $lastPairing): Group
+    private function group(int $groupId, int $bankAccountId, ?DateTimeImmutable $lastPairing): Group
     {
-        return m::mock(Group::class, [
-            'getId' => $groupId,
-            'getBankAccountId' => $bankAccountId,
-            'getLastPairing' => $lastPairing,
-            'updateLastPairing' => null,
-        ]);
+        $group = new Group(
+            [1],
+            null,
+            'Foo',
+            new Group\PaymentDefaults(null, null, null, null),
+            new DateTimeImmutable(),
+            [EmailType::PAYMENT_INFO => new EmailTemplate('', '')],
+            null,
+            $this->mockBankAccount($bankAccountId, '123'),
+            new BankAccountAccessCheckerStub(),
+            new OAuthsAccessCheckerStub(),
+        );
+
+        if ($lastPairing !== null) {
+            $group->updateLastPairing($lastPairing);
+        }
+
+        Helpers::assignIdentity($group, $groupId);
+
+        return $group;
     }
 }
