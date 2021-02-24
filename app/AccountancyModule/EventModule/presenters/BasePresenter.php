@@ -35,7 +35,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
             assert($this->event instanceof Event);
         } catch (EventNotFound $exc) {
             $this->template->setParameters(['message' => 'Nemáte oprávnění načíst akci nebo akce neexsituje.']);
-            $this->forward('accessDenied');
+            $this->forward('Default:accessDenied');
         }
 
         $this->template->setParameters([

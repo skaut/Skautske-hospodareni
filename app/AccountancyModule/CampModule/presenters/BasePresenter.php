@@ -33,18 +33,19 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         }
 
         $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($this->aid)));
-        try {
-            $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
-            assert($cashbook instanceof Cashbook);
+        $cashbook   = $this->queryBus->handle(new CashbookQuery($cashbookId));
+        assert($cashbook instanceof Cashbook);
 
-            $this->isEditable = $this->authorizator->isAllowed(CampResource::UPDATE_REAL, $this->aid);
+        $this->isEditable = $this->authorizator->isAllowed(CampResource::UPDATE_REAL, $this->aid);
+
+        try {
             $this->template->setParameters([
                 'event' => $this->event = $this->queryBus->handle(new CampQuery(new SkautisCampId($this->aid))),
                 'isEditable' => $this->isEditable,
             ]);
         } catch (CampNotFound $exc) {
             $this->template->setParameters(['message' => 'Nemáte oprávnění načíst tábor nebo tábor neexsituje.']);
-            $this->forward('accessDenied');
+            $this->forward('Default:accessDenied');
         }
     }
 
