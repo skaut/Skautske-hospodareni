@@ -15,7 +15,7 @@ use function sprintf;
  */
 class VehicleTravel extends Travel
 {
-    /** @ORM\Column(type="float", options={"unsigned"=true}) */
+    /** @ORM\Column(type="float") */
     private float $distance;
 
     public function __construct(int $id, float $distance, TravelDetails $details, Command $command)

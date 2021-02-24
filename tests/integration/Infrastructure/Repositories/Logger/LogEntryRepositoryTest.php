@@ -38,21 +38,21 @@ final class LogEntryRepositoryTest extends IntegrationTest
     public function testSave(?int $typeId): void
     {
         $row = [
-            'unitId' => 15,
-            'userId' => 10,
+            'unit_id' => 15,
+            'user_id' => 10,
             'description' => 'Something happened!',
             'type' => Type::PAYMENT,
-            'typeId' => $typeId,
+            'type_id' => $typeId,
             'date' => '2018-01-01 00:10:15',
         ];
 
         $this->repository->save(
             new LogEntry(
-                $row['unitId'],
-                $row['userId'],
+                $row['unit_id'],
+                $row['user_id'],
                 $row['description'],
                 Type::get($row['type']),
-                $row['typeId'],
+                $row['type_id'],
                 new DateTimeImmutable($row['date'])
             )
         );
@@ -65,25 +65,25 @@ final class LogEntryRepositoryTest extends IntegrationTest
         $rows = [
             [
                 'type' => Type::PAYMENT,
-                'typeId' => null,
+                'type_id' => null,
             ],
             [
                 'type' => Type::OBJECT,
-                'typeId' => 2,
+                'type_id' => 2,
             ],
             [
                 'type' => Type::OBJECT,
-                'typeId' => 3,
+                'type_id' => 3,
             ],
             [
                 'type' => Type::OBJECT,
-                'typeId' => 3,
+                'type_id' => 3,
             ],
         ];
 
         $rowTemplate = [
-            'unitId' => 15,
-            'userId' => 10,
+            'unit_id' => 15,
+            'user_id' => 10,
             'description' => 'Something happened!',
             'date' => '2018-01-01 00:10:15',
         ];
@@ -99,8 +99,8 @@ final class LogEntryRepositoryTest extends IntegrationTest
         $this->assertSame(4, $entries[1]->getId());
 
         foreach ($entries as $entry) {
-            $this->assertSame($rowTemplate['unitId'], $entry->getUnitId());
-            $this->assertSame($rowTemplate['userId'], $entry->getUserId());
+            $this->assertSame($rowTemplate['unit_id'], $entry->getUnitId());
+            $this->assertSame($rowTemplate['user_id'], $entry->getUserId());
             $this->assertSame($rowTemplate['description'], $entry->getDescription());
             $this->assertEquals($rowTemplate['date'], $entry->getDate()->format('Y-m-d H:i:s'));
         }

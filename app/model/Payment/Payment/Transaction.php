@@ -23,7 +23,7 @@ class Transaction
     /** @ORM\Column(type="string", length=64, nullable=true, name="transactionId") */
     private string $id;
 
-    /** @ORM\Column(type="string", length=64, nullable=true, name="paidFrom") */
+    /** @ORM\Column(type="string", length=64, nullable=true) */
     private string $bankAccount;
 
     /** @ORM\Column(type="string", nullable=true, name="transaction_payer") */

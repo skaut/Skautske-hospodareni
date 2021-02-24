@@ -18,26 +18,26 @@ class Contract
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer", options={"unsigned"=true})
+     * @ORM\Column(type="integer")
      */
     private int $id;
 
-    /** @ORM\Column(type="integer", options={"unsigned"=true}) */
+    /** @ORM\Column(type="integer") */
     private int $unitId;
 
-    /** @ORM\Column(type="string", name="unit_person", length=64, options={"comment": "jméno osoby zastupující jednotku"}) */
+    /** @ORM\Column(type="string", length=64, options={"comment": "jméno osoby zastupující jednotku"}) */
     private string $unitRepresentative;
 
-    /** @ORM\Column(type="chronos_date", nullable=true, name="start") */
+    /** @ORM\Column(type="chronos_date", nullable=true) */
     private ?Date $since = null;
 
-    /** @ORM\Column(type="chronos_date", nullable=true, name="end") */
+    /** @ORM\Column(type="chronos_date", nullable=true) */
     private ?Date $until = null;
 
     /** @ORM\Embedded(class=ContractPassenger::class, columnPrefix=false) */
     private ContractPassenger $passenger;
 
-    /** @ORM\Column(type="smallint", name="template", options={"comment":"1-old, 2-podle NOZ"}) */
+    /** @ORM\Column(type="smallint", options={"comment":"1-old, 2-podle NOZ"}) */
     private int $templateVersion = 2;
 
     public function __construct(Unit $unit, string $unitRepresentative, Date $since, ContractPassenger $passenger)

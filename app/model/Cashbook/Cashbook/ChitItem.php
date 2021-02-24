@@ -17,7 +17,7 @@ class ChitItem
      * @internal only for mapping
      *
      * @ORM\Id()
-     * @ORM\Column(type="integer", options={"unsigned"=true})
+     * @ORM\Column(type="integer")
      * @ORM\GeneratedValue()
      */
     private ?int $id = null;

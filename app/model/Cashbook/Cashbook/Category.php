@@ -13,7 +13,7 @@ use Model\Cashbook\Operation;
  */
 class Category
 {
-    /** @ORM\Column(type="integer", name="category", options={"unsigned"=true}) */
+    /** @ORM\Column(type="integer", name="category") */
     private int $id;
 
     /**

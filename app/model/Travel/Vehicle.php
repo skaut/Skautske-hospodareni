@@ -36,14 +36,14 @@ class Vehicle
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer", options={"unsigned"=true})
+     * @ORM\Column(type="integer")
      */
     private int $id;
 
     /** @ORM\Column(type="string", length=64) */
     private string $type;
 
-    /** @ORM\Column(type="integer", options={"unsigned"=true}) */
+    /** @ORM\Column(type="integer") */
     private int $unitId;
 
     /** @ORM\Column(type="integer", nullable=true) */
@@ -52,7 +52,7 @@ class Vehicle
     /** @ORM\Column(type="string", length=64) */
     private string $registration;
 
-    /** @ORM\Column(type="float", options={"unsigned"=true}) */
+    /** @ORM\Column(type="float") */
     private float $consumption;
 
     /** @ORM\Column(type="string", length=64) */

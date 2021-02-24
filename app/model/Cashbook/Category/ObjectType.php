@@ -13,7 +13,7 @@ use Model\Cashbook\ObjectType as ObjectTypeEnum;
  * @ORM\Entity()
  * @ORM\Table(
  *     name="ac_chitsCategory_object",
- *     indexes={@ORM\Index(name="objectTypeId", columns={"objectTypeId"})}
+ *     indexes={@ORM\Index(name="type", columns={"type"})}
  * )
  */
 class ObjectType
@@ -21,13 +21,13 @@ class ObjectType
     /**
      * @ORM\Id()
      * @ORM\ManyToOne(targetEntity=Category::class)
-     * @ORM\JoinColumn(name="categoryId", nullable=false)
+     * @ORM\JoinColumn(nullable=false)
      */
     private Category $category;
 
     /**
      * @ORM\Id()
-     * @ORM\Column(type="string_enum", name="objectTypeId", length=20)
+     * @ORM\Column(type="string_enum", length=20)
      *
      * @var ObjectTypeEnum
      * @EnumAnnotation(class=ObjectTypeEnum::class)

@@ -28,7 +28,7 @@ final class Passenger
     /** @ORM\Column(type="string", name="driver_address") */
     private string $address;
 
-    /** @ORM\Column(type="integer", nullable=true, options={"unsigned"=true}) */
+    /** @ORM\Column(type="integer", nullable=true) */
     private ?int $contractId = null;
 
     public function __construct(string $name, string $contact, string $address)

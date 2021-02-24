@@ -17,7 +17,7 @@ use function in_array;
  * @ORM\Table(
  *     name="ac_participants",
  *     indexes={
- *         @ORM\Index(name="actionId", columns={"event_id"}),
+ *         @ORM\Index(name="eventId", columns={"event_id"}),
  *     }
  * )
  */
@@ -29,7 +29,7 @@ class Payment
      */
     private PaymentId $id;
 
-    /** @ORM\Column(type="integer", name="participantId", options={"unsigned"=true}) */
+    /** @ORM\Column(type="integer") */
     private int $participantId;
 
     /** @ORM\Embedded(class=Event::class) */
@@ -41,7 +41,7 @@ class Payment
     /** @ORM\Column(type="money") */
     private Money $repayment;
 
-    /** @ORM\Column(type="string", name="isAccount") */
+    /** @ORM\Column(type="string") */
     private string $account;
 
     public function __construct(PaymentId $id, int $participantId, Event $event, ?Money $payment = null, ?Money $repayment = null, string $account = 'N')

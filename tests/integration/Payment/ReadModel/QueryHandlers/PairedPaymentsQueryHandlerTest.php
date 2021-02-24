@@ -27,11 +27,11 @@ final class PairedPaymentsQueryHandlerTest extends IntegrationTest
     public function testHandlerReturnsCorrectData(): void
     {
         $group = [
-            'label' => 'Test',
+            'name' => 'Test',
             'bank_account_id' => 10,
             'last_pairing' => '2018-10-01 15:30:00',
             'state' => Group::STATE_CLOSED,
-            'state_info' => '',
+            'note' => '',
         ];
 
         $this->tester->haveInDatabase('pa_group', $group); // Group #1
@@ -66,13 +66,13 @@ final class PairedPaymentsQueryHandlerTest extends IntegrationTest
         $payment = [
             'name' => 'Test',
             'amount' => 150,
-            'maturity' => '2017-10-29',
+            'due_date' => '2017-10-29',
             'state' => Payment\State::COMPLETED,
-            'groupId' => $groupId,
+            'group_id' => $groupId,
             'transactionId' => $transactionId,
             'transaction_payer' => $transactionId !== null ? 'A' : null,
             'transaction_note' => $transactionId !== null ? 'A' : null,
-            'dateClosed' => $closedAt->format('Y-m-d H:i:s'),
+            'closed_at' => $closedAt->format('Y-m-d H:i:s'),
             'note' => '',
         ];
 

@@ -27,7 +27,7 @@ class TravelDetails
     private Date $date;
 
     /**
-     * @ORM\Column(type="string_enum", name="type")
+     * @ORM\Column(type="string_enum")
      *
      * @Enum(class=TransportType::class)
      * @var TransportType

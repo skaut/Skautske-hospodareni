@@ -25,14 +25,14 @@ class PaymentRepositoryTest extends IntegrationTest
     private const TABLE = 'pa_payment';
 
     private const PAYMENT_ROW = [
-        'groupId' => 1,
+        'group_id' => 1,
         'name' => 'Test',
         'email' => 'frantisekmasa1@gmail.com',
         'amount' => 200.0,
-        'maturity' => '2017-10-29',
+        'due_date' => '2017-10-29',
         'note' => '',
         'state' => Payment\State::PREPARING,
-        'vs' => '100',
+        'variable_symbol' => '100',
     ];
 
     private PaymentRepository $repository;
@@ -72,13 +72,13 @@ class PaymentRepositoryTest extends IntegrationTest
 
         $payment = $this->repository->find(1);
 
-        $this->assertSame($data['groupId'], $payment->getGroupId());
+        $this->assertSame($data['group_id'], $payment->getGroupId());
         $this->assertSame($data['name'], $payment->getName());
         $this->assertSame($data['email'], $payment->getEmail());
         $this->assertSame($data['amount'], $payment->getAmount());
-        $this->assertEquals(new Date($data['maturity']), $payment->getDueDate());
+        $this->assertEquals(new Date($data['due_date']), $payment->getDueDate());
         $this->assertTrue($payment->getState()->equalsValue($data['state']), "Payment is not should be 'preparing'");
-        $this->assertEquals(new VariableSymbol($data['vs']), $payment->getVariableSymbol(), 'Variable symbol doesn\'t match');
+        $this->assertEquals(new VariableSymbol($data['variable_symbol']), $payment->getVariableSymbol(), 'Variable symbol doesn\'t match');
     }
 
     public function testFindWithTransaction(): void
@@ -87,7 +87,7 @@ class PaymentRepositoryTest extends IntegrationTest
             'transactionId' => '123456',
             'transaction_payer' => 'František Maša',
             'transaction_note' => 'Poznámka',
-            'paidFrom' => (string) Helpers::createAccountNumber(),
+            'bank_account' => (string) Helpers::createAccountNumber(),
         ], self::PAYMENT_ROW);
 
         $this->addGroupWithId(1);
@@ -97,7 +97,7 @@ class PaymentRepositoryTest extends IntegrationTest
 
         $expectedTransaction = new Payment\Transaction(
             $data['transactionId'],
-            $data['paidFrom'],
+            $data['bank_account'],
             $data['transaction_payer'],
             $data['transaction_note']
         );
@@ -134,9 +134,9 @@ class PaymentRepositoryTest extends IntegrationTest
     {
         $payments = array_fill(0, 5, self::PAYMENT_ROW);
 
-        $payments[2]['vs'] = '100';
-        $payments[3]['vs'] = '0100';
-        $payments[4]['vs'] = '1000';
+        $payments[2]['variable_symbol'] = '100';
+        $payments[3]['variable_symbol'] = '0100';
+        $payments[4]['variable_symbol'] = '1000';
 
         $this->addGroupWithId(1);
         $this->addPayments($payments);
@@ -160,14 +160,14 @@ class PaymentRepositoryTest extends IntegrationTest
 
         $paymentRows = array_map(static function (array $payment): array {
             return [
-                'groupId' => $payment[0],
+                'group_id' => $payment[0],
                 'name' => 'Test',
                 'email' => 'frantisekmasa1@gmail.com',
                 'amount' => $payment[1],
-                'maturity' => '2017-10-29',
+                'due_date' => '2017-10-29',
                 'note' => '',
                 'state' => $payment[2],
-                'vs' => '100',
+                'variable_symbol' => '100',
             ];
         }, $payments);
 
@@ -208,14 +208,14 @@ class PaymentRepositoryTest extends IntegrationTest
         $this->addGroupWithId(1);
 
         $this->tester->haveInDatabase(self::TABLE, [
-            'groupId' => 1,
+            'group_id' => 1,
             'name' => 'Test',
             'email' => 'frantisekmasa1@gmail.com',
             'amount' => 120,
-            'maturity' => '2017-10-29',
+            'due_date' => '2017-10-29',
             'note' => '',
             'state' => Payment\State::PREPARING,
-            'vs' => '100',
+            'variable_symbol' => '100',
         ]);
 
         $payment = $this->repository->find(1);
@@ -229,9 +229,9 @@ class PaymentRepositoryTest extends IntegrationTest
     {
         $this->tester->haveInDatabase('pa_group', [
             'id' => $id,
-            'label' => 'test',
+            'name' => 'test',
             'state' => Group::STATE_OPEN,
-            'state_info' => '',
+            'note' => '',
         ]);
     }
 

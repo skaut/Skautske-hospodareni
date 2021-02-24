@@ -33,7 +33,7 @@ class Chit
 {
     /**
      * @ORM\Id()
-     * @ORM\Column(type="integer", options={"unsigned"=true})
+     * @ORM\Column(type="integer")
      * @ORM\GeneratedValue()
      */
     private ?int $id = null;
@@ -74,7 +74,7 @@ class Chit
     /**
      * ID of person that locked this
      *
-     * @ORM\Column(type="integer", nullable=true, name="`lock`", options={"unsigned"=true})
+     * @ORM\Column(type="integer", nullable=true)
      */
     private ?int $locked = null;
 

@@ -28,7 +28,7 @@ class Amount
     /** @ORM\Column(type="string", name="priceText", length=100) */
     private string $expression;
 
-    /** @ORM\Column(type="float", name="price", options={"unsigned"=true}) */
+    /** @ORM\Column(type="float", name="price") */
     private float $value;
 
     public function __construct(string $expression)

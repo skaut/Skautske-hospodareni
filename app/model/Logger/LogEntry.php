@@ -14,8 +14,8 @@ use Model\Logger\Log\Type;
  * @ORM\Table(
  *     name="log",
  *     indexes={
- *          @ORM\Index(name="unitId", columns={"unitId"}),
- *          @ORM\Index(name="typeId", columns={"typeId"}),
+ *          @ORM\Index(name="unitId", columns={"unit_id"}),
+ *          @ORM\Index(name="typeId", columns={"type_id"}),
  *      }
  * )
  */
@@ -24,24 +24,24 @@ class LogEntry
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer", options={"unsigned"=true})
+     * @ORM\Column(type="integer")
      */
     private int $id;
 
-    /** @ORM\Column(type="integer", name="unitId", options={"unsigned"=true}) */
+    /** @ORM\Column(type="integer") */
     private int $unitId;
 
     /** @ORM\Column(type="datetime_immutable") */
     private DateTimeImmutable $date;
 
-    /** @ORM\Column(type="integer", name="userId", options={"unsigned"=true}) */
+    /** @ORM\Column(type="integer") */
     private int $userId;
 
     /** @ORM\Column(type="text") */
     private string $description;
 
     /**
-     * @ORM\Column(type="string_enum", name="type")
+     * @ORM\Column(type="string_enum")
      *
      * @Enum(class=Type::class)
      * @var Type
@@ -49,7 +49,7 @@ class LogEntry
      */
     private $type;
 
-    /** @ORM\Column(type="integer", nullable=true, name="typeId", options={"unsigned"=true}) */
+    /** @ORM\Column(type="integer", nullable=true) */
     private ?int $typeId = null;
 
     public function __construct(

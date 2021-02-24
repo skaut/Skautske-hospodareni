@@ -22,17 +22,17 @@ use function sort;
 class GroupRepositoryTest extends IntegrationTest
 {
     private const ROW = [
-        'label' => 'Test',
+        'name' => 'Test',
         'state' => Group::STATE_OPEN,
-        'state_info' => 'Test note',
+        'note' => 'Test note',
         'created_at' => '2018-01-01 12:34:11',
         'last_pairing' => '2018-02-01 12:34:11',
         'oauth_id' => '42288e92-27fb-453c-9904-36a7ebd14fe2',
         'bank_account_id' => 100,
         'amount' => 100.0,
-        'nextVs' => '140',
-        'maturity' => '2018-01-19',
-        'ks' => 123,
+        'next_variable_symbol' => '140',
+        'due_date' => '2018-01-19',
+        'constant_symbol' => 123,
     ];
 
     private GroupRepository $repository;
@@ -70,22 +70,22 @@ class GroupRepositoryTest extends IntegrationTest
         $paymentDefaults = new Group\PaymentDefaults(
             self::ROW['amount'],
             new Date('2018-01-29'),
-            self::ROW['ks'],
-            new VariableSymbol(self::ROW['nextVs'])
+            self::ROW['constant_symbol'],
+            new VariableSymbol(self::ROW['next_variable_symbol'])
         );
 
         $row = [
-            'label' => 'Test',
+            'name' => 'Test',
             'state' => Group::STATE_OPEN,
-            'state_info' => 'Test note',
+            'note' => 'Test note',
             'created_at' => $createdAt->format('Y-m-d H:i:s'),
             'last_pairing' => $lastPairing->format('Y-m-d H:i:s'),
             'oauth_id' => '42288e92-27fb-453c-9904-36a7ebd14fe2',
             'bank_account_id' => 100,
             'amount' => $paymentDefaults->getAmount(),
-            'nextVs' => $paymentDefaults->getNextVariableSymbol()->toInt(),
-            'maturity' => $paymentDefaults->getDueDate()->format('Y-m-d'),
-            'ks' => $paymentDefaults->getConstantSymbol(),
+            'next_variable_symbol' => $paymentDefaults->getNextVariableSymbol()->toInt(),
+            'due_date' => $paymentDefaults->getDueDate()->format('Y-m-d'),
+            'constant_symbol' => $paymentDefaults->getConstantSymbol(),
         ];
 
         $infoEmail = new EmailTemplate('subject', 'body');
@@ -112,7 +112,7 @@ class GroupRepositoryTest extends IntegrationTest
         $group = $this->repository->find(1);
 
         $this->assertSame($row['state'], $group->getState());
-        $this->assertSame($row['state_info'], $group->getNote());
+        $this->assertSame($row['note'], $group->getNote());
         $this->assertEquals($createdAt, $group->getCreatedAt());
         $this->assertSame($unitIds, $group->getUnitIds());
         $this->assertEquals($lastPairing, $group->getLastPairing());
@@ -130,15 +130,15 @@ class GroupRepositoryTest extends IntegrationTest
     public function testFindByUnits(): void
     {
         $row = [
-            'label' => 'Test',
+            'name' => 'Test',
             'state' => Group::STATE_OPEN,
-            'state_info' => 'Test note',
+            'note' => 'Test note',
             'created_at' => '2018-01-01 00:00:00',
             'last_pairing' => '2018-01-01 00:00:00',
             'oauth_id' => '42288e92-27fb-453c-9904-36a7ebd14fe2',
             'bank_account_id' => 100,
-            'maturity' => '2018-01-01',
-            'ks' => null,
+            'due_date' => '2018-01-01',
+            'constant_symbol' => null,
         ];
 
         foreach ([10, 5, 20] as $index => $unitId) {
@@ -181,17 +181,17 @@ class GroupRepositoryTest extends IntegrationTest
         $I = $this->tester;
 
         $I->haveInDatabase('pa_group', [
-            'label' => 'Test',
+            'name' => 'Test',
             'state' => Group::STATE_CLOSED,
-            'state_info' => 'Test note',
+            'note' => 'Test note',
             'created_at' => '2018-05-14 00:00:00',
             'last_pairing' => '2018-05-14 00:00:00',
             'oauth_id' => '42288e92-27fb-453c-9904-36a7ebd14fe2',
             'bank_account_id' => 100,
             'amount' => 100.0,
-            'nextVs' => 123,
-            'maturity' => '2018-05-14 00:00:00',
-            'ks' => 123,
+            'next_variable_symbol' => 123,
+            'due_date' => '2018-05-14 00:00:00',
+            'constant_symbol' => 123,
         ]);
 
         $I->haveInDatabase('pa_group_email', [

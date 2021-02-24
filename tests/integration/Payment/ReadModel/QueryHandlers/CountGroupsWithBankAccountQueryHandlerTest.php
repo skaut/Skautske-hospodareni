@@ -23,11 +23,11 @@ final class CountGroupsWithBankAccountQueryHandlerTest extends IntegrationTest
     {
         for ($i = 0; $i < 3; $i++) {
             $this->tester->haveInDatabase('pa_group', [
-                'label' => 'Test',
+                'name' => 'Test',
                 'bank_account_id' => 10,
                 'last_pairing' => '2018-10-01 15:30:00',
                 'state' => Group::STATE_CLOSED,
-                'state_info' => '',
+                'note' => '',
             ]);
         }
 
