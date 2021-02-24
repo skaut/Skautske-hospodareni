@@ -70,7 +70,7 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
             foreach ($cashbookTotals as $categoryId => $total) {
                 $this->skautis->event->EventCampStatementUpdate([
                     'ID' => $categoryId,
-                    'ID_EventCamp' => $campSkautisId,
+                    'ID_EventCamp' => $campSkautisId->toInt(),
                     'Ammount' => $total,
                     'IsEstimate' => false,
                 ], 'eventCampStatement');
