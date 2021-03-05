@@ -38,7 +38,6 @@
         "nette/utils": " ~2.4",
         "nettrine/dbal": "^0.4",
         "nettrine/migrations": "^0.5",
-        "nextras/forms": "^2.0",
         "nextras/mail-panel": "2.4.0",
         "php-http/guzzle6-adapter": "^2.0",
         "phpoffice/phpspreadsheet": "^1.0",

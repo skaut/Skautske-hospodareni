@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9340ff8e60a2e44c7af810073ffe412f",
+    "content-hash": "6a2daa6f5ac085d45e276c02dad7d35e",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -4838,60 +4838,6 @@
                 "nette"
             ],
             "time": "2019-02-25T14:59:59+00:00"
-        },
-        {
-            "name": "nextras/forms",
-            "version": "v2.0.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/nextras/forms.git",
-                "reference": "895eee801b060af80bdea68b30bcc9fce391701b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/nextras/forms/zipball/895eee801b060af80bdea68b30bcc9fce391701b",
-                "reference": "895eee801b060af80bdea68b30bcc9fce391701b",
-                "shasum": ""
-            },
-            "require": {
-                "latte/latte": "~2.4",
-                "nette/application": "~2.4",
-                "nette/component-model": "~2.3",
-                "nette/forms": "~2.4",
-                "nette/utils": "~2.4",
-                "php": ">=5.6"
-            },
-            "require-dev": {
-                "nette/tester": "~1.4"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Nextras\\Forms\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nextras Community",
-                    "homepage": "https://github.com/nextras/forms/graphs/contributors"
-                }
-            ],
-            "description": "Form components for Nette Framework.",
-            "keywords": [
-                "form",
-                "nette"
-            ],
-            "abandoned": true,
-            "time": "2017-10-31T10:00:30+00:00"
         },
         {
             "name": "nextras/mail-panel",
@@ -12174,61 +12120,6 @@
             "time": "2021-07-28T10:34:58+00:00"
         },
         {
-            "name": "webimpress/safe-writer",
-            "version": "2.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/webimpress/safe-writer.git",
-                "reference": "5cfafdec5873c389036f14bf832a5efc9390dcdd"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/webimpress/safe-writer/zipball/5cfafdec5873c389036f14bf832a5efc9390dcdd",
-                "reference": "5cfafdec5873c389036f14bf832a5efc9390dcdd",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.2 || ^8.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^8.5.8 || ^9.3.7",
-                "vimeo/psalm": "^3.14.2",
-                "webimpress/coding-standard": "^1.1.5"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.1.x-dev",
-                    "dev-develop": "2.2.x-dev",
-                    "dev-release-1.0": "1.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Webimpress\\SafeWriter\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-2-Clause"
-            ],
-            "description": "Tool to write files safely, to avoid race conditions",
-            "keywords": [
-                "concurrent write",
-                "file writer",
-                "race condition",
-                "safe writer",
-                "webimpress"
-            ],
-            "funding": [
-                {
-                    "url": "https://github.com/michalbundyra",
-                    "type": "github"
-                }
-            ],
-            "time": "2020-08-25T07:21:11+00:00"
-        },
-        {
             "name": "webmozart/assert",
             "version": "1.10.0",
             "source": {
@@ -12295,5 +12186,5 @@
         "php": ">= 7.4"
     },
     "platform-dev": [],
-    "plugin-api-version": "1.1.0"
+    "plugin-api-version": "2.0.0"
 }

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\AccountancyModule\Components\FormControls\DateControl;
 use DateTimeInterface;
 use Nette\Forms\Controls\MultiChoiceControl;
 use Nette\StaticClass;
 use Nette\Utils\Validators;
-use Nextras\Forms\Controls\DatePicker;
 
 use function array_intersect;
 use function count;
@@ -30,7 +30,7 @@ class MyValidators
         return $control->value !== null;
     }
 
-    public static function isValidRange(DatePicker $end, DateTimeInterface $start): bool
+    public static function isValidRange(DateControl $end, DateTimeInterface $start): bool
     {
         return $start <= $end->getValue();
     }
