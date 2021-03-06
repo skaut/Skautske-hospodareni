@@ -8,7 +8,6 @@ use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
 use Model\DTO\Participant\Participant;
 use Model\DTO\Participant\UpdateParticipant;
-use Model\EventEntity;
 use Nette\Application\BadRequestException;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Http\IResponse;
@@ -56,8 +55,6 @@ final class ParticipantList extends BaseControl
 
     protected bool $isAllowParticipantDelete;
 
-    protected EventEntity $eventService;
-
     /** @var Participant[] */
     private array $currentParticipants;
 
@@ -72,7 +69,6 @@ final class ParticipantList extends BaseControl
      */
     public function __construct(
         int $aid,
-        EventEntity $eventService,
         array $currentParticipants,
         bool $isAllowRepayment,
         bool $isAllowIsAccount,
@@ -81,7 +77,6 @@ final class ParticipantList extends BaseControl
     ) {
         parent::__construct();
         $this->aid                      = $aid;
-        $this->eventService             = $eventService;
         $this->currentParticipants      = $currentParticipants;
         $this->isAllowRepayment         = $isAllowRepayment;
         $this->isAllowIsAccount         = $isAllowIsAccount;

@@ -6,7 +6,6 @@ namespace App\AccountancyModule\Factories\Participants;
 
 use App\AccountancyModule\Components\Participants\ParticipantList;
 use Model\DTO\Participant\Participant;
-use Model\EventEntity;
 
 interface IParticipantListFactory
 {
@@ -15,7 +14,6 @@ interface IParticipantListFactory
      */
     public function create(
         int $aid,
-        EventEntity $eventService,
         array $currentParticipants,
         bool $isAllowRepayment,
         bool $isAllowIsAccount,

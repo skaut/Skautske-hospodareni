@@ -70,9 +70,6 @@ autoDI:
               - Model\Skautis\WebserviceFactory
               - Model\Skautis\ReadModel\Queries\**
 
-        # Factories for mutable services
-        - implement: 'Model\I{Event,Chit,Participant}ServiceFactory'
-
         # Utility services
         - class: Model\Services\**
 
@@ -119,9 +116,7 @@ services:
 
     router: @App\RouterFactory::createRouter
 
-    eventService: Model\EventEntity("General")
-    campService: Model\EventEntity("Camp")
-    unitAccountService: Model\EventEntity("Unit")
+    - Model\ParticipantService
     - Model\Skautis\Factory\EventFactory
     - Model\StatisticsService
 
