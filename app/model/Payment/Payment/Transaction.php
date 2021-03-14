@@ -27,7 +27,7 @@ class Transaction
     private string $bankAccount;
 
     /** @ORM\Column(type="string", nullable=true, name="transaction_payer") */
-    private string $payer;
+    private ?string $payer = null;
 
     /** @ORM\Column(type="string", nullable=true, name="transaction_note") */
     private ?string $note = null;
