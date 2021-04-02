@@ -39,7 +39,7 @@ class BankAccountsPresenter extends BasePresenter
 
     private BankAccountService $accounts;
 
-    private int $id;
+    private ?int $id = null;
 
     public function __construct(IBankAccountFormFactory $formFactory, BankAccountService $accounts)
     {
