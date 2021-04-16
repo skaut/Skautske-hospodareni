@@ -29,7 +29,7 @@ final class ParticipantRepositoryTest extends SkautisTest
 
         $participants = $this->getRepository()->findByEducation(new SkautisEducationId(1524));
 
-        $this->assertCount(5, $participants);
+        $this->assertCount(7, $participants);
     }
 
     private function getRepository(): ParticipantRepository
