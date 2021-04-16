@@ -78,7 +78,7 @@ final class ParticipantRepository implements IParticipantRepository
      */
     public function findByEducation(SkautisEducationId $id): array
     {
-        $participants = $this->skautis->event->ParticipantEducationAll(['ID_EventEducation' => $id->toInt()]);
+        $participants = $this->skautis->event->ParticipantEducationAll(['ID_EventEducation' => $id->toInt(), 'IsActive' => true]);
         if (! is_array($participants)) {
             return []; // API returns empty object when there are no results
         }
