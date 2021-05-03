@@ -20,7 +20,6 @@ final class GroupProgress extends BaseControl
      */
     public function __construct(array $summaries)
     {
-        parent::__construct();
         $this->summaries = $summaries;
     }
 

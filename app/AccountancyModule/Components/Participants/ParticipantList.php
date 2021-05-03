@@ -75,7 +75,6 @@ final class ParticipantList extends BaseControl
         bool $isAllowParticipantUpdate,
         bool $isAllowParticipantDelete
     ) {
-        parent::__construct();
         $this->aid                      = $aid;
         $this->currentParticipants      = $currentParticipants;
         $this->isAllowRepayment         = $isAllowRepayment;

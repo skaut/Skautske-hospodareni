@@ -37,7 +37,6 @@ class PairButton extends BaseControl
 
     public function __construct(PaymentService $payments, BankService $model, BankAccountService $bankAccounts)
     {
-        parent::__construct();
         $this->model        = $model;
         $this->payments     = $payments;
         $this->bankAccounts = $bankAccounts;

@@ -36,7 +36,6 @@ final class PaymentList extends BaseControl
 
     public function __construct(int $groupId, bool $isEditable, QueryBus $queryBus, GridFactory $gridFactory)
     {
-        parent::__construct();
         $this->groupId     = $groupId;
         $this->isEditable  = $isEditable;
         $this->queryBus    = $queryBus;
@@ -69,7 +68,7 @@ final class PaymentList extends BaseControl
             ->setAttribute('class', 'w-18');
 
         $grid->addColumnText('recipientsString', 'Email')
-            ->addAttributes(['class' => 'small'])
+            ->addCellAttributes(['class' => 'small'])
             ->setSortable();
 
         $grid->addColumnText('amount', 'Částka')

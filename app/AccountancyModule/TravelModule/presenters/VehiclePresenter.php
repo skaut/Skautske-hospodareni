@@ -7,6 +7,7 @@ namespace App\AccountancyModule\TravelModule;
 use App\AccountancyModule\TravelModule\Components\RoadworthyControl;
 use App\AccountancyModule\TravelModule\Factories\IRoadworthyControlFactory;
 use App\Forms\BaseForm;
+use Contributte\Application\Response\PSR7StreamResponse;
 use Model\Common\File;
 use Model\DTO\Travel\Vehicle as VehicleDTO;
 use Model\Travel\Commands\Vehicle\CreateVehicle;
@@ -20,7 +21,6 @@ use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Http\IResponse;
 use Nette\Utils\ArrayHash;
-use Ublaboo\Responses\PSR7StreamResponse;
 
 use function assert;
 use function in_array;

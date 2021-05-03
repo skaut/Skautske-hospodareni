@@ -6,25 +6,21 @@ namespace App\AccountancyModule\Components;
 
 use App\BasePresenter;
 use Nette\Application\UI\Control;
-use Nette\Bridges\ApplicationLatte\Template;
+use Nette\Bridges\ApplicationLatte\DefaultTemplate;
 use Nette\InvalidStateException;
 use stdClass;
 
 /**
- * @property-read Template $template
+ * @property-read DefaultTemplate $template
  * @property-read BasePresenter $presenter
  */
 abstract class BaseControl extends Control
 {
     abstract public function render(): void;
 
-    /**
-     * @param bool $throw
-     */
-    // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
-    public function getPresenter($throw = true): ?BasePresenter
+    public function getPresenter(): ?BasePresenter
     {
-        $presenter = parent::getPresenter($throw);
+        $presenter = parent::getPresenter();
 
         if (! $presenter instanceof BasePresenter) {
             throw new InvalidStateException(

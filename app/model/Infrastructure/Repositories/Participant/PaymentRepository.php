@@ -49,10 +49,9 @@ final class PaymentRepository implements IPaymentRepository
                 SELECT p FROM Model\Participant\Payment p INDEX BY p.participantId
                     WHERE p.event.id = :eventId AND p.event.type = :eventType
             DQL)
-            ->execute([
-                'eventId' => $event->getId(),
-                'eventType' => $event->getType()->toString(),
-            ]);
+            ->setParameter('eventId', $event->getId())
+            ->setParameter('eventType', $event->getType()->toString())
+            ->getResult();
     }
 
     public function save(Payment $payment): void

@@ -39,7 +39,6 @@ final class NoteForm extends BaseControl
         CommandBus $commandBus,
         QueryBus $queryBus
     ) {
-        parent::__construct();
         $this->cashbookId = $cashbookId;
         $this->isEditable = $isEditable;
         $this->commandBus = $commandBus;

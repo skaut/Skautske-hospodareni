@@ -126,7 +126,7 @@ jobs:
             - name: Build frontend assets
               run: yarn install && yarn build
             - name: Prepare database
-              run: docker-compose exec -T -u www-data app php www/index.php migrations:migrate --no-interaction
+              run: docker-compose exec -T -u www-data app bin/console migrations:migrate --no-interaction
             - run: docker-compose exec -T -u www-data app phing tests-acceptance
             - uses: actions/upload-artifact@v2
               if: failure()
@@ -183,7 +183,7 @@ jobs:
             - name: Extract workdir
               run: tar -xzf workdir.tar.gz
             - run: mv app/config/config.ci.local.neon app/config/config.local.neon
-            - run: php www/index.php app:lint-latte
+            - run: bin/console app:lint-latte
 
     validate-mapping:
         name: "Validate mapping against migrations"
@@ -209,8 +209,8 @@ jobs:
             - name: Extract workdir
               run: tar -xzf workdir.tar.gz
             - run: mv app/config/config.ci.local.neon app/config/config.local.neon
-            - run: php www/index.php migrations:migrate --no-interaction
-            - run: "! php www/index.php migrations:diff && php www/index.php migrations:diff --allow-empty-diff"
+            - run: bin/console migrations:migrate --no-interaction
+            - run: "! bin/console migrations:diff && bin/console migrations:diff --allow-empty-diff"
 
     checks-passed:
         name: "Wait for all checks"

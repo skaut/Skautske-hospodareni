@@ -222,7 +222,7 @@ class EventPresenter extends BasePresenter
         }
 
         $id     = (int) $this->aid;
-        $values = $button->getForm()->getValues(true);
+        $values = $button->getForm()->getValues('array');
 
         $this->commandBus->handle(
             new UpdateEvent(

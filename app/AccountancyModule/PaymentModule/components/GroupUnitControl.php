@@ -44,7 +44,6 @@ class GroupUnitControl extends BaseControl
 
     public function __construct(int $groupId, CommandBus $commandBus, PaymentService $groups, UnitService $units, IAuthorizator $authorizator, QueryBus $queryBus)
     {
-        parent::__construct();
         $this->groupId      = $groupId;
         $this->commandBus   = $commandBus;
         $this->groups       = $groups;
