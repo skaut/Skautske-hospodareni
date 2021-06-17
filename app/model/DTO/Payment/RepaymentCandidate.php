@@ -8,7 +8,9 @@ use Model\Payment\BankAccount\AccountNumber;
 
 class RepaymentCandidate
 {
-    private int $personId;
+    private int $paymentId;
+
+    private ?int $personId;
 
     private string $name;
 
@@ -17,18 +19,25 @@ class RepaymentCandidate
     private ?AccountNumber $bankAccount;
 
     public function __construct(
-        int $personId,
+        int $paymentId,
+        ?int $personId,
         string $name,
         float $amount,
         ?AccountNumber $bankAccount
     ) {
+        $this->paymentId   = $paymentId;
         $this->personId    = $personId;
         $this->name        = $name;
         $this->amount      = $amount;
         $this->bankAccount = $bankAccount;
     }
 
-    public function getPersonId(): int
+    public function getPaymentId(): int
+    {
+        return $this->paymentId;
+    }
+
+    public function getPersonId(): ?int
     {
         return $this->personId;
     }

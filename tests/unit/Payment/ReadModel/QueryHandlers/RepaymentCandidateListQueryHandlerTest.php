@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Model\Payment\ReadModel\QueryHandlers;
 
+use Cake\Chronos\Date;
 use Codeception\Test\Unit;
+use DateTimeImmutable;
 use eGen\MessageBus\Bus\QueryBus;
 use Mockery;
 use Model\Common\Repositories\IParticipantRepository;
@@ -42,7 +44,7 @@ final class RepaymentCandidateListQueryHandlerTest extends Unit
                 $this->createPayment(State::CANCELED, 100, 100, null),
                 $this->createPayment(State::COMPLETED, 123, 200.0, null),
                 $this->createPayment(State::COMPLETED, 124, 500.0, '2000145399/0800'),
-                $this->createPayment(State::COMPLETED, 125, 600.0, null),
+                $this->createPayment(State::COMPLETED, null, 600.0, null),
             ]);
 
         $groups = Mockery::mock(IGroupRepository::class);
@@ -78,15 +80,26 @@ final class RepaymentCandidateListQueryHandlerTest extends Unit
         $this->assertSame(630.0, array_sum(array_map(fn (RepaymentCandidate $candidate) => $candidate->getAmount(), $repaymentCandidates)));
     }
 
-    private function createPayment(string $state, int $personId, float $amount, ?string $bankAccount): Payment
+    private function createPayment(string $state, ?int $personId, float $amount, ?string $bankAccount): Payment
     {
-        return Mockery::mock(Payment::class, [
-            'getState' => State::get($state),
-            'getPersonId' => $personId,
-            'getName' => 'My Name',
-            'getAmount' => $amount,
-            'getTransaction' => Mockery::mock(Transaction::class, ['getBankAccount' => $bankAccount]),
-        ]);
+        return new Payment(
+            1,
+            'My Name',
+            $amount,
+            [],
+            Date::create(2021, 06, 17),
+            null,
+            null,
+            '',
+            $state !== State::PREPARING,
+            State::get($state),
+            $bankAccount !== null ? new Transaction('123', $bankAccount, '', null) : null,
+            $state !== State::PREPARING ? new DateTimeImmutable() : null,
+            null,
+            $personId,
+            1,
+            [],
+        );
     }
 
     private function createParticipant(int $personId, float $repayment): Participant
