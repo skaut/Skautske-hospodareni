@@ -69,11 +69,14 @@ final class RepaymentCandidateListQueryHandler
 
         foreach ($repayments as $repayment) {
             assert($repayment instanceof DTO\RepaymentCandidate);
-            if (! array_key_exists($repayment->getPersonId(), $participantsPayments)) {
+
+            $personId = $repayment->getPersonId();
+
+            if ($personId === null || ! array_key_exists($personId, $participantsPayments)) {
                 continue;
             }
 
-            $repayment->setAmount($participantsPayments[$repayment->getPersonId()]);
+            $repayment->setAmount($participantsPayments[$personId]);
         }
 
         return $repayments;

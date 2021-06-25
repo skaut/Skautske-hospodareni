@@ -11,6 +11,7 @@ class RepaymentCandidateFactory
     public static function create(Payment $payment): RepaymentCandidate
     {
         return new RepaymentCandidate(
+            $payment->getId(),
             $payment->getPersonId(),
             $payment->getName(),
             $payment->getAmount(),

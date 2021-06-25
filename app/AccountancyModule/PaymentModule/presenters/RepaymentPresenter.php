@@ -65,7 +65,7 @@ final class RepaymentPresenter extends BasePresenter
 
         foreach ($this->queryBus->handle(new RepaymentCandidateListQuery($this->group->getId())) as $repayment) {
             assert($repayment instanceof RepaymentCandidate);
-            $container = $paymentsContainer->addContainer('payment' . $repayment->getPersonId());
+            $container = $paymentsContainer->addContainer('payment' . $repayment->getPaymentId());
 
             $checkbox = $container->addCheckbox('selected');
 
