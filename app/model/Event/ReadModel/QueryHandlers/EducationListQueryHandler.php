@@ -29,8 +29,9 @@ class EducationListQueryHandler
      */
     public function __invoke(EducationListQuery $query): array
     {
-        $educations = $this->skautis->event->EventEducationAll([
+        $educations = $this->skautis->event->EventEducationAllMyActions([
             'Year' => $query->getYear(),
+            'ID_RelationType' => 'team',
         ]);
 
         if (is_object($educations)) {
