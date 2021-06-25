@@ -15,14 +15,17 @@ use Model\DTO\Payment\Group;
 use Model\Payment\Commands\Group\ChangeGroupUnits;
 use Model\PaymentService;
 use Model\Unit\ReadModel\Queries\UnitQuery;
+use Model\Unit\ReadModel\Queries\UnitsDetailQuery;
 use Model\Unit\Unit;
 use Model\UnitService;
 use Nette\Application\BadRequestException;
 use Nette\Utils\ArrayHash;
 
+use function array_keys;
 use function array_map;
 use function array_replace;
 use function assert;
+use function in_array;
 use function sprintf;
 
 class GroupUnitControl extends BaseControl
@@ -160,6 +163,12 @@ class GroupUnitControl extends BaseControl
             $subunitPairs = $this->units->getSubunitPairs($officialUnitId, true);
 
             $officialUnitPairs[] = [$officialUnitId => $officialUnit->getDisplayName()] + $subunitPairs;
+            if (in_array($unitId, [$officialUnitId, array_keys($subunitPairs)])) {
+                continue;
+            }
+
+            $unitsDetail         = $this->queryBus->handle(new UnitsDetailQuery([$unitId]));
+            $officialUnitPairs[] = [$unitId => $unitsDetail[$unitId]->getDisplayName()];
         }
 
         return array_replace(...$officialUnitPairs);
