@@ -8672,23 +8672,23 @@
         },
         {
             "name": "doctrine/coding-standard",
-            "version": "8.2.0",
+            "version": "8.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/coding-standard.git",
-                "reference": "529d385bb3790431080493c0fe7adaec39df368a"
+                "reference": "f595b060799c1a0d76ead16981804eaa0bbcd8d6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/coding-standard/zipball/529d385bb3790431080493c0fe7adaec39df368a",
-                "reference": "529d385bb3790431080493c0fe7adaec39df368a",
+                "url": "https://api.github.com/repos/doctrine/coding-standard/zipball/f595b060799c1a0d76ead16981804eaa0bbcd8d6",
+                "reference": "f595b060799c1a0d76ead16981804eaa0bbcd8d6",
                 "shasum": ""
             },
             "require": {
                 "dealerdirect/phpcodesniffer-composer-installer": "^0.6.2 || ^0.7",
                 "php": "^7.1 || ^8.0",
-                "slevomat/coding-standard": "^6.3.9",
-                "squizlabs/php_codesniffer": "^3.5.5"
+                "slevomat/coding-standard": "^6.4.1",
+                "squizlabs/php_codesniffer": "^3.5.8"
             },
             "type": "phpcodesniffer-standard",
             "notification-url": "https://packagist.org/downloads/",
@@ -8719,7 +8719,7 @@
                 "standard",
                 "style"
             ],
-            "time": "2020-10-25T14:56:19+00:00"
+            "time": "2021-04-03T10:54:55+00:00"
         },
         {
             "name": "facebook/webdriver",
@@ -10376,12 +10376,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "ce3f11627a44eb3a911ba2644637749cf5b72724"
+                "reference": "ac0d045cdd1a9f1c87a0225a1dcda2bfb71be924"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/ce3f11627a44eb3a911ba2644637749cf5b72724",
-                "reference": "ce3f11627a44eb3a911ba2644637749cf5b72724",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/ac0d045cdd1a9f1c87a0225a1dcda2bfb71be924",
+                "reference": "ac0d045cdd1a9f1c87a0225a1dcda2bfb71be924",
                 "shasum": ""
             },
             "conflict": {
@@ -10497,6 +10497,7 @@
                 "laravel/framework": "<6.20.26|>=7,<8.40",
                 "laravel/socialite": ">=1,<1.0.99|>=2,<2.0.10",
                 "league/commonmark": "<0.18.3",
+                "league/flysystem": "<1.1.4|>=2,<2.1.1",
                 "lexik/jwt-authentication-bundle": "<2.10.7|>=2.11,<2.11.3",
                 "librenms/librenms": "<21.1",
                 "livewire/livewire": ">2.2.4,<2.2.6",
@@ -10737,7 +10738,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-06-23T15:02:39+00:00"
+            "time": "2021-06-24T09:02:34+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
