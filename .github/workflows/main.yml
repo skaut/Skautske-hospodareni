@@ -211,6 +211,11 @@ jobs:
             - run: mv app/config/config.ci.local.neon app/config/config.local.neon
             - run: bin/console migrations:migrate --no-interaction
             - run: "! bin/console migrations:diff && bin/console migrations:diff --allow-empty-diff"
+            - uses: actions/upload-artifact@v2
+              if: failure()
+              with:
+                  name: migrations
+                  path: migrations
 
     checks-passed:
         name: "Wait for all checks"
