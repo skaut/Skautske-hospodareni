@@ -64,6 +64,7 @@ library.add(
     far.faCalendar,
     far.faCheckCircle,
     far.faClock,
+    far.faCopy,
     far.faEdit,
     far.faEnvelopeOpen,
     far.faFileExcel,

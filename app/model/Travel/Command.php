@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Model\Common\ShouldNotHappen;
 use Model\Travel\Command\TransportTravel;
 use Model\Travel\Command\Travel;
 use Model\Travel\Command\TravelDetails;
@@ -207,6 +208,22 @@ class Command
         }
 
         $travel->update($price, $details);
+    }
+
+    /**
+     * @throws TravelNotFound
+     */
+    public function duplicateTravel(int $id): void
+    {
+        $travel = $this->getTravel($id);
+
+        if ($travel instanceof VehicleTravel) {
+            $this->addVehicleTravel($travel->getDistance(), $travel->getDetails());
+        } elseif ($travel instanceof TransportTravel) {
+            $this->addTransportTravel($travel->getPrice(), $travel->getDetails());
+        } else {
+            throw new ShouldNotHappen('Uknown travel type');
+        }
     }
 
     public function removeTravel(int $id): void
