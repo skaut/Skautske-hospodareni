@@ -15,7 +15,6 @@ use Nette\SmartObject;
  * @property-read string $displayName
  * @property-read Date $startDate
  * @property-read Date $endDate
- * @property-read string $state
  */
 class Education implements ISkautisEvent
 {
@@ -29,20 +28,16 @@ class Education implements ISkautisEvent
 
     private Date $endDate;
 
-    private string $state;
-
     public function __construct(
         SkautisEducationId $id,
         string $displayName,
         Date $startDate,
-        Date $endDate,
-        string $state
+        Date $endDate
     ) {
         $this->id          = $id;
         $this->displayName = $displayName;
         $this->startDate   = $startDate;
         $this->endDate     = $endDate;
-        $this->state       = $state;
     }
 
     public function getId(): SkautisEducationId
@@ -58,11 +53,6 @@ class Education implements ISkautisEvent
     public function getUnitId(): UnitId
     {
         throw new NotImplementedException('For education events is not implemented UnitID');
-    }
-
-    public function getState(): string
-    {
-        return $this->state;
     }
 
     public function getStartDate(): Date
