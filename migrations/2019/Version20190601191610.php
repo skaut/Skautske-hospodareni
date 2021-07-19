@@ -24,6 +24,6 @@ final class Version20190601191610 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        $this->addSql('DROP VIEW `ac_chitsView`');
+        $this->addSql('DROP VIEW IF EXISTS `ac_chitsView`');
     }
 }
