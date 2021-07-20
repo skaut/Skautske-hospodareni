@@ -23,7 +23,6 @@ class BankAccountForm extends BaseControl
 
     public function __construct(?int $id, BankAccountService $model, CommandBus $commandBus)
     {
-        parent::__construct();
         $this->id         = $id;
         $this->model      = $model;
         $this->commandBus = $commandBus;

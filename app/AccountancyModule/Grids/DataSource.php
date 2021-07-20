@@ -10,7 +10,6 @@ use Ublaboo\DataGrid\DataSource\IDataSource;
 use Ublaboo\DataGrid\Filter\Filter;
 use Ublaboo\DataGrid\Utils\Sorting;
 
-use function call_user_func;
 use function count;
 
 abstract class DataSource implements IDataSource
@@ -65,18 +64,18 @@ abstract class DataSource implements IDataSource
     /**
      * @param Filter[] $filters
      */
-    final public function filter(array $filters): self
+    final public function filter(array $filters): void
     {
         foreach ($filters as $filter) {
-            if ($filter->hasConditionCallback()) {
-                call_user_func($filter->getConditionCallback(), $this, $filter->getValue());
+            $callback = $filter->getConditionCallback();
+
+            if ($callback !== null) {
+                $callback($this, $filter->getValue());
                 continue;
             }
 
             $this->filters[] = $filter;
         }
-
-        return $this;
     }
 
     /**
@@ -89,12 +88,7 @@ abstract class DataSource implements IDataSource
         return $this;
     }
 
-    /**
-     * @param int $offset
-     * @param int $limit
-     */
-    // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
-    final public function limit($offset, $limit): self
+    final public function limit(int $offset, int $limit): self
     {
         $this->offset = $offset;
         $this->limit  = $limit;

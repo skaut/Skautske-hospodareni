@@ -20,10 +20,10 @@ use Model\DTO\Participant\Participant;
 use Model\DTO\Participant\UpdateParticipant;
 use Model\Event\Commands\Camp\ActivateAutocomputedParticipants;
 use Model\Event\SkautisCampId;
-use Model\EventEntity;
 use Model\ExcelService;
 use Model\ExportService;
 use Model\Participant\Payment\EventType;
+use Model\ParticipantService;
 use Model\Services\PdfRenderer;
 use Nette\Utils\Strings;
 use Skautis\Wsdl\PermissionException;
@@ -51,14 +51,15 @@ class ParticipantPresenter extends BasePresenter
 
     private bool $isAllowParticipantDelete;
 
-    private EventEntity $eventService;
+    private ParticipantService $participants;
 
     public function __construct(
         ExportService $export,
         ExcelService $excel,
         PdfRenderer $pdf,
         IPersonPickerFactory $personPickerFactory,
-        IParticipantListFactory $participantListFactory
+        IParticipantListFactory $participantListFactory,
+        ParticipantService $participants
     ) {
         parent::__construct();
         $this->exportService          = $export;
@@ -66,12 +67,12 @@ class ParticipantPresenter extends BasePresenter
         $this->pdf                    = $pdf;
         $this->personPickerFactory    = $personPickerFactory;
         $this->participantListFactory = $participantListFactory;
+        $this->participants           = $participants;
     }
 
     protected function startup(): void
     {
         parent::startup();
-        $this->eventService = $this->context->getService('campService');
 
         $this->canAddParticipants       = $this->authorizator->isAllowed(Camp::ADD_PARTICIPANT, $this->aid);
         $this->isAllowParticipantDelete = $this->authorizator->isAllowed(Camp::REMOVE_PARTICIPANT, $this->aid);
@@ -145,7 +146,6 @@ class ParticipantPresenter extends BasePresenter
     {
         $control = $this->participantListFactory->create(
             $this->aid,
-            $this->eventService,
             $this->campParticipants(),
             true,
             true,
@@ -161,7 +161,7 @@ class ParticipantPresenter extends BasePresenter
                     $this->redirect('this');
                 }
 
-                $this->eventService->getParticipants()->update($u);
+                $this->participants->update(EventType::CAMP(), $u);
             }
         };
 

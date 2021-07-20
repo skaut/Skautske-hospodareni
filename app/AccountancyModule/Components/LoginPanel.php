@@ -22,7 +22,6 @@ final class LoginPanel extends BaseControl
 
     public function __construct(UserService $userService, UnitService $unitService, User $user)
     {
-        parent::__construct();
         $this->userService = $userService;
         $this->unitService = $unitService;
         $this->user        = $user;

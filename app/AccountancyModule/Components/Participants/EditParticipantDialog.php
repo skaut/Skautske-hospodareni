@@ -33,7 +33,6 @@ final class EditParticipantDialog extends Dialog
      */
     public function __construct(array $participants, bool $isAccountAllowed, bool $isRepaymentAllowed)
     {
-        parent::__construct();
         $this->participants       = $participants;
         $this->isAccountAllowed   = $isAccountAllowed;
         $this->isRepaymentAllowed = $isRepaymentAllowed;

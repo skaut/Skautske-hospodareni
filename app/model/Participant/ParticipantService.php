@@ -15,31 +15,36 @@ use Model\Utils\MoneyFactory;
 use Skautis\Skautis;
 
 use function sprintf;
+use function ucfirst;
 
-class ParticipantService extends MutableBaseService
+final class ParticipantService
 {
     private IPaymentRepository $repository;
 
-    public function __construct(string $name, Skautis $skautIS, IPaymentRepository $repository)
+    private Skautis $skautis;
+
+    public function __construct(Skautis $skautis, IPaymentRepository $repository)
     {
-        parent::__construct($name, $skautIS);
         $this->repository = $repository;
+        $this->skautis    = $skautis;
     }
 
-    public function update(UpdateParticipant $updateParticipant): void
+    public function update(EventType $eventType, UpdateParticipant $updateParticipant): void
     {
         if ($updateParticipant->getField() === 'days') {
-            $sisData = [
+            $typeName = ucfirst($eventType->toString());
+            $sisData  = [
                 'ID' => $updateParticipant->getParticipantId(),
                 'Real' => true,
                 'Days' => $updateParticipant->getValue(),
             ];
-            $this->skautis->event->{'Participant' . $this->typeName . 'Update'}($sisData, 'participant' . $this->typeName);
+
+            $this->skautis->event->{'Participant' . $typeName . 'Update'}($sisData, 'participant' . $typeName);
 
             return;
         }
 
-        $event = new Event($updateParticipant->getEventId(), $this->type === EventType::CAMP ? EventType::CAMP() : EventType::GENERAL());
+        $event = new Event($updateParticipant->getEventId(), $eventType);
         try {
             $payment = $this->repository->findByParticipant($updateParticipant->getParticipantId(), $event->getType());
         } catch (PaymentNotFound $exc) {

@@ -135,7 +135,7 @@ class Payment
 
     public function getRecipientsString(): string
     {
-        return implode(', ', array_map(fn (EmailAddress $emailAddress) => Strings::truncate($emailAddress, 35), $this->recipients));
+        return implode(', ', array_map(fn (EmailAddress $emailAddress) => Strings::truncate($emailAddress->getValue(), 35), $this->recipients));
     }
 
     public function getDueDate(): Date

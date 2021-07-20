@@ -1,0 +1,9 @@
+#!/usr/bin/env php
+<?php
+
+$container = require __DIR__ . '/../app/bootstrap.php';
+assert($container instanceof Nette\DI\Container);
+
+$application = $container->getByType(Symfony\Component\Console\Application::class);
+
+exit($application->run());

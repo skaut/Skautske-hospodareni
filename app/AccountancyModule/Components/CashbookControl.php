@@ -34,7 +34,6 @@ class CashbookControl extends BaseControl
         IChitListControlFactory $chitListFactory,
         INoteFormFactory $noteFactory
     ) {
-        parent::__construct();
         $this->cashbookId      = $cashbookId;
         $this->isEditable      = $isEditable;
         $this->unitId          = $unitId;

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\Factories;
 
 use App\AccountancyModule\Components\DataGrid;
-use Nette\Bridges\ApplicationLatte\Template;
+use Nette\Bridges\ApplicationLatte\DefaultTemplate;
 use Ublaboo\DataGrid\Localization\SimpleTranslator;
 
 use function assert;
@@ -62,11 +62,12 @@ class GridFactory
 
         $grid->onAnchor[] = function () use ($grid, $templateFile, $templateParameters): void {
             $template = $grid->getTemplate();
-            assert($template instanceof Template);
+            assert($template instanceof DefaultTemplate);
             $baseTemplate = __DIR__ . '/../Components/templates/datagrid.latte';
 
             // This is variable with original layout in DataGrid 6.0+ (it replaces $original_template)
             $template->setParameters(['originalTemplate' => $baseTemplate]);
+            $template->setParameters(['baseTemplate' => $baseTemplate]);
             $grid->setTemplateFile($templateFile ?? $baseTemplate);
 
             $template->setParameters($templateParameters);
@@ -85,7 +86,7 @@ class GridFactory
             $presenter->payload->postGet = true;
         };
 
-        DataGrid::$icon_prefix = ''; // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+        DataGrid::$iconPrefix = '';
 
         return $grid;
     }

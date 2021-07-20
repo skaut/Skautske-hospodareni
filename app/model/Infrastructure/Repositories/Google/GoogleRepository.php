@@ -77,12 +77,9 @@ final class GoogleRepository implements IGoogleRepository
         $oAuth = $this->entityManager->createQuery(<<<'DQL'
             SELECT o FROM Model\Google\OAuth o WHERE o.unitId = :unitId AND o.email = :email
         DQL)
-            ->execute(
-                [
-                    'unitId' => $unitId->toInt(),
-                    'email' => $email,
-                ],
-            );
+            ->setParameter('unitId', $unitId->toInt())
+            ->setParameter('email', $email)
+            ->getResult();
 
         if ($oAuth === []) {
             throw new OAuthNotFound();

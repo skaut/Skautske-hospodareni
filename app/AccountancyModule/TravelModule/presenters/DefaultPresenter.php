@@ -26,7 +26,6 @@ use function array_key_exists;
 use function array_map;
 use function array_slice;
 use function assert;
-use function count;
 use function round;
 use function sprintf;
 use function str_replace;
@@ -138,24 +137,22 @@ class DefaultPresenter extends BasePresenter
 
         assert($template instanceof Template);
 
-        $template->setParameters([
-            'command' => $command,
-            'travels' => $travels,
-            'types' => array_map(fn (TransportType $t) => $t->getLabel(), $command->getTransportTypes()),
-            'vehicle' => $vehicleId !== null ? $this->travelService->findVehicle($vehicleId) : null,
-        ]);
+        $template->getLatte()->addFilterLoader('\\App\\AccountancyModule\\AccountancyHelpers::loader');
 
-        if (count($travels) !== 0) {
-            $template->setParameters([
-                'start' => $travels[0],
-                'end' => array_slice($travels, -1)[0],
-            ]);
-        }
-
-        $template->getLatte()->addFilter(null, '\\App\\AccountancyModule\\AccountancyHelpers::loader');
-        $template->setFile(__DIR__ . '/../templates/Default/ex.command.latte');
-
-        $this->pdf->render((string) $template, 'cestovni-prikaz.pdf');
+        $this->pdf->render(
+            $template->renderToString(
+                __DIR__ . '/../templates/Default/ex.command.latte',
+                [
+                    'command' => $command,
+                    'travels' => $travels,
+                    'types' => array_map(fn (TransportType $t) => $t->getLabel(), $command->getTransportTypes()),
+                    'vehicle' => $vehicleId !== null ? $this->travelService->findVehicle($vehicleId) : null,
+                    'start' => $travels[0] ?? null,
+                    'end' => array_slice($travels, -1)[0] ?? null,
+                ]
+            ),
+            'cestovni-prikaz.pdf'
+        );
         $this->terminate();
     }
 

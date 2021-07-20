@@ -25,7 +25,7 @@ class Contract
     /** @ORM\Column(type="integer") */
     private int $unitId;
 
-    /** @ORM\Column(type="string", length=64, options={"comment": "jméno osoby zastupující jednotku"}) */
+    /** @ORM\Column(type="string", length=64) */
     private string $unitRepresentative;
 
     /** @ORM\Column(type="chronos_date", nullable=true) */

@@ -48,7 +48,6 @@ class FunctionsControl extends BaseControl
         QueryBus $queryBus,
         IAuthorizator $authorizator
     ) {
-        parent::__construct();
         $this->eventId      = $eventId;
         $this->unitId       = $unitId;
         $this->commandBus   = $commandBus;

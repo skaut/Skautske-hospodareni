@@ -31,7 +31,6 @@ class MissingAutocomputedCategoryControl extends BaseControl
         QueryBus $queryBus,
         CommandBus $commandBus
     ) {
-        parent::__construct();
         $this->campId       = $campId;
         $this->authorizator = $authorizator;
         $this->queryBus     = $queryBus;

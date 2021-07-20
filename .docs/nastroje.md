@@ -6,12 +6,12 @@ Změny v databázi jsou verzované.
 
 Migrace na aktuální schéma:
 ```bash
-php www/index.php migrations:migrate
+bin/console migrations:migrate
 ```
 
 Generování migrace se změnami:
 ```bash
-php www/index.php migrations:diff
+bin/console migrations:diff
 ```
 
 ## Buildování frontendu

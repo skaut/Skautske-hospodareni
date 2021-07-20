@@ -42,7 +42,6 @@ final class CreateCashbookDialog extends BaseControl
 
     public function __construct(bool $isEditable, UnitId $unitId, CommandBus $commandBus, QueryBus $queryBus)
     {
-        parent::__construct();
         $this->isEditable = $isEditable;
         $this->unitId     = $unitId;
         $this->commandBus = $commandBus;

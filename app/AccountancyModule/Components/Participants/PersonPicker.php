@@ -50,7 +50,6 @@ final class PersonPicker extends BaseControl
         array $currentParticipants,
         QueryBus $queryBus
     ) {
-        parent::__construct();
         $this->userUnitId          = $userUnitId;
         $this->currentParticipants = $currentParticipants;
         $this->queryBus            = $queryBus;
@@ -136,10 +135,10 @@ final class PersonPicker extends BaseControl
         $form->addDate('birthday', 'Dat. nar.');
 
         $form->addSubmit('send', 'Založit účastníka')
-            ->setAttribute('class', 'btn btn-primary');
+            ->setHtmlAttribute('class', 'btn btn-primary');
 
         $form->onSuccess[] = function (BaseForm $form): void {
-            $values = $form->getValues(true);
+            $values = $form->getValues('array');
 
             $this->onNonMemberAdd(
                 new NonMemberParticipant(

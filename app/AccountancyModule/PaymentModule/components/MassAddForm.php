@@ -29,7 +29,6 @@ class MassAddForm extends BaseControl
 
     public function __construct(int $groupId, PaymentService $payments, CommandBus $commandBus)
     {
-        parent::__construct();
         $this->groupId    = $groupId;
         $this->payments   = $payments;
         $this->commandBus = $commandBus;

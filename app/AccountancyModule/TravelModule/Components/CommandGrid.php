@@ -32,7 +32,6 @@ class CommandGrid extends BaseGridControl
         TravelService $travel,
         GridFactory $gridFactory
     ) {
-        parent::__construct();
         $this->unitId      = $unitId;
         $this->userId      = $userId;
         $this->travel      = $travel;

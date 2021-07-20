@@ -9,7 +9,7 @@ services:
     - Nette\Caching\Storages\DevNullStorage
 
 extensions:
-    console: Kdyby\Console\DI\ConsoleExtension
+    console: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
     decorator: Nette\DI\Extensions\DecoratorExtension # default extension in Nette DI
     messageBus: eGen\MessageBus\DI\MessageBusExtension
 

@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App;
 
-use Nette\Application\IRouter;
 use Nette\Application\Routers\Route;
 use Nette\Application\Routers\RouteList;
 use Nette\Application\Routers\SimpleRouter;
+use Nette\Routing\Router;
 
 /**
  * Router factory.
  */
 class RouterFactory
 {
-    public function createRouter(): IRouter
+    public function createRouter(): Router
     {
         $router = new RouteList();
 
@@ -58,191 +58,149 @@ class RouterFactory
 
         $router[] = $accountancy = new RouteList('Accountancy');
 
-        $accountancy[] = new Route('export/<action>/<cashbookId>', ['presenter' => 'CashbookExport']);
+        $accountancy->addRoute('export/<action>/<cashbookId>', ['presenter' => 'CashbookExport']);
 
-        $accountancy[] = $this->createCampRoutes();
-        $accountancy[] = $this->createEventRoutes();
-        $accountancy[] = $this->createTravelRoutes();
-        $accountancy[] = $this->createUnitAccountRoutes();
-        $accountancy[] = $this->createPaymentRoutes();
-        $accountancy[] = $this->createStatRoutes();
+        $this->createCampRoutes($accountancy);
+        $this->createEventRoutes($accountancy);
+        $this->createTravelRoutes($accountancy);
+        $this->createUnitAccountRoutes($accountancy);
+        $this->createPaymentRoutes($accountancy);
+        $this->createStatRoutes($accountancy);
 
-        $accountancy[] = new Route('<module>/<presenter>[/<action>]', ['action' => 'default']);
+        $accountancy->addRoute('<module>/<presenter>[/<action>]', ['action' => 'default']);
 
-        $router[] = new SimpleRouter('Default:default');
+        $router->add(new SimpleRouter('Default:default'));
 
         return $router;
     }
 
-    private function createCampRoutes(): IRouter
+    private function createCampRoutes(RouteList $parent): void
     {
-        $router = new RouteList('Camp');
-
-        $prefix   = 'tabory';
-        $router[] = new Route(
-            $prefix . '/<aid [0-9]+>[/<presenter>[/<action>]]',
-            [
-                'presenter' => [
-                    Route::VALUE => 'Detail',
-                    Route::FILTER_TABLE => [
-                        'ucastnici' => 'Participant',
-                        'kniha' => 'Cashbook',
-                        'rozpocet' => 'Budget',
+        $parent
+            ->withModule('Camp')
+            ->addRoute('tabory', 'Default:default')
+            ->withPath('tabory')
+            ->addRoute(
+                '<aid [0-9]+>[/<presenter>[/<action>]]',
+                [
+                    'presenter' => [
+                        Route::VALUE => 'Detail',
+                        Route::FILTER_TABLE => [
+                            'ucastnici' => 'Participant',
+                            'kniha' => 'Cashbook',
+                            'rozpocet' => 'Budget',
+                        ],
                     ],
-                ],
-                'action' => 'default',
-            ]
-        );
-
-        $router[] = new Route(
-            $prefix . '/<presenter>[/<action>]',
-            [
-                'presenter' => 'Default',
-                'action' => 'default',
-            ]
-        );
-
-        return $router;
+                    'action' => 'default',
+                ]
+            )
+            ->addRoute('<presenter>[/<action>]', ['action' => 'default']);
     }
 
-    private function createEventRoutes(): IRouter
+    private function createEventRoutes(RouteList $parent): void
     {
-        $router = new RouteList('Event');
-
-        $prefix = 'akce';
-
-        $router[] = new Route(
-            $prefix . '/<aid [0-9]+>/<presenter>[/<action>]',
-            [
-                'presenter' => [
-                    Route::VALUE => 'Event',
-                    Route::FILTER_TABLE => [
-                        'ucastnici' => 'Participant',
-                        'kniha' => 'Cashbook',
+        $parent
+            ->withModule('Event')
+            ->addRoute('akce', 'Default:default')
+            ->withPath('akce')
+            ->addRoute(
+                '<aid [0-9]+>/<presenter>[/<action>]',
+                [
+                    'presenter' => [
+                        Route::VALUE => 'Event',
+                        Route::FILTER_TABLE => [
+                            'ucastnici' => 'Participant',
+                            'kniha' => 'Cashbook',
+                        ],
                     ],
-                ],
-                'action' => 'default',
-            ]
-        );
-
-        $router[] = new Route(
-            $prefix . '/[<presenter>][/<action>]',
-            [
-                'presenter' => 'Default',
-                'action' => 'default',
-            ]
-        );
-
-        return $router;
+                    'action' => 'default',
+                ]
+            )
+            ->addRoute('<presenter>[/<action>]', ['action' => 'default']);
     }
 
-    private function createTravelRoutes(): IRouter
+    private function createTravelRoutes(RouteList $parent): void
     {
-        $router = new RouteList('Travel');
-
-        $prefix = 'cestaky';
-
-        $router[] = new Route($prefix . '/vozidla', 'VehicleList:default');
-        $router[] = new Route(
-            $prefix . '[/<presenter>[/<action>][/<id>]]',
-            [
-                'presenter' => [
-                    Route::VALUE => 'Default',
-                    Route::FILTER_TABLE => [
-                        'vozidla' => 'Vehicle',
-                        'smlouvy' => 'Contract',
+        $parent
+            ->withModule('Travel')
+            ->addRoute('cestaky', 'Default:default')
+            ->withPath('cestaky')
+            ->addRoute('vozidla', 'VehicleList:default')
+            ->addRoute(
+                '<presenter>[/<action>][/<id>]',
+                [
+                    'presenter' => [
+                        Route::FILTER_TABLE => [
+                            'vozidla' => 'Vehicle',
+                            'smlouvy' => 'Contract',
+                        ],
                     ],
-                ],
-                'action' => 'default',
-            ]
-        );
-
-        return $router;
+                    'action' => 'default',
+                ]
+            );
     }
 
-    private function createUnitAccountRoutes(): IRouter
+    private function createUnitAccountRoutes(RouteList $parent): void
     {
-        $router = new RouteList('UnitAccount');
-
-        $prefix = 'jednotka';
-
-        $router[] = new Route(
-            $prefix . '/<unitId [0-9]+>[/<presenter>][/<action>][/<year>]',
-            [
-                'presenter' => [
-                    Route::VALUE => 'Default',
-                    Route::FILTER_TABLE => [
-                        'kniha' => 'Cashbook',
-                        'paragony' => 'Chit',
-                        'rozpocet' => 'Budget',
+        $parent
+            ->withModule('UnitAccount')
+            ->addRoute('jednotka', 'Default:default')
+            ->withPath('jednotka')
+            ->addRoute(
+                '<unitId [0-9]+>[/<presenter>][/<action>][/<year>]',
+                [
+                    'presenter' => [
+                        Route::VALUE => 'Default',
+                        Route::FILTER_TABLE => [
+                            'kniha' => 'Cashbook',
+                            'paragony' => 'Chit',
+                            'rozpocet' => 'Budget',
+                        ],
                     ],
-                ],
-                'action' => 'default',
-            ]
-        );
-
-        $router[] = new Route(
-            $prefix . '[/<presenter>][/<action>]',
-            [
-                'presenter' => 'Default',
-                'action' => 'default',
-            ]
-        );
-
-        return $router;
+                    'action' => 'default',
+                ]
+            )
+            ->addRoute('<presenter>[/<action>]', ['action' => 'default']);
     }
 
-    private function createPaymentRoutes(): IRouter
+    private function createPaymentRoutes(RouteList $parent): void
     {
-        $router = new RouteList('Payment');
-
-        $prefix = 'platby';
-
-        $router[] = new Route($prefix, 'GroupList:default');
-        $router[] = new Route(
-            $prefix . '[/<id [0-9]+>[/<presenter>[/<action>]]]',
-            [
-                'presenter' => [
-                    Route::VALUE => 'Payment',
-                    Route::FILTER_TABLE => ['bankovni-ucty' => 'BankAccounts'],
-                ],
+        $parent
+            ->withModule('Payment')
+            ->withPath('platby')
+            ->addRoute('emaily ? jednotka=<unitId>', 'Mail:default')
+            ->addRoute('bankovni-ucty ? jednotka=<unitId>', 'BankAccounts:default')
+            ->addRoute(
+                'bankovni-ucty/<id [0-9]+>[/<action>] ? jednotka=<unitId>',
+                [
+                    'presenter' => 'BankAccounts',
+                    'action' => [
+                        Route::VALUE => 'default',
+                        Route::FILTER_TABLE => ['upravit' => 'edit'],
+                    ],
+                ]
+            )
+            ->addRoute('', 'GroupList:default')
+            ->addRoute('skupiny/<id [0-9]+>[/<action>]', [
+                'presenter' => 'Payment',
                 'action' => 'default',
-            ]
-        );
-
-        $router[] = new Route(
-            $prefix . '[/<presenter>][/<action>]',
-            [
-                'presenter' => 'Default',
-                'action' => 'default',
-            ]
-        );
-
-        return $router;
+            ])
+            ->addRoute('[<presenter>[/<action>]]', ['action' => 'default']);
     }
 
-    private function createStatRoutes(): IRouter
+    private function createStatRoutes(RouteList $parent): void
     {
-        $router = new RouteList('Statistics');
-
-        $prefix = 'statistiky';
-
-        $router[] = new Route(
-            $prefix . '/<unitId [0-9]+>[/<presenter>][/<action>]',
-            [
-                'presenter' => [Route::VALUE => 'Default'],
-                'action' => 'default',
-            ]
-        );
-
-        $router[] = new Route(
-            $prefix . '[/<presenter>][/<action>]',
-            [
-                'presenter' => 'Default',
-                'action' => 'default',
-            ]
-        );
-
-        return $router;
+        $parent
+            ->withModule('Statistics')
+            ->addRoute('statistiky', 'Default:default')
+            ->withPath('statistiky')
+            ->addRoute(
+                '<unitId [0-9]+>[/<presenter>][/<action>]',
+                [
+                    'presenter' => [Route::VALUE => 'Default'],
+                    'action' => 'default',
+                ]
+            )
+            ->addRoute('[<presenter>][/<action>]', ['action' => 'default']);
     }
 }

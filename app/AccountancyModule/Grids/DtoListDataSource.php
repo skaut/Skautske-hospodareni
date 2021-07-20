@@ -33,13 +33,11 @@ final class DtoListDataSource implements IDataSource
 
     /**
      * @param mixed[] $filters
-     *
-     * @phpstan-return $this
      */
-    public function filter(array $filters): self
+    public function filter(array $filters): void
     {
         if ($filters === []) {
-            return $this;
+            return;
         }
 
         throw new NotImplementedException('This data source does not support filtering');

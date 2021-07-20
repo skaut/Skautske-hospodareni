@@ -35,7 +35,6 @@ final class RoadworthyControl extends BaseControl
 
     public function __construct(int $vehicleId, bool $isEditable, CommandBus $commandBus, QueryBus $queryBus)
     {
-        parent::__construct();
         $this->vehicleId  = $vehicleId;
         $this->isEditable = $isEditable;
         $this->commandBus = $commandBus;

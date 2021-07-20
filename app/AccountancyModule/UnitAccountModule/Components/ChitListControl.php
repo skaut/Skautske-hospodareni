@@ -39,7 +39,6 @@ final class ChitListControl extends BaseControl
         QueryBus $queryBus,
         User $user
     ) {
-        parent::__construct();
         $this->cashbookId   = $cashbookId;
         $this->onlyUnlocked = $onlyUnlocked;
         $this->commandBus   = $commandBus;

@@ -7,24 +7,24 @@ namespace Model\Mail;
 use Model\Google\GoogleService;
 use Model\Google\OAuth;
 use Model\Google\OAuthMailer;
-use Nette\Mail\IMailer;
+use Nette\Mail\Mailer;
 
 class MailerFactory implements IMailerFactory
 {
-    private IMailer $debugMailer;
+    private Mailer $debugMailer;
 
     private bool $enabled;
 
     private GoogleService $googleService;
 
-    public function __construct(IMailer $debugMailer, bool $enabled, GoogleService $googleService)
+    public function __construct(Mailer $debugMailer, bool $enabled, GoogleService $googleService)
     {
         $this->debugMailer   = $debugMailer;
         $this->enabled       = $enabled;
         $this->googleService = $googleService;
     }
 
-    public function create(OAuth $oAuth): IMailer
+    public function create(OAuth $oAuth): Mailer
     {
         if (! $this->enabled) {
             return $this->debugMailer;

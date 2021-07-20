@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Services;
 
 use Latte\Engine;
-use Nette\Bridges\ApplicationLatte\ILatteFactory;
+use Nette\Bridges\ApplicationLatte\LatteFactory;
 use Nette\Bridges\ApplicationLatte\Template;
 
 class TemplateFactory
@@ -13,11 +13,11 @@ class TemplateFactory
     public const OAUTH_ADDED     = __DIR__ . '/../emails/oAuthAdded.latte';
     public const PAYMENT_DETAILS = __DIR__ . '/../emails/payment.base.latte';
 
-    private ILatteFactory $latteFactory;
+    private LatteFactory $latteFactory;
 
     private ?Engine $engine = null;
 
-    public function __construct(ILatteFactory $latteFactory)
+    public function __construct(LatteFactory $latteFactory)
     {
         $this->latteFactory = $latteFactory;
     }
@@ -36,11 +36,7 @@ class TemplateFactory
      */
     public function create(string $file, array $parameters): string
     {
-        $template = new Template($this->getEngine());
-
-        $template->setFile($file);
-        $template->setParameters($parameters);
-
-        return (string) $template;
+        return (new Template($this->getEngine()))
+            ->renderToString($file, $parameters);
     }
 }

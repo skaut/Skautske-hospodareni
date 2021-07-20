@@ -41,7 +41,6 @@ class CommandForm extends Control
 
     public function __construct(int $unitId, ?int $commandId, TravelService $model, QueryBus $queryBus)
     {
-        parent::__construct();
         $this->unitId    = $unitId;
         $this->commandId = $commandId;
         $this->model     = $model;

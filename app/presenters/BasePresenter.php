@@ -12,8 +12,11 @@ use Model\Auth\IAuthorizator;
 use Model\Common\Services\NotificationsCollector;
 use Model\UnitService;
 use Model\UserService;
-use Nette;
+use Nette\Application\BadRequestException;
 use Nette\Application\LinkGenerator;
+use Nette\Application\Response;
+use Nette\Application\UI\Presenter;
+use Nette\Bridges\ApplicationLatte\DefaultTemplate;
 use Nette\Security\Identity;
 use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\AuthenticationException;
@@ -24,9 +27,9 @@ use function explode;
 use function sprintf;
 
 /**
- * @property-read Nette\Bridges\ApplicationLatte\Template $template
+ * @property-read DefaultTemplate $template
  */
-abstract class BasePresenter extends Nette\Application\UI\Presenter
+abstract class BasePresenter extends Presenter
 {
     protected UserService $userService;
 
@@ -50,6 +53,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
     protected LinkGenerator $linkGenerator;
 
+    private Context $appContext;
+
     public function injectAll(
         UserService $userService,
         UnitService $unitService,
@@ -59,7 +64,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         ILoginPanelFactory $loginPanelFactory,
         NotificationsCollector $notificationsCollector,
         LoggerInterface $logger,
-        LinkGenerator $linkGenerator
+        LinkGenerator $linkGenerator,
+        Context $appContext
     ): void {
         $this->userService            = $userService;
         $this->unitService            = $unitService;
@@ -70,19 +76,20 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         $this->logger                 = $logger;
         $this->notificationsCollector = $notificationsCollector;
         $this->linkGenerator          = $linkGenerator;
+        $this->appContext             = $appContext;
     }
 
     protected function startup(): void
     {
         parent::startup();
 
-        $this->appDir = $this->context->getParameters()['appDir'];
+        $this->appDir = $this->appContext->getAppDir();
 
         //adresář s částmi šablon pro použití ve více modulech
         $this->template->setParameters([
             'templateBlockDir' => $this->appDir . '/templateBlocks/',
             'backlink' => $backlink = $this->getParameter('backlink'),
-            'testBackground' => $this->context->getParameters()['testBackground'],
+            'testBackground' => $this->appContext->shouldShowTestBackground(),
         ]);
 
         if ($this->getUser()->isLoggedIn() && $backlink !== null) {
@@ -106,14 +113,12 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
         $presenterNameParts = explode(':', $this->getName());
 
-        $parameters = $this->context->getParameters();
-
         $this->template->setParameters([
             'module' => $presenterNameParts[1] ?? null,
             'presenterName' => $presenterNameParts[array_key_last($presenterNameParts)],
             'linkGenerator' => $this->linkGenerator,
-            'productionMode' => $parameters['productionMode'],
-            'wwwDir' => $parameters['wwwDir'],
+            'productionMode' => $this->appContext->isProduction(),
+            'wwwDir' => $this->appContext->getWwwDir(),
         ]);
 
         if (! $this->getUser()->isLoggedIn()) {
@@ -134,7 +139,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     public function handleChangeRole(?int $roleId = null): void
     {
         if ($roleId === null) {
-            throw new Nette\Application\BadRequestException();
+            throw new BadRequestException();
         }
 
         $this['loginPanel']->handleChangeRole($roleId);
@@ -166,11 +171,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         return $this->unitId;
     }
 
-    /**
-     * @param  Nette\Application\IResponse $response
-     */
-    // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
-    protected function shutdown($response): void
+    protected function shutdown(Response $response): void
     {
         foreach ($this->notificationsCollector->popNotifications() as [$type, $message, $count]) {
             if ($type === NotificationsCollector::ERROR) {

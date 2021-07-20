@@ -34,7 +34,6 @@ final class PrefixControl extends Dialog
 
     public function __construct(CashbookId $cashbookId, PaymentMethod $paymentMethod, bool $isEditable, CommandBus $commandBus, QueryBus $queryBus)
     {
-        parent::__construct();
         $this->isEditable    = $isEditable;
         $this->cashbookId    = $cashbookId;
         $this->paymentMethod = $paymentMethod;

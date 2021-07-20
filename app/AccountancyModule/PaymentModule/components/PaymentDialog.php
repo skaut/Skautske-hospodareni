@@ -41,7 +41,6 @@ final class PaymentDialog extends Dialog
 
     public function __construct(int $groupId, CommandBus $commandBus, PaymentService $paymentService)
     {
-        parent::__construct();
         $this->groupId        = $groupId;
         $this->commandBus     = $commandBus;
         $this->paymentService = $paymentService;

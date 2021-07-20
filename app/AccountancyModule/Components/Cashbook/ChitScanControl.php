@@ -36,7 +36,6 @@ final class ChitScanControl extends BaseControl
 
     public function __construct(CashbookId $cashbookId, int $chitId, bool $isEditable, CommandBus $commandBus, QueryBus $queryBus)
     {
-        parent::__construct();
         $this->chitId     = $chitId;
         $this->cashbookId = $cashbookId;
         $this->isEditable = $isEditable;

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule;
 
+use Contributte\Application\Response\PSR7StreamResponse;
+use GuzzleHttp\Psr7\Utils;
 use Model\Auth\Resources\Camp;
 use Model\Auth\Resources\Event;
 use Model\Auth\Resources\Unit;
@@ -29,7 +31,6 @@ use Nette\Http\IResponse;
 use Nette\Utils\Image;
 use Nette\Utils\Strings;
 use RuntimeException;
-use Ublaboo\Responses\PSR7StreamResponse;
 use ZipStream\Option\Archive;
 use ZipStream\ZipStream;
 
@@ -38,7 +39,6 @@ use function array_map;
 use function array_values;
 use function assert;
 use function date;
-use function GuzzleHttp\Psr7\stream_for;
 use function in_array;
 use function sprintf;
 
@@ -215,9 +215,9 @@ class CashbookExportPresenter extends BasePresenter
 
             $contents = $scan->getContents();
             if ($thumbnail) {
-                $image = Image::fromString($contents);
+                $image = Image::fromString($contents->getContents());
                 $image->resize(150, 150);
-                $contents = stream_for($image->toString());
+                $contents = Utils::streamFor($image->toString());
             }
 
             $this->sendResponse(new PSR7StreamResponse($contents, $scan->getFileName()));

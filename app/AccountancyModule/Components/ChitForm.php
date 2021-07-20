@@ -82,7 +82,6 @@ final class ChitForm extends BaseControl
         QueryBus $queryBus,
         LoggerInterface $logger
     ) {
-        parent::__construct();
         $this->cashbookId = $cashbookId;
         $this->isEditable = $isEditable;
         $this->unitId     = $unitId;
@@ -240,14 +239,14 @@ final class ChitForm extends BaseControl
             $container->addHidden('id');
 
             $container->addSubmit('remove', 'Odebrat položku')
-                ->setValidationScope(false)
+                ->setValidationScope(null)
                 ->onClick[] = function (SubmitButton $button): void {
                     $this->removeItem($button);
                 };
         }, 1);
 
         $items->addSubmit('addItem', 'Přidat další položku')
-            ->setValidationScope(false)
+            ->setValidationScope(null)
             ->onClick[] = function () use ($items): void {
                 $items->createOne();
                 $this->reload();
