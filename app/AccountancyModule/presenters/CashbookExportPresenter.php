@@ -39,6 +39,7 @@ use function array_values;
 use function assert;
 use function date;
 use function GuzzleHttp\Psr7\stream_for;
+use function iconv;
 use function in_array;
 use function sprintf;
 
@@ -167,7 +168,7 @@ class CashbookExportPresenter extends BasePresenter
 
         foreach ($files as $name => $file) {
             assert($file instanceof File);
-            $zip->addFileFromPsr7Stream($name, $file->getContents());
+            $zip->addFileFromPsr7Stream(iconv('UTF-8', 'ASCII//TRANSLIT', $name), $file->getContents());
         }
 
         $zip->finish();
