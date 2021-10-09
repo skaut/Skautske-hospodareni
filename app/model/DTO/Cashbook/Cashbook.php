@@ -23,7 +23,9 @@ class Cashbook
 
     private string $note;
 
-    private bool $hasOnlyNumericChitNumbers;
+    private bool $hasCashOnlyNumericChitNumbers;
+
+    private bool $hasBankOnlyNumericChitNumbers;
 
     public function __construct(
         CashbookId $id,
@@ -31,14 +33,16 @@ class Cashbook
         ?string $cashChitNumberPrefix,
         ?string $bankChitNumberPrefix,
         string $note,
-        bool $hasOnlyNumericChitNumbers
+        bool $hasCashOnlyNumericChitNumbers,
+        bool $hasBankOnlyNumericChitNumbers
     ) {
-        $this->id                        = $id;
-        $this->type                      = $type;
-        $this->cashChitNumberPrefix      = $cashChitNumberPrefix;
-        $this->bankChitNumberPrefix      = $bankChitNumberPrefix;
-        $this->note                      = $note;
-        $this->hasOnlyNumericChitNumbers = $hasOnlyNumericChitNumbers;
+        $this->id                            = $id;
+        $this->type                          = $type;
+        $this->cashChitNumberPrefix          = $cashChitNumberPrefix;
+        $this->bankChitNumberPrefix          = $bankChitNumberPrefix;
+        $this->note                          = $note;
+        $this->hasCashOnlyNumericChitNumbers = $hasCashOnlyNumericChitNumbers;
+        $this->hasBankOnlyNumericChitNumbers = $hasBankOnlyNumericChitNumbers;
     }
 
     public function getId(): string
@@ -61,8 +65,8 @@ class Cashbook
         return $this->note;
     }
 
-    public function hasOnlyNumericChitNumbers(): bool
+    public function hasOnlyNumericChitNumbers(PaymentMethod $paymentMethod): bool
     {
-        return $this->hasOnlyNumericChitNumbers;
+        return $paymentMethod->equals(PaymentMethod::CASH()) ? $this->hasCashOnlyNumericChitNumbers : $this->hasBankOnlyNumericChitNumbers;
     }
 }

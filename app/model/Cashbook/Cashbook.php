@@ -320,17 +320,17 @@ class Cashbook extends Aggregate
      */
     private function getMaxChitNumber(PaymentMethod $paymentMethod): int
     {
-        if (! $this->hasOnlyNumericChitNumbers()) {
+        if (! $this->hasOnlyNumericChitNumbers($paymentMethod)) {
             throw new NonNumericChitNumbers();
         }
 
         $defaultMax = -1;
         $res        = $defaultMax;
 
-        foreach ($this->chits as $chit) {
+        foreach ($this->getChitsByPaymentMethod($paymentMethod) as $chit) {
             $number = $chit->getBody()->getNumber();
 
-            if ($number === null || ! $chit->getPaymentMethod()->equals($paymentMethod)) {
+            if ($number === null) {
                 continue;
             }
 
@@ -344,9 +344,9 @@ class Cashbook extends Aggregate
         return $res;
     }
 
-    public function hasOnlyNumericChitNumbers(): bool
+    public function hasOnlyNumericChitNumbers(PaymentMethod $paymentMethod): bool
     {
-        foreach ($this->chits as $chit) {
+        foreach ($this->getChitsByPaymentMethod($paymentMethod) as $chit) {
             $number = $chit->getBody()->getNumber();
 
             if ($number !== null && $number->containsLetter()) {
@@ -389,6 +389,16 @@ class Cashbook extends Aggregate
     {
         $chit = $this->getChit($chitId);
         $chit->removeScan($path);
+    }
+
+    /**
+     * @phpstan-return ArrayCollection<int, Chit>
+     */
+    private function getChitsByPaymentMethod(PaymentMethod $paymentMethod): ArrayCollection
+    {
+        return $this->chits->filter(function (Chit $chit) use ($paymentMethod): bool {
+            return $chit->getPaymentMethod()->equals($paymentMethod);
+        });
     }
 
     /**

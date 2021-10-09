@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
+use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\Repositories\ICashbookRepository;
@@ -31,7 +32,8 @@ class CashbookQueryHandler
             $cashbook->getCashChitNumberPrefix(),
             $cashbook->getBankChitNumberPrefix(),
             $cashbook->getNote(),
-            $cashbook->hasOnlyNumericChitNumbers()
+            $cashbook->hasOnlyNumericChitNumbers(PaymentMethod::CASH()),
+            $cashbook->hasOnlyNumericChitNumbers(PaymentMethod::BANK())
         );
     }
 }
