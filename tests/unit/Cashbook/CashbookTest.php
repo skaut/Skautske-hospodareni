@@ -179,9 +179,9 @@ class CashbookTest extends Unit
         $cashbook = $this->createEventCashbook();
         Helpers::addChitToCashbook($cashbook, '1', PaymentMethod::CASH());
         Helpers::addChitToCashbook($cashbook, null, PaymentMethod::CASH());
-        $this->assertTrue($cashbook->hasOnlyNumericChitNumbers());
+        $this->assertTrue($cashbook->hasOnlyNumericChitNumbers(PaymentMethod::CASH()));
         Helpers::addChitToCashbook($cashbook, 'V1', PaymentMethod::CASH());
-        $this->assertFalse($cashbook->hasOnlyNumericChitNumbers());
+        $this->assertFalse($cashbook->hasOnlyNumericChitNumbers(PaymentMethod::CASH()));
     }
 
     public function testGenerateChitNumbersMaxNotFound(): void
