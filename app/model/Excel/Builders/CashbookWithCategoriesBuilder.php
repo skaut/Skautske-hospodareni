@@ -9,8 +9,10 @@ use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Operation;
+use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -21,6 +23,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use function array_map;
 use function array_merge;
 use function array_values;
+use function assert;
 use function count;
 use function explode;
 use function mb_strlen;
@@ -50,6 +53,8 @@ class CashbookWithCategoriesBuilder
     public function build(Worksheet $sheet, CashbookId $cashbookId, PaymentMethod $paymentMethod): void
     {
         $this->sheet = $sheet;
+        $cashbook    = $this->queryBus->handle(new CashbookQuery($cashbookId));
+        assert($cashbook instanceof Cashbook);
 
         $this->addCashbookHeader();
 
@@ -61,7 +66,7 @@ class CashbookWithCategoriesBuilder
         $chits      = $this->queryBus->handle(ChitListQuery::withMethod($paymentMethod, $cashbookId));
         $categories = array_merge($incomeCategories, $expenseCategories);
 
-        $this->addChits($chits, $categories);
+        $this->addChits($chits, $categories, $cashbook->getChitNumberPrefix($paymentMethod));
         $this->addSumsRow(count($categories), count($chits));
         $this->addTableStyles(count($chits), count($categories), count($incomeCategories));
     }
@@ -129,7 +134,7 @@ class CashbookWithCategoriesBuilder
      * @param Chit[]     $chits
      * @param Category[] $categories
      */
-    private function addChits(array $chits, array $categories): void
+    private function addChits(array $chits, array $categories, string $prefix): void
     {
         $categoryColumns = [];
 
@@ -150,7 +155,7 @@ class CashbookWithCategoriesBuilder
             $cashbookColumns = [
                 $index++,
                 $chit->getDate()->format('d.m.'),
-                $chit->getNumber() !== null ? $chit->getNumber()->toString() : '',
+                $chit->getNumber() !== null ? $prefix . $chit->getNumber()->toString() : '',
                 $chit->getPurpose(),
                 $isIncome ? $amount : '',
                 ! $isIncome ? $amount : '',
