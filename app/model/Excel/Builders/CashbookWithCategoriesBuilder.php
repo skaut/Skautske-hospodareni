@@ -66,7 +66,7 @@ class CashbookWithCategoriesBuilder
         $chits      = $this->queryBus->handle(ChitListQuery::withMethod($paymentMethod, $cashbookId));
         $categories = array_merge($incomeCategories, $expenseCategories);
 
-        $this->addChits($chits, $categories, $cashbook->getChitNumberPrefix($paymentMethod));
+        $this->addChits($chits, $categories, $cashbook->getChitNumberPrefix($paymentMethod) ?? '');
         $this->addSumsRow(count($categories), count($chits));
         $this->addTableStyles(count($chits), count($categories), count($incomeCategories));
     }
