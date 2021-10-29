@@ -50,7 +50,6 @@ class InvertChitDialog extends BaseControl
 
     public function __construct(CashbookId $cashbookId, CommandBus $commandBus, QueryBus $queryBus)
     {
-        parent::__construct();
         $this->cashbookId = $cashbookId;
         $this->commandBus = $commandBus;
         $this->queryBus   = $queryBus;

@@ -76,7 +76,6 @@ class ChitListControl extends BaseControl
         IChitScanControlFactory $chitScanControlFactory,
         IPrefixControlFactory $prefixFactory
     ) {
-        parent::__construct();
         $this->cashbookId              = $cashbookId;
         $this->isEditable              = $isEditable;
         $this->paymentMethod           = $paymentMethod;

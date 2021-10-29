@@ -5,9 +5,13 @@ parameters:
 extensions:
     migrations: Nettrine\Migrations\DI\MigrationsExtension
     dbal: Nettrine\DBAL\DI\DbalExtension
+    doctrineCache: Nettrine\Cache\DI\CacheExtension
+
+migrations:
+    directory: %appDir%/../migrations
 
 dbal:
-    debugger:
+    debug:
         panel: %debugMode%
 
     connection:
@@ -16,6 +20,7 @@ dbal:
         password: %database.password%
         dbname: %database.name%
         serverVersion: 8.0
+        driver: pdo_mysql
 
         types:
             string_enum:
@@ -67,16 +72,13 @@ dbal:
 services:
     - Model\Infrastructure\EntityManagerFactory(%debugMode%, %tempDir%)
     - @Model\Infrastructure\EntityManagerFactory::create()
-    - class: Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper
-      tags: { kdyby.console.helper: em }
 
+    - factory: Doctrine\ORM\Tools\Console\Command\GenerateProxiesCommand
+      tags: { console.command: orm:generate-proxies }
+    - factory: Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand
+      tags: { console.command: orm:validate-schema }
 
-    - Doctrine\ORM\Tools\Console\Command\GenerateProxiesCommand
-    - Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand
 decorator:
-    Symfony\Component\Console\Command\Command:
-        tags: [ kdyby.console.command ]
-
     Doctrine\Migrations\Configuration\Configuration:
         setup:
             - setCheckDatabasePlatform(false)

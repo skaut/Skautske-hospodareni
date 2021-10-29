@@ -6,16 +6,19 @@ namespace App\AccountancyModule\Components\FormControls;
 
 use Cake\Chronos\Date;
 use InvalidArgumentException;
+use Nette\Forms\Controls\BaseControl;
 use Nette\Utils\Html;
-use Nextras\Forms\Controls\DatePicker;
 
 use function sprintf;
+use function str_replace;
 
 /**
  * Datetime picker with automatic string <-> Date conversion
  */
-class DateControl extends DatePicker
+class DateControl extends BaseControl
 {
+    private const DATE_FORMAT = 'd.m.Y';
+
     /**
      * @param mixed $value
      */
@@ -51,11 +54,15 @@ class DateControl extends DatePicker
     {
         $value = parent::getValue();
 
-        if ($value === null) {
+        if ($value === null || $value === '') {
             return null;
         }
 
-        return Date::instance($value);
+        if ($value instanceof Date) {
+            return $value;
+        }
+
+        return Date::createFromFormat(self::DATE_FORMAT, str_replace(' ', '', $value));
     }
 
     public function getControl(): Html
@@ -65,10 +72,11 @@ class DateControl extends DatePicker
         $value = $this->getValue();
 
         if ($value !== null) {
-            $control->setAttribute('value', $value->format($this->htmlFormat));
+            $control->setAttribute('value', $value->format(self::DATE_FORMAT));
         }
 
         $control->setAttribute('autocomplete', 'off');
+        $control->setAttribute('class', 'form-control date');
 
         return $control;
     }

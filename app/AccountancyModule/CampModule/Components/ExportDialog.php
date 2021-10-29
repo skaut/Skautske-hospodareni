@@ -28,7 +28,6 @@ final class ExportDialog extends Dialog
      */
     public function __construct(array $camps, QueryBus $queryBus)
     {
-        parent::__construct();
         $this->camps    = $camps;
         $this->queryBus = $queryBus;
     }

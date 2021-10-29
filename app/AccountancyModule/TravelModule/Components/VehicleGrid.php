@@ -24,7 +24,6 @@ class VehicleGrid extends BaseGridControl
 
     public function __construct(int $unitId, TravelService $travel, UnitService $units, GridFactory $gridFactory)
     {
-        parent::__construct();
         $this->unitId      = $unitId;
         $this->travel      = $travel;
         $this->units       = $units;

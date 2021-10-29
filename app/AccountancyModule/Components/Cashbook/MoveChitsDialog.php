@@ -57,7 +57,6 @@ class MoveChitsDialog extends BaseControl
         QueryBus $queryBus,
         IAuthorizator $authorizator
     ) {
-        parent::__construct();
         $this->cashbookId   = $cashbookId;
         $this->commandBus   = $commandBus;
         $this->queryBus     = $queryBus;

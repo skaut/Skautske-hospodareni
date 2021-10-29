@@ -56,7 +56,6 @@ final class GroupForm extends BaseControl
         PaymentService $model,
         QueryBus $queryBus
     ) {
-        parent::__construct();
         $this->unitId        = $unitId;
         $this->skautisEntity = $skautisEntity;
         $this->groupId       = $groupId;
@@ -94,25 +93,24 @@ final class GroupForm extends BaseControl
 
         $form->addGroup('Základní údaje');
         $form->addText('name', 'Název')
-            ->setAttribute('class', 'form-control')
+            ->setHtmlAttribute('class', 'form-control')
             ->setRequired('Musíte zadat název skupiny')
             ->setHtmlId('group-name-input');
 
         $form->addText('amount', 'Výchozí částka')
-            ->setAttribute('class', 'form-control')
+            ->setHtmlAttribute('class', 'form-control')
             ->setRequired(false)
             ->setNullable()
             ->addRule(Form::FLOAT, 'Částka musí být zadaná jako číslo');
 
         $form->addDate('dueDate', 'Výchozí splatnost')
             ->disableWeekends()
-            ->setAttribute('class', 'form-control')
-            ->setRequired(false)
-            ->setNullable();
+            ->setHtmlAttribute('class', 'form-control')
+            ->setRequired(false);
 
         $form->addText('constantSymbol', 'KS')
             ->setMaxLength(4)
-            ->setAttribute('class', 'form-control')
+            ->setHtmlAttribute('class', 'form-control')
             ->setRequired(false)
             ->setNullable()
             ->addRule(Form::INTEGER, 'Konstantní symbol musí být číslo');

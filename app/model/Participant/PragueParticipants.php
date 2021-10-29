@@ -22,7 +22,7 @@ final class PragueParticipants
 
     private const PRAGUE_SUPPORTABLE_AGE       = 18;
     private const PRAGUE_SUPPORTABLE_UPPER_AGE = 26;
-    public const PRAGUE_UNIT_PREFIX            = 11;
+    public const PRAGUE_UNIT_PREFIX            = '11';
 
     private int $under18;
 

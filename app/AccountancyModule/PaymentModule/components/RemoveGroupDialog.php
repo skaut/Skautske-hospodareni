@@ -28,8 +28,6 @@ final class RemoveGroupDialog extends Dialog
         CommandBus $commandBus,
         PaymentService $paymentService
     ) {
-        parent::__construct();
-
         $this->groupId        = $groupId;
         $this->isAllowed      = $isAllowed;
         $this->commandBus     = $commandBus;

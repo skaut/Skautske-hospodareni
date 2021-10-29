@@ -26,7 +26,6 @@ final class EditTravelDialog extends Dialog
 
     public function __construct(int $commandId, TravelService $model)
     {
-        parent::__construct();
         $this->commandId = $commandId;
         $this->model     = $model;
     }

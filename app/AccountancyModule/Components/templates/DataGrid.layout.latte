@@ -57,8 +57,8 @@
                                     {ifset #$filter_block}
                                         {include #$filter_block, filter => $f, input => $form['filter'][$f->getKey()], outer => TRUE}
                                     {else}
-                                        {ifset #$filter_type_block}
-                                            {include #$filter_type_block, filter => $f, input => $form['filter'][$f->getKey()], outer => TRUE}
+                                        {ifset #$filterTypeBlock}
+                                            {include #$filterTypeBlock, filter => $f, input => $form['filter'][$f->getKey()], outer => TRUE}
                                         {else}
                                             {include $f->getTemplate(), filter => $f, input => $form['filter'][$f->getKey()], outer => TRUE}
                                         {/ifset}
@@ -78,7 +78,7 @@
                 <div class="table-responsive pb-5">
                     <table class="{block table-class}table table-hover table-striped table-bordered table-sm{/block} mb-5" n:snippet="table" n:block="data">
                         <thead n:block="header">
-                        <tr class="row-group-actions" n:if="$hasGroupActions || $exports || $toolbar_buttons || $control->canHideColumns() || $inlineAdd" n:block="group-actions">
+                        <tr class="row-group-actions" n:if="$hasGroupActions || $exports || $toolbarButtons || $control->canHideColumns() || $inlineAdd" n:block="group-actions">
                             <th colspan="{$control->getColumnsCount()}" class="ublaboo-datagrid-th-form-inline">
                                 {if $hasGroupActions}
                                     {block group_actions}
@@ -99,8 +99,8 @@
                                 {/if}
 
                                 <div class="datagrid-toolbar" n:if="$control->canHideColumns() || $inlineAdd || $exports || $toolbar_buttons">
-								<span n:if="$toolbar_buttons">
-									{foreach $toolbar_buttons as $toolbar_button}{$toolbar_button->renderButton()}{/foreach}
+								<span n:if="$toolbarButtons">
+									{foreach $toolbarButtons as $toolbar_button}{$toolbar_button->renderButton()}{/foreach}
 								</span>
 
                                     <span class="datagrid-exports" n:if="$exports" n:snippet="exports" n:block="exports">
@@ -226,7 +226,7 @@
                                 </div>
                                 {$th->endTag()|noescape}
                             {/foreach}
-                            <th n:if="$actions || $control->isSortable() || $items_detail || $inlineEdit || $inlineAdd"
+                            <th n:if="$actions || $control->isSortable() || $itemsDetail || $inlineEdit || $inlineAdd"
                                     class="col-action text-center">
                                 {='ublaboo_datagrid.action'|translate}
                             </th>
@@ -239,14 +239,14 @@
                                 {if !$control->hasOuterFilterRendering() && isset($filters[$key])}
                                     {var $i = $filter['filter'][$key]}
 
-                                    {var $filter_block = 'filter-' . $filters[$key]->getKey()}
-                                    {var $filter_type_block = 'filtertype-' . $filters[$key]->getType()}
+                                    {var $filterBlock = 'filter-' . $filters[$key]->getKey()}
+                                    {var $filterTypeBlock = 'filtertype-' . $filters[$key]->getType()}
 
-                                    {ifset #$filter_block}
-                                        {include #$filter_block, filter => $filters[$key], input => $i, outer => FALSE}
+                                    {ifset #$filterBlock}
+                                        {include #$filterBlock, filter => $filters[$key], input => $i, outer => FALSE}
                                     {else}
-                                        {ifset #$filter_type_block}
-                                            {include #$filter_type_block, filter => $filters[$key], input => $i, outer => FALSE}
+                                        {ifset #$filterTypeBlock}
+                                            {include #$filterTypeBlock, filter => $filters[$key], input => $i, outer => FALSE}
                                         {else}
                                             {include $filters[$key]->getTemplate(), filter => $filters[$key], input => $i, outer => FALSE}
                                         {/ifset}
@@ -255,7 +255,7 @@
                                 {/if}
                                 {$th->endTag()|noescape}
                             {/foreach}
-                            <th n:if="$actions || $control->isSortable() || $items_detail || $inlineEdit || $inlineAdd"
+                            <th n:if="$actions || $control->isSortable() || $itemsDetail || $inlineEdit || $inlineAdd"
                                     class="col-action text-center">
                                 {if !$control->hasAutoSubmit() && !$control->hasOuterFilterRendering()}
                                     {input $filter['filter']['submit']}
@@ -330,7 +330,7 @@
                                                     {include column-value, column => $column, row => $row, key => $key}
                                                     {$td->endTag()|noescape}
                                                 {/foreach}
-                                                <td n:if="$actions || $control->isSortable() || $items_detail || $inlineEdit || $inlineAdd"
+                                                <td n:if="$actions || $control->isSortable() || $itemsDetail || $inlineEdit || $inlineAdd"
                                                         class="col-action">
                                                     {foreach $actions as $key => $action}
                                                         {if $row->hasAction($key)}
@@ -347,8 +347,8 @@
                                                     {if $inlineEdit && $row->hasInlineEdit()}
                                                         {$inlineEdit->renderButton($row)|noescape}
                                                     {/if}
-                                                    {if $items_detail && $items_detail->shouldBeRendered($row)}
-                                                        {$items_detail->renderButton($row)|noescape}
+                                                    {if $itemsDetail && $itemsDetail->shouldBeRendered($row)}
+                                                        {$itemsDetail->renderButton($row)|noescape}
                                                     {/if}
                                                 </td>
                                             </tr>
@@ -358,13 +358,13 @@
                                     {**
                                      * Item detail
                                      *}
-                                    {if $items_detail && $items_detail->shouldBeRendered($row)}
+                                    {if $itemsDetail && $itemsDetail->shouldBeRendered($row)}
                                         <tr class="row-item-detail item-detail-{$row->getId()}" n:snippet="item-{$row->getId()}-detail">
                                             {if isset($toggle_detail) && $toggle_detail == $row->getId()}
-                                                {var $item_detail_params = ['item' => $item, '_form' => $filter] + $items_detail->getTemplateVariables()}
+                                                {var $item_detail_params = ['item' => $item, '_form' => $filter] + $itemsDetail->getTemplateVariables()}
 
-                                                {if isset($filter['items_detail_form'])}
-                                                    {var $item_detail_params['items_detail_form'] = $filter['items_detail_form']}
+                                                {if isset($filter['itemsDetail_form'])}
+                                                    {var $item_detail_params['itemsDetail_form'] = $filter['itemsDetail_form']}
                                                 {/if}
 
                                                 {ifset #detail}
@@ -373,13 +373,13 @@
                                                             {include #detail, (expand) $item_detail_params}
                                                         </div>
                                                     </td>
-                                                {elseif $items_detail}
+                                                {elseif $itemsDetail}
                                                     <td colspan="{$control->getColumnsCount()}">
                                                         <div class="item-detail-content">
-                                                            {if $items_detail->getType() == 'template'}
-                                                                {include $items_detail->getTemplate(), (expand) $item_detail_params}
+                                                            {if $itemsDetail->getType() == 'template'}
+                                                                {include $itemsDetail->getTemplate(), (expand) $item_detail_params}
                                                             {else}
-                                                                {$items_detail->render($item)|noescape}
+                                                                {$itemsDetail->render($item)|noescape}
                                                             {/if}
                                                         </div>
                                                     </td>
@@ -506,7 +506,7 @@
             {include aggregationFunctions, columns => $columns}
         {/if}
 
-        <td n:if="$actions || $control->isSortable() || $items_detail || $inlineEdit || $inlineAdd"
+        <td n:if="$actions || $control->isSortable() || $itemsDetail || $inlineEdit || $inlineAdd"
                 class="col-action"></td>
     </tr>
 
