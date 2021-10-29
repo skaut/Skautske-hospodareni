@@ -6,18 +6,18 @@ namespace Model\Payment;
 
 use Model\Google\OAuth;
 use Model\Mail\IMailerFactory;
-use Nette\Mail\IMailer;
+use Nette\Mail\Mailer;
 
 class MailerFactoryStub implements IMailerFactory
 {
-    private IMailer $mailer;
+    private Mailer $mailer;
 
-    public function create(OAuth $oAuth): IMailer
+    public function create(OAuth $oAuth): Mailer
     {
         return $this->mailer;
     }
 
-    public function setMailer(IMailer $mailer): void
+    public function setMailer(Mailer $mailer): void
     {
         $this->mailer = $mailer;
     }
