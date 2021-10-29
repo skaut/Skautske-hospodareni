@@ -6,7 +6,7 @@ namespace Model\Google;
 
 use Google_Service_Gmail;
 use Google_Service_Gmail_Message;
-use Nette\Mail\IMailer;
+use Nette\Mail\Mailer;
 use Nette\Mail\Message;
 
 use function array_key_exists;
@@ -14,7 +14,7 @@ use function base64_encode;
 use function sprintf;
 use function str_replace;
 
-class OAuthMailer implements IMailer
+class OAuthMailer implements Mailer
 {
     private Google_Service_Gmail $gmailService;
 

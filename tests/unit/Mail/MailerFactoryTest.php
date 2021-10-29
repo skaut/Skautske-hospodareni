@@ -10,14 +10,14 @@ use Mockery as m;
 use Model\Google\GoogleService;
 use Model\Google\OAuth;
 use Model\Google\OAuthMailer;
-use Nette\Mail\IMailer;
+use Nette\Mail\Mailer;
 
 class MailerFactoryTest extends Unit
 {
     public function testInDisabledModeReturnsDebugMailer(): void
     {
         $googleService = m::mock(GoogleService::class);
-        $mailer        = m::mock(IMailer::class);
+        $mailer        = m::mock(Mailer::class);
         $factory       = new MailerFactory($mailer, false, $googleService);
 
         $this->assertSame($mailer, $factory->create($this->getConfig()));
@@ -31,7 +31,7 @@ class MailerFactoryTest extends Unit
                 'setAccessToken' => null,
             ]),
         ]);
-        $mailer        = m::mock(IMailer::class);
+        $mailer        = m::mock(Mailer::class);
         $factory       = new MailerFactory($mailer, true, $googleService);
 
         $this->assertInstanceOf(OAuthMailer::class, $factory->create($this->getConfig()));
