@@ -14,10 +14,8 @@ use Nette\Utils\Html;
 use RuntimeException;
 
 use function array_reverse;
-use function array_shift;
 use function count;
 use function explode;
-use function func_get_args;
 use function is_callable;
 use function mb_strtoupper;
 use function mb_substr;
@@ -35,26 +33,20 @@ abstract class AccountancyHelpers
     private const DATE_FORMAT_DAY_MONTH = 'j. n.';
     private const DATE_FORMAT_DAY       = 'j.';
 
-    /**
-     * loader na všechny filtry
-     *
-     * @return Html|string
-     */
-    public static function loader(string $filter)
+    public static function loader(string $filter): callable
     {
         $method = [self::class, $filter];
 
         if (is_callable($method)) {
-            $args = func_get_args();
-            array_shift($args);
-
-            return $method(...$args);
+            return $method;
         }
 
         throw new RuntimeException('Filter not found');
     }
 
     /**
+     * @filter
+     *
      * zobrazení stavu ve formě ikony
      */
     public static function eventStateLabel(string $s): string
@@ -73,6 +65,8 @@ abstract class AccountancyHelpers
     }
 
     /**
+     * @filter
+     *
      * zobrazuje popisky stavů u táborů
      */
     public static function campStateLabel(string $s): string
@@ -95,6 +89,9 @@ abstract class AccountancyHelpers
         }
     }
 
+    /**
+     * @filter
+     */
     public static function commandState(?DateTimeInterface $s): string
     {
         if ($s === null) {
@@ -105,6 +102,9 @@ abstract class AccountancyHelpers
             $s->format('j.n.Y H:i:s') . '">Uzavřený</span>';
     }
 
+    /**
+     * @filter
+     */
     public static function paymentState(string $state, bool $plural): string
     {
         $labels = [
@@ -116,6 +116,9 @@ abstract class AccountancyHelpers
         return $labels[$state][$plural ? 1 : 0] ?? $state;
     }
 
+    /**
+     * @filter
+     */
     public static function paymentStateLabel(State $s): Html
     {
         $classes = [
@@ -130,10 +133,11 @@ abstract class AccountancyHelpers
     }
 
     /**
-     * formátuje číslo na částku
-     *
      * @param float|string|Money|null $price
      * http://prirucka.ujc.cas.cz/?id=786
+     *
+     * @filter
+     * formátuje číslo na částku
      */
     public static function price($price, bool $full = true): string
     {
@@ -151,9 +155,10 @@ abstract class AccountancyHelpers
     }
 
     /**
-     * formátuje číslo podle toho zda obsahuje desetinou část nebo ne
-     *
      * @param int|float|string $num
+     *
+     * @filter
+     * formátuje číslo podle toho zda obsahuje desetinou část nebo ne
      */
     public static function num($num): string
     {
@@ -172,6 +177,7 @@ abstract class AccountancyHelpers
     }
 
     /**
+     * @filter
      * převádí zadané číslo na slovní řetězec
      */
     public static function priceToString(float $price): string
@@ -271,6 +277,9 @@ abstract class AccountancyHelpers
         return mb_strtoupper(mb_substr($string, 0, 1, 'UTF-8'), 'UTF-8') . mb_substr($string, 1, null, 'UTF-8');
     }
 
+    /**
+     * @filter
+     */
     public static function groupState(string $s): string
     {
         switch ($s) {
@@ -287,6 +296,8 @@ abstract class AccountancyHelpers
 
     /**
      * @param Date[] $dates
+     *
+     * @filter
      */
     public static function dateRange(array $dates): string
     {

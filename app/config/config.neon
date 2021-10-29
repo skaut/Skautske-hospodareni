@@ -165,7 +165,7 @@ services:
 
     nette.latteFactory:
         setup:
-            - addFilter(null, [App\AccountancyModule\AccountancyHelpers, loader])
+            - addFilterLoader([App\AccountancyModule\AccountancyHelpers, loader])
 
     @Skautis\Wsdl\WsdlManager:
         setup:
