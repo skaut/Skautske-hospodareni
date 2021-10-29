@@ -38,11 +38,9 @@ abstract class AccountancyHelpers
     /**
      * loader na všechny filtry
      *
-     * @param int|float|string|DateTimeInterface|Money|State|null $value
-     *
      * @return Html|string
      */
-    public static function loader(string $filter, $value)
+    public static function loader(string $filter)
     {
         $method = [self::class, $filter];
 
