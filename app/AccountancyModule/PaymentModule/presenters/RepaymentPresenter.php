@@ -120,7 +120,7 @@ final class RepaymentPresenter extends BasePresenter
 
             $repayments[] = new Repayment(
                 AccountNumber::fromString($repayment->account),
-                MoneyFactory::fromFloat($repayment->amount),
+                MoneyFactory::fromFloat((float) $repayment->amount),
                 $repayment->name
             );
         }
