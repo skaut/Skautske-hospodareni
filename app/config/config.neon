@@ -26,7 +26,16 @@ tracy:
 
 console:
     url: https://h.skauting.cz
-    helperSet: Doctrine\ORM\Tools\Console\ConsoleRunner::createHelperSet()
+    helperSet: Symfony\Component\Console\Helper\HelperSet([
+        # Helpery required by Doctrine Migrations commands
+        em: Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper(),
+        db: Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper(),
+
+        # Helpery required by Doctrine DBAL a ORM commands
+        entityManager: Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper(),
+        connection: Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper(),
+        question: Symfony\Component\Console\Helper\QuestionHelper(),
+    ])
 
 messageBus:
     commandBus:
