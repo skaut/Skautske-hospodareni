@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Google\Handlers;
 
-use eGen\MessageBus\Bus\EventBus;
+use Model\Common\Services\EventBus;
 use Model\Google\Commands\RemoveOAuth;
 use Model\Google\Exception\OAuthNotFound;
 use Model\Mail\Repositories\IGoogleRepository;

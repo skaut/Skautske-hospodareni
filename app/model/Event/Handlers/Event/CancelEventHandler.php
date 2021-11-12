@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Event\Handlers\Event;
 
-use eGen\MessageBus\Bus\EventBus;
+use Model\Common\Services\EventBus;
 use Model\Event\Commands\CancelEvent;
 use Model\Events\Events\EventWasCanceled;
 use Skautis\Skautis;

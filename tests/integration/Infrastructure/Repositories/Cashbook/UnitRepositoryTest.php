@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Model\Infrastructure\Repositories\Cashbook;
 
-use eGen\MessageBus\Bus\EventBus;
+use Hskauting\Tests\NullEventBus;
 use IntegrationTest;
 use Mockery;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Events\Unit\CashbookWasCreated;
 use Model\Cashbook\Exception\UnitNotFound;
 use Model\Cashbook\Unit;
+use Model\Common\Services\EventBus;
 use Model\Common\UnitId;
 
 final class UnitRepositoryTest extends IntegrationTest
@@ -106,6 +107,6 @@ final class UnitRepositoryTest extends IntegrationTest
 
     private function getRepository(?EventBus $eventBus = null): UnitRepository
     {
-        return new UnitRepository($this->entityManager, $eventBus ?? new EventBus());
+        return new UnitRepository($this->entityManager, $eventBus ?? new NullEventBus());
     }
 }

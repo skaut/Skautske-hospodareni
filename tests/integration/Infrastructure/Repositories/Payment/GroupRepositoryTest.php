@@ -6,9 +6,9 @@ namespace Model\Infrastructure\Repositories\Payment;
 
 use Cake\Chronos\Date;
 use DateTimeImmutable;
-use eGen\MessageBus\Bus\EventBus;
 use IntegrationTest;
 use Mockery as m;
+use Model\Common\Services\EventBus;
 use Model\Payment\DomainEvents\GroupWasRemoved;
 use Model\Payment\EmailTemplate;
 use Model\Payment\EmailType;

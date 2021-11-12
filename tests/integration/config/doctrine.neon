@@ -9,6 +9,7 @@ services:
     - Nette\Caching\Storages\DevNullStorage
     - Model\Common\Services\EgenCommandBus
     - Model\Common\Services\EgenQueryBus
+    - Model\Common\Services\EgenEventBus
 
 extensions:
     console: Contributte\Console\DI\ConsoleExtension(%consoleMode%)

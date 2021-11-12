@@ -6,7 +6,6 @@ namespace Model\Infrastructure\Repositories\Cashbook;
 
 use Cake\Chronos\Date;
 use Doctrine\ORM\EntityManager;
-use eGen\MessageBus\Bus\EventBus;
 use Helpers;
 use IntegrationTest;
 use Model\Cashbook\Cashbook;
@@ -14,6 +13,7 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\ChitBody;
 use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\Operation;
+use Model\Common\Services\EventBus;
 
 class CashbookRepositoryTest extends IntegrationTest
 {
