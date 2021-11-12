@@ -6,12 +6,12 @@ namespace App\AccountancyModule\Components\Cashbook;
 
 use App\AccountancyModule\Components\Dialog;
 use App\Forms\BaseForm;
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Commands\Cashbook\UpdateChitNumberPrefix;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Common\Services\CommandBus;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\Cashbook;
 use Nette\Application\BadRequestException;
 use Nette\Http\IResponse;

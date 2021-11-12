@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Payment\ReadModel\QueryHandlers;
 
-use eGen\MessageBus\QueryBus\IQueryBus;
 use Model\Common\Repositories\IParticipantRepository;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Payment as DTO;
 use Model\Event\SkautisCampId;
 use Model\Payment\Group\Type;
@@ -24,11 +24,11 @@ final class RepaymentCandidateListQueryHandler
 {
     private IGroupRepository $groups;
 
-    private IQueryBus $queryBus;
+    private QueryBus $queryBus;
 
     private IParticipantRepository $participants;
 
-    public function __construct(IQueryBus $queryBus, IGroupRepository $groups, IParticipantRepository $participants)
+    public function __construct(QueryBus $queryBus, IGroupRepository $groups, IParticipantRepository $participants)
     {
         $this->queryBus     = $queryBus;
         $this->groups       = $groups;

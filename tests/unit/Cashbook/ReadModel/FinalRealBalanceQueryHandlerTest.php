@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use Codeception\Test\Unit;
-use eGen\MessageBus\Bus\QueryBus;
 use Mockery as m;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\CategorySummary;
 use Model\Utils\MoneyFactory;
 use Money\Money;

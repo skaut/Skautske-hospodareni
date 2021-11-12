@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use Doctrine\ORM\EntityManager;
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\Chit;
 use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\Chit as ChitDTO;
 use Model\DTO\Cashbook\ChitFactory;
 

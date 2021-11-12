@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CodeQuality;
 
-use eGen\MessageBus\Bus\QueryBus;
+use Model\Common\Services\QueryBus;
 use Nette\Loaders\RobotLoader;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
@@ -45,17 +45,17 @@ final class QueryBusDynamicReturnTypeProvider implements DynamicMethodReturnType
         $this->queryHandlerClassRegex = $queryHandlerClassRegex;
     }
 
-    public function setBroker(Broker $broker) : void
+    public function setBroker(Broker $broker): void
     {
         $this->broker = $broker;
     }
 
-    public function getClass() : string
+    public function getClass(): string
     {
         return QueryBus::class;
     }
 
-    public function isMethodSupported(MethodReflection $methodReflection) : bool
+    public function isMethodSupported(MethodReflection $methodReflection): bool
     {
         return $methodReflection->getName() === 'handle';
     }
@@ -64,7 +64,7 @@ final class QueryBusDynamicReturnTypeProvider implements DynamicMethodReturnType
         MethodReflection $methodReflection,
         MethodCall $methodCall,
         Scope $scope
-    ) : Type {
+    ): Type {
         $this->analyzeReturnTypes($scope);
 
         $queryType = $scope->getType($methodCall->args[0]->value);
@@ -76,7 +76,7 @@ final class QueryBusDynamicReturnTypeProvider implements DynamicMethodReturnType
         return $this->returnTypes[$queryType->getClassName()] ?? new NeverType();
     }
 
-    private function analyzeReturnTypes(Scope $scope) : void
+    private function analyzeReturnTypes(Scope $scope): void
     {
         if ($this->returnTypes !== null) {
             return;
@@ -122,7 +122,7 @@ final class QueryBusDynamicReturnTypeProvider implements DynamicMethodReturnType
     /**
      * @return array<string>
      */
-    private function getQueryHandlerClasses() : array
+    private function getQueryHandlerClasses(): array
     {
         $loader = (new RobotLoader())
             ->setTempDirectory($this->tempDir)
@@ -136,7 +136,7 @@ final class QueryBusDynamicReturnTypeProvider implements DynamicMethodReturnType
 
         return array_filter(
             array_keys($loader->getIndexedClasses()),
-            function (string $className) : bool {
+            function (string $className): bool {
                 return preg_match($this->queryHandlerClassRegex, $className) === 1;
             }
         );

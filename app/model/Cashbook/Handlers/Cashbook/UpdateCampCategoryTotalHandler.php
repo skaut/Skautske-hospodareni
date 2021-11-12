@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Handlers\Cashbook;
 
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotals;
 use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\Repositories\ICashbookRepository;
 use Model\Cashbook\Services\ICampCategoryUpdater;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\CategorySummary;
 use Model\Utils\MoneyFactory;
 

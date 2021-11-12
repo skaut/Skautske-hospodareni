@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
 use Model\Cashbook\ReadModel\Queries\EventPragueParticipantsQuery;
+use Model\Common\Services\QueryBus;
 use Model\Participant\PragueParticipants;
 use Nette\Utils\Strings;
 

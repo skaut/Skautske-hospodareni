@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Model\Payment\ReadModel\QueryHandlers;
 
 use Codeception\Test\Unit;
-use eGen\MessageBus\Bus\QueryBus;
 use Mockery;
+use Model\Common\Services\QueryBus;
 use Model\Event\Event;
 use Model\Event\ReadModel\Queries\EventListQuery;
 use Model\Event\SkautisEventId;

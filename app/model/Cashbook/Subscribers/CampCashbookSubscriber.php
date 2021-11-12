@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Subscribers;
 
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotals;
@@ -12,6 +11,7 @@ use Model\Cashbook\Events\ChitWasAdded;
 use Model\Cashbook\Events\ChitWasUpdated;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Common\Services\CommandBus;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\Cashbook;
 
 use function assert;

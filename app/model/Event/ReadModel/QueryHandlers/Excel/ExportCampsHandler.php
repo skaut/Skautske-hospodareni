@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Model\Event\ReadModel\QueryHandlers\Excel;
 
 use Assert\Assertion;
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\QueryHandlers\Pdf\SheetChitsGenerator;
 use Model\Cashbook\ReadModel\SpreadsheetFactory;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Event\ExportedCashbook;
 use Model\Event\Camp;
 use Model\Event\Functions;

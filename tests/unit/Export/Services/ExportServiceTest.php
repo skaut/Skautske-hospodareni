@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Model\Export;
 
 use Codeception\Test\Unit;
-use eGen\MessageBus\Bus\QueryBus;
 use Mockery as m;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ICategory;
@@ -13,6 +12,7 @@ use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantStatisticsQuery;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\CategorySummary;
 use Model\DTO\Participant\Statistics;
 use Model\Event\Event;

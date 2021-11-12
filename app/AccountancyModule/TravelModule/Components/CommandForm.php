@@ -6,7 +6,7 @@ namespace App\AccountancyModule\TravelModule\Components;
 
 use App\Forms\BaseForm;
 use App\MyValidators;
-use eGen\MessageBus\Bus\QueryBus;
+use Model\Common\Services\QueryBus;
 use Model\Travel\Passenger;
 use Model\Travel\Travel\TransportType;
 use Model\TravelService;

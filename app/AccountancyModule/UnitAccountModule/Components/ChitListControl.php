@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\AccountancyModule\UnitAccountModule\Components;
 
 use App\AccountancyModule\Components\BaseControl;
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Commands\Cashbook\LockChit;
 use Model\Cashbook\Commands\Cashbook\UnlockChit;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Common\Services\CommandBus;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\Chit;
 use Nette\Security\User;
 

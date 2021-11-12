@@ -6,7 +6,6 @@ namespace App\AccountancyModule\Components\Cashbook;
 
 use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Commands\Cashbook\AddChitScan;
 use Model\Cashbook\Commands\Cashbook\RemoveChitScan;
@@ -15,6 +14,7 @@ use Model\Common\FilePath;
 use Model\Common\IScanStorage;
 use Model\Common\ScanNotFound;
 use Model\Common\Services\CommandBus;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\Chit;
 use Nette\Http\FileUpload;
 

@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\AccountancyModule\EventModule;
 
 use App\AccountancyModule\Grids\DataSource;
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Event\EventListItem;
 use Model\Event\Event;

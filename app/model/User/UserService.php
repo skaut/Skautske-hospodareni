@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model;
 
-use eGen\MessageBus\Bus\QueryBus;
+use Model\Common\Services\QueryBus;
 use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\SkautisRole;

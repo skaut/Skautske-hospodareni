@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Subscribers;
 
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Commands\Cashbook\ClearCashbook;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Common\Services\CommandBus;
+use Model\Common\Services\QueryBus;
 use Model\Events\Events\EventWasCanceled;
 
 final class EventWasCanceledSubscriber

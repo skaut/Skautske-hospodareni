@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
 use Model\Cashbook\ReadModel\Queries\CampParticipantStatisticsQuery;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Participant\Statistics;
 
 use function count;

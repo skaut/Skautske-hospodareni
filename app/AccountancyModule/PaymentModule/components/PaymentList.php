@@ -8,7 +8,7 @@ use App\AccountancyModule\Components\BaseControl;
 use App\AccountancyModule\Components\DataGrid;
 use App\AccountancyModule\Factories\GridFactory;
 use App\AccountancyModule\Grids\DtoListDataSource;
-use eGen\MessageBus\Bus\QueryBus;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Payment\Payment;
 use Model\Payment\Payment\State;
 use Model\Payment\ReadModel\Queries\PaymentListQuery;

@@ -6,7 +6,7 @@ namespace App\AccountancyModule\Components\Participants;
 
 use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
-use eGen\MessageBus\Bus\QueryBus;
+use Model\Common\Services\QueryBus;
 use Model\Common\UnitId;
 use Model\DTO\Participant\NonMemberParticipant;
 use Model\DTO\Participant\Participant;

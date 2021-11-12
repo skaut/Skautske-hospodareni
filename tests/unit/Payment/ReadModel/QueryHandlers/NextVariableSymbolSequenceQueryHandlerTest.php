@@ -6,8 +6,8 @@ namespace Model\Payment\ReadModel\QueryHandlers;
 
 use Codeception\Test\Unit as TestCase;
 use DateTimeImmutable;
-use eGen\MessageBus\Bus\QueryBus;
 use Mockery as m;
+use Model\Common\Services\QueryBus;
 use Model\Payment\Group;
 use Model\Payment\ReadModel\Queries\NextVariableSymbolSequenceQuery;
 use Model\Payment\Repositories\IGroupRepository;

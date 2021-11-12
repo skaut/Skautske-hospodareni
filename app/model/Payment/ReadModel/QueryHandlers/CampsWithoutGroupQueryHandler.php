@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment\ReadModel\QueryHandlers;
 
-use eGen\MessageBus\Bus\QueryBus;
+use Model\Common\Services\QueryBus;
 use Model\Event\Camp;
 use Model\Event\ReadModel\Queries\CampListQuery;
 use Model\Payment\Group;
