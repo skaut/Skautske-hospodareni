@@ -10093,16 +10093,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.80",
+            "version": "0.12.99",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "c6a1b17f22ecf708d434d6bee05092647ec7e686"
+                "reference": "b4d40f1d759942f523be267a1bab6884f46ca3f7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/c6a1b17f22ecf708d434d6bee05092647ec7e686",
-                "reference": "c6a1b17f22ecf708d434d6bee05092647ec7e686",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/b4d40f1d759942f523be267a1bab6884f46ca3f7",
+                "reference": "b4d40f1d759942f523be267a1bab6884f46ca3f7",
                 "shasum": ""
             },
             "require": {
@@ -10131,9 +10131,17 @@
                 "MIT"
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
+            "support": {
+                "issues": "https://github.com/phpstan/phpstan/issues",
+                "source": "https://github.com/phpstan/phpstan/tree/0.12.99"
+            },
             "funding": [
                 {
                     "url": "https://github.com/ondrejmirtes",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/phpstan",
                     "type": "github"
                 },
                 {
@@ -10145,7 +10153,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-02-28T20:22:43+00:00"
+            "time": "2021-09-12T20:09:55+00:00"
         },
         {
             "name": "phpstan/phpstan-doctrine",
@@ -10213,21 +10221,21 @@
         },
         {
             "name": "phpstan/phpstan-nette",
-            "version": "0.12.17",
+            "version": "0.12.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-nette.git",
-                "reference": "4930ff18725dd27bf2e15bb2b6ac1ef581d53514"
+                "reference": "c24d2bb6292b81cf3878b2892c49f9277e8789d0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-nette/zipball/4930ff18725dd27bf2e15bb2b6ac1ef581d53514",
-                "reference": "4930ff18725dd27bf2e15bb2b6ac1ef581d53514",
+                "url": "https://api.github.com/repos/phpstan/phpstan-nette/zipball/c24d2bb6292b81cf3878b2892c49f9277e8789d0",
+                "reference": "c24d2bb6292b81cf3878b2892c49f9277e8789d0",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.1 || ^8.0",
-                "phpstan/phpstan": "^0.12.60"
+                "phpstan/phpstan": "^0.12.86"
             },
             "conflict": {
                 "nette/application": "<2.3.0",
@@ -10240,12 +10248,11 @@
             "require-dev": {
                 "nette/forms": "^3.0",
                 "nette/utils": "^2.3.0 || ^3.0.0",
-                "phing/phing": "^2.16.3",
                 "php-parallel-lint/php-parallel-lint": "^1.2",
                 "phpstan/phpstan-php-parser": "^0.12.2",
                 "phpstan/phpstan-phpunit": "^0.12.16",
                 "phpstan/phpstan-strict-rules": "^0.12.5",
-                "phpunit/phpunit": "^7.5.20"
+                "phpunit/phpunit": "^9.5"
             },
             "type": "phpstan-extension",
             "extra": {
@@ -10269,7 +10276,11 @@
                 "MIT"
             ],
             "description": "Nette Framework class reflection extension for PHPStan",
-            "time": "2021-04-11T16:57:55+00:00"
+            "support": {
+                "issues": "https://github.com/phpstan/phpstan-nette/issues",
+                "source": "https://github.com/phpstan/phpstan-nette/tree/0.12.21"
+            },
+            "time": "2021-06-09T08:47:54+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -12474,5 +12485,5 @@
         "php": ">= 7.4"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }
