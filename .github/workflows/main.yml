@@ -110,7 +110,9 @@ jobs:
               run: docker-compose up -d
             - run: mv app/config/config.ci.local.neon app/config/config.local.neon
             - name: Install Node.js
-              uses: actions/setup-node@v1
+              uses: actions/setup-node@v2
+              with:
+                node-version: '14'
             # Copy & paste from https://github.com/actions/cache/blob/master/examples.md#node---yarn
             - name: Get yarn cache
               id: yarn-cache
