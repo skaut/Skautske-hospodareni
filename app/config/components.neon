@@ -1,7 +1,3 @@
-autoDI:
-    services:
-        - implement: App\AccountancyModule\**\I*Factory
-
 services:
     # Factories
     - App\AccountancyModule\Factories\GridFactory

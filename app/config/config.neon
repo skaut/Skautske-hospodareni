@@ -46,48 +46,56 @@ messageBus:
     queryBus:
 
 extensions:
-    autoDI: Fmasa\AutoDI\DI\AutoDIExtension
     skautis: Skautis\Nette\SkautisExtension
     messageBus: eGen\MessageBus\DI\MessageBusExtension
     console: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
 
-autoDI:
-    services:
-        # Main model facades
-        - class: Model\**Service
-          exclude: 'Model\{Event,Chit,Participant}Service' # mutable services
-
-        # Domain services
-        - class: Model\*\Services\**
-
-        # Aggregate repositories
-        - class: Model\Infrastructure\Repositories\**Repository
-
-        # Old repository namespaces - deprecated
-        - class: Model\**\Repositories\*Repository
-
-        # Domain event subscribers
-        - class: Model\*\Subscribers\*Subscriber
-          tags: [eventBus.subscriber]
-
-        # Skautis communication related services
-        - class: Model\Skautis\**
-          exclude:
-              - Model\Skautis\WebserviceFactory
-              - Model\Skautis\ReadModel\Queries\**
-
-        # Utility services
-        - class: Model\Services\**
 search:
     command handlers:
-       in: %appDir%
-       classes: Model\**\Handlers\**Handler
-       tags: [commandBus.handler]
+        in: %appDir%
+        classes: Model\**\Handlers\**Handler
+        tags: [commandBus.handler]
 
     query handlers:
-       in: %appDir%
-       classes: Model\**\ReadModel\**Handler
-       tags: [queryBus.handler]
+        in: %appDir%
+        classes: Model\**\ReadModel\**Handler
+        tags: [queryBus.handler]
+
+    event subscribers:
+        in: %appDir%
+        classes: Model\*\Subscribers\*Subscriber
+        tags: [eventBus.subscriber]
+
+    UI control factories:
+        in: %appDir%
+        classes: App\AccountancyModule\**\I*Factory
+
+    services:
+        in: %appDir%
+        classes:
+            # Main model facades
+            - Model\**Service
+
+            # Domain services
+            - Model\*\Services\**
+
+            # Aggregate repositories
+            - Model\Infrastructure\Repositories\**Repository
+
+            # Old repository namespaces - deprecated
+            - Model\**\Repositories\*Repository
+
+            # Skautis communication related services
+            - Model\Skautis\**
+
+            - Model\Services\**
+        exclude:
+            classes:
+                - Model\Skautis\WebserviceFactory
+                - Model\Skautis\ReadModel\Queries\**
+                - Model\EventService
+                - Model\ChitService
+                - Model\ParticipantService
 
 services:
     skautisCache:

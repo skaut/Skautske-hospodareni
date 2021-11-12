@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d24f4d834cb9fa6251b3b60bb8fa19ee",
+    "content-hash": "007d3b86e782947152bf2c71f6917ee5",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -1929,53 +1929,6 @@
                 "php"
             ],
             "time": "2020-03-25T18:49:23+00:00"
-        },
-        {
-            "name": "fmasa/auto-di",
-            "version": "2.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/fmasa/auto-di.git",
-                "reference": "3687eb4c95d53f4646bb0f29c525c6a7182e8a7c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/fmasa/auto-di/zipball/3687eb4c95d53f4646bb0f29c525c6a7182e8a7c",
-                "reference": "3687eb4c95d53f4646bb0f29c525c6a7182e8a7c",
-                "shasum": ""
-            },
-            "require": {
-                "nette/di": "^3.0",
-                "nette/robot-loader": "^2.4.2 || ^3.0",
-                "php": "^7.1"
-            },
-            "require-dev": {
-                "nette/bootstrap": "^3.0",
-                "phpunit/phpcov": "^3.0",
-                "phpunit/phpunit": "^5.7",
-                "satooshi/php-coveralls": "^1.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Fmasa\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "František Maša",
-                    "email": "frantisekmasa1@gmail.com"
-                }
-            ],
-            "support": {
-                "issues": "https://github.com/fmasa/auto-di/issues",
-                "source": "https://github.com/fmasa/auto-di/tree/2.x"
-            },
-            "time": "2020-02-23T15:58:27+00:00"
         },
         {
             "name": "fmasa/doctrine-nullable-embeddables",
