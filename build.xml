@@ -18,6 +18,7 @@
         <copy todir="${build.dir}">
             <fileset dir=".">
                 <include name="app/**"/>
+                <include name="bin/console"/>
                 <include name="migrations/**"/>
                 <include name="temp/**"/>
                 <include name="vendor/**"/>
@@ -190,7 +191,7 @@
     <target name="deploy:app-command">
         <phingcall target="deploy:ssh">
             <property name="command"
-                      value="php74-cli &quot;${deploy.release}/www/index.php ${command}&quot;"/>
+                      value="php74-cli &quot;${deploy.release}/bin/console ${command}&quot;"/>
         </phingcall>
     </target>
 
