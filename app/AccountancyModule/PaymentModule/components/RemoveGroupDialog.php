@@ -6,7 +6,7 @@ namespace App\AccountancyModule\PaymentModule\Components;
 
 use App\AccountancyModule\Components\Dialog;
 use App\Forms\BaseForm;
-use eGen\MessageBus\Bus\CommandBus;
+use Model\Common\Services\CommandBus;
 use Model\Payment\Commands\Group\RemoveGroup;
 use Model\PaymentService;
 use Nette\Application\BadRequestException;

@@ -7,6 +7,7 @@ parameters:
 
 services:
     - Nette\Caching\Storages\DevNullStorage
+    - Model\Common\Services\EgenCommandBus
 
 extensions:
     console: Contributte\Console\DI\ConsoleExtension(%consoleMode%)

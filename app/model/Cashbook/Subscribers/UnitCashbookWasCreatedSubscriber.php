@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Subscribers;
 
-use eGen\MessageBus\Bus\CommandBus;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Commands\Cashbook\CreateCashbook;
 use Model\Cashbook\Events\Unit\CashbookWasCreated;
+use Model\Common\Services\CommandBus;
 use Model\Payment\IUnitResolver;
 
 final class UnitCashbookWasCreatedSubscriber

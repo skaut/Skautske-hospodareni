@@ -6,7 +6,6 @@ namespace Model\Infrastructure\Repositories\Cashbook;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\NoResultException;
-use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\EventBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
@@ -14,6 +13,7 @@ use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\Commands\Cashbook\CreateCashbook;
 use Model\Cashbook\Event;
 use Model\Cashbook\Repositories\IEventRepository;
+use Model\Common\Services\CommandBus;
 use Model\Event\SkautisEventId;
 use Model\Infrastructure\Repositories\AggregateRepository;
 

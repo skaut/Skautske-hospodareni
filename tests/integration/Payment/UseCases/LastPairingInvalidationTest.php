@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Model\Payment;
 
 use DateTimeImmutable;
-use eGen\MessageBus\Bus\CommandBus;
 use Helpers;
 use IntegrationTest;
 use Model\BankService;
+use Model\Common\Services\CommandBus;
 use Model\Payment\Commands\BankAccount\CreateBankAccount;
 use Model\Payment\Commands\Payment\CreatePayment;
 use Model\Payment\Commands\Payment\UpdatePayment;

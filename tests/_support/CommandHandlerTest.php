@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use eGen\MessageBus\Bus\CommandBus;
+use Model\Common\Services\CommandBus;
 
 abstract class CommandHandlerTest extends IntegrationTest
 {

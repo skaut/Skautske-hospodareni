@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\AccountancyModule\EventModule\Components;
 
 use App\AccountancyModule\Components\BaseControl;
-use eGen\MessageBus\Bus\CommandBus;
 use eGen\MessageBus\Bus\QueryBus;
 use Model\Auth\IAuthorizator;
 use Model\Auth\Resources\Camp;
+use Model\Common\Services\CommandBus;
 use Model\Event\Commands\Camp\ActivateAutocomputedCashbook;
 use Model\Event\ReadModel\Queries\CampQuery;
 use Model\Event\SkautisCampId;

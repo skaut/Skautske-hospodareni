@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App;
 
 use App\AccountancyModule\SkautisMaintenance;
-use eGen\MessageBus\Bus\CommandBus;
 use Model\Cashbook\Commands\Cashbook\SelectFirstActiveRole;
+use Model\Common\Services\CommandBus;
 use Model\Skautis\Exception\MissingCurrentRole;
 use Model\Unit\UserHasNoUnit;
 use Model\User\Exception\UserHasNoRole;

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Model\Payment\IntegrationTests;
 
-use eGen\MessageBus\Bus\CommandBus;
 use Helpers;
 use IntegrationTest;
 use Model\Common\EmailAddress;
+use Model\Common\Services\CommandBus;
 use Model\Common\User;
 use Model\Google\OAuth;
 use Model\Google\OAuthId;

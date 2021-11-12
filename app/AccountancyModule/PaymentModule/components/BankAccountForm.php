@@ -6,7 +6,7 @@ namespace App\AccountancyModule\PaymentModule\Factories;
 
 use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
-use eGen\MessageBus\Bus\CommandBus;
+use Model\Common\Services\CommandBus;
 use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\BankAccountService;
 use Model\Payment\Commands\BankAccount\CreateBankAccount;
