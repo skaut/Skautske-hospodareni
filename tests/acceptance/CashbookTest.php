@@ -7,8 +7,8 @@ namespace acceptance;
 use AcceptanceTester;
 use Cake\Chronos\Date;
 use Codeception\Test\Unit;
+use Facebook\WebDriver\WebDriverKeys;
 use Model\Cashbook\Operation;
-use WebDriverKeys;
 
 use function date;
 use function sprintf;
