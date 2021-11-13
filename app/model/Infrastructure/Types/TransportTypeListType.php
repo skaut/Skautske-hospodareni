@@ -45,7 +45,7 @@ final class TransportTypeListType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): array
     {
-        $types = Json::decode($value);
+        $types = Json::decode($value, Json::FORCE_ARRAY);
 
         Assertion::allString($types);
 
