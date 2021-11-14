@@ -13,13 +13,14 @@ use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Common\Services\CommandBus;
 use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\Cashbook;
+use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
 
 use function assert;
 
 /**
  * Update category total in Skautis for camp cashbook
  */
-final class CampCashbookSubscriber
+final class CampCashbookSubscriber implements MessageSubscriberInterface
 {
     private CommandBus $commandBus;
 
@@ -29,6 +30,17 @@ final class CampCashbookSubscriber
     {
         $this->commandBus = $commandBus;
         $this->queryBus   = $queryBus;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function getHandledMessages(): array
+    {
+        return [
+            ChitWasAdded::class => ['method' => 'chitWasAdded'],
+            ChitWasUpdated::class => ['method' => 'chitWasUpdated'],
+        ];
     }
 
     public function chitWasAdded(ChitWasAdded $event): void

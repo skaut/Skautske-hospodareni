@@ -8,6 +8,7 @@ use Model\Payment\DomainEvents\PaymentAmountWasChanged;
 use Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
 use Model\Payment\DomainEvents\PaymentWasCreated;
 use Model\Payment\Repositories\IGroupRepository;
+use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
 
 /**
  * When payment VS is changed, there is a risk that corresponding bank transaction
@@ -15,13 +16,25 @@ use Model\Payment\Repositories\IGroupRepository;
  *
  * When 'last pairing' is invalidated, all bank payments will be loaded
  */
-class PaymentSubscriber
+final class PaymentSubscriber implements MessageSubscriberInterface
 {
     private IGroupRepository $groups;
 
     public function __construct(IGroupRepository $groups)
     {
         $this->groups = $groups;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function getHandledMessages(): array
+    {
+        return [
+            PaymentWasCreated::class => ['method' => 'handlePaymentCreated'],
+            PaymentVariableSymbolWasChanged::class => ['method' => 'handleVariableSymbolChanged'],
+            PaymentAmountWasChanged::class => ['method' => 'handlePaymentAmountChanged'],
+        ];
     }
 
     public function handlePaymentCreated(PaymentWasCreated $event): void

@@ -5,16 +5,24 @@ services:
     - Model\Infrastructure\Repositories\Payment\BankAccountRepository
 
     - class: Model\Payment\Subscribers\PaymentSubscriber
-      tags: [eventBus.subscriber]
+      tags:
+          messenger.messageHandler:
+              bus: eventBus
 
     - class: Model\Payment\Handlers\Payment\CreatePaymentHandler
-      tags: [commandBus.handler]
+      tags:
+          messenger.messageHandler:
+              bus: commandBus
 
     - class: Model\Payment\Handlers\Payment\UpdatePaymentHandler
-      tags: [commandBus.handler]
+      tags:
+          messenger.messageHandler:
+              bus: commandBus
 
     - class: Model\Payment\Handlers\BankAccount\CreateBankAccountHandler
-      tags: [commandBus.handler]
+      tags:
+          messenger.messageHandler:
+              bus: commandBus
 
     - Model\Payment\Services\BankAccountAccessChecker
     - Stubs\OAuthsAccessCheckerStub

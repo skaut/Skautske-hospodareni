@@ -11,7 +11,9 @@ services:
     - Model\Payment\UserRepositoryStub
 
     - class: Model\Payment\Handlers\Payment\CreatePaymentHandler
-      tags: [commandBus.handler]
+      tags:
+          messenger.messageHandler:
+              bus: commandBus
 
 includes:
     - config/doctrine.neon

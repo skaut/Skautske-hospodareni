@@ -6,7 +6,9 @@ services:
     - Model\Payment\Handlers\Group\RemoveGroupHandler
 
     - class: Model\Payment\Subscribers\GroupRemovedSubscriber
-      tags: [eventBus.subscriber]
+      tags:
+          messenger.messageHandler:
+              bus: eventBus
 
 includes:
     - ../../config/doctrine.neon

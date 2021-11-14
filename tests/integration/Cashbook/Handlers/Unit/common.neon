@@ -4,9 +4,13 @@ services:
     - Model\Payment\UnitResolverStub
 
     - class: Model\Cashbook\Handlers\Cashbook\CreateCashbookHandler
-      tags: [commandBus.handler]
+      tags:
+          messenger.messageHandler:
+              bus: commandBus
     - class: Model\Cashbook\Subscribers\UnitCashbookWasCreatedSubscriber
-      tags: [eventBus.subscriber]
+      tags:
+          messenger.messageHandler:
+              bus: eventBus
 
 includes:
     - ../../../config/doctrine.neon

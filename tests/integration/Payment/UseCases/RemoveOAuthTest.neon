@@ -5,7 +5,9 @@ services:
     - Model\Google\Handlers\RemoveOAuthHandler
 
     - class: Model\Payment\Subscribers\OAuthRemovedSubscriber
-      tags: [eventBus.subscriber]
+      tags:
+          messenger.messageHandler:
+              bus: eventBus
 
 includes:
     - ../../config/doctrine.neon
