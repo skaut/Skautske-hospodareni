@@ -73,7 +73,7 @@ class Version20170623193150 extends AbstractMigration
         $this->addSql('ALTER TABLE pa_group DROP bank_account_id');
     }
 
-    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     private function getMainAccount(int $unitId): ?string
     {
         $result = $this->skautis->org->AccountAll(['ID_Unit' => $unitId]);

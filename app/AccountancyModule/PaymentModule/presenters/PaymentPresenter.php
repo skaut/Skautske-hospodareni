@@ -282,7 +282,7 @@ class PaymentPresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     public function handleCloseGroup(): void
     {
         $this->assertCanEditGroup();

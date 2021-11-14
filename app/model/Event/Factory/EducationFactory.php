@@ -9,7 +9,7 @@ use Model\Event\Education;
 use Model\Event\SkautisEducationId;
 use stdClass;
 
-// phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+// phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
 final class EducationFactory
 {

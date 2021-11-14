@@ -56,7 +56,7 @@ class UserService extends BaseService
     /**
      * změní přihlášenou roli do skautISu
      */
-    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     public function updateSkautISRole(int $id): void
     {
         $response = $this->skautis->user->LoginUpdate(['ID_UserRole' => $id, 'ID' => $this->skautis->getUser()->getLoginId()]);
@@ -74,7 +74,7 @@ class UserService extends BaseService
      *
      * @see ActiveSkautisRoleQuery
      */
-    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     public function getActualRole(): ?SkautisRole
     {
         foreach ($this->getAllSkautisRoles() as $r) {

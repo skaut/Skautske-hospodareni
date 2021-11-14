@@ -12,7 +12,7 @@ use stdClass;
 
 use function explode;
 
-// phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+// phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
 final class EventFactory
 {

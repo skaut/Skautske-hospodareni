@@ -41,7 +41,7 @@ final class LoginPanel extends BaseControl
         $this->redirect('this');
     }
 
-    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     public function render(): void
     {
         $this->template->setFile(__DIR__ . '/templates/LoginPanel.latte');

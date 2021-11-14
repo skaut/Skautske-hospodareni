@@ -24,7 +24,7 @@ class BankAccountImporter implements IBankAccountImporter
     /**
      * @return AccountNumber[]
      */
-    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     public function import(int $unitId): array
     {
         $accounts = $this->skautis->org->AccountAll([
