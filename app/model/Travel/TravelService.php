@@ -29,7 +29,6 @@ use Money\Money;
 
 use function array_map;
 use function array_merge;
-use function array_unique;
 
 class TravelService
 {
@@ -286,7 +285,7 @@ class TravelService
     }
 
     /**
-     * @param TransportType[] $types
+     * @param list<TransportType> $types
      */
     public function addCommand(
         int $unitId,
@@ -326,7 +325,7 @@ class TravelService
     }
 
     /**
-     * @param TransportType[] $types
+     * @param list<TransportType> $types
      */
     public function updateCommand(
         int $id,
@@ -357,7 +356,7 @@ class TravelService
             $fuelPrice,
             $amortization,
             $note,
-            array_unique(array_merge($types, $command->getUsedTransportTypes())),
+            array_merge($types, $command->getUsedTransportTypes()),
             $unit
         );
 
