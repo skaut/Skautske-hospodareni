@@ -11,6 +11,7 @@ use Model\Travel\Travel\TransportType;
 use Nette\Utils\Json;
 
 use function array_map;
+use function array_values;
 
 final class TransportTypeListType extends Type
 {
@@ -33,6 +34,7 @@ final class TransportTypeListType extends Type
     public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
         Assertion::isArray($value);
+        Assertion::same($value, array_values($value));
         Assertion::allIsInstanceOf($value, TransportType::class);
 
         return Json::encode(array_map(fn (TransportType $type) => $type->toString(), $value));

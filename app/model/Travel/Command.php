@@ -20,6 +20,7 @@ use Money\Money;
 use function array_reduce;
 use function array_sum;
 use function array_unique;
+use function array_values;
 use function min;
 
 /**
@@ -82,7 +83,7 @@ class Command
     /**
      * @ORM\Column(type="transport_types")
      *
-     * @var TransportType[]
+     * @var list<TransportType>
      */
     private array $transportTypes;
 
@@ -93,7 +94,7 @@ class Command
     private string $unit;
 
     /**
-     * @param TransportType[] $transportTypes
+     * @param list<TransportType> $transportTypes
      */
     public function __construct(
         int $unitId,
@@ -120,12 +121,12 @@ class Command
         $this->note             = $note;
         $this->travels          = new ArrayCollection();
         $this->ownerId          = $ownerId;
-        $this->transportTypes   = array_unique($transportTypes);
+        $this->transportTypes   = array_values(array_unique($transportTypes));
         $this->unit             = $unit;
     }
 
     /**
-     * @param TransportType[] $transportTypes
+     * @param list<TransportType> $transportTypes
      */
     public function update(
         ?Vehicle $vehicle,
@@ -147,7 +148,7 @@ class Command
         $this->fuelPrice        = $fuelPrice;
         $this->amortization     = $amortization;
         $this->note             = $note;
-        $this->transportTypes   = array_unique($transportTypes);
+        $this->transportTypes   = array_values(array_unique($transportTypes));
         $this->unit             = $unit;
     }
 
