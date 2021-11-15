@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c6ab402bef429313cfda29970d0890bf",
+    "content-hash": "0bb8bd317a8a967090ca6713a92e11fe",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -169,26 +169,24 @@
         },
         {
             "name": "cakephp/chronos",
-            "version": "1.3.0",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cakephp/chronos.git",
-                "reference": "ba2bab98849e7bf29b02dd634ada49ab36472959"
+                "reference": "3ecd6e7ae191c676570cd1bed51fd561de4606dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cakephp/chronos/zipball/ba2bab98849e7bf29b02dd634ada49ab36472959",
-                "reference": "ba2bab98849e7bf29b02dd634ada49ab36472959",
+                "url": "https://api.github.com/repos/cakephp/chronos/zipball/3ecd6e7ae191c676570cd1bed51fd561de4606dd",
+                "reference": "3ecd6e7ae191c676570cd1bed51fd561de4606dd",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.6"
+                "php": ">=7.2"
             },
             "require-dev": {
-                "athletic/athletic": "~0.1",
-                "cakephp/cakephp-codesniffer": "^3.0",
-                "phpbench/phpbench": "@dev",
-                "phpunit/phpunit": "<6.0 || ^7.0"
+                "cakephp/cakephp-codesniffer": "^4.5",
+                "phpunit/phpunit": "^8.0 || ^9.0"
             },
             "type": "library",
             "autoload": {
@@ -221,7 +219,12 @@
                 "datetime",
                 "time"
             ],
-            "time": "2019-11-30T02:33:19+00:00"
+            "support": {
+                "irc": "irc://irc.freenode.org/cakephp",
+                "issues": "https://github.com/cakephp/chronos/issues",
+                "source": "https://github.com/cakephp/chronos"
+            },
+            "time": "2021-10-17T02:44:05+00:00"
         },
         {
             "name": "clue/stream-filter",
@@ -9131,25 +9134,25 @@
         },
         {
             "name": "warhuhn/chronos-doctrine",
-            "version": "1.0.3",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/warhuhn/chronos-doctrine.git",
-                "reference": "4bafc7ee46249a8ae96088380b41c79687dfade3"
+                "reference": "f9a17a5245d105a29b7cd570795766e11b676a1b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/warhuhn/chronos-doctrine/zipball/4bafc7ee46249a8ae96088380b41c79687dfade3",
-                "reference": "4bafc7ee46249a8ae96088380b41c79687dfade3",
+                "url": "https://api.github.com/repos/warhuhn/chronos-doctrine/zipball/f9a17a5245d105a29b7cd570795766e11b676a1b",
+                "reference": "f9a17a5245d105a29b7cd570795766e11b676a1b",
                 "shasum": ""
             },
             "require": {
-                "cakephp/chronos": "^1.1",
-                "doctrine/dbal": "^2.5",
-                "php": "^5.5 || ^7.0"
+                "cakephp/chronos": "^2.0",
+                "doctrine/dbal": "^2.10",
+                "php": ">=7.2"
             },
             "require-dev": {
-                "phpunit/phpunit": "^6.2"
+                "phpunit/phpunit": "^9.2"
             },
             "type": "library",
             "autoload": {
@@ -9169,7 +9172,11 @@
                 }
             ],
             "description": "Doctrine DBAL Types to use Chronos' Immutable DateTime Objects",
-            "time": "2019-03-31T17:05:33+00:00"
+            "support": {
+                "issues": "https://github.com/warhuhn/chronos-php/issues",
+                "source": "https://github.com/warhuhn/chronos-php"
+            },
+            "time": "2020-06-15T19:17:57+00:00"
         }
     ],
     "packages-dev": [

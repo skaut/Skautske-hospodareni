@@ -5,7 +5,7 @@
         "php": ">= 7.4",
         "beberlei/assert": "^2.7",
         "beberlei/doctrineextensions": "^1.0",
-        "cakephp/chronos": "^1.1",
+        "cakephp/chronos": "^2.3",
         "composer/ca-bundle": "^1.1",
         "consistence/consistence": "^2.0",
         "consistence/consistence-doctrine": "^2.0",
@@ -48,7 +48,7 @@
         "thecodingmachine/safe": "^1.0.0",
         "tracy/tracy": "~2.4",
         "ublaboo/datagrid": "^v6.8",
-        "warhuhn/chronos-doctrine": "^1.0"
+        "warhuhn/chronos-doctrine": "^2.0"
     },
     "require-dev": {
         "codeception/codeception": "^4.1",
