@@ -6,11 +6,11 @@ namespace App\AccountancyModule\TravelModule\Components;
 
 use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
-use eGen\MessageBus\Bus\CommandBus;
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Common\FilePath;
 use Model\Common\IScanStorage;
 use Model\Common\ScanNotFound;
+use Model\Common\Services\CommandBus;
+use Model\Common\Services\QueryBus;
 use Model\Travel\Commands\Vehicle\AddRoadworthyScan;
 use Model\Travel\Commands\Vehicle\RemoveRoadworthyScan;
 use Model\Travel\ReadModel\Queries\Vehicle\RoadworthyScansQuery;

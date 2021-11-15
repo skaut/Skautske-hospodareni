@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\CategorySummary;
 use Model\Utils\MoneyFactory;
 use Money\Money;

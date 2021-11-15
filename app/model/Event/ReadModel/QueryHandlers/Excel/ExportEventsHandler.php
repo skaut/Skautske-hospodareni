@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Model\Event\ReadModel\QueryHandlers\Excel;
 
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
@@ -12,6 +11,7 @@ use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventPragueParticipantsQuery;
 use Model\Cashbook\ReadModel\QueryHandlers\Pdf\SheetChitsGenerator;
 use Model\Cashbook\ReadModel\SpreadsheetFactory;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Event\ExportedCashbook;
 use Model\DTO\Event\StatisticsItem;

@@ -10,7 +10,7 @@ use App\Forms\BaseForm;
 use Assert\Assertion;
 use Cake\Chronos\Date;
 use DateTimeImmutable;
-use eGen\MessageBus\Bus\QueryBus;
+use Model\Common\Services\QueryBus;
 use Model\Common\UnitId;
 use Model\DTO\Google\OAuth;
 use Model\DTO\Payment\BankAccount;

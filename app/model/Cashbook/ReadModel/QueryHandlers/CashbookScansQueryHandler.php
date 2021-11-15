@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\ReadModel\Queries\CashbookScansQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Common\File;
 use Model\Common\IScanStorage;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\Chit;
 
 use function assert;

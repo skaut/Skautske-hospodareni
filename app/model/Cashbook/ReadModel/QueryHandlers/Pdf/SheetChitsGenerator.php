@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers\Pdf;
 
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
 use Model\DTO\Event\ExportedCashbook;

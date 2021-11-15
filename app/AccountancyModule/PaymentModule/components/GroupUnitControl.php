@@ -6,10 +6,10 @@ namespace App\AccountancyModule\PaymentModule\Components;
 
 use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
-use eGen\MessageBus\Bus\CommandBus;
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Auth\IAuthorizator;
 use Model\Auth\Resources\Unit as ResourceUnit;
+use Model\Common\Services\CommandBus;
+use Model\Common\Services\QueryBus;
 use Model\Common\ShouldNotHappen;
 use Model\DTO\Payment\Group;
 use Model\Payment\Commands\Group\ChangeGroupUnits;

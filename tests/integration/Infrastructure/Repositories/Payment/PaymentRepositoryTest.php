@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Repositories\Payment;
 
 use Cake\Chronos\Date;
-use eGen\MessageBus\Bus\EventBus;
 use Helpers;
+use Hskauting\Tests\NullEventBus;
 use IntegrationTest;
 use Model\Payment\EmailType;
 use Model\Payment\Group;
@@ -53,7 +53,7 @@ class PaymentRepositoryTest extends IntegrationTest
     {
         $this->tester->useConfigFiles(['config/doctrine.neon']);
         parent::_before();
-        $this->repository = new PaymentRepository($this->entityManager, new EventBus());
+        $this->repository = new PaymentRepository($this->entityManager, new NullEventBus());
     }
 
     public function testFindNotSavedPaymentThrowsException(): void

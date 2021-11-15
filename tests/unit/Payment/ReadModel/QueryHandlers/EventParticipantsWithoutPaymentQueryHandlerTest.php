@@ -6,9 +6,9 @@ namespace Model\Payment\ReadModel\QueryHandlers;
 
 use Assert\InvalidArgumentException;
 use Codeception\Test\Unit;
-use eGen\MessageBus\Bus\QueryBus;
 use Mockery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Participant\Participant;
 use Model\Payment\Group;
 use Model\Payment\ReadModel\Queries\EventParticipantsWithoutPaymentQuery;
@@ -61,7 +61,7 @@ final class EventParticipantsWithoutPaymentQueryHandlerTest extends Unit
         $handler = new EventParticipantsWithoutPaymentQueryHandler(
             $this->mockGroupRepository($skautisEntity),
             Mockery::mock(PaymentService::class),
-            new QueryBus()
+            Mockery::mock(QueryBus::class),
         );
 
         $this->expectException(InvalidArgumentException::class);

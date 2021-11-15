@@ -8,7 +8,7 @@ use App\AccountancyModule\Components\Dialog;
 use App\AccountancyModule\ExcelResponse;
 use App\Forms\BaseForm;
 use Cake\Chronos\Date;
-use eGen\MessageBus\Bus\QueryBus;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Camp\CampListItem;
 use Model\Event\ReadModel\Queries\Excel\ExportCamps;
 use Nette\Utils\ArrayHash;

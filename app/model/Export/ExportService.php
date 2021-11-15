@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Model;
 
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ICategory;
@@ -21,6 +20,7 @@ use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantStatisticsQuery;
 use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\CategorySummary;
 use Model\DTO\Cashbook\Chit;

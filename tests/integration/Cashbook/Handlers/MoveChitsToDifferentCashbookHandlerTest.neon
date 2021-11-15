@@ -1,9 +1,13 @@
 services:
     - Model\Infrastructure\Repositories\Cashbook\CashbookRepository
     - class: Model\Cashbook\Handlers\Cashbook\MoveChitsToDifferentCashbookHandler
-      tags: [commandBus.handler]
+      tags:
+          messenger.messageHandler:
+              bus: commandBus
     - class: Model\Cashbook\Handlers\Cashbook\AddChitScanHandler
-      tags: [commandBus.handler]
+      tags:
+          messenger.messageHandler:
+              bus: commandBus
     - Model\Infrastructure\Services\Common\FlysystemScanStorage
     - League\Flysystem\Filesystem(League\Flysystem\Adapter\NullAdapter())
 

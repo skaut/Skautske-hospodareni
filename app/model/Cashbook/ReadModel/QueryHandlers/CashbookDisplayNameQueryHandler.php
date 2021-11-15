@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\CashbookDisplayNameQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
+use Model\Common\Services\QueryBus;
 use Model\Common\ShouldNotHappen;
 use Model\DTO\Cashbook\Cashbook;
 use Model\Event\Camp;

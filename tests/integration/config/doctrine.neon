@@ -7,15 +7,26 @@ parameters:
 
 services:
     - Nette\Caching\Storages\DevNullStorage
+    - Model\Common\Services\MessengerCommandBus(@messenger.commandBus.bus)
+    - Model\Common\Services\MessengerQueryBus(@messenger.queryBus.bus)
+    - Model\Common\Services\MessengerEventBus(@messenger.eventBus.bus)
 
 extensions:
     console: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
     decorator: Nette\DI\Extensions\DecoratorExtension # default extension in Nette DI
-    messageBus: eGen\MessageBus\DI\MessageBusExtension
+    messenger: Fmasa\Messenger\DI\MessengerExtension
 
-messageBus:
-    commandBus:
-    eventBus:
+messenger:
+    buses:
+        commandBus:
+            singleHandlerPerMessage: true
+            panel: false
+        eventBus:
+            allowNoHandlers: true
+            panel: false
+        queryBus:
+            singleHandlerPerMessage: true
+            panel: false
 
 includes:
     - ../../../app/config/model/doctrine.neon

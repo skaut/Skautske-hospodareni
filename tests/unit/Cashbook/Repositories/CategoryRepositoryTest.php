@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Model\Cashbook\Repositories;
 
 use Codeception\Test\Unit;
-use eGen\MessageBus\Bus\QueryBus;
 use Mockery;
 use Model\Cashbook\CampCategory;
 use Model\Cashbook\Cashbook\CashbookId;
@@ -14,6 +13,7 @@ use Model\Cashbook\Category;
 use Model\Cashbook\ObjectType;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
+use Model\Common\Services\QueryBus;
 use Money\Money;
 
 use function array_merge;

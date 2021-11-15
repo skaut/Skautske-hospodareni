@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use Cake\Chronos\Date;
-use eGen\MessageBus\Bus\QueryBus;
 use Helpers;
 use IntegrationTest;
 use Mockery as m;
@@ -14,6 +13,7 @@ use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\Category;
 
 use function count;

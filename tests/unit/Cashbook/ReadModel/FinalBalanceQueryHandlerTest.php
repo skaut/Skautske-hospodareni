@@ -6,12 +6,12 @@ namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use Cake\Chronos\Date;
 use Codeception\Test\Unit;
-use eGen\MessageBus\Bus\QueryBus;
 use Mockery as m;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\FinalCashBalanceQuery;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit;
 use Model\Utils\MoneyFactory;

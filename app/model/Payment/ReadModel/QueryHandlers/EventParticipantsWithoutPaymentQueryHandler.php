@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Model\Payment\ReadModel\QueryHandlers;
 
 use Assert\Assertion;
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Participant\Participant;
 use Model\Event\SkautisEventId;
 use Model\Payment\Group\Type;

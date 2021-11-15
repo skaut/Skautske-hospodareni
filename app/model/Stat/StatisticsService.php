@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model;
 
-use eGen\MessageBus\Bus\QueryBus;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Stat\Counter;
 use Model\Event\ReadModel\Queries\CampListQuery;
 use Model\Event\ReadModel\Queries\CampStatisticsQuery;

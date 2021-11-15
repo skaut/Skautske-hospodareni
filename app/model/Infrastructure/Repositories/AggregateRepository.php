@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Repositories;
 
 use Doctrine\ORM\EntityManager;
-use eGen\MessageBus\Bus\EventBus;
 use Model\Common\Aggregate;
+use Model\Common\Services\EventBus;
 
 abstract class AggregateRepository
 {

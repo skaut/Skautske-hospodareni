@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Model;
 
-use eGen\MessageBus\Bus\CommandBus;
 use Helpers;
 use IntegrationTest;
+use Model\Common\Services\CommandBus;
 use Model\Payment\Commands\Payment\CreatePayment;
 use Model\Payment\Group;
 use Model\Payment\Payment;

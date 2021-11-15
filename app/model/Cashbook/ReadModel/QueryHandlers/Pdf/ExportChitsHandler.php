@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Model\Cashbook\ReadModel\QueryHandlers\Pdf;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ReadModel\Queries\CampParticipantIncomeQuery;
@@ -17,6 +16,7 @@ use Model\Cashbook\ReadModel\Queries\EventParticipantIncomeQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
 use Model\Cashbook\ReadModel\Queries\Pdf\ExportChits;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
 use Model\DTO\Cashbook\ChitItem;

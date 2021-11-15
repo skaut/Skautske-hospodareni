@@ -6,7 +6,6 @@ namespace Model\Cashbook\ReadModel\QueryHandlers;
 
 use Cake\Chronos\Date;
 use Codeception\Test\Unit;
-use eGen\MessageBus\Bus\QueryBus;
 use Helpers;
 use Mockery as m;
 use Model\Cashbook\Cashbook;
@@ -14,6 +13,7 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\Queries\ChitQuery;
 use Model\Cashbook\Repositories\ICashbookRepository;
+use Model\Common\Services\QueryBus;
 
 final class ChitQueryHandlerTest extends Unit
 {
@@ -24,7 +24,7 @@ final class ChitQueryHandlerTest extends Unit
 
     public function testUnexistingChit(): void
     {
-        $handler = new ChitQueryHandler($this->mockCashbookRepository(), new QueryBus());
+        $handler = new ChitQueryHandler($this->mockCashbookRepository(), m::mock(QueryBus::class));
 
         $this->assertNull($handler(new ChitQuery($this->getCashbookId(), 5)));
     }

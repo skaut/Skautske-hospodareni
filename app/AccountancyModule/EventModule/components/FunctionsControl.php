@@ -6,11 +6,11 @@ namespace App\AccountancyModule\EventModule\Components;
 
 use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
-use eGen\MessageBus\Bus\CommandBus;
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Auth\IAuthorizator;
 use Model\Auth\Resources\Event;
 use Model\Common\ReadModel\Queries\MemberNamesQuery;
+use Model\Common\Services\CommandBus;
+use Model\Common\Services\QueryBus;
 use Model\Common\UnitId;
 use Model\Event\AssistantNotAdult;
 use Model\Event\Commands\Event\UpdateFunctions;

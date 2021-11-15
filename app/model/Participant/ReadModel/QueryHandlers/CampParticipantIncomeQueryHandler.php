@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\ReadModel\Queries\CampParticipantIncomeQuery;
 use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Participant\Participant;
 use Model\Participant\ZeroParticipantIncome;
 

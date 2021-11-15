@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model;
 
-use eGen\MessageBus\Bus\QueryBus;
+use Model\Common\Services\QueryBus;
 use Model\Payment\IUnitResolver;
 use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\Repositories\IUnitRepository;

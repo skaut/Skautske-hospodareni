@@ -20,11 +20,14 @@ services:
     - Model\Payment\MailingService
 
     - class: Model\Payment\Handlers\Payment\CreatePaymentHandler
-      tags: [commandBus.handler]
+      tags:
+          messenger.messageHandler:
+              bus: commandBus
 
     - class: Model\Payment\Subscribers\PaymentMailSubscriber
-      tags: [eventBus.subscriber]
-
+      tags:
+          messenger.messageHandler:
+              bus: eventBus
 includes:
     - ../../config/doctrine.neon
 

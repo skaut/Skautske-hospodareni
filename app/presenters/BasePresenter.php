@@ -6,10 +6,10 @@ namespace App;
 
 use App\AccountancyModule\Factories\ILoginPanelFactory;
 use App\Components\LoginPanel;
-use eGen\MessageBus\Bus\CommandBus;
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Auth\IAuthorizator;
+use Model\Common\Services\CommandBus;
 use Model\Common\Services\NotificationsCollector;
+use Model\Common\Services\QueryBus;
 use Model\UnitService;
 use Model\UserService;
 use Nette\Application\BadRequestException;

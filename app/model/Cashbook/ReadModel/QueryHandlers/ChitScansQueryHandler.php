@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\ReadModel\Queries\ChitQuery;
 use Model\Cashbook\ReadModel\Queries\ChitScansQuery;
 use Model\Common\File;
 use Model\Common\IScanStorage;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\Chit;
 
 use function array_map;

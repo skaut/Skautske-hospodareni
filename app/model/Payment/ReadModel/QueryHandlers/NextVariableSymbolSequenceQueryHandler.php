@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Payment\ReadModel\QueryHandlers;
 
 use DateTimeImmutable;
-use eGen\MessageBus\Bus\QueryBus;
+use Model\Common\Services\QueryBus;
 use Model\Payment\Group;
 use Model\Payment\ReadModel\Queries\NextVariableSymbolSequenceQuery;
 use Model\Payment\Repositories\IGroupRepository;

@@ -37,34 +37,43 @@ console:
         question: Symfony\Component\Console\Helper\QuestionHelper(),
     ])
 
-messageBus:
-    commandBus:
-    	middlewares:
-    		before:
-    			-  SimpleBus\Message\Logging\LoggingMiddleware(level: 'debug')
-    eventBus:
-    queryBus:
+messenger:
+    buses:
+        commandBus:
+            singleHandlerPerMessage: true
+            middleware:
+                - Model\Infrastructure\Services\Messenger\LoggingMiddleware(level: 'debug')
+        eventBus:
+            allowNoHandlers: true
+        queryBus:
+            singleHandlerPerMessage: true
 
 extensions:
     skautis: Skautis\Nette\SkautisExtension
-    messageBus: eGen\MessageBus\DI\MessageBusExtension
+    messenger: Fmasa\Messenger\DI\MessengerExtension
     console: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
 
 search:
     command handlers:
         in: %appDir%
         classes: Model\**\Handlers\**Handler
-        tags: [commandBus.handler]
+        tags:
+            messenger.messageHandler:
+                bus: commandBus
 
     query handlers:
         in: %appDir%
         classes: Model\**\ReadModel\**Handler
-        tags: [queryBus.handler]
+        tags:
+            messenger.messageHandler:
+                bus: queryBus
 
     event subscribers:
         in: %appDir%
         classes: Model\*\Subscribers\*Subscriber
-        tags: [eventBus.subscriber]
+        tags:
+            messenger.messageHandler:
+                bus: eventBus
 
     UI control factories:
         in: %appDir%
@@ -98,6 +107,10 @@ search:
                 - Model\ParticipantService
 
 services:
+    - Model\Common\Services\MessengerCommandBus(@messenger.commandBus.bus)
+    - Model\Common\Services\MessengerQueryBus(@messenger.queryBus.bus)
+    - Model\Common\Services\MessengerEventBus(@messenger.eventBus.bus)
+
     skautisCache:
         factory: Nette\Caching\Cache(namespace: 'skautis')
         autowired: false
@@ -114,16 +127,24 @@ services:
     - Model\Cashbook\ReadModel\QueryHandlers\Pdf\SheetChitsGenerator
 
     - factory: Model\Event\ReadModel\QueryHandlers\EventScopesHandler(@skautis.event, @skautisCache)
-      tags: [queryBus.handler]
+      tags:
+          messenger.messageHandler:
+              bus: queryBus
 
     - factory: Model\Event\ReadModel\QueryHandlers\EventTypesHandler(@skautis.event, @skautisCache)
-      tags: [queryBus.handler]
+      tags:
+          messenger.messageHandler:
+              bus: queryBus
 
     - factory: Model\Event\ReadModel\QueryHandlers\CampStatesHandler(@skautis.event, @skautisCache)
-      tags: [queryBus.handler]
+      tags:
+          messenger.messageHandler:
+              bus: queryBus
 
     - factory: Model\Event\ReadModel\QueryHandlers\EventStatesHandler(@skautis.event, @skautisCache)
-      tags: [queryBus.handler]
+      tags:
+          messenger.messageHandler:
+              bus: queryBus
 
     - Model\Services\PdfRenderer(%tempDir%)
 
@@ -163,13 +184,19 @@ services:
 
 
     - factory: Model\Cashbook\ReadModel\QueryHandlers\EventParticipantListQueryHandler
-      tags: [queryBus.handler]
+      tags:
+          messenger.messageHandler:
+              bus: queryBus
 
     # Skautis read model
     - factory: Model\Skautis\ReadModel\QueryHandlers\CampBudgetQueryHandler(@skautis.cached.event)
-      tags: [queryBus.handler]
+      tags:
+          messenger.messageHandler:
+              bus: queryBus
     - factory: Model\Skautis\ReadModel\QueryHandlers\EventStatisticsQueryHandler(@skautis.cached.event)
-      tags: [queryBus.handler]
+      tags:
+          messenger.messageHandler:
+              bus: queryBus
 
     - League\Flysystem\Filesystem(League\Flysystem\Adapter\Local(%uploadDirectory%))
     - Model\Infrastructure\Services\Common\FlysystemScanStorage

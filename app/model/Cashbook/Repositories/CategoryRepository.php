@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Repositories;
 
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\CategoryNotFound;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
+use Model\Common\Services\QueryBus;
 
 use function array_merge;
 use function sprintf;

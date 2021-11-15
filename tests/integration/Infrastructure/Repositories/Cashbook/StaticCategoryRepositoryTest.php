@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Repositories\Cashbook;
 
 use Doctrine\ORM\EntityManager;
-use eGen\MessageBus\Bus\EventBus;
+use Hskauting\Tests\NullEventBus;
 use IntegrationTest;
 use Model\Cashbook\Category;
 use Model\Cashbook\ObjectType;
@@ -23,7 +23,10 @@ class StaticCategoryRepositoryTest extends IntegrationTest
     {
         $this->tester->useConfigFiles(['config/doctrine.neon']);
         parent::_before();
-        $this->repository = new StaticCategoryRepository($this->tester->grabService(EntityManager::class), new EventBus());
+        $this->repository = new StaticCategoryRepository(
+            $this->tester->grabService(EntityManager::class),
+            new NullEventBus(),
+        );
     }
 
     /**

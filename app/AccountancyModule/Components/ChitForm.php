@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\AccountancyModule\Components;
 
 use App\Forms\BaseForm;
-use eGen\MessageBus\Bus\CommandBus;
-use eGen\MessageBus\Bus\QueryBus;
 use InvalidArgumentException;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
@@ -26,6 +24,8 @@ use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use Model\Cashbook\ReadModel\Queries\ChitQuery;
 use Model\Common\ReadModel\Queries\MemberNamesQuery;
+use Model\Common\Services\CommandBus;
+use Model\Common\Services\QueryBus;
 use Model\Common\UnitId;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;

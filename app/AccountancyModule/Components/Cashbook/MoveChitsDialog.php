@@ -6,8 +6,6 @@ namespace App\AccountancyModule\Components\Cashbook;
 
 use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
-use eGen\MessageBus\Bus\CommandBus;
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Auth\IAuthorizator;
 use Model\Auth\Resources\Camp as CampResource;
 use Model\Auth\Resources\Event as EventResource;
@@ -18,6 +16,8 @@ use Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
+use Model\Common\Services\CommandBus;
+use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\Cashbook;
 use Model\Event\Camp;
 use Model\Event\Event;

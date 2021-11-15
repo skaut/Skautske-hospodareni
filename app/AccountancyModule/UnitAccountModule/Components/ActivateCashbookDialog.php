@@ -6,11 +6,11 @@ namespace App\AccountancyModule\UnitAccountModule\Components;
 
 use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
-use eGen\MessageBus\Bus\CommandBus;
-use eGen\MessageBus\Bus\QueryBus;
 use Model\Cashbook\Commands\Unit\ActivateCashbook;
 use Model\Cashbook\ReadModel\Queries\ActiveUnitCashbookQuery;
 use Model\Cashbook\ReadModel\Queries\UnitCashbookListQuery;
+use Model\Common\Services\CommandBus;
+use Model\Common\Services\QueryBus;
 use Model\Common\UnitId;
 use Model\DTO\Cashbook\UnitCashbook;
 use Nette\Utils\ArrayHash;
