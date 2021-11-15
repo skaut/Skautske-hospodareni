@@ -34,7 +34,7 @@ final class EventSubscriber implements MessageSubscriberInterface
         ];
     }
 
-    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     public function handleOpened(EventWasOpened $event): void
     {
         $user = $this->userService->getUserDetail();

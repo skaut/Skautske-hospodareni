@@ -26,7 +26,7 @@ final class MemberEmailRepository implements IMemberEmailRepository
     /**
      * @return array<string, string>
      */
-    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     public function findByMember(int $memberId): array
     {
         try {

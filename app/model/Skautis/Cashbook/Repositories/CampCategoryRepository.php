@@ -33,7 +33,7 @@ final class CampCategoryRepository implements ICampCategoryRepository
     /**
      * @return CampCategory[]
      */
-    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     public function findForCamp(int $campId): array
     {
         $skautisCategories = $this->eventWebService->EventCampStatementAll([
@@ -67,7 +67,7 @@ final class CampCategoryRepository implements ICampCategoryRepository
         return $categories;
     }
 
-    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     private function getParticipantType(stdClass $category): ?ParticipantType
     {
         $categoryId = $category->ID_EventCampStatementType ?? null;

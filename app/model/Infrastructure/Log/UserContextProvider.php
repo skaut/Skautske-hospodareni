@@ -25,7 +25,7 @@ final class UserContextProvider
     /**
      * @return array<string, mixed>
      */
-    // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     public function getUserData(): ?array
     {
         $identity = $this->user->getIdentity();

@@ -16,7 +16,7 @@ use function is_array;
 use function is_string;
 use function property_exists;
 
-// phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+// phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
 final class CampFactory
 {
