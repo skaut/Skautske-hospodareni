@@ -3,12 +3,8 @@ parameters:
         # Errors related mostly to usage of assert($x instanceof A || $x === null) and similar asserts
         - '~Unreachable statement - code above always terminates.~'
 
-        # Incompatibility with current PHPStan
-        - '~Return type \(array\<string, mixed\>\) of method Model\\Infrastructure\\Log\\Monolog\\UserContextProcessor\:\:__invoke\(\) should be compatible with return type \(Monolog\\Processor\\Record\) of method Monolog\\Processor\\ProcessorInterface\:\:__invoke\(\)~'
-
-includes:
-    - vendor/phpstan/phpstan-nette/extension.neon
-    - vendor/phpstan/phpstan-doctrine/extension.neon
+    doctrine:
+        objectManagerLoader: tests/object-manager.php
 
 services:
 	- class: CodeQuality\ObjectIdentityComparisonRule
@@ -22,7 +18,7 @@ services:
 
 	- class: CodeQuality\QueryBusDynamicReturnTypeProvider
 	  arguments:
-	      - %autoload_directories%
+	      - [%rootDir%/../../../app]
 	      - %rootDir%/../../../temp
 	      - '~^.*QueryHandlers\\.*Handler$~'
 

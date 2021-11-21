@@ -53,7 +53,9 @@ class CashbookPresenter extends BasePresenter
         $finalBalance     = $this->queryBus->handle(new FinalCashBalanceQuery($this->getCashbookId()));
         $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId()));
 
-        assert(is_float($incomeBalance) && $finalBalance instanceof Money && $finalRealBalance instanceof Money);
+        assert(is_float($incomeBalance));
+        assert($finalBalance instanceof Money);
+        assert($finalRealBalance instanceof Money);
 
         $this->template->setParameters([
             'isCashbookEmpty' => $this->isCashbookEmpty(),

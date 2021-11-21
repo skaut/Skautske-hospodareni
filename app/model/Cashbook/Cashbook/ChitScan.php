@@ -24,7 +24,10 @@ class ChitScan
      */
     private int $id;
 
-    /** @ORM\ManyToOne(targetEntity=Chit::class, inversedBy="scans") */
+    /**
+     * @ORM\ManyToOne(targetEntity=Chit::class, inversedBy="scans")
+     * @ORM\JoinColumn(nullable=false)
+     */
     private Chit $chit;
 
     /** @ORM\Column(type="file_path") */

@@ -26,6 +26,7 @@ class Unit
      * @internal for mapping only
      *
      * @ORM\ManyToOne(targetEntity=Group::class, inversedBy="units")
+     * @ORM\JoinColumn(nullable=false)
      */
     private Group $group;
 

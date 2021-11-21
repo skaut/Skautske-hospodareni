@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Excel\Builders;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Operation;
@@ -22,7 +23,6 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 use function array_map;
 use function array_merge;
-use function array_values;
 use function assert;
 use function count;
 use function explode;
@@ -189,9 +189,11 @@ class CashbookWithCategoriesBuilder
             return $category->getOperationType()->equalsValue(Operation::INCOME);
         });
 
-        return array_map(function (ArrayCollection $categories): array {
-            return array_values($categories->toArray()); // partition keeps original keys
-        }, $categoriesByOperation);
+        // partition keeps original keys
+        return array_map(
+            fn (Collection $categories): array => $categories->getValues(),
+            $categoriesByOperation,
+        );
     }
 
     private function addColumnSum(int $column, int $resultRow, int $firstRow): void

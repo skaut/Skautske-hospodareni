@@ -25,7 +25,10 @@ class RoadworthyScan
      */
     private int $id;
 
-    /** @ORM\ManyToOne(targetEntity=Vehicle::class, inversedBy="roadworthyScans") */
+    /**
+     * @ORM\ManyToOne(targetEntity=Vehicle::class, inversedBy="roadworthyScans")
+     * @ORM\JoinColumn(nullable=false)
+     */
     private Vehicle $vehicle;
 
     /** @ORM\Column(type="file_path") */

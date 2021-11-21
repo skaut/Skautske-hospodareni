@@ -23,7 +23,10 @@ class Email
      */
     private int $id;
 
-    /** @ORM\ManyToOne(targetEntity=Group::class, inversedBy="emails") */
+    /**
+     * @ORM\ManyToOne(targetEntity=Group::class, inversedBy="emails")
+     * @ORM\JoinColumn(nullable=false)
+     */
     private Group $group;
 
     /** @ORM\Column(type="boolean") */

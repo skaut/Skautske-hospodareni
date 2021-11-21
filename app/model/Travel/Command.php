@@ -17,6 +17,7 @@ use Model\Travel\Travel\TransportType;
 use Model\Utils\MoneyFactory;
 use Money\Money;
 
+use function array_filter;
 use function array_reduce;
 use function array_sum;
 use function array_unique;
@@ -48,7 +49,7 @@ class Command
     /** @ORM\Column(type="string", length=64) */
     private string $purpose;
 
-    /** @ORM\Column(type="string", length=64, nullable=true) */
+    /** @ORM\Column(type="string", length=64) */
     private string $place;
 
     /** @ORM\Column(type="string", length=64) */
@@ -255,9 +256,10 @@ class Command
 
     private function getTransportPrice(): Money
     {
-        $prices = $this->travels->filter(function (Travel $t) {
-            return $t instanceof TransportTravel;
-        })->toArray();
+        $prices = array_filter(
+            $this->travels->toArray(),
+            fn (Travel $t) => $t instanceof TransportTravel,
+        );
 
         return array_reduce(
             $prices,
