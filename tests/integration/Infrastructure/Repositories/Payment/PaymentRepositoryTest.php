@@ -27,7 +27,6 @@ class PaymentRepositoryTest extends IntegrationTest
     private const PAYMENT_ROW = [
         'group_id' => 1,
         'name' => 'Test',
-        'email' => 'frantisekmasa1@gmail.com',
         'amount' => 200.0,
         'due_date' => '2017-10-29',
         'note' => '',
@@ -74,7 +73,6 @@ class PaymentRepositoryTest extends IntegrationTest
 
         $this->assertSame($data['group_id'], $payment->getGroupId());
         $this->assertSame($data['name'], $payment->getName());
-        $this->assertSame($data['email'], $payment->getEmail());
         $this->assertSame($data['amount'], $payment->getAmount());
         $this->assertEquals(new Date($data['due_date']), $payment->getDueDate());
         $this->assertTrue($payment->getState()->equalsValue($data['state']), "Payment is not should be 'preparing'");
@@ -162,7 +160,6 @@ class PaymentRepositoryTest extends IntegrationTest
             return [
                 'group_id' => $payment[0],
                 'name' => 'Test',
-                'email' => 'frantisekmasa1@gmail.com',
                 'amount' => $payment[1],
                 'due_date' => '2017-10-29',
                 'note' => '',
@@ -210,7 +207,6 @@ class PaymentRepositoryTest extends IntegrationTest
         $this->tester->haveInDatabase(self::TABLE, [
             'group_id' => 1,
             'name' => 'Test',
-            'email' => 'frantisekmasa1@gmail.com',
             'amount' => 120,
             'due_date' => '2017-10-29',
             'note' => '',

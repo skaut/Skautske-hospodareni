@@ -46,13 +46,6 @@ class Payment extends Aggregate
     /** @ORM\Column(type="string", length=64) */
     private string $name;
 
-   /**
-    * @deprecated - use email recipients
-    *
-    * @ORM\Column(type="text", nullable=true)
-    */
-    private ?string $email;
-
     /**
      * @ORM\OneToMany(targetEntity=EmailRecipient::class, mappedBy="payment", cascade={"persist", "remove"}, orphanRemoval=true)
      *
@@ -227,11 +220,6 @@ class Payment extends Aggregate
     public function getName(): string
     {
         return $this->name;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
     }
 
     /**
