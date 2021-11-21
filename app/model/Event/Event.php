@@ -54,22 +54,16 @@ class Event implements ISkautisEvent
 
     private int $typeId;
 
-    /** @var ?bool */
     private ?bool $statisticAutoComputed = null;
 
-    /** @var ?int */
     private ?int $realCount = null;
 
-    /** @var ?int */
     private ?int $realChildDays = null;
 
-    /** @var ?int */
     private ?int $realPersonDays = null;
 
-    /** @var ?string */
     private ?string $personClosed = null;
 
-    /** @var ?Date */
     private ?Date $dateClosed = null;
 
     private ?string $unitEducativeName = null;

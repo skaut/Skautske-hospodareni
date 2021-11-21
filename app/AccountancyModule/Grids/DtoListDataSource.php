@@ -22,7 +22,6 @@ final class DtoListDataSource implements IDataSource
 
     /**
      * @param array<object> $data
-     *
      * @phpstan-param array<T> $data
      */
     public function __construct(array $data)
@@ -64,7 +63,6 @@ final class DtoListDataSource implements IDataSource
 
     /**
      * @return object[]
-     *
      * @phpstan-return T[]
      */
     public function getData(): array
