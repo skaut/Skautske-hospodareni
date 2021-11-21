@@ -40,7 +40,7 @@ class Chit
 
     /**
      * @ORM\ManyToOne(targetEntity=Cashbook::class, inversedBy="chits")
-     * @ORM\JoinColumn(name="eventId")
+     * @ORM\JoinColumn(name="eventId", nullable=false)
      */
     private Cashbook $cashbook;
 

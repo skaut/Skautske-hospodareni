@@ -48,7 +48,7 @@ class Command
     /** @ORM\Column(type="string", length=64) */
     private string $purpose;
 
-    /** @ORM\Column(type="string", length=64, nullable=true) */
+    /** @ORM\Column(type="string", length=64) */
     private string $place;
 
     /** @ORM\Column(type="string", length=64) */

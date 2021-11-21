@@ -26,7 +26,7 @@ class Category
      */
     private int $id;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    /** @ORM\Column(type="integer") */
     private int $unitId;
 
     /** @ORM\Column(type="string", length=64) */
@@ -52,7 +52,7 @@ class Category
      * @ORM\ManyToOne(targetEntity="Category", inversedBy="children")
      * @ORM\JoinColumn(name="parentId", referencedColumnName="id")
      */
-    private Category $parent;
+    private ?Category $parent = null;
 
     /** @ORM\Column(type="float", options={"default"=0}) */
     private float $value;

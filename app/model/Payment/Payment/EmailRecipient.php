@@ -21,7 +21,10 @@ class EmailRecipient
      */
     private int $id;
 
-    /** @ORM\ManyToOne(targetEntity=Payment::class, inversedBy="emailRecipients") */
+    /**
+     * @ORM\ManyToOne(targetEntity=Payment::class, inversedBy="emailRecipients")
+     * @ORM\JoinColumn(nullable=false)
+     */
     private Payment $payment;
 
     /** @ORM\Column(type="email_address") */
