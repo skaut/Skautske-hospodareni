@@ -11,9 +11,10 @@ use Consistence\Enum\Enum;
  */
 class ObjectType extends Enum
 {
-    public const CAMP  = 'camp';
-    public const EVENT = 'general';
-    public const UNIT  = 'unit';
+    public const CAMP      = 'camp';
+    public const EVENT     = 'general';
+    public const UNIT      = 'unit';
+    public const EDUCATION = 'education';
 
     public function toString(): string
     {

@@ -65,6 +65,9 @@ dbal:
             skautis_event_id:
                 class: Model\Infrastructure\Types\SkautisEventIdType
                 commented: true
+            skautis_education_id:
+                class: Model\Infrastructure\Types\SkautisEducationIdType
+                commented: true
             skautis_camp_id:
                 class: Model\Infrastructure\Types\SkautisCampIdType
                 commented: true

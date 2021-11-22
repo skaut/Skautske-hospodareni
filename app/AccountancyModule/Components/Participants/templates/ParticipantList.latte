@@ -24,7 +24,7 @@ $showUnits bool - zobrazovat číslo jednotky
 
                     {formContainer edit}
                         <div class="modal-body">
-                            <div class="form-group">
+                            <div class="form-group" n:if="$isAllowDaysUpdate">
                                 <label n:name="days"/>
                                 <input n:name="days" class="form-control">
                             </div>
@@ -111,7 +111,7 @@ $showUnits bool - zobrazovat číslo jednotky
                     </th>
                     <th data-visible-if-not-checked=".participantCheckboxInput, .allParticipantCheckbox">Příjmení a jméno ({= count($participants)})</th>
                     <th n:if="$showUnits" data-visible-if-not-checked=".participantCheckboxInput, .allParticipantCheckbox">Jednotka</th>
-                    <th data-visible-if-not-checked=".participantCheckboxInput, .allParticipantCheckbox">Dnů</th>
+                    <th n:if="$isAllowDaysUpdate" data-visible-if-not-checked=".participantCheckboxInput, .allParticipantCheckbox">Dnů</th>
                     <th data-visible-if-not-checked=".participantCheckboxInput, .allParticipantCheckbox">Částka</th>
                     <th n:if="$isAllowRepayment" data-visible-if-not-checked=".participantCheckboxInput, .allParticipantCheckbox">Vratka</th>
                     <th n:if="$isAllowIsAccount" data-visible-if-not-checked=".participantCheckboxInput, .allParticipantCheckbox">Na účet?</th>
@@ -145,7 +145,7 @@ $showUnits bool - zobrazovat číslo jednotky
                         </td>
                         <td><label for="massParticipants-{$p->id}">{$p->displayName}</label></td>
                         <td n:if="$showUnits">{ifset $p->unitRegistrationNumber}{$p->unitRegistrationNumber}{/ifset}</td>
-                        <td class="text-right">{$p->days}</td>
+                        <td class="text-right" n:if="$isAllowDaysUpdate">{$p->days}</td>
                         <td class="text-right">{$p->payment|price:false}{php $totalPayment += $p->payment}</td>
                         <td class="text-right" n:if="$isAllowRepayment">{$p->repayment|price:false}{php $totalRepayment += $p->repayment}</td>
                         <td n:if="$isAllowIsAccount">{$p->onAccount === 'Y' ? 'Ano'}</td>
@@ -161,7 +161,7 @@ $showUnits bool - zobrazovat číslo jednotky
                     </tr>
                     <tr>
                         {var $total = $totalPayment - $totalRepayment}
-                        {var $colspanHeader = 2+($isAllowAnyAction ?1:0)+($showUnits?1:0)}
+                        {var $colspanHeader = 1+($isAllowAnyAction ?1:0)+($showUnits?1:0)+($isAllowDaysUpdate?1:0)}
                         <td colspan="{$colspanHeader}" class="b">Celkem: {= count($participants)} osob</td>
                         {if $isAllowRepayment}
                             <td class="text-right" id="payment-total">{$totalPayment|price:false}</td>

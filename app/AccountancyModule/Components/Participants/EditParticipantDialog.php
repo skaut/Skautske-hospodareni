@@ -28,14 +28,17 @@ final class EditParticipantDialog extends Dialog
 
     private bool $isRepaymentAllowed;
 
+    private bool $isAllowedDaysUpdate;
+
     /**
      * @param array<int, Participant> $participants
      */
-    public function __construct(array $participants, bool $isAccountAllowed, bool $isRepaymentAllowed)
+    public function __construct(array $participants, bool $iAllowedDaysUpdate, bool $isAccountAllowed, bool $isRepaymentAllowed)
     {
-        $this->participants       = $participants;
-        $this->isAccountAllowed   = $isAccountAllowed;
-        $this->isRepaymentAllowed = $isRepaymentAllowed;
+        $this->participants        = $participants;
+        $this->isAccountAllowed    = $isAccountAllowed;
+        $this->isRepaymentAllowed  = $isRepaymentAllowed;
+        $this->isAllowedDaysUpdate = $iAllowedDaysUpdate;
     }
 
     public function editParticipant(int $participantId): void
@@ -59,10 +62,12 @@ final class EditParticipantDialog extends Dialog
 
         $form = new BaseForm();
 
-        $form->addInteger('days', 'Počet dní')
-            ->setRequired('Musíte vyplnit počet dní')
-            ->addRule(BaseForm::MIN, 'Minimální počet dní je %d', 1)
-            ->setDefaultValue($participant->getDays());
+        if ($this->isAllowedDaysUpdate) {
+            $form->addInteger('days', 'Počet dní')
+                ->setRequired('Musíte vyplnit počet dní')
+                ->addRule(BaseForm::MIN, 'Minimální počet dní je %d', 1)
+                ->setDefaultValue($participant->getDays());
+        }
 
         $form->addText('payment', 'Částka')
             ->setRequired('Musíte vyplnit částku')
@@ -91,7 +96,7 @@ final class EditParticipantDialog extends Dialog
                 $changes[UpdateParticipant::FIELD_PAYMENT] = $values['payment'];
             }
 
-            if ($values['days'] !== $participant->getDays()) {
+            if ($this->isAllowedDaysUpdate && $values['days'] !== $participant->getDays()) {
                 $changes[UpdateParticipant::FIELD_DAYS] = $values['days'];
             }
 

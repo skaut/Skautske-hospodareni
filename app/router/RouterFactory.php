@@ -62,6 +62,7 @@ class RouterFactory
 
         $this->createCampRoutes($accountancy);
         $this->createEventRoutes($accountancy);
+        $this->createEducationRoutes($accountancy);
         $this->createTravelRoutes($accountancy);
         $this->createUnitAccountRoutes($accountancy);
         $this->createPaymentRoutes($accountancy);
@@ -108,6 +109,28 @@ class RouterFactory
                 [
                     'presenter' => [
                         Route::VALUE => 'Event',
+                        Route::FILTER_TABLE => [
+                            'ucastnici' => 'Participant',
+                            'kniha' => 'Cashbook',
+                        ],
+                    ],
+                    'action' => 'default',
+                ]
+            )
+            ->addRoute('<presenter>[/<action>]', ['action' => 'default']);
+    }
+
+    private function createEducationRoutes(RouteList $parent): void
+    {
+        $parent
+            ->withModule('Education')
+            ->addRoute('vzdelavacky', 'Default:default')
+            ->withPath('vzdelavacky')
+            ->addRoute(
+                '<aid [0-9]+>/<presenter>[/<action>]',
+                [
+                    'presenter' => [
+                        Route::VALUE => 'Education',
                         Route::FILTER_TABLE => [
                             'ucastnici' => 'Participant',
                             'kniha' => 'Cashbook',

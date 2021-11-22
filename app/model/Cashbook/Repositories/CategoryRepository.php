@@ -18,18 +18,22 @@ class CategoryRepository
 {
     private ICampCategoryRepository $campCategories;
 
+    private IEducationCategoryRepository $educationCategories;
+
     private IStaticCategoryRepository $staticCategories;
 
     private QueryBus $queryBus;
 
     public function __construct(
         ICampCategoryRepository $campCategories,
+        IEducationCategoryRepository $educationCategories,
         IStaticCategoryRepository $staticCategories,
         QueryBus $queryBus
     ) {
-        $this->campCategories   = $campCategories;
-        $this->staticCategories = $staticCategories;
-        $this->queryBus         = $queryBus;
+        $this->campCategories      = $campCategories;
+        $this->educationCategories = $educationCategories;
+        $this->staticCategories    = $staticCategories;
+        $this->queryBus            = $queryBus;
     }
 
     /**
@@ -40,14 +44,21 @@ class CategoryRepository
         $skautisType = $type->getSkautisObjectType();
         $categories  = $this->staticCategories->findByObjectType($skautisType);
 
-        if (! $skautisType->equalsValue(CashbookType::CAMP)) {
-            return $categories;
+        if ($skautisType->equalsValue(CashbookType::CAMP)) {
+            $campId         = $this->queryBus->handle(new SkautisIdQuery($cashbookId));
+            $campCategories = $this->campCategories->findForCamp($campId);
+
+            return array_merge($categories, $campCategories);
         }
 
-        $campId         = $this->queryBus->handle(new SkautisIdQuery($cashbookId));
-        $campCategories = $this->campCategories->findForCamp($campId);
+        if ($skautisType->equalsValue(CashbookType::EDUCATION)) {
+            $educationId         = $this->queryBus->handle(new SkautisIdQuery($cashbookId));
+            $educationCategories = $this->educationCategories->findForEducation($educationId);
 
-        return array_merge($categories, $campCategories);
+            return array_merge($categories, $educationCategories);
+        }
+
+        return $categories;
     }
 
     /**

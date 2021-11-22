@@ -10,6 +10,7 @@ use Model\Cashbook\ObjectType;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
 use Model\Cashbook\Repositories\ICampRepository;
 use Model\Cashbook\Repositories\ICashbookRepository;
+use Model\Cashbook\Repositories\IEducationRepository;
 use Model\Cashbook\Repositories\IEventRepository;
 use Model\Cashbook\Repositories\IUnitRepository;
 use Model\Common\ShouldNotHappen;
@@ -24,16 +25,20 @@ class SkautisIdQueryHandler
 
     private ICampRepository $campRepository;
 
+    private IEducationRepository $educationRepository;
+
     public function __construct(
         ICashbookRepository $cashbooks,
         IUnitRepository $units,
         IEventRepository $eventRepository,
-        ICampRepository $campRepository
+        ICampRepository $campRepository,
+        IEducationRepository $educationRepository
     ) {
-        $this->cashbooks       = $cashbooks;
-        $this->units           = $units;
-        $this->eventRepository = $eventRepository;
-        $this->campRepository  = $campRepository;
+        $this->cashbooks           = $cashbooks;
+        $this->units               = $units;
+        $this->eventRepository     = $eventRepository;
+        $this->campRepository      = $campRepository;
+        $this->educationRepository = $educationRepository;
     }
 
     /**
@@ -55,6 +60,10 @@ class SkautisIdQueryHandler
 
         if ($objectType->equalsValue(ObjectType::CAMP)) {
             return $this->campRepository->findByCashbookId($query->getCashbookId())->getSkautisId()->toInt();
+        }
+
+        if ($objectType->equalsValue(ObjectType::EDUCATION)) {
+            return $this->educationRepository->findByCashbookId($query->getCashbookId())->getSkautisId()->toInt();
         }
 
         throw new ShouldNotHappen();

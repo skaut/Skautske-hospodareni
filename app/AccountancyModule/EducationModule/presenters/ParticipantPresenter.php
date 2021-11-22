@@ -2,20 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\AccountancyModule\EventModule;
+namespace App\AccountancyModule\EducationModule;
 
 use App\AccountancyModule\Components\Participants\ParticipantList;
-use App\AccountancyModule\Components\Participants\PersonPicker;
 use App\AccountancyModule\ExcelResponse;
 use App\AccountancyModule\Factories\Participants\IParticipantListFactory;
-use App\AccountancyModule\Factories\Participants\IPersonPickerFactory;
-use Assert\Assertion;
+use Model\Auth\Resources\Education;
 use Model\Auth\Resources\Event;
-use Model\Cashbook\Commands\Cashbook\AddEventParticipant;
-use Model\Cashbook\Commands\Cashbook\CreateEventParticipant;
-use Model\Cashbook\Commands\Cashbook\RemoveEventParticipant;
-use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
-use Model\DTO\Participant\NonMemberParticipant;
+use Model\Cashbook\ReadModel\Queries\EducationParticipantListQuery;
 use Model\DTO\Participant\Participant;
 use Model\DTO\Participant\UpdateParticipant;
 use Model\ExcelService;
@@ -41,13 +35,9 @@ class ParticipantPresenter extends BasePresenter
 
     private PdfRenderer $pdf;
 
-    private IPersonPickerFactory $personPickerFactory;
-
     private IParticipantListFactory $participantListFactory;
 
     private bool $isAllowParticipantUpdate;
-
-    private bool $isAllowParticipantDelete;
 
     private ParticipantService $participants;
 
@@ -55,7 +45,6 @@ class ParticipantPresenter extends BasePresenter
         ExportService $export,
         ExcelService $excel,
         PdfRenderer $pdf,
-        IPersonPickerFactory $personPickerFactory,
         IParticipantListFactory $participantListFactory,
         ParticipantService $participants
     ) {
@@ -63,7 +52,6 @@ class ParticipantPresenter extends BasePresenter
         $this->exportService          = $export;
         $this->excelService           = $excel;
         $this->pdf                    = $pdf;
-        $this->personPickerFactory    = $personPickerFactory;
         $this->participantListFactory = $participantListFactory;
         $this->participants           = $participants;
     }
@@ -75,8 +63,7 @@ class ParticipantPresenter extends BasePresenter
         $isDraft      = $this->event->getState() === 'draft';
         $authorizator = $this->authorizator;
 
-        $this->isAllowParticipantDelete = $isDraft && $authorizator->isAllowed(Event::REMOVE_PARTICIPANT, $this->aid);
-        $this->canAddParticipants       = $isDraft && $authorizator->isAllowed(Event::UPDATE_PARTICIPANT, $this->aid);
+        $this->canAddParticipants       = $isDraft && $authorizator->isAllowed(Education::UPDATE_PARTICIPANT, $this->aid);
         $this->isAllowParticipantUpdate = $this->canAddParticipants;
 
         $this->template->setParameters([
@@ -86,11 +73,9 @@ class ParticipantPresenter extends BasePresenter
 
     public function renderDefault(int $aid): void
     {
-        $this->setLayout('layout.new');
-
         if (! $this->authorizator->isAllowed(Event::ACCESS_PARTICIPANTS, $this->aid)) {
             $this->flashMessage('Nemáte právo prohlížeč účastníky akce', 'danger');
-            $this->redirect('Event:');
+            $this->redirect('Education:');
         }
 
         if (! $this->isAjax()) {
@@ -113,52 +98,27 @@ class ParticipantPresenter extends BasePresenter
         }
     }
 
-    protected function createComponentPersonPicker(): PersonPicker
-    {
-        Assertion::true($this->canAddParticipants);
-
-        $picker = $this->personPickerFactory->create($this->getCurrentUnitId(), $this->eventParticipants());
-
-        $picker->onSelect[] = function (array $personIds): void {
-            foreach ($personIds as $personId) {
-                $this->commandBus->handle(new AddEventParticipant($this->event->getId(), $personId));
-            }
-        };
-
-        $picker->onNonMemberAdd[] = function (NonMemberParticipant $participant): void {
-            $this->commandBus->handle(new CreateEventParticipant($this->event->getId(), $participant));
-        };
-
-        return $picker;
-    }
-
     protected function createComponentParticipantList(): ParticipantList
     {
         $control = $this->participantListFactory->create(
             $this->aid,
             $this->eventParticipants(),
+            false,
             true,
-            false,
-            false,
+            true,
             $this->isAllowParticipantUpdate,
-            $this->isAllowParticipantDelete
+            false
         );
 
         $control->onUpdate[] = function (array $updates): void {
             foreach ($updates as $u) {
                 assert($u instanceof UpdateParticipant);
-                if (! in_array($u->getField(), UpdateParticipant::getEventFields())) {
+                if (! in_array($u->getField(), UpdateParticipant::getEducationFields())) {
                     $this->flashMessage(sprintf('Nelze upravit pole: %s', $u->getField()), 'warning');
                     $this->redirect('this');
                 }
 
-                $this->participants->update(EventType::GENERAL(), $u);
-            }
-        };
-
-        $control->onRemove[] = function (array $participantIds): void {
-            foreach ($participantIds as $participantId) {
-                $this->commandBus->handle(new RemoveEventParticipant($participantId));
+                $this->participants->update(EventType::EDUCATION(), $u);
             }
         };
 
@@ -168,7 +128,7 @@ class ParticipantPresenter extends BasePresenter
     public function actionExport(int $aid): void
     {
         try {
-            $template = $this->exportService->getParticipants($aid, EventType::GENERAL);
+            $template = $this->exportService->getParticipants($aid, EventType::EDUCATION);
             $this->pdf->render($template, 'seznam-ucastniku.pdf', false);
         } catch (PermissionException $ex) {
             $this->flashMessage('Nemáte oprávnění k záznamu osoby! (' . $ex->getMessage() . ')', 'danger');
@@ -183,6 +143,6 @@ class ParticipantPresenter extends BasePresenter
      */
     private function eventParticipants(): array
     {
-        return $this->queryBus->handle(new EventParticipantListQuery($this->event->getId()));
+        return $this->queryBus->handle(new EducationParticipantListQuery($this->event->getId()));
     }
 }

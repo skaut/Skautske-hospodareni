@@ -1,0 +1,22 @@
+{block #title}{$event->getDisplayName()} - základní informace{/block}
+
+    {block #content}
+
+{include ../header.latte}
+
+<div class="row d-flex align-items-center">
+    <div class="col-lg-7 text-center text-lg-left">
+        <span class="text-nowrap"><i class="fas fa-calendar"></i> {[$event->getStartDate(), $event->getEndDate()]|dateRange}</span>
+    </div>
+    <div class="col-lg-5 text-lg-right text-center mt-lg-0 d-flex d-md-block flex-column mt-1">
+        <div class="btn-group mr-md-3 mt-2">
+            <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+                <i class="fas fa-print"></i> Exportovat
+            </button>
+            <div class="dropdown-menu">
+                <a n:href="Education:report $aid" target="_blank" class="dropdown-item">Záverečná zpráva</a>
+            </div>
+        </div>
+    </div>
+</div>

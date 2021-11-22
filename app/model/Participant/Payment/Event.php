@@ -15,7 +15,7 @@ final class Event
     private int $id;
 
     /**
-     * @ORM\Column(type="string_enum", length=7)
+     * @ORM\Column(type="string_enum", length=9)
      *
      * @var EventType
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint

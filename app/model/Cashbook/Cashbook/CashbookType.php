@@ -19,12 +19,14 @@ class CashbookType extends Enum
     public const OFFICIAL_UNIT = 'official_unit';
     public const TROOP         = 'troop';
     public const CAMP          = 'camp';
+    public const EDUCATION     = 'education';
 
     private const TRANSFER_FROM_CATEGORY_IDS = [
         self::OFFICIAL_UNIT => 9, // "Převod z pokladny střediska"
         self::TROOP => 13, // "Převod z odd. pokladny"
         self::EVENT => 15, // "Převod z akce"
         self::CAMP => 15, // "Převod z akce"
+        self::EDUCATION => 15, // "Převod z akce"
     ];
 
     private const TRANSFER_TO_CATEGORY_IDS = [
@@ -32,6 +34,7 @@ class CashbookType extends Enum
         self::TROOP => 14, // "Převod do odd. pokladny"
         self::EVENT => 16, // "Převod do akce"
         self::CAMP => 16, // "Převod do akce"
+        self::EDUCATION => 16, // "Převod do akce"
     ];
 
     public function getSkautisObjectType(): ObjectType

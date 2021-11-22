@@ -16,6 +16,7 @@ use Model\Cashbook\ReadModel\Queries\CashbookOfficialUnitQuery;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use Model\Cashbook\ReadModel\Queries\EducationCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantStatisticsQuery;
@@ -29,10 +30,13 @@ use Model\Event\Camp;
 use Model\Event\Event;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\ReadModel\Queries\CampQuery;
+use Model\Event\ReadModel\Queries\EducationFunctions;
+use Model\Event\ReadModel\Queries\EducationQuery;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\ReadModel\Queries\EventQuery;
 use Model\Event\Repositories\IEventRepository;
 use Model\Event\SkautisCampId;
+use Model\Event\SkautisEducationId;
 use Model\Event\SkautisEventId;
 use Model\Participant\Payment\EventType;
 use Model\Services\TemplateFactory;
@@ -258,6 +262,55 @@ class ExportService
             'virtualTotalExpense' => $total['virtualExpense'],
             'functions' => $this->queryBus->handle(new CampFunctions(new SkautisCampId($skautisCampId))),
             'areTotalsConsistentWithSkautis' => $areTotalsConsistentWithSkautis,
+            'finalRealBalance' => $finalRealBalance,
+        ]);
+    }
+
+    public function getEducationReport(SkautisEducationId $educationId): string
+    {
+        $cashbookId = $this->queryBus->handle(new EducationCashbookIdQuery($educationId));
+        $categories = $this->queryBus->handle(new CategoriesSummaryQuery($cashbookId));
+
+        $total = [
+            'income'  => MoneyFactory::zero(),
+            'expense' => MoneyFactory::zero(),
+            'virtualIncome'  => MoneyFactory::zero(),
+            'virtualExpense' => MoneyFactory::zero(),
+        ];
+
+        $incomeCategories  = [self::CATEGORY_REAL => [], self::CATEGORY_VIRTUAL => []];
+        $expenseCategories = [self::CATEGORY_REAL => [], self::CATEGORY_VIRTUAL => []];
+
+        foreach ($categories as $category) {
+            assert($category instanceof CategorySummary);
+
+            $virtualCategory = $category->isVirtual() ? self::CATEGORY_VIRTUAL : self::CATEGORY_REAL;
+
+            if ($category->isIncome()) {
+                $key                                  = $category->isVirtual() ? 'virtualIncome' : 'income';
+                $total[$key]                          = $total[$key]->add($category->getTotal());
+                $incomeCategories[$virtualCategory][] = $category;
+            } else {
+                $key                                   = $category->isVirtual() ? 'virtualExpense' : 'expense';
+                $total[$key]                           = $total[$key]->add($category->getTotal());
+                $expenseCategories[$virtualCategory][] = $category;
+            }
+        }
+
+        $finalRealBalance = MoneyFactory::toFloat($this->queryBus->handle(new FinalRealBalanceQuery($cashbookId)));
+        assert(is_float($finalRealBalance));
+
+        return $this->templateFactory->create(__DIR__ . '/templates/educationReport.latte', [
+            'education' => $this->queryBus->handle(new EducationQuery($educationId)),
+            'incomeCategories' => $incomeCategories[self::CATEGORY_REAL],
+            'expenseCategories' => $expenseCategories[self::CATEGORY_REAL],
+            'totalIncome' => $total['income'],
+            'totalExpense' => $total['expense'],
+            'virtualIncomeCategories' => $incomeCategories[self::CATEGORY_VIRTUAL],
+            'virtualExpenseCategories' => $expenseCategories[self::CATEGORY_VIRTUAL],
+            'virtualTotalIncome' => $total['virtualIncome'],
+            'virtualTotalExpense' => $total['virtualExpense'],
+            'functions' => $this->queryBus->handle(new EducationFunctions($educationId)),
             'finalRealBalance' => $finalRealBalance,
         ]);
     }

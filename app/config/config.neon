@@ -179,7 +179,9 @@ services:
     - Model\Skautis\Common\Repositories\UserRepository(@skautis.webservice.user, @skautis.org)
     - Model\Skautis\EventRepository(@skautis.event)
     - Model\Skautis\CampRepository(@skautis.cached.event)
+    - Model\Skautis\EducationRepository(@skautis.cached.event)
     - Model\Skautis\Cashbook\Repositories\CampCategoryRepository(@skautis.cached.event)
+    - Model\Skautis\Cashbook\Repositories\EducationCategoryRepository(@skautis.cached.grants)
     - Model\Infrastructure\Repositories\Mail\GoogleRepository
 
 
@@ -206,6 +208,7 @@ services:
     skautis.event: Model\Skautis\WebserviceFactory::create('event')
     skautis.webservice.user: Model\Skautis\WebserviceFactory::createCached('user')
     skautis.cached.event: Model\Skautis\WebserviceFactory::createCached('event')
+    skautis.cached.grants: Model\Skautis\WebserviceFactory::createCached('Grants')
 
     nette.latteFactory:
         setup:

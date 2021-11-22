@@ -149,6 +149,7 @@ class ParticipantPresenter extends BasePresenter
             $this->campParticipants(),
             true,
             true,
+            true,
             $this->isAllowParticipantUpdate,
             $this->isAllowParticipantDelete
         );
