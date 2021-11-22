@@ -16,7 +16,6 @@ final class GoogleRepositoryTest extends IntegrationTest
 {
     /**
      * @return string[]
-     *
      * @phpstan-return list<String>
      */
     protected function getTestedAggregateRoots(): array

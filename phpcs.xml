@@ -30,17 +30,4 @@
     <rule ref="PSR2.Methods.MethodDeclaration.Underscore">
         <exclude-pattern>/tests/*</exclude-pattern>
     </rule>
-
-
-    <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements">
-        <properties>
-            <property name="alwaysUsedPropertiesAnnotations" type="array">
-                <element value="@ORM\Column"/>
-                <element value="@ORM\ManyToOne"/>
-                <element value="@ORM\OneToMany"/>
-                <element value="@ORM\ManyToMany"/>
-                <element value="@ORM\Embedded"/>
-            </property>
-        </properties>
-    </rule>
 </ruleset>
