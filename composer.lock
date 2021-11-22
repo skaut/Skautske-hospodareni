@@ -438,16 +438,16 @@
         },
         {
             "name": "consistence/consistence",
-            "version": "2.0.1",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consistence/consistence.git",
-                "reference": "49786347a96696337591f14f26dabf46d1e69fd8"
+                "reference": "3b34fe58280107789f133c93784d56650d5cece1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consistence/consistence/zipball/49786347a96696337591f14f26dabf46d1e69fd8",
-                "reference": "49786347a96696337591f14f26dabf46d1e69fd8",
+                "url": "https://api.github.com/repos/consistence/consistence/zipball/3b34fe58280107789f133c93784d56650d5cece1",
+                "reference": "3b34fe58280107789f133c93784d56650d5cece1",
                 "shasum": ""
             },
             "require": {
@@ -492,7 +492,11 @@
                 "time",
                 "type"
             ],
-            "time": "2018-12-28T16:03:19+00:00"
+            "support": {
+                "issues": "https://github.com/consistence/consistence/issues",
+                "source": "https://github.com/consistence/consistence/tree/2.0.2"
+            },
+            "time": "2021-10-20T09:56:03+00:00"
         },
         {
             "name": "consistence/consistence-doctrine",
