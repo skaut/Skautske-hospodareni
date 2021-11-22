@@ -13,6 +13,7 @@ use Model\Common\Services\CommandBus;
 use Model\DTO\Payment\Payment;
 use Model\Payment\Commands\Payment\CreatePayment;
 use Model\Payment\Commands\Payment\UpdatePayment;
+use Model\Payment\InvalidVariableSymbol;
 use Model\PaymentService;
 use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
@@ -115,7 +116,12 @@ final class PaymentDialog extends Dialog
             $group = $this->paymentService->getGroup($this->groupId);
             Assertion::notNull($group);
 
-            $nextVS = $this->paymentService->getNextVS($this->groupId);
+            try {
+                $nextVS = $this->paymentService->getNextVS($this->groupId);
+            } catch (InvalidVariableSymbol $exception) {
+                $this->flashMessage('Nelze vygenerovat následující VS: \'' . $exception->getInvalidValue() . '\'', 'danger');
+                $nextVS = '';
+            }
 
             $form->setDefaults([
                 'amount' => $group->getDefaultAmount(),

@@ -26,6 +26,7 @@ use Model\Payment\Commands\Mailing\SendPaymentInfo;
 use Model\Payment\EmailNotSet;
 use Model\Payment\GroupNotFound;
 use Model\Payment\InvalidBankAccount;
+use Model\Payment\InvalidVariableSymbol;
 use Model\Payment\MailingService;
 use Model\Payment\Payment\State;
 use Model\Payment\PaymentClosed;
@@ -118,7 +119,12 @@ class PaymentPresenter extends BasePresenter
             $this['pairButton']->setGroups([$id]);
         }
 
-        $nextVS = $this->model->getNextVS($group->getId());
+        try {
+            $nextVS = $this->model->getNextVS($group->getId());
+        } catch (InvalidVariableSymbol $exception) {
+            $this->flashMessage('Nelze vygenerovat následující VS: \'' . $exception->getInvalidValue() . '\'', 'danger');
+            $nextVS = null;
+        }
 
         $payments = $this->getPaymentsForGroup($id);
 
@@ -270,16 +276,20 @@ class PaymentPresenter extends BasePresenter
     {
         $this->assertCanEditGroup();
 
-        $nextVS = $this->model->getNextVS($this->id);
+        try {
+            $nextVS = $this->model->getNextVS($this->id);
+            if ($nextVS === null) {
+                $this->flashMessage('Vyplňte VS libovolné platbě a další pak již budou dogenerovány způsobem +1.', 'warning');
+                $this->redirect('this');
+            }
 
-        if ($nextVS === null) {
-            $this->flashMessage('Vyplňte VS libovolné platbě a další pak již budou dogenerovány způsobem +1.', 'warning');
+            $numberOfUpdatedVS = $this->model->generateVs($this->id);
+            $this->flashMessage('Počet dogenerovaných VS: ' . $numberOfUpdatedVS, 'success');
+            $this->redirect('this');
+        } catch (InvalidVariableSymbol $exception) {
+            $this->flashMessage('Nelze vygenerovat následující VS: \'' . $exception->getInvalidValue() . '\'', 'danger');
             $this->redirect('this');
         }
-
-        $numberOfUpdatedVS = $this->model->generateVs($this->id);
-        $this->flashMessage('Počet dogenerovaných VS: ' . $numberOfUpdatedVS, 'success');
-        $this->redirect('this');
     }
 
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
