@@ -54,6 +54,7 @@ final class PaymentList extends BaseControl
             __DIR__ . '/templates/PaymentList.grid.latte',
             ['isEditable' => $this->isEditable],
         );
+        $grid->setColumnsHideable();
 
         $grid->addColumnText('name', 'Název/účel')
             ->setSortable()
@@ -78,10 +79,15 @@ final class PaymentList extends BaseControl
             ->setSortable();
 
         $grid->addColumnText('constantSymbol', 'KS')
-            ->setSortable();
+            ->setSortable()
+            ->setDefaultHide();
 
         $grid->addColumnDateTime('dueDate', 'Splatnost')
             ->setSortable();
+
+        $grid->addColumnDateTime('Note', 'Poznámka')
+            ->setSortable()
+            ->setDefaultHide();
 
         $grid->addColumnText('state', 'Stav')
             ->setSortable()
