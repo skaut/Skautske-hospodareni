@@ -22,6 +22,7 @@ class GridFactory
         'ublaboo_datagrid.reset_filter' => 'Zrušit filtry',
         'ublaboo_datagrid.group_actions' => 'Hromadné operace',
         'ublaboo_datagrid.show_all_columns' => 'Zobrazit všechny sloupce',
+        'ublaboo_datagrid.show_default_columns' => 'Zobrazit výchozí sloupce',
         'ublaboo_datagrid.hide_column' => 'Skrýt sloupec',
         'ublaboo_datagrid.action' => 'Akce',
         'ublaboo_datagrid.previous' => 'Předchozí',

@@ -37,12 +37,6 @@
     </div>
 {/block}
 
-{block header}
-    <thead>
-        {include #header-column-row}
-    </thead>
-{/block}
-
 {block col-actions}
     {if !$item->isClosed() && $isEditable}
         <a href="{plink paymentDialog:open! $item->getId()}"

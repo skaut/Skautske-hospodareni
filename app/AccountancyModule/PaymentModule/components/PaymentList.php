@@ -54,6 +54,7 @@ final class PaymentList extends BaseControl
             __DIR__ . '/templates/PaymentList.grid.latte',
             ['isEditable' => $this->isEditable],
         );
+        $grid->setRememberState(false, true);
         $grid->setColumnsHideable();
 
         $grid->addColumnText('name', 'Název/účel')
