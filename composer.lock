@@ -3877,23 +3877,23 @@
         },
         {
             "name": "nasext/dependent-select-box",
-            "version": "v5.0.3",
+            "version": "v5.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/NasExt/DependentSelectBox.git",
-                "reference": "4fe9e6bf1ecdb12b2a497aa84079c1f3f6fd0592"
+                "reference": "47ac6766e65dbaa883bba8441eaf78dc1328eb98"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NasExt/DependentSelectBox/zipball/4fe9e6bf1ecdb12b2a497aa84079c1f3f6fd0592",
-                "reference": "4fe9e6bf1ecdb12b2a497aa84079c1f3f6fd0592",
+                "url": "https://api.github.com/repos/NasExt/DependentSelectBox/zipball/47ac6766e65dbaa883bba8441eaf78dc1328eb98",
+                "reference": "47ac6766e65dbaa883bba8441eaf78dc1328eb98",
                 "shasum": ""
             },
             "require": {
                 "nette/application": "^2.4 || ^3.0.0",
                 "nette/forms": "^2.4 || ^3.0.0",
                 "nette/utils": "^2.4 || ^3.0.0",
-                "php": "^7.1"
+                "php": ">=7.1"
             },
             "require-dev": {
                 "latte/latte": "^2.4 || ^3.0.0",
@@ -3934,9 +3934,9 @@
             ],
             "support": {
                 "issues": "https://github.com/NasExt/DependentSelectBox/issues",
-                "source": "https://github.com/NasExt/DependentSelectBox/tree/master"
+                "source": "https://github.com/NasExt/DependentSelectBox/tree/v5.1.0"
             },
-            "time": "2020-02-27T11:41:15+00:00"
+            "time": "2021-08-20T13:03:51+00:00"
         },
         {
             "name": "nette/application",
