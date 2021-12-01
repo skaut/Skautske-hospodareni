@@ -3046,16 +3046,16 @@
         },
         {
             "name": "latte/latte",
-            "version": "v2.10.5",
+            "version": "v2.10.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/latte.git",
-                "reference": "0138a26efe7a2a448769f6ba490bfaae8fe7ab50"
+                "reference": "8a9bd8af76557fc35abae639ab7b966af706fec9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/latte/zipball/0138a26efe7a2a448769f6ba490bfaae8fe7ab50",
-                "reference": "0138a26efe7a2a448769f6ba490bfaae8fe7ab50",
+                "url": "https://api.github.com/repos/nette/latte/zipball/8a9bd8af76557fc35abae639ab7b966af706fec9",
+                "reference": "8a9bd8af76557fc35abae639ab7b966af706fec9",
                 "shasum": ""
             },
             "require": {
@@ -3124,9 +3124,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/latte/issues",
-                "source": "https://github.com/nette/latte/tree/v2.10.5"
+                "source": "https://github.com/nette/latte/tree/v2.10.6"
             },
-            "time": "2021-10-26T17:36:38+00:00"
+            "time": "2021-11-26T22:56:21+00:00"
         },
         {
             "name": "league/flysystem",
