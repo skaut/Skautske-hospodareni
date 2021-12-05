@@ -35,7 +35,7 @@
                     <th></th>
                 </tr>
                 <tr n:foreach="$transactions as $t"
-                    n:class="isset($payments[$t->id]) ? 'bg-info'">
+                    class="{if isset($paymentsByVariableSymbol[$t->variableSymbol])}bg-warning{elseif isset($payments[$t->id])}bg-info{/if}">
                     <td>{$t->date|date:'j.n.Y'}</td>
                     <td class="r">
                         <strong n:class="$t->amount < 0 ? text-danger">{$t->amount|price}</strong>
@@ -46,11 +46,23 @@
                     <td class="r">{include #noEmpty $t->variableSymbol}</td>
                     <td>{include #noEmpty $t->note}</td>
 
-                    {var $payment = $payments[$t->id] ?? null}
-                    <td n:inner-if="$payment !== null">
-                        <a href="{link Payment:default $payment->groupId}#payment-{$payment->id}" class="btn btn-xs btn-default"
-                                title='Spárováno {if array_key_exists($payment->getGroupId(), $groupNames)} ve skupině "{$groupNames[$payment->getGroupId()]}"{/if} s platbou "{$payment->name}"'
-                                data-toggle='tooltip'>
+                    {var $pairedPayment = $payments[$t->id] ?? null}
+                    {var $preparedPayment = $paymentsByVariableSymbol[$t->variableSymbol ?? null] ?? null}
+                    <td>
+                        {if $preparedPayment}
+                            {foreach $preparedPayment as $p}
+                                <a href="{link Payment:default $p->groupId}#payment-{$p->id}" class="btn btn-xs btn-default"
+                                                                    title='Variabilní symbol odpovídá {if array_key_exists($p->getGroupId(), $groupNames)} ve skupině "{$groupNames[$p->getGroupId()]}"{/if} nespárované platbě "{$p->name}"'
+                                                                    data-toggle='tooltip'>
+                                    <span class="fas fa-exclamation-triangle"></span>
+                                </a>
+                            {/foreach}
+                        {/if}
+
+
+                        <a n:if="$pairedPayment !== null" href="{link Payment:default $pairedPayment->groupId}#payment-{$pairedPayment->id}" class="btn btn-xs btn-default"
+                                                          title='Spárováno s platbou "{$pairedPayment->name}{if array_key_exists($pairedPayment->getGroupId(), $groupNames)} ve skupině "{$groupNames[$pairedPayment->getGroupId()]}"{/if}"'
+                                                          data-toggle='tooltip'>
                             <span class="fas fa-university"></span>
                         </a>
                     </td>
