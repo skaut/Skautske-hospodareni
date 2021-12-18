@@ -20,6 +20,7 @@ use Model\Payment\BankAccountService;
 use Model\Payment\ReadModel\Queries\CountGroupsWithBankAccountQuery;
 use Model\Payment\ReadModel\Queries\GetGroupList;
 use Model\Payment\ReadModel\Queries\PairedPaymentsQuery;
+use Model\Payment\ReadModel\Queries\PreparedPairedPaymentsQuery;
 use Model\Payment\TokenNotSet;
 use Model\Unit\ReadModel\Queries\SubunitListQuery;
 use Model\Unit\Unit;
@@ -146,7 +147,7 @@ class BankAccountsPresenter extends BasePresenter
         try {
             $templateParameters['transactions'] = $this->accounts->getTransactions($id, self::DAYS_BACK);
 
-            $payments = $this->queryBus->handle(
+            $pairedPayments = $this->queryBus->handle(
                 new PairedPaymentsQuery(
                     new BankAccountId($id),
                     (new DateTimeImmutable())->modify(sprintf('- %d days', self::DAYS_BACK))->setTime(0, 0, 0),
@@ -156,7 +157,7 @@ class BankAccountsPresenter extends BasePresenter
 
             $paymentsByTransaction = [];
 
-            foreach ($payments as $payment) {
+            foreach ($pairedPayments as $payment) {
                 assert($payment instanceof Payment);
 
                 $paymentsByTransaction[$payment->getTransaction()->getId()] = $payment;
@@ -171,9 +172,25 @@ class BankAccountsPresenter extends BasePresenter
                 $groupNames[$g->getId()] = $g->getName();
             }
 
+            $preparedPayments         = $this->queryBus->handle(
+                new PreparedPairedPaymentsQuery(
+                    new BankAccountId($id)
+                )
+            );
+            $paymentsByVariableSymbol = [];
+
+            foreach ($preparedPayments as $payment) {
+                if ($payment->getVariableSymbol() === null) {
+                    continue;
+                }
+
+                $paymentsByVariableSymbol[$payment->getVariableSymbol()->toInt()][] = $payment;
+            }
+
             $templateParameters['groupNames'] = $groupNames;
 
-            $templateParameters['payments'] = $paymentsByTransaction;
+            $templateParameters['payments']                 = $paymentsByTransaction;
+            $templateParameters['paymentsByVariableSymbol'] = $paymentsByVariableSymbol;
         } catch (TokenNotSet $e) {
             $templateParameters['warningMessage'] = 'Nemáte vyplněný token pro komunikaci s FIO';
         } catch (BankTimeLimit $e) {
