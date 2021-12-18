@@ -27,9 +27,9 @@ final class ParticipantRepositoryTest extends SkautisTest
     {
         VCR::insertCassette('ParticipantRepository/findByEducation_all.json');
 
-        $participants = $this->getRepository()->findByEducation(new SkautisEducationId(1524));
+        $participants = $this->getRepository()->findByEducation(new SkautisEducationId(1621));
 
-        $this->assertCount(7, $participants);
+        $this->assertCount(3, $participants);
     }
 
     private function getRepository(): ParticipantRepository
