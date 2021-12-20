@@ -246,7 +246,7 @@ class PaymentService
 
         $group = $this->groups->find($groupId);
 
-        return $group->getNextVariableSymbol();
+        return $group->getPaymentDefaults()->getNextVariableSymbol();
     }
 
     /**

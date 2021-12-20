@@ -47,7 +47,7 @@ class GroupTest extends Unit
         $this->assertSame(200.2, $group->getDefaultAmount());
         $this->assertSame($dueDate, $group->getDueDate());
         $this->assertSame(203, $group->getConstantSymbol());
-        $this->assertSame($variableSymbol, $group->getNextVariableSymbol());
+        $this->assertSame($variableSymbol, $group->getPaymentDefaults()->getNextVariableSymbol());
         $this->assertSame($createdAt, $group->getCreatedAt());
         $this->assertEmailsAreSame($emails, $group);
         $this->assertSame($oAuthId, $group->getOauthId());
@@ -130,7 +130,7 @@ class GroupTest extends Unit
         $this->assertSame(120.0, $group->getDefaultAmount());
         $this->assertNull($group->getDueDate());
         $this->assertNull($group->getConstantSymbol());
-        $this->assertNull($group->getNextVariableSymbol());
+        $this->assertNull($group->getPaymentDefaults()->getNextVariableSymbol());
         $this->assertSame($createdAt, $group->getCreatedAt());
         $this->assertSame($oAuthId, $group->getOauthId());
         $this->assertSame(33, $group->getBankAccountId());

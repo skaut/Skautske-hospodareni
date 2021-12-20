@@ -21,7 +21,7 @@ class GroupFactory
             $group->getDefaultAmount(),
             $group->getDueDate(),
             $group->getConstantSymbol(),
-            $group->getNextVariableSymbol(),
+            $group->getPaymentDefaults()->getNextVariableSymbol(),
             $group->getState(),
             $group->getOauthId(),
             $group->getNote(),

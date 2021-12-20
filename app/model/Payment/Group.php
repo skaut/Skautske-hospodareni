@@ -249,14 +249,6 @@ class Group
         return $this->paymentDefaults->getConstantSymbol();
     }
 
-    /**
-     * @deprecated Use Group::getPaymentDefaults()
-     */
-    public function getNextVariableSymbol(): ?VariableSymbol
-    {
-        return $this->paymentDefaults->getNextVariableSymbol();
-    }
-
     public function getState(): string
     {
         return $this->state;
