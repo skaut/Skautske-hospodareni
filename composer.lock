@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "47d1b17f3443ecfe854d3225a9eba87e",
+    "content-hash": "c4b4e5c01c1dae4a29a90d332c0b03ea",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -1115,32 +1115,35 @@
         },
         {
             "name": "doctrine/dbal",
-            "version": "2.12.1",
+            "version": "2.13.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "adce7a954a1c2f14f85e94aed90c8489af204086"
+                "reference": "67ef6d0327ccbab1202b39e0222977a47ed3ef2f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/adce7a954a1c2f14f85e94aed90c8489af204086",
-                "reference": "adce7a954a1c2f14f85e94aed90c8489af204086",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/67ef6d0327ccbab1202b39e0222977a47ed3ef2f",
+                "reference": "67ef6d0327ccbab1202b39e0222977a47ed3ef2f",
                 "shasum": ""
             },
             "require": {
-                "doctrine/cache": "^1.0",
+                "doctrine/cache": "^1.0|^2.0",
+                "doctrine/deprecations": "^0.5.3",
                 "doctrine/event-manager": "^1.0",
                 "ext-pdo": "*",
-                "php": "^7.3 || ^8"
+                "php": "^7.1 || ^8"
             },
             "require-dev": {
-                "doctrine/coding-standard": "^8.1",
-                "jetbrains/phpstorm-stubs": "^2019.1",
-                "phpstan/phpstan": "^0.12.40",
-                "phpunit/phpunit": "^9.4",
-                "psalm/plugin-phpunit": "^0.10.0",
+                "doctrine/coding-standard": "9.0.0",
+                "jetbrains/phpstorm-stubs": "2021.1",
+                "phpstan/phpstan": "1.2.0",
+                "phpunit/phpunit": "^7.5.20|^8.5|9.5.10",
+                "psalm/plugin-phpunit": "0.16.1",
+                "squizlabs/php_codesniffer": "3.6.1",
+                "symfony/cache": "^4.4",
                 "symfony/console": "^2.0.5|^3.0|^4.0|^5.0",
-                "vimeo/psalm": "^3.17.2"
+                "vimeo/psalm": "4.13.0"
             },
             "suggest": {
                 "symfony/console": "For helpful console commands such as SQL execution and import of files."
@@ -1149,11 +1152,6 @@
                 "bin/doctrine-dbal"
             ],
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "4.0.x-dev"
-                }
-            },
             "autoload": {
                 "psr-4": {
                     "Doctrine\\DBAL\\": "lib/Doctrine/DBAL"
@@ -1204,6 +1202,10 @@
                 "sqlserver",
                 "sqlsrv"
             ],
+            "support": {
+                "issues": "https://github.com/doctrine/dbal/issues",
+                "source": "https://github.com/doctrine/dbal/tree/2.13.6"
+            },
             "funding": [
                 {
                     "url": "https://www.doctrine-project.org/sponsorship.html",
@@ -1218,7 +1220,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-11-14T20:26:58+00:00"
+            "time": "2021-11-26T20:11:05+00:00"
         },
         {
             "name": "doctrine/deprecations",
@@ -9282,25 +9284,25 @@
         },
         {
             "name": "warhuhn/chronos-doctrine",
-            "version": "2.0.0",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/warhuhn/chronos-doctrine.git",
-                "reference": "f9a17a5245d105a29b7cd570795766e11b676a1b"
+                "reference": "ef212e68ebddfc05d884d46dae1d263e7b5494e0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/warhuhn/chronos-doctrine/zipball/f9a17a5245d105a29b7cd570795766e11b676a1b",
-                "reference": "f9a17a5245d105a29b7cd570795766e11b676a1b",
+                "url": "https://api.github.com/repos/warhuhn/chronos-doctrine/zipball/ef212e68ebddfc05d884d46dae1d263e7b5494e0",
+                "reference": "ef212e68ebddfc05d884d46dae1d263e7b5494e0",
                 "shasum": ""
             },
             "require": {
                 "cakephp/chronos": "^2.0",
-                "doctrine/dbal": "^2.10",
+                "doctrine/dbal": "^2.10|^3.0",
                 "php": ">=7.2"
             },
             "require-dev": {
-                "phpunit/phpunit": "^9.2"
+                "phpunit/phpunit": "^9.3"
             },
             "type": "library",
             "autoload": {
@@ -9324,7 +9326,7 @@
                 "issues": "https://github.com/warhuhn/chronos-php/issues",
                 "source": "https://github.com/warhuhn/chronos-php"
             },
-            "time": "2020-06-15T19:17:57+00:00"
+            "time": "2021-12-17T11:46:20+00:00"
         }
     ],
     "packages-dev": [
