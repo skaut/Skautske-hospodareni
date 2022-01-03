@@ -48,7 +48,7 @@
         "thecodingmachine/safe": "^1.0.0",
         "tracy/tracy": "~2.4",
         "ublaboo/datagrid": "^v6.8",
-        "warhuhn/chronos-doctrine": "^2.0"
+        "warhuhn/chronos-doctrine": "^3.0"
     },
     "require-dev": {
         "codeception/codeception": "^4.1",
