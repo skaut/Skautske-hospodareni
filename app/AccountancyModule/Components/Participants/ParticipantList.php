@@ -51,6 +51,8 @@ final class ParticipantList extends BaseControl
 
     protected bool $isAllowIsAccount;
 
+    protected bool $isAllowDaysUpdate;
+
     protected bool $isAllowParticipantUpdate;
 
     protected bool $isAllowParticipantDelete;
@@ -70,6 +72,7 @@ final class ParticipantList extends BaseControl
     public function __construct(
         int $aid,
         array $currentParticipants,
+        bool $isAllowDaysUpdate,
         bool $isAllowRepayment,
         bool $isAllowIsAccount,
         bool $isAllowParticipantUpdate,
@@ -77,6 +80,7 @@ final class ParticipantList extends BaseControl
     ) {
         $this->aid                      = $aid;
         $this->currentParticipants      = $currentParticipants;
+        $this->isAllowDaysUpdate        = $isAllowDaysUpdate;
         $this->isAllowRepayment         = $isAllowRepayment;
         $this->isAllowIsAccount         = $isAllowIsAccount;
         $this->isAllowParticipantUpdate = $isAllowParticipantUpdate;
@@ -105,6 +109,7 @@ final class ParticipantList extends BaseControl
             'sort'       => $this->sort,
             'sortOptions' => $sortOptions,
             'showUnits' => $this->showUnits,
+            'isAllowDaysUpdate' => $this->isAllowDaysUpdate,
             'isAllowRepayment' => $this->isAllowRepayment,
             'isAllowIsAccount' => $this->isAllowIsAccount,
             'isAllowParticipantUpdate' => $this->isAllowParticipantUpdate,
@@ -183,7 +188,7 @@ final class ParticipantList extends BaseControl
 
     protected function createComponentEditDialog(): EditParticipantDialog
     {
-        $dialog = new EditParticipantDialog($this->participantsById(), $this->isAllowIsAccount, $this->isAllowRepayment);
+        $dialog = new EditParticipantDialog($this->participantsById(), $this->isAllowDaysUpdate, $this->isAllowIsAccount, $this->isAllowRepayment);
 
         $dialog->onUpdate[] = function (int $participantId, array $fields): void {
             $changes = [];
@@ -193,7 +198,7 @@ final class ParticipantList extends BaseControl
             }
 
             $this->onUpdate($changes);
-            $this->reload('Účastník byli upraven.', 'success');
+            $this->reload('Účastník byl upraven.', 'success');
         };
 
         return $dialog;

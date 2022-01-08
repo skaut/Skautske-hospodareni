@@ -7,6 +7,7 @@ namespace Model\Skautis\Auth;
 use InvalidArgumentException;
 use Model\Auth\IAuthorizator;
 use Model\Auth\Resources\Camp;
+use Model\Auth\Resources\Education;
 use Model\Auth\Resources\Event;
 use Model\Auth\Resources\Unit;
 use Skautis\Wsdl\PermissionException;
@@ -21,9 +22,10 @@ final class SkautisAuthorizator implements IAuthorizator
     private WebServiceInterface $userWebservice;
 
     private const RESOURCE_CLASS_TO_SKAUTIS_TABLE_MAP = [
+        Camp::class => Camp::TABLE,
+        Education::class => Education::TABLE,
         Event::class => Event::TABLE,
         Unit::class => Unit::TABLE,
-        Camp::class => Camp::TABLE,
     ];
 
     public function __construct(WebServiceInterface $userWebservice)

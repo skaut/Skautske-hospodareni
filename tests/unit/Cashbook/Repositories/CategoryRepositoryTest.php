@@ -42,6 +42,8 @@ final class CategoryRepositoryTest extends Unit
             new CampCategory(4, Operation::get(Operation::INCOME), 'name2', Money::CZK(0), null),
         ];
 
+        $educationCategoryRepository = Mockery::mock(IEducationCategoryRepository::class);
+
         $campCategoryRepository = Mockery::mock(ICampCategoryRepository::class);
         $campCategoryRepository->shouldReceive('findForCamp')
             ->once()
@@ -56,7 +58,7 @@ final class CategoryRepositoryTest extends Unit
                 return $query->getCashbookId()->toString() === self::CASHBOOK_ID;
             })->andReturn(self::CAMP_ID);
 
-        $repository = new CategoryRepository($campCategoryRepository, $staticCategoryRepository, $queryBus);
+        $repository = new CategoryRepository($campCategoryRepository, $educationCategoryRepository, $staticCategoryRepository, $queryBus);
 
         $result = $repository->findForCashbook(CashbookId::fromString(self::CASHBOOK_ID), CashbookType::get(CashbookType::CAMP));
 

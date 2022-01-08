@@ -1,0 +1,16 @@
+{block #title}{$event->getDisplayName()} - evidence plateb{/block}
+
+{block #content}
+{include ../header.latte}
+
+<div n:snippet="paragony">
+    <p n:if="$isInMinus" class="alert alert-danger">
+        Evidence plateb je v záporných číslech a to nesmí nastat! Je importovaný HPD?
+    </p>
+
+    {snippet}
+        {control cashbook}
+    {/snippet}
+</div>
+<hr />
+<div class="text-right lead mb-sm-2" title="náklady + výnosy">Výsledek hospodaření: {if $finalRealBalance === null}Chybí povolené automatické dopočítávání!{else}{$finalRealBalance|price} Kč{/if}</div>

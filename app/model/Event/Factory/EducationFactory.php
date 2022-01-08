@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Skautis\Factory;
 
 use Cake\Chronos\Date;
+use Model\Common\UnitId;
 use Model\Event\Education;
 use Model\Event\SkautisEducationId;
 use stdClass;
@@ -20,8 +21,12 @@ final class EducationFactory
         return new Education(
             new SkautisEducationId($skautisEducation->ID),
             $skautisEducation->DisplayName,
+            new UnitId($skautisEducation->ID_Unit),
+            $skautisEducation->Unit,
             Date::createFromFormat(self::DATETIME_FORMAT, $skautisEducation->StartDate),
-            Date::createFromFormat(self::DATETIME_FORMAT, $skautisEducation->EndDate)
+            Date::createFromFormat(self::DATETIME_FORMAT, $skautisEducation->EndDate),
+            $skautisEducation->Location,
+            $skautisEducation->ID_EventEducationState
         );
     }
 }

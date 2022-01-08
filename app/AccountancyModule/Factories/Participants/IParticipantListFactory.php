@@ -15,6 +15,7 @@ interface IParticipantListFactory
     public function create(
         int $aid,
         array $currentParticipants,
+        bool $isAllowDaysUpdate,
         bool $isAllowRepayment,
         bool $isAllowIsAccount,
         bool $isAllowParticipantUpdate,

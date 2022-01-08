@@ -1,0 +1,10 @@
+{block #title}{$event->getDisplayName()} - seznam účastníků{/block}
+
+{block #content}
+{include ../header.latte}
+
+<div class="row">
+    <div class="col-lg-12">
+        {control participantList}
+    </div>
+</div>

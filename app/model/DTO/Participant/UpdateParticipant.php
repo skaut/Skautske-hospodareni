@@ -58,4 +58,10 @@ class UpdateParticipant
     {
         return [self::FIELD_DAYS, self::FIELD_PAYMENT];
     }
+
+    /** @return string[] */
+    public static function getEducationFields(): array
+    {
+        return [self::FIELD_PAYMENT, self::FIELD_REPAYMENT, self::FIELD_IS_ACCOUNT];
+    }
 }
