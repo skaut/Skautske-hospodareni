@@ -40,7 +40,7 @@ final class ContractRepository implements IContractRepository
     public function save(Contract $contract): void
     {
         $this->em->persist($contract);
-        $this->em->flush($contract);
+        $this->em->flush();
     }
 
     public function remove(Contract $contract): void
