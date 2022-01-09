@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "73b591afbaae2bb8ab12f73010528516",
+    "content-hash": "4ce9b22a719d76a0d5c8f17730e7f4eb",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -450,28 +450,30 @@
             "time": "2021-09-13T08:41:34+00:00"
         },
         {
-            "name": "consistence/consistence",
-            "version": "2.0.2",
+            "name": "consistence-community/consistence",
+            "version": "2.1.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/consistence/consistence.git",
-                "reference": "3b34fe58280107789f133c93784d56650d5cece1"
+                "url": "https://github.com/consistence-community/consistence.git",
+                "reference": "66fcbc4710e3518b37f4b4e4133a6e504dc6650a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consistence/consistence/zipball/3b34fe58280107789f133c93784d56650d5cece1",
-                "reference": "3b34fe58280107789f133c93784d56650d5cece1",
+                "url": "https://api.github.com/repos/consistence-community/consistence/zipball/66fcbc4710e3518b37f4b4e4133a6e504dc6650a",
+                "reference": "66fcbc4710e3518b37f4b4e4133a6e504dc6650a",
                 "shasum": ""
             },
             "require": {
-                "php": "~7.2"
+                "php": "~7.4 || ~8.0"
+            },
+            "replace": {
+                "consistence/consistence": "2.*"
             },
             "require-dev": {
-                "consistence/coding-standard": "3.7",
-                "jakub-onderka/php-console-highlighter": "0.4",
-                "jakub-onderka/php-parallel-lint": "1.0",
-                "phing/phing": "2.16.1",
-                "phpunit/phpunit": "7.5.1"
+                "consistence-community/coding-standard": "3.11.1",
+                "phing/phing": "2.17.0",
+                "php-parallel-lint/php-parallel-lint": "1.3.1",
+                "phpunit/phpunit": "9.5.10"
             },
             "type": "library",
             "autoload": {
@@ -506,37 +508,40 @@
                 "type"
             ],
             "support": {
-                "issues": "https://github.com/consistence/consistence/issues",
-                "source": "https://github.com/consistence/consistence/tree/2.0.2"
+                "issues": "https://github.com/consistence-community/consistence/issues",
+                "source": "https://github.com/consistence-community/consistence/tree/2.1.3"
             },
-            "time": "2021-10-20T09:56:03+00:00"
+            "time": "2021-11-30T14:52:01+00:00"
         },
         {
-            "name": "consistence/consistence-doctrine",
-            "version": "2.0",
+            "name": "consistence-community/consistence-doctrine",
+            "version": "2.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/consistence/consistence-doctrine.git",
-                "reference": "93a1b9a3ac64818f8f82880d57a8ec38518dd780"
+                "url": "https://github.com/consistence-community/consistence-doctrine.git",
+                "reference": "60551885672e9b842943835059a51c1932f39885"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consistence/consistence-doctrine/zipball/93a1b9a3ac64818f8f82880d57a8ec38518dd780",
-                "reference": "93a1b9a3ac64818f8f82880d57a8ec38518dd780",
+                "url": "https://api.github.com/repos/consistence-community/consistence-doctrine/zipball/60551885672e9b842943835059a51c1932f39885",
+                "reference": "60551885672e9b842943835059a51c1932f39885",
                 "shasum": ""
             },
             "require": {
-                "consistence/consistence": "~1.0|~2.0",
-                "doctrine/annotations": "~1.2",
+                "consistence-community/consistence": "~2.1",
+                "doctrine/annotations": "~1.7",
                 "doctrine/orm": "^2.6.3",
-                "php": "~7.2"
+                "php": "~7.4 || ~8.0"
+            },
+            "replace": {
+                "consistence/consistence-doctrine": "2.*"
             },
             "require-dev": {
-                "consistence/coding-standard": "3.7",
-                "jakub-onderka/php-console-highlighter": "0.4",
-                "jakub-onderka/php-parallel-lint": "1.0",
-                "phing/phing": "2.16.1",
-                "phpunit/phpunit": "7.5.1"
+                "consistence-community/coding-standard": "3.11.0",
+                "doctrine/persistence": "^1.3.5 || ^2.0",
+                "phing/phing": "2.16.4",
+                "php-parallel-lint/php-parallel-lint": "1.2.0",
+                "phpunit/phpunit": "9.5.2"
             },
             "type": "library",
             "autoload": {
@@ -561,7 +566,10 @@
                 }
             ],
             "description": "Integration of Consistence library with Doctrine ORM",
-            "time": "2018-12-21T13:16:29+00:00"
+            "support": {
+                "source": "https://github.com/consistence-community/consistence-doctrine/tree/2.1"
+            },
+            "time": "2021-03-05T19:26:23+00:00"
         },
         {
             "name": "contributte/application",
