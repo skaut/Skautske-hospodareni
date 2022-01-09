@@ -21,6 +21,8 @@ use Doctrine\ORM\Tools\Setup;
 use DoctrineExtensions\Query\Mysql\Field;
 use Fmasa\DoctrineNullableEmbeddables\Subscriber;
 
+use const CASE_LOWER;
+
 final class EntityManagerFactory
 {
     private bool $debugMode;
@@ -47,7 +49,7 @@ final class EntityManagerFactory
         $annotationsReader = $this->annotationsReader();
 
         $configuration->setMetadataDriverImpl(new AnnotationDriver($annotationsReader, [__DIR__ . '/../']));
-        $configuration->setNamingStrategy(new UnderscoreNamingStrategy());
+        $configuration->setNamingStrategy(new UnderscoreNamingStrategy(CASE_LOWER, true));
         $configuration->addCustomStringFunction('field', Field::class);
         $configuration->setSecondLevelCacheEnabled(true);
 
