@@ -146,7 +146,7 @@ class CashbookTest extends Unit
     private function fillChitForm(Date $date, string $purpose, Operation $type, string $category, string $recipient, string $amount): void
     {
         $this->tester->fillField('Datum', $date->format('d.m. Y'));
-        $this->tester->pressKey('body', WebDriverKeys::ESCAPE); // close datepicker
+        $this->tester->pressKey('body', [WebDriverKeys::ESCAPE]); // close datepicker
         $this->tester->fillField('Účel', $purpose);
         $this->tester->selectOption('#chit-type', $type->equals(Operation::EXPENSE()) ? 'Výdaje' : 'Příjmy');
         $this->tester->selectOption(sprintf('items[0][%sCategories]', $type->equals(Operation::EXPENSE()) ? 'expense' : 'income'), $category);
