@@ -11,6 +11,7 @@ use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
 use Model\Common\Services\QueryBus;
 use Model\DTO\Participant\Participant;
 use Model\Payment\Group;
+use Model\Payment\Group\SkautisEntity;
 use Model\Payment\ReadModel\Queries\EventParticipantsWithoutPaymentQuery;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\PaymentService;
@@ -70,7 +71,7 @@ final class EventParticipantsWithoutPaymentQueryHandlerTest extends Unit
     }
 
     /**
-     * @return (SkautisEntity|null)[][]
+     * @return list<list<SkautisEntity|null>>
      */
     public static function dataInvalidSkautisEntities(): array
     {

@@ -107,7 +107,7 @@ final class LogEntryRepositoryTest extends IntegrationTest
     }
 
     /**
-     * @return int[][]
+     * @return list<list<int|null>>
      */
     public function dataTypeIds(): array
     {

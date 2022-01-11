@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
+use Codeception\Scenario;
 use Page\Payment;
+
+assert(isset($scenario) && $scenario instanceof Scenario);
 
 $I = new AcceptanceTester($scenario);
 

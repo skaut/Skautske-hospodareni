@@ -7,7 +7,7 @@ namespace Model\Travel;
 use Cake\Chronos\Date;
 use Codeception\Test\Unit;
 use InvalidArgumentException;
-use Mockery as m;
+use Mockery;
 use Model\Travel\Command\TransportTravel;
 use Model\Travel\Command\TravelDetails;
 use Model\Travel\Command\VehicleTravel;
@@ -22,8 +22,9 @@ class CommandTest extends Unit
 {
     public function testCreate(): void
     {
-        $vehicle = $this->mockVehicle();
+        $vehicle = Mockery::mock(Vehicle::class);
         $vehicle->shouldReceive('getId')->andReturn(6);
+
         $driver  = new Passenger('Frantisek Masa', '---', 'Brno');
         $purpose = 'Cesta na střediskovku';
         $command = new Command(2, $vehicle, $driver, $purpose, 'Brno', '', Money::CZK(3120), Money::CZK(500), '', null, [], '');
@@ -41,7 +42,7 @@ class CommandTest extends Unit
 
     public function testCalculateTotal(): void
     {
-        $vehicle = $this->mockVehicle();
+        $vehicle = Mockery::mock(Vehicle::class);
         $vehicle->shouldReceive('getConsumption')->andReturn(6);
 
         $command = $this->createCommand($vehicle);
@@ -77,7 +78,7 @@ class CommandTest extends Unit
             '-',
             'Brno',
             '',
-            Money::fromFloat(100),
+            MoneyFactory::fromFloat(100),
             MoneyFactory::fromFloat(3),
             '',
             null,
@@ -118,8 +119,10 @@ class CommandTest extends Unit
     public function testUpdateMethod(): void
     {
         $command = $this->createCommand();
-        $vehicle = $this->mockVehicle();
+
+        $vehicle = Mockery::mock(Vehicle::class);
         $vehicle->shouldReceive('getId')->andReturn(5);
+
         $driver            = new Passenger('Stig', '000000000', 'Neznámá');
         $purpose           = 'Akce';
         $place             = 'Praha';
@@ -149,7 +152,7 @@ class CommandTest extends Unit
         $command = $this->createCommand();
         $command->addVehicleTravel(200, $this->getDetails());
 
-        $distance = (float) 220;
+        $distance = 220.0;
         $details  = new TravelDetails(Date::now(), TransportType::get(TransportType::MOTORCYCLE), 'Praha', 'Brno');
 
         $command->updateVehicleTravel(0, $distance, $details);
@@ -312,7 +315,7 @@ class CommandTest extends Unit
      */
     public function testAddingVehicleTravelWithNegativeOrZeroDistanceThrowsException(float $distance): void
     {
-        $command = $this->createCommand($this->mockVehicle());
+        $command = $this->createCommand(Mockery::mock(Vehicle::class));
 
         $this->expectException(InvalidArgumentException::class);
 
@@ -338,7 +341,7 @@ class CommandTest extends Unit
      */
     public function testUpdatingVehicleTravelWithNegativeOrZeroDistanceThrowsException(float $distance): void
     {
-        $command = $this->createCommand($this->mockVehicle());
+        $command = $this->createCommand(Mockery::mock(Vehicle::class));
         $command->addVehicleTravel(10, $this->getDetails());
 
         $this->expectException(InvalidArgumentException::class);
@@ -436,16 +439,11 @@ class CommandTest extends Unit
         self::assertEquals($travelDetails->getEndPlace(), $duplicatedTravelDetails->getEndPlace());
     }
 
-    private function mockVehicle(): m\MockInterface
-    {
-        return m::mock(Vehicle::class);
-    }
-
     private function createCommand(?Vehicle $vehicle = null): Command
     {
         return new Command(
             10,
-            $vehicle ?? $this->mockVehicle(),
+            $vehicle ?? Mockery::mock(Vehicle::class),
             new Passenger('Frantisek Masa', '777777777', 'Brno'),
             'Cesta na střediskovku',
             'Brno',

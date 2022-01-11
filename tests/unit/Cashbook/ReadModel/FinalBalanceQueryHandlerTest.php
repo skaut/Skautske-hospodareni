@@ -29,13 +29,13 @@ final class FinalBalanceQueryHandlerTest extends Unit
     public function testCashbookWithPositiveAndNegativeChitsReturnsCorrectBalance(): void
     {
         $this->assertBalance(MoneyFactory::fromFloat(1100), [
-            $this->mockChit('100', Operation::INCOME),
-            $this->mockChit('1000', Operation::EXPENSE),
-            $this->mockChit('2000', Operation::INCOME),
+            $this->mockChit(100, Operation::INCOME),
+            $this->mockChit(1000, Operation::EXPENSE),
+            $this->mockChit(2000, Operation::INCOME),
         ]);
     }
 
-    private function mockChit(string $amount, string $operation): Chit
+    private function mockChit(int $amount, string $operation): Chit
     {
         $op = Operation::get($operation);
 
@@ -56,7 +56,8 @@ final class FinalBalanceQueryHandlerTest extends Unit
         $queryBus = m::mock(QueryBus::class);
         $queryBus->shouldReceive('handle')
             ->withArgs(static function (ChitListQuery $query) {
-                return $query->getCashbookId()->toString() === self::CASHBOOK_ID && $query->getPaymentMethod() === Cashbook\PaymentMethod::CASH();
+                return $query->getCashbookId()->toString() === self::CASHBOOK_ID
+                    && $query->getPaymentMethod()->equalsValue(Cashbook\PaymentMethod::CASH);
             })
             ->andReturn($chits);
 

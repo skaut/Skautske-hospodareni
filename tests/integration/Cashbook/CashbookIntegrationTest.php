@@ -221,7 +221,7 @@ class CashbookIntegrationTest extends IntegrationTest
     }
 
     /**
-     * @return string[][]
+     * @return list<list<mixed>>>
      */
     public function getValidTransfers(): array
     {
@@ -270,7 +270,7 @@ class CashbookIntegrationTest extends IntegrationTest
     }
 
     /**
-     * @return string[]
+     * @return list<list<int>>
      */
     public function getInvalidInverseChitCategories(): array
     {

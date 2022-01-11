@@ -10,6 +10,9 @@ use VCR\Util\SoapClient;
 
 class WebServiceWithInterception extends WebService
 {
+    /**
+     * @param array<string, mixed> $soapOpts
+     */
     public function __construct($wsdl, array $soapOpts)
     {
         $this->init = $soapOpts;

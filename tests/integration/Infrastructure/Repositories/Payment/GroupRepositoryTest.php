@@ -7,7 +7,8 @@ namespace Model\Infrastructure\Repositories\Payment;
 use Cake\Chronos\Date;
 use DateTimeImmutable;
 use IntegrationTest;
-use Mockery as m;
+use Mockery;
+use Mockery\MockInterface;
 use Model\Common\Services\EventBus;
 use Model\Payment\DomainEvents\GroupWasRemoved;
 use Model\Payment\EmailTemplate;
@@ -37,6 +38,7 @@ class GroupRepositoryTest extends IntegrationTest
 
     private GroupRepository $repository;
 
+    /** @var EventBus&MockInterface */
     private EventBus $eventBus;
 
     /**
@@ -52,7 +54,7 @@ class GroupRepositoryTest extends IntegrationTest
         $this->tester->useConfigFiles(['config/doctrine.neon']);
         parent::_before();
 
-        $this->eventBus   = m::mock(EventBus::class);
+        $this->eventBus   = Mockery::mock(EventBus::class);
         $this->repository = new GroupRepository($this->entityManager, $this->eventBus);
     }
 

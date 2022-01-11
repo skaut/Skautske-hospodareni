@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace acceptance;
 
 use AcceptanceTester;
+use Codeception\Scenario;
 
+use function assert;
 use function date;
+
+assert(isset($scenario) && $scenario instanceof Scenario);
 
 $I = new AcceptanceTester($scenario);
 
@@ -19,7 +23,7 @@ function fillModalAndSubmit(AcceptanceTester $I, int $year): void
     $I->click('Založit', '.modal-footer');
 
     $I->see('Pokladní kniha byla vytvořena');
-    $I->see($year);
+    $I->see((string) $year);
 }
 
 $I->click('Jednotka');

@@ -57,7 +57,7 @@ class CommandRepositoryTest extends IntegrationTest
         'command_id' => self::COMMAND_ID,
         'start_place' => 'Praha',
         'end_place' => 'Brno',
-        'price' => 500.0,
+        'price' => 500,
         'transport_type' => TransportType::BUS,
         'has_fuel' => 0,
         'start_date' => '2018-01-01',
