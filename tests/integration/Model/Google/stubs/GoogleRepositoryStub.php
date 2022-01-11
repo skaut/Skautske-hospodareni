@@ -23,19 +23,13 @@ class GoogleRepositoryStub implements IGoogleRepository
     }
 
     /**
-     * @inheritDoc
+     * @param list<int> $unitIds
+     *
+     * @return array<int, list<OAuth>>
      */
     public function findByUnits(array $unitIds): array
     {
         return array_fill_keys($unitIds, []);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function findByUnit(UnitId $unitId): array
-    {
-        return [];
     }
 
     public function findByUnitAndEmail(UnitId $unitId, string $email): OAuth

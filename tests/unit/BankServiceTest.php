@@ -262,7 +262,7 @@ final class BankServiceTest extends Unit
     }
 
     /**
-     * @param Payment[] $paymentsByGroup
+     * @param array<int, list<Payment>> $paymentsByGroup
      */
     private function mockPaymentRepository(array $paymentsByGroup): IPaymentRepository
     {

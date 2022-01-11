@@ -114,8 +114,7 @@ class Helpers
     }
 
     /**
-     * @param int|null $catrgoryId
-     * @return ICategory[]
+     * @return list<ICategory>
      */
     public static function mockCashbookCategories(?int $categoryId = null, ?Operation $operation = null) : array
     {

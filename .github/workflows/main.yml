@@ -150,6 +150,8 @@ jobs:
                   path: .
             - name: Extract workdir
               run: tar -xzpf workdir.tar.gz
+            - name: Generate Codeception helper code
+              run: vendor/bin/codecept build
             - run: phing static-analysis
 
     coding-standard:

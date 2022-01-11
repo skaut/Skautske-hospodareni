@@ -6,6 +6,14 @@ parameters:
     doctrine:
         objectManagerLoader: tests/object-manager.php
 
+    excludePaths:
+        analyse:
+            - tests/_output
+            - tests/_support/_generated
+
+    scanDirectories:
+        - tests/_support
+
 services:
 	- class: CodeQuality\ObjectIdentityComparisonRule
 	  tags: [ phpstan.rules.rule ]

@@ -23,7 +23,7 @@ class CreateCashbookHandlerTest extends Unit
             ->once()
             ->withArgs(static function (Cashbook $cashbook) use ($type, $cashbookId) {
                 return $cashbook->getId()->equals($cashbookId)
-                    && $cashbook->getType() === $type;
+                    && $cashbook->getType()->equals($type);
             });
 
         $handler = new CreateCashbookHandler($repository);

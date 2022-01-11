@@ -69,11 +69,13 @@ final class LazyWebServiceTest extends Unit
 
         self::assertSame(
             'result1',
+            // @phpstan-ignore-next-line
             $lazyWebService->foo1(['arg1' => 'foo']),
         );
 
         self::assertSame(
             'result2',
+            // @phpstan-ignore-next-line
             $lazyWebService->foo2(['arg2' => 'foo'])
         );
     }

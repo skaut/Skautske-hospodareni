@@ -118,9 +118,6 @@ final class BankAccountAccessCheckerTest extends Unit
             ->allUnitsHaveAccessToBankAccount([1, 2, 3], 5);
     }
 
-    /**
-     * @param int $unitIds
-     */
     private function createBankAccount(int $unitId, bool $allowedForSubunits): BankAccount
     {
         $accountNumber = Helpers::createAccountNumber();

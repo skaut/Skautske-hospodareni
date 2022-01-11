@@ -157,7 +157,7 @@ class CashbookTest extends Unit
     private function waitForBalance(string $balance): void
     {
         $this->tester->expectTo(sprintf('see %s CZK as final balance', $balance));
-        $this->tester->waitForText($balance, null, self::BALANCE_SELECTOR);
+        $this->tester->waitForText($balance, 10, self::BALANCE_SELECTOR);
     }
 
     private function removeChit(int $position): void
