@@ -1,7 +1,7 @@
 {
     "private": true,
     "scripts": {
-        "build": "yarn webpack",
+        "build": "webpack --mode=development",
         "build-production": "webpack --mode=production",
         "check-types": "yarn tsc --noEmit"
     },
