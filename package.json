@@ -3,7 +3,8 @@
     "scripts": {
         "build": "webpack --mode=development",
         "build-production": "webpack --mode=production",
-        "check-types": "yarn tsc --noEmit"
+        "check-types": "yarn tsc --noEmit",
+        "prepare": "husky install"
     },
     "dependencies": {
         "@fortawesome/fontawesome-svg-core": "^1.2.36",
@@ -28,7 +29,7 @@
         "autoprefixer": "^9.8.8",
         "babel-loader": "^8.2.3",
         "css-loader": "^5.0.1",
-        "husky": "^4.3.0",
+        "husky": "^7.0.4",
         "lint-staged": "^12.1.4",
         "mini-css-extract-plugin": "^1.6.2",
         "sass": "^1.45.2",
@@ -39,11 +40,6 @@
         "webpack": "^4.46.0",
         "webpack-bundle-analyzer": "^4.5.0",
         "webpack-cli": "^4.9.1"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
     },
     "lint-staged": {
         "*.php": [
