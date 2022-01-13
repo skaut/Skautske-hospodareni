@@ -25,8 +25,8 @@ final class EducationFactory
             $skautisEducation->Unit,
             Date::createFromFormat(self::DATETIME_FORMAT, $skautisEducation->StartDate),
             Date::createFromFormat(self::DATETIME_FORMAT, $skautisEducation->EndDate),
-            $skautisEducation->Location,
-            $skautisEducation->ID_EventEducationState
+            $skautisEducation->Location ?? '',
+            $skautisEducation->ID_EventEducationState ?? ''
         );
     }
 }
