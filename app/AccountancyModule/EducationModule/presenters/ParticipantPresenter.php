@@ -8,7 +8,6 @@ use App\AccountancyModule\Components\Participants\ParticipantList;
 use App\AccountancyModule\ExcelResponse;
 use App\AccountancyModule\Factories\Participants\IParticipantListFactory;
 use Model\Auth\Resources\Education;
-use Model\Auth\Resources\Event;
 use Model\Cashbook\ReadModel\Queries\EducationParticipantListQuery;
 use Model\DTO\Participant\Participant;
 use Model\DTO\Participant\UpdateParticipant;
@@ -73,7 +72,7 @@ class ParticipantPresenter extends BasePresenter
 
     public function renderDefault(int $aid): void
     {
-        if (! $this->authorizator->isAllowed(Event::ACCESS_PARTICIPANTS, $this->aid)) {
+        if (! $this->authorizator->isAllowed(Education::ACCESS_PARTICIPANTS, $this->aid)) {
             $this->flashMessage('Nemáte právo prohlížeč účastníky akce', 'danger');
             $this->redirect('Education:');
         }
@@ -87,6 +86,11 @@ class ParticipantPresenter extends BasePresenter
 
     public function actionExportExcel(int $aid): void
     {
+        if ($this->event->getStartDate() === null) {
+            $this->flashMessage('Bez vyplněného počátku akce nelze exportovat seznam účastníků, protože nelze dopočítat věk v době akce.', 'danger');
+            $this->redirect('default', ['aid' => $aid]);
+        }
+
         try {
             $participantsDTO = $this->eventParticipants();
             $spreadsheet     = $this->excelService->getGeneralParticipants($participantsDTO, $this->event->getStartDate());

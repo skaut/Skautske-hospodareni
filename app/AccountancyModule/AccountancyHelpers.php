@@ -295,7 +295,7 @@ abstract class AccountancyHelpers
     }
 
     /**
-     * @param Date[] $dates
+     * @param Date[]|null[] $dates
      *
      * @filter
      */
@@ -306,6 +306,15 @@ abstract class AccountancyHelpers
         }
 
         [$start, $end] = $dates;
+
+        if ($end === null) {
+            if ($start === null) {
+                return 'Žádné datumy nejsou k dispozici';
+            }
+
+            return $start->format(self::DATE_FORMAT_FULL);
+        }
+
         if ($start->year !== $end->year) {
             return sprintf('%s - %s', $start->format(self::DATE_FORMAT_FULL), $end->format(self::DATE_FORMAT_FULL));
         }

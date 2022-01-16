@@ -17,6 +17,7 @@ use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EducationCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\EducationParticipantListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantStatisticsQuery;
@@ -27,6 +28,7 @@ use Model\DTO\Cashbook\CategorySummary;
 use Model\DTO\Cashbook\Chit;
 use Model\DTO\Participant\Statistics;
 use Model\Event\Camp;
+use Model\Event\Education;
 use Model\Event\Event;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\ReadModel\Queries\CampQuery;
@@ -90,6 +92,13 @@ class ExportService
             $displayName = $camp->getDisplayName();
             $unitId      = $camp->getUnitId();
             $list        = $this->queryBus->handle(new CampParticipantListQuery($camp->getId()));
+        } elseif ($type === EventType::EDUCATION) {
+            $templateFile = __DIR__ . '/templates/participantEducation.latte';
+            $education    = $this->queryBus->handle(new EducationQuery(new SkautisEducationId($aid)));
+            assert($education instanceof Education);
+            $displayName = $education->getDisplayName();
+            $unitId      = $education->getUnitId();
+            $list        = $this->queryBus->handle(new EducationParticipantListQuery($education->getId()));
         } else {
             $templateFile = __DIR__ . '/templates/participant.latte';
             $event        = $this->queryBus->handle(new EventQuery(new SkautisEventId($aid)));

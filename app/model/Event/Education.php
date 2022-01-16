@@ -11,8 +11,8 @@ use Nette\SmartObject;
 
 /**
  * @property-read string $displayName
- * @property-read Date $startDate
- * @property-read Date $endDate
+ * @property-read Date|null $startDate
+ * @property-read Date|null $endDate
  */
 class Education implements ISkautisEvent
 {
@@ -26,9 +26,9 @@ class Education implements ISkautisEvent
 
     private string $unitName;
 
-    private Date $startDate;
+    private ?Date $startDate;
 
-    private Date $endDate;
+    private ?Date $endDate;
 
     private string $location;
 
@@ -39,8 +39,8 @@ class Education implements ISkautisEvent
         string $displayName,
         UnitId $unitId,
         string $unitName,
-        Date $startDate,
-        Date $endDate,
+        ?Date $startDate,
+        ?Date $endDate,
         string $location,
         string $state
     ) {
@@ -74,12 +74,12 @@ class Education implements ISkautisEvent
         return $this->unitId;
     }
 
-    public function getStartDate(): Date
+    public function getStartDate(): ?Date
     {
         return $this->startDate;
     }
 
-    public function getEndDate(): Date
+    public function getEndDate(): ?Date
     {
         return $this->endDate;
     }
