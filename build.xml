@@ -59,6 +59,7 @@
               passthru="true"/>
 
         <!-- Build frontend assets -->
+        <exec dir="${build.dir}" command='npm set-script prepare ""' passthru="true" checkreturn="true"/>
         <exec dir="${build.dir}" command="yarn install &amp;&amp; yarn build" passthru="true" checkreturn="true"/>
 
         <delete>
