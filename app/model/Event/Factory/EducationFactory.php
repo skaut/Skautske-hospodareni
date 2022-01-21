@@ -23,8 +23,8 @@ final class EducationFactory
             $skautisEducation->DisplayName,
             new UnitId($skautisEducation->ID_Unit),
             $skautisEducation->Unit,
-            Date::createFromFormat(self::DATETIME_FORMAT, $skautisEducation->StartDate),
-            Date::createFromFormat(self::DATETIME_FORMAT, $skautisEducation->EndDate),
+            $skautisEducation->StartDate === null ? null : Date::createFromFormat(self::DATETIME_FORMAT, $skautisEducation->StartDate),
+            $skautisEducation->EndDate === null ? null : Date::createFromFormat(self::DATETIME_FORMAT, $skautisEducation->EndDate),
             $skautisEducation->Location ?? '',
             $skautisEducation->ID_EventEducationState ?? ''
         );
