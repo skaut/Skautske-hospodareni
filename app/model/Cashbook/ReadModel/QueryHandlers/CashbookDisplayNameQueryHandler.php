@@ -12,10 +12,13 @@ use Model\Common\Services\QueryBus;
 use Model\Common\ShouldNotHappen;
 use Model\DTO\Cashbook\Cashbook;
 use Model\Event\Camp;
+use Model\Event\Education;
 use Model\Event\Event;
 use Model\Event\ReadModel\Queries\CampQuery;
+use Model\Event\ReadModel\Queries\EducationQuery;
 use Model\Event\ReadModel\Queries\EventQuery;
 use Model\Event\SkautisCampId;
+use Model\Event\SkautisEducationId;
 use Model\Event\SkautisEventId;
 use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\Unit;
@@ -59,6 +62,13 @@ final class CashbookDisplayNameQueryHandler
             assert($unit instanceof Unit);
 
             return $unit->getDisplayName();
+        }
+
+        if ($type->equalsValue(ObjectType::EDUCATION)) {
+            $education = $this->queryBus->handle(new EducationQuery(new SkautisEducationId($skautisId)));
+            assert($education instanceof Education);
+
+            return $education->getDisplayName();
         }
 
         throw new ShouldNotHappen(sprintf('Cannot find cashbook name. Unknown object type "%s"', $type->toString()));
