@@ -7,6 +7,7 @@ namespace App\AccountancyModule;
 use Contributte\Application\Response\PSR7StreamResponse;
 use GuzzleHttp\Psr7\Utils;
 use Model\Auth\Resources\Camp;
+use Model\Auth\Resources\Education;
 use Model\Auth\Resources\Event;
 use Model\Auth\Resources\Unit;
 use Model\Cashbook\Cashbook\CashbookId;
@@ -238,6 +239,7 @@ class CashbookExportPresenter extends BasePresenter
             ObjectType::EVENT => Event::ACCESS_DETAIL,
             ObjectType::CAMP => Camp::ACCESS_DETAIL,
             ObjectType::UNIT => Unit::ACCESS_DETAIL,
+            ObjectType::EDUCATION => Education::ACCESS_DETAIL,
         ];
 
         if (! isset($requiredPermissions[$skautisType])) {
