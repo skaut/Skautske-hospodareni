@@ -200,7 +200,7 @@ services:
           messenger.messageHandler:
               bus: queryBus
 
-    - League\Flysystem\Filesystem(League\Flysystem\Adapter\Local(%uploadDirectory%))
+    - League\Flysystem\Filesystem(League\Flysystem\Local\LocalFilesystemAdapter(%uploadDirectory%))
     - Model\Infrastructure\Services\Common\FlysystemScanStorage
 
     # Skautis webservices

@@ -9,7 +9,7 @@ services:
           messenger.messageHandler:
               bus: commandBus
     - Model\Infrastructure\Services\Common\FlysystemScanStorage
-    - League\Flysystem\Filesystem(League\Flysystem\Adapter\NullAdapter())
+    - League\Flysystem\Filesystem(League\Flysystem\InMemory\InMemoryFilesystemAdapter())
 
 includes:
     - ../../config/doctrine.neon
