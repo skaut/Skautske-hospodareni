@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Services\Common;
 
 use Codeception\Test\Unit;
-use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use Model\Common\Exception\InvalidScanFile;
 use Model\Common\FileNotFound;
 use Model\Common\FilePath;
@@ -26,7 +26,7 @@ final class FlysystemScanStorageTest extends Unit
     protected function _before(): void
     {
         $this->directory = __DIR__ . '/../../../../_temp/' . uniqid(self::class, true);
-        $this->storage   = new FlysystemScanStorage(new Filesystem(new Local($this->directory)));
+        $this->storage   = new FlysystemScanStorage(new Filesystem(new LocalFilesystemAdapter($this->directory)));
     }
 
     protected function _after(): void

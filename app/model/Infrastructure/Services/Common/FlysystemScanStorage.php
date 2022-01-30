@@ -6,24 +6,25 @@ namespace Model\Infrastructure\Services\Common;
 
 use Assert\Assertion;
 use finfo;
-use League\Flysystem\FileNotFoundException;
-use League\Flysystem\FilesystemInterface;
+use GuzzleHttp\Psr7\Utils;
+use League\Flysystem\FilesystemOperator;
+use League\Flysystem\UnableToDeleteFile;
+use League\Flysystem\UnableToReadFile;
 use Model\Common\Exception\InvalidScanFile;
 use Model\Common\File;
 use Model\Common\FileNotFound;
 use Model\Common\FilePath;
 use Model\Common\IScanStorage;
 
-use function GuzzleHttp\Psr7\stream_for;
 use function in_array;
 
 use const FILEINFO_MIME_TYPE;
 
 final class FlysystemScanStorage implements IScanStorage
 {
-    private FilesystemInterface $filesystem;
+    private FilesystemOperator $filesystem;
 
-    public function __construct(FilesystemInterface $filesystem)
+    public function __construct(FilesystemOperator $filesystem)
     {
         $this->filesystem = $filesystem;
     }
@@ -35,8 +36,8 @@ final class FlysystemScanStorage implements IScanStorage
 
             Assertion::isResource($contents);
 
-            return new File(stream_for($contents), $path);
-        } catch (FileNotFoundException $e) {
+            return new File(Utils::streamFor($contents), $path);
+        } catch (UnableToReadFile $e) {
             throw new FileNotFound($e->getMessage(), $e->getCode(), $e);
         }
     }
@@ -56,7 +57,7 @@ final class FlysystemScanStorage implements IScanStorage
     {
         try {
             $this->filesystem->delete($path->getPath());
-        } catch (FileNotFoundException $e) {
+        } catch (UnableToDeleteFile $e) {
             // File was probably deleted before
         }
     }
