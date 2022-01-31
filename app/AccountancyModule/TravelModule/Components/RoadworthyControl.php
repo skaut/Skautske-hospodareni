@@ -14,7 +14,6 @@ use Model\Common\Services\QueryBus;
 use Model\Travel\Commands\Vehicle\AddRoadworthyScan;
 use Model\Travel\Commands\Vehicle\RemoveRoadworthyScan;
 use Model\Travel\ReadModel\Queries\Vehicle\RoadworthyScansQuery;
-use Model\Travel\Vehicle\RoadworthyScan;
 use Nette\Application\BadRequestException;
 use Nette\Http\FileUpload;
 use Nette\Http\IResponse;
@@ -60,7 +59,7 @@ final class RoadworthyControl extends BaseControl
         $this->assertIsEditable();
 
         try {
-            $this->commandBus->handle(new RemoveRoadworthyScan($this->vehicleId, FilePath::generate(RoadworthyScan::FILE_PATH_PREFIX, $path)));
+            $this->commandBus->handle(new RemoveRoadworthyScan($this->vehicleId, FilePath::fromString($path)));
             $this->presenter->flashMessage('Sken byl odebrán', 'success');
         } catch (ScanNotFound $e) {
         }
