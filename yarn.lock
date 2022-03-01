@@ -1499,10 +1499,14 @@ bn.js@^5.0.0, bn.js@^5.1.1:
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-5.1.3.tgz#beca005408f642ebebea80b042b4d18d2ac0ee6b"
   integrity sha512-GkTiFpjFtUzU9CbMeJ5iazkCzGL3jrhzerzZIuqLABjbwRaFt33I9tUdSNryIptM+RxDet6OKm2WnLXzW51KsQ==
 
-bootstrap.native@^2.0.27:
-  version "2.0.27"
-  resolved "https://registry.yarnpkg.com/bootstrap.native/-/bootstrap.native-2.0.27.tgz#c0978d372cde1bd9f06d015985e99ae7af44f816"
-  integrity sha512-gv2eN4zXHOLN/oPotTxb8CJr9Dk0xlM9YURyHCWjq1Lyt2I669bri/Bp8b0HPOKX7JqRVh+Sk/VwEe0OcQN2fw==
+bootstrap.native@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/bootstrap.native/-/bootstrap.native-4.1.0.tgz#0d19acf2ac16a03497f1ee91f2f8a5d0667f2f27"
+  integrity sha512-ZgbLadK9vIl4CMU+zQHJmyimMBJUCG9ptDpO8IU6ZGXwsDGqAe4q+FzUXN0qwKPyqgiSDGQtbE2L0Yl7TtTWow==
+  dependencies:
+    event-listener.js "^0.0.5"
+    minifill "^0.0.17"
+    shorter-js "^0.3.0"
 
 bootstrap@^4.6.0:
   version "4.6.0"
@@ -2297,6 +2301,11 @@ esutils@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/esutils/-/esutils-2.0.2.tgz#0abf4f1caa5bcb1f7a9d8acc6dea4faaa04bac9b"
   integrity sha1-Cr9PHKpbyx96nYrMbepPqqBLrJs=
+
+event-listener.js@^0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/event-listener.js/-/event-listener.js-0.0.5.tgz#ec2f853cbc61c98ee9ad1b240dd10d1f425955a5"
+  integrity sha512-4mryaCw4/sEBxWDxQGK6oAznxERj5XMo7QlfYYTP64keMyBCduvyLDtX25Z16L2HYn/f8zpLQ2H1Cay9C6IJCw==
 
 event-target-shim@^2.0.0:
   version "2.0.0"
@@ -3326,6 +3335,11 @@ mini-css-extract-plugin@^1.6.2:
     loader-utils "^2.0.0"
     schema-utils "^3.0.0"
     webpack-sources "^1.1.0"
+
+minifill@^0.0.17:
+  version "0.0.17"
+  resolved "https://registry.yarnpkg.com/minifill/-/minifill-0.0.17.tgz#8e5fab670e07f14ec67b2459735bb1fbfc48f2b0"
+  integrity sha512-tV56LFXsi8vjH4tUExtlu8aPKKQw/U/mn4OIrDU9x30H+9sP8/dWFbXzkAPmcH6o+9fho98kyafnk4VgQViYQQ==
 
 minimalistic-assert@^1.0.0, minimalistic-assert@^1.0.1:
   version "1.0.1"
@@ -4383,6 +4397,11 @@ shebang-regex@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/shebang-regex/-/shebang-regex-3.0.0.tgz#ae16f1644d873ecad843b0307b143362d4c42172"
   integrity sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==
+
+shorter-js@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/shorter-js/-/shorter-js-0.3.0.tgz#2d6a2cbb2d6efaac48815dddfa1d30d02b00185e"
+  integrity sha512-Rm5VtDhrJDp45dTHslxG2vSl7RTRkdq2zqtVNLcvhQkGBTZ3g2sw+mV/6ZFWtZ+xG5oVQau792xcgcuVCz7D4A==
 
 signal-exit@^3.0.2:
   version "3.0.2"
