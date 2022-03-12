@@ -26,7 +26,6 @@ final class WaitForDb extends Module
                 new PDO($db->_getConfig('dsn'), $db->_getConfig('user'), $db->_getConfig('password'));
                 break;
             } catch (PDOException $e) {
-                // @phpstan-ignore-next-line
                 if ($retriesLeft === 0 || $e->getCode() !== 2002) {
                     throw $e;
                 }
