@@ -89,11 +89,11 @@ class ExcelService
     /**
      * @param Chit[] $chits
      */
-    public function getChitsExport(CashbookId $cashbookId, array $chits): Spreadsheet
+    public function getChitsExport(array $chits): Spreadsheet
     {
         $spreadsheet = $this->getNewFile();
         $sheetChit   = $spreadsheet->setActiveSheetIndex(0);
-        $this->setSheetChitsOnly($sheetChit, $chits, $cashbookId);
+        $this->setSheetChitsOnly($sheetChit, $chits);
 
         return $spreadsheet;
     }
@@ -246,7 +246,7 @@ class ExcelService
     /**
      * @param Chit[] $chits
      */
-    private function setSheetChitsOnly(Worksheet $sheet, array $chits, CashbookId $cashbookId): void
+    private function setSheetChitsOnly(Worksheet $sheet, array $chits): void
     {
         $sheet->setCellValue('B1', 'Ze dne')
             ->setCellValue('C1', 'Účel výplaty')

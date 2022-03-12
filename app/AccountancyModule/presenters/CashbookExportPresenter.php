@@ -99,7 +99,6 @@ class CashbookExportPresenter extends BasePresenter
         $chitIds = array_map('\intval', $chitIds);
 
         $spreadsheet = $this->excelService->getChitsExport(
-            CashbookId::fromString($cashbookId),
             $this->getChitsWithIds($chitIds)
         );
 
