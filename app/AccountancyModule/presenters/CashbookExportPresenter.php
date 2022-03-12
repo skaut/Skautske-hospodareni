@@ -144,6 +144,12 @@ class CashbookExportPresenter extends BasePresenter
         }
 
         $spreadsheet = $this->excelService->getCashbook($cashbookId, PaymentMethod::get($paymentMethod));
+
+        $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::get($paymentMethod), $cashbookId));
+        $spreadsheet->createSheet(1);
+        $spreadsheet->setActiveSheetIndex(1);
+        $this->excelService->addItemsExport($spreadsheet, $chits);
+
         $this->sendResponse(
             new ExcelResponse(
                 sprintf(
@@ -192,6 +198,26 @@ class CashbookExportPresenter extends BasePresenter
         );
 
         $this->sendResponse(new ExcelResponse('pokladni-kniha', $spreadsheet));
+    }
+
+    /**
+     * Exports cashbook items columns as XLS file
+     */
+    public function actionExportCashbookItems(string $cashbookId, string $paymentMethod): void
+    {
+        if (! PaymentMethod::isValidValue($paymentMethod)) {
+            throw new BadRequestException(
+                sprintf('Invalid payment method %s', $paymentMethod),
+                IResponse::S400_BAD_REQUEST
+            );
+        }
+
+        $spreadsheet = $this->excelService->getCashbookItems(
+            CashbookId::fromString($cashbookId),
+            PaymentMethod::get($paymentMethod)
+        );
+
+        $this->sendResponse(new ExcelResponse('seznam-polozek', $spreadsheet));
     }
 
     public function actionDownloadScan(string $cashbookId, int $chitId, string $path): void
