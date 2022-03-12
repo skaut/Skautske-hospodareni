@@ -3944,16 +3944,16 @@
         },
         {
             "name": "nette/application",
-            "version": "v3.1.4",
+            "version": "v3.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/application.git",
-                "reference": "db6eedc199732ed6cf9982da97a38219e8601c62"
+                "reference": "fa5da6a90ff71724353568894a4839aec627eae3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/application/zipball/db6eedc199732ed6cf9982da97a38219e8601c62",
-                "reference": "db6eedc199732ed6cf9982da97a38219e8601c62",
+                "url": "https://api.github.com/repos/nette/application/zipball/fa5da6a90ff71724353568894a4839aec627eae3",
+                "reference": "fa5da6a90ff71724353568894a4839aec627eae3",
                 "shasum": ""
             },
             "require": {
@@ -4029,9 +4029,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/application/issues",
-                "source": "https://github.com/nette/application/tree/v3.1.4"
+                "source": "https://github.com/nette/application/tree/v3.1.5"
             },
-            "time": "2021-10-06T23:40:44+00:00"
+            "time": "2021-12-20T12:24:49+00:00"
         },
         {
             "name": "nette/bootstrap",
@@ -4686,16 +4686,16 @@
         },
         {
             "name": "nette/php-generator",
-            "version": "v3.6.5",
+            "version": "v3.6.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/php-generator.git",
-                "reference": "9370403f9d9c25b51c4596ded1fbfe70347f7c82"
+                "reference": "ad7d0a77f58260001bd263605eb2b9fbaf1d61a7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/php-generator/zipball/9370403f9d9c25b51c4596ded1fbfe70347f7c82",
-                "reference": "9370403f9d9c25b51c4596ded1fbfe70347f7c82",
+                "url": "https://api.github.com/repos/nette/php-generator/zipball/ad7d0a77f58260001bd263605eb2b9fbaf1d61a7",
+                "reference": "ad7d0a77f58260001bd263605eb2b9fbaf1d61a7",
                 "shasum": ""
             },
             "require": {
@@ -4748,9 +4748,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/php-generator/issues",
-                "source": "https://github.com/nette/php-generator/tree/v3.6.5"
+                "source": "https://github.com/nette/php-generator/tree/v3.6.6"
             },
-            "time": "2021-11-24T16:23:44+00:00"
+            "time": "2022-02-20T18:06:09+00:00"
         },
         {
             "name": "nette/robot-loader",
@@ -7749,12 +7749,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Symfony\\Polyfill\\Ctype\\": ""
-                },
                 "files": [
                     "bootstrap.php"
-                ]
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Ctype\\": ""
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -7828,12 +7828,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Symfony\\Polyfill\\Intl\\Grapheme\\": ""
-                },
                 "files": [
                     "bootstrap.php"
-                ]
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Intl\\Grapheme\\": ""
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -7996,12 +7996,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Symfony\\Polyfill\\Intl\\Normalizer\\": ""
-                },
                 "files": [
                     "bootstrap.php"
                 ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Intl\\Normalizer\\": ""
+                },
                 "classmap": [
                     "Resources/stubs"
                 ]
@@ -8083,12 +8083,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Symfony\\Polyfill\\Mbstring\\": ""
-                },
                 "files": [
                     "bootstrap.php"
-                ]
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Mbstring\\": ""
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -8315,12 +8315,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Symfony\\Polyfill\\Php80\\": ""
-                },
                 "files": [
                     "bootstrap.php"
                 ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Php80\\": ""
+                },
                 "classmap": [
                     "Resources/stubs"
                 ]
@@ -8533,26 +8533,26 @@
         },
         {
             "name": "symfony/property-access",
-            "version": "v5.3.8",
+            "version": "v5.4.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/property-access.git",
-                "reference": "2fbab5f95ddb6b8e85f38a6a8a04a17c0acc4d66"
+                "reference": "95534d912f61117d3bce2d4456419ee2ee548d7a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/property-access/zipball/2fbab5f95ddb6b8e85f38a6a8a04a17c0acc4d66",
-                "reference": "2fbab5f95ddb6b8e85f38a6a8a04a17c0acc4d66",
+                "url": "https://api.github.com/repos/symfony/property-access/zipball/95534d912f61117d3bce2d4456419ee2ee548d7a",
+                "reference": "95534d912f61117d3bce2d4456419ee2ee548d7a",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.2.5",
-                "symfony/deprecation-contracts": "^2.1",
+                "symfony/deprecation-contracts": "^2.1|^3",
                 "symfony/polyfill-php80": "^1.16",
-                "symfony/property-info": "^5.2"
+                "symfony/property-info": "^5.2|^6.0"
             },
             "require-dev": {
-                "symfony/cache": "^4.4|^5.0"
+                "symfony/cache": "^4.4|^5.0|^6.0"
             },
             "suggest": {
                 "psr/cache-implementation": "To cache access methods."
@@ -8594,7 +8594,7 @@
                 "reflection"
             ],
             "support": {
-                "source": "https://github.com/symfony/property-access/tree/v5.3.8"
+                "source": "https://github.com/symfony/property-access/tree/v5.4.5"
             },
             "funding": [
                 {
@@ -8610,27 +8610,27 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-09-10T11:55:24+00:00"
+            "time": "2022-02-04T18:39:09+00:00"
         },
         {
             "name": "symfony/property-info",
-            "version": "v5.3.8",
+            "version": "v5.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/property-info.git",
-                "reference": "39de5bed8c036f76ec0457ec52908e45d5497947"
+                "reference": "bcc2b6904cbcf16b2e5d618da16117cd8e132f9a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/property-info/zipball/39de5bed8c036f76ec0457ec52908e45d5497947",
-                "reference": "39de5bed8c036f76ec0457ec52908e45d5497947",
+                "url": "https://api.github.com/repos/symfony/property-info/zipball/bcc2b6904cbcf16b2e5d618da16117cd8e132f9a",
+                "reference": "bcc2b6904cbcf16b2e5d618da16117cd8e132f9a",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.2.5",
-                "symfony/deprecation-contracts": "^2.1",
+                "symfony/deprecation-contracts": "^2.1|^3",
                 "symfony/polyfill-php80": "^1.16",
-                "symfony/string": "^5.1"
+                "symfony/string": "^5.1|^6.0"
             },
             "conflict": {
                 "phpdocumentor/reflection-docblock": "<3.2.2",
@@ -8640,9 +8640,10 @@
             "require-dev": {
                 "doctrine/annotations": "^1.10.4",
                 "phpdocumentor/reflection-docblock": "^3.0|^4.0|^5.0",
-                "symfony/cache": "^4.4|^5.0",
-                "symfony/dependency-injection": "^4.4|^5.0",
-                "symfony/serializer": "^4.4|^5.0"
+                "phpstan/phpdoc-parser": "^1.0",
+                "symfony/cache": "^4.4|^5.0|^6.0",
+                "symfony/dependency-injection": "^4.4|^5.0|^6.0",
+                "symfony/serializer": "^4.4|^5.0|^6.0"
             },
             "suggest": {
                 "phpdocumentor/reflection-docblock": "To use the PHPDoc",
@@ -8684,7 +8685,7 @@
                 "validator"
             ],
             "support": {
-                "source": "https://github.com/symfony/property-info/tree/v5.3.8"
+                "source": "https://github.com/symfony/property-info/tree/v5.4.3"
             },
             "funding": [
                 {
@@ -8700,7 +8701,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-09-07T07:41:40+00:00"
+            "time": "2022-01-02T09:53:40+00:00"
         },
         {
             "name": "symfony/redis-messenger",
@@ -8944,12 +8945,12 @@
             },
             "type": "library",
             "autoload": {
-                "psr-4": {
-                    "Symfony\\Component\\String\\": ""
-                },
                 "files": [
                     "Resources/functions.php"
                 ],
+                "psr-4": {
+                    "Symfony\\Component\\String\\": ""
+                },
                 "exclude-from-classmap": [
                     "/Tests/"
                 ]
@@ -9208,16 +9209,16 @@
         },
         {
             "name": "ublaboo/datagrid",
-            "version": "v6.9.2",
+            "version": "v6.9.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/contributte/datagrid.git",
-                "reference": "8da97ce01e323cf53af7b944a87c97c5db947190"
+                "reference": "a91ad121517c1adf74e7b5f0528031d479230e7d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/contributte/datagrid/zipball/8da97ce01e323cf53af7b944a87c97c5db947190",
-                "reference": "8da97ce01e323cf53af7b944a87c97c5db947190",
+                "url": "https://api.github.com/repos/contributte/datagrid/zipball/a91ad121517c1adf74e7b5f0528031d479230e7d",
+                "reference": "a91ad121517c1adf74e7b5f0528031d479230e7d",
                 "shasum": ""
             },
             "require": {
@@ -9226,21 +9227,22 @@
                 "nette/forms": "^3.1.3",
                 "nette/utils": "^3.0.1",
                 "php": ">=7.2",
-                "symfony/property-access": "^3.0.0 || ^4.0.0 || ^5.0.0"
+                "symfony/property-access": "^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0"
             },
             "require-dev": {
+                "contributte/code-rules": "^1.1.0",
                 "dibi/dibi": "^3.0.0 || ^4.0.0",
-                "doctrine/cache": "^1.11",
-                "doctrine/orm": "^2.6.12",
+                "doctrine/annotations": "^1.12.1",
+                "doctrine/cache": "^1.11.0",
+                "doctrine/orm": "^2.11.1",
                 "elasticsearch/elasticsearch": "^7.1",
-                "gamee/php-code-checker-rules": "^2.0.21",
                 "mockery/mockery": "^1.3.3",
                 "nette/database": "^3.0.2",
                 "nette/tester": "^2.3.4",
                 "nextras/dbal": "^3.0.1 || ^4.0",
                 "nextras/orm": "^3.1.0 || ^4.0",
-                "ninjify/coding-standard": "^0.12.0",
-                "phpstan/phpstan-nette": "^0.12.14",
+                "ninjify/coding-standard": "^0.12.1",
+                "phpstan/phpstan-nette": "^1.0.0",
                 "tharos/leanmapper": "^3.4.2 || ^4.0.0",
                 "tracy/tracy": "^2.6.3"
             },
@@ -9280,7 +9282,7 @@
             ],
             "support": {
                 "issues": "https://github.com/contributte/datagrid/issues",
-                "source": "https://github.com/contributte/datagrid/tree/v6.9.2"
+                "source": "https://github.com/contributte/datagrid/tree/v6.9.4"
             },
             "funding": [
                 {
@@ -9292,7 +9294,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-10-19T08:21:03+00:00"
+            "time": "2022-02-14T15:35:30+00:00"
         },
         {
             "name": "warhuhn/chronos-doctrine",
