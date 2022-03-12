@@ -86,6 +86,17 @@ class ExcelService
         return $excel;
     }
 
+    public function getCashbookItems(CashbookId $cashbookId, PaymentMethod $paymentMethod): Spreadsheet
+    {
+        $excel = $this->getNewFile();
+        $sheet = $excel->getActiveSheet();
+
+        $builder = new CashbookWithCategoriesBuilder($this->queryBus);
+        $builder->build($sheet, $cashbookId, $paymentMethod);
+
+        return $excel;
+    }
+
     /**
      * @param Chit[] $chits
      */
@@ -96,6 +107,16 @@ class ExcelService
         $this->setSheetChitsOnly($sheetChit, $chits);
 
         return $spreadsheet;
+    }
+
+    /**
+     * @param Chit[] $chits
+     */
+    public function addItemsExport(Spreadsheet $spreadsheetWithActiveSheet, array $chits): Spreadsheet
+    {
+        $this->setSheetItemsOnly($spreadsheetWithActiveSheet->getActiveSheet(), $chits);
+
+        return $spreadsheetWithActiveSheet;
     }
 
     /**
@@ -302,5 +323,46 @@ class ExcelService
 
         $sheet->getStyle('A1:G1')->getFont()->setBold(true);
         $sheet->setTitle('Doklady');
+    }
+
+    /**
+     * @param Chit[] $chits
+     */
+    private function setSheetItemsOnly(Worksheet $sheet, array $chits): void
+    {
+        $sheet->setCellValue('B1', 'Ze dne')
+            ->setCellValue('C1', 'Číslo dokladu')
+            ->setCellValue('D1', 'Účel výplaty')
+            ->setCellValue('E1', 'Kategorie')
+            ->setCellValue('F1', 'Komu/Od')
+            ->setCellValue('G1', 'Částka');
+
+        $rowCnt = 2;
+
+        foreach ($chits as $chit) {
+            foreach ($chit->getItems() as $item) {
+                $amount = $item->getAmount()->toFloat();
+
+                $sheet->setCellValue('A' . $rowCnt, $rowCnt - 1)
+                    ->setCellValue('B' . $rowCnt, $chit->getBody()->getDate()->format('d.m.Y'))
+                    ->setCellValue('C' . $rowCnt, $chit->getBody()->getNumber())
+                    ->setCellValue('D' . $rowCnt, $item->getPurpose())
+                    ->setCellValue('E' . $rowCnt, $item->getCategory()->getName())
+                    ->setCellValue('F' . $rowCnt, $chit->getBody()->getRecipient())
+                    ->setCellValue('G' . $rowCnt, $amount);
+                $rowCnt++;
+            }
+        }
+
+        //add border
+        $sheet->getStyle('A1:G' . ($rowCnt - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+        //format
+        foreach (Range::letters('A', 'G') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        $sheet->getStyle('A1:G1')->getFont()->setBold(true);
+        $sheet->setTitle('Položky z dokladů');
     }
 }
