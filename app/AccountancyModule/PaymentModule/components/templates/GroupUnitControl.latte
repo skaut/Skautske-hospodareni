@@ -16,7 +16,8 @@
           <button class="btn btn-link btn-sm p-0 ml-1" type="button" data-toggle="dropdown" data-persist="true">
               <i class="far fa-edit"></i>
           </button>
-          <div class="dropdown-menu dropdown-menu-right px-4 py-3 text-nowrap" n:inner-snippet="form">
+          <div class="dropdown-menu dropdown-menu-right px-4 py-3 text-nowrap">
+              {snippet form}
               <form n:name="form">
                   <h5>Jednotky s přístupem</h5>
                   <div class="form-check" n:foreach="$form['unitIds']->items as $key => $label">
@@ -30,6 +31,7 @@
                       <i class="fas fa-check"></i> Uložit
                   </button>
               </form>
+              {/snippet}
           </div>
     </div>
 </div>
