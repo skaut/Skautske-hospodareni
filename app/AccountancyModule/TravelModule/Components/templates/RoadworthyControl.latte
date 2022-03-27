@@ -19,7 +19,7 @@
                 </button>
             {/if}
         </span>
-        <div class="dropdown-menu dropdown-menu-left" style="width: 150%" n:inner-snippet>
+        <div class="dropdown-menu dropdown-menu-left" style="width: 150%" n:snippet="">
             {foreach $files as $file}
             <div class="px-4 py-1">
                 {$file->getOriginalFilename()|truncate:26}

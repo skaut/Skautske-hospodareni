@@ -16,17 +16,17 @@
             <tr>
                 <td rowspan="{$subcategoryCount}">{$rootCategory->label}</td>
                 <td>{$rootCategory->children[0]->label}</td>
-                <td class="r">{php $sum += $rootCategory->children[0]->value} {$rootCategory->children[0]->value|number:2:',':' '} Kč</td>
+                <td class="r">{php $sum += $rootCategory->children[0]->value} {$rootCategory->children[0]->value|number:2, ',', ' '} Kč</td>
             </tr>
             <tr n:for="$i = 1; $i < $subcategoryCount; $i++">
                 {var $subcategory = $rootCategory->children[$i]}
                 <td>{$subcategory->label}</td>
-                <td class="r">{php $sum += $subcategory->value} {$subcategory->value|number:2:',':' '} Kč</td>
+                <td class="r">{php $sum += $subcategory->value} {$subcategory->value|number:2, ',', ' '} Kč</td>
             </tr>
         {/if}
     {/foreach}
 
-    <tr><th colspan="2">Celkem</th><th class="r">{$sum|number:2:',':' '} Kč</th></tr>
+    <tr><th colspan="2">Celkem</th><th class="r">{$sum|number:2, ',', ' '} Kč</th></tr>
 </table>   
 {/block}
 
