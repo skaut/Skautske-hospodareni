@@ -23,7 +23,7 @@
         "postcss-loader": "^3.0.0"
     },
     "devDependencies": {
-        "@babel/core": "^7.16.12",
+        "@babel/core": "^7.17.8",
         "@babel/preset-env": "^7.16.11",
         "@types/webpack-env": "^1.16.3",
         "autoprefixer": "^9.8.8",
