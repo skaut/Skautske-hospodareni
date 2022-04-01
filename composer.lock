@@ -198,12 +198,12 @@
             },
             "type": "library",
             "autoload": {
-                "psr-4": {
-                    "Cake\\Chronos\\": "src/"
-                },
                 "files": [
                     "src/carbon_compat.php"
-                ]
+                ],
+                "psr-4": {
+                    "Cake\\Chronos\\": "src/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -1123,16 +1123,16 @@
         },
         {
             "name": "doctrine/dbal",
-            "version": "2.13.6",
+            "version": "2.13.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "67ef6d0327ccbab1202b39e0222977a47ed3ef2f"
+                "reference": "dc9b3c3c8592c935a6e590441f9abc0f9eba335b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/67ef6d0327ccbab1202b39e0222977a47ed3ef2f",
-                "reference": "67ef6d0327ccbab1202b39e0222977a47ed3ef2f",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/dc9b3c3c8592c935a6e590441f9abc0f9eba335b",
+                "reference": "dc9b3c3c8592c935a6e590441f9abc0f9eba335b",
                 "shasum": ""
             },
             "require": {
@@ -1145,13 +1145,13 @@
             "require-dev": {
                 "doctrine/coding-standard": "9.0.0",
                 "jetbrains/phpstorm-stubs": "2021.1",
-                "phpstan/phpstan": "1.2.0",
-                "phpunit/phpunit": "^7.5.20|^8.5|9.5.10",
+                "phpstan/phpstan": "1.4.6",
+                "phpunit/phpunit": "^7.5.20|^8.5|9.5.16",
                 "psalm/plugin-phpunit": "0.16.1",
-                "squizlabs/php_codesniffer": "3.6.1",
+                "squizlabs/php_codesniffer": "3.6.2",
                 "symfony/cache": "^4.4",
                 "symfony/console": "^2.0.5|^3.0|^4.0|^5.0",
-                "vimeo/psalm": "4.13.0"
+                "vimeo/psalm": "4.22.0"
             },
             "suggest": {
                 "symfony/console": "For helpful console commands such as SQL execution and import of files."
@@ -1212,7 +1212,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/dbal/issues",
-                "source": "https://github.com/doctrine/dbal/tree/2.13.6"
+                "source": "https://github.com/doctrine/dbal/tree/2.13.8"
             },
             "funding": [
                 {
@@ -1228,7 +1228,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-11-26T20:11:05+00:00"
+            "time": "2022-03-09T15:25:46+00:00"
         },
         {
             "name": "doctrine/deprecations",
@@ -9299,16 +9299,16 @@
         },
         {
             "name": "warhuhn/chronos-doctrine",
-            "version": "3.0.0",
+            "version": "3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/warhuhn/chronos-doctrine.git",
-                "reference": "ef212e68ebddfc05d884d46dae1d263e7b5494e0"
+                "reference": "8dc4fe8248fd87508148c87d0f857978d46441a7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/warhuhn/chronos-doctrine/zipball/ef212e68ebddfc05d884d46dae1d263e7b5494e0",
-                "reference": "ef212e68ebddfc05d884d46dae1d263e7b5494e0",
+                "url": "https://api.github.com/repos/warhuhn/chronos-doctrine/zipball/8dc4fe8248fd87508148c87d0f857978d46441a7",
+                "reference": "8dc4fe8248fd87508148c87d0f857978d46441a7",
                 "shasum": ""
             },
             "require": {
@@ -9341,7 +9341,7 @@
                 "issues": "https://github.com/warhuhn/chronos-php/issues",
                 "source": "https://github.com/warhuhn/chronos-php"
             },
-            "time": "2021-12-17T11:46:20+00:00"
+            "time": "2022-03-04T16:06:16+00:00"
         }
     ],
     "packages-dev": [
