@@ -6,6 +6,7 @@ extensions:
     migrations: Nettrine\Migrations\DI\MigrationsExtension
     dbal: Nettrine\DBAL\DI\DbalExtension
     doctrineCache: Nettrine\Cache\DI\CacheExtension
+    psr6: Contributte\Psr6\DI\Psr6CachingExtension
 
 migrations:
     directory: %appDir%/../migrations

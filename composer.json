@@ -10,6 +10,7 @@
         "consistence-community/consistence": "^2.1",
         "consistence-community/consistence-doctrine": "^2.1",
         "contributte/console": "^0.9.0",
+        "contributte/psr6-caching": "^0.2.1",
         "fmasa/doctrine-nullable-embeddables": "^1.0",
         "fmasa/messenger": "^1.1",
         "fmasa/sentry-breadcrumbs-monolog-handler": "^2.0",
