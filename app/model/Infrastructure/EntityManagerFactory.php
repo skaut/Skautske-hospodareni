@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Infrastructure;
 
 use Consistence\Doctrine\Enum\EnumPostLoadEntityListener;
+use Contributte\Psr6\ICachePoolFactory;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\CachedReader;
@@ -31,11 +32,14 @@ final class EntityManagerFactory
 
     private Connection $connection;
 
-    public function __construct(bool $debugMode, string $tempDir, Connection $connection)
+    private ICachePoolFactory $cachePoolFactory;
+
+    public function __construct(bool $debugMode, string $tempDir, Connection $connection, ICachePoolFactory $cachePoolFactory)
     {
-        $this->debugMode  = $debugMode;
-        $this->tempDir    = $tempDir;
-        $this->connection = $connection;
+        $this->debugMode        = $debugMode;
+        $this->tempDir          = $tempDir;
+        $this->connection       = $connection;
+        $this->cachePoolFactory = $cachePoolFactory;
     }
 
     public function create(): EntityManager
@@ -55,7 +59,7 @@ final class EntityManagerFactory
 
         $cacheConfiguration = new CacheConfiguration();
         $cacheConfiguration->setCacheFactory(
-            new DefaultCacheFactory(new RegionsConfiguration(), $this->cache('secondLevelCache'))
+            new DefaultCacheFactory(new RegionsConfiguration(), $this->cachePoolFactory->create('secondLevelCache'))
         );
         $configuration->setSecondLevelCacheConfiguration($cacheConfiguration);
 
