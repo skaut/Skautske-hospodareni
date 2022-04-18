@@ -12,7 +12,7 @@
         "contributte/console": "^0.9",
         "contributte/psr6-caching": "^0.2",
         "fmasa/doctrine-nullable-embeddables": "^1.0",
-        "fmasa/messenger": "^1.1",
+        "fmasa/messenger": "^2.0",
         "fmasa/sentry-breadcrumbs-monolog-handler": "^2.3",
         "google/apiclient": "^2.12",
         "heureka/bank-account-validator": "1.1.*",
