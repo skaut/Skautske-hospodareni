@@ -25,19 +25,19 @@
                     <div class="card mb-2">
                         <div class="card-body">
                             <div class="form-row mb-1">
-                                <div class="col">{input items-$id-purpose}</div>
+                                <div class="col">{input "items-$id-purpose"}</div>
                             </div>
                             <div class="form-row mb-1">
                                 <div class="col chit-category">
-                                    {input items-$id-incomeCategories}
-                                    {input items-$id-expenseCategories}
+                                    {input "items-$id-incomeCategories"}
+                                    {input "items-$id-expenseCategories"}
                                 </div>
                             </div>
                             <div class="form-row mb-1">
-                                <div class="col">{input items-$id-price}</div>
+                                <div class="col">{input "items-$id-price"}</div>
                             </div>
                             {if $itemsCount > 1}
-                                {input items-$id-remove  class=>"btn btn-light btn-sm ajax"}
+                                {input "items-$id-remove" class=>"btn btn-light btn-sm ajax"}
                             {/if}
                         </div>
                     </div>
