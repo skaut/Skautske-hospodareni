@@ -75,12 +75,12 @@ final class PaymentDialog extends Dialog
             ->addRule(Form::FLOAT, 'Částka musí být zadaná jako číslo')
             ->addRule(Form::MIN, 'Částka musí být větší než 0', 0.01);
 
-        $form->addText('email', 'Email')
+        $form->addText('email', 'E-mail')
             ->setRequired(false)
             ->addFilter(fn (string $value) => preg_replace('/\s+/', '', $value))
             ->setNullable()
             ->addCondition(Form::FILLED)
-            ->addRule([MyValidators::class, 'isValidEmailList'], 'Zadaný email nemá platný formát. Více adres oddělte pouze čárkou.');
+            ->addRule([MyValidators::class, 'isValidEmailList'], 'Zadaný e-mail nemá platný formát. Více adres oddělte pouze čárkou.');
 
         $form->addDate('dueDate', 'Splatnost')
             ->disableWeekends()

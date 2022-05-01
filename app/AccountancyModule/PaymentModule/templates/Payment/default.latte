@@ -53,17 +53,17 @@
             <div class="btn-group">
                 <button class="btn btn-light dropdown-toggle" type="button" id="emailsDropd"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                    <i class="far fa-envelope-open"></i> Email <span class="caret"></span>
+                    <i class="far fa-envelope-open"></i> E-mail <span class="caret"></span>
                 </button>
                 <div class="dropdown-menu" aria-labelledby="emailsDropdown">
-                    <a n:href="sendTest! $group->id" class="dropdown-item">Zaslat testovací email</a>
+                    <a n:href="sendTest! $group->id" class="dropdown-item">Zaslat testovací e-mail</a>
                     {if $isGroupSendActive}
                         <a n:href="sendGroup! $group->id"
                                 class="dropdown-item"
-                                onclick="return confirm('Opravdu chcete rozeslat emaily?')">Rozeslat emaily</a>
+                                onclick="return confirm('Opravdu chcete rozeslat e-maily?')">Rozeslat e-maily</a>
                     {else}
                         <a href="#" class="disabled dropdown-item"
-                           title="Nejsou žádné platby s vyplněným emailem k odeslání"><s>Rozeslat emaily</s></a>
+                           title="Nejsou žádné platby s vyplněným e-mailem k odeslání"><s>Rozeslat e-maily</s></a>
                     {/if}
                 </div>
             </div>

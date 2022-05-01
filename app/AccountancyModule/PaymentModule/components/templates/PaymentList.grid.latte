@@ -11,7 +11,7 @@
                         type="button"
                         data-toggle="dropdown"
                         data-persist="true"
-                        title="Odeslané emaily">
+                        title="Odeslané e-maily">
                     <i class="far fa-envelope-open"></i>&nbsp;{count($emails)}
                 </button>
                 <div class="dropdown-menu dropdown-menu-right p-0 border-0 text-nowrap">
@@ -44,7 +44,7 @@
            title="Upravit platbu"><i class="far fa-edit"></i></a>
         <a href="{plink send! $item->id}"
                 n:class="btn, btn-sm, btn-primary, !empty($item->getEmailRecipients()) ? 'ui--sendEmail', empty($item->getEmailRecipients()) ? disabled"
-           title="{empty($item->getEmailRecipients()) ? 'Není uveden email' : 'Odeslat email o platbě'}"><i
+           title="{empty($item->getEmailRecipients()) ? 'Není uveden email' : 'Odeslat e-mail o platbě'}"><i
                     class="far fa-envelope-open"></i></a>
         <a href="{plink complete! $item->getId()}" class="btn btn-sm btn-success" title="Zaplaceno"><i
                     class="fas fa-check"></i></a>

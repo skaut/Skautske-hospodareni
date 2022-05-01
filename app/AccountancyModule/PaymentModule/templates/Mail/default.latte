@@ -1,17 +1,17 @@
 
 {block #content}
-<h1 n:inner-block="title" class="mb-4">Nastavení emailů</h1>
+<h1 n:inner-block="title" class="mb-4">Nastavení e-mailů</h1>
 
 <div class="row">
     <div class="col-lg-7">
-        <h4 class="mb-3">Seznam propojených emailů jednotky</h4>
+        <h4 class="mb-3">Seznam propojených e-mailů jednotky</h4>
         {if empty($oauthList)}
-            <p>Zatím nejsou k dispozici žádné propojené emaily.</p>
+            <p>Zatím nejsou k dispozici žádné propojené e-maily.</p>
         {else}
         <table class="table table-bordered table-striped table-sm">
             <tr>
                 <th>&nbsp;</th>
-                <th>Email</th>
+                <th>E-mail</th>
                 <th>Naposledy upraveno</th>
             </tr>
             <tr n:foreach="$oauthList as $l">
@@ -28,7 +28,7 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Přidat účet</h5>
-                <p class="alert-info alert">Lze přidávat emaily pouze ze skautských G Suite (tedy @skaut.cz, @skautka.cz či na doménách jednotek a akcí).</p>
+                <p class="alert-info alert">Lze přidávat e-maily pouze ze skautských G Suite (tedy @skaut.cz, @skautka.cz či na doménách jednotek a akcí).</p>
                 <p class="card-text">Nově připojený účet bude přiřazen jednotce dle aktuálně užívané role.</p>
                 <a n:href=":Accountancy:Google:oauth" class="btn btn-primary card-link"><i class="fab fa-google"></i> Propojit účet</a>
             </div>

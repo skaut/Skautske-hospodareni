@@ -12,6 +12,6 @@ class NullMailer implements Mailer
 {
     public function send(Message $mail): void
     {
-        Assertion::notNull($mail->getHeader('To'), 'There must be at least one email recipient');
+        Assertion::notNull($mail->getHeader('To'), 'There must be at least one e-mail recipient');
     }
 }
