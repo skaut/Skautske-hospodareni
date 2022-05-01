@@ -76,7 +76,7 @@
             </td>
             <td class="align-middle">
                 {$groupUnits[$g->id]|implode:', '}</td>
-            <td>{control progress-$g->id}</td>
+            <td>{control "progress-$g->id"}</td>
             <td class="align-middle text-center">
                 {$g->state|groupState|noescape}
                 <span class="text-success" title="Lze párovat s bankou" n:if="$groupsPairingSupport[$g->id] === TRUE">

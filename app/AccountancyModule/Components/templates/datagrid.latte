@@ -37,12 +37,12 @@
 {block filter-type-select}
     <div class="input-group mr-2 mb-2">
         <div class="input-group-prepend">
-            <label n:name="filter-$name" class="input-group-text">
+            <label n:name="filter-{$name}" class="input-group-text">
                 <i n:ifset="$icon" class="{$icon} mr-1"></i>
                 {$label}
             </label>
         </div>
-        <select n:name="filter-$name" class="form-control custom-select"/>
+        <select n:name="filter-{$name}" class="form-control custom-select"/>
     </div>
 {/block}
 
