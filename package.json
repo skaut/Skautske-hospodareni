@@ -23,14 +23,14 @@
         "postcss-loader": "^3.0.0"
     },
     "devDependencies": {
-        "@babel/core": "^7.17.8",
+        "@babel/core": "^7.17.10",
         "@babel/preset-env": "^7.16.11",
         "@types/webpack-env": "^1.16.4",
         "autoprefixer": "^9.8.8",
         "babel-loader": "^8.2.5",
         "css-loader": "^5.2.7",
         "husky": "^7.0.4",
-        "lint-staged": "^12.3.5",
+        "lint-staged": "^12.4.1",
         "mini-css-extract-plugin": "^1.6.2",
         "sass": "^1.51.0",
         "sass-loader": "^8.0.2",
