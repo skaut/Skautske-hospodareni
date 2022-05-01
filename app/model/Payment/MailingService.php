@@ -74,7 +74,7 @@ class MailingService
 
         if ($template === null || ! $group->isEmailEnabled($emailType)) {
             throw new EmailTemplateNotSet(
-                "Email template '" . $emailType->getValue() . "' not found"
+                "E-mail template '" . $emailType->getValue() . "' not found"
             );
         }
 

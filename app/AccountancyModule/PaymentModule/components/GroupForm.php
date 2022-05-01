@@ -129,8 +129,8 @@ final class GroupForm extends BaseControl
             ->setRequired(false)
             ->setPrompt('Vyberte bankovní účet');
 
-        $form->addSelect('oAuthId', 'Email odesílatele', $this->oAuthItems())
-            ->setPrompt('Vyberte email')
+        $form->addSelect('oAuthId', 'E-mail odesílatele', $this->oAuthItems())
+            ->setPrompt('Vyberte e-mail')
             ->setAttribute('class', 'ui--emailSelectbox'); // For acceptance testing
 
         $this->addEmailsToForm($form);
@@ -238,8 +238,8 @@ final class GroupForm extends BaseControl
         $emailsContainer = $form->addContainer('emails');
 
         $emails = [
-            EmailType::PAYMENT_INFO => 'Email s platebními údaji',
-            EmailType::PAYMENT_COMPLETED => 'Email při dokončení platby',
+            EmailType::PAYMENT_INFO => 'E-mail s platebními údaji',
+            EmailType::PAYMENT_COMPLETED => 'E-mail při dokončení platby',
         ];
 
         foreach ($emails as $type => $caption) {
@@ -259,7 +259,7 @@ final class GroupForm extends BaseControl
                     ->toggle($bodyId);
             }
 
-            $container->addText('subject', 'Předmět emailu')
+            $container->addText('subject', 'Předmět e-mailu')
                 ->setOption('id', $subjectId);
             $container->addTextArea('body', 'Text mailu')
                 ->setOption('id', $bodyId)

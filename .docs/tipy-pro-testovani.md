@@ -8,7 +8,7 @@ Spousta jich vychází z [Extremely Defensive PHP](https://ocramius.github.io/ex
 - Chování (změnu stavu) pokrýváme unit testy. Testujeme všechny scénáře (cesty, kterými se kód může ubírat) [\[1\]](https://ocramius.github.io/extremely-defensive-php/#/107)
 
 ## Jak testovat listenery
-V listenerech se většinou nachází nějaké side-effecty, kterými se nechceme zabývat při vykonávání hlavní akce (odeslání emailu o nějaké akci, apod). Stačí testovat v rámci integračního testu hlavní akce.
+V listenerech se většinou nachází nějaké side-effecty, kterými se nechceme zabývat při vykonávání hlavní akce (odeslání e-mailu o nějaké akci, apod). Stačí testovat v rámci integračního testu hlavní akce.
 
 ## Jak testovat repozitáře
 Integrační test s databází

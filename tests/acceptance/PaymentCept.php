@@ -37,7 +37,7 @@ $I->click('Založit skupinu plateb');
 $I->waitForText('Obecná');
 $I->click('Obecná');
 $I->fillField('Název', 'Jaráky');
-$I->click('//option[text()="Vyberte email"]');
+$I->click('//option[text()="Vyberte e-mail"]');
 $I->click('//option[text()="test@hospodareni.loc"]');
 
 $I->click('//option[text()="Vyberte bankovní účet"]');

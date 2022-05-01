@@ -12,6 +12,6 @@ class PaymentHasNoEmails extends Exception
 {
     public static function withName(string $name): self
     {
-        return new self(sprintf('Payment "%s" does not have any email address filled', $name));
+        return new self(sprintf('Payment "%s" does not have any e-mail address filled', $name));
     }
 }

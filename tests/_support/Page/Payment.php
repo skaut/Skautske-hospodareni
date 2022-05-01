@@ -24,7 +24,7 @@ class Payment
 
     public function fillEmail(string $name) : void
     {
-        $this->tester->fillField('Email', $name);
+        $this->tester->fillField('E-mail', $name);
     }
 
     public function fillAmount(float $amount) : void

@@ -207,7 +207,7 @@ class PaymentPresenter extends BasePresenter
         }
 
         if (empty($payment->getEmailRecipients())) {
-            $this->flashMessage('Platba nemá vyplněný email', 'danger');
+            $this->flashMessage('Platba nemá vyplněný e-mail', 'danger');
             $this->redirect('this');
         }
 
@@ -219,7 +219,7 @@ class PaymentPresenter extends BasePresenter
     }
 
     /**
-     * rozešle všechny neposlané emaily
+     * rozešle všechny neposlané e-maily
      *
      * @param int $gid groupId
      */
@@ -235,13 +235,13 @@ class PaymentPresenter extends BasePresenter
     public function handleSendTest(int $gid): void
     {
         if (! $this->isEditable) {
-            $this->flashMessage('Neplatný požadavek na odeslání testovacího emailu!', 'danger');
+            $this->flashMessage('Neplatný požadavek na odeslání testovacího e-mailu!', 'danger');
             $this->redirect('this');
         }
 
         try {
             $email = $this->mailing->sendTestMail($gid);
-            $this->flashMessage('Testovací email byl odeslán na ' . $email . '.');
+            $this->flashMessage('Testovací e-mail byl odeslán na ' . $email . '.');
         } catch (OAuthNotSet $e) {
             $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
         } catch (InvalidOAuth $e) {
@@ -249,7 +249,7 @@ class PaymentPresenter extends BasePresenter
         } catch (InvalidBankAccount $e) {
             $this->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
         } catch (EmailNotSet $e) {
-            $this->flashMessage('Nemáte nastavený email ve skautisu, na který by se odeslal testovací email!', 'danger');
+            $this->flashMessage('Nemáte nastavený e-mail ve skautisu, na který by se odeslal testovací e-mail!', 'danger');
         }
 
         $this->redirect('this');
@@ -405,8 +405,8 @@ class PaymentPresenter extends BasePresenter
         if ($sentCount > 0) {
             $this->flashMessage(
                 $sentCount === 1
-                    ? 'Informační email byl odeslán'
-                    : 'Informační emaily (' . $sentCount . ') byly odeslány',
+                    ? 'Informační e-mail byl odeslán'
+                    : 'Informační e-maily (' . $sentCount . ') byly odeslány',
                 'success'
             );
         }
