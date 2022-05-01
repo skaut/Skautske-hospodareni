@@ -5258,35 +5258,39 @@
         },
         {
             "name": "nettrine/dbal",
-            "version": "v0.7.0",
+            "version": "v0.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nettrine/dbal.git",
-                "reference": "26a63ef21d229aa35b42b2d7798581bdb88ee912"
+                "reference": "9d6f2dc0979ff4665c51ccfdc8b0b6a3ddc369fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nettrine/dbal/zipball/26a63ef21d229aa35b42b2d7798581bdb88ee912",
-                "reference": "26a63ef21d229aa35b42b2d7798581bdb88ee912",
+                "url": "https://api.github.com/repos/nettrine/dbal/zipball/9d6f2dc0979ff4665c51ccfdc8b0b6a3ddc369fb",
+                "reference": "9d6f2dc0979ff4665c51ccfdc8b0b6a3ddc369fb",
                 "shasum": ""
             },
             "require": {
                 "contributte/di": "^0.5.0",
                 "doctrine/dbal": "^2.9.2",
                 "nettrine/cache": "^0.3.0",
-                "php": ">=7.2"
+                "php": ">=7.2 <8.2"
+            },
+            "conflict": {
+                "nette/di": "<3.0.6",
+                "nette/schema": "<1.1.0"
             },
             "require-dev": {
-                "contributte/console": "^0.5.0",
-                "mockery/mockery": "^1.3.3",
+                "contributte/console": "^0.9.1",
+                "mockery/mockery": "^1.3.5",
                 "ninjify/nunjuck": "^0.4",
-                "ninjify/qa": "^0.9.0",
-                "phpstan/phpstan": "^0.12",
-                "phpstan/phpstan-deprecation-rules": "^0.12",
-                "phpstan/phpstan-nette": "^0.12",
-                "phpstan/phpstan-strict-rules": "^0.12",
-                "psr/log": "^1.1",
-                "tracy/tracy": "~2.6.2"
+                "ninjify/qa": "^0.12",
+                "phpstan/phpstan": "^1.2.0",
+                "phpstan/phpstan-deprecation-rules": "^1.0.0",
+                "phpstan/phpstan-nette": "^1.0.0",
+                "phpstan/phpstan-strict-rules": "^1.1.0",
+                "psr/log": "^1.1 || ^2.0 || ^3.0",
+                "tracy/tracy": "^2.6.2"
             },
             "type": "library",
             "extra": {
@@ -5322,9 +5326,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nettrine/dbal/issues",
-                "source": "https://github.com/nettrine/dbal/tree/v0.7.0"
+                "source": "https://github.com/nettrine/dbal/tree/v0.7.1"
             },
-            "time": "2020-12-11T15:36:41+00:00"
+            "time": "2022-04-12T14:52:00+00:00"
         },
         {
             "name": "nettrine/migrations",
