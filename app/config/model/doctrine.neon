@@ -10,6 +10,7 @@ extensions:
 
 migrations:
     directory: %appDir%/../migrations
+    versionsOrganization: year
 
 dbal:
     debug:
