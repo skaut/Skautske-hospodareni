@@ -16,6 +16,7 @@ use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Category;
 use Model\DTO\Cashbook\Chit;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\ColumnDimension;
@@ -216,7 +217,7 @@ class CashbookWithCategoriesBuilder
 
         $sheet->getRowDimension(self::SUBHEADER_ROW)->setRowHeight(40);
 
-        $sheet->getStyleByColumnAndRow(0, 0, 0, $lastRow)
+        $sheet->getStyle('A1:A' . $lastRow)
             ->getAlignment()
             ->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
@@ -245,11 +246,11 @@ class CashbookWithCategoriesBuilder
             ],
         ]);
 
-        $lastRowStyle = $sheet->getStyleByColumnAndRow(0, $lastRow, $lastColumn, $lastRow);
+        $lastRowStyle = $sheet->getStyle('A' . $lastRow . ':' . Coordinate::stringFromColumnIndex($lastColumn) . $lastRow);
         $lastRowStyle->getFont()->setBold(true);
         $lastRowStyle->getBorders()->getTop()->setBorderStyle(Border::BORDER_MEDIUM);
 
-        $sheet->getStyleByColumnAndRow(0, 1, $lastColumn, $lastRow)
+        $sheet->getStyle('A1:' . Coordinate::stringFromColumnIndex($lastColumn) . $lastRow)
             ->getFont()
             ->setSize(self::FONT_SIZE);
 
@@ -261,13 +262,13 @@ class CashbookWithCategoriesBuilder
         ];
 
         foreach ($separatedColumns as $column) {
-            $sheet->getStyleByColumnAndRow($column, self::HEADER_ROW, $column, $lastRow)
+            $sheet->getStyle(Coordinate::stringFromColumnIndex($column) . self::HEADER_ROW . ':' . Coordinate::stringFromColumnIndex($column) . $lastRow)
                 ->getBorders()
                 ->getLeft()
                 ->setBorderStyle(Border::BORDER_MEDIUM);
         }
 
-        $headers = $sheet->getStyleByColumnAndRow(0, self::HEADER_ROW, $lastColumn, self::SUBHEADER_ROW);
+        $headers = $sheet->getStyle('A' . self::HEADER_ROW . ':' . Coordinate::stringFromColumnIndex($lastColumn) . self::SUBHEADER_ROW);
 
         $headers->getBorders()
             ->getOutline()
