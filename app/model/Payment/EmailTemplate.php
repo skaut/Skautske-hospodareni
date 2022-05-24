@@ -45,6 +45,7 @@ class EmailTemplate
             '%groupname%' => $group->getName(),
             '%amount%' => $payment->getAmount(),
             '%maturity%' => $payment->getDueDate()->format('j.n.Y'),
+            '%maturityus%' => $payment->getDueDate()->format('Y-m-d'),
             '%vs%' => $payment->getVariableSymbol(),
             '%ks%' => $payment->getConstantSymbol(),
             '%note%' => $payment->getNote(),

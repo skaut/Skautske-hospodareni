@@ -25,7 +25,7 @@ class EmailTemplateTest extends Unit
 
     public function testEvaluate(): void
     {
-        $subject = '%groupname% | %name% | %account% | %amount% | %maturity% | %vs% | %ks% | %note% | %user%';
+        $subject = '%groupname% | %name% | %account% | %amount% | %maturity% | %maturityus% | %vs% | %ks% | %note% | %user%';
         $body    = 'Body: ' . $subject . ' | %qrcode%';
 
         $template = new EmailTemplate($subject, $body);
@@ -36,7 +36,7 @@ class EmailTemplateTest extends Unit
 
         $evaluatedTemplate = $template->evaluate($group, $payment, '123456789/2100', 'Sináček');
 
-        $expectedSubject = 'Skupina | František Maša | 123456789/2100 | 200 | 27.4.2017 | 4554 | 303 | Poznámka | Sináček';
+        $expectedSubject = 'Skupina | František Maša | 123456789/2100 | 200 | 27.4.2017 | 2017-04-27 | 4554 | 303 | Poznámka | Sináček';
 
         $qrCode       = '<img alt="QR platbu se nepodařilo zobrazit" src="http://api.paylibo.com/paylibo/generator/czech/image?accountNumber=123456789&bankCode=2100&amount=200&currency=CZK&size=200&vs=4554&ks=303&message=' . urlencode('František Maša') . '">';
         $expectedBody = 'Body: ' . $expectedSubject . ' | ' . $qrCode;
