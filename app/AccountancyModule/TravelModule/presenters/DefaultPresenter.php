@@ -10,11 +10,11 @@ use App\AccountancyModule\TravelModule\Factories\ICommandGridFactory;
 use App\AccountancyModule\TravelModule\Factories\IEditTravelDialogFactory;
 use App\Forms\BaseForm;
 use Assert\Assertion;
-use Model\BaseService;
 use Model\Services\PdfRenderer;
 use Model\Travel\Commands\Command\DuplicateTravel;
 use Model\Travel\Travel\TransportType;
 use Model\TravelService;
+use Model\UserService;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Bridges\ApplicationLatte\Template;
@@ -68,7 +68,7 @@ class DefaultPresenter extends BasePresenter
         assert($identity instanceof SimpleIdentity);
 
         return $command->getOwnerId() === $this->getUser()->getId() ||
-            array_key_exists($command->getUnitId(), $identity->access[BaseService::ACCESS_READ]);
+            array_key_exists($command->getUnitId(), $identity->access[UserService::ACCESS_READ]);
     }
 
     private function isCommandEditable(int $id): bool
@@ -79,7 +79,7 @@ class DefaultPresenter extends BasePresenter
         assert($identity instanceof SimpleIdentity);
 
         $unitOrOwner = $command->getOwnerId() === $this->getUser()->getId() ||
-            array_key_exists($command->getUnitId(), $identity->access[BaseService::ACCESS_EDIT]);
+            array_key_exists($command->getUnitId(), $identity->access[UserService::ACCESS_EDIT]);
 
         return $this->isCommandAccessible($id) &&
             $command->getClosedAt() === null && $unitOrOwner;

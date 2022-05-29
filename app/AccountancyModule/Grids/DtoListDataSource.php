@@ -71,13 +71,9 @@ final class DtoListDataSource implements IDataSource
     }
 
     /**
-     * @param int $offset
-     * @param int $limit
-     *
      * @return $this
      */
-    // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
-    public function limit($offset, $limit): self
+    public function limit(int $offset, int $limit): self
     {
         $this->criteria->setFirstResult($offset)->setMaxResults($limit);
 

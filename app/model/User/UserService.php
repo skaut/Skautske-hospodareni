@@ -12,13 +12,31 @@ use Nette\Application\BadRequestException;
 use Skautis\Skautis;
 use stdClass;
 
+use function array_key_exists;
+
 class UserService extends BaseService
 {
+    public const ACCESS_READ = 'read';
+    public const ACCESS_EDIT = 'edit';
+
     private QueryBus $queryBus;
+
+    /**
+     * krátkodobé lokální úložiště pro ukládání odpovědí ze skautISU
+     *
+     * @var mixed[]
+     */
+    private static array $storage = [];
+
+
+    /**
+     * slouží pro komunikaci se skautISem
+     */
+    protected Skautis $skautis;
 
     public function __construct(Skautis $skautis, QueryBus $queryBus)
     {
-        parent::__construct($skautis);
+        $this->skautis  = $skautis;
         $this->queryBus = $queryBus;
     }
 
@@ -150,5 +168,34 @@ class UserService extends BaseService
     public function getSkautisUrl(): string
     {
         return $this->skautis->getConfig()->getBaseUrl();
+    }
+
+    /**
+     * ukládá $val do lokálního úložiště
+     *
+     * @param mixed $id
+     * @param mixed $val
+     *
+     * @return mixed
+     */
+    private function saveSes($id, $val)
+    {
+        return self::$storage[$id] = $val;
+    }
+
+    /**
+     * vrací objekt z lokálního úložiště
+     *
+     * @param string|int $id
+     *
+     * @return mixed | FALSE
+     */
+    private function loadSes($id)
+    {
+        if (array_key_exists($id, self::$storage)) {
+            return self::$storage[$id];
+        }
+
+        return false;
     }
 }

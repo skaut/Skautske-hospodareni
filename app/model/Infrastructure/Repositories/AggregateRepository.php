@@ -35,7 +35,7 @@ abstract class AggregateRepository
             return;
         }
 
-        $this->entityManager->transactional(function () use ($aggregate, $events): void {
+        $this->entityManager->wrapInTransaction(function () use ($aggregate, $events): void {
             $this->persist($aggregate);
             foreach ($events as $event) {
                 $this->eventBus->handle($event);

@@ -33,10 +33,9 @@ abstract class BaseControl extends Control
 
     /**
      * @param string $message
-     * @param string $type
      */
     // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
-    public function flashMessage($message, $type = 'info'): stdClass
+    public function flashMessage($message, string $type = 'info'): stdClass
     {
         return $this->getPresenter()->flashMessage($message, $type);
     }

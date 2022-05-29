@@ -114,7 +114,7 @@ class UnitService
      */
     public function getReadUnits(User $user): array
     {
-        return $this->getUnits($user, BaseService::ACCESS_READ);
+        return $this->getUnits($user, UserService::ACCESS_READ);
     }
 
     /**

@@ -162,7 +162,7 @@ final class GroupRepository implements IGroupRepository
 
     public function remove(Group $group): void
     {
-        $this->em->transactional(
+        $this->em->wrapInTransaction(
             function (EntityManager $entityManager) use ($group): void {
                 $entityManager->remove($group);
 
