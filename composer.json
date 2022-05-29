@@ -37,7 +37,7 @@
         "nette/security": "^3.1",
         "nette/utils": "^3.2",
         "nettrine/cache": "^0.3.0",
-        "nettrine/dbal": "^0.7",
+        "nettrine/dbal": "^0.8.0",
         "nettrine/migrations": "^v0.8",
         "nextras/mail-panel": "^v2.5",
         "php-http/guzzle6-adapter": "^2.0",
