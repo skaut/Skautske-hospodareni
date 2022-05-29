@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Model\Google;
 
 use Google\Client;
-use Google_Service_Gmail;
-use Google_Service_Oauth2;
+use Google\Service\Gmail;
+use Google\Service\Oauth2;
 
 class GoogleService
 {
@@ -24,8 +24,8 @@ class GoogleService
         $client = new Client();
         $client->setApplicationName('Skautské hospodaření online');
         $client->setScopes([
-            Google_Service_Gmail::GMAIL_SEND,
-            Google_Service_Oauth2::USERINFO_EMAIL,
+            Gmail::GMAIL_SEND,
+            Oauth2::USERINFO_EMAIL,
         ]);
         $client->setAuthConfig($this->credentialsPath);
         $client->setRedirectUri($this->tokenUri);

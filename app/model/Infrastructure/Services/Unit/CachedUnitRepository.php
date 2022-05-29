@@ -7,7 +7,7 @@ namespace Model\Infrastructure\Services\Unit;
 use Model\Unit\Repositories\IUnitRepository;
 use Model\Unit\Unit;
 use Nette\Caching\Cache;
-use Nette\Caching\IStorage;
+use Nette\Caching\Storage;
 
 final class CachedUnitRepository implements IUnitRepository
 {
@@ -17,7 +17,7 @@ final class CachedUnitRepository implements IUnitRepository
 
     private Cache $cache;
 
-    public function __construct(IUnitRepository $inner, IStorage $storage)
+    public function __construct(IUnitRepository $inner, Storage $storage)
     {
         $this->inner = $inner;
         $this->cache = new Cache($storage, 'units');
