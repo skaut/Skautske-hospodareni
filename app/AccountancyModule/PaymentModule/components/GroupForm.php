@@ -131,12 +131,12 @@ final class GroupForm extends BaseControl
 
         $form->addSelect('oAuthId', 'E-mail odesílatele', $this->oAuthItems())
             ->setPrompt('Vyberte e-mail')
-            ->setAttribute('class', 'ui--emailSelectbox'); // For acceptance testing
+            ->setHtmlAttribute('class', 'ui--emailSelectbox'); // For acceptance testing
 
         $this->addEmailsToForm($form);
 
         $form->addSubmit('send', $this->groupId !== null ? 'Uložit skupinu' : 'Založit skupinu')
-            ->setAttribute('class', 'btn btn-primary');
+            ->setHtmlAttribute('class', 'btn btn-primary');
 
         $form->setDefaults($this->buildDefaultsFromGroup());
 
@@ -263,7 +263,7 @@ final class GroupForm extends BaseControl
                 ->setOption('id', $subjectId);
             $container->addTextArea('body', 'Text mailu')
                 ->setOption('id', $bodyId)
-                ->setAttribute('class', 'form-control')
+                ->setHtmlAttribute('class', 'form-control')
                 ->setDefaultValue($this->getDefaultEmailBody($type));
         }
 

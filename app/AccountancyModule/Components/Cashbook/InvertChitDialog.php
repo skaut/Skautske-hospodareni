@@ -104,7 +104,7 @@ class InvertChitDialog extends BaseControl
             ->setRequired('Musíte vybrat evidenci plateb');
 
         $form->addSubmit('send', 'Vytvořit protidoklad')
-            ->setAttribute('class', 'ajax btn btn-primary');
+            ->setHtmlAttribute('class', 'ajax btn btn-primary');
 
         $form->onSuccess[] = function (BaseForm $form, array $values): void {
             $cashbookId = CashbookId::fromString((string) $values['cashbookId']);

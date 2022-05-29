@@ -89,7 +89,7 @@ class GroupUnitControl extends BaseControl
             ->setRequired('Musíte vybrat jednotku');
 
         $form->addButton('save')
-            ->setAttribute('type', 'submit');
+            ->setHtmlAttribute('type', 'submit');
 
         $form->onSuccess[] = function ($form, ArrayHash $values) use ($group): void {
             if (! $this->canEdit($group)) {

@@ -93,7 +93,7 @@ class MoveChitsDialog extends BaseControl
             ->setPrompt('Zvolte knihu');
 
         $form->addSubmit('move', 'Přesunout doklady')
-            ->setAttribute('class', 'ajax');
+            ->setHtmlAttribute('class', 'ajax');
 
         $form->onSuccess[] = function (BaseForm $form, ArrayHash $values): void {
             $this->formSubmitted($form, $values);

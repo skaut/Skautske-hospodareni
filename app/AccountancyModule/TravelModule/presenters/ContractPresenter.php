@@ -151,29 +151,29 @@ class ContractPresenter extends BasePresenter
         $form = new BaseForm();
 
         $form->addText('passengerName', 'Jméno a příjmení řidiče')
-            ->setAttribute('class', 'form-control')
+            ->setHtmlAttribute('class', 'form-control')
             ->setRequired('Musíte vyplnit jméno řidiče.');
         $form->addText('passengerAddress', 'Bydliště řidiče')
-            ->setAttribute('class', 'form-control')
+            ->setHtmlAttribute('class', 'form-control')
             ->setRequired('Musíte vyplnit bydliště řidiče.');
         $form->addDate('passengerBirthday', 'Datum narození řidiče')
-            ->setAttribute('class', 'form-control')
+            ->setHtmlAttribute('class', 'form-control')
             ->setRequired('Musíte vyplnit datum narození řidiče.');
         $form->addText('passengerContact', 'Telefon na řidiče (9cifer)')
-            ->setAttribute('class', 'form-control')
+            ->setHtmlAttribute('class', 'form-control')
             ->setRequired('Musíte vyplnit telefon na řidiče.')
             ->addRule(Form::NUMERIC, 'Telefon musí být číslo.');
 
         $form->addText('unitRepresentative', 'Zástupce jednotky')
             ->setRequired('Musíte vyplnit zástupce jednotky')
-            ->setAttribute('class', 'form-control');
+            ->setHtmlAttribute('class', 'form-control');
         $form->addDate('start', 'Platnost od')
             ->setDefaultValue(Date::now())
             ->setRequired('Musíte vyplnit od kdy smlouva platí')
-            ->setAttribute('class', 'form-control');
+            ->setHtmlAttribute('class', 'form-control');
 
         $form->addSubmit('send', 'Založit smlouvu')
-            ->setAttribute('class', 'btn btn-primary');
+            ->setHtmlAttribute('class', 'btn btn-primary');
 
         $form->onSuccess[] = function (Form $form): void {
             $this->formCreateContractSubmitted($form);

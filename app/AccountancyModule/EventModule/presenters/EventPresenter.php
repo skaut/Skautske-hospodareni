@@ -206,7 +206,7 @@ class EventPresenter extends BasePresenter
         $form->addSelect('scope', 'Rozsah (+)', $this->queryBus->handle(new EventScopes()));
         $form->addHidden('aid');
         $form->addSubmit('send', 'Upravit')
-            ->setAttribute('class', 'btn btn-primary')
+            ->setHtmlAttribute('class', 'btn btn-primary')
             ->onClick[] = function (SubmitButton $button): void {
                 $this->formEditSubmitted($button);
             };

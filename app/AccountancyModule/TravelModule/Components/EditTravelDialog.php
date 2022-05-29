@@ -53,7 +53,7 @@ final class EditTravelDialog extends Dialog
         $form->addSelect('type', 'Prostředek', $command->getTransportTypePairs());
 
         $form->addDate('date', 'Datum cesty')
-            ->setAttribute('class', 'date')
+            ->setHtmlAttribute('class', 'date')
             ->addRule(Form::FILLED, 'Musíte vyplnit datum cesty.');
 
         $form->addText('startPlace', 'Z')
@@ -68,7 +68,7 @@ final class EditTravelDialog extends Dialog
             ->addRule(Form::MIN, 'Vzdálenost musí být větší než 0.', 0.01);
 
         $form->addSubmit('send', 'Upravit')
-            ->setAttribute('class', 'btn btn-primary ajax');
+            ->setHtmlAttribute('class', 'btn btn-primary ajax');
 
         $travelId = $this->travelId;
         Assertion::notNull($travelId);

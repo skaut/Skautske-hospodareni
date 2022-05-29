@@ -226,7 +226,7 @@ class DefaultPresenter extends BasePresenter
         $form->addHidden('command_id');
         $form->addSelect('type');
         $form->addDate('start_date', 'Datum cesty')
-            ->setAttribute('class', 'date')
+            ->setHtmlAttribute('class', 'date')
             ->addRule(Form::FILLED, 'Musíte vyplnit datum cesty.');
         $form->addText('start_place', 'Z*')
             ->addRule(Form::FILLED, 'Musíte vyplnit místo počátku cesty.');
@@ -237,7 +237,7 @@ class DefaultPresenter extends BasePresenter
             ->addRule(Form::FLOAT, 'Vzdálenost musí být číslo!')
             ->addRule(Form::MIN, 'Vzdálenost musí být větší než 0.', 0.01);
         $form->addSubmit('send', 'Přidat')
-            ->setAttribute('class', 'btn btn-primary');
+            ->setHtmlAttribute('class', 'btn btn-primary');
 
         $form->onSuccess[] = function (Form $form): void {
             $this->formAddTravelSubmitted($form);

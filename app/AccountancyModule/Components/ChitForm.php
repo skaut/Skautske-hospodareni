@@ -179,15 +179,15 @@ final class ChitForm extends BaseControl
 
         $form->addDate('date')
             ->setRequired('Zadejte datum')
-            ->setAttribute('class', 'form-control input-sm required')
-            ->setAttribute('placeholder', 'Datum');
+            ->setHtmlAttribute('class', 'form-control input-sm required')
+            ->setHtmlAttribute('placeholder', 'Datum');
 
         $form->addText('num')
             ->setMaxLength(5)
             ->setRequired(false)
             ->addRule($form::PATTERN, self::INVALID_CHIT_NUMBER_MESSAGE, ChitNumber::PATTERN)
-            ->setAttribute('placeholder', 'Číslo dokladu')
-            ->setAttribute('class', 'form-control input-sm');
+            ->setHtmlAttribute('placeholder', 'Číslo dokladu')
+            ->setHtmlAttribute('class', 'form-control input-sm');
 
         $paymentMethods = [
             PaymentMethod::CASH => 'Pokladna',
@@ -205,26 +205,26 @@ final class ChitForm extends BaseControl
         $form->addText('recipient')
             ->setMaxLength(64)
             ->setHtmlId('form-recipient')
-            ->setAttribute('data-autocomplete', Json::encode($this->getAdultMemberNames()))
-            ->setAttribute('placeholder', 'Komu/Od')
-            ->setAttribute('class', 'form-control input-sm');
+            ->setHtmlAttribute('data-autocomplete', Json::encode($this->getAdultMemberNames()))
+            ->setHtmlAttribute('placeholder', 'Komu/Od')
+            ->setHtmlAttribute('class', 'form-control input-sm');
 
         $items = $form->addDynamic('items', function (Container $container) use ($typePicker): void {
             $this->itemsCount++;
             $container->addText('purpose')
                 ->setMaxLength(120)
                 ->setRequired('Zadejte účel výplaty')
-                ->setAttribute('placeholder', 'Účel')
-                ->setAttribute('class', 'form-control input-sm required');
+                ->setHtmlAttribute('placeholder', 'Účel')
+                ->setHtmlAttribute('class', 'form-control input-sm required');
 
             $container->addSelect('incomeCategories', null, $this->getCategoryPairsByType(Operation::get(Operation::INCOME)))
-                ->setAttribute('class', 'form-control input-sm')
+                ->setHtmlAttribute('class', 'form-control input-sm')
                 ->setHtmlId('incomeCategories' . $this->itemsCount)
                 ->addConditionOn($typePicker, Form::EQUAL, Operation::INCOME)
                 ->toggle('incomeCategories' . $this->itemsCount);
 
             $container->addSelect('expenseCategories', null, $this->getCategoryPairsByType(Operation::get(Operation::EXPENSE)))
-                ->setAttribute('class', 'form-control input-sm')
+                ->setHtmlAttribute('class', 'form-control input-sm')
                 ->setHtmlId('expenseCategories' . $this->itemsCount)
                 ->addConditionOn($typePicker, Form::EQUAL, Operation::EXPENSE)
                 ->toggle('expenseCategories' . $this->itemsCount);
@@ -234,8 +234,8 @@ final class ChitForm extends BaseControl
                 ->addRule([$this, 'isAmountValid'], 'Částka musí být větší než 0')
                 ->setMaxLength(100)
                 ->setHtmlId('form-out-price')
-                ->setAttribute('placeholder', 'Částka: 2+3*15')
-                ->setAttribute('class', 'form-control input-sm');
+                ->setHtmlAttribute('placeholder', 'Částka: 2+3*15')
+                ->setHtmlAttribute('class', 'form-control input-sm');
             $container->addHidden('id');
 
             $container->addSubmit('remove', 'Odebrat položku')
@@ -258,7 +258,7 @@ final class ChitForm extends BaseControl
             ->addRule($form::INTEGER);
 
         $form->addSubmit('send', 'Uložit')
-            ->setAttribute('class', 'btn btn-primary');
+            ->setHtmlAttribute('class', 'btn btn-primary');
 
         $form->onSuccess[] = function (BaseForm $form, ArrayHash $values): void {
             if ($form->isSubmitted() !== $form['send']) {

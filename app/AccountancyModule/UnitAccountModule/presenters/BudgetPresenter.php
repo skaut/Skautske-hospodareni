@@ -77,7 +77,7 @@ class BudgetPresenter extends BasePresenter
         $form->addHidden('oid', $this->unitId->toInt());
 
         $form->addSubmit('submit', 'Založit kategorii')
-            ->setAttribute('class', 'btn btn-primary');
+            ->setHtmlAttribute('class', 'btn btn-primary');
 
         $form->onSuccess[] = function (Form $form): void {
             $this->addCategoryFormSubmitted($form);
