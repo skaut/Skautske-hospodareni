@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule;
 
-use Model\BaseService;
 use Model\Common\UnitId;
 use Model\Skautis\SkautisMaintenanceChecker;
-use Nette\Security\Identity;
+use Model\UserService;
+use Nette\Security\SimpleIdentity;
 use stdClass;
 
 use function array_keys;
@@ -70,10 +70,9 @@ abstract class BasePresenter extends \App\BasePresenter
 
     /**
      * @param string $message
-     * @param string $type
      */
     // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
-    public function flashMessage($message, $type = 'info'): stdClass
+    public function flashMessage($message, string $type = 'info'): stdClass
     {
         $this->redrawControl('flash');
 
@@ -96,10 +95,10 @@ abstract class BasePresenter extends \App\BasePresenter
             return [];
         }
 
-        assert($identity instanceof Identity);
+        assert($identity instanceof SimpleIdentity);
 
         /** @var array<int, mixed> $editableUnits */
-        $editableUnits = $identity->access[BaseService::ACCESS_EDIT];
+        $editableUnits = $identity->access[UserService::ACCESS_EDIT];
 
         return array_keys($editableUnits);
     }

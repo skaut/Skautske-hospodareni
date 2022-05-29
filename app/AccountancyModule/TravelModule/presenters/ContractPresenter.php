@@ -7,14 +7,14 @@ namespace App\AccountancyModule\TravelModule;
 use App\Forms\BaseForm;
 use Cake\Chronos\Date;
 use Exception;
-use Model\BaseService;
 use Model\DTO\Travel\Contract;
 use Model\Services\PdfRenderer;
 use Model\Travel\Contract\Passenger;
 use Model\TravelService;
 use Model\Unit\ReadModel\Queries\UnitQuery;
+use Model\UserService;
 use Nette\Application\UI\Form;
-use Nette\Security\Identity;
+use Nette\Security\SimpleIdentity;
 
 use function array_column;
 use function array_filter;
@@ -40,18 +40,18 @@ class ContractPresenter extends BasePresenter
     {
         $identity = $this->getUser()->getIdentity();
 
-        assert($identity instanceof Identity);
+        assert($identity instanceof SimpleIdentity);
 
-        return $contract !== null && array_key_exists($contract->getUnitId(), $identity->access[BaseService::ACCESS_READ]);
+        return $contract !== null && array_key_exists($contract->getUnitId(), $identity->access[UserService::ACCESS_READ]);
     }
 
     private function isContractEditable(?Contract $contract): bool
     {
         $identity = $this->getUser()->getIdentity();
 
-        assert($identity instanceof Identity);
+        assert($identity instanceof SimpleIdentity);
 
-        return $contract !== null && array_key_exists($contract->getUnitId(), $identity->access[BaseService::ACCESS_EDIT]);
+        return $contract !== null && array_key_exists($contract->getUnitId(), $identity->access[UserService::ACCESS_EDIT]);
     }
 
     public function renderDefault(): void
@@ -59,16 +59,16 @@ class ContractPresenter extends BasePresenter
         $identity = $this->getUser()->getIdentity();
         $unitId   = $this->officialUnit->getId();
 
-        assert($identity instanceof Identity);
+        assert($identity instanceof SimpleIdentity);
 
-        if (! array_key_exists($unitId, $identity->access[BaseService::ACCESS_READ])) {
+        if (! array_key_exists($unitId, $identity->access[UserService::ACCESS_READ])) {
             $this->flashMessage('Nemáš přístup ke smlouvám cestovních příkazů.', 'danger');
             $this->redirect('Default:default');
         }
 
         $this->template->setParameters([
             'list' => $this->travelService->getAllContracts($unitId),
-            'canCreate' => array_key_exists($unitId, $identity->access[BaseService::ACCESS_EDIT]),
+            'canCreate' => array_key_exists($unitId, $identity->access[UserService::ACCESS_EDIT]),
         ]);
     }
 

@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\AccountancyModule;
 
 use Nette;
-use Nette\Application\IResponse;
+use Nette\Application\Response;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 use function gmdate;
 use function sprintf;
 
-final class ExcelResponse implements IResponse
+final class ExcelResponse implements Response
 {
     private string $filename;
 

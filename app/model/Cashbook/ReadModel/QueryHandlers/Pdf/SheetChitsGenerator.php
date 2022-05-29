@@ -55,12 +55,12 @@ class SheetChitsGenerator
                 $prefix   = $cashbook->getChitNumberPrefix($chit->getPaymentMethod());
 
                 $sheet->setCellValue('A' . $rowCnt, $item->getDisplayName())
-                    ->setCellValue('B' . $rowCnt, $chit->getDate()->format('d.m.Y'))
+                    ->setCellValue('B' . $rowCnt, $chit->getBody()->getDate()->format('d.m.Y'))
                     ->setCellValue('C' . $rowCnt, $chit->getPaymentMethod()->equals(PaymentMethod::CASH()) ? 'Pokladna' : 'Banka')
-                    ->setCellValue('D' . $rowCnt, $prefix . (string) $chit->getNumber())
+                    ->setCellValue('D' . $rowCnt, $prefix . (string) $chit->getBody()->getNumber())
                     ->setCellValue('E' . $rowCnt, $chit->getPurpose())
                     ->setCellValue('F' . $rowCnt, $chit->getCategories())
-                    ->setCellValue('G' . $rowCnt, (string) $chit->getRecipient())
+                    ->setCellValue('G' . $rowCnt, (string) $chit->getBody()->getRecipient())
                     ->setCellValue('H' . $rowCnt, $isIncome ? $amount : '')
                     ->setCellValue('I' . $rowCnt, ! $isIncome ? $amount : '');
 

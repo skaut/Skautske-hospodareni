@@ -7,7 +7,7 @@ namespace App\Components;
 use App\AccountancyModule\Components\BaseControl;
 use Model\UnitService;
 use Model\UserService;
-use Nette\Security\Identity;
+use Nette\Security\SimpleIdentity;
 use Nette\Security\User;
 
 use function assert;
@@ -33,7 +33,7 @@ final class LoginPanel extends BaseControl
 
         $identity = $this->user->getIdentity();
 
-        assert($identity instanceof Identity);
+        assert($identity instanceof SimpleIdentity);
 
         $identity->access      = $this->userService->getAccessArrays($this->unitService);
         $identity->currentRole = $this->userService->getActualRole();

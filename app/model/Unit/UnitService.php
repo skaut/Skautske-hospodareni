@@ -11,7 +11,7 @@ use Model\Unit\Repositories\IUnitRepository;
 use Model\Unit\Unit;
 use Model\Unit\UserHasNoUnit;
 use Nette\Application\BadRequestException;
-use Nette\Security\Identity;
+use Nette\Security\SimpleIdentity;
 use Nette\Security\User;
 use Skautis;
 
@@ -114,7 +114,7 @@ class UnitService
      */
     public function getReadUnits(User $user): array
     {
-        return $this->getUnits($user, BaseService::ACCESS_READ);
+        return $this->getUnits($user, UserService::ACCESS_READ);
     }
 
     /**
@@ -124,7 +124,7 @@ class UnitService
     {
         $identity = $user->getIdentity();
 
-        assert($identity instanceof Identity);
+        assert($identity instanceof SimpleIdentity);
 
         $res = [];
         foreach ($identity->access[$accessType] as $uId => $u) {

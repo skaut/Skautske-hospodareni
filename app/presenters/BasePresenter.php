@@ -17,7 +17,7 @@ use Nette\Application\LinkGenerator;
 use Nette\Application\Response;
 use Nette\Application\UI\Presenter;
 use Nette\Bridges\ApplicationLatte\DefaultTemplate;
-use Nette\Security\Identity;
+use Nette\Security\SimpleIdentity;
 use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\AuthenticationException;
 
@@ -154,7 +154,7 @@ abstract class BasePresenter extends Presenter
     {
         $identity = $this->user->getIdentity();
 
-        assert($identity instanceof Identity);
+        assert($identity instanceof SimpleIdentity);
 
         $identity->access = $this->userService->getAccessArrays($this->unitService);
     }
