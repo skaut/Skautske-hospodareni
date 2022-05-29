@@ -34,9 +34,9 @@ use Model\Skautis\Exception\AmountMustBeGreaterThanZero;
 use NasExt\Forms\DependentData;
 use Nette\Application\BadRequestException;
 use Nette\Forms\Container;
+use Nette\Forms\Control;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Forms\Form;
-use Nette\Forms\IControl;
 use Nette\Http\IResponse;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\Json;
@@ -90,7 +90,7 @@ final class ChitForm extends BaseControl
         $this->logger     = $logger;
     }
 
-    public function isAmountValid(IControl $control): bool
+    public function isAmountValid(Control $control): bool
     {
         try {
             new Amount($control->getValue());

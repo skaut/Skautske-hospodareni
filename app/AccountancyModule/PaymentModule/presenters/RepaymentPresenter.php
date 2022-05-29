@@ -16,7 +16,7 @@ use Model\Payment\ReadModel\Queries\RepaymentCandidateListQuery;
 use Model\Payment\Repayment;
 use Model\PaymentService;
 use Model\Utils\MoneyFactory;
-use Nette\Forms\IControl;
+use Nette\Forms\Control;
 
 use function assert;
 use function count;
@@ -88,7 +88,7 @@ final class RepaymentPresenter extends BasePresenter
                 ->setRequired('Musíte vyplnit bankovní účet')
                 ->addRule($form::PATTERN, $invalidBankAccountMessage, '^([0-9]{1,6}-)?[0-9]{1,10}/[0-9]{4}$')
                 ->addRule(
-                    function (IControl $control) {
+                    function (Control $control) {
                         return AccountNumber::isValid($control->getValue());
                     },
                     $invalidBankAccountMessage

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Google\Handlers;
 
-use Google_Service_Oauth2;
+use Google\Service\Oauth2;
 use Model\Google\Commands\SaveOAuth;
 use Model\Google\Exception\OAuthNotFound;
 use Model\Google\GoogleService;
@@ -28,7 +28,7 @@ final class SaveOAuthHandler
         $client = $this->googleService->getClient();
         $token  = $client->fetchAccessTokenWithAuthCode($command->getCode());
         $client->setAccessToken($token);
-        $email = (new Google_Service_Oauth2($client))->userinfo->get()->getEmail();
+        $email = (new Oauth2($client))->userinfo->get()->getEmail();
 
         try {
             $oAuth = $this->repository->findByUnitAndEmail($command->getUnitId(), $email);

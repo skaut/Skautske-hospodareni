@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Google;
 
-use Google_Service_Gmail;
-use Google_Service_Gmail_Message;
+use Google\Service\Gmail;
 use Nette\Mail\Mailer;
 use Nette\Mail\Message;
 
@@ -16,7 +15,7 @@ use function str_replace;
 
 class OAuthMailer implements Mailer
 {
-    private Google_Service_Gmail $gmailService;
+    private Gmail $gmailService;
 
     public function __construct(GoogleService $googleService, OAuth $oAuth)
     {
@@ -27,12 +26,12 @@ class OAuthMailer implements Mailer
         }
 
         $client->setAccessToken($token);
-        $this->gmailService = new Google_Service_Gmail($client);
+        $this->gmailService = new Gmail($client);
     }
 
     public function send(Message $mail): void
     {
-        $gmsg = new Google_Service_Gmail_Message();
+        $gmsg = new Gmail\Message();
         $gmsg->setRaw($this->urlSafeBase64Encode($mail->generateMessage()));
         $this->gmailService->users_messages->send('me', $gmsg);
     }

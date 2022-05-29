@@ -68,11 +68,7 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
         'hidden' => ['container' => null],
     ];
 
-    /**
-     * @param bool $own
-     */
-    // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
-    public function renderErrors(?Nette\Forms\IControl $control = null, $own = true): string
+    public function renderErrors(?Nette\Forms\Control $control = null, bool $own = true): string
     {
         if (
             $control instanceof Nette\Forms\Controls\Checkbox ||
@@ -118,7 +114,7 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
         return parent::renderPairMulti($controls);
     }
 
-    public function renderLabel(Nette\Forms\IControl $control): Nette\Utils\Html
+    public function renderLabel(Nette\Forms\Control $control): Nette\Utils\Html
     {
         if ($control instanceof Nette\Forms\Controls\Checkbox || $control instanceof Nette\Forms\Controls\CheckboxList) {
             $control->labelPrototype->appendAttribute('class', 'form-check-label');
@@ -129,7 +125,7 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
         return parent::renderLabel($control);
     }
 
-    public function renderControl(Nette\Forms\IControl $control): Nette\Utils\Html
+    public function renderControl(Nette\Forms\Control $control): Nette\Utils\Html
     {
         if (! $control instanceof BaseControl) {
             return parent::renderControl($control);
