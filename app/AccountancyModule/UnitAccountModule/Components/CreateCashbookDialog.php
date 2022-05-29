@@ -74,7 +74,7 @@ final class CreateCashbookDialog extends BaseControl
             ->setRequired('Musíte vybrat rok');
 
         $form->addSubmit('create', 'Založit')
-            ->setAttribute('class', 'btn btn-primary');
+            ->setHtmlAttribute('class', 'btn btn-primary');
 
         $form->onSuccess[] = function ($form, ArrayHash $values): void {
             if (! $this->isEditable) {

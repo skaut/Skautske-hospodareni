@@ -148,21 +148,21 @@ class VehiclePresenter extends BasePresenter
         $form = new BaseForm();
 
         $form->addText('type', 'Typ')
-            ->setAttribute('class', 'form-control')
+            ->setHtmlAttribute('class', 'form-control')
             ->addRule(Form::FILLED, 'Musíte vyplnit typ.');
         $form->addText('registration', 'SPZ*')
-            ->setAttribute('class', 'form-control')
+            ->setHtmlAttribute('class', 'form-control')
             ->addRule(Form::FILLED, 'Musíte vyplnit SPZ.');
         $form->addText('consumption', 'Harmonizovaná spotřeba*')
-            ->setAttribute('class', 'form-control')
+            ->setHtmlAttribute('class', 'form-control')
             ->addRule(Form::FILLED, 'Musíte vyplnit průměrnou spotřebu.')
             ->addRule(Form::FLOAT, 'Průměrná spotřeba musí být číslo!');
         $form->addSelect('subunitId', 'Oddíl', $this->unitService->getSubunitPairs($this->getUnitId()))
-            ->setAttribute('class', 'form-control')
+            ->setHtmlAttribute('class', 'form-control')
             ->setPrompt('Žádný')
             ->setRequired(false);
         $form->addSubmit('send', 'Založit')
-            ->setAttribute('class', 'btn btn-primary');
+            ->setHtmlAttribute('class', 'btn btn-primary');
 
         $form->onSuccess[] = function (Form $form, ArrayHash $values): void {
             $this->formCreateVehicleSubmitted($values);

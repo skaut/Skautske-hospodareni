@@ -59,7 +59,7 @@ final class RepaymentPresenter extends BasePresenter
             ->setDefaultValue(Date::now()->addWeekday());
 
         $form->addSubmit('send', 'Založit příkazy k úhradě')
-            ->setAttribute('class', 'btn btn-primary btn-large');
+            ->setHtmlAttribute('class', 'btn btn-primary btn-large');
 
         $paymentsContainer = $form->addContainer('payments');
 

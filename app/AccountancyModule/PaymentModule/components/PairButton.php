@@ -81,7 +81,7 @@ class PairButton extends BaseControl
             ->setDefaultValue(BankService::DAYS_BACK_DEFAULT)
             ->setRequired('Musíte vyplnit počet dní')
             ->addRule($form::MIN, 'Musíte zadat alespoň kladný počet dní', 1)
-            ->setType('number');
+            ->setHtmlType('number');
         $form->addSubmit('pair', 'Párovat');
 
         $form->onSuccess[] = function ($form, $values): void {

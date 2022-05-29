@@ -114,7 +114,7 @@ class CashbookPresenter extends BasePresenter
             ->setDefaultValue('N');
 
         $form->addSubmit('send', 'Importovat')
-            ->setAttribute('class', 'btn btn-primary');
+            ->setHtmlAttribute('class', 'btn btn-primary');
 
         $form->onSuccess[] = function (BaseForm $form): void {
             $this->formImportHpdSubmitted($form);

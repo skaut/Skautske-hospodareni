@@ -67,7 +67,7 @@ final class PrefixControl extends Dialog
         $form->addText('prefix')
             ->setRequired(false)
             ->setMaxLength(self::MAX_LENGTH)
-            ->setAttribute('size', 6)
+            ->setHtmlAttribute('size', 6)
             ->setNullable()
             ->setDefaultValue($this->getPrefix())
             ->addRule(BaseForm::MAX_LENGTH, 'Maximální délka prefixu je %d znaků', self::MAX_LENGTH);

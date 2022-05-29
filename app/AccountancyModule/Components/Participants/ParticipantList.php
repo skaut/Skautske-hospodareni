@@ -212,15 +212,15 @@ final class ParticipantList extends BaseControl
 
         $editCon->addText('days', 'Dní')
             ->setNullable()
-            ->setAttribute('placeholder', 'Ponechat původní hodnotu');
+            ->setHtmlAttribute('placeholder', 'Ponechat původní hodnotu');
 
         $editCon->addText('payment', 'Částka')
             ->setNullable()
-            ->setAttribute('placeholder', 'Ponechat původní hodnotu');
+            ->setHtmlAttribute('placeholder', 'Ponechat původní hodnotu');
 
         $editCon->addText('repayment', 'Vratka')
             ->setNullable()
-            ->setAttribute('placeholder', 'Ponechat původní hodnotu');
+            ->setHtmlAttribute('placeholder', 'Ponechat původní hodnotu');
 
         $form->addCheckboxList('participantIds', null, array_map(fn () => '', $this->participantsById()))
             ->setRequired('Musíte vybrat některého z účastníků');
@@ -228,7 +228,7 @@ final class ParticipantList extends BaseControl
         $editCon->addRadioList('isAccount', 'Na účet?', ['N' => 'Ne', 'Y' => 'Ano', self::NO_ACTION => 'Ponechat původní hodnotu'])
             ->setDefaultValue('');
         $editCon->addSubmit('send', 'Upravit')
-            ->setAttribute('class', 'btn btn-info btn-small')
+            ->setHtmlAttribute('class', 'btn btn-info btn-small')
             ->onClick[] = function (SubmitButton $button): void {
                 $this->massEditSubmitted($button);
             };

@@ -66,10 +66,10 @@ class CommandForm extends Control
         $form->addGroup();
         $form->addText('purpose', 'Účel cesty')
             ->setMaxLength(64)
-            ->setAttribute('class', 'form-control')
+            ->setHtmlAttribute('class', 'form-control')
             ->addRule($form::FILLED, 'Musíte vyplnit účel cesty.');
         $typeSelectBox = $form->addMultiSelect('type', 'Prostředek', $this->prepareTransportTypeOptions())
-            ->setAttribute('class', 'combobox')
+            ->setHtmlAttribute('class', 'combobox')
             ->setRequired('Vyberte alespoň jeden dopravní prostředek.');
 
         $typeSelectBox
@@ -78,23 +78,23 @@ class CommandForm extends Control
 
         $form->addText('place', 'Místo')
             ->setMaxLength(64)
-            ->setAttribute('class', 'form-control');
+            ->setHtmlAttribute('class', 'form-control');
         $form->addText('fellowPassengers', 'Spolucestující')
             ->setMaxLength(64)
-            ->setAttribute('class', 'form-control');
+            ->setHtmlAttribute('class', 'form-control');
         $form->addText('note', 'Poznámka')
             ->setMaxLength(64)
-            ->setAttribute('class', 'form-control');
+            ->setHtmlAttribute('class', 'form-control');
         $form->addText('unit', 'Jednotka')
             ->setMaxLength(64)
-            ->setAttribute('class', 'form-control');
+            ->setHtmlAttribute('class', 'form-control');
 
         $form->addGroup('Cestující');
         $passenger = $form->addContainer('passenger');
 
         $form->addSelect('contract_id', 'Smlouva', $this->prepareContracts())
             ->setPrompt('Bez smlouvy')
-            ->setAttribute('class', 'form-control')
+            ->setHtmlAttribute('class', 'form-control')
             ->setOption('id', 'contractId')
             ->addCondition($form::BLANK)
             ->toggle('passengerName')
@@ -112,27 +112,27 @@ class CommandForm extends Control
         $form->addSelect('vehicle_id', 'Vozidlo*', $vehicles)
             ->setOption('id', 'vehicle_id')
             ->setPrompt('Vyberte vozidlo')
-            ->setAttribute('class', 'form-control')
+            ->setHtmlAttribute('class', 'form-control')
             ->addConditionOn($typeSelectBox, [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
             ->setRequired('Musíte vyplnit typ vozidla.');
 
         $form->addText('fuel_price', 'Cena paliva za 1l*')
             ->setOption('id', 'fuel_price')
-            ->setAttribute('class', 'form-control')
+            ->setHtmlAttribute('class', 'form-control')
             ->addConditionOn($typeSelectBox, [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
             ->setRequired('Musíte vyplnit cenu paliva.')
             ->addRule($form::FLOAT, 'Musíte zadat desetinné číslo.');
 
         $form->addText('amortization', 'Opotřebení*')
             ->setOption('id', 'amortization')
-            ->setAttribute('class', 'form-control')
+            ->setHtmlAttribute('class', 'form-control')
             ->addConditionOn($typeSelectBox, [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
             ->setRequired('Musíte vyplnit opotřebení.')
             ->addRule($form::FLOAT, 'Musíte zadat desetinné číslo.');
 
         $form->setCurrentGroup();
         $form->addSubmit('send', $this->commandId !== null ? 'Upravit' : 'Založit')
-            ->setAttribute('class', 'btn btn-primary');
+            ->setHtmlAttribute('class', 'btn btn-primary');
 
         $form->onSuccess[] = function (BaseForm $form): void {
             if ($this->commandId === null) {

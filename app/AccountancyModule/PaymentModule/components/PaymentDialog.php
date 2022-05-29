@@ -92,7 +92,7 @@ final class PaymentDialog extends Dialog
         $form->addText('constantSymbol', 'KS')
             ->setNullable()
             ->setMaxLength(4)
-            ->setType('text')
+            ->setHtmlType('text')
             ->setRequired(false)
             ->addRule(Form::INTEGER, 'KS musí být číslo');
 

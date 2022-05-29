@@ -43,26 +43,26 @@ class MassAddForm extends BaseControl
             ->setRequired(false)
             ->addRule($form::FLOAT, 'Částka musí být číslo')
             ->addRule($form::MIN, 'Čátka musí být větší než 0', 0.01)
-            ->setAttribute('class', 'input-mini');
+            ->setHtmlAttribute('class', 'input-mini');
 
         $form->addDate('dueDate', 'Splatnost:')
             ->disableWeekends()
             ->setRequired(false)
-            ->setAttribute('class', 'input-small');
+            ->setHtmlAttribute('class', 'input-small');
         $form->addText('constantSymbol', 'KS:')
             ->setRequired(false)
             ->setNullable()
             ->addRule(BaseForm::INTEGER)
             ->addRule(BaseForm::MAX_LENGTH, 'Maximální délka konstantního symbolu je %d', 4)
             ->setMaxLength(4)
-            ->setAttribute('class', 'input-mini');
+            ->setHtmlAttribute('class', 'input-mini');
         $form->addText('note', 'Poznámka:')
-            ->setAttribute('class', 'input-small');
+            ->setHtmlAttribute('class', 'input-small');
 
         $form->addContainer('persons');
 
         $form->addSubmit('send', 'Přidat vybrané')
-            ->setAttribute('class', 'btn btn-primary btn-large');
+            ->setHtmlAttribute('class', 'btn btn-primary btn-large');
 
         $form->onSuccess[] = function (BaseForm $form): void {
             $this->formSubmitted($form);
@@ -105,8 +105,8 @@ class MassAddForm extends BaseControl
         $container->addHidden('id', $id);
 
         $container->addText('amount', 'Částka:')
-            ->setAttribute('class', 'input-mini')
-            ->setType('number')
+            ->setHtmlAttribute('class', 'input-mini')
+            ->setHtmlType('number')
             ->setRequired(false)
             ->setNullable()
             ->setDefaultValue($amount)
@@ -118,14 +118,14 @@ class MassAddForm extends BaseControl
 
         $container->addDate('dueDate', 'Splatnost:')
             ->disableWeekends()
-            ->setAttribute('class', 'input-small')
+            ->setHtmlAttribute('class', 'input-small')
             ->setRequired(false);
 
         $container->addVariableSymbol('variableSymbol', 'VS:')
             ->setRequired(false);
 
         $container->addText('constantSymbol', 'KS:')
-            ->setAttribute('class', 'input-mini')
+            ->setHtmlAttribute('class', 'input-mini')
             ->setRequired(false)
             ->setNullable()
             ->addRule($form::INTEGER)
@@ -134,7 +134,7 @@ class MassAddForm extends BaseControl
         $container->addText('note', 'Poznámka:')
             ->setDefaultValue($note)
             ->setRequired(false)
-            ->setAttribute('class', 'input-small');
+            ->setHtmlAttribute('class', 'input-small');
     }
 
     public function render(): void

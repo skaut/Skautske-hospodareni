@@ -87,7 +87,7 @@ final class EditParticipantDialog extends Dialog
         }
 
         $form->addSubmit('save', 'Upravit')
-            ->setAttribute('class', 'btn btn-primary');
+            ->setHtmlAttribute('class', 'btn btn-primary');
 
         $form->onSuccess[] = function ($_x, array $values) use ($participant): void {
             $changes = [];
