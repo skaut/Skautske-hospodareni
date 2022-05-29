@@ -46,6 +46,6 @@ SQL;
 
         $stmt = $this->db->executeQuery($sql, $params, $types);
 
-        return array_map('floatval', $stmt->fetchAll());
+        return array_map('floatval', $stmt->fetchAllAssociative());
     }
 }

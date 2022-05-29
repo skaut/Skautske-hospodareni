@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App;
 
 use Model\AuthService;
-use Nette\Security\Identity;
+use Nette\Security\SimpleIdentity;
 use Skautis\Wsdl\AuthenticationException;
 
 use function strlen;
@@ -66,7 +66,7 @@ class AuthPresenter extends BasePresenter
             $user = $this->getUser();
 
             $user->setExpiration('+ 29 minutes'); // nastavíme expiraci
-            $user->login(new Identity(
+            $user->login(new SimpleIdentity(
                 $this->userService->getUserDetail()->ID,
                 $this->userService->getAllSkautisRoles(),
                 ['currentRole' => $this->userService->getActualRole()],

@@ -60,11 +60,11 @@ class Version20170623193150 extends AbstractMigration
                 ]);
 
                 $bankAccountId = $this->connection->lastInsertId();
-                $this->connection->exec('UPDATE pa_group SET bank_account_id = ' . $bankAccountId . ' WHERE unitId = ' . $unitId);
+                $this->connection->executeStatement('UPDATE pa_group SET bank_account_id = ' . $bankAccountId . ' WHERE unitId = ' . $unitId);
             }
         }
 
-        $this->connection->exec('DROP TABLE pa_bank');
+        $this->connection->executeStatement('DROP TABLE pa_bank');
     }
 
     public function down(Schema $schema): void

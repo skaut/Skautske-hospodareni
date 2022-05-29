@@ -7,7 +7,7 @@ namespace App\AccountancyModule;
 use Model\BaseService;
 use Model\Common\UnitId;
 use Model\Skautis\SkautisMaintenanceChecker;
-use Nette\Security\Identity;
+use Nette\Security\SimpleIdentity;
 use stdClass;
 
 use function array_keys;
@@ -96,7 +96,7 @@ abstract class BasePresenter extends \App\BasePresenter
             return [];
         }
 
-        assert($identity instanceof Identity);
+        assert($identity instanceof SimpleIdentity);
 
         /** @var array<int, mixed> $editableUnits */
         $editableUnits = $identity->access[BaseService::ACCESS_EDIT];

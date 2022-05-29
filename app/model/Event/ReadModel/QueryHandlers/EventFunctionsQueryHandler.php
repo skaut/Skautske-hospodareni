@@ -23,7 +23,7 @@ class EventFunctionsQueryHandler
     public function __invoke(EventFunctions $query): Functions
     {
         $functions = $this->skautis->event->eventFunctionAllGeneral([
-            'ID_EventGeneral' => $query->getEventId()->getValue(),
+            'ID_EventGeneral' => $query->getEventId()->toInt(),
         ]);
 
         return new Functions(

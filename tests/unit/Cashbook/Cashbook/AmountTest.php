@@ -15,7 +15,7 @@ class AmountTest extends Unit
     public function testCalculateSum(string $expression, float $expectedResult): void
     {
         $amount = new Amount($expression);
-        $this->assertSame($expectedResult, $amount->getValue());
+        $this->assertSame($expectedResult, $amount->toFloat());
     }
 
     public function testResultCantBeNegative(): void
@@ -73,7 +73,7 @@ class AmountTest extends Unit
     public function testCalculateSumsAndMultiplications(string $expression, float $expectedResult): void
     {
         $amount = new Amount($expression);
-        $this->assertSame($expectedResult, $amount->getValue());
+        $this->assertSame($expectedResult, $amount->toFloat());
     }
 
     /**

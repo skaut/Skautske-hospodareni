@@ -153,10 +153,11 @@ class CashbookWithCategoriesBuilder
 
             $balance += $isIncome ? $amount : -$amount;
 
+            $body            = $chit->getBody();
             $cashbookColumns = [
                 $index++,
-                $chit->getDate()->format('d.m.'),
-                $chit->getNumber() !== null ? $prefix . $chit->getNumber()->toString() : '',
+                $body->getDate()->format('d.m.'),
+                $body->getNumber() !== null ? $prefix . $body->getNumber()->toString() : '',
                 $chit->getPurpose(),
                 $isIncome ? $amount : '',
                 ! $isIncome ? $amount : '',

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Log;
 
 use Model\User\SkautisRole;
-use Nette\Security\Identity;
+use Nette\Security\SimpleIdentity;
 use Nette\Security\User;
 use stdClass;
 
@@ -34,7 +34,7 @@ final class UserContextProvider
             return null;
         }
 
-        assert($identity instanceof Identity);
+        assert($identity instanceof SimpleIdentity);
 
         $currentRole = $identity->currentRole ?? null;
 

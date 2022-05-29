@@ -20,7 +20,7 @@ use Nette\Application\UI\Form;
 use Nette\Bridges\ApplicationLatte\Template;
 use Nette\Forms\Controls\SelectBox;
 use Nette\Http\IResponse;
-use Nette\Security\Identity;
+use Nette\Security\SimpleIdentity;
 
 use function array_key_exists;
 use function array_map;
@@ -65,7 +65,7 @@ class DefaultPresenter extends BasePresenter
 
         $identity = $this->getUser()->getIdentity();
 
-        assert($identity instanceof Identity);
+        assert($identity instanceof SimpleIdentity);
 
         return $command->getOwnerId() === $this->getUser()->getId() ||
             array_key_exists($command->getUnitId(), $identity->access[BaseService::ACCESS_READ]);
@@ -76,7 +76,7 @@ class DefaultPresenter extends BasePresenter
         $command  = $this->travelService->getCommandDetail($id);
         $identity = $this->getUser()->getIdentity();
 
-        assert($identity instanceof Identity);
+        assert($identity instanceof SimpleIdentity);
 
         $unitOrOwner = $command->getOwnerId() === $this->getUser()->getId() ||
             array_key_exists($command->getUnitId(), $identity->access[BaseService::ACCESS_EDIT]);

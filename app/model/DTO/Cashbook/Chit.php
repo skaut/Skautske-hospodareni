@@ -128,9 +128,6 @@ class Chit
         return $this->amount;
     }
 
-    /**
-     * @deprecated use getBody()
-     */
     public function getPurpose(): string
     {
         return implode(', ', array_map(function (ChitItem $i) {
@@ -221,7 +218,7 @@ class Chit
     {
         return sprintf(
             '%s_%s',
-            $this->getDate()->format('Y-m-d'),
+            $this->getBody()->getDate()->format('Y-m-d'),
             substr($this->getPurpose(), 0, 30)
         );
     }

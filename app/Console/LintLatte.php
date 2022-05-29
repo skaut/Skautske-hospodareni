@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console;
 
-use Nette\Bridges\ApplicationLatte\ILatteFactory;
+use Nette\Bridges\ApplicationLatte\LatteFactory;
 use Nette\Bridges\ApplicationLatte\UIMacros;
 use Nette\Bridges\FormsLatte\FormMacros;
 use Nette\Utils\Strings;
@@ -22,9 +22,9 @@ final class LintLatte extends Command
 {
     private string $appDir;
 
-    private ILatteFactory $latteFactory;
+    private LatteFactory $latteFactory;
 
-    public function __construct(string $appDir, ILatteFactory $latteFactory)
+    public function __construct(string $appDir, LatteFactory $latteFactory)
     {
         parent::__construct();
         $this->appDir       = $appDir;
