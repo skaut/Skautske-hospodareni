@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "941c835b306206e621bd543724a3bc41",
+    "content-hash": "4be6e83d9f717227d3e92b9c25bdb9bf",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -5139,21 +5139,21 @@
         },
         {
             "name": "nettrine/dbal",
-            "version": "v0.7.1",
+            "version": "v0.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nettrine/dbal.git",
-                "reference": "9d6f2dc0979ff4665c51ccfdc8b0b6a3ddc369fb"
+                "reference": "e092aac6561073e802cab948fb913e2043894155"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nettrine/dbal/zipball/9d6f2dc0979ff4665c51ccfdc8b0b6a3ddc369fb",
-                "reference": "9d6f2dc0979ff4665c51ccfdc8b0b6a3ddc369fb",
+                "url": "https://api.github.com/repos/nettrine/dbal/zipball/e092aac6561073e802cab948fb913e2043894155",
+                "reference": "e092aac6561073e802cab948fb913e2043894155",
                 "shasum": ""
             },
             "require": {
                 "contributte/di": "^0.5.0",
-                "doctrine/dbal": "^2.9.2",
+                "doctrine/dbal": "^2.13 || ^3.2",
                 "nettrine/cache": "^0.3.0",
                 "php": ">=7.2 <8.2"
             },
@@ -5207,9 +5207,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nettrine/dbal/issues",
-                "source": "https://github.com/nettrine/dbal/tree/v0.7.1"
+                "source": "https://github.com/nettrine/dbal/tree/v0.8.0"
             },
-            "time": "2022-04-12T14:52:00+00:00"
+            "time": "2022-05-09T08:04:24+00:00"
         },
         {
             "name": "nettrine/migrations",
@@ -6713,23 +6713,23 @@
         },
         {
             "name": "sentry/sentry",
-            "version": "3.4.0",
+            "version": "3.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/getsentry/sentry-php.git",
-                "reference": "a92443883df6a55cbe7a062f76949f23dda66772"
+                "reference": "5b611e3f09035f5ad5edf494443e3236bd5ea482"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/getsentry/sentry-php/zipball/a92443883df6a55cbe7a062f76949f23dda66772",
-                "reference": "a92443883df6a55cbe7a062f76949f23dda66772",
+                "url": "https://api.github.com/repos/getsentry/sentry-php/zipball/5b611e3f09035f5ad5edf494443e3236bd5ea482",
+                "reference": "5b611e3f09035f5ad5edf494443e3236bd5ea482",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "ext-mbstring": "*",
                 "guzzlehttp/promises": "^1.4",
-                "guzzlehttp/psr7": "^1.7|^2.0",
+                "guzzlehttp/psr7": "^1.8.4|^2.1.1",
                 "jean85/pretty-package-versions": "^1.5|^2.0.4",
                 "php": "^7.2|^8.0",
                 "php-http/async-client-implementation": "^1.0",
@@ -6768,7 +6768,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.4.x-dev"
+                    "dev-master": "3.5.x-dev"
                 }
             },
             "autoload": {
@@ -6802,7 +6802,7 @@
             ],
             "support": {
                 "issues": "https://github.com/getsentry/sentry-php/issues",
-                "source": "https://github.com/getsentry/sentry-php/tree/3.4.0"
+                "source": "https://github.com/getsentry/sentry-php/tree/3.5.0"
             },
             "funding": [
                 {
@@ -6814,7 +6814,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2022-03-13T12:38:01+00:00"
+            "time": "2022-05-19T07:14:12+00:00"
         },
         {
             "name": "setasign/fpdi",
