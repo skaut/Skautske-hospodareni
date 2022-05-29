@@ -14,7 +14,7 @@ use stdClass;
 
 use function array_key_exists;
 
-class UserService extends BaseService
+class UserService
 {
     public const ACCESS_READ = 'read';
     public const ACCESS_EDIT = 'edit';
