@@ -98,7 +98,7 @@ class CashbookWithCategoriesBuilder
 
         $columnsWithSum = array_merge(
             range(self::CATEGORIES_FIRST_COLUMN, $categoriesLastColumn), // Categories sum
-            [5, 6, 7] // Incomes and expenses sum
+            [5, 6] // Incomes and expenses sum
         );
 
         foreach ($columnsWithSum as $column) {
