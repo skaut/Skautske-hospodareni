@@ -21,6 +21,7 @@ class ActivateAutocomputedCashbookHandler
         $this->skautis->event->eventCampUpdateRealTotalCostBeforeEnd([
             'ID' => $command->getCampId()->toInt(),
             'IsRealTotalCostAutoComputed' => 1,
+            'IsOnlineLogin' => false,
         ], 'eventCamp');
     }
 }
