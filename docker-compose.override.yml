@@ -7,7 +7,7 @@ services:
         volumes:
             - /var/www/html/temp
             - /var/www/html/tests/_temp
-            - nfsmount:/var/www/html
+#            - nfsmount:/var/www/html
     mysql:
         ports:
             - 3306:3306
@@ -25,10 +25,3 @@ volumes:
     mysql:
         name: hskauting_mysql
         external: true
-
-    nfsmount:
-        driver: local
-        driver_opts:
-            type: nfs
-            o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
-            device: ":${PWD}"
