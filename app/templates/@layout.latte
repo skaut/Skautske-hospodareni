@@ -35,6 +35,9 @@
 
             <div class="collapse navbar-collapse" id="navbarMain">
                 <ul class="navbar-nav mr-auto">
+                    <li n:class="nav-item">
+                        <a class="nav-link" n:href=":Default:reinforcement">Posily</a>
+                    </li>
                     {if $user->isLoggedIn()}
                         <li n:class="nav-item, $module === 'Event' ? active">
                             <a class="nav-link" href="{$linkGenerator->link('Accountancy:Event:Default:')}">Akce</a>
