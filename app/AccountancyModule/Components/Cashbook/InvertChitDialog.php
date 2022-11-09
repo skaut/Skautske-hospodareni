@@ -66,7 +66,7 @@ class InvertChitDialog extends BaseControl
         if ($this->chitId !== null && ! $this->isChitValid()) {
             throw new BadRequestException(
                 sprintf('Chit %d doesn\'t exist or can\'t be inverted', $this->chitId),
-                IResponse::S404_NOT_FOUND
+                IResponse::S404_NOT_FOUND,
             );
         }
 
@@ -81,9 +81,7 @@ class InvertChitDialog extends BaseControl
         $template->render();
     }
 
-    /**
-     * @return CashbookType[]
-     */
+    /** @return CashbookType[] */
     public static function getValidInverseCashbookTypes(): array
     {
         return [
@@ -116,9 +114,7 @@ class InvertChitDialog extends BaseControl
         return $form;
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     private function getCashbooks(): array
     {
         if ($this->cashbooks !== null) {

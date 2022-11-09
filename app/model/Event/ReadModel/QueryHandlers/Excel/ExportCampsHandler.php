@@ -56,7 +56,7 @@ final class ExportCampsHandler
             function (int $campId): Camp {
                 return $this->queryBus->handle(new CampQuery(new SkautisCampId($campId)));
             },
-            $query->getCampIds()
+            $query->getCampIds(),
         );
 
         $sheetCamps = $spreadsheet->setActiveSheetIndex(0);
@@ -69,19 +69,17 @@ final class ExportCampsHandler
                 function (Camp $camp): ExportedCashbook {
                     return new ExportedCashbook(
                         $this->queryBus->handle(new CampCashbookIdQuery($camp->getId())),
-                        $camp->getDisplayName()
+                        $camp->getDisplayName(),
                     );
                 },
-                $camps
-            )
+                $camps,
+            ),
         );
 
         return $spreadsheet;
     }
 
-    /**
-     * @param Camp[] $camps
-     */
+    /** @param Camp[] $camps */
     protected function setSheetCamps(Worksheet $sheet, array $camps): void
     {
         $sheet->setCellValue('A1', 'Pořadatel')
@@ -138,9 +136,7 @@ final class ExportCampsHandler
         $sheet->setTitle('Přehled táborů');
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     private function getCampTroopNames(Camp $camp): array
     {
         $troopNames = [];

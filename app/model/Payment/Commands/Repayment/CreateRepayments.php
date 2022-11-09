@@ -19,9 +19,7 @@ final class CreateRepayments
 
     private string $token;
 
-    /**
-     * @param Repayment[] $repayments
-     */
+    /** @param Repayment[] $repayments */
     public function __construct(AccountNumber $sourceAccount, Date $date, array $repayments, string $token)
     {
         $this->sourceAccount = $sourceAccount;
@@ -40,9 +38,7 @@ final class CreateRepayments
         return $this->date;
     }
 
-    /**
-     * @return Repayment[]
-     */
+    /** @return Repayment[] */
     public function getRepayments(): array
     {
         return $this->repayments;

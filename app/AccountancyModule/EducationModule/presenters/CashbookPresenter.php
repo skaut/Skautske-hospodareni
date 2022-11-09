@@ -63,7 +63,7 @@ class CashbookPresenter extends BasePresenter
         return $this->cashbookFactory->create(
             $this->getCashbookId(),
             $this->isEditable,
-            $this->getCurrentUnitId()
+            $this->getCurrentUnitId(),
         );
     }
 

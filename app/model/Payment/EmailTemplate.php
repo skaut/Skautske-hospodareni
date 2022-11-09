@@ -15,9 +15,7 @@ use function http_build_query;
 use function preg_match;
 use function str_replace;
 
-/**
- * @ORM\Embeddable()
- */
+/** @ORM\Embeddable() */
 class EmailTemplate
 {
     /** @ORM\Column(type="string") */
@@ -73,9 +71,7 @@ class EmailTemplate
         return $this->body;
     }
 
-    /**
-     * @param mixed[] $parameters
-     */
+    /** @param mixed[] $parameters */
     private function replace(array $parameters, string $template): string
     {
         return str_replace(array_keys($parameters), array_values($parameters), $template);

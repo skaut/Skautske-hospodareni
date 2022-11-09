@@ -17,7 +17,7 @@ final class Version20200214114359 extends AbstractMigration
     public function up(Schema $schema): void
     {
         $this->addSql('DROP INDEX participantId_event_type ON ac_participants');
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             ALTER TABLE ac_participants
                 CHANGE id id CHAR(36) NOT NULL COMMENT '(DC2Type:payment_id)',
                 CHANGE participantId participantId INT UNSIGNED NOT NULL,

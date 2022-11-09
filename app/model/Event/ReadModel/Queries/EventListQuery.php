@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Event\ReadModel\Queries;
 
-/**
- * @see EventListQueryHandler
- */
+/** @see EventListQueryHandler */
 final class EventListQuery
 {
     private ?int $year = null;

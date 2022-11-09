@@ -6,9 +6,7 @@ namespace Model\Cashbook;
 
 use Consistence\Enum\Enum;
 
-/**
- * @method string getValue()
- */
+/** @method string getValue() */
 class ObjectType extends Enum
 {
     public const CAMP      = 'camp';

@@ -19,9 +19,7 @@ final class BankAccountAccessChecker implements IBankAccountAccessChecker
         $this->unitResolver = $unitResolver;
     }
 
-    /**
-     * @param int[] $unitIds
-     */
+    /** @param int[] $unitIds */
     public function allUnitsHaveAccessToBankAccount(array $unitIds, int $bankAccountId): bool
     {
         $bankAccount = $this->bankAccounts->find($bankAccountId);

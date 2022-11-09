@@ -41,7 +41,7 @@ class UpdateCampCategoryTotalHandler
 
         $this->updater->updateCategories(
             $cashbook->getId(),
-            $totals
+            $totals,
         );
     }
 }

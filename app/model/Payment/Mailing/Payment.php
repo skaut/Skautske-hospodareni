@@ -24,9 +24,7 @@ class Payment
 
     private string $note;
 
-    /**
-     * @param EmailAddress[] $recipients
-     */
+    /** @param EmailAddress[] $recipients */
     public function __construct(string $name, float $amount, array $recipients, DateTimeImmutable $dueDate, ?int $variableSymbol, ?int $constantSymbol, string $note)
     {
         $this->name           = $name;
@@ -48,9 +46,7 @@ class Payment
         return $this->amount;
     }
 
-    /**
-     * @return EmailAddress[]
-     */
+    /** @return EmailAddress[] */
     public function getRecipients(): array
     {
         return $this->recipients;

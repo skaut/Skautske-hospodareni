@@ -19,9 +19,7 @@ final class ChitSubscriber implements MessageSubscriberInterface
         $this->loggerService = $ls;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public static function getHandledMessages(): array
     {
         return [
@@ -37,7 +35,7 @@ final class ChitSubscriber implements MessageSubscriberInterface
             $chit->getUserId(),
             "Uživatel '" . $chit->getUserName() . "' upravil paragon (ID=" . $chit->getChitId() . ').',
             Type::get(Type::OBJECT),
-            $chit->getEventId()
+            $chit->getEventId(),
         );
     }
 
@@ -48,7 +46,7 @@ final class ChitSubscriber implements MessageSubscriberInterface
             $chit->getUserId(),
             "Uživatel '" . $chit->getUserName() . "' odebral paragon (ID=" . $chit->getChitId() . ', účel=' . $chit->getChitPurpose() . ').',
             Type::get(Type::OBJECT),
-            $chit->getEventId()
+            $chit->getEventId(),
         );
     }
 }

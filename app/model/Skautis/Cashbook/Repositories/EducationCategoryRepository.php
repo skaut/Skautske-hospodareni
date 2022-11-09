@@ -23,9 +23,7 @@ final class EducationCategoryRepository implements IEducationCategoryRepository
         $this->grantsWebService = $grantsWebService;
     }
 
-    /**
-     * @return EducationCategory[]
-     */
+    /** @return EducationCategory[] */
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     public function findForEducation(int $educationId): array
     {
@@ -48,7 +46,7 @@ final class EducationCategoryRepository implements IEducationCategoryRepository
                 $category->ID,
                 Operation::get($category->IsRevenue ? Operation::INCOME : Operation::EXPENSE),
                 $category->StatementType,
-                MoneyFactory::fromFloat((float) $category->Ammount)
+                MoneyFactory::fromFloat((float) $category->Ammount),
             );
         }
 

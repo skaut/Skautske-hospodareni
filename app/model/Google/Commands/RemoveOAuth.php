@@ -6,9 +6,7 @@ namespace Model\Google\Commands;
 
 use Model\Google\OAuthId;
 
-/**
- * @see RemoveOAuthHandler
- */
+/** @see RemoveOAuthHandler */
 final class RemoveOAuth
 {
     private OAuthId $oAuthId;

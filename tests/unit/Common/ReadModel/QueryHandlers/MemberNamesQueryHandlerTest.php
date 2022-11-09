@@ -36,7 +36,7 @@ final class MemberNamesQueryHandlerTest extends Unit
                 2 => 'Petr',
                 3 => 'Vojta',
             ],
-            $handler(new MemberNamesQuery($unitId, 18))
+            $handler(new MemberNamesQuery($unitId, 18)),
         );
     }
 }

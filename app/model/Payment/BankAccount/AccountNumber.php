@@ -8,9 +8,7 @@ use BankAccountValidator\Czech;
 use Doctrine\ORM\Mapping as ORM;
 use Model\Payment\InvalidBankAccountNumber;
 
-/**
- * @ORM\Embeddable()
- */
+/** @ORM\Embeddable() */
 class AccountNumber
 {
     /** @ORM\Column(type="string", nullable=true, length=6) */
@@ -22,9 +20,7 @@ class AccountNumber
     /** @ORM\Column(type="string", length=4) */
     private string $bankCode;
 
-    /**
-     * @throws InvalidBankAccountNumber
-     */
+    /** @throws InvalidBankAccountNumber */
     public function __construct(?string $prefix, string $number, string $bankCode)
     {
         $validator = new Czech();
@@ -38,9 +34,7 @@ class AccountNumber
         $this->bankCode = $bankCode;
     }
 
-    /**
-     * @throws InvalidBankAccountNumber
-     */
+    /** @throws InvalidBankAccountNumber */
     public static function fromString(string $number): self
     {
         $parser = new Czech();

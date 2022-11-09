@@ -13,9 +13,7 @@ class Person
     /** @var string[] */
     private array $emails;
 
-    /**
-     * @param string[] $emails
-     */
+    /** @param string[] $emails */
     public function __construct(int $id, string $name, array $emails)
     {
         $this->id     = $id;
@@ -33,9 +31,7 @@ class Person
         return $this->name;
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function getEmails(): array
     {
         return $this->emails;

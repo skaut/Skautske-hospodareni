@@ -9,13 +9,9 @@ use Model\Common\UserNotFound;
 
 interface IUserRepository
 {
-    /**
-     * @throws UserNotFound
-     */
+    /** @throws UserNotFound */
     public function find(int $id): User;
 
-    /**
-     * @throws UserNotFound
-     */
+    /** @throws UserNotFound */
     public function getCurrentUser(): User;
 }

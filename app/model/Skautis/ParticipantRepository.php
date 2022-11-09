@@ -43,9 +43,7 @@ final class ParticipantRepository implements IParticipantRepository
         $this->payments = $payments;
     }
 
-    /**
-     * @return ParticipantDTO[]
-     */
+    /** @return ParticipantDTO[] */
     public function findByEvent(SkautisEventId $id): array
     {
         $participants = $this->skautis->event->ParticipantGeneralAll(['ID_EventGeneral' => $id->toInt()]);
@@ -58,9 +56,7 @@ final class ParticipantRepository implements IParticipantRepository
         return $this->processParticipants($participants, $event);
     }
 
-    /**
-     * @return ParticipantDTO[]
-     */
+    /** @return ParticipantDTO[] */
     public function findByCamp(SkautisCampId $id): array
     {
         $participants = $this->skautis->event->ParticipantCampAll(['ID_EventCamp' => $id->toInt()]);
@@ -73,9 +69,7 @@ final class ParticipantRepository implements IParticipantRepository
         return $this->processParticipants($participants, $event);
     }
 
-    /**
-     * @return ParticipantDTO[]
-     */
+    /** @return ParticipantDTO[] */
     public function findByEducation(SkautisEducationId $id): array
     {
         $participants = $this->skautis->event->ParticipantEducationAll(['ID_EventEducation' => $id->toInt(), 'IsActive' => true]);

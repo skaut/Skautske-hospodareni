@@ -94,9 +94,7 @@ class Command
      */
     private string $unit;
 
-    /**
-     * @param list<TransportType> $transportTypes
-     */
+    /** @param list<TransportType> $transportTypes */
     public function __construct(
         int $unitId,
         ?Vehicle $vehicle,
@@ -126,9 +124,7 @@ class Command
         $this->unit             = $unit;
     }
 
-    /**
-     * @param list<TransportType> $transportTypes
-     */
+    /** @param list<TransportType> $transportTypes */
     public function update(
         ?Vehicle $vehicle,
         Passenger $driver,
@@ -173,9 +169,7 @@ class Command
         $this->travels->set($id, new VehicleTravel($id, $distance, $details, $this));
     }
 
-    /**
-     * @throws TravelNotFound
-     */
+    /** @throws TravelNotFound */
     public function updateVehicleTravel(int $id, float $distance, TravelDetails $details): void
     {
         $travel = $this->getTravel($id);
@@ -196,9 +190,7 @@ class Command
         $this->travels->set($id, new TransportTravel($id, $price, $details, $this));
     }
 
-    /**
-     * @throws TravelNotFound
-     */
+    /** @throws TravelNotFound */
     public function updateTransportTravel(int $id, Money $price, TravelDetails $details): void
     {
         $travel = $this->getTravel($id);
@@ -212,9 +204,7 @@ class Command
         $travel->update($price, $details);
     }
 
-    /**
-     * @throws TravelNotFound
-     */
+    /** @throws TravelNotFound */
     public function duplicateTravel(int $id): void
     {
         $travel = $this->getTravel($id);
@@ -266,7 +256,7 @@ class Command
             function (Money $total, TransportTravel $travel) {
                 return $total->add($travel->getPrice());
             },
-            MoneyFactory::zero()
+            MoneyFactory::zero(),
         );
     }
 
@@ -396,9 +386,7 @@ class Command
         return $this->travels->count();
     }
 
-    /**
-     * @throws TravelNotFound
-     */
+    /** @throws TravelNotFound */
     private function getTravel(int $id): Travel
     {
         $travel = $this->travels->get($id);
@@ -418,7 +406,7 @@ class Command
     public function getUsedTransportTypes(): array
     {
         return array_unique(
-            $this->travels->map(fn (Travel $travel) => $travel->getDetails()->getTransportType())->toArray()
+            $this->travels->map(fn (Travel $travel) => $travel->getDetails()->getTransportType())->toArray(),
         );
     }
 
@@ -432,9 +420,7 @@ class Command
         return $this->ownerId;
     }
 
-    /**
-     * @return TransportType[]
-     */
+    /** @return TransportType[] */
     public function getTransportTypes(): array
     {
         return $this->transportTypes;

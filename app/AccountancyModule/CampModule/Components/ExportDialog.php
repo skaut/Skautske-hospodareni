@@ -23,9 +23,7 @@ final class ExportDialog extends Dialog
 
     private QueryBus $queryBus;
 
-    /**
-     * @param CampListItem[] $camps
-     */
+    /** @param CampListItem[] $camps */
     public function __construct(array $camps, QueryBus $queryBus)
     {
         $this->camps    = $camps;
@@ -71,8 +69,8 @@ final class ExportDialog extends Dialog
         $this->presenter->sendResponse(
             new ExcelResponse(
                 sprintf('Souhrn-táborů-%s', Date::today()->format('Y_n_j')),
-                $this->queryBus->handle(new ExportCamps($values->campIds))
-            )
+                $this->queryBus->handle(new ExportCamps($values->campIds)),
+            ),
         );
     }
 }

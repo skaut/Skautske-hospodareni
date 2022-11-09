@@ -23,14 +23,14 @@ final class Version20190409104015 extends AbstractMigration
             'PRIMARY KEY (`_id`),' .
             'KEY `chit_id` (`chit_id`),' .
             'CONSTRAINT `ac_chits_item_ibfk_2` FOREIGN KEY (`chit_id`) REFERENCES `ac_chits` (`id`) ON DELETE CASCADE ON UPDATE CASCADE' .
-            ') ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;'
+            ') ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;',
         );
 
         // move current data
         $this->addSql(
             'INSERT INTO `ac_chits_item` (`id`,`chit_id`, `price`, `priceText`, `category`, `category_operation_type`)' .
             'SELECT 1, `id`, `price`, `priceText`, `category`, `category_operation_type`' .
-            'FROM `ac_chits`'
+            'FROM `ac_chits`',
         );
 
         // temporary rename of origin column and default values
@@ -39,7 +39,7 @@ final class Version20190409104015 extends AbstractMigration
             'CHANGE `price` `x_price` float(9,2) NULL AFTER `purpose`,' .
             'CHANGE `priceText` `x_priceText` varchar(100) COLLATE \'utf8_czech_ci\' NULL AFTER `x_price`,' .
             'CHANGE `category` `x_category` int(10) unsigned NULL AFTER `x_priceText`,' .
-            'CHANGE `category_operation_type` `x_category_operation_type` varchar(255) COLLATE \'utf8_czech_ci\' NULL COMMENT \'(DC2Type:string_enum)\' AFTER `lock`;'
+            'CHANGE `category_operation_type` `x_category_operation_type` varchar(255) COLLATE \'utf8_czech_ci\' NULL COMMENT \'(DC2Type:string_enum)\' AFTER `lock`;',
         );
     }
 
@@ -50,7 +50,7 @@ final class Version20190409104015 extends AbstractMigration
             'CHANGE `x_price` `price` float(9,2) NOT NULL AFTER `purpose`,' .
             'CHANGE `x_priceText` `priceText` varchar(100) COLLATE \'utf8_czech_ci\' NOT NULL AFTER `price`,' .
             'CHANGE `x_category` `category` int(10) unsigned NOT NULL AFTER `priceText`,' .
-            'CHANGE `x_category_operation_type` `category_operation_type` varchar(255) COLLATE \'utf8_czech_ci\' NULL COMMENT \'(DC2Type:string_enum)\' AFTER `lock`;'
+            'CHANGE `x_category_operation_type` `category_operation_type` varchar(255) COLLATE \'utf8_czech_ci\' NULL COMMENT \'(DC2Type:string_enum)\' AFTER `lock`;',
         );
 
         $this->addSql('DROP TABLE IF EXISTS `ac_chits_item`;');

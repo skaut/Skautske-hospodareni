@@ -22,9 +22,7 @@ class BudgetService
         $this->repository = $budgetRepository;
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     public function getCategories(int $unitId): array
     {
         return [
@@ -41,14 +39,12 @@ class BudgetService
             Operation::get($type),
             $parentId === null ? null : $this->repository->find($parentId),
             (float) str_replace(',', '.', $value),
-            $year
+            $year,
         );
         $this->repository->save($category);
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function getCategoriesRoot(int $unitId, string $type): array
     {
         $res = [];

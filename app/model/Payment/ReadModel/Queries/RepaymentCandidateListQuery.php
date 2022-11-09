@@ -6,9 +6,7 @@ namespace Model\Payment\ReadModel\Queries;
 
 use Model\Payment\ReadModel\QueryHandlers\RepaymentCandidateListQueryHandler;
 
-/**
- * @see RepaymentCandidateListQueryHandler
- */
+/** @see RepaymentCandidateListQueryHandler */
 final class RepaymentCandidateListQuery
 {
     private int $groupId;

@@ -87,16 +87,14 @@ final class ActivateCashbookDialog extends BaseControl
         $this->flashMessage(
             sprintf(
                 'html: Pokladní kniha <strong>%d</strong> byla nastavena jako výchozí.',
-                $this->getActiveCashbook()->getYear()
-            )
+                $this->getActiveCashbook()->getYear(),
+            ),
         );
         $this->opened = false;
         $this->redirect('this');
     }
 
-    /**
-     * @return string[] cashbook ID => cashbook year
-     */
+    /** @return string[] cashbook ID => cashbook year */
     private function getCashbooks(): array
     {
         $cashbooks = $this->queryBus->handle(new UnitCashbookListQuery($this->unitId));

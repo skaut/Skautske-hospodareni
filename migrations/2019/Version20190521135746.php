@@ -16,7 +16,7 @@ final class Version20190521135746 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             ALTER TABLE ac_chits_item
                 CHANGE COLUMN id _id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
                 ADD id INT(10) UNSIGNED NOT NULL

@@ -33,7 +33,7 @@ class Version20180122114315 extends AbstractMigration
     public function postUp(Schema $schema): void
     {
         $unitCashbooks = $this->connection->fetchAll(
-            "SELECT c.id as id, o.skautisId as unit_id FROM ac_cashbook c JOIN ac_object o ON o.id = c.id WHERE c.type = 'unit'"
+            "SELECT c.id as id, o.skautisId as unit_id FROM ac_cashbook c JOIN ac_object o ON o.id = c.id WHERE c.type = 'unit'",
         );
 
         foreach ($unitCashbooks as $cashbook) {

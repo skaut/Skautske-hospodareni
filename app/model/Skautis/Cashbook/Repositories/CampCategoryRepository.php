@@ -30,9 +30,7 @@ final class CampCategoryRepository implements ICampCategoryRepository
         $this->eventWebService = $eventWebService;
     }
 
-    /**
-     * @return CampCategory[]
-     */
+    /** @return CampCategory[] */
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     public function findForCamp(int $campId): array
     {
@@ -60,7 +58,7 @@ final class CampCategoryRepository implements ICampCategoryRepository
                 $operation,
                 $category->EventCampStatementType,
                 MoneyFactory::fromFloat((float) $category->Ammount),
-                $this->getParticipantType($category)
+                $this->getParticipantType($category),
             );
         }
 

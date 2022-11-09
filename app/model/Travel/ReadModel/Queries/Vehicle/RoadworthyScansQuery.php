@@ -6,9 +6,7 @@ namespace Model\Travel\ReadModel\Queries\Vehicle;
 
 use Model\Travel\ReadModel\QueryHandlers\Vehicle\RoadworthyScansQueryHandler;
 
-/**
- * @see RoadworthyScansQueryHandler
- */
+/** @see RoadworthyScansQueryHandler */
 final class RoadworthyScansQuery
 {
     private int $vehicleId;

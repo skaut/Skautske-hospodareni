@@ -7,9 +7,7 @@ namespace Model\Cashbook\ReadModel\Queries;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ReadModel\QueryHandlers\ChitQueryHandler;
 
-/**
- * @see ChitQueryHandler
- */
+/** @see ChitQueryHandler */
 final class ChitQuery
 {
     private CashbookId $cashbookId;

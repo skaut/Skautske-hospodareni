@@ -19,9 +19,7 @@ class CategoryRepositoryTest extends IntegrationTest
         $this->repository = new CategoryRepository($this->tester->grabService(EntityManager::class));
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function getTestedAggregateRoots(): array
     {
         return [Category::class];

@@ -45,9 +45,7 @@ final class EventListDataSource extends DataSource
         return $this;
     }
 
-    /**
-     * @return EventListItem[]
-     */
+    /** @return EventListItem[] */
     protected function loadData(): array
     {
         $events = $this->queryBus->handle(new EventListQuery($this->year, $this->state));
@@ -63,7 +61,7 @@ final class EventListDataSource extends DataSource
                     $event->getState(),
                 );
             },
-            $events
+            $events,
         );
     }
 

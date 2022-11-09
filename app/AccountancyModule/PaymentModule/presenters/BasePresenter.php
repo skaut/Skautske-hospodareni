@@ -62,9 +62,7 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
         return array_intersect($group->getUnitIds(), $this->editableUnits) !== [];
     }
 
-    /**
-     * @return int[]
-     */
+    /** @return int[] */
     protected function getEditableUnits(): array
     {
         return $this->editableUnits;

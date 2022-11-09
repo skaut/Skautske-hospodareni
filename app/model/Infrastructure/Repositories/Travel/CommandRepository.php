@@ -29,17 +29,13 @@ final class CommandRepository implements ICommandRepository
         return $command;
     }
 
-    /**
-     * @return Command[]
-     */
+    /** @return Command[] */
     public function findByUnit(int $unitId): array
     {
         return $this->em->getRepository(Command::class)->findBy(['unitId' => $unitId]);
     }
 
-    /**
-     * @return Command[]
-     */
+    /** @return Command[] */
     public function findByUnitAndUser(int $unitId, int $userId): array
     {
         return $this->em->createQueryBuilder()
@@ -53,17 +49,13 @@ final class CommandRepository implements ICommandRepository
             ->getResult();
     }
 
-    /**
-     * @return Command[]
-     */
+    /** @return Command[] */
     public function findByVehicle(int $vehicleId): array
     {
         return $this->em->getRepository(Command::class)->findBy(['vehicle' => $vehicleId]);
     }
 
-    /**
-     * @return Command[]
-     */
+    /** @return Command[] */
     public function findByContract(int $contractId): array
     {
         return $this->em->createQueryBuilder()

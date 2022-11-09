@@ -25,9 +25,7 @@ class SheetChitsGenerator
         $this->queryBus = $queryBus;
     }
 
-    /**
-     * @param ExportedCashbook[] $cashbooks
-     */
+    /** @param ExportedCashbook[] $cashbooks */
     public function __invoke(Worksheet $sheet, array $cashbooks): void
     {
         $sheet->setCellValue('A1', 'Název akce')

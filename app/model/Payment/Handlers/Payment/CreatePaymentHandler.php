@@ -35,8 +35,8 @@ final class CreatePaymentHandler
                 $command->getVariableSymbol(),
                 $command->getConstantSymbol(),
                 $command->getPersonId(),
-                $command->getNote()
-            )
+                $command->getNote(),
+            ),
         );
     }
 }

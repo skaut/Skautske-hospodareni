@@ -37,7 +37,7 @@ class CachingClientDecorator implements IFioClient
                 $dependencies[Cache::TAGS]       = ['fio/' . $account->getId()];
 
                 return $this->inner->getTransactions($since, $until, $account);
-            }
+            },
         );
     }
 }

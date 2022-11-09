@@ -40,9 +40,7 @@ class BudgetPresenter extends BasePresenter
         ]);
     }
 
-    /**
-     * @param mixed[] $values
-     */
+    /** @param mixed[] $values */
     public function getParentCategories(array $values): DependentData
     {
         $items = $this->budgetService->getCategoriesRoot($this->unitId->toInt(), $values['type']);

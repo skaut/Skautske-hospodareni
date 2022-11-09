@@ -9,9 +9,7 @@ use Model\Payment\BankAccountNotFound;
 
 interface IBankAccountRepository
 {
-    /**
-     * @throws BankAccountNotFound
-     */
+    /** @throws BankAccountNotFound */
     public function find(int $id): BankAccount;
 
     /**
@@ -25,9 +23,7 @@ interface IBankAccountRepository
 
     public function save(BankAccount $account): void;
 
-    /**
-     * @return BankAccount[]
-     */
+    /** @return BankAccount[] */
     public function findByUnit(int $unitId): array;
 
     public function remove(BankAccount $account): void;

@@ -13,9 +13,7 @@ use Model\Payment\ReadModel\Queries\PairedPaymentsQuery;
 
 final class PairedPaymentsQueryHandlerTest extends IntegrationTest
 {
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     protected function getTestedAggregateRoots(): array
     {
         return [
@@ -52,8 +50,8 @@ final class PairedPaymentsQueryHandlerTest extends IntegrationTest
             new PairedPaymentsQuery(
                 new BankAccountId(10),
                 new DateTimeImmutable('2018-09-24 00:00:00'),
-                new DateTimeImmutable('2018-10-01 00:00:00')
-            )
+                new DateTimeImmutable('2018-10-01 00:00:00'),
+            ),
         );
 
         $this->assertCount(2, $payments);

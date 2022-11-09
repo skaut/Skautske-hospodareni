@@ -23,14 +23,12 @@ final class CampStatesHandler
         $this->cache           = $cache;
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function __invoke(CampStates $query): array
     {
         return $this->cache->load(self::CACHE_KEY, function () {
             return Helpers::getPairs(
-                $this->eventWebservice->eventCampStateAll()
+                $this->eventWebservice->eventCampStateAll(),
             );
         });
     }

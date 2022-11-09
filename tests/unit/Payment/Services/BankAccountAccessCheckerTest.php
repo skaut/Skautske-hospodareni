@@ -31,9 +31,7 @@ final class BankAccountAccessCheckerTest extends Unit
         ]);
     }
 
-    /**
-     * @return mixed[][]
-     */
+    /** @return mixed[][] */
     public static function dataValidUnitsToKeepForBankAccount(): array
     {
         return [
@@ -63,13 +61,11 @@ final class BankAccountAccessCheckerTest extends Unit
 
         $this->assertTrue(
             $checker->allUnitsHaveAccessToBankAccount($unitIds, 1),
-            $message . ' should have access to bank account'
+            $message . ' should have access to bank account',
         );
     }
 
-    /**
-     * @return mixed[][]
-     */
+    /** @return mixed[][] */
     public static function dataUnitsWithNoAccessToBankAccount(): array
     {
         return [
@@ -101,7 +97,7 @@ final class BankAccountAccessCheckerTest extends Unit
 
         $this->assertFalse(
             $checker->allUnitsHaveAccessToBankAccount($unitIds, 1),
-            $message . ' should not have access to bank account'
+            $message . ' should not have access to bank account',
         );
     }
 

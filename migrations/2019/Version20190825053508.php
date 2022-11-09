@@ -20,7 +20,7 @@ final class Version20190825053508 extends AbstractMigration
         $this->addSql('DROP INDEX state ON pa_group');
         $this->addSql('DROP INDEX fk_bank_account_id ON pa_group');
         $this->addSql('DROP INDEX objectId ON pa_group');
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             ALTER TABLE pa_group 
                 CHANGE groupType groupType VARCHAR(20) DEFAULT NULL COMMENT 'typ entity(DC2Type:string_enum)', 
                 CHANGE amount amount DOUBLE PRECISION DEFAULT NULL,
@@ -34,13 +34,13 @@ final class Version20190825053508 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             CREATE TABLE pa_group_state (
                 id VARCHAR(20) NOT NULL COLLATE utf8_czech_ci, 
                 label VARCHAR(64) NOT NULL COLLATE utf8_czech_ci, 
                 PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB COMMENT = '' 
         SQL);
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             ALTER TABLE pa_group 
                 CHANGE groupType groupType VARCHAR(20) DEFAULT NULL COLLATE utf8_czech_ci COMMENT 'typ entity',
                 CHANGE amount amount DOUBLE PRECISION UNSIGNED DEFAULT NULL,

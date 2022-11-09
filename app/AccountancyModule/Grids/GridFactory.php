@@ -46,9 +46,7 @@ class GridFactory
         return $grid;
     }
 
-    /**
-     * @param array<string, mixed> $templateParameters
-     */
+    /** @param array<string, mixed> $templateParameters */
     public function createSimpleGrid(?string $templateFile = null, array $templateParameters = []): DataGrid
     {
         $grid = new DataGrid();

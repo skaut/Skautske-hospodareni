@@ -87,7 +87,7 @@ final class CreateCashbookDialog extends BaseControl
             $this->commandBus->handle(
                 $this->unitExists()
                     ? new CreateCashbook($this->unitId, $year)
-                    : new CreateUnit($this->unitId, $year)
+                    : new CreateUnit($this->unitId, $year),
             );
             $this->flashMessage('Pokladní kniha byla vytvořena');
             $this->onSuccess($year);
@@ -101,9 +101,7 @@ final class CreateCashbookDialog extends BaseControl
         return (int) date('Y') + $yearsDifference;
     }
 
-    /**
-     * @return int[]
-     */
+    /** @return int[] */
     private function getYearsWithCashbook(): array
     {
         $cashbooks = $this->queryBus->handle(new UnitCashbookListQuery($this->unitId));

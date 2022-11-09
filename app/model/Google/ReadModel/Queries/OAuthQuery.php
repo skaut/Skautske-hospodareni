@@ -6,9 +6,7 @@ namespace Model\Google\ReadModel\Queries;
 
 use Model\Google\OAuthId;
 
-/**
- * @see OAuthQueryHandler
- */
+/** @see OAuthQueryHandler */
 final class OAuthQuery
 {
     private OAuthId $oAuthId;

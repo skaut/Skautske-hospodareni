@@ -29,9 +29,7 @@ class StaticCategoryRepositoryTest extends IntegrationTest
         );
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     protected function getTestedAggregateRoots(): array
     {
         return [Category::class];

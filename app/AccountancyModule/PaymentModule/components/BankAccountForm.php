@@ -79,7 +79,7 @@ class BankAccountForm extends BaseControl
                     $this->id,
                     $values->name,
                     new AccountNumber($prefix, $number, $bankCode),
-                    $values->token
+                    $values->token,
                 );
             } else {
                 $this->commandBus->handle(
@@ -87,8 +87,8 @@ class BankAccountForm extends BaseControl
                         $this->getPresenter()->getUnitId(),
                         $values->name,
                         new AccountNumber($prefix, $number, $bankCode),
-                        $values->token
-                    )
+                        $values->token,
+                    ),
                 );
             }
 

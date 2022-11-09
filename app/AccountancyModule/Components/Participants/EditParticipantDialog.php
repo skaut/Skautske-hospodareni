@@ -30,9 +30,7 @@ final class EditParticipantDialog extends Dialog
 
     private bool $isAllowedDaysUpdate;
 
-    /**
-     * @param array<int, Participant> $participants
-     */
+    /** @param array<int, Participant> $participants */
     public function __construct(array $participants, bool $iAllowedDaysUpdate, bool $isAccountAllowed, bool $isRepaymentAllowed)
     {
         $this->participants        = $participants;

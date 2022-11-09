@@ -23,7 +23,7 @@ final class AddInverseChitHandler
 
         $cashbook->addInverseChit(
             $originalCashbook,
-            $command->getChitId()
+            $command->getChitId(),
         );
 
         $this->cashbooks->save($cashbook);

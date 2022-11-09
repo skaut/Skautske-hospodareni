@@ -66,9 +66,7 @@ final class ParticipantList extends BaseControl
     /** @persistent */
     public ?string $sort = 'displayName';
 
-    /**
-     * @param Participant[] $currentParticipants
-     */
+    /** @param Participant[] $currentParticipants */
     public function __construct(
         int $aid,
         array $currentParticipants,
@@ -120,9 +118,7 @@ final class ParticipantList extends BaseControl
         $this->template->render();
     }
 
-    /**
-     * @param Participant[] $participants
-     */
+    /** @param Participant[] $participants */
     protected function sortParticipants(array &$participants, string $sort): void
     {
         if (! isset(self::SORT_OPTIONS[$sort])) {
@@ -169,7 +165,7 @@ final class ParticipantList extends BaseControl
             $this->currentParticipants,
             function (Participant $p) use ($participantId) {
                 return $p->getId() !== $participantId;
-            }
+            },
         );
         $this->reload('Účastník byl odebrán', 'success');
     }
@@ -179,7 +175,7 @@ final class ParticipantList extends BaseControl
         if (! isset($this->participantsById()[$participantId])) {
             throw new BadRequestException(
                 sprintf('Participant %d does not exist', $participantId),
-                IResponse::S404_NOT_FOUND
+                IResponse::S404_NOT_FOUND,
             );
         }
 
@@ -291,9 +287,7 @@ final class ParticipantList extends BaseControl
         $this->reload('Účastníci byli odebráni');
     }
 
-    /**
-     * @return array<int, Participant> Participant's indexed by their ID
-     */
+    /** @return array<int, Participant> Participant's indexed by their ID */
     private function participantsById(): array
     {
         $participants = [];

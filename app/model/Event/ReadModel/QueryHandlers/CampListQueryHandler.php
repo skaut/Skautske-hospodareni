@@ -23,9 +23,7 @@ class CampListQueryHandler
         $this->campFactory = $campFactory;
     }
 
-    /**
-     * @return array<int, Camp> Camps indexed by ID
-     */
+    /** @return array<int, Camp> Camps indexed by ID */
     public function __invoke(CampListQuery $query): array
     {
         $camps = $this->skautis->event->EventCampAll([

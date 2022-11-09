@@ -7,9 +7,7 @@ namespace Model\Cashbook\ReadModel\Queries;
 use Model\Cashbook\ReadModel\QueryHandlers\UnitCashbookListQueryHandler;
 use Model\Common\UnitId;
 
-/**
- * @see UnitCashbookListQueryHandler
- */
+/** @see UnitCashbookListQueryHandler */
 final class UnitCashbookListQuery
 {
     private UnitId $unitId;

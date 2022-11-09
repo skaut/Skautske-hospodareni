@@ -7,9 +7,7 @@ namespace Model\Skautis\ReadModel\Queries;
 use Model\Event\SkautisCampId;
 use Model\Skautis\ReadModel\QueryHandlers\CampBudgetQueryHandler;
 
-/**
- * @see CampBudgetQueryHandler
- */
+/** @see CampBudgetQueryHandler */
 final class CampBudgetQuery
 {
     private SkautisCampId $campId;

@@ -11,13 +11,9 @@ use Model\Event\SkautisEducationId;
 
 interface IEducationRepository
 {
-    /**
-     * @throws CashbookNotFound
-     */
+    /** @throws CashbookNotFound */
     public function findBySkautisId(SkautisEducationId $id): Education;
 
-    /**
-     * @throws CashbookNotFound
-     */
+    /** @throws CashbookNotFound */
     public function findByCashbookId(CashbookId $cashbookId): Education;
 }

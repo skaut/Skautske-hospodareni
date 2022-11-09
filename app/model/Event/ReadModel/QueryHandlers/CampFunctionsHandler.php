@@ -32,7 +32,7 @@ class CampFunctionsHandler
             $functionsByType['leader'],
             $functionsByType['assistant'],
             $functionsByType['economist'],
-            $functionsByType['medic']
+            $functionsByType['medic'],
         );
     }
 

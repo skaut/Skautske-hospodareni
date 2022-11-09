@@ -6,9 +6,7 @@ namespace Model\Travel\Commands\Vehicle;
 
 use Model\Travel\Handlers\Vehicle\AddRoadworthyScanHandler;
 
-/**
- * @see AddRoadworthyScanHandler
- */
+/** @see AddRoadworthyScanHandler */
 final class AddRoadworthyScan
 {
     private int $vehicleId;

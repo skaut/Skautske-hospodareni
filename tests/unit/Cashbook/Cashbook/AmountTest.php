@@ -9,9 +9,7 @@ use InvalidArgumentException;
 
 class AmountTest extends Unit
 {
-    /**
-     * @dataProvider getSums
-     */
+    /** @dataProvider getSums */
     public function testCalculateSum(string $expression, float $expectedResult): void
     {
         $amount = new Amount($expression);
@@ -32,9 +30,7 @@ class AmountTest extends Unit
         new Amount('0');
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     public function getSums(): array
     {
         return [
@@ -46,18 +42,14 @@ class AmountTest extends Unit
         ];
     }
 
-    /**
-     * @dataProvider getMultiplications
-     */
+    /** @dataProvider getMultiplications */
     public function testCalculateMultiplication(string $expression, float $expectedResult): void
     {
         $amount = new Amount($expression);
         $this->assertSame($expectedResult, $amount->toFloat());
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     public function getMultiplications(): array
     {
         return [
@@ -67,18 +59,14 @@ class AmountTest extends Unit
         ];
     }
 
-    /**
-     * @dataProvider getMultiplications
-     */
+    /** @dataProvider getMultiplications */
     public function testCalculateSumsAndMultiplications(string $expression, float $expectedResult): void
     {
         $amount = new Amount($expression);
         $this->assertSame($expectedResult, $amount->toFloat());
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     public function getMultiplicationsWithSums(): array
     {
         return [
@@ -88,9 +76,7 @@ class AmountTest extends Unit
         ];
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     public function getExpressions(): array
     {
         return [
@@ -100,9 +86,7 @@ class AmountTest extends Unit
         ];
     }
 
-    /**
-     * @dataProvider getExpressions
-     */
+    /** @dataProvider getExpressions */
     public function testIsUsingFormula(string $expression, bool $expectedResult): void
     {
         $amount = new Amount($expression);

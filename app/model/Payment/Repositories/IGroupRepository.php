@@ -12,9 +12,7 @@ use Model\Payment\GroupNotFound;
 
 interface IGroupRepository
 {
-    /**
-     * @throws GroupNotFound
-     */
+    /** @throws GroupNotFound */
     public function find(int $id): Group;
 
     /**
@@ -31,24 +29,16 @@ interface IGroupRepository
      */
     public function findByUnits(array $unitIds, bool $openOnly): array;
 
-    /**
-     * @return Group[]
-     */
+    /** @return Group[] */
     public function findBySkautisEntities(SkautisEntity ...$objects): array;
 
-    /**
-     * @return Group[]
-     */
+    /** @return Group[] */
     public function findBySkautisEntityType(Type $type): array;
 
-    /**
-     * @return Group[]
-     */
+    /** @return Group[] */
     public function findByBankAccount(int $bankAccountId): array;
 
-    /**
-     * @return Group[]
-     */
+    /** @return Group[] */
     public function findByOAuth(OAuthId $oAuthId): array;
 
     public function save(Group $group): void;

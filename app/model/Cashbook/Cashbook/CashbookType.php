@@ -56,9 +56,7 @@ class CashbookType extends Enum
         return self::TRANSFER_TO_CATEGORY_IDS[$this->getValue()];
     }
 
-    /**
-     * @return CashbookType[]
-     */
+    /** @return CashbookType[] */
     public static function getInverseCashbookTypes(int $chitCategoryId): array
     {
         foreach ([self::TRANSFER_FROM_CATEGORY_IDS, self::TRANSFER_TO_CATEGORY_IDS] as $categoryIdsByType) {
@@ -72,7 +70,7 @@ class CashbookType extends Enum
                     function (string $type): self {
                         return CashbookType::get($type);
                     },
-                    $types
+                    $types,
                 );
             }
         }

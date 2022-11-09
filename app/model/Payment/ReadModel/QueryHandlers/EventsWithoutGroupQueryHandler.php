@@ -28,9 +28,7 @@ final class EventsWithoutGroupQueryHandler
         $this->groups   = $groups;
     }
 
-    /**
-     * @return Event[]
-     */
+    /** @return Event[] */
     public function __invoke(EventsWithoutGroupQuery $query): array
     {
         $events = $this->queryBus->handle(new EventListQuery($query->getYear()));
@@ -64,14 +62,14 @@ final class EventsWithoutGroupQueryHandler
             function (Event $event): SkautisEntity {
                 return SkautisEntity::fromEventId($event->getId());
             },
-            $events
+            $events,
         );
 
         return array_map(
             function (Group $group): int {
                 return $group->getObject()->getId();
             },
-            $this->groups->findBySkautisEntities(...$skautisEntities)
+            $this->groups->findBySkautisEntities(...$skautisEntities),
         );
     }
 }

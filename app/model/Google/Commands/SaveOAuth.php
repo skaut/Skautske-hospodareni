@@ -7,9 +7,7 @@ namespace Model\Google\Commands;
 use Model\Common\UnitId;
 use Model\Google\Handlers\SaveOAuthHandler;
 
-/**
- * @see SaveOAuthHandler
- */
+/** @see SaveOAuthHandler */
 final class SaveOAuth
 {
     private string $code;

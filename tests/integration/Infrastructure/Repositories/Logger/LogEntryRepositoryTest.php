@@ -18,9 +18,7 @@ final class LogEntryRepositoryTest extends IntegrationTest
 
     private LogEntryRepository $repository;
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function getTestedAggregateRoots(): array
     {
         return [LogEntry::class];
@@ -32,9 +30,7 @@ final class LogEntryRepositoryTest extends IntegrationTest
         $this->repository = new LogEntryRepository($this->tester->grabService(EntityManager::class));
     }
 
-    /**
-     * @dataProvider dataTypeIds
-     */
+    /** @dataProvider dataTypeIds */
     public function testSave(?int $typeId): void
     {
         $row = [
@@ -53,8 +49,8 @@ final class LogEntryRepositoryTest extends IntegrationTest
                 $row['description'],
                 Type::get($row['type']),
                 $row['type_id'],
-                new DateTimeImmutable($row['date'])
-            )
+                new DateTimeImmutable($row['date']),
+            ),
         );
 
         $this->tester->seeInDatabase(self::TABLE, $row);
@@ -106,9 +102,7 @@ final class LogEntryRepositoryTest extends IntegrationTest
         }
     }
 
-    /**
-     * @return list<list<int|null>>
-     */
+    /** @return list<list<int|null>> */
     public function dataTypeIds(): array
     {
         return [

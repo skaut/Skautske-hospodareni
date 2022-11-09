@@ -9,9 +9,7 @@ use Model\Travel\VehicleNotFound;
 
 interface IVehicleRepository
 {
-    /**
-     * @throws VehicleNotFound
-     */
+    /** @throws VehicleNotFound */
     public function find(int $id): Vehicle;
 
     /**
@@ -21,9 +19,7 @@ interface IVehicleRepository
      */
     public function findByIds(array $ids): array;
 
-    /**
-     * @return Vehicle[]
-     */
+    /** @return Vehicle[] */
     public function findByUnit(int $unitId): array;
 
     public function save(Vehicle $vehicle): void;

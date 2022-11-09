@@ -166,9 +166,7 @@ class Vehicle
         return $this->metadata;
     }
 
-    /**
-     * @return RoadworthyScan[]
-     */
+    /** @return RoadworthyScan[] */
     public function getRoadworthyScans(): array
     {
         return $this->roadworthyScans->toArray();

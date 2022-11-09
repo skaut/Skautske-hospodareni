@@ -11,14 +11,10 @@ use Model\Event\SkautisCampId;
 
 interface ICampRepository
 {
-    /**
-     * @throws CashbookNotFound
-     */
+    /** @throws CashbookNotFound */
     public function findBySkautisId(SkautisCampId $id): Camp;
 
-    /**
-     * @throws CashbookNotFound
-     */
+    /** @throws CashbookNotFound */
     public function findByCashbookId(CashbookId $cashbookId): Camp;
 
 // public function save(Cashbook $cashbook): void;

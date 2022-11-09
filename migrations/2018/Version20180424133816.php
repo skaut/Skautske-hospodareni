@@ -12,7 +12,7 @@ class Version20180424133816 extends AbstractMigration
     public function up(Schema $schema): void
     {
         $this->addSql(
-            'ALTER TABLE pa_payment ADD transaction_payer VARCHAR(255) DEFAULT NULL, ADD transaction_note VARCHAR(255) DEFAULT NULL'
+            'ALTER TABLE pa_payment ADD transaction_payer VARCHAR(255) DEFAULT NULL, ADD transaction_note VARCHAR(255) DEFAULT NULL',
         );
     }
 

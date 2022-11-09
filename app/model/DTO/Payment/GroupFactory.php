@@ -25,7 +25,7 @@ class GroupFactory
             $group->getState(),
             $group->getOauthId(),
             $group->getNote(),
-            $group->getBankAccountId()
+            $group->getBankAccountId(),
         );
     }
 }

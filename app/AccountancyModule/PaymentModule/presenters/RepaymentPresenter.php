@@ -91,7 +91,7 @@ final class RepaymentPresenter extends BasePresenter
                     function (Control $control) {
                         return AccountNumber::isValid($control->getValue());
                     },
-                    $invalidBankAccountMessage
+                    $invalidBankAccountMessage,
                 );
         }
 
@@ -121,7 +121,7 @@ final class RepaymentPresenter extends BasePresenter
             $repayments[] = new Repayment(
                 AccountNumber::fromString($repayment->account),
                 MoneyFactory::fromFloat((float) $repayment->amount),
-                $repayment->name
+                $repayment->name,
             );
         }
 
@@ -150,8 +150,8 @@ final class RepaymentPresenter extends BasePresenter
                     $bankAccount->getNumber(),
                     $values->date ?? Date::now(),
                     $repayments,
-                    $bankAccount->getToken()
-                )
+                    $bankAccount->getToken(),
+                ),
             );
 
             $this->flashMessage('Vratky byly odeslány do banky', 'success');

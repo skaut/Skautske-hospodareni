@@ -42,9 +42,7 @@ class ExcelService
         return $sheet;
     }
 
-    /**
-     * @param Participant[] $participantsDTO
-     */
+    /** @param Participant[] $participantsDTO */
     public function getGeneralParticipants(array $participantsDTO, Date $startDate): Spreadsheet
     {
         $spreadsheet = $this->getNewFile();
@@ -54,9 +52,7 @@ class ExcelService
         return $spreadsheet;
     }
 
-    /**
-     * @param Participant[] $participantsDTO
-     */
+    /** @param Participant[] $participantsDTO */
     public function getCampParticipants(array $participantsDTO): Spreadsheet
     {
         $spreadsheet = $this->getNewFile();
@@ -97,9 +93,7 @@ class ExcelService
         return $excel;
     }
 
-    /**
-     * @param Chit[] $chits
-     */
+    /** @param Chit[] $chits */
     public function getChitsExport(array $chits): Spreadsheet
     {
         $spreadsheet = $this->getNewFile();
@@ -109,9 +103,7 @@ class ExcelService
         return $spreadsheet;
     }
 
-    /**
-     * @param Chit[] $chits
-     */
+    /** @param Chit[] $chits */
     public function addItemsExport(Spreadsheet $spreadsheetWithActiveSheet, array $chits): Spreadsheet
     {
         $this->setSheetItemsOnly($spreadsheetWithActiveSheet->getActiveSheet(), $chits);
@@ -119,9 +111,7 @@ class ExcelService
         return $spreadsheetWithActiveSheet;
     }
 
-    /**
-     * @param Participant[] $data
-     */
+    /** @param Participant[] $data */
     protected function setSheetParticipantCamp(Worksheet $sheet, array $data): void
     {
         $sheet->setCellValue('A1', 'P.č.')
@@ -169,9 +159,7 @@ class ExcelService
         $sheet->setAutoFilter('A1:N' . ($rowCnt - 1));
     }
 
-    /**
-     * @param Participant[] $data
-     */
+    /** @param Participant[] $data */
     protected function setSheetParticipantGeneral(Worksheet $sheet, array $data, Date $startDate): void
     {
         $sheet->setCellValue('A1', 'P.č.')
@@ -264,9 +252,7 @@ class ExcelService
         $sheet->setTitle('Evidence plateb');
     }
 
-    /**
-     * @param Chit[] $chits
-     */
+    /** @param Chit[] $chits */
     private function setSheetChitsOnly(Worksheet $sheet, array $chits): void
     {
         $sheet->setCellValue('B1', 'Ze dne')
@@ -325,9 +311,7 @@ class ExcelService
         $sheet->setTitle('Doklady');
     }
 
-    /**
-     * @param Chit[] $chits
-     */
+    /** @param Chit[] $chits */
     private function setSheetItemsOnly(Worksheet $sheet, array $chits): void
     {
         $sheet->setCellValue('B1', 'Ze dne')

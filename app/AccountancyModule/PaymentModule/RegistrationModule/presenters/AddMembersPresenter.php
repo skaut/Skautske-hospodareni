@@ -41,9 +41,7 @@ class AddMembersPresenter extends BasePresenter
         $this->readUnits = $this->unitService->getReadUnits($this->user);
     }
 
-    /**
-     * @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY
-     */
+    /** @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY */
     public function actionDefault(int $id, ?int $unitId = null): void
     {
         $this->id = $id;
@@ -84,7 +82,7 @@ class AddMembersPresenter extends BasePresenter
                 $p['emails'],
                 $p['Person'],
                 $totalAmount,
-                $stsCount !== 0 ? $stsCount . 'x STS' : ''
+                $stsCount !== 0 ? $stsCount . 'x STS' : '',
             );
         }
 

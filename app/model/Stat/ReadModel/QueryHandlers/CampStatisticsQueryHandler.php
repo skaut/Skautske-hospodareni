@@ -21,9 +21,7 @@ class CampStatisticsQueryHandler
         $this->db = $connection;
     }
 
-    /**
-     * @return float[]
-     */
+    /** @return float[] */
     public function __invoke(CampStatisticsQuery $query): array
     {
         $params = [

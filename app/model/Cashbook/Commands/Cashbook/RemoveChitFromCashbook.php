@@ -7,9 +7,7 @@ namespace Model\Cashbook\Commands\Cashbook;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Handlers\Cashbook\RemoveChitFromCashbookHandler;
 
-/**
- * @see RemoveChitFromCashbookHandler
- */
+/** @see RemoveChitFromCashbookHandler */
 final class RemoveChitFromCashbook
 {
     private CashbookId $cashbookId;

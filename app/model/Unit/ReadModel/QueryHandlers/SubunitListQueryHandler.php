@@ -17,9 +17,7 @@ final class SubunitListQueryHandler
         $this->units = $units;
     }
 
-    /**
-     * @return Unit[]
-     */
+    /** @return Unit[] */
     public function __invoke(SubunitListQuery $query): array
     {
         return $this->units->findByParent($query->getUnitId()->toInt());

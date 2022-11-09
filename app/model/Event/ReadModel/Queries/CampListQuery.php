@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Event\ReadModel\Queries;
 
-/**
- * @see CampListQueryHandler
- */
+/** @see CampListQueryHandler */
 final class CampListQuery
 {
     private ?int $year = null;

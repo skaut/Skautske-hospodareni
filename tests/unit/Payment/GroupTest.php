@@ -38,7 +38,7 @@ class GroupTest extends Unit
             $oAuthId,
             $bankAccount,
             $this->mockBankAccountAccessChecker([20, 22], $bankAccount->getId(), true),
-            $this->mockOAuthAccessChecker([20, 22], $oAuthId, true)
+            $this->mockOAuthAccessChecker([20, 22], $oAuthId, true),
         );
 
         $this->assertSame([20, 22], $group->getUnitIds());
@@ -164,7 +164,7 @@ class GroupTest extends Unit
         $group = $this->createGroup(
             null,
             null,
-            m::mock(BankAccount::class, ['getId' => 10, 'getUnitId' => 20])
+            m::mock(BankAccount::class, ['getId' => 10, 'getUnitId' => 20]),
         );
 
         $group->removeBankAccount();
@@ -229,7 +229,7 @@ class GroupTest extends Unit
         $group->changeUnits(
             $unitIds,
             m::mock(IBankAccountAccessChecker::class),
-            $this->mockOAuthAccessChecker($unitIds, $oAuthId, false)
+            $this->mockOAuthAccessChecker($unitIds, $oAuthId, false),
         );
 
         $this->assertSame($unitIds, $group->getUnitIds());
@@ -246,7 +246,7 @@ class GroupTest extends Unit
         $group->changeUnits(
             $unitIds,
             m::mock(IBankAccountAccessChecker::class),
-            $this->mockOAuthAccessChecker($unitIds, $oAuthId, true)
+            $this->mockOAuthAccessChecker($unitIds, $oAuthId, true),
         );
 
         $this->assertSame($unitIds, $group->getUnitIds());
@@ -258,9 +258,7 @@ class GroupTest extends Unit
         return m::mock(BankAccount::class, ['getId' => $id, 'getUnitId' => 50, 'isAllowedForSubunits' => true]);
     }
 
-    /**
-     * @param int[] $unitIds
-     */
+    /** @param int[] $unitIds */
     private function mockBankAccountAccessChecker(array $unitIds, int $bankAccountId, bool $hasAccess): IBankAccountAccessChecker
     {
         $accessChecker = m::mock(IBankAccountAccessChecker::class);
@@ -273,9 +271,7 @@ class GroupTest extends Unit
         return $accessChecker;
     }
 
-    /**
-     * @param int[] $unitIds
-     */
+    /** @param int[] $unitIds */
     private function mockOAuthAccessChecker(array $unitIds, OAuthId $oAuthId, bool $hasAccess): IOAuthAccessChecker
     {
         $accessChecker = m::mock(IOAuthAccessChecker::class);
@@ -313,9 +309,7 @@ class GroupTest extends Unit
         );
     }
 
-    /**
-     * @param EmailTemplate[] $expected
-     */
+    /** @param EmailTemplate[] $expected */
     private function assertEmailsAreSame(array $expected, Group $group): void
     {
         foreach ($expected as $key => $value) {

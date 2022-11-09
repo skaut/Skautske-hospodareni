@@ -41,9 +41,7 @@ class GroupRepositoryTest extends IntegrationTest
     /** @var EventBus&MockInterface */
     private EventBus $eventBus;
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function getTestedAggregateRoots(): array
     {
         return [Group::class];
@@ -73,7 +71,7 @@ class GroupRepositoryTest extends IntegrationTest
             self::ROW['amount'],
             new Date('2018-01-29'),
             self::ROW['constant_symbol'],
-            new VariableSymbol(self::ROW['next_variable_symbol'])
+            new VariableSymbol(self::ROW['next_variable_symbol']),
         );
 
         $row = [
@@ -164,7 +162,7 @@ class GroupRepositoryTest extends IntegrationTest
             static function (Group $group): int {
                 return $group->getId();
             },
-            $groups
+            $groups,
         );
 
         sort($groupIds);
@@ -238,7 +236,7 @@ class GroupRepositoryTest extends IntegrationTest
         /** @var Group[] $groups */
         $groups = $this->repository->findBySkautisEntities(
             new Group\SkautisEntity(2, Group\Type::get(Group\Type::REGISTRATION)),
-            new Group\SkautisEntity(10, Group\Type::get(Group\Type::EVENT))
+            new Group\SkautisEntity(10, Group\Type::get(Group\Type::EVENT)),
         );
 
         $this->assertCount(2, $groups);

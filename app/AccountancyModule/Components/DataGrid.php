@@ -40,7 +40,7 @@ final class DataGrid extends \Ublaboo\DataGrid\DataGrid
         return $this->dataModel->filterData(
             $this->getPaginator(),
             $this->createSorting($this->sort, $this->sortCallback),
-            $this->assembleFilters()
+            $this->assembleFilters(),
         );
     }
 
@@ -49,16 +49,14 @@ final class DataGrid extends \Ublaboo\DataGrid\DataGrid
         return $this->addFilterSelect($name, $label, $this->getYearOptions(), 'year');
     }
 
-    /**
-     * @return array<string, string>
-     */
+    /** @return array<string, string> */
     private function getYearOptions(): array
     {
         $years = array_map(
             function (int $year): string {
                 return (string) $year;
             },
-            array_reverse(range(2012, (int) date('Y')))
+            array_reverse(range(2012, (int) date('Y'))),
         );
 
         return [self::OPTION_ALL => 'Všechny'] + array_combine($years, $years);

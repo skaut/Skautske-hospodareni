@@ -7,9 +7,7 @@ namespace Model\Cashbook\Commands\Cashbook;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 
-/**
- * @see GenerateChitNumbersHandler
- */
+/** @see GenerateChitNumbersHandler */
 final class GenerateChitNumbers
 {
     private CashbookId $cashbookId;

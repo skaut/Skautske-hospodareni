@@ -46,7 +46,7 @@ class Transaction
             $transaction->getId(),
             $transaction->getBankAccount(),
             $transaction->getName(),
-            $transaction->getNote()
+            $transaction->getNote(),
         );
     }
 

@@ -7,9 +7,7 @@ namespace Model\Payment\ReadModel\Queries;
 use Model\Payment\EmailType;
 use Model\Payment\ReadModel\QueryHandlers\GroupEmailQueryHandler;
 
-/**
- * @see GroupEmailQueryHandler
- */
+/** @see GroupEmailQueryHandler */
 final class GroupEmailQuery
 {
     private int $groupId;

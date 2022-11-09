@@ -7,9 +7,7 @@ namespace Model\Cashbook\ReadModel\Queries;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ReadModel\QueryHandlers\SkautisIdQueryHandler;
 
-/**
- * @see SkautisIdQueryHandler
- */
+/** @see SkautisIdQueryHandler */
 final class SkautisIdQuery
 {
     private CashbookId $cashbookId;

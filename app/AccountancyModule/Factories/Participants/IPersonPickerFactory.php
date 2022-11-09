@@ -10,8 +10,6 @@ use Model\DTO\Participant\Participant;
 
 interface IPersonPickerFactory
 {
-    /**
-     * @param Participant[] $currentParticipants
-     */
+    /** @param Participant[] $currentParticipants */
     public function create(UnitId $userUnitId, array $currentParticipants): PersonPicker;
 }

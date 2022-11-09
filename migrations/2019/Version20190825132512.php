@@ -11,7 +11,7 @@ final class Version20190825132512 extends AbstractMigration
 {
     public function up(Schema $schema): void
     {
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             CREATE TABLE ac_chit_scan (
                 id INT AUTO_INCREMENT NOT NULL,
                 chit_id BIGINT(20) UNSIGNED NOT NULL, 

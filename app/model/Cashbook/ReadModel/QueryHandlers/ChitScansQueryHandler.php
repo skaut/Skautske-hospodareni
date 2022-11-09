@@ -27,9 +27,7 @@ final class ChitScansQueryHandler
         $this->storage  = $storage;
     }
 
-    /**
-     * @return File[]
-     */
+    /** @return File[] */
     public function __invoke(ChitScansQuery $query): array
     {
         $chit = $this->queryBus->handle(new ChitQuery($query->getCashbookId(), $query->getChitId()));
@@ -39,7 +37,7 @@ final class ChitScansQueryHandler
             function (Cashbook\ChitScan $scan): File {
                 return $this->storage->get($scan->getFilePath());
             },
-            $chit->getScans()
+            $chit->getScans(),
         );
     }
 }

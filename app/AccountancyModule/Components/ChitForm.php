@@ -154,16 +154,14 @@ final class ChitForm extends BaseControl
         $this->redrawControl();
     }
 
-    /**
-     * @param mixed[] $values
-     */
+    /** @param mixed[] $values */
     public function getCategoryItems(array $values): DependentData
     {
         $type = $values['type'];
 
         if ($type !== null) {
             return new DependentData(
-                $this->getCategoryPairsByType(Operation::get($type))
+                $this->getCategoryPairsByType(Operation::get($type)),
             );
         }
 
@@ -299,7 +297,7 @@ final class ChitForm extends BaseControl
             $items[]    = new ChitItem(
                 new Amount($item->price),
                 $categoriesDto[$categoryId],
-                $item->purpose
+                $item->purpose,
             );
         }
 
@@ -329,9 +327,7 @@ final class ChitForm extends BaseControl
         }
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     private function getAdultMemberNames(): array
     {
         try {
@@ -341,9 +337,7 @@ final class ChitForm extends BaseControl
         }
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     private function getCategoryPairsByType(?Operation $operation): array
     {
         return $this->queryBus->handle(new CategoryPairsQuery($this->cashbookId, $operation));

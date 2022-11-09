@@ -35,9 +35,7 @@ final class OAuthsAccessibleByGroupsQueryHandler
         $this->googleRepository = $googleRepository;
     }
 
-    /**
-     * @return OAuthDTO[]
-     */
+    /** @return OAuthDTO[] */
     public function __invoke(OAuthsAccessibleByGroupsQuery $query): array
     {
         $unitIds   = $query->getUnitIds();
@@ -66,7 +64,7 @@ final class OAuthsAccessibleByGroupsQueryHandler
     private function unitsOwningOAuth(array $unitIds): array
     {
         return array_unique(
-            array_merge([], $unitIds, array_map([$this->unitResolver, 'getOfficialUnitId'], $unitIds))
+            array_merge([], $unitIds, array_map([$this->unitResolver, 'getOfficialUnitId'], $unitIds)),
         );
     }
 }

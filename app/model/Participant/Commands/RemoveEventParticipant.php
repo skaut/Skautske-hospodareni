@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Commands\Cashbook;
 
-/**
- * @see RemoveEventParticipantHandler
- */
+/** @see RemoveEventParticipantHandler */
 final class RemoveEventParticipant
 {
     private int $participantId;

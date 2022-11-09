@@ -56,9 +56,7 @@ abstract class Travel
         return $this->details;
     }
 
-    /**
-     * @deprecated only for code completion
-     */
+    /** @deprecated only for code completion */
     public function getCommand(): Command
     {
         return $this->command;

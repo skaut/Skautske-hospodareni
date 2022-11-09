@@ -10,8 +10,6 @@ use Model\Event\SkautisCampId;
 
 interface ICampRepository
 {
-    /**
-     * @throws CampNotFound
-     */
+    /** @throws CampNotFound */
     public function find(SkautisCampId $id): Camp;
 }

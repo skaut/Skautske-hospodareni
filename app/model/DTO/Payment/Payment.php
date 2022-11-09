@@ -193,9 +193,7 @@ class Payment
         return $this->groupId;
     }
 
-    /**
-     * @return SentEmail[]
-     */
+    /** @return SentEmail[] */
     public function getSentEmails(): array
     {
         return $this->sentEmails;

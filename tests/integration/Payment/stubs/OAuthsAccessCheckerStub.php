@@ -9,9 +9,7 @@ use Model\Payment\Services\IOAuthAccessChecker;
 
 final class OAuthsAccessCheckerStub implements IOAuthAccessChecker
 {
-    /**
-     * @param int[] $unitIds
-     */
+    /** @param int[] $unitIds */
     public function allUnitsHaveAccessToOAuth(array $unitIds, OAuthId $oAuthId): bool
     {
         return true;

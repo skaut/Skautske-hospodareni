@@ -9,8 +9,6 @@ use Model\Common\UnitId;
 
 interface IMemberRepository
 {
-    /**
-     * @return Member[]
-     */
+    /** @return Member[] */
     public function findByUnit(UnitId $unitId, bool $includeSubunitMembers): array;
 }

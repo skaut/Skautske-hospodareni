@@ -12,7 +12,7 @@ final class Version20190825050311 extends AbstractMigration
     public function up(Schema $schema): void
     {
         $this->addSql('DROP INDEX unit_id ON tc_contracts');
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             ALTER TABLE tc_contracts 
             CHANGE unit_id unit_id INT UNSIGNED NOT NULL, 
             CHANGE driver_birthday driver_birthday DATE DEFAULT NULL, 
@@ -22,7 +22,7 @@ final class Version20190825050311 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             ALTER TABLE tc_contracts 
                 CHANGE unit_id unit_id INT UNSIGNED NOT NULL COMMENT 'SkautIS ID jednotky', 
                 CHANGE template template SMALLINT NOT NULL,

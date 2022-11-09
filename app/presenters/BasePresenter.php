@@ -26,9 +26,7 @@ use function assert;
 use function explode;
 use function sprintf;
 
-/**
- * @property-read DefaultTemplate $template
- */
+/** @property-read DefaultTemplate $template */
 abstract class BasePresenter extends Presenter
 {
     protected UserService $userService;

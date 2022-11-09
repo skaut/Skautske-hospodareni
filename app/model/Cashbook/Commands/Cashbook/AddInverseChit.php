@@ -7,9 +7,7 @@ namespace Model\Cashbook\Commands\Cashbook;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Handlers\Cashbook\AddInverseChitHandler;
 
-/**
- * @see AddInverseChitHandler
- */
+/** @see AddInverseChitHandler */
 final class AddInverseChit
 {
     private CashbookId $originalCashbookId;

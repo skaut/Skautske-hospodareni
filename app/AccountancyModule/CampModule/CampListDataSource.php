@@ -45,9 +45,7 @@ final class CampListDataSource extends DataSource
         return $this;
     }
 
-    /**
-     * @return CampListItem[]
-     */
+    /** @return CampListItem[] */
     protected function loadData(): array
     {
         $camps = $this->queryBus->handle(new CampListQuery($this->year, $this->state));
@@ -64,7 +62,7 @@ final class CampListDataSource extends DataSource
                     $camp->getState(),
                 );
             },
-            $camps
+            $camps,
         );
     }
 

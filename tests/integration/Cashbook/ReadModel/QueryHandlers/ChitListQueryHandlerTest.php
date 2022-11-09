@@ -20,9 +20,7 @@ use function count;
 
 class ChitListQueryHandlerTest extends IntegrationTest
 {
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     protected function getTestedAggregateRoots(): array
     {
         return [Cashbook::class];
@@ -50,7 +48,7 @@ class ChitListQueryHandlerTest extends IntegrationTest
                 $body,
                 PaymentMethod::get($paymentMethod),
                 [new Cashbook\ChitItem(Cashbook\Amount::fromFloat(10), $category, '')],
-                Helpers::mockCashbookCategories($categoryId)
+                Helpers::mockCashbookCategories($categoryId),
             );
         }
 
@@ -93,8 +91,8 @@ class ChitListQueryHandlerTest extends IntegrationTest
         $this->assertSame(
             [],
             (new ChitListQueryHandler($this->entityManager, $this->prepareQueryBus()))(
-                ChitListQuery::all(Cashbook\CashbookId::generate())
-            )
+                ChitListQuery::all(Cashbook\CashbookId::generate()),
+            ),
         );
     }
 

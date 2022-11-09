@@ -103,7 +103,7 @@ class PairButton extends BaseControl
             function (Group $g) {
                 return $g->getBankAccountId();
             },
-            $groups
+            $groups,
         );
         $bankAccountIds = array_filter($bankAccountIds);
 

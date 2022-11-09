@@ -53,7 +53,7 @@ final class Passenger
         $passenger = new Passenger(
             $contractPassenger->getName(),
             $contractPassenger->getContact(),
-            $contractPassenger->getAddress()
+            $contractPassenger->getAddress(),
         );
         $passenger->setContractId($contract->getId());
 

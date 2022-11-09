@@ -89,9 +89,7 @@ abstract class AccountancyHelpers
         }
     }
 
-    /**
-     * @filter
-     */
+    /** @filter */
     public static function commandState(?DateTimeInterface $s): string
     {
         if ($s === null) {
@@ -102,9 +100,7 @@ abstract class AccountancyHelpers
             $s->format('j.n.Y H:i:s') . '">Uzavřený</span>';
     }
 
-    /**
-     * @filter
-     */
+    /** @filter */
     public static function paymentState(string $state, bool $plural): string
     {
         $labels = [
@@ -116,9 +112,7 @@ abstract class AccountancyHelpers
         return $labels[$state][$plural ? 1 : 0] ?? $state;
     }
 
-    /**
-     * @filter
-     */
+    /** @filter */
     public static function paymentStateLabel(State $s): Html
     {
         $classes = [
@@ -277,9 +271,7 @@ abstract class AccountancyHelpers
         return mb_strtoupper(mb_substr($string, 0, 1, 'UTF-8'), 'UTF-8') . mb_substr($string, 1, null, 'UTF-8');
     }
 
-    /**
-     * @filter
-     */
+    /** @filter */
     public static function groupState(string $s): string
     {
         switch ($s) {

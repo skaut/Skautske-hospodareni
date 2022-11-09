@@ -6,9 +6,7 @@ namespace Model\Payment\Commands\Group;
 
 use Model\Payment\Handlers\Group\RemoveGroupHandler;
 
-/**
- * @see RemoveGroupHandler
- */
+/** @see RemoveGroupHandler */
 final class RemoveGroup
 {
     private int $groupId;

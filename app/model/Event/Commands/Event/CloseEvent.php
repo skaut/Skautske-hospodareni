@@ -7,9 +7,7 @@ namespace Model\Event\Commands\Event;
 use Model\Event\Handlers\Event\CloseEventHandler;
 use Model\Event\SkautisEventId;
 
-/**
- * @see CloseEventHandler
- */
+/** @see CloseEventHandler */
 final class CloseEvent
 {
     private SkautisEventId $eventId;

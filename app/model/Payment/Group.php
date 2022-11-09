@@ -176,9 +176,7 @@ class Group
         $this->bankAccount = null;
     }
 
-    /**
-     * @param int[] $unitIds
-     */
+    /** @param int[] $unitIds */
     public function changeUnits(
         array $unitIds,
         IBankAccountAccessChecker $bankAccountAccessChecker,
@@ -207,15 +205,13 @@ class Group
         return $this->id;
     }
 
-    /**
-     * @return int[]
-     */
+    /** @return int[] */
     public function getUnitIds(): array
     {
         return $this->units->map(
             function (Unit $unit): int {
                 return $unit->getUnitId();
-            }
+            },
         )->toArray();
     }
 

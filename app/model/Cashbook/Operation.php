@@ -18,7 +18,7 @@ class Operation extends Enum
     public function getInverseOperation(): self
     {
         return self::get(
-            $this->getValue() === self::INCOME ? self::EXPENSE : self::INCOME
+            $this->getValue() === self::INCOME ? self::EXPENSE : self::INCOME,
         );
     }
 

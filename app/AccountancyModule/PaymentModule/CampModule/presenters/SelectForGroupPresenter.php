@@ -15,7 +15,7 @@ final class SelectForGroupPresenter extends BasePresenter
     public function renderDefault(): void
     {
         $this->template->setParameters(
-            ['camps' => array_values($this->queryBus->handle(new CampsWithoutGroupQuery(Date::today()->year)))]
+            ['camps' => array_values($this->queryBus->handle(new CampsWithoutGroupQuery(Date::today()->year)))],
         );
     }
 }

@@ -23,15 +23,13 @@ final class EventTypesHandler
         $this->cache           = $cache;
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function __invoke(EventTypes $query): array
     {
         // Event types don't change so it's safe to cache them no matter what
         return $this->cache->load(self::CACHE_KEY, function () {
             return Helpers::getPairs(
-                $this->eventWebservice->eventGeneralTypeAll()
+                $this->eventWebservice->eventGeneralTypeAll(),
             );
         });
     }

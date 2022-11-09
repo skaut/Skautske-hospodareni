@@ -20,17 +20,13 @@ final class TransportTypeListType extends Type
         return 'transport_types';
     }
 
-    /**
-     * @param array<string, mixed> $fieldDeclaration
-     */
+    /** @param array<string, mixed> $fieldDeclaration */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
     {
         return $platform->getJsonTypeDeclarationSQL($fieldDeclaration);
     }
 
-    /**
-     * @param mixed $value
-     */
+    /** @param mixed $value */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
         Assertion::isArray($value);

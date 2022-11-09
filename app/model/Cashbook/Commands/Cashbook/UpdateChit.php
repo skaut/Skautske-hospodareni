@@ -9,9 +9,7 @@ use Model\Cashbook\Cashbook\ChitBody;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\DTO\Cashbook\ChitItem;
 
-/**
- * @see UpdateChitHandler
- */
+/** @see UpdateChitHandler */
 final class UpdateChit
 {
     private CashbookId $cashbookId;
@@ -25,9 +23,7 @@ final class UpdateChit
     /** @var ChitItem[] */
     private array $items;
 
-    /**
-     * @param ChitItem[] $items
-     */
+    /** @param ChitItem[] $items */
     public function __construct(
         CashbookId $cashbookId,
         int $chitId,
@@ -62,9 +58,7 @@ final class UpdateChit
         return $this->paymentMethod;
     }
 
-    /**
-     * @return ChitItem[]
-     */
+    /** @return ChitItem[] */
     public function getItems(): array
     {
         return $this->items;

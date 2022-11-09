@@ -42,7 +42,7 @@ final class CategoryPairsQueryHandlerTest extends Unit
         $handler = $this->createHandler();
 
         $this->assertSame([1 => 'Název 1'], $handler(
-            new CategoryPairsQuery(CashbookId::fromString(self::CASHBOOK_ID), Operation::get(Operation::INCOME))
+            new CategoryPairsQuery(CashbookId::fromString(self::CASHBOOK_ID), Operation::get(Operation::INCOME)),
         ));
     }
 

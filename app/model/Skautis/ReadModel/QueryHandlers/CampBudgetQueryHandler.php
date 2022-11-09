@@ -21,9 +21,7 @@ final class CampBudgetQueryHandler
         $this->eventWebService = $eventWebService;
     }
 
-    /**
-     * @return BudgetEntry[]
-     */
+    /** @return BudgetEntry[] */
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     public function __invoke(CampBudgetQuery $query): array
     {
@@ -36,7 +34,7 @@ final class CampBudgetQueryHandler
             return new BudgetEntry(
                 $category->EventCampStatementType,
                 MoneyFactory::fromFloat((float) $category->Ammount),
-                $category->IsRevenue
+                $category->IsRevenue,
             );
         }, $skautisCategories);
     }

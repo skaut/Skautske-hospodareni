@@ -6,9 +6,7 @@ namespace Model\Event\ReadModel\Queries;
 
 use Model\Event\ReadModel\QueryHandlers\EducationListQueryHandler;
 
-/**
- * @see EducationListQueryHandler
- */
+/** @see EducationListQueryHandler */
 final class EducationListQuery
 {
     private ?int $year;

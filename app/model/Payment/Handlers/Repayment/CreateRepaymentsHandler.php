@@ -43,7 +43,7 @@ final class CreateRepaymentsHandler
                         ],
                     ],
                     'timeout' => 60,
-                ]
+                ],
             );
         } catch (ServerException $e) {
             throw BankError::fromServerException($e);

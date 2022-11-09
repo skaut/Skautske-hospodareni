@@ -8,9 +8,7 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Handlers\Cashbook\RemoveChitScanHandler;
 use Model\Common\FilePath;
 
-/**
- * @see RemoveChitScanHandler
- */
+/** @see RemoveChitScanHandler */
 final class RemoveChitScan
 {
     private CashbookId $cashbookId;

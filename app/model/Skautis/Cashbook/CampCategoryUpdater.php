@@ -41,9 +41,7 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
         $this->campCategories = $campCategories;
     }
 
-    /**
-     * @param array<int, float> $cashbookTotals
-     */
+    /** @param array<int, float> $cashbookTotals */
     public function updateCategories(CashbookId $cashbookId, array $cashbookTotals): void
     {
         $campSkautisId = $this->campRepository->findByCashbookId($cashbookId)->getSkautisId();
@@ -84,9 +82,7 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
         }
     }
 
-    /**
-     * @return float[]
-     */
+    /** @return float[] */
     private function getSkautisTotals(SkautisCampId $campSkautisId): array
     {
         $categories = $this->campCategories->findForCamp($campSkautisId->toInt());

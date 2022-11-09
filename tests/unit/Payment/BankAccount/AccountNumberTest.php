@@ -22,20 +22,16 @@ class AccountNumberTest extends Unit
         $this->assertSame('19-17608231/0100', (string) $number);
     }
 
-    /**
-     * @dataProvider dataGetAccountNumberWithPrefix
-     */
+    /** @dataProvider dataGetAccountNumberWithPrefix */
     public function testGetAccountNumberWithPrefix(string $fullAccountNumber, string $expectedNumberWithPrefix): void
     {
         $this->assertSame(
             $expectedNumberWithPrefix,
-            AccountNumber::fromString($fullAccountNumber)->getNumberWithPrefix()
+            AccountNumber::fromString($fullAccountNumber)->getNumberWithPrefix(),
         );
     }
 
-    /**
-     * @return string[][]
-     */
+    /** @return string[][] */
     public function dataGetAccountNumberWithPrefix(): array
     {
         return [

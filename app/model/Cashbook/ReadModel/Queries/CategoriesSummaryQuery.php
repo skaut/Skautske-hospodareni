@@ -7,9 +7,7 @@ namespace Model\Cashbook\ReadModel\Queries;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ReadModel\QueryHandlers\CategoriesSummaryQueryHandler;
 
-/**
- * @see CategoriesSummaryQueryHandler
- */
+/** @see CategoriesSummaryQueryHandler */
 final class CategoriesSummaryQuery
 {
     private CashbookId $cashbookId;

@@ -30,7 +30,7 @@ class RouterFactory
                 'presenter' => 'Auth',
                 'action' => 'default',
                 'backlink' => null,
-            ]
+            ],
         );
 
         $router[] = new Route(
@@ -46,7 +46,7 @@ class RouterFactory
                         'cestovni-prikaz' => 'travelCommand',
                     ],
                 ],
-            ]
+            ],
         );
 
         $router[] = new Route(
@@ -54,7 +54,7 @@ class RouterFactory
             [
                 'presenter' => 'Offline',
                 'action' => 'list',
-            ]
+            ],
         );
 
         $router[] = $accountancy = new RouteList('Accountancy');
@@ -94,7 +94,7 @@ class RouterFactory
                         ],
                     ],
                     'action' => 'default',
-                ]
+                ],
             )
             ->addRoute('<presenter>[/<action>]', ['action' => 'default']);
     }
@@ -116,7 +116,7 @@ class RouterFactory
                         ],
                     ],
                     'action' => 'default',
-                ]
+                ],
             )
             ->addRoute('<presenter>[/<action>]', ['action' => 'default']);
     }
@@ -138,7 +138,7 @@ class RouterFactory
                         ],
                     ],
                     'action' => 'default',
-                ]
+                ],
             )
             ->addRoute('<presenter>[/<action>]', ['action' => 'default']);
     }
@@ -160,7 +160,7 @@ class RouterFactory
                         ],
                     ],
                     'action' => 'default',
-                ]
+                ],
             );
     }
 
@@ -182,7 +182,7 @@ class RouterFactory
                         ],
                     ],
                     'action' => 'default',
-                ]
+                ],
             )
             ->addRoute('<presenter>[/<action>]', ['action' => 'default']);
     }
@@ -202,7 +202,7 @@ class RouterFactory
                         Route::VALUE => 'default',
                         Route::FILTER_TABLE => ['upravit' => 'edit'],
                     ],
-                ]
+                ],
             )
             ->addRoute('', 'GroupList:default')
             ->addRoute('skupiny/<id [0-9]+>[/<action>]', [
@@ -223,7 +223,7 @@ class RouterFactory
                 [
                     'presenter' => [Route::VALUE => 'Default'],
                     'action' => 'default',
-                ]
+                ],
             )
             ->addRoute('[<presenter>][/<action>]', ['action' => 'default']);
     }

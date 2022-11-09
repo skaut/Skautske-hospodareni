@@ -30,7 +30,7 @@ final class ParticipantFactory
             $participant->getUnitRegistrationNumber(),
             $participant->getDays(),
             $participant->getPayment(),
-            $participant->getCategory()
+            $participant->getCategory(),
         );
     }
 }

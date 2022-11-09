@@ -27,9 +27,7 @@ class VariableSymbolTest extends Unit
         new VariableSymbol('');
     }
 
-    /**
-     * @dataProvider getVariableSymbolsStartingWithZero
-     */
+    /** @dataProvider getVariableSymbolsStartingWithZero */
     public function testVariableSymbolCantStartWithZero(string $symbol): void
     {
         $this->expectException(InvalidVariableSymbol::class);
@@ -37,9 +35,7 @@ class VariableSymbolTest extends Unit
         new VariableSymbol($symbol);
     }
 
-    /**
-     * @dataProvider getNonNumericSymbol
-     */
+    /** @dataProvider getNonNumericSymbol */
     public function testVariableSymbolCantContainNonNumericSymbols(string $data): void
     {
         $this->expectException(InvalidVariableSymbol::class);
@@ -47,9 +43,7 @@ class VariableSymbolTest extends Unit
         new VariableSymbol('123' . $data[0]);
     }
 
-    /**
-     * @return string[][]
-     */
+    /** @return string[][] */
     public function getNonNumericSymbol(): array
     {
         return [
@@ -60,9 +54,7 @@ class VariableSymbolTest extends Unit
         ];
     }
 
-    /**
-     * @return string[][]
-     */
+    /** @return string[][] */
     public function getVariableSymbolsStartingWithZero(): array
     {
         return [
@@ -78,7 +70,7 @@ class VariableSymbolTest extends Unit
 
         $this->assertTrue(
             VariableSymbol::areEqual($second, $first),
-            'Variable symbol doesn\'t match other instance with same value'
+            'Variable symbol doesn\'t match other instance with same value',
         );
     }
 
@@ -87,9 +79,7 @@ class VariableSymbolTest extends Unit
         $this->assertFalse(VariableSymbol::areEqual($first, $second));
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     public function getNotEqualPairs(): array
     {
         return [

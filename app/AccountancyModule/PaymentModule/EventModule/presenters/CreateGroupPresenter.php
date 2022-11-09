@@ -41,7 +41,7 @@ final class CreateGroupPresenter extends BasePresenter
     {
         $form = $this->formFactory->create(
             $this->getCurrentUnitId(),
-            SkautisEntity::fromEventId($this->event->getId())
+            SkautisEntity::fromEventId($this->event->getId()),
         );
 
         $form->fillName($this->event->getDisplayName());

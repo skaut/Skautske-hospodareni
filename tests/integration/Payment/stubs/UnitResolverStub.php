@@ -14,9 +14,7 @@ class UnitResolverStub implements IUnitResolver
         return $this->officialUnits[$unitId];
     }
 
-    /**
-     * @param int[] $officialUnits
-     */
+    /** @param int[] $officialUnits */
     public function setOfficialUnits(array $officialUnits): void
     {
         $this->officialUnits = $officialUnits;

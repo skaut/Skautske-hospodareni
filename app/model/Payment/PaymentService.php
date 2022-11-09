@@ -125,7 +125,7 @@ class PaymentService
             function (Group $g) {
                 return DTO\GroupFactory::create($g);
             },
-            $groups
+            $groups,
         );
     }
 
@@ -139,9 +139,7 @@ class PaymentService
         return $this->payments->summarizeByGroup($groupIds);
     }
 
-    /**
-     * @param EmailTemplate[] $emails
-     */
+    /** @param EmailTemplate[] $emails */
     public function createGroup(
         int $unitId,
         ?SkautisEntity $skautisEntity,
@@ -172,9 +170,7 @@ class PaymentService
         return $group->getId();
     }
 
-    /**
-     * @param EmailTemplate[] $emails
-     */
+    /** @param EmailTemplate[] $emails */
     public function updateGroup(
         int $id,
         string $name,
@@ -279,7 +275,7 @@ class PaymentService
                 $persons,
                 function (stdClass $a, stdClass $b) {
                     return strcmp($a->Person, $b->Person);
-                }
+                },
             );
 
             $personsWithPayment = $this->getPersonsWithActivePayment($groupId);
@@ -287,7 +283,7 @@ class PaymentService
                 $persons,
                 function ($v) use ($personsWithPayment) {
                     return ! in_array($v->ID_Person, $personsWithPayment);
-                }
+                },
             );
 
             foreach ($persons as $p) {
@@ -299,9 +295,7 @@ class PaymentService
         return $result;
     }
 
-    /**
-     * @return stdClass[]
-     */
+    /** @return stdClass[] */
     public function getPersonFromRegistration(?int $registrationId, bool $includeChild = true): array
     {
         $persons = $this->skautis->org->PersonRegistrationAll([
@@ -318,9 +312,7 @@ class PaymentService
         return $persons;
     }
 
-    /**
-     * @return mixed[] format array("add" => [], "remove" => [])
-     */
+    /** @return mixed[] format array("add" => [], "remove" => []) */
     public function getJournalChangesAfterRegistration(int $unitId, int $year): array
     {
         $changes = ['add' => [], 'remove' => []];
@@ -380,13 +372,11 @@ class PaymentService
             function (Group $group) {
                 return $group->getObject()->getId();
             },
-            $groups
+            $groups,
         );
     }
 
-    /**
-     * @throws MissingVariableSymbol
-     */
+    /** @throws MissingVariableSymbol */
     public function generateVs(int $gid): int
     {
         $nextVariableSymbol = $this->getNextVS($gid);
@@ -401,7 +391,7 @@ class PaymentService
             $payments,
             function (Payment $p) {
                 return $p->getVariableSymbol() === null && $p->getState()->equalsValue(State::PREPARING);
-            }
+            },
         );
 
         foreach ($payments as $payment) {
@@ -414,9 +404,7 @@ class PaymentService
         return count($payments);
     }
 
-    /**
-     * @return int[]
-     */
+    /** @return int[] */
     public function getPersonsWithActivePayment(int $groupId): array
     {
         $payments = $this->payments->findByGroup($groupId);
@@ -425,14 +413,14 @@ class PaymentService
             $payments,
             function (Payment $payment) {
                 return $payment->getPersonId() !== null && ! $payment->getState()->equalsValue(State::CANCELED);
-            }
+            },
         );
 
         return array_map(
             function (Payment $p) {
                 return $p->getPersonId();
             },
-            $payments
+            $payments,
         );
     }
 }

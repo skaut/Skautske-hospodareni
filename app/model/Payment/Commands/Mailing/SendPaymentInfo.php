@@ -6,9 +6,7 @@ namespace Model\Payment\Commands\Mailing;
 
 use Model\Event\Handlers\Mailing\SendPaymentInfoHandler;
 
-/**
- * @see SendPaymentInfoHandler
- */
+/** @see SendPaymentInfoHandler */
 final class SendPaymentInfo
 {
     private int $paymentId;

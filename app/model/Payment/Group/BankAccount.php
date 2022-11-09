@@ -7,9 +7,7 @@ namespace Model\Payment\Group;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Embeddable()
- */
+/** @ORM\Embeddable() */
 final class BankAccount
 {
     /** @ORM\Column(type="integer", nullable=true, name="bank_account_id") */

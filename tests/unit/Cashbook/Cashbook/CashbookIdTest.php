@@ -25,7 +25,7 @@ final class CashbookIdTest extends Unit
     {
         $this->assertSame(
             self::UUID_WITHOUT_HYPHENS,
-            CashbookId::fromString(self::UUID_WITHOUT_HYPHENS)->withoutHyphens()
+            CashbookId::fromString(self::UUID_WITHOUT_HYPHENS)->withoutHyphens(),
         );
     }
 }

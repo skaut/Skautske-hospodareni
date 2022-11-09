@@ -29,9 +29,7 @@ use function assert;
  */
 class CashbookIntegrationTest extends IntegrationTest
 {
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function getTestedAggregateRoots(): array
     {
         return [Cashbook::class];
@@ -73,7 +71,7 @@ class CashbookIntegrationTest extends IntegrationTest
             new ChitBody(null, $date, $recipient),
             $paymentMethod,
             [new ChitItem($amount, $category, 'purpose')],
-            $categories
+            $categories,
         );
 
         $event = $cashbook->extractEventsToDispatch()[0];
@@ -97,7 +95,7 @@ class CashbookIntegrationTest extends IntegrationTest
             new ChitBody(null, $date, null),
             $paymentMethod,
             [new ChitItem($amount, $category, 'new-purpose')],
-            $categories
+            $categories,
         );
     }
 
@@ -118,7 +116,7 @@ class CashbookIntegrationTest extends IntegrationTest
             new ChitBody(null, $date, null),
             $paymentMethod,
             [new ChitItem($amount, $category, 'new-purpose')],
-            $categories
+            $categories,
         );
     }
 
@@ -168,9 +166,7 @@ class CashbookIntegrationTest extends IntegrationTest
         return $cashbook;
     }
 
-    /**
-     * @dataProvider getValidTransfers
-     */
+    /** @dataProvider getValidTransfers */
     public function testAddInverseTransferAddsChitToCalledCashbook(
         string $originalCashbookType,
         string $cashbookType,
@@ -187,7 +183,7 @@ class CashbookIntegrationTest extends IntegrationTest
             $body,
             PaymentMethod::CASH(),
             [new ChitItem(new Amount('101'), $category, 'transfer')],
-            $categories
+            $categories,
         );
 
         // to generate ID for chit
@@ -220,9 +216,7 @@ class CashbookIntegrationTest extends IntegrationTest
         $this->assertTrue($event->getCashbookId()->equals($cashbookId));
     }
 
-    /**
-     * @return list<list<mixed>>>
-     */
+    /** @return list<list<mixed>>> */
     public function getValidTransfers(): array
     {
         return [ // expense -> income
@@ -243,9 +237,7 @@ class CashbookIntegrationTest extends IntegrationTest
         ];
     }
 
-    /**
-     * @dataProvider getInvalidInverseChitCategories
-     */
+    /** @dataProvider getInvalidInverseChitCategories */
     public function testAddInvalidInverseChitThrowsException(int $invalidCategoryId): void
     {
         $originalCashbook = new Cashbook(CashbookId::generate(), CashbookType::get(CashbookType::OFFICIAL_UNIT));
@@ -255,7 +247,7 @@ class CashbookIntegrationTest extends IntegrationTest
             new ChitBody(new ChitNumber('123'), new Date(), new Recipient('FM')),
             PaymentMethod::CASH(),
             [new ChitItem(new Amount('100'), $category, 'transfer')],
-            $categories
+            $categories,
         );
 
         // to generate ID for chit
@@ -269,9 +261,7 @@ class CashbookIntegrationTest extends IntegrationTest
         $cashbook->addInverseChit($originalCashbook, 1);
     }
 
-    /**
-     * @return list<list<int>>
-     */
+    /** @return list<list<int>> */
     public function getInvalidInverseChitCategories(): array
     {
         return [
@@ -289,7 +279,7 @@ class CashbookIntegrationTest extends IntegrationTest
             new ChitBody(null, new Date(), null),
             PaymentMethod::CASH(),
             [new ChitItem(new Amount('100'), Helpers::mockChitItemCategory($categoryId), 'purpose')],
-            Helpers::mockCashbookCategories($categoryId)
+            Helpers::mockCashbookCategories($categoryId),
         );
         $cashbook->extractEventsToDispatch();
 
@@ -312,7 +302,7 @@ class CashbookIntegrationTest extends IntegrationTest
                 $chitBody,
                 PaymentMethod::CASH(),
                 [new ChitItem(new Amount('100'), $category, 'purpose')],
-                Helpers::mockCashbookCategories($categoryId)
+                Helpers::mockCashbookCategories($categoryId),
             );
         }
 
@@ -344,9 +334,7 @@ class CashbookIntegrationTest extends IntegrationTest
         $this->assertInstanceOf(ChitWasAdded::class, $events[0]);
     }
 
-    /**
-     * @dataProvider getNonCampCashbookTypes
-     */
+    /** @dataProvider getNonCampCashbookTypes */
     public function testCopyChitsBetweenTwoNonCampCashbooksWithSameType(string $cashbookType): void
     {
         $sourceCashbook = $this->createCashbookWithChit($cashbookType);
@@ -356,13 +344,11 @@ class CashbookIntegrationTest extends IntegrationTest
 
         $this->assertSame(
             $sourceCashbook->getCategoryTotals(),
-            $targetCashbook->getCategoryTotals()
+            $targetCashbook->getCategoryTotals(),
         );
     }
 
-    /**
-     * @return string[][]
-     */
+    /** @return string[][] */
     public function getNonCampCashbookTypes(): array
     {
         return [
@@ -372,9 +358,7 @@ class CashbookIntegrationTest extends IntegrationTest
         ];
     }
 
-    /**
-     * @dataProvider getDifferentCashbookTypes
-     */
+    /** @dataProvider getDifferentCashbookTypes */
     public function testCopyChitsBetweenDifferentCashbooksWithDifferentCategories(string $sourceType, string $targetType): void
     {
         $sourceCashbook = $this->createCashbookWithChit($sourceType);
@@ -417,9 +401,7 @@ class CashbookIntegrationTest extends IntegrationTest
         $this->assertCount(0, $chit->getScans());
     }
 
-    /**
-     * @return string[][]
-     */
+    /** @return string[][] */
     public function getDifferentCashbookTypes(): array
     {
         return [

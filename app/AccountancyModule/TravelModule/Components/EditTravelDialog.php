@@ -102,7 +102,7 @@ final class EditTravelDialog extends Dialog
             $values->date,
             TransportType::get($values->type),
             $values->startPlace,
-            $values->endPlace
+            $values->endPlace,
         );
         $this->getPresenter()->redrawControl('travelsTable');
         $this->flashMessage('Cesta byla upravena.');

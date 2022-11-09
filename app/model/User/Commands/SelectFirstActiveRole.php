@@ -6,9 +6,7 @@ namespace Model\Cashbook\Commands\Cashbook;
 
 use Model\Cashbook\Handlers\Cashbook\SelectFirstActiveRoleHandler;
 
-/**
- * @see SelectFirstActiveRoleHandler
- */
+/** @see SelectFirstActiveRoleHandler */
 final class SelectFirstActiveRole
 {
 }

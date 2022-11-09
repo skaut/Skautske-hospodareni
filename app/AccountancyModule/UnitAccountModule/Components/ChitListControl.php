@@ -75,9 +75,7 @@ final class ChitListControl extends BaseControl
         return count($this->getChits()) === 0;
     }
 
-    /**
-     * @return Chit[]
-     */
+    /** @return Chit[] */
     private function getChits(): array
     {
         if ($this->chits === null) {
@@ -88,7 +86,7 @@ final class ChitListControl extends BaseControl
                     $chits,
                     function (Chit $chit): bool {
                         return ! $chit->isLocked();
-                    }
+                    },
                 );
             }
 

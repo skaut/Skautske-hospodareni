@@ -6,9 +6,7 @@ namespace Model\Cashbook\Commands\Cashbook;
 
 use Model\Event\SkautisCampId;
 
-/**
- * @see AddEventParticipantHandler
- */
+/** @see AddEventParticipantHandler */
 final class AddCampParticipant
 {
     private SkautisCampId $campId;

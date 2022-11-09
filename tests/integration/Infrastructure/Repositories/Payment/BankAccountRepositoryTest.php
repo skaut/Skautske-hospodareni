@@ -17,9 +17,7 @@ class BankAccountRepositoryTest extends IntegrationTest
 {
     private BankAccountRepository $repository;
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function getTestedAggregateRoots(): array
     {
         return [BankAccount::class];
@@ -157,13 +155,11 @@ class BankAccountRepositoryTest extends IntegrationTest
             new BankAccount\AccountNumber(null, '2000942144', '2010'),
             'test-token',
             $createdAt ?? new DateTimeImmutable(),
-            m::mock(IUnitResolver::class, ['getOfficialUnitId' => $unitId])
+            m::mock(IUnitResolver::class, ['getOfficialUnitId' => $unitId]),
         );
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     private function getRow(int $id, int $unitId, ?DateTimeImmutable $createdAt = null): array
     {
         return [

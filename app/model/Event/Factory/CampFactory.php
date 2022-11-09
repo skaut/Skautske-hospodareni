@@ -30,7 +30,7 @@ final class CampFactory
                 $skautisCamp->RealChild,
                 $skautisCamp->RealCount,
                 $skautisCamp->RealChildDays ?? 0,
-                $skautisCamp->RealPersonDays
+                $skautisCamp->RealPersonDays,
             );
         } else {
             $stats = null;
@@ -50,13 +50,11 @@ final class CampFactory
             $skautisCamp->TotalDays ?? null,
             $stats,
             $skautisCamp->IsRealAutoComputed ?? null,
-            $skautisCamp->IsRealTotalCostAutoComputed ?? null
+            $skautisCamp->IsRealTotalCostAutoComputed ?? null,
         );
     }
 
-    /**
-     * @return UnitId[]
-     */
+    /** @return UnitId[] */
     private function getParticipatingUnits(stdClass $idUnitArray): array
     {
         if (property_exists($idUnitArray, 'string')) {
@@ -67,7 +65,7 @@ final class CampFactory
                     function (string $id) {
                         return new UnitId((int) $id);
                     },
-                    $unitIdOrIds
+                    $unitIdOrIds,
                 );
             }
 

@@ -20,7 +20,7 @@ final class ContractFactory
             $contract->getUnitRepresentative(),
             $contract->getSince(),
             $contract->getUntil(),
-            $contract->getTemplateVersion()
+            $contract->getTemplateVersion(),
         );
     }
 }

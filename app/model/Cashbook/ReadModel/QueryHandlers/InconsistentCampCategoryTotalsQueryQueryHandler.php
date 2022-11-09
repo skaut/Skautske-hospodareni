@@ -26,9 +26,7 @@ class InconsistentCampCategoryTotalsQueryQueryHandler
         $this->queryBus       = $queryBus;
     }
 
-    /**
-     * @return float[]
-     */
+    /** @return float[] */
     public function __invoke(InconsistentCampCategoryTotalsQuery $query): array
     {
         $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery($query->getCampId()));

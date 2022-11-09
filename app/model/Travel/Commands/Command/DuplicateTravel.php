@@ -6,9 +6,7 @@ namespace Model\Travel\Commands\Command;
 
 use Model\Travel\Handlers\Command\DuplicateTravelHandler;
 
-/**
- * @see DuplicateTravelHandler
- */
+/** @see DuplicateTravelHandler */
 final class DuplicateTravel
 {
     private int $commandId;

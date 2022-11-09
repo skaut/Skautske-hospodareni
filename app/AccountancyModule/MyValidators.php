@@ -22,9 +22,7 @@ class MyValidators
 
     public const EMAIL_SEPARATOR = ',';
 
-    /**
-     * @param mixed $control
-     */
+    /** @param mixed $control */
     public static function isValidDate($control): bool
     {
         return $control->value !== null;
@@ -35,17 +33,13 @@ class MyValidators
         return $start <= $end->getValue();
     }
 
-    /**
-     * @param mixed[] $values
-     */
+    /** @param mixed[] $values */
     public static function hasSelectedAny(MultiChoiceControl $control, array $values): bool
     {
         return count(array_intersect($control->getValue(), $values)) !== 0;
     }
 
-    /**
-     * @param mixed $control
-     */
+    /** @param mixed $control */
     public static function isValidEmailList($control): bool
     {
         $value = preg_replace('/\s+/', '', $control->value);

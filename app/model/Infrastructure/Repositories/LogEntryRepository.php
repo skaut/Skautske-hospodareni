@@ -18,9 +18,7 @@ final class LogEntryRepository implements ILogEntryRepository
         $this->em = $em;
     }
 
-    /**
-     * @return LogEntry[]
-     */
+    /** @return LogEntry[] */
     public function findAllByTypeId(Type $type, int $typeId): array
     {
         return $this->em->createQueryBuilder()

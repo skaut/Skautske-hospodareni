@@ -6,9 +6,7 @@ namespace Model\Cashbook\ReadModel\Queries;
 
 use Model\Cashbook\Cashbook\CashbookId;
 
-/**
- * @see ChitScansQueryHandler
- */
+/** @see ChitScansQueryHandler */
 final class ChitScansQuery
 {
     private CashbookId $cashbookId;

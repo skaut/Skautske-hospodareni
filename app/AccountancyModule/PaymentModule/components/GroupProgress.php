@@ -15,9 +15,7 @@ final class GroupProgress extends BaseControl
     /** @var array<string, Summary> */
     private array $summaries;
 
-    /**
-     * @param array<string, Summary> $summaries
-     */
+    /** @param array<string, Summary> $summaries */
     public function __construct(array $summaries)
     {
         $this->summaries = $summaries;

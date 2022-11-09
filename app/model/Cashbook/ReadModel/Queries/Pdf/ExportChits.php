@@ -6,9 +6,7 @@ namespace Model\Cashbook\ReadModel\Queries\Pdf;
 
 use Model\Cashbook\Cashbook\CashbookId;
 
-/**
- * @see ExportChitsHandler
- */
+/** @see ExportChitsHandler */
 final class ExportChits
 {
     private CashbookId $cashbookId;
@@ -27,9 +25,7 @@ final class ExportChits
         $this->chitIds    = $chitIds;
     }
 
-    /**
-     * @param int[]|null $chitIds
-     */
+    /** @param int[]|null $chitIds */
     public static function withChitIds(CashbookId $cashbookId, ?array $chitIds): self
     {
         return new self($cashbookId, $chitIds);
@@ -45,9 +41,7 @@ final class ExportChits
         return $this->cashbookId;
     }
 
-    /**
-     * @return int[]|null
-     */
+    /** @return int[]|null */
     public function getChitIds(): ?array
     {
         return $this->chitIds;

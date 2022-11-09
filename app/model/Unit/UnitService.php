@@ -35,9 +35,7 @@ class UnitService
         $this->queryBus     = $queryBus;
     }
 
-    /**
-     * @throws UserHasNoUnit
-     */
+    /** @throws UserHasNoUnit */
     public function getUnitId(): int
     {
         $user   = $this->skautis->getUser();
@@ -55,9 +53,7 @@ class UnitService
         return $this->unitResolver->getOfficialUnitId($unitId);
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function getSubunitPairs(int $parentId, bool $useDisplayName = false): array
     {
         $subUnits = $this->units->findByParent($parentId);
@@ -117,9 +113,7 @@ class UnitService
         return $this->getUnits($user, UserService::ACCESS_READ);
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function getUnits(User $user, string $accessType): array
     {
         $identity = $user->getIdentity();

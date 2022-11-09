@@ -11,13 +11,9 @@ use Model\Event\SkautisEventId;
 
 interface IEventRepository
 {
-    /**
-     * @throws CashbookNotFound
-     */
+    /** @throws CashbookNotFound */
     public function findBySkautisId(SkautisEventId $id): Event;
 
-    /**
-     * @throws CashbookNotFound
-     */
+    /** @throws CashbookNotFound */
     public function findByCashbookId(CashbookId $cashbookId): Event;
 }

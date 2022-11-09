@@ -7,9 +7,7 @@ namespace Model\Cashbook\Commands\Cashbook;
 use Model\DTO\Participant\NonMemberParticipant;
 use Model\Event\SkautisCampId;
 
-/**
- * @see CreateEventParticipantHandler
- */
+/** @see CreateEventParticipantHandler */
 final class CreateCampParticipant
 {
     private SkautisCampId $campId;

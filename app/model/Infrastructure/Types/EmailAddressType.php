@@ -17,9 +17,7 @@ class EmailAddressType extends StringType
         return 'email_address';
     }
 
-    /**
-     * @param mixed $value
-     */
+    /** @param mixed $value */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         if ($value === null) {
@@ -31,9 +29,7 @@ class EmailAddressType extends StringType
         return $value->getValue();
     }
 
-    /**
-     * @param mixed $value
-     */
+    /** @param mixed $value */
     public function convertToPHPValue($value, AbstractPlatform $platform): ?EmailAddress
     {
         return $value === null ? null : new EmailAddress($value);

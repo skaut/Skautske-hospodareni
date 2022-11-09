@@ -40,7 +40,7 @@ final class LazyWebServiceTest extends Unit
 
         self::assertSame(
             'result2',
-            $lazyWebService->call('foo2', ['arg2' => 'foo'])
+            $lazyWebService->call('foo2', ['arg2' => 'foo']),
         );
     }
 
@@ -76,7 +76,7 @@ final class LazyWebServiceTest extends Unit
         self::assertSame(
             'result2',
             // @phpstan-ignore-next-line
-            $lazyWebService->foo2(['arg2' => 'foo'])
+            $lazyWebService->foo2(['arg2' => 'foo']),
         );
     }
 

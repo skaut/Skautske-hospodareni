@@ -30,7 +30,7 @@ class CampParticipantCategoryIdQueryHandler
         }
 
         throw new InvalidStateException(
-            sprintf('There is no participant category for participant type %s.', $participantType->getValue())
+            sprintf('There is no participant category for participant type %s.', $participantType->getValue()),
         );
     }
 }

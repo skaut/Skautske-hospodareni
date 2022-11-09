@@ -29,9 +29,7 @@ final class UnitRepositoryTest extends IntegrationTest
         'cashbook_id' => '1e71a1e0-6202-4023-8649-a6068669bb1f',
     ];
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     protected function getTestedAggregateRoots(): array
     {
         return [Unit::class];
@@ -42,7 +40,7 @@ final class UnitRepositoryTest extends IntegrationTest
         $unit = new Unit(
             new UnitId(self::UNIT['id']),
             CashbookId::fromString(self::CASHBOOK['cashbook_id']),
-            self::CASHBOOK['year']
+            self::CASHBOOK['year'],
         );
 
         $this->getRepository()->save($unit);

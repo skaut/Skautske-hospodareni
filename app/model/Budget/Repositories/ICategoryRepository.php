@@ -10,14 +10,10 @@ use Model\Cashbook\Operation;
 
 interface ICategoryRepository
 {
-    /**
-     * @throws CategoryNotFound
-     */
+    /** @throws CategoryNotFound */
     public function find(int $id): Category;
 
-    /**
-     * @return Category[]
-     */
+    /** @return Category[] */
     public function findCategories(int $unitId, Operation $operationType): array;
 
     public function save(Category $vehicle): void;

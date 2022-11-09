@@ -7,9 +7,7 @@ namespace Model\Cashbook\Cashbook;
 use Cake\Chronos\Date;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Embeddable()
- */
+/** @ORM\Embeddable() */
 final class ChitBody
 {
     /** @ORM\Column(type="chit_number", nullable=true, name="num", length=5) */

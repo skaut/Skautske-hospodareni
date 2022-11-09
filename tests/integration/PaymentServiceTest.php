@@ -21,9 +21,7 @@ class PaymentServiceTest extends IntegrationTest
 
     private CommandBus $commandBus;
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function getTestedAggregateRoots(): array
     {
         return [
@@ -41,9 +39,7 @@ class PaymentServiceTest extends IntegrationTest
         $this->commandBus        = $this->tester->grabService(CommandBus::class);
     }
 
-    /**
-     * @see https://github.com/skaut/Skautske-hospodareni/issues/387
-     */
+    /** @see https://github.com/skaut/Skautske-hospodareni/issues/387 */
     public function testGenerateVSForMultiplePayments(): void
     {
         $paymentDefaults = new Group\PaymentDefaults(null, null, null, new VariableSymbol('1'));
@@ -68,7 +64,7 @@ class PaymentServiceTest extends IntegrationTest
     private function createPaymentWithoutVariableSymbol(int $groupId): void
     {
         $this->commandBus->handle(
-            new CreatePayment($groupId, 'test', [], 100, Helpers::getValidDueDate(), null, null, null, '')
+            new CreatePayment($groupId, 'test', [], 100, Helpers::getValidDueDate(), null, null, null, ''),
         );
     }
 }

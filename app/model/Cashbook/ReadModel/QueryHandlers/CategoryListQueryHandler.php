@@ -39,7 +39,7 @@ class CategoryListQueryHandler
                 $category->getName(),
                 $category->getShortcut(),
                 $category->getOperationType(),
-                $category->isVirtual()
+                $category->isVirtual(),
             );
         }
 

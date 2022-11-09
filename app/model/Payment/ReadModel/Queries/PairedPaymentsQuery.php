@@ -7,9 +7,7 @@ namespace Model\Payment\ReadModel\Queries;
 use DateTimeImmutable;
 use Model\Payment\BankAccount\BankAccountId;
 
-/**
- * @see PairedPaymentsQueryHandler
- */
+/** @see PairedPaymentsQueryHandler */
 final class PairedPaymentsQuery
 {
     private BankAccountId $bankAccountId;

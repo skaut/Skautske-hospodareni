@@ -101,9 +101,7 @@ class Payment extends Aggregate
      */
     private Collection $sentEmails;
 
-    /**
-     * @param EmailAddress[] $recipients
-     */
+    /** @param EmailAddress[] $recipients */
     public function __construct(
         Group $group,
         string $name,
@@ -222,9 +220,7 @@ class Payment extends Aggregate
         return $this->name;
     }
 
-    /**
-     * @return list<EmailAddress>
-     */
+    /** @return list<EmailAddress> */
     public function getEmailRecipients(): array
     {
         return $this->emailRecipients
@@ -294,17 +290,13 @@ class Payment extends Aggregate
         return ! $this->isClosed() && $this->variableSymbol !== null;
     }
 
-    /**
-     * @return SentEmail[]
-     */
+    /** @return SentEmail[] */
     public function getSentEmails(): array
     {
         return $this->sentEmails->toArray();
     }
 
-    /**
-     * @throws PaymentClosed
-     */
+    /** @throws PaymentClosed */
     private function checkNotClosed(): void
     {
         if ($this->closedAt !== null) {
@@ -312,9 +304,7 @@ class Payment extends Aggregate
         }
     }
 
-    /**
-     * @param EmailAddress[] $recipients
-     */
+    /** @param EmailAddress[] $recipients */
     private function updateDetails(
         string $name,
         array $recipients,

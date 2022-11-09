@@ -14,14 +14,10 @@ interface IScanStorage
         'pdf' => 'application/pdf',
     ];
 
-    /**
-     * @throws InvalidScanFile
-     */
+    /** @throws InvalidScanFile */
     public function save(FilePath $path, string $contents): void;
 
-    /**
-     * @throws FileNotFound
-     */
+    /** @throws FileNotFound */
     public function get(FilePath $path): File;
 
     public function delete(FilePath $path): void;

@@ -7,9 +7,7 @@ namespace Model\User\ReadModel\Queries;
 use Model\User\ReadModel\QueryHandlers\EditableUnitsQueryHandler;
 use Model\User\SkautisRole;
 
-/**
- * @see EditableUnitsQueryHandler
- */
+/** @see EditableUnitsQueryHandler */
 final class EditableUnitsQuery
 {
     private SkautisRole $role;

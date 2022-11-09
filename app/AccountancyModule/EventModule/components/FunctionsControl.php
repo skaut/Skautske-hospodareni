@@ -133,8 +133,8 @@ class FunctionsControl extends BaseControl
                     $values->leader,
                     $values->assistant,
                     $values->accountant,
-                    $values->medic
-                )
+                    $values->medic,
+                ),
             );
 
             $this->handleCloseEditation();

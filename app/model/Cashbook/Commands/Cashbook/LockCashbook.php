@@ -7,9 +7,7 @@ namespace Model\Cashbook\Commands\Cashbook;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Handlers\Cashbook\LockCashbookHandler;
 
-/**
- * @see LockCashbookHandler
- */
+/** @see LockCashbookHandler */
 final class LockCashbook
 {
     private CashbookId $cashbookId;

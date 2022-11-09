@@ -6,9 +6,7 @@ namespace Model\Payment\ReadModel\Queries;
 
 use Model\Payment\ReadModel\QueryHandlers\MemberEmailsQueryHandler;
 
-/**
- * @see MemberEmailsQueryHandler
- */
+/** @see MemberEmailsQueryHandler */
 final class MemberEmailsQuery
 {
     private int $memberId;

@@ -17,9 +17,7 @@ final class ChitFactory
 {
     use StaticClass;
 
-    /**
-     * @param Category[] $categories
-     */
+    /** @param Category[] $categories */
     public static function create(ChitEntity $chit, array $categories): Chit
     {
         /** @var ChitItem[] $items */
@@ -43,7 +41,7 @@ final class ChitFactory
             $items,
             $chit->getOperation(),
             $chit->getAmount(),
-            $chit->getScans()
+            $chit->getScans(),
         );
     }
 }

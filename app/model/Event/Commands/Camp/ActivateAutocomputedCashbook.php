@@ -7,9 +7,7 @@ namespace Model\Event\Commands\Camp;
 use Model\Event\Handlers\Camp\ActivateAutocomputedCashbookHandler;
 use Model\Event\SkautisCampId;
 
-/**
- * @see ActivateAutocomputedCashbookHandler
- */
+/** @see ActivateAutocomputedCashbookHandler */
 final class ActivateAutocomputedCashbook
 {
     private SkautisCampId $campId;

@@ -7,9 +7,7 @@ namespace Model\Cashbook\Commands\Unit;
 use Model\Cashbook\Handlers\Unit\CreateCashbookHandler;
 use Model\Common\UnitId;
 
-/**
- * @see CreateCashbookHandler
- */
+/** @see CreateCashbookHandler */
 final class CreateCashbook
 {
     private UnitId $unitId;

@@ -36,9 +36,7 @@ use function array_map;
 use function assert;
 use function count;
 
-/**
- * @method onEditButtonClicked(int $chitId)
- */
+/** @method onEditButtonClicked(int $chitId) */
 class ChitListControl extends BaseControl
 {
     /** @var callable[] */
@@ -221,9 +219,7 @@ class ChitListControl extends BaseControl
         );
     }
 
-    /**
-     * @param int[] $chitIds
-     */
+    /** @param int[] $chitIds */
     private function redirectToExport(string $action, array $chitIds): void
     {
         $this->getPresenter()->redirect($action, [$this->cashbookId->toString(), $chitIds]);

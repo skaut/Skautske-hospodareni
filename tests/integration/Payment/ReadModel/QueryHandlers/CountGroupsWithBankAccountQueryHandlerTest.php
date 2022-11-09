@@ -11,9 +11,7 @@ use Model\Payment\ReadModel\Queries\CountGroupsWithBankAccountQuery;
 
 final class CountGroupsWithBankAccountQueryHandlerTest extends IntegrationTest
 {
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     protected function getTestedAggregateRoots(): array
     {
         return [Group::class];

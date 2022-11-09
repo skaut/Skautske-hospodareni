@@ -46,7 +46,7 @@ final class UnitRepository implements IUnitRepository
     public function find(int $id): Unit
     {
         return $this->createUnit(
-            $this->findAsStdClass($id)
+            $this->findAsStdClass($id),
         );
     }
 
@@ -75,7 +75,7 @@ final class UnitRepository implements IUnitRepository
             $unit->Postcode,
             $unit->RegistrationNumber,
             $unit->ID_UnitType,
-            isset($unit->ID_UnitParent) ? (int) $unit->ID_UnitParent : null
+            isset($unit->ID_UnitParent) ? (int) $unit->ID_UnitParent : null,
         );
     }
 }

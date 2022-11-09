@@ -7,9 +7,7 @@ namespace Model\Event\Commands;
 use Model\Event\Handlers\Event\CancelEventHandler;
 use Model\Event\SkautisEventId;
 
-/**
- * @see CancelEventHandler
- */
+/** @see CancelEventHandler */
 final class CancelEvent
 {
     private SkautisEventId $eventId;

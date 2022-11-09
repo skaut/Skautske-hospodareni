@@ -23,7 +23,7 @@ class DefaultPresenter extends BasePresenter
     {
         $grid = $this->gridFactory->createSimpleGrid(
             __DIR__ . '/../templates/Default/@eventsGrid.latte',
-            []
+            [],
         );
 
         $grid->addColumnLink('displayName', 'Název', 'Education:', null, ['aid' => 'id'])

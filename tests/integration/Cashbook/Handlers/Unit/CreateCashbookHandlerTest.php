@@ -29,9 +29,7 @@ final class CreateCashbookHandlerTest extends CommandHandlerTest
         $this->tester->grabService(UnitResolverStub::class)->setOfficialUnits(self::OFFICIAL_UNITS);
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     protected function getTestedAggregateRoots(): array
     {
         return [
@@ -40,9 +38,7 @@ final class CreateCashbookHandlerTest extends CommandHandlerTest
         ];
     }
 
-    /**
-     * @dataProvider dataCashbookTypes
-     */
+    /** @dataProvider dataCashbookTypes */
     public function testUnitCashbookAndCashbookAggregateAreCreated(CashbookType $cashbookType, UnitId $unitId): void
     {
         $this->entityManager->persist(new Unit($unitId, Cashbook\CashbookId::generate(), 2018));
@@ -60,9 +56,7 @@ final class CreateCashbookHandlerTest extends CommandHandlerTest
         $this->assertTrue($cashbook->getType()->equals($cashbookType), 'Correct cashbook type is assigned');
     }
 
-    /**
-     * @return mixed[][]
-     */
+    /** @return mixed[][] */
     public function dataCashbookTypes(): array
     {
         return [

@@ -12,19 +12,13 @@ use Model\Event\SkautisEventId;
 
 interface IParticipantRepository
 {
-    /**
-     * @return Participant[]
-     */
+    /** @return Participant[] */
     public function findByEvent(SkautisEventId $id): array;
 
-    /**
-     * @return Participant[]
-     */
+    /** @return Participant[] */
     public function findByCamp(SkautisCampId $id): array;
 
-    /**
-     * @return Participant[]
-     */
+    /** @return Participant[] */
     public function findByEducation(SkautisEducationId $id): array;
 
     public function addCampParticipant(SkautisCampId $campId, int $personId): void;

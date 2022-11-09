@@ -33,9 +33,7 @@ final class EventParticipantsWithoutPaymentQueryHandler
         $this->queryBus       = $queryBus;
     }
 
-    /**
-     * @return Participant[]
-     */
+    /** @return Participant[] */
     public function __invoke(EventParticipantsWithoutPaymentQuery $query): array
     {
         $skautisEntity = $this->groups->find($query->getGroupId())->getObject();
@@ -44,7 +42,7 @@ final class EventParticipantsWithoutPaymentQueryHandler
         Assertion::same(Type::EVENT, $skautisEntity->getType()->getValue());
 
         $participants = $this->queryBus->handle(
-            new EventParticipantListQuery(new SkautisEventId($skautisEntity->getId()))
+            new EventParticipantListQuery(new SkautisEventId($skautisEntity->getId())),
         );
 
         $ignoredPersonIds = $this->paymentService->getPersonsWithActivePayment($query->getGroupId());
@@ -53,7 +51,7 @@ final class EventParticipantsWithoutPaymentQueryHandler
             $participants,
             function (Participant $p) use ($ignoredPersonIds) {
                 return ! in_array($p->getPersonId(), $ignoredPersonIds, true);
-            }
+            },
         );
 
         return array_values($participants);

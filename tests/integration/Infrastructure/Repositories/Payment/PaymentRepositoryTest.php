@@ -36,9 +36,7 @@ class PaymentRepositoryTest extends IntegrationTest
 
     private PaymentRepository $repository;
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function getTestedAggregateRoots(): array
     {
         return [
@@ -97,7 +95,7 @@ class PaymentRepositoryTest extends IntegrationTest
             $data['transactionId'],
             $data['bank_account'],
             $data['transaction_payer'],
-            $data['transaction_note']
+            $data['transaction_note'],
         );
 
         $this->assertTrue($expectedTransaction->equals($payment->getTransaction()));
@@ -231,9 +229,7 @@ class PaymentRepositoryTest extends IntegrationTest
         ]);
     }
 
-    /**
-     * @param mixed[] $payments
-     */
+    /** @param mixed[] $payments */
     private function addPayments(array $payments): void
     {
         foreach ($payments as $payment) {

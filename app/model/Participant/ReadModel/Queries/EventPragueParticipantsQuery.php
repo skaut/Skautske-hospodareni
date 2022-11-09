@@ -7,9 +7,7 @@ namespace Model\Cashbook\ReadModel\Queries;
 use Cake\Chronos\Date;
 use Model\Event\SkautisEventId;
 
-/**
- * @see EventPragueParticipantsQueryHandler
- */
+/** @see EventPragueParticipantsQueryHandler */
 final class EventPragueParticipantsQuery
 {
     private SkautisEventId $id;

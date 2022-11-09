@@ -8,9 +8,7 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Handlers\Cashbook\UpdateChitNumberPrefixHandler;
 
-/**
- * @see UpdateChitNumberPrefixHandler
- */
+/** @see UpdateChitNumberPrefixHandler */
 final class UpdateChitNumberPrefix
 {
     private CashbookId $cashbookId;

@@ -6,9 +6,7 @@ namespace Model\Event\Commands\Event;
 
 use Model\Event\Handlers\Event\ActivateStatisticsHandler;
 
-/**
- * @see ActivateStatisticsHandler
- */
+/** @see ActivateStatisticsHandler */
 final class ActivateStatistics
 {
     private int $eventId;

@@ -16,16 +16,14 @@ class TravelFactory
 {
     use StaticClass;
 
-    /**
-     * @return Travel[]
-     */
+    /** @return Travel[] */
     public static function createList(Command $command): array
     {
         $dtos = array_map(
             function (Command\Travel $travel) use ($command) {
                 return self::createSingle($travel, $command);
             },
-            $command->getTravels()
+            $command->getTravels(),
         );
 
         usort(
@@ -34,7 +32,7 @@ class TravelFactory
                 $result = $a->getDetails()->getDate() <=> $b->getDetails()->getDate();
 
                 return $result === 0 ? $a->getId() <=> $b->getId() : $result;
-            }
+            },
         );
 
         return $dtos;

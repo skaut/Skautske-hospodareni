@@ -23,14 +23,12 @@ final class EventStatesHandler
         $this->cache           = $cache;
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function __invoke(EventStates $query): array
     {
         return $this->cache->load(self::CACHE_KEY, function () {
             return Helpers::getPairs(
-                $this->eventWebservice->eventGeneralStateAll()
+                $this->eventWebservice->eventGeneralStateAll(),
             );
         });
     }

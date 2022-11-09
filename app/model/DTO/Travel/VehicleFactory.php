@@ -20,7 +20,7 @@ class VehicleFactory
             $vehicle->getConsumption(),
             $vehicle->isArchived(),
             $vehicle->getMetadata()->getCreatedAt(),
-            $vehicle->getMetadata()->getAuthorName()
+            $vehicle->getMetadata()->getAuthorName(),
         );
     }
 }

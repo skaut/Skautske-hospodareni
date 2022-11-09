@@ -95,7 +95,7 @@ final class ChitScanControl extends BaseControl
             ->addRule(
                 BaseForm::MIME_TYPE,
                 'Neplatný formát skenu, povolené formáty jsou ' . implode(', ', array_keys(IScanStorage::ALLOWED_MIME_TYPES)) . '.',
-                IScanStorage::ALLOWED_MIME_TYPES
+                IScanStorage::ALLOWED_MIME_TYPES,
             )->addRule(BaseForm::MAX_FILE_SIZE, 'Maximální povolená velikost souboru je 15 MB', 15 * 1024 * 1024);
 
         $form->addSubmit('submit', 'Nahrát');
@@ -132,7 +132,7 @@ final class ChitScanControl extends BaseControl
         }
 
         $this->commandBus->handle(
-            new AddChitScan($this->cashbookId, (int) $chitId, $upload->getSanitizedName(), $upload->getContents())
+            new AddChitScan($this->cashbookId, (int) $chitId, $upload->getSanitizedName(), $upload->getContents()),
         );
 
         $this->getPresenter()->flashMessage('Sken byl nahrán', 'success');

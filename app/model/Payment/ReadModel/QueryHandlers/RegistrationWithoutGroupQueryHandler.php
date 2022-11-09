@@ -36,7 +36,7 @@ final class RegistrationWithoutGroupQueryHandler
         $lastRegistration = $registrations[0];
 
         $groups = $this->groups->findBySkautisEntities(
-            new SkautisEntity($lastRegistration->getId(), Type::get(Type::REGISTRATION))
+            new SkautisEntity($lastRegistration->getId(), Type::get(Type::REGISTRATION)),
         );
 
         return count($groups) === 0 ? $lastRegistration : null;

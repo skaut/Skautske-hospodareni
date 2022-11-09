@@ -7,9 +7,7 @@ namespace Model\Cashbook\Commands\Cashbook;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Handlers\Cashbook\UnlockChitHandler;
 
-/**
- * @see UnlockChitHandler
- */
+/** @see UnlockChitHandler */
 final class UnlockChit
 {
     private CashbookId $cashbookId;

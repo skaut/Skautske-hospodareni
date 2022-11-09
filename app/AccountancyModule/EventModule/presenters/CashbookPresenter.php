@@ -101,8 +101,8 @@ class CashbookPresenter extends BasePresenter
                 $cashbookId,
                 new ChitBody(null, $this->event->getStartDate(), $accountant),
                 PaymentMethod::CASH(),
-                [new ChitItem($amount, $categoriesDto[Category::EVENT_PARTICIPANTS_INCOME_CATEGORY_ID], 'účastnické příspěvky')]
-            )
+                [new ChitItem($amount, $categoriesDto[Category::EVENT_PARTICIPANTS_INCOME_CATEGORY_ID], 'účastnické příspěvky')],
+            ),
         );
 
         $this->flashMessage('Účastníci byli importováni');

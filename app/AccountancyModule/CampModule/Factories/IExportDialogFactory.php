@@ -9,8 +9,6 @@ use Model\DTO\Camp\CampListItem;
 
 interface IExportDialogFactory
 {
-    /**
-     * @param CampListItem[] $camps
-     */
+    /** @param CampListItem[] $camps */
     public function create(array $camps): ExportDialog;
 }

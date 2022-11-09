@@ -58,7 +58,7 @@ class CommandForm extends Control
 
         $vehiclesWithFuel = array_map(
             fn (TransportType $t) => $t->toString(),
-            array_filter(TransportType::getAvailableEnums(), fn (TransportType $t) => $t->hasFuel())
+            array_filter(TransportType::getAvailableEnums(), fn (TransportType $t) => $t->hasFuel()),
         );
 
         $form = new BaseForm();
@@ -242,7 +242,7 @@ class CommandForm extends Control
             $values['note'],
             array_map(fn (string $type) => TransportType::get($type), $values['type']),
             $this->getPresenter()->getUser()->getId(),
-            $values['unit']
+            $values['unit'],
         );
 
         $this->flashMessage('Cestovní příkaz byl založen.');
@@ -262,7 +262,7 @@ class CommandForm extends Control
             MoneyFactory::fromFloat((float) $values['amortization']),
             $values['note'],
             array_map(fn (string $type) => TransportType::get($type), $values['type']),
-            $values['unit']
+            $values['unit'],
         );
 
         $this->flashMessage('Cestovní příkaz byl upraven.');
@@ -287,14 +287,12 @@ class CommandForm extends Control
         return $options;
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     private function prepareContracts(?int $includeContractId = null): array
     {
         $contracts = $this->model->getAllContractsPairs(
             $this->unitId,
-            $includeContractId
+            $includeContractId,
         );
 
         if (! empty($contracts['past'])) {

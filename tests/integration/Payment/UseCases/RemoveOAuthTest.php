@@ -26,9 +26,7 @@ final class RemoveOAuthTest extends IntegrationTest
 
     private RemoveOAuthHandler $handler;
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     protected function getTestedAggregateRoots(): array
     {
         return [

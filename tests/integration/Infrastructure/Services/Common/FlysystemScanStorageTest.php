@@ -82,9 +82,7 @@ final class FlysystemScanStorageTest extends Unit
         $this->assertSame($contents, (string) $file->getContents());
     }
 
-    /**
-     * @dataProvider dataInvalidContents
-     */
+    /** @dataProvider dataInvalidContents */
     public function testCannotSaveFileWithInvalidMimeType(string $contents): void
     {
         $this->expectException(InvalidScanFile::class);
@@ -92,9 +90,7 @@ final class FlysystemScanStorageTest extends Unit
         $this->storage->save($this->getFilePath('foo'), $contents);
     }
 
-    /**
-     * @return string[][]
-     */
+    /** @return string[][] */
     public function dataInvalidContents(): array
     {
         return [

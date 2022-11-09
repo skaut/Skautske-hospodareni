@@ -6,9 +6,7 @@ namespace Model\Cashbook\ReadModel\Queries;
 
 use Model\Cashbook\Cashbook\CashbookId;
 
-/**
- * @see ParticipantChitSumQueryHandler
- */
+/** @see ParticipantChitSumQueryHandler */
 final class ParticipantChitSumQuery
 {
     private CashbookId $cashbookId;

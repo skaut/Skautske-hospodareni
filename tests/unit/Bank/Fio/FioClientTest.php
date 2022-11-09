@@ -29,7 +29,7 @@ class FioClientTest extends Unit
         $fio->getTransactions(
             Date::today(),
             Date::today(),
-            $this->mockAccount(null)
+            $this->mockAccount(null),
         );
     }
 

@@ -35,9 +35,7 @@ final class RepaymentCandidateListQueryHandler
         $this->participants = $participants;
     }
 
-    /**
-     * @return DTO\RepaymentCandidate[]
-     */
+    /** @return DTO\RepaymentCandidate[] */
     public function __invoke(RepaymentCandidateListQuery $query): array
     {
         $payments   = array_filter(
@@ -64,7 +62,7 @@ final class RepaymentCandidateListQueryHandler
     {
         $participantsPayments = array_filter(
             array_column($this->participants->findByCamp($campId), 'repayment', 'personId'),
-            fn (float $amount) => $amount > 0
+            fn (float $amount) => $amount > 0,
         );
 
         foreach ($repayments as $repayment) {

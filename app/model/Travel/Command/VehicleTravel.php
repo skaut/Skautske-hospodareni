@@ -10,9 +10,7 @@ use Model\Travel\Command;
 
 use function sprintf;
 
-/**
- * @ORM\Entity()
- */
+/** @ORM\Entity() */
 class VehicleTravel extends Travel
 {
     /** @ORM\Column(type="float") */

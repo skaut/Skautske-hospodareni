@@ -7,9 +7,7 @@ namespace Model\Cashbook\ReadModel\Queries;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\ReadModel\QueryHandlers\FinalCashBalanceQueryHandler;
 
-/**
- * @see FinalCashBalanceQueryHandler
- */
+/** @see FinalCashBalanceQueryHandler */
 final class FinalCashBalanceQuery
 {
     private CashbookId $cashbookId;

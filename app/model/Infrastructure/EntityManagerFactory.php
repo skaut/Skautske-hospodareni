@@ -47,7 +47,7 @@ final class EntityManagerFactory
         $configuration = Setup::createConfiguration(
             $this->debugMode,
             $this->tempDir . '/doctrine/proxies',
-            $this->cache('cache')
+            $this->cache('cache'),
         );
 
         $annotationsReader = $this->annotationsReader();
@@ -59,7 +59,7 @@ final class EntityManagerFactory
 
         $cacheConfiguration = new CacheConfiguration();
         $cacheConfiguration->setCacheFactory(
-            new DefaultCacheFactory(new RegionsConfiguration(), $this->cachePoolFactory->create('secondLevelCache'))
+            new DefaultCacheFactory(new RegionsConfiguration(), $this->cachePoolFactory->create('secondLevelCache')),
         );
         $configuration->setSecondLevelCacheConfiguration($cacheConfiguration);
 
@@ -69,7 +69,7 @@ final class EntityManagerFactory
         $eventManager->addEventSubscriber(new Subscriber($annotationsReader));
         $eventManager->addEventListener(
             Events::postLoad,
-            new EnumPostLoadEntityListener($annotationsReader, $this->cache('enums'))
+            new EnumPostLoadEntityListener($annotationsReader, $this->cache('enums')),
         );
 
         return $entityManager;

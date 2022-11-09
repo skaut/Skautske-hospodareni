@@ -21,24 +21,20 @@ class AggregateId
 
         if ($normalizedId === null) {
             throw new InvalidArgumentException(
-                sprintf('Invalid id "%s", valid ID is either UUIDv4 or legacy numeric string', $id)
+                sprintf('Invalid id "%s", valid ID is either UUIDv4 or legacy numeric string', $id),
             );
         }
 
         $this->id = $normalizedId;
     }
 
-    /**
-     * @return static
-     */
+    /** @return static */
     public static function generate(): self
     {
         return new static(Uuid::uuid4()->toString());
     }
 
-    /**
-     * @return static
-     */
+    /** @return static */
     public static function fromString(string $id): self
     {
         return new static($id);

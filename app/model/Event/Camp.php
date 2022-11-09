@@ -56,9 +56,7 @@ class Camp implements ISkautisEvent
 
     private ?bool $realTotalCostAutoComputed = null;
 
-    /**
-     * @param  UnitId[] $participatingUnits
-     */
+    /** @param  UnitId[] $participatingUnits */
     public function __construct(
         SkautisCampId $id,
         string $displayName,
@@ -136,9 +134,7 @@ class Camp implements ISkautisEvent
         return $this->registrationNumber;
     }
 
-    /**
-     * @return UnitId[]
-     */
+    /** @return UnitId[] */
     public function getParticipatingUnits(): array
     {
         return $this->participatingUnits;

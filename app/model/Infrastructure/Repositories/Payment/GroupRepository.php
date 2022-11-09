@@ -169,7 +169,7 @@ final class GroupRepository implements IGroupRepository
                 $this->eventBus->handle(new GroupWasRemoved($group->getId()));
 
                 $entityManager->flush();
-            }
+            },
         );
     }
 }

@@ -23,9 +23,7 @@ use function explode;
 use function implode;
 use function preg_replace;
 
-/**
- * @method void onSuccess()
- */
+/** @method void onSuccess() */
 final class PaymentDialog extends Dialog
 {
     /** @var callable[] */
@@ -176,15 +174,13 @@ final class PaymentDialog extends Dialog
                 $values->dueDate,
                 $values->variableSymbol,
                 $values->constantSymbol,
-                $values->note
-            )
+                $values->note,
+            ),
         );
         $this->flashMessage('Platba byla upravena', 'success');
     }
 
-    /**
-     * @return EmailAddress[]
-     */
+    /** @return EmailAddress[] */
     private function processEmails(?string $emails): array
     {
         if ($emails === null) {
@@ -193,7 +189,7 @@ final class PaymentDialog extends Dialog
 
         return array_map(
             fn (string $email) => new EmailAddress($email),
-            explode(MyValidators::EMAIL_SEPARATOR, $emails)
+            explode(MyValidators::EMAIL_SEPARATOR, $emails),
         );
     }
 
@@ -209,8 +205,8 @@ final class PaymentDialog extends Dialog
                 null,
                 $values->variableSymbol,
                 $values->constantSymbol,
-                $values->note
-            )
+                $values->note,
+            ),
         );
 
         $this->flashMessage('Platba byla přidána', 'success');

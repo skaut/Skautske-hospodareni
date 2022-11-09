@@ -141,9 +141,7 @@ class PaymentPresenter extends BasePresenter
         ]);
     }
 
-    /**
-     * @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY
-     */
+    /** @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY */
     public function actionMassAdd(int $id, ?int $unitId = null, bool $directMemberOnly = true): void
     {
         $this->assertCanEditGroup();
@@ -379,9 +377,7 @@ class PaymentPresenter extends BasePresenter
         $this->flashMessage(sprintf('Google vrátil chybu: %s', $e->getMessage()), 'danger');
     }
 
-    /**
-     * @param Payment[] $payments
-     */
+    /** @param Payment[] $payments */
     private function sendEmailsForPayments(array $payments): void
     {
         $sentCount = 0;
@@ -407,16 +403,14 @@ class PaymentPresenter extends BasePresenter
                 $sentCount === 1
                     ? 'Informační e-mail byl odeslán'
                     : 'Informační e-maily (' . $sentCount . ') byly odeslány',
-                'success'
+                'success',
             );
         }
 
         $this->redirect('this');
     }
 
-    /**
-     * @return Payment[]
-     */
+    /** @return Payment[] */
     private function getPaymentsForGroup(int $groupId): array
     {
         return $this->queryBus->handle(new PaymentListQuery($groupId));
@@ -433,13 +427,11 @@ class PaymentPresenter extends BasePresenter
             $payments,
             function (Payment $p) {
                 return ! $p->isClosed() && ! empty($p->getEmailRecipients()) && $p->getSentEmails() === [];
-            }
+            },
         );
     }
 
-    /**
-     * @param Payment[] $payments
-     */
+    /** @param Payment[] $payments */
     private function countNotSentPayments(array $payments): int
     {
         return count(array_filter($payments, fn (Payment $payment) => $payment->getSentEmails() === [] && $payment->getState()->equalsValue(State::PREPARING)));

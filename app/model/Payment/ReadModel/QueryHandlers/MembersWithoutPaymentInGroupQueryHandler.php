@@ -30,9 +30,7 @@ final class MembersWithoutPaymentInGroupQueryHandler
         $this->paymentService = $paymentService;
     }
 
-    /**
-     * @return Person[]
-     */
+    /** @return Person[] */
     public function __invoke(MembersWithoutPaymentInGroupQuery $query): array
     {
         $personsWithPayment = $this->paymentService->getPersonsWithActivePayment($query->getGroupId());
@@ -47,7 +45,7 @@ final class MembersWithoutPaymentInGroupQueryHandler
             $persons[] = new Person(
                 $member->getId(),
                 $member->getName(),
-                $this->emails->findByMember($member->getId())
+                $this->emails->findByMember($member->getId()),
             );
         }
 

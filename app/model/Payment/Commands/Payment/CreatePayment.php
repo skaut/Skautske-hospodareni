@@ -9,9 +9,7 @@ use Model\Common\EmailAddress;
 use Model\Payment\Handlers\Payment\CreatePaymentHandler;
 use Model\Payment\VariableSymbol;
 
-/**
- * @see CreatePaymentHandler
- */
+/** @see CreatePaymentHandler */
 final class CreatePayment
 {
     private int $groupId;
@@ -33,9 +31,7 @@ final class CreatePayment
 
     private string $note;
 
-    /**
-     * @param EmailAddress[] $recipients
-     */
+    /** @param EmailAddress[] $recipients */
     public function __construct(
         int $groupId,
         string $name,

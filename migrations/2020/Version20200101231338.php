@@ -16,7 +16,7 @@ final class Version20200101231338 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             CREATE TABLE pa_payment_sent_emails (
                 id INT UNSIGNED AUTO_INCREMENT NOT NULL,
                 payment_id INT DEFAULT NULL,
@@ -29,7 +29,7 @@ final class Version20200101231338 extends AbstractMigration
         SQL);
 
         $this->addSql('ALTER TABLE pa_payment_sent_emails ADD CONSTRAINT FK_95359C6C4C3A3BB FOREIGN KEY (payment_id) REFERENCES pa_payment (id)');
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             INSERT INTO pa_payment_sent_emails (payment_id, type, time, sender_name)
                 SELECT id, 'payment_info', NOW(), 'Hospodaření' FROM pa_payment WHERE state = 'send'
         SQL);

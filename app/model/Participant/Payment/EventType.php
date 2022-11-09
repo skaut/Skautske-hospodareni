@@ -6,9 +6,7 @@ namespace Model\Participant\Payment;
 
 use Consistence\Enum\Enum;
 
-/**
- * @method string getValue()
- */
+/** @method string getValue() */
 final class EventType extends Enum
 {
     public const CAMP      = 'camp';

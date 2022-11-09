@@ -149,9 +149,9 @@ class DefaultPresenter extends BasePresenter
                     'vehicle' => $vehicleId !== null ? $this->travelService->findVehicle($vehicleId) : null,
                     'start' => $travels[0] ?? null,
                     'end' => array_slice($travels, -1)[0] ?? null,
-                ]
+                ],
             ),
-            'cestovni-prikaz.pdf'
+            'cestovni-prikaz.pdf',
         );
         $this->terminate();
     }
@@ -264,7 +264,7 @@ class DefaultPresenter extends BasePresenter
             $v['start_date'],
             $v['start_place'],
             $v['end_place'],
-            $v['distance']
+            $v['distance'],
         );
         $this->flashMessage('Cesta byla přidána.');
         $this->redirect('this');

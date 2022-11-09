@@ -151,8 +151,8 @@ class BankAccountsPresenter extends BasePresenter
                 new PairedPaymentsQuery(
                     new BankAccountId($id),
                     (new DateTimeImmutable())->modify(sprintf('- %d days', self::DAYS_BACK))->setTime(0, 0, 0),
-                    new DateTimeImmutable()
-                )
+                    new DateTimeImmutable(),
+                ),
             );
 
             $paymentsByTransaction = [];
@@ -164,7 +164,7 @@ class BankAccountsPresenter extends BasePresenter
             }
 
             $groups = $this->queryBus->handle(
-                new GetGroupList(array_keys($this->unitService->getReadUnits($this->user)), false)
+                new GetGroupList(array_keys($this->unitService->getReadUnits($this->user)), false),
             );
 
             $groupNames = [];
@@ -174,8 +174,8 @@ class BankAccountsPresenter extends BasePresenter
 
             $preparedPayments         = $this->queryBus->handle(
                 new PreparedPairedPaymentsQuery(
-                    new BankAccountId($id)
-                )
+                    new BankAccountId($id),
+                ),
             );
             $paymentsByVariableSymbol = [];
 

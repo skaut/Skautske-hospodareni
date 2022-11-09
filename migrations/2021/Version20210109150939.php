@@ -21,7 +21,7 @@ final class Version20210109150939 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             CREATE TABLE pa_smtp (
                 id INT UNSIGNED AUTO_INCREMENT NOT NULL,
                 unitId INT UNSIGNED NOT NULL,

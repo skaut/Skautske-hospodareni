@@ -11,7 +11,7 @@ final class Version20190321140458 extends AbstractMigration
 {
     public function up(Schema $schema): void
     {
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             CREATE TABLE pa_group_unit (
                   id INT NOT NULL AUTO_INCREMENT,
                   unit_id INT NOT NULL,
@@ -20,8 +20,7 @@ final class Version20190321140458 extends AbstractMigration
                   PRIMARY KEY (id)
               )
               DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB
-SQL
-        );
+SQL);
         $this->addSql('ALTER TABLE pa_group_unit ADD CONSTRAINT FK_FB5A0CD6FE54D947 FOREIGN KEY (group_id) REFERENCES pa_group (id)');
         $this->addSql('INSERT INTO pa_group_unit (unit_id, group_id) SELECT unitId, id FROM pa_group');
         $this->addSql('ALTER TABLE pa_group DROP unitId');
