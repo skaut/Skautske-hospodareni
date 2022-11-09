@@ -151,7 +151,7 @@ class ParticipantPresenter extends BasePresenter
             true,
             true,
             $this->isAllowParticipantUpdate,
-            $this->isAllowParticipantDelete
+            $this->isAllowParticipantDelete,
         );
 
         $control->onUpdate[] = function (array $updates): void {
@@ -188,9 +188,7 @@ class ParticipantPresenter extends BasePresenter
         $this->terminate();
     }
 
-    /**
-     * @return Participant[]
-     */
+    /** @return Participant[] */
     private function campParticipants(): array
     {
         return $this->queryBus->handle(new CampParticipantListQuery($this->event->getId()));

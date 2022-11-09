@@ -26,9 +26,7 @@ final class AddChitToCashbookHandler
         $this->categories = $categories;
     }
 
-    /**
-     * @throws CashbookNotFound
-     */
+    /** @throws CashbookNotFound */
     public function __invoke(AddChitToCashbook $command): void
     {
         $cashbook = $this->cashbooks->find($command->getCashbookId());

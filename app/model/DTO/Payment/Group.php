@@ -54,9 +54,7 @@ class Group
 
     private ?int $bankAccountId = null;
 
-    /**
-     * @param int[] $unitIds
-     */
+    /** @param int[] $unitIds */
     public function __construct(
         int $id,
         ?string $type,
@@ -97,9 +95,7 @@ class Group
         return $this->type;
     }
 
-    /**
-     * @return int[]
-     */
+    /** @return int[] */
     public function getUnitIds(): array
     {
         return $this->unitIds;

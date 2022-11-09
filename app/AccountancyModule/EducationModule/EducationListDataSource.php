@@ -27,9 +27,7 @@ final class EducationListDataSource extends DataSource
         return $this;
     }
 
-    /**
-     * @return Education[]
-     */
+    /** @return Education[] */
     protected function loadData(): array
     {
         return $this->queryBus->handle(new EducationListQuery($this->year));

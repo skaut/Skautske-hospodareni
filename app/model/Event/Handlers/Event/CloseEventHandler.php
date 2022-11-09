@@ -30,8 +30,8 @@ final class CloseEventHandler
             new EventWasClosed(
                 $event->getId(),
                 $event->getUnitId()->toInt(),
-                $event->getDisplayName()
-            )
+                $event->getDisplayName(),
+            ),
         );
     }
 }

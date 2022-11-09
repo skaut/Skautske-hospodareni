@@ -60,7 +60,7 @@ final class ExportEventsHandler
             function (int $eventId): Event {
                 return $this->queryBus->handle(new EventQuery(new SkautisEventId($eventId)));
             },
-            $query->getEventIds()
+            $query->getEventIds(),
         );
 
         $this->setSheetEvents($spreadsheet->setActiveSheetIndex(0), $events);
@@ -70,16 +70,14 @@ final class ExportEventsHandler
                 function (Event $event): ExportedCashbook {
                     return new ExportedCashbook($this->getCashbookId($event), $event->getDisplayName());
                 },
-                $events
-            )
+                $events,
+            ),
         );
 
         return $spreadsheet;
     }
 
-    /**
-     * @param array<int, Event> $events
-     */
+    /** @param array<int, Event> $events */
     private function setSheetEvents(Worksheet $sheet, array $events): void
     {
         $scopes                     = $this->queryBus->handle(new EventScopes());
@@ -151,9 +149,7 @@ final class ExportEventsHandler
         $sheet->setTitle('Přehled akcí');
     }
 
-    /**
-     * @param StatisticsItem[] $statistics
-     */
+    /** @param StatisticsItem[] $statistics */
     private function addHeader(Worksheet $sheet, array $statistics, bool $allowPragueColumns): void
     {
         $sheet->setCellValue('A1', 'Pořadatel')
@@ -190,7 +186,7 @@ final class ExportEventsHandler
             ->setWidth('200pt')->setHeight('50pt')->getText()
             ->createTextRun(
                 'Ověřte, zda jsou splněny další podmínky - např. akce konaná v době mimo školní '
-                . 'vyučování (u táborů prázdnin), cílovou skupinou je studující mládež do 26 let.'
+                . 'vyučování (u táborů prázdnin), cílovou skupinou je studující mládež do 26 let.',
             );
     }
 
@@ -212,7 +208,7 @@ final class ExportEventsHandler
             $participants =  $this->queryBus->handle(new EventPragueParticipantsQuery(
                 $event->getId(),
                 $event->getRegistrationNumber(),
-                $event->getStartDate()
+                $event->getStartDate(),
             ));
 
             if ($participants === null) {

@@ -52,9 +52,7 @@ class GroupUnitControl extends BaseControl
         $this->queryBus     = $queryBus;
     }
 
-    /**
-     * @throws BadRequestException
-     */
+    /** @throws BadRequestException */
     public function render(): void
     {
         $group = $this->getGroup($this->groupId);
@@ -63,7 +61,7 @@ class GroupUnitControl extends BaseControl
             function (int $unitId): string {
                 return $this->queryBus->handle(new UnitQuery($unitId))->getDisplayName();
             },
-            $group->getUnitIds()
+            $group->getUnitIds(),
         );
 
         $this->template->setParameters([
@@ -74,9 +72,7 @@ class GroupUnitControl extends BaseControl
         $this->template->render();
     }
 
-    /**
-     * @throws BadRequestException
-     */
+    /** @throws BadRequestException */
     protected function createComponentForm(): BaseForm
     {
         $form = new BaseForm();
@@ -116,7 +112,7 @@ class GroupUnitControl extends BaseControl
         if ($group->getBankAccountId() !== null && $groupAfterChange->getBankAccountId() === null) {
             $this->flashMessage(
                 'Bankovní účet byl odebrán, protože jej není možné pro tyto jednotky použít',
-                'warning'
+                'warning',
             );
         }
 
@@ -180,7 +176,7 @@ class GroupUnitControl extends BaseControl
         if ($group === null) {
             throw new ShouldNotHappen(sprintf(
                 'Group used with %s should always exist',
-                self::class
+                self::class,
             ));
         }
 

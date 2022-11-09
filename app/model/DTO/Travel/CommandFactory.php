@@ -29,7 +29,7 @@ class CommandFactory
             $command->getClosedAt() !== null ? Command::STATE_CLOSED : Command::STATE_IN_PROGRESS,
             $command->getOwnerId(),
             $command->getTransportTypes(),
-            $command->getUnit()
+            $command->getUnit(),
         );
     }
 }

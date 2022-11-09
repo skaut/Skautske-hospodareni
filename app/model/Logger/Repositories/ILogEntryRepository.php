@@ -9,9 +9,7 @@ use Model\Logger\LogEntry;
 
 interface ILogEntryRepository
 {
-    /**
-     * @return LogEntry[]
-     */
+    /** @return LogEntry[] */
     public function findAllByTypeId(Type $type, int $typeId): array;
 
     public function save(LogEntry $log): void;

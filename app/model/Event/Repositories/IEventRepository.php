@@ -10,9 +10,7 @@ use Model\Event\SkautisEventId;
 
 interface IEventRepository
 {
-    /**
-     * @throws EventNotFound
-     */
+    /** @throws EventNotFound */
     public function find(SkautisEventId $id): Event;
 
     public function open(Event $event): void;

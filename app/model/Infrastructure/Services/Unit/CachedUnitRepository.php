@@ -23,9 +23,7 @@ final class CachedUnitRepository implements IUnitRepository
         $this->cache = new Cache($storage, 'units');
     }
 
-    /**
-     * @return Unit[]
-     */
+    /** @return Unit[] */
     public function findByParent(int $parentId): array
     {
         return $this->cache->load(
@@ -34,7 +32,7 @@ final class CachedUnitRepository implements IUnitRepository
                 $options[Cache::EXPIRE] = self::EXPIRATION;
 
                 return $this->inner->findByParent($parentId);
-            }
+            },
         );
     }
 
@@ -46,7 +44,7 @@ final class CachedUnitRepository implements IUnitRepository
                 $options[Cache::EXPIRE] = self::EXPIRATION;
 
                 return $this->inner->find($id);
-            }
+            },
         );
     }
 }

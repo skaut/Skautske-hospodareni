@@ -9,29 +9,19 @@ use Model\Travel\CommandNotFound;
 
 interface ICommandRepository
 {
-    /**
-     * @throws CommandNotFound
-     */
+    /** @throws CommandNotFound */
     public function find(int $id): Command;
 
-    /**
-     * @return Command[]
-     */
+    /** @return Command[] */
     public function findByUnit(int $unitId): array;
 
-    /**
-     * @return Command[]
-     */
+    /** @return Command[] */
     public function findByUnitAndUser(int $unitId, int $userId): array;
 
-    /**
-     * @return Command[]
-     */
+    /** @return Command[] */
     public function findByVehicle(int $vehicleId): array;
 
-    /**
-     * @return Command[]
-     */
+    /** @return Command[] */
     public function findByContract(int $contractId): array;
 
     public function countByVehicle(int $vehicleId): int;

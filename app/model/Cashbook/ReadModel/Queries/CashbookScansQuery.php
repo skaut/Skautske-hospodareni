@@ -7,9 +7,7 @@ namespace Model\Cashbook\ReadModel\Queries;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 
-/**
- * @see CashbookScansQueryHandler
- */
+/** @see CashbookScansQueryHandler */
 final class CashbookScansQuery
 {
     private CashbookId $cashbookId;

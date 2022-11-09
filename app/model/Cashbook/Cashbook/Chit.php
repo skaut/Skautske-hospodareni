@@ -210,7 +210,7 @@ class Chit
             $this->items->map(function (ChitItem $item): ChitItem {
                 return clone $item;
             })->toArray(),
-            $this->scans->toArray()
+            $this->scans->toArray(),
         );
     }
 
@@ -224,7 +224,7 @@ class Chit
         $items = $this->items->map(function (ChitItem $item): ChitItem {
             $category = new Category(
                 $this->isIncome() ? CategoryAggregate::UNDEFINED_INCOME_ID : CategoryAggregate::UNDEFINED_EXPENSE_ID,
-                $item->getCategory()->getOperationType()
+                $item->getCategory()->getOperationType(),
             );
 
             return $item->withCategory($category);
@@ -256,9 +256,7 @@ class Chit
         return $this->paymentMethod;
     }
 
-    /**
-     * @return ChitItem[]
-     */
+    /** @return ChitItem[] */
     public function getItems(): array
     {
         return $this->items->toArray();
@@ -320,9 +318,7 @@ class Chit
         throw ScanNotFound::withPath($filePath);
     }
 
-    /**
-     * @return ChitScan[]
-     */
+    /** @return ChitScan[] */
     public function getScans(): array
     {
         return $this->scans->toArray();

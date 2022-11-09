@@ -18,9 +18,7 @@ class RecipientType extends StringType
         return 'recipient';
     }
 
-    /**
-     * @param mixed $value
-     */
+    /** @param mixed $value */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         if ($value === null) {
@@ -32,9 +30,7 @@ class RecipientType extends StringType
         return $value->getName();
     }
 
-    /**
-     * @param mixed $value
-     */
+    /** @param mixed $value */
     public function convertToPHPValue($value, AbstractPlatform $platform): ?Recipient
     {
         if ($value === null) {

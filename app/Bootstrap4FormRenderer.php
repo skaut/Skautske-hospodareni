@@ -89,9 +89,7 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
         return parent::renderErrors($control, $own);
     }
 
-    /**
-     * @param BaseControl[] $controls
-     */
+    /** @param BaseControl[] $controls */
     public function renderPairMulti(array $controls): string
     {
         $primary = false;

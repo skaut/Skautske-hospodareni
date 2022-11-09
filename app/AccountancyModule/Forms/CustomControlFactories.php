@@ -21,9 +21,7 @@ trait CustomControlFactories
         return $this[$name] = new VariableSymbolControl($label);
     }
 
-    /**
-     * @phpstan-param string|int $name
-     */
+    /** @phpstan-param string|int $name */
     public function addContainer($name): BaseContainer
     {
         $control               = new BaseContainer();

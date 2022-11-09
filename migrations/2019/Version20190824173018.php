@@ -14,7 +14,7 @@ final class Version20190824173018 extends AbstractMigration
         $this->addSql('ALTER TABLE tc_commands DROP FOREIGN KEY tc_commands_ibfk_1');
         $this->addSql('ALTER TABLE tc_commands DROP FOREIGN KEY tc_commands_ibfk_2');
         $this->addSql('DROP INDEX contract_id ON tc_commands');
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             ALTER TABLE tc_commands 
                 CHANGE fuel_price fuel_price NUMERIC(8, 2) NOT NULL COMMENT '(DC2Type:money)', 
                 CHANGE amortization amortization NUMERIC(8, 2) NOT NULL COMMENT '(DC2Type:money)', 
@@ -26,7 +26,7 @@ final class Version20190824173018 extends AbstractMigration
         $this->addSql('ALTER TABLE tc_command_types DROP FOREIGN KEY tc_command_types_ibfk_5');
         $this->addSql('ALTER TABLE tc_command_types DROP FOREIGN KEY tc_command_types_ibfk_6');
         $this->addSql('DROP INDEX unique_relationship ON tc_command_types');
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             ALTER TABLE tc_command_types
                 CHANGE typeId typeId VARCHAR(5) NOT NULL, ADD PRIMARY KEY (commandId, typeId)
         SQL);
@@ -41,7 +41,7 @@ final class Version20190824173018 extends AbstractMigration
         $this->addSql('ALTER TABLE tc_command_types DROP INDEX `PRIMARY`, ADD UNIQUE INDEX unique_relationship (commandId, typeId)');
         $this->addSql('ALTER TABLE tc_command_types DROP FOREIGN KEY FK_DC7EBB8F36C645');
         $this->addSql('ALTER TABLE tc_command_types DROP FOREIGN KEY FK_DC7EBB9BF49490');
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             ALTER TABLE tc_command_types
                 CHANGE typeId typeId VARCHAR(5) DEFAULT 'auv' NOT NULL COLLATE utf8_czech_ci
         SQL);
@@ -50,7 +50,7 @@ final class Version20190824173018 extends AbstractMigration
         $this->addSql('ALTER TABLE tc_command_types RENAME INDEX idx_dc7ebb9bf49490 TO typeId');
         $this->addSql('ALTER TABLE tc_command_types RENAME INDEX idx_dc7ebb8f36c645 TO commandId');
         $this->addSql('ALTER TABLE tc_commands DROP FOREIGN KEY FK_4D5B6D0C545317D1');
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             ALTER TABLE tc_commands
                 CHANGE fuel_price fuel_price DOUBLE PRECISION NOT NULL,
                 CHANGE amortization amortization DOUBLE PRECISION NOT NULL,

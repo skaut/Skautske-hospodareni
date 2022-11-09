@@ -29,9 +29,7 @@ final class CreateUnitHandlerTest extends CommandHandlerTest
         $this->tester->grabService(UnitResolverStub::class)->setOfficialUnits(self::OFFICIAL_UNITS);
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     protected function getTestedAggregateRoots(): array
     {
         return [
@@ -40,9 +38,7 @@ final class CreateUnitHandlerTest extends CommandHandlerTest
         ];
     }
 
-    /**
-     * @dataProvider dataCashbookTypes
-     */
+    /** @dataProvider dataCashbookTypes */
     public function testUnitCashbookAndCashbookAggregateAreCreated(CashbookType $cashbookType, UnitId $unitId): void
     {
         $this->commandBus->handle(new CreateUnit($unitId, self::YEAR));
@@ -56,9 +52,7 @@ final class CreateUnitHandlerTest extends CommandHandlerTest
         $this->assertTrue($cashbook->getType()->equals($cashbookType), 'Correct cashbook type is assigned');
     }
 
-    /**
-     * @return mixed[][]
-     */
+    /** @return mixed[][] */
     public function dataCashbookTypes(): array
     {
         return [

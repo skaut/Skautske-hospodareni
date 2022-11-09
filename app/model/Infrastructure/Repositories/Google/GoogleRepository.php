@@ -30,9 +30,7 @@ final class GoogleRepository implements IGoogleRepository
         $this->entityManager->flush();
     }
 
-    /**
-     * @throws OAuthNotFound
-     */
+    /** @throws OAuthNotFound */
     public function find(OAuthId $oAuthId): OAuth
     {
         $oAuth = $this->entityManager->getRepository(OAuth::class)->find($oAuthId);

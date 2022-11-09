@@ -38,7 +38,7 @@ final class SkautisRegistrationRepository implements IRegistrationRepository
             function (stdClass $registration): Registration {
                 return new Registration($registration->ID, $registration->Unit, $registration->Year);
             },
-            $registrations
+            $registrations,
         );
     }
 }

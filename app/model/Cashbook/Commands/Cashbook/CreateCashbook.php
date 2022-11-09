@@ -8,9 +8,7 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Handlers\Cashbook\CreateCashbookHandler;
 
-/**
- * @see CreateCashbookHandler
- */
+/** @see CreateCashbookHandler */
 final class CreateCashbook
 {
     private CashbookId $id;

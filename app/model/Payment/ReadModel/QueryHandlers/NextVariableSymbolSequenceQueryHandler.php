@@ -57,7 +57,7 @@ class NextVariableSymbolSequenceQueryHandler
             $groups,
             function (Group $group) use ($currentYear): bool {
                 return $group->getCreatedAt() !== null && $group->getCreatedAt()->format('Y') === $currentYear;
-            }
+            },
         );
 
         return Strings::padLeft((string) (count($groups) + 1), 2, '0');

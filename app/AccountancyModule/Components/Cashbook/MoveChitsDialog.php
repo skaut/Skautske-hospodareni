@@ -63,9 +63,7 @@ class MoveChitsDialog extends BaseControl
         $this->authorizator = $authorizator;
     }
 
-    /**
-     * @param int[] $chitIds
-     */
+    /** @param int[] $chitIds */
     public function open(array $chitIds): void
     {
         $this->chitIds = implode(',', $chitIds);
@@ -126,15 +124,13 @@ class MoveChitsDialog extends BaseControl
         }
 
         $this->commandBus->handle(
-            new MoveChitsToDifferentCashbook($chitIds, $this->cashbookId, $newCashbookId)
+            new MoveChitsToDifferentCashbook($chitIds, $this->cashbookId, $newCashbookId),
         );
 
         $this->redirect('this');
     }
 
-    /**
-     * @return int[]
-     */
+    /** @return int[] */
     private function getChitIds(): array
     {
         $chitIds = explode(',', $this->chitIds);
@@ -142,9 +138,7 @@ class MoveChitsDialog extends BaseControl
         return array_map('\intval', $chitIds);
     }
 
-    /**
-     * @return array<string, string> Cashbook ID => Camp name
-     */
+    /** @return array<string, string> Cashbook ID => Camp name */
     private function getCampCashbooks(): array
     {
         $cashbooks = [];
@@ -166,9 +160,7 @@ class MoveChitsDialog extends BaseControl
         return $cashbooks;
     }
 
-    /**
-     * @return array<string, string> Cashbook ID => Event name
-     */
+    /** @return array<string, string> Cashbook ID => Event name */
     private function getEventCashbooks(): array
     {
         $cashbooks = [];

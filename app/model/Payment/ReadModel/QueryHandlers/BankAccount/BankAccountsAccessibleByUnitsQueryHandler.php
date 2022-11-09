@@ -32,9 +32,7 @@ final class BankAccountsAccessibleByUnitsQueryHandler
         $this->unitResolver  = $unitResolver;
     }
 
-    /**
-     * @return BankAccount[]
-     */
+    /** @return BankAccount[] */
     public function __invoke(BankAccountsAccessibleByUnitsQuery $query): array
     {
         $unitIds         = $query->getUnitIds();

@@ -9,9 +9,7 @@ use Model\Cashbook\Cashbook\ChitBody;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\DTO\Cashbook\ChitItem as ChitItemDto;
 
-/**
- * @see AddChitToCashbookHandler
- */
+/** @see AddChitToCashbookHandler */
 final class AddChitToCashbook
 {
     private CashbookId $cashbookId;
@@ -23,9 +21,7 @@ final class AddChitToCashbook
 
     private PaymentMethod $paymentMethod;
 
-    /**
-     * @param ChitItemDto[] $items
-     */
+    /** @param ChitItemDto[] $items */
     public function __construct(CashbookId $cashbookId, ChitBody $body, PaymentMethod $paymentMethod, array $items)
     {
         $this->cashbookId    = $cashbookId;
@@ -44,9 +40,7 @@ final class AddChitToCashbook
         return $this->body;
     }
 
-    /**
-     * @return ChitItemDto[]
-     */
+    /** @return ChitItemDto[] */
     public function getItems(): array
     {
         return $this->items;

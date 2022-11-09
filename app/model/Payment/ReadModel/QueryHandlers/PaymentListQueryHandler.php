@@ -20,9 +20,7 @@ final class PaymentListQueryHandler
         $this->payments = $payments;
     }
 
-    /**
-     * @return DTO\Payment[]
-     */
+    /** @return DTO\Payment[] */
     public function __invoke(PaymentListQuery $query): array
     {
         $payments = $this->payments->findByGroup($query->getGroupId());
@@ -31,7 +29,7 @@ final class PaymentListQueryHandler
             function (Payment $payment) {
                 return DTO\PaymentFactory::create($payment);
             },
-            $payments
+            $payments,
         );
     }
 }

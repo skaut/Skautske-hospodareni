@@ -21,7 +21,7 @@ final class Version20190510135230 extends AbstractMigration
             ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB
         SQL);
 
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             ALTER TABLE tc_vehicle_roadworthy_scan
                 ADD CONSTRAINT FK_270D2917545317D1
                     FOREIGN KEY (vehicle_id) REFERENCES tc_vehicle (id)

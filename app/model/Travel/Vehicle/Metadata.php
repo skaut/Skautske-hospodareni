@@ -7,9 +7,7 @@ namespace Model\Travel\Vehicle;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Embeddable()
- */
+/** @ORM\Embeddable() */
 class Metadata
 {
     /** @ORM\Column(type="datetime_immutable") */

@@ -183,19 +183,19 @@ class ExportService
         }
 
         $totalIncome = array_sum(
-            array_column($sums[self::CATEGORY_REAL][Operation::INCOME], 'amount')
+            array_column($sums[self::CATEGORY_REAL][Operation::INCOME], 'amount'),
         );
 
         $totalExpense = array_sum(
-            array_column($sums[self::CATEGORY_REAL][Operation::EXPENSE], 'amount')
+            array_column($sums[self::CATEGORY_REAL][Operation::EXPENSE], 'amount'),
         );
 
         $virtualTotalIncome = array_sum(
-            array_column($sums[self::CATEGORY_VIRTUAL][Operation::INCOME], 'amount')
+            array_column($sums[self::CATEGORY_VIRTUAL][Operation::INCOME], 'amount'),
         );
 
         $virtualTotalExpense = array_sum(
-            array_column($sums[self::CATEGORY_VIRTUAL][Operation::EXPENSE], 'amount')
+            array_column($sums[self::CATEGORY_VIRTUAL][Operation::EXPENSE], 'amount'),
         );
 
         $stats = $this->queryBus->handle(new EventParticipantStatisticsQuery(new SkautisEventId($skautisEventId)));

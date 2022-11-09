@@ -11,7 +11,7 @@ final class Version20211121192425 extends AbstractMigration
 {
     public function up(Schema $schema): void
     {
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
                 CREATE TABLE ac_education_cashbooks (
                     id CHAR(36) NOT NULL COMMENT '(DC2Type:skautis_education_id)', 
                     cashbook_id CHAR(36) NOT NULL COMMENT '(DC2Type:cashbook_id)',

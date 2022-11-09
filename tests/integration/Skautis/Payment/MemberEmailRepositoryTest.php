@@ -25,7 +25,7 @@ final class MemberEmailRepositoryTest extends SkautisTest
                 'matka@ditetova.czz' => 'matka@ditetova.czz – Matka',
                 'jan@dite.czz' => 'jan@dite.czz – E-mail (hlavní)',
             ],
-            $this->getRepository()->findByMember(147006)
+            $this->getRepository()->findByMember(147006),
         );
     }
 

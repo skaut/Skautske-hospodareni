@@ -31,7 +31,7 @@ class CreateGroupPresenter extends BasePresenter
     public function actionDefault(): void
     {
         $registration = $this->queryBus->handle(
-            new RegistrationWithoutGroupQuery(new UnitId($this->unitService->getUnitId()))
+            new RegistrationWithoutGroupQuery(new UnitId($this->unitService->getUnitId())),
         );
 
         if ($registration === null) {
@@ -52,7 +52,7 @@ class CreateGroupPresenter extends BasePresenter
 
         $form = $this->groupFormFactory->create(
             $unitId,
-            new SkautisEntity($registration->getId(), Type::get(Type::REGISTRATION))
+            new SkautisEntity($registration->getId(), Type::get(Type::REGISTRATION)),
         );
 
         $form->fillName('Registrace ' . $registration->getYear());

@@ -7,9 +7,7 @@ namespace Model\Cashbook\Commands\Cashbook;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Handlers\Cashbook\ClearCashbookHandler;
 
-/**
- * @see ClearCashbookHandler
- */
+/** @see ClearCashbookHandler */
 final class ClearCashbook
 {
     private CashbookId $cashbookId;

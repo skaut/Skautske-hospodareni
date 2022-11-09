@@ -42,9 +42,7 @@ class Unit
     /** @var Unit[]|null */
     private ?array $children = null;
 
-    /**
-     * @param Unit[]|null $children
-     */
+    /** @param Unit[]|null $children */
     public function __construct(
         int $id,
         string $sortName,
@@ -147,17 +145,13 @@ class Unit
         return $this->registrationNumber;
     }
 
-    /**
-     * @return Unit[]|null
-     */
+    /** @return Unit[]|null */
     public function getChildren(): ?array
     {
         return $this->children;
     }
 
-    /**
-     * @param Unit[] $ch
-     */
+    /** @param Unit[] $ch */
     public function withChildren(array $ch): self
     {
         return new self(
@@ -171,7 +165,7 @@ class Unit
             $this->registrationNumber,
             $this->type,
             $this->parentId,
-            $ch
+            $ch,
         );
     }
 }

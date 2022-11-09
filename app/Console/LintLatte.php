@@ -48,7 +48,7 @@ final class LintLatte extends Command
 
         $latteFiles = new RegexIterator(
             new RecursiveIteratorIterator(new RecursiveDirectoryIterator(realpath($appDir))),
-            '~.latte$~'
+            '~.latte$~',
         );
 
         foreach ($latteFiles as $filePath => $_x) {

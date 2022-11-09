@@ -76,7 +76,7 @@ final class RoadworthyControl extends BaseControl
             ->addRule(
                 BaseForm::MIME_TYPE,
                 'Neplatný formát skenu, povolené formáty jsou ' . implode(', ', array_keys(IScanStorage::ALLOWED_MIME_TYPES)) . '.',
-                IScanStorage::ALLOWED_MIME_TYPES
+                IScanStorage::ALLOWED_MIME_TYPES,
             )->addRule(BaseForm::MAX_FILE_SIZE, 'Maximální povolená velikost souboru je 15 MB', 15 * 1024 * 1024);
 
         $form->addSubmit('submit', 'Ok');
@@ -105,7 +105,7 @@ final class RoadworthyControl extends BaseControl
         }
 
         $this->commandBus->handle(
-            new AddRoadworthyScan($this->vehicleId, $upload->getSanitizedName(), $upload->getContents())
+            new AddRoadworthyScan($this->vehicleId, $upload->getSanitizedName(), $upload->getContents()),
         );
 
         $this->presenter->flashMessage('Sken byl nahrán', 'success');

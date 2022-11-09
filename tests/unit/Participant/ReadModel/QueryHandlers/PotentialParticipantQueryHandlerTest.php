@@ -14,9 +14,7 @@ use Model\Participant\ReadModel\Queries\PotentialParticipantListQuery;
 
 final class PotentialParticipantQueryHandlerTest extends Unit
 {
-    /**
-     * @dataProvider dataDirectMembersOnly
-     */
+    /** @dataProvider dataDirectMembersOnly */
     public function testReturnAllMembersThatAreNotAlreadyParticipants(bool $directMembersOnly): void
     {
         $unitId = new UnitId(1);
@@ -41,13 +39,11 @@ final class PotentialParticipantQueryHandlerTest extends Unit
                 3 => 'á',
                 2 => 'b',
             ],
-            $handler(new PotentialParticipantListQuery($unitId, $directMembersOnly, $participants))
+            $handler(new PotentialParticipantListQuery($unitId, $directMembersOnly, $participants)),
         );
     }
 
-    /**
-     * @return bool[][]
-     */
+    /** @return bool[][] */
     public function dataDirectMembersOnly(): array
     {
         return [[true], [false]];

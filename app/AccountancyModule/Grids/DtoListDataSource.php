@@ -10,9 +10,7 @@ use Nette\NotImplementedException;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 use Ublaboo\DataGrid\Utils\Sorting;
 
-/**
- * @template T
- */
+/** @template T */
 final class DtoListDataSource implements IDataSource
 {
     /** @phpstan-var ArrayCollection<int, T> */
@@ -30,9 +28,7 @@ final class DtoListDataSource implements IDataSource
         $this->criteria   = Criteria::create();
     }
 
-    /**
-     * @param mixed[] $filters
-     */
+    /** @param mixed[] $filters */
     public function filter(array $filters): void
     {
         if ($filters === []) {
@@ -70,9 +66,7 @@ final class DtoListDataSource implements IDataSource
         return $this->getFilteredCollection()->toArray();
     }
 
-    /**
-     * @return $this
-     */
+    /** @return $this */
     public function limit(int $offset, int $limit): self
     {
         $this->criteria->setFirstResult($offset)->setMaxResults($limit);
@@ -80,9 +74,7 @@ final class DtoListDataSource implements IDataSource
         return $this;
     }
 
-    /**
-     * @phpstan-return $this
-     */
+    /** @phpstan-return $this */
     public function sort(Sorting $sorting): self
     {
         $sortCallback = $sorting->getSortCallback();
@@ -96,9 +88,7 @@ final class DtoListDataSource implements IDataSource
         return $this;
     }
 
-    /**
-     * @phpstan-return ArrayCollection<int, T>
-     */
+    /** @phpstan-return ArrayCollection<int, T> */
     private function getFilteredCollection(): ArrayCollection
     {
         return $this->collection->matching($this->criteria);

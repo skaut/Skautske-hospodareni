@@ -7,9 +7,7 @@ namespace Model\Google\ReadModel\Queries;
 use Model\Common\UnitId;
 use Model\Google\ReadModel\QueryHandlers\UnitOAuthListQueryHandler;
 
-/**
- * @see UnitOAuthListQueryHandler
- */
+/** @see UnitOAuthListQueryHandler */
 final class UnitOAuthListQuery
 {
     private UnitId $unitId;

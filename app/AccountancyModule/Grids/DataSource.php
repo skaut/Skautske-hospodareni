@@ -28,9 +28,7 @@ abstract class DataSource implements IDataSource
     /** @var mixed[] */
     private array $conditions = [];
 
-    /**
-     * @return object[]
-     */
+    /** @return object[] */
     abstract protected function loadData(): array;
 
     public function getCount(): int
@@ -38,9 +36,7 @@ abstract class DataSource implements IDataSource
         return count($this->getData());
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     final public function getData(): array
     {
         $dataSource = $this->innerDataSource();
@@ -61,9 +57,7 @@ abstract class DataSource implements IDataSource
         return $dataSource->getData();
     }
 
-    /**
-     * @param Filter[] $filters
-     */
+    /** @param Filter[] $filters */
     final public function filter(array $filters): void
     {
         foreach ($filters as $filter) {
@@ -78,9 +72,7 @@ abstract class DataSource implements IDataSource
         }
     }
 
-    /**
-     * @param mixed[] $filter
-     */
+    /** @param mixed[] $filter */
     final public function filterOne(array $filter): self
     {
         $this->conditions[] = $filter;

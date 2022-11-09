@@ -62,9 +62,7 @@ class Category implements ICategory
     /** @ORM\Column(type="boolean") */
     private bool $deleted = false;
 
-    /**
-     * @param Category\ObjectType[] $types
-     */
+    /** @param Category\ObjectType[] $types */
     public function __construct(
         int $id,
         string $name,
@@ -113,7 +111,7 @@ class Category implements ICategory
         return $this->types->exists(
             function ($_x, Category\ObjectType $categoryType) use ($type): bool {
                 return $categoryType->getType()->equals($type);
-            }
+            },
         );
     }
 

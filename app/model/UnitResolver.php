@@ -17,9 +17,7 @@ final class UnitResolver implements IUnitResolver
         $this->units = $units;
     }
 
-    /**
-     * @throws UnitHasNoParent
-     */
+    /** @throws UnitHasNoParent */
     public function getOfficialUnitId(int $unitId): int
     {
         $unit = $this->units->find($unitId);

@@ -29,9 +29,7 @@ class AccountancyHelpersTest extends Unit
         ]);
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     public function getDateRanges(): array
     {
         return [
@@ -42,9 +40,7 @@ class AccountancyHelpersTest extends Unit
         ];
     }
 
-    /**
-     * @dataProvider getDateRanges
-     */
+    /** @dataProvider getDateRanges */
     public function testDateRange(Date $end, string $expectedResult): void
     {
         $res = AccountancyHelpers::dateRange([
@@ -54,9 +50,7 @@ class AccountancyHelpersTest extends Unit
         $this->assertSame($expectedResult, $res);
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     public function getPrices(): array
     {
         return [
@@ -81,9 +75,7 @@ class AccountancyHelpersTest extends Unit
         $this->assertSame($expected, AccountancyHelpers::price($price));
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     public function getNumbers(): array
     {
         return [

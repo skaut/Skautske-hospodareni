@@ -7,9 +7,7 @@ namespace Model\Payment\ReadModel\Queries;
 use Model\Common\UnitId;
 use Model\Payment\ReadModel\QueryHandlers\MembersWithoutPaymentInGroupQueryHandler;
 
-/**
- * @see MembersWithoutPaymentInGroupQueryHandler
- */
+/** @see MembersWithoutPaymentInGroupQueryHandler */
 final class MembersWithoutPaymentInGroupQuery
 {
     private UnitId $unitId;

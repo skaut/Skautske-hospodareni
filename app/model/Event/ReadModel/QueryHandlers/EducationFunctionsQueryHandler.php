@@ -27,7 +27,7 @@ class EducationFunctionsQueryHandler
         ]);
 
         return new Functions(
-            ...array_map([PersonFactory::class, 'create'], $functions)
+            ...array_map([PersonFactory::class, 'create'], $functions),
         );
     }
 }

@@ -23,7 +23,7 @@ final class ActivateAutocomputedParticipantsHandler
                 'ID' => $command->getCampId()->toInt(),
                 'IsRealAutoComputed' => 1,
             ],
-            'eventCamp'
+            'eventCamp',
         );
     }
 }

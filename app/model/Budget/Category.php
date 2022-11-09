@@ -90,9 +90,7 @@ class Category
         return $this->value;
     }
 
-    /**
-     * @return Category[]
-     */
+    /** @return Category[] */
     public function getChildren(): array
     {
         return $this->children->toArray();

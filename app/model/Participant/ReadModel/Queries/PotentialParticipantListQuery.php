@@ -8,9 +8,7 @@ use Model\Common\UnitId;
 use Model\DTO\Participant\Participant;
 use Model\Participant\ReadModel\QueryHandlers\PotentialParticipantListQueryHandler;
 
-/**
- * @see PotentialParticipantListQueryHandler
- */
+/** @see PotentialParticipantListQueryHandler */
 final class PotentialParticipantListQuery
 {
     private UnitId $unitId;
@@ -20,9 +18,7 @@ final class PotentialParticipantListQuery
     /** @var Participant[] */
     private array $currentParticipants;
 
-    /**
-     * @param Participant[] $currentParticipants
-     */
+    /** @param Participant[] $currentParticipants */
     public function __construct(UnitId $unitId, bool $directMembersOnly, array $currentParticipants)
     {
         $this->unitId              = $unitId;
@@ -40,9 +36,7 @@ final class PotentialParticipantListQuery
         return $this->directMembersOnly;
     }
 
-    /**
-     * @return Participant[]
-     */
+    /** @return Participant[] */
     public function getCurrentParticipants(): array
     {
         return $this->currentParticipants;

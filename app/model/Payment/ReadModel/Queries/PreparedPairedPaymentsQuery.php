@@ -6,9 +6,7 @@ namespace Model\Payment\ReadModel\Queries;
 
 use Model\Payment\BankAccount\BankAccountId;
 
-/**
- * @see PreparedPaymentsQueryHandler
- */
+/** @see PreparedPaymentsQueryHandler */
 final class PreparedPairedPaymentsQuery
 {
     private BankAccountId $bankAccountId;

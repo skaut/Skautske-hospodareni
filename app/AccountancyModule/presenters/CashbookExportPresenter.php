@@ -99,7 +99,7 @@ class CashbookExportPresenter extends BasePresenter
         $chitIds = array_map('\intval', $chitIds);
 
         $spreadsheet = $this->excelService->getChitsExport(
-            $this->getChitsWithIds($chitIds)
+            $this->getChitsWithIds($chitIds),
         );
 
         $this->sendResponse(new ExcelResponse('Export-vybranych-paragonu', $spreadsheet));
@@ -139,7 +139,7 @@ class CashbookExportPresenter extends BasePresenter
         if (! PaymentMethod::isValidValue($paymentMethod)) {
             throw new BadRequestException(
                 sprintf('Invalid payment method %s', $paymentMethod),
-                IResponse::S400_BAD_REQUEST
+                IResponse::S400_BAD_REQUEST,
             );
         }
 
@@ -155,10 +155,10 @@ class CashbookExportPresenter extends BasePresenter
                 sprintf(
                     '%s-pokladni-kniha-%s',
                     Strings::webalize($this->queryBus->handle(new CashbookDisplayNameQuery($cashbookId))),
-                    date('Y_n_j')
+                    date('Y_n_j'),
                 ),
-                $spreadsheet
-            )
+                $spreadsheet,
+            ),
         );
     }
 
@@ -188,13 +188,13 @@ class CashbookExportPresenter extends BasePresenter
         if (! PaymentMethod::isValidValue($paymentMethod)) {
             throw new BadRequestException(
                 sprintf('Invalid payment method %s', $paymentMethod),
-                IResponse::S400_BAD_REQUEST
+                IResponse::S400_BAD_REQUEST,
             );
         }
 
         $spreadsheet = $this->excelService->getCashbookWithCategories(
             CashbookId::fromString($cashbookId),
-            PaymentMethod::get($paymentMethod)
+            PaymentMethod::get($paymentMethod),
         );
 
         $this->sendResponse(new ExcelResponse('pokladni-kniha', $spreadsheet));
@@ -208,13 +208,13 @@ class CashbookExportPresenter extends BasePresenter
         if (! PaymentMethod::isValidValue($paymentMethod)) {
             throw new BadRequestException(
                 sprintf('Invalid payment method %s', $paymentMethod),
-                IResponse::S400_BAD_REQUEST
+                IResponse::S400_BAD_REQUEST,
             );
         }
 
         $spreadsheet = $this->excelService->getCashbookItems(
             CashbookId::fromString($cashbookId),
-            PaymentMethod::get($paymentMethod)
+            PaymentMethod::get($paymentMethod),
         );
 
         $this->sendResponse(new ExcelResponse('seznam-polozek', $spreadsheet));
@@ -253,9 +253,7 @@ class CashbookExportPresenter extends BasePresenter
         throw new BadRequestException('Scan not found', IResponse::S404_NOT_FOUND);
     }
 
-    /**
-     * @throws BadRequestException
-     */
+    /** @throws BadRequestException */
     private function hasAccessToCashbook(): bool
     {
         $skautisType = $this->getSkautisType()->getValue();
@@ -274,9 +272,7 @@ class CashbookExportPresenter extends BasePresenter
         return $this->authorizator->isAllowed($requiredPermissions[$skautisType], $this->getSkautisId());
     }
 
-    /**
-     * @throws BadRequestException
-     */
+    /** @throws BadRequestException */
     private function getSkautisType(): ObjectType
     {
         try {
@@ -293,7 +289,7 @@ class CashbookExportPresenter extends BasePresenter
     private function getSkautisId(): int
     {
         return $this->queryBus->handle(
-            new SkautisIdQuery(CashbookId::fromString($this->cashbookId))
+            new SkautisIdQuery(CashbookId::fromString($this->cashbookId)),
         );
     }
 
@@ -310,7 +306,7 @@ class CashbookExportPresenter extends BasePresenter
             $chits,
             function (Chit $chit) use ($ids): bool {
                 return in_array($chit->getId(), $ids, true);
-            }
+            },
         );
 
         return array_values($filteredChits);

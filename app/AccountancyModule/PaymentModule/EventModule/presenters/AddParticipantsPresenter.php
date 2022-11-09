@@ -31,9 +31,7 @@ final class AddParticipantsPresenter extends BasePresenter
         $this->formFactory = $formFactory;
     }
 
-    /**
-     * @param int $id ID of payment group
-     */
+    /** @param int $id ID of payment group */
     public function actionDefault(int $id): void
     {
         $group = $this->model->getGroup($id);
@@ -64,7 +62,7 @@ final class AddParticipantsPresenter extends BasePresenter
                 $participant->getPersonId(),
                 $this->queryBus->handle(new MemberEmailsQuery($participant->getPersonId())),
                 $participant->getDisplayName(),
-                $amount === 0.0 ? null : $amount
+                $amount === 0.0 ? null : $amount,
             );
         }
 

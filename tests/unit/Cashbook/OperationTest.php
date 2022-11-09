@@ -8,17 +8,13 @@ use Codeception\Test\Unit;
 
 final class OperationTest extends Unit
 {
-    /**
-     * @dataProvider getInverseTypes
-     */
+    /** @dataProvider getInverseTypes */
     public function testInverse(string $originalType, string $inverseType): void
     {
         $this->assertTrue(Operation::get($originalType)->getInverseOperation()->equalsValue($inverseType));
     }
 
-    /**
-     * @return string[][]
-     */
+    /** @return string[][] */
     public function getInverseTypes(): array
     {
         return [

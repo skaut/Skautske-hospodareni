@@ -36,9 +36,7 @@ class BankAccountServiceTest extends IntegrationTest
         $this->unitResolver       = $this->tester->grabService(UnitResolverStub::class);
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function getTestedAggregateRoots(): array
     {
         return [
@@ -80,7 +78,7 @@ class BankAccountServiceTest extends IntegrationTest
             Helpers::createAccountNumber(),
             null,
             new DateTimeImmutable(),
-            $this->unitResolver
+            $this->unitResolver,
         );
     }
 

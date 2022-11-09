@@ -6,9 +6,7 @@ namespace Model\Payment;
 
 use Consistence\Enum\Enum;
 
-/**
- * @method string getValue()
- */
+/** @method string getValue() */
 final class EmailType extends Enum
 {
     /**

@@ -30,7 +30,7 @@ final class SkautisCallListener
     {
         $this->logger->debug(
             sprintf('Skautis query "%s" sucessfuly performed.', $query->fname),
-            $this->prepareContext($query)
+            $this->prepareContext($query),
         );
     }
 
@@ -38,13 +38,11 @@ final class SkautisCallListener
     {
         $this->logger->debug(
             sprintf('Skautis query "%s" returns error: %s', $query->fname, $query->getExceptionString()),
-            $this->prepareContext($query)
+            $this->prepareContext($query),
         );
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     private function prepareContext(SkautisQuery $query): array
     {
         return [

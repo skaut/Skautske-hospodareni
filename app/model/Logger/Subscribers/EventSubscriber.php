@@ -23,9 +23,7 @@ final class EventSubscriber implements MessageSubscriberInterface
         $this->userService   = $userService;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public static function getHandledMessages(): array
     {
         return [
@@ -43,7 +41,7 @@ final class EventSubscriber implements MessageSubscriberInterface
             $user->ID,
             "Uživatel '" . $user->Person . "' otevřel akci '" . $event->getEventName() . "' (" . $event->getEventId() . ').',
             Type::get(Type::OBJECT),
-            $event->getEventId()->toInt()
+            $event->getEventId()->toInt(),
         );
     }
 
@@ -56,7 +54,7 @@ final class EventSubscriber implements MessageSubscriberInterface
             $user->ID,
             "Uživatel '" . $user->Person . "' uzavřel akci '" . $event->getEventName() . "' (" . $event->getEventId() . ').',
             Type::get(Type::OBJECT),
-            $event->getEventId()->toInt()
+            $event->getEventId()->toInt(),
         );
     }
 }

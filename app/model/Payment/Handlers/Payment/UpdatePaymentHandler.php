@@ -27,7 +27,7 @@ final class UpdatePaymentHandler
             $command->getDueDate(),
             $command->getVariableSymbol(),
             $command->getConstantSymbol(),
-            $command->getNote()
+            $command->getNote(),
         );
         $this->payments->save($payment);
     }

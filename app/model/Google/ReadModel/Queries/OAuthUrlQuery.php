@@ -6,9 +6,7 @@ namespace Model\Google\ReadModel\Queries;
 
 use Model\Google\ReadModel\QueryHandlers\OAuthUrlQueryHandler;
 
-/**
- * @see OAuthUrlQueryHandler
- */
+/** @see OAuthUrlQueryHandler */
 final class OAuthUrlQuery
 {
 }

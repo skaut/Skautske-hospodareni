@@ -17,9 +17,7 @@ use function array_slice;
 use function count;
 use function ksort;
 
-/**
- * @see https://is.skaut.cz/JunakWebservice/Events.asmx?WSDL
- */
+/** @see https://is.skaut.cz/JunakWebservice/Events.asmx?WSDL */
 final class CampCategoryRepositoryTest extends Unit
 {
     private const CAMP_ID = 666;
@@ -67,7 +65,7 @@ final class CampCategoryRepositoryTest extends Unit
 
         $this->assertCount(
             count(self::CATEGORIES) - 1, // Repository should not contain reserve
-            $categories
+            $categories,
         );
 
         $expectedCategories = array_slice(array_map('array_values', self::CATEGORIES), 1);
@@ -91,13 +89,11 @@ final class CampCategoryRepositoryTest extends Unit
         $repository = $this->prepareRepository(new stdClass());
 
         $this->assertEmpty(
-            $repository->findForCamp(self::CAMP_ID)
+            $repository->findForCamp(self::CAMP_ID),
         );
     }
 
-    /**
-     * @param stdClass|stdClass[] $webserviceResult
-     */
+    /** @param stdClass|stdClass[] $webserviceResult */
     private function prepareRepository($webserviceResult): CampCategoryRepository
     {
         $service = m::mock(WebServiceInterface::class);

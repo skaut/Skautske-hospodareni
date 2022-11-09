@@ -51,7 +51,7 @@ final class AddParticipantsPresenter extends BasePresenter
 
         $this->group        = $group;
         $this->participants = $this->queryBus->handle(
-            new CampParticipantListQuery(new SkautisCampId($group->getSkautisId()))
+            new CampParticipantListQuery(new SkautisCampId($group->getSkautisId())),
         );
 
         $this->template->setParameters([
@@ -78,7 +78,7 @@ final class AddParticipantsPresenter extends BasePresenter
                 $p->getPersonId(),
                 $this->queryBus->handle(new MemberEmailsQuery($p->getPersonId())),
                 $p->getDisplayName(),
-                $amount === 0.0 ? null : $amount
+                $amount === 0.0 ? null : $amount,
             );
         }
 

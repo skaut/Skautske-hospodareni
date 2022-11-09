@@ -17,9 +17,7 @@ final class EventStatisticsQueryHandler
         $this->eventWebService = $eventWebService;
     }
 
-    /**
-     * @return StatisticsItem[]
-     */
+    /** @return StatisticsItem[] */
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     public function __invoke(EventStatisticsQuery $query): array
     {

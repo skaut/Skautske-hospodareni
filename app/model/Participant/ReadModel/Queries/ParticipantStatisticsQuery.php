@@ -7,25 +7,19 @@ namespace Model\Cashbook\ReadModel\Queries;
 use Model\Event\SkautisCampId;
 use Model\Event\SkautisEventId;
 
-/**
- * @see ParticipantStatisticsQueryHandler
- */
+/** @see ParticipantStatisticsQueryHandler */
 final class ParticipantStatisticsQuery
 {
     /** @var SkautisCampId|SkautisEventId */
     private $id;
 
-    /**
-     * @param SkautisCampId|SkautisEventId $id
-     */
+    /** @param SkautisCampId|SkautisEventId $id */
     public function __construct($id)
     {
         $this->id = $id;
     }
 
-    /**
-     * @return SkautisCampId|SkautisEventId
-     */
+    /** @return SkautisCampId|SkautisEventId */
     public function getId()
     {
         return $this->id;

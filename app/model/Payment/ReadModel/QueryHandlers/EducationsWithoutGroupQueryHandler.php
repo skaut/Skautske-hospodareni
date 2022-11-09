@@ -28,9 +28,7 @@ final class EducationsWithoutGroupQueryHandler
         $this->groups   = $groups;
     }
 
-    /**
-     * @return array<int, Education> (indexed by ID)
-     */
+    /** @return array<int, Education> (indexed by ID) */
     public function __invoke(EducationsWithoutGroupQuery $query): array
     {
         $educations = $this->queryBus->handle(new EducationListQuery($query->getYear()));

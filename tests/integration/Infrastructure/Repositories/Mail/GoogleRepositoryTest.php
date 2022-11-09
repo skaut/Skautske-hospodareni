@@ -71,7 +71,7 @@ final class GoogleRepositoryTest extends IntegrationTest
 
         $returnedIds = array_map(
             fn (array $oauths) => array_map(fn (OAuth $oauth) => $oauth->getId()->toString(), $oauths),
-            $repository->findByUnits($unitIds)
+            $repository->findByUnits($unitIds),
         );
 
         self::assertSame(

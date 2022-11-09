@@ -6,8 +6,6 @@ namespace Model\Common\Services;
 
 interface QueryBus
 {
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     public function handle(object $query);
 }

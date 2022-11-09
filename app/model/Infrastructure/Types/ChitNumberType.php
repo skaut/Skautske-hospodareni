@@ -22,9 +22,7 @@ class ChitNumberType extends StringType
         return 5;
     }
 
-    /**
-     * @param mixed $value
-     */
+    /** @param mixed $value */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         if ($value === null) {
@@ -36,9 +34,7 @@ class ChitNumberType extends StringType
         return $value->toString();
     }
 
-    /**
-     * @param mixed $value
-     */
+    /** @param mixed $value */
     public function convertToPHPValue($value, AbstractPlatform $platform): ?ChitNumber
     {
         return $value === null ? null : new ChitNumber($value);

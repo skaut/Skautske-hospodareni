@@ -7,9 +7,7 @@ namespace Model\Unit\ReadModel\Queries;
 use Model\Common\UnitId;
 use Model\Unit\ReadModel\QueryHandlers\SubunitListQueryHandler;
 
-/**
- * @see SubunitListQueryHandler
- */
+/** @see SubunitListQueryHandler */
 final class SubunitListQuery
 {
     private UnitId $unitId;

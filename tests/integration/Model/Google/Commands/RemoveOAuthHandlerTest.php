@@ -18,9 +18,7 @@ class RemoveOAuthHandlerTest extends CommandHandlerTest
         parent::_before();
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function getTestedAggregateRoots(): array
     {
         return [

@@ -24,9 +24,7 @@ final class RoadworthyScansQueryHandler
         $this->scans    = $scans;
     }
 
-    /**
-     * @return File[]
-     */
+    /** @return File[] */
     public function __invoke(RoadworthyScansQuery $query): array
     {
         $vehicle = $this->vehicles->find($query->getVehicleId());
@@ -35,7 +33,7 @@ final class RoadworthyScansQueryHandler
             function (RoadworthyScan $scan): File {
                 return $this->scans->get($scan->getFilePath());
             },
-            $vehicle->getRoadworthyScans()
+            $vehicle->getRoadworthyScans(),
         );
     }
 }

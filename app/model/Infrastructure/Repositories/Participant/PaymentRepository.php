@@ -39,9 +39,7 @@ final class PaymentRepository implements IPaymentRepository
         return $payment;
     }
 
-    /**
-     * @return Payment[]
-     */
+    /** @return Payment[] */
     public function findByEvent(Event $event): array
     {
         return $this->em

@@ -16,9 +16,7 @@ final class MemberEmailsQueryHandler
         $this->emails = $emails;
     }
 
-    /**
-     * @return array<string, string> email address => email label
-     */
+    /** @return array<string, string> email address => email label */
     public function __invoke(MemberEmailsQuery $query): array
     {
         return $this->emails->findByMember($query->getMemberId());

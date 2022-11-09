@@ -22,7 +22,6 @@ final class Camp
     public const UPDATE_REAL      = [self::class, 'EV_EventCamp_UPDATE_Real'];
     public const UPDATE_REAL_COST = [self::class, 'EV_EventCamp_UPDATE_RealTotalCostBeforeEnd'];
 
-
     public const ACCESS_PARTICIPANT_DETAIL              = [self::class, 'EV_ParticipantCamp_DETAIL'];
     public const ADD_PARTICIPANT                        = [self::class, 'EV_ParticipantCamp_INSERT_EventCamp'];
     public const REMOVE_PARTICIPANT                     = [self::class, 'EV_ParticipantCamp_DELETE'];

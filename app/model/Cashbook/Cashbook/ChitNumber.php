@@ -23,7 +23,7 @@ final class ChitNumber
         $value = strtoupper($value);
         if (strlen($value) > 5 || ! Strings::match($value, sprintf('~%s~', self::PATTERN))) {
             throw new InvalidArgumentException(
-                sprintf('"%s" is not valid chit number', $value)
+                sprintf('"%s" is not valid chit number', $value),
             );
         }
 

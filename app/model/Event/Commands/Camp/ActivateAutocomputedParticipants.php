@@ -7,9 +7,7 @@ namespace Model\Event\Commands\Camp;
 use Model\Event\Handlers\Camp\ActivateAutocomputedParticipantsHandler;
 use Model\Event\SkautisCampId;
 
-/**
- * @see ActivateAutocomputedParticipantsHandler
- */
+/** @see ActivateAutocomputedParticipantsHandler */
 final class ActivateAutocomputedParticipants
 {
     private SkautisCampId $campId;

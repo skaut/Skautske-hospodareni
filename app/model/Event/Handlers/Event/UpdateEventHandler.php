@@ -26,7 +26,7 @@ final class UpdateEventHandler
             $command->getStartDate(),
             $command->getEndDate(),
             $command->getScopeId(),
-            $command->getTypeId()
+            $command->getTypeId(),
         );
 
         $this->events->update($event);

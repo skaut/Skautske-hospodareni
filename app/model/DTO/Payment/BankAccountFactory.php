@@ -20,7 +20,7 @@ final class BankAccountFactory
             $bankAccount->getNumber(),
             $bankAccount->getToken(),
             $bankAccount->getCreatedAt(),
-            $bankAccount->isAllowedForSubunits()
+            $bankAccount->isAllowedForSubunits(),
         );
     }
 }

@@ -17,9 +17,7 @@ final class MemberNamesQueryHandler
         $this->members = $members;
     }
 
-    /**
-     * @return array<int, string> Member ID => Member name
-     */
+    /** @return array<int, string> Member ID => Member name */
     public function __invoke(MemberNamesQuery $query): array
     {
         $minimalAge = $query->getMinimalAge();

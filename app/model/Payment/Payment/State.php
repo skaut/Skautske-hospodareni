@@ -6,9 +6,7 @@ namespace Model\Payment\Payment;
 
 use Consistence\Enum\Enum;
 
-/**
- * @method string getValue()
- */
+/** @method string getValue() */
 class State extends Enum
 {
     public const CANCELED  = 'canceled';

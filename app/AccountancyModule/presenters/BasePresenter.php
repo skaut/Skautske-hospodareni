@@ -68,9 +68,7 @@ abstract class BasePresenter extends \App\BasePresenter
         $this->userService->updateLogoutTime();
     }
 
-    /**
-     * @param string $message
-     */
+    /** @param string $message */
     // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
     public function flashMessage($message, string $type = 'info'): stdClass
     {
@@ -84,9 +82,7 @@ abstract class BasePresenter extends \App\BasePresenter
         return $this->unitId;
     }
 
-    /**
-     * @return int[]
-     */
+    /** @return int[] */
     protected function getEditableUnitIds(): array
     {
         $identity = $this->getUser()->getIdentity();

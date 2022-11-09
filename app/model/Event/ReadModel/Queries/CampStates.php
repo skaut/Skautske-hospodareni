@@ -6,9 +6,7 @@ namespace Model\Event\ReadModel\Queries;
 
 use Model\Event\ReadModel\QueryHandlers\CampStatesHandler;
 
-/**
- * @see CampStatesHandler
- */
+/** @see CampStatesHandler */
 class CampStates
 {
 }

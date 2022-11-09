@@ -11,14 +11,10 @@ use Model\Payment\VariableSymbol;
 
 interface IPaymentRepository
 {
-    /**
-     * @throws PaymentNotFound
-     */
+    /** @throws PaymentNotFound */
     public function find(int $id): Payment;
 
-    /**
-     * @return Payment[]
-     */
+    /** @return Payment[] */
     public function findByGroup(int $groupId): array;
 
     /**
@@ -37,9 +33,7 @@ interface IPaymentRepository
 
     public function save(Payment $payment): void;
 
-    /**
-     * @param Payment[] $payments
-     */
+    /** @param Payment[] $payments */
     public function saveMany(array $payments): void;
 
     public function remove(Payment $payment): void;

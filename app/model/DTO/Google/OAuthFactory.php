@@ -12,7 +12,7 @@ class OAuthFactory
             $origin->getId(),
             $origin->getEmail(),
             $origin->getUnitId(),
-            $origin->getUpdatedAt()
+            $origin->getUpdatedAt(),
         );
     }
 }

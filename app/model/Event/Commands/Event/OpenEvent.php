@@ -7,9 +7,7 @@ namespace Model\Event\Commands\Event;
 use Model\Event\Handlers\Event\OpenEventHandler;
 use Model\Event\SkautisEventId;
 
-/**
- * @see OpenEventHandler
- */
+/** @see OpenEventHandler */
 final class OpenEvent
 {
     private SkautisEventId $eventId;

@@ -20,7 +20,7 @@ final class PaymentFactory
             $event,
             MoneyFactory::zero(),
             MoneyFactory::zero(),
-            'N'
+            'N',
         );
     }
 }

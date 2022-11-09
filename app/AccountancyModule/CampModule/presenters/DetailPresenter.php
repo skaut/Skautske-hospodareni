@@ -58,7 +58,7 @@ class DetailPresenter extends BasePresenter
                     return null;
                 }
             },
-            $this->event->getParticipatingUnits()
+            $this->event->getParticipatingUnits(),
         ));
 
         if ($this->isAjax()) {
@@ -85,7 +85,7 @@ class DetailPresenter extends BasePresenter
             'pragueParticipants' => $this->queryBus->handle(new CampPragueParticipantsQuery(
                 $this->event->getId(),
                 $this->event->getRegistrationNumber(),
-                $this->event->getStartDate()
+                $this->event->getStartDate(),
             )),
             'finalRealBalance' => $finalRealBalance,
             'prefix' => $cashbook->getChitNumberPrefix(PaymentMethod::CASH()),

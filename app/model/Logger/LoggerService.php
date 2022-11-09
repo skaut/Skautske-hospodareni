@@ -26,16 +26,14 @@ class LoggerService
         $this->logs->save(new LogEntry($unitId, $userId, $description, $type, $typeId, new DateTimeImmutable()));
     }
 
-    /**
-     * @return \Model\DTO\Logger\LogEntry[]
-     */
+    /** @return \Model\DTO\Logger\LogEntry[] */
     public function findAllByTypeId(Type $type, int $typeId): array
     {
         return array_map(
             function (LogEntry $log) {
                 return LogFactory::create($log);
             },
-            $this->logs->findAllByTypeId($type, $typeId)
+            $this->logs->findAllByTypeId($type, $typeId),
         );
     }
 }

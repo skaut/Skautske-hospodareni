@@ -21,9 +21,7 @@ class EventStatisticsQueryHandler
         $this->db = $connection;
     }
 
-    /**
-     * @return float[]
-     */
+    /** @return float[] */
     public function __invoke(EventStatisticsQuery $query): array
     {
         $params = [

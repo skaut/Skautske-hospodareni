@@ -7,9 +7,7 @@ namespace Model\Cashbook\Commands\Cashbook;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Handlers\Cashbook\AddChitScanHandler;
 
-/**
- * @see AddChitScanHandler
- */
+/** @see AddChitScanHandler */
 final class AddChitScan
 {
     private CashbookId $cashbookId;

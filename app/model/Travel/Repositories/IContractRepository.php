@@ -9,14 +9,10 @@ use Model\Travel\ContractNotFound;
 
 interface IContractRepository
 {
-    /**
-     * @throws ContractNotFound
-     */
+    /** @throws ContractNotFound */
     public function find(int $id): Contract;
 
-    /**
-     * @return Contract[]
-     */
+    /** @return Contract[] */
     public function findByUnit(int $unitId): array;
 
     public function save(Contract $contract): void;

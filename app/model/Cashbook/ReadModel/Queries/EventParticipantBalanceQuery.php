@@ -7,9 +7,7 @@ namespace Model\Cashbook\ReadModel\Queries;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Event\SkautisEventId;
 
-/**
- * @see EventParticipantBalanceQueryHandler
- */
+/** @see EventParticipantBalanceQueryHandler */
 final class EventParticipantBalanceQuery
 {
     private SkautisEventId $eventId;

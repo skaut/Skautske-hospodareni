@@ -7,9 +7,7 @@ namespace Model\Skautis\ReadModel\Queries;
 use Model\Event\SkautisEventId;
 use Model\Skautis\ReadModel\QueryHandlers\EventStatisticsQueryHandler;
 
-/**
- * @see EventStatisticsQueryHandler
- */
+/** @see EventStatisticsQueryHandler */
 final class EventStatisticsQuery
 {
     private SkautisEventId $eventId;

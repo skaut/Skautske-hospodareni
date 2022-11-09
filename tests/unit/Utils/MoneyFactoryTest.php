@@ -34,21 +34,17 @@ class MoneyFactoryTest extends Unit
         $this->assertSame('CZK', $money->getCurrency()->getCode());
     }
 
-    /**
-     * @dataProvider dataFloor
-     */
+    /** @dataProvider dataFloor */
     public function testFloor(float $amount, float $flooredAmount): void
     {
         $money = MoneyFactory::fromFloat($amount);
 
         $this->assertTrue(
-            MoneyFactory::floor($money)->equals(MoneyFactory::fromFloat($flooredAmount))
+            MoneyFactory::floor($money)->equals(MoneyFactory::fromFloat($flooredAmount)),
         );
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     public function dataFloor(): array
     {
         return [

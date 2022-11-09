@@ -24,9 +24,7 @@ class Category
 
     private float $value;
 
-    /**
-     * @param Category[] $children
-     */
+    /** @param Category[] $children */
     public function __construct(int $id, string $label, float $value, array $children)
     {
         $this->id       = $id;
@@ -50,9 +48,7 @@ class Category
         return $this->value;
     }
 
-    /**
-     * @return Category[]
-     */
+    /** @return Category[] */
     public function getChildren(): array
     {
         return $this->children;

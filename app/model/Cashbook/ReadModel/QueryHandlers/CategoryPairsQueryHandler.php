@@ -40,7 +40,7 @@ class CategoryPairsQueryHandler
                 $categories,
                 function (ICategory $category) use ($query): bool {
                     return $category->getOperationType()->equals($query->getOperationType());
-                }
+                },
             );
         }
 

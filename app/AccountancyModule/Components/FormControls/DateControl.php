@@ -19,9 +19,7 @@ class DateControl extends BaseControl
 {
     private const DATE_FORMAT = 'd.m.Y';
 
-    /**
-     * @param mixed $value
-     */
+    /** @param mixed $value */
     public function setDefaultValue($value): self
     {
         if (! $value instanceof Date && $value !== null) {

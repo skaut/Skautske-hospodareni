@@ -27,9 +27,7 @@ final class UpdatePayment
 
     private int $paymentId;
 
-    /**
-     * @param EmailAddress[] $recipients
-     */
+    /** @param EmailAddress[] $recipients */
     public function __construct(
         int $paymentId,
         string $name,

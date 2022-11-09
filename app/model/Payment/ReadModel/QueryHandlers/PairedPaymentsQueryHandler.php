@@ -21,9 +21,7 @@ class PairedPaymentsQueryHandler
         $this->entityManager = $entityManager;
     }
 
-    /**
-     * @return \Model\DTO\Payment\Payment[]
-     */
+    /** @return \Model\DTO\Payment\Payment[] */
     public function __invoke(PairedPaymentsQuery $query): array
     {
         $groupIds = $this->entityManager->createQueryBuilder()

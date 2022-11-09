@@ -7,9 +7,7 @@ namespace Model\Cashbook\Commands\Cashbook;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Handlers\Cashbook\MoveChitsToDifferentCashbookHandler;
 
-/**
- * @see MoveChitsToDifferentCashbookHandler
- */
+/** @see MoveChitsToDifferentCashbookHandler */
 final class MoveChitsToDifferentCashbook
 {
     /** @var int[] */
@@ -19,9 +17,7 @@ final class MoveChitsToDifferentCashbook
 
     private CashbookId $targetCashbookId;
 
-    /**
-     * @param int[] $chitIds
-     */
+    /** @param int[] $chitIds */
     public function __construct(array $chitIds, CashbookId $sourceCashbookId, CashbookId $targetCashbookId)
     {
         $this->chitIds          = $chitIds;
@@ -29,9 +25,7 @@ final class MoveChitsToDifferentCashbook
         $this->targetCashbookId = $targetCashbookId;
     }
 
-    /**
-     * @return int[]
-     */
+    /** @return int[] */
     public function getChitIds(): array
     {
         return $this->chitIds;

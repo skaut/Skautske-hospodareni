@@ -18,9 +18,7 @@ final class PaymentIdType extends GuidType
         return 'payment_id';
     }
 
-    /**
-     * @param mixed $value
-     */
+    /** @param mixed $value */
     public function convertToPHPValue($value, AbstractPlatform $platform): ?PaymentId
     {
         if ($value === null) {
@@ -32,9 +30,7 @@ final class PaymentIdType extends GuidType
         return PaymentId::fromString($value);
     }
 
-    /**
-     * @param mixed $value
-     */
+    /** @param mixed $value */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         if ($value === null) {

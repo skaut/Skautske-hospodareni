@@ -31,9 +31,7 @@ final class CategoryRepository implements ICategoryRepository
         return $category;
     }
 
-    /**
-     * @return Category[]
-     */
+    /** @return Category[] */
     public function findCategories(int $unitId, Operation $operationType): array
     {
         return $this->em->getRepository(Category::class)->findBy([

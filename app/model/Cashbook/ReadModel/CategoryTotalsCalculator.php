@@ -55,9 +55,7 @@ final class CategoryTotalsCalculator
         return $totalByCategories;
     }
 
-    /**
-     * @param ICategory[] $categories
-     */
+    /** @param ICategory[] $categories */
     private static function getCampIncomeCategoryId(array $categories, ParticipantType $type): int
     {
         foreach ($categories as $c) {

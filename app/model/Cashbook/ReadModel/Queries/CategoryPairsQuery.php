@@ -8,9 +8,7 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Operation;
 use Model\Cashbook\ReadModel\QueryHandlers\CategoryPairsQueryHandler;
 
-/**
- * @see CategoryPairsQueryHandler
- */
+/** @see CategoryPairsQueryHandler */
 final class CategoryPairsQuery
 {
     private CashbookId $cashbookId;

@@ -31,8 +31,8 @@ final class OpenEventHandler
             new EventWasOpened(
                 $event->getId(),
                 $event->getUnitId()->toInt(),
-                $event->getDisplayName()
-            )
+                $event->getDisplayName(),
+            ),
         );
     }
 }

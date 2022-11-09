@@ -16,9 +16,7 @@ final class PotentialParticipantListQueryHandler
         $this->members = $members;
     }
 
-    /**
-     * @return array<int, string> member ID => member name
-     */
+    /** @return array<int, string> member ID => member name */
     public function __invoke(PotentialParticipantListQuery $query): array
     {
         $all = $this->members->findByUnit($query->getUnitId(), ! $query->directMembersOnly());

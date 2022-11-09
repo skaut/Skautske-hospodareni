@@ -13,9 +13,7 @@ use VCR\VCR;
 
 final class ParticipantRepositoryTest extends SkautisTest
 {
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function getTestedAggregateRoots(): array
     {
         return [

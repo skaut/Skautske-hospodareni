@@ -23,9 +23,7 @@ class EventListQueryHandler
         $this->eventFactory = $eventFactory;
     }
 
-    /**
-     * @return array<int, Event> Events indexed by ID
-     */
+    /** @return array<int, Event> Events indexed by ID */
     public function __invoke(EventListQuery $query): array
     {
         $events = $this->skautis->event->eventGeneralAll([

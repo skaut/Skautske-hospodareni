@@ -99,7 +99,7 @@ class CashbookPresenter extends BasePresenter
         return $this->cashbookFactory->create(
             $this->getCashbookId(),
             $this->isEditable && ! $this->isRealTotalCostAutoComputed,
-            $this->getCurrentUnitId()
+            $this->getCurrentUnitId(),
         );
     }
 
@@ -134,7 +134,7 @@ class CashbookPresenter extends BasePresenter
             $amount = $this->queryBus->handle(new CampParticipantIncomeQuery(
                 new SkautisCampId($this->getCampId()),
                 $values->cat === 'adult',
-                $values->isAccount === 'Y'
+                $values->isAccount === 'Y',
             ));
             assert($amount instanceof Amount);
         } catch (ZeroParticipantIncome $exc) {
@@ -146,7 +146,7 @@ class CashbookPresenter extends BasePresenter
         $body    = new ChitBody(null, $this->event->getStartDate(), null);
 
         $categoryId    = $this->queryBus->handle(
-            new CampParticipantCategoryIdQuery(new SkautisCampId($this->getCampId()), ParticipantType::get($values->cat === 'adult' ? ParticipantType::ADULT : ParticipantType::CHILD))
+            new CampParticipantCategoryIdQuery(new SkautisCampId($this->getCampId()), ParticipantType::get($values->cat === 'adult' ? ParticipantType::ADULT : ParticipantType::CHILD)),
         );
         $categoriesDto = $this->queryBus->handle(new CategoryListQuery($this->getCashbookId()));
 

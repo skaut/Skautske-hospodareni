@@ -111,7 +111,7 @@ class ParticipantPresenter extends BasePresenter
             true,
             true,
             $this->isAllowParticipantUpdate,
-            false
+            false,
         );
 
         $control->onUpdate[] = function (array $updates): void {
@@ -142,9 +142,7 @@ class ParticipantPresenter extends BasePresenter
         $this->terminate();
     }
 
-    /**
-     * @return Participant[]
-     */
+    /** @return Participant[] */
     private function eventParticipants(): array
     {
         return $this->queryBus->handle(new EducationParticipantListQuery($this->event->getId()));

@@ -6,9 +6,7 @@ namespace Model\Cashbook\Events;
 
 use Model\Cashbook\Cashbook\CashbookId;
 
-/**
- * @todo Use this event for logging
- */
+/** @todo Use this event for logging */
 class ChitWasRemoved
 {
     private CashbookId $cashbookId;

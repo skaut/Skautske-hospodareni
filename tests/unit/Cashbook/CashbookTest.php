@@ -75,7 +75,7 @@ class CashbookTest extends Unit
             $chitBody,
             PaymentMethod::CASH(),
             $items,
-            $categories
+            $categories,
         );
 
         $expectedTotals = [
@@ -127,9 +127,7 @@ class CashbookTest extends Unit
         $this->assertTrue($cashbookId->equals($event->getCashbookId()));
     }
 
-    /**
-     * @dataProvider dataValidChitNumberPrefixes
-     */
+    /** @dataProvider dataValidChitNumberPrefixes */
     public function testUpdateChitNumberPrefix(?string $prefix): void
     {
         $cashbook = $this->createEventCashbook();
@@ -141,9 +139,7 @@ class CashbookTest extends Unit
         $this->assertSame($prefix, $cashbook->getCashChitNumberPrefix());
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     public function dataValidChitNumberPrefixes(): array
     {
         return [

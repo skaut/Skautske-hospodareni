@@ -18,7 +18,7 @@ final class Version20210206085905 extends AbstractMigration
     {
         $this->dropForeignKeys();
         $this->addSql('ALTER TABLE log CHANGE id id INT AUTO_INCREMENT NOT NULL');
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
              ALTER TABLE pa_group 
                  CHANGE id id INT AUTO_INCREMENT NOT NULL,
                  CHANGE smtp_id smtp_id INT DEFAULT NULL
@@ -27,25 +27,25 @@ final class Version20210206085905 extends AbstractMigration
         $this->addSql('ALTER TABLE pa_group_unit CHANGE group_id group_id INT DEFAULT NULL');
         $this->addSql('ALTER TABLE pa_payment_email_recipients CHANGE id id INT AUTO_INCREMENT NOT NULL');
         $this->addSql('ALTER TABLE pa_payment_sent_emails CHANGE id id INT AUTO_INCREMENT NOT NULL');
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             ALTER TABLE tc_commands 
                 CHANGE id id INT AUTO_INCREMENT NOT NULL,
                 CHANGE vehicle_id vehicle_id INT DEFAULT NULL,
                 CHANGE contract_id contract_id INT DEFAULT NULL,
                 CHANGE unit_id unit_id INT NOT NULL
         SQL);
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             ALTER TABLE tc_contracts 
                 CHANGE id id INT AUTO_INCREMENT NOT NULL,
                 CHANGE unit_id unit_id INT NOT NULL
         SQL);
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
              ALTER TABLE tc_travels 
                  CHANGE id id INT NOT NULL,
                  CHANGE command_id command_id INT NOT NULL,
                  CHANGE distance distance DOUBLE PRECISION DEFAULT NULL
         SQL);
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             ALTER TABLE tc_vehicle 
                 CHANGE id id INT AUTO_INCREMENT NOT NULL,
                 CHANGE unit_id unit_id INT NOT NULL,
@@ -59,7 +59,7 @@ final class Version20210206085905 extends AbstractMigration
     {
         $this->dropForeignKeys();
         $this->addSql('ALTER TABLE log CHANGE id id INT UNSIGNED AUTO_INCREMENT NOT NULL');
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             ALTER TABLE pa_group 
                 CHANGE id id INT UNSIGNED AUTO_INCREMENT NOT NULL, 
                 CHANGE smtp_id smtp_id INT UNSIGNED DEFAULT NULL
@@ -68,25 +68,25 @@ final class Version20210206085905 extends AbstractMigration
         $this->addSql('ALTER TABLE pa_group_unit CHANGE group_id group_id INT UNSIGNED DEFAULT NULL');
         $this->addSql('ALTER TABLE pa_payment_email_recipients CHANGE id id INT UNSIGNED AUTO_INCREMENT NOT NULL');
         $this->addSql('ALTER TABLE pa_payment_sent_emails CHANGE id id INT UNSIGNED AUTO_INCREMENT NOT NULL');
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
              ALTER TABLE tc_commands 
                  CHANGE id id INT UNSIGNED AUTO_INCREMENT NOT NULL, 
                  CHANGE vehicle_id vehicle_id INT UNSIGNED DEFAULT NULL, 
                  CHANGE unit_id unit_id INT UNSIGNED NOT NULL, 
                  CHANGE contract_id contract_id INT UNSIGNED DEFAULT NULL
         SQL);
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             ALTER TABLE tc_contracts 
                 CHANGE id id INT UNSIGNED AUTO_INCREMENT NOT NULL,
                 CHANGE unit_id unit_id INT UNSIGNED NOT NULL
         SQL);
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             ALTER TABLE tc_travels 
                 CHANGE id id INT UNSIGNED NOT NULL,
                 CHANGE command_id command_id INT UNSIGNED NOT NULL,
                 CHANGE distance distance DOUBLE PRECISION UNSIGNED DEFAULT NULL
         SQL);
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             ALTER TABLE tc_vehicle 
                 CHANGE id id INT UNSIGNED AUTO_INCREMENT NOT NULL,
                 CHANGE unit_id unit_id INT UNSIGNED NOT NULL,

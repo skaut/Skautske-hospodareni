@@ -20,9 +20,7 @@ final class GetGroupListHandler
         $this->groups = $groups;
     }
 
-    /**
-     * @return Group[]
-     */
+    /** @return Group[] */
     public function __invoke(GetGroupList $query): array
     {
         $groups = $this->groups->findByUnits($query->getUnitIds(), $query->onlyOpen());

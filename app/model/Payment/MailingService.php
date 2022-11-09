@@ -74,7 +74,7 @@ class MailingService
 
         if ($template === null || ! $group->isEmailEnabled($emailType)) {
             throw new EmailTemplateNotSet(
-                "E-mail template '" . $emailType->getValue() . "' not found"
+                "E-mail template '" . $emailType->getValue() . "' not found",
             );
         }
 
@@ -111,7 +111,7 @@ class MailingService
             $group->getDueDate() ?? new DateTimeImmutable('+ 2 weeks'),
             rand(1000, 100000),
             $group->getConstantSymbol(),
-            'obsah poznámky'
+            'obsah poznámky',
         );
 
         $this->send($group, $payment, $group->getEmailTemplate(EmailType::get(EmailType::PAYMENT_INFO)));
@@ -162,7 +162,7 @@ class MailingService
             TemplateFactory::PAYMENT_DETAILS,
             [
                 'body' => nl2br($emailTemplate->getBody(), false),
-            ]
+            ],
         );
 
         $oAuth = $this->googleRepository->find($group->getOauthId());
@@ -187,7 +187,7 @@ class MailingService
             $payment->getDueDate(),
             $payment->getVariableSymbol() !== null ? $payment->getVariableSymbol()->toInt() : null,
             $payment->getConstantSymbol(),
-            $payment->getNote()
+            $payment->getNote(),
         );
     }
 }

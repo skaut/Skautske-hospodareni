@@ -44,7 +44,7 @@ class PaymentTest extends Unit
             $variableSymbol,
             $constantSymbol,
             $personId,
-            $note
+            $note,
         );
 
         $this->assertSame($name, $payment->getName());
@@ -81,7 +81,7 @@ class PaymentTest extends Unit
             null,
             null,
             null,
-            ''
+            '',
         );
     }
 
@@ -98,7 +98,7 @@ class PaymentTest extends Unit
             null,
             null,
             null,
-            ''
+            '',
         );
     }
 
@@ -164,9 +164,7 @@ class PaymentTest extends Unit
         $this->assertTrue($payment->isClosed());
     }
 
-    /**
-     * @dataProvider getVariableSymbolUpdates
-     */
+    /** @dataProvider getVariableSymbolUpdates */
     public function testUpdateVariableSymbol(?VariableSymbol $old, VariableSymbol $new): void
     {
         $payment = $this->createPaymentWithVariableSymbol($old);
@@ -184,9 +182,7 @@ class PaymentTest extends Unit
         $this->assertSame($new, $event->getVariableSymbol());
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     public function getVariableSymbolUpdates(): array
     {
         return [
@@ -260,9 +256,7 @@ class PaymentTest extends Unit
     {
     }
 
-    /**
-     * @return VariableSymbol[][]
-     */
+    /** @return VariableSymbol[][] */
     public function getVariableSymbolChanges(): array
     {
         return [
@@ -301,9 +295,7 @@ class PaymentTest extends Unit
         $this->assertTrue($payment->isClosed());
     }
 
-    /**
-     * @dataProvider dataVariableSymbols
-     */
+    /** @dataProvider dataVariableSymbols */
     public function testChangingVariableSymbolViaUpdateRaisesEvent(?VariableSymbol $variableSymbol): void
     {
         $payment = $this->createPaymentWithVariableSymbol($variableSymbol);
@@ -322,9 +314,7 @@ class PaymentTest extends Unit
         $this->assertSame($newVariableSymbol, $event->getVariableSymbol());
     }
 
-    /**
-     * @dataProvider dataVariableSymbols
-     */
+    /** @dataProvider dataVariableSymbols */
     public function testUpdateWithSameVariableSymbolDoesNotRaiseEvent(?VariableSymbol $variableSymbol): void
     {
         $payment = $this->createPaymentWithVariableSymbol($variableSymbol);
@@ -334,9 +324,7 @@ class PaymentTest extends Unit
         $this->assertSame([], $payment->extractEventsToDispatch());
     }
 
-    /**
-     * @return (VariableSymbol|null)[][]
-     */
+    /** @return (VariableSymbol|null)[][] */
     public function dataVariableSymbols(): array
     {
         return [

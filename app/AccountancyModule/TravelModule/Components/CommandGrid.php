@@ -47,7 +47,7 @@ class CommandGrid extends BaseGridControl
 
         $grid = $this->gridFactory->createSimpleGrid(
             __DIR__ . '/templates/CommandGrid.latte',
-            ['vehicles' => $this->travel->findVehiclesByIds($vehicleIds)]
+            ['vehicles' => $this->travel->findVehiclesByIds($vehicleIds)],
         );
 
         $grid->setPrimaryKey('id');

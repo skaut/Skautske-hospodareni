@@ -17,9 +17,7 @@ final class EditableUnitsQueryHandler
         $this->units = $units;
     }
 
-    /**
-     * @return Unit[]
-     */
+    /** @return Unit[] */
     public function __invoke(EditableUnitsQuery $query): array
     {
         $role = $query->getRole();
@@ -37,9 +35,7 @@ final class EditableUnitsQueryHandler
         ];
     }
 
-    /**
-     * @return Unit[]
-     */
+    /** @return Unit[] */
     private function getUnitTree(int $rootUnitId): array
     {
         $rootUnit = $this->units->find($rootUnitId);

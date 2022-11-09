@@ -17,9 +17,7 @@ class UnitsDetailQueryHandler
         $this->units = $units;
     }
 
-    /**
-     * @return Unit[]
-     */
+    /** @return Unit[] */
     public function __invoke(UnitsDetailQuery $query): array
     {
         $units = [];

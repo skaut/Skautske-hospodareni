@@ -55,7 +55,7 @@ class CategoriesSummaryQueryHandler
                 $category->getName(),
                 MoneyFactory::fromFloat($totalByCategories[$category->getId()] ?? 0),
                 $category->getOperationType(),
-                $category->isVirtual()
+                $category->isVirtual(),
             );
         }
 

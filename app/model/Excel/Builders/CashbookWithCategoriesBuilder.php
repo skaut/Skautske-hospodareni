@@ -84,7 +84,7 @@ class CashbookWithCategoriesBuilder
             $this->sheet->setCellValueByColumnAndRow(
                 $column++,
                 self::SUBHEADER_ROW,
-                $value
+                $value,
             );
         }
     }
@@ -98,7 +98,7 @@ class CashbookWithCategoriesBuilder
 
         $columnsWithSum = array_merge(
             range(self::CATEGORIES_FIRST_COLUMN, $categoriesLastColumn), // Categories sum
-            [5, 6] // Incomes and expenses sum
+            [5, 6], // Incomes and expenses sum
         );
 
         foreach ($columnsWithSum as $column) {
@@ -106,9 +106,7 @@ class CashbookWithCategoriesBuilder
         }
     }
 
-    /**
-     * @param Category[] $categories
-     */
+    /** @param Category[] $categories */
     private function addCategoriesHeader(int $startColumn, string $groupName, array $categories): void
     {
         $lastColumn = $startColumn + count($categories) - 1;
@@ -126,7 +124,7 @@ class CashbookWithCategoriesBuilder
 
             $this->guessColumnWidth(
                 $this->sheet->getColumnDimensionByColumn($column),
-                $category->getName()
+                $category->getName(),
             );
         }
     }
@@ -178,13 +176,11 @@ class CashbookWithCategoriesBuilder
         }
     }
 
-    /**
-     * @return Category[][]
-     */
+    /** @return Category[][] */
     private function getCategories(CashbookId $cashbookId): array
     {
         $categories = new ArrayCollection(
-            $this->queryBus->handle(new CategoryListQuery($cashbookId))
+            $this->queryBus->handle(new CategoryListQuery($cashbookId)),
         );
 
         $categoriesByOperation = $categories->partition(function ($_x, Category $category): bool {

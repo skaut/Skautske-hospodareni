@@ -8,8 +8,6 @@ use Model\Cashbook\EducationCategory;
 
 interface IEducationCategoryRepository
 {
-    /**
-     * @return EducationCategory[]
-     */
+    /** @return EducationCategory[] */
     public function findForEducation(int $educationId): array;
 }

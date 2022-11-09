@@ -8,9 +8,7 @@ use Consistence\Doctrine\Enum\EnumAnnotation;
 use Doctrine\ORM\Mapping as ORM;
 use Model\Cashbook\Operation;
 
-/**
- * @ORM\Embeddable()
- */
+/** @ORM\Embeddable() */
 class Category
 {
     /** @ORM\Column(type="integer", name="category") */

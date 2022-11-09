@@ -7,9 +7,7 @@ namespace Model\Event\ReadModel\Queries;
 use Model\Event\ReadModel\QueryHandlers\CampFunctionsHandler;
 use Model\Event\SkautisCampId;
 
-/**
- * @see CampFunctionsHandler
- */
+/** @see CampFunctionsHandler */
 class CampFunctions
 {
     private SkautisCampId $campId;

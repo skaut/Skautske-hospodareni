@@ -131,8 +131,8 @@ class Cashbook extends Aggregate
                 $chitBody,
                 $paymentMethod,
                 $items,
-                $this->reindexCategories($categories)
-            )
+                $this->reindexCategories($categories),
+            ),
         );
         $this->raise(new ChitWasAdded($this->id));
     }
@@ -155,13 +155,13 @@ class Cashbook extends Aggregate
             $categoryId = $cashbook->type->getTransferToCategoryId();
         } else {
             throw new InvalidCashbookTransfer(
-                sprintf("Can't create inverse chit to chit with category '%s'", $originalCategoryId)
+                sprintf("Can't create inverse chit to chit with category '%s'", $originalCategoryId),
             );
         }
 
         $category = new Cashbook\Category(
             $categoryId,
-            $originalChit->getOperation()->getInverseOperation()
+            $originalChit->getOperation()->getInverseOperation(),
         );
 
         $copy = $originalChit->withCategory($category, $this);
@@ -191,9 +191,7 @@ class Cashbook extends Aggregate
         $this->raise(new ChitWasUpdated($this->id));
     }
 
-    /**
-     * @return float[] Category totals indexed by category IDs
-     */
+    /** @return float[] Category totals indexed by category IDs */
     public function getCategoryTotals(): array
     {
         $totalByCategories = [];
@@ -264,7 +262,7 @@ class Cashbook extends Aggregate
             function (int $chitId) use ($sourceCashbook): Chit {
                 return $sourceCashbook->getChit($chitId);
             },
-            $chitIds
+            $chitIds,
         );
 
         foreach ($chits as $chit) {
@@ -291,7 +289,7 @@ class Cashbook extends Aggregate
             function (Chit $chit): Chit {
                 return clone $chit;
             },
-            $this->sortedChits($paymentMethodOnly)
+            $this->sortedChits($paymentMethodOnly),
         );
     }
 
@@ -300,9 +298,7 @@ class Cashbook extends Aggregate
         $this->chits->clear();
     }
 
-    /**
-     * @throws ChitNotFound
-     */
+    /** @throws ChitNotFound */
     private function getChit(int $id): Chit
     {
         foreach ($this->chits as $chit) {
@@ -391,9 +387,7 @@ class Cashbook extends Aggregate
         $chit->removeScan($path);
     }
 
-    /**
-     * @phpstan-return ArrayCollection<int, Chit>
-     */
+    /** @phpstan-return ArrayCollection<int, Chit> */
     private function getChitsByPaymentMethod(PaymentMethod $paymentMethod): ArrayCollection
     {
         return $this->chits->filter(function (Chit $chit) use ($paymentMethod): bool {
@@ -416,9 +410,7 @@ class Cashbook extends Aggregate
         return $categoriesById;
     }
 
-    /**
-     * @return Chit[]
-     */
+    /** @return Chit[] */
     private function sortedChits(?PaymentMethod $paymentMethodOnly): array
     {
         $chits = $this->chits->toArray();
@@ -428,7 +420,7 @@ class Cashbook extends Aggregate
                 $chits,
                 function (Chit $chit) use ($paymentMethodOnly): bool {
                     return $chit->getPaymentMethod()->equals($paymentMethodOnly);
-                }
+                },
             );
         }
 

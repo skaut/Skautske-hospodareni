@@ -39,7 +39,7 @@ final class MoveChitsToDifferentCashbookHandlerTest extends CommandHandlerTest
                 new Cashbook\ChitBody(null, new Date(), null),
                 Cashbook\PaymentMethod::get(Cashbook\PaymentMethod::CASH),
                 [new Cashbook\ChitItem(new Amount('100'), $category, 'test')],
-                Helpers::mockCashbookCategories($categoryId)
+                Helpers::mockCashbookCategories($categoryId),
             );
         }
 
@@ -51,11 +51,11 @@ final class MoveChitsToDifferentCashbookHandlerTest extends CommandHandlerTest
                 1,
                 'foo.jpg',
                 Image::fromBlank(1, 1)->toString(),
-            )
+            ),
         );
 
         $this->commandBus->handle(
-            new MoveChitsToDifferentCashbook([1, 3], $sourceCashbookId, $targetCashbookId)
+            new MoveChitsToDifferentCashbook([1, 3], $sourceCashbookId, $targetCashbookId),
         );
 
         $this->entityManager->clear();
@@ -68,9 +68,7 @@ final class MoveChitsToDifferentCashbookHandlerTest extends CommandHandlerTest
         $this->assertCount(1, $targetCashbook->getChits()[0]->getScans());
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     protected function getTestedAggregateRoots(): array
     {
         return [Cashbook::class];

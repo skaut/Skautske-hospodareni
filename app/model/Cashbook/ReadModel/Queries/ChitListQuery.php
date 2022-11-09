@@ -8,9 +8,7 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ReadModel\QueryHandlers\ChitListQueryHandler;
 
-/**
- * @see ChitListQueryHandler
- */
+/** @see ChitListQueryHandler */
 final class ChitListQuery
 {
     private CashbookId $cashbookId;

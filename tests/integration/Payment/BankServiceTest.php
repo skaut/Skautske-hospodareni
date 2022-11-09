@@ -58,9 +58,7 @@ class BankServiceTest extends IntegrationTest
         $this->bankAccounts = $this->tester->grabService(IBankAccountRepository::class);
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     protected function getTestedAggregateRoots(): array
     {
         return [
@@ -80,7 +78,7 @@ class BankServiceTest extends IntegrationTest
             new BankAccount\AccountNumber(null, '2000942144', '2010'),
             'test-token',
             new DateTimeImmutable(),
-            m::mock(IUnitResolver::class, ['getOfficialUnitId' => 1])
+            m::mock(IUnitResolver::class, ['getOfficialUnitId' => 1]),
         );
 
         $this->bankAccounts->save($bankAccount);
@@ -116,7 +114,7 @@ class BankServiceTest extends IntegrationTest
             $bankAccount->getName(),
             2,
             $dateSince,
-            $dateUntil
+            $dateUntil,
         ), $pairingResult->getMessage());
     }
 
@@ -131,7 +129,7 @@ class BankServiceTest extends IntegrationTest
             $variableSymbol === null ? null : new VariableSymbol($variableSymbol),
             null,
             null,
-            ''
+            '',
         );
         $this->payments->save($payment);
     }
@@ -169,7 +167,7 @@ class BankServiceTest extends IntegrationTest
             '',
             (int) $variableSymbol,
             0,
-            ''
+            '',
         );
     }
 }

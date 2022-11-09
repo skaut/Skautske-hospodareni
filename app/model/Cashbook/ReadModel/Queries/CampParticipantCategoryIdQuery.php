@@ -8,9 +8,7 @@ use Model\Cashbook\ParticipantType;
 use Model\Cashbook\ReadModel\QueryHandlers\CampParticipantCategoryIdQueryHandler;
 use Model\Event\SkautisCampId;
 
-/**
- * @see CampParticipantCategoryIdQueryHandler
- */
+/** @see CampParticipantCategoryIdQueryHandler */
 final class CampParticipantCategoryIdQuery
 {
     private SkautisCampId $campId;

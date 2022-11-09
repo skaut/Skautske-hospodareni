@@ -6,9 +6,7 @@ namespace Model\Event\ReadModel\Queries;
 
 use Model\Event\ReadModel\QueryHandlers\EventStatesHandler;
 
-/**
- * @see EventStatesHandler
- */
+/** @see EventStatesHandler */
 class EventStates
 {
 }

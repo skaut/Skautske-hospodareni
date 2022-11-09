@@ -6,9 +6,7 @@ namespace Model\Event\ReadModel\Queries;
 
 use Model\Event\SkautisEducationId;
 
-/**
- * @see EducationQueryHandler
- */
+/** @see EducationQueryHandler */
 class EducationQuery
 {
     private SkautisEducationId $educationId;

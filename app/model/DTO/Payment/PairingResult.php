@@ -54,7 +54,7 @@ class PairingResult
                 $this->accountName,
                 $this->count,
                 $this->since->format('j.n.Y'),
-                $this->until->format('j.n.Y')
+                $this->until->format('j.n.Y'),
             );
         }
 
@@ -62,7 +62,7 @@ class PairingResult
             'Žádné platby na účtu "%s" nebyly spárovány za období %s - %s',
             $this->accountName,
             $this->since->format('j.n.Y'),
-            $this->until->format('j.n.Y')
+            $this->until->format('j.n.Y'),
         );
     }
 }

@@ -44,7 +44,7 @@ final class GroupListPresenter extends BasePresenter
     public function actionDefault(bool $onlyOpen = true): void
     {
         $groups = $this->queryBus->handle(
-            new GetGroupList(array_keys($this->unitService->getReadUnits($this->user)), $onlyOpen)
+            new GetGroupList(array_keys($this->unitService->getReadUnits($this->user)), $onlyOpen),
         );
 
         $groupIds         = [];
@@ -60,7 +60,7 @@ final class GroupListPresenter extends BasePresenter
                 function (int $unitId): string {
                     return $this->queryBus->handle(new UnitQuery($unitId))->getDisplayName();
                 },
-                $group->getUnitIds()
+                $group->getUnitIds(),
             );
         }
 

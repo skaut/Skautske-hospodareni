@@ -44,7 +44,7 @@ final class CreateVehicleHandler
             $subunit,
             $command->getRegistration(),
             $command->getConsumption(),
-            $metadata
+            $metadata,
         );
 
         $this->vehicles->save($vehicle);

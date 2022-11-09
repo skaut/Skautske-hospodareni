@@ -6,25 +6,19 @@ namespace Model\Event\ReadModel\Queries\Excel;
 
 use Model\Event\ReadModel\QueryHandlers\Excel\ExportCampsHandler;
 
-/**
- * @see ExportCampsHandler
- */
+/** @see ExportCampsHandler */
 final class ExportCamps
 {
     /** @var int[] */
     private array $campIds;
 
-    /**
-     * @param int[] $eventIds
-     */
+    /** @param int[] $eventIds */
     public function __construct(array $eventIds)
     {
         $this->campIds = $eventIds;
     }
 
-    /**
-     * @return int[]
-     */
+    /** @return int[] */
     public function getCampIds(): array
     {
         return $this->campIds;

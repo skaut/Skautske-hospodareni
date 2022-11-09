@@ -22,7 +22,7 @@ final class Version20190529204201 extends AbstractMigration
     public function down(Schema $schema): void
     {
         $this->addSql(
-            'ALTER TABLE ac_camp_participants CHANGE event_id actionId INT UNSIGNED NOT NULL, DROP event_type'
+            'ALTER TABLE ac_camp_participants CHANGE event_id actionId INT UNSIGNED NOT NULL, DROP event_type',
         );
     }
 }

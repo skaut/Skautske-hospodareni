@@ -25,9 +25,7 @@ final class RemoveGroupTest extends IntegrationTest
 
     private RemoveGroupHandler $handler;
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     protected function getTestedAggregateRoots(): array
     {
         return [
@@ -69,7 +67,7 @@ final class RemoveGroupTest extends IntegrationTest
 
         for ($i = 1; $i <= 3; $i++) {
             $this->payments->save(
-                new Payment($group, 'test' . $i, [], 120, Helpers::getValidDueDate(), null, null, null, '')
+                new Payment($group, 'test' . $i, [], 120, Helpers::getValidDueDate(), null, null, null, ''),
             );
         }
 

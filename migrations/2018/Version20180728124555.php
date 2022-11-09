@@ -24,7 +24,7 @@ class Version20180728124555 extends AbstractMigration
         $this->addSql(
             'DELETE FROM ac_chitsCategory_object WHERE objectTypeId = \'camp\' AND categoryId NOT IN (?)',
             [self::VALID_CATEGORIES_FOR_CAMP],
-            [Connection::PARAM_INT_ARRAY]
+            [Connection::PARAM_INT_ARRAY],
         );
     }
 

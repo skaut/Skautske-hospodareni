@@ -12,15 +12,13 @@ use function sprintf;
 
 final class NoAccessToOAuth extends Exception
 {
-    /**
-     * @param int[] $unitIds
-     */
+    /** @param int[] $unitIds */
     public static function forUnits(array $unitIds, OAuthId $mailCredentialsId): self
     {
         return new self(sprintf(
             'Some of units %s have no access to mail credentials #%d',
             implode(', ', $unitIds),
-            $mailCredentialsId->toString()
+            $mailCredentialsId->toString(),
         ));
     }
 }

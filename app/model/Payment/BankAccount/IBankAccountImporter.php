@@ -6,8 +6,6 @@ namespace Model\Payment\BankAccount;
 
 interface IBankAccountImporter
 {
-    /**
-     * @return AccountNumber[]
-     */
+    /** @return AccountNumber[] */
     public function import(int $unitId): array;
 }

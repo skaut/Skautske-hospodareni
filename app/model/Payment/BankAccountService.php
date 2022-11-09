@@ -55,9 +55,7 @@ class BankAccountService
         $this->fioCache     = $fioCache;
     }
 
-    /**
-     * @throws BankAccountNotFound
-     */
+    /** @throws BankAccountNotFound */
     public function updateBankAccount(int $id, string $name, AccountNumber $number, ?string $token): void
     {
         $account = $this->bankAccounts->find($id);
@@ -68,9 +66,7 @@ class BankAccountService
         $this->cleanFioCache($id);
     }
 
-    /**
-     * @throws BankAccountNotFound
-     */
+    /** @throws BankAccountNotFound */
     public function removeBankAccount(int $id): void
     {
         $account = $this->bankAccounts->find($id);
@@ -86,9 +82,7 @@ class BankAccountService
         $this->cleanFioCache($id);
     }
 
-    /**
-     * @throws BankAccountNotFound
-     */
+    /** @throws BankAccountNotFound */
     public function allowForSubunits(int $id): void
     {
         $account = $this->bankAccounts->find($id);
@@ -98,9 +92,7 @@ class BankAccountService
         $this->bankAccounts->save($account);
     }
 
-    /**
-     * @throws BankAccountNotFound
-     */
+    /** @throws BankAccountNotFound */
     public function disallowForSubunits(int $id): void
     {
         $account = $this->bankAccounts->find($id);
@@ -144,13 +136,11 @@ class BankAccountService
             function (BankAccount $a) {
                 return BankAccountFactory::create($a);
             },
-            $accounts
+            $accounts,
         );
     }
 
-    /**
-     * @return BankAccountDTO[]
-     */
+    /** @return BankAccountDTO[] */
     public function findByUnit(UnitId $unitId): array
     {
         $accounts = $this->bankAccounts->findByUnit($this->unitResolver->getOfficialUnitId($unitId->toInt()));
@@ -158,14 +148,14 @@ class BankAccountService
             $accounts,
             function (BankAccount $a) use ($unitId) {
                 return $a->getUnitId() === $unitId->toInt() || $a->isAllowedForSubunits();
-            }
+            },
         );
 
         return array_map(
             function (BankAccount $a) {
                 return BankAccountFactory::create($a);
             },
-            $accounts
+            $accounts,
         );
     }
 
@@ -185,9 +175,7 @@ class BankAccountService
         return $this->fio->getTransactions($today->subDays($daysBack), $today, $account);
     }
 
-    /**
-     * @throws BankAccountNotFound When no bank accounts were imported.
-     */
+    /** @throws BankAccountNotFound When no bank accounts were imported. */
     public function importFromSkautis(int $unitId): void
     {
         $now     = new DateTimeImmutable();
@@ -200,14 +188,12 @@ class BankAccountService
         $i = 1;
         foreach ($numbers as $number) {
             $this->bankAccounts->save(
-                new BankAccount($unitId, 'Importovaný účet (' . $i++ . ')', $number, null, $now, $this->unitResolver)
+                new BankAccount($unitId, 'Importovaný účet (' . $i++ . ')', $number, null, $now, $this->unitResolver),
             );
         }
     }
 
-    /**
-     * @return AccountNumber[]
-     */
+    /** @return AccountNumber[] */
     private function getImportableBankAccounts(int $unitId): array
     {
         $unitId   = $this->unitResolver->getOfficialUnitId($unitId);
@@ -216,7 +202,7 @@ class BankAccountService
             function (BankAccount $a) {
                 return (string) $a->getNumber();
             },
-            $accounts
+            $accounts,
         );
 
         $imported = $this->importer->import($unitId);
@@ -225,7 +211,7 @@ class BankAccountService
             $imported,
             function (AccountNumber $n) use ($numbers) {
                 return ! in_array((string) $n, $numbers, true);
-            }
+            },
         );
     }
 

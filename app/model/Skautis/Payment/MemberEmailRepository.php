@@ -23,9 +23,7 @@ final class MemberEmailRepository implements IMemberEmailRepository
         $this->skautis = $skautis;
     }
 
-    /**
-     * @return array<string, string>
-     */
+    /** @return array<string, string> */
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     public function findByMember(int $memberId): array
     {

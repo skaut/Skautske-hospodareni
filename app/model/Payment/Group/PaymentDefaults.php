@@ -9,9 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Model\Payment\DueDateIsNotWorkday;
 use Model\Payment\VariableSymbol;
 
-/**
- * @ORM\Embeddable()
- */
+/** @ORM\Embeddable() */
 final class PaymentDefaults
 {
     /** @ORM\Column(type="float", nullable=true) */
@@ -26,9 +24,7 @@ final class PaymentDefaults
     /** @ORM\Column(type="variable_symbol", nullable=true) */
     private ?VariableSymbol $nextVariableSymbol = null;
 
-    /**
-     * @throws DueDateIsNotWorkday
-     */
+    /** @throws DueDateIsNotWorkday */
     public function __construct(
         ?float $amount,
         ?Date $dueDate,

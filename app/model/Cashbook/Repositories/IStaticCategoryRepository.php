@@ -13,13 +13,9 @@ use Model\Cashbook\ObjectType;
  */
 interface IStaticCategoryRepository
 {
-    /**
-     * @return Category[]
-     */
+    /** @return Category[] */
     public function findByObjectType(ObjectType $type): array;
 
-    /**
-     * @throws CategoryNotFound
-     */
+    /** @throws CategoryNotFound */
     public function find(int $id): Category;
 }

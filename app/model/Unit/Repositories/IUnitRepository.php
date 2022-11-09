@@ -9,13 +9,9 @@ use Model\Unit\UnitNotFound;
 
 interface IUnitRepository
 {
-    /**
-     * @return Unit[]
-     */
+    /** @return Unit[] */
     public function findByParent(int $parentId): array;
 
-    /**
-     * @throws UnitNotFound
-     */
+    /** @throws UnitNotFound */
     public function find(int $id): Unit;
 }

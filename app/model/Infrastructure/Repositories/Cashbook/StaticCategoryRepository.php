@@ -12,9 +12,7 @@ use Model\Infrastructure\Repositories\AggregateRepository;
 
 final class StaticCategoryRepository extends AggregateRepository implements IStaticCategoryRepository
 {
-    /**
-     * @return Category[]
-     */
+    /** @return Category[] */
     public function findByObjectType(ObjectType $type): array
     {
         return $this->getEntityManager()->createQueryBuilder()
@@ -29,9 +27,7 @@ final class StaticCategoryRepository extends AggregateRepository implements ISta
             ->getResult();
     }
 
-    /**
-     * @throws CategoryNotFound
-     */
+    /** @throws CategoryNotFound */
     public function find(int $id): Category
     {
         $category = $this->getEntityManager()->find(Category::class, $id);

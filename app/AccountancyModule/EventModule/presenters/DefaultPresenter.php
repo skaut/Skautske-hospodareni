@@ -57,7 +57,7 @@ class DefaultPresenter extends BasePresenter
             $this->flashMessage('Akci se nepodařilo zrušit', 'danger');
             $this->logger->error(
                 sprintf('Event #%d couldn\'t be canceled. Reason: %s', $aid, $e->getMessage()),
-                ['exception' => get_class($e)]
+                ['exception' => get_class($e)],
             );
         }
 
@@ -73,7 +73,7 @@ class DefaultPresenter extends BasePresenter
     {
         $grid = $this->gridFactory->createSimpleGrid(
             __DIR__ . '/../templates/Default/@eventsGrid.latte',
-            ['accessCreate' => $this->authorizator->isAllowed(EventResource::CREATE, null)]
+            ['accessCreate' => $this->authorizator->isAllowed(EventResource::CREATE, null)],
         );
 
         $grid->addColumnLink('name', 'Název', 'Event:', null, ['aid' => 'id'])

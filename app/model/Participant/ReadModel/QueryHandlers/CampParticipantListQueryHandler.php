@@ -17,9 +17,7 @@ final class CampParticipantListQueryHandler
         $this->participants = $participants;
     }
 
-    /**
-     * @return Participant[]
-     */
+    /** @return Participant[] */
     public function __invoke(CampParticipantListQuery $query): array
     {
         return $this->participants->findByCamp($query->getCampId());

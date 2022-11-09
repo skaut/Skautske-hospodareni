@@ -29,7 +29,7 @@ final class UnitCashbookWasCreatedSubscriber
         $cashbookType = CashbookType::get(
             $this->unitResolver->getOfficialUnitId($unitId) === $unitId
                 ? CashbookType::OFFICIAL_UNIT
-                : CashbookType::TROOP
+                : CashbookType::TROOP,
         );
 
         $this->commandBus->handle(new CreateCashbook($event->getCashbookId(), $cashbookType));

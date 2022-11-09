@@ -7,9 +7,7 @@ namespace Model\Cashbook\ReadModel\Queries;
 use Model\Cashbook\ReadModel\QueryHandlers\CampParticipantListQueryHandler;
 use Model\Event\SkautisCampId;
 
-/**
- * @see CampParticipantListQueryHandler
- */
+/** @see CampParticipantListQueryHandler */
 final class CampParticipantListQuery
 {
     private SkautisCampId $campId;

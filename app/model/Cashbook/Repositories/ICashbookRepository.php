@@ -10,9 +10,7 @@ use Model\Cashbook\CashbookNotFound;
 
 interface ICashbookRepository
 {
-    /**
-     * @throws CashbookNotFound
-     */
+    /** @throws CashbookNotFound */
     public function find(CashbookId $id): Cashbook;
 
     public function save(Cashbook $cashbook): void;

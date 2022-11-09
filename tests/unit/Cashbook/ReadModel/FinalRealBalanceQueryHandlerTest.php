@@ -43,9 +43,7 @@ final class FinalRealBalanceQueryHandlerTest extends Unit
         ]);
     }
 
-    /**
-     * @param CategorySummary[] $summaries
-     */
+    /** @param CategorySummary[] $summaries */
     private function assertBalance(Money $expectedBalance, array $summaries): void
     {
         $cashbookId = Cashbook\CashbookId::fromString(self::CASHBOOK_ID);

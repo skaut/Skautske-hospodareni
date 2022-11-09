@@ -29,9 +29,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
 
     private CommandBus $commandBus;
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     protected function getTestedAggregateRoots(): array
     {
         return [
@@ -50,9 +48,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
         $this->commandBus     = $this->tester->grabService(CommandBus::class);
     }
 
-    /**
-     * @see bug https://github.com/skaut/Skautske-hospodareni/pull/511
-     */
+    /** @see bug https://github.com/skaut/Skautske-hospodareni/pull/511 */
     public function testWhenPaymentHasNoEmailNothingHappens(): void
     {
         $this->users->setUser(new User(10, 'František Maša', self::EMAIL));
@@ -71,9 +67,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
         $this->assertPaymentWasCompleted();
     }
 
-    /**
-     * @see bug https://github.com/skaut/Skautske-hospodareni/pull/511
-     */
+    /** @see bug https://github.com/skaut/Skautske-hospodareni/pull/511 */
     public function testWhenGroupHasNoOAuthSetNothingHappens(): void
     {
         $this->users->setUser(new User(10, 'František Maša', self::EMAIL));
@@ -97,7 +91,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
                 EmailType::PAYMENT_COMPLETED => $email,
             ],
             self::EMAIL,
-            $oAuthId
+            $oAuthId,
         );
 
         $this->users->setUser(new User(1, 'František Maša', self::EMAIL));
@@ -105,9 +99,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
         $this->paymentService->completePayment(1);
     }
 
-    /**
-     * @param EmailTemplate[]|null $emails
-     */
+    /** @param EmailTemplate[]|null $emails */
     private function initEntities(?array $emails = null, ?string $paymentEmail = self::EMAIL, ?OAuthId $oAuthId = null): void
     {
         if ($oAuthId === null) {
@@ -121,7 +113,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
 
         $this->paymentService->createGroup(11, null, 'Test', $paymentDefaults, $emails, $oAuthId, null);
         $this->commandBus->handle(
-            new CreatePayment(1, 'Platba', $paymentEmail !== null ? [new EmailAddress($paymentEmail)] : [], 100, Helpers::getValidDueDate(), null, null, null, '')
+            new CreatePayment(1, 'Platba', $paymentEmail !== null ? [new EmailAddress($paymentEmail)] : [], 100, Helpers::getValidDueDate(), null, null, null, ''),
         );
     }
 

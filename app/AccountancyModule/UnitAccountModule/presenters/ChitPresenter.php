@@ -109,7 +109,7 @@ class ChitPresenter extends BasePresenter
                 }
 
                 return $this->chitListFactory->create($cashbookIdVo, (bool) $this->onlyUnlocked);
-            }
+            },
         );
     }
 
@@ -124,9 +124,7 @@ class ChitPresenter extends BasePresenter
         return false;
     }
 
-    /**
-     * @return array<string, array<string, int|string>>
-     */
+    /** @return array<string, array<string, int|string>> */
     private function getUnitCashbooks(): array
     {
         $cashbooks = [];
@@ -145,9 +143,7 @@ class ChitPresenter extends BasePresenter
         return $cashbooks;
     }
 
-    /**
-     * @return array<string, array<string, int|string>>
-     */
+    /** @return array<string, array<string, int|string>> */
     private function getEventCashbooks(): array
     {
         $readableUnits = $this->unitService->getReadUnits($this->user);
@@ -174,9 +170,7 @@ class ChitPresenter extends BasePresenter
         return $cashbooks;
     }
 
-    /**
-     * @return array<string, array<string, int|string>>
-     */
+    /** @return array<string, array<string, int|string>> */
     private function getCampCashbooks(): array
     {
         $readableUnits = $this->unitService->getReadUnits($this->user);

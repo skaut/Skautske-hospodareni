@@ -17,9 +17,7 @@ final class EducationParticipantListQueryHandler
         $this->participants = $participants;
     }
 
-    /**
-     * @return Participant[]
-     */
+    /** @return Participant[] */
     public function __invoke(EducationParticipantListQuery $query): array
     {
         return $this->participants->findByEducation($query->getEducationId());

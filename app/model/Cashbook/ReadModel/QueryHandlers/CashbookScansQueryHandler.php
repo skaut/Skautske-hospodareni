@@ -26,9 +26,7 @@ final class CashbookScansQueryHandler
         $this->storage  = $storage;
     }
 
-    /**
-     * @return File[]
-     */
+    /** @return File[] */
     public function __invoke(CashbookScansQuery $query): array
     {
         $chits = $this->queryBus->handle(ChitListQuery::withMethod($query->getPaymentMethod(), $query->getCashbookId()));
@@ -40,7 +38,7 @@ final class CashbookScansQueryHandler
                 $filename       = sprintf(
                     '%s_%s',
                     $chit->getName(),
-                    $scan->getFilePath()->getOriginalFilename()
+                    $scan->getFilePath()->getOriginalFilename(),
                 );
                 $arr[$filename] = $this->storage->get($scan->getFilePath());
             }

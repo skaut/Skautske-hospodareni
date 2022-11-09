@@ -31,8 +31,8 @@ final class CreateBankAccountHandler
                 $command->getNumber(),
                 $command->getToken(),
                 new DateTimeImmutable(),
-                $this->unitResolver
-            )
+                $this->unitResolver,
+            ),
         );
     }
 }

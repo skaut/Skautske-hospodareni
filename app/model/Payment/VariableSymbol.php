@@ -24,7 +24,7 @@ final class VariableSymbol
     public function increment(): self
     {
         return new VariableSymbol(
-            (string) ($this->toInt() + 1)
+            (string) ($this->toInt() + 1),
         );
     }
 

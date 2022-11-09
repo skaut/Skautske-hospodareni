@@ -33,9 +33,7 @@ class AddParticipantsPresenter extends BasePresenter
         $this->formFactory = $formFactory;
     }
 
-    /**
-     * @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY
-     */
+    /** @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY */
     public function actionDefault(int $id, ?int $unitId = null): void
     {
         $this->id = $id;
@@ -53,8 +51,8 @@ class AddParticipantsPresenter extends BasePresenter
 
         $participants = $this->queryBus->handle(
             new EducationParticipantListQuery(
-                new SkautisEducationId($group->getSkautisId())
-            )
+                new SkautisEducationId($group->getSkautisId()),
+            ),
         );
 
         $form = $this['massAddForm'];
@@ -73,7 +71,7 @@ class AddParticipantsPresenter extends BasePresenter
                 $p->getPersonId(),
                 $this->queryBus->handle(new MemberEmailsQuery($p->getPersonId())),
                 $p->getDisplayName(),
-                $amount === 0.0 ? null : $amount
+                $amount === 0.0 ? null : $amount,
             );
         }
 

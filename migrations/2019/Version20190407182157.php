@@ -21,13 +21,13 @@ final class Version20190407182157 extends AbstractMigration
             'CREATE TABLE `ac_object_type` ('
             . '`id` varchar(20) COLLATE utf8_czech_ci NOT NULL,'
             . ' PRIMARY KEY (`id`) '
-            . ') ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;'
+            . ') ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;',
         );
 
         $this->addSql("INSERT INTO `ac_object_type` (`id`) VALUES ('camp'), ('general'), ('unit')");
         $this->addSql(
             'ALTER TABLE hskauting.ac_object ADD CONSTRAINT `ac_object_ibfk_2` '
-            . 'FOREIGN KEY (`type`) REFERENCES `ac_object_type` (`id`) ON UPDATE CASCADE'
+            . 'FOREIGN KEY (`type`) REFERENCES `ac_object_type` (`id`) ON UPDATE CASCADE',
         );
     }
 }

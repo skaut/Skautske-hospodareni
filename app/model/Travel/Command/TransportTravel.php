@@ -12,9 +12,7 @@ use Money\Money;
 
 use function sprintf;
 
-/**
- * @ORM\Entity()
- */
+/** @ORM\Entity() */
 class TransportTravel extends Travel
 {
     /** @ORM\Column(type="money") */
@@ -41,7 +39,7 @@ class TransportTravel extends Travel
     {
         if (! $price->isPositive()) {
             throw new InvalidArgumentException(
-                sprintf('Price must be positive number, %01.2f given', MoneyFactory::toFloat($price))
+                sprintf('Price must be positive number, %01.2f given', MoneyFactory::toFloat($price)),
             );
         }
 

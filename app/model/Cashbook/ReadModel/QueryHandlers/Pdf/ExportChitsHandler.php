@@ -107,7 +107,7 @@ class ExportChitsHandler
             $template['list'] = $this->queryBus->handle(
                 $skautisId instanceof SkautisCampId
                     ? new CampParticipantListQuery($skautisId)
-                    : new EventParticipantListQuery($skautisId)
+                    : new EventParticipantListQuery($skautisId),
             );
         }
 

@@ -11,9 +11,7 @@ use Model\Event\SkautisCampId;
 use Model\Event\SkautisEducationId;
 use Model\Event\SkautisEventId;
 
-/**
- * @ORM\Embeddable()
- */
+/** @ORM\Embeddable() */
 final class SkautisEntity
 {
     /** @ORM\Column(type="integer", nullable=true, name="sisId", options={"comment": "ID entity ve skautisu"}) */

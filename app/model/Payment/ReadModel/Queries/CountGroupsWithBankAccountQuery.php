@@ -6,9 +6,7 @@ namespace Model\Payment\ReadModel\Queries;
 
 use Model\Payment\BankAccount\BankAccountId;
 
-/**
- * @see CountGroupsWithBankAccountQueryHandler
- */
+/** @see CountGroupsWithBankAccountQueryHandler */
 final class CountGroupsWithBankAccountQuery
 {
     private BankAccountId $bankAccountId;

@@ -22,9 +22,7 @@ final class UserContextProvider
         $this->user = $user;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     public function getUserData(): ?array
     {
@@ -47,7 +45,7 @@ final class UserContextProvider
                 function (stdClass $r) {
                     return sprintf('DisplayName: %s, Unit: %s, IsActive: %s', $r->DisplayName, $r->Unit, $r->IsActive);
                 },
-                $identity->getRoles()
+                $identity->getRoles(),
             ),
         ];
     }

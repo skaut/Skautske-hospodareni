@@ -28,9 +28,7 @@ final class CampsWithoutGroupQueryHandler
         $this->groups   = $groups;
     }
 
-    /**
-     * @return Camp[]
-     */
+    /** @return Camp[] */
     public function __invoke(CampsWithoutGroupQuery $query): array
     {
         $camps = $this->queryBus->handle(new CampListQuery($query->getYear()));
@@ -64,14 +62,14 @@ final class CampsWithoutGroupQueryHandler
             function (Camp $camp): SkautisEntity {
                 return SkautisEntity::fromCampId($camp->getId());
             },
-            $camps
+            $camps,
         );
 
         return array_map(
             function (Group $group): int {
                 return $group->getObject()->getId();
             },
-            $this->groups->findBySkautisEntities(...$skautisEntities)
+            $this->groups->findBySkautisEntities(...$skautisEntities),
         );
     }
 }

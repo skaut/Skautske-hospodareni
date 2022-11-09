@@ -11,14 +11,10 @@ use Model\Common\UnitId;
 
 interface IUnitRepository
 {
-    /**
-     * @throws UnitNotFound
-     */
+    /** @throws UnitNotFound */
     public function find(UnitId $id): Unit;
 
-    /**
-     * @throws UnitNotFound
-     */
+    /** @throws UnitNotFound */
     public function findByCashbookId(CashbookId $cashbookId): Unit;
 
     public function save(Unit $unit): void;

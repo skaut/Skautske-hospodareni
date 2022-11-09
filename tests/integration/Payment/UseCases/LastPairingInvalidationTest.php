@@ -25,9 +25,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
 
     private IGroupRepository $groupRepository;
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function getTestedAggregateRoots(): array
     {
         return [
@@ -56,7 +54,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
         $this->pairPayments();
 
         $this->commandBus->handle(
-            new CreatePayment(1, 'a', [], 2, Helpers::getValidDueDate(), null, new VariableSymbol('1'), null, '')
+            new CreatePayment(1, 'a', [], 2, Helpers::getValidDueDate(), null, new VariableSymbol('1'), null, ''),
         );
 
         $this->assertGroupHasEmptyLastPairing();
@@ -79,8 +77,8 @@ final class LastPairingInvalidationTest extends IntegrationTest
                 Helpers::getValidDueDate(),
                 $originalVariableSymbol,
                 null,
-                ''
-            )
+                '',
+            ),
         );
 
         $this->assertGroupHasEmptyLastPairing();
@@ -103,8 +101,8 @@ final class LastPairingInvalidationTest extends IntegrationTest
                 Helpers::getValidDueDate(),
                 $originalVariableSymbol->increment(),
                 null,
-                ''
-            )
+                '',
+            ),
         );
 
         $this->assertGroupHasEmptyLastPairing();
@@ -125,8 +123,8 @@ final class LastPairingInvalidationTest extends IntegrationTest
                 Helpers::getValidDueDate(),
                 null,
                 null,
-                ''
-            )
+                '',
+            ),
         );
 
         $this->assertGroupHasLastPairing();
@@ -149,8 +147,8 @@ final class LastPairingInvalidationTest extends IntegrationTest
                 Helpers::getValidDueDate(),
                 $originalVariableSymbol,
                 null,
-                ''
-            )
+                '',
+            ),
         );
 
         $this->assertGroupHasLastPairing();
@@ -168,8 +166,8 @@ final class LastPairingInvalidationTest extends IntegrationTest
                 self::UNIT_ID,
                 'foo',
                 Helpers::createAccountNumber(),
-                '1234'
-            )
+                '1234',
+            ),
         );
     }
 
@@ -187,7 +185,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
                 $this->entityManager->find(BankAccount::class, 1),
                 $this->tester->grabService(BankAccountAccessChecker::class),
                 $this->tester->grabService(IOAuthAccessChecker::class),
-            )
+            ),
         );
 
         // This is payment we will edit in tests
@@ -201,8 +199,8 @@ final class LastPairingInvalidationTest extends IntegrationTest
                 null,
                 $variableSymbol,
                 null,
-                ''
-            )
+                '',
+            ),
         );
 
         // we need at least one payment with VS for initial pairing
@@ -216,8 +214,8 @@ final class LastPairingInvalidationTest extends IntegrationTest
                 null,
                 new VariableSymbol('1'),
                 null,
-                ''
-            )
+                '',
+            ),
         );
     }
 

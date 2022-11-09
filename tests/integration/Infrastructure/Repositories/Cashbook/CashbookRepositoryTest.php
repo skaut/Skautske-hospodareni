@@ -28,13 +28,11 @@ class CashbookRepositoryTest extends IntegrationTest
         parent::_before();
         $this->repository = new CashbookRepository(
             $this->tester->grabService(EntityManager::class),
-            $this->tester->grabService(EventBus::class)
+            $this->tester->grabService(EventBus::class),
         );
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function getTestedAggregateRoots(): array
     {
         return [Cashbook::class];
@@ -85,11 +83,11 @@ class CashbookRepositoryTest extends IntegrationTest
             new ChitBody(
                 new Cashbook\ChitNumber($chit['num']),
                 new Date($chit['date']),
-                new Cashbook\Recipient($chit['recipient'])
+                new Cashbook\Recipient($chit['recipient']),
             ),
             Cashbook\PaymentMethod::get($chit['payment_method']),
             [new Cashbook\ChitItem(new Cashbook\Amount($chitItem['priceText']), $category, $chitItem['purpose'])],
-            Helpers::mockCashbookCategories($chitItem['category'])
+            Helpers::mockCashbookCategories($chitItem['category']),
         );
 
         $this->repository->save($cashbook);
@@ -104,9 +102,7 @@ class CashbookRepositoryTest extends IntegrationTest
         $this->tester->seeInDatabase(self::CHIT_ITEM_TABLE, $chitItem);
     }
 
-    /**
-     * @see https://github.com/skaut/Skautske-hospodareni/issues/914
-     */
+    /** @see https://github.com/skaut/Skautske-hospodareni/issues/914 */
     public function testOrphanedChitItemsAreRemoved(): void
     {
         $cashbook      = new Cashbook(CashbookId::generate(), Cashbook\CashbookType::get(Cashbook\CashbookType::CAMP));
@@ -119,7 +115,7 @@ class CashbookRepositoryTest extends IntegrationTest
             $body,
             $paymentMethod,
             [new Cashbook\ChitItem(Cashbook\Amount::fromFloat(100), $category, 'foo')],
-            $categoryList
+            $categoryList,
         );
 
         $this->repository->save($cashbook);
@@ -129,7 +125,7 @@ class CashbookRepositoryTest extends IntegrationTest
             $body,
             $paymentMethod,
             [new Cashbook\ChitItem(Cashbook\Amount::fromFloat(10), $category, 'foo')],
-            $categoryList
+            $categoryList,
         );
 
         $this->repository->save($cashbook);

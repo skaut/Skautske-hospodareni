@@ -13,17 +13,13 @@ class FioClientStub implements IFioClient
     /** @var Transaction[] */
     private array $transactions = [];
 
-    /**
-     * @param Transaction[] $transactions
-     */
+    /** @param Transaction[] $transactions */
     public function setTransactions(array $transactions): void
     {
         $this->transactions = $transactions;
     }
 
-    /**
-     * @return Transaction[]
-     */
+    /** @return Transaction[] */
     public function getTransactions(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account): array
     {
         return $this->transactions;

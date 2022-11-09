@@ -21,7 +21,7 @@ final class Version20210206080027 extends AbstractMigration
         $this->addSql('ALTER TABLE ac_chits CHANGE id id INT AUTO_INCREMENT NOT NULL');
         $this->addSql('ALTER TABLE ac_chit_scan CHANGE chit_id chit_id INT DEFAULT NULL');
         $this->addSql('ALTER TABLE ac_chit_to_item CHANGE chit_id chit_id INT NOT NULL, CHANGE item_id item_id INT NOT NULL');
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             ALTER TABLE ac_chits_item
                 CHANGE id id INT AUTO_INCREMENT NOT NULL,
                 CHANGE price price DOUBLE PRECISION NOT NULL,
@@ -31,7 +31,7 @@ final class Version20210206080027 extends AbstractMigration
         $this->addSql('ALTER TABLE ac_chitsCategory CHANGE id id INT AUTO_INCREMENT NOT NULL');
         $this->addSql('ALTER TABLE ac_chitsCategory_object CHANGE category_id category_id INT NOT NULL');
 
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             ALTER TABLE ac_unit_budget_category 
                 CHANGE id id INT AUTO_INCREMENT NOT NULL,
                 CHANGE parentId parentId INT DEFAULT NULL,
@@ -48,7 +48,7 @@ final class Version20210206080027 extends AbstractMigration
         $this->addSql('ALTER TABLE ac_chits CHANGE id id INT UNSIGNED AUTO_INCREMENT NOT NULL');
         $this->addSql('ALTER TABLE ac_chit_scan CHANGE chit_id chit_id INT UNSIGNED DEFAULT NULL');
         $this->addSql('ALTER TABLE ac_chit_to_item CHANGE chit_id chit_id INT UNSIGNED NOT NULL, CHANGE item_id item_id INT UNSIGNED NOT NULL');
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             ALTER TABLE ac_chits_item
                 CHANGE id id INT UNSIGNED AUTO_INCREMENT NOT NULL,
                 CHANGE price price DOUBLE PRECISION UNSIGNED NOT NULL,
@@ -58,7 +58,7 @@ final class Version20210206080027 extends AbstractMigration
         $this->addSql('ALTER TABLE ac_chitsCategory CHANGE id id INT UNSIGNED AUTO_INCREMENT NOT NULL');
         $this->addSql('ALTER TABLE ac_chitsCategory_object CHANGE category_id category_id INT UNSIGNED NOT NULL');
 
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             ALTER TABLE ac_unit_budget_category 
                 CHANGE id id INT UNSIGNED AUTO_INCREMENT NOT NULL,
                 CHANGE parentId parentId INT UNSIGNED DEFAULT NULL,

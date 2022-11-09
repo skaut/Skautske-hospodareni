@@ -23,9 +23,7 @@ final class ExportDialog extends Dialog
 
     private QueryBus $queryBus;
 
-    /**
-     * @param EventListItem[] $events
-     */
+    /** @param EventListItem[] $events */
     public function __construct(array $events, QueryBus $queryBus)
     {
         $this->events   = $events;
@@ -71,8 +69,8 @@ final class ExportDialog extends Dialog
         $this->presenter->sendResponse(
             new ExcelResponse(
                 sprintf('Souhrn-akci-%s', Date::today()->format('Y_n_j')),
-                $this->queryBus->handle(new ExportEvents($values->eventIds))
-            )
+                $this->queryBus->handle(new ExportEvents($values->eventIds)),
+            ),
         );
     }
 }

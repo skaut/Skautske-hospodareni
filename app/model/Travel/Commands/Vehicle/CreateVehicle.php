@@ -6,9 +6,7 @@ namespace Model\Travel\Commands\Vehicle;
 
 use Model\Travel\Handlers\Vehicle\CreateVehicleHandler;
 
-/**
- * @see CreateVehicleHandler
- */
+/** @see CreateVehicleHandler */
 final class CreateVehicle
 {
     private string $type;

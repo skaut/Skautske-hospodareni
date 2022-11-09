@@ -77,9 +77,7 @@ class Command
 
     private string $unit;
 
-    /**
-     * @param TransportType[] $transportTypes
-     */
+    /** @param TransportType[] $transportTypes */
     public function __construct(
         int $id,
         int $unitId,
@@ -207,17 +205,13 @@ class Command
         return $this->ownerId;
     }
 
-    /**
-     * @return TransportType[]
-     */
+    /** @return TransportType[] */
     public function getTransportTypes(): array
     {
         return $this->transportTypes;
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function getTransportTypePairs(): array
     {
         $types = [];

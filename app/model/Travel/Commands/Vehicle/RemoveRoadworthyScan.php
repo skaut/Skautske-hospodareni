@@ -7,9 +7,7 @@ namespace Model\Travel\Commands\Vehicle;
 use Model\Common\FilePath;
 use Model\Travel\Handlers\Vehicle\RemoveRoadworthyScanHandler;
 
-/**
- * @see RemoveRoadworthyScanHandler
- */
+/** @see RemoveRoadworthyScanHandler */
 final class RemoveRoadworthyScan
 {
     private int $vehicleId;

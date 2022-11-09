@@ -11,9 +11,7 @@ final class ChangeGroupUnits
     /** @var int[] */
     private array $unitIds;
 
-    /**
-     * @param int[] $unitIds
-     */
+    /** @param int[] $unitIds */
     public function __construct(int $groupId, array $unitIds)
     {
         $this->groupId = $groupId;
@@ -25,9 +23,7 @@ final class ChangeGroupUnits
         return $this->groupId;
     }
 
-    /**
-     * @return int[]
-     */
+    /** @return int[] */
     public function getUnitIds(): array
     {
         return $this->unitIds;

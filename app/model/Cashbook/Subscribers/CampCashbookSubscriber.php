@@ -32,9 +32,7 @@ final class CampCashbookSubscriber implements MessageSubscriberInterface
         $this->queryBus   = $queryBus;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public static function getHandledMessages(): array
     {
         return [

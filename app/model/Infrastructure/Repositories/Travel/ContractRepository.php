@@ -29,9 +29,7 @@ final class ContractRepository implements IContractRepository
         return $contract;
     }
 
-    /**
-     * @return Contract[]
-     */
+    /** @return Contract[] */
     public function findByUnit(int $unitId): array
     {
         return $this->em->getRepository(Contract::class)->findBy(['unitId' => $unitId]);

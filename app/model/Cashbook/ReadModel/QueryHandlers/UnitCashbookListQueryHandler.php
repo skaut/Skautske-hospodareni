@@ -21,9 +21,7 @@ final class UnitCashbookListQueryHandler
         $this->entityManager = $entityManager;
     }
 
-    /**
-     * @return UnitCashbook[]
-     */
+    /** @return UnitCashbook[] */
     public function __invoke(UnitCashbookListQuery $query): array
     {
         $unit = $this->entityManager->find(Unit::class, $query->getUnitId());

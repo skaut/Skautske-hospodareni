@@ -6,9 +6,7 @@ namespace Model\Cashbook\ReadModel\Queries;
 
 use Model\Cashbook\Cashbook\CashbookId;
 
-/**
- * @see CategoryListQueryHandler
- */
+/** @see CategoryListQueryHandler */
 final class CategoryListQuery
 {
     private CashbookId $cashbookId;

@@ -19,9 +19,7 @@ class VehicleRepositoryTest extends IntegrationTest
 
     private VehicleRepository $repository;
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function getTestedAggregateRoots(): array
     {
         return [Vehicle::class];
@@ -126,11 +124,11 @@ class VehicleRepositoryTest extends IntegrationTest
         $this->assertFalse($vehicle->isArchived());
         $this->assertEquals(
             new DateTimeImmutable($row['metadata_created_at']),
-            $vehicle->getMetadata()->getCreatedAt()
+            $vehicle->getMetadata()->getCreatedAt(),
         );
         $this->assertSame(
             $row['metadata_author_name'],
-            $vehicle->getMetadata()->getAuthorName()
+            $vehicle->getMetadata()->getAuthorName(),
         );
 
         $roadworthyScans = $vehicle->getRoadworthyScans();
@@ -163,7 +161,7 @@ class VehicleRepositoryTest extends IntegrationTest
             $subunit,
             $row['registration'],
             $row['consumption'],
-            new Vehicle\Metadata(new DateTimeImmutable($row['metadata_created_at']), $row['metadata_author_name'])
+            new Vehicle\Metadata(new DateTimeImmutable($row['metadata_created_at']), $row['metadata_author_name']),
         );
 
         $this->repository->save($vehicle);
@@ -171,9 +169,7 @@ class VehicleRepositoryTest extends IntegrationTest
         $this->tester->seeInDatabase(self::TABLE, ['id' => 1] + $row);
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     private function getVehicleRow(): array
     {
         return [

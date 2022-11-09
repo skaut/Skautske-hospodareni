@@ -50,9 +50,7 @@ final class EditableUnitsQueryHandlerTest extends \Codeception\Test\Unit
         }
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     public function getExpectedReturnedUnits(): array
     {
         return [

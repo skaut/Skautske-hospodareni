@@ -19,9 +19,7 @@ class CashbookQueryHandler
         $this->cashbooks = $cashbooks;
     }
 
-    /**
-     * @throws CashbookNotFound
-     */
+    /** @throws CashbookNotFound */
     public function __invoke(CashbookQuery $query): Cashbook
     {
         $cashbook = $this->cashbooks->find($query->getCashbookId());
@@ -33,7 +31,7 @@ class CashbookQueryHandler
             $cashbook->getBankChitNumberPrefix(),
             $cashbook->getNote(),
             $cashbook->hasOnlyNumericChitNumbers(PaymentMethod::CASH()),
-            $cashbook->hasOnlyNumericChitNumbers(PaymentMethod::BANK())
+            $cashbook->hasOnlyNumericChitNumbers(PaymentMethod::BANK()),
         );
     }
 }

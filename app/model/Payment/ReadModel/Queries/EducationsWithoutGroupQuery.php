@@ -6,9 +6,7 @@ namespace Model\Payment\ReadModel\Queries;
 
 use Model\Payment\ReadModel\QueryHandlers\EducationsWithoutGroupQueryHandler;
 
-/**
- * @see EducationsWithoutGroupQueryHandler
- */
+/** @see EducationsWithoutGroupQueryHandler */
 final class EducationsWithoutGroupQuery
 {
     private int $year;

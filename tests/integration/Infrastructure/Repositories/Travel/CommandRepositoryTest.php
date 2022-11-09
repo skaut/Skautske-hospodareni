@@ -65,9 +65,7 @@ class CommandRepositoryTest extends IntegrationTest
 
     private CommandRepository $repository;
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function getTestedAggregateRoots(): array
     {
         return [
@@ -222,9 +220,7 @@ class CommandRepositoryTest extends IntegrationTest
         }
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     public function getExpectedReturnedCommandIds(): array
     {
         return [
@@ -249,7 +245,7 @@ class CommandRepositoryTest extends IntegrationTest
             $expectedCommandIds,
             array_map(static function (Command $command): int {
                 return $command->getId();
-            }, $commands)
+            }, $commands),
         );
     }
 

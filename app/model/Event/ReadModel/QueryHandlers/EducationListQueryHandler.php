@@ -24,9 +24,7 @@ class EducationListQueryHandler
         $this->educationFactory = $educationFactory;
     }
 
-    /**
-     * @return array<int, Education> Educations indexed by ID
-     */
+    /** @return array<int, Education> Educations indexed by ID */
     public function __invoke(EducationListQuery $query): array
     {
         $educations = $this->skautis->event->EventEducationAllMyActions([

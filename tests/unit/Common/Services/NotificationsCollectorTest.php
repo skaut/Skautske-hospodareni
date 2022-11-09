@@ -21,7 +21,7 @@ final class NotificationsCollectorTest extends Unit
                 ['error', 'test1', 2],
                 ['error', 'test2', 1],
             ],
-            $collector->popNotifications()
+            $collector->popNotifications(),
         );
     }
 

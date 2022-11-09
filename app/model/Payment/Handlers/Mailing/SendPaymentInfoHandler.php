@@ -23,9 +23,7 @@ final class SendPaymentInfoHandler
         $this->mailingService = $mailingService;
     }
 
-    /**
-     * @throws InvalidOAuth
-     */
+    /** @throws InvalidOAuth */
     public function __invoke(SendPaymentInfo $command): void
     {
         $payment = $this->payments->find($command->getPaymentId());

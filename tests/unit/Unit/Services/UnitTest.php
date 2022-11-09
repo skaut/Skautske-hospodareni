@@ -45,7 +45,7 @@ class UnitTest extends \Codeception\Test\Unit
             $regNumber,
             'stredisko',
             null,
-            null
+            null,
         );
         $this->assertSame(sprintf('Junák - český skaut, %s, z. s., %s, %s, %s, IČO: %s', $unitName, $street, $city, $postcode, $ic), $unit->getFullDisplayNameWithAddress());
     }
@@ -65,7 +65,7 @@ class UnitTest extends \Codeception\Test\Unit
             $regNumber,
             $type,
             null,
-            null
+            null,
         );
     }
 }

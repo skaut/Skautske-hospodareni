@@ -54,9 +54,7 @@ final class CashbookHandlersTest extends Unit
         $handler($commandInstance);
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     public function dataHandlers(): array
     {
         return [

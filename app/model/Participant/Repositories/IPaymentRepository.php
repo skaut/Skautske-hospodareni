@@ -10,14 +10,10 @@ use Model\Participant\PaymentNotFound;
 
 interface IPaymentRepository
 {
-    /**
-     * @throws PaymentNotFound
-     */
+    /** @throws PaymentNotFound */
     public function findByParticipant(int $id, Payment\EventType $eventType): Payment;
 
-    /**
-     * @return Payment[]
-     */
+    /** @return Payment[] */
     public function findByEvent(Event $event): array;
 
     public function save(Payment $payment): void;

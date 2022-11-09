@@ -79,9 +79,7 @@ class MassAddForm extends BaseControl
         return $form;
     }
 
-    /**
-     * @param string[] $emails
-     */
+    /** @param string[] $emails */
     public function addPerson(int $id, array $emails, string $name, ?float $amount = null, string $note = ''): void
     {
         $form          = $this['form'];
@@ -151,7 +149,7 @@ class MassAddForm extends BaseControl
             (array) $values->persons,
             function ($person) {
                 return $person->selected === true;
-            }
+            },
         );
 
         if (empty($persons)) {
@@ -165,7 +163,7 @@ class MassAddForm extends BaseControl
                 $persons,
                 function ($person) {
                     return $person->dueDate === null;
-                }
+                },
             );
             if (! empty($withoutDueDate)) {
                 $form->addError('Musíte vyplnit datum splatnosti');
@@ -185,8 +183,8 @@ class MassAddForm extends BaseControl
                     (int) $person->id,
                     $person->variableSymbol,
                     $person->constantSymbol ?? $values->constantSymbol,
-                    $person->note
-                )
+                    $person->note,
+                ),
             );
         }
 

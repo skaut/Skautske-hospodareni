@@ -14,7 +14,7 @@ final class Version20190505084443 extends AbstractMigration
         $this->addSql('INSERT INTO `ac_chitsCategory` (`id`, `label`, `short`, `type`, `virtual`, `orderby`, `deleted`) VALUES ' .
             '(20,	\'Vratka úč. poplatku\',	\'vr\',	\'out\',	1,	100,	0);');
         $this->addSql('INSERT INTO `ac_chitsCategory_object` (`categoryId`, `objectTypeId`) VALUES (20, \'general\'), (20, \'camp\');');
-        $this->addSql(<<<EOT
+        $this->addSql(<<<'EOT'
 UPDATE `ac_chits_item` SET
 `price` = (-1 * `price`),
 `priceText` = REPLACE(priceText, '-', ' '),

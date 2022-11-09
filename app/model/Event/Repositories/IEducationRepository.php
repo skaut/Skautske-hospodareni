@@ -10,8 +10,6 @@ use Model\Event\SkautisEducationId;
 
 interface IEducationRepository
 {
-    /**
-     * @throws EducationNotFound
-     */
+    /** @throws EducationNotFound */
     public function find(SkautisEducationId $id): Education;
 }

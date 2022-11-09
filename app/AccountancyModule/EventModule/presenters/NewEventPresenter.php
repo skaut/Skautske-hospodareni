@@ -45,7 +45,7 @@ final class NewEventPresenter extends BasePresenter
             function (string $name): string {
                 return '» ' . $name;
             },
-            $subunits
+            $subunits,
         );
 
         $unit = $this->queryBus->handle(new UnitQuery($unitId));
@@ -99,8 +99,8 @@ final class NewEventPresenter extends BasePresenter
                 $v->orgID,
                 $v['location'] !== '' ? $v['location'] : null,
                 $v['scope'],
-                $v['type']
-            )
+                $v['type'],
+            ),
         );
 
         $this->redirect('Event:', ['aid' => $this->queryBus->handle(new NewestEventId())]);

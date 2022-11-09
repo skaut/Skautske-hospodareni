@@ -52,10 +52,10 @@ class FioClient implements IFioClient
                     $transaction->getUserIdentity() ?? $transaction->getPerformedBy() ?? '',
                     $transaction->getVariableSymbol() !== null ? (int) $transaction->getVariableSymbol() : null,
                     $transaction->getConstantSymbol() !== null ? (int) $transaction->getConstantSymbol() : null,
-                    $transaction->getComment()
+                    $transaction->getComment(),
                 );
             },
-            $transactions
+            $transactions,
         );
 
         return array_reverse($transactions); // DESC sort
@@ -80,7 +80,7 @@ class FioClient implements IFioClient
         } catch (TransferException | InternalErrorException $e) {
             $this->logger->warning(
                 sprintf('Bank account #%d request failed: %s', $account->getId(), $e->getMessage()),
-                ['previous' => $e]
+                ['previous' => $e],
             );
 
             throw new BankTimeout('There was an error when connecting to FIO', $e->getCode(), $e);

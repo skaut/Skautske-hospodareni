@@ -16,14 +16,14 @@ final class Version20200112173514 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             INSERT INTO `ac_chitsCategory` (`id`, `label`, `short`, `type`, `virtual`, `orderby`, `deleted`) VALUES
-            (21, 'Vratka úč. poplatku - dítě',	'vrc',  'out', 1, 100, 0),
+            (21, 'Vratka úč. poplatku - dítě',  'vrc',  'out', 1, 100, 0),
             (22, 'Vratka úč. poplatku - dospělý','vra', 'out', 1, 100, 0);
         SQL);
         $this->addSql('INSERT INTO `ac_chitsCategory_object` (`categoryId`, `objectTypeId`) VALUES (21,	\'camp\'), (22,	\'camp\');');
 
-        $ids = $this->connection->fetchAll(<<<SQL
+        $ids = $this->connection->fetchAll(<<<'SQL'
                 SELECT i.id
                 FROM `ac_chits_item` i
                 left join ac_chit_to_item ci ON i.id = ci.item_id
@@ -36,7 +36,7 @@ final class Version20200112173514 extends AbstractMigration
             $this->connection->update(
                 'ac_chits_item',
                 ['category' => 21],
-                ['id' => $row['id']]
+                ['id' => $row['id']],
             );
         }
 
@@ -46,7 +46,7 @@ final class Version20200112173514 extends AbstractMigration
     public function down(Schema $schema): void
     {
         $this->addSql('INSERT INTO `ac_chitsCategory_object` (`categoryId`, `objectTypeId`) VALUES (20, \'camp\');');
-        $ids = $this->connection->fetchAll(<<<SQL
+        $ids = $this->connection->fetchAll(<<<'SQL'
                 SELECT i.id
                 FROM `ac_chits_item` i
                 left join ac_chit_to_item ci ON i.id = ci.item_id
@@ -59,7 +59,7 @@ final class Version20200112173514 extends AbstractMigration
             $this->connection->update(
                 'ac_chits_item',
                 ['category' => 20],
-                ['id' => $row['id']]
+                ['id' => $row['id']],
             );
         }
 

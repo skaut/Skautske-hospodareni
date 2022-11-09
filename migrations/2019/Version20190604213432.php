@@ -28,7 +28,7 @@ final class Version20190604213432 extends AbstractMigration
             $this->connection->update(
                 'ac_participants',
                 ['id' => PaymentId::generate()->toString()],
-                ['participantId' => $row['participantId'], 'event_type' => $row['event_type'], 'event_id' => $row['event_id']]
+                ['participantId' => $row['participantId'], 'event_type' => $row['event_type'], 'event_id' => $row['event_id']],
             );
         }
     }

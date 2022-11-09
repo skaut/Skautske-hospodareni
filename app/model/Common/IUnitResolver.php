@@ -8,8 +8,6 @@ use Model\Unit\UnitHasNoParent;
 
 interface IUnitResolver
 {
-    /**
-     * @throws UnitHasNoParent
-     */
+    /** @throws UnitHasNoParent */
     public function getOfficialUnitId(int $unitId): int;
 }

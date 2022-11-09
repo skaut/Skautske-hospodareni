@@ -35,7 +35,7 @@ final class ParticipantFactory
             $skautisParticipant->UnitRegistrationNumber ?? '',
             (int) ($skautisParticipant->Days ?? 0),
             $payment,
-            $skautisParticipant->Category ?? null
+            $skautisParticipant->Category ?? null,
         );
     }
 }

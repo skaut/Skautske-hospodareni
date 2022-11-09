@@ -25,9 +25,7 @@ final class PaymentSubscriber implements MessageSubscriberInterface
         $this->groups = $groups;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public static function getHandledMessages(): array
     {
         return [

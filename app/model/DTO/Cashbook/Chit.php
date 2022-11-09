@@ -99,25 +99,19 @@ class Chit
         return $this->body;
     }
 
-    /**
-     * @deprecated use getBody()
-     */
+    /** @deprecated use getBody() */
     public function getNumber(): ?ChitNumber
     {
         return $this->body->getNumber();
     }
 
-    /**
-     * @deprecated use getBody()
-     */
+    /** @deprecated use getBody() */
     public function getDate(): Date
     {
         return $this->body->getDate();
     }
 
-    /**
-     * @deprecated use getBody()
-     */
+    /** @deprecated use getBody() */
     public function getRecipient(): ?Recipient
     {
         return $this->body->getRecipient();
@@ -164,9 +158,7 @@ class Chit
         return $this->locked;
     }
 
-    /**
-     * @return CashbookType[]
-     */
+    /** @return CashbookType[] */
     public function getInverseCashbookTypes(): array
     {
         return $this->inverseCashbookTypes;
@@ -193,17 +185,13 @@ class Chit
         return $amount;
     }
 
-    /**
-     * @return ChitItem[]
-     */
+    /** @return ChitItem[] */
     public function getItems(): array
     {
         return $this->items;
     }
 
-    /**
-     * @return ChitScan[]
-     */
+    /** @return ChitScan[] */
     public function getScans(): array
     {
         return $this->scans;
@@ -219,7 +207,7 @@ class Chit
         return sprintf(
             '%s_%s',
             $this->getBody()->getDate()->format('Y-m-d'),
-            substr($this->getPurpose(), 0, 30)
+            substr($this->getPurpose(), 0, 30),
         );
     }
 }

@@ -6,25 +6,19 @@ namespace Model\Unit\ReadModel\Queries;
 
 use Model\Unit\ReadModel\QueryHandlers\UnitsDetailQueryHandler;
 
-/**
- * @see UnitsDetailQueryHandler
- */
+/** @see UnitsDetailQueryHandler */
 final class UnitsDetailQuery
 {
     /** @var int[] */
     private array $unitIds;
 
-    /**
-     * @param int[] $unitIds
-     */
+    /** @param int[] $unitIds */
     public function __construct(array $unitIds)
     {
         $this->unitIds = $unitIds;
     }
 
-    /**
-     * @return int[]
-     */
+    /** @return int[] */
     public function getUnitIds(): array
     {
         return $this->unitIds;

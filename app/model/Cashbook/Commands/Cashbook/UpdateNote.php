@@ -7,9 +7,7 @@ namespace Model\Cashbook\Commands\Cashbook;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Handlers\Cashbook\UpdateNoteHandler;
 
-/**
- * @see UpdateNoteHandler
- */
+/** @see UpdateNoteHandler */
 final class UpdateNote
 {
     private CashbookId $cashbookId;

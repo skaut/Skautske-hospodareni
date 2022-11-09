@@ -6,9 +6,7 @@ namespace Model\Unit\ReadModel\Queries;
 
 use Model\Unit\ReadModel\QueryHandlers\UnitQueryHandler;
 
-/**
- * @see UnitQueryHandler
- */
+/** @see UnitQueryHandler */
 final class UnitQuery
 {
     private int $unitId;

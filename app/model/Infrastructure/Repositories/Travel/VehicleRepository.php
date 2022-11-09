@@ -20,9 +20,7 @@ final class VehicleRepository implements IVehicleRepository
         $this->em = $em;
     }
 
-    /**
-     * @throws VehicleNotFound
-     */
+    /** @throws VehicleNotFound */
     public function find(int $id): Vehicle
     {
         $vehicle = $this->em->find(Vehicle::class, $id);
@@ -54,9 +52,7 @@ final class VehicleRepository implements IVehicleRepository
             ->getResult();
     }
 
-    /**
-     * @return Vehicle[]
-     */
+    /** @return Vehicle[] */
     public function findByUnit(int $unitId): array
     {
         $vehicles = $this->em->createQueryBuilder()

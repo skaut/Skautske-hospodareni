@@ -89,7 +89,7 @@ class EventPresenter extends BasePresenter
         $pragueParticipants = $this->queryBus->handle(new EventPragueParticipantsQuery(
             $this->event->getId(),
             $this->event->getRegistrationNumber(),
-            $this->event->getStartDate()
+            $this->event->getStartDate(),
         ));
 
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->getCashbookId($aid)));
@@ -232,8 +232,8 @@ class EventPresenter extends BasePresenter
                 $values['end'],
                 $values['location'] !== '' ? $values['location'] : null,
                 $values['scope'],
-                $values['type']
-            )
+                $values['type'],
+            ),
         );
 
         $this->flashMessage('Základní údaje byly upraveny.');

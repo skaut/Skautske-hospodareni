@@ -30,9 +30,7 @@ final class ContractRepositoryTest extends IntegrationTest
         $this->repository = new ContractRepository($this->entityManager);
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     protected function getTestedAggregateRoots(): array
     {
         return [Contract::class];

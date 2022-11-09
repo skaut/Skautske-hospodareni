@@ -21,9 +21,7 @@ class BaseForm extends Form
         $this->protection = parent::addProtection('Vypršela platnost formuláře, zkus to ještě jednou.');
     }
 
-    /**
-     * @deprecated CSRF protection is auto-enabled for all forms
-     */
+    /** @deprecated CSRF protection is auto-enabled for all forms */
     public function getProtection(): CsrfProtection
     {
         return $this->protection;

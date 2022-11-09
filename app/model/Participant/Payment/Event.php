@@ -6,9 +6,7 @@ namespace Model\Participant\Payment;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Embeddable()
- */
+/** @ORM\Embeddable() */
 final class Event
 {
     /** @ORM\Column(type="integer") */

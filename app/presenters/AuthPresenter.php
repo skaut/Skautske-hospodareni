@@ -56,7 +56,7 @@ class AuthPresenter extends BasePresenter
             $this->authService->setInit(
                 $post['skautIS_Token'],
                 (int) $post['skautIS_IDRole'],
-                (int) $post['skautIS_IDUnit']
+                (int) $post['skautIS_IDUnit'],
             );
 
             if (! $this->userService->isLoggedIn()) {

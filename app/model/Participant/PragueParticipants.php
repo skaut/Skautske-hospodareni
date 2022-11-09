@@ -32,9 +32,7 @@ final class PragueParticipants
 
     private int $citizensCount;
 
-    /**
-     * @param Participant[] $participants
-     */
+    /** @param Participant[] $participants */
     public static function fromParticipantList(Date $eventStartDate, array $participants): self
     {
         $under18           = 0;

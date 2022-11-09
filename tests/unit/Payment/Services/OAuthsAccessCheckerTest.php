@@ -34,7 +34,7 @@ final class OAuthsAccessCheckerTest extends Unit
     {
         $this->assertTrue(
             $this->createChecker(100)
-                ->allUnitsHaveAccessToOAuth([100, 12], $this->oAuthId)
+                ->allUnitsHaveAccessToOAuth([100, 12], $this->oAuthId),
         );
     }
 
@@ -42,7 +42,7 @@ final class OAuthsAccessCheckerTest extends Unit
     {
         $this->assertTrue(
             $this->createChecker(20)
-                ->allUnitsHaveAccessToOAuth([10, 12], $this->oAuthId)
+                ->allUnitsHaveAccessToOAuth([10, 12], $this->oAuthId),
         );
     }
 
@@ -50,7 +50,7 @@ final class OAuthsAccessCheckerTest extends Unit
     {
         $this->assertFalse(
             $this->createChecker(10)
-                ->allUnitsHaveAccessToOAuth([12], $this->oAuthId)
+                ->allUnitsHaveAccessToOAuth([12], $this->oAuthId),
         );
     }
 
@@ -62,7 +62,7 @@ final class OAuthsAccessCheckerTest extends Unit
             ->once()
             ->withArgs([$this->oAuthId])
             ->andReturn(
-                OAuth::create(new UnitId($oAuthOwnerUnitId), 'code', 'foo@gmail.com')
+                OAuth::create(new UnitId($oAuthOwnerUnitId), 'code', 'foo@gmail.com'),
             );
 
         return new OAuthsAccessChecker($repository, $this->unitResolver);

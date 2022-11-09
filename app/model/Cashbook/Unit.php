@@ -83,9 +83,7 @@ class Unit extends Aggregate
         $this->activeCashbookId = $cashbookId;
     }
 
-    /**
-     * @return Unit\Cashbook[]
-     */
+    /** @return Unit\Cashbook[] */
     public function getCashbooks(): array
     {
         return $this->cashbooks->toArray();

@@ -60,9 +60,7 @@ class CashbookOfficialUnitQueryHandler
         $this->campCashbookRepository  = $campCashbookRepository;
     }
 
-    /**
-     * @throws CashbookNotFound
-     */
+    /** @throws CashbookNotFound */
     public function __invoke(CashbookOfficialUnitQuery $query): Unit
     {
         $cashbook = $this->cashbooks->find($query->getCashbookId());

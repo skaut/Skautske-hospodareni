@@ -116,7 +116,7 @@ final class GroupForm extends BaseControl
             ->addRule(Form::INTEGER, 'Konstantní symbol musí být číslo');
 
         $nextVs = $this->queryBus->handle(
-            new NextVariableSymbolSequenceQuery($this->unitId->toInt(), new DateTimeImmutable())
+            new NextVariableSymbolSequenceQuery($this->unitId->toInt(), new DateTimeImmutable()),
         );
 
         $form->addVariableSymbol('nextVs', 'Další VS:')
@@ -175,7 +175,7 @@ final class GroupForm extends BaseControl
                 $paymentDefaults,
                 $emails,
                 $oAuthId,
-                $v->bankAccount
+                $v->bankAccount,
             );
 
             $this->flashMessage('Skupina byla upravena');
@@ -187,7 +187,7 @@ final class GroupForm extends BaseControl
                 $paymentDefaults,
                 $emails,
                 $oAuthId,
-                $v->bankAccount
+                $v->bankAccount,
             );
 
             $this->flashMessage('Skupina byla založena');
@@ -201,9 +201,7 @@ final class GroupForm extends BaseControl
         return FileSystem::read(__DIR__ . '/../templates/defaultEmails/' . $name . '.html');
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     private function buildDefaultsFromGroup(): array
     {
         if ($this->groupId === null) {
@@ -281,9 +279,7 @@ final class GroupForm extends BaseControl
         return new EmailTemplate($emailValues->subject, $emailValues->body);
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     private function getEmailDefaults(int $groupId, EmailType $type): array
     {
         $email = $this->queryBus->handle(new GroupEmailQuery($groupId, $type));
@@ -301,9 +297,7 @@ final class GroupForm extends BaseControl
         ];
     }
 
-    /**
-     * @return array<int, string>
-     */
+    /** @return array<int, string> */
     private function bankAccountItems(): array
     {
         $bankAccounts = $this->queryBus->handle(new BankAccountsAccessibleByUnitsQuery($this->groupUnitIds()));
@@ -318,9 +312,7 @@ final class GroupForm extends BaseControl
         return $items;
     }
 
-    /**
-     * @return array<string, array<string, string>>
-     */
+    /** @return array<string, array<string, string>> */
     private function oAuthItems(): array
     {
         $oAuths = $this->queryBus->handle(new OAuthsAccessibleByGroupsQuery($this->groupUnitIds()));
@@ -331,9 +323,9 @@ final class GroupForm extends BaseControl
                     function (OAuth $oAuth): int {
                         return $oAuth->getUnitId();
                     },
-                    $oAuths
-                ))
-            )
+                    $oAuths,
+                )),
+            ),
         );
 
         $items = [];
@@ -349,9 +341,7 @@ final class GroupForm extends BaseControl
         return $items;
     }
 
-    /**
-     * @return int[]
-     */
+    /** @return int[] */
     private function groupUnitIds(): array
     {
         if ($this->groupId === null) {

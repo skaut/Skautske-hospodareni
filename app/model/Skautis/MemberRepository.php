@@ -37,7 +37,7 @@ final class MemberRepository implements IMemberRepository
             $members[] = new Member(
                 $member->ID,
                 $member->DisplayName,
-                isset($member->Birthday) ? new Date($member->Birthday) : null
+                isset($member->Birthday) ? new Date($member->Birthday) : null,
             );
         }
 

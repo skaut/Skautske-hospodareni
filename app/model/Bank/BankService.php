@@ -75,7 +75,7 @@ class BankService
             function (Group $g) {
                 return $g->getBankAccountId();
             },
-            true
+            true,
         );
 
         $now            = new DateTimeImmutable();
@@ -96,7 +96,7 @@ class BankService
                 $payments,
                 function (Payment $p) {
                     return $p->canBePaired();
-                }
+                },
             );
 
             if (empty($payments)) {
@@ -123,9 +123,7 @@ class BankService
         return $pairingResults;
     }
 
-    /**
-     * @param Group[] $groups
-     */
+    /** @param Group[] $groups */
     private function updateLastPairing(array $groups, DateTimeImmutable $time): void
     {
         foreach ($groups as $group) {
@@ -134,9 +132,7 @@ class BankService
         }
     }
 
-    /**
-     * @param Group[] $groups
-     */
+    /** @param Group[] $groups */
     private function resolvePairingIntervalStart(array $groups): Date
     {
         $defaultStart = Date::today()->subDays(self::DAYS_BACK_DEFAULT);
@@ -147,8 +143,8 @@ class BankService
 
         return new Date(
             min(
-                array_map(fn (Group $g) => $g->getLastPairing() ?? $defaultStart, $groups)
-            )
+                array_map(fn (Group $g) => $g->getLastPairing() ?? $defaultStart, $groups),
+            ),
         );
     }
 
@@ -164,14 +160,14 @@ class BankService
             $payments,
             function (Payment $p) {
                 return $p->getVariableSymbol()->toInt();
-            }
+            },
         );
 
         $transactions = array_filter(
             $transactions,
             function (BankTransaction $t) use ($paymentsByVS) {
                 return $t->getVariableSymbol() !== null && isset($paymentsByVS[$t->getVariableSymbol()]);
-            }
+            },
         );
 
         $paired = [];

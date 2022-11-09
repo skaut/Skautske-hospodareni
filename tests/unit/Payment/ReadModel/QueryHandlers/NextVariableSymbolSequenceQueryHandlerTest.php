@@ -66,7 +66,7 @@ class NextVariableSymbolSequenceQueryHandlerTest extends TestCase
         $groups = array_merge(
             array_fill(0, $groupsCount, $this->mockGroup($now)),
             // add some groups from different year to test that these are filtered out
-            array_fill(0, 10, $this->mockGroup($now->modify('- 1 year')))
+            array_fill(0, 10, $this->mockGroup($now->modify('- 1 year'))),
         );
 
         $groupRepository->shouldReceive('findByUnits')

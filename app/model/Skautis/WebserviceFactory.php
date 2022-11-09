@@ -10,9 +10,7 @@ use Skautis\Skautis;
 use Skautis\Wsdl\Decorator\Cache\ArrayCache;
 use Skautis\Wsdl\Decorator\Cache\CacheDecorator;
 
-/**
- * @see LazyWebService
- */
+/** @see LazyWebService */
 final class WebserviceFactory
 {
     use StaticClass;

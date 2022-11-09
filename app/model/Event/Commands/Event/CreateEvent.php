@@ -7,9 +7,7 @@ namespace Model\Event\Commands\Event;
 use Cake\Chronos\Date;
 use Model\Event\Handlers\Event\CreateEventHandler;
 
-/**
- * @see CreateEventHandler
- */
+/** @see CreateEventHandler */
 final class CreateEvent
 {
     private string $name;

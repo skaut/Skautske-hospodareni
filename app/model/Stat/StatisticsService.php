@@ -27,9 +27,7 @@ class StatisticsService
         $this->queryBus = $queryBus;
     }
 
-    /**
-     * @return array<int, Counter>
-     */
+    /** @return array<int, Counter> */
     public function getEventStatistics(Unit $unitTree, int $year): array
     {
         $events     = $this->queryBus->handle(new EventListQuery($year, null));
@@ -45,7 +43,7 @@ class StatisticsService
         foreach ($keys as $k) {
             $merged[$k] = new Counter(
                 $eventCount[$k] ?? 0,
-                $campCount[$k] ?? 0
+                $campCount[$k] ?? 0,
             );
         }
 
@@ -53,7 +51,7 @@ class StatisticsService
             $this->countTree($unitTree, $merged),
             function (Counter $c) {
                 return ! $c->isEmpty();
-            }
+            },
         );
     }
 

@@ -46,9 +46,7 @@ final class FinalBalanceQueryHandlerTest extends Unit
         ]);
     }
 
-    /**
-     * @param Chit[] $chits
-     */
+    /** @param Chit[] $chits */
     private function assertBalance(Money $expectedBalance, array $chits): void
     {
         $cashbookId = Cashbook\CashbookId::fromString(self::CASHBOOK_ID);

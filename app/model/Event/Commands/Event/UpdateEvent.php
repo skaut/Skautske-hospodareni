@@ -8,9 +8,7 @@ use Cake\Chronos\Date;
 use Model\Event\Handlers\Event\UpdateEventHandler;
 use Model\Event\SkautisEventId;
 
-/**
- * @see UpdateEventHandler
- */
+/** @see UpdateEventHandler */
 class UpdateEvent
 {
     private SkautisEventId $eventId;

@@ -36,9 +36,7 @@ class CategoryRepository
         $this->queryBus            = $queryBus;
     }
 
-    /**
-     * @return ICategory[]
-     */
+    /** @return ICategory[] */
     public function findForCashbook(CashbookId $cashbookId, CashbookType $type): array
     {
         $skautisType = $type->getSkautisObjectType();
@@ -61,9 +59,7 @@ class CategoryRepository
         return $categories;
     }
 
-    /**
-     * @throws CategoryNotFound
-     */
+    /** @throws CategoryNotFound */
     public function find(int $categoryId, CashbookId $cashbookId, CashbookType $type): ICategory
     {
         if ($type->equalsValue(CashbookType::CAMP)) {
@@ -74,7 +70,7 @@ class CategoryRepository
             }
 
             throw new CategoryNotFound(
-                sprintf('Category #%d for cashbook #%d not found', $categoryId, $cashbookId)
+                sprintf('Category #%d for cashbook #%d not found', $categoryId, $cashbookId),
             );
         }
 
@@ -82,7 +78,7 @@ class CategoryRepository
 
         if (! $category->supportsType($type->getSkautisObjectType())) {
             throw new CategoryNotFound(
-                sprintf("Category #%d found, but it doesn't support cashbook type %s", $categoryId, $type->getValue())
+                sprintf("Category #%d found, but it doesn't support cashbook type %s", $categoryId, $type->getValue()),
             );
         }
 

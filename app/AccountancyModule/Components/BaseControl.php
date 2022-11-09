@@ -24,16 +24,14 @@ abstract class BaseControl extends Control
 
         if (! $presenter instanceof BasePresenter) {
             throw new InvalidStateException(
-                'Presenter using BaseControl derived controls must inherit from ' . BasePresenter::class
+                'Presenter using BaseControl derived controls must inherit from ' . BasePresenter::class,
             );
         }
 
         return $presenter;
     }
 
-    /**
-     * @param string $message
-     */
+    /** @param string $message */
     // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
     public function flashMessage($message, string $type = 'info'): stdClass
     {

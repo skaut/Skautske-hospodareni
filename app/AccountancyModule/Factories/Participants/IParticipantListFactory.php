@@ -9,9 +9,7 @@ use Model\DTO\Participant\Participant;
 
 interface IParticipantListFactory
 {
-    /**
-     * @param Participant[] $currentParticipants
-     */
+    /** @param Participant[] $currentParticipants */
     public function create(
         int $aid,
         array $currentParticipants,

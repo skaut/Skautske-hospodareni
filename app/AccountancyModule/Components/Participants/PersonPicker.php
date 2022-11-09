@@ -42,9 +42,7 @@ final class PersonPicker extends BaseControl
 
     private UnitId $userUnitId;
 
-    /**
-     * @param Participant[] $currentParticipants
-     */
+    /** @param Participant[] $currentParticipants */
     public function __construct(
         UnitId $userUnitId,
         array $currentParticipants,
@@ -149,7 +147,7 @@ final class PersonPicker extends BaseControl
                     $values['street'],
                     $values['city'],
                     (int) $values['postcode'],
-                )
+                ),
             );
 
             $this->flashMessage('Účastník byl přidán', 'success');
@@ -159,15 +157,13 @@ final class PersonPicker extends BaseControl
         return $form;
     }
 
-    /**
-     * @return array<int, string>
-     */
+    /** @return array<int, string> */
     private function getPotentialParticipants(): array
     {
         $unitId = UnitId::fromInt($this->selectedUnitId());
 
         return $this->queryBus->handle(
-            new PotentialParticipantListQuery($unitId, $this->directMemberOnly, $this->currentParticipants)
+            new PotentialParticipantListQuery($unitId, $this->directMemberOnly, $this->currentParticipants),
         );
     }
 }

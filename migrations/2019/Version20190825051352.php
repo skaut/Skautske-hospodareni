@@ -15,7 +15,7 @@ final class Version20190825051352 extends AbstractMigration
         $this->addSql('DROP TABLE pa_payment_state');
         $this->addSql('DROP INDEX groupId ON pa_payment');
         $this->addSql('DROP INDEX state ON pa_payment');
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             ALTER TABLE pa_payment 
                 CHANGE state state VARCHAR(20) NOT NULL COMMENT '(DC2Type:string_enum)', 
                 CHANGE maturity maturity DATE NOT NULL COMMENT '(DC2Type:chronos_date)', 
@@ -27,14 +27,14 @@ final class Version20190825051352 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             CREATE TABLE pa_payment_state (
                 id VARCHAR(20) NOT NULL COLLATE utf8_czech_ci, 
                 label VARCHAR(64) NOT NULL COLLATE utf8_czech_ci, 
                 orderby TINYINT(1) NOT NULL, PRIMARY KEY(id)
               ) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB COMMENT = '' 
         SQL);
-        $this->addSql(<<<SQL
+        $this->addSql(<<<'SQL'
             ALTER TABLE pa_payment 
                 CHANGE maturity maturity DATE NOT NULL, 
                 CHANGE vs vs VARCHAR(10) DEFAULT NULL COLLATE utf8_czech_ci, 
