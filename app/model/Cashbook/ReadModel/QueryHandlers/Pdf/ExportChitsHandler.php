@@ -84,7 +84,7 @@ class ExportChitsHandler
 
         $officialUnit = $this->queryBus->handle(new CashbookOfficialUnitQuery($query->getCashbookId()));
         assert($officialUnit instanceof Unit);
-        $template['officialName'] = $officialUnit->getFullDisplayNameWithAddress();
+        $template['officialName'] = $officialUnit->getFullDisplayNameWithAddress(true);
         $template['cashbook']     = $cashbook;
 
         //HPD
