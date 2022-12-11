@@ -2,7 +2,7 @@
     "name": "skaut/skautske_hospodareni",
     "type": "project",
     "require": {
-        "php": ">= 7.4",
+        "php": ">= 8.0",
         "beberlei/assert": "^2.9",
         "beberlei/doctrineextensions": "^1.3",
         "cakephp/chronos": "^2.3",

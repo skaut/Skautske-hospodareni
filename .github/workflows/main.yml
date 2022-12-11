@@ -11,7 +11,7 @@ jobs:
         name: "Prepare working directory"
         runs-on: ubuntu-20.04
         container:
-            image: fmasa/lebeda:7.4
+            image: skaut/lebeda:8.0
         steps:
             - uses: actions/checkout@v3
             # Copy & paste from https://github.com/actions/cache/blob/master/examples.md#php---composer
@@ -42,7 +42,7 @@ jobs:
         name: "Run unit tests"
         runs-on: ubuntu-20.04
         container:
-            image: fmasa/lebeda:7.4
+            image: skaut/lebeda:8.0
         needs: workdir
         steps:
             - name: Download workdir
@@ -140,7 +140,7 @@ jobs:
         name: "Run PHPStan analysis"
         runs-on: ubuntu-20.04
         container:
-            image: fmasa/lebeda:7.4
+            image: skaut/lebeda:8.0
         needs: workdir
         steps:
             - name: Download workdir
@@ -158,7 +158,7 @@ jobs:
         name: "Check coding standard"
         runs-on: ubuntu-20.04
         container:
-            image: fmasa/lebeda:7.4
+            image: skaut/lebeda:8.0
         needs: workdir
         steps:
             - name: Download workdir
@@ -174,7 +174,7 @@ jobs:
         name: "Lint Latte templates"
         runs-on: ubuntu-20.04
         container:
-            image: fmasa/lebeda:7.4
+            image: skaut/lebeda:8.0
         needs: workdir
         env:
             DEVELOPMENT_MACHINE: true
@@ -193,7 +193,7 @@ jobs:
         name: "Validate mapping against migrations"
         runs-on: ubuntu-20.04
         container:
-            image: fmasa/lebeda:7.4
+            image: skaut/lebeda:8.0
         needs: workdir
         services:
             mysql-test:
@@ -233,7 +233,7 @@ jobs:
             - validate-mapping
         runs-on: ubuntu-20.04
         container:
-            image: fmasa/lebeda:7.4-ci
+            image: skaut/lebeda:8.0-ci
         steps:
             - run: true
 
@@ -243,7 +243,7 @@ jobs:
         needs: [checks-passed]
         runs-on: ubuntu-20.04
         container:
-            image: fmasa/lebeda:7.4-ci
+            image: skaut/lebeda:8.0-ci
         steps:
             - name: Download workdir
               uses: actions/download-artifact@v1
@@ -286,7 +286,7 @@ jobs:
         needs: [checks-passed]
         runs-on: ubuntu-20.04
         container:
-            image: fmasa/lebeda:7.4-ci
+            image: skaut/lebeda:8.0-ci
         steps:
             - name: Download workdir
               uses: actions/download-artifact@v1
