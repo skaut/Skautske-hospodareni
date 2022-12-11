@@ -84,18 +84,18 @@ class Unit
         return $this->displayName;
     }
 
-    public function getFullDisplayName(): string
+    public function getFullDisplayName(bool $nonBreakingSpace = false): string
     {
         if ($this->isOfficial()) {
-            return sprintf('Junák - český skaut, %s, z. s.', $this->getDisplayName());
+            return sprintf('Junák - český skaut, %s, z.%ss.', $this->getDisplayName(), $nonBreakingSpace ? '&nbsp;' : ' ');
         }
 
         return '';
     }
 
-    public function getFullDisplayNameWithAddress(): string
+    public function getFullDisplayNameWithAddress(bool $nonBreakingSpace = false): string
     {
-        return $this->getFullDisplayName() . ', ' . $this->getAddress() . ', IČO: ' . $this->ic;
+        return $this->getFullDisplayName($nonBreakingSpace) . ', ' . $this->getAddress() . ', IČO:' . ($nonBreakingSpace ? '&nbsp;' : ' ') . $this->ic;
     }
 
     public function getAddress(): string
