@@ -4542,22 +4542,22 @@
         },
         {
             "name": "nette/mail",
-            "version": "v3.1.8",
+            "version": "v3.1.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/mail.git",
-                "reference": "69b43ae9a5c63ff68804531ef0113c372c676ce6"
+                "reference": "345b572c1faf8bc88160b1b8be75cc88bbc35b5d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/mail/zipball/69b43ae9a5c63ff68804531ef0113c372c676ce6",
-                "reference": "69b43ae9a5c63ff68804531ef0113c372c676ce6",
+                "url": "https://api.github.com/repos/nette/mail/zipball/345b572c1faf8bc88160b1b8be75cc88bbc35b5d",
+                "reference": "345b572c1faf8bc88160b1b8be75cc88bbc35b5d",
                 "shasum": ""
             },
             "require": {
                 "ext-iconv": "*",
                 "nette/utils": "^3.1",
-                "php": ">=7.1 <8.2"
+                "php": ">=7.1 <8.3"
             },
             "conflict": {
                 "nette/di": "<3.0-stable"
@@ -4610,9 +4610,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/mail/issues",
-                "source": "https://github.com/nette/mail/tree/v3.1.8"
+                "source": "https://github.com/nette/mail/tree/v3.1.9"
             },
-            "time": "2021-08-25T00:07:03+00:00"
+            "time": "2022-10-13T01:28:04+00:00"
         },
         {
             "name": "nette/neon",
