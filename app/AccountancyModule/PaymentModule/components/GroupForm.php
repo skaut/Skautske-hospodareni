@@ -80,6 +80,12 @@ final class GroupForm extends BaseControl
 
     public function fillDueDate(Date $dueDate): void
     {
+        if ($dueDate->isSaturday()) {
+            $dueDate = $dueDate->addDays(2);
+        } elseif ($dueDate->isSunday()) {
+            $dueDate = $dueDate->addDay(1);
+        }
+
         $dueDateControl = $this['form']['dueDate'];
 
         assert($dueDateControl instanceof DateControl);
@@ -140,11 +146,22 @@ final class GroupForm extends BaseControl
 
         $form->setDefaults($this->buildDefaultsFromGroup());
 
+        $form->onError[] = function (BaseForm $form): void {
+            $this->formError($form);
+        };
+
         $form->onSuccess[] = function (BaseForm $form): void {
             $this->formSucceeded($form);
         };
 
         return $form;
+    }
+
+    private function formError(BaseForm $form): void
+    {
+        foreach ($form->getErrors() as $error) {
+            $this->flashMessage($error, 'danger');
+        }
     }
 
     private function formSucceeded(BaseForm $form): void
