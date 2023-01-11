@@ -7,6 +7,7 @@ namespace Model\Google;
 use Google\Service\Gmail;
 use Nette\Mail\Mailer;
 use Nette\Mail\Message;
+use Nette\Utils\Strings;
 
 use function array_key_exists;
 use function base64_encode;
@@ -22,7 +23,15 @@ class OAuthMailer implements Mailer
         $client = $googleService->getClient();
         $token  = $client->fetchAccessTokenWithRefreshToken($oAuth->getToken());
         if (array_key_exists('error', $token)) {
-            throw new InvalidOAuth(sprintf('%s => %s', $token['error'], $token['error_description']));
+            $errMsg = $token['error'];
+            if (array_key_exists('error_description', $token)) {
+                $errMsg = sprintf('%s => %s', $errMsg, $token['error_description']);
+                if (Strings::contains($token['error_description'], 'Token has been expired')) {
+                    $errMsg = sprintf('%s, %s', $errMsg, 'Je potřeba odebrat a znovu propojit emailový účet.');
+                }
+            }
+
+            throw new InvalidOAuth($errMsg);
         }
 
         $client->setAccessToken($token);
