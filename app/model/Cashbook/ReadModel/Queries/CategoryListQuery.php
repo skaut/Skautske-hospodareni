@@ -9,11 +9,8 @@ use Model\Cashbook\Cashbook\CashbookId;
 /** @see CategoryListQueryHandler */
 final class CategoryListQuery
 {
-    private CashbookId $cashbookId;
-
-    public function __construct(CashbookId $cashbookId)
+    public function __construct(private CashbookId $cashbookId)
     {
-        $this->cashbookId = $cashbookId;
     }
 
     public function getCashbookId(): CashbookId

@@ -9,14 +9,8 @@ use Model\Common\UnitId;
 
 final class CashbookWasCreated
 {
-    private UnitId $unitId;
-
-    private CashbookId $cashbookId;
-
-    public function __construct(UnitId $unitId, CashbookId $cashbookId)
+    public function __construct(private UnitId $unitId, private CashbookId $cashbookId)
     {
-        $this->unitId     = $unitId;
-        $this->cashbookId = $cashbookId;
     }
 
     public function getUnitId(): UnitId

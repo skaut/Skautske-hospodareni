@@ -22,23 +22,14 @@ use function sprintf;
 
 class CashbookPresenter extends BasePresenter
 {
-    private IActivateCashbookDialogFactory $activateCashbookDialogFactory;
-
-    private ICashbookControlFactory $cashbookFactory;
-
-    private ICreateCashbookDialogFactory $createCashbookDialogFactory;
-
     private CashbookId $cashbookId;
 
     public function __construct(
-        ICashbookControlFactory $cashbookFactory,
-        ICreateCashbookDialogFactory $createCashbookDialogFactory,
-        IActivateCashbookDialogFactory $activateCashbookDialogFactory
+        private ICashbookControlFactory $cashbookFactory,
+        private ICreateCashbookDialogFactory $createCashbookDialogFactory,
+        private IActivateCashbookDialogFactory $activateCashbookDialogFactory,
     ) {
         parent::__construct();
-        $this->cashbookFactory               = $cashbookFactory;
-        $this->createCashbookDialogFactory   = $createCashbookDialogFactory;
-        $this->activateCashbookDialogFactory = $activateCashbookDialogFactory;
     }
 
     protected function startup(): void
@@ -67,7 +58,7 @@ class CashbookPresenter extends BasePresenter
         $dialog->open();
     }
 
-    public function actionDefault(?int $unitId = null, ?int $year = null): void
+    public function actionDefault(int|null $unitId = null, int|null $year = null): void
     {
         if ($unitId === null) {
             $this->redirect('this', ['unitId' => $this->unitService->getUnitId(), 'year' => $year]);
@@ -162,7 +153,7 @@ class CashbookPresenter extends BasePresenter
         return $chits === [];
     }
 
-    private function getActiveCashbook(): ?UnitCashbook
+    private function getActiveCashbook(): UnitCashbook|null
     {
         return $this->queryBus->handle(new ActiveUnitCashbookQuery($this->unitId));
     }

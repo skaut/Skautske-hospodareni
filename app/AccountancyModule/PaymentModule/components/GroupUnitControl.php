@@ -30,26 +30,8 @@ use function sprintf;
 
 class GroupUnitControl extends BaseControl
 {
-    private int $groupId;
-
-    private CommandBus $commandBus;
-
-    private PaymentService $groups;
-
-    private UnitService $units;
-
-    private IAuthorizator $authorizator;
-
-    private QueryBus $queryBus;
-
-    public function __construct(int $groupId, CommandBus $commandBus, PaymentService $groups, UnitService $units, IAuthorizator $authorizator, QueryBus $queryBus)
+    public function __construct(private int $groupId, private CommandBus $commandBus, private PaymentService $groups, private UnitService $units, private IAuthorizator $authorizator, private QueryBus $queryBus)
     {
-        $this->groupId      = $groupId;
-        $this->commandBus   = $commandBus;
-        $this->groups       = $groups;
-        $this->units        = $units;
-        $this->authorizator = $authorizator;
-        $this->queryBus     = $queryBus;
     }
 
     /** @throws BadRequestException */

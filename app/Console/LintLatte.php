@@ -20,15 +20,9 @@ use function sprintf;
 
 final class LintLatte extends Command
 {
-    private string $appDir;
-
-    private LatteFactory $latteFactory;
-
-    public function __construct(string $appDir, LatteFactory $latteFactory)
+    public function __construct(private string $appDir, private LatteFactory $latteFactory)
     {
         parent::__construct();
-        $this->appDir       = $appDir;
-        $this->latteFactory = $latteFactory;
     }
 
     protected function configure(): void

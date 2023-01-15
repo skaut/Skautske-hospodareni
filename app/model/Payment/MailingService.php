@@ -24,36 +24,15 @@ use function rand;
 
 class MailingService
 {
-    private IGroupRepository $groups;
-
-    private IMailerFactory $mailerFactory;
-
-    private IPaymentRepository $payments;
-
-    private IBankAccountRepository $bankAccounts;
-
-    private TemplateFactory $templateFactory;
-
-    private IUserRepository $users;
-
-    private IGoogleRepository $googleRepository;
-
     public function __construct(
-        IGroupRepository $groups,
-        IMailerFactory $mailerFactory,
-        IPaymentRepository $payments,
-        IBankAccountRepository $bankAccounts,
-        TemplateFactory $templateFactory,
-        IUserRepository $users,
-        IGoogleRepository $googleRepository
+        private IGroupRepository $groups,
+        private IMailerFactory $mailerFactory,
+        private IPaymentRepository $payments,
+        private IBankAccountRepository $bankAccounts,
+        private TemplateFactory $templateFactory,
+        private IUserRepository $users,
+        private IGoogleRepository $googleRepository,
     ) {
-        $this->groups           = $groups;
-        $this->mailerFactory    = $mailerFactory;
-        $this->payments         = $payments;
-        $this->bankAccounts     = $bankAccounts;
-        $this->templateFactory  = $templateFactory;
-        $this->users            = $users;
-        $this->googleRepository = $googleRepository;
     }
 
     /**
@@ -185,7 +164,7 @@ class MailingService
             $payment->getAmount(),
             $payment->getEmailRecipients(),
             $payment->getDueDate(),
-            $payment->getVariableSymbol() !== null ? $payment->getVariableSymbol()->toInt() : null,
+            $payment->getVariableSymbol()?->toInt(),
             $payment->getConstantSymbol(),
             $payment->getNote(),
         );

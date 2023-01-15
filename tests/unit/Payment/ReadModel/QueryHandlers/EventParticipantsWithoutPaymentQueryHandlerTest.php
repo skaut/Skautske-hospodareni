@@ -55,7 +55,7 @@ final class EventParticipantsWithoutPaymentQueryHandlerTest extends Unit
     }
 
     /** @dataProvider dataInvalidSkautisEntities */
-    public function testThrowsExceptionIfGroupIsNotEventGroup(?Group\SkautisEntity $skautisEntity): void
+    public function testThrowsExceptionIfGroupIsNotEventGroup(Group\SkautisEntity|null $skautisEntity): void
     {
         $handler = new EventParticipantsWithoutPaymentQueryHandler(
             $this->mockGroupRepository($skautisEntity),
@@ -77,7 +77,7 @@ final class EventParticipantsWithoutPaymentQueryHandlerTest extends Unit
         ];
     }
 
-    private function mockGroupRepository(?Group\SkautisEntity $skautisEntity): IGroupRepository
+    private function mockGroupRepository(Group\SkautisEntity|null $skautisEntity): IGroupRepository
     {
         $groups = Mockery::mock(IGroupRepository::class);
         $groups->shouldReceive('find')

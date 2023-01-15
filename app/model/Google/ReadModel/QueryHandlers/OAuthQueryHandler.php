@@ -12,18 +12,15 @@ use Model\Mail\Repositories\IGoogleRepository;
 
 final class OAuthQueryHandler
 {
-    private IGoogleRepository $repository;
-
-    public function __construct(IGoogleRepository $repository)
+    public function __construct(private IGoogleRepository $repository)
     {
-        $this->repository = $repository;
     }
 
-    public function __invoke(OAuthQuery $query): ?OAuthDTO
+    public function __invoke(OAuthQuery $query): OAuthDTO|null
     {
         try {
             $oAuth = $this->repository->find($query->getOAuthId());
-        } catch (OAuthNotFound $exc) {
+        } catch (OAuthNotFound) {
             return null;
         }
 

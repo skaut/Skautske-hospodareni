@@ -12,12 +12,9 @@ final class EventParticipantBalanceQuery
 {
     private SkautisEventId $eventId;
 
-    private CashbookId $cashbookId;
-
-    public function __construct(SkautisEventId $campId, CashbookId $cashbookId)
+    public function __construct(SkautisEventId $campId, private CashbookId $cashbookId)
     {
-        $this->eventId    = $campId;
-        $this->cashbookId = $cashbookId;
+        $this->eventId = $campId;
     }
 
     public function getEventId(): SkautisEventId

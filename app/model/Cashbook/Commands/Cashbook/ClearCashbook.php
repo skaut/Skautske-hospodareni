@@ -10,11 +10,8 @@ use Model\Cashbook\Handlers\Cashbook\ClearCashbookHandler;
 /** @see ClearCashbookHandler */
 final class ClearCashbook
 {
-    private CashbookId $cashbookId;
-
-    public function __construct(CashbookId $cashbookId)
+    public function __construct(private CashbookId $cashbookId)
     {
-        $this->cashbookId = $cashbookId;
     }
 
     public function getCashbookId(): CashbookId

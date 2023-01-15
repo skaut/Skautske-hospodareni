@@ -9,11 +9,8 @@ use Model\Travel\Repositories\ICommandRepository;
 
 final class DuplicateTravelHandler
 {
-    private ICommandRepository $commands;
-
-    public function __construct(ICommandRepository $commands)
+    public function __construct(private ICommandRepository $commands)
     {
-        $this->commands = $commands;
     }
 
     public function __invoke(DuplicateTravel $command): void

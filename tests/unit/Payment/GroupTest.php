@@ -285,10 +285,10 @@ class GroupTest extends Unit
     }
 
     private function createGroup(
-        ?Date $dueDate = null,
-        ?DateTimeImmutable $createdAt = null,
-        ?BankAccount $bankAccount = null,
-        ?OAuthId $oAuthId = null
+        Date|null $dueDate = null,
+        DateTimeImmutable|null $createdAt = null,
+        BankAccount|null $bankAccount = null,
+        OAuthId|null $oAuthId = null,
     ): Group {
         $dueDate       ??= new Date('2018-01-19'); // defaults to friday
         $paymentDefaults = new PaymentDefaults(200.2, $dueDate, 203, new VariableSymbol('666'));

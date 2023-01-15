@@ -32,47 +32,32 @@ use function array_merge;
 
 class TravelService
 {
-    private IVehicleRepository $vehicles;
-
-    private ICommandRepository $commands;
-
-    private IContractRepository $contracts;
-
-    private IUnitRepository $units;
-
-    protected QueryBus $queryBus;
-
     public function __construct(
-        IVehicleRepository $vehicles,
-        ICommandRepository $commands,
-        IContractRepository $contracts,
-        IUnitRepository $units,
-        QueryBus $queryBus
+        private IVehicleRepository $vehicles,
+        private ICommandRepository $commands,
+        private IContractRepository $contracts,
+        private IUnitRepository $units,
+        protected QueryBus $queryBus,
     ) {
-        $this->vehicles  = $vehicles;
-        $this->commands  = $commands;
-        $this->contracts = $contracts;
-        $this->units     = $units;
-        $this->queryBus  = $queryBus;
     }
 
     /**     VEHICLES    */
-    public function getVehicleDTO(int $id): ?DTO\Vehicle
+    public function getVehicleDTO(int $id): DTO\Vehicle|null
     {
         try {
             return DTO\VehicleFactory::create(
                 $this->vehicles->find($id),
             );
-        } catch (VehicleNotFound $e) {
+        } catch (VehicleNotFound) {
             return null;
         }
     }
 
-    public function findVehicle(int $id): ?Vehicle
+    public function findVehicle(int $id): Vehicle|null
     {
         try {
             return $this->vehicles->find($id);
-        } catch (VehicleNotFound $e) {
+        } catch (VehicleNotFound) {
             return null;
         }
     }
@@ -110,7 +95,7 @@ class TravelService
             $this->vehicles->remove($vehicle);
 
             return true;
-        } catch (VehicleNotFound $e) {
+        } catch (VehicleNotFound) {
             return false;
         }
     }
@@ -131,7 +116,7 @@ class TravelService
     }
 
     /**     TRAVELS    */
-    public function getTravel(int $commandId, int $travelId): ?DTO\Command\Travel
+    public function getTravel(int $commandId, int $travelId): DTO\Command\Travel|null
     {
         $command = $this->commands->find($commandId);
 
@@ -172,7 +157,7 @@ class TravelService
         Date $date,
         TransportType $transportType,
         string $startPlace,
-        string $endPlace
+        string $endPlace,
     ): void {
         $details = new Command\TravelDetails($date, $transportType, $startPlace, $endPlace);
 
@@ -186,7 +171,7 @@ class TravelService
             }
 
             $this->commands->save($command);
-        } catch (TravelNotFound $e) {
+        } catch (TravelNotFound) {
         }
     }
 
@@ -199,13 +184,13 @@ class TravelService
     }
 
     /**     CONTRACTS    */
-    public function getContract(int $contractId): ?DTO\Contract
+    public function getContract(int $contractId): DTO\Contract|null
     {
         try {
             return DTO\ContractFactory::create(
                 $this->contracts->find($contractId),
             );
-        } catch (ContractNotFound $e) {
+        } catch (ContractNotFound) {
             return null;
         }
     }
@@ -220,7 +205,7 @@ class TravelService
     }
 
     /** @return string[][] */
-    public function getAllContractsPairs(int $unitId, ?int $includeContractId): array
+    public function getAllContractsPairs(int $unitId, int|null $includeContractId): array
     {
         $contracts = $this->contracts->findByUnit($unitId);
 
@@ -263,15 +248,15 @@ class TravelService
         try {
             $contract = $this->contracts->find($contractId);
             $this->contracts->remove($contract);
-        } catch (ContractNotFound $e) {
+        } catch (ContractNotFound) {
         }
     }
 
-    public function getCommandDetail(int $id): ?DTO\Command
+    public function getCommandDetail(int $id): DTO\Command|null
     {
         try {
             return DTO\CommandFactory::create($this->commands->find($id));
-        } catch (CommandNotFound $e) {
+        } catch (CommandNotFound) {
             return null;
         }
     }
@@ -279,9 +264,9 @@ class TravelService
     /** @param list<TransportType> $types */
     public function addCommand(
         int $unitId,
-        ?int $contractId,
-        ?Passenger $passenger,
-        ?int $vehicleId,
+        int|null $contractId,
+        Passenger|null $passenger,
+        int|null $vehicleId,
         string $purpose,
         string $place,
         string $passengers,
@@ -290,7 +275,7 @@ class TravelService
         string $note,
         array $types,
         int $ownerId,
-        string $unit
+        string $unit,
     ): void {
         $vehicle = $vehicleId !== null
             ? $this->vehicles->find($vehicleId)
@@ -317,9 +302,9 @@ class TravelService
     /** @param list<TransportType> $types */
     public function updateCommand(
         int $id,
-        ?int $contractId,
-        ?Passenger $passenger,
-        ?int $vehicleId,
+        int|null $contractId,
+        Passenger|null $passenger,
+        int|null $vehicleId,
         string $purpose,
         string $place,
         string $passengers,
@@ -327,7 +312,7 @@ class TravelService
         Money $amortization,
         string $note,
         array $types,
-        string $unit
+        string $unit,
     ): void {
         $command = $this->commands->find($id);
 
@@ -439,7 +424,7 @@ class TravelService
         $this->commands->remove($command);
     }
 
-    private function selectPassenger(?Passenger $passenger, ?int $contractId): Passenger
+    private function selectPassenger(Passenger|null $passenger, int|null $contractId): Passenger
     {
         if (
             ($passenger === null && $contractId === null)

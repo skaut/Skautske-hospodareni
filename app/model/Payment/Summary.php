@@ -14,14 +14,8 @@ class Summary
 {
     use SmartObject;
 
-    private int $count;
-
-    private float $amount;
-
-    public function __construct(int $count, float $amount)
+    public function __construct(private int $count, private float $amount)
     {
-        $this->count  = $count;
-        $this->amount = $amount;
     }
 
     public function getCount(): int

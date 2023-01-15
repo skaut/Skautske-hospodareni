@@ -10,17 +10,11 @@ use Model\Event\SkautisEventId;
 /** @see ParticipantStatisticsQueryHandler */
 final class ParticipantStatisticsQuery
 {
-    /** @var SkautisCampId|SkautisEventId */
-    private $id;
-
-    /** @param SkautisCampId|SkautisEventId $id */
-    public function __construct($id)
+    public function __construct(private SkautisCampId|SkautisEventId $id)
     {
-        $this->id = $id;
     }
 
-    /** @return SkautisCampId|SkautisEventId */
-    public function getId()
+    public function getId(): SkautisCampId|SkautisEventId
     {
         return $this->id;
     }

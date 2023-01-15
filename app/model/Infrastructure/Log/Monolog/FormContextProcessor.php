@@ -10,11 +10,8 @@ use function json_encode;
 
 class FormContextProcessor
 {
-    private Request $request;
-
-    public function __construct(Request $request)
+    public function __construct(private Request $request)
     {
-        $this->request = $request;
     }
 
     /**

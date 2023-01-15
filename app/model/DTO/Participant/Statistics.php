@@ -6,14 +6,8 @@ namespace Model\DTO\Participant;
 
 class Statistics
 {
-    private int $personDays;
-
-    private int $personsCount;
-
-    public function __construct(int $personDays, int $personsCount)
+    public function __construct(private int $personDays, private int $personsCount)
     {
-        $this->personDays   = $personDays;
-        $this->personsCount = $personsCount;
     }
 
     public function getPersonDays(): int

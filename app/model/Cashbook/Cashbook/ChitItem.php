@@ -20,7 +20,7 @@ class ChitItem
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue()
      */
-    private ?int $id = null;
+    private int|null $id = null;
 
     /** @ORM\Embedded(class=Amount::class, columnPrefix=false) */
     private Amount $amount;

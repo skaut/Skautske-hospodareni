@@ -24,40 +24,16 @@ use function sprintf;
 
 class CashbookOfficialUnitQueryHandler
 {
-    private ICashbookRepository $cashbooks;
-
-    private IEventRepository $eventRepository;
-
-    private ICampRepository $campRepository;
-
-    private IUnitRepository $unitRepository;
-
-    private ISkautisUnitRepository $skautisUnitRepository;
-
-    private IUnitResolver $unitResolver;
-
-    private ICashbookEventRepository $eventCashbookRepository;
-
-    private ICashbookCampRepository $campCashbookRepository;
-
     public function __construct(
-        ICashbookRepository $cashbooks,
-        IEventRepository $eventRepository,
-        ICampRepository $campRepository,
-        IUnitRepository $unitRepository,
-        IUnitResolver $unitResolver,
-        ISkautisUnitRepository $skautisUnitRepository,
-        ICashbookEventRepository $eventCashbookRepository,
-        ICashbookCampRepository $campCashbookRepository
+        private ICashbookRepository $cashbooks,
+        private IEventRepository $eventRepository,
+        private ICampRepository $campRepository,
+        private IUnitRepository $unitRepository,
+        private IUnitResolver $unitResolver,
+        private ISkautisUnitRepository $skautisUnitRepository,
+        private ICashbookEventRepository $eventCashbookRepository,
+        private ICashbookCampRepository $campCashbookRepository,
     ) {
-        $this->cashbooks               = $cashbooks;
-        $this->eventRepository         = $eventRepository;
-        $this->unitRepository          = $unitRepository;
-        $this->campRepository          = $campRepository;
-        $this->unitResolver            = $unitResolver;
-        $this->skautisUnitRepository   = $skautisUnitRepository;
-        $this->eventCashbookRepository = $eventCashbookRepository;
-        $this->campCashbookRepository  = $campCashbookRepository;
     }
 
     /** @throws CashbookNotFound */

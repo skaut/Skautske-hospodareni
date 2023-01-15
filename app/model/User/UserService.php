@@ -19,8 +19,6 @@ class UserService
     public const ACCESS_READ = 'read';
     public const ACCESS_EDIT = 'edit';
 
-    private QueryBus $queryBus;
-
     /**
      * krátkodobé lokální úložiště pro ukládání odpovědí ze skautISU
      *
@@ -34,16 +32,15 @@ class UserService
      */
     protected Skautis $skautis;
 
-    public function __construct(Skautis $skautis, QueryBus $queryBus)
+    public function __construct(Skautis $skautis, private QueryBus $queryBus)
     {
-        $this->skautis  = $skautis;
-        $this->queryBus = $queryBus;
+        $this->skautis = $skautis;
     }
 
     /**
      * varcí ID role aktuálně přihlášeného uživatele
      */
-    public function getRoleId(): ?int
+    public function getRoleId(): int|null
     {
         return $this->skautis->getUser()->getRoleId();
     }
@@ -93,7 +90,7 @@ class UserService
      * @see ActiveSkautisRoleQuery
      */
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    public function getActualRole(): ?SkautisRole
+    public function getActualRole(): SkautisRole|null
     {
         foreach ($this->getAllSkautisRoles() as $r) {
             if ($r->ID === $this->getRoleId()) {
@@ -172,25 +169,16 @@ class UserService
 
     /**
      * ukládá $val do lokálního úložiště
-     *
-     * @param mixed $id
-     * @param mixed $val
-     *
-     * @return mixed
      */
-    private function saveSes($id, $val)
+    private function saveSes(mixed $id, mixed $val): mixed
     {
         return self::$storage[$id] = $val;
     }
 
     /**
      * vrací objekt z lokálního úložiště
-     *
-     * @param string|int $id
-     *
-     * @return mixed | FALSE
      */
-    private function loadSes($id)
+    private function loadSes(string|int $id): mixed
     {
         if (array_key_exists($id, self::$storage)) {
             return self::$storage[$id];

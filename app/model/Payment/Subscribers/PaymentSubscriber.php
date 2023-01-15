@@ -18,11 +18,8 @@ use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
  */
 final class PaymentSubscriber implements MessageSubscriberInterface
 {
-    private IGroupRepository $groups;
-
-    public function __construct(IGroupRepository $groups)
+    public function __construct(private IGroupRepository $groups)
     {
-        $this->groups = $groups;
     }
 
     /** @return array<string, mixed> */

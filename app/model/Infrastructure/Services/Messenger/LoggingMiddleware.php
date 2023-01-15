@@ -11,13 +11,8 @@ use Symfony\Component\Messenger\Middleware\StackInterface;
 
 final class LoggingMiddleware implements MiddlewareInterface
 {
-    private LoggerInterface $logger;
-    private string $level;
-
-    public function __construct(LoggerInterface $logger, string $level)
+    public function __construct(private LoggerInterface $logger, private string $level)
     {
-        $this->logger = $logger;
-        $this->level  = $level;
     }
 
     public function handle(Envelope $envelope, StackInterface $stack): Envelope

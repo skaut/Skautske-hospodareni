@@ -37,22 +37,13 @@ class InvertChitDialog extends BaseControl
      * @var        int|string|NULL
      * @persistent
      */
-    public $chitId;
-
-    private CashbookId $cashbookId;
+    public int|string|null $chitId = null;
 
     /** @var array<string, string>|NULL */
-    private ?array $cashbooks = null;
+    private array|null $cashbooks = null;
 
-    private CommandBus $commandBus;
-
-    private QueryBus $queryBus;
-
-    public function __construct(CashbookId $cashbookId, CommandBus $commandBus, QueryBus $queryBus)
+    public function __construct(private CashbookId $cashbookId, private CommandBus $commandBus, private QueryBus $queryBus)
     {
-        $this->cashbookId = $cashbookId;
-        $this->commandBus = $commandBus;
-        $this->queryBus   = $queryBus;
     }
 
     public function handleOpen(int $chitId): void
@@ -178,7 +169,7 @@ class InvertChitDialog extends BaseControl
         return false;
     }
 
-    private function getChit(): ?Chit
+    private function getChit(): Chit|null
     {
         return $this->queryBus->handle(new ChitQuery($this->cashbookId, (int) $this->chitId));
     }

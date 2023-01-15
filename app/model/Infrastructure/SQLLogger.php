@@ -11,11 +11,8 @@ use function preg_match;
 // phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 final class SQLLogger implements \Doctrine\DBAL\Logging\SQLLogger
 {
-    private LoggerInterface $logger;
-
-    public function __construct(LoggerInterface $logger)
+    public function __construct(private LoggerInterface $logger)
     {
-        $this->logger = $logger;
     }
 
     /**
@@ -24,7 +21,7 @@ final class SQLLogger implements \Doctrine\DBAL\Logging\SQLLogger
      * @param mixed[]|null $types
      */
     // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
-    public function startQuery($sql, ?array $params = null, ?array $types = null): void
+    public function startQuery($sql, array|null $params = null, array|null $types = null): void
     {
         $context = [
             'sql' => $sql,

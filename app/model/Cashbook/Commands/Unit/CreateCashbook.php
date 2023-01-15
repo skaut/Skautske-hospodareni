@@ -10,14 +10,8 @@ use Model\Common\UnitId;
 /** @see CreateCashbookHandler */
 final class CreateCashbook
 {
-    private UnitId $unitId;
-
-    private int $year;
-
-    public function __construct(UnitId $unitId, int $year)
+    public function __construct(private UnitId $unitId, private int $year)
     {
-        $this->unitId = $unitId;
-        $this->year   = $year;
     }
 
     public function getUnitId(): UnitId

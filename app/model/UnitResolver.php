@@ -10,11 +10,8 @@ use Model\Unit\UnitHasNoParent;
 
 final class UnitResolver implements IUnitResolver
 {
-    private IUnitRepository $units;
-
-    public function __construct(IUnitRepository $units)
+    public function __construct(private IUnitRepository $units)
     {
-        $this->units = $units;
     }
 
     /** @throws UnitHasNoParent */

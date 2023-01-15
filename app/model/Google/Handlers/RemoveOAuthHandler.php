@@ -12,21 +12,15 @@ use Model\Payment\DomainEvents\OAuthWasRemoved;
 
 final class RemoveOAuthHandler
 {
-    private IGoogleRepository $repository;
-
-    private EventBus $eventBus;
-
-    public function __construct(IGoogleRepository $repository, EventBus $eventBus)
+    public function __construct(private IGoogleRepository $repository, private EventBus $eventBus)
     {
-        $this->repository = $repository;
-        $this->eventBus   = $eventBus;
     }
 
     public function __invoke(RemoveOAuth $command): void
     {
         try {
             $oAuth = $this->repository->find($command->getOAuthId());
-        } catch (OAuthNotFound $exc) {
+        } catch (OAuthNotFound) {
             return;
         }
 

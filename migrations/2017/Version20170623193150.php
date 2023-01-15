@@ -74,7 +74,7 @@ class Version20170623193150 extends AbstractMigration
     }
 
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    private function getMainAccount(int $unitId): ?string
+    private function getMainAccount(int $unitId): string|null
     {
         $result = $this->skautis->org->AccountAll(['ID_Unit' => $unitId]);
 

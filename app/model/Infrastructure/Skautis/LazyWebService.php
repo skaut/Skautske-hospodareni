@@ -17,27 +17,19 @@ use Skautis\Wsdl\WebServiceInterface;
  */
 final class LazyWebService implements WebServiceInterface
 {
-    private string $webServiceName;
+    private WebServiceInterface|null $webService = null;
 
-    private Skautis $skautis;
-
-    private ?WebServiceInterface $webService = null;
-
-    public function __construct(string $webServiceName, Skautis $skautis)
+    public function __construct(private string $webServiceName, private Skautis $skautis)
     {
-        $this->webServiceName = $webServiceName;
-        $this->skautis        = $skautis;
     }
 
     /**
      * @param string  $functionName
      * @param mixed[] $arguments
      *
-     * @return mixed
-     *
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
      */
-    public function call($functionName, array $arguments = [])
+    public function call($functionName, array $arguments = []): mixed
     {
         return $this->getWebservice()->call($functionName, $arguments);
     }
@@ -46,11 +38,9 @@ final class LazyWebService implements WebServiceInterface
      * @param string  $functionName
      * @param mixed[] $arguments
      *
-     * @return mixed
-     *
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
      */
-    public function __call($functionName, $arguments)
+    public function __call($functionName, $arguments): mixed
     {
         return $this->getWebservice()->__call($functionName, $arguments);
     }

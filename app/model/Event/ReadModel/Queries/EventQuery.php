@@ -9,11 +9,8 @@ use Model\Event\SkautisEventId;
 /** @see EventQueryHandler */
 class EventQuery
 {
-    private SkautisEventId $eventId;
-
-    public function __construct(SkautisEventId $eventId)
+    public function __construct(private SkautisEventId $eventId)
     {
-        $this->eventId = $eventId;
     }
 
     public function getEventId(): SkautisEventId

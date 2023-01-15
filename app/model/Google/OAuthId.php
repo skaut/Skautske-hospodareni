@@ -40,7 +40,7 @@ final class OAuthId
         return new self($id);
     }
 
-    public static function fromStringOrNull(?string $id): ?self
+    public static function fromStringOrNull(string|null $id): self|null
     {
         if ($id === null) {
             return null;

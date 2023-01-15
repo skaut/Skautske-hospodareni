@@ -17,17 +17,8 @@ class ChitItem
 {
     use SmartObject;
 
-    private Amount $amount;
-
-    private Category $category;
-
-    private string $purpose;
-
-    public function __construct(Amount $amount, Category $category, string $purpose)
+    public function __construct(private Amount $amount, private Category $category, private string $purpose)
     {
-        $this->amount   = $amount;
-        $this->category = $category;
-        $this->purpose  = $purpose;
     }
 
     public function getAmount(): Amount

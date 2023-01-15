@@ -10,11 +10,8 @@ use Model\Unit\ReadModel\QueryHandlers\SubunitListQueryHandler;
 /** @see SubunitListQueryHandler */
 final class SubunitListQuery
 {
-    private UnitId $unitId;
-
-    public function __construct(UnitId $unitId)
+    public function __construct(private UnitId $unitId)
     {
-        $this->unitId = $unitId;
     }
 
     public function getUnitId(): UnitId

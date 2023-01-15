@@ -103,7 +103,7 @@ final class UnitRepositoryTest extends IntegrationTest
         $this->getRepository($eventBus)->save($unit);
     }
 
-    private function getRepository(?EventBus $eventBus = null): UnitRepository
+    private function getRepository(EventBus|null $eventBus = null): UnitRepository
     {
         return new UnitRepository($this->entityManager, $eventBus ?? new NullEventBus());
     }

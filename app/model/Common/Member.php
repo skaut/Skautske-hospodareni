@@ -8,17 +8,8 @@ use Cake\Chronos\Date;
 
 final class Member
 {
-    private int $id;
-
-    private string $name;
-
-    private ?Date $birthday = null;
-
-    public function __construct(int $id, string $name, ?Date $birthday)
+    public function __construct(private int $id, private string $name, private Date|null $birthday = null)
     {
-        $this->id       = $id;
-        $this->name     = $name;
-        $this->birthday = $birthday;
     }
 
     public function getId(): int
@@ -31,7 +22,7 @@ final class Member
         return $this->name;
     }
 
-    public function getBirthday(): ?Date
+    public function getBirthday(): Date|null
     {
         return $this->birthday;
     }

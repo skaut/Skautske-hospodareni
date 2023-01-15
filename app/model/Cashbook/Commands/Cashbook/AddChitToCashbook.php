@@ -12,22 +12,9 @@ use Model\DTO\Cashbook\ChitItem as ChitItemDto;
 /** @see AddChitToCashbookHandler */
 final class AddChitToCashbook
 {
-    private CashbookId $cashbookId;
-
-    private ChitBody $body;
-
-    /** @var ChitItemDto[] */
-    private array $items;
-
-    private PaymentMethod $paymentMethod;
-
     /** @param ChitItemDto[] $items */
-    public function __construct(CashbookId $cashbookId, ChitBody $body, PaymentMethod $paymentMethod, array $items)
+    public function __construct(private CashbookId $cashbookId, private ChitBody $body, private PaymentMethod $paymentMethod, private array $items)
     {
-        $this->cashbookId    = $cashbookId;
-        $this->body          = $body;
-        $this->paymentMethod = $paymentMethod;
-        $this->items         = $items;
     }
 
     public function getCashbookId(): CashbookId

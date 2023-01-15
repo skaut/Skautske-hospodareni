@@ -11,17 +11,8 @@ use Nette\Mail\Mailer;
 
 class MailerFactory implements IMailerFactory
 {
-    private Mailer $debugMailer;
-
-    private bool $enabled;
-
-    private GoogleService $googleService;
-
-    public function __construct(Mailer $debugMailer, bool $enabled, GoogleService $googleService)
+    public function __construct(private Mailer $debugMailer, private bool $enabled, private GoogleService $googleService)
     {
-        $this->debugMailer   = $debugMailer;
-        $this->enabled       = $enabled;
-        $this->googleService = $googleService;
     }
 
     public function create(OAuth $oAuth): Mailer

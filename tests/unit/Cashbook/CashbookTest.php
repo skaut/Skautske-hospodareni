@@ -128,7 +128,7 @@ class CashbookTest extends Unit
     }
 
     /** @dataProvider dataValidChitNumberPrefixes */
-    public function testUpdateChitNumberPrefix(?string $prefix): void
+    public function testUpdateChitNumberPrefix(string|null $prefix): void
     {
         $cashbook = $this->createEventCashbook();
 
@@ -230,7 +230,7 @@ class CashbookTest extends Unit
         $cashbook->addChit($chitBody, PaymentMethod::CASH(), $items, $categories);
     }
 
-    private function createEventCashbook(?CashbookId $cashbookId = null): Cashbook
+    private function createEventCashbook(CashbookId|null $cashbookId = null): Cashbook
     {
         return new Cashbook($cashbookId ?? CashbookId::generate(), CashbookType::get(CashbookType::EVENT));
     }

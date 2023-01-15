@@ -13,17 +13,11 @@ use Model\DTO\Cashbook\ChitFactory;
 
 final class ChitQueryHandler
 {
-    private ICashbookRepository $cashbooks;
-
-    private QueryBus $queryBus;
-
-    public function __construct(ICashbookRepository $cashbooks, QueryBus $queryBus)
+    public function __construct(private ICashbookRepository $cashbooks, private QueryBus $queryBus)
     {
-        $this->cashbooks = $cashbooks;
-        $this->queryBus  = $queryBus;
     }
 
-    public function __invoke(ChitQuery $query): ?Chit
+    public function __invoke(ChitQuery $query): Chit|null
     {
         $cashbook = $this->cashbooks->find($query->getCashbookId());
 

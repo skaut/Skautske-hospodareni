@@ -15,11 +15,8 @@ use function array_map;
 
 class PreparedPaymentsQueryHandler
 {
-    private EntityManager $entityManager;
-
-    public function __construct(EntityManager $entityManager)
+    public function __construct(private EntityManager $entityManager)
     {
-        $this->entityManager = $entityManager;
     }
 
     /** @return \Model\DTO\Payment\Payment[] */

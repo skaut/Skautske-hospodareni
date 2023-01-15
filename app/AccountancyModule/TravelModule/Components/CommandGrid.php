@@ -18,24 +18,12 @@ use function array_unique;
 
 class CommandGrid extends BaseGridControl
 {
-    private int $unitId;
-
-    private int $userId;
-
-    private TravelService $travel;
-
-    private GridFactory $gridFactory;
-
     public function __construct(
-        int $unitId,
-        int $userId,
-        TravelService $travel,
-        GridFactory $gridFactory
+        private int $unitId,
+        private int $userId,
+        private TravelService $travel,
+        private GridFactory $gridFactory,
     ) {
-        $this->unitId      = $unitId;
-        $this->userId      = $userId;
-        $this->travel      = $travel;
-        $this->gridFactory = $gridFactory;
     }
 
     protected function createComponentGrid(): DataGrid

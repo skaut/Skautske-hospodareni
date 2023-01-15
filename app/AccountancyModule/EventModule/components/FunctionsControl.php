@@ -28,31 +28,16 @@ use function assert;
 
 class FunctionsControl extends BaseControl
 {
-    private int $eventId;
-
-    private UnitId $unitId;
-
-    private CommandBus $commandBus;
-
-    private QueryBus $queryBus;
-
-    private IAuthorizator $authorizator;
-
     /** @persistent */
     public bool $editation = false;
 
     public function __construct(
-        int $eventId,
-        UnitId $unitId,
-        CommandBus $commandBus,
-        QueryBus $queryBus,
-        IAuthorizator $authorizator
+        private int $eventId,
+        private UnitId $unitId,
+        private CommandBus $commandBus,
+        private QueryBus $queryBus,
+        private IAuthorizator $authorizator,
     ) {
-        $this->eventId      = $eventId;
-        $this->unitId       = $unitId;
-        $this->commandBus   = $commandBus;
-        $this->queryBus     = $queryBus;
-        $this->authorizator = $authorizator;
     }
 
     private function canEdit(): bool
@@ -144,10 +129,10 @@ class FunctionsControl extends BaseControl
         } catch (PermissionException $exc) {
             $form->addError($exc->getMessage());
             $this->reload($exc->getMessage(), 'danger');
-        } catch (LeaderNotAdult $e) {
+        } catch (LeaderNotAdult) {
             $form->addError('Vedoucí akce musí být dosplělá osoba.');
             $this->reload();
-        } catch (AssistantNotAdult $e) {
+        } catch (AssistantNotAdult) {
             $form->addError('Zástupce musí být dosplělá osoba.');
             $this->reload();
         }
@@ -190,7 +175,7 @@ class FunctionsControl extends BaseControl
         return $persons;
     }
 
-    private function getIdOrNull(?Person $person): ?int
+    private function getIdOrNull(Person|null $person): int|null
     {
         if ($person === null) {
             return null;

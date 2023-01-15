@@ -15,11 +15,8 @@ class ParticipantChitSumQueryHandler
 {
     private const PARTICIPANT_INCOME_CATEGORY_IDS = [1, 11];
 
-    private EntityManager $entityManager;
-
-    public function __construct(EntityManager $entityManager)
+    public function __construct(private EntityManager $entityManager)
     {
-        $this->entityManager = $entityManager;
     }
 
     public function __invoke(ParticipantChitSumQuery $query): float

@@ -35,7 +35,7 @@ abstract class BasePresenter extends Presenter
 
     private string $appDir;
 
-    private ?int $unitId = null;
+    private int|null $unitId = null;
 
     protected CommandBus $commandBus;
 
@@ -63,7 +63,7 @@ abstract class BasePresenter extends Presenter
         NotificationsCollector $notificationsCollector,
         LoggerInterface $logger,
         LinkGenerator $linkGenerator,
-        Context $appContext
+        Context $appContext,
     ): void {
         $this->userService            = $userService;
         $this->unitService            = $unitService;
@@ -129,12 +129,12 @@ abstract class BasePresenter extends Presenter
                 'myRoles' => $this->userService->getAllSkautisRoles(),
                 'myRole' => $this->userService->getRoleId(),
             ]);
-        } catch (AuthenticationException $ex) {
+        } catch (AuthenticationException) {
             $this->getUser()->logout(true);
         }
     }
 
-    public function handleChangeRole(?int $roleId = null): void
+    public function handleChangeRole(int|null $roleId = null): void
     {
         if ($roleId === null) {
             throw new BadRequestException();

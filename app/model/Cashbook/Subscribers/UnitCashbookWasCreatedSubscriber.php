@@ -12,14 +12,8 @@ use Model\Payment\IUnitResolver;
 
 final class UnitCashbookWasCreatedSubscriber
 {
-    private CommandBus $commandBus;
-
-    private IUnitResolver $unitResolver;
-
-    public function __construct(CommandBus $commandBus, IUnitResolver $unitResolver)
+    public function __construct(private CommandBus $commandBus, private IUnitResolver $unitResolver)
     {
-        $this->commandBus   = $commandBus;
-        $this->unitResolver = $unitResolver;
     }
 
     public function __invoke(CashbookWasCreated $event): void

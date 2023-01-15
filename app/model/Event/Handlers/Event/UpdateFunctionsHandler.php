@@ -14,11 +14,8 @@ use function strpos;
 
 class UpdateFunctionsHandler
 {
-    private Skautis $skautis;
-
-    public function __construct(Skautis $skautis)
+    public function __construct(private Skautis $skautis)
     {
-        $this->skautis = $skautis;
     }
 
     /**

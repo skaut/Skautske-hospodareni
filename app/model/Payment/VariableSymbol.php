@@ -8,17 +8,13 @@ use Nette\Utils\Strings;
 
 final class VariableSymbol
 {
-    private string $value;
-
     private const PATTERN = '^(?!0)[0-9]{1,10}$';
 
-    public function __construct(string $value)
+    public function __construct(private string $value)
     {
         if (! Strings::match($value, '/' . self::PATTERN . '/')) {
             throw new InvalidVariableSymbol($value);
         }
-
-        $this->value = $value;
     }
 
     public function increment(): self
@@ -28,10 +24,10 @@ final class VariableSymbol
         );
     }
 
-    public static function areEqual(?VariableSymbol $first, ?VariableSymbol $second): bool
+    public static function areEqual(VariableSymbol|null $first, VariableSymbol|null $second): bool
     {
-        $firstInt  = $first !== null ? $first->toInt() : null;
-        $secondInt = $second !== null ? $second->toInt() : null;
+        $firstInt  = $first?->toInt();
+        $secondInt = $second?->toInt();
 
         return $firstInt === $secondInt;
     }

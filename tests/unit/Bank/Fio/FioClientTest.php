@@ -90,7 +90,7 @@ class FioClientTest extends Unit
         $fio->getTransactions($since, $until, $this->mockAccount());
     }
 
-    private function mockAccount(?string $token = 'token'): BankAccount
+    private function mockAccount(string|null $token = 'token'): BankAccount
     {
         return m::mock(BankAccount::class, [
             'getId' => 10,

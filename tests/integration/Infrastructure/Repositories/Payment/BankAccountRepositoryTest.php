@@ -147,7 +147,7 @@ class BankAccountRepositoryTest extends IntegrationTest
         $this->assertSame([], $accounts);
     }
 
-    private function createAccount(int $unitId = 1, ?DateTimeImmutable $createdAt = null): BankAccount
+    private function createAccount(int $unitId = 1, DateTimeImmutable|null $createdAt = null): BankAccount
     {
         return new BankAccount(
             1,
@@ -160,7 +160,7 @@ class BankAccountRepositoryTest extends IntegrationTest
     }
 
     /** @return mixed[] */
-    private function getRow(int $id, int $unitId, ?DateTimeImmutable $createdAt = null): array
+    private function getRow(int $id, int $unitId, DateTimeImmutable|null $createdAt = null): array
     {
         return [
             'id' => $id,

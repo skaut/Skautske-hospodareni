@@ -39,50 +39,28 @@ final class ParticipantList extends BaseControl
 
     private const NO_ACTION = '';
 
-    public int $aid;
-
     /** @var callable[] */
     public array $onUpdate = [];
 
     /** @var callable[] */
     public array $onRemove = [];
 
-    protected bool $isAllowRepayment;
-
-    protected bool $isAllowIsAccount;
-
-    protected bool $isAllowDaysUpdate;
-
-    protected bool $isAllowParticipantUpdate;
-
-    protected bool $isAllowParticipantDelete;
-
-    /** @var Participant[] */
-    private array $currentParticipants;
-
     /** @persistent */
     public bool $showUnits = false;
 
     /** @persistent */
-    public ?string $sort = 'displayName';
+    public string|null $sort = 'displayName';
 
     /** @param Participant[] $currentParticipants */
     public function __construct(
-        int $aid,
-        array $currentParticipants,
-        bool $isAllowDaysUpdate,
-        bool $isAllowRepayment,
-        bool $isAllowIsAccount,
-        bool $isAllowParticipantUpdate,
-        bool $isAllowParticipantDelete
+        public int $aid,
+        private array $currentParticipants,
+        protected bool $isAllowDaysUpdate,
+        protected bool $isAllowRepayment,
+        protected bool $isAllowIsAccount,
+        protected bool $isAllowParticipantUpdate,
+        protected bool $isAllowParticipantDelete,
     ) {
-        $this->aid                      = $aid;
-        $this->currentParticipants      = $currentParticipants;
-        $this->isAllowDaysUpdate        = $isAllowDaysUpdate;
-        $this->isAllowRepayment         = $isAllowRepayment;
-        $this->isAllowIsAccount         = $isAllowIsAccount;
-        $this->isAllowParticipantUpdate = $isAllowParticipantUpdate;
-        $this->isAllowParticipantDelete = $isAllowParticipantDelete;
     }
 
     public function render(): void

@@ -11,20 +11,8 @@ class UpdateParticipant
     public const FIELD_REPAYMENT  = 'repayment';
     public const FIELD_IS_ACCOUNT = 'isAccount';
 
-    private int $eventId;
-
-    private int $participantId;
-
-    private string $field;
-
-    private string $value;
-
-    public function __construct(int $eventId, int $participantId, string $field, string $value)
+    public function __construct(private int $eventId, private int $participantId, private string $field, private string $value)
     {
-        $this->eventId       = $eventId;
-        $this->participantId = $participantId;
-        $this->field         = $field;
-        $this->value         = $value;
     }
 
     public function getEventId(): int

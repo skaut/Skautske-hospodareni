@@ -10,14 +10,8 @@ use Model\Cashbook\Handlers\Cashbook\LockCashbookHandler;
 /** @see LockCashbookHandler */
 final class LockCashbook
 {
-    private CashbookId $cashbookId;
-
-    private int $userId;
-
-    public function __construct(CashbookId $cashbookId, int $userId)
+    public function __construct(private CashbookId $cashbookId, private int $userId)
     {
-        $this->cashbookId = $cashbookId;
-        $this->userId     = $userId;
     }
 
     public function getCashbookId(): CashbookId

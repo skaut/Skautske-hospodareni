@@ -10,11 +10,8 @@ use Model\Cashbook\ReadModel\QueryHandlers\CategoriesSummaryQueryHandler;
 /** @see CategoriesSummaryQueryHandler */
 final class CategoriesSummaryQuery
 {
-    private CashbookId $cashbookId;
-
-    public function __construct(CashbookId $cashbookId)
+    public function __construct(private CashbookId $cashbookId)
     {
-        $this->cashbookId = $cashbookId;
     }
 
     public function getCashbookId(): CashbookId

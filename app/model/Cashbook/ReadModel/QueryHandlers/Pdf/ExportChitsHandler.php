@@ -35,16 +35,10 @@ use function in_array;
 
 class ExportChitsHandler
 {
-    private QueryBus $queryBus;
-
-    private TemplateFactory $templateFactory;
-
     public function __construct(
-        QueryBus $queryBus,
-        TemplateFactory $templateFactory
+        private QueryBus $queryBus,
+        private TemplateFactory $templateFactory,
     ) {
-        $this->queryBus        = $queryBus;
-        $this->templateFactory = $templateFactory;
     }
 
     public function __invoke(ExportChits $query): string
@@ -102,7 +96,7 @@ class ExportChitsHandler
             assert($functions instanceof Functions);
 
             $accountant            = $functions->getAccountant() ?? $functions->getLeader();
-            $template['pokladnik'] = $accountant !== null ? $accountant->getName() : '';
+            $template['pokladnik'] = $accountant?->getName() ?? '';
 
             $template['list'] = $this->queryBus->handle(
                 $skautisId instanceof SkautisCampId

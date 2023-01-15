@@ -11,14 +11,8 @@ use Model\Event\SkautisCampId;
 /** @see CampParticipantCategoryIdQueryHandler */
 final class CampParticipantCategoryIdQuery
 {
-    private SkautisCampId $campId;
-
-    private ParticipantType $participantType;
-
-    public function __construct(SkautisCampId $campId, ParticipantType $participantType)
+    public function __construct(private SkautisCampId $campId, private ParticipantType $participantType)
     {
-        $this->campId          = $campId;
-        $this->participantType = $participantType;
     }
 
     public function getCampId(): SkautisCampId

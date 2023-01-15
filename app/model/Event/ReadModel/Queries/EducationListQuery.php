@@ -9,14 +9,11 @@ use Model\Event\ReadModel\QueryHandlers\EducationListQueryHandler;
 /** @see EducationListQueryHandler */
 final class EducationListQuery
 {
-    private ?int $year;
-
-    public function __construct(?int $year)
+    public function __construct(private int|null $year)
     {
-        $this->year = $year;
     }
 
-    public function getYear(): ?int
+    public function getYear(): int|null
     {
         return $this->year;
     }

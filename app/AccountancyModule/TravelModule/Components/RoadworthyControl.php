@@ -24,20 +24,8 @@ use function implode;
 
 final class RoadworthyControl extends BaseControl
 {
-    private int $vehicleId;
-
-    private bool $isEditable;
-
-    private CommandBus $commandBus;
-
-    private QueryBus $queryBus;
-
-    public function __construct(int $vehicleId, bool $isEditable, CommandBus $commandBus, QueryBus $queryBus)
+    public function __construct(private int $vehicleId, private bool $isEditable, private CommandBus $commandBus, private QueryBus $queryBus)
     {
-        $this->vehicleId  = $vehicleId;
-        $this->isEditable = $isEditable;
-        $this->commandBus = $commandBus;
-        $this->queryBus   = $queryBus;
     }
 
     public function render(): void
@@ -61,7 +49,7 @@ final class RoadworthyControl extends BaseControl
         try {
             $this->commandBus->handle(new RemoveRoadworthyScan($this->vehicleId, FilePath::fromString($path)));
             $this->presenter->flashMessage('Sken byl odebrán', 'success');
-        } catch (ScanNotFound $e) {
+        } catch (ScanNotFound) {
         }
 
         $this->redrawControl();

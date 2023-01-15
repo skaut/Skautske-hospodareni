@@ -16,14 +16,8 @@ use function array_map;
 
 final class AddChitToCashbookHandler
 {
-    private ICashbookRepository $cashbooks;
-
-    private CategoryRepository $categories;
-
-    public function __construct(ICashbookRepository $cashbooks, CategoryRepository $categories)
+    public function __construct(private ICashbookRepository $cashbooks, private CategoryRepository $categories)
     {
-        $this->cashbooks  = $cashbooks;
-        $this->categories = $categories;
     }
 
     /** @throws CashbookNotFound */

@@ -9,11 +9,8 @@ use Model\Google\OAuthId;
 /** @see RemoveOAuthHandler */
 final class RemoveOAuth
 {
-    private OAuthId $oAuthId;
-
-    public function __construct(OAuthId $oAuthId)
+    public function __construct(private OAuthId $oAuthId)
     {
-        $this->oAuthId = $oAuthId;
     }
 
     public function getOAuthId(): OAuthId

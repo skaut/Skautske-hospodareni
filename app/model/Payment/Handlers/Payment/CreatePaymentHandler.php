@@ -11,14 +11,8 @@ use Model\Payment\Repositories\IPaymentRepository;
 
 final class CreatePaymentHandler
 {
-    private IPaymentRepository $payments;
-
-    private IGroupRepository $groups;
-
-    public function __construct(IPaymentRepository $payments, IGroupRepository $groups)
+    public function __construct(private IPaymentRepository $payments, private IGroupRepository $groups)
     {
-        $this->payments = $payments;
-        $this->groups   = $groups;
     }
 
     public function __invoke(CreatePayment $command): void

@@ -14,14 +14,8 @@ use function is_object;
 
 class EducationListQueryHandler
 {
-    private Skautis $skautis;
-
-    private EducationFactory $educationFactory;
-
-    public function __construct(Skautis $skautis, EducationFactory $educationFactory)
+    public function __construct(private Skautis $skautis, private EducationFactory $educationFactory)
     {
-        $this->skautis          = $skautis;
-        $this->educationFactory = $educationFactory;
     }
 
     /** @return array<int, Education> Educations indexed by ID */

@@ -9,11 +9,8 @@ use Model\Payment\BankAccount\BankAccountId;
 /** @see PreparedPaymentsQueryHandler */
 final class PreparedPairedPaymentsQuery
 {
-    private BankAccountId $bankAccountId;
-
-    public function __construct(BankAccountId $bankAccountId)
+    public function __construct(private BankAccountId $bankAccountId)
     {
-        $this->bankAccountId = $bankAccountId;
     }
 
     public function getBankAccountId(): BankAccountId

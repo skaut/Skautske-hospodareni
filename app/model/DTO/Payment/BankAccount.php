@@ -9,36 +9,15 @@ use Model\Payment\BankAccount\AccountNumber;
 
 class BankAccount
 {
-    private int $id;
-
-    private int $unitId;
-
-    private string $name;
-
-    private AccountNumber $number;
-
-    private ?string $token = null;
-
-    private DateTimeImmutable $createdAt;
-
-    private bool $allowedForSubunits;
-
     public function __construct(
-        int $id,
-        int $unitId,
-        string $name,
-        AccountNumber $number,
-        ?string $token,
-        DateTimeImmutable $createdAt,
-        bool $allowedForSubunits
+        private int $id,
+        private int $unitId,
+        private string $name,
+        private AccountNumber $number,
+        private string|null $token = null,
+        private DateTimeImmutable $createdAt,
+        private bool $allowedForSubunits,
     ) {
-        $this->id                 = $id;
-        $this->unitId             = $unitId;
-        $this->name               = $name;
-        $this->number             = $number;
-        $this->token              = $token;
-        $this->createdAt          = $createdAt;
-        $this->allowedForSubunits = $allowedForSubunits;
     }
 
     public function getId(): int
@@ -61,7 +40,7 @@ class BankAccount
         return $this->number;
     }
 
-    public function getToken(): ?string
+    public function getToken(): string|null
     {
         return $this->token;
     }

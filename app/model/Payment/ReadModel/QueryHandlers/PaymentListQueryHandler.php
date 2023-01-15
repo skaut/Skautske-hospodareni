@@ -13,11 +13,8 @@ use function array_map;
 
 final class PaymentListQueryHandler
 {
-    private IPaymentRepository $payments;
-
-    public function __construct(IPaymentRepository $payments)
+    public function __construct(private IPaymentRepository $payments)
     {
-        $this->payments = $payments;
     }
 
     /** @return DTO\Payment[] */

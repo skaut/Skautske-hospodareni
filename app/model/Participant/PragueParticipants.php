@@ -24,14 +24,6 @@ final class PragueParticipants
     private const PRAGUE_SUPPORTABLE_UPPER_AGE = 26;
     public const PRAGUE_UNIT_PREFIX            = '11';
 
-    private int $under18;
-
-    private int $between18and26;
-
-    private int $personDaysUnder26;
-
-    private int $citizensCount;
-
     /** @param Participant[] $participants */
     public static function fromParticipantList(Date $eventStartDate, array $participants): self
     {
@@ -73,12 +65,8 @@ final class PragueParticipants
         return new self($under18, $between18and26, $personDaysUnder26, $citizensCount);
     }
 
-    public function __construct(int $under18, int $between18and26, int $personDaysUnder26, int $citizensCount)
+    public function __construct(private int $under18, private int $between18and26, private int $personDaysUnder26, private int $citizensCount)
     {
-        $this->under18           = $under18;
-        $this->between18and26    = $between18and26;
-        $this->personDaysUnder26 = $personDaysUnder26;
-        $this->citizensCount     = $citizensCount;
     }
 
     public function getUnder18(): int

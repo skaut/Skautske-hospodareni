@@ -12,7 +12,7 @@ use Model\Payment\InvalidBankAccountNumber;
 class AccountNumber
 {
     /** @ORM\Column(type="string", nullable=true, length=6) */
-    private ?string $prefix = null;
+    private string|null $prefix = null;
 
     /** @ORM\Column(type="string", length=10) */
     private string $number;
@@ -21,7 +21,7 @@ class AccountNumber
     private string $bankCode;
 
     /** @throws InvalidBankAccountNumber */
-    public function __construct(?string $prefix, string $number, string $bankCode)
+    public function __construct(string|null $prefix, string $number, string $bankCode)
     {
         $validator = new Czech();
 
@@ -53,12 +53,12 @@ class AccountNumber
             self::fromString($number);
 
             return true;
-        } catch (InvalidBankAccountNumber $e) {
+        } catch (InvalidBankAccountNumber) {
             return false;
         }
     }
 
-    public function getPrefix(): ?string
+    public function getPrefix(): string|null
     {
         return $this->prefix;
     }

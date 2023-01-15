@@ -16,11 +16,8 @@ use function is_object;
 
 final class EducationCategoryRepository implements IEducationCategoryRepository
 {
-    private WebServiceInterface $grantsWebService;
-
-    public function __construct(WebServiceInterface $grantsWebService)
+    public function __construct(private WebServiceInterface $grantsWebService)
     {
-        $this->grantsWebService = $grantsWebService;
     }
 
     /** @return EducationCategory[] */

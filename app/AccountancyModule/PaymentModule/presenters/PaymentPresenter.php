@@ -53,48 +53,21 @@ class PaymentPresenter extends BasePresenter
     /** @var string[] */
     protected array $readUnits;
 
-    protected UnitService $unitService;
-
-    private PaymentService $model;
-
-    private MailingService $mailing;
-
-    private IMassAddFormFactory $massAddFormFactory;
-
-    private IPairButtonFactory $pairButtonFactory;
-
-    private IGroupUnitControlFactory $unitControlFactory;
-
-    private IRemoveGroupDialogFactory $removeGroupDialogFactory;
-
-    private IPaymentDialogFactory $paymentDialogFactory;
-
-    private IPaymentListFactory $paymentListFactory;
-
     private const NO_MAILER_MESSAGE       = 'Nemáte nastavený mail pro odesílání u skupiny';
     private const NO_BANK_ACCOUNT_MESSAGE = 'Skupina nemá nastavený bankovní účet';
 
     public function __construct(
-        PaymentService $model,
-        UnitService $unitService,
-        MailingService $mailing,
-        IMassAddFormFactory $massAddFormFactory,
-        IPairButtonFactory $pairButtonFactory,
-        IGroupUnitControlFactory $unitControlFactory,
-        IRemoveGroupDialogFactory $removeGroupDialogFactory,
-        IPaymentDialogFactory $paymentDialogFactory,
-        IPaymentListFactory $paymentListFactory
+        private PaymentService $model,
+        protected UnitService $unitService,
+        private MailingService $mailing,
+        private IMassAddFormFactory $massAddFormFactory,
+        private IPairButtonFactory $pairButtonFactory,
+        private IGroupUnitControlFactory $unitControlFactory,
+        private IRemoveGroupDialogFactory $removeGroupDialogFactory,
+        private IPaymentDialogFactory $paymentDialogFactory,
+        private IPaymentListFactory $paymentListFactory,
     ) {
         parent::__construct();
-        $this->model                    = $model;
-        $this->unitService              = $unitService;
-        $this->mailing                  = $mailing;
-        $this->massAddFormFactory       = $massAddFormFactory;
-        $this->pairButtonFactory        = $pairButtonFactory;
-        $this->unitControlFactory       = $unitControlFactory;
-        $this->removeGroupDialogFactory = $removeGroupDialogFactory;
-        $this->paymentDialogFactory     = $paymentDialogFactory;
-        $this->paymentListFactory       = $paymentListFactory;
     }
 
     protected function startup(): void
@@ -142,7 +115,7 @@ class PaymentPresenter extends BasePresenter
     }
 
     /** @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY */
-    public function actionMassAdd(int $id, ?int $unitId = null, bool $directMemberOnly = true): void
+    public function actionMassAdd(int $id, int|null $unitId = null, bool $directMemberOnly = true): void
     {
         $this->assertCanEditGroup();
 
@@ -172,9 +145,9 @@ class PaymentPresenter extends BasePresenter
 
         try {
             $this->model->cancelPayment($pid);
-        } catch (PaymentNotFound $e) {
+        } catch (PaymentNotFound) {
             $this->flashMessage('Platba nenalezena!', 'danger');
-        } catch (PaymentClosed $e) {
+        } catch (PaymentClosed) {
             $this->flashMessage('Tato platba už je uzavřená', 'danger');
         }
 
@@ -211,7 +184,7 @@ class PaymentPresenter extends BasePresenter
 
         try {
             $this->sendEmailsForPayments([$payment]);
-        } catch (PaymentClosed $e) {
+        } catch (PaymentClosed) {
             $this->flashMessage('Nelze odeslat uzavřenou platbu');
         }
     }
@@ -240,13 +213,13 @@ class PaymentPresenter extends BasePresenter
         try {
             $email = $this->mailing->sendTestMail($gid);
             $this->flashMessage('Testovací e-mail byl odeslán na ' . $email . '.');
-        } catch (OAuthNotSet $e) {
+        } catch (OAuthNotSet) {
             $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
         } catch (InvalidOAuth $e) {
             $this->oauthError($e);
-        } catch (InvalidBankAccount $e) {
+        } catch (InvalidBankAccount) {
             $this->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
-        } catch (EmailNotSet $e) {
+        } catch (EmailNotSet) {
             $this->flashMessage('Nemáte nastavený e-mail ve skautisu, na který by se odeslal testovací e-mail!', 'danger');
         }
 
@@ -263,7 +236,7 @@ class PaymentPresenter extends BasePresenter
         try {
             $this->model->completePayment($pid);
             $this->flashMessage('Platba byla zaplacena.');
-        } catch (PaymentClosed $e) {
+        } catch (PaymentClosed) {
             $this->flashMessage('Tato platba už je uzavřená', 'danger');
         }
 
@@ -300,7 +273,7 @@ class PaymentPresenter extends BasePresenter
 
         try {
             $this->model->closeGroup($this->id, $note);
-        } catch (GroupNotFound $e) {
+        } catch (GroupNotFound) {
         }
 
         $this->redirect('this');
@@ -315,7 +288,7 @@ class PaymentPresenter extends BasePresenter
 
         try {
             $this->model->openGroup($this->id, $note);
-        } catch (GroupNotFound $e) {
+        } catch (GroupNotFound) {
         }
 
         $this->redirect('this');
@@ -387,10 +360,10 @@ class PaymentPresenter extends BasePresenter
                 $this->commandBus->handle(new SendPaymentInfo($payment->getId()));
                 $sentCount++;
             }
-        } catch (OAuthNotSet $e) {
+        } catch (OAuthNotSet) {
             $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
             $this->redirect('this');
-        } catch (InvalidBankAccount $e) {
+        } catch (InvalidBankAccount) {
             $this->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
             $this->redirect('this');
         } catch (InvalidOAuth $e) {

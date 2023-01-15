@@ -36,17 +36,11 @@ class BankAccountsPresenter extends BasePresenter
 {
     private const DAYS_BACK = 60;
 
-    private IBankAccountFormFactory $formFactory;
+    private int|null $id = null;
 
-    private BankAccountService $accounts;
-
-    private ?int $id = null;
-
-    public function __construct(IBankAccountFormFactory $formFactory, BankAccountService $accounts)
+    public function __construct(private IBankAccountFormFactory $formFactory, private BankAccountService $accounts)
     {
         parent::__construct();
-        $this->formFactory = $formFactory;
-        $this->accounts    = $accounts;
     }
 
     public function handleAllowForSubunits(int $id): void
@@ -56,7 +50,7 @@ class BankAccountsPresenter extends BasePresenter
         try {
             $this->accounts->allowForSubunits($id);
             $this->flashMessage('Bankovní účet zpřístupněn', 'success');
-        } catch (BankAccountNotFound $e) {
+        } catch (BankAccountNotFound) {
             $this->flashMessage('Bankovní účet neexistuje', 'danger');
         }
 
@@ -70,7 +64,7 @@ class BankAccountsPresenter extends BasePresenter
         try {
             $this->accounts->disallowForSubunits($id);
             $this->flashMessage('Bankovní účet znepřístupněn', 'success');
-        } catch (BankAccountNotFound $e) {
+        } catch (BankAccountNotFound) {
             $this->flashMessage('Bankovní účet neexistuje', 'danger');
         }
 
@@ -84,7 +78,7 @@ class BankAccountsPresenter extends BasePresenter
         try {
             $this->accounts->removeBankAccount($id);
             $this->flashMessage('Bankovní účet byl odstraněn', 'success');
-        } catch (BankAccountNotFound $e) {
+        } catch (BankAccountNotFound) {
         }
 
         $this->redirect('default');
@@ -99,7 +93,7 @@ class BankAccountsPresenter extends BasePresenter
         try {
             $this->accounts->importFromSkautis($this->getUnitId());
             $this->flashMessage('Účty byly importovány', 'success');
-        } catch (BankAccountNotFound $e) {
+        } catch (BankAccountNotFound) {
             $this->flashMessage('Nenalezeny žádné účty', 'warning');
         }
 
@@ -191,11 +185,11 @@ class BankAccountsPresenter extends BasePresenter
 
             $templateParameters['payments']                 = $paymentsByTransaction;
             $templateParameters['paymentsByVariableSymbol'] = $paymentsByVariableSymbol;
-        } catch (TokenNotSet $e) {
+        } catch (TokenNotSet) {
             $templateParameters['warningMessage'] = 'Nemáte vyplněný token pro komunikaci s FIO';
-        } catch (BankTimeLimit $e) {
+        } catch (BankTimeLimit) {
             $templateParameters['warningMessage'] = PairButton::TIME_LIMIT_MESSAGE;
-        } catch (BankTimeout $e) {
+        } catch (BankTimeout) {
             $templateParameters['errorMessage'] = PairButton::TIMEOUT_MESSAGE;
         }
 
@@ -214,7 +208,7 @@ class BankAccountsPresenter extends BasePresenter
         return;
     }
 
-    private function canEdit(?int $unitId = null): bool
+    private function canEdit(int|null $unitId = null): bool
     {
         return $this->authorizator->isAllowed(UnitResource::EDIT, $unitId ?? $this->getUnitId());
     }
@@ -284,7 +278,7 @@ class BankAccountsPresenter extends BasePresenter
         return false;
     }
 
-    private function findBankAccount(int $id): ?BankAccount
+    private function findBankAccount(int $id): BankAccount|null
     {
         return $this->accounts->find($id);
     }

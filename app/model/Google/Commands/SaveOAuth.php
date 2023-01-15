@@ -10,14 +10,8 @@ use Model\Google\Handlers\SaveOAuthHandler;
 /** @see SaveOAuthHandler */
 final class SaveOAuth
 {
-    private string $code;
-
-    private UnitId $unitId;
-
-    public function __construct(string $code, UnitId $unitId)
+    public function __construct(private string $code, private UnitId $unitId)
     {
-        $this->code   = $code;
-        $this->unitId = $unitId;
     }
 
     public function getCode(): string

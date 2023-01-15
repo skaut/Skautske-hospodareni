@@ -15,16 +15,13 @@ use function assert;
 
 class MailPresenter extends BasePresenter
 {
-    private MailService $model;
-
     public function __construct(
-        MailService $model
+        private MailService $model,
     ) {
         parent::__construct();
-        $this->model = $model;
     }
 
-    public function actionDefault(?int $unitId = null): void
+    public function actionDefault(int|null $unitId = null): void
     {
         if ($unitId === null) {
             $this->redirect('this', ['unitId' => $this->unitService->getUnitId()]);

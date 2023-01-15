@@ -14,14 +14,8 @@ use Skautis\Wsdl\WebServiceInterface;
 
 final class CampRepository implements ICampRepository
 {
-    private WebServiceInterface $webService;
-
-    private CampFactory $campFactory;
-
-    public function __construct(WebServiceInterface $webService, CampFactory $campFactory)
+    public function __construct(private WebServiceInterface $webService, private CampFactory $campFactory)
     {
-        $this->webService  = $webService;
-        $this->campFactory = $campFactory;
     }
 
     public function find(SkautisCampId $id): Camp

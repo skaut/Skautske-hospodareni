@@ -10,12 +10,9 @@ use function sprintf;
 
 class InvalidVariableSymbol extends Exception
 {
-    private string $invalidValue;
-
-    public function __construct(string $invalidValue)
+    public function __construct(private string $invalidValue)
     {
         parent::__construct(sprintf('"%s" is not a valid variable symbol', $invalidValue));
-        $this->invalidValue = $invalidValue;
     }
 
     public function getInvalidValue(): string

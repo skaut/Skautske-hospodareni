@@ -21,32 +21,14 @@ class LogEntry
 {
     use SmartObject;
 
-    private int $unitId;
-
-    private DateTimeImmutable $date;
-
-    private int $userId;
-
-    private string $description;
-
-    private Type $type;
-
-    private ?int $typeId = null;
-
     public function __construct(
-        int $unitId,
-        DateTimeImmutable $date,
-        int $userId,
-        string $description,
-        Type $type,
-        ?int $typeId
+        private int $unitId,
+        private DateTimeImmutable $date,
+        private int $userId,
+        private string $description,
+        private Type $type,
+        private int|null $typeId = null,
     ) {
-        $this->unitId      = $unitId;
-        $this->date        = $date;
-        $this->userId      = $userId;
-        $this->description = $description;
-        $this->type        = $type;
-        $this->typeId      = $typeId;
     }
 
     public function getUnitId(): int
@@ -74,7 +56,7 @@ class LogEntry
         return $this->type->getValue();
     }
 
-    public function getTypeId(): ?int
+    public function getTypeId(): int|null
     {
         return $this->typeId;
     }

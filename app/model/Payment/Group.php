@@ -54,7 +54,7 @@ class Group
      *
      * @Nullable()
      */
-    private ?SkautisEntity $object = null;
+    private SkautisEntity|null $object = null;
 
     /** @ORM\Column(type="string", length=64) */
     private string $name;
@@ -66,14 +66,14 @@ class Group
     private string $state = self::STATE_OPEN;
 
     /** @ORM\Column(type="datetime_immutable", nullable=true) */
-    private ?DateTimeImmutable $createdAt = null;
+    private DateTimeImmutable|null $createdAt = null;
 
     /**
      * @ORM\Embedded(class=Group\BankAccount::class, columnPrefix=false)
      *
      * @Nullable()
      */
-    private ?Group\BankAccount $bankAccount = null;
+    private Group\BankAccount|null $bankAccount = null;
 
     /**
      * @ORM\OneToMany(targetEntity=Email::class, mappedBy="group", cascade={"persist", "remove"}, orphanRemoval=true)
@@ -83,13 +83,13 @@ class Group
     private Collection $emails;
 
     /** @ORM\Column(type="oauth_id", nullable=true) */
-    private ?OAuthId $oauthId;
+    private OAuthId|null $oauthId;
 
     /** @ORM\Column(type="string", length=250) */
     private string $note = '';
 
     /** @ORM\Column(type="integer", nullable=true) */
-    private ?int $smtpId = null;
+    private int|null $smtpId = null;
 
     public const STATE_OPEN   = 'open';
     public const STATE_CLOSED = 'closed';
@@ -100,15 +100,15 @@ class Group
      */
     public function __construct(
         array $unitIds,
-        ?SkautisEntity $object,
+        SkautisEntity|null $object,
         string $name,
         PaymentDefaults $paymentDefaults,
         DateTimeImmutable $createdAt,
         array $emails,
-        ?OAuthId $oAuthId,
-        ?BankAccount $bankAccount,
+        OAuthId|null $oAuthId,
+        BankAccount|null $bankAccount,
         IBankAccountAccessChecker $bankAccountAccessChecker,
-        IOAuthAccessChecker $oAuthAccessChecker
+        IOAuthAccessChecker $oAuthAccessChecker,
     ) {
         Assertion::notEmpty($unitIds);
         $this->object          = $object;
@@ -138,10 +138,10 @@ class Group
     public function update(
         string $name,
         PaymentDefaults $paymentDefaults,
-        ?OAuthId $oAuthId,
-        ?BankAccount $bankAccount,
+        OAuthId|null $oAuthId,
+        BankAccount|null $bankAccount,
         IBankAccountAccessChecker $bankAccountAccessChecker,
-        IOAuthAccessChecker $oAuthAccessChecker
+        IOAuthAccessChecker $oAuthAccessChecker,
     ): void {
         $this->changeBankAccount($bankAccount, $bankAccountAccessChecker);
         $this->changeOAuth($oAuthId, $oAuthAccessChecker);
@@ -180,7 +180,7 @@ class Group
     public function changeUnits(
         array $unitIds,
         IBankAccountAccessChecker $bankAccountAccessChecker,
-        IOAuthAccessChecker $mailAccessChecker
+        IOAuthAccessChecker $mailAccessChecker,
     ): void {
         $this->units->clear();
         foreach ($unitIds as $unitId) {
@@ -200,7 +200,7 @@ class Group
         $this->oauthId = null;
     }
 
-    public function getId(): ?int
+    public function getId(): int|null
     {
         return $this->id;
     }
@@ -215,7 +215,7 @@ class Group
         )->toArray();
     }
 
-    public function getObject(): ?SkautisEntity
+    public function getObject(): SkautisEntity|null
     {
         return $this->object;
     }
@@ -230,17 +230,17 @@ class Group
         return $this->paymentDefaults;
     }
 
-    public function getDefaultAmount(): ?float
+    public function getDefaultAmount(): float|null
     {
         return $this->paymentDefaults->getAmount();
     }
 
-    public function getDueDate(): ?Date
+    public function getDueDate(): Date|null
     {
         return $this->paymentDefaults->getDueDate();
     }
 
-    public function getConstantSymbol(): ?int
+    public function getConstantSymbol(): int|null
     {
         return $this->paymentDefaults->getConstantSymbol();
     }
@@ -250,16 +250,16 @@ class Group
         return $this->state;
     }
 
-    public function getCreatedAt(): ?DateTimeImmutable
+    public function getCreatedAt(): DateTimeImmutable|null
     {
         return $this->createdAt;
     }
 
-    public function getEmailTemplate(EmailType $type): ?EmailTemplate
+    public function getEmailTemplate(EmailType $type): EmailTemplate|null
     {
         $email = $this->getEmail($type);
 
-        return $email !== null ? $email->getTemplate() : null;
+        return $email?->getTemplate();
     }
 
     public function isEmailEnabled(EmailType $type): bool
@@ -287,12 +287,12 @@ class Group
         $this->bankAccount = $this->bankAccount->invalidateLastPairing();
     }
 
-    public function getLastPairing(): ?DateTimeImmutable
+    public function getLastPairing(): DateTimeImmutable|null
     {
-        return $this->bankAccount !== null ? $this->bankAccount->getLastPairing() : null;
+        return $this->bankAccount?->getLastPairing();
     }
 
-    public function getOauthId(): ?OAuthId
+    public function getOauthId(): OAuthId|null
     {
         return $this->oauthId;
     }
@@ -302,12 +302,12 @@ class Group
         return $this->note;
     }
 
-    public function getBankAccountId(): ?int
+    public function getBankAccountId(): int|null
     {
-        return $this->bankAccount !== null ? $this->bankAccount->getId() : null;
+        return $this->bankAccount?->getId();
     }
 
-    private function changeBankAccount(?BankAccount $bankAccount, IBankAccountAccessChecker $accessChecker): void
+    private function changeBankAccount(BankAccount|null $bankAccount, IBankAccountAccessChecker $accessChecker): void
     {
         if ($bankAccount === null) {
             $this->bankAccount = null;
@@ -348,7 +348,7 @@ class Group
         $email->disable();
     }
 
-    private function getEmail(EmailType $type): ?Email
+    private function getEmail(EmailType $type): Email|null
     {
         foreach ($this->emails as $email) {
             assert($email instanceof Email);
@@ -366,7 +366,7 @@ class Group
         $this->oauthId = null;
     }
 
-    private function changeOAuth(?OAuthId $oAuthId, IOAuthAccessChecker $checker): void
+    private function changeOAuth(OAuthId|null $oAuthId, IOAuthAccessChecker $checker): void
     {
         $unitIds = $this->getUnitIds();
 

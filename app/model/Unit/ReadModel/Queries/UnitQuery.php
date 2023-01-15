@@ -9,11 +9,8 @@ use Model\Unit\ReadModel\QueryHandlers\UnitQueryHandler;
 /** @see UnitQueryHandler */
 final class UnitQuery
 {
-    private int $unitId;
-
-    public function __construct(int $unitId)
+    public function __construct(private int $unitId)
     {
-        $this->unitId = $unitId;
     }
 
     public function getUnitId(): int

@@ -26,20 +26,8 @@ final class PaymentList extends BaseControl
         State::CANCELED,
     ];
 
-    private int $groupId;
-
-    private bool $isEditable;
-
-    private QueryBus $queryBus;
-
-    private GridFactory $gridFactory;
-
-    public function __construct(int $groupId, bool $isEditable, QueryBus $queryBus, GridFactory $gridFactory)
+    public function __construct(private int $groupId, private bool $isEditable, private QueryBus $queryBus, private GridFactory $gridFactory)
     {
-        $this->groupId     = $groupId;
-        $this->isEditable  = $isEditable;
-        $this->queryBus    = $queryBus;
-        $this->gridFactory = $gridFactory;
     }
 
     public function render(): void

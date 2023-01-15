@@ -433,7 +433,7 @@ class CommandTest extends Unit
         self::assertEquals($travelDetails->getEndPlace(), $duplicatedTravelDetails->getEndPlace());
     }
 
-    private function createCommand(?Vehicle $vehicle = null): Command
+    private function createCommand(Vehicle|null $vehicle = null): Command
     {
         return new Command(
             10,

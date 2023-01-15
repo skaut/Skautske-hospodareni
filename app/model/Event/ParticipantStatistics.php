@@ -6,28 +6,13 @@ namespace Model\Event;
 
 final class ParticipantStatistics
 {
-    private int $realAdult;
-
-    private int $realChild;
-
-    private int $realCount;
-
-    private int $realChildDays;
-
-    private int $realPersonDays;
-
     public function __construct(
-        int $realAdult,
-        int $realChild,
-        int $realCount,
-        int $realChildDays,
-        int $realPersonDays
+        private int $realAdult,
+        private int $realChild,
+        private int $realCount,
+        private int $realChildDays,
+        private int $realPersonDays,
     ) {
-        $this->realAdult      = $realAdult;
-        $this->realChild      = $realChild;
-        $this->realCount      = $realCount;
-        $this->realChildDays  = $realChildDays;
-        $this->realPersonDays = $realPersonDays;
     }
 
     public function getRealAdult(): int

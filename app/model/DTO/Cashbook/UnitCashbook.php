@@ -16,17 +16,8 @@ class UnitCashbook
 {
     use SmartObject;
 
-    private int $id;
-
-    private CashbookId $cashbookId;
-
-    private int $year;
-
-    public function __construct(int $id, CashbookId $cashbookId, int $year)
+    public function __construct(private int $id, private CashbookId $cashbookId, private int $year)
     {
-        $this->id         = $id;
-        $this->cashbookId = $cashbookId;
-        $this->year       = $year;
     }
 
     public function getId(): int

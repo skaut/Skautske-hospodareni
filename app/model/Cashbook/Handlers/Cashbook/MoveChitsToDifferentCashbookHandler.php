@@ -9,11 +9,8 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 
 final class MoveChitsToDifferentCashbookHandler
 {
-    private ICashbookRepository $cashbooks;
-
-    public function __construct(ICashbookRepository $cashbooks)
+    public function __construct(private ICashbookRepository $cashbooks)
     {
-        $this->cashbooks = $cashbooks;
     }
 
     public function __invoke(MoveChitsToDifferentCashbook $command): void

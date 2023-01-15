@@ -14,14 +14,8 @@ use function sprintf;
 
 final class ExcelResponse implements Response
 {
-    private string $filename;
-
-    private Spreadsheet $spreadsheet;
-
-    public function __construct(string $filename, Spreadsheet $spreadsheet)
+    public function __construct(private string $filename, private Spreadsheet $spreadsheet)
     {
-        $this->filename    = $filename;
-        $this->spreadsheet = $spreadsheet;
     }
 
     /**

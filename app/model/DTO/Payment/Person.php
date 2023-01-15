@@ -6,19 +6,9 @@ namespace Model\DTO\Payment;
 
 class Person
 {
-    private int $id;
-
-    private string $name;
-
-    /** @var string[] */
-    private array $emails;
-
     /** @param string[] $emails */
-    public function __construct(int $id, string $name, array $emails)
+    public function __construct(private int $id, private string $name, private array $emails)
     {
-        $this->id     = $id;
-        $this->name   = $name;
-        $this->emails = $emails;
     }
 
     public function getId(): int

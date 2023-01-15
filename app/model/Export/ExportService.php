@@ -58,24 +58,12 @@ class ExportService
     public const CATEGORY_VIRTUAL = 'virtual';
     public const CATEGORY_REAL    = 'real';
 
-    private UnitService $units;
-
-    private TemplateFactory $templateFactory;
-
-    private IEventRepository $events;
-
-    private QueryBus $queryBus;
-
     public function __construct(
-        UnitService $units,
-        TemplateFactory $templateFactory,
-        IEventRepository $events,
-        QueryBus $queryBus
+        private UnitService $units,
+        private TemplateFactory $templateFactory,
+        private IEventRepository $events,
+        private QueryBus $queryBus,
     ) {
-        $this->units           = $units;
-        $this->templateFactory = $templateFactory;
-        $this->events          = $events;
-        $this->queryBus        = $queryBus;
     }
 
     public function getNewPage(): string

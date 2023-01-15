@@ -43,7 +43,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
                 'event' => $this->event = $this->queryBus->handle(new CampQuery(new SkautisCampId($this->aid))),
                 'isEditable' => $this->isEditable,
             ]);
-        } catch (CampNotFound $exc) {
+        } catch (CampNotFound) {
             $this->template->setParameters(['message' => 'Nemáte oprávnění načíst tábor nebo tábor neexsituje.']);
             $this->forward('Default:accessDenied');
         }
@@ -63,7 +63,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         }
     }
 
-    protected function getCampId(): ?int
+    protected function getCampId(): int|null
     {
         return $this->aid;
     }

@@ -10,14 +10,8 @@ use Model\Common\IScanStorage;
 
 final class RemoveChitScanHandler
 {
-    private ICashbookRepository $cashbooks;
-
-    private IScanStorage $storage;
-
-    public function __construct(ICashbookRepository $cashbooks, IScanStorage $storage)
+    public function __construct(private ICashbookRepository $cashbooks, private IScanStorage $storage)
     {
-        $this->cashbooks = $cashbooks;
-        $this->storage   = $storage;
     }
 
     public function __invoke(RemoveChitScan $command): void

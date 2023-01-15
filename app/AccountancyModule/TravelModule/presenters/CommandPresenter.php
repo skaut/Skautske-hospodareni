@@ -11,18 +11,12 @@ use Nette\Application\BadRequestException;
 
 class CommandPresenter extends BasePresenter
 {
-    private ICommandFormFactory $commandFormFactory;
+    private int|null $id = null;
 
-    private TravelService $model;
-
-    private ?int $id = null;
-
-    public function __construct(ICommandFormFactory $commandFormFactory, TravelService $model)
+    public function __construct(private ICommandFormFactory $commandFormFactory, private TravelService $model)
     {
         parent::__construct();
         $this->setLayout('layout.new');
-        $this->commandFormFactory = $commandFormFactory;
-        $this->model              = $model;
     }
 
     public function actionEdit(int $id): void

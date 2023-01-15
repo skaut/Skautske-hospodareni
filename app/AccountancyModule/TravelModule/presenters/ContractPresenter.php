@@ -24,19 +24,13 @@ use function dirname;
 
 class ContractPresenter extends BasePresenter
 {
-    private TravelService $travelService;
-
-    private PdfRenderer $pdf;
-
-    public function __construct(TravelService $travelService, PdfRenderer $pdf)
+    public function __construct(private TravelService $travelService, private PdfRenderer $pdf)
     {
         parent::__construct();
-        $this->travelService = $travelService;
-        $this->pdf           = $pdf;
         $this->setLayout('layout.new');
     }
 
-    private function isContractAccessible(?Contract $contract): bool
+    private function isContractAccessible(Contract|null $contract): bool
     {
         $identity = $this->getUser()->getIdentity();
 
@@ -45,7 +39,7 @@ class ContractPresenter extends BasePresenter
         return $contract !== null && array_key_exists($contract->getUnitId(), $identity->access[UserService::ACCESS_READ]);
     }
 
-    private function isContractEditable(?Contract $contract): bool
+    private function isContractEditable(Contract|null $contract): bool
     {
         $identity = $this->getUser()->getIdentity();
 

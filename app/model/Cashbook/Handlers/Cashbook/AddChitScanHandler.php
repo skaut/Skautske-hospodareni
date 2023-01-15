@@ -12,16 +12,10 @@ use Model\Common\IScanStorage;
 
 final class AddChitScanHandler
 {
-    private ICashbookRepository $cashbook;
-
-    private IScanStorage $scanStorage;
-
     public function __construct(
-        ICashbookRepository $cashbook,
-        IScanStorage $scanStorage
+        private ICashbookRepository $cashbook,
+        private IScanStorage $scanStorage,
     ) {
-        $this->cashbook    = $cashbook;
-        $this->scanStorage = $scanStorage;
     }
 
     public function __invoke(AddChitScan $command): void

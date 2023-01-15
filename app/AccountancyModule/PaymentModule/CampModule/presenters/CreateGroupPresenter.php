@@ -14,14 +14,11 @@ use Model\Payment\ReadModel\Queries\CampsWithoutGroupQuery;
 
 final class CreateGroupPresenter extends BasePresenter
 {
-    private IGroupFormFactory $formFactory;
-
     private Camp $camp;
 
-    public function __construct(IGroupFormFactory $formFactory)
+    public function __construct(private IGroupFormFactory $formFactory)
     {
         parent::__construct();
-        $this->formFactory = $formFactory;
     }
 
     public function actionDefault(int $campId): void

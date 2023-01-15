@@ -21,16 +21,15 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 final class CashbookHandlersTest extends Unit
 {
     /**
-     * @param mixed   $commandInstance
      * @param mixed[] $expectedMethodArguments
      *
      * @dataProvider dataHandlers
      */
     public function test(
-        $commandInstance,
+        mixed $commandInstance,
         string $handlerClass,
         string $expectedMethodCall,
-        array $expectedMethodArguments
+        array $expectedMethodArguments,
     ): void {
         $cashbook = m::mock(Cashbook::class);
         $cashbook->shouldReceive($expectedMethodCall)

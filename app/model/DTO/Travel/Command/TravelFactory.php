@@ -9,7 +9,6 @@ use Nette\StaticClass;
 use RuntimeException;
 
 use function array_map;
-use function get_class;
 use function usort;
 
 class TravelFactory
@@ -38,7 +37,7 @@ class TravelFactory
         return $dtos;
     }
 
-    public static function create(Command $command, int $travelId): ?Travel
+    public static function create(Command $command, int $travelId): Travel|null
     {
         foreach ($command->getTravels() as $travel) {
             if ($travel->getId() === $travelId) {
@@ -62,6 +61,6 @@ class TravelFactory
             return new Travel($id, $details, null, $travel->getPrice());
         }
 
-        throw new RuntimeException('Invalid travel type ' . get_class($travel));
+        throw new RuntimeException('Invalid travel type ' . $travel::class);
     }
 }

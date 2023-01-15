@@ -6,12 +6,9 @@ namespace Model\Chit\Events;
 
 class ChitWasRemoved extends BaseChit
 {
-    private string $chitPurpose;
-
-    public function __construct(int $unitId, int $userId, string $userName, int $chitId, int $localId, string $chitPurpose)
+    public function __construct(int $unitId, int $userId, string $userName, int $chitId, int $localId, private string $chitPurpose)
     {
         parent::__construct($unitId, $userId, $userName, $chitId, $localId);
-        $this->chitPurpose = $chitPurpose;
     }
 
     public function getChitPurpose(): string

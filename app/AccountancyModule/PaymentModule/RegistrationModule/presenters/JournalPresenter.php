@@ -11,12 +11,9 @@ use function array_keys;
 
 class JournalPresenter extends BasePresenter
 {
-    private PaymentService $model;
-
-    public function __construct(PaymentService $model)
+    public function __construct(private PaymentService $model)
     {
         parent::__construct();
-        $this->model = $model;
     }
 
     public function renderDefault(int $groupId): void

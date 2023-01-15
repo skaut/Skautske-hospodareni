@@ -10,11 +10,8 @@ use Model\DTO\Participant\Participant;
 
 final class EventParticipantListQueryHandler
 {
-    private IParticipantRepository $participants;
-
-    public function __construct(IParticipantRepository $participants)
+    public function __construct(private IParticipantRepository $participants)
     {
-        $this->participants = $participants;
     }
 
     /** @return Participant[] */

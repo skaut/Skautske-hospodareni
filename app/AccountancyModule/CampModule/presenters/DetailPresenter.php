@@ -33,19 +33,13 @@ class DetailPresenter extends BasePresenter
 {
     protected ExportService $exportService;
 
-    private PdfRenderer $pdf;
-
-    private IMissingAutocomputedCategoryControlFactory $missingAutocomputedCategoryControlFactory;
-
     public function __construct(
         ExportService $export,
-        PdfRenderer $pdf,
-        IMissingAutocomputedCategoryControlFactory $missingAutocomputedCategoryControlFactory
+        private PdfRenderer $pdf,
+        private IMissingAutocomputedCategoryControlFactory $missingAutocomputedCategoryControlFactory,
     ) {
         parent::__construct();
-        $this->exportService                             = $export;
-        $this->pdf                                       = $pdf;
-        $this->missingAutocomputedCategoryControlFactory = $missingAutocomputedCategoryControlFactory;
+        $this->exportService = $export;
     }
 
     public function renderDefault(int $aid, bool $missingCategories = false): void
@@ -54,7 +48,7 @@ class DetailPresenter extends BasePresenter
             function (UnitId $id) {
                 try {
                     return $this->queryBus->handle(new UnitQuery($id->toInt()));
-                } catch (UnitNotFound $exc) {
+                } catch (UnitNotFound) {
                     return null;
                 }
             },
@@ -70,7 +64,7 @@ class DetailPresenter extends BasePresenter
 
         try {
             $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId()));
-        } catch (MissingCategory $exc) {
+        } catch (MissingCategory) {
             $finalRealBalance  = null;
             $missingCategories = true;
         }
@@ -104,7 +98,7 @@ class DetailPresenter extends BasePresenter
             $template = $this->exportService->getCampReport($aid, $this->areTotalsConsistentWithSkautis($aid));
             $this->pdf->render($template, 'reportCamp.pdf');
             $this->terminate();
-        } catch (MissingCategory $exc) {
+        } catch (MissingCategory) {
             $this->flashMessage('Chybí základní kategorie. Zapněte si automatické dopočítávání rozpočtu!', 'danger');
             $this->redirect('default', ['aid' => $this->aid, 'missingCategories' => true]);
         }

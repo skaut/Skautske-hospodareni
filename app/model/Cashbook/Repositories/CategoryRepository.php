@@ -16,24 +16,12 @@ use function sprintf;
 
 class CategoryRepository
 {
-    private ICampCategoryRepository $campCategories;
-
-    private IEducationCategoryRepository $educationCategories;
-
-    private IStaticCategoryRepository $staticCategories;
-
-    private QueryBus $queryBus;
-
     public function __construct(
-        ICampCategoryRepository $campCategories,
-        IEducationCategoryRepository $educationCategories,
-        IStaticCategoryRepository $staticCategories,
-        QueryBus $queryBus
+        private ICampCategoryRepository $campCategories,
+        private IEducationCategoryRepository $educationCategories,
+        private IStaticCategoryRepository $staticCategories,
+        private QueryBus $queryBus,
     ) {
-        $this->campCategories      = $campCategories;
-        $this->educationCategories = $educationCategories;
-        $this->staticCategories    = $staticCategories;
-        $this->queryBus            = $queryBus;
     }
 
     /** @return ICategory[] */

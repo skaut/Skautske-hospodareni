@@ -30,7 +30,7 @@ class EmailTemplate
         $this->body    = $body;
     }
 
-    public function evaluate(Group $group, Payment $payment, ?string $bankAccount, string $user): EmailTemplate
+    public function evaluate(Group $group, Payment $payment, string|null $bankAccount, string $user): EmailTemplate
     {
         $accountRequired = Strings::contains($this->body, '%qrcode') || Strings::contains($this->body, '%account');
         if ($bankAccount === null && $accountRequired) {

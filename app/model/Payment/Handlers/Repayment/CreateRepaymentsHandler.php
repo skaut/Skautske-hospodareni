@@ -12,11 +12,8 @@ use Model\Utils\MoneyFactory;
 
 final class CreateRepaymentsHandler
 {
-    private ClientInterface $http;
-
-    public function __construct(ClientInterface $http)
+    public function __construct(private ClientInterface $http)
     {
-        $this->http = $http;
     }
 
     public function __invoke(CreateRepayments $command): void

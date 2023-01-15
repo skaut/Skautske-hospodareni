@@ -6,16 +6,9 @@ namespace Model\Payment\Commands\Group;
 
 final class ChangeGroupUnits
 {
-    private int $groupId;
-
-    /** @var int[] */
-    private array $unitIds;
-
     /** @param int[] $unitIds */
-    public function __construct(int $groupId, array $unitIds)
+    public function __construct(private int $groupId, private array $unitIds)
     {
-        $this->groupId = $groupId;
-        $this->unitIds = $unitIds;
     }
 
     public function getGroupId(): int

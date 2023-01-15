@@ -13,14 +13,8 @@ use function is_object;
 
 class EventListQueryHandler
 {
-    private Skautis $skautis;
-
-    private EventFactory $eventFactory;
-
-    public function __construct(Skautis $skautis, EventFactory $eventFactory)
+    public function __construct(private Skautis $skautis, private EventFactory $eventFactory)
     {
-        $this->skautis      = $skautis;
-        $this->eventFactory = $eventFactory;
     }
 
     /** @return array<int, Event> Events indexed by ID */

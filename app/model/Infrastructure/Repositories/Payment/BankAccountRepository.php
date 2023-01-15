@@ -14,11 +14,8 @@ use function count;
 
 final class BankAccountRepository implements IBankAccountRepository
 {
-    private EntityManager $entityManager;
-
-    public function __construct(EntityManager $entityManager)
+    public function __construct(private EntityManager $entityManager)
     {
-        $this->entityManager = $entityManager;
     }
 
     public function find(int $id): BankAccount

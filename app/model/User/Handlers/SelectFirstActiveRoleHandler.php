@@ -12,11 +12,8 @@ use function count;
 
 final class SelectFirstActiveRoleHandler
 {
-    private UserService $userService;
-
-    public function __construct(UserService $userService)
+    public function __construct(private UserService $userService)
     {
-        $this->userService = $userService;
     }
 
     public function __invoke(SelectFirstActiveRole $command): void

@@ -14,14 +14,8 @@ final class Counter
 {
     use SmartObject;
 
-    private int $events;
-
-    private int $camps;
-
-    public function __construct(int $events = 0, int $camps = 0)
+    public function __construct(private int $events = 0, private int $camps = 0)
     {
-        $this->events = $events;
-        $this->camps  = $camps;
     }
 
     public function getEvents(): int

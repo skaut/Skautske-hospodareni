@@ -10,20 +10,8 @@ use function mb_substr;
 
 final class EducationCategory implements ICategory
 {
-    private int $id;
-
-    private Operation $operationType;
-
-    private string $name;
-
-    private Money $total;
-
-    public function __construct(int $id, Operation $operationType, string $name, Money $total)
+    public function __construct(private int $id, private Operation $operationType, private string $name, private Money $total)
     {
-        $this->id            = $id;
-        $this->operationType = $operationType;
-        $this->name          = $name;
-        $this->total         = $total;
     }
 
     public function getId(): int

@@ -27,12 +27,12 @@ class Transaction
     private string $bankAccount;
 
     /** @ORM\Column(type="string", nullable=true, name="transaction_payer") */
-    private ?string $payer = null;
+    private string|null $payer = null;
 
     /** @ORM\Column(type="string", nullable=true, name="transaction_note") */
-    private ?string $note = null;
+    private string|null $note = null;
 
-    public function __construct(string $id, string $bankAccount, string $payer, ?string $note)
+    public function __construct(string $id, string $bankAccount, string $payer, string|null $note)
     {
         $this->id          = $id;
         $this->bankAccount = $bankAccount;
@@ -58,17 +58,17 @@ class Transaction
     /**
      * TODO: fix some payment transactions in database, that have NULL bank accounts
      */
-    public function getBankAccount(): ?string
+    public function getBankAccount(): string|null
     {
         return $this->bankAccount;
     }
 
-    public function getPayer(): ?string
+    public function getPayer(): string|null
     {
         return $this->payer;
     }
 
-    public function getNote(): ?string
+    public function getNote(): string|null
     {
         return $this->note;
     }

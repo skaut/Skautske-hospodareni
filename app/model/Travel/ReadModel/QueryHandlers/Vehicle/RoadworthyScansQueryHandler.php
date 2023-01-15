@@ -14,14 +14,8 @@ use function array_map;
 
 final class RoadworthyScansQueryHandler
 {
-    private IVehicleRepository $vehicles;
-
-    private IScanStorage $scans;
-
-    public function __construct(IVehicleRepository $vehicles, IScanStorage $scans)
+    public function __construct(private IVehicleRepository $vehicles, private IScanStorage $scans)
     {
-        $this->vehicles = $vehicles;
-        $this->scans    = $scans;
     }
 
     /** @return File[] */

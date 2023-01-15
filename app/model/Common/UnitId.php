@@ -6,11 +6,8 @@ namespace Model\Common;
 
 final class UnitId
 {
-    private int $id;
-
-    public function __construct(int $id)
+    public function __construct(private int $id)
     {
-        $this->id = $id;
     }
 
     public static function fromInt(int $id): self

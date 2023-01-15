@@ -14,20 +14,8 @@ use Ublaboo\DataGrid\DataSource\DoctrineCollectionDataSource;
 
 class VehicleGrid extends BaseGridControl
 {
-    private int $unitId;
-
-    private TravelService $travel;
-
-    private UnitService $units;
-
-    private GridFactory $gridFactory;
-
-    public function __construct(int $unitId, TravelService $travel, UnitService $units, GridFactory $gridFactory)
+    public function __construct(private int $unitId, private TravelService $travel, private UnitService $units, private GridFactory $gridFactory)
     {
-        $this->unitId      = $unitId;
-        $this->travel      = $travel;
-        $this->units       = $units;
-        $this->gridFactory = $gridFactory;
     }
 
     protected function createComponentGrid(): DataGrid

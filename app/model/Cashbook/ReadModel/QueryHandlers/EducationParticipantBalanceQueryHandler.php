@@ -11,11 +11,8 @@ use Model\Common\Services\QueryBus;
 
 class EducationParticipantBalanceQueryHandler
 {
-    private QueryBus $queryBus;
-
-    public function __construct(QueryBus $queryBus)
+    public function __construct(private QueryBus $queryBus)
     {
-        $this->queryBus = $queryBus;
     }
 
     public function __invoke(EducationParticipantBalanceQuery $query): float

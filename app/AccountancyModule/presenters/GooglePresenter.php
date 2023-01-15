@@ -20,7 +20,7 @@ class GooglePresenter extends BasePresenter
     {
         try {
             $this->commandBus->handle(new SaveOAuth($code, new UnitId($this->userService->getActualRole()->getUnitId())));
-        } catch (InvalidArgumentException $exc) {
+        } catch (InvalidArgumentException) {
             $this->flashMessage('Nepodařilo se propojit Google účet!', 'danger');
             $this->redirect(':Accountancy:Payment:Mail:');
         }

@@ -80,7 +80,7 @@ final class RepaymentCandidateListQueryHandlerTest extends Unit
         $this->assertSame(630.0, array_sum(array_map(fn (RepaymentCandidate $candidate) => $candidate->getAmount(), $repaymentCandidates)));
     }
 
-    private function createPayment(string $state, ?int $personId, float $amount, ?string $bankAccount): Payment
+    private function createPayment(string $state, int|null $personId, float $amount, string|null $bankAccount): Payment
     {
         return new Payment(
             1,

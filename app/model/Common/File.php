@@ -12,14 +12,8 @@ use function explode;
 
 final class File
 {
-    private StreamInterface $stream;
-
-    private FilePath $path;
-
-    public function __construct(StreamInterface $stream, FilePath $path)
+    public function __construct(private StreamInterface $stream, private FilePath $path)
     {
-        $this->stream = $stream;
-        $this->path   = $path;
     }
 
     public function getPath(): string

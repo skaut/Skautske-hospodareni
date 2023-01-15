@@ -27,36 +27,18 @@ use function in_array;
 
 class BankAccountService
 {
-    private IBankAccountRepository $bankAccounts;
-
-    private IGroupRepository $groups;
-
-    private IUnitResolver $unitResolver;
-
-    private IFioClient $fio;
-
-    private IBankAccountImporter $importer;
-
-    private Cache $fioCache;
-
     public function __construct(
-        IBankAccountRepository $bankAccounts,
-        IGroupRepository $groups,
-        IUnitResolver $unitResolver,
-        IFioClient $fio,
-        IBankAccountImporter $importer,
-        Cache $fioCache
+        private IBankAccountRepository $bankAccounts,
+        private IGroupRepository $groups,
+        private IUnitResolver $unitResolver,
+        private IFioClient $fio,
+        private IBankAccountImporter $importer,
+        private Cache $fioCache,
     ) {
-        $this->bankAccounts = $bankAccounts;
-        $this->groups       = $groups;
-        $this->unitResolver = $unitResolver;
-        $this->fio          = $fio;
-        $this->importer     = $importer;
-        $this->fioCache     = $fioCache;
     }
 
     /** @throws BankAccountNotFound */
-    public function updateBankAccount(int $id, string $name, AccountNumber $number, ?string $token): void
+    public function updateBankAccount(int $id, string $name, AccountNumber $number, string|null $token): void
     {
         $account = $this->bankAccounts->find($id);
 
@@ -111,11 +93,11 @@ class BankAccountService
         $this->bankAccounts->save($account);
     }
 
-    public function find(int $id): ?BankAccountDTO
+    public function find(int $id): BankAccountDTO|null
     {
         try {
             return BankAccountFactory::create($this->bankAccounts->find($id));
-        } catch (BankAccountNotFound $e) {
+        } catch (BankAccountNotFound) {
             return null;
         }
     }

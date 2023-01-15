@@ -36,20 +36,11 @@ use function count;
 
 final class ExportEventsHandler
 {
-    private QueryBus $queryBus;
-
-    private SpreadsheetFactory $spreadsheetFactory;
-
-    private SheetChitsGenerator $sheetChitsGenerator;
-
     public function __construct(
-        QueryBus $queryBus,
-        SpreadsheetFactory $spreadsheetFactory,
-        SheetChitsGenerator $sheetChitsGenerator
+        private QueryBus $queryBus,
+        private SpreadsheetFactory $spreadsheetFactory,
+        private SheetChitsGenerator $sheetChitsGenerator,
     ) {
-        $this->queryBus            = $queryBus;
-        $this->spreadsheetFactory  = $spreadsheetFactory;
-        $this->sheetChitsGenerator = $sheetChitsGenerator;
     }
 
     public function __invoke(ExportEvents $query): Spreadsheet
@@ -99,8 +90,8 @@ final class ExportEventsHandler
             $functions = $this->queryBus->handle(new EventFunctions($event->getId()));
             assert($functions instanceof Functions);
 
-            $leader     = $functions->getLeader() !== null ? $functions->getLeader()->getName() : null;
-            $accountant = $functions->getAccountant() !== null ? $functions->getAccountant()->getName() : null;
+            $leader     = $functions->getLeader()?->getName();
+            $accountant = $functions->getAccountant()?->getName();
 
             $sheet
                 ->setCellValue('A' . $row, $event->getUnitName())
@@ -221,7 +212,7 @@ final class ExportEventsHandler
         return $pragueParticipantsPerEvent;
     }
 
-    private function getCashbookPrefix(Event $event): ?string
+    private function getCashbookPrefix(Event $event): string|null
     {
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->getCashbookId($event)));
         assert($cashbook instanceof Cashbook);

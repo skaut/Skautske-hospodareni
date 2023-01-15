@@ -10,14 +10,8 @@ use Model\Travel\Handlers\Vehicle\RemoveRoadworthyScanHandler;
 /** @see RemoveRoadworthyScanHandler */
 final class RemoveRoadworthyScan
 {
-    private int $vehicleId;
-
-    private FilePath $path;
-
-    public function __construct(int $vehicleId, FilePath $path)
+    public function __construct(private int $vehicleId, private FilePath $path)
     {
-        $this->vehicleId = $vehicleId;
-        $this->path      = $path;
     }
 
     public function getVehicleId(): int

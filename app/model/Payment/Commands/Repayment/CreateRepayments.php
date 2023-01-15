@@ -10,22 +10,9 @@ use Model\Payment\Repayment;
 
 final class CreateRepayments
 {
-    private AccountNumber $sourceAccount;
-
-    private Date $date;
-
-    /** @var Repayment[] */
-    private array $repayments;
-
-    private string $token;
-
     /** @param Repayment[] $repayments */
-    public function __construct(AccountNumber $sourceAccount, Date $date, array $repayments, string $token)
+    public function __construct(private AccountNumber $sourceAccount, private Date $date, private array $repayments, private string $token)
     {
-        $this->sourceAccount = $sourceAccount;
-        $this->date          = $date;
-        $this->repayments    = $repayments;
-        $this->token         = $token;
     }
 
     public function getSourceAccount(): AccountNumber

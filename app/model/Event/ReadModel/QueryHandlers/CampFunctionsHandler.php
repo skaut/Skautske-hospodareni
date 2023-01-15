@@ -13,11 +13,8 @@ use stdClass;
 
 class CampFunctionsHandler
 {
-    private Skautis $skautis;
-
-    public function __construct(Skautis $skautis)
+    public function __construct(private Skautis $skautis)
     {
-        $this->skautis = $skautis;
     }
 
     public function __invoke(CampFunctions $query): Functions

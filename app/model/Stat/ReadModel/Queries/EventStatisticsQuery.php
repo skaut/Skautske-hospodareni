@@ -14,15 +14,12 @@ final class EventStatisticsQuery
     /** @var SkautisEventId[] */
     private array $eventIds;
 
-    private int $year;
-
     /** @param int[] $eventIds */
-    public function __construct(array $eventIds, int $year)
+    public function __construct(array $eventIds, private int $year)
     {
         $this->eventIds = array_map(function (int $id) {
             return new SkautisEventId($id);
         }, $eventIds);
-        $this->year     = $year;
     }
 
     /** @return SkautisEventId[] */

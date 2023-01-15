@@ -13,11 +13,8 @@ use function array_map;
 
 final class UnitOAuthListQueryHandler
 {
-    private IGoogleRepository $repository;
-
-    public function __construct(IGoogleRepository $repository)
+    public function __construct(private IGoogleRepository $repository)
     {
-        $this->repository = $repository;
     }
 
     /** @return OAuthDTO[] */

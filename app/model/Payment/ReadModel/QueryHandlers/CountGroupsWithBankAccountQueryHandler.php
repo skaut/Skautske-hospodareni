@@ -9,11 +9,8 @@ use Model\Payment\ReadModel\Queries\CountGroupsWithBankAccountQuery;
 
 final class CountGroupsWithBankAccountQueryHandler
 {
-    private EntityManager $entityManager;
-
-    public function __construct(EntityManager $entityManager)
+    public function __construct(private EntityManager $entityManager)
     {
-        $this->entityManager = $entityManager;
     }
 
     public function __invoke(CountGroupsWithBankAccountQuery $query): int

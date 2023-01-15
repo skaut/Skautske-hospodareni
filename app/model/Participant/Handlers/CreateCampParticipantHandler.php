@@ -9,11 +9,8 @@ use Model\Common\Repositories\IParticipantRepository;
 
 final class CreateCampParticipantHandler
 {
-    private IParticipantRepository $participants;
-
-    public function __construct(IParticipantRepository $participants)
+    public function __construct(private IParticipantRepository $participants)
     {
-        $this->participants = $participants;
     }
 
     public function __invoke(CreateCampParticipant $command): void

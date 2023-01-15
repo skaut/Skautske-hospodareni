@@ -9,14 +9,8 @@ use Model\Travel\Handlers\Command\DuplicateTravelHandler;
 /** @see DuplicateTravelHandler */
 final class DuplicateTravel
 {
-    private int $commandId;
-
-    private int $travelId;
-
-    public function __construct(int $commandId, int $travelId)
+    public function __construct(private int $commandId, private int $travelId)
     {
-        $this->commandId = $commandId;
-        $this->travelId  = $travelId;
     }
 
     public function getCommandId(): int

@@ -82,7 +82,7 @@ final class BankAccountAccessCheckerTest extends Unit
     public function testReturnsFalseWhenAtLeastOneUnitHasNoAccessToBankAccount(
         array $unitIds,
         bool $allowedForSubunits,
-        string $message
+        string $message,
     ): void {
         $bankAccount = $this->createBankAccount(20, $allowedForSubunits);
 

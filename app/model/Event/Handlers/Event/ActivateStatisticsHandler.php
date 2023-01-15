@@ -9,11 +9,8 @@ use Skautis\Skautis;
 
 class ActivateStatisticsHandler
 {
-    private Skautis $skautis;
-
-    public function __construct(Skautis $skautis)
+    public function __construct(private Skautis $skautis)
     {
-        $this->skautis = $skautis;
     }
 
     public function __invoke(ActivateStatistics $command): void

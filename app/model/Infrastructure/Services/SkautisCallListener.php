@@ -13,11 +13,8 @@ use function sprintf;
 
 final class SkautisCallListener
 {
-    private LoggerInterface $logger;
-
-    public function __construct(LoggerInterface $logger)
+    public function __construct(private LoggerInterface $logger)
     {
-        $this->logger = $logger;
     }
 
     public function register(WsdlManager $wsdlManager): void

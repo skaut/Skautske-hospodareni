@@ -9,13 +9,9 @@ use Model\Event\ReadModel\QueryHandlers\Excel\ExportEventsHandler;
 /** @see ExportEventsHandler */
 final class ExportEvents
 {
-    /** @var int[] */
-    private array $eventIds;
-
     /** @param int[] $eventIds */
-    public function __construct(array $eventIds)
+    public function __construct(private array $eventIds)
     {
-        $this->eventIds = $eventIds;
     }
 
     /** @return int[] */

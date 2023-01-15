@@ -31,56 +31,11 @@ class Participant
 {
     use SmartObject;
 
-    private int $id;
-
-    private int $personId;
-
-    private string $firstName;
-
-    private string $lastName;
-
-    private ?string $nickName = null;
-
-    private ?int $age = null;
-
-    private ?Date $birthday = null;
-
-    private string $street;
-
-    private string $city;
-
-    private int $postcode;
-
-    private string $state;
-
-    private string $unit;
-
-    private string $unitRegistrationNumber;
-
-    private int $days;
-
     private Payment $paymentObj;
 
-    private ?string $category = null;
-
-    public function __construct(int $id, int $personId, string $firstName, string $lastName, ?string $nickName, ?int $age, ?Date $birthday, string $street, string $city, int $postcode, string $state, string $unit, string $unitRegistrationNumber, int $days, Payment $payment, ?string $category)
+    public function __construct(private int $id, private int $personId, private string $firstName, private string $lastName, private string|null $nickName = null, private int|null $age = null, private Date|null $birthday = null, private string $street, private string $city, private int $postcode, private string $state, private string $unit, private string $unitRegistrationNumber, private int $days, Payment $payment, private string|null $category = null)
     {
-        $this->id                     = $id;
-        $this->personId               = $personId;
-        $this->firstName              = $firstName;
-        $this->lastName               = $lastName;
-        $this->nickName               = $nickName;
-        $this->age                    = $age;
-        $this->birthday               = $birthday;
-        $this->street                 = $street;
-        $this->city                   = $city;
-        $this->postcode               = $postcode;
-        $this->state                  = $state;
-        $this->unit                   = $unit;
-        $this->unitRegistrationNumber = $unitRegistrationNumber;
-        $this->days                   = $days;
-        $this->paymentObj             = $payment;
-        $this->category               = $category;
+        $this->paymentObj = $payment;
     }
 
     public function getId(): int
@@ -103,17 +58,17 @@ class Participant
         return $this->lastName;
     }
 
-    public function getNickName(): ?string
+    public function getNickName(): string|null
     {
         return $this->nickName;
     }
 
-    public function getAge(): ?int
+    public function getAge(): int|null
     {
         return $this->age;
     }
 
-    public function getBirthday(): ?Date
+    public function getBirthday(): Date|null
     {
         return $this->birthday;
     }

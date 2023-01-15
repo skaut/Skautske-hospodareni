@@ -11,11 +11,8 @@ use Model\Travel\Repositories\IContractRepository;
 
 final class ContractRepository implements IContractRepository
 {
-    private EntityManager $em;
-
-    public function __construct(EntityManager $em)
+    public function __construct(private EntityManager $em)
     {
-        $this->em = $em;
     }
 
     public function find(int $id): Contract

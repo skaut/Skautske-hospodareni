@@ -9,13 +9,9 @@ use Model\Unit\ReadModel\QueryHandlers\UnitsDetailQueryHandler;
 /** @see UnitsDetailQueryHandler */
 final class UnitsDetailQuery
 {
-    /** @var int[] */
-    private array $unitIds;
-
     /** @param int[] $unitIds */
-    public function __construct(array $unitIds)
+    public function __construct(private array $unitIds)
     {
-        $this->unitIds = $unitIds;
     }
 
     /** @return int[] */

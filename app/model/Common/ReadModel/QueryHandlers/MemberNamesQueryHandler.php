@@ -10,11 +10,8 @@ use Model\Common\Repositories\IMemberRepository;
 
 final class MemberNamesQueryHandler
 {
-    private IMemberRepository $members;
-
-    public function __construct(IMemberRepository $members)
+    public function __construct(private IMemberRepository $members)
     {
-        $this->members = $members;
     }
 
     /** @return array<int, string> Member ID => Member name */

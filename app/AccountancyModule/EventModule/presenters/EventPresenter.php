@@ -39,28 +39,16 @@ use function assert;
 
 class EventPresenter extends BasePresenter
 {
-    protected ExportService $exportService;
-
-    private IFunctionsControlFactory $functionsFactory;
-
-    private PdfRenderer $pdf;
-
-    private LoggerService $loggerService;
-
     public function __construct(
-        ExportService $exportService,
-        IFunctionsControlFactory $functionsFactory,
-        PdfRenderer $pdf,
-        LoggerService $loggerService
+        protected ExportService $exportService,
+        private IFunctionsControlFactory $functionsFactory,
+        private PdfRenderer $pdf,
+        private LoggerService $loggerService,
     ) {
         parent::__construct();
-        $this->exportService    = $exportService;
-        $this->functionsFactory = $functionsFactory;
-        $this->pdf              = $pdf;
-        $this->loggerService    = $loggerService;
     }
 
-    public function renderDefault(?int $aid): void
+    public function renderDefault(int|null $aid): void
     {
         if ($aid === null) {
             $this->redirect('Default:');

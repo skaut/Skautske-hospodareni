@@ -16,38 +16,26 @@ class Functions
 {
     use SmartObject;
 
-    private ?Person $leader = null;
-
-    private ?Person $assistant = null;
-
-    private ?Person $accountant = null;
-
-    private ?Person $medic = null;
-
-    public function __construct(?Person $leader, ?Person $assistant, ?Person $accountant, ?Person $medic)
+    public function __construct(private Person|null $leader = null, private Person|null $assistant = null, private Person|null $accountant = null, private Person|null $medic = null)
     {
-        $this->leader     = $leader;
-        $this->assistant  = $assistant;
-        $this->accountant = $accountant;
-        $this->medic      = $medic;
     }
 
-    public function getLeader(): ?Person
+    public function getLeader(): Person|null
     {
         return $this->leader;
     }
 
-    public function getAssistant(): ?Person
+    public function getAssistant(): Person|null
     {
         return $this->assistant;
     }
 
-    public function getAccountant(): ?Person
+    public function getAccountant(): Person|null
     {
         return $this->accountant;
     }
 
-    public function getMedic(): ?Person
+    public function getMedic(): Person|null
     {
         return $this->medic;
     }

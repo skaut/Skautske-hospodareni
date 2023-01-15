@@ -9,11 +9,8 @@ use Monolog\Processor\ProcessorInterface;
 
 class UserContextProcessor implements ProcessorInterface
 {
-    private UserContextProvider $userContext;
-
-    public function __construct(UserContextProvider $userContext)
+    public function __construct(private UserContextProvider $userContext)
     {
-        $this->userContext = $userContext;
     }
 
     /**

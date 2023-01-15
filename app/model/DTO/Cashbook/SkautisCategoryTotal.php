@@ -8,14 +8,8 @@ use Money\Money;
 
 class SkautisCategoryTotal
 {
-    private Money $amount;
-
-    private bool $consistent;
-
-    public function __construct(Money $amount, bool $consistent)
+    public function __construct(private Money $amount, private bool $consistent)
     {
-        $this->amount     = $amount;
-        $this->consistent = $consistent;
     }
 
     public function getAmount(): Money

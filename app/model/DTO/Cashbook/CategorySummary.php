@@ -18,23 +18,8 @@ class CategorySummary
 {
     use SmartObject;
 
-    private int $id;
-
-    private string $name;
-
-    private Money $total;
-
-    private Operation $operationType;
-
-    private bool $virtual;
-
-    public function __construct(int $id, string $name, Money $total, Operation $operationType, bool $virtual)
+    public function __construct(private int $id, private string $name, private Money $total, private Operation $operationType, private bool $virtual)
     {
-        $this->id            = $id;
-        $this->name          = $name;
-        $this->total         = $total;
-        $this->operationType = $operationType;
-        $this->virtual       = $virtual;
     }
 
     public function getId(): int

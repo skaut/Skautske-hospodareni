@@ -39,28 +39,13 @@ use function assert;
 
 final class GroupForm extends BaseControl
 {
-    private UnitId $unitId;
-
-    private ?SkautisEntity $skautisEntity = null;
-
-    private ?int $groupId = null;
-
-    private PaymentService $model;
-
-    private QueryBus $queryBus;
-
     public function __construct(
-        UnitId $unitId,
-        ?SkautisEntity $skautisEntity,
-        ?int $groupId,
-        PaymentService $model,
-        QueryBus $queryBus
+        private UnitId $unitId,
+        private SkautisEntity|null $skautisEntity = null,
+        private int|null $groupId = null,
+        private PaymentService $model,
+        private QueryBus $queryBus,
     ) {
-        $this->unitId        = $unitId;
-        $this->skautisEntity = $skautisEntity;
-        $this->groupId       = $groupId;
-        $this->model         = $model;
-        $this->queryBus      = $queryBus;
     }
 
     public function render(): void
@@ -241,7 +226,7 @@ final class GroupForm extends BaseControl
             'dueDate' => $group->getDueDate(),
             'constantSymbol' => $group->getConstantSymbol(),
             'nextVs' => $group->getNextVariableSymbol(),
-            'oAuthId' => $group->getOAuthId() !== null ? $group->getOAuthId()->toString() : null,
+            'oAuthId' => $group->getOAuthId()?->toString(),
             'emails' => $emails,
             'groupId' => $this->groupId,
             'bankAccount' => $group->getBankAccountId(),
@@ -285,7 +270,7 @@ final class GroupForm extends BaseControl
         $form->setCurrentGroup();
     }
 
-    private function buildEmailTemplate(ArrayHash $values, string $emailType): ?EmailTemplate
+    private function buildEmailTemplate(ArrayHash $values, string $emailType): EmailTemplate|null
     {
         $emailValues = $values->emails->{$emailType};
 

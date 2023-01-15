@@ -27,66 +27,23 @@ class Camp implements ISkautisEvent
     public const STATE_APPROVED_PARENT = 'approvedParent';
     public const STATE_REAL            = 'real';
 
-    private SkautisCampId $id;
-
-    private string $displayName;
-
-    private UnitId $unitId;
-
-    private string $unitName;
-
-    private Date $startDate;
-
-    private Date $endDate;
-
-    private string $location;
-
-    private string $state;
-
-    private string $registrationNumber;
-
-    /** @var UnitId[] */
-    private array $participatingUnits;
-
-    private ?int $totalDays = null;
-
-    private ?ParticipantStatistics $participantStatistics = null;
-
-    private ?bool $realAutoComputed = null;
-
-    private ?bool $realTotalCostAutoComputed = null;
-
     /** @param  UnitId[] $participatingUnits */
     public function __construct(
-        SkautisCampId $id,
-        string $displayName,
-        UnitId $unitId,
-        string $unitName,
-        Date $startDate,
-        Date $endDate,
-        string $location,
-        string $state,
-        string $registrationNumber,
-        array $participatingUnits,
-        ?int $totalDays,
-        ?ParticipantStatistics $participantStatistics,
-        ?bool $realAutoComputed,
-        ?bool $realTotalCostAutoComputed
+        private SkautisCampId $id,
+        private string $displayName,
+        private UnitId $unitId,
+        private string $unitName,
+        private Date $startDate,
+        private Date $endDate,
+        private string $location,
+        private string $state,
+        private string $registrationNumber,
+        private array $participatingUnits,
+        private int|null $totalDays = null,
+        private ParticipantStatistics|null $participantStatistics = null,
+        private bool|null $realAutoComputed = null,
+        private bool|null $realTotalCostAutoComputed = null,
     ) {
-        $this->id                        = $id;
-        $this->displayName               = $displayName;
-        $this->unitId                    = $unitId;
-        $this->unitName                  = $unitName;
-        $this->startDate                 = $startDate;
-        $this->endDate                   = $endDate;
-        $this->location                  = $location;
-        $this->state                     = $state;
-        $this->registrationNumber        = $registrationNumber;
-        $this->participatingUnits        = $participatingUnits;
-        $this->totalDays                 = $totalDays;
-        $this->participantStatistics     = $participantStatistics;
-        $this->realAutoComputed          = $realAutoComputed;
-        $this->realTotalCostAutoComputed = $realTotalCostAutoComputed;
     }
 
     public function getId(): SkautisCampId
@@ -140,22 +97,22 @@ class Camp implements ISkautisEvent
         return $this->participatingUnits;
     }
 
-    public function getTotalDays(): ?int
+    public function getTotalDays(): int|null
     {
         return $this->totalDays;
     }
 
-    public function getParticipantStatistics(): ?ParticipantStatistics
+    public function getParticipantStatistics(): ParticipantStatistics|null
     {
         return $this->participantStatistics;
     }
 
-    public function isRealAutoComputed(): ?bool
+    public function isRealAutoComputed(): bool|null
     {
         return $this->realAutoComputed;
     }
 
-    public function isRealTotalCostAutoComputed(): ?bool
+    public function isRealTotalCostAutoComputed(): bool|null
     {
         return $this->realTotalCostAutoComputed;
     }

@@ -94,7 +94,7 @@ final class CampCategoryRepositoryTest extends Unit
     }
 
     /** @param stdClass|stdClass[] $webserviceResult */
-    private function prepareRepository($webserviceResult): CampCategoryRepository
+    private function prepareRepository(stdClass|array $webserviceResult): CampCategoryRepository
     {
         $service = m::mock(WebServiceInterface::class);
 

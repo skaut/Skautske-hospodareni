@@ -19,20 +19,8 @@ class OAuth
 {
     use SmartObject;
 
-    private OAuthId $id;
-
-    private string $email;
-
-    private UnitId $unitId;
-
-    private DateTimeImmutable $updatedAt;
-
-    public function __construct(OAuthId $id, string $email, UnitId $unitId, DateTimeImmutable $updatedAt)
+    public function __construct(private OAuthId $id, private string $email, private UnitId $unitId, private DateTimeImmutable $updatedAt)
     {
-        $this->id        = $id;
-        $this->email     = $email;
-        $this->unitId    = $unitId;
-        $this->updatedAt = $updatedAt;
     }
 
     public function getId(): string

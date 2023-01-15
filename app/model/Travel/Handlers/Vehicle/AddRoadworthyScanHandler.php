@@ -12,14 +12,8 @@ use Model\Travel\Vehicle\RoadworthyScan;
 
 final class AddRoadworthyScanHandler
 {
-    private IVehicleRepository $vehicles;
-
-    private IScanStorage $scanStorage;
-
-    public function __construct(IVehicleRepository $vehicles, IScanStorage $scanStorage)
+    public function __construct(private IVehicleRepository $vehicles, private IScanStorage $scanStorage)
     {
-        $this->vehicles    = $vehicles;
-        $this->scanStorage = $scanStorage;
     }
 
     public function __invoke(AddRoadworthyScan $command): void

@@ -12,13 +12,9 @@ use function array_reduce;
 
 final class GroupProgress extends BaseControl
 {
-    /** @var array<string, Summary> */
-    private array $summaries;
-
     /** @param array<string, Summary> $summaries */
-    public function __construct(array $summaries)
+    public function __construct(private array $summaries)
     {
-        $this->summaries = $summaries;
     }
 
     public function render(): void

@@ -9,31 +9,9 @@ use Model\Common\EmailAddress;
 
 class Payment
 {
-    private string $name;
-
-    private float $amount;
-
-    /** @var EmailAddress[] */
-    private array $recipients;
-
-    private DateTimeImmutable $dueDate;
-
-    private ?int $variableSymbol = null;
-
-    private ?int $constantSymbol = null;
-
-    private string $note;
-
     /** @param EmailAddress[] $recipients */
-    public function __construct(string $name, float $amount, array $recipients, DateTimeImmutable $dueDate, ?int $variableSymbol, ?int $constantSymbol, string $note)
+    public function __construct(private string $name, private float $amount, private array $recipients, private DateTimeImmutable $dueDate, private int|null $variableSymbol = null, private int|null $constantSymbol = null, private string $note)
     {
-        $this->name           = $name;
-        $this->amount         = $amount;
-        $this->recipients     = $recipients;
-        $this->dueDate        = $dueDate;
-        $this->variableSymbol = $variableSymbol;
-        $this->constantSymbol = $constantSymbol;
-        $this->note           = $note;
     }
 
     public function getName(): string
@@ -57,12 +35,12 @@ class Payment
         return $this->dueDate;
     }
 
-    public function getVariableSymbol(): ?int
+    public function getVariableSymbol(): int|null
     {
         return $this->variableSymbol;
     }
 
-    public function getConstantSymbol(): ?int
+    public function getConstantSymbol(): int|null
     {
         return $this->constantSymbol;
     }

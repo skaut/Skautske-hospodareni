@@ -10,11 +10,8 @@ use Model\Unit\Unit;
 
 class UnitQueryHandler
 {
-    private IUnitRepository $units;
-
-    public function __construct(IUnitRepository $units)
+    public function __construct(private IUnitRepository $units)
     {
-        $this->units = $units;
     }
 
     public function __invoke(UnitQuery $query): Unit

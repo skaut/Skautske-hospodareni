@@ -11,11 +11,8 @@ use Model\UserService;
 
 final class ActiveSkautisRoleQueryHandler
 {
-    private UserService $userService;
-
-    public function __construct(UserService $userService)
+    public function __construct(private UserService $userService)
     {
-        $this->userService = $userService;
     }
 
     public function __invoke(ActiveSkautisRoleQuery $_x): SkautisRole

@@ -16,20 +16,11 @@ use function array_unique;
 
 final class BankAccountsAccessibleByUnitsQueryHandler
 {
-    private IBankAccountAccessChecker $accessChecker;
-
-    private IBankAccountRepository $bankAccounts;
-
-    private IUnitResolver $unitResolver;
-
     public function __construct(
-        IBankAccountAccessChecker $accessChecker,
-        IBankAccountRepository $bankAccounts,
-        IUnitResolver $unitResolver
+        private IBankAccountAccessChecker $accessChecker,
+        private IBankAccountRepository $bankAccounts,
+        private IUnitResolver $unitResolver,
     ) {
-        $this->accessChecker = $accessChecker;
-        $this->bankAccounts  = $bankAccounts;
-        $this->unitResolver  = $unitResolver;
     }
 
     /** @return BankAccount[] */

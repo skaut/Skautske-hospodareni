@@ -22,29 +22,19 @@ use function in_array;
 
 class ErrorPresenter extends Presenter
 {
-    private LoggerInterface $logger;
-
-    protected CommandBus $commandBus;
-
     private const SKAUTIS_UNAVAILABLE_ERRORS = [
         'Server was unable to process request.',
         'Could not connect to host',
         'Service Unavailable',
     ];
 
-    public function __construct(LoggerInterface $logger, CommandBus $commandBus)
+    public function __construct(private LoggerInterface $logger, protected CommandBus $commandBus)
     {
         parent::__construct();
-        $this->logger     = $logger;
-        $this->commandBus = $commandBus;
     }
 
-    /**
-     * @param mixed $exception
-     *
-     * @throws Nette\Application\AbortException
-     */
-    public function renderDefault($exception, ?Request $request = null): void
+    /** @throws Nette\Application\AbortException */
+    public function renderDefault(mixed $exception, Request|null $request = null): void
     {
         if ($exception instanceof SkautisMaintenance || $exception instanceof WsdlException && $this->isSkautisUnavailable($exception)) {
             $this->flashMessage('Nepodařilo se připojit ke Skautisu. Zkuste to prosím za chvíli nebo zkontrolujte, zda neprobíhá jeho údržba.', 'danger');
@@ -67,7 +57,7 @@ class ErrorPresenter extends Presenter
                 $this->commandBus->handle(new SelectFirstActiveRole());
                 $this->flashMessage('Chyběla aktivní role, byl jste automaticky přehlášen na jinou roli.', 'danger');
                 $this->forward($request);
-            } catch (UserHasNoRole $exc) {
+            } catch (UserHasNoRole) {
                 $this->setView('noRole');
             }
         }

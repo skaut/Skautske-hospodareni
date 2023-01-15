@@ -33,14 +33,8 @@ final class ParticipantRepository implements IParticipantRepository
 {
     private const DATETIME_FORMAT = 'Y-m-d\TH:i:s';
 
-    private Skautis $skautis;
-
-    private IPaymentRepository $payments;
-
-    public function __construct(Skautis $skautis, IPaymentRepository $payments)
+    public function __construct(private Skautis $skautis, private IPaymentRepository $payments)
     {
-        $this->skautis  = $skautis;
-        $this->payments = $payments;
     }
 
     /** @return ParticipantDTO[] */
@@ -156,7 +150,7 @@ final class ParticipantRepository implements IParticipantRepository
             'FirstName' => $participant->getFirstName(),
             'LastName' => $participant->getLastName(),
             'IdentificationCode' => null,
-            'Birthday' => $participant->getBirthday() !== null ? $participant->getBirthday()->format(self::DATETIME_FORMAT) : null,
+            'Birthday' => $participant->getBirthday()?->format(self::DATETIME_FORMAT),
             'Street' => $participant->getStreet(),
             'City' => $participant->getCity(),
             'Postcode' => $participant->getPostcode(),

@@ -9,11 +9,8 @@ use Model\Payment\Repositories\IMemberEmailRepository;
 
 final class MemberEmailsQueryHandler
 {
-    private IMemberEmailRepository $emails;
-
-    public function __construct(IMemberEmailRepository $emails)
+    public function __construct(private IMemberEmailRepository $emails)
     {
-        $this->emails = $emails;
     }
 
     /** @return array<string, string> email address => email label */

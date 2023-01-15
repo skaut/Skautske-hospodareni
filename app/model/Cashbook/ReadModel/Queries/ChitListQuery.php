@@ -11,17 +11,11 @@ use Model\Cashbook\ReadModel\QueryHandlers\ChitListQueryHandler;
 /** @see ChitListQueryHandler */
 final class ChitListQuery
 {
-    private CashbookId $cashbookId;
-
-    private ?PaymentMethod $paymentMethod = null;
-
     /**
      * Use static factory method
      */
-    private function __construct(CashbookId $cashbookId, ?PaymentMethod $paymentMethod)
+    private function __construct(private CashbookId $cashbookId, private PaymentMethod|null $paymentMethod = null)
     {
-        $this->cashbookId    = $cashbookId;
-        $this->paymentMethod = $paymentMethod;
     }
 
     public static function withMethod(PaymentMethod $paymentMethod, CashbookId $cashbookId): self
@@ -39,7 +33,7 @@ final class ChitListQuery
         return $this->cashbookId;
     }
 
-    public function getPaymentMethod(): ?PaymentMethod
+    public function getPaymentMethod(): PaymentMethod|null
     {
         return $this->paymentMethod;
     }

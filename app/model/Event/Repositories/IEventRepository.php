@@ -19,5 +19,5 @@ interface IEventRepository
 
     public function update(Event $event): void;
 
-    public function getNewestEventId(): ?int;
+    public function getNewestEventId(): int|null;
 }

@@ -55,7 +55,7 @@ class Payment extends Aggregate
     private Collection $emailRecipients;
 
     /** @ORM\Column(type="integer", nullable=true) */
-    private ?int $personId = null;
+    private int|null $personId = null;
 
     /** @ORM\Column(type="float") */
     private float $amount;
@@ -64,10 +64,10 @@ class Payment extends Aggregate
     private Date $dueDate;
 
     /** @ORM\Column(type="variable_symbol", nullable=true, length=10) */
-    private ?VariableSymbol $variableSymbol = null;
+    private VariableSymbol|null $variableSymbol = null;
 
     /** @ORM\Column(type="smallint", nullable=true) */
-    private ?int $constantSymbol = null;
+    private int|null $constantSymbol = null;
 
     /** @ORM\Column(type="string", length=64) */
     private string $note = '';
@@ -77,13 +77,13 @@ class Payment extends Aggregate
      *
      * @Nullable()
      */
-    private ?Transaction $transaction = null;
+    private Transaction|null $transaction = null;
 
     /** @ORM\Column(type="datetime_immutable", nullable=true) */
-    private ?DateTimeImmutable $closedAt = null;
+    private DateTimeImmutable|null $closedAt = null;
 
     /** @ORM\Column(type="string", length=64, nullable=true) */
-    private ?string $closedByUsername = null;
+    private string|null $closedByUsername = null;
 
     /**
      * @ORM\Column(type="string_enum", length=20)
@@ -108,10 +108,10 @@ class Payment extends Aggregate
         array $recipients,
         float $amount,
         Date $dueDate,
-        ?VariableSymbol $variableSymbol,
-        ?int $constantSymbol,
-        ?int $personId,
-        string $note
+        VariableSymbol|null $variableSymbol,
+        int|null $constantSymbol,
+        int|null $personId,
+        string $note,
     ) {
         if ($amount <= 0) {
             throw new InvalidArgumentException('Payment amount must be larger than 0');
@@ -143,9 +143,9 @@ class Payment extends Aggregate
         array $recipients,
         float $amount,
         Date $dueDate,
-        ?VariableSymbol $variableSymbol,
-        ?int $constantSymbol,
-        string $note
+        VariableSymbol|null $variableSymbol,
+        int|null $constantSymbol,
+        string $note,
     ): void {
         $this->checkNotClosed();
         $this->updateDetails($name, $recipients, $dueDate, $constantSymbol, $note);
@@ -228,7 +228,7 @@ class Payment extends Aggregate
             ->getValues();
     }
 
-    public function getPersonId(): ?int
+    public function getPersonId(): int|null
     {
         return $this->personId;
     }
@@ -243,12 +243,12 @@ class Payment extends Aggregate
         return $this->dueDate;
     }
 
-    public function getVariableSymbol(): ?VariableSymbol
+    public function getVariableSymbol(): VariableSymbol|null
     {
         return $this->variableSymbol;
     }
 
-    public function getConstantSymbol(): ?int
+    public function getConstantSymbol(): int|null
     {
         return $this->constantSymbol;
     }
@@ -258,17 +258,17 @@ class Payment extends Aggregate
         return $this->note;
     }
 
-    public function getTransaction(): ?Transaction
+    public function getTransaction(): Transaction|null
     {
         return $this->transaction;
     }
 
-    public function getClosedAt(): ?DateTimeImmutable
+    public function getClosedAt(): DateTimeImmutable|null
     {
         return $this->closedAt;
     }
 
-    public function getClosedByUsername(): ?string
+    public function getClosedByUsername(): string|null
     {
         return $this->closedByUsername;
     }
@@ -309,8 +309,8 @@ class Payment extends Aggregate
         string $name,
         array $recipients,
         Date $dueDate,
-        ?int $constantSymbol,
-        string $note
+        int|null $constantSymbol,
+        string $note,
     ): void {
         $this->name            = $name;
         $this->dueDate         = $dueDate;

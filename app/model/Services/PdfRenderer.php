@@ -9,11 +9,8 @@ use Mpdf\Output\Destination;
 
 class PdfRenderer
 {
-    private string $tempDir;
-
-    public function __construct(string $tempDir)
+    public function __construct(private string $tempDir)
     {
-        $this->tempDir = $tempDir;
     }
 
     /**

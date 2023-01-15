@@ -9,11 +9,8 @@ use Model\Payment\ReadModel\QueryHandlers\MemberEmailsQueryHandler;
 /** @see MemberEmailsQueryHandler */
 final class MemberEmailsQuery
 {
-    private int $memberId;
-
-    public function __construct(int $memberId)
+    public function __construct(private int $memberId)
     {
-        $this->memberId = $memberId;
     }
 
     public function getMemberId(): int

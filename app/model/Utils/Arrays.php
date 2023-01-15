@@ -39,12 +39,8 @@ class Arrays
         return $newCollection;
     }
 
-    /**
-     * @param mixed[] $collection
-     *
-     * @return mixed
-     */
-    public static function ungroup(array $collection)
+    /** @param mixed[] $collection */
+    public static function ungroup(array $collection): mixed
     {
         return array_reduce($collection, 'array_merge', []);
     }

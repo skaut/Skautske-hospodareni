@@ -8,4 +8,8 @@ use Skautis\Wsdl\WsdlException;
 
 final class AmountMustBeGreaterThanZero extends WsdlException
 {
+    public function __construct()
+    {
+        parent::__construct();
+    }
 }

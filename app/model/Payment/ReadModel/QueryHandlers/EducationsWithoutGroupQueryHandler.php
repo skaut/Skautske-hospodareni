@@ -18,14 +18,8 @@ use function in_array;
 
 final class EducationsWithoutGroupQueryHandler
 {
-    private QueryBus $queryBus;
-
-    private IGroupRepository $groups;
-
-    public function __construct(QueryBus $queryBus, IGroupRepository $groups)
+    public function __construct(private QueryBus $queryBus, private IGroupRepository $groups)
     {
-        $this->queryBus = $queryBus;
-        $this->groups   = $groups;
     }
 
     /** @return array<int, Education> (indexed by ID) */

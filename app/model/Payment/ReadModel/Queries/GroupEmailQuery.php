@@ -10,14 +10,8 @@ use Model\Payment\ReadModel\QueryHandlers\GroupEmailQueryHandler;
 /** @see GroupEmailQueryHandler */
 final class GroupEmailQuery
 {
-    private int $groupId;
-
-    private EmailType $emailType;
-
-    public function __construct(int $groupId, EmailType $emailType)
+    public function __construct(private int $groupId, private EmailType $emailType)
     {
-        $this->groupId   = $groupId;
-        $this->emailType = $emailType;
     }
 
     public function getGroupId(): int

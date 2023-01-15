@@ -20,11 +20,8 @@ use function in_array;
 
 class StatisticsService
 {
-    private QueryBus $queryBus;
-
-    public function __construct(QueryBus $queryBus)
+    public function __construct(private QueryBus $queryBus)
     {
-        $this->queryBus = $queryBus;
     }
 
     /** @return array<int, Counter> */
@@ -85,7 +82,7 @@ class StatisticsService
      *
      * @return Counter[]|array<int, Counter>|null
      */
-    private function countTree(Unit $root, array $cntArr): ?array
+    private function countTree(Unit $root, array $cntArr): array|null
     {
         $children = $root->getChildren();
 

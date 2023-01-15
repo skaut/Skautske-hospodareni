@@ -19,20 +19,11 @@ use function assert;
 
 final class OAuthsAccessibleByGroupsQueryHandler
 {
-    private IOAuthAccessChecker $accessChecker;
-
-    private IUnitResolver $unitResolver;
-
-    private IGoogleRepository $googleRepository;
-
     public function __construct(
-        IOAuthAccessChecker $accessChecker,
-        IUnitResolver $unitResolver,
-        IGoogleRepository $googleRepository
+        private IOAuthAccessChecker $accessChecker,
+        private IUnitResolver $unitResolver,
+        private IGoogleRepository $googleRepository,
     ) {
-        $this->accessChecker    = $accessChecker;
-        $this->unitResolver     = $unitResolver;
-        $this->googleRepository = $googleRepository;
     }
 
     /** @return OAuthDTO[] */

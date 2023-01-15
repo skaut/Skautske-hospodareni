@@ -10,11 +10,8 @@ use Model\Payment\ReadModel\QueryHandlers\RegistrationWithoutGroupQueryHandler;
 /** @see RegistrationWithoutGroupQueryHandler */
 final class RegistrationWithoutGroupQuery
 {
-    private UnitId $unitId;
-
-    public function __construct(UnitId $unitId)
+    public function __construct(private UnitId $unitId)
     {
-        $this->unitId = $unitId;
     }
 
     public function getUnitId(): UnitId

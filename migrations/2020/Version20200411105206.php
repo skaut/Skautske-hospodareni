@@ -31,7 +31,7 @@ final class Version20200411105206 extends AbstractMigration
             }
 
             $this->connection->commit();
-        } catch (Throwable $exc) {
+        } catch (Throwable) {
             $this->connection->rollBack();
         }
     }

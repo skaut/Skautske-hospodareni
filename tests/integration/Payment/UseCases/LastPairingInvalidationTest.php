@@ -171,7 +171,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
         );
     }
 
-    private function createGroupWithInitialPayment(?VariableSymbol $variableSymbol): void
+    private function createGroupWithInitialPayment(VariableSymbol|null $variableSymbol): void
     {
         $this->groupRepository->save(
             new Group(

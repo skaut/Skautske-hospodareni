@@ -23,14 +23,8 @@ use function implode;
 
 final class GroupRepository implements IGroupRepository
 {
-    private EntityManager $em;
-
-    private EventBus $eventBus;
-
-    public function __construct(EntityManager $em, EventBus $eventBus)
+    public function __construct(private EntityManager $em, private EventBus $eventBus)
     {
-        $this->em       = $em;
-        $this->eventBus = $eventBus;
     }
 
     public function find(int $id): Group

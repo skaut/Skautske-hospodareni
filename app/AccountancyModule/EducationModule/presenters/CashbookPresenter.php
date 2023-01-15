@@ -22,13 +22,10 @@ use function count;
 
 class CashbookPresenter extends BasePresenter
 {
-    private ICashbookControlFactory $cashbookFactory;
-
     public function __construct(
-        ICashbookControlFactory $cashbookFactory
+        private ICashbookControlFactory $cashbookFactory,
     ) {
         parent::__construct();
-        $this->cashbookFactory = $cashbookFactory;
     }
 
     protected function startup(): void
@@ -43,7 +40,7 @@ class CashbookPresenter extends BasePresenter
         try {
             $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId()));
             assert($finalRealBalance instanceof Money);
-        } catch (MissingCategory $exc) {
+        } catch (MissingCategory) {
             $finalRealBalance = null;
         }
 

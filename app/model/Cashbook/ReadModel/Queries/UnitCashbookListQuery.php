@@ -10,11 +10,8 @@ use Model\Common\UnitId;
 /** @see UnitCashbookListQueryHandler */
 final class UnitCashbookListQuery
 {
-    private UnitId $unitId;
-
-    public function __construct(UnitId $unitId)
+    public function __construct(private UnitId $unitId)
     {
-        $this->unitId = $unitId;
     }
 
     public function getUnitId(): UnitId

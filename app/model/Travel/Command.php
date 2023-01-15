@@ -41,7 +41,7 @@ class Command
     private int $unitId;
 
     /** @ORM\ManyToOne(targetEntity=Vehicle::class) */
-    private ?Vehicle $vehicle = null;
+    private Vehicle|null $vehicle = null;
 
     /** @ORM\Embedded(class=Passenger::class, columnPrefix=false) */
     private Passenger $passenger;
@@ -65,7 +65,7 @@ class Command
     private string $note;
 
     /** @ORM\Column(type="datetime_immutable", nullable=true) */
-    private ?DateTimeImmutable $closedAt = null;
+    private DateTimeImmutable|null $closedAt = null;
 
     /**
      * @ORM\OneToMany(targetEntity=Travel::class, indexBy="id", mappedBy="command", cascade={"persist", "remove"}, orphanRemoval=true)
@@ -79,7 +79,7 @@ class Command
     private int $nextTravelId = 0;
 
     /** @ORM\Column(type="integer", nullable=true) */
-    private ?int $ownerId = null;
+    private int|null $ownerId = null;
 
     /**
      * @ORM\Column(type="transport_types")
@@ -97,7 +97,7 @@ class Command
     /** @param list<TransportType> $transportTypes */
     public function __construct(
         int $unitId,
-        ?Vehicle $vehicle,
+        Vehicle|null $vehicle,
         Passenger $passenger,
         string $purpose,
         string $place,
@@ -105,9 +105,9 @@ class Command
         Money $fuelPrice,
         Money $amortization,
         string $note,
-        ?int $ownerId,
+        int|null $ownerId,
         array $transportTypes,
-        string $unit
+        string $unit,
     ) {
         $this->unitId           = $unitId;
         $this->vehicle          = $vehicle;
@@ -126,7 +126,7 @@ class Command
 
     /** @param list<TransportType> $transportTypes */
     public function update(
-        ?Vehicle $vehicle,
+        Vehicle|null $vehicle,
         Passenger $driver,
         string $purpose,
         string $place,
@@ -135,7 +135,7 @@ class Command
         Money $amortization,
         string $note,
         array $transportTypes,
-        string $unit
+        string $unit,
     ): void {
         $this->vehicle          = $vehicle;
         $this->passenger        = $driver;
@@ -313,11 +313,9 @@ class Command
         return $this->unitId;
     }
 
-    public function getVehicleId(): ?int
+    public function getVehicleId(): int|null
     {
-        return $this->vehicle !== null
-            ? $this->vehicle->getId()
-            : null;
+        return $this->vehicle?->getId();
     }
 
     public function getPassenger(): Passenger
@@ -355,7 +353,7 @@ class Command
         return $this->note;
     }
 
-    public function getClosedAt(): ?DateTimeImmutable
+    public function getClosedAt(): DateTimeImmutable|null
     {
         return $this->closedAt;
     }
@@ -372,7 +370,7 @@ class Command
         return $this->travels->getValues();
     }
 
-    public function getFirstTravelDate(): ?DateTimeImmutable
+    public function getFirstTravelDate(): DateTimeImmutable|null
     {
         return $this->travels->isEmpty()
             ? null
@@ -415,7 +413,7 @@ class Command
         return $this->nextTravelId++;
     }
 
-    public function getOwnerId(): ?int
+    public function getOwnerId(): int|null
     {
         return $this->ownerId;
     }

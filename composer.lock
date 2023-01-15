@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7308af5dc913f7a7a31ef9e07f086fd4",
+    "content-hash": "b9ec94296e9a1a034f740f24935fed46",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -2024,48 +2024,6 @@
                 "source": "https://github.com/firebase/php-jwt/tree/v6.2.0"
             },
             "time": "2022-05-13T20:54:50+00:00"
-        },
-        {
-            "name": "fmasa/doctrine-nullable-embeddables",
-            "version": "1.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/fmasa/doctrine-nullable-embeddables.git",
-                "reference": "737323f8e9aa3358220629072c99ee79452d907c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/fmasa/doctrine-nullable-embeddables/zipball/737323f8e9aa3358220629072c99ee79452d907c",
-                "reference": "737323f8e9aa3358220629072c99ee79452d907c",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/orm": "^2.5",
-                "php": "^7.0"
-            },
-            "require-dev": {
-                "phpunit/phpcov": "^4.0",
-                "phpunit/phpunit": "^6.0",
-                "satooshi/php-coveralls": "^1.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Fmasa\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "František Maša",
-                    "email": "frantisekmasa1@gmail.com"
-                }
-            ],
-            "description": "Mechanism for nullable embeddables in Doctrine 2.5+",
-            "time": "2018-02-22T11:30:49+00:00"
         },
         {
             "name": "fmasa/messenger",
@@ -6917,6 +6875,51 @@
             "time": "2021-02-11T11:37:01+00:00"
         },
         {
+            "name": "skaut/doctrine-nullable-embeddables",
+            "version": "1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/skaut/doctrine-nullable-embeddables.git",
+                "reference": "6b9f66d0fd57415548d8378560ab9cd7700c7352"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/skaut/doctrine-nullable-embeddables/zipball/6b9f66d0fd57415548d8378560ab9cd7700c7352",
+                "reference": "6b9f66d0fd57415548d8378560ab9cd7700c7352",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/orm": "^2.5",
+                "php": "^7.0|^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpcov": "^4.0",
+                "phpunit/phpunit": "^6.0",
+                "satooshi/php-coveralls": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Fmasa\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "František Maša",
+                    "email": "frantisekmasa1@gmail.com"
+                }
+            ],
+            "description": "Mechanism for nullable embeddables in Doctrine 2.5+",
+            "support": {
+                "source": "https://github.com/skaut/doctrine-nullable-embeddables/tree/1.1.1"
+            },
+            "time": "2023-01-15T10:44:51+00:00"
+        },
+        {
             "name": "skautis/nette",
             "version": "v2.2.0",
             "source": {
@@ -10160,28 +10163,28 @@
         },
         {
             "name": "mockery/mockery",
-            "version": "1.4.0",
+            "version": "1.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mockery/mockery.git",
-                "reference": "6c6a7c533469873deacf998237e7649fc6b36223"
+                "reference": "e01123a0e847d52d186c5eb4b9bf58b0c6d00346"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mockery/mockery/zipball/6c6a7c533469873deacf998237e7649fc6b36223",
-                "reference": "6c6a7c533469873deacf998237e7649fc6b36223",
+                "url": "https://api.github.com/repos/mockery/mockery/zipball/e01123a0e847d52d186c5eb4b9bf58b0c6d00346",
+                "reference": "e01123a0e847d52d186c5eb4b9bf58b0c6d00346",
                 "shasum": ""
             },
             "require": {
-                "hamcrest/hamcrest-php": "~2.0",
+                "hamcrest/hamcrest-php": "^2.0.1",
                 "lib-pcre": ">=7.0",
-                "php": "^7.3.0"
+                "php": "^7.3 || ^8.0"
             },
             "conflict": {
                 "phpunit/phpunit": "<8.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^8.0.0 || ^9.0.0"
+                "phpunit/phpunit": "^8.5 || ^9.3"
             },
             "type": "library",
             "extra": {
@@ -10226,9 +10229,9 @@
             ],
             "support": {
                 "issues": "https://github.com/mockery/mockery/issues",
-                "source": "https://github.com/mockery/mockery/tree/master"
+                "source": "https://github.com/mockery/mockery/tree/1.4.4"
             },
-            "time": "2020-05-19T14:25:16+00:00"
+            "time": "2021-09-13T15:28:59+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -13318,8 +13321,8 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">= 7.4"
+        "php": ">= 7.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }

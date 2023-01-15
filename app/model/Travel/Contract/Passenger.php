@@ -31,9 +31,9 @@ final class Passenger
     private string $address;
 
     /** @ORM\Column(type="chronos_date", nullable=true, name="driver_birthday") */
-    private ?Date $birthday = null;
+    private Date|null $birthday = null;
 
-    public function __construct(string $name, string $contact, string $address, ?Date $birthday)
+    public function __construct(string $name, string $contact, string $address, Date|null $birthday)
     {
         $this->name     = $name;
         $this->contact  = $contact;
@@ -56,7 +56,7 @@ final class Passenger
         return $this->address;
     }
 
-    public function getBirthday(): ?Date
+    public function getBirthday(): Date|null
     {
         return $this->birthday;
     }

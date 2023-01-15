@@ -8,11 +8,8 @@ use Model\Cashbook\Cashbook\CashbookId;
 
 final class ChitWasUpdated
 {
-    private CashbookId $cashbookId;
-
-    public function __construct(CashbookId $cashbookId)
+    public function __construct(private CashbookId $cashbookId)
     {
-        $this->cashbookId = $cashbookId;
     }
 
     public function getCashbookId(): CashbookId

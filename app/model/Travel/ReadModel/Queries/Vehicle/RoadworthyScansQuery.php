@@ -9,11 +9,8 @@ use Model\Travel\ReadModel\QueryHandlers\Vehicle\RoadworthyScansQueryHandler;
 /** @see RoadworthyScansQueryHandler */
 final class RoadworthyScansQuery
 {
-    private int $vehicleId;
-
-    public function __construct(int $vehicleId)
+    public function __construct(private int $vehicleId)
     {
-        $this->vehicleId = $vehicleId;
     }
 
     public function getVehicleId(): int

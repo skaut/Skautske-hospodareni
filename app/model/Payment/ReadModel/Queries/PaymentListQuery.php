@@ -9,11 +9,8 @@ use Model\Payment\ReadModel\QueryHandlers\PaymentListQueryHandler;
 /** @see PaymentListQueryHandler */
 final class PaymentListQuery
 {
-    private int $groupId;
-
-    public function __construct(int $groupId)
+    public function __construct(private int $groupId)
     {
-        $this->groupId = $groupId;
     }
 
     public function getGroupId(): int

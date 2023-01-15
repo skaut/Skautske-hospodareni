@@ -15,17 +15,8 @@ use Nette\Utils\ArrayHash;
 
 class BankAccountForm extends BaseControl
 {
-    private ?int $id = null;
-
-    private BankAccountService $model;
-
-    private CommandBus $commandBus;
-
-    public function __construct(?int $id, BankAccountService $model, CommandBus $commandBus)
+    public function __construct(private int|null $id = null, private BankAccountService $model, private CommandBus $commandBus)
     {
-        $this->id         = $id;
-        $this->model      = $model;
-        $this->commandBus = $commandBus;
     }
 
     protected function createComponentForm(): BaseForm
@@ -94,7 +85,7 @@ class BankAccountForm extends BaseControl
 
             $this->flashMessage('Bankovní účet byl uložen');
             $this->getPresenter()->redirect('BankAccounts:default');
-        } catch (InvalidBankAccountNumber $e) {
+        } catch (InvalidBankAccountNumber) {
             $form->addError('Neplatné číslo účtu');
         }
     }

@@ -52,10 +52,10 @@ class Cashbook extends Aggregate
     private $type;
 
     /** @ORM\Column(type="string", nullable=true) */
-    private ?string $cashChitNumberPrefix = null;
+    private string|null $cashChitNumberPrefix = null;
 
     /** @ORM\Column(type="string", nullable=true) */
-    private ?string $bankChitNumberPrefix = null;
+    private string|null $bankChitNumberPrefix = null;
 
     /**
      * @ORM\OneToMany(targetEntity=Chit::class, mappedBy="cashbook", cascade={"persist", "remove"}, orphanRemoval=true)
@@ -86,12 +86,12 @@ class Cashbook extends Aggregate
         return $this->type;
     }
 
-    public function getCashChitNumberPrefix(): ?string
+    public function getCashChitNumberPrefix(): string|null
     {
         return $this->cashChitNumberPrefix;
     }
 
-    public function getBankChitNumberPrefix(): ?string
+    public function getBankChitNumberPrefix(): string|null
     {
         return $this->bankChitNumberPrefix;
     }
@@ -101,7 +101,7 @@ class Cashbook extends Aggregate
         return $this->note;
     }
 
-    public function updateChitNumberPrefix(?string $chitNumberPrefix, PaymentMethod $paymentMethod): void
+    public function updateChitNumberPrefix(string|null $chitNumberPrefix, PaymentMethod $paymentMethod): void
     {
         if ($chitNumberPrefix !== null && Strings::length($chitNumberPrefix) > 6) {
             throw new InvalidArgumentException('Chit number prefix too long');
@@ -283,7 +283,7 @@ class Cashbook extends Aggregate
      *
      * @return Chit[]
      */
-    public function getChits(?PaymentMethod $paymentMethodOnly = null): array
+    public function getChits(PaymentMethod|null $paymentMethodOnly = null): array
     {
         return array_map(
             function (Chit $chit): Chit {
@@ -411,7 +411,7 @@ class Cashbook extends Aggregate
     }
 
     /** @return Chit[] */
-    private function sortedChits(?PaymentMethod $paymentMethodOnly): array
+    private function sortedChits(PaymentMethod|null $paymentMethodOnly): array
     {
         $chits = $this->chits->toArray();
 

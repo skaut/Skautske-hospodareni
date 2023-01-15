@@ -13,19 +13,13 @@ use Model\Payment\Services\IOAuthAccessChecker;
 
 class ChangeGroupUnitsHandler
 {
-    private IGroupRepository $groups;
-
-    private IBankAccountAccessChecker $bankAccountAccessChecker;
-
     private IOAuthAccessChecker $mailCredentaccessChecker;
 
     public function __construct(
-        IGroupRepository $groups,
-        IBankAccountAccessChecker $bankAccountAccessChecker,
-        IOAuthAccessChecker $oAuthAccessChecker
+        private IGroupRepository $groups,
+        private IBankAccountAccessChecker $bankAccountAccessChecker,
+        IOAuthAccessChecker $oAuthAccessChecker,
     ) {
-        $this->groups                   = $groups;
-        $this->bankAccountAccessChecker = $bankAccountAccessChecker;
         $this->mailCredentaccessChecker = $oAuthAccessChecker;
     }
 

@@ -18,7 +18,7 @@ abstract class BaseControl extends Control
 {
     abstract public function render(): void;
 
-    public function getPresenter(): ?BasePresenter
+    public function getPresenter(): BasePresenter|null
     {
         $presenter = parent::getPresenter();
 
@@ -38,7 +38,7 @@ abstract class BaseControl extends Control
         return $this->getPresenter()->flashMessage($message, $type);
     }
 
-    protected function reload(?string $message = null, string $type = 'info'): void
+    protected function reload(string|null $message = null, string $type = 'info'): void
     {
         if ($message !== null) {
             $this->flashMessage($message, $type);

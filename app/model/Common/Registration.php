@@ -6,17 +6,8 @@ namespace Model\Common;
 
 final class Registration
 {
-    private int $id;
-
-    private string $unitName;
-
-    private int $year;
-
-    public function __construct(int $id, string $unitName, int $year)
+    public function __construct(private int $id, private string $unitName, private int $year)
     {
-        $this->id       = $id;
-        $this->unitName = $unitName;
-        $this->year     = $year;
     }
 
     public function getId(): int

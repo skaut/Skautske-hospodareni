@@ -6,7 +6,7 @@ namespace App;
 
 class TutorialPresenter extends BasePresenter
 {
-    public function renderEvent(?string $anchor = null): void
+    public function renderEvent(string|null $anchor = null): void
     {
     }
 }

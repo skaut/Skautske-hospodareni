@@ -11,12 +11,9 @@ use Cake\Chronos\Date;
 
 class DefaultPresenter extends BasePresenter
 {
-    private GridFactory $gridFactory;
-
-    public function __construct(GridFactory $gridFactory)
+    public function __construct(private GridFactory $gridFactory)
     {
         parent::__construct();
-        $this->gridFactory = $gridFactory;
     }
 
     protected function createComponentGrid(): DataGrid

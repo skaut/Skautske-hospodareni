@@ -48,7 +48,7 @@ class NextVariableSymbolSequenceQueryHandlerTest extends TestCase
         $this->assertReturnsVariableSymbol(self::YEAR . '14102001', 1, '014-1');
     }
 
-    private function assertReturnsVariableSymbol(?string $expectedSymbol, int $groupsCount, string $unitRegistrationNumber): void
+    private function assertReturnsVariableSymbol(string|null $expectedSymbol, int $groupsCount, string $unitRegistrationNumber): void
     {
         $unitDTO = m::mock(Unit::class, ['getShortRegistrationNumber' => $unitRegistrationNumber]);
 

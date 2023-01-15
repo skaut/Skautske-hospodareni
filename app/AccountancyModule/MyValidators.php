@@ -22,8 +22,7 @@ class MyValidators
 
     public const EMAIL_SEPARATOR = ',';
 
-    /** @param mixed $control */
-    public static function isValidDate($control): bool
+    public static function isValidDate(mixed $control): bool
     {
         return $control->value !== null;
     }
@@ -39,8 +38,7 @@ class MyValidators
         return count(array_intersect($control->getValue(), $values)) !== 0;
     }
 
-    /** @param mixed $control */
-    public static function isValidEmailList($control): bool
+    public static function isValidEmailList(mixed $control): bool
     {
         $value = preg_replace('/\s+/', '', $control->value);
         foreach (explode(self::EMAIL_SEPARATOR, $value) as $email) {

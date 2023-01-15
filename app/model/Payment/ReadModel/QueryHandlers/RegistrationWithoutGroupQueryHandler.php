@@ -15,17 +15,11 @@ use function count;
 
 final class RegistrationWithoutGroupQueryHandler
 {
-    private IRegistrationRepository $registrations;
-
-    private IGroupRepository $groups;
-
-    public function __construct(IRegistrationRepository $registrations, IGroupRepository $groups)
+    public function __construct(private IRegistrationRepository $registrations, private IGroupRepository $groups)
     {
-        $this->registrations = $registrations;
-        $this->groups        = $groups;
     }
 
-    public function __invoke(RegistrationWithoutGroupQuery $query): ?Registration
+    public function __invoke(RegistrationWithoutGroupQuery $query): Registration|null
     {
         $registrations = $this->registrations->findByUnit($query->getUnitId());
 

@@ -39,12 +39,9 @@ class ChitPresenter extends BasePresenter
     /** @persistent */
     public int $onlyUnlocked = 1;
 
-    private IChitListControlFactory $chitListFactory;
-
-    public function __construct(IChitListControlFactory $chitListFactory)
+    public function __construct(private IChitListControlFactory $chitListFactory)
     {
         parent::__construct();
-        $this->chitListFactory = $chitListFactory;
     }
 
     protected function startup(): void
@@ -71,7 +68,7 @@ class ChitPresenter extends BasePresenter
         $this->redrawControl();
     }
 
-    public function actionDefault(?int $year = null): void
+    public function actionDefault(int|null $year = null): void
     {
         $this->cashbooks = [
             ObjectType::UNIT => $this->getUnitCashbooks(),

@@ -9,17 +9,8 @@ use Model\Travel\Handlers\Vehicle\AddRoadworthyScanHandler;
 /** @see AddRoadworthyScanHandler */
 final class AddRoadworthyScan
 {
-    private int $vehicleId;
-
-    private string $fileName;
-
-    private string $scanContents;
-
-    public function __construct(int $vehicleId, string $fileName, string $scanContents)
+    public function __construct(private int $vehicleId, private string $fileName, private string $scanContents)
     {
-        $this->vehicleId    = $vehicleId;
-        $this->fileName     = $fileName;
-        $this->scanContents = $scanContents;
     }
 
     public function getFileName(): string
