@@ -19,12 +19,9 @@ use Model\Infrastructure\Repositories\AggregateRepository;
 
 final class EventRepository extends AggregateRepository implements IEventRepository
 {
-    private CommandBus $commandBus;
-
-    public function __construct(EntityManager $entityManager, EventBus $eventBus, CommandBus $commandBus)
+    public function __construct(EntityManager $entityManager, EventBus $eventBus, private CommandBus $commandBus)
     {
         parent::__construct($entityManager, $eventBus);
-        $this->commandBus = $commandBus;
     }
 
     public function findBySkautisId(SkautisEventId $id): Event
@@ -38,7 +35,7 @@ final class EventRepository extends AggregateRepository implements IEventReposit
                 ->setParameter('skautisId', $id->toInt())
                 ->getQuery()
                 ->getSingleResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             $cashbook = new Event($id, CashbookId::generate());
             $this->save($cashbook);
 
@@ -59,7 +56,7 @@ final class EventRepository extends AggregateRepository implements IEventReposit
                 ->setParameter('cashbookId', $cashbookId)
                 ->getQuery()
                 ->getSingleResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             throw new CashbookNotFound();
         }
     }

@@ -23,11 +23,8 @@ final class CampCategoryRepository implements ICampCategoryRepository
         3 => ParticipantType::ADULT,
     ];
 
-    private WebServiceInterface $eventWebService;
-
-    public function __construct(WebServiceInterface $eventWebService)
+    public function __construct(private WebServiceInterface $eventWebService)
     {
-        $this->eventWebService = $eventWebService;
     }
 
     /** @return CampCategory[] */
@@ -66,7 +63,7 @@ final class CampCategoryRepository implements ICampCategoryRepository
     }
 
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    private function getParticipantType(stdClass $category): ?ParticipantType
+    private function getParticipantType(stdClass $category): ParticipantType|null
     {
         $categoryId = $category->ID_EventCampStatementType ?? null;
 

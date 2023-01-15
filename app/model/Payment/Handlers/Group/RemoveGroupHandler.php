@@ -13,11 +13,8 @@ use function sprintf;
 
 final class RemoveGroupHandler
 {
-    private IGroupRepository $groups;
-
-    public function __construct(IGroupRepository $groups)
+    public function __construct(private IGroupRepository $groups)
     {
-        $this->groups = $groups;
     }
 
     public function __invoke(RemoveGroup $command): void

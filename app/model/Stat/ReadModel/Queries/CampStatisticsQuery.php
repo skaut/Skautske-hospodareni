@@ -14,15 +14,12 @@ final class CampStatisticsQuery
     /** @var SkautisCampId[] */
     private array $campIds;
 
-    private int $year;
-
     /** @param int[] $campIds */
-    public function __construct(array $campIds, int $year)
+    public function __construct(array $campIds, private int $year)
     {
         $this->campIds = array_map(function (int $id) {
             return new SkautisCampId($id);
         }, $campIds);
-        $this->year    = $year;
     }
 
     /** @return SkautisCampId[] */

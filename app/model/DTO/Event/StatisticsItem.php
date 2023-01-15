@@ -6,14 +6,8 @@ namespace Model\DTO\Event;
 
 final class StatisticsItem
 {
-    private string $label;
-
-    private int $count;
-
-    public function __construct(string $label, int $count)
+    public function __construct(private string $label, private int $count)
     {
-        $this->label = $label;
-        $this->count = $count;
     }
 
     public function getLabel(): string

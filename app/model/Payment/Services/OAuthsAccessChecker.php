@@ -11,14 +11,8 @@ use Model\Payment\IUnitResolver;
 
 final class OAuthsAccessChecker implements IOAuthAccessChecker
 {
-    private IGoogleRepository $googleRepository;
-
-    private IUnitResolver $unitResolver;
-
-    public function __construct(IGoogleRepository $googleRepository, IUnitResolver $unitResolver)
+    public function __construct(private IGoogleRepository $googleRepository, private IUnitResolver $unitResolver)
     {
-        $this->googleRepository = $googleRepository;
-        $this->unitResolver     = $unitResolver;
     }
 
     /**

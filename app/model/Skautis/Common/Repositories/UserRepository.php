@@ -13,14 +13,8 @@ use stdClass;
 
 final class UserRepository implements IUserRepository
 {
-    private WebServiceInterface $userWebService;
-
-    private WebServiceInterface $orgWebService;
-
-    public function __construct(WebServiceInterface $userWebService, WebServiceInterface $orgWebService)
+    public function __construct(private WebServiceInterface $userWebService, private WebServiceInterface $orgWebService)
     {
-        $this->userWebService = $userWebService;
-        $this->orgWebService  = $orgWebService;
     }
 
     public function find(int $id): User
@@ -44,7 +38,7 @@ final class UserRepository implements IUserRepository
 
                 return new User($user->ID, $user->Person, $person->Email);
             }
-        } catch (PermissionException $e) {
+        } catch (PermissionException) {
         }
 
         throw new UserNotFound();

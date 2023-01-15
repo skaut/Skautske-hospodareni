@@ -8,11 +8,8 @@ use Model\Event\SkautisEventId;
 
 final class EventWasCanceled
 {
-    private SkautisEventId $eventId;
-
-    public function __construct(SkautisEventId $eventId)
+    public function __construct(private SkautisEventId $eventId)
     {
-        $this->eventId = $eventId;
     }
 
     public function getEventId(): SkautisEventId

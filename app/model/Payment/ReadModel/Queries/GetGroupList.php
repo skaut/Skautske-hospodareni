@@ -9,16 +9,9 @@ use Model\Payment\ReadModel\QueryHandlers\GetGroupListHandler;
 /** @see GetGroupListHandler */
 final class GetGroupList
 {
-    /** @var int[] */
-    private array $unitIds;
-
-    private bool $onlyOpen;
-
     /** @param int[] $unitIds */
-    public function __construct(array $unitIds, bool $onlyOpen)
+    public function __construct(private array $unitIds, private bool $onlyOpen)
     {
-        $this->unitIds  = $unitIds;
-        $this->onlyOpen = $onlyOpen;
     }
 
     /** @return int[] */

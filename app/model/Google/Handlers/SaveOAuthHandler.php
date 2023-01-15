@@ -13,14 +13,8 @@ use Model\Mail\Repositories\IGoogleRepository;
 
 final class SaveOAuthHandler
 {
-    private IGoogleRepository $repository;
-
-    private GoogleService $googleService;
-
-    public function __construct(IGoogleRepository $repository, GoogleService $googleService)
+    public function __construct(private IGoogleRepository $repository, private GoogleService $googleService)
     {
-        $this->repository    = $repository;
-        $this->googleService = $googleService;
     }
 
     public function __invoke(SaveOAuth $command): void
@@ -33,7 +27,7 @@ final class SaveOAuthHandler
         try {
             $oAuth = $this->repository->findByUnitAndEmail($command->getUnitId(), $email);
             $oAuth->setToken($token['refresh_token']);
-        } catch (OAuthNotFound $exc) {
+        } catch (OAuthNotFound) {
             $oAuth = OAuth::create($command->getUnitId(), $token['refresh_token'], $email);
         }
 

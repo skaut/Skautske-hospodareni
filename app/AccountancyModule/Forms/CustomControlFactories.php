@@ -11,7 +11,7 @@ use Nette\Forms\Control;
 
 trait CustomControlFactories
 {
-    public function addDate(string $name, ?string $label = null): DateControl
+    public function addDate(string $name, string|null $label = null): DateControl
     {
         return $this[$name] = new DateControl($label);
     }
@@ -30,7 +30,7 @@ trait CustomControlFactories
         return $this[$name] = $control;
     }
 
-    public function addDependentSelectBox(string $name, ?string $label, Control ...$parents): DependentSelectBox
+    public function addDependentSelectBox(string $name, string|null $label, Control ...$parents): DependentSelectBox
     {
         return $this[$name] = new DependentSelectBox($label, $parents);
     }

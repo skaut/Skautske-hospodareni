@@ -10,23 +10,8 @@ use function mb_substr;
 
 final class CampCategory implements ICategory
 {
-    private int $id;
-
-    private Operation $operationType;
-
-    private string $name;
-
-    private Money $total;
-
-    private ?ParticipantType $participantType = null;
-
-    public function __construct(int $id, Operation $operationType, string $name, Money $total, ?ParticipantType $participantType)
+    public function __construct(private int $id, private Operation $operationType, private string $name, private Money $total, private ParticipantType|null $participantType = null)
     {
-        $this->id              = $id;
-        $this->operationType   = $operationType;
-        $this->name            = $name;
-        $this->total           = $total;
-        $this->participantType = $participantType;
     }
 
     public function getId(): int
@@ -54,7 +39,7 @@ final class CampCategory implements ICategory
         return $this->total;
     }
 
-    public function getParticipantType(): ?ParticipantType
+    public function getParticipantType(): ParticipantType|null
     {
         return $this->participantType;
     }

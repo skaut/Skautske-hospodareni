@@ -64,7 +64,7 @@ class AggregateId
         return $otherValueObject->id === $this->id;
     }
 
-    private function normalize(string $id): ?string
+    private function normalize(string $id): string|null
     {
         $uuid = Uuid::fromString($id);
 

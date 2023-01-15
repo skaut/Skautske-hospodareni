@@ -22,17 +22,11 @@ class AddMembersPresenter extends BasePresenter
     /** @var string[] */
     protected array $readUnits;
 
-    private PaymentService $model;
-
-    private IMassAddFormFactory $massAddFormFactory;
-
     private const STS_PRICE = 200;
 
-    public function __construct(IMassAddFormFactory $massAddFormFactory, PaymentService $model)
+    public function __construct(private IMassAddFormFactory $massAddFormFactory, private PaymentService $model)
     {
         parent::__construct();
-        $this->model              = $model;
-        $this->massAddFormFactory = $massAddFormFactory;
     }
 
     protected function startup(): void
@@ -42,14 +36,14 @@ class AddMembersPresenter extends BasePresenter
     }
 
     /** @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY */
-    public function actionDefault(int $id, ?int $unitId = null): void
+    public function actionDefault(int $id, int|null $unitId = null): void
     {
         $this->id = $id;
 
         //ověření přístupu
         try {
             $list = $this->model->getPersonsFromRegistrationWithoutPayment(array_keys($this->readUnits), $id);
-        } catch (InvalidArgumentException $exc) {
+        } catch (InvalidArgumentException) {
             $this->flashMessage('Neoprávněný přístup ke skupině.', 'danger');
             $this->redirect(':Accountancy:Payment:GroupList:');
 

@@ -46,47 +46,23 @@ use function usort;
 
 class PaymentService
 {
-    private Skautis $skautis;
-
-    private IGroupRepository $groups;
-
-    private IPaymentRepository $payments;
-
-    private IBankAccountRepository $bankAccounts;
-
-    private IBankAccountAccessChecker $bankAccountAccessChecker;
-
-    private IMemberEmailRepository $emails;
-
-    private IOAuthAccessChecker $oAuthAccessChecker;
-
-    private IUserRepository $users;
-
     public function __construct(
-        Skautis $skautis,
-        IGroupRepository $groups,
-        IPaymentRepository $payments,
-        IBankAccountRepository $bankAccounts,
-        IBankAccountAccessChecker $bankAccountAccessChecker,
-        IMemberEmailRepository $emails,
-        IOAuthAccessChecker $oAuthAccessChecker,
-        IUserRepository $users
+        private Skautis $skautis,
+        private IGroupRepository $groups,
+        private IPaymentRepository $payments,
+        private IBankAccountRepository $bankAccounts,
+        private IBankAccountAccessChecker $bankAccountAccessChecker,
+        private IMemberEmailRepository $emails,
+        private IOAuthAccessChecker $oAuthAccessChecker,
+        private IUserRepository $users,
     ) {
-        $this->skautis                  = $skautis;
-        $this->groups                   = $groups;
-        $this->payments                 = $payments;
-        $this->bankAccounts             = $bankAccounts;
-        $this->bankAccountAccessChecker = $bankAccountAccessChecker;
-        $this->emails                   = $emails;
-        $this->oAuthAccessChecker       = $oAuthAccessChecker;
-        $this->users                    = $users;
     }
 
-    public function findPayment(int $id): ?DTO\Payment
+    public function findPayment(int $id): DTO\Payment|null
     {
         try {
             return DTO\PaymentFactory::create($this->payments->find($id));
-        } catch (PaymentNotFound $e) {
+        } catch (PaymentNotFound) {
             return null;
         }
     }
@@ -142,12 +118,12 @@ class PaymentService
     /** @param EmailTemplate[] $emails */
     public function createGroup(
         int $unitId,
-        ?SkautisEntity $skautisEntity,
+        SkautisEntity|null $skautisEntity,
         string $label,
         PaymentDefaults $paymentDefaults,
         array $emails,
-        ?OAuthId $oAuthId,
-        ?int $bankAccountId
+        OAuthId|null $oAuthId,
+        int|null $bankAccountId,
     ): int {
         $now         = new DateTimeImmutable();
         $bankAccount = $bankAccountId !== null ? $this->bankAccounts->find($bankAccountId) : null;
@@ -176,8 +152,8 @@ class PaymentService
         string $name,
         PaymentDefaults $paymentDefaults,
         array $emails,
-        ?OAuthId $oAuthId,
-        ?int $bankAccountId
+        OAuthId|null $oAuthId,
+        int|null $bankAccountId,
     ): void {
         $group       = $this->groups->find($id);
         $bankAccount = $bankAccountId !== null ? $this->bankAccounts->find($bankAccountId) : null;
@@ -198,13 +174,13 @@ class PaymentService
         $this->groups->save($group);
     }
 
-    public function getGroup(int $id): ?DTO\Group
+    public function getGroup(int $id): DTO\Group|null
     {
         try {
             $group = $this->groups->find($id);
 
             return DTO\GroupFactory::create($group);
-        } catch (GroupNotFound $e) {
+        } catch (GroupNotFound) {
         }
 
         return null;
@@ -224,7 +200,7 @@ class PaymentService
         $this->groups->save($group);
     }
 
-    public function getMaxVariableSymbol(int $groupId): ?VariableSymbol
+    public function getMaxVariableSymbol(int $groupId): VariableSymbol|null
     {
         return $this->payments->getMaxVariableSymbol($groupId);
     }
@@ -232,7 +208,7 @@ class PaymentService
     /**
      * vrací nejvyšší hodnotu VS uvedenou ve skupině pro nezrušené platby
      */
-    public function getNextVS(int $groupId): ?VariableSymbol
+    public function getNextVS(int $groupId): VariableSymbol|null
     {
         $maxVs = $this->payments->getMaxVariableSymbol($groupId);
 
@@ -296,7 +272,7 @@ class PaymentService
     }
 
     /** @return stdClass[] */
-    public function getPersonFromRegistration(?int $registrationId, bool $includeChild = true): array
+    public function getPersonFromRegistration(int|null $registrationId, bool $includeChild = true): array
     {
         $persons = $this->skautis->org->PersonRegistrationAll([
             'ID_UnitRegistration' => $registrationId,
@@ -352,7 +328,7 @@ class PaymentService
         return $changes;
     }
 
-    public function getRegistrationYear(int $registrationId): ?int
+    public function getRegistrationYear(int $registrationId): int|null
     {
         $registration = $this->skautis->org->UnitRegistrationDetail(['ID' => $registrationId]);
 

@@ -10,19 +10,9 @@ use Model\Cashbook\Handlers\Cashbook\MoveChitsToDifferentCashbookHandler;
 /** @see MoveChitsToDifferentCashbookHandler */
 final class MoveChitsToDifferentCashbook
 {
-    /** @var int[] */
-    private array $chitIds;
-
-    private CashbookId $sourceCashbookId;
-
-    private CashbookId $targetCashbookId;
-
     /** @param int[] $chitIds */
-    public function __construct(array $chitIds, CashbookId $sourceCashbookId, CashbookId $targetCashbookId)
+    public function __construct(private array $chitIds, private CashbookId $sourceCashbookId, private CashbookId $targetCashbookId)
     {
-        $this->chitIds          = $chitIds;
-        $this->sourceCashbookId = $sourceCashbookId;
-        $this->targetCashbookId = $targetCashbookId;
     }
 
     /** @return int[] */

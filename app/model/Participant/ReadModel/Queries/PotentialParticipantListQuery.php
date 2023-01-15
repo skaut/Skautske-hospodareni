@@ -11,19 +11,9 @@ use Model\Participant\ReadModel\QueryHandlers\PotentialParticipantListQueryHandl
 /** @see PotentialParticipantListQueryHandler */
 final class PotentialParticipantListQuery
 {
-    private UnitId $unitId;
-
-    private bool $directMembersOnly;
-
-    /** @var Participant[] */
-    private array $currentParticipants;
-
     /** @param Participant[] $currentParticipants */
-    public function __construct(UnitId $unitId, bool $directMembersOnly, array $currentParticipants)
+    public function __construct(private UnitId $unitId, private bool $directMembersOnly, private array $currentParticipants)
     {
-        $this->unitId              = $unitId;
-        $this->directMembersOnly   = $directMembersOnly;
-        $this->currentParticipants = $currentParticipants;
     }
 
     public function getUnitId(): UnitId

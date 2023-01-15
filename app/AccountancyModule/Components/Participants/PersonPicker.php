@@ -24,7 +24,7 @@ use function assert;
 final class PersonPicker extends BaseControl
 {
     /** @persistent */
-    public ?string $unitId = null;
+    public string|null $unitId = null;
 
     /** @persistent */
     public bool $directMemberOnly = false;
@@ -35,22 +35,12 @@ final class PersonPicker extends BaseControl
     /** @var callable[] */
     public array $onNonMemberAdd = [];
 
-    /** @var Participant[] */
-    private array $currentParticipants;
-
-    private QueryBus $queryBus;
-
-    private UnitId $userUnitId;
-
     /** @param Participant[] $currentParticipants */
     public function __construct(
-        UnitId $userUnitId,
-        array $currentParticipants,
-        QueryBus $queryBus
+        private UnitId $userUnitId,
+        private array $currentParticipants,
+        private QueryBus $queryBus,
     ) {
-        $this->userUnitId          = $userUnitId;
-        $this->currentParticipants = $currentParticipants;
-        $this->queryBus            = $queryBus;
     }
 
     public function handleAdd(int $personId): void

@@ -45,7 +45,6 @@ use Skautis\Wsdl\WsdlException;
 
 use function array_values;
 use function assert;
-use function get_class;
 use function sprintf;
 
 final class ChitForm extends BaseControl
@@ -57,37 +56,22 @@ final class ChitForm extends BaseControl
         Operation::EXPENSE => 'Výdaje',
     ];
 
-    private CashbookId $cashbookId;
-
     /**
      * Can current user add/edit chits?
      */
     private bool $isEditable;
 
-    private UnitId $unitId;
-
-    private CommandBus $commandBus;
-
-    private QueryBus $queryBus;
-
-    private LoggerInterface $logger;
-
     private int $itemsCount = 0;
 
     public function __construct(
-        CashbookId $cashbookId,
+        private CashbookId $cashbookId,
         bool $isEditable,
-        UnitId $unitId,
-        CommandBus $commandBus,
-        QueryBus $queryBus,
-        LoggerInterface $logger
+        private UnitId $unitId,
+        private CommandBus $commandBus,
+        private QueryBus $queryBus,
+        private LoggerInterface $logger,
     ) {
-        $this->cashbookId = $cashbookId;
         $this->isEditable = $isEditable;
-        $this->unitId     = $unitId;
-        $this->commandBus = $commandBus;
-        $this->queryBus   = $queryBus;
-        $this->logger     = $logger;
     }
 
     public function isAmountValid(Control $control): bool
@@ -96,7 +80,7 @@ final class ChitForm extends BaseControl
             new Amount($control->getValue());
 
             return true;
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return false;
         }
     }
@@ -313,16 +297,16 @@ final class ChitForm extends BaseControl
             $this->reload();
         } catch (InvalidArgumentException | CashbookNotFound $exc) {
             $this->flashMessage('Paragon se nepodařilo přidat do seznamu.', 'danger');
-            $this->logger->error(sprintf('Can\'t add chit to cashbook (%s: %s)', get_class($exc), $exc->getMessage()));
-        } catch (ChitLocked $e) {
+            $this->logger->error(sprintf('Can\'t add chit to cashbook (%s: %s)', $exc::class, $exc->getMessage()));
+        } catch (ChitLocked) {
             $this->flashMessage('Nelze upravit zamčený paragon', 'error');
-        } catch (AmountMustBeGreaterThanZero $ex) {
+        } catch (AmountMustBeGreaterThanZero) {
             $form->addError('Nelze uložit doklad, protože kategorie ve skautisu nemůže být záporná!');
-        } catch (WsdlException $se) {
+        } catch (WsdlException) {
             $this->flashMessage('Nepodařilo se upravit záznamy ve skautisu.', 'danger');
-        } catch (DuplicitCategory $e) {
+        } catch (DuplicitCategory) {
             $form->addError('Není dovoleno přidávat více položek se stejou kategorií!');
-        } catch (SingleItemRestriction $e) {
+        } catch (SingleItemRestriction) {
             $form->addError('Převody a hromadný příjmový doklad mohou mít pouze 1 položku!');
         }
     }
@@ -332,13 +316,13 @@ final class ChitForm extends BaseControl
     {
         try {
             return array_values($this->queryBus->handle(new MemberNamesQuery($this->unitId, 15)));
-        } catch (WsdlException $e) {
+        } catch (WsdlException) {
             return [];
         }
     }
 
     /** @return string[] */
-    private function getCategoryPairsByType(?Operation $operation): array
+    private function getCategoryPairsByType(Operation|null $operation): array
     {
         return $this->queryBus->handle(new CategoryPairsQuery($this->cashbookId, $operation));
     }

@@ -17,22 +17,15 @@ use Model\Event\SkautisEventId;
 use Skautis\Exception;
 
 use function array_merge;
-use function get_class;
 use function sprintf;
 
 class DefaultPresenter extends BasePresenter
 {
     public const DEFAULT_STATE = 'draft'; //filtrovani zobrazených položek
 
-    private IExportDialogFactory $exportDialogFactory;
-
-    private GridFactory $gridFactory;
-
-    public function __construct(IExportDialogFactory $exportDialogFactory, GridFactory $gridFactory)
+    public function __construct(private IExportDialogFactory $exportDialogFactory, private GridFactory $gridFactory)
     {
         parent::__construct();
-        $this->exportDialogFactory = $exportDialogFactory;
-        $this->gridFactory         = $gridFactory;
     }
 
     protected function startup(): void
@@ -57,7 +50,7 @@ class DefaultPresenter extends BasePresenter
             $this->flashMessage('Akci se nepodařilo zrušit', 'danger');
             $this->logger->error(
                 sprintf('Event #%d couldn\'t be canceled. Reason: %s', $aid, $e->getMessage()),
-                ['exception' => get_class($e)],
+                ['exception' => $e::class],
             );
         }
 
@@ -97,7 +90,7 @@ class DefaultPresenter extends BasePresenter
 
         $states = array_merge([DataGrid::OPTION_ALL => 'Nezrušené'], $this->queryBus->handle(new EventStates()));
         $grid->addFilterSelect('state', 'Stav', $states)
-            ->setCondition(function (EventListDataSource $dataSource, ?string $state): void {
+            ->setCondition(function (EventListDataSource $dataSource, string|null $state): void {
                 $dataSource->filterByState($state === DataGrid::OPTION_ALL ? null : $state);
             });
 

@@ -13,18 +13,15 @@ use Model\Payment\PaymentHasNoEmails;
 
 final class PaymentMailSubscriber
 {
-    private MailingService $mailingService;
-
-    public function __construct(MailingService $mailingService)
+    public function __construct(private MailingService $mailingService)
     {
-        $this->mailingService = $mailingService;
     }
 
     public function __invoke(PaymentWasCompleted $event): void
     {
         try {
             $this->mailingService->sendEmail($event->getId(), EmailType::get(EmailType::PAYMENT_COMPLETED));
-        } catch (EmailTemplateNotSet | OAuthNotSet | PaymentHasNoEmails $e) {
+        } catch (EmailTemplateNotSet | OAuthNotSet | PaymentHasNoEmails) {
         }
     }
 }

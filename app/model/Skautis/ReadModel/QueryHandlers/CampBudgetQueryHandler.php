@@ -14,11 +14,8 @@ use function array_map;
 
 final class CampBudgetQueryHandler
 {
-    private WebServiceInterface $eventWebService;
-
-    public function __construct(WebServiceInterface $eventWebService)
+    public function __construct(private WebServiceInterface $eventWebService)
     {
-        $this->eventWebService = $eventWebService;
     }
 
     /** @return BudgetEntry[] */

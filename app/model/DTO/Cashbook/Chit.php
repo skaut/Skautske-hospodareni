@@ -41,52 +41,22 @@ class Chit
 {
     use SmartObject;
 
-    private int $id;
-
-    private ChitBody $body;
-
-    private bool $locked;
-
-    /** @var CashbookType[] */
-    private array $inverseCashbookTypes;
-
-    private PaymentMethod $paymentMethod;
-
-    /** @var ChitItem[] */
-    private array $items;
-
-    private Operation $operation;
-
-    private Amount $amount;
-
-    /** @var ChitScan[] */
-    private array $scans;
-
     /**
      * @param CashbookType[] $inverseCashbookTypes
      * @param ChitItem[]     $items
      * @param ChitScan[]     $scans
      */
     public function __construct(
-        int $id,
-        ChitBody $body,
-        bool $locked,
-        array $inverseCashbookTypes,
-        PaymentMethod $paymentMethod,
-        array $items,
-        Operation $operation,
-        Amount $amount,
-        array $scans
+        private int $id,
+        private ChitBody $body,
+        private bool $locked,
+        private array $inverseCashbookTypes,
+        private PaymentMethod $paymentMethod,
+        private array $items,
+        private Operation $operation,
+        private Amount $amount,
+        private array $scans,
     ) {
-        $this->id                   = $id;
-        $this->body                 = $body;
-        $this->locked               = $locked;
-        $this->inverseCashbookTypes = $inverseCashbookTypes;
-        $this->paymentMethod        = $paymentMethod;
-        $this->items                = $items;
-        $this->operation            = $operation;
-        $this->amount               = $amount;
-        $this->scans                = $scans;
     }
 
     public function getId(): int
@@ -100,7 +70,7 @@ class Chit
     }
 
     /** @deprecated use getBody() */
-    public function getNumber(): ?ChitNumber
+    public function getNumber(): ChitNumber|null
     {
         return $this->body->getNumber();
     }
@@ -112,7 +82,7 @@ class Chit
     }
 
     /** @deprecated use getBody() */
-    public function getRecipient(): ?Recipient
+    public function getRecipient(): Recipient|null
     {
         return $this->body->getRecipient();
     }

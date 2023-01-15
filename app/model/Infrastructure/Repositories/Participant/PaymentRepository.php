@@ -13,11 +13,8 @@ use Model\Participant\Repositories\IPaymentRepository;
 
 final class PaymentRepository implements IPaymentRepository
 {
-    private EntityManager $em;
-
-    public function __construct(EntityManager $em)
+    public function __construct(private EntityManager $em)
     {
-        $this->em = $em;
     }
 
     public function findByParticipant(int $participantId, Payment\EventType $eventType): Payment
@@ -32,7 +29,7 @@ final class PaymentRepository implements IPaymentRepository
                 ->setParameter('event_type', $eventType->toString())
                 ->getQuery()
                 ->getSingleResult();
-        } catch (NoResultException $exc) {
+        } catch (NoResultException) {
             throw new PaymentNotFound();
         }
 

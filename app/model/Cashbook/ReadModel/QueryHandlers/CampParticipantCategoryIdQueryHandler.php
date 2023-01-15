@@ -12,11 +12,8 @@ use function sprintf;
 
 class CampParticipantCategoryIdQueryHandler
 {
-    private ICampCategoryRepository $categories;
-
-    public function __construct(ICampCategoryRepository $categories)
+    public function __construct(private ICampCategoryRepository $categories)
     {
-        $this->categories = $categories;
     }
 
     public function __invoke(CampParticipantCategoryIdQuery $query): int

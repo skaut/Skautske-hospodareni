@@ -20,30 +20,15 @@ use function count;
 final class ChitListControl extends BaseControl
 {
     /** @var Chit[]|NULL */
-    private ?array $chits = null;
-
-    private CashbookId $cashbookId;
-
-    private bool $onlyUnlocked;
-
-    private CommandBus $commandBus;
-
-    private QueryBus $queryBus;
-
-    private User $user;
+    private array|null $chits = null;
 
     public function __construct(
-        CashbookId $cashbookId,
-        bool $onlyUnlocked,
-        CommandBus $commandBus,
-        QueryBus $queryBus,
-        User $user
+        private CashbookId $cashbookId,
+        private bool $onlyUnlocked,
+        private CommandBus $commandBus,
+        private QueryBus $queryBus,
+        private User $user,
     ) {
-        $this->cashbookId   = $cashbookId;
-        $this->onlyUnlocked = $onlyUnlocked;
-        $this->commandBus   = $commandBus;
-        $this->queryBus     = $queryBus;
-        $this->user         = $user;
     }
 
     public function handleLockChit(int $chitId): void

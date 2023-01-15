@@ -42,47 +42,26 @@ class ChitListControl extends BaseControl
     /** @var callable[] */
     public array $onEditButtonClicked = [];
 
-    private CashbookId $cashbookId;
-
     /**
      * Can current user edit cashbook?
      */
     private bool $isEditable;
 
-    private PaymentMethod $paymentMethod;
-
-    private CommandBus $commandBus;
-
-    private QueryBus $queryBus;
-
-    private IMoveChitsDialogFactory $moveChitsDialogFactory;
-
-    private IInvertChitDialogFactory $invertChitDialogFactory;
-
     private IChitScanControlFactory $chitScanFactory;
 
-    private IPrefixControlFactory $prefixFactory;
-
     public function __construct(
-        CashbookId $cashbookId,
+        private CashbookId $cashbookId,
         bool $isEditable,
-        PaymentMethod $paymentMethod,
-        CommandBus $commandBus,
-        QueryBus $queryBus,
-        IMoveChitsDialogFactory $moveChitsDialogFactory,
-        IInvertChitDialogFactory $invertChitDialogFactory,
+        private PaymentMethod $paymentMethod,
+        private CommandBus $commandBus,
+        private QueryBus $queryBus,
+        private IMoveChitsDialogFactory $moveChitsDialogFactory,
+        private IInvertChitDialogFactory $invertChitDialogFactory,
         IChitScanControlFactory $chitScanControlFactory,
-        IPrefixControlFactory $prefixFactory
+        private IPrefixControlFactory $prefixFactory,
     ) {
-        $this->cashbookId              = $cashbookId;
-        $this->isEditable              = $isEditable;
-        $this->paymentMethod           = $paymentMethod;
-        $this->commandBus              = $commandBus;
-        $this->queryBus                = $queryBus;
-        $this->moveChitsDialogFactory  = $moveChitsDialogFactory;
-        $this->invertChitDialogFactory = $invertChitDialogFactory;
-        $this->chitScanFactory         = $chitScanControlFactory;
-        $this->prefixFactory           = $prefixFactory;
+        $this->isEditable      = $isEditable;
+        $this->chitScanFactory = $chitScanControlFactory;
     }
 
     public function render(): void
@@ -126,9 +105,9 @@ class ChitListControl extends BaseControl
         try {
             $this->commandBus->handle(new RemoveChitFromCashbook($this->cashbookId, $chitId));
             $this->flashMessage('Paragon byl smazán');
-        } catch (ChitLocked $e) {
+        } catch (ChitLocked) {
             $this->flashMessage('Nelze smazat zamčený paragon', 'error');
-        } catch (CashbookNotFound | ChitNotFound $e) {
+        } catch (CashbookNotFound | ChitNotFound) {
             $this->flashMessage('Paragon se nepodařilo smazat');
         }
 
@@ -150,9 +129,9 @@ class ChitListControl extends BaseControl
         try {
             $this->commandBus->handle(new GenerateChitNumbers($this->cashbookId, PaymentMethod::get($paymentMethod)));
             $this->getPresenter()->flashMessage('Čísla paragonů byla dogenerována.');
-        } catch (NonNumericChitNumbers $exc) {
+        } catch (NonNumericChitNumbers) {
             $this->getPresenter()->flashMessage('Nelze generovat čísla, když čísla dokladů jsou nečíselné!', 'error');
-        } catch (MaxChitNumberNotFound $exc) {
+        } catch (MaxChitNumberNotFound) {
             $this->getPresenter()->flashMessage('Nepodařilo se určit poslední poslední paragon, od kterého by se pokračovalo s číslováním.', 'error');
         }
 

@@ -10,11 +10,8 @@ use Model\User\SkautisRole;
 /** @see EditableUnitsQueryHandler */
 final class EditableUnitsQuery
 {
-    private SkautisRole $role;
-
-    public function __construct(SkautisRole $role)
+    public function __construct(private SkautisRole $role)
     {
-        $this->role = $role;
     }
 
     public function getRole(): SkautisRole

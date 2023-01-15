@@ -26,8 +26,7 @@ final class TransportTypeListType extends Type
         return $platform->getJsonTypeDeclarationSQL($fieldDeclaration);
     }
 
-    /** @param mixed $value */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform): string
+    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): string
     {
         Assertion::isArray($value);
         Assertion::same($value, array_values($value));
@@ -36,12 +35,8 @@ final class TransportTypeListType extends Type
         return Json::encode(array_map(fn (TransportType $type) => $type->toString(), $value));
     }
 
-    /**
-     * @param mixed $value
-     *
-     * @return TransportType[]
-     */
-    public function convertToPHPValue($value, AbstractPlatform $platform): array
+    /** @return TransportType[] */
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): array
     {
         $types = Json::decode($value);
 

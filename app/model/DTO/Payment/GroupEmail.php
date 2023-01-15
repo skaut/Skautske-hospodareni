@@ -8,14 +8,8 @@ use Model\Payment\EmailTemplate;
 
 final class GroupEmail
 {
-    private EmailTemplate $template;
-
-    private bool $enabled;
-
-    public function __construct(EmailTemplate $template, bool $enabled)
+    public function __construct(private EmailTemplate $template, private bool $enabled)
     {
-        $this->template = $template;
-        $this->enabled  = $enabled;
     }
 
     public function getTemplate(): EmailTemplate

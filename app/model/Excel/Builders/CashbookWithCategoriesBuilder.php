@@ -35,8 +35,6 @@ class CashbookWithCategoriesBuilder
 {
     private Worksheet $sheet;
 
-    private QueryBus $queryBus;
-
     private const HEADER_ROW              = 2;
     private const SUBHEADER_ROW           = 3;
     private const CATEGORIES_FIRST_COLUMN = 8;
@@ -46,9 +44,8 @@ class CashbookWithCategoriesBuilder
     // Coefficient for minimal size of column
     private const COLUMN_WIDTH_COEFFICIENT = 1.5;
 
-    public function __construct(QueryBus $queryBus)
+    public function __construct(private QueryBus $queryBus)
     {
-        $this->queryBus = $queryBus;
     }
 
     public function build(Worksheet $sheet, CashbookId $cashbookId, PaymentMethod $paymentMethod): void

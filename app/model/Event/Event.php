@@ -28,97 +28,46 @@ class Event implements ISkautisEvent
 {
     use SmartObject;
 
-    private SkautisEventId $id;
-
-    private string $displayName;
-
-    private UnitId $unitId;
-
-    private string $unitName;
-
-    private string $state;
-
-    private Date $startDate;
-
-    private Date $endDate;
-
-    private ?int $totalDays = null;
-
     private string $location;
-
-    private string $registrationNumber;
 
     private string $note;
 
-    private int $scopeId;
-
-    private int $typeId;
-
-    private ?bool $statisticAutoComputed = null;
-
-    private ?int $realCount = null;
-
-    private ?int $realChildDays = null;
-
-    private ?int $realPersonDays = null;
-
-    private ?string $personClosed = null;
-
-    private ?Date $dateClosed = null;
-
-    private ?string $unitEducativeName = null;
+    private bool|null $statisticAutoComputed = null;
 
     public function __construct(
-        SkautisEventId $id,
-        string $displayName,
-        UnitId $unitId,
-        string $unitName,
-        string $state,
-        Date $startDate,
-        Date $endDate,
-        ?int $totalDays,
-        ?string $location,
-        string $registrationNumber,
-        ?string $note,
-        int $scopeId,
-        int $typeId,
-        ?bool $isStatisticAutoComputed,
-        ?int $realCount,
-        ?int $realChildDays,
-        ?int $realPersonDays,
-        ?string $personClosed,
-        ?Date $dateClosed,
-        ?string $unitEducativeName
+        private SkautisEventId $id,
+        private string $displayName,
+        private UnitId $unitId,
+        private string $unitName,
+        private string $state,
+        private Date $startDate,
+        private Date $endDate,
+        private int|null $totalDays = null,
+        string|null $location,
+        private string $registrationNumber,
+        string|null $note,
+        private int $scopeId,
+        private int $typeId,
+        bool|null $isStatisticAutoComputed,
+        private int|null $realCount = null,
+        private int|null $realChildDays = null,
+        private int|null $realPersonDays = null,
+        private string|null $personClosed = null,
+        private Date|null $dateClosed = null,
+        private string|null $unitEducativeName = null,
     ) {
-        $this->id                    = $id;
-        $this->displayName           = $displayName;
-        $this->unitId                = $unitId;
-        $this->unitName              = $unitName;
-        $this->state                 = $state;
-        $this->startDate             = $startDate;
-        $this->endDate               = $endDate;
-        $this->totalDays             = $totalDays;
         $this->location              = $location ?? '';
-        $this->registrationNumber    = $registrationNumber;
         $this->note                  = $note ?? '';
-        $this->scopeId               = $scopeId;
-        $this->typeId                = $typeId;
         $this->statisticAutoComputed = $isStatisticAutoComputed;
-        $this->realCount             = $realCount;
-        $this->realChildDays         = $realChildDays;
-        $this->realPersonDays        = $realPersonDays;
-        $this->personClosed          = $personClosed;
-        $this->dateClosed            = $dateClosed;
-        $this->unitEducativeName     = $unitEducativeName;
     }
 
     public function update(
         string $displayName,
-        ?string $location,
+        string|null $location,
         Date $startDate,
         Date $endDate,
         int $scopeId,
-        int $typeId
+        int $typeId,
     ): void {
         $this->displayName = $displayName;
         $this->location    = $location;
@@ -168,7 +117,7 @@ class Event implements ISkautisEvent
         return $this->endDate;
     }
 
-    public function getTotalDays(): ?int
+    public function getTotalDays(): int|null
     {
         return $this->totalDays;
     }
@@ -198,37 +147,37 @@ class Event implements ISkautisEvent
         return $this->typeId;
     }
 
-    public function isStatisticAutoComputed(): ?bool
+    public function isStatisticAutoComputed(): bool|null
     {
         return $this->statisticAutoComputed;
     }
 
-    public function getRealCount(): ?int
+    public function getRealCount(): int|null
     {
         return $this->realCount;
     }
 
-    public function getRealChildDays(): ?int
+    public function getRealChildDays(): int|null
     {
         return $this->realChildDays;
     }
 
-    public function getRealPersonDays(): ?int
+    public function getRealPersonDays(): int|null
     {
         return $this->realPersonDays;
     }
 
-    public function getPersonClosed(): ?string
+    public function getPersonClosed(): string|null
     {
         return $this->personClosed;
     }
 
-    public function getDateClosed(): ?Date
+    public function getDateClosed(): Date|null
     {
         return $this->dateClosed;
     }
 
-    public function getUnitEducativeName(): ?string
+    public function getUnitEducativeName(): string|null
     {
         return $this->unitEducativeName;
     }

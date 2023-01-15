@@ -32,27 +32,15 @@ use function str_replace;
 
 class DefaultPresenter extends BasePresenter
 {
-    private ?int $commandId = null;
-
-    private TravelService $travelService;
-
-    private PdfRenderer $pdf;
-
-    private ICommandGridFactory $gridFactory;
-
-    private IEditTravelDialogFactory $editTravelDialogFactory;
+    private int|null $commandId = null;
 
     public function __construct(
-        TravelService $travelService,
-        PdfRenderer $pdf,
-        ICommandGridFactory $gridFactory,
-        IEditTravelDialogFactory $editTravelDialogFactory
+        private TravelService $travelService,
+        private PdfRenderer $pdf,
+        private ICommandGridFactory $gridFactory,
+        private IEditTravelDialogFactory $editTravelDialogFactory,
     ) {
         parent::__construct();
-        $this->travelService           = $travelService;
-        $this->pdf                     = $pdf;
-        $this->gridFactory             = $gridFactory;
-        $this->editTravelDialogFactory = $editTravelDialogFactory;
         $this->setLayout('layout.new');
     }
 
@@ -85,7 +73,7 @@ class DefaultPresenter extends BasePresenter
             $command->getClosedAt() === null && $unitOrOwner;
     }
 
-    public function actionDetail(?int $id): void
+    public function actionDetail(int|null $id): void
     {
         if ($id === null) {
             $this->redirect('default');

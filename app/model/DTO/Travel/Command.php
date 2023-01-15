@@ -38,86 +38,28 @@ class Command
     public const STATE_CLOSED      = 'closed';
     public const STATE_IN_PROGRESS = 'in_progress';
 
-    private int $id;
-
-    private int $unitId;
-
-    private ?int $vehicleId = null;
-
-    private Passenger $passenger;
-
-    private string $purpose;
-
-    private string $place;
-
-    private string $fellowPassengers;
-
-    private Money $fuelPrice;
-
-    private Money $amortizationPerKm;
-
-    private string $note;
-
-    private Money $total;
-
-    private ?DateTimeImmutable $closedAt = null;
-
-    private ?DateTimeImmutable $firstTravelDate = null;
-
-    private Money $pricePerKm;
-
-    private Money $fuelPricePerKm;
-
-    private string $state;
-
-    private ?int $ownerId = null;
-
-    /** @var TransportType[] */
-    private array $transportTypes;
-
-    private string $unit;
-
     /** @param TransportType[] $transportTypes */
     public function __construct(
-        int $id,
-        int $unitId,
-        ?int $vehicleId,
-        Passenger $passenger,
-        string $purpose,
-        string $place,
-        string $fellowPassengers,
-        Money $fuelPrice,
-        Money $amortizationPerKm,
-        string $note,
-        ?DateTimeImmutable $closedAt,
-        Money $total,
-        ?DateTimeImmutable $firstTravelDate,
-        Money $pricePerKm,
-        Money $fuelPricePerKm,
-        string $state,
-        ?int $ownerId,
-        array $transportTypes,
-        string $unit
+        private int $id,
+        private int $unitId,
+        private int|null $vehicleId = null,
+        private Passenger $passenger,
+        private string $purpose,
+        private string $place,
+        private string $fellowPassengers,
+        private Money $fuelPrice,
+        private Money $amortizationPerKm,
+        private string $note,
+        private DateTimeImmutable|null $closedAt = null,
+        private Money $total,
+        private DateTimeImmutable|null $firstTravelDate = null,
+        private Money $pricePerKm,
+        private Money $fuelPricePerKm,
+        private string $state,
+        private int|null $ownerId = null,
+        private array $transportTypes,
+        private string $unit,
     ) {
-        $this->id                = $id;
-        $this->unitId            = $unitId;
-        $this->vehicleId         = $vehicleId;
-        $this->passenger         = $passenger;
-        $this->purpose           = $purpose;
-        $this->place             = $place;
-        $this->fellowPassengers  = $fellowPassengers;
-        $this->fuelPrice         = $fuelPrice;
-        $this->amortizationPerKm = $amortizationPerKm;
-        $this->note              = $note;
-        $this->total             = $total;
-        $this->closedAt          = $closedAt;
-        $this->firstTravelDate   = $firstTravelDate;
-        $this->pricePerKm        = $pricePerKm;
-        $this->fuelPricePerKm    = $fuelPricePerKm;
-        $this->state             = $state;
-        $this->ownerId           = $ownerId;
-        $this->transportTypes    = $transportTypes;
-        $this->unit              = $unit;
     }
 
     public function getId(): int
@@ -130,7 +72,7 @@ class Command
         return $this->unitId;
     }
 
-    public function getVehicleId(): ?int
+    public function getVehicleId(): int|null
     {
         return $this->vehicleId;
     }
@@ -170,7 +112,7 @@ class Command
         return $this->note;
     }
 
-    public function getClosedAt(): ?DateTimeImmutable
+    public function getClosedAt(): DateTimeImmutable|null
     {
         return $this->closedAt;
     }
@@ -180,7 +122,7 @@ class Command
         return $this->total;
     }
 
-    public function getFirstTravelDate(): ?DateTimeImmutable
+    public function getFirstTravelDate(): DateTimeImmutable|null
     {
         return $this->firstTravelDate;
     }
@@ -200,7 +142,7 @@ class Command
         return $this->state;
     }
 
-    public function getOwnerId(): ?int
+    public function getOwnerId(): int|null
     {
         return $this->ownerId;
     }

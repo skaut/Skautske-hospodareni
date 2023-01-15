@@ -14,8 +14,6 @@ use function uniqid;
 
 final class FilePath
 {
-    private string $path;
-
     public static function generate(string $prefix, string $path): self
     {
         return new self(self::generatePath($prefix, $path));
@@ -26,9 +24,8 @@ final class FilePath
         return new self($path);
     }
 
-    private function __construct(string $path)
+    private function __construct(private string $path)
     {
-        $this->path = $path;
     }
 
     public function getPath(): string

@@ -15,22 +15,9 @@ class Category
 {
     use SmartObject;
 
-    private int $id;
-
-    private string $label;
-
-    /** @var Category[] */
-    private array $children;
-
-    private float $value;
-
     /** @param Category[] $children */
-    public function __construct(int $id, string $label, float $value, array $children)
+    public function __construct(private int $id, private string $label, private float $value, private array $children)
     {
-        $this->id       = $id;
-        $this->label    = $label;
-        $this->value    = $value;
-        $this->children = $children;
     }
 
     public function getId(): int

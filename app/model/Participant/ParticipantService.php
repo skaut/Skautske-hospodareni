@@ -19,14 +19,8 @@ use function ucfirst;
 
 final class ParticipantService
 {
-    private IPaymentRepository $repository;
-
-    private Skautis $skautis;
-
-    public function __construct(Skautis $skautis, IPaymentRepository $repository)
+    public function __construct(private Skautis $skautis, private IPaymentRepository $repository)
     {
-        $this->repository = $repository;
-        $this->skautis    = $skautis;
     }
 
     public function update(EventType $eventType, UpdateParticipant $updateParticipant): void
@@ -47,7 +41,7 @@ final class ParticipantService
         $event = new Event($updateParticipant->getEventId(), $eventType);
         try {
             $payment = $this->repository->findByParticipant($updateParticipant->getParticipantId(), $event->getType());
-        } catch (PaymentNotFound $exc) {
+        } catch (PaymentNotFound) {
             $payment = PaymentFactory::createDefault($updateParticipant->getParticipantId(), $event);
         }
 

@@ -10,14 +10,8 @@ use Model\Cashbook\Cashbook\PaymentMethod;
 /** @see CashbookScansQueryHandler */
 final class CashbookScansQuery
 {
-    private CashbookId $cashbookId;
-
-    private PaymentMethod $paymentMethod;
-
-    public function __construct(CashbookId $cashbookId, PaymentMethod $paymentMethod)
+    public function __construct(private CashbookId $cashbookId, private PaymentMethod $paymentMethod)
     {
-        $this->cashbookId    = $cashbookId;
-        $this->paymentMethod = $paymentMethod;
     }
 
     public function getCashbookId(): CashbookId

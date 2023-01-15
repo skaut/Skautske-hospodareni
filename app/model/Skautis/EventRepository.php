@@ -19,16 +19,10 @@ use function max;
 
 final class EventRepository implements IEventRepository
 {
-    private WebServiceInterface $webService;
-
     private string $skautisType = 'eventGeneral';
 
-    private EventFactory $eventFactory;
-
-    public function __construct(WebServiceInterface $webService, EventFactory $eventFactory)
+    public function __construct(private WebServiceInterface $webService, private EventFactory $eventFactory)
     {
-        $this->webService   = $webService;
-        $this->eventFactory = $eventFactory;
     }
 
     public function find(SkautisEventId $id): Event
@@ -67,7 +61,7 @@ final class EventRepository implements IEventRepository
         ], 'eventGeneral');
     }
 
-    public function getNewestEventId(): ?int
+    public function getNewestEventId(): int|null
     {
         $events = $this->webService->eventGeneralAll(['IsRelation' => true]);
 

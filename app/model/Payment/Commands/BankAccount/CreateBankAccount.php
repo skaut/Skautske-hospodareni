@@ -8,20 +8,8 @@ use Model\Payment\BankAccount\AccountNumber;
 
 final class CreateBankAccount
 {
-    private int $unitId;
-
-    private string $name;
-
-    private AccountNumber $number;
-
-    private ?string $token = null;
-
-    public function __construct(int $unitId, string $name, AccountNumber $number, ?string $token)
+    public function __construct(private int $unitId, private string $name, private AccountNumber $number, private string|null $token = null)
     {
-        $this->unitId = $unitId;
-        $this->name   = $name;
-        $this->number = $number;
-        $this->token  = $token;
     }
 
     public function getUnitId(): int
@@ -39,7 +27,7 @@ final class CreateBankAccount
         return $this->number;
     }
 
-    public function getToken(): ?string
+    public function getToken(): string|null
     {
         return $this->token;
     }

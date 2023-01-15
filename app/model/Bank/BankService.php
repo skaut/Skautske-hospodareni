@@ -30,26 +30,14 @@ use function min;
 
 class BankService
 {
-    private IFioClient $bank;
-
-    private IGroupRepository $groups;
-
-    private IPaymentRepository $payments;
-
-    private IBankAccountRepository $bankAccounts;
-
     public const DAYS_BACK_DEFAULT = 60;
 
     public function __construct(
-        IGroupRepository $groups,
-        IFioClient $bank,
-        IPaymentRepository $payments,
-        IBankAccountRepository $bankAccounts
+        private IGroupRepository $groups,
+        private IFioClient $bank,
+        private IPaymentRepository $payments,
+        private IBankAccountRepository $bankAccounts,
     ) {
-        $this->groups       = $groups;
-        $this->bank         = $bank;
-        $this->payments     = $payments;
-        $this->bankAccounts = $bankAccounts;
     }
 
     /**
@@ -63,7 +51,7 @@ class BankService
      * @throws BankTimeout
      * @throws InvalidOAuth
      */
-    public function pairAllGroups(array $groupIds, ?int $daysBack = null): array
+    public function pairAllGroups(array $groupIds, int|null $daysBack = null): array
     {
         Assert::thatAll($groupIds)->integer();
         Assert::that($daysBack)->nullOr()->min(1);

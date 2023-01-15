@@ -9,13 +9,9 @@ use Model\Payment\ReadModel\QueryHandlers\BankAccount\BankAccountsAccessibleByUn
 /** @see BankAccountsAccessibleByUnitsQueryHandler */
 final class BankAccountsAccessibleByUnitsQuery
 {
-    /** @var int[] */
-    private array $unitIds;
-
     /** @param int[] $unitIds */
-    public function __construct(array $unitIds)
+    public function __construct(private array $unitIds)
     {
-        $this->unitIds = $unitIds;
     }
 
     /** @return int[] */

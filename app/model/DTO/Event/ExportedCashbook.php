@@ -8,14 +8,8 @@ use Model\Cashbook\Cashbook\CashbookId;
 
 final class ExportedCashbook
 {
-    private CashbookId $cashbookId;
-
-    private string $displayName;
-
-    public function __construct(CashbookId $cashbookId, string $displayName)
+    public function __construct(private CashbookId $cashbookId, private string $displayName)
     {
-        $this->cashbookId  = $cashbookId;
-        $this->displayName = $displayName;
     }
 
     public function getCashbookId(): CashbookId

@@ -12,14 +12,11 @@ use Nette\Utils\Strings;
 
 final class CampPragueParticipantsQueryHandler
 {
-    private QueryBus $queryBus;
-
-    public function __construct(QueryBus $queryBus)
+    public function __construct(private QueryBus $queryBus)
     {
-        $this->queryBus = $queryBus;
     }
 
-    public function __invoke(CampPragueParticipantsQuery $query): ?PragueParticipants
+    public function __invoke(CampPragueParticipantsQuery $query): PragueParticipants|null
     {
         if (! Strings::startsWith($query->getRegistrationNumber(), PragueParticipants::PRAGUE_UNIT_PREFIX)) {
             return null;

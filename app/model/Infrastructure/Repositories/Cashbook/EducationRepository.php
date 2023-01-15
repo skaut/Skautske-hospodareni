@@ -19,12 +19,9 @@ use Model\Infrastructure\Repositories\AggregateRepository;
 
 final class EducationRepository extends AggregateRepository implements IEducationRepository
 {
-    private CommandBus $commandBus;
-
-    public function __construct(EntityManager $entityManager, EventBus $eventBus, CommandBus $commandBus)
+    public function __construct(EntityManager $entityManager, EventBus $eventBus, private CommandBus $commandBus)
     {
         parent::__construct($entityManager, $eventBus);
-        $this->commandBus = $commandBus;
     }
 
     public function findBySkautisId(SkautisEducationId $id): Education
@@ -38,7 +35,7 @@ final class EducationRepository extends AggregateRepository implements IEducatio
                 ->setParameter('skautisId', $id->toInt())
                 ->getQuery()
                 ->getSingleResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             $cashbook = new Education($id, CashbookId::generate());
             $this->save($cashbook);
 
@@ -59,7 +56,7 @@ final class EducationRepository extends AggregateRepository implements IEducatio
                 ->setParameter('cashbookId', $cashbookId)
                 ->getQuery()
                 ->getSingleResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             throw new CashbookNotFound();
         }
     }

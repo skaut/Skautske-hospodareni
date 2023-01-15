@@ -38,17 +38,11 @@ class CashbookPresenter extends BasePresenter
 {
     private bool $isRealTotalCostAutoComputed;
 
-    private ICashbookControlFactory $cashbookFactory;
-
-    private IMissingAutocomputedCategoryControlFactory $categoryAutocomputedFactory;
-
     public function __construct(
-        ICashbookControlFactory $cashbookFactory,
-        IMissingAutocomputedCategoryControlFactory $categoryAutocomputedFactory
+        private ICashbookControlFactory $cashbookFactory,
+        private IMissingAutocomputedCategoryControlFactory $categoryAutocomputedFactory,
     ) {
         parent::__construct();
-        $this->cashbookFactory             = $cashbookFactory;
-        $this->categoryAutocomputedFactory = $categoryAutocomputedFactory;
     }
 
     protected function startup(): void
@@ -65,7 +59,7 @@ class CashbookPresenter extends BasePresenter
         try {
             $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId()));
             assert($finalRealBalance instanceof Money);
-        } catch (MissingCategory $exc) {
+        } catch (MissingCategory) {
             $finalRealBalance  = null;
             $missingCategories = true;
         }
@@ -87,7 +81,7 @@ class CashbookPresenter extends BasePresenter
         try {
             $this->commandBus->handle(new ActivateAutocomputedCashbook(new SkautisCampId($this->getCampId())));
             $this->flashMessage('Byl aktivován automatický výpočet příjmů a výdajů v rozpočtu.');
-        } catch (PermissionException $e) {
+        } catch (PermissionException) {
             $this->flashMessage('Dopočítávání se nepodařilo aktivovat. Pro aktivaci musí být tábor alespoň ve stavu schváleno střediskem.', 'danger');
         }
 
@@ -137,7 +131,7 @@ class CashbookPresenter extends BasePresenter
                 $values->isAccount === 'Y',
             ));
             assert($amount instanceof Amount);
-        } catch (ZeroParticipantIncome $exc) {
+        } catch (ZeroParticipantIncome) {
             $this->flashMessage('Nemáte žádné příjmy od účastníků, které by bylo možné importovat.', 'warning');
             $this->redirect('default', ['aid' => $this->getCampId()]);
         }

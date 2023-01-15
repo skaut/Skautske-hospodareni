@@ -9,14 +9,8 @@ use Model\Common\UnitId;
 /** @see CreateUnitHandler */
 final class CreateUnit
 {
-    private UnitId $unitId;
-
-    private int $activeCashbookYear;
-
-    public function __construct(UnitId $unitId, int $activeCashbookYear)
+    public function __construct(private UnitId $unitId, private int $activeCashbookYear)
     {
-        $this->unitId             = $unitId;
-        $this->activeCashbookYear = $activeCashbookYear;
     }
 
     public function getUnitId(): UnitId

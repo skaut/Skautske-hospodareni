@@ -10,11 +10,8 @@ use Model\Cashbook\Repositories\IEducationRepository;
 
 final class EducationCashbookIdQueryHandler
 {
-    private IEducationRepository $eventRepository;
-
-    public function __construct(IEducationRepository $eventRepository)
+    public function __construct(private IEducationRepository $eventRepository)
     {
-        $this->eventRepository = $eventRepository;
     }
 
     public function __invoke(EducationCashbookIdQuery $query): CashbookId

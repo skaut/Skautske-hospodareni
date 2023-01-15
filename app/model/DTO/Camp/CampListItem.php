@@ -8,36 +8,15 @@ use Cake\Chronos\Date;
 
 final class CampListItem
 {
-    private int $id;
-
-    private string $name;
-
-    private Date $startDate;
-
-    private Date $endDate;
-
-    private string $location;
-
-    private ?string $prefix = null;
-
-    private string $state;
-
     public function __construct(
-        int $id,
-        string $name,
-        Date $startDate,
-        Date $endDate,
-        string $location,
-        ?string $prefix,
-        string $state
+        private int $id,
+        private string $name,
+        private Date $startDate,
+        private Date $endDate,
+        private string $location,
+        private string|null $prefix = null,
+        private string $state,
     ) {
-        $this->id        = $id;
-        $this->name      = $name;
-        $this->startDate = $startDate;
-        $this->endDate   = $endDate;
-        $this->location  = $location;
-        $this->prefix    = $prefix;
-        $this->state     = $state;
     }
 
     public function getId(): int
@@ -65,7 +44,7 @@ final class CampListItem
         return $this->location;
     }
 
-    public function getPrefix(): ?string
+    public function getPrefix(): string|null
     {
         return $this->prefix;
     }

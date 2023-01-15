@@ -68,7 +68,7 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
         'hidden' => ['container' => null],
     ];
 
-    public function renderErrors(?Nette\Forms\Control $control = null, bool $own = true): string
+    public function renderErrors(Nette\Forms\Control|null $control = null, bool $own = true): string
     {
         if (
             $control instanceof Nette\Forms\Controls\Checkbox ||

@@ -8,76 +8,28 @@ use Cake\Chronos\Date;
 
 class Participant
 {
-    private int $id;
-
-    private int $personId;
-
-    private string $firstName;
-
-    private string $lastName;
-
-    private ?string $nickName = null;
-
-    private ?int $age = null;
-
-    private ?Date $birthday = null;
-
-    private string $street;
-
-    private string $city;
-
-    private int $postcode;
-
-    private string $state;
-
-    private ?int $unitId = null;
-
-    private string $unit;
-
-    private string $unitRegistrationNumber;
-
-    private int $days;
-
-    private Payment $payment;
-
-    private ?string $category = null;
+    private string|null $nickName = null;
 
     public function __construct(
-        int $id,
-        int $personId,
-        string $firstName,
-        string $lastName,
-        ?string $nickname,
-        ?int $age,
-        ?Date $birthday,
-        string $street,
-        string $city,
-        int $postcode,
-        string $state,
-        ?int $unitId,
-        string $unit,
-        string $unitRegistrationNumber,
-        int $days,
-        Payment $payment,
-        ?string $category
+        private int $id,
+        private int $personId,
+        private string $firstName,
+        private string $lastName,
+        string|null $nickname,
+        private int|null $age = null,
+        private Date|null $birthday = null,
+        private string $street,
+        private string $city,
+        private int $postcode,
+        private string $state,
+        private int|null $unitId = null,
+        private string $unit,
+        private string $unitRegistrationNumber,
+        private int $days,
+        private Payment $payment,
+        private string|null $category = null,
     ) {
-        $this->id                     = $id;
-        $this->personId               = $personId;
-        $this->firstName              = $firstName;
-        $this->lastName               = $lastName;
-        $this->nickName               = $nickname;
-        $this->age                    = $age;
-        $this->birthday               = $birthday;
-        $this->street                 = $street;
-        $this->city                   = $city;
-        $this->postcode               = $postcode;
-        $this->state                  = $state;
-        $this->unitId                 = $unitId;
-        $this->unit                   = $unit;
-        $this->unitRegistrationNumber = $unitRegistrationNumber;
-        $this->days                   = $days;
-        $this->payment                = $payment;
-        $this->category               = $category;
+        $this->nickName = $nickname;
     }
 
     public function getId(): int
@@ -100,17 +52,17 @@ class Participant
         return $this->lastName;
     }
 
-    public function getNickName(): ?string
+    public function getNickName(): string|null
     {
         return $this->nickName;
     }
 
-    public function getAge(): ?int
+    public function getAge(): int|null
     {
         return $this->age;
     }
 
-    public function getBirthday(): ?Date
+    public function getBirthday(): Date|null
     {
         return $this->birthday;
     }
@@ -135,7 +87,7 @@ class Participant
         return $this->state;
     }
 
-    public function getUnitId(): ?int
+    public function getUnitId(): int|null
     {
         return $this->unitId;
     }
@@ -165,7 +117,7 @@ class Participant
         return $this->lastName . ' ' . $this->firstName . ($this->nickName !== null ? '(' . $this->nickName . ')' : '');
     }
 
-    public function getCategory(): ?string
+    public function getCategory(): string|null
     {
         return $this->category;
     }

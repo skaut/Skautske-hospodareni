@@ -133,7 +133,7 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
         $entityManager->flush();
     }
 
-    public function getMaxVariableSymbol(int $groupId): ?VariableSymbol
+    public function getMaxVariableSymbol(int $groupId): VariableSymbol|null
     {
         $result = $this->getEntityManager()->createQueryBuilder()
             ->select('MAX(p.variableSymbol) as vs')

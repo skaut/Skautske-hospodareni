@@ -11,16 +11,13 @@ use Model\Event\ReadModel\Queries\EducationListQuery;
 
 final class EducationListDataSource extends DataSource
 {
-    private ?int $year = null;
+    private int|null $year = null;
 
-    private QueryBus $queryBus;
-
-    public function __construct(QueryBus $queryBus)
+    public function __construct(private QueryBus $queryBus)
     {
-        $this->queryBus = $queryBus;
     }
 
-    public function filterByYear(?int $year): self
+    public function filterByYear(int|null $year): self
     {
         $this->year = $year;
 

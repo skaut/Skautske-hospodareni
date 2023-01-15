@@ -15,7 +15,7 @@ class RepaymentCandidateFactory
             $payment->getPersonId(),
             $payment->getName(),
             $payment->getAmount(),
-            $payment->getTransaction() !== null && $payment->getTransaction()->getBankAccount() !== null ? AccountNumber::fromString($payment->getTransaction()->getBankAccount()) : null,
+            $payment->getTransaction()?->getBankAccount() !== null ? AccountNumber::fromString($payment->getTransaction()->getBankAccount()) : null,
         );
     }
 }

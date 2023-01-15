@@ -9,11 +9,8 @@ use Model\Cashbook\Repositories\IUnitRepository;
 
 final class ActivateCashbookHandler
 {
-    private IUnitRepository $units;
-
-    public function __construct(IUnitRepository $units)
+    public function __construct(private IUnitRepository $units)
     {
-        $this->units = $units;
     }
 
     public function __invoke(ActivateCashbook $command): void

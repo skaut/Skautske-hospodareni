@@ -18,16 +18,9 @@ use function uasort;
 
 final class ExportDialog extends Dialog
 {
-    /** @var CampListItem[] */
-    private array $camps;
-
-    private QueryBus $queryBus;
-
     /** @param CampListItem[] $camps */
-    public function __construct(array $camps, QueryBus $queryBus)
+    public function __construct(private array $camps, private QueryBus $queryBus)
     {
-        $this->camps    = $camps;
-        $this->queryBus = $queryBus;
     }
 
     public function handleOpen(): void

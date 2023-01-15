@@ -17,28 +17,13 @@ use Model\Common\ShouldNotHappen;
 
 class SkautisIdQueryHandler
 {
-    private ICashbookRepository $cashbooks;
-
-    private IUnitRepository $units;
-
-    private IEventRepository $eventRepository;
-
-    private ICampRepository $campRepository;
-
-    private IEducationRepository $educationRepository;
-
     public function __construct(
-        ICashbookRepository $cashbooks,
-        IUnitRepository $units,
-        IEventRepository $eventRepository,
-        ICampRepository $campRepository,
-        IEducationRepository $educationRepository
+        private ICashbookRepository $cashbooks,
+        private IUnitRepository $units,
+        private IEventRepository $eventRepository,
+        private ICampRepository $campRepository,
+        private IEducationRepository $educationRepository,
     ) {
-        $this->cashbooks           = $cashbooks;
-        $this->units               = $units;
-        $this->eventRepository     = $eventRepository;
-        $this->campRepository      = $campRepository;
-        $this->educationRepository = $educationRepository;
     }
 
     /**

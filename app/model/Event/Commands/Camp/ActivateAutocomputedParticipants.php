@@ -10,11 +10,8 @@ use Model\Event\SkautisCampId;
 /** @see ActivateAutocomputedParticipantsHandler */
 final class ActivateAutocomputedParticipants
 {
-    private SkautisCampId $campId;
-
-    public function __construct(SkautisCampId $campId)
+    public function __construct(private SkautisCampId $campId)
     {
-        $this->campId = $campId;
     }
 
     public function getCampId(): SkautisCampId

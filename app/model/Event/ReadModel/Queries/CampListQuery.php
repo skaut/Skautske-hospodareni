@@ -7,22 +7,16 @@ namespace Model\Event\ReadModel\Queries;
 /** @see CampListQueryHandler */
 final class CampListQuery
 {
-    private ?int $year = null;
-
-    private ?string $state = null;
-
-    public function __construct(?int $year, ?string $state = null)
+    public function __construct(private int|null $year = null, private string|null $state = null)
     {
-        $this->year  = $year;
-        $this->state = $state;
     }
 
-    public function getYear(): ?int
+    public function getYear(): int|null
     {
         return $this->year;
     }
 
-    public function getState(): ?string
+    public function getState(): string|null
     {
         return $this->state;
     }

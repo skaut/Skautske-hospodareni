@@ -9,14 +9,8 @@ use Model\Cashbook\Cashbook\CashbookId;
 /** @see ChitScansQueryHandler */
 final class ChitScansQuery
 {
-    private CashbookId $cashbookId;
-
-    private int $chitId;
-
-    public function __construct(CashbookId $cashbookId, int $chitId)
+    public function __construct(private CashbookId $cashbookId, private int $chitId)
     {
-        $this->cashbookId = $cashbookId;
-        $this->chitId     = $chitId;
     }
 
     public function getCashbookId(): CashbookId

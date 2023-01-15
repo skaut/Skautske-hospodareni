@@ -16,11 +16,8 @@ use function is_string;
 
 final class MemberEmailRepository implements IMemberEmailRepository
 {
-    private Skautis $skautis;
-
-    public function __construct(Skautis $skautis)
+    public function __construct(private Skautis $skautis)
     {
-        $this->skautis = $skautis;
     }
 
     /** @return array<string, string> */
@@ -29,13 +26,13 @@ final class MemberEmailRepository implements IMemberEmailRepository
     {
         try {
             $contacts = $this->toArray($this->skautis->org->PersonContactAll(['ID_Person' => $memberId]));
-        } catch (PermissionException $e) {
+        } catch (PermissionException) {
             return [];
         }
 
         try {
             $contacts = array_merge($this->toArray($this->skautis->org->PersonContactAllParent(['ID_Person' => $memberId])), $contacts);
-        } catch (PermissionException $e) {
+        } catch (PermissionException) {
         }
 
         $emails = [];
@@ -60,7 +57,7 @@ final class MemberEmailRepository implements IMemberEmailRepository
      *
      * @return stdClass[]
      */
-    private function toArray($response): array
+    private function toArray(stdClass|array $response): array
     {
         if ($response instanceof stdClass) {
             return [];

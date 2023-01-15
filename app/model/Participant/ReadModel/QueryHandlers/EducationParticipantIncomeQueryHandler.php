@@ -13,11 +13,8 @@ use function assert;
 
 class EducationParticipantIncomeQueryHandler
 {
-    private QueryBus $queryBus;
-
-    public function __construct(QueryBus $queryBus)
+    public function __construct(private QueryBus $queryBus)
     {
-        $this->queryBus = $queryBus;
     }
 
     public function __invoke(EducationParticipantIncomeQuery $query): float

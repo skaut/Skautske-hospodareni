@@ -11,11 +11,8 @@ use Model\Cashbook\Unit;
 
 final class CreateUnitHandler
 {
-    private IUnitRepository $units;
-
-    public function __construct(IUnitRepository $units)
+    public function __construct(private IUnitRepository $units)
     {
-        $this->units = $units;
     }
 
     public function __invoke(CreateUnit $command): void

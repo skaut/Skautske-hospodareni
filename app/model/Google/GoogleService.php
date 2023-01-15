@@ -10,13 +10,8 @@ use Google\Service\Oauth2;
 
 class GoogleService
 {
-    private string $credentialsPath;
-    private string $tokenUri;
-
-    public function __construct(string $credentialsPath, string $tokenUri)
+    public function __construct(private string $credentialsPath, private string $tokenUri)
     {
-        $this->credentialsPath = $credentialsPath;
-        $this->tokenUri        = $tokenUri;
     }
 
     public function getClient(): Client

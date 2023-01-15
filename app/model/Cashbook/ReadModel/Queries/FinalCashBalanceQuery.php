@@ -10,11 +10,8 @@ use Model\Cashbook\ReadModel\QueryHandlers\FinalCashBalanceQueryHandler;
 /** @see FinalCashBalanceQueryHandler */
 final class FinalCashBalanceQuery
 {
-    private CashbookId $cashbookId;
-
-    public function __construct(CashbookId $cashbookId)
+    public function __construct(private CashbookId $cashbookId)
     {
-        $this->cashbookId = $cashbookId;
     }
 
     public function getCashbookId(): CashbookId

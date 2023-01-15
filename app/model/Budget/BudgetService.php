@@ -31,7 +31,7 @@ class BudgetService
         ];
     }
 
-    public function addCategory(int $unitId, string $label, string $type, ?int $parentId, string $value, int $year): void
+    public function addCategory(int $unitId, string $label, string $type, int|null $parentId, string $value, int $year): void
     {
         $category = new Category(
             $unitId,

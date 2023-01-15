@@ -11,15 +11,15 @@ use Doctrine\ORM\Mapping as ORM;
 final class ChitBody
 {
     /** @ORM\Column(type="chit_number", nullable=true, name="num", length=5) */
-    private ?ChitNumber $number = null;
+    private ChitNumber|null $number = null;
 
     /** @ORM\Column(type="chronos_date") */
     private Date $date;
 
     /** @ORM\Column(type="recipient", length=64, nullable=true) */
-    private ?Recipient $recipient = null;
+    private Recipient|null $recipient = null;
 
-    public function __construct(?ChitNumber $number, Date $date, ?Recipient $recipient)
+    public function __construct(ChitNumber|null $number, Date $date, Recipient|null $recipient)
     {
         $this->number    = $number;
         $this->date      = $date;
@@ -36,7 +36,7 @@ final class ChitBody
         return new self($chitNumber, $this->date, $this->recipient);
     }
 
-    public function getNumber(): ?ChitNumber
+    public function getNumber(): ChitNumber|null
     {
         return $this->number;
     }
@@ -46,7 +46,7 @@ final class ChitBody
         return $this->date;
     }
 
-    public function getRecipient(): ?Recipient
+    public function getRecipient(): Recipient|null
     {
         return $this->recipient;
     }

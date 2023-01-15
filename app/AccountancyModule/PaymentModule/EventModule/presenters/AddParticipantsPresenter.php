@@ -16,19 +16,14 @@ use function assert;
 
 final class AddParticipantsPresenter extends BasePresenter
 {
-    private PaymentService $model;
-    private IMassAddFormFactory $formFactory;
-
     private int $groupId;
 
     /** @var Participant[] */
     private array $participants;
 
-    public function __construct(PaymentService $model, IMassAddFormFactory $formFactory)
+    public function __construct(private PaymentService $model, private IMassAddFormFactory $formFactory)
     {
         parent::__construct();
-        $this->model       = $model;
-        $this->formFactory = $formFactory;
     }
 
     /** @param int $id ID of payment group */

@@ -18,16 +18,10 @@ use function assert;
 final class EditTravelDialog extends Dialog
 {
     /** @var int|null @persistent */
-    public ?int $travelId = null;
+    public int|null $travelId = null;
 
-    private int $commandId;
-
-    private TravelService $model;
-
-    public function __construct(int $commandId, TravelService $model)
+    public function __construct(private int $commandId, private TravelService $model)
     {
-        $this->commandId = $commandId;
-        $this->model     = $model;
     }
 
     public function open(int $travelId): void

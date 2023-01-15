@@ -25,11 +25,8 @@ class ExcelService
 {
     private const ADULT_AGE = 18;
 
-    private QueryBus $queryBus;
-
-    public function __construct(QueryBus $queryBus)
+    public function __construct(private QueryBus $queryBus)
     {
-        $this->queryBus = $queryBus;
     }
 
     private function getNewFile(): Spreadsheet
@@ -140,7 +137,7 @@ class ExcelService
                 ->setCellValue('E' . $rowCnt, $row->getStreet())
                 ->setCellValue('F' . $rowCnt, $row->getCity())
                 ->setCellValue('G' . $rowCnt, $row->getPostcode())
-                ->setCellValue('H' . $rowCnt, $row->getBirthday() !== null ? $row->getBirthday()->format('d.m.Y') : '')
+                ->setCellValue('H' . $rowCnt, $row->getBirthday()?->format('d.m.Y') ?? '')
                 ->setCellValue('I' . $rowCnt, $row->getDays())
                 ->setCellValue('J' . $rowCnt, $row->getAge() < self::ADULT_AGE ? $row->getDays() : 0)
                 ->setCellValue('K' . $rowCnt, $row->getPayment())
@@ -184,7 +181,7 @@ class ExcelService
                 ->setCellValue('E' . $rowCnt, $row->getStreet())
                 ->setCellValue('F' . $rowCnt, $row->getCity())
                 ->setCellValue('G' . $rowCnt, $row->getPostcode())
-                ->setCellValue('H' . $rowCnt, $row->getBirthday() !== null ? $row->getBirthday()->format('d.m.Y') : '')
+                ->setCellValue('H' . $rowCnt, $row->getBirthday()?->format('d.m.Y') ?? '')
                 ->setCellValue('I' . $rowCnt, $row->getUnitRegistrationNumber())
                 ->setCellValue('J' . $rowCnt, $row->getDays())
                 ->setCellValue('K' . $rowCnt, $row->getBirthday() !== null && $startDate->diffInYears($row->getBirthday()) < self::ADULT_AGE ? $row->getDays() : 0)

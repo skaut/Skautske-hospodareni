@@ -9,14 +9,8 @@ use Model\Payment\Repositories\IBankAccountRepository;
 
 final class BankAccountAccessChecker implements IBankAccountAccessChecker
 {
-    private IBankAccountRepository $bankAccounts;
-
-    private IUnitResolver $unitResolver;
-
-    public function __construct(IBankAccountRepository $bankAccounts, IUnitResolver $unitResolver)
+    public function __construct(private IBankAccountRepository $bankAccounts, private IUnitResolver $unitResolver)
     {
-        $this->bankAccounts = $bankAccounts;
-        $this->unitResolver = $unitResolver;
     }
 
     /** @param int[] $unitIds */

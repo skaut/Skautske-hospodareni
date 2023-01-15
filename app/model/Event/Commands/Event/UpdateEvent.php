@@ -11,29 +11,8 @@ use Model\Event\SkautisEventId;
 /** @see UpdateEventHandler */
 class UpdateEvent
 {
-    private SkautisEventId $eventId;
-
-    private string $name;
-
-    private Date $startDate;
-
-    private Date $endDate;
-
-    private ?string $location = null;
-
-    private int $scopeId;
-
-    private int $typeId;
-
-    public function __construct(SkautisEventId $eventId, string $name, Date $startDate, Date $endDate, ?string $location, int $scopeId, int $typeId)
+    public function __construct(private SkautisEventId $eventId, private string $name, private Date $startDate, private Date $endDate, private string|null $location = null, private int $scopeId, private int $typeId)
     {
-        $this->eventId   = $eventId;
-        $this->name      = $name;
-        $this->startDate = $startDate;
-        $this->endDate   = $endDate;
-        $this->location  = $location;
-        $this->scopeId   = $scopeId;
-        $this->typeId    = $typeId;
     }
 
     public function getEventId(): SkautisEventId
@@ -56,7 +35,7 @@ class UpdateEvent
         return $this->endDate;
     }
 
-    public function getLocation(): ?string
+    public function getLocation(): string|null
     {
         return $this->location;
     }

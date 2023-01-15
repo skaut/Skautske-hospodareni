@@ -12,14 +12,8 @@ use function sprintf;
 
 class CachingClientDecorator implements IFioClient
 {
-    private IFioClient $inner;
-
-    private Cache $cache;
-
-    public function __construct(IFioClient $inner, Cache $cache)
+    public function __construct(private IFioClient $inner, private Cache $cache)
     {
-        $this->inner = $inner;
-        $this->cache = $cache;
     }
 
     /**
@@ -31,7 +25,7 @@ class CachingClientDecorator implements IFioClient
 
         return $this->cache->load(
             $key,
-            function (?array $dependencies = null) use ($since, $until, $account) {
+            function (array|null $dependencies = null) use ($since, $until, $account) {
                 $dependencies                  ??= [];
                 $dependencies[Cache::EXPIRATION] = '5 minutes';
                 $dependencies[Cache::TAGS]       = ['fio/' . $account->getId()];

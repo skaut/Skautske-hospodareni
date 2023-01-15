@@ -29,10 +29,10 @@ class Contract
     private string $unitRepresentative;
 
     /** @ORM\Column(type="chronos_date", nullable=true) */
-    private ?Date $since = null;
+    private Date|null $since = null;
 
     /** @ORM\Column(type="chronos_date", nullable=true) */
-    private ?Date $until = null;
+    private Date|null $until = null;
 
     /** @ORM\Embedded(class=ContractPassenger::class, columnPrefix=false) */
     private ContractPassenger $passenger;
@@ -64,12 +64,12 @@ class Contract
         return $this->unitRepresentative;
     }
 
-    public function getSince(): ?Date
+    public function getSince(): Date|null
     {
         return $this->since;
     }
 
-    public function getUntil(): ?Date
+    public function getUntil(): Date|null
     {
         return $this->until;
     }

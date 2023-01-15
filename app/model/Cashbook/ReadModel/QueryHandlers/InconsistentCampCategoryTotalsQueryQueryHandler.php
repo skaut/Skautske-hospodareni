@@ -16,14 +16,8 @@ use function assert;
 
 class InconsistentCampCategoryTotalsQueryQueryHandler
 {
-    private ICampCategoryRepository $campCategories;
-
-    private QueryBus $queryBus;
-
-    public function __construct(ICampCategoryRepository $campCategories, QueryBus $queryBus)
+    public function __construct(private ICampCategoryRepository $campCategories, private QueryBus $queryBus)
     {
-        $this->campCategories = $campCategories;
-        $this->queryBus       = $queryBus;
     }
 
     /** @return float[] */

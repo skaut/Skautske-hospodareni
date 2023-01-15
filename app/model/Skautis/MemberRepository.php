@@ -15,11 +15,8 @@ use function usort;
 
 final class MemberRepository implements IMemberRepository
 {
-    private Skautis $skautis;
-
-    public function __construct(Skautis $skautis)
+    public function __construct(private Skautis $skautis)
     {
-        $this->skautis = $skautis;
     }
 
     /** @return Member[] */

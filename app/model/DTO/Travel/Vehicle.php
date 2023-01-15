@@ -22,48 +22,18 @@ class Vehicle
 {
     use SmartObject;
 
-    private int $id;
-
-    private string $type;
-
-    private int $unitId;
-
-    private string $registration;
-
-    private string $label;
-
-    private ?int $subunitId = null;
-
-    private float $consumption;
-
-    private bool $archived;
-
-    private DateTimeImmutable $createdAt;
-
-    private string $authorName;
-
     public function __construct(
-        int $id,
-        string $type,
-        int $unitId,
-        string $registration,
-        string $label,
-        ?int $subunitId,
-        float $consumption,
-        bool $archived,
-        DateTimeImmutable $createdAt,
-        string $authorName
+        private int $id,
+        private string $type,
+        private int $unitId,
+        private string $registration,
+        private string $label,
+        private int|null $subunitId = null,
+        private float $consumption,
+        private bool $archived,
+        private DateTimeImmutable $createdAt,
+        private string $authorName,
     ) {
-        $this->id           = $id;
-        $this->type         = $type;
-        $this->unitId       = $unitId;
-        $this->registration = $registration;
-        $this->label        = $label;
-        $this->subunitId    = $subunitId;
-        $this->consumption  = $consumption;
-        $this->archived     = $archived;
-        $this->createdAt    = $createdAt;
-        $this->authorName   = $authorName;
     }
 
     public function getId(): int
@@ -91,7 +61,7 @@ class Vehicle
         return $this->label;
     }
 
-    public function getSubunitId(): ?int
+    public function getSubunitId(): int|null
     {
         return $this->subunitId;
     }

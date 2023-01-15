@@ -26,20 +26,8 @@ use const CASE_LOWER;
 
 final class EntityManagerFactory
 {
-    private bool $debugMode;
-
-    private string $tempDir;
-
-    private Connection $connection;
-
-    private ICachePoolFactory $cachePoolFactory;
-
-    public function __construct(bool $debugMode, string $tempDir, Connection $connection, ICachePoolFactory $cachePoolFactory)
+    public function __construct(private bool $debugMode, private string $tempDir, private Connection $connection, private ICachePoolFactory $cachePoolFactory)
     {
-        $this->debugMode        = $debugMode;
-        $this->tempDir          = $tempDir;
-        $this->connection       = $connection;
-        $this->cachePoolFactory = $cachePoolFactory;
     }
 
     public function create(): EntityManager

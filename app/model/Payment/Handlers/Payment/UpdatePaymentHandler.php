@@ -9,11 +9,8 @@ use Model\Payment\Repositories\IPaymentRepository;
 
 final class UpdatePaymentHandler
 {
-    private IPaymentRepository $payments;
-
-    public function __construct(IPaymentRepository $payments)
+    public function __construct(private IPaymentRepository $payments)
     {
-        $this->payments = $payments;
     }
 
     public function __invoke(UpdatePayment $command): void

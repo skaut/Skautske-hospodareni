@@ -10,14 +10,8 @@ use Model\Cashbook\Handlers\Cashbook\UpdateNoteHandler;
 /** @see UpdateNoteHandler */
 final class UpdateNote
 {
-    private CashbookId $cashbookId;
-
-    private string $note;
-
-    public function __construct(CashbookId $cashbookId, string $note)
+    public function __construct(private CashbookId $cashbookId, private string $note)
     {
-        $this->cashbookId = $cashbookId;
-        $this->note       = $note;
     }
 
     public function getCashbookId(): CashbookId

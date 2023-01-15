@@ -12,46 +12,18 @@ use Model\Payment\VariableSymbol;
 /** @see CreatePaymentHandler */
 final class CreatePayment
 {
-    private int $groupId;
-
-    private string $name;
-
-    /** @var EmailAddress[] */
-    private array $recipients;
-
-    private float $amount;
-
-    private Date $dueDate;
-
-    private ?int $personId = null;
-
-    private ?VariableSymbol $variableSymbol = null;
-
-    private ?int $constantSymbol = null;
-
-    private string $note;
-
     /** @param EmailAddress[] $recipients */
     public function __construct(
-        int $groupId,
-        string $name,
-        array $recipients,
-        float $amount,
-        Date $dueDate,
-        ?int $personId,
-        ?VariableSymbol $variableSymbol,
-        ?int $constantSymbol,
-        string $note
+        private int $groupId,
+        private string $name,
+        private array $recipients,
+        private float $amount,
+        private Date $dueDate,
+        private int|null $personId = null,
+        private VariableSymbol|null $variableSymbol = null,
+        private int|null $constantSymbol = null,
+        private string $note,
     ) {
-        $this->groupId        = $groupId;
-        $this->name           = $name;
-        $this->recipients     = $recipients;
-        $this->amount         = $amount;
-        $this->dueDate        = $dueDate;
-        $this->personId       = $personId;
-        $this->variableSymbol = $variableSymbol;
-        $this->constantSymbol = $constantSymbol;
-        $this->note           = $note;
     }
 
     public function getGroupId(): int
@@ -80,17 +52,17 @@ final class CreatePayment
         return $this->dueDate;
     }
 
-    public function getPersonId(): ?int
+    public function getPersonId(): int|null
     {
         return $this->personId;
     }
 
-    public function getVariableSymbol(): ?VariableSymbol
+    public function getVariableSymbol(): VariableSymbol|null
     {
         return $this->variableSymbol;
     }
 
-    public function getConstantSymbol(): ?int
+    public function getConstantSymbol(): int|null
     {
         return $this->constantSymbol;
     }

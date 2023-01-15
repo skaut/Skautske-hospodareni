@@ -18,23 +18,12 @@ use function in_array;
 
 class MissingAutocomputedCategoryControl extends BaseControl
 {
-    private SkautisCampId $campId;
-
-    private IAuthorizator $authorizator;
-    private QueryBus $queryBus;
-
-    private CommandBus $commandBus;
-
     public function __construct(
-        SkautisCampId $campId,
-        IAuthorizator $authorizator,
-        QueryBus $queryBus,
-        CommandBus $commandBus
+        private SkautisCampId $campId,
+        private IAuthorizator $authorizator,
+        private QueryBus $queryBus,
+        private CommandBus $commandBus,
     ) {
-        $this->campId       = $campId;
-        $this->authorizator = $authorizator;
-        $this->queryBus     = $queryBus;
-        $this->commandBus   = $commandBus;
     }
 
     public function handleActivate(): void

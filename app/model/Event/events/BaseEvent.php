@@ -8,17 +8,8 @@ use Model\Event\SkautisEventId;
 
 class BaseEvent
 {
-    private SkautisEventId $eventId;
-
-    private int $unitId;
-
-    private string $eventName;
-
-    public function __construct(SkautisEventId $eventId, int $unitId, string $eventName)
+    public function __construct(private SkautisEventId $eventId, private int $unitId, private string $eventName)
     {
-        $this->eventId   = $eventId;
-        $this->unitId    = $unitId;
-        $this->eventName = $eventName;
     }
 
     public function getEventId(): SkautisEventId

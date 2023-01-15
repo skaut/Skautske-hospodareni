@@ -14,17 +14,8 @@ use function assert;
 
 final class LoginPanel extends BaseControl
 {
-    private UserService $userService;
-
-    private UnitService $unitService;
-
-    private User $user;
-
-    public function __construct(UserService $userService, UnitService $unitService, User $user)
+    public function __construct(private UserService $userService, private UnitService $unitService, private User $user)
     {
-        $this->userService = $userService;
-        $this->unitService = $unitService;
-        $this->user        = $user;
     }
 
     public function handleChangeRole(int $roleId): void

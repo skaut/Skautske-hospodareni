@@ -32,27 +32,18 @@ class ParticipantPresenter extends BasePresenter
 
     private ExcelService $excelService;
 
-    private PdfRenderer $pdf;
-
-    private IParticipantListFactory $participantListFactory;
-
     private bool $isAllowParticipantUpdate;
-
-    private ParticipantService $participants;
 
     public function __construct(
         ExportService $export,
         ExcelService $excel,
-        PdfRenderer $pdf,
-        IParticipantListFactory $participantListFactory,
-        ParticipantService $participants
+        private PdfRenderer $pdf,
+        private IParticipantListFactory $participantListFactory,
+        private ParticipantService $participants,
     ) {
         parent::__construct();
-        $this->exportService          = $export;
-        $this->excelService           = $excel;
-        $this->pdf                    = $pdf;
-        $this->participantListFactory = $participantListFactory;
-        $this->participants           = $participants;
+        $this->exportService = $export;
+        $this->excelService  = $excel;
     }
 
     protected function startup(): void

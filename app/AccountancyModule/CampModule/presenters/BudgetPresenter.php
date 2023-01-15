@@ -20,12 +20,9 @@ use function count;
 
 class BudgetPresenter extends BasePresenter
 {
-    private IMissingAutocomputedCategoryControlFactory $missingAutocomputedCategoryControlFactory;
-
-    public function __construct(IMissingAutocomputedCategoryControlFactory $missingAutocomputedCategoryControlFactory)
+    public function __construct(private IMissingAutocomputedCategoryControlFactory $missingAutocomputedCategoryControlFactory)
     {
         parent::__construct();
-        $this->missingAutocomputedCategoryControlFactory = $missingAutocomputedCategoryControlFactory;
     }
 
     protected function startup(): void
@@ -57,7 +54,7 @@ class BudgetPresenter extends BasePresenter
             }
 
             $this->redrawControl('contentSnip');
-        } catch (MissingCategory $exc) {
+        } catch (MissingCategory) {
             $this->template->setParameters(['missingCategories' => true]);
         }
     }

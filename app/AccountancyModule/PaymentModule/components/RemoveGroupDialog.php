@@ -14,24 +14,12 @@ use Nette\Http\IResponse;
 
 final class RemoveGroupDialog extends Dialog
 {
-    private int $groupId;
-
-    private bool $isAllowed;
-
-    private CommandBus $commandBus;
-
-    private PaymentService $paymentService;
-
     public function __construct(
-        int $groupId,
-        bool $isAllowed,
-        CommandBus $commandBus,
-        PaymentService $paymentService
+        private int $groupId,
+        private bool $isAllowed,
+        private CommandBus $commandBus,
+        private PaymentService $paymentService,
     ) {
-        $this->groupId        = $groupId;
-        $this->isAllowed      = $isAllowed;
-        $this->commandBus     = $commandBus;
-        $this->paymentService = $paymentService;
     }
 
     public function open(): void

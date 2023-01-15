@@ -13,14 +13,8 @@ use Model\Payment\Repositories\IPaymentRepository;
 
 final class SendPaymentInfoHandler
 {
-    private IPaymentRepository $payments;
-
-    private MailingService $mailingService;
-
-    public function __construct(IPaymentRepository $payments, MailingService $mailingService)
+    public function __construct(private IPaymentRepository $payments, private MailingService $mailingService)
     {
-        $this->payments       = $payments;
-        $this->mailingService = $mailingService;
     }
 
     /** @throws InvalidOAuth */

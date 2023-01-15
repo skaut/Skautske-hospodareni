@@ -15,16 +15,13 @@ use function sprintf;
 
 final class UserContextProvider
 {
-    private User $user;
-
-    public function __construct(User $user)
+    public function __construct(private User $user)
     {
-        $this->user = $user;
     }
 
     /** @return array<string, mixed> */
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    public function getUserData(): ?array
+    public function getUserData(): array|null
     {
         $identity = $this->user->getIdentity();
 
@@ -50,7 +47,7 @@ final class UserContextProvider
         ];
     }
 
-    private function formatRole(?SkautisRole $role): string
+    private function formatRole(SkautisRole|null $role): string
     {
         if ($role === null) {
             return '';

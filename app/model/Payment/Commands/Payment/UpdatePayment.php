@@ -10,42 +10,17 @@ use Model\Payment\VariableSymbol;
 
 final class UpdatePayment
 {
-    private string $name;
-
-    /** @var EmailAddress[] */
-    private array $recipients;
-
-    private float $amount;
-
-    private Date $dueDate;
-
-    private ?VariableSymbol $variableSymbol = null;
-
-    private ?int $constantSymbol = null;
-
-    private string $note;
-
-    private int $paymentId;
-
     /** @param EmailAddress[] $recipients */
     public function __construct(
-        int $paymentId,
-        string $name,
-        array $recipients,
-        float $amount,
-        Date $dueDate,
-        ?VariableSymbol $variableSymbol,
-        ?int $constantSymbol,
-        string $note
+        private int $paymentId,
+        private string $name,
+        private array $recipients,
+        private float $amount,
+        private Date $dueDate,
+        private VariableSymbol|null $variableSymbol = null,
+        private int|null $constantSymbol = null,
+        private string $note,
     ) {
-        $this->paymentId      = $paymentId;
-        $this->name           = $name;
-        $this->recipients     = $recipients;
-        $this->amount         = $amount;
-        $this->dueDate        = $dueDate;
-        $this->variableSymbol = $variableSymbol;
-        $this->constantSymbol = $constantSymbol;
-        $this->note           = $note;
     }
 
     public function getPaymentId(): int
@@ -74,12 +49,12 @@ final class UpdatePayment
         return $this->dueDate;
     }
 
-    public function getVariableSymbol(): ?VariableSymbol
+    public function getVariableSymbol(): VariableSymbol|null
     {
         return $this->variableSymbol;
     }
 
-    public function getConstantSymbol(): ?int
+    public function getConstantSymbol(): int|null
     {
         return $this->constantSymbol;
     }

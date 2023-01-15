@@ -38,78 +38,28 @@ class Payment
 {
     use SmartObject;
 
-    private int $id;
-
-    private string $name;
-
-    private float $amount;
-
-    /** @var EmailAddress[]  */
-    private array $recipients;
-
-    private Date $dueDate;
-
-    private ?VariableSymbol $variableSymbol;
-
-    private ?int $constantSymbol;
-
-    private string $note;
-
-    private bool $closed;
-
-    private State $state;
-
-    private ?Transaction $transaction;
-
-    private ?DateTimeImmutable $closedAt;
-
-    private ?string $closedByUsername;
-
-    private ?int $personId;
-
-    private int $groupId;
-
-    /** @var SentEmail[] */
-    private array $sentEmails;
-
     /**
      * @param EmailAddress[] $recipients
      * @param SentEmail[]    $sentEmails
      */
     public function __construct(
-        int $id,
-        string $name,
-        float $amount,
-        array $recipients,
-        Date $dueDate,
-        ?VariableSymbol $variableSymbol,
-        ?int $constantSymbol,
-        string $note,
-        bool $closed,
-        State $state,
-        ?Transaction $transaction,
-        ?DateTimeImmutable $closedAt,
-        ?string $closedByUsername,
-        ?int $personId,
-        int $groupId,
-        array $sentEmails
+        private int $id,
+        private string $name,
+        private float $amount,
+        private array $recipients,
+        private Date $dueDate,
+        private VariableSymbol|null $variableSymbol,
+        private int|null $constantSymbol,
+        private string $note,
+        private bool $closed,
+        private State $state,
+        private Transaction|null $transaction,
+        private DateTimeImmutable|null $closedAt,
+        private string|null $closedByUsername,
+        private int|null $personId,
+        private int $groupId,
+        private array $sentEmails,
     ) {
-        $this->id               = $id;
-        $this->name             = $name;
-        $this->amount           = $amount;
-        $this->recipients       = $recipients;
-        $this->dueDate          = $dueDate;
-        $this->variableSymbol   = $variableSymbol;
-        $this->constantSymbol   = $constantSymbol;
-        $this->note             = $note;
-        $this->closed           = $closed;
-        $this->state            = $state;
-        $this->transaction      = $transaction;
-        $this->closedAt         = $closedAt;
-        $this->closedByUsername = $closedByUsername;
-        $this->personId         = $personId;
-        $this->groupId          = $groupId;
-        $this->sentEmails       = $sentEmails;
     }
 
     public function getId(): int
@@ -143,12 +93,12 @@ class Payment
         return $this->dueDate;
     }
 
-    public function getVariableSymbol(): ?VariableSymbol
+    public function getVariableSymbol(): VariableSymbol|null
     {
         return $this->variableSymbol;
     }
 
-    public function getConstantSymbol(): ?int
+    public function getConstantSymbol(): int|null
     {
         return $this->constantSymbol;
     }
@@ -168,22 +118,22 @@ class Payment
         return $this->state;
     }
 
-    public function getTransaction(): ?Transaction
+    public function getTransaction(): Transaction|null
     {
         return $this->transaction;
     }
 
-    public function getClosedAt(): ?DateTimeImmutable
+    public function getClosedAt(): DateTimeImmutable|null
     {
         return $this->closedAt;
     }
 
-    public function getClosedByUsername(): ?string
+    public function getClosedByUsername(): string|null
     {
         return $this->closedByUsername;
     }
 
-    public function getPersonId(): ?int
+    public function getPersonId(): int|null
     {
         return $this->personId;
     }

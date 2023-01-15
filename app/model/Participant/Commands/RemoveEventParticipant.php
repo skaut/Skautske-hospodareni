@@ -7,11 +7,8 @@ namespace Model\Cashbook\Commands\Cashbook;
 /** @see RemoveEventParticipantHandler */
 final class RemoveEventParticipant
 {
-    private int $participantId;
-
-    public function __construct(int $participantId)
+    public function __construct(private int $participantId)
     {
-        $this->participantId = $participantId;
     }
 
     public function getParticipantId(): int

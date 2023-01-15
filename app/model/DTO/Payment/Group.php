@@ -27,62 +27,22 @@ class Group
 {
     use SmartObject;
 
-    private int $id;
-
-    private ?string $type = null;
-
-    /** @var int[] */
-    private array $unitIds;
-
-    private ?int $skautisId = null;
-
-    private string $name;
-
-    private ?float $defaultAmount = null;
-
-    private ?Date $dueDate = null;
-
-    private ?int $constantSymbol = null;
-
-    private ?VariableSymbol $nextVariableSymbol = null;
-
-    private string $state;
-
-    private ?OAuthId $oAuthId = null;
-
-    private string $note;
-
-    private ?int $bankAccountId = null;
-
     /** @param int[] $unitIds */
     public function __construct(
-        int $id,
-        ?string $type,
-        array $unitIds,
-        ?int $skautisId,
-        string $name,
-        ?float $defaultAmount,
-        ?Date $dueDate,
-        ?int $constantSymbol,
-        ?VariableSymbol $nextVariableSymbol,
-        string $state,
-        ?OAuthId $oAuthId,
-        string $note,
-        ?int $bankAccountId
+        private int $id,
+        private string|null $type = null,
+        private array $unitIds,
+        private int|null $skautisId = null,
+        private string $name,
+        private float|null $defaultAmount = null,
+        private Date|null $dueDate = null,
+        private int|null $constantSymbol = null,
+        private VariableSymbol|null $nextVariableSymbol = null,
+        private string $state,
+        private OAuthId|null $oAuthId = null,
+        private string $note,
+        private int|null $bankAccountId = null,
     ) {
-        $this->id                 = $id;
-        $this->type               = $type;
-        $this->unitIds            = $unitIds;
-        $this->skautisId          = $skautisId;
-        $this->name               = $name;
-        $this->defaultAmount      = $defaultAmount;
-        $this->dueDate            = $dueDate;
-        $this->constantSymbol     = $constantSymbol;
-        $this->nextVariableSymbol = $nextVariableSymbol;
-        $this->state              = $state;
-        $this->oAuthId            = $oAuthId;
-        $this->note               = $note;
-        $this->bankAccountId      = $bankAccountId;
     }
 
     public function getId(): int
@@ -90,7 +50,7 @@ class Group
         return $this->id;
     }
 
-    public function getType(): ?string
+    public function getType(): string|null
     {
         return $this->type;
     }
@@ -106,7 +66,7 @@ class Group
         return $this->unitId;
     }
 
-    public function getSkautisId(): ?int
+    public function getSkautisId(): int|null
     {
         return $this->skautisId;
     }
@@ -116,22 +76,22 @@ class Group
         return $this->name;
     }
 
-    public function getDefaultAmount(): ?float
+    public function getDefaultAmount(): float|null
     {
         return $this->defaultAmount;
     }
 
-    public function getDueDate(): ?Date
+    public function getDueDate(): Date|null
     {
         return $this->dueDate;
     }
 
-    public function getConstantSymbol(): ?int
+    public function getConstantSymbol(): int|null
     {
         return $this->constantSymbol;
     }
 
-    public function getNextVariableSymbol(): ?VariableSymbol
+    public function getNextVariableSymbol(): VariableSymbol|null
     {
         return $this->nextVariableSymbol;
     }
@@ -141,7 +101,7 @@ class Group
         return $this->state;
     }
 
-    public function getOAuthId(): ?OAuthId
+    public function getOAuthId(): OAuthId|null
     {
         return $this->oAuthId;
     }
@@ -151,7 +111,7 @@ class Group
         return $this->note;
     }
 
-    public function getBankAccountId(): ?int
+    public function getBankAccountId(): int|null
     {
         return $this->bankAccountId;
     }

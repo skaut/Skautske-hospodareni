@@ -22,23 +22,8 @@ final class PrefixControl extends Dialog
 {
     private const MAX_LENGTH = 6;
 
-    private CashbookId $cashbookId;
-
-    private PaymentMethod $paymentMethod;
-
-    private bool $isEditable;
-
-    private CommandBus $commandBus;
-
-    private QueryBus $queryBus;
-
-    public function __construct(CashbookId $cashbookId, PaymentMethod $paymentMethod, bool $isEditable, CommandBus $commandBus, QueryBus $queryBus)
+    public function __construct(private CashbookId $cashbookId, private PaymentMethod $paymentMethod, private bool $isEditable, private CommandBus $commandBus, private QueryBus $queryBus)
     {
-        $this->isEditable    = $isEditable;
-        $this->cashbookId    = $cashbookId;
-        $this->paymentMethod = $paymentMethod;
-        $this->commandBus    = $commandBus;
-        $this->queryBus      = $queryBus;
     }
 
     public function handleOpen(): void
@@ -82,7 +67,7 @@ final class PrefixControl extends Dialog
         return $form;
     }
 
-    private function getPrefix(): ?string
+    private function getPrefix(): string|null
     {
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
 

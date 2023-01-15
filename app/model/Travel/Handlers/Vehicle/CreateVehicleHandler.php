@@ -13,17 +13,8 @@ use Model\Unit\Repositories\IUnitRepository;
 
 final class CreateVehicleHandler
 {
-    private IVehicleRepository $vehicles;
-
-    private IUserRepository $users;
-
-    private IUnitRepository $units;
-
-    public function __construct(IVehicleRepository $vehicles, IUserRepository $users, IUnitRepository $units)
+    public function __construct(private IVehicleRepository $vehicles, private IUserRepository $users, private IUnitRepository $units)
     {
-        $this->vehicles = $vehicles;
-        $this->users    = $users;
-        $this->units    = $units;
     }
 
     public function __invoke(CreateVehicle $command): void

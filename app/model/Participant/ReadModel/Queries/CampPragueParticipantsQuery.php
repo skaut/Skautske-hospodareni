@@ -10,17 +10,8 @@ use Model\Event\SkautisCampId;
 /** @see CampPragueParticipantStatisticsQueryHandler */
 final class CampPragueParticipantsQuery
 {
-    private SkautisCampId $id;
-
-    private string $registrationNumber;
-
-    private Date $startDate;
-
-    public function __construct(SkautisCampId $id, string $registrationNumber, Date $startDate)
+    public function __construct(private SkautisCampId $id, private string $registrationNumber, private Date $startDate)
     {
-        $this->id                 = $id;
-        $this->registrationNumber = $registrationNumber;
-        $this->startDate          = $startDate;
     }
 
     public function getId(): SkautisCampId

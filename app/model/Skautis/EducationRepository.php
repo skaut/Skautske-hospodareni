@@ -14,14 +14,8 @@ use Skautis\Wsdl\WebServiceInterface;
 
 final class EducationRepository implements IEducationRepository
 {
-    private WebServiceInterface $webService;
-
-    private EducationFactory $educationFactory;
-
-    public function __construct(WebServiceInterface $webService, EducationFactory $educationFactory)
+    public function __construct(private WebServiceInterface $webService, private EducationFactory $educationFactory)
     {
-        $this->webService       = $webService;
-        $this->educationFactory = $educationFactory;
     }
 
     public function find(SkautisEducationId $id): Education

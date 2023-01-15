@@ -14,9 +14,9 @@ final class BankAccount
     private int $id;
 
     /** @ORM\Column(type="datetime_immutable", nullable=true) */
-    private ?DateTimeImmutable $lastPairing = null;
+    private DateTimeImmutable|null $lastPairing = null;
 
-    private function __construct(int $id, ?DateTimeImmutable $lastPairing)
+    private function __construct(int $id, DateTimeImmutable|null $lastPairing)
     {
         $this->id          = $id;
         $this->lastPairing = $lastPairing;
@@ -42,7 +42,7 @@ final class BankAccount
         return $this->id;
     }
 
-    public function getLastPairing(): ?DateTimeImmutable
+    public function getLastPairing(): DateTimeImmutable|null
     {
         return $this->lastPairing;
     }

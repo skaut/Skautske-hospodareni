@@ -26,15 +26,9 @@ final class RepaymentPresenter extends BasePresenter
 {
     private Group $group;
 
-    private PaymentService $payments;
-
-    private BankAccountService $bankAccounts;
-
-    public function __construct(PaymentService $payments, BankAccountService $bankAccounts)
+    public function __construct(private PaymentService $payments, private BankAccountService $bankAccounts)
     {
         parent::__construct();
-        $this->payments     = $payments;
-        $this->bankAccounts = $bankAccounts;
     }
 
     public function actionDefault(int $id): void

@@ -14,11 +14,8 @@ use function sprintf;
 
 final class CategoryRepository implements ICategoryRepository
 {
-    private EntityManager $em;
-
-    public function __construct(EntityManager $em)
+    public function __construct(private EntityManager $em)
     {
-        $this->em = $em;
     }
 
     public function find(int $id): Category

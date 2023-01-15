@@ -10,17 +10,8 @@ use Model\Cashbook\Handlers\Cashbook\LockChitHandler;
 /** @see LockChitHandler */
 final class LockChit
 {
-    private CashbookId $cashbookId;
-
-    private int $chitId;
-
-    private int $userId;
-
-    public function __construct(CashbookId $cashbookId, int $chitId, int $userId)
+    public function __construct(private CashbookId $cashbookId, private int $chitId, private int $userId)
     {
-        $this->cashbookId = $cashbookId;
-        $this->chitId     = $chitId;
-        $this->userId     = $userId;
     }
 
     public function getCashbookId(): CashbookId

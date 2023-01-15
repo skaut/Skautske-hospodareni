@@ -19,54 +19,20 @@ class Unit
         'zvlastniJednotka',
     ];
 
-    private int $id;
-
-    private string $sortName;
-
-    private string $displayName;
-
-    private ?string $ic = null;
-
-    private string $street;
-
-    private string $city;
-
-    private string $postcode;
-
-    private string $registrationNumber;
-
-    private string $type;
-
-    private ?int $parentId = null;
-
-    /** @var Unit[]|null */
-    private ?array $children = null;
-
     /** @param Unit[]|null $children */
     public function __construct(
-        int $id,
-        string $sortName,
-        string $displayName,
-        ?string $ic,
-        string $street,
-        string $city,
-        string $postcode,
-        string $registrationNumber,
-        string $type,
-        ?int $parentId,
-        ?array $children = null
+        private int $id,
+        private string $sortName,
+        private string $displayName,
+        private string|null $ic = null,
+        private string $street,
+        private string $city,
+        private string $postcode,
+        private string $registrationNumber,
+        private string $type,
+        private int|null $parentId = null,
+        private array|null $children = null,
     ) {
-        $this->id                 = $id;
-        $this->sortName           = $sortName;
-        $this->displayName        = $displayName;
-        $this->ic                 = $ic;
-        $this->street             = $street;
-        $this->city               = $city;
-        $this->postcode           = $postcode;
-        $this->registrationNumber = $registrationNumber;
-        $this->type               = $type;
-        $this->parentId           = $parentId;
-        $this->children           = $children;
     }
 
     public function getId(): int
@@ -103,7 +69,7 @@ class Unit
         return $this->street . ', ' . $this->city . ', ' . $this->postcode;
     }
 
-    public function getIc(): ?string
+    public function getIc(): string|null
     {
         return $this->ic;
     }
@@ -118,12 +84,12 @@ class Unit
         return $this->city;
     }
 
-    public function getPostcode(): ?string
+    public function getPostcode(): string|null
     {
         return $this->postcode;
     }
 
-    public function getParentId(): ?int
+    public function getParentId(): int|null
     {
         return $this->parentId;
     }
@@ -146,7 +112,7 @@ class Unit
     }
 
     /** @return Unit[]|null */
-    public function getChildren(): ?array
+    public function getChildren(): array|null
     {
         return $this->children;
     }

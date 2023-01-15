@@ -70,7 +70,7 @@ class Category implements ICategory
         Operation $operationType,
         array $types,
         bool $virtual,
-        int $priority
+        int $priority,
     ) {
         $this->id            = $id;
         $this->name          = $name;

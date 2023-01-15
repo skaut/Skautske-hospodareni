@@ -13,11 +13,8 @@ use function array_map;
 
 class EventFunctionsQueryHandler
 {
-    private Skautis $skautis;
-
-    public function __construct(Skautis $skautis)
+    public function __construct(private Skautis $skautis)
     {
-        $this->skautis = $skautis;
     }
 
     public function __invoke(EventFunctions $query): Functions

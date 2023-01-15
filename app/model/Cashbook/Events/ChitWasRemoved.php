@@ -9,14 +9,8 @@ use Model\Cashbook\Cashbook\CashbookId;
 /** @todo Use this event for logging */
 class ChitWasRemoved
 {
-    private CashbookId $cashbookId;
-
-    private string $chitPurpose;
-
-    public function __construct(CashbookId $cashbookId, string $chitPurpose)
+    public function __construct(private CashbookId $cashbookId, private string $chitPurpose)
     {
-        $this->cashbookId  = $cashbookId;
-        $this->chitPurpose = $chitPurpose;
     }
 
     public function getCashbookId(): CashbookId

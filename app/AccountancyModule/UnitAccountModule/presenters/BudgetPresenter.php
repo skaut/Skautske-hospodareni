@@ -14,15 +14,12 @@ use function date;
 
 class BudgetPresenter extends BasePresenter
 {
-    protected BudgetService $budgetService;
-
-    public function __construct(BudgetService $budgetService)
+    public function __construct(protected BudgetService $budgetService)
     {
         parent::__construct();
-        $this->budgetService = $budgetService;
     }
 
-    public function renderDefault(?int $year = null): void
+    public function renderDefault(int|null $year = null): void
     {
         $this->template->setParameters([
             'categories' => $this->budgetService->getCategories($this->unitId->toInt()),
@@ -31,7 +28,7 @@ class BudgetPresenter extends BasePresenter
         ]);
     }
 
-    public function renderAdd(?int $year = null): void
+    public function renderAdd(int|null $year = null): void
     {
         $form = $this['addCategoryForm'];
         assert($form instanceof BaseForm);

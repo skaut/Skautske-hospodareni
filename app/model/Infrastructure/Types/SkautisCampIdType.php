@@ -17,8 +17,7 @@ final class SkautisCampIdType extends GuidType
         return 'skautis_camp_id';
     }
 
-    /** @param mixed $value */
-    public function convertToPHPValue($value, AbstractPlatform $platform): ?SkautisCampId
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): SkautisCampId|null
     {
         if ($value === null) {
             return null;
@@ -27,8 +26,7 @@ final class SkautisCampIdType extends GuidType
         return new SkautisCampId((int) $value);
     }
 
-    /** @param mixed $value */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?int
+    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): int|null
     {
         if ($value === null) {
             return null;

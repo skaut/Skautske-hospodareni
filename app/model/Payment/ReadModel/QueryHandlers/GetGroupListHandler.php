@@ -13,11 +13,8 @@ use function array_map;
 
 final class GetGroupListHandler
 {
-    private IGroupRepository $groups;
-
-    public function __construct(IGroupRepository $groups)
+    public function __construct(private IGroupRepository $groups)
     {
-        $this->groups = $groups;
     }
 
     /** @return Group[] */

@@ -13,23 +13,23 @@ use Model\Payment\VariableSymbol;
 final class PaymentDefaults
 {
     /** @ORM\Column(type="float", nullable=true) */
-    private ?float $amount = null;
+    private float|null $amount = null;
 
     /** @ORM\Column(type="chronos_date", nullable=true) */
-    private ?Date $dueDate = null;
+    private Date|null $dueDate = null;
 
     /** @ORM\Column(type="integer", nullable=true) */
-    private ?int $constantSymbol = null;
+    private int|null $constantSymbol = null;
 
     /** @ORM\Column(type="variable_symbol", nullable=true) */
-    private ?VariableSymbol $nextVariableSymbol = null;
+    private VariableSymbol|null $nextVariableSymbol = null;
 
     /** @throws DueDateIsNotWorkday */
     public function __construct(
-        ?float $amount,
-        ?Date $dueDate,
-        ?int $constantSymbol,
-        ?VariableSymbol $nextVariableSymbol
+        float|null $amount,
+        Date|null $dueDate,
+        int|null $constantSymbol,
+        VariableSymbol|null $nextVariableSymbol,
     ) {
         if ($dueDate !== null && ! $dueDate->isWeekday()) {
             throw new DueDateIsNotWorkday();
@@ -41,22 +41,22 @@ final class PaymentDefaults
         $this->nextVariableSymbol = $nextVariableSymbol;
     }
 
-    public function getAmount(): ?float
+    public function getAmount(): float|null
     {
         return $this->amount;
     }
 
-    public function getDueDate(): ?Date
+    public function getDueDate(): Date|null
     {
         return $this->dueDate;
     }
 
-    public function getConstantSymbol(): ?int
+    public function getConstantSymbol(): int|null
     {
         return $this->constantSymbol;
     }
 
-    public function getNextVariableSymbol(): ?VariableSymbol
+    public function getNextVariableSymbol(): VariableSymbol|null
     {
         return $this->nextVariableSymbol;
     }

@@ -12,11 +12,8 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 
 final class GenerateChitNumbersHandler
 {
-    private ICashbookRepository $cashbooks;
-
-    public function __construct(ICashbookRepository $cashbooks)
+    public function __construct(private ICashbookRepository $cashbooks)
     {
-        $this->cashbooks = $cashbooks;
     }
 
     /**

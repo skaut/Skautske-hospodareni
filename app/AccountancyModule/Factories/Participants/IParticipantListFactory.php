@@ -17,6 +17,6 @@ interface IParticipantListFactory
         bool $isAllowRepayment,
         bool $isAllowIsAccount,
         bool $isAllowParticipantUpdate,
-        bool $isAllowParticipantDelete
+        bool $isAllowParticipantDelete,
     ): ParticipantList;
 }

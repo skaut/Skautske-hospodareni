@@ -12,21 +12,15 @@ use Model\Participant\Repositories\IPaymentRepository;
 
 final class RemoveEventParticipantHandler
 {
-    private IParticipantRepository $participants;
-
-    private IPaymentRepository $payments;
-
-    public function __construct(IParticipantRepository $participants, IPaymentRepository $payments)
+    public function __construct(private IParticipantRepository $participants, private IPaymentRepository $payments)
     {
-        $this->participants = $participants;
-        $this->payments     = $payments;
     }
 
     public function __invoke(RemoveEventParticipant $command): void
     {
         try {
             $this->payments->remove($this->payments->findByParticipant($command->getParticipantId(), EventType::GENERAL()));
-        } catch (PaymentNotFound $exc) {
+        } catch (PaymentNotFound) {
         }
 
         $this->participants->removeEventParticipant($command->getParticipantId());

@@ -24,23 +24,8 @@ use function implode;
 
 final class ChitScanControl extends BaseControl
 {
-    private int $chitId;
-
-    private CashbookId $cashbookId;
-
-    private bool $isEditable;
-
-    private CommandBus $commandBus;
-
-    private QueryBus $queryBus;
-
-    public function __construct(CashbookId $cashbookId, int $chitId, bool $isEditable, CommandBus $commandBus, QueryBus $queryBus)
+    public function __construct(private CashbookId $cashbookId, private int $chitId, private bool $isEditable, private CommandBus $commandBus, private QueryBus $queryBus)
     {
-        $this->chitId     = $chitId;
-        $this->cashbookId = $cashbookId;
-        $this->isEditable = $isEditable;
-        $this->commandBus = $commandBus;
-        $this->queryBus   = $queryBus;
     }
 
     public function render(): void
@@ -75,7 +60,7 @@ final class ChitScanControl extends BaseControl
         try {
             $this->commandBus->handle(new RemoveChitScan($this->cashbookId, $this->chitId, FilePath::fromString($path)));
             $this->getPresenter()->flashMessage('Sken byl odebrán', 'success');
-        } catch (ScanNotFound $e) {
+        } catch (ScanNotFound) {
         }
 
         if ($this->getPresenter()->isAjax()) {

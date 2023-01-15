@@ -36,7 +36,7 @@ class Chit
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue()
      */
-    private ?int $id = null;
+    private int|null $id = null;
 
     /**
      * @ORM\ManyToOne(targetEntity=Cashbook::class, inversedBy="chits")
@@ -76,7 +76,7 @@ class Chit
      *
      * @ORM\Column(type="integer", nullable=true)
      */
-    private ?int $locked = null;
+    private int|null $locked = null;
 
     /**
      * @ORM\OneToMany(

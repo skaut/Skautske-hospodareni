@@ -23,8 +23,7 @@ class VariableSymbolType extends StringType
         return self::LENGTH;
     }
 
-    /** @param mixed $value */
-    public function convertToPHPValue($value, AbstractPlatform $platform): ?VariableSymbol
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): VariableSymbol|null
     {
         if ($value === null || $value === '' || $value === '0') {
             return null;
@@ -33,8 +32,7 @@ class VariableSymbolType extends StringType
         return new VariableSymbol($value);
     }
 
-    /** @param mixed $value */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
+    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): string|null
     {
         if ($value === null) {
             return null;

@@ -21,24 +21,15 @@ use function assert;
 
 final class GroupListPresenter extends BasePresenter
 {
-    private Factories\IPairButtonFactory $pairButtonFactory;
-
-    private PaymentService $groups;
-
-    private BankAccountService $bankAccounts;
-
     /** @var array<int, array<string, Summary>> */
     private array $summaries;
 
     public function __construct(
-        Factories\IPairButtonFactory $pairButtonFactory,
-        PaymentService $groups,
-        BankAccountService $bankAccounts
+        private Factories\IPairButtonFactory $pairButtonFactory,
+        private PaymentService $groups,
+        private BankAccountService $bankAccounts,
     ) {
         parent::__construct();
-        $this->pairButtonFactory = $pairButtonFactory;
-        $this->groups            = $groups;
-        $this->bankAccounts      = $bankAccounts;
     }
 
     public function actionDefault(bool $onlyOpen = true): void

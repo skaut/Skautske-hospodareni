@@ -12,17 +12,11 @@ use Model\PaymentService;
 
 class GroupPresenter extends BasePresenter
 {
-    private ?Group $group = null;
+    private Group|null $group = null;
 
-    private PaymentService $model;
-
-    private IGroupFormFactory $groupFormFactory;
-
-    public function __construct(PaymentService $model, IGroupFormFactory $groupFormFactory)
+    public function __construct(private PaymentService $model, private IGroupFormFactory $groupFormFactory)
     {
         parent::__construct();
-        $this->model            = $model;
-        $this->groupFormFactory = $groupFormFactory;
     }
 
     public function actionNewGroup(): void

@@ -20,14 +20,8 @@ use function assert;
 
 class ChitListQueryHandler
 {
-    private EntityManager $entityManager;
-
-    private QueryBus $queryBus;
-
-    public function __construct(EntityManager $entityManager, QueryBus $queryBus)
+    public function __construct(private EntityManager $entityManager, private QueryBus $queryBus)
     {
-        $this->entityManager = $entityManager;
-        $this->queryBus      = $queryBus;
     }
 
     /**

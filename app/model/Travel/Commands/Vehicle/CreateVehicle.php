@@ -9,32 +9,14 @@ use Model\Travel\Handlers\Vehicle\CreateVehicleHandler;
 /** @see CreateVehicleHandler */
 final class CreateVehicle
 {
-    private string $type;
-
-    private int $unitId;
-
-    private ?int $subunitId = null;
-
-    private string $registration;
-
-    private float $consumption;
-
-    private int $userId;
-
     public function __construct(
-        string $type,
-        int $unitId,
-        ?int $subunitId,
-        string $registration,
-        float $consumption,
-        int $userId
+        private string $type,
+        private int $unitId,
+        private int|null $subunitId = null,
+        private string $registration,
+        private float $consumption,
+        private int $userId,
     ) {
-        $this->type         = $type;
-        $this->unitId       = $unitId;
-        $this->subunitId    = $subunitId;
-        $this->registration = $registration;
-        $this->consumption  = $consumption;
-        $this->userId       = $userId;
     }
 
     public function getType(): string
@@ -47,7 +29,7 @@ final class CreateVehicle
         return $this->unitId;
     }
 
-    public function getSubunitId(): ?int
+    public function getSubunitId(): int|null
     {
         return $this->subunitId;
     }

@@ -19,8 +19,6 @@ use function is_array;
 
 final class SkautisAuthorizator implements IAuthorizator
 {
-    private WebServiceInterface $userWebservice;
-
     private const RESOURCE_CLASS_TO_SKAUTIS_TABLE_MAP = [
         Camp::class => Camp::TABLE,
         Education::class => Education::TABLE,
@@ -28,13 +26,12 @@ final class SkautisAuthorizator implements IAuthorizator
         Unit::class => Unit::TABLE,
     ];
 
-    public function __construct(WebServiceInterface $userWebservice)
+    public function __construct(private WebServiceInterface $userWebservice)
     {
-        $this->userWebservice = $userWebservice;
     }
 
     /** @param mixed[] $action */
-    public function isAllowed(array $action, ?int $resourceId): bool
+    public function isAllowed(array $action, int|null $resourceId): bool
     {
         if (count($action) !== 2 || ! isset(self::RESOURCE_CLASS_TO_SKAUTIS_TABLE_MAP[$action[0]])) {
             throw new InvalidArgumentException('Unknown action');
@@ -52,7 +49,7 @@ final class SkautisAuthorizator implements IAuthorizator
     }
 
     /** @return stdClass[] */
-    private function getAvailableActions(string $skautisTable, ?int $id): array
+    private function getAvailableActions(string $skautisTable, int|null $id): array
     {
         try {
             $result = $this->userWebservice->ActionVerify([
@@ -64,7 +61,7 @@ final class SkautisAuthorizator implements IAuthorizator
             return is_array($result)
                 ? $result
                 : [];
-        } catch (PermissionException $exc) {
+        } catch (PermissionException) {
             return [];
         }
     }

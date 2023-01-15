@@ -9,11 +9,8 @@ use Model\Event\SkautisEducationId;
 /** @see EducationFunctionsQueryHandler */
 final class EducationFunctions
 {
-    private SkautisEducationId $educationId;
-
-    public function __construct(SkautisEducationId $educationId)
+    public function __construct(private SkautisEducationId $educationId)
     {
-        $this->educationId = $educationId;
     }
 
     public function getEducationId(): SkautisEducationId

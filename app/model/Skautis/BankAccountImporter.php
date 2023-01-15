@@ -14,11 +14,8 @@ use function assert;
 
 class BankAccountImporter implements IBankAccountImporter
 {
-    private Skautis $skautis;
-
-    public function __construct(Skautis $skautis)
+    public function __construct(private Skautis $skautis)
     {
-        $this->skautis = $skautis;
     }
 
     /** @return AccountNumber[] */
@@ -35,7 +32,7 @@ class BankAccountImporter implements IBankAccountImporter
             assert($account instanceof stdClass);
             try {
                 $result[] = AccountNumber::fromString($account->DisplayName);
-            } catch (InvalidBankAccountNumber $e) {
+            } catch (InvalidBankAccountNumber) {
                 // Skip invalid bank accounts
             }
         }

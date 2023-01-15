@@ -13,14 +13,8 @@ final class CampStatesHandler
 {
     private const CACHE_KEY = 'camp_states';
 
-    private WebServiceInterface $eventWebservice;
-
-    private Cache $cache;
-
-    public function __construct(WebServiceInterface $eventWebservice, Cache $cache)
+    public function __construct(private WebServiceInterface $eventWebservice, private Cache $cache)
     {
-        $this->eventWebservice = $eventWebservice;
-        $this->cache           = $cache;
     }
 
     /** @return string[] */

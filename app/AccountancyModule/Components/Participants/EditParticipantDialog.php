@@ -16,26 +16,16 @@ use function assert;
 final class EditParticipantDialog extends Dialog
 {
     /** @persistent */
-    public ?int $participantId = null;
+    public int|null $participantId = null;
 
     /** @var Closure[] */
     public array $onUpdate = [];
 
-    /** @var array<int, Participant> */
-    private array $participants;
-
-    private bool $isAccountAllowed;
-
-    private bool $isRepaymentAllowed;
-
     private bool $isAllowedDaysUpdate;
 
     /** @param array<int, Participant> $participants */
-    public function __construct(array $participants, bool $iAllowedDaysUpdate, bool $isAccountAllowed, bool $isRepaymentAllowed)
+    public function __construct(private array $participants, bool $iAllowedDaysUpdate, private bool $isAccountAllowed, private bool $isRepaymentAllowed)
     {
-        $this->participants        = $participants;
-        $this->isAccountAllowed    = $isAccountAllowed;
-        $this->isRepaymentAllowed  = $isRepaymentAllowed;
         $this->isAllowedDaysUpdate = $iAllowedDaysUpdate;
     }
 

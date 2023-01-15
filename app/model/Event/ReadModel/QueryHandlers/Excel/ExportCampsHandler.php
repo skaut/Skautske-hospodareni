@@ -28,24 +28,15 @@ use function implode;
 
 final class ExportCampsHandler
 {
-    private QueryBus $queryBus;
-
-    private SpreadsheetFactory $spreadsheetFactory;
-
     private IUnitRepository $unitRepository;
 
-    private SheetChitsGenerator $sheetChitsGenerator;
-
     public function __construct(
-        QueryBus $queryBus,
-        SpreadsheetFactory $spreadsheetFactory,
+        private QueryBus $queryBus,
+        private SpreadsheetFactory $spreadsheetFactory,
         IUnitRepository $units,
-        SheetChitsGenerator $sheetChitsGenerator
+        private SheetChitsGenerator $sheetChitsGenerator,
     ) {
-        $this->queryBus            = $queryBus;
-        $this->spreadsheetFactory  = $spreadsheetFactory;
-        $this->unitRepository      = $units;
-        $this->sheetChitsGenerator = $sheetChitsGenerator;
+        $this->unitRepository = $units;
     }
 
     public function __invoke(ExportCamps $query): Spreadsheet
@@ -102,8 +93,8 @@ final class ExportCampsHandler
             $functions = $this->queryBus->handle(new CampFunctions($camp->getId()));
             assert($functions instanceof Functions);
 
-            $leader     = $functions->getLeader() !== null ? $functions->getLeader()->getName() : null;
-            $accountant = $functions->getAccountant() !== null ? $functions->getAccountant()->getName() : null;
+            $leader     = $functions->getLeader()?->getName();
+            $accountant = $functions->getAccountant()?->getName();
 
             $statistics = $camp->getParticipantStatistics();
 
@@ -143,7 +134,7 @@ final class ExportCampsHandler
         foreach ($camp->getParticipatingUnits() as $troopId) {
             try {
                 $unit = $this->unitRepository->find($troopId->toInt());
-            } catch (UnitNotFound $e) {
+            } catch (UnitNotFound) {
                 // Removed troops are returned as well https://github.com/skaut/Skautske-hospodareni/issues/483
                 continue;
             }

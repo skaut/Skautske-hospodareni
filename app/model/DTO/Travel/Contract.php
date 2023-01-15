@@ -22,36 +22,15 @@ class Contract
 {
     use SmartObject;
 
-    private int $id;
-
-    private Passenger $passenger;
-
-    private int $unitId;
-
-    private string $unitRepresentative;
-
-    private ?Date $since = null;
-
-    private ?Date $until = null;
-
-    private int $templateVersion;
-
     public function __construct(
-        int $id,
-        Passenger $passenger,
-        int $unitId,
-        string $unitRepresentative,
-        ?Date $since,
-        ?Date $until,
-        int $templateVersion
+        private int $id,
+        private Passenger $passenger,
+        private int $unitId,
+        private string $unitRepresentative,
+        private Date|null $since = null,
+        private Date|null $until = null,
+        private int $templateVersion,
     ) {
-        $this->id                 = $id;
-        $this->passenger          = $passenger;
-        $this->unitId             = $unitId;
-        $this->unitRepresentative = $unitRepresentative;
-        $this->since              = $since;
-        $this->until              = $until;
-        $this->templateVersion    = $templateVersion;
     }
 
     public function getId(): int
@@ -74,12 +53,12 @@ class Contract
         return $this->unitRepresentative;
     }
 
-    public function getSince(): ?Date
+    public function getSince(): Date|null
     {
         return $this->since;
     }
 
-    public function getUntil(): ?Date
+    public function getUntil(): Date|null
     {
         return $this->until;
     }

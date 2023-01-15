@@ -15,11 +15,8 @@ use function is_object;
 
 final class UnitRepository implements IUnitRepository
 {
-    private WebServiceInterface $webService;
-
-    public function __construct(WebServiceInterface $webService)
+    public function __construct(private WebServiceInterface $webService)
     {
-        $this->webService = $webService;
     }
 
     /** @return mixed[] */

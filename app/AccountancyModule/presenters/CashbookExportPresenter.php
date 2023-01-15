@@ -49,18 +49,9 @@ class CashbookExportPresenter extends BasePresenter
     /** @persistent */
     public string $cashbookId = ''; // default value type is used for type casting
 
-    private ExportService $exportService;
-
-    private ExcelService $excelService;
-
-    private PdfRenderer $pdf;
-
-    public function __construct(ExportService $exportService, ExcelService $excelService, PdfRenderer $pdf)
+    public function __construct(private ExportService $exportService, private ExcelService $excelService, private PdfRenderer $pdf)
     {
         parent::__construct();
-        $this->exportService = $exportService;
-        $this->excelService  = $excelService;
-        $this->pdf           = $pdf;
     }
 
     /**

@@ -11,15 +11,12 @@ use function date;
 
 class DefaultPresenter extends BasePresenter
 {
-    private StatisticsService $statService;
-
-    public function __construct(StatisticsService $statService)
+    public function __construct(private StatisticsService $statService)
     {
         parent::__construct();
-        $this->statService = $statService;
     }
 
-    public function renderDefault(?int $year = null): void
+    public function renderDefault(int|null $year = null): void
     {
         if ($year === null) {
             $year = (int) date('Y');

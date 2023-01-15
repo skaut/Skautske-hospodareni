@@ -21,17 +21,8 @@ use function assert;
 
 class MassAddForm extends BaseControl
 {
-    private int $groupId;
-
-    private CommandBus $commandBus;
-
-    private PaymentService $payments;
-
-    public function __construct(int $groupId, PaymentService $payments, CommandBus $commandBus)
+    public function __construct(private int $groupId, private PaymentService $payments, private CommandBus $commandBus)
     {
-        $this->groupId    = $groupId;
-        $this->payments   = $payments;
-        $this->commandBus = $commandBus;
     }
 
     protected function createComponentForm(): BaseForm
@@ -80,7 +71,7 @@ class MassAddForm extends BaseControl
     }
 
     /** @param string[] $emails */
-    public function addPerson(int $id, array $emails, string $name, ?float $amount = null, string $note = ''): void
+    public function addPerson(int $id, array $emails, string $name, float|null $amount = null, string $note = ''): void
     {
         $form          = $this['form'];
         $persons       = $form['persons'];

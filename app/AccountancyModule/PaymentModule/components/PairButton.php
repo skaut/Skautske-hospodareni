@@ -26,20 +26,11 @@ class PairButton extends BaseControl
     public const TIMEOUT_MESSAGE    = 'Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.';
     public const TIME_LIMIT_MESSAGE = 'Mezi dotazy na bankovnictví musí být prodleva 1 minuta!';
 
-    private BankService $model;
-
-    private PaymentService $payments;
-
-    private BankAccountService $bankAccounts;
-
     /** @var int[] */
     private array $groupIds = [];
 
-    public function __construct(PaymentService $payments, BankService $model, BankAccountService $bankAccounts)
+    public function __construct(private PaymentService $payments, private BankService $model, private BankAccountService $bankAccounts)
     {
-        $this->model        = $model;
-        $this->payments     = $payments;
-        $this->bankAccounts = $bankAccounts;
     }
 
     public function handlePair(): void
@@ -118,7 +109,7 @@ class PairButton extends BaseControl
         return false;
     }
 
-    private function pair(?int $daysBack = null): void
+    private function pair(int|null $daysBack = null): void
     {
         try {
             $pairingResults = $this->model->pairAllGroups($this->groupIds, $daysBack);
@@ -126,10 +117,10 @@ class PairButton extends BaseControl
                 assert($p instanceof PairingResult);
                 $this->flashMessage($p->getMessage(), $p->getCount() > 0 ? 'success' : 'info');
             }
-        } catch (BankTimeout $exc) {
+        } catch (BankTimeout) {
             $this->flashMessage(self::TIMEOUT_MESSAGE, 'danger');
             bdump(self::TIMEOUT_MESSAGE);
-        } catch (BankTimeLimit $exc) {
+        } catch (BankTimeLimit) {
             $this->flashMessage(self::TIME_LIMIT_MESSAGE, 'danger');
             bdump(self::TIME_LIMIT_MESSAGE);
         } catch (InvalidOAuth $exc) {

@@ -24,17 +24,11 @@ class NextVariableSymbolSequenceQueryHandler
 {
     private const UNIT_PART_LENGTH = 3;
 
-    private IGroupRepository $groups;
-
-    private QueryBus $queryBus;
-
-    public function __construct(IGroupRepository $groups, QueryBus $queryBus)
+    public function __construct(private IGroupRepository $groups, private QueryBus $queryBus)
     {
-        $this->groups   = $groups;
-        $this->queryBus = $queryBus;
     }
 
-    public function __invoke(NextVariableSymbolSequenceQuery $query): ?VariableSymbol
+    public function __invoke(NextVariableSymbolSequenceQuery $query): VariableSymbol|null
     {
         $now                = $query->getNow();
         $groupIncrementPart = $this->getGroupIncrement($query->getUnitId(), $now);

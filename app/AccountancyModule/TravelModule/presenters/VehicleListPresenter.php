@@ -9,12 +9,9 @@ use App\AccountancyModule\TravelModule\Factories\IVehicleGridFactory;
 
 final class VehicleListPresenter extends BasePresenter
 {
-    private IVehicleGridFactory $gridFactory;
-
-    public function __construct(IVehicleGridFactory $gridFactory)
+    public function __construct(private IVehicleGridFactory $gridFactory)
     {
         parent::__construct();
-        $this->gridFactory = $gridFactory;
         $this->setLayout('layout.new');
     }
 

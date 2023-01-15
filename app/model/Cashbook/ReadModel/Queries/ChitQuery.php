@@ -10,14 +10,8 @@ use Model\Cashbook\ReadModel\QueryHandlers\ChitQueryHandler;
 /** @see ChitQueryHandler */
 final class ChitQuery
 {
-    private CashbookId $cashbookId;
-
-    private int $chitId;
-
-    public function __construct(CashbookId $cashbookId, int $chitId)
+    public function __construct(private CashbookId $cashbookId, private int $chitId)
     {
-        $this->cashbookId = $cashbookId;
-        $this->chitId     = $chitId;
     }
 
     public function getCashbookId(): CashbookId

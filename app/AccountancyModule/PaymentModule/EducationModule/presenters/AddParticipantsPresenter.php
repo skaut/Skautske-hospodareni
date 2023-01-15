@@ -20,21 +20,15 @@ use function in_array;
 
 class AddParticipantsPresenter extends BasePresenter
 {
-    private PaymentService $model;
-
-    private IMassAddFormFactory $formFactory;
-
     private int $id;
 
-    public function __construct(PaymentService $model, IMassAddFormFactory $formFactory)
+    public function __construct(private PaymentService $model, private IMassAddFormFactory $formFactory)
     {
         parent::__construct();
-        $this->model       = $model;
-        $this->formFactory = $formFactory;
     }
 
     /** @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY */
-    public function actionDefault(int $id, ?int $unitId = null): void
+    public function actionDefault(int $id, int|null $unitId = null): void
     {
         $this->id = $id;
         $group    = $this->model->getGroup($id);

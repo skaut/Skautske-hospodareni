@@ -13,11 +13,8 @@ use function array_values;
 
 final class VehicleRepository implements IVehicleRepository
 {
-    private EntityManager $em;
-
-    public function __construct(EntityManager $em)
+    public function __construct(private EntityManager $em)
     {
-        $this->em = $em;
     }
 
     /** @throws VehicleNotFound */

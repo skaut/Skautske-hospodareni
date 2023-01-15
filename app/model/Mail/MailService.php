@@ -19,12 +19,9 @@ class MailService
 {
     private IGoogleRepository $googleRepository;
 
-    private IUnitResolver $unitResolver;
-
-    public function __construct(IGoogleRepository $credentials, IUnitResolver $unitResolver)
+    public function __construct(IGoogleRepository $credentials, private IUnitResolver $unitResolver)
     {
         $this->googleRepository = $credentials;
-        $this->unitResolver     = $unitResolver;
     }
 
     /**

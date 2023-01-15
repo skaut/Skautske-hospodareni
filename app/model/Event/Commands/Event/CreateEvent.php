@@ -10,36 +10,15 @@ use Model\Event\Handlers\Event\CreateEventHandler;
 /** @see CreateEventHandler */
 final class CreateEvent
 {
-    private string $name;
-
-    private Date $startDate;
-
-    private Date $endDate;
-
-    private int $unitId;
-
-    private ?string $location = null;
-
-    private int $scopeId;
-
-    private int $typeId;
-
     public function __construct(
-        string $name,
-        Date $startDate,
-        Date $endDate,
-        int $unitId,
-        ?string $location,
-        int $scopeId,
-        int $typeId
+        private string $name,
+        private Date $startDate,
+        private Date $endDate,
+        private int $unitId,
+        private string|null $location = null,
+        private int $scopeId,
+        private int $typeId,
     ) {
-        $this->name      = $name;
-        $this->startDate = $startDate;
-        $this->endDate   = $endDate;
-        $this->unitId    = $unitId;
-        $this->location  = $location;
-        $this->scopeId   = $scopeId;
-        $this->typeId    = $typeId;
     }
 
     public function getName(): string
@@ -62,7 +41,7 @@ final class CreateEvent
         return $this->unitId;
     }
 
-    public function getLocation(): ?string
+    public function getLocation(): string|null
     {
         return $this->location;
     }

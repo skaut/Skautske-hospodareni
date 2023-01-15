@@ -29,7 +29,7 @@ final class Passenger
     private string $address;
 
     /** @ORM\Column(type="integer", nullable=true) */
-    private ?int $contractId = null;
+    private int|null $contractId = null;
 
     public function __construct(string $name, string $contact, string $address)
     {
@@ -80,7 +80,7 @@ final class Passenger
         return $this->address;
     }
 
-    public function getContractId(): ?int
+    public function getContractId(): int|null
     {
         return $this->contractId;
     }

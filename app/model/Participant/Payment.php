@@ -44,7 +44,7 @@ class Payment
     /** @ORM\Column(type="string") */
     private string $account;
 
-    public function __construct(PaymentId $id, int $participantId, Event $event, ?Money $payment = null, ?Money $repayment = null, string $account = 'N')
+    public function __construct(PaymentId $id, int $participantId, Event $event, Money|null $payment = null, Money|null $repayment = null, string $account = 'N')
     {
         $this->id            = $id;
         $this->participantId = $participantId;

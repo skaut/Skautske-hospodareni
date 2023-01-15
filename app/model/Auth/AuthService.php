@@ -8,17 +8,14 @@ use Skautis\Skautis;
 
 class AuthService
 {
-    private Skautis $skautis;
-
-    public function __construct(Skautis $skautis)
+    public function __construct(private Skautis $skautis)
     {
-        $this->skautis = $skautis;
     }
 
     /**
      * vrací přihlašovací url
      */
-    public function getLoginUrl(?string $backlink): string
+    public function getLoginUrl(string|null $backlink): string
     {
         return $this->skautis->getLoginUrl($backlink);
     }

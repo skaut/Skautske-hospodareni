@@ -10,20 +10,8 @@ use function sprintf;
 
 class PairingResult
 {
-    private string $accountName;
-
-    private DateTimeImmutable $since;
-
-    private DateTimeImmutable $until;
-
-    private int $count;
-
-    public function __construct(string $accountName, DateTimeImmutable $since, DateTimeImmutable $until, int $count)
+    public function __construct(private string $accountName, private DateTimeImmutable $since, private DateTimeImmutable $until, private int $count)
     {
-        $this->accountName = $accountName;
-        $this->since       = $since;
-        $this->until       = $until;
-        $this->count       = $count;
     }
 
     public function getAccountName(): string

@@ -32,12 +32,9 @@ use function is_float;
 
 class CashbookPresenter extends BasePresenter
 {
-    private ICashbookControlFactory $cashbookFactory;
-
-    public function __construct(ICashbookControlFactory $cashbookFactory)
+    public function __construct(private ICashbookControlFactory $cashbookFactory)
     {
         parent::__construct();
-        $this->cashbookFactory = $cashbookFactory;
     }
 
     protected function startup(): void

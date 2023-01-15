@@ -10,14 +10,8 @@ use Model\Event\SkautisEducationId;
 /** @see EducationParticipantBalanceQueryHandler */
 final class EducationParticipantBalanceQuery
 {
-    private SkautisEducationId $educationId;
-
-    private CashbookId $cashbookId;
-
-    public function __construct(SkautisEducationId $educationId, CashbookId $cashbookId)
+    public function __construct(private SkautisEducationId $educationId, private CashbookId $cashbookId)
     {
-        $this->educationId = $educationId;
-        $this->cashbookId  = $cashbookId;
     }
 
     public function getEducationId(): SkautisEducationId

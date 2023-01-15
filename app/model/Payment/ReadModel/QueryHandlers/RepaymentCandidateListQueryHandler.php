@@ -22,17 +22,8 @@ use function assert;
 
 final class RepaymentCandidateListQueryHandler
 {
-    private IGroupRepository $groups;
-
-    private QueryBus $queryBus;
-
-    private IParticipantRepository $participants;
-
-    public function __construct(QueryBus $queryBus, IGroupRepository $groups, IParticipantRepository $participants)
+    public function __construct(private QueryBus $queryBus, private IGroupRepository $groups, private IParticipantRepository $participants)
     {
-        $this->queryBus     = $queryBus;
-        $this->groups       = $groups;
-        $this->participants = $participants;
     }
 
     /** @return DTO\RepaymentCandidate[] */

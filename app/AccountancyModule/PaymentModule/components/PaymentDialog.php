@@ -32,17 +32,8 @@ final class PaymentDialog extends Dialog
     /** @persistent */
     public int $paymentId = -1;
 
-    private int $groupId;
-
-    private CommandBus $commandBus;
-
-    private PaymentService $paymentService;
-
-    public function __construct(int $groupId, CommandBus $commandBus, PaymentService $paymentService)
+    public function __construct(private int $groupId, private CommandBus $commandBus, private PaymentService $paymentService)
     {
-        $this->groupId        = $groupId;
-        $this->commandBus     = $commandBus;
-        $this->paymentService = $paymentService;
     }
 
     public function handleOpen(int $paymentId = -1): void
@@ -181,7 +172,7 @@ final class PaymentDialog extends Dialog
     }
 
     /** @return EmailAddress[] */
-    private function processEmails(?string $emails): array
+    private function processEmails(string|null $emails): array
     {
         if ($emails === null) {
             return [];
@@ -218,7 +209,7 @@ final class PaymentDialog extends Dialog
         return $this->paymentId !== -1;
     }
 
-    private function payment(): ?Payment
+    private function payment(): Payment|null
     {
         if ($this->paymentId === -1) {
             return null;

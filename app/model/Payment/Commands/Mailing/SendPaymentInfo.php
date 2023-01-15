@@ -9,11 +9,8 @@ use Model\Event\Handlers\Mailing\SendPaymentInfoHandler;
 /** @see SendPaymentInfoHandler */
 final class SendPaymentInfo
 {
-    private int $paymentId;
-
-    public function __construct(int $paymentId)
+    public function __construct(private int $paymentId)
     {
-        $this->paymentId = $paymentId;
     }
 
     public function getPaymentId(): int

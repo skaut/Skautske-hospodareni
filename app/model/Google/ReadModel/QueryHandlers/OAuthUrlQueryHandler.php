@@ -9,11 +9,8 @@ use Model\Google\ReadModel\Queries\OAuthUrlQuery;
 
 final class OAuthUrlQueryHandler
 {
-    private GoogleService $service;
-
-    public function __construct(GoogleService $service)
+    public function __construct(private GoogleService $service)
     {
-        $this->service = $service;
     }
 
     public function __invoke(OAuthUrlQuery $query): string

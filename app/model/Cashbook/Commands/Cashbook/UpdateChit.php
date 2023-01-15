@@ -12,30 +12,14 @@ use Model\DTO\Cashbook\ChitItem;
 /** @see UpdateChitHandler */
 final class UpdateChit
 {
-    private CashbookId $cashbookId;
-
-    private int $chitId;
-
-    private ChitBody $body;
-
-    private PaymentMethod $paymentMethod;
-
-    /** @var ChitItem[] */
-    private array $items;
-
     /** @param ChitItem[] $items */
     public function __construct(
-        CashbookId $cashbookId,
-        int $chitId,
-        ChitBody $body,
-        PaymentMethod $paymentMethod,
-        array $items
+        private CashbookId $cashbookId,
+        private int $chitId,
+        private ChitBody $body,
+        private PaymentMethod $paymentMethod,
+        private array $items,
     ) {
-        $this->cashbookId    = $cashbookId;
-        $this->chitId        = $chitId;
-        $this->body          = $body;
-        $this->paymentMethod = $paymentMethod;
-        $this->items         = $items;
     }
 
     public function getCashbookId(): CashbookId

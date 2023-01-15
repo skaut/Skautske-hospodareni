@@ -10,11 +10,8 @@ use Model\Event\Repositories\IEducationRepository;
 
 class EducationQueryHandler
 {
-    private IEducationRepository $repository;
-
-    public function __construct(IEducationRepository $repository)
+    public function __construct(private IEducationRepository $repository)
     {
-        $this->repository = $repository;
     }
 
     public function __invoke(EducationQuery $query): Education

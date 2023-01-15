@@ -14,20 +14,11 @@ use function in_array;
 
 final class MembersWithoutPaymentInGroupQueryHandler
 {
-    private IMemberRepository $members;
-
-    private IMemberEmailRepository $emails;
-
-    private PaymentService $paymentService;
-
     public function __construct(
-        IMemberRepository $members,
-        IMemberEmailRepository $emails,
-        PaymentService $paymentService
+        private IMemberRepository $members,
+        private IMemberEmailRepository $emails,
+        private PaymentService $paymentService,
     ) {
-        $this->members        = $members;
-        $this->emails         = $emails;
-        $this->paymentService = $paymentService;
     }
 
     /** @return Person[] */

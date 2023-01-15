@@ -47,7 +47,7 @@ class Vehicle
     private int $unitId;
 
     /** @ORM\Column(type="integer", nullable=true) */
-    private ?int $subunitId = null;
+    private int|null $subunitId = null;
 
     /** @ORM\Column(type="string", length=64) */
     private string $registration;
@@ -77,7 +77,7 @@ class Vehicle
      */
     private Collection $roadworthyScans;
 
-    public function __construct(string $type, Unit $unit, ?Unit $subunit, string $registration, float $consumption, Metadata $metadata)
+    public function __construct(string $type, Unit $unit, Unit|null $subunit, string $registration, float $consumption, Metadata $metadata)
     {
         $this->type   = $type;
         $this->unitId = $unit->getId();
@@ -126,7 +126,7 @@ class Vehicle
         return $this->id;
     }
 
-    public function getSubunitId(): ?int
+    public function getSubunitId(): int|null
     {
         return $this->subunitId;
     }

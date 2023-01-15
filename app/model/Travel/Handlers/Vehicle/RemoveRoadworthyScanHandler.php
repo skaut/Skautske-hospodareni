@@ -10,14 +10,8 @@ use Model\Travel\Repositories\IVehicleRepository;
 
 final class RemoveRoadworthyScanHandler
 {
-    private IVehicleRepository $vehicles;
-
-    private IScanStorage $scans;
-
-    public function __construct(IVehicleRepository $vehicles, IScanStorage $scans)
+    public function __construct(private IVehicleRepository $vehicles, private IScanStorage $scans)
     {
-        $this->vehicles = $vehicles;
-        $this->scans    = $scans;
     }
 
     public function __invoke(RemoveRoadworthyScan $command): void

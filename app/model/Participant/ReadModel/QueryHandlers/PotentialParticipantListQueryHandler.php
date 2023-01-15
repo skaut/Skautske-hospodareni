@@ -9,11 +9,8 @@ use Model\Participant\ReadModel\Queries\PotentialParticipantListQuery;
 
 final class PotentialParticipantListQueryHandler
 {
-    private IMemberRepository $members;
-
-    public function __construct(IMemberRepository $members)
+    public function __construct(private IMemberRepository $members)
     {
-        $this->members = $members;
     }
 
     /** @return array<int, string> member ID => member name */

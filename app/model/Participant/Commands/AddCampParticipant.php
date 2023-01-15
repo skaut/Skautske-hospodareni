@@ -9,14 +9,8 @@ use Model\Event\SkautisCampId;
 /** @see AddEventParticipantHandler */
 final class AddCampParticipant
 {
-    private SkautisCampId $campId;
-
-    private int $personId;
-
-    public function __construct(SkautisCampId $campId, int $personId)
+    public function __construct(private SkautisCampId $campId, private int $personId)
     {
-        $this->campId   = $campId;
-        $this->personId = $personId;
     }
 
     public function getCampId(): SkautisCampId

@@ -6,23 +6,8 @@ namespace Model\Event\Commands\Event;
 
 final class UpdateFunctions
 {
-    private int $eventId;
-
-    private ?int $leaderId = null;
-
-    private ?int $assistantId = null;
-
-    private ?int $accountantId = null;
-
-    private ?int $medicId = null;
-
-    public function __construct(int $eventId, ?int $leaderId, ?int $assistantId, ?int $accountantId, ?int $medicId)
+    public function __construct(private int $eventId, private int|null $leaderId = null, private int|null $assistantId = null, private int|null $accountantId = null, private int|null $medicId = null)
     {
-        $this->eventId      = $eventId;
-        $this->leaderId     = $leaderId;
-        $this->assistantId  = $assistantId;
-        $this->accountantId = $accountantId;
-        $this->medicId      = $medicId;
     }
 
     public function getEventId(): int
@@ -30,22 +15,22 @@ final class UpdateFunctions
         return $this->eventId;
     }
 
-    public function getLeaderId(): ?int
+    public function getLeaderId(): int|null
     {
         return $this->leaderId;
     }
 
-    public function getAssistantId(): ?int
+    public function getAssistantId(): int|null
     {
         return $this->assistantId;
     }
 
-    public function getAccountantId(): ?int
+    public function getAccountantId(): int|null
     {
         return $this->accountantId;
     }
 
-    public function getMedicId(): ?int
+    public function getMedicId(): int|null
     {
         return $this->medicId;
     }

@@ -18,8 +18,7 @@ final class OAuthIdType extends GuidType
         return 'oauth_id';
     }
 
-    /** @param mixed $value */
-    public function convertToPHPValue($value, AbstractPlatform $platform): ?OAuthId
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): OAuthId|null
     {
         if ($value === null) {
             return null;
@@ -30,8 +29,7 @@ final class OAuthIdType extends GuidType
         return OAuthId::fromString($value);
     }
 
-    /** @param mixed $value */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
+    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): string|null
     {
         if ($value === null) {
             return null;

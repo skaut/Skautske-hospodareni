@@ -18,14 +18,8 @@ use function in_array;
 
 class CategoriesSummaryQueryHandler
 {
-    private ICashbookRepository $cashbooks;
-
-    private CategoryRepository $categories;
-
-    public function __construct(ICashbookRepository $cashbooks, CategoryRepository $categories)
+    public function __construct(private ICashbookRepository $cashbooks, private CategoryRepository $categories)
     {
-        $this->cashbooks  = $cashbooks;
-        $this->categories = $categories;
     }
 
     /**

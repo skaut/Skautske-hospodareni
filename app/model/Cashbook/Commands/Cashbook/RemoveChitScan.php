@@ -11,17 +11,8 @@ use Model\Common\FilePath;
 /** @see RemoveChitScanHandler */
 final class RemoveChitScan
 {
-    private CashbookId $cashbookId;
-
-    private int $chitId;
-
-    private FilePath $path;
-
-    public function __construct(CashbookId $cashbookId, int $chitId, FilePath $path)
+    public function __construct(private CashbookId $cashbookId, private int $chitId, private FilePath $path)
     {
-        $this->cashbookId = $cashbookId;
-        $this->chitId     = $chitId;
-        $this->path       = $path;
     }
 
     public function getCashbookId(): CashbookId

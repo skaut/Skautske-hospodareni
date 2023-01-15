@@ -10,14 +10,8 @@ use Model\Cashbook\Handlers\Cashbook\RemoveChitFromCashbookHandler;
 /** @see RemoveChitFromCashbookHandler */
 final class RemoveChitFromCashbook
 {
-    private CashbookId $cashbookId;
-
-    private int $chitId;
-
-    public function __construct(CashbookId $cashbookId, int $chitId)
+    public function __construct(private CashbookId $cashbookId, private int $chitId)
     {
-        $this->cashbookId = $cashbookId;
-        $this->chitId     = $chitId;
     }
 
     public function getCashbookId(): CashbookId

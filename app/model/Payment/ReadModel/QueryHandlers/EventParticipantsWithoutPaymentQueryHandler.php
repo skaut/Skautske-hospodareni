@@ -20,17 +20,8 @@ use function in_array;
 
 final class EventParticipantsWithoutPaymentQueryHandler
 {
-    private IGroupRepository $groups;
-
-    private PaymentService $paymentService;
-
-    private QueryBus $queryBus;
-
-    public function __construct(IGroupRepository $groups, PaymentService $paymentService, QueryBus $queryBus)
+    public function __construct(private IGroupRepository $groups, private PaymentService $paymentService, private QueryBus $queryBus)
     {
-        $this->groups         = $groups;
-        $this->paymentService = $paymentService;
-        $this->queryBus       = $queryBus;
     }
 
     /** @return Participant[] */

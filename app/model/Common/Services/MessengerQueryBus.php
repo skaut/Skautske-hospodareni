@@ -12,15 +12,11 @@ use function assert;
 
 final class MessengerQueryBus implements QueryBus
 {
-    private MessageBusInterface $queryBus;
-
-    public function __construct(MessageBusInterface $queryBus)
+    public function __construct(private MessageBusInterface $queryBus)
     {
-        $this->queryBus = $queryBus;
     }
 
-    /** @return mixed */
-    public function handle(object $query)
+    public function handle(object $query): mixed
     {
         try {
             $stamp = $this->queryBus->dispatch($query)->last(HandledStamp::class);

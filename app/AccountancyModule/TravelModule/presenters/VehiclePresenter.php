@@ -30,15 +30,9 @@ class VehiclePresenter extends BasePresenter
     /** @persistent */
     public int $id = 0;
 
-    private TravelService $travelService;
-
-    private IRoadworthyControlFactory $roadworthyControlFactory;
-
-    public function __construct(TravelService $travelService, IRoadworthyControlFactory $roadworthyControlFactory)
+    public function __construct(private TravelService $travelService, private IRoadworthyControlFactory $roadworthyControlFactory)
     {
         parent::__construct();
-        $this->travelService            = $travelService;
-        $this->roadworthyControlFactory = $roadworthyControlFactory;
         $this->setLayout('layout.new');
     }
 
@@ -91,7 +85,7 @@ class VehiclePresenter extends BasePresenter
                     assert($unit instanceof Unit);
                     $subUnitName = $unit->getSortName();
                 }
-            } catch (UnitNotFound $exc) {
+            } catch (UnitNotFound) {
                 // jednotka může být smazaná a pak na ní nikdo nemá oprávnění
             }
 
@@ -196,7 +190,7 @@ class VehiclePresenter extends BasePresenter
         $this->redirect('VehicleList:default');
     }
 
-    private function isVehicleEditable(?VehicleDTO $vehicle): bool
+    private function isVehicleEditable(VehicleDTO|null $vehicle): bool
     {
         if ($vehicle === null) {
             return false;

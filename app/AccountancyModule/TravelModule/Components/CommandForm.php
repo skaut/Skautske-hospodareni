@@ -28,23 +28,11 @@ use function in_array;
 
 class CommandForm extends Control
 {
-    private int $unitId;
-
-    private ?int $commandId = null;
-
-    private TravelService $model;
-
-    private QueryBus $queryBus;
-
     /** @var callable[] */
     public array $onSuccess = [];
 
-    public function __construct(int $unitId, ?int $commandId, TravelService $model, QueryBus $queryBus)
+    public function __construct(private int $unitId, private int|null $commandId = null, private TravelService $model, private QueryBus $queryBus)
     {
-        $this->unitId    = $unitId;
-        $this->commandId = $commandId;
-        $this->model     = $model;
-        $this->queryBus  = $queryBus;
     }
 
     public function render(): void
@@ -288,7 +276,7 @@ class CommandForm extends Control
     }
 
     /** @return mixed[] */
-    private function prepareContracts(?int $includeContractId = null): array
+    private function prepareContracts(int|null $includeContractId = null): array
     {
         $contracts = $this->model->getAllContractsPairs(
             $this->unitId,
@@ -302,7 +290,7 @@ class CommandForm extends Control
         return $contracts['valid'];
     }
 
-    private function createPassenger(ArrayHash $values): ?Passenger
+    private function createPassenger(ArrayHash $values): Passenger|null
     {
         return isset($values['contract_id'])
             ? null

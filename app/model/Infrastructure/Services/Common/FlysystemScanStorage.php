@@ -22,11 +22,8 @@ use const FILEINFO_MIME_TYPE;
 
 final class FlysystemScanStorage implements IScanStorage
 {
-    private FilesystemOperator $filesystem;
-
-    public function __construct(FilesystemOperator $filesystem)
+    public function __construct(private FilesystemOperator $filesystem)
     {
-        $this->filesystem = $filesystem;
     }
 
     public function get(FilePath $path): File
@@ -57,12 +54,12 @@ final class FlysystemScanStorage implements IScanStorage
     {
         try {
             $this->filesystem->delete($path->getPath());
-        } catch (UnableToDeleteFile $e) {
+        } catch (UnableToDeleteFile) {
             // File was probably deleted before
         }
     }
 
-    private function detectMimeType(string $contents): ?string
+    private function detectMimeType(string $contents): string|null
     {
         return (new finfo(FILEINFO_MIME_TYPE))->buffer($contents) ?: null;
     }

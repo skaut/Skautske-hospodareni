@@ -15,12 +15,9 @@ final class EventSubscriber implements MessageSubscriberInterface
 {
     private LoggerService $loggerService;
 
-    private UserService $userService;
-
-    public function __construct(LoggerService $logger, UserService $userService)
+    public function __construct(LoggerService $logger, private UserService $userService)
     {
         $this->loggerService = $logger;
-        $this->userService   = $userService;
     }
 
     /** @return array<string, mixed> */

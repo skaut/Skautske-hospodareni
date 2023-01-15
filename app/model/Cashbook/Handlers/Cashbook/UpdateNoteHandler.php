@@ -10,11 +10,8 @@ use Model\Cashbook\Repositories\ICashbookRepository;
 
 final class UpdateNoteHandler
 {
-    private ICashbookRepository $cashbooks;
-
-    public function __construct(ICashbookRepository $cashbooks)
+    public function __construct(private ICashbookRepository $cashbooks)
     {
-        $this->cashbooks = $cashbooks;
     }
 
     /** @throws CashbookNotFound */

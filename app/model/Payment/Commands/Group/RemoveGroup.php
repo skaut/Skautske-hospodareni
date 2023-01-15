@@ -9,11 +9,8 @@ use Model\Payment\Handlers\Group\RemoveGroupHandler;
 /** @see RemoveGroupHandler */
 final class RemoveGroup
 {
-    private int $groupId;
-
-    public function __construct(int $groupId)
+    public function __construct(private int $groupId)
     {
-        $this->groupId = $groupId;
     }
 
     public function getGroupId(): int

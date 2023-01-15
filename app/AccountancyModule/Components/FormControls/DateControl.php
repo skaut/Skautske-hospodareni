@@ -19,8 +19,7 @@ class DateControl extends BaseControl
 {
     private const DATE_FORMAT = 'd.m.Y';
 
-    /** @param mixed $value */
-    public function setDefaultValue($value): self
+    public function setDefaultValue(mixed $value): self
     {
         if (! $value instanceof Date && $value !== null) {
             throw new InvalidArgumentException(sprintf('$value must be instance of %s or NULL', Date::class));
@@ -48,7 +47,7 @@ class DateControl extends BaseControl
         return $this;
     }
 
-    public function getValue(): ?Date
+    public function getValue(): Date|null
     {
         $value = parent::getValue();
 

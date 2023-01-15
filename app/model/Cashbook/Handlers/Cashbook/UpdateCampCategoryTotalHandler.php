@@ -16,17 +16,8 @@ use function assert;
 
 class UpdateCampCategoryTotalHandler
 {
-    private ICashbookRepository $cashbooks;
-
-    private ICampCategoryUpdater $updater;
-
-    private QueryBus $queryBus;
-
-    public function __construct(ICashbookRepository $cashbooks, ICampCategoryUpdater $updater, QueryBus $queryBus)
+    public function __construct(private ICashbookRepository $cashbooks, private ICampCategoryUpdater $updater, private QueryBus $queryBus)
     {
-        $this->cashbooks = $cashbooks;
-        $this->updater   = $updater;
-        $this->queryBus  = $queryBus;
     }
 
     public function __invoke(UpdateCampCategoryTotals $command): void

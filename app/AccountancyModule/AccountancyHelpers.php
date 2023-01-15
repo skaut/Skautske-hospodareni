@@ -90,7 +90,7 @@ abstract class AccountancyHelpers
     }
 
     /** @filter */
-    public static function commandState(?DateTimeInterface $s): string
+    public static function commandState(DateTimeInterface|null $s): string
     {
         if ($s === null) {
             return '<span class="hidden-xs hidden-sm badge badge-warning">Rozpracovaný</span>';
@@ -133,7 +133,7 @@ abstract class AccountancyHelpers
      * @filter
      * formátuje číslo na částku
      */
-    public static function price($price, bool $full = true): string
+    public static function price(float|string|Money|null $price, bool $full = true): string
     {
         if ($price === null || $price === '') {
             return ' '; //je tam nedělitelná mezera
@@ -149,12 +149,10 @@ abstract class AccountancyHelpers
     }
 
     /**
-     * @param int|float|string $num
-     *
      * @filter
      * formátuje číslo podle toho zda obsahuje desetinou část nebo ne
      */
-    public static function num($num): string
+    public static function num(int|float|string $num): string
     {
         return number_format((float) $num, strpos((string) $num, '.') ? 2 : 0, ',', ' ');
     }

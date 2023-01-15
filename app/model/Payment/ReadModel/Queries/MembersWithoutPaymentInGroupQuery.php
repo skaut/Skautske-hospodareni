@@ -10,17 +10,8 @@ use Model\Payment\ReadModel\QueryHandlers\MembersWithoutPaymentInGroupQueryHandl
 /** @see MembersWithoutPaymentInGroupQueryHandler */
 final class MembersWithoutPaymentInGroupQuery
 {
-    private UnitId $unitId;
-
-    private int $groupId;
-
-    private bool $directMemberOnly;
-
-    public function __construct(UnitId $unitId, int $groupId, bool $directMemberOnly)
+    public function __construct(private UnitId $unitId, private int $groupId, private bool $directMemberOnly)
     {
-        $this->unitId           = $unitId;
-        $this->groupId          = $groupId;
-        $this->directMemberOnly = $directMemberOnly;
     }
 
     public function getUnitId(): UnitId

@@ -13,14 +13,8 @@ use function is_object;
 
 class CampListQueryHandler
 {
-    private Skautis $skautis;
-
-    private CampFactory $campFactory;
-
-    public function __construct(Skautis $skautis, CampFactory $campFactory)
+    public function __construct(private Skautis $skautis, private CampFactory $campFactory)
     {
-        $this->skautis     = $skautis;
-        $this->campFactory = $campFactory;
     }
 
     /** @return array<int, Camp> Camps indexed by ID */

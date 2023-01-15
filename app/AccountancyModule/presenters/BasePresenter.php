@@ -15,12 +15,12 @@ use function assert;
 
 abstract class BasePresenter extends \App\BasePresenter
 {
-    protected ?string $backlink = null;
+    protected string|null $backlink = null;
 
     /**
      * id volane v url, vetsinou id akce
      */
-    protected ?int $aid = null;
+    protected int|null $aid = null;
 
     protected UnitId $unitId;
 

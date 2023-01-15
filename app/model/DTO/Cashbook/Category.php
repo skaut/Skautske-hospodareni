@@ -17,23 +17,8 @@ class Category
 {
     use SmartObject;
 
-    private int $id;
-
-    private string $name;
-
-    private string $shortcut;
-
-    private Operation $operationType;
-
-    private bool $virtual;
-
-    public function __construct(int $id, string $name, string $shortcut, Operation $operationType, bool $virtual)
+    public function __construct(private int $id, private string $name, private string $shortcut, private Operation $operationType, private bool $virtual)
     {
-        $this->id            = $id;
-        $this->name          = $name;
-        $this->shortcut      = $shortcut;
-        $this->operationType = $operationType;
-        $this->virtual       = $virtual;
     }
 
     public function getId(): int

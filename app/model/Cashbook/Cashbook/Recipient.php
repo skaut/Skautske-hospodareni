@@ -8,15 +8,11 @@ use InvalidArgumentException;
 
 final class Recipient
 {
-    private string $name;
-
-    public function __construct(string $name)
+    public function __construct(private string $name)
     {
         if ($name === '') {
             throw new InvalidArgumentException('Recipient must have name');
         }
-
-        $this->name = $name;
     }
 
     public function getName(): string

@@ -6,20 +6,8 @@ namespace App;
 
 final class Context
 {
-    private string $appDir;
-
-    private string $wwwDir;
-
-    private bool $productionMode;
-
-    private bool $showTestBackground;
-
-    public function __construct(string $appDir, string $wwwDir, bool $productionMode, bool $showTestBackground)
+    public function __construct(private string $appDir, private string $wwwDir, private bool $productionMode, private bool $showTestBackground)
     {
-        $this->appDir             = $appDir;
-        $this->wwwDir             = $wwwDir;
-        $this->productionMode     = $productionMode;
-        $this->showTestBackground = $showTestBackground;
     }
 
     public function getAppDir(): string

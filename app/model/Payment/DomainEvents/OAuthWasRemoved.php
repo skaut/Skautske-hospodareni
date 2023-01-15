@@ -8,11 +8,8 @@ use Model\Google\OAuthId;
 
 final class OAuthWasRemoved
 {
-    private OAuthId $oAuthId;
-
-    public function __construct(OAuthId $oAuthId)
+    public function __construct(private OAuthId $oAuthId)
     {
-        $this->oAuthId = $oAuthId;
     }
 
     public function getOAuthId(): OAuthId

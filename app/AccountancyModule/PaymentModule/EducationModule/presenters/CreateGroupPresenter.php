@@ -17,14 +17,11 @@ use function array_key_exists;
 
 class CreateGroupPresenter extends BasePresenter
 {
-    private IGroupFormFactory $formFactory;
-
     private Education $education;
 
-    public function __construct(IGroupFormFactory $formFactory)
+    public function __construct(private IGroupFormFactory $formFactory)
     {
         parent::__construct();
-        $this->formFactory = $formFactory;
     }
 
     public function actionDefault(int $educationId): void

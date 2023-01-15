@@ -10,14 +10,8 @@ use Model\Common\Services\EventBus;
 
 abstract class AggregateRepository
 {
-    private EntityManager $entityManager;
-
-    private EventBus $eventBus;
-
-    public function __construct(EntityManager $entityManager, EventBus $eventBus)
+    public function __construct(private EntityManager $entityManager, private EventBus $eventBus)
     {
-        $this->entityManager = $entityManager;
-        $this->eventBus      = $eventBus;
     }
 
     protected function getEntityManager(): EntityManager

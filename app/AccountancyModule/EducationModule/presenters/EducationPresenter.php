@@ -17,20 +17,14 @@ use function assert;
 
 class EducationPresenter extends BasePresenter
 {
-    protected ExportService $exportService;
-
-    private PdfRenderer $pdf;
-
     public function __construct(
-        ExportService $exportService,
-        PdfRenderer $pdf
+        protected ExportService $exportService,
+        private PdfRenderer $pdf,
     ) {
         parent::__construct();
-        $this->exportService = $exportService;
-        $this->pdf           = $pdf;
     }
 
-    public function renderDefault(?int $aid): void
+    public function renderDefault(int|null $aid): void
     {
         if ($aid === null) {
             $this->redirect('Default:');

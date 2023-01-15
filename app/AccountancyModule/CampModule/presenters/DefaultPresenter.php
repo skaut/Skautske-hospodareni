@@ -17,15 +17,9 @@ class DefaultPresenter extends BasePresenter
 {
     public const DEFAULT_STATE = 'approvedParent'; //filtrovani zobrazených položek
 
-    private GridFactory $gridFactory;
-
-    private IExportDialogFactory $exportDialogFactory;
-
-    public function __construct(GridFactory $gridFactory, IExportDialogFactory $exportDialogFactory)
+    public function __construct(private GridFactory $gridFactory, private IExportDialogFactory $exportDialogFactory)
     {
         parent::__construct();
-        $this->gridFactory         = $gridFactory;
-        $this->exportDialogFactory = $exportDialogFactory;
     }
 
     protected function startup(): void
@@ -61,7 +55,7 @@ class DefaultPresenter extends BasePresenter
 
         $states = array_merge([DataGrid::OPTION_ALL => 'Nezrušené'], $this->queryBus->handle(new CampStates()));
         $grid->addFilterSelect('state', 'Stav', $states)
-            ->setCondition(function (CampListDataSource $dataSource, ?string $state): void {
+            ->setCondition(function (CampListDataSource $dataSource, string|null $state): void {
                 $dataSource->filterByState($state === DataGrid::OPTION_ALL ? null : $state);
             });
 

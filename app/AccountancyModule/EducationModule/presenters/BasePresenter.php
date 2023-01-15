@@ -33,7 +33,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         try {
             $this->event = $this->queryBus->handle(new EducationQuery(new SkautisEducationId($this->aid)));
             assert($this->event instanceof Education);
-        } catch (EducationNotFound $exc) {
+        } catch (EducationNotFound) {
             $this->template->setParameters(['message' => 'Nemáte oprávnění načíst vzdělávací akci nebo neexsituje.']);
             $this->forward('Default:accessDenied');
         }

@@ -19,20 +19,8 @@ use function assert;
 
 class UnitService
 {
-    private Skautis\Skautis $skautis;
-
-    private IUnitRepository $units;
-
-    private IUnitResolver $unitResolver;
-
-    private QueryBus $queryBus;
-
-    public function __construct(Skautis\Skautis $skautis, IUnitRepository $units, IUnitResolver $unitResolver, QueryBus $queryBus)
+    public function __construct(private Skautis\Skautis $skautis, private IUnitRepository $units, private IUnitResolver $unitResolver, private QueryBus $queryBus)
     {
-        $this->skautis      = $skautis;
-        $this->units        = $units;
-        $this->unitResolver = $unitResolver;
-        $this->queryBus     = $queryBus;
     }
 
     /** @throws UserHasNoUnit */
@@ -69,7 +57,7 @@ class UnitService
     /**
      * vrací jednotku, která má právní subjektivitu
      */
-    public function getOfficialUnit(?int $unitId = null): Unit
+    public function getOfficialUnit(int|null $unitId = null): Unit
     {
         $unitId       ??= $this->getUnitId();
         $officialUnitId = $this->unitResolver->getOfficialUnitId($unitId);

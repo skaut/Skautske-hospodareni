@@ -13,36 +13,15 @@ class Cashbook
 {
     use SmartObject;
 
-    private CashbookId $id;
-
-    private CashbookType $type;
-
-    private ?string $cashChitNumberPrefix = null;
-
-    private ?string $bankChitNumberPrefix = null;
-
-    private string $note;
-
-    private bool $hasCashOnlyNumericChitNumbers;
-
-    private bool $hasBankOnlyNumericChitNumbers;
-
     public function __construct(
-        CashbookId $id,
-        CashbookType $type,
-        ?string $cashChitNumberPrefix,
-        ?string $bankChitNumberPrefix,
-        string $note,
-        bool $hasCashOnlyNumericChitNumbers,
-        bool $hasBankOnlyNumericChitNumbers
+        private CashbookId $id,
+        private CashbookType $type,
+        private string|null $cashChitNumberPrefix = null,
+        private string|null $bankChitNumberPrefix = null,
+        private string $note,
+        private bool $hasCashOnlyNumericChitNumbers,
+        private bool $hasBankOnlyNumericChitNumbers,
     ) {
-        $this->id                            = $id;
-        $this->type                          = $type;
-        $this->cashChitNumberPrefix          = $cashChitNumberPrefix;
-        $this->bankChitNumberPrefix          = $bankChitNumberPrefix;
-        $this->note                          = $note;
-        $this->hasCashOnlyNumericChitNumbers = $hasCashOnlyNumericChitNumbers;
-        $this->hasBankOnlyNumericChitNumbers = $hasBankOnlyNumericChitNumbers;
     }
 
     public function getId(): string
@@ -55,7 +34,7 @@ class Cashbook
         return $this->type;
     }
 
-    public function getChitNumberPrefix(PaymentMethod $paymentMethod): ?string
+    public function getChitNumberPrefix(PaymentMethod $paymentMethod): string|null
     {
         return $paymentMethod->equals(PaymentMethod::CASH()) ? $this->cashChitNumberPrefix : $this->bankChitNumberPrefix;
     }

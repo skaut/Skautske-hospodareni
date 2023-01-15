@@ -25,20 +25,11 @@ use const ARRAY_FILTER_USE_BOTH;
 
 final class CampCategoryUpdater implements ICampCategoryUpdater
 {
-    private Skautis $skautis;
-
-    private ICampRepository $campRepository;
-
-    private ICampCategoryRepository $campCategories;
-
     public function __construct(
-        Skautis $skautis,
-        ICampRepository $campRepository,
-        ICampCategoryRepository $campCategories
+        private Skautis $skautis,
+        private ICampRepository $campRepository,
+        private ICampCategoryRepository $campCategories,
     ) {
-        $this->skautis        = $skautis;
-        $this->campRepository = $campRepository;
-        $this->campCategories = $campCategories;
     }
 
     /** @param array<int, float> $cashbookTotals */

@@ -12,14 +12,8 @@ use Model\Events\Events\EventWasCanceled;
 
 final class EventWasCanceledSubscriber
 {
-    private CommandBus $commandBus;
-
-    private QueryBus $queryBus;
-
-    public function __construct(CommandBus $commandBus, QueryBus $queryBus)
+    public function __construct(private CommandBus $commandBus, private QueryBus $queryBus)
     {
-        $this->commandBus = $commandBus;
-        $this->queryBus   = $queryBus;
     }
 
     public function __invoke(EventWasCanceled $event): void

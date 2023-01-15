@@ -50,15 +50,15 @@ class LogEntry
     private $type;
 
     /** @ORM\Column(type="integer", nullable=true) */
-    private ?int $typeId = null;
+    private int|null $typeId = null;
 
     public function __construct(
         int $unitId,
         int $userId,
         string $desc,
         Type $type,
-        ?int $typeId,
-        DateTimeImmutable $at
+        int|null $typeId,
+        DateTimeImmutable $at,
     ) {
         $this->unitId      = $unitId;
         $this->date        = $at;
@@ -98,7 +98,7 @@ class LogEntry
         return $this->type;
     }
 
-    public function getTypeId(): ?int
+    public function getTypeId(): int|null
     {
         return $this->typeId;
     }

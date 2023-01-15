@@ -19,40 +19,16 @@ class Education implements ISkautisEvent
 {
     use SmartObject;
 
-    private SkautisEducationId $id;
-
-    private string $displayName;
-
-    private UnitId $unitId;
-
-    private string $unitName;
-
-    private ?Date $startDate;
-
-    private ?Date $endDate;
-
-    private string $location;
-
-    private string $state;
-
     public function __construct(
-        SkautisEducationId $id,
-        string $displayName,
-        UnitId $unitId,
-        string $unitName,
-        ?Date $startDate,
-        ?Date $endDate,
-        string $location,
-        string $state
+        private SkautisEducationId $id,
+        private string $displayName,
+        private UnitId $unitId,
+        private string $unitName,
+        private Date|null $startDate,
+        private Date|null $endDate,
+        private string $location,
+        private string $state,
     ) {
-        $this->id          = $id;
-        $this->displayName = $displayName;
-        $this->unitId      = $unitId;
-        $this->unitName    = $unitName;
-        $this->startDate   = $startDate;
-        $this->endDate     = $endDate;
-        $this->location    = $location;
-        $this->state       = $state;
     }
 
     public function getId(): SkautisEducationId
@@ -75,12 +51,12 @@ class Education implements ISkautisEvent
         return $this->unitId;
     }
 
-    public function getStartDate(): ?Date
+    public function getStartDate(): Date|null
     {
         return $this->startDate;
     }
 
-    public function getEndDate(): ?Date
+    public function getEndDate(): Date|null
     {
         return $this->endDate;
     }

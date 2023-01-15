@@ -17,8 +17,7 @@ final class UnitIdType extends GuidType
         return 'unit_id';
     }
 
-    /** @param mixed $value */
-    public function convertToPHPValue($value, AbstractPlatform $platform): ?UnitId
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): UnitId|null
     {
         if ($value === null) {
             return null;
@@ -27,8 +26,7 @@ final class UnitIdType extends GuidType
         return new UnitId((int) $value);
     }
 
-    /** @param mixed $value */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?int
+    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): int|null
     {
         if ($value === null) {
             return null;
