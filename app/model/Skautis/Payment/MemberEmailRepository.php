@@ -10,7 +10,6 @@ use Skautis\Skautis;
 use Skautis\Wsdl\PermissionException;
 use stdClass;
 
-use function array_merge;
 use function assert;
 use function is_string;
 
@@ -30,23 +29,30 @@ final class MemberEmailRepository implements IMemberEmailRepository
             return [];
         }
 
-        try {
-            $contacts = array_merge($this->toArray($this->skautis->org->PersonContactAllParent(['ID_Person' => $memberId])), $contacts);
-        } catch (PermissionException) {
-        }
-
         $emails = [];
-
         foreach ($contacts as $c) {
             if (! Strings::startsWith($c->ID_ContactType, 'email')) {
                 continue;
             }
 
             $email = $c->Value;
-
             assert(is_string($email));
-
             $emails[$email] = $email . ' – ' . ( $c->ParentType ?? $c->ContactType);
+        }
+
+        try {
+            $parents = $this->toArray($this->skautis->org->PersonParentAll(['ID_Person' => $memberId]));
+            foreach ($parents as $parent) {
+                if (! isset($parent->Email)) {
+                    continue;
+                }
+
+                $email = $parent->Email;
+                assert(is_string($email));
+
+                $emails[$email] = $email . ' - ' . $parent->ParentType;
+            }
+        } catch (PermissionException) {
         }
 
         return $emails;
