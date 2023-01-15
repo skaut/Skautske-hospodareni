@@ -10,14 +10,16 @@ use Skautis\Skautis;
 use Skautis\Wsdl\PermissionException;
 use stdClass;
 
-use function array_merge;
 use function assert;
 use function is_string;
 
 final class MemberEmailRepository implements IMemberEmailRepository
 {
-    public function __construct(private Skautis $skautis)
+    private Skautis $skautis;
+
+    public function __construct(Skautis $skautis)
     {
+        $this->skautis = $skautis;
     }
 
     /** @return array<string, string> */
@@ -26,27 +28,31 @@ final class MemberEmailRepository implements IMemberEmailRepository
     {
         try {
             $contacts = $this->toArray($this->skautis->org->PersonContactAll(['ID_Person' => $memberId]));
-        } catch (PermissionException) {
+        } catch (PermissionException $e) {
             return [];
         }
 
-        try {
-            $contacts = array_merge($this->toArray($this->skautis->org->PersonContactAllParent(['ID_Person' => $memberId])), $contacts);
-        } catch (PermissionException) {
-        }
-
         $emails = [];
-
         foreach ($contacts as $c) {
             if (! Strings::startsWith($c->ID_ContactType, 'email')) {
                 continue;
             }
 
             $email = $c->Value;
-
             assert(is_string($email));
-
             $emails[$email] = $email . ' – ' . ( $c->ParentType ?? $c->ContactType);
+        }
+
+        try {
+            $parents = $this->toArray($this->skautis->org->PersonParentAll(['ID_Person' => $memberId]));
+            foreach ($parents as $parent) {
+                if (! isset($parent->Email)) {
+                    continue;
+                }
+
+                $emails[] = $parent->Email . ' - ' . $parent->ParentType;
+            }
+        } catch (PermissionException $e) {
         }
 
         return $emails;
@@ -57,7 +63,7 @@ final class MemberEmailRepository implements IMemberEmailRepository
      *
      * @return stdClass[]
      */
-    private function toArray(stdClass|array $response): array
+    private function toArray($response): array
     {
         if ($response instanceof stdClass) {
             return [];
