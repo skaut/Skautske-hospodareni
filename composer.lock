@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4e1e87f4772387fd99e8a2d65227f5b9",
+    "content-hash": "b9ec94296e9a1a034f740f24935fed46",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -6876,21 +6876,21 @@
         },
         {
             "name": "skaut/doctrine-nullable-embeddables",
-            "version": "1.1.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/skaut/doctrine-nullable-embeddables.git",
-                "reference": "8b585863d434d175dd85a31031cf461f66cd5fb1"
+                "reference": "6b9f66d0fd57415548d8378560ab9cd7700c7352"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/skaut/doctrine-nullable-embeddables/zipball/8b585863d434d175dd85a31031cf461f66cd5fb1",
-                "reference": "8b585863d434d175dd85a31031cf461f66cd5fb1",
+                "url": "https://api.github.com/repos/skaut/doctrine-nullable-embeddables/zipball/6b9f66d0fd57415548d8378560ab9cd7700c7352",
+                "reference": "6b9f66d0fd57415548d8378560ab9cd7700c7352",
                 "shasum": ""
             },
             "require": {
                 "doctrine/orm": "^2.5",
-                "php": "^7.0|8.0"
+                "php": "^7.0|^8.0"
             },
             "require-dev": {
                 "phpunit/phpcov": "^4.0",
@@ -6915,9 +6915,9 @@
             ],
             "description": "Mechanism for nullable embeddables in Doctrine 2.5+",
             "support": {
-                "source": "https://github.com/skaut/doctrine-nullable-embeddables/tree/1.1.0"
+                "source": "https://github.com/skaut/doctrine-nullable-embeddables/tree/1.1.1"
             },
-            "time": "2023-01-15T10:28:58+00:00"
+            "time": "2023-01-15T10:44:51+00:00"
         },
         {
             "name": "skautis/nette",
@@ -13321,7 +13321,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">= 7.4"
+        "php": ">= 7.0"
     },
     "platform-dev": [],
     "plugin-api-version": "2.2.0"
