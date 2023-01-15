@@ -65,12 +65,8 @@ class AccountancyHelpersTest extends Unit
         ];
     }
 
-    /**
-     * @param float|string|Money|null $price
-     *
-     * @dataProvider getPrices
-     */
-    public function testPrice($price, string $expected): void
+    /** @dataProvider getPrices */
+    public function testPrice(float|string|Money|null $price, string $expected): void
     {
         $this->assertSame($expected, AccountancyHelpers::price($price));
     }
@@ -87,12 +83,8 @@ class AccountancyHelpersTest extends Unit
         ];
     }
 
-    /**
-     * @param int|float|string $number
-     *
-     * @dataProvider getNumbers
-     */
-    public function testNum($number, string $expected): void
+    /** @dataProvider getNumbers */
+    public function testNum(int|float|string $number, string $expected): void
     {
         $this->assertSame($expected, AccountancyHelpers::num($number));
     }

@@ -59,7 +59,7 @@ final class PairedPaymentsQueryHandlerTest extends IntegrationTest
         $this->assertSame(5, $payments[1]->getId());
     }
 
-    private function insertPaymentToDb(int $groupId, ?string $transactionId, DateTimeImmutable $closedAt): void
+    private function insertPaymentToDb(int $groupId, string|null $transactionId, DateTimeImmutable $closedAt): void
     {
         $payment = [
             'name' => 'Test',

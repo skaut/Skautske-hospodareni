@@ -269,7 +269,7 @@ final class BankServiceTest extends Unit
         return $repository;
     }
 
-    private function group(int $groupId, int $bankAccountId, ?DateTimeImmutable $lastPairing): Group
+    private function group(int $groupId, int $bankAccountId, DateTimeImmutable|null $lastPairing): Group
     {
         $group = new Group(
             [1],

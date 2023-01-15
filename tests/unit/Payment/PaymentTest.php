@@ -165,7 +165,7 @@ class PaymentTest extends Unit
     }
 
     /** @dataProvider getVariableSymbolUpdates */
-    public function testUpdateVariableSymbol(?VariableSymbol $old, VariableSymbol $new): void
+    public function testUpdateVariableSymbol(VariableSymbol|null $old, VariableSymbol $new): void
     {
         $payment = $this->createPaymentWithVariableSymbol($old);
         $payment->extractEventsToDispatch(); // Clear events collection;
@@ -296,7 +296,7 @@ class PaymentTest extends Unit
     }
 
     /** @dataProvider dataVariableSymbols */
-    public function testChangingVariableSymbolViaUpdateRaisesEvent(?VariableSymbol $variableSymbol): void
+    public function testChangingVariableSymbolViaUpdateRaisesEvent(VariableSymbol|null $variableSymbol): void
     {
         $payment = $this->createPaymentWithVariableSymbol($variableSymbol);
         $payment->extractEventsToDispatch(); // Clear events
@@ -315,7 +315,7 @@ class PaymentTest extends Unit
     }
 
     /** @dataProvider dataVariableSymbols */
-    public function testUpdateWithSameVariableSymbolDoesNotRaiseEvent(?VariableSymbol $variableSymbol): void
+    public function testUpdateWithSameVariableSymbolDoesNotRaiseEvent(VariableSymbol|null $variableSymbol): void
     {
         $payment = $this->createPaymentWithVariableSymbol($variableSymbol);
         $payment->extractEventsToDispatch(); // Clear events
@@ -387,7 +387,7 @@ class PaymentTest extends Unit
         return $this->createPaymentWithVariableSymbol(new VariableSymbol('454545'));
     }
 
-    private function createPaymentWithVariableSymbol(?VariableSymbol $symbol): Payment
+    private function createPaymentWithVariableSymbol(VariableSymbol|null $symbol): Payment
     {
         $group   = $this->mockGroup(29);
         $dueDate = Date::now();

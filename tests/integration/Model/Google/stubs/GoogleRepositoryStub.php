@@ -41,7 +41,7 @@ class GoogleRepositoryStub implements IGoogleRepository
     {
     }
 
-    private function createOAuth(?UnitId $unitId = null, ?string $email = null): OAuth
+    private function createOAuth(UnitId|null $unitId = null, string|null $email = null): OAuth
     {
         return OAuth::create($unitId ?? new UnitId(123), 'XXXX', $email ?? 'test@hospodareni.loc');
     }

@@ -157,7 +157,7 @@ class CashbookIntegrationTest extends IntegrationTest
         $cashbook->removeChit(2);
     }
 
-    private function createCashbookWithLockedChit(?CashbookId $cashbookId = null): Cashbook
+    private function createCashbookWithLockedChit(CashbookId|null $cashbookId = null): Cashbook
     {
         $cashbook = $this->createCashbookWithChit(CashbookType::EVENT, $cashbookId);
         $cashbook->lockChit(1, 10);
@@ -172,7 +172,7 @@ class CashbookIntegrationTest extends IntegrationTest
         string $cashbookType,
         string $originalOperation,
         int $originalCategoryId,
-        int $newCategoryId
+        int $newCategoryId,
     ): void {
         $body             = new ChitBody(new ChitNumber('123'), new Date(), new Recipient('Maša'));
         $originalCashbook = new Cashbook(CashbookId::generate(), CashbookType::get($originalCashbookType));
@@ -270,7 +270,7 @@ class CashbookIntegrationTest extends IntegrationTest
         ];
     }
 
-    private function createCashbookWithChit(string $type = CashbookType::EVENT, ?CashbookId $cashbookId = null): Cashbook
+    private function createCashbookWithChit(string $type = CashbookType::EVENT, CashbookId|null $cashbookId = null): Cashbook
     {
         $cashbook   = new Cashbook($cashbookId ?? CashbookId::generate(), CashbookType::get($type));
         $categoryId = 666;

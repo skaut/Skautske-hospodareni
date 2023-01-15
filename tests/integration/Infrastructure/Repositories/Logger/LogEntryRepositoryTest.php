@@ -31,7 +31,7 @@ final class LogEntryRepositoryTest extends IntegrationTest
     }
 
     /** @dataProvider dataTypeIds */
-    public function testSave(?int $typeId): void
+    public function testSave(int|null $typeId): void
     {
         $row = [
             'unit_id' => 15,

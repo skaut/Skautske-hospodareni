@@ -74,7 +74,7 @@ class VariableSymbolTest extends Unit
         );
     }
 
-    public function areNotEqual(?VariableSymbol $first, ?VariableSymbol $second): void
+    public function areNotEqual(VariableSymbol|null $first, VariableSymbol|null $second): void
     {
         $this->assertFalse(VariableSymbol::areEqual($first, $second));
     }

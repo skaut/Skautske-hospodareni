@@ -100,7 +100,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
     }
 
     /** @param EmailTemplate[]|null $emails */
-    private function initEntities(?array $emails = null, ?string $paymentEmail = self::EMAIL, ?OAuthId $oAuthId = null): void
+    private function initEntities(array|null $emails = null, string|null $paymentEmail = self::EMAIL, OAuthId|null $oAuthId = null): void
     {
         if ($oAuthId === null) {
             $oAuthId = OAuthId::generate();

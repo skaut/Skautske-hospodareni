@@ -118,7 +118,7 @@ class BankServiceTest extends IntegrationTest
         ), $pairingResult->getMessage());
     }
 
-    private function addPayment(Group $group, float $amount, ?string $variableSymbol): void
+    private function addPayment(Group $group, float $amount, string|null $variableSymbol): void
     {
         $payment = new Payment(
             $group,
@@ -134,7 +134,7 @@ class BankServiceTest extends IntegrationTest
         $this->payments->save($payment);
     }
 
-    private function addGroup(?BankAccount $bankAccount): Group
+    private function addGroup(BankAccount|null $bankAccount): Group
     {
         $paymentDefaults = new Group\PaymentDefaults(null, null, null, null);
         $emails          = Helpers::createEmails();
@@ -157,7 +157,7 @@ class BankServiceTest extends IntegrationTest
         return $group;
     }
 
-    private function createTransaction(float $amount, ?string $variableSymbol): Transaction
+    private function createTransaction(float $amount, string|null $variableSymbol): Transaction
     {
         return new Transaction(
             (string) mt_rand(1, 1000),
