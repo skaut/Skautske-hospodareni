@@ -47,7 +47,10 @@ final class MemberEmailRepository implements IMemberEmailRepository
                     continue;
                 }
 
-                $emails[] = $parent->Email . ' - ' . $parent->ParentType;
+                $email = $parent->Email;
+                assert(is_string($email));
+
+                $emails[$email] = $email . ' - ' . $parent->ParentType;
             }
         } catch (PermissionException) {
         }
