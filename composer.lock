@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7308af5dc913f7a7a31ef9e07f086fd4",
+    "content-hash": "4e1e87f4772387fd99e8a2d65227f5b9",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -2024,48 +2024,6 @@
                 "source": "https://github.com/firebase/php-jwt/tree/v6.2.0"
             },
             "time": "2022-05-13T20:54:50+00:00"
-        },
-        {
-            "name": "fmasa/doctrine-nullable-embeddables",
-            "version": "1.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/fmasa/doctrine-nullable-embeddables.git",
-                "reference": "737323f8e9aa3358220629072c99ee79452d907c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/fmasa/doctrine-nullable-embeddables/zipball/737323f8e9aa3358220629072c99ee79452d907c",
-                "reference": "737323f8e9aa3358220629072c99ee79452d907c",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/orm": "^2.5",
-                "php": "^7.0"
-            },
-            "require-dev": {
-                "phpunit/phpcov": "^4.0",
-                "phpunit/phpunit": "^6.0",
-                "satooshi/php-coveralls": "^1.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Fmasa\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "František Maša",
-                    "email": "frantisekmasa1@gmail.com"
-                }
-            ],
-            "description": "Mechanism for nullable embeddables in Doctrine 2.5+",
-            "time": "2018-02-22T11:30:49+00:00"
         },
         {
             "name": "fmasa/messenger",
@@ -6915,6 +6873,51 @@
                 }
             ],
             "time": "2021-02-11T11:37:01+00:00"
+        },
+        {
+            "name": "skaut/doctrine-nullable-embeddables",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/skaut/doctrine-nullable-embeddables.git",
+                "reference": "8b585863d434d175dd85a31031cf461f66cd5fb1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/skaut/doctrine-nullable-embeddables/zipball/8b585863d434d175dd85a31031cf461f66cd5fb1",
+                "reference": "8b585863d434d175dd85a31031cf461f66cd5fb1",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/orm": "^2.5",
+                "php": "^7.0|8.0"
+            },
+            "require-dev": {
+                "phpunit/phpcov": "^4.0",
+                "phpunit/phpunit": "^6.0",
+                "satooshi/php-coveralls": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Fmasa\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "František Maša",
+                    "email": "frantisekmasa1@gmail.com"
+                }
+            ],
+            "description": "Mechanism for nullable embeddables in Doctrine 2.5+",
+            "support": {
+                "source": "https://github.com/skaut/doctrine-nullable-embeddables/tree/1.1.0"
+            },
+            "time": "2023-01-15T10:28:58+00:00"
         },
         {
             "name": "skautis/nette",
@@ -13321,5 +13324,5 @@
         "php": ">= 7.4"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }
