@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Model\Skautis\Exception;
 
 use Exception;
-use Throwable;
 
 final class MissingCurrentRole extends Exception
 {

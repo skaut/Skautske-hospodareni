@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Model\Skautis\Exception;
 
 use Skautis\Wsdl\WsdlException;
-use Throwable;
 
 final class AmountMustBeGreaterThanZero extends WsdlException
 {
