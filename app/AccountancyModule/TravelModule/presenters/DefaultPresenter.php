@@ -244,7 +244,7 @@ class DefaultPresenter extends BasePresenter
             $this->redirect('default');
         }
 
-        $v['distance'] = round((float) str_replace(',', '.', $v['distance']), 2);
+        $v['distance'] = round((float) str_replace(',', '.', (string) $v['distance']), 2);
 
         $this->travelService->addTravel(
             $commandId,
