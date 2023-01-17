@@ -11,11 +11,11 @@ use Model\Payment\ReadModel\Queries\GetGroupList;
 use Model\Payment\Summary;
 use Model\PaymentService;
 use Model\Unit\ReadModel\Queries\UnitQuery;
+use Model\Unit\UnitNotFound;
 use Nette\Application\UI\Multiplier;
 
 use function array_filter;
 use function array_keys;
-use function array_map;
 use function array_unique;
 use function assert;
 
@@ -47,12 +47,13 @@ final class GroupListPresenter extends BasePresenter
             $groupIds[]       = $group->getId();
             $bankAccountIds[] = $group->getBankAccountId();
 
-            $unitNamesByGroup[$group->getId()] = array_map(
-                function (int $unitId): string {
-                    return $this->queryBus->handle(new UnitQuery($unitId))->getDisplayName();
-                },
-                $group->getUnitIds(),
-            );
+            foreach ($group->getUnitIds() as $unitId) {
+                try {
+                    $unitNamesByGroup[$group->getId()] = [$this->queryBus->handle(new UnitQuery($unitId))->getDisplayName()];
+                } catch (UnitNotFound) {
+                    //$this->flashMessage(sprintf('Jednotka s ID: %s nebyla nalezena k platební skupině "%s"(ID:%s).', $unitId, $group->name, $group->getId()), 'danger');
+                }
+            }
         }
 
         $bankAccounts = $this->bankAccounts->findByIds(array_filter(array_unique($bankAccountIds)));
