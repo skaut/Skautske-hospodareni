@@ -20,7 +20,7 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\ORM\Tools\Setup;
 use DoctrineExtensions\Query\Mysql\Field;
-use Fmasa\DoctrineNullableEmbeddables\Subscriber;
+use Model\Infrastructure\DoctrineNullableEmbeddables\Subscriber;
 
 use const CASE_LOWER;
 

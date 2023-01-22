@@ -43,7 +43,6 @@
         "phpoffice/phpspreadsheet": "^1.22",
         "ramsey/uuid": "^4.2",
         "sentry/sentry": "^3.4",
-        "skaut/doctrine-nullable-embeddables": "^1.1",
         "skautis/nette": "^2.2",
         "skautis/skautis": "2.*@dev",
         "thecodingmachine/safe": "^1.3",

@@ -6,10 +6,10 @@ namespace Model\Payment\Group;
 
 use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use Doctrine\ORM\Mapping as ORM;
-use Fmasa\DoctrineNullableEmbeddables\Annotations\Nullable;
 use Model\Event\SkautisCampId;
 use Model\Event\SkautisEducationId;
 use Model\Event\SkautisEventId;
+use Model\Infrastructure\DoctrineNullableEmbeddables\Nullable;
 
 /** @ORM\Embeddable() */
 final class SkautisEntity

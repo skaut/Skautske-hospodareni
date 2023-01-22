@@ -80,9 +80,9 @@ class StatisticsService
     /**
      * @param Counter[] $cntArr
      *
-     * @return Counter[]|array<int, Counter>|null
+     * @return Counter[]|array<int, Counter>
      */
-    private function countTree(Unit $root, array $cntArr): array|null
+    private function countTree(Unit $root, array $cntArr): array
     {
         $children = $root->getChildren();
 
