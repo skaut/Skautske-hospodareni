@@ -232,9 +232,6 @@ services:
               - Model\Infrastructure\Log\Monolog\UserContextProcessor()
               - Model\Infrastructure\Log\Monolog\FormContextProcessor()
 
-    - factory: App\Console\LintLatte(%appDir%)
-      tags: { console.command: app:lint-latte }
-
 decorator:
     Monolog\Logger:
         setup:
