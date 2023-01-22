@@ -8,6 +8,7 @@ use App\AccountancyModule\Components\FormControls\DateControl;
 use Kdyby\Replicator\Container;
 use NasExt\Forms\Controls\DependentSelectBox;
 use Nette\Forms\Control;
+use Nette\Forms\IControl;
 
 trait CustomControlFactories
 {
@@ -30,7 +31,7 @@ trait CustomControlFactories
         return $this[$name] = $control;
     }
 
-    public function addDependentSelectBox(string $name, string|null $label, Control ...$parents): DependentSelectBox
+    public function addDependentSelectBox(string $name, string|null $label, IControl ...$parents): DependentSelectBox
     {
         return $this[$name] = new DependentSelectBox($label, $parents);
     }
