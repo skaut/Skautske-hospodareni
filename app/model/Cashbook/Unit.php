@@ -104,7 +104,7 @@ class Unit extends Aggregate
 
     private function cashbookForYearExists(int $year): bool
     {
-        return $this->cashbooks->exists(function ($_x, Cashbook $cashbook) use ($year): bool {
+        return $this->cashbooks->exists(function (int|null $_x = null, Cashbook|null $cashbook = null) use ($year): bool {
             return $cashbook->getYear() === $year;
         });
     }
