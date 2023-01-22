@@ -187,7 +187,7 @@ jobs:
             - name: Extract workdir
               run: tar -xzf workdir.tar.gz
             - run: mv app/config/config.ci.local.neon app/config/config.local.neon
-            - run: bin/console app:lint-latte
+            - run: vendor/bin/latte-lint app
 
     validate-mapping:
         name: "Validate mapping against migrations"
