@@ -390,7 +390,7 @@ class Cashbook extends Aggregate
     /** @phpstan-return ArrayCollection<int, Chit> */
     private function getChitsByPaymentMethod(PaymentMethod $paymentMethod): ArrayCollection
     {
-        return $this->chits->filter(function (Chit $chit) use ($paymentMethod): bool {
+        return $this->chits->filter(function (Chit|null $chit = null) use ($paymentMethod): bool {
             return $chit->getPaymentMethod()->equals($paymentMethod);
         });
     }

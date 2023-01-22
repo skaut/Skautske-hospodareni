@@ -47,16 +47,16 @@ class ExportChitsHandler
 
         if ($query->getChitIds() !== null) {
             $ids   = $query->getChitIds();
-            $chits = $chits->filter(function (Chit $chit) use ($ids): bool {
+            $chits = $chits->filter(function (Chit|null $chit = null) use ($ids): bool {
                 return in_array($chit->getId(), $ids, true);
             });
         }
 
-        [$income, $outcome] = $chits->partition(function ($_x, Chit $chit): bool {
+        [$income, $outcome] = $chits->partition(function (int|string|null $_x = null, Chit|null $chit = null): bool {
             return $chit->isIncome();
         });
 
-        $activeHpd = $chits->exists(function ($_x, Chit $chit): bool {
+        $activeHpd = $chits->exists(function (int|string|null $_x = null, Chit|null $chit = null): bool {
             return 0 < count(array_filter($chit->getItems(), function (ChitItem $item) {
                     return $item->getCategory()->getShortcut() === 'hpd';
             }));

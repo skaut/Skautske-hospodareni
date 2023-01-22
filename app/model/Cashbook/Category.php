@@ -109,7 +109,7 @@ class Category implements ICategory
     public function supportsType(ObjectType $type): bool
     {
         return $this->types->exists(
-            function ($_x, Category\ObjectType $categoryType) use ($type): bool {
+            function ($_x = null, Category\ObjectType|null $categoryType = null) use ($type): bool {
                 return $categoryType->getType()->equals($type);
             },
         );

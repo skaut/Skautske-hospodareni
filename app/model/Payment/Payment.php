@@ -224,7 +224,7 @@ class Payment extends Aggregate
     public function getEmailRecipients(): array
     {
         return $this->emailRecipients
-            ->map(fn (EmailRecipient $recipient) => $recipient->getEmailAddress())
+            ->map(fn (EmailRecipient|null $recipient = null) => $recipient->getEmailAddress())
             ->getValues();
     }
 
