@@ -45,7 +45,7 @@
         "sentry/sentry": "^3.4",
         "skautis/nette": "^2.2",
         "skautis/skautis": "2.*@dev",
-        "thecodingmachine/safe": "^1.3",
+        "thecodingmachine/safe": "^2.4",
         "tracy/tracy": "~2.9",
         "ublaboo/datagrid": "^v6.9",
         "warhuhn/chronos-doctrine": "^3.0"
