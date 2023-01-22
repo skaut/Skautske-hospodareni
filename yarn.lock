@@ -1127,12 +1127,12 @@
   resolved "https://registry.yarnpkg.com/@types/nprogress/-/nprogress-0.2.0.tgz#86c593682d4199212a0509cc3c4d562bbbd6e45f"
   integrity sha512-1cYJrqq9GezNFPsWTZpFut/d4CjpZqA0vhqDUPFWYKF1oIyBz5qnoYMzR+0C/T96t3ebLAC1SSnwrVOm5/j74A==
 
-"@types/pikaday@^1.7.5":
-  version "1.7.5"
-  resolved "https://registry.yarnpkg.com/@types/pikaday/-/pikaday-1.7.5.tgz#6e211052ad9e3d2fbbcebfccb2e6a15df1c48b26"
-  integrity sha512-9PKz1nIcly1jfwUmSQIoNSrf0IQdXIo7EU+nk3nXmlMvZmsCTJP1PP8hr8q1GO6wn0wIA0ait7fkq9ZTT/SyQQ==
+"@types/pikaday@^1.7.6":
+  version "1.7.6"
+  resolved "https://registry.yarnpkg.com/@types/pikaday/-/pikaday-1.7.6.tgz#b29d4bcdbcf17ef4c05525324dff616e80a77208"
+  integrity sha512-wH/xzBgFAt/ALp6pPW+bLri9aabSRw/3UvrPJuJat4w8LQCE0jMezmvF2Fv9ZpAOTSmz10cxuqUWNfj48GhjyQ==
   dependencies:
-    moment ">=2.14.0"
+    moment ">=2.29.2"
 
 "@types/webpack-env@^1.16.4":
   version "1.16.4"
@@ -3475,7 +3475,7 @@ mkdirp@^0.5.1, mkdirp@^0.5.3:
   dependencies:
     minimist "^1.2.5"
 
-moment@>=2.14.0, moment@^2.29.4:
+moment@>=2.29.2, moment@^2.29.4:
   version "2.29.4"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
   integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
