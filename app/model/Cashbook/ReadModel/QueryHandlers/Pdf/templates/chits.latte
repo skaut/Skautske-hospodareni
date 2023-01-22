@@ -7,13 +7,29 @@ $list - seznam příjemců (pro HPD)
 $totalPayment - celková částka (pro HPD)
 *}
 <style>
-.paragonTable td{
-    width: 33%;
-    height: 27px;
-}
 table {
     border-spacing: 0;
+    width: 770px;
+    overflow:wrap;
 }
+
+.paragonTable td {
+    height: 27px;
+}
+
+.itemsTable {
+    font-size:0.9em;
+    color:#777;
+    border-color:#777;
+    margin-top:20px;
+}
+
+.formula {
+    font-size:0.9em;
+    color:#777;
+    padding-top:10px;
+}
+
 </style>
 {var $incomeCnt = 0}
 {foreach $income as $chit}

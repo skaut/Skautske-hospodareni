@@ -2,18 +2,13 @@
 $officialName - oficiální název organizační jednotky
 $item - položka výdaje
 *}
-<style>
-table {
-    border-spacing: 0;
-}
-</style>
 <table border="1" class="paragonTable">
     <tr>
-        <td rowspan="2">{$officialName|noescape}</td>
+        <td rowspan="2" width="350px">{$officialName|noescape}</td>
         <td colspan="2"><b>Výdajový pokladní doklad</b></td>
     </tr>
     <tr>
-        <td><b>ze dne:</b> {$chit->date|date:"j.n.Y"}</td>
+        <td width="220px"><b>ze dne:</b> {$chit->date|date:"j.n.Y"}</td>
         <td><b>č.</b> {$cashbook->getChitNumberPrefix($chit->getPaymentMethod())}{$chit->number}</td>
     </tr>
     <tr>
@@ -52,7 +47,7 @@ table {
     <tr>
         {var $amount = $chit->amount->toFloat()}
         <td><b>Celkem Kč:</b>{if $amount !== 0.0} {= number_format($amount, 2, ",", "")}=={/if}</td>
-        <td colspan="2"><b>Slovy:</b>{if $amount !== 0.0} =={$amount|pricetostring}korun=={/if}</td>
+        <td colspan="2"><b>Slovy:</b>{if $amount !== 0.0}&nbsp;=={$amount|pricetostring}korun=={/if}</td>
     </tr>
     <tr>
         <td><b>přezkoušel dne:</b> </td>
@@ -60,13 +55,13 @@ table {
     </tr>
 </table>
 
-<div n:if="$chit->amount->isUsingFormula()" style="font-size:0.9em;color:#777;padding-top:10px;">
+<div n:if="$chit->amount->isUsingFormula()" class="formula">
     <i>{$chit->amount->expression} = {$amount}  </i>
 </div>
 
-<table n:if="count($chit->items) > 1" style="font-size:0.9em;color:#777;border-color:#777;margin-top:20px;" border="1">
+<table n:if="count($chit->items) > 1" class="itemsTable" border="1">
     <tr>
-        <th>kategorie</th>
+        <th style="width: 70px;">kategorie</th>
         <th>účel</th>
         <th>částka</th>
     </tr>
