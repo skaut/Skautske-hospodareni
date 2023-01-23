@@ -1,7 +1,7 @@
 <div class="dropdown btn-group">
     <button class="btn btn-sm btn-secondary d-none d-inline" type="button" id="chitScanList" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-persist="true">
         <i class="far fa-folder-open"></i>
-        <span n:if="count($files) > 0" class="badge badge-light">{php echo count($files);}</span>
+        <span n:if="count($files) > 0" class="badge badge-light">{count($files)}</span>
     </button>
     <div class="dropdown-menu">
         <div n:foreach="$files as $file" class="dropdown-item text-nowrap" title="{$file->getFilePath()->getOriginalFilename()}">

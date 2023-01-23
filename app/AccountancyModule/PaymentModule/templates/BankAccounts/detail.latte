@@ -75,5 +75,5 @@
 </div>
 
 {define #noEmpty $val}
-    {php echo $val === "" || $val === NULL ? "&nbsp;" : $val;}
+    {if $val === "" || $val === NULL}&nbsp;{else}{$val}{/if}
 {/define}
