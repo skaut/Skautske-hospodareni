@@ -59,8 +59,6 @@ $showUnits bool - zobrazovat číslo jednotky
     {var $tabIndex = 1}
         <div n:ifset="$participants">
             <h2 class="mb-3">Seznam účastníků</h2>
-            {var $participantsNames = []}
-
             <div class="d-flex mb-2">
                 <div class="dropdown d-inline-block mr-auto">
                     <button n:class="btn, btn-light, dropdown-toggle, empty($participants) ? 'disabled'"
@@ -139,7 +137,6 @@ $showUnits bool - zobrazovat číslo jednotky
                 {var $totalPayment = $totalRepayment = 0}
                 {if !empty($participants)}
                     <tr n:foreach="$participants as $p" id='par-list-row-{$p->id}' data-pid='{$p->id}'>
-                        {php $participantsNames[] = $p->displayName}
                         <td n:if="$isAllowAnyAction" class="text-center participantCheckbox">
                             <input n:name="participantIds:$p->id" class="participantCheckboxInput">
                         </td>
