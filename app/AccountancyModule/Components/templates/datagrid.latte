@@ -79,7 +79,7 @@
 {/block}
 
 {define inlineAddRow}
-    {php $inlineAdd->onSetDefaults($filter['inline_add']); }
+    {do $inlineAdd->onSetDefaults($filter['inline_add']) }
 
     <tr class="datagrid-row-inline-add datagrid-row-inline-add-hidden">
         <td n:if="$hasGroupActions" class="col-checkbox"></td>

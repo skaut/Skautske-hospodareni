@@ -27,7 +27,7 @@
         </thead>
         {var $balance = 0}
         <tr n:foreach="$categoriesSummary as $categorySummary" n:if="$categorySummary->isIncome() === $income && ! $categorySummary->isVirtual()">
-            {php $balance += (float)$categorySummary->total->getAmount()/100}
+            {do $balance += (float)$categorySummary->total->getAmount()/100}
             <td>{$categorySummary->name}</td>
             <td n:class="text-right,text-nowrap, array_key_exists($categorySummary->id, $toRepair) ? bg-danger-lighter"
                 n:attr="[title => array_key_exists($categorySummary->id, $toRepair) ? 'Součet paragonů je ' . $toRepair[$categorySummary->id]]">

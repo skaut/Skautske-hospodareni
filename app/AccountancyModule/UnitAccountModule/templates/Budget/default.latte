@@ -16,12 +16,12 @@
             <tr>
                 <td rowspan="{$subcategoryCount}">{$rootCategory->label}</td>
                 <td>{$rootCategory->children[0]->label}</td>
-                <td class="r">{php $sum += $rootCategory->children[0]->value} {$rootCategory->children[0]->value|number:2, ',', ' '} Kč</td>
+                <td class="r">{do $sum += $rootCategory->children[0]->value} {$rootCategory->children[0]->value|number:2, ',', ' '} Kč</td>
             </tr>
             <tr n:for="$i = 1; $i < $subcategoryCount; $i++">
                 {var $subcategory = $rootCategory->children[$i]}
                 <td>{$subcategory->label}</td>
-                <td class="r">{php $sum += $subcategory->value} {$subcategory->value|number:2, ',', ' '} Kč</td>
+                <td class="r">{do $sum += $subcategory->value} {$subcategory->value|number:2, ',', ' '} Kč</td>
             </tr>
         {/if}
     {/foreach}
@@ -42,7 +42,7 @@
     <div class="col-md-6" n:if="!empty($categories['in'])">
         {include #table rootCategories => $categories['in']}
     </div>
-    {php $presenter->template->sum = $presenter->template->sumReality = 0}
+    {do $presenter->template->sum = $presenter->template->sumReality = 0}
     <div class="col-md-6" n:if="!empty($categories['out'])">
         {include #table rootCategories=>$categories['out']}
     </div>

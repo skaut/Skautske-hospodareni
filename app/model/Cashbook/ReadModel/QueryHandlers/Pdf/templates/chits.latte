@@ -37,10 +37,10 @@ table {
         {if !$iterator->isFirst()}<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />{/if}
         {include chits.hpd.latte "chit"=>$chit, "list"=>$list, "pokladnik"=>$pokladnik, "totalPayment"=>$totalPayment}
         {if !$iterator->isLast()}<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />{/if}
-        {php $incomeCnt = 0}
+        {do $incomeCnt = 0}
     {else}
         {include chits.in.latte "chit"=>$chit}
-        {php $incomeCnt++}
+        {do $incomeCnt++}
         {if $incomeCnt % 3 == 0}
             <pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />
         {else}
