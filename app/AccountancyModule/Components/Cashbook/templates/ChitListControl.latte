@@ -45,7 +45,7 @@
                 {var $balance = 0}
                 {foreach $chits as $chit}
                     {var $isIncome = $chit->isIncome()}
-                    {php $balance += $isIncome ? $chit->amount->toFloat() : -$chit->amount->toFloat()}
+                    {do $balance += $isIncome ? $chit->amount->toFloat() : -$chit->amount->toFloat()}
                     {var $itemsCount = count($chit->items)}
                     <tr>
                         <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} class="dependent-checkbox" style="white-space:nowrap">

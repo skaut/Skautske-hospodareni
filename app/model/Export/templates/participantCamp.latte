@@ -39,7 +39,9 @@ table {
     </tr>
     {$totPDays = $totDDays = $totPay = $totRepay = $totAccount = 0}
     <tr n:foreach="$list as $p">
-        {php $totPDays += $p->days;$totPay += $p->payment;$totRepay += $p->repayment}
+        {do $totPDays += $p->days}
+        {do $totPay += $p->payment}
+        {do $totRepay += $p->repayment}
         <td>{$iterator->counter}</td>
         <td>{$p->firstName}</td>
         <td>{$p->lastName}</td>
@@ -48,11 +50,11 @@ table {
         <td>{(string)$p->postcode|postCode}</td>
         <td style="text-align: right;">{$p->birthday|date:"d.m.Y"}</td>
         <td style="text-align: right;">{$p->days}</td>
-        <td style="text-align: right;">{if $p->age < 18}{$p->days}{php $totDDays += $p->days}{else}0{/if}</td>
+        <td style="text-align: right;">{if $p->age < 18}{$p->days}{do $totDDays += $p->days}{else}0{/if}</td>
         <td style="text-align: right;">{$p->payment|price:false}</td>
         <td style="text-align: right;">{$p->repayment|price:false}</td>
         <td style="text-align: right;">{= $p->payment - $p->repayment|price}</td>
-        <td style="text-align: right;">{if $p->onAccount == "Y"}Ano{php $totAccount += ($p->payment - $p->repayment)}{else}&nbsp;{/if}</td>
+        <td style="text-align: right;">{if $p->onAccount == "Y"}Ano{do $totAccount += ($p->payment - $p->repayment)}{else}&nbsp;{/if}</td>
     </tr>
     <tr>
         <td colspan="7">&nbsp;</td>

@@ -143,8 +143,8 @@ $showUnits bool - zobrazovat číslo jednotky
                         <td><label for="massParticipants-{$p->id}">{$p->displayName}</label></td>
                         <td n:if="$showUnits">{ifset $p->unitRegistrationNumber}{$p->unitRegistrationNumber}{/ifset}</td>
                         <td class="text-right" n:if="$isAllowDaysUpdate">{$p->days}</td>
-                        <td class="text-right">{$p->payment|price:false}{php $totalPayment += $p->payment}</td>
-                        <td class="text-right" n:if="$isAllowRepayment">{$p->repayment|price:false}{php $totalRepayment += $p->repayment}</td>
+                        <td class="text-right">{$p->payment|price:false}{do $totalPayment += $p->payment}</td>
+                        <td class="text-right" n:if="$isAllowRepayment">{$p->repayment|price:false}{do $totalRepayment += $p->repayment}</td>
                         <td n:if="$isAllowIsAccount">{$p->onAccount === 'Y' ? 'Ano'}</td>
                         <td n:if="$isAllowAnyAction" class="text-right text-nowrap">
                             <a n:if="$isAllowParticipantUpdate"
