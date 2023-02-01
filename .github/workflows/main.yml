@@ -130,7 +130,7 @@ jobs:
             - name: Prepare database
               run: docker-compose exec -T -u www-data app bin/console migrations:migrate --no-interaction
             - run: docker-compose exec -T -u www-data app phing tests-acceptance
-            - uses: actions/upload-artifact@v2
+            - uses: actions/upload-artifact@v3
               if: failure()
               with:
                     name: error-output
@@ -215,7 +215,7 @@ jobs:
             - run: mv app/config/config.ci.local.neon app/config/config.local.neon
             - run: bin/console migrations:migrate --no-interaction
             - run: "! bin/console migrations:diff && bin/console migrations:diff --allow-empty-diff"
-            - uses: actions/upload-artifact@v2
+            - uses: actions/upload-artifact@v3
               if: failure()
               with:
                   name: migrations
