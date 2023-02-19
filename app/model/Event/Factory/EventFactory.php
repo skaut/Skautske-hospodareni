@@ -18,6 +18,13 @@ final class EventFactory
 {
     private const DATETIME_FORMAT = 'Y-m-d\TH:i:s';
 
+    private function createDateFromFormat(string $str): Date
+    {
+        $matches = explode('.', $str, 2); // remove microseconds
+
+        return Date::createFromFormat(self::DATETIME_FORMAT, $matches[0]);
+    }
+
     public function create(stdClass $skautisEvent): Event
     {
         return new Event(
@@ -26,8 +33,8 @@ final class EventFactory
             new UnitId($skautisEvent->ID_Unit),
             $skautisEvent->Unit,
             $skautisEvent->ID_EventGeneralState,
-            Date::createFromFormat(self::DATETIME_FORMAT, $skautisEvent->StartDate),
-            Date::createFromFormat(self::DATETIME_FORMAT, $skautisEvent->EndDate),
+            $this->createDateFromFormat($skautisEvent->StartDate),
+            $this->createDateFromFormat($skautisEvent->EndDate),
             $skautisEvent->TotalDays ?? null,
             $skautisEvent->Location ?? null,
             $skautisEvent->RegistrationNumber,
