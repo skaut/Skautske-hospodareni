@@ -1007,6 +1007,16 @@
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.21.tgz#5de5a2385a35309427f6011992b544514d559aa1"
   integrity sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==
 
+"@thednp/event-listener@^2.0.0-alpha8":
+  version "2.0.0-alpha8"
+  resolved "https://registry.yarnpkg.com/@thednp/event-listener/-/event-listener-2.0.0-alpha8.tgz#441ebe1442a15a21385f922c3f6855a9fb0f307c"
+  integrity sha512-5VVMxP0OqQy/0+TRbkLVgDoPROA2/icadwG14QRt5IWrq3dN4sBskkzHOFQyBX3t5WrXXr52ZXcsTc/WzlpsXg==
+
+"@thednp/shorty@^2.0.0-alpha12":
+  version "2.0.0-alpha13"
+  resolved "https://registry.yarnpkg.com/@thednp/shorty/-/shorty-2.0.0-alpha13.tgz#7749a7be2668b7145cebccb7a75d91a4638b3cfa"
+  integrity sha512-EJgCQLaJ1YtXqozHDuqwNaS1W38k7ehJLUBhZJtP+XVMkUWcC65xfHfL9E8/QGZp9hrXKkz2qpvmtOit3OGl9w==
+
 "@types/json-schema@^7.0.5", "@types/json-schema@^7.0.6":
   version "7.0.6"
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.6.tgz#f4c7ec43e81b319a9815115031709f26987891f0"
@@ -1483,10 +1493,13 @@ bn.js@^5.0.0, bn.js@^5.1.1:
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-5.1.3.tgz#beca005408f642ebebea80b042b4d18d2ac0ee6b"
   integrity sha512-GkTiFpjFtUzU9CbMeJ5iazkCzGL3jrhzerzZIuqLABjbwRaFt33I9tUdSNryIptM+RxDet6OKm2WnLXzW51KsQ==
 
-bootstrap.native@^2.0.27:
-  version "2.0.27"
-  resolved "https://registry.yarnpkg.com/bootstrap.native/-/bootstrap.native-2.0.27.tgz#c0978d372cde1bd9f06d015985e99ae7af44f816"
-  integrity sha512-gv2eN4zXHOLN/oPotTxb8CJr9Dk0xlM9YURyHCWjq1Lyt2I669bri/Bp8b0HPOKX7JqRVh+Sk/VwEe0OcQN2fw==
+bootstrap.native@^5.0.4:
+  version "5.0.4"
+  resolved "https://registry.yarnpkg.com/bootstrap.native/-/bootstrap.native-5.0.4.tgz#0d9c96ae0cd55b6584df8f1a3dcb8f0838bddd46"
+  integrity sha512-isPIHDAHfAyW5/fAqeKrkADx+GdUrDWdt4O4y/c8tfJKNGunRHESRX2T4Y8p9R+y2OP2k99YoUjYScGnJlU/dQ==
+  dependencies:
+    "@thednp/event-listener" "^2.0.0-alpha8"
+    "@thednp/shorty" "^2.0.0-alpha12"
 
 bootstrap@^4.6.0:
   version "4.6.0"
