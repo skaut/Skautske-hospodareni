@@ -84,6 +84,9 @@
             <span n:attr="$attrs">
                 <a n:href="generateVS!" n:class="$nextVS === null ? disabled, btn, btn-light">Dogenerovat VS</a>
             </span>
+            <span>
+                <a n:href="export! $group->id" class="btn btn-light">Exportovat</a>
+            </span>
         </div>
         <div class="dropdown d-inline-block">
             <button class="btn btn-success dropdown-toggle" type="button" id="addPayments"
