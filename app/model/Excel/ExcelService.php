@@ -15,6 +15,7 @@ use Model\DTO\Cashbook\Chit;
 use Model\DTO\Participant\Participant;
 use Model\Excel\Builders\CashbookWithCategoriesBuilder;
 use Model\Excel\Range;
+use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -345,5 +346,58 @@ class ExcelService
 
         $sheet->getStyle('A1:G1')->getFont()->setBold(true);
         $sheet->setTitle('Položky z dokladů');
+    }
+
+    /**
+     * @param DTO\Payment\Payment[] $paymentsDTO
+     *
+     * @throws Exception
+     */
+    public function getPaymentsList(array $paymentsDTO, string $paymentGroupName): Spreadsheet
+    {
+        $spreadsheet = $this->getNewFile();
+        $sheet       = $spreadsheet->getActiveSheet();
+        $this->setSheetPaymentList($sheet, $paymentsDTO);
+        $sheet->setTitle($paymentGroupName);
+
+        return $spreadsheet;
+    }
+
+    /**
+     * @param DTO\Payment\Payment[] $paymentsDTO
+     *
+     * @throws Exception
+     */
+    private function setSheetPaymentList(Worksheet $sheet, array $paymentsDTO): void
+    {
+        $sheet->setCellValue('B1', 'Název/účel')
+            ->setCellValue('C1', 'E-mail')
+            ->setCellValue('D1', 'Částka')
+            ->setCellValue('E1', 'VS')
+            ->setCellValue('F1', 'Splatnost')
+            ->setCellValue('G1', 'Stav');
+
+        $rowCnt = 2;
+
+        foreach ($paymentsDTO as $payment) {
+                $sheet->setCellValue('A' . $rowCnt, $rowCnt - 1)
+                    ->setCellValue('B' . $rowCnt, $payment->getName())
+                    ->setCellValue('C' . $rowCnt, $payment->getRecipientsString())
+                    ->setCellValue('D' . $rowCnt, $payment->getAmount())
+                    ->setCellValue('E' . $rowCnt, $payment->getVariableSymbol())
+                    ->setCellValue('F' . $rowCnt, $payment->getDueDate()->format('d.m.Y'))
+                    ->setCellValue('G' . $rowCnt, $payment->getState()->getValue());
+                $rowCnt++;
+        }
+
+        //add border
+        $sheet->getStyle('A1:G' . ($rowCnt - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+        //format
+        foreach (Range::letters('A', 'G') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        $sheet->getStyle('A1:G1')->getFont()->setBold(true);
     }
 }
