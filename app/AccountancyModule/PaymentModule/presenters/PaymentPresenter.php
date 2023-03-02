@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\PaymentModule;
 
+use App\AccountancyModule\ExcelResponse;
 use App\AccountancyModule\PaymentModule\Components\GroupProgress;
 use App\AccountancyModule\PaymentModule\Components\GroupUnitControl;
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
@@ -20,6 +21,7 @@ use App\AccountancyModule\PaymentModule\Factories\IRemoveGroupDialogFactory;
 use DateTimeImmutable;
 use Model\DTO\Payment\Payment;
 use Model\DTO\Payment\Person;
+use Model\ExcelService;
 use Model\Google\Exception\OAuthNotSet;
 use Model\Google\InvalidOAuth;
 use Model\Payment\Commands\Mailing\SendPaymentInfo;
@@ -35,6 +37,9 @@ use Model\Payment\ReadModel\Queries\MembersWithoutPaymentInGroupQuery;
 use Model\Payment\ReadModel\Queries\PaymentListQuery;
 use Model\PaymentService;
 use Model\UnitService;
+use Nette\Utils\Strings;
+use PhpOffice\PhpSpreadsheet\Exception;
+use Skautis\Wsdl\PermissionException;
 
 use function array_filter;
 use function assert;
@@ -60,6 +65,7 @@ class PaymentPresenter extends BasePresenter
         private PaymentService $model,
         protected UnitService $unitService,
         private MailingService $mailing,
+        private ExcelService $excelService,
         private IMassAddFormFactory $massAddFormFactory,
         private IPairButtonFactory $pairButtonFactory,
         private IGroupUnitControlFactory $unitControlFactory,
@@ -260,6 +266,26 @@ class PaymentPresenter extends BasePresenter
         } catch (InvalidVariableSymbol $exception) {
             $this->flashMessage('Nelze vygenerovat následující VS: \'' . $exception->getInvalidValue() . '\'', 'danger');
             $this->redirect('this');
+        }
+    }
+
+    public function handleExport(int $id): void
+    {
+        $this->assertCanEditGroup();
+
+        $group    = $this->model->getGroup($id);
+        $payments = $this->getPaymentsForGroup($id);
+
+        try {
+            $spreadsheet = $this->excelService->getPaymentsList($payments, $group->getName());
+            $this->flashMessage('Seznam plateb byl exportován');
+            $this->sendResponse(new ExcelResponse(Strings::webalize($group->getName()) . '-' . date('Y_n_j'), $spreadsheet));
+        } catch (Exception) {
+            $this->flashMessage('Nepodařilo se vygenerovat excel');
+            $this->redirect('this');
+        } catch (PermissionException $ex) {
+            $this->flashMessage('Nemáte oprávnění k exportu platební skupiny! (' . $ex->getMessage() . ')', 'danger');
+            $this->redirect('default');
         }
     }
 
