@@ -2,6 +2,7 @@
 import netteForms from '../../vendor/nette/forms/src/assets/netteForms';
 interface NetteForms {
     showFormErrors(form: HTMLFormElement, messages: { element: Element, message: string }[]): void;
+    validators : Object;
 }
 
 const invalidControlClass = 'is-invalid';
@@ -44,5 +45,13 @@ netteFormsInstance.showFormErrors = (form: HTMLFormElement, messages: { element:
         formGroup.appendChild(messageElement);
     });
 };
+
+// @ts-ignore
+netteFormsInstance.validators.AppMyValidators_hasSelectedAny = function (elem: HTMLInputElement, arg: Object, val: Array)
+    {
+        return Object.keys(arg).map(e => {return e.toLowerCase()}).filter(
+            value => val.includes(value)
+        ).length !== 0;
+    };
 
 export default netteFormsInstance;
