@@ -9031,22 +9031,22 @@
         },
         {
             "name": "tracy/tracy",
-            "version": "v2.9.7",
+            "version": "v2.10.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/tracy.git",
-                "reference": "1c6e9b5bad030fdf49194154c9674201fa6372bb"
+                "reference": "882fee7cf4258a602ad4a37461e837ed2ca1406b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/tracy/zipball/1c6e9b5bad030fdf49194154c9674201fa6372bb",
-                "reference": "1c6e9b5bad030fdf49194154c9674201fa6372bb",
+                "url": "https://api.github.com/repos/nette/tracy/zipball/882fee7cf4258a602ad4a37461e837ed2ca1406b",
+                "reference": "882fee7cf4258a602ad4a37461e837ed2ca1406b",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "ext-session": "*",
-                "php": ">=7.2 <8.3"
+                "php": ">=8.0 <8.3"
             },
             "conflict": {
                 "nette/di": "<3.0"
@@ -9063,7 +9063,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.9-dev"
+                    "dev-master": "2.10-dev"
                 }
             },
             "autoload": {
@@ -9099,9 +9099,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/tracy/issues",
-                "source": "https://github.com/nette/tracy/tree/v2.9.7"
+                "source": "https://github.com/nette/tracy/tree/v2.10.2"
             },
-            "time": "2023-02-28T13:01:54+00:00"
+            "time": "2023-03-29T12:34:53+00:00"
         },
         {
             "name": "ublaboo/datagrid",
