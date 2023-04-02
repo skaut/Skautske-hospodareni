@@ -3,7 +3,7 @@ version: '3.4'
 services:
     app:
         container_name: hskauting.app
-        image: skaut/lebeda:8.0
+        image: skaut/lebeda:8.1
         volumes:
             - www:/var/www
             - .:/var/www/html
