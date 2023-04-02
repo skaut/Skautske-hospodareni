@@ -268,7 +268,7 @@ class Command
         $distance = $this->getDistance();
 
         return $distance !== 0.0
-            ? $this->getVehiclePrice()->divide($this->getDistance())
+            ? $this->getVehiclePrice()->divide((string) $this->getDistance())
             : MoneyFactory::zero();
     }
 
@@ -280,10 +280,10 @@ class Command
 
         $distance = $this->getDistance();
 
-        $fuelPrice = $this->fuelPrice->multiply($distance * $this->vehicle->getConsumption() / 100);
+        $fuelPrice = $this->fuelPrice->multiply((string) ($distance * $this->vehicle->getConsumption() / 100));
 
         return $this->amortization
-                    ->multiply($distance)
+                    ->multiply((string) $distance)
                     ->add($fuelPrice);
     }
 
@@ -300,7 +300,7 @@ class Command
             return MoneyFactory::zero();
         }
 
-        return $this->fuelPrice->multiply($this->vehicle->getConsumption() / 100);
+        return $this->fuelPrice->multiply((string) ($this->vehicle->getConsumption() / 100));
     }
 
     public function getId(): int
