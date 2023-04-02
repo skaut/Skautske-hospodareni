@@ -1,7 +1,7 @@
 # Instalace pro lokální vývoj
 
 Aplikace vyžaduje:
-- PHP 8.0
+- PHP 8.1
 - MySQL 8
 - Apache
 - Composer

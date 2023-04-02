@@ -9,9 +9,9 @@ on:
 jobs:
     workdir:
         name: "Prepare working directory"
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         container:
-            image: skaut/lebeda:8.0
+            image: skaut/lebeda:8.1
         steps:
             - uses: actions/checkout@v3
             # Copy & paste from https://github.com/actions/cache/blob/master/examples.md#php---composer
@@ -40,9 +40,9 @@ jobs:
 
     tests-unit:
         name: "Run unit tests"
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         container:
-            image: skaut/lebeda:8.0
+            image: skaut/lebeda:8.1
         needs: workdir
         steps:
             - name: Download workdir
@@ -56,9 +56,13 @@ jobs:
 
     tests-integration:
         name: "Run integration tests"
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         needs: workdir
         steps:
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                php-version: '8.1'
             - name: Download workdir
               uses: actions/download-artifact@v1
               with:
@@ -73,7 +77,7 @@ jobs:
     collect-code-coverage:
         name: "Collect code coverage"
         if: github.ref == 'refs/heads/master'
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         needs: workdir
         steps:
             - name: Download workdir
@@ -96,7 +100,7 @@ jobs:
 
     tests-acceptance:
         name: "Run acceptance tests"
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         needs: workdir
         steps:
             - name: Download workdir
@@ -138,9 +142,9 @@ jobs:
 
     static-analysis:
         name: "Run PHPStan analysis"
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         container:
-            image: skaut/lebeda:8.0
+            image: skaut/lebeda:8.1
         needs: workdir
         steps:
             - name: Download workdir
@@ -156,9 +160,9 @@ jobs:
 
     coding-standard:
         name: "Check coding standard"
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         container:
-            image: skaut/lebeda:8.0
+            image: skaut/lebeda:8.1
         needs: workdir
         steps:
             - name: Download workdir
@@ -172,9 +176,9 @@ jobs:
 
     latte-lint:
         name: "Lint Latte templates"
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         container:
-            image: skaut/lebeda:8.0
+            image: skaut/lebeda:8.1
         needs: workdir
         env:
             DEVELOPMENT_MACHINE: true
@@ -191,9 +195,9 @@ jobs:
 
     validate-mapping:
         name: "Validate mapping against migrations"
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         container:
-            image: skaut/lebeda:8.0
+            image: skaut/lebeda:8.1
         needs: workdir
         services:
             mysql-test:
@@ -231,9 +235,9 @@ jobs:
             - static-analysis
             - latte-lint
             - validate-mapping
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         container:
-            image: skaut/lebeda:8.0-ci
+            image: skaut/lebeda:8.1-ci
         steps:
             - run: true
 
@@ -241,9 +245,9 @@ jobs:
         name: "Deploy to test-h.skauting.cz"
         if: github.ref == 'refs/heads/master'
         needs: [checks-passed]
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         container:
-            image: skaut/lebeda:8.0-ci
+            image: skaut/lebeda:8.1-ci
         steps:
             - name: Download workdir
               uses: actions/download-artifact@v1
@@ -284,9 +288,9 @@ jobs:
         name: "Deploy to h.skauting.cz"
         if: github.ref == 'refs/heads/master'
         needs: [checks-passed]
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         container:
-            image: skaut/lebeda:8.0-ci
+            image: skaut/lebeda:8.1-ci
         steps:
             - name: Download workdir
               uses: actions/download-artifact@v1
