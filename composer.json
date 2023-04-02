@@ -20,7 +20,7 @@
         "league/flysystem": "^2.4",
         "maennchen/zipstream-php": "^2.1",
         "mhujer/fio-api-php": "^4.1",
-        "moneyphp/money": "^3.3",
+        "moneyphp/money": "^4.1",
         "monolog/monolog": "^2.4",
         "mpdf/mpdf": "^8.0",
         "nette/application": "^3.1",
