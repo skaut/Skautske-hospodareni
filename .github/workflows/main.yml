@@ -57,6 +57,8 @@ jobs:
     tests-integration:
         name: "Run integration tests"
         runs-on: ubuntu-20.04
+        container:
+            image: skaut/lebeda:8.1
         needs: workdir
         steps:
             - name: Download workdir
