@@ -10809,21 +10809,21 @@
         },
         {
             "name": "phpstan/phpstan-mockery",
-            "version": "1.0.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-mockery.git",
-                "reference": "1767581e025d830d9288702761ad3cc7b72ecca4"
+                "reference": "6aa86bd8e9c9a1be97baf0558d4a2ed1374736a6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-mockery/zipball/1767581e025d830d9288702761ad3cc7b72ecca4",
-                "reference": "1767581e025d830d9288702761ad3cc7b72ecca4",
+                "url": "https://api.github.com/repos/phpstan/phpstan-mockery/zipball/6aa86bd8e9c9a1be97baf0558d4a2ed1374736a6",
+                "reference": "6aa86bd8e9c9a1be97baf0558d4a2ed1374736a6",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1 || ^8.0",
-                "phpstan/phpstan": "^1.0"
+                "php": "^7.2 || ^8.0",
+                "phpstan/phpstan": "^1.10"
             },
             "require-dev": {
                 "mockery/mockery": "^1.2.4",
@@ -10835,9 +10835,6 @@
             },
             "type": "phpstan-extension",
             "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0-dev"
-                },
                 "phpstan": {
                     "includes": [
                         "extension.neon"
@@ -10856,9 +10853,9 @@
             "description": "PHPStan Mockery extension",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-mockery/issues",
-                "source": "https://github.com/phpstan/phpstan-mockery/tree/1.0.0"
+                "source": "https://github.com/phpstan/phpstan-mockery/tree/1.1.1"
             },
-            "time": "2021-09-20T16:03:58+00:00"
+            "time": "2023-02-18T13:54:03+00:00"
         },
         {
             "name": "phpstan/phpstan-nette",
