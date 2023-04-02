@@ -6,12 +6,12 @@ namespace App\AccountancyModule\Factories;
 
 use App\AccountancyModule\Components\DataGrid;
 use Nette\Bridges\ApplicationLatte\DefaultTemplate;
-use Ublaboo\DataGrid\Localization\SimpleTranslator;
 
 use function assert;
 
 class GridFactory
 {
+    /**
     private const TRANSLATIONS = [
         'ublaboo_datagrid.no_item_found_reset' => 'Nebyly nalezeny žádné položky. Zkuste zrušit filtry.',
         'ublaboo_datagrid.no_item_found' => 'Nebyly nalezeny žádné položky.',
@@ -34,14 +34,13 @@ class GridFactory
         'Name' => 'Jméno',
         'Inserted' => 'Vloženo',
     ];
-
+     */
     public function create(): DataGrid
     {
         $grid = new DataGrid();
         $grid->setDefaultPerPage(20);
 
-        $translator = new SimpleTranslator(self::TRANSLATIONS);
-        $grid->setTranslator($translator);
+        //$grid->setTranslator(new SimpleTranslator(self::TRANSLATIONS));
 
         return $grid;
     }
@@ -52,7 +51,7 @@ class GridFactory
         $grid = new DataGrid();
 
         $grid->setColumnReset(false);
-        $grid->setTranslator(new SimpleTranslator(self::TRANSLATIONS));
+        //$grid->setTranslator(new SimpleTranslator(self::TRANSLATIONS));
         $grid->setOuterFilterRendering(true);
         $grid->setCollapsibleOuterFilters(false);
         $grid->setPagination(false);
