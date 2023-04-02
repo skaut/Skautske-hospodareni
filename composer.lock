@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "44cd23e9dd665dc3f6e62bd0b51fa366",
+    "content-hash": "c25500821efc5d27778777984c698f6b",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -6941,16 +6941,16 @@
         },
         {
             "name": "skautis/skautis",
-            "version": "v2.2.0",
+            "version": "v2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/skaut/Skautis.git",
-                "reference": "e770502c4478bf6255b94cadfe83e9b5cb2ce0c2"
+                "reference": "a676c628c8f6bd074eb0650b47688b9fd1dce905"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/skaut/Skautis/zipball/e770502c4478bf6255b94cadfe83e9b5cb2ce0c2",
-                "reference": "e770502c4478bf6255b94cadfe83e9b5cb2ce0c2",
+                "url": "https://api.github.com/repos/skaut/Skautis/zipball/a676c628c8f6bd074eb0650b47688b9fd1dce905",
+                "reference": "a676c628c8f6bd074eb0650b47688b9fd1dce905",
                 "shasum": ""
             },
             "require": {
@@ -6995,7 +6995,12 @@
                 "soap",
                 "wsdl"
             ],
-            "time": "2019-09-12T12:19:19+00:00"
+            "support": {
+                "issues": "https://github.com/skaut/Skautis/issues",
+                "source": "https://github.com/skaut/Skautis",
+                "wiki": "http://is.skaut.cz/napoveda/"
+            },
+            "time": "2023-04-02T19:19:57+00:00"
         },
         {
             "name": "symfony/amqp-messenger",
@@ -13285,13 +13290,12 @@
     "stability-flags": {
         "skaut/dependent-select-box": 20,
         "skaut/psr6-caching": 20,
-        "skautis/skautis": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">= 8.0"
+        "php": ">= 8.1"
     },
     "platform-dev": [],
     "plugin-api-version": "2.3.0"

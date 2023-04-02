@@ -44,7 +44,7 @@
         "skaut/dependent-select-box": "dev-master",
         "skaut/psr6-caching": "^0.3.0@dev",
         "skautis/nette": "^2.2",
-        "skautis/skautis": "2.*@dev",
+        "skautis/skautis": "~2.3",
         "thecodingmachine/safe": "^2.4",
         "tracy/tracy": "~2.9",
         "ublaboo/datagrid": "^v6.9",
