@@ -18,9 +18,9 @@ class MoneyType extends IntegerType
         return self::NAME;
     }
 
-    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): Money
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): Money|null
     {
-        return Money::CZK(parent::convertToPHPValue($value, $platform));
+        return $value === null ? null : Money::CZK(parent::convertToPHPValue($value, $platform));
     }
 
     public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): string
