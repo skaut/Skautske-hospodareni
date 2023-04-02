@@ -9,7 +9,7 @@ on:
 jobs:
     workdir:
         name: "Prepare working directory"
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         container:
             image: skaut/lebeda:8.1
         steps:
@@ -40,7 +40,7 @@ jobs:
 
     tests-unit:
         name: "Run unit tests"
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         container:
             image: skaut/lebeda:8.1
         needs: workdir
@@ -56,9 +56,9 @@ jobs:
 
     tests-integration:
         name: "Run integration tests"
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         container:
-            image: skaut/lebeda:8.1
+            image: skaut/lebeda:8.1-ci
         needs: workdir
         steps:
             - name: Download workdir
@@ -75,7 +75,7 @@ jobs:
     collect-code-coverage:
         name: "Collect code coverage"
         if: github.ref == 'refs/heads/master'
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         needs: workdir
         steps:
             - name: Download workdir
@@ -98,7 +98,9 @@ jobs:
 
     tests-acceptance:
         name: "Run acceptance tests"
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
+        container:
+            image: skaut/lebeda:8.1-ci
         needs: workdir
         steps:
             - name: Download workdir
@@ -140,7 +142,7 @@ jobs:
 
     static-analysis:
         name: "Run PHPStan analysis"
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         container:
             image: skaut/lebeda:8.1
         needs: workdir
@@ -158,7 +160,7 @@ jobs:
 
     coding-standard:
         name: "Check coding standard"
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         container:
             image: skaut/lebeda:8.1
         needs: workdir
@@ -174,7 +176,7 @@ jobs:
 
     latte-lint:
         name: "Lint Latte templates"
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         container:
             image: skaut/lebeda:8.1
         needs: workdir
@@ -193,7 +195,7 @@ jobs:
 
     validate-mapping:
         name: "Validate mapping against migrations"
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         container:
             image: skaut/lebeda:8.1
         needs: workdir
@@ -233,7 +235,7 @@ jobs:
             - static-analysis
             - latte-lint
             - validate-mapping
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         container:
             image: skaut/lebeda:8.1-ci
         steps:
@@ -243,7 +245,7 @@ jobs:
         name: "Deploy to test-h.skauting.cz"
         if: github.ref == 'refs/heads/master'
         needs: [checks-passed]
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         container:
             image: skaut/lebeda:8.1-ci
         steps:
@@ -286,7 +288,7 @@ jobs:
         name: "Deploy to h.skauting.cz"
         if: github.ref == 'refs/heads/master'
         needs: [checks-passed]
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         container:
             image: skaut/lebeda:8.1-ci
         steps:
