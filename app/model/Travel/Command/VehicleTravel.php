@@ -19,6 +19,7 @@ class VehicleTravel extends Travel
     public function __construct(int $id, float $distance, TravelDetails $details, Command $command)
     {
         parent::__construct($id, $command, $details);
+
         $this->setDistance($distance);
     }
 

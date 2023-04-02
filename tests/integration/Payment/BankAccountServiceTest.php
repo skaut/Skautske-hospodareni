@@ -29,7 +29,9 @@ class BankAccountServiceTest extends IntegrationTest
     protected function _before(): void
     {
         $this->tester->useConfigFiles(['Payment/BankAccountServiceTest.neon']);
+
         parent::_before();
+
         $this->bankAccountService = $this->tester->grabService(BankAccountService::class);
         $this->bankAccounts       = $this->tester->grabService(IBankAccountRepository::class);
         $this->groups             = $this->tester->grabService(IGroupRepository::class);

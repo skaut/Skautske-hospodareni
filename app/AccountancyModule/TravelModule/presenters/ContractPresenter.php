@@ -27,6 +27,7 @@ class ContractPresenter extends BasePresenter
     public function __construct(private TravelService $travelService, private PdfRenderer $pdf)
     {
         parent::__construct();
+
         $this->setLayout('layout.new');
     }
 

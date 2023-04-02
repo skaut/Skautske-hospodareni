@@ -22,7 +22,9 @@ class StaticCategoryRepositoryTest extends IntegrationTest
     protected function _before(): void
     {
         $this->tester->useConfigFiles(['config/doctrine.neon']);
+
         parent::_before();
+
         $this->repository = new StaticCategoryRepository(
             $this->tester->grabService(EntityManager::class),
             new NullEventBus(),

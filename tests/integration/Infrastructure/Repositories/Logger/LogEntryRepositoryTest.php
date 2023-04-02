@@ -27,6 +27,7 @@ final class LogEntryRepositoryTest extends IntegrationTest
     protected function _before(): void
     {
         parent::_before();
+
         $this->repository = new LogEntryRepository($this->tester->grabService(EntityManager::class));
     }
 

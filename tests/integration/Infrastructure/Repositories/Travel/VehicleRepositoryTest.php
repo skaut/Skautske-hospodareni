@@ -28,6 +28,7 @@ class VehicleRepositoryTest extends IntegrationTest
     protected function _before(): void
     {
         parent::_before();
+
         $this->repository = new VehicleRepository($this->tester->grabService(EntityManager::class));
     }
 

@@ -13,6 +13,7 @@ class VariableSymbolControl extends TextInput
     public function __construct(string $label)
     {
         parent::__construct($label, 10);
+
         $this->addRule(Form::PATTERN, 'VS musí být nejvýše 10 číslic', '^[0-9]{1,10}$');
         $this->addRule(Form::PATTERN, 'VS nesmí začínat nulou', '^(?!0).*$');
     }

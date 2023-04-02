@@ -77,7 +77,9 @@ final class MoveChitsToDifferentCashbookHandlerTest extends CommandHandlerTest
     protected function _before(): void
     {
         $this->tester->useConfigFiles([__DIR__ . '/MoveChitsToDifferentCashbookHandlerTest.neon']);
+
         parent::_before();
+
         $this->cashbooks = $this->tester->grabService(ICashbookRepository::class);
     }
 }

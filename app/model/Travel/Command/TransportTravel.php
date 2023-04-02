@@ -21,6 +21,7 @@ class TransportTravel extends Travel
     public function __construct(int $id, Money $price, TravelDetails $details, Command $command)
     {
         parent::__construct($id, $command, $details);
+
         $this->setPrice($price);
     }
 

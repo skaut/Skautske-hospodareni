@@ -21,6 +21,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
     protected function startup(): void
     {
         parent::startup();
+
         $this->type = 'unit';
         $this->year = (int) $this->getParameter('year', date('Y'));
 

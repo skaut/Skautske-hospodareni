@@ -26,7 +26,6 @@ class UserService
      */
     private static array $storage = [];
 
-
     /**
      * slouží pro komunikaci se skautISem
      */

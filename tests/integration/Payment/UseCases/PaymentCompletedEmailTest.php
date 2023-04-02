@@ -42,7 +42,9 @@ class PaymentCompletedEmailTest extends IntegrationTest
     protected function _before(): void
     {
         $this->tester->useConfigFiles(['Payment/UseCases/PaymentCompletedEmailTest.neon']);
+
         parent::_before();
+
         $this->paymentService = $this->tester->grabService(PaymentService::class);
         $this->users          = $this->tester->grabService(UserRepositoryStub::class);
         $this->commandBus     = $this->tester->grabService(CommandBus::class);

@@ -26,7 +26,9 @@ class BankAccountRepositoryTest extends IntegrationTest
     protected function _before(): void
     {
         $this->tester->useConfigFiles(['config/doctrine.neon']);
+
         parent::_before();
+
         $this->repository = new BankAccountRepository($this->entityManager);
     }
 

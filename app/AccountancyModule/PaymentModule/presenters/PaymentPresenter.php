@@ -79,6 +79,7 @@ class PaymentPresenter extends BasePresenter
     protected function startup(): void
     {
         parent::startup();
+
         //Kontrola ověření přístupu
         $this->readUnits = $this->unitService->getReadUnits($this->user);
     }

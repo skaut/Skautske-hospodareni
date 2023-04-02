@@ -16,6 +16,7 @@ class CategoryRepositoryTest extends IntegrationTest
     public function _before(): void
     {
         parent::_before();
+
         $this->repository = new CategoryRepository($this->tester->grabService(EntityManager::class));
     }
 

@@ -26,6 +26,7 @@ class CashbookRepositoryTest extends IntegrationTest
     public function _before(): void
     {
         parent::_before();
+
         $this->repository = new CashbookRepository(
             $this->tester->grabService(EntityManager::class),
             $this->tester->grabService(EventBus::class),

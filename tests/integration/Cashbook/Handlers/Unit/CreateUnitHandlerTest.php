@@ -25,7 +25,9 @@ final class CreateUnitHandlerTest extends CommandHandlerTest
     protected function _before(): void
     {
         $this->tester->useConfigFiles([__DIR__ . '/CreateUnitHandlerTest.neon']);
+
         parent::_before();
+
         $this->tester->grabService(UnitResolverStub::class)->setOfficialUnits(self::OFFICIAL_UNITS);
     }
 

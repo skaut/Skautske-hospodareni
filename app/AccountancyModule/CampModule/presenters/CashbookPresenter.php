@@ -48,6 +48,7 @@ class CashbookPresenter extends BasePresenter
     protected function startup(): void
     {
         parent::startup();
+
         $this->isEditable                  = $this->isEditable || $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $this->getCampId());
         $this->isRealTotalCostAutoComputed = ! $this->event->isRealTotalCostAutoComputed();
     }

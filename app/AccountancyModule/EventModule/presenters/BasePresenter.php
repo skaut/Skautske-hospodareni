@@ -20,6 +20,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
     protected function startup(): void
     {
         parent::startup();
+
         $this->type = ObjectType::EVENT;
         $this->template->setParameters([
             'aid' => $this->aid,

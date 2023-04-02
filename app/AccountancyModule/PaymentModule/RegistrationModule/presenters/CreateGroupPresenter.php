@@ -25,6 +25,7 @@ class CreateGroupPresenter extends BasePresenter
     public function __construct(Factories\IGroupFormFactory $groupFormFactory)
     {
         parent::__construct();
+
         $this->groupFormFactory = $groupFormFactory;
     }
 

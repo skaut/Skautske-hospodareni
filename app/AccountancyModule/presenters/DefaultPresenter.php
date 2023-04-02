@@ -12,6 +12,7 @@ class DefaultPresenter extends BasePresenter
     protected function startup(): void
     {
         parent::startup();
+
         $this->redirect('Event:Default:');
     }
 }

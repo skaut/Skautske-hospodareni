@@ -50,6 +50,7 @@ class GroupRepositoryTest extends IntegrationTest
     protected function _before(): void
     {
         $this->tester->useConfigFiles(['config/doctrine.neon']);
+
         parent::_before();
 
         $this->eventBus   = Mockery::mock(EventBus::class);
