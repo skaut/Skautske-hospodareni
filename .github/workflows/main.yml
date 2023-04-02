@@ -60,7 +60,11 @@ jobs:
         needs: workdir
         steps:
             - name: Install Docker and Docker Compose
-              uses: docker/setup-buildx-action@v1
+              uses: docker/setup-buildx-action@v2
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                php-version: '8.1'
             - name: Download workdir
               uses: actions/download-artifact@v1
               with:
@@ -79,7 +83,7 @@ jobs:
         needs: workdir
         steps:
             - name: Install Docker and Docker Compose
-              uses: docker/setup-buildx-action@v1
+              uses: docker/setup-buildx-action@v2
             - name: Download workdir
               uses: actions/download-artifact@v1
               with:
