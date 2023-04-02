@@ -32,6 +32,7 @@ class AddMembersPresenter extends BasePresenter
     protected function startup(): void
     {
         parent::startup();
+
         $this->readUnits = $this->unitService->getReadUnits($this->user);
     }
 

@@ -28,6 +28,7 @@ class BudgetPresenter extends BasePresenter
     protected function startup(): void
     {
         parent::startup();
+
         if ($this->aid) {
             return;
         }

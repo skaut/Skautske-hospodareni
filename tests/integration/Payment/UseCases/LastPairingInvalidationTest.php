@@ -40,6 +40,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
         $this->tester->useConfigFiles([__DIR__ . '/LastPairingInvalidationTest.neon']);
 
         parent::_before();
+
         $this->tester->grabService(UnitResolverStub::class)
             ->setOfficialUnits([self::UNIT_ID => self::UNIT_ID]);
 

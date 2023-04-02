@@ -47,6 +47,7 @@ class ChitPresenter extends BasePresenter
     protected function startup(): void
     {
         parent::startup();
+
         $this->template->setParameters([
             'onlyUnlocked' => $this->onlyUnlocked,
         ]);

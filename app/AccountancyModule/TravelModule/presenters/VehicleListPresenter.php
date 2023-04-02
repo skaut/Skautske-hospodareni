@@ -12,6 +12,7 @@ final class VehicleListPresenter extends BasePresenter
     public function __construct(private IVehicleGridFactory $gridFactory)
     {
         parent::__construct();
+
         $this->setLayout('layout.new');
     }
 

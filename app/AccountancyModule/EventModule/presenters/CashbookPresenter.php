@@ -40,6 +40,7 @@ class CashbookPresenter extends BasePresenter
     protected function startup(): void
     {
         parent::startup();
+
         $isDraft          = $this->event->getState() === 'draft';
         $this->isEditable = $isDraft && $this->authorizator->isAllowed(Event::UPDATE_PARTICIPANT, $this->aid);
     }

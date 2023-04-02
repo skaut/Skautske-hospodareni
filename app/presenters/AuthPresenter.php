@@ -18,6 +18,7 @@ class AuthPresenter extends BasePresenter
     public function __construct(AuthService $as)
     {
         parent::__construct();
+
         $this->authService = $as;
     }
 

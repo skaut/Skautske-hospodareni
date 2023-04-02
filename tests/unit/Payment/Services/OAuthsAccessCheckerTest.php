@@ -21,6 +21,7 @@ final class OAuthsAccessCheckerTest extends Unit
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->unitResolver = new UnitResolverStub();
         $this->unitResolver->setOfficialUnits([
             10 => 20,

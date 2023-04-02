@@ -39,6 +39,7 @@ class DetailPresenter extends BasePresenter
         private IMissingAutocomputedCategoryControlFactory $missingAutocomputedCategoryControlFactory,
     ) {
         parent::__construct();
+
         $this->exportService = $export;
     }
 

@@ -54,6 +54,7 @@ class ParticipantPresenter extends BasePresenter
         private ParticipantService $participants,
     ) {
         parent::__construct();
+
         $this->exportService = $export;
         $this->excelService  = $excel;
     }

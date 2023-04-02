@@ -37,7 +37,9 @@ final class RemoveGroupTest extends IntegrationTest
     protected function _before(): void
     {
         $this->tester->useConfigFiles([__DIR__ . '/RemoveGroupTest.neon']);
+
         parent::_before();
+
         $this->groups   = $this->tester->grabService(IGroupRepository::class);
         $this->payments = $this->tester->grabService(IPaymentRepository::class);
         $this->handler  = $this->tester->grabService(RemoveGroupHandler::class);

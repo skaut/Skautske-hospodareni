@@ -27,6 +27,7 @@ final class ContractRepositoryTest extends IntegrationTest
     protected function _before(): void
     {
         parent::_before();
+
         $this->repository = new ContractRepository($this->entityManager);
     }
 

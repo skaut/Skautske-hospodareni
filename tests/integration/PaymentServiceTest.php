@@ -33,7 +33,9 @@ class PaymentServiceTest extends IntegrationTest
     public function _before(): void
     {
         $this->tester->useConfigFiles(['PaymentServiceTest.neon']);
+
         parent::_before();
+
         $this->service           = $this->tester->grabService(PaymentService::class);
         $this->paymentRepository = $this->tester->grabService(IPaymentRepository::class);
         $this->commandBus        = $this->tester->grabService(CommandBus::class);

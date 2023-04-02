@@ -77,6 +77,7 @@ class CommandRepositoryTest extends IntegrationTest
     protected function _before(): void
     {
         parent::_before();
+
         $this->repository = new CommandRepository($this->tester->grabService(EntityManager::class));
     }
 

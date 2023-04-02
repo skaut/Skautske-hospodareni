@@ -41,6 +41,7 @@ class DefaultPresenter extends BasePresenter
         private IEditTravelDialogFactory $editTravelDialogFactory,
     ) {
         parent::__construct();
+
         $this->setLayout('layout.new');
     }
 

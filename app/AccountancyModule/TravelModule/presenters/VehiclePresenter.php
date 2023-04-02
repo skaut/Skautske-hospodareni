@@ -33,6 +33,7 @@ class VehiclePresenter extends BasePresenter
     public function __construct(private TravelService $travelService, private IRoadworthyControlFactory $roadworthyControlFactory)
     {
         parent::__construct();
+
         $this->setLayout('layout.new');
     }
 

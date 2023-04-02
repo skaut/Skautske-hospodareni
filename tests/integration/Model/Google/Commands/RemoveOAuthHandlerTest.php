@@ -15,6 +15,7 @@ class RemoveOAuthHandlerTest extends CommandHandlerTest
     public function _before(): void
     {
         $this->tester->useConfigFiles(['Model/Google/Commands/RemoveOAuthHandlerTest.neon']);
+
         parent::_before();
     }
 

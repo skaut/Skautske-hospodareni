@@ -31,6 +31,7 @@ class CashbookPresenter extends BasePresenter
     protected function startup(): void
     {
         parent::startup();
+
         $this->isEditable = $this->isEditable || $this->authorizator->isAllowed(Education::UPDATE_REAL_BUDGET_SPENDING, $this->aid);
     }
 

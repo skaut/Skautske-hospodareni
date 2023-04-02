@@ -49,7 +49,9 @@ class PaymentRepositoryTest extends IntegrationTest
     protected function _before(): void
     {
         $this->tester->useConfigFiles(['config/doctrine.neon']);
+
         parent::_before();
+
         $this->repository = new PaymentRepository($this->entityManager, new NullEventBus());
     }
 
