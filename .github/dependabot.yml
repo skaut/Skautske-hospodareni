@@ -18,4 +18,5 @@ updates:
   - dependency-name: sass-loader
     versions:
     - 10.1.1
-
+  - dependency-name: "@fortawesome/*"
+    versions: ["6.x"]
