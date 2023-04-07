@@ -30,7 +30,7 @@
         "babel-loader": "^8.3.0",
         "css-loader": "^5.2.7",
         "husky": "^8.0.3",
-        "lint-staged": "^13.2.0",
+        "lint-staged": "^13.2.1",
         "mini-css-extract-plugin": "^1.6.2",
         "sass": "^1.60.0",
         "sass-loader": "^8.0.2",
