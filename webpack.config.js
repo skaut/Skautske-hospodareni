@@ -1,5 +1,5 @@
 const path = require('path');
-const webpack = require('webpack');
+const { IgnorePlugin } = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
@@ -39,7 +39,7 @@ module.exports = {
         ]
     },
     plugins: [
-        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+        new IgnorePlugin({resourceRegExp: /^\.\/locale$/,contextRegExp: /moment$/}),
         new MiniCssExtractPlugin({
             // Options similar to the same options in webpackOptions.output
             // both options are optional
