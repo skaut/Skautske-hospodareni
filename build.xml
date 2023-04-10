@@ -10,7 +10,6 @@
     </target>
 
     <target name="prepare-tarball" description="Prepares deployable tarball with everything built">
-        <exec command="git config --global --add safe.directory ." />
         <exec command="git rev-parse --short HEAD" outputProperty="build.hash"/>
         <property name="build.dir" value="${tempDir}/builds/${build.hash}"/>
 
@@ -124,7 +123,6 @@
         <property environment="env"/>
         <property name="deploy.rootDir" refid="env.ROOT_DIR"/>
         <property name="deploy.releasesDir" value="${deploy.rootDir}/releases"/>
-        <exec command="git config --global --add safe.directory ." />
         <exec command="git rev-parse --short HEAD" outputProperty="build.hash"/>
 
         <property name="deploy.ssh.host" value="www.skauting.cz"/>
