@@ -10,6 +10,7 @@
     </target>
 
     <target name="prepare-tarball" description="Prepares deployable tarball with everything built">
+        <exec command="git config --global --add safe.directory ." />
         <exec command="git rev-parse --short HEAD" outputProperty="build.hash"/>
         <property name="build.dir" value="${tempDir}/builds/${build.hash}"/>
 
