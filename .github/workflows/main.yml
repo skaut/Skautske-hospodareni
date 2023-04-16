@@ -277,8 +277,10 @@ jobs:
               uses: actions/setup-node@v3
               with:
                 node-version: '16'
+                
             - name: Setup git safe dir
               run: git config --global --add safe.directory /__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}
+
             - name: Deploy to test-h.skauting.cz
               run: phing deploy
               env:
@@ -321,6 +323,13 @@ jobs:
                   key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
                   restore-keys: |
                       ${{ runner.os }}-yarn-
+            - name: Install Node.js
+              uses: actions/setup-node@v3
+              with:
+                node-version: '16'
+
+            - name: Setup git safe dir
+              run: git config --global --add safe.directory /__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}
 
             - name: Deploy to h.skauting.cz
               run: phing deploy
