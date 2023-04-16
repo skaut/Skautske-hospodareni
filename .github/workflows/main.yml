@@ -277,6 +277,8 @@ jobs:
               uses: actions/setup-node@v3
               with:
                 node-version: '16'
+            - name: Setup git safe dir
+              run: git config --global --add safe.directory /__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}
             - name: Deploy to test-h.skauting.cz
               run: phing deploy
               env:
