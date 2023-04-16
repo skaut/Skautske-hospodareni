@@ -192,7 +192,7 @@
     <target name="deploy:app-command">
         <phingcall target="deploy:ssh">
             <property name="command"
-                      value="php80-cli &quot;${deploy.release}/bin/console ${command}&quot;"/>
+                      value="php81-cli &quot;${deploy.release}/bin/console ${command}&quot;"/>
         </phingcall>
     </target>
 
