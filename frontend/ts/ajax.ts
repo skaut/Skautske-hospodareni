@@ -25,7 +25,7 @@ export default function (): void {
         initializeCheckboxToggle(snippet, 'data-visible-if-checked', 'data-visible-if-not-checked');
         initializeSendMassForm(snippet, 'chits-');
         snippet.querySelectorAll<HTMLElement>('.date').forEach(initializeDatePicker);
-        window.BSN.initCallback(snippet);
+        //window.BSN.initCallback(snippet);
     });
 
     naja.registerExtension(DataGridExtension);
