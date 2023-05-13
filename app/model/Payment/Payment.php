@@ -210,6 +210,11 @@ class Payment extends Aggregate
         $this->variableSymbol = $variableSymbol;
     }
 
+    public function updateNote(string $note): void
+    {
+        $this->note = $note;
+    }
+
     public function getGroupId(): int
     {
         return $this->groupId;

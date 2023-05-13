@@ -1,0 +1,31 @@
+{layout $layout}
+
+{define control $input, $extraClasses}
+    <input n:name="$input" n:class="$input->hasErrors() ? 'is-invalid', form-control, $extraClasses ?? ''">
+{/define}
+
+{define errors $input}
+    <div class="invalid-feedback d-block" n:foreach="$input->getErrors() as $error">{$error}</div>
+{/define}
+
+{block dialog-title}Nastavit poznámku{/block}
+
+{block dialog-body}
+    {if $payment === null}
+        <div class="alert alert-danger">Zadaná platba neexistuje.</div>
+    {else}
+        <form n:name="form" class="inline-errors">
+
+            <div class="form-group">
+                <label n:name="note"/>
+                <small class="text-muted">volitelná</small>
+                {include control $form['note']}
+                {include errors $form['note']}
+            </div>
+
+            <input n:name="send" class="btn btn-primary btn-lg w-100 mt-2 ajax">
+        </form>
+    {/if}
+{/block}
+
+{block dialog-footer}{/block}
