@@ -22,7 +22,7 @@ class CommandPresenter extends BasePresenter
     public function actionEdit(int $id): void
     {
         $command = $this->model->getCommandDetail($id);
-        if ($command === null || $command->getUnitId() !== $this->getUnitId() || $command->getClosedAt() !== null) {
+        if ($command === null || $command->getClosedAt() !== null) {
             throw new BadRequestException('Cestovní příkaz #' . $id . ' neexistuje');
         }
 
