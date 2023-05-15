@@ -6,6 +6,7 @@ namespace Model\Common\Repositories;
 
 use Model\DTO\Participant\NonMemberParticipant;
 use Model\DTO\Participant\Participant;
+use model\DTO\Participant\PaymentDetails;
 use Model\Event\SkautisCampId;
 use Model\Event\SkautisEducationId;
 use Model\Event\SkautisEventId;
@@ -17,6 +18,9 @@ interface IParticipantRepository
 
     /** @return Participant[] */
     public function findByCamp(SkautisCampId $id): array;
+
+    /** @return PaymentDetails[] */
+    public function findByPaymentDetail(SkautisCampId $id): array;
 
     /** @return Participant[] */
     public function findByEducation(SkautisEducationId $id): array;

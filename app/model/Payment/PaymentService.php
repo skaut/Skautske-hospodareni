@@ -7,8 +7,12 @@ namespace Model;
 use Assert\Assert;
 use DateTimeImmutable;
 use InvalidArgumentException;
+use Model\Common\Repositories\IParticipantRepository;
 use Model\Common\Repositories\IUserRepository;
+use model\DTO\Participant\PaymentDetails;
 use Model\DTO\Payment as DTO;
+use model\Event\Exception\CampInvitationNotFound;
+use Model\Event\SkautisCampId;
 use Model\Google\OAuthId;
 use Model\Payment\EmailTemplate;
 use Model\Payment\EmailType;
@@ -49,6 +53,7 @@ class PaymentService
     public function __construct(
         private Skautis $skautis,
         private IGroupRepository $groups,
+        private IParticipantRepository $participantRepository,
         private IPaymentRepository $payments,
         private IBankAccountRepository $bankAccounts,
         private IBankAccountAccessChecker $bankAccountAccessChecker,
@@ -398,5 +403,15 @@ class PaymentService
             },
             $payments,
         );
+    }
+
+    /**
+     * @return PaymentDetails[]
+     *
+     * @throws CampInvitationNotFound
+     */
+    public function getParticipantPaymentDetails(SkautisCampId $skautisCampId): array
+    {
+        return $this->participantRepository->findByPaymentDetail($skautisCampId);
     }
 }

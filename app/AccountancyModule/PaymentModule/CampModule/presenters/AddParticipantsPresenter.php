@@ -9,7 +9,9 @@ use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
 use Model\DTO\Participant\Participant;
+use model\DTO\Participant\PaymentDetails;
 use Model\DTO\Payment\Group;
+use model\Event\Exception\CampInvitationNotFound;
 use Model\Event\SkautisCampId;
 use Model\Payment\ReadModel\Queries\MemberEmailsQuery;
 use Model\PaymentService;
@@ -20,6 +22,8 @@ use function in_array;
 
 final class AddParticipantsPresenter extends BasePresenter
 {
+    /** @var PaymentDetails[] */
+    private array $participantPaymentDetails;
     private Group $group;
 
     /** @var Participant[] */
@@ -49,6 +53,12 @@ final class AddParticipantsPresenter extends BasePresenter
             new CampParticipantListQuery(new SkautisCampId($group->getSkautisId())),
         );
 
+        try {
+            $this->participantPaymentDetails = $this->model->getParticipantPaymentDetails(new SkautisCampId($this->group->getSkautisId()));
+        } catch (CampInvitationNotFound) {
+            $this->flashMessage('Nelze načíst data z e-přihlášek. E-přihláška není aktivní, nebo nemáte oprávnění.', 'warning');
+        }
+
         $this->template->setParameters([
             'unit' => $this->queryBus->handle(new UnitQuery($this->getCurrentUnitId()->toInt())),
             'group' => $group,
@@ -68,12 +78,27 @@ final class AddParticipantsPresenter extends BasePresenter
         );
 
         foreach ($participants as $p) {
-            $amount = $p->getPayment();
+            $participantPaymentDetail = $this->participantPaymentDetails[$p->getPersonId()] ?? null;
+            if ($participantPaymentDetail) {
+                $paymentNote    = $participantPaymentDetail->getPaymentNote();
+                $variableSymbol = $participantPaymentDetail->getVariableSymbol();
+                $dueDate        = $participantPaymentDetail->getPaymentTerm();
+                $amount         = $p->getPayment() === 0.0 ? $participantPaymentDetail->getPrice() : $p->getPayment(); // Backward Compatibility
+            } else {
+                $paymentNote    = '';
+                $variableSymbol = '';
+                $dueDate        = null;
+                $amount         = $p->getPayment() === 0.0 ? null : $p->getPayment();
+            }
+
             $form->addPerson(
                 $p->getPersonId(),
                 $this->queryBus->handle(new MemberEmailsQuery($p->getPersonId())),
                 $p->getDisplayName(),
                 $amount === 0.0 ? null : $amount,
+                $paymentNote,
+                $variableSymbol,
+                $dueDate,
             );
         }
 

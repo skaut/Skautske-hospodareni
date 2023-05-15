@@ -4,6 +4,8 @@ services:
     - Model\Infrastructure\Repositories\Payment\PaymentRepository
     - Model\Infrastructure\Repositories\Payment\GroupRepository
     - Model\Skautis\Payment\MemberEmailRepository
+    - Model\Skautis\ParticipantRepository
+    - Model\Infrastructure\Repositories\Participant\PaymentRepository
     - Model\Common\Services\NotificationsCollector
     - GuzzleHttp\Client
 
