@@ -8,6 +8,7 @@ use App\AccountancyModule\TravelModule\Components\CommandForm;
 use App\AccountancyModule\TravelModule\Factories\ICommandFormFactory;
 use Model\TravelService;
 use Nette\Application\BadRequestException;
+use Nette\Application\ForbiddenRequestException;
 
 class CommandPresenter extends BasePresenter
 {
@@ -24,6 +25,10 @@ class CommandPresenter extends BasePresenter
         $command = $this->model->getCommandDetail($id);
         if ($command === null || $command->getClosedAt() !== null) {
             throw new BadRequestException('Cestovní příkaz #' . $id . ' neexistuje');
+        }
+
+        if ($command->getUnitId() !== $this->getUnitId() && $this->getUser()->getId() !== $command->getOwnerId()) {
+            throw new ForbiddenRequestException('Nemáte oprávnění upravovat zvolený doklad');
         }
 
         $this->id = $id;
