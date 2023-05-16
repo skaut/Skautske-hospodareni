@@ -71,6 +71,7 @@ final class ParticipantRepository implements IParticipantRepository
      *
      * @throws CampInvitationNotFound
      */
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     public function findByPaymentDetail(SkautisCampId $id): array
     {
         try {
