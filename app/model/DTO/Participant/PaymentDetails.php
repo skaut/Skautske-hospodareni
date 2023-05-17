@@ -56,6 +56,17 @@ class PaymentDetails
 
     public function getPaymentTerm(): Date|null
     {
-        return $this->paymentTerm !== null ? new Date($this->paymentTerm) : null;
+        // fix weekends - cannot use weekend for due date
+        if ($this->paymentTerm !== null) {
+            $date = new Date($this->paymentTerm);
+
+            if ($date->isSaturday() || $date->isSunday()) {
+                return $date->modify('next monday');
+            }
+
+            return $date;
+        }
+
+        return null;
     }
 }
