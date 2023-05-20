@@ -53,7 +53,7 @@ final class EditParticipantDialog extends Dialog
         if ($this->isAllowedDaysUpdate) {
             $form->addInteger('days', 'Počet dní')
                 ->setRequired('Musíte vyplnit počet dní')
-                ->addRule(BaseForm::MIN, 'Minimální počet dní je %d', 1)
+                ->addRule(BaseForm::MIN, 'Minimální počet dní je %d', 0)
                 ->setDefaultValue($participant->getDays());
         }
 
