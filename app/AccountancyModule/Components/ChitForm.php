@@ -221,14 +221,14 @@ final class ChitForm extends BaseControl
             $container->addHidden('id');
 
             $container->addSubmit('remove', 'Odebrat položku')
-                ->setValidationScope(null)
+                ->setValidationScope([])
                 ->onClick[] = function (SubmitButton $button): void {
                     $this->removeItem($button);
                 };
         }, 1);
 
         $items->addSubmit('addItem', 'Přidat další položku')
-            ->setValidationScope(null)
+            ->setValidationScope([])
             ->onClick[] = function () use ($items): void {
                 $items->createOne();
                 $this->reload();
