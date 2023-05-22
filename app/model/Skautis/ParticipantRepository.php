@@ -7,7 +7,9 @@ namespace Model\Skautis;
 use Model\Common\Repositories\IParticipantRepository;
 use Model\DTO\Participant\NonMemberParticipant;
 use Model\DTO\Participant\Participant as ParticipantDTO;
+use model\DTO\Participant\PaymentDetails;
 use Model\DTO\Payment\ParticipantFactory as ParticipantDTOFactory;
+use model\Event\Exception\CampInvitationNotFound;
 use Model\Event\SkautisCampId;
 use Model\Event\SkautisEducationId;
 use Model\Event\SkautisEventId;
@@ -18,6 +20,7 @@ use Model\Participant\PaymentFactory;
 use Model\Participant\Repositories\IPaymentRepository;
 use Model\Skautis\Factory\ParticipantFactory;
 use Skautis\Skautis;
+use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WsdlException;
 use stdClass;
 
@@ -61,6 +64,45 @@ final class ParticipantRepository implements IParticipantRepository
         $event = new Event($id->toInt(), EventType::CAMP());
 
         return $this->processParticipants($participants, $event);
+    }
+
+    /**
+     * @return PaymentDetails[]
+     *
+     * @throws CampInvitationNotFound
+     */
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    public function findByPaymentDetail(SkautisCampId $id): array
+    {
+        try {
+            $campInvitationPerson = $this->skautis->event->EventCampInvitationAll(['ID_EventCamp' => $id->toInt()]);
+            $invitations          = [];
+            foreach ($campInvitationPerson as $invitation) {
+                $invitations[$invitation->ID] = $invitation;
+            }
+
+            $campEnrollPerson = $this->skautis->event->EventCampEnrollAll(['ID_EventCamp' => $id->toInt()]);
+            $paymentDetails   = [];
+            foreach ($campEnrollPerson as $person) {
+                if (! isset($invitations[$person->ID_EventCampInvitation])) {
+                    continue;
+                }
+
+                $invitation                         = $invitations[$person->ID_EventCampInvitation];
+                $paymentDetails[$person->ID_Person] = new PaymentDetails(
+                    $person->ID_Person,
+                    $person->VariableSymbol,
+                    (float) $invitation->Price,
+                    $invitation->PaymentNote,
+                    $invitation->SpecificSymbol,
+                    $invitation->PaymentTerm,
+                );
+            }
+
+            return $paymentDetails;
+        } catch (PermissionException) {
+            throw new CampInvitationNotFound();
+        }
     }
 
     /** @return ParticipantDTO[] */

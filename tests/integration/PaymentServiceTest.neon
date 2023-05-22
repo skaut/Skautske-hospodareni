@@ -9,6 +9,8 @@ services:
     - Stubs\BankAccountAccessCheckerStub
     - Stubs\OAuthsAccessCheckerStub
     - Model\Payment\UserRepositoryStub
+    - Model\Skautis\ParticipantRepository
+    - Model\Infrastructure\Repositories\Participant\PaymentRepository
 
     - class: Model\Payment\Handlers\Payment\CreatePaymentHandler
       tags:

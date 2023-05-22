@@ -7,6 +7,7 @@ namespace App\AccountancyModule\PaymentModule\Components;
 use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseContainer;
 use App\Forms\BaseForm;
+use Cake\Chronos\Date;
 use Model\Common\EmailAddress;
 use Model\Common\Services\CommandBus;
 use Model\Payment\Commands\Payment\CreatePayment;
@@ -71,7 +72,7 @@ class MassAddForm extends BaseControl
     }
 
     /** @param string[] $emails */
-    public function addPerson(int $id, array $emails, string $name, float|null $amount = null, string $note = ''): void
+    public function addPerson(int $id, array $emails, string $name, float|null $amount = null, string $note = '', string $variableSymbol = '', Date|null $dueDate = null): void
     {
         $form          = $this['form'];
         $persons       = $form['persons'];
@@ -108,9 +109,11 @@ class MassAddForm extends BaseControl
         $container->addDate('dueDate', 'Splatnost:')
             ->disableWeekends()
             ->setHtmlAttribute('class', 'input-small')
+            ->setDefaultValue($dueDate)
             ->setRequired(false);
 
         $container->addVariableSymbol('variableSymbol', 'VS:')
+            ->setDefaultValue($variableSymbol)
             ->setRequired(false);
 
         $container->addText('constantSymbol', 'KS:')
