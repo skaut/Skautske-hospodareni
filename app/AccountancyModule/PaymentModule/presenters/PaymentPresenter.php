@@ -11,12 +11,14 @@ use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Components\PairButton;
 use App\AccountancyModule\PaymentModule\Components\PaymentDialog;
 use App\AccountancyModule\PaymentModule\Components\PaymentList;
+use App\AccountancyModule\PaymentModule\Components\PaymentNoteDialog;
 use App\AccountancyModule\PaymentModule\Components\RemoveGroupDialog;
 use App\AccountancyModule\PaymentModule\Factories\IGroupUnitControlFactory;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use App\AccountancyModule\PaymentModule\Factories\IPairButtonFactory;
 use App\AccountancyModule\PaymentModule\Factories\IPaymentDialogFactory;
 use App\AccountancyModule\PaymentModule\Factories\IPaymentListFactory;
+use App\AccountancyModule\PaymentModule\Factories\IPaymentNoteDialogFactory;
 use App\AccountancyModule\PaymentModule\Factories\IRemoveGroupDialogFactory;
 use DateTimeImmutable;
 use Model\DTO\Payment\Payment;
@@ -71,6 +73,7 @@ class PaymentPresenter extends BasePresenter
         private IGroupUnitControlFactory $unitControlFactory,
         private IRemoveGroupDialogFactory $removeGroupDialogFactory,
         private IPaymentDialogFactory $paymentDialogFactory,
+        private IPaymentNoteDialogFactory $paymentNoteDialogFactory,
         private IPaymentListFactory $paymentListFactory,
     ) {
         parent::__construct();
@@ -332,6 +335,19 @@ class PaymentPresenter extends BasePresenter
         $this->assertCanEditGroup();
 
         $dialog = $this->paymentDialogFactory->create($this->id);
+
+        $dialog->onSuccess[] = function (): void {
+            $this->redrawControl('grid');
+        };
+
+        return $dialog;
+    }
+
+    protected function createComponentPaymentNoteDialog(): PaymentNoteDialog
+    {
+        $this->assertCanEditGroup();
+
+        $dialog = $this->paymentNoteDialogFactory->create($this->id);
 
         $dialog->onSuccess[] = function (): void {
             $this->redrawControl('grid');
