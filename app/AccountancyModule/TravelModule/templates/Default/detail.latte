@@ -26,6 +26,7 @@
     <div class="col-sm-4">
         <h3>Příkaz</h3>
         <b>Účel cesty:</b> {$command->purpose}<br />
+        <b>Jednotka:</b> {$command->unit}  <br/>
         {if $command->place !== ""}<b>Místo:</b> {$command->place}<br />{/if}
         {if $command->fellowPassengers !== ""}<b>Spolucestující:</b> {$command->fellowPassengers}<br />{/if}
         {if $command->note !== ""}<b>Poznámka:</b>{$command->note}{/if}

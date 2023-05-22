@@ -44,6 +44,7 @@ class CommandGrid extends BaseGridControl
             ->setSortable()
             ->setFilterText();
 
+        $grid->addColumnText('unit', 'Jednotka')->setSortable();
         $grid->addColumnText('passenger', 'Cestující')->setSortable();
         $grid->addColumnText('vehicle', 'Vozidlo');
         $grid->addColumnDateTime('firstTravelDate', 'První jízda')->setSortable();
