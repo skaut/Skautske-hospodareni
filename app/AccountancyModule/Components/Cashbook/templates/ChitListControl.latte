@@ -11,7 +11,8 @@
             </div>
         </div>
     </div>
-    <div class="panel-body chit-list" n:if="!empty($chits)" n:attr="id => $control->getUniqueId()">
+    <div class="panel-body chit-list " n:if="!empty($chits)" n:attr="id => $control->getUniqueId()">
+        <div class="overflow-auto">
             <table class="table table-bordered table-condensed" id="cashbookTable">
                 <thead>
                 <tr>
@@ -110,6 +111,7 @@
                 </tr>
                 <tbody>
             </table>
+    </div>
 
         {if $canMoveChits}
             {control moveChitsDialog}
