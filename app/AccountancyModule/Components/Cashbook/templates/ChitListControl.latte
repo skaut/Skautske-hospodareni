@@ -58,7 +58,7 @@
                                         class="btn btn-sm btn-info d-none d-lg-inline"><i
                                             class="fas fa-print"></i></a>
                                 {control "chitScan-$chit->id"}
-                                <a n:if="$isEditable && ! $chit->locked" n:href="edit! $chit->id"
+                                <a n:if="$isEditable && ! $chit->locked" n:href="edit! $chit->id" data-toggle="chitEdit"
                                         class="ajax btn btn-sm btn-primary ui--editChit"><i class="far fa-edit"></i></a>
 
                                 <a n:if="$isEditable && ! $chit->locked" n:href="remove! $chit->id"
