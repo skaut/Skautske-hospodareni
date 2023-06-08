@@ -1,6 +1,6 @@
 {snippet}
     <div class="card bg-light mb-2" n:if="$isEditable" id="chitFormHeader">
-        <div class="card-header"><h5>Nový doklad</h5></div>
+        <div class="card-header"><h5>{ifset $edit}Upravit doklad číslo : {if $num}{$num}{else}<span title="systémové Id">{$pid}</span> {/if} {else}Nový doklad{/ifset}</h5></div>
         <div class="card-body">
             <form n:name="form" class="chit-form">
                 <ul class="alert alert-danger" n:if="$form->hasErrors()">
@@ -8,8 +8,6 @@
                 </ul>
                 <div class="form-row">
                     <div class="col" id="chit-type">Typ: {input type:in}{label type:in /} {input type:out}{label type:out /}</div>
-                </div>
-                <div class="form-row">
                     <div class="col">Způsob: {input paymentMethod:cash}{label paymentMethod:cash /} {input paymentMethod:bank}{label paymentMethod:bank /}</div>
                 </div>
                 <div class="form-row mb-1">
@@ -35,8 +33,6 @@
                                     {input "items-$id-incomeCategories"}
                                     {input "items-$id-expenseCategories"}
                                 </div>
-                            </div>
-                            <div class="form-row mb-1">
                                 <div class="col">{input "items-$id-price"}</div>
                             </div>
                             {if $itemsCount > 1}
@@ -47,6 +43,7 @@
                 {/foreach}
                 {input items-addItem class=>"btn btn-light ajax"}<br /><br />
                 {input send}
+                {ifset $edit}{input cancle}{/ifset}
             </form>
         </div>
     </div>

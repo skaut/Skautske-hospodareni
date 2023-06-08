@@ -103,6 +103,8 @@ final class ChitForm extends BaseControl
     {
         $chit = $this->queryBus->handle(new ChitQuery($this->cashbookId, $chitId));
 
+        $this->template->setParameters(['edit' => true, 'pid' => $chit->getId(), 'num' => (string) $chit->getBody()->getNumber()]);
+
         if ($chit === null) {
             throw new BadRequestException(sprintf('Chit %d not found', $chitId), IResponse::S404_NotFound);
         }
@@ -249,6 +251,14 @@ final class ChitForm extends BaseControl
 
             $this->formSubmitted($form, $values);
         };
+
+        $form->addSubmit('cancle', 'Zpět')
+            ->setHtmlAttribute('class', 'btn btn-secondary')
+            ->setValidationScope([])
+            ->onClick[] = function (): void {
+                $this->flashMessage('Úprava paragonu byla zrušena. Paragon nebyl upraven.');
+                $this->reload();
+            };
 
         return $form;
     }
