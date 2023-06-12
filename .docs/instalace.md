@@ -11,7 +11,7 @@ Aplikace vyžaduje:
 Pro lokální vývoj je připraven Docker container a konfigurace pro **docker-compose**.
 
 ```bash
-docker-compose up -d # Spustí container v detached modu
+docker compose up -d # Spustí container v detached modu
 ```
 
 V kontejneru je možné spustit bash pomocným skriptem:
