@@ -55,6 +55,8 @@ final class ChitForm extends BaseControl
         Operation::EXPENSE => 'Výdaje',
     ];
 
+    private bool $displayChitForm = false;
+
     /**
      * Can current user add/edit chits?
      */
@@ -93,10 +95,25 @@ final class ChitForm extends BaseControl
         $this->template->setParameters([
             'isEditable' => $this->isEditable,
             'dataAutocomplete' => $this->getAdultMemberNames(),
+            'displayChitForm' => $this->displayChitForm,
         ]);
 
         $this->template->setFile(__DIR__ . '/templates/ChitForm.latte');
         $this->template->render();
+    }
+
+    public function setDisplayChitForm(bool $displayChitForm): void
+    {
+        $this->displayChitForm = $displayChitForm;
+    }
+
+    public function setDisplayChitParent(bool $displayChitForm): void
+    {
+        if (! ($this->parent instanceof CashbookControl)) {
+            return;
+        }
+
+        $this->parent->displayChitForm = $displayChitForm;
     }
 
     public function editChit(int $chitId): void
@@ -244,9 +261,17 @@ final class ChitForm extends BaseControl
         $form->addSubmit('send', 'Uložit')
             ->setHtmlAttribute('class', 'btn btn-primary');
 
+        $form->addSubmit('sendStay', 'Uložit a pokračuj')
+            ->setHtmlAttribute('class', 'btn btn-secondary');
+
         $form->onSuccess[] = function (BaseForm $form, ArrayHash $values): void {
-            if ($form->isSubmitted() !== $form['send']) {
+            if ($form->isSubmitted() !== $form['send'] && $form->isSubmitted() !== $form['sendStay']) {
                 return;
+            }
+
+            $this->setDisplayChitParent(false);
+            if ($form->isSubmitted() === $form['sendStay']) {
+                $this->setDisplayChitParent(true);
             }
 
             $this->formSubmitted($form, $values);
@@ -257,6 +282,7 @@ final class ChitForm extends BaseControl
             ->setValidationScope([])
             ->onClick[] = function (): void {
                 $this->flashMessage('Úprava paragonu byla zrušena. Paragon nebyl upraven.');
+                $this->setDisplayChitParent(false);
                 $this->reload();
             };
 
