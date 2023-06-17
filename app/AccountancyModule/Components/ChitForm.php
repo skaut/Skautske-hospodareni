@@ -39,7 +39,6 @@ use Nette\Forms\Controls\SubmitButton;
 use Nette\Forms\Form;
 use Nette\Http\IResponse;
 use Nette\Utils\ArrayHash;
-use Nette\Utils\Json;
 use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\WsdlException;
 
@@ -93,6 +92,7 @@ final class ChitForm extends BaseControl
 
         $this->template->setParameters([
             'isEditable' => $this->isEditable,
+            'dataAutocomplete' => $this->getAdultMemberNames(),
         ]);
 
         $this->template->setFile(__DIR__ . '/templates/ChitForm.latte');
@@ -187,7 +187,7 @@ final class ChitForm extends BaseControl
         $form->addText('recipient')
             ->setMaxLength(64)
             ->setHtmlId('form-recipient')
-            ->setHtmlAttribute('data-autocomplete', Json::encode($this->getAdultMemberNames()))
+            ->setHtmlAttribute('list', 'list-recipient')
             ->setHtmlAttribute('placeholder', 'Komu/Od')
             ->setHtmlAttribute('class', 'form-control input-sm');
 

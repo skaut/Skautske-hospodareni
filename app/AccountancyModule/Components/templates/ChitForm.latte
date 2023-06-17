@@ -18,6 +18,9 @@
                 </div>
                 <div class="row">
                     <div class="col">{input recipient}</div>
+                    <datalist id="list-recipient">
+                        <option n:foreach="$dataAutocomplete as $opt">{$opt}</option>
+                    </datalist>
                 </div>
                 <h5 class="card-title mt-2">Položky</h5>
                 {var $itemsCount = iterator_count($form['items']->getContainers())}
