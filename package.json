@@ -34,7 +34,7 @@
         "mini-css-extract-plugin": "^2.7.6",
         "sass": "^1.62.1",
         "sass-loader": "^13.3.1",
-        "ts-loader": "^9.4.3",
+        "ts-loader": "^9.4.4",
         "typescript": "^5.0.4",
         "uglify-js": "^3.17.4",
         "webpack": "^5.85.0",
