@@ -3898,22 +3898,22 @@
         },
         {
             "name": "nette/bootstrap",
-            "version": "v3.1.4",
+            "version": "v3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/bootstrap.git",
-                "reference": "1a7965b4ee401ad0e3f673b9c016d2481afdc280"
+                "reference": "7fde23cc8a8cf97d545baf0ad7f8cd47c73feb17"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/bootstrap/zipball/1a7965b4ee401ad0e3f673b9c016d2481afdc280",
-                "reference": "1a7965b4ee401ad0e3f673b9c016d2481afdc280",
+                "url": "https://api.github.com/repos/nette/bootstrap/zipball/7fde23cc8a8cf97d545baf0ad7f8cd47c73feb17",
+                "reference": "7fde23cc8a8cf97d545baf0ad7f8cd47c73feb17",
                 "shasum": ""
             },
             "require": {
-                "nette/di": "^3.0.5",
+                "nette/di": "^3.1",
                 "nette/utils": "^3.2.1 || ^4.0",
-                "php": ">=7.2 <8.3"
+                "php": ">=8.0 <8.3"
             },
             "conflict": {
                 "tracy/tracy": "<2.6"
@@ -3929,9 +3929,9 @@
                 "nette/robot-loader": "^3.0",
                 "nette/safe-stream": "^2.2",
                 "nette/security": "^3.0",
-                "nette/tester": "^2.0",
-                "phpstan/phpstan-nette": "^0.12",
-                "tracy/tracy": "^2.6"
+                "nette/tester": "^2.4",
+                "phpstan/phpstan-nette": "^1.0",
+                "tracy/tracy": "^2.9"
             },
             "suggest": {
                 "nette/robot-loader": "to use Configurator::createRobotLoader()",
@@ -3940,7 +3940,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.1-dev"
+                    "dev-master": "3.2-dev"
                 }
             },
             "autoload": {
@@ -3973,9 +3973,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/bootstrap/issues",
-                "source": "https://github.com/nette/bootstrap/tree/v3.1.4"
+                "source": "https://github.com/nette/bootstrap/tree/v3.2.0"
             },
-            "time": "2022-12-14T15:23:02+00:00"
+            "time": "2023-01-13T04:09:35+00:00"
         },
         {
             "name": "nette/caching",
