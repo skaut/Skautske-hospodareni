@@ -29,7 +29,7 @@ final class ParticipantFactory
             $skautisParticipant->Street ?? $skautisParticipant->PersonAddressStreet,
             $skautisParticipant->City ?? $skautisParticipant->PersonAddressCity,
             (int) ($skautisParticipant->Postcode ?? $skautisParticipant->PersonAddressPostcode),
-            $skautisParticipant->State ?? $skautisParticipant->PersonAddressState,
+            $skautisParticipant->State ?? $skautisParticipant->PersonAddressState ?? '',
             isset($skautisParticipant->ID_Unit) ? (int) $skautisParticipant->ID_Unit : null,
             $skautisParticipant->Unit ?? '',
             $skautisParticipant->UnitRegistrationNumber ?? '',

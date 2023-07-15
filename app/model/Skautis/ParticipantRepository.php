@@ -170,6 +170,8 @@ final class ParticipantRepository implements IParticipantRepository
                 'LastName' => $participant->getLastName(),
                 'NickName' => $participant->getNickName(),
                 'Note' => '',
+                'IdentificationCode' => '',
+                'IsForeign' => false,
             ],
         ]);
         $this->fillParticipantInfo($newParticipantArr->ID_Person, $participant);
