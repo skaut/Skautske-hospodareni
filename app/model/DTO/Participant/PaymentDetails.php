@@ -12,7 +12,7 @@ use Nette\SmartObject;
  * @property-read string|null $variableSymbol
  * @property-read float|null $price
  * @property-read string|null $paymentNote
- * @property-read string|null $specificSymbol
+ * @property-read int|null $specificSymbol
  * @property-read Date|null $paymentTerm
  */
 class PaymentDetails

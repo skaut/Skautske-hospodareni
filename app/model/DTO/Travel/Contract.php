@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Model\DTO\Travel;
 
 use Cake\Chronos\Date;
-use DateTimeImmutable;
 use Model\Travel\Contract\Passenger;
 use Nette\SmartObject;
 
@@ -14,8 +13,8 @@ use Nette\SmartObject;
  * @property-read Passenger                 $passenger
  * @property-read int                       $unitId
  * @property-read string                    $unitRepresentative
- * @property-read DateTimeImmutable|NULL $since
- * @property-read DateTimeImmutable|NULL $until
+ * @property-read Date|NULL $since
+ * @property-read Date|NULL $until
  * @property-read int                       $templateVersion
  */
 class Contract

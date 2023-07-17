@@ -10,9 +10,9 @@ use Model\Google\OAuthId;
 use Nette\SmartObject;
 
 /**
- * @property-read string $id
+ * @property-read OAuthId $id
  * @property-read string $email
- * @property-read int $unitId
+ * @property-read UnitId $unitId
  * @property-read DateTimeImmutable $updatedAt
  */
 class OAuth
