@@ -6,7 +6,6 @@ namespace Model\Travel\Command;
 
 use Cake\Chronos\Date;
 use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
-use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Model\Travel\Travel\TransportType;
 use Nette\SmartObject;
@@ -14,7 +13,7 @@ use Nette\SmartObject;
 /**
  * @ORM\Embeddable()
  *
- * @property-read DateTimeImmutable $date
+ * @property-read Date $date
  * @property-read TransportType $transportType
  * @property-read string $startPlace
  * @property-read string $endPlace

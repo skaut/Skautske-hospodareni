@@ -10,7 +10,7 @@ use Model\Skautis\ISkautisEvent;
 use Nette\SmartObject;
 
 /**
- * @property-read int $id
+ * @property-read SkautisEducationId $id
  * @property-read string $displayName
  * @property-read Date|null $startDate
  * @property-read Date|null $endDate

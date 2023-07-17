@@ -20,7 +20,7 @@ use Nette\SmartObject;
  * @property-read int|NULL $constantSymbol
  * @property-read VariableSymbol|NULL $nextVariableSymbol
  * @property-read string $state
- * @property-read string|NULL $oAuthId
+ * @property-read OAuthId|NULL $oAuthId
  * @property-read string $note
  */
 class Group

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Model\Travel\Contract;
 
 use Cake\Chronos\Date;
-use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Nette\SmartObject;
 
@@ -15,7 +14,7 @@ use Nette\SmartObject;
  * @property-read string $name
  * @property-read string $contact
  * @property-read string $address
- * @property-read DateTimeImmutable|NULL $birthday
+ * @property-read Date|NULL $birthday
  */
 final class Passenger
 {
