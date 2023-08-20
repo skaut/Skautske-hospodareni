@@ -17,7 +17,7 @@
                 {if $command->passenger->contractId !== NULL}
                     <a n:href="Contract:detail $command->passenger->contractId" class="btn btn-primary d-none d-md-inline"><i class="fas fa-search"></i> Smlouva</a>
                 {/if}
-                <a n:href="print $command->id" class="btn btn-info d-none d-md-inline"><i class="fas fa-print"></i> Vytisknout cestovní příkaz</a>
+                <a n:href="print $command->id" class="btn btn-info"><i class="fas fa-print"></i> Vytisknout cestovní příkaz</a>
             </div>
         </div>
     </div>
