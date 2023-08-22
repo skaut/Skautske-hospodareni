@@ -63,7 +63,7 @@ class CashbookExportPresenter extends BasePresenter
         parent::startup();
 
         if (! $this->hasAccessToCashbook()) {
-            throw new BadRequestException('User has no access to cashbook', IResponse::S403_FORBIDDEN);
+            throw new BadRequestException('User has no access to cashbook', IResponse::S403_Forbidden);
         }
     }
 
@@ -130,7 +130,7 @@ class CashbookExportPresenter extends BasePresenter
         if (! PaymentMethod::isValidValue($paymentMethod)) {
             throw new BadRequestException(
                 sprintf('Invalid payment method %s', $paymentMethod),
-                IResponse::S400_BAD_REQUEST,
+                IResponse::S400_BadRequest,
             );
         }
 
@@ -179,7 +179,7 @@ class CashbookExportPresenter extends BasePresenter
         if (! PaymentMethod::isValidValue($paymentMethod)) {
             throw new BadRequestException(
                 sprintf('Invalid payment method %s', $paymentMethod),
-                IResponse::S400_BAD_REQUEST,
+                IResponse::S400_BadRequest,
             );
         }
 
@@ -199,7 +199,7 @@ class CashbookExportPresenter extends BasePresenter
         if (! PaymentMethod::isValidValue($paymentMethod)) {
             throw new BadRequestException(
                 sprintf('Invalid payment method %s', $paymentMethod),
-                IResponse::S400_BAD_REQUEST,
+                IResponse::S400_BadRequest,
             );
         }
 
@@ -241,7 +241,7 @@ class CashbookExportPresenter extends BasePresenter
             $this->sendResponse(new PSR7StreamResponse($contents, $scan->getFileName()));
         }
 
-        throw new BadRequestException('Scan not found', IResponse::S404_NOT_FOUND);
+        throw new BadRequestException('Scan not found', IResponse::S404_NotFound);
     }
 
     /** @throws BadRequestException */
@@ -273,7 +273,7 @@ class CashbookExportPresenter extends BasePresenter
 
             return $cashbook->getType()->getSkautisObjectType();
         } catch (CashbookNotFound $e) {
-            throw new BadRequestException($e->getMessage(), IResponse::S404_NOT_FOUND, $e);
+            throw new BadRequestException($e->getMessage(), IResponse::S404_NotFound, $e);
         }
     }
 

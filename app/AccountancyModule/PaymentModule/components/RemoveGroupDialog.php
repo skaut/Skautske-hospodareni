@@ -49,7 +49,7 @@ final class RemoveGroupDialog extends Dialog
 
         $form->onSuccess[] = function (): void {
             if (! $this->isAllowed) {
-                throw new BadRequestException('Nemáte oprávnění smazat tuto skupinu', IResponse::S403_FORBIDDEN);
+                throw new BadRequestException('Nemáte oprávnění smazat tuto skupinu', IResponse::S403_Forbidden);
             }
 
             $this->commandBus->handle(new RemoveGroup($this->groupId));

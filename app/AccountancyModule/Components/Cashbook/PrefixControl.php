@@ -44,7 +44,7 @@ final class PrefixControl extends Dialog
     protected function createComponentForm(): BaseForm
     {
         if (! $this->isEditable) {
-            throw new BadRequestException('User cannot edit cashbook prefix', IResponse::S403_FORBIDDEN);
+            throw new BadRequestException('User cannot edit cashbook prefix', IResponse::S403_Forbidden);
         }
 
         $form = new BaseForm();

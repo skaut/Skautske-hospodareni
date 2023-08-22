@@ -271,7 +271,7 @@ class DefaultPresenter extends BasePresenter
         Assertion::notNull($commandId);
 
         if (! $this->isCommandEditable($commandId)) {
-            throw new BadRequestException(sprintf('User cannot edit command %d', $commandId), IResponse::S403_FORBIDDEN);
+            throw new BadRequestException(sprintf('User cannot edit command %d', $commandId), IResponse::S403_Forbidden);
         }
 
         return $this->editTravelDialogFactory->create($commandId);
