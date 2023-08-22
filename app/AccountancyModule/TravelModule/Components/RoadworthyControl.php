@@ -105,6 +105,6 @@ final class RoadworthyControl extends BaseControl
             return;
         }
 
-        throw new BadRequestException('Nemáte oprávnění upravovat vozidlo', IResponse::S403_FORBIDDEN);
+        throw new BadRequestException('Nemáte oprávnění upravovat vozidlo', IResponse::S403_Forbidden);
     }
 }

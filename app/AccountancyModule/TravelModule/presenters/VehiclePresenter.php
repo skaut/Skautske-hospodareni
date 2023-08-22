@@ -71,7 +71,7 @@ class VehiclePresenter extends BasePresenter
             $this->sendResponse(new PSR7StreamResponse($scan->getContents(), $scan->getFileName()));
         }
 
-        throw new BadRequestException('Scan not found', IResponse::S404_NOT_FOUND);
+        throw new BadRequestException('Scan not found', IResponse::S404_NotFound);
     }
 
     public function renderDetail(int $id): void

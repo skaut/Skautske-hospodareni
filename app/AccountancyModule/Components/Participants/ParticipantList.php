@@ -153,7 +153,7 @@ final class ParticipantList extends BaseControl
         if (! isset($this->participantsById()[$participantId])) {
             throw new BadRequestException(
                 sprintf('Participant %d does not exist', $participantId),
-                IResponse::S404_NOT_FOUND,
+                IResponse::S404_NotFound,
             );
         }
 

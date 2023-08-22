@@ -57,7 +57,7 @@ class InvertChitDialog extends BaseControl
         if ($this->chitId !== null && ! $this->isChitValid()) {
             throw new BadRequestException(
                 sprintf('Chit %d doesn\'t exist or can\'t be inverted', $this->chitId),
-                IResponse::S404_NOT_FOUND,
+                IResponse::S404_NotFound,
             );
         }
 

@@ -103,7 +103,7 @@ class ChitPresenter extends BasePresenter
             function (string $cashbookId): ChitListControl {
                 $cashbookIdVo = CashbookId::fromString($cashbookId);
                 if (! $this->canEditCashbook($cashbookIdVo)) {
-                    throw new BadRequestException(sprintf('Cashbook #%s not found', $cashbookIdVo->toString()), IResponse::S404_NOT_FOUND);
+                    throw new BadRequestException(sprintf('Cashbook #%s not found', $cashbookIdVo->toString()), IResponse::S404_NotFound);
                 }
 
                 return $this->chitListFactory->create($cashbookIdVo, (bool) $this->onlyUnlocked);
