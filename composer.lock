@@ -3806,16 +3806,16 @@
         },
         {
             "name": "nette/application",
-            "version": "v3.1.11",
+            "version": "v3.1.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/application.git",
-                "reference": "b03bd4971b03e3fa582ac40ea429446cd00788bb"
+                "reference": "83f5144840a1aa38eb7bae58ce58a9d0c5f10177"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/application/zipball/b03bd4971b03e3fa582ac40ea429446cd00788bb",
-                "reference": "b03bd4971b03e3fa582ac40ea429446cd00788bb",
+                "url": "https://api.github.com/repos/nette/application/zipball/83f5144840a1aa38eb7bae58ce58a9d0c5f10177",
+                "reference": "83f5144840a1aa38eb7bae58ce58a9d0c5f10177",
                 "shasum": ""
             },
             "require": {
@@ -3826,7 +3826,7 @@
                 "php": ">=7.2"
             },
             "conflict": {
-                "latte/latte": "<2.7.1 || >=3.0.0 <3.0.5 || >=3.1",
+                "latte/latte": "<2.7.1 || >=3.0.0 <3.0.8 || >=3.1",
                 "nette/caching": "<3.1",
                 "nette/di": "<3.0.7",
                 "nette/forms": "<3.0",
@@ -3892,9 +3892,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/application/issues",
-                "source": "https://github.com/nette/application/tree/v3.1.11"
+                "source": "https://github.com/nette/application/tree/v3.1.13"
             },
-            "time": "2023-04-28T10:09:21+00:00"
+            "time": "2023-08-27T10:38:40+00:00"
         },
         {
             "name": "nette/bootstrap",
