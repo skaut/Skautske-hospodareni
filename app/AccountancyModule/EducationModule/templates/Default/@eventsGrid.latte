@@ -1,6 +1,7 @@
 {extends $baseTemplate}
 
 {block filters}
+    {include #filter-type-search}
     {include #filter-type-select name => 'year', label => 'Rok', icon => 'fas fa-calendar'}
 {/block}
 

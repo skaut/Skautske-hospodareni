@@ -37,6 +37,9 @@ class DefaultPresenter extends BasePresenter
                 $dataSource->filterByYear($year === DataGrid::OPTION_ALL ? null : (int) ($year ?? Date::today()->year));
             });
 
+        $grid->addFilterText('search', 'Název', 'name')
+            ->setPlaceholder('Hledat podle názvu...');
+
         $grid->addColumnText('prefix', 'Prefix')
             ->setSortable();
 
