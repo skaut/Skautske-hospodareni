@@ -37,6 +37,11 @@ class DefaultPresenter extends BasePresenter
                 $dataSource->filterByYear($year === DataGrid::OPTION_ALL ? null : (int) ($year ?? Date::today()->year));
             });
 
+        $grid->addColumnText('prefix', 'Prefix')
+            ->setSortable();
+
+        $grid->addColumnText('state', 'Stav');
+
         $grid->setDataSource(new EducationListDataSource($this->queryBus));
         $grid->setDefaultSort(['name' => 'ASC']);
 
