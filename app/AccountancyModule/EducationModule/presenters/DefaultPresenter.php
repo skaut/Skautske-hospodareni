@@ -43,8 +43,6 @@ class DefaultPresenter extends BasePresenter
         $grid->addColumnText('prefix', 'Prefix')
             ->setSortable();
 
-        $grid->addColumnText('state', 'Stav');
-
         $grid->setDataSource(new EducationListDataSource($this->queryBus));
         $grid->setDefaultSort(['name' => 'ASC']);
 

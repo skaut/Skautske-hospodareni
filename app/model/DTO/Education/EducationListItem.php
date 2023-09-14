@@ -14,7 +14,6 @@ final class EducationListItem
         private Date|null $startDate,
         private Date|null $endDate,
         private string|null $prefix = null,
-        private string $state,
     ) {
     }
 
@@ -41,10 +40,5 @@ final class EducationListItem
     public function getPrefix(): string|null
     {
         return $this->prefix;
-    }
-
-    public function getState(): string
-    {
-        return $this->state;
     }
 }

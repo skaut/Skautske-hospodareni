@@ -46,7 +46,6 @@ final class EducationListDataSource extends DataSource
                     $education->getStartDate(),
                     $education->getEndDate(),
                     $this->chitNumberPrefix($education),
-                    $education->getState(),
                 );
             },
             $educationEvents,
