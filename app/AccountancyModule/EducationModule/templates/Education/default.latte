@@ -6,7 +6,17 @@
 
 <div class="row d-flex align-items-center">
     <div class="col-lg-7 text-center text-lg-left">
+        <span data-toggle="tooltip">
+            {$event->getState()|educationStateLabel|noescape}
+        </span>
+        <span class="ml-2 mr-2">|</span>
+        {$event->getUnitName()}
+        <span class="ml-2 mr-2">|</span>
         <span class="text-nowrap"><i class="fas fa-calendar"></i> {[$event->getStartDate(), $event->getEndDate()]|dateRange}</span>
+        <span class="ml-2 mr-2">|</span>
+        <i class="fas fa-map-marker-alt"></i>
+        {if trim($event->getLocation()) === ''}<i
+                class="text-muted">Nevyplněno</i>{else}{$event->getLocation()}{/if}
     </div>
     <div class="col-lg-5 text-lg-right text-center mt-lg-0 d-flex d-md-block flex-column mt-1">
         <div class="btn-group mr-md-3 mt-2">
