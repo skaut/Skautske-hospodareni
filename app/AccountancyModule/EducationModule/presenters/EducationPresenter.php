@@ -34,6 +34,7 @@ class EducationPresenter extends BasePresenter
         assert($cashbook instanceof Cashbook);
 
         $this->template->setParameters([
+            'skautISUrl'        => $this->userService->getSkautisUrl(),
             'accessDetailEvent' => $this->authorizator->isAllowed(Education::ACCESS_DETAIL, $aid),
         ]);
 

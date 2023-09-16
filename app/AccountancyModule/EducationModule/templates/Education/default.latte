@@ -19,14 +19,14 @@
                 class="text-muted">Nevyplněno</i>{else}{$event->getLocation()}{/if}
     </div>
     <div class="col-lg-5 text-lg-right text-center mt-lg-0 d-flex d-md-block flex-column mt-1">
-        <div class="btn-group mr-md-3 mt-2">
-            <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-                    aria-expanded="false">
-                <i class="fas fa-print"></i> Exportovat
-            </button>
-            <div class="dropdown-menu">
-                <a n:href="Education:report $aid" target="_blank" class="dropdown-item">Záverečná zpráva</a>
-            </div>
-        </div>
+        <a n:href="Education:report 'aid'=>$aid" target="_blank" class="btn btn-info mr-md-2 mb-2 mb-md-0">
+            <i class="fas fa-print"></i>
+            Záverečná zpráva
+        </a>
+
+        <a href="{$skautISUrl}Junak/Events/Education/Detail.aspx?ID={$event->getID()}" target="_blank" class="btn btn-light">
+            <i class="far fa-edit d-none d-xl-inline-block"></i>
+            Upravit ve SkautISu
+        </a>
     </div>
 </div>
