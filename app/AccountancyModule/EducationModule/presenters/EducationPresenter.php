@@ -6,8 +6,11 @@ namespace App\AccountancyModule\EducationModule;
 
 use Model\Auth\Resources\Education;
 use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Cashbook\PaymentMethod;
+use Model\Cashbook\MissingCategory;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\EducationCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Model\Event\SkautisEducationId;
 use Model\ExportService;
@@ -33,9 +36,18 @@ class EducationPresenter extends BasePresenter
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->getCashbookId($aid)));
         assert($cashbook instanceof Cashbook);
 
+        try {
+            $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId($aid)));
+        } catch (MissingCategory) {
+            $finalRealBalance  = null;
+        }
+
         $this->template->setParameters([
-            'skautISUrl'        => $this->userService->getSkautisUrl(),
-            'accessDetailEvent' => $this->authorizator->isAllowed(Education::ACCESS_DETAIL, $aid),
+            'skautISUrl'       => $this->userService->getSkautisUrl(),
+            'accessDetail'     => $this->authorizator->isAllowed(Education::ACCESS_DETAIL, $aid),
+            'finalRealBalance' => $finalRealBalance,
+            'prefixCash'           => $cashbook->getChitNumberPrefix(PaymentMethod::CASH()),
+            'prefixBank'           => $cashbook->getChitNumberPrefix(PaymentMethod::BANK()),
         ]);
 
         if (! $this->isAjax()) {

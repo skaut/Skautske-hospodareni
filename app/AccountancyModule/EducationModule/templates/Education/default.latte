@@ -30,3 +30,25 @@
         </a>
     </div>
 </div>
+
+<div class="row mt-4">
+    <div class="col-md-4 mb-4" n:if="$accessDetail">
+        <div class="card">
+            <h5 class="card-header">Základní údaje</h5>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex">
+                    <div class="font-weight-bold mr-auto">Výsledek hospodaření</div>
+                    <div>{if $finalRealBalance === null}Chybí povolené automatické dopočítávání!{else}{$finalRealBalance|price} Kč{/if}</div>
+                </li>
+                <li class="list-group-item d-flex">
+                    <div class="font-weight-bold mr-auto">Prefix dokladů pokladny</div>
+                    <div>{$prefixCash}</div>
+                </li>
+                <li class="list-group-item d-flex">
+                    <div class="font-weight-bold mr-auto">Prefix dokladů banky</div>
+                    <div>{$prefixBank}</div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
