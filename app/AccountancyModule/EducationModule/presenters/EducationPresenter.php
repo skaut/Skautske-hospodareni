@@ -12,6 +12,7 @@ use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\EducationCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
 use Model\DTO\Cashbook\Cashbook;
+use Model\Event\ReadModel\Queries\EducationFunctions;
 use Model\Event\SkautisEducationId;
 use Model\ExportService;
 use Model\Services\PdfRenderer;
@@ -45,6 +46,9 @@ class EducationPresenter extends BasePresenter
         $this->template->setParameters([
             'skautISUrl'       => $this->userService->getSkautisUrl(),
             'accessDetail'     => $this->authorizator->isAllowed(Education::ACCESS_DETAIL, $aid),
+            'functions' => $this->authorizator->isAllowed(Education::ACCESS_FUNCTIONS, $aid)
+                ? $this->queryBus->handle(new EducationFunctions(new SkautisEducationId($aid)))
+                : null,
             'finalRealBalance' => $finalRealBalance,
             'prefixCash'           => $cashbook->getChitNumberPrefix(PaymentMethod::CASH()),
             'prefixBank'           => $cashbook->getChitNumberPrefix(PaymentMethod::BANK()),

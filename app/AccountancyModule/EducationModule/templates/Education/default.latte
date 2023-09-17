@@ -51,4 +51,39 @@
             </ul>
         </div>
     </div>
+
+    <div class="col-md-4 mb-4" n:if="$functions !== NULL">
+        <div class="card">
+            <div class="card-header d-flex align-items-center">
+                <h5 class="m-0 mr-auto">Vedení akce</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex">
+                    <div class="font-weight-bold mr-auto">Vedoucí akce</div>
+                    <div>
+                        {$functions->leader !== NULL ? $functions->leader->name : "-"}
+                    </div>
+                </li>
+                <li class="list-group-item d-flex" n:foreach="$functions->assistants as $assistant">
+                    <div class="font-weight-bold mr-auto">Zástupce vedoucího</div>
+                    <div>
+                        {$assistant->name}
+                    </div>
+                </li>
+
+                {var $otherFunctionLabels = [
+                    'accountant' => 'Hospodář',
+                    'secretary' => 'Tajemník',
+                    'medic' => 'Zdravotník',
+                ]}
+
+                <li class="list-group-item d-flex" n:foreach="$otherFunctionLabels as $functionName => $label">
+                    <div class="font-weight-bold mr-auto">{$label}</div>
+                    <div>
+                        {$functions->$functionName !== NULL ? $functions->$functionName->name : "-"}
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
 </div>
