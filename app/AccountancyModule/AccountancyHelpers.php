@@ -299,7 +299,7 @@ abstract class AccountancyHelpers
 
         if ($end === null) {
             if ($start === null) {
-                return 'Žádné datumy nejsou k dispozici';
+                return 'Žádná data nejsou k dispozici';
             }
 
             return $start->format(self::DATE_FORMAT_FULL);
