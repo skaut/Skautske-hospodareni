@@ -10,6 +10,9 @@ use Model\Event\Education;
 use Model\Event\SkautisEducationId;
 use stdClass;
 
+use function mb_ereg_replace;
+use function property_exists;
+
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
 final class EducationFactory
@@ -18,9 +21,14 @@ final class EducationFactory
 
     public function create(stdClass $skautisEducation): Education
     {
+        $eventNameUncombined =
+            ! property_exists($skautisEducation, 'DisplayNameCombined') || $skautisEducation->DisplayName === $skautisEducation->DisplayNameCombined
+            ? $skautisEducation->DisplayName
+            : mb_ereg_replace(' - ' . $skautisEducation->DisplayName . '$', '', $skautisEducation->DisplayNameCombined);
+
         return new Education(
             new SkautisEducationId($skautisEducation->ID),
-            $skautisEducation->DisplayName,
+            $eventNameUncombined,
             new UnitId($skautisEducation->ID_Unit),
             $skautisEducation->Unit,
             $skautisEducation->StartDate === null ? null : Date::createFromFormat(self::DATETIME_FORMAT, $skautisEducation->StartDate),
