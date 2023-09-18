@@ -52,6 +52,18 @@
         </div>
     </div>
 
+    <div class="col-md-4 mb-4" n:if="$accessDetail">
+        <div class="card">
+            <h5 class="card-header">Statistiky</h5>
+            <table class="table mb-0">
+                    <tr>
+                        <th class="border-top-0">Počet dnů</th>
+                        <td class="border-top-0 text-right">{$totalDays}</td>
+                    </tr>
+                </table>
+        </div>
+    </div>
+
     <div class="col-md-4 mb-4" n:if="$functions !== NULL">
         <div class="card">
             <div class="card-header d-flex align-items-center">

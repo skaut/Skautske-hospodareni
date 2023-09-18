@@ -13,11 +13,15 @@ use Model\Cashbook\ReadModel\Queries\EducationCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Model\Event\ReadModel\Queries\EducationFunctions;
+use Model\Event\ReadModel\Queries\EducationTermsQuery;
 use Model\Event\SkautisEducationId;
 use Model\ExportService;
 use Model\Services\PdfRenderer;
 
+use function array_map;
+use function array_unique;
 use function assert;
+use function count;
 
 class EducationPresenter extends BasePresenter
 {
@@ -40,8 +44,10 @@ class EducationPresenter extends BasePresenter
         try {
             $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId($aid)));
         } catch (MissingCategory) {
-            $finalRealBalance  = null;
+            $finalRealBalance = null;
         }
+
+        $terms = $this->queryBus->handle(new EducationTermsQuery($aid));
 
         $this->template->setParameters([
             'skautISUrl'       => $this->userService->getSkautisUrl(),
@@ -52,6 +58,7 @@ class EducationPresenter extends BasePresenter
             'finalRealBalance' => $finalRealBalance,
             'prefixCash'           => $cashbook->getChitNumberPrefix(PaymentMethod::CASH()),
             'prefixBank'           => $cashbook->getChitNumberPrefix(PaymentMethod::BANK()),
+            'totalDays'            => $this->countDays($terms),
         ]);
 
         if (! $this->isAjax()) {
@@ -77,5 +84,36 @@ class EducationPresenter extends BasePresenter
     private function getCashbookId(int $skautisEducationId): CashbookId
     {
         return $this->queryBus->handle(new EducationCashbookIdQuery(new SkautisEducationId($skautisEducationId)));
+    }
+
+    /** @param array<EducationTerm> $terms */
+    private function countDays(array $terms): int
+    {
+        $days = [];
+
+        foreach ($terms as $term) {
+            $date   = $term->startDate;
+            $days[] = $date;
+
+            // Could be while(true), but don't want to risk infinite loop
+            for ($i = 0; $i < 50; ++$i) {
+                $date   = $date->addDay();
+                $days[] = $date;
+                if ($date->eq($term->endDate)) {
+                    break;
+                }
+            }
+        }
+
+        return count(
+            array_unique(
+                array_map(
+                    function ($date) {
+                        return $date->__toString();
+                    },
+                    $days,
+                ),
+            ),
+        );
     }
 }
