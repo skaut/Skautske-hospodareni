@@ -59,7 +59,7 @@ class EducationPresenter extends BasePresenter
         $instructors                   = $this->queryBus->handle(new EducationInstructorsQuery($aid));
         $courseParticipationStats      = $this->queryBus->handle(new EducationCourseParticipationStatsQuery($aid));
         $courses                       = $this->queryBus->handle(new EducationCoursesQuery($aid));
-        $participantParticipationStats = $this->queryBus->handle(new EducationParticipantParticipationStatsQuery($this->event->getGrantId()->toInt()));
+        $participantParticipationStats = $this->queryBus->handle(new EducationParticipantParticipationStatsQuery($this->event->grantId->toInt()));
 
         $this->template->setParameters([
             'skautISUrl'       => $this->userService->getSkautisUrl(),
@@ -75,7 +75,7 @@ class EducationPresenter extends BasePresenter
             'participantsCapacity' => array_sum(
                 array_map(
                     static function (EducationCourseParticipationStats $stat) {
-                        return $stat->getCapacity();
+                        return $stat->capacity;
                     },
                     $courseParticipationStats,
                 ),
@@ -83,7 +83,7 @@ class EducationPresenter extends BasePresenter
             'participantsAccepted' => array_sum(
                 array_map(
                     static function (EducationCourseParticipationStats $stat) {
-                        return $stat->getAccepted();
+                        return $stat->accepted;
                     },
                     $courseParticipationStats,
                 ),
@@ -91,7 +91,7 @@ class EducationPresenter extends BasePresenter
             'personDaysEstimated' => array_sum(
                 array_map(
                     static function (EducationCourse $course) {
-                        return $course->getEstimatedPersonDays();
+                        return $course->estimatedPersonDays;
                     },
                     $courses,
                 ),
@@ -99,7 +99,7 @@ class EducationPresenter extends BasePresenter
             'personDaysReal' => array_sum(
                 array_map(
                     static function (EducationParticipantParticipationStats $stat) {
-                        return $stat->getTotalDays();
+                        return $stat->totalDays;
                     },
                     $participantParticipationStats,
                 ),

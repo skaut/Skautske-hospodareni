@@ -14,6 +14,7 @@ use Nette\SmartObject;
  * @property-read string $displayName
  * @property-read Date|null $startDate
  * @property-read Date|null $endDate
+ * @property-read SkautisGrantId $grantId
  */
 class Education implements ISkautisEvent
 {

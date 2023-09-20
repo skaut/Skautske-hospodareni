@@ -10,6 +10,7 @@ use Nette\SmartObject;
 /**
  * @property-read SkautisEducationCourseId $id
  * @property-read string $displayName
+ * @property-read int $estimatedPersonDays
  */
 class EducationCourse implements ISkautisEvent
 {

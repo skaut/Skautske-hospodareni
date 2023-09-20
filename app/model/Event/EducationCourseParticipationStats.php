@@ -6,7 +6,11 @@ namespace Model\Event;
 
 use Nette\SmartObject;
 
-/** @property-read SkautisEducationCourseParticipationStatsId $id */
+/**
+ * @property-read SkautisEducationCourseParticipationStatsId $id
+ * @property-read int $accepted
+ * @property-read int $capacity
+ */
 class EducationCourseParticipationStats
 {
     use SmartObject;
