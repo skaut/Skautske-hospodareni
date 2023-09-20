@@ -12,8 +12,10 @@ use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\EducationCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
 use Model\DTO\Cashbook\Cashbook;
+use Model\Event\EducationCourse;
 use Model\Event\EducationCourseParticipationStats;
 use Model\Event\ReadModel\Queries\EducationCourseParticipationStatsQuery;
+use Model\Event\ReadModel\Queries\EducationCoursesQuery;
 use Model\Event\ReadModel\Queries\EducationFunctions;
 use Model\Event\ReadModel\Queries\EducationInstructorsQuery;
 use Model\Event\ReadModel\Queries\EducationTermsQuery;
@@ -51,9 +53,10 @@ class EducationPresenter extends BasePresenter
             $finalRealBalance = null;
         }
 
-        $terms                    = $this->queryBus->handle(new EducationTermsQuery($aid));
-        $instructors              = $this->queryBus->handle(new EducationInstructorsQuery($aid));
-        $courseParticipationStats = $this->queryBus->handle(new EducationCourseParticipationStatsQuery($aid));
+        $terms                         = $this->queryBus->handle(new EducationTermsQuery($aid));
+        $instructors                   = $this->queryBus->handle(new EducationInstructorsQuery($aid));
+        $courseParticipationStats      = $this->queryBus->handle(new EducationCourseParticipationStatsQuery($aid));
+        $courses                       = $this->queryBus->handle(new EducationCoursesQuery($aid));
 
         $this->template->setParameters([
             'skautISUrl'       => $this->userService->getSkautisUrl(),
@@ -80,6 +83,14 @@ class EducationPresenter extends BasePresenter
                         return $stat->getAccepted();
                     },
                     $courseParticipationStats,
+                ),
+            ),
+            'personDaysEstimated' => array_sum(
+                array_map(
+                    static function (EducationCourse $course) {
+                        return $course->getEstimatedPersonDays();
+                    },
+                    $courses,
                 ),
             ),
         ]);
