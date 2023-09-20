@@ -13,6 +13,7 @@ use Model\Cashbook\ReadModel\Queries\EducationCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Model\Event\ReadModel\Queries\EducationFunctions;
+use Model\Event\ReadModel\Queries\EducationInstructorsQuery;
 use Model\Event\ReadModel\Queries\EducationTermsQuery;
 use Model\Event\SkautisEducationId;
 use Model\ExportService;
@@ -47,7 +48,8 @@ class EducationPresenter extends BasePresenter
             $finalRealBalance = null;
         }
 
-        $terms = $this->queryBus->handle(new EducationTermsQuery($aid));
+        $terms       = $this->queryBus->handle(new EducationTermsQuery($aid));
+        $instructors = $this->queryBus->handle(new EducationInstructorsQuery($aid));
 
         $this->template->setParameters([
             'skautISUrl'       => $this->userService->getSkautisUrl(),
@@ -59,6 +61,7 @@ class EducationPresenter extends BasePresenter
             'prefixCash'           => $cashbook->getChitNumberPrefix(PaymentMethod::CASH()),
             'prefixBank'           => $cashbook->getChitNumberPrefix(PaymentMethod::BANK()),
             'totalDays'            => $this->countDays($terms),
+            'teamCount'            => count($instructors),
         ]);
 
         if (! $this->isAjax()) {
