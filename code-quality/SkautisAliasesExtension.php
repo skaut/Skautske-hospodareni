@@ -23,6 +23,7 @@ class SkautisAliasesExtension implements PropertiesClassReflectionExtension
         "Evaluation",
         "Events",
         "Exports",
+        "Grants",
         "GoogleApps",
         "Journal",
         "Material",

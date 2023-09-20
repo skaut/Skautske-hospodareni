@@ -15,6 +15,7 @@ use Model\DTO\Cashbook\Cashbook;
 use Model\Event\EducationCourse;
 use Model\Event\EducationCourseParticipationStats;
 use Model\Event\EducationParticipantParticipationStats;
+use Model\Event\EducationTerm;
 use Model\Event\ReadModel\Queries\EducationCourseParticipationStatsQuery;
 use Model\Event\ReadModel\Queries\EducationCoursesQuery;
 use Model\Event\ReadModel\Queries\EducationFunctions;

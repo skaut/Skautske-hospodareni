@@ -17,6 +17,7 @@ class EducationFunctions
 {
     use SmartObject;
 
+    /** @param array<Person> $assistants */
     public function __construct(private Person|null $leader = null, private Person|null $accountant = null, private Person|null $secretary = null, private Person|null $medic = null, private array $assistants = [])
     {
     }
