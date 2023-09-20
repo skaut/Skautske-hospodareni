@@ -42,9 +42,7 @@ class EducationFunctions
         return $this->medic;
     }
 
-    /**
-     * @return Person[]
-     */
+    /** @return Person[] */
     public function getAssistants(): array
     {
         return $this->assistants;
