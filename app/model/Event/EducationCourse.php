@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Model\Event;
 
-use Model\Skautis\ISkautisEvent;
 use Nette\SmartObject;
 
 /**
@@ -12,7 +11,7 @@ use Nette\SmartObject;
  * @property-read string $displayName
  * @property-read int $estimatedPersonDays
  */
-class EducationCourse implements ISkautisEvent
+class EducationCourse
 {
     use SmartObject;
 
