@@ -22,7 +22,7 @@ class EducationParticipantParticipationStatsQueryHandler
     public function __invoke(EducationParticipantParticipationStatsQuery $query): array
     {
         $participantParticipationStats = $this->skautis->Grants->ParticipantCourseTermAll([
-            'ID_Grant' => $query->getgrantId(),
+            'ID_Grant' => $query->getGrantId(),
         ]);
 
         if (is_object($participantParticipationStats)) {
