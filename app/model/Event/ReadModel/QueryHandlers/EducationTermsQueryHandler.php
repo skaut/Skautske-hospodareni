@@ -18,7 +18,7 @@ class EducationTermsQueryHandler
     {
     }
 
-    /** @return array<int, EducationTerm> Educations indexed by ID */
+    /** @return array<int, EducationTerm> Education terms indexed by ID */
     public function __invoke(EducationTermsQuery $query): array
     {
         $terms = $this->skautis->event->EventEducationCourseTermAll([

@@ -18,7 +18,7 @@ class EducationInstructorsQueryHandler
     {
     }
 
-    /** @return array<int, EducationInstructor> Educations indexed by ID */
+    /** @return array<int, EducationInstructor> Education instructors indexed by ID */
     public function __invoke(EducationInstructorsQuery $query): array
     {
         $instructors = $this->skautis->event->InstructorAll([

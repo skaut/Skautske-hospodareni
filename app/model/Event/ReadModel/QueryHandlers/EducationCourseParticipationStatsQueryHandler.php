@@ -18,7 +18,7 @@ class EducationCourseParticipationStatsQueryHandler
     {
     }
 
-    /** @return array<int, EducationTerm> Educations indexed by ID */
+    /** @return array<int, EducationCourseParticipationStats> Education course participation statistics indexed by ID */
     public function __invoke(EducationCourseParticipationStatsQuery $query): array
     {
         $courseParticipationStats = $this->skautis->event->EventEducationCourseAllParticipants([
