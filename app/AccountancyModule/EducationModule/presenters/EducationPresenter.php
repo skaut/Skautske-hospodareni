@@ -153,7 +153,7 @@ class EducationPresenter extends BasePresenter
         return count(
             array_unique(
                 array_map(
-                    function ($date) {
+                    static function ($date) {
                         return $date->__toString();
                     },
                     $days,
