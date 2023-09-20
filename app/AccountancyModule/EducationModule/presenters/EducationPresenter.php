@@ -14,10 +14,12 @@ use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
 use Model\DTO\Cashbook\Cashbook;
 use Model\Event\EducationCourse;
 use Model\Event\EducationCourseParticipationStats;
+use Model\Event\EducationParticipantParticipationStats;
 use Model\Event\ReadModel\Queries\EducationCourseParticipationStatsQuery;
 use Model\Event\ReadModel\Queries\EducationCoursesQuery;
 use Model\Event\ReadModel\Queries\EducationFunctions;
 use Model\Event\ReadModel\Queries\EducationInstructorsQuery;
+use Model\Event\ReadModel\Queries\EducationParticipantParticipationStatsQuery;
 use Model\Event\ReadModel\Queries\EducationTermsQuery;
 use Model\Event\SkautisEducationId;
 use Model\ExportService;
@@ -57,6 +59,7 @@ class EducationPresenter extends BasePresenter
         $instructors                   = $this->queryBus->handle(new EducationInstructorsQuery($aid));
         $courseParticipationStats      = $this->queryBus->handle(new EducationCourseParticipationStatsQuery($aid));
         $courses                       = $this->queryBus->handle(new EducationCoursesQuery($aid));
+        $participantParticipationStats = $this->queryBus->handle(new EducationParticipantParticipationStatsQuery($this->event->getGrantId()->toInt()));
 
         $this->template->setParameters([
             'skautISUrl'       => $this->userService->getSkautisUrl(),
@@ -91,6 +94,14 @@ class EducationPresenter extends BasePresenter
                         return $course->getEstimatedPersonDays();
                     },
                     $courses,
+                ),
+            ),
+            'personDaysReal' => array_sum(
+                array_map(
+                    static function (EducationParticipantParticipationStats $stat) {
+                        return $stat->getTotalDays();
+                    },
+                    $participantParticipationStats,
                 ),
             ),
         ]);

@@ -28,6 +28,7 @@ class Education implements ISkautisEvent
         private Date|null $endDate,
         private string $location,
         private string $state,
+        private SkautisGrantId $grantId,
     ) {
     }
 
@@ -69,5 +70,10 @@ class Education implements ISkautisEvent
     public function getState(): string
     {
         return $this->state;
+    }
+
+    public function getGrantId(): SkautisGrantId
+    {
+        return $this->grantId;
     }
 }

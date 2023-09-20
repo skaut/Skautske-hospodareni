@@ -8,6 +8,7 @@ use Cake\Chronos\Date;
 use Model\Common\UnitId;
 use Model\Event\Education;
 use Model\Event\SkautisEducationId;
+use Model\Event\SkautisGrantId;
 use stdClass;
 
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
@@ -27,6 +28,7 @@ final class EducationFactory
             $skautisEducation->EndDate === null ? null : Date::createFromFormat(self::DATETIME_FORMAT, $skautisEducation->EndDate),
             $skautisEducation->Location ?? '',
             $skautisEducation->ID_EventEducationState ?? '',
+            new SkautisGrantId($skautisEducation->ID_Grant ?? null),
         );
     }
 }
