@@ -6,7 +6,7 @@ namespace Model\Grant;
 
 final class SkautisGrantId
 {
-    public function __construct(private int $value)
+    public function __construct(private int|null $value)
     {
     }
 
