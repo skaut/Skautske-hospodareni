@@ -6,8 +6,9 @@ namespace App\AccountancyModule\EventModule\Factories;
 
 use App\AccountancyModule\EventModule\Components\MissingAutocomputedCategoryControl;
 use Model\Event\SkautisCampId;
+use Model\Event\SkautisEducationId;
 
 interface IMissingAutocomputedCategoryControlFactory
 {
-    public function create(SkautisCampId $campId): MissingAutocomputedCategoryControl;
+    public function create(SkautisCampId|SkautisEducationId $id): MissingAutocomputedCategoryControl;
 }
