@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\EducationModule;
 
-use Model\Auth\Resources\Event as ResourceEvent;
+use Model\Auth\Resources\Education as ResourceEducation;
 use Model\Cashbook\ObjectType;
 use Model\Event\Education;
 use Model\Event\Exception\EducationNotFound;
@@ -41,7 +41,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
 
         $this->template->setParameters([
             'event' => $this->event,
-            'isEditable' => $this->isEditable = $this->authorizator->isAllowed(ResourceEvent::UPDATE, $this->aid),
+            'isEditable' => $this->isEditable = $this->authorizator->isAllowed(ResourceEducation::UPDATE, $this->aid),
         ]);
     }
 
