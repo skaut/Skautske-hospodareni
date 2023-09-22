@@ -191,6 +191,10 @@ services:
               bus: queryBus
 
     # Skautis read model
+    - factory: Model\Skautis\ReadModel\QueryHandlers\EducationBudgetQueryHandler(@skautis.cached.grants)
+      tags:
+          messenger.messageHandler:
+              bus: queryBus
     - factory: Model\Skautis\ReadModel\QueryHandlers\CampBudgetQueryHandler(@skautis.cached.event)
       tags:
           messenger.messageHandler:
