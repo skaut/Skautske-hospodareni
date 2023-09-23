@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\EducationModule;
 
-use App\AccountancyModule\EventModule\Components\MissingAutocomputedCategoryControl;
-use App\AccountancyModule\EventModule\Factories\IMissingAutocomputedCategoryControlFactory;
 use Model\Auth\Resources\Education;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Commands\Cashbook\UpdateEducationCategoryTotals;
-use Model\Cashbook\MissingCategory;
 use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\ReadModel\Queries\EducationCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\InconsistentEducationCategoryTotalsQuery;
@@ -20,7 +17,7 @@ use function count;
 
 class BudgetPresenter extends BasePresenter
 {
-    public function __construct(private IMissingAutocomputedCategoryControlFactory $missingAutocomputedCategoryControlFactory)
+    public function __construct()
     {
         parent::__construct();
     }
@@ -41,23 +38,19 @@ class BudgetPresenter extends BasePresenter
     {
         $educationId = new SkautisEducationId($aid);
 
-        try {
-            $inconsistentTotals = $this->queryBus->handle(new InconsistentEducationCategoryTotalsQuery($educationId));
-            $this->template->setParameters([
-                'isConsistent'             => count($inconsistentTotals) === 0,
-                'toRepair'                 => $inconsistentTotals,
-                'budgetEntries'            => $this->queryBus->handle(new EducationBudgetQuery($educationId, $this->event->grantId)),
-                'categoriesSummary'        => $this->queryBus->handle(new CategoriesSummaryQuery($this->getCashbookId($aid))),
-                'isUpdateStatementAllowed' => $this->authorizator->isAllowed(Education::UPDATE_REAL_BUDGET_SPENDING, $aid),
-            ]);
-            if (! $this->isAjax()) {
-                return;
-            }
-
-            $this->redrawControl('contentSnip');
-        } catch (MissingCategory) {
-            $this->template->setParameters(['missingCategories' => true]);
+        $inconsistentTotals = $this->queryBus->handle(new InconsistentEducationCategoryTotalsQuery($educationId));
+        $this->template->setParameters([
+            'isConsistent'             => count($inconsistentTotals) === 0,
+            'toRepair'                 => $inconsistentTotals,
+            'budgetEntries'            => $this->queryBus->handle(new EducationBudgetQuery($educationId, $this->event->grantId)),
+            'categoriesSummary'        => $this->queryBus->handle(new CategoriesSummaryQuery($this->getCashbookId($aid))),
+            'isUpdateStatementAllowed' => $this->authorizator->isAllowed(Education::UPDATE_REAL_BUDGET_SPENDING, $aid),
+        ]);
+        if (! $this->isAjax()) {
+            return;
         }
+
+        $this->redrawControl('contentSnip');
     }
 
     /**
@@ -80,10 +73,5 @@ class BudgetPresenter extends BasePresenter
     private function getCashbookId(int $educationId): CashbookId
     {
         return $this->queryBus->handle(new EducationCashbookIdQuery(new SkautisEducationId($educationId)));
-    }
-
-    protected function createComponentCategoryAutocomputedControl(): MissingAutocomputedCategoryControl
-    {
-        return $this->missingAutocomputedCategoryControlFactory->create(new SkautisEducationId($this->aid));
     }
 }
