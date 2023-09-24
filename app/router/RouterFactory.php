@@ -135,6 +135,7 @@ class RouterFactory
                         Route::FILTER_TABLE => [
                             'ucastnici' => 'Participant',
                             'kniha' => 'Cashbook',
+                            'rozpocet' => 'Budget',
                         ],
                     ],
                     'action' => 'default',
