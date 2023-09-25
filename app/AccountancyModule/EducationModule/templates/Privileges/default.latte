@@ -1,0 +1,38 @@
+{block #title}{$event->getDisplayName()} - seznam oprávnění{/block}
+
+{block #content}
+
+{include ../header.latte}
+
+<h2>Přehled oprávnění přihlášené osoby</h2>
+
+<p class="alert alert-info">Oprávnění jsou zobrazena pro přihlášeného uživatele a právě aktivní roli, mohou být odvozena i podle funkce v jednotce či na dané akci.</p>
+<table class="table table-bordered table-sm">
+    <tr>
+        <th>Sekce</th>
+        <th>Událost</th>
+        <th class="text-center">Máš&nbsp;oprávnění?</th>
+    </tr>
+    {foreach $privileges as $section}
+        <tr>
+            <th rowspan="{= count($section['items'])+1}">{$section['label']}</th>
+        </tr>
+        <tr n:foreach="$section['items'] as $p">
+            <td>
+                {$p['label']}
+                <div class="small text-muted">{$p['desc']}</div>
+            </td>
+            <td class="text-center align-middle">
+                {if $p['value']}
+                    <span class="text-success"><i class="far fa-check-circle"></i></span>
+                    Ano
+                {else}
+                    <span class="text-muted">
+                        <i class="far fa-times-circle"></i>
+                        Ne
+                    </span>
+                {/if}
+            </td>
+        </tr>
+    {/foreach}
+</table>
