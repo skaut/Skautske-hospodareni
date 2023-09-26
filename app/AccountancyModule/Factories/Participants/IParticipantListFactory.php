@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\AccountancyModule\Factories\Participants;
 
 use App\AccountancyModule\Components\Participants\ParticipantList;
-use Model\DTO\Participant\Participant;
+use Model\DTO\Participant\ParticipatingPerson;
 
 interface IParticipantListFactory
 {
-    /** @param Participant[] $currentParticipants */
+    /** @param ParticipatingPerson[] $currentParticipants */
     public function create(
         int $aid,
         array $currentParticipants,

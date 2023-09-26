@@ -101,7 +101,7 @@ class ParticipantPresenter extends BasePresenter
         $control = $this->participantListFactory->create(
             $this->aid,
             $this->eventInstructors(),
-            true,
+            false,
             true,
             true,
             false,
