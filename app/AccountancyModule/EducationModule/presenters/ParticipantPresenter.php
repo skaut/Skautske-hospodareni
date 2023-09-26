@@ -104,7 +104,7 @@ class ParticipantPresenter extends BasePresenter
             false,
             true,
             true,
-            false,
+            true,
             false,
             'Seznam instruktorů',
         );
