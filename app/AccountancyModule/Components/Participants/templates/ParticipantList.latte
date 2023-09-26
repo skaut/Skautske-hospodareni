@@ -58,7 +58,7 @@ $showUnits bool - zobrazovat číslo jednotky
 
     {var $tabIndex = 1}
         <div n:ifset="$participants">
-            <h2 class="mb-3">Seznam účastníků</h2>
+            <h2 class="mb-3">{$title}</h2>
             <div class="d-flex mb-2">
                 <div class="dropdown d-inline-block mr-auto">
                     <button n:class="btn, btn-light, dropdown-toggle, empty($participants) ? 'disabled'"

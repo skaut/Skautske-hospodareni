@@ -106,6 +106,7 @@ class ParticipantPresenter extends BasePresenter
             true,
             false,
             false,
+            'Seznam instruktorů',
         );
 
         $control->onUpdate[] = function (array $updates): void {
