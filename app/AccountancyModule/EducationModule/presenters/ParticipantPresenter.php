@@ -8,7 +8,9 @@ use App\AccountancyModule\Components\Participants\ParticipantList;
 use App\AccountancyModule\ExcelResponse;
 use App\AccountancyModule\Factories\Participants\IParticipantListFactory;
 use Model\Auth\Resources\Education;
+use Model\Cashbook\ReadModel\Queries\EducationInstructorListQuery;
 use Model\Cashbook\ReadModel\Queries\EducationParticipantListQuery;
+use Model\DTO\Instructor\Instructor;
 use Model\DTO\Participant\Participant;
 use Model\DTO\Participant\UpdateParticipant;
 use Model\ExcelService;
@@ -94,6 +96,33 @@ class ParticipantPresenter extends BasePresenter
         }
     }
 
+    protected function createComponentInstructorList(): ParticipantList
+    {
+        $control = $this->participantListFactory->create(
+            $this->aid,
+            $this->eventInstructors(),
+            true,
+            true,
+            true,
+            false,
+            false,
+        );
+
+        $control->onUpdate[] = function (array $updates): void {
+            foreach ($updates as $u) {
+                assert($u instanceof UpdateParticipant);
+                if (! in_array($u->getField(), UpdateParticipant::getEducationFields())) {
+                    $this->flashMessage(sprintf('Nelze upravit pole: %s', $u->getField()), 'warning');
+                    $this->redirect('this');
+                }
+
+                $this->participants->update(EventType::EDUCATION(), $u);
+            }
+        };
+
+        return $control;
+    }
+
     protected function createComponentParticipantList(): ParticipantList
     {
         $control = $this->participantListFactory->create(
@@ -133,6 +162,12 @@ class ParticipantPresenter extends BasePresenter
         }
 
         $this->terminate();
+    }
+
+    /** @return Instructor[] */
+    private function eventInstructors(): array
+    {
+        return $this->queryBus->handle(new EducationInstructorListQuery($this->event->getId()));
     }
 
     /** @return Participant[] */
