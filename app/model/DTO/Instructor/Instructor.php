@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace Model\DTO\Instructor;
 
+use Model\DTO\Participant\ParticipatingPerson;
 use Model\Participant\Payment;
 use Model\Utils\MoneyFactory;
-use Nette\SmartObject;
 
 /**
- * @property-read int $id
  * @property-read int $personId
- * @property-read string $firstName
- * @property-read string $lastName
- * @property-read string $nickname
- * @property-read string $displayName
  * @property-read int $educationId
  * @property-read string $educationName
  * @property-read string $instructorType
@@ -25,18 +20,16 @@ use Nette\SmartObject;
  * @property-read float $repayment
  * @property-read string $onAccount
  */
-class Instructor
+class Instructor extends ParticipatingPerson
 {
-    use SmartObject;
-
     private Payment $paymentObj;
 
     public function __construct(
-        private int $id,
+        int $id,
         private int $personId,
-        private string $firstName,
-        private string $lastName,
-        private string|null $nickname = null,
+        string $firstName,
+        string $lastName,
+        string|null $nickname = null,
         private int $educationId,
         private string $educationName,
         private string $instructorType,
@@ -45,32 +38,13 @@ class Instructor
         private string $eventFocus,
         Payment $payment,
     ) {
+        parent::__construct($id, $firstName, $lastName, $nickname);
         $this->paymentObj = $payment;
-    }
-
-    public function getId(): int
-    {
-        return $this->id;
     }
 
     public function getPersonId(): int
     {
         return $this->personId;
-    }
-
-    public function getFirstName(): string
-    {
-        return $this->firstName;
-    }
-
-    public function getLastName(): string
-    {
-        return $this->lastName;
-    }
-
-    public function getNickname(): string|null
-    {
-        return $this->nickname;
     }
 
     public function getEducationId(): int
@@ -101,11 +75,6 @@ class Instructor
     public function getEventFocus(): string
     {
         return $this->eventFocus;
-    }
-
-    public function getDisplayName(): string
-    {
-        return $this->lastName . ' ' . $this->firstName . ($this->nickname !== null ? '(' . $this->nickname . ')' : '');
     }
 
     public function getPayment(): float

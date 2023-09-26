@@ -7,16 +7,10 @@ namespace Model\DTO\Participant;
 use Cake\Chronos\Date;
 use Model\Participant\Payment;
 use Model\Utils\MoneyFactory;
-use Nette\SmartObject;
 
 /**
- * @property-read int $id
  * @property-read int $personId
- * @property-read string $firstName
- * @property-read string $lastName
- * @property-read string $nickName
  * @property-read int|null $age
- * @property-read string $displayName
  * @property-read string $street
  * @property-read string $city
  * @property-read int $postcode
@@ -28,40 +22,36 @@ use Nette\SmartObject;
  * @property-read int $days
  * @property-read bool $isAccepted
  */
-class Participant
+class Participant extends ParticipatingPerson
 {
-    use SmartObject;
-
     private Payment $paymentObj;
 
-    public function __construct(private int $id, private int $personId, private string $firstName, private string $lastName, private string|null $nickName = null, private int|null $age = null, private Date|null $birthday = null, private string $street, private string $city, private int $postcode, private string $state, private string $unit, private string $unitRegistrationNumber, private int $days, private bool $isAccepted, Payment $payment, private string|null $category = null)
-    {
+    public function __construct(
+        int $id,
+        private int $personId,
+        string $firstName,
+        string $lastName,
+        string|null $nickName = null,
+        private int|null $age = null,
+        private Date|null $birthday = null,
+        private string $street,
+        private string $city,
+        private int $postcode,
+        private string $state,
+        private string $unit,
+        private string $unitRegistrationNumber,
+        private int $days,
+        private bool $isAccepted,
+        Payment $payment,
+        private string|null $category = null
+    ) {
+        parent::__construct($id, $firstName, $lastName, $nickName);
         $this->paymentObj = $payment;
-    }
-
-    public function getId(): int
-    {
-        return $this->id;
     }
 
     public function getPersonId(): int
     {
         return $this->personId;
-    }
-
-    public function getFirstName(): string
-    {
-        return $this->firstName;
-    }
-
-    public function getLastName(): string
-    {
-        return $this->lastName;
-    }
-
-    public function getNickName(): string|null
-    {
-        return $this->nickName;
     }
 
     public function getAge(): int|null
@@ -102,11 +92,6 @@ class Participant
     public function getUnit(): string
     {
         return $this->unit;
-    }
-
-    public function getDisplayName(): string
-    {
-        return $this->lastName . ' ' . $this->firstName . ($this->nickName !== null ? '(' . $this->nickName . ')' : '');
     }
 
     public function getDays(): int

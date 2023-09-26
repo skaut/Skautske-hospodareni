@@ -6,7 +6,7 @@ namespace App\AccountancyModule\Components\Participants;
 
 use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
-use Model\DTO\Participant\Participant;
+use Model\DTO\Participant\ParticipatingPerson;
 use Model\DTO\Participant\UpdateParticipant;
 use Model\Participant\ParticipantNotFound;
 use Nette\Application\BadRequestException;
@@ -53,7 +53,7 @@ final class ParticipantList extends BaseControl
     /** @persistent */
     public string|null $sort = 'displayName';
 
-    /** @param Participant[] $currentParticipants */
+    /** @param ParticipatingPerson[] $currentParticipants */
     public function __construct(
         public int $aid,
         private array $currentParticipants,
@@ -99,7 +99,7 @@ final class ParticipantList extends BaseControl
         $this->template->render();
     }
 
-    /** @param Participant[] $participants */
+    /** @param ParticipatingPerson[] $participants */
     protected function sortParticipants(array &$participants, string $sort): void
     {
         if (! isset(self::SORT_OPTIONS[$sort])) {
@@ -107,9 +107,9 @@ final class ParticipantList extends BaseControl
         }
 
         if ($sort === 'displayName') {
-            $sortFunction = fn (Participant $a, Participant $b) => strcoll($a->{$sort}, $b->{$sort});
+            $sortFunction = fn (ParticipatingPerson $a, ParticipatingPerson $b) => strcoll($a->{$sort}, $b->{$sort});
         } else {
-            $sortFunction = fn (Participant $a, Participant $b) => $a->{$sort} <=> $b->{$sort};
+            $sortFunction = fn (ParticipatingPerson $a, ParticipatingPerson $b) => $a->{$sort} <=> $b->{$sort};
         }
 
         usort($participants, $sortFunction);
@@ -144,7 +144,7 @@ final class ParticipantList extends BaseControl
         $this->onRemove([$participantId]);
         $this->currentParticipants = array_filter(
             $this->currentParticipants,
-            function (Participant $p) use ($participantId) {
+            function (ParticipatingPerson $p) use ($participantId) {
                 return $p->getId() !== $participantId;
             },
         );
@@ -287,7 +287,7 @@ final class ParticipantList extends BaseControl
         $this->reload('Účastníci byli odebráni');
     }
 
-    /** @return array<int, Participant> Participant's indexed by their ID */
+    /** @return array<int, ParticipatingPerson> Participant's indexed by their ID */
     private function participantsById(): array
     {
         $participants = [];
