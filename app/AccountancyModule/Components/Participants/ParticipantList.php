@@ -63,6 +63,7 @@ final class ParticipantList extends BaseControl
         protected bool $isAllowParticipantUpdate,
         protected bool $isAllowParticipantDelete,
         protected bool $isOnlineLogin,
+        protected bool $isAllowShowUnits,
         protected string $title,
     ) {
     }
@@ -89,6 +90,7 @@ final class ParticipantList extends BaseControl
             'participants' => $this->currentParticipants,
             'sort'       => $this->sort,
             'sortOptions' => $sortOptions,
+            'isAllowShowUnits' => $this->isAllowShowUnits,
             'showUnits' => $this->showUnits,
             'isAllowDaysUpdate' => $this->isAllowDaysUpdate,
             'isAllowRepayment' => $this->isAllowRepayment,

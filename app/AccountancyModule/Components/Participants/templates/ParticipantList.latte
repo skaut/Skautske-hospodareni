@@ -89,7 +89,7 @@ $showUnits bool - zobrazovat číslo jednotky
                         <a n:href="sort $id" class="dropdown-item ajax">{$label}</a>
                     </div>
                 </span>
-                <a n:href="showUnits !$showUnits" class='btn btn-light ajax'>
+                <a n:if="$isAllowShowUnits" n:href="showUnits !$showUnits" class='btn btn-light ajax'>
                     <i n:class="fas, $showUnits ? 'fa-eye' : 'fa-eye-slash'"></i>
                     {$showUnits ? 'Skrýt' : 'Zobrazit'} jednotku
                 </a>
