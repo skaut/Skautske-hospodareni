@@ -19,5 +19,6 @@ interface IParticipantListFactory
         bool $isAllowParticipantUpdate,
         bool $isAllowParticipantDelete,
         bool $isOnlineLogin,
+        string $title = 'Seznam účastníků',
     ): ParticipantList;
 }

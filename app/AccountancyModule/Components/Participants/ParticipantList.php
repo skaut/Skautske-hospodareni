@@ -63,6 +63,7 @@ final class ParticipantList extends BaseControl
         protected bool $isAllowParticipantUpdate,
         protected bool $isAllowParticipantDelete,
         protected bool $isOnlineLogin,
+        protected string $title,
     ) {
     }
 
@@ -84,6 +85,7 @@ final class ParticipantList extends BaseControl
         $this->template->setFile(__DIR__ . '/templates/ParticipantList.latte');
         $this->template->setParameters([
             'aid' => $this->aid,
+            'title' => $this->title,
             'participants' => $this->currentParticipants,
             'sort'       => $this->sort,
             'sortOptions' => $sortOptions,
