@@ -8,7 +8,7 @@ use App\AccountancyModule\Components\Dialog;
 use App\Forms\BaseForm;
 use Assert\Assertion;
 use Closure;
-use Model\DTO\Participant\Participant;
+use Model\DTO\Participant\ParticipatingPerson;
 use Model\DTO\Participant\UpdateParticipant;
 
 use function assert;
@@ -21,7 +21,7 @@ final class EditParticipantDialog extends Dialog
     /** @var Closure[] */
     public array $onUpdate = [];
 
-    /** @param array<int, Participant> $participants */
+    /** @param array<int, ParticipatingPerson> $participants */
     public function __construct(private array $participants, private bool $isAllowedDaysUpdate, private bool $isAccountAllowed, private bool $isRepaymentAllowed, private bool $isOnlineLogin)
     {
     }
@@ -43,7 +43,7 @@ final class EditParticipantDialog extends Dialog
         Assertion::keyExists($this->participants, $this->participantId);
 
         $participant = $this->participants[$this->participantId];
-        assert($participant instanceof Participant);
+        assert($participant instanceof ParticipatingPerson);
 
         $form = new BaseForm();
 
