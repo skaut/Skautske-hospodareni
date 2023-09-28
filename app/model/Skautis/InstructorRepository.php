@@ -59,7 +59,7 @@ final class InstructorRepository implements IInstructorRepository
                 $payment =  PaymentFactory::createDefault($p->ID, $event);
             }
 
-            $instructors[$p->ID] = InstructorFactory::create($p, $payment); // TODO
+            $instructors[$p->ID] = InstructorFactory::create($p, $payment);
         }
 
         /*
