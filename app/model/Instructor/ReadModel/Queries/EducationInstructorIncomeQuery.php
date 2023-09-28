@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\Queries;
 
-use Model\Cashbook\ReadModel\QueryHandlers\EducationParticipantIncomeQueryHandler;
+use Model\Cashbook\ReadModel\QueryHandlers\EducationInstructorIncomeQueryHandler;
 use Model\Event\SkautisEducationId;
 
-/** @see EducationParticipantIncomeQueryHandler */
-final class EducationParticipantIncomeQuery
+/** @see EducationInstructorIncomeQueryHandler */
+final class EducationInstructorIncomeQuery
 {
     private SkautisEducationId $educationId;
 

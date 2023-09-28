@@ -17,6 +17,7 @@ use Model\Cashbook\MissingCategory;
 use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EducationCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\EducationInstructorIncomeQuery;
 use Model\Cashbook\ReadModel\Queries\EducationParticipantCategoryIdQuery;
 use Model\Cashbook\ReadModel\Queries\EducationParticipantIncomeQuery;
 use Model\Cashbook\ReadModel\Queries\FinalCashBalanceQuery;
@@ -81,6 +82,9 @@ class CashbookPresenter extends BasePresenter
     protected function createComponentFormImportHpd(): BaseForm
     {
         $form = new BaseForm();
+        $form->addRadioList('from', 'Kategorie:', ['participant' => 'Od účastníků', 'instructor' => 'Od instruktorů'])
+            ->addRule($form::FILLED, 'Musíte vyplnit kategorii.')
+            ->setDefaultValue('participant');
         $form->addRadioList('isAccount', 'Placeno:', ['N' => 'Hotově', 'Y' => 'Přes účet'])
             ->addRule($form::FILLED, 'Musíte vyplnit způsob platby.')
             ->setDefaultValue('N');
@@ -102,14 +106,16 @@ class CashbookPresenter extends BasePresenter
         $this->editableOnly();
         $values = $form->getValues();
 
-        $amount = $this->queryBus->handle(new EducationParticipantIncomeQuery(new SkautisEducationId($this->aid)));
+        $amount = $values->from === 'instructor'
+            ? $this->queryBus->handle(new EducationInstructorIncomeQuery(new SkautisEducationId($this->aid)))
+            : $this->queryBus->handle(new EducationParticipantIncomeQuery(new SkautisEducationId($this->aid)));
 
         if ($amount === 0.0) {
             $this->flashMessage('Nemáte žádné příjmy od účastníků, které by bylo možné importovat.', 'warning');
             $this->redirect('default', ['aid' => $this->aid]);
         }
 
-        $purpose = 'úč. příspěvky ' . ($values->isAccount === 'Y' ? '- účet' : '- hotovost');
+        $purpose = 'úč. příspěvky - ' . ($values->from === 'instructor' ? 'instruktoři' : 'účastníci') . ' - ' . ($values->isAccount === 'Y' ? 'účet' : 'hotovost');
         $body    = new ChitBody(null, $this->event->getStartDate(), null);
 
         $categoryId    = $this->queryBus->handle(
