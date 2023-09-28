@@ -82,7 +82,7 @@ class CashbookPresenter extends BasePresenter
     protected function createComponentFormImportHpd(): BaseForm
     {
         $form = new BaseForm();
-        $form->addRadioList('from', 'Kategorie:', ['participant' => 'Od účastníků', 'instructor' => 'Od instruktorů'])
+        $form->addRadioList('from', 'Od:', ['participant' => 'Od účastníků', 'instructor' => 'Od instruktorů'])
             ->addRule($form::FILLED, 'Musíte vyplnit kategorii.')
             ->setDefaultValue('participant');
         $form->addRadioList('isAccount', 'Placeno:', ['N' => 'Hotově', 'Y' => 'Přes účet'])
