@@ -12,6 +12,7 @@ use Model\DTO\Participant\ParticipatingPerson;
 use Model\DTO\Participant\UpdateParticipant;
 
 use function assert;
+use function method_exists;
 
 final class EditParticipantDialog extends Dialog
 {
@@ -51,7 +52,7 @@ final class EditParticipantDialog extends Dialog
             $days = $form->addInteger('days', 'Počet dní')
                 ->setRequired('Musíte vyplnit počet dní')
                 ->addRule(BaseForm::MIN, 'Minimální počet dní je %d', 0)
-                ->setDefaultValue($participant->getDays());
+                ->setDefaultValue(method_exists($participant, 'getDays') ? $participant->getDays() : 0);
             if ($this->isOnlineLogin && ! $participant->isAccepted()) {
                 $days->setRequired(false)
                     ->setDisabled()
@@ -87,7 +88,7 @@ final class EditParticipantDialog extends Dialog
                 $changes[UpdateParticipant::FIELD_PAYMENT] = $values['payment'];
             }
 
-            if ($this->isAllowedDaysUpdate && isset($values['days']) && $values['days'] !== $participant->getDays()) {
+            if ($this->isAllowedDaysUpdate && isset($values['days']) && method_exists($participant, 'getDays') && $values['days'] !== $participant->getDays()) {
                 $changes[UpdateParticipant::FIELD_DAYS] = $values['days'];
             }
 
