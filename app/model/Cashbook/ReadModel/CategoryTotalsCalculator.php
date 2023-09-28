@@ -7,6 +7,7 @@ namespace Model\Cashbook\ReadModel;
 use Model\Cashbook\CampCategory;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\CashbookType;
+use Model\Cashbook\EducationCategory;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\MissingCategory;
 use Model\Cashbook\ParticipantType;
@@ -28,6 +29,9 @@ final class CategoryTotalsCalculator
         if ($cashbook->getType()->equalsValue(CashbookType::CAMP)) {
             $totalByCategories = self::categorySubtract($totalByCategories, self::getCampIncomeCategoryId($categories, ParticipantType::CHILD()), ICategory::CATEGORY_REFUND_CHILD_ID);
             $totalByCategories = self::categorySubtract($totalByCategories, self::getCampIncomeCategoryId($categories, ParticipantType::ADULT()), ICategory::CATEGORY_REFUND_ADULT_ID);
+        } elseif ($cashbook->getType()->equalsValue(CashbookType::EDUCATION)) {
+            $totalByCategories = self::categorySubtract($totalByCategories, self::getEducationIncomeCategoryId($categories), ICategory::CATEGORY_REFUND_PARTICIPANT_ID);
+            $totalByCategories = self::categorySubtract($totalByCategories, self::getEducationIncomeCategoryId($categories), ICategory::CATEGORY_REFUND_INSTRUCTOR_ID);
         } else {
             if (array_key_exists(ICategory::CATEGORY_HPD_ID, $totalByCategories)) {
                 $totalByCategories[ICategory::CATEGORY_PARTICIPANT_INCOME_ID] = ($totalByCategories[ICategory::CATEGORY_PARTICIPANT_INCOME_ID] ?? 0) + $totalByCategories[ICategory::CATEGORY_HPD_ID];
@@ -65,5 +69,17 @@ final class CategoryTotalsCalculator
         }
 
         throw new MissingCategory(sprintf('Seznam táborových kategorií neobsahuje požadový typ "%s".', $type->getValue()));
+    }
+
+    /** @param ICategory[] $categories */
+    private static function getEducationIncomeCategoryId(array $categories): int
+    {
+        foreach ($categories as $c) {
+            if ($c instanceof EducationCategory && $c->getName() === 'Účastnické poplatky') {
+                return $c->getId();
+            }
+        }
+
+        throw new MissingCategory('Seznam kategorií vzdělávačky neobsahuje účastnické poplatky.');
     }
 }

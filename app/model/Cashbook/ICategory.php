@@ -14,6 +14,8 @@ interface ICategory
     public const CATEGORY_REFUND_ID             = 20;
     public const CATEGORY_REFUND_CHILD_ID       = 21;
     public const CATEGORY_REFUND_ADULT_ID       = 22;
+    public const CATEGORY_REFUND_PARTICIPANT_ID = 23;
+    public const CATEGORY_REFUND_INSTRUCTOR_ID  = 24;
 
     public function getId(): int;
 
