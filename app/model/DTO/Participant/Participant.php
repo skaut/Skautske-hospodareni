@@ -46,6 +46,7 @@ class Participant extends ParticipatingPerson
         private string|null $category = null
     ) {
         parent::__construct($id, $firstName, $lastName, $nickName);
+
         $this->paymentObj = $payment;
     }
 

@@ -17,7 +17,7 @@ use Model\Skautis\Factory\InstructorFactory;
 use Skautis\Skautis;
 use stdClass;
 
-use function array_diff_key;
+//use function array_diff_key;
 use function array_key_exists;
 use function array_map;
 use function is_array;
