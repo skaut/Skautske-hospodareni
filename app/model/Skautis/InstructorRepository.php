@@ -62,9 +62,11 @@ final class InstructorRepository implements IInstructorRepository
             $instructors[$p->ID] = InstructorFactory::create($p, $payment); // TODO
         }
 
+        /*
         foreach (array_diff_key($eventPayments, $instructors) as $paymentToRemove) {
             $this->payments->remove($paymentToRemove); //delete zaznam, protoze neexistuje k nemu ucastnik
         }
+        */
 
         usort(
             $instructors,
