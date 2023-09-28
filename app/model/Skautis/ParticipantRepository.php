@@ -24,7 +24,7 @@ use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WsdlException;
 use stdClass;
 
-use function array_diff_key;
+//use function array_diff_key;
 use function array_key_exists;
 use function array_map;
 use function is_array;

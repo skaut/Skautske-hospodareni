@@ -39,6 +39,7 @@ class Instructor extends ParticipatingPerson
         Payment $payment,
     ) {
         parent::__construct($id, $firstName, $lastName, $nickname);
+
         $this->paymentObj = $payment;
     }
 
