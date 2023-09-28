@@ -6,27 +6,20 @@ namespace Model\DTO\Instructor;
 
 use Model\DTO\Participant\ParticipatingPerson;
 use Model\Participant\Payment;
-use Model\Utils\MoneyFactory;
 
 /**
- * @property-read int $personId
  * @property-read int $educationId
  * @property-read string $educationName
  * @property-read string $instructorType
  * @property-read string $scoutExperience
  * @property-read string $professionalExperience
  * @property-read string $eventFocus
- * @property-read float $payment
- * @property-read float $repayment
- * @property-read string $onAccount
  */
 class Instructor extends ParticipatingPerson
 {
-    private Payment $paymentObj;
-
     public function __construct(
         int $id,
-        private int $personId,
+        int $personId,
         string $firstName,
         string $lastName,
         string|null $nickname = null,
@@ -38,14 +31,7 @@ class Instructor extends ParticipatingPerson
         private string $eventFocus,
         Payment $payment,
     ) {
-        parent::__construct($id, $firstName, $lastName, $nickname);
-
-        $this->paymentObj = $payment;
-    }
-
-    public function getPersonId(): int
-    {
-        return $this->personId;
+        parent::__construct($id, $personId, $firstName, $lastName, $nickname, $payment);
     }
 
     public function getEducationId(): int
@@ -76,20 +62,5 @@ class Instructor extends ParticipatingPerson
     public function getEventFocus(): string
     {
         return $this->eventFocus;
-    }
-
-    public function getPayment(): float
-    {
-        return MoneyFactory::toFloat($this->paymentObj->getPayment());
-    }
-
-    public function getRepayment(): float
-    {
-        return MoneyFactory::toFloat($this->paymentObj->getRepayment());
-    }
-
-    public function getOnAccount(): string
-    {
-        return $this->paymentObj->getAccount();
     }
 }

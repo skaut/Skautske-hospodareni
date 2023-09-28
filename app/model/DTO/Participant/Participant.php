@@ -6,29 +6,25 @@ namespace Model\DTO\Participant;
 
 use Cake\Chronos\Date;
 use Model\Participant\Payment;
-use Model\Utils\MoneyFactory;
 
 /**
- * @property-read int $personId
  * @property-read int|null $age
+ * @property-read Date|null $birthday
+ * @property-read string $unitRegistrationNumber
  * @property-read string $street
  * @property-read string $city
  * @property-read int $postcode
- * @property-read Date|null $birthday
- * @property-read string $unitRegistrationNumber
- * @property-read float $payment
- * @property-read float $repayment
- * @property-read string $onAccount
+ * @property-read string $state
+ * @property-read string $unit
  * @property-read int $days
  * @property-read bool $isAccepted
+ * @property-read string $category
  */
 class Participant extends ParticipatingPerson
 {
-    private Payment $paymentObj;
-
     public function __construct(
         int $id,
-        private int $personId,
+        int $personId,
         string $firstName,
         string $lastName,
         string|null $nickName = null,
@@ -45,14 +41,7 @@ class Participant extends ParticipatingPerson
         Payment $payment,
         private string|null $category = null,
     ) {
-        parent::__construct($id, $firstName, $lastName, $nickName);
-
-        $this->paymentObj = $payment;
-    }
-
-    public function getPersonId(): int
-    {
-        return $this->personId;
+        parent::__construct($id, $personId, $firstName, $lastName, $nickName, $payment);
     }
 
     public function getAge(): int|null
@@ -98,21 +87,6 @@ class Participant extends ParticipatingPerson
     public function getDays(): int
     {
         return $this->days;
-    }
-
-    public function getPayment(): float
-    {
-        return MoneyFactory::toFloat($this->paymentObj->getPayment());
-    }
-
-    public function getRepayment(): float
-    {
-        return MoneyFactory::toFloat($this->paymentObj->getRepayment());
-    }
-
-    public function getOnAccount(): string
-    {
-        return $this->paymentObj->getAccount();
     }
 
     public function getCategory(): string
