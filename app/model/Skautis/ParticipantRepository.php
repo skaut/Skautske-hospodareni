@@ -220,9 +220,11 @@ final class ParticipantRepository implements IParticipantRepository
             $participants[$p->ID] = ParticipantFactory::create($p, $payment);
         }
 
+        /*
         foreach (array_diff_key($participantPayments, $participants) as $paymentToRemove) {
             $this->payments->remove($paymentToRemove); //delete zaznam, protoze neexistuje k nemu ucastnik
         }
+        */
 
         usort(
             $participants,
