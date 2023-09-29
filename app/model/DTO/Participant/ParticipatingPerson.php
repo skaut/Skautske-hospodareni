@@ -23,6 +23,9 @@ class ParticipatingPerson
 {
     use SmartObject;
 
+    public const PARTICIPANT = 'participant';
+    public const INSTRUCTOR  = 'instructor';
+
     private Payment $paymentObj;
 
     public function __construct(

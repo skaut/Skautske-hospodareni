@@ -17,6 +17,7 @@ use Model\Cashbook\Commands\Cashbook\RemoveCampParticipant;
 use Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
 use Model\DTO\Participant\NonMemberParticipant;
 use Model\DTO\Participant\Participant;
+use Model\DTO\Participant\ParticipatingPerson;
 use Model\DTO\Participant\UpdateParticipant;
 use Model\Event\Commands\Camp\ActivateAutocomputedParticipants;
 use Model\Event\SkautisCampId;
@@ -100,8 +101,10 @@ class ParticipantPresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    public function actionExportExcel(int $aid): void
+    public function actionExportExcel(int $aid, string $exportType): void
     {
+        assert($exportType === ParticipatingPerson::PARTICIPANT);
+
         try {
             $participantsDTO = $this->campParticipants();
             $spreadsheet     = $this->excelService->getCampParticipants($participantsDTO);
@@ -165,8 +168,10 @@ class ParticipantPresenter extends BasePresenter
         return $control;
     }
 
-    public function actionExport(int $aid): void
+    public function actionExport(int $aid, string $exportType): void
     {
+        assert($exportType === ParticipatingPerson::PARTICIPANT);
+
         try {
             $template = $this->exportService->getParticipants($aid, EventType::CAMP);
             $this->pdf->render($template, 'seznam-ucastniku.pdf', true);

@@ -21,5 +21,6 @@ interface IParticipantListFactory
         bool $isOnlineLogin,
         bool $isAllowShowUnits = true,
         string $title = 'Seznam účastníků',
+        string $exportType = ParticipatingPerson::PARTICIPANT,
     ): ParticipantList;
 }
