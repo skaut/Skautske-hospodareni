@@ -8,9 +8,11 @@ use App\AccountancyModule\Components\Participants\ParticipantList;
 use App\AccountancyModule\ExcelResponse;
 use App\AccountancyModule\Factories\Participants\IParticipantListFactory;
 use Model\Auth\Resources\Education;
+use Model\Cashbook\ReadModel\Queries\EducationInstructorEnrichmentQuery;
 use Model\Cashbook\ReadModel\Queries\EducationInstructorListQuery;
 use Model\Cashbook\ReadModel\Queries\EducationParticipantListQuery;
 use Model\DTO\Instructor\Instructor;
+use Model\DTO\Instructor\InstructorEnriched;
 use Model\DTO\Participant\Participant;
 use Model\DTO\Participant\ParticipatingPerson;
 use Model\DTO\Participant\UpdateParticipant;
@@ -22,6 +24,7 @@ use Model\Services\PdfRenderer;
 use Nette\Utils\Strings;
 use Skautis\Wsdl\PermissionException;
 
+use function array_map;
 use function assert;
 use function date;
 use function in_array;
@@ -87,7 +90,14 @@ class ParticipantPresenter extends BasePresenter
         }
 
         try {
-            $participantsDTO = $this->eventParticipants();
+            $participantsDTO = $exportType === ParticipatingPerson::INSTRUCTOR
+                ? array_map(
+                    function (Instructor $instructor): InstructorEnriched {
+                        return $this->queryBus->handle(new EducationInstructorEnrichmentQuery($instructor));
+                    },
+                    $this->eventInstructors(),
+                )
+                : $this->eventParticipants();
             $spreadsheet     = $this->excelService->getEducationParticipants($participantsDTO, $this->event->getStartDate());
 
             $this->sendResponse(new ExcelResponse(Strings::webalize($this->event->getDisplayName()) . '-' . date('Y_n_j'), $spreadsheet));
