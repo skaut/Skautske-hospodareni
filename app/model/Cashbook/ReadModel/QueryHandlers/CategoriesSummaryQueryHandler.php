@@ -37,9 +37,9 @@ class CategoriesSummaryQueryHandler
 
         $totalByCategories = $calculator->calculate($cashbook, $categories);
 
-        // filter out camp refund categories
+        // filter out camp and education refund categories
         $categories = array_filter($categories, function (ICategory $category) {
-            return ! in_array($category->getId(), [ICategory::CATEGORY_REFUND_CHILD_ID, ICategory::CATEGORY_REFUND_ADULT_ID]);
+            return ! in_array($category->getId(), [ICategory::CATEGORY_REFUND_CHILD_ID, ICategory::CATEGORY_REFUND_ADULT_ID, ICategory::CATEGORY_REFUND_PARTICIPANT_ID, ICategory::CATEGORY_REFUND_INSTRUCTOR_ID]);
         });
 
         $categoriesSummaryById = [];
