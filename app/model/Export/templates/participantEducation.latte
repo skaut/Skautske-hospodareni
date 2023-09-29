@@ -33,10 +33,13 @@ td {
 <table class="all" border="1">
     <tr>
         <th style="width: 5%;">P.č.</th>
-        <th style="width: 30%">Příjmení a jméno</th>
-        <th style="width: 45%">Adresa</th>
-        <th style="width: 12%;">Dat. nar.</th>
-        <th style="width: 8%;">Zaplaceno</th>
+        <th style="width: 25%">Příjmení a jméno</th>
+        <th style="width: 34%">Adresa</th>
+        <th style="width: 10%;">Dat. nar.</th>
+        <th style="width: 7%;">Zaplaceno</th>
+        <th style="width: 7%;">Vratka</th>
+        <th style="width: 7%;">Celkem</th>
+        <th style="width: 5%;">Na účet?</th>
     </tr>
     {dump $list}
     <tr n:foreach="$list as $p">
@@ -44,7 +47,10 @@ td {
         <td>{$p->displayName}</td>
         <td>{if property_exists($p, "street") && $p->street != ""}{$p->street}{else}&nbsp;{/if}{if property_exists($p, "city") && $p->city != ""}, {$p->city}{/if}{if property_exists($p, "postcode") && $p->postcode != ""}, {(string)$p->postcode|postCode}{/if}</td>
         <td style="text-align: right;">{if property_exists($p, "birthday") && $p->birthday !== null}{$p->birthday->format("d.m.Y")}{else}&nbsp;{/if}</td>
-        <td style="text-align: right;">{$p->payment|price:false} Kč</td>
+        <td style="text-align: right;">{$p->payment|price:false}</td>
+        <td style="text-align: right;">{$p->repayment|price:false}</td>
+        <td style="text-align: right;">{= $p->payment - $p->repayment|price}</td>
+        <td style="text-align: right;">{if $p->onAccount == "Y"}Ano{else}&nbsp;{/if}</td>
     </tr>
 </table>
 
