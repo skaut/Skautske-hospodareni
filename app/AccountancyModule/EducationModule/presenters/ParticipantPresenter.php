@@ -159,7 +159,7 @@ class ParticipantPresenter extends BasePresenter
     {
         try {
             $template = $this->exportService->getParticipants($aid, EventType::EDUCATION, $exportType);
-            $this->pdf->render($template, 'seznam-ucastniku.pdf', false);
+            $this->pdf->render($template, 'seznam-ucastniku.pdf', true);
         } catch (PermissionException $ex) {
             $this->flashMessage('Nemáte oprávnění k záznamu osoby! (' . $ex->getMessage() . ')', 'danger');
             $this->redirect('default', ['aid' => $this->aid]);
