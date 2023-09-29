@@ -100,7 +100,8 @@ class ParticipantPresenter extends BasePresenter
                 : $this->eventParticipants();
             $spreadsheet     = $this->excelService->getEducationParticipants($participantsDTO, $this->event->getStartDate());
 
-            $this->sendResponse(new ExcelResponse(Strings::webalize($this->event->getDisplayName()) . '-' . date('Y_n_j'), $spreadsheet));
+            $typeSlug = $exportType === ParticipatingPerson::INSTRUCTOR ? 'instruktori' : 'ucastnici';
+            $this->sendResponse(new ExcelResponse(Strings::webalize($this->event->getDisplayName()) . '-' . $typeSlug . '-' . date('Y_n_j'), $spreadsheet));
         } catch (PermissionException $ex) {
             $this->flashMessage('Nemáte oprávnění k záznamu osoby! (' . $ex->getMessage() . ')', 'danger');
             $this->redirect('default', ['aid' => $aid]);
