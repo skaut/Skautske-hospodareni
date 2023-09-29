@@ -15,6 +15,7 @@ use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
 use Model\DTO\Instructor\InstructorEnriched;
 use Model\DTO\Participant\Participant;
+use Model\DTO\Participant\ParticipatingPerson;
 use Model\Excel\Builders\CashbookWithCategoriesBuilder;
 use Model\Excel\Range;
 use PhpOffice\PhpSpreadsheet\Exception;
@@ -62,7 +63,7 @@ class ExcelService
         return $spreadsheet;
     }
 
-    /** @param Participant[] $participantsDTO */
+    /** @param ParticipatingPerson[] $participantsDTO */
     public function getEducationParticipants(array $participantsDTO): Spreadsheet
     {
         $spreadsheet = $this->getNewFile();
@@ -121,7 +122,7 @@ class ExcelService
         return $spreadsheetWithActiveSheet;
     }
 
-    /** @param Participant[] $data */
+    /** @param ParticipatingPerson[] $data */
     protected function setSheetParticipantEducation(Worksheet $sheet, array $data): void
     {
         $sheet->setCellValue('A1', 'P.č.')
