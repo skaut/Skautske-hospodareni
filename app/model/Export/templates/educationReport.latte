@@ -22,13 +22,19 @@ $chits - paragony akce
     <h1>{$education->getDisplayName()}</h1>
 
     <h3>Základní údaje</h3>
-    {var $functionsWithName = [
-    'Vedoucí tábora' => $functions->leader,
-    'Zástupce vedoucího tábora' => $functions->assistant,
+
+    <b>Vedoucí akce: </b> {if $functions->leader !== NULL}{$functions->leader->name} {if $functions->leader->email !== NULL}(e-mail: {$functions->leader->email}){/if}{/if}<br>
+
+    {foreach $functions->assistants as $assistant}
+        <b>Zástupce vedoucího: </b> {if $assistant !== NULL}{$assistant->name} {if $assistant->email !== NULL}(e-mail: {$assistant->email}){/if}{/if}<br>
+    {/foreach}
+
+    {var $otherFunctions = [
     'Hospodář' => $functions->accountant,
+    'Tajemník' => $functions->secretary,
     'Zdravotník' => $functions->medic,
     ]}
-    {foreach $functionsWithName as $functionName => $person}
+    {foreach $otherFunctions as $functionName => $person}
         <b>{$functionName}: </b> {if $person !== NULL}{$person->name} {if $person->email !== NULL}(e-mail: {$person->email}){/if}{/if}<br>
     {/foreach}
 
