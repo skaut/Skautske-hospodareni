@@ -17,6 +17,7 @@ use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EducationCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\EducationInstructorListQuery;
 use Model\Cashbook\ReadModel\Queries\EducationParticipantListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
@@ -26,6 +27,7 @@ use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\CategorySummary;
 use Model\DTO\Cashbook\Chit;
+use Model\DTO\Participant\ParticipatingPerson;
 use Model\DTO\Participant\Statistics;
 use Model\Event\Camp;
 use Model\Event\Education;
@@ -78,7 +80,7 @@ class ExportService
         return '<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />';
     }
 
-    public function getParticipants(int $aid, string $type = EventType::GENERAL): string
+    public function getParticipants(int $aid, string $type = EventType::GENERAL, string $participantType = ParticipatingPerson::PARTICIPANT): string
     {
         if ($type === EventType::CAMP) {
             $templateFile = __DIR__ . '/templates/participantCamp.latte';
@@ -93,7 +95,9 @@ class ExportService
             assert($education instanceof Education);
             $displayName = $education->getDisplayName();
             $unitId      = $education->getUnitId();
-            $list        = $this->queryBus->handle(new EducationParticipantListQuery($education->getId()));
+            $list        = $participantType === ParticipatingPerson::INSTRUCTOR
+                ? $this->queryBus->handle(new EducationInstructorListQuery($education->getId()))
+                : $this->queryBus->handle(new EducationParticipantListQuery($education->getId()));
         } else {
             $templateFile = __DIR__ . '/templates/participant.latte';
             $event        = $this->queryBus->handle(new EventQuery(new SkautisEventId($aid)));

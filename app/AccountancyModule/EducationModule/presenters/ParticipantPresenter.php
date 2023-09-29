@@ -12,6 +12,7 @@ use Model\Cashbook\ReadModel\Queries\EducationInstructorListQuery;
 use Model\Cashbook\ReadModel\Queries\EducationParticipantListQuery;
 use Model\DTO\Instructor\Instructor;
 use Model\DTO\Participant\Participant;
+use Model\DTO\Participant\ParticipatingPerson;
 use Model\DTO\Participant\UpdateParticipant;
 use Model\ExcelService;
 use Model\ExportService;
@@ -78,7 +79,7 @@ class ParticipantPresenter extends BasePresenter
         $this->redrawControl('contentSnip');
     }
 
-    public function actionExportExcel(int $aid): void
+    public function actionExportExcel(int $aid, string $exportType): void
     {
         if ($this->event->getStartDate() === null) {
             $this->flashMessage('Bez vyplněného počátku akce nelze exportovat seznam účastníků, protože nelze dopočítat věk v době akce.', 'danger');
@@ -108,6 +109,7 @@ class ParticipantPresenter extends BasePresenter
             false,
             false,
             'Seznam instruktorů',
+            ParticipatingPerson::INSTRUCTOR,
         );
 
         $control->onUpdate[] = function (array $updates): void {
@@ -153,10 +155,10 @@ class ParticipantPresenter extends BasePresenter
         return $control;
     }
 
-    public function actionExport(int $aid): void
+    public function actionExport(int $aid, string $exportType): void
     {
         try {
-            $template = $this->exportService->getParticipants($aid, EventType::EDUCATION);
+            $template = $this->exportService->getParticipants($aid, EventType::EDUCATION, $exportType);
             $this->pdf->render($template, 'seznam-ucastniku.pdf', false);
         } catch (PermissionException $ex) {
             $this->flashMessage('Nemáte oprávnění k záznamu osoby! (' . $ex->getMessage() . ')', 'danger');

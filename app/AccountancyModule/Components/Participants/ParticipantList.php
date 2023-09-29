@@ -65,6 +65,7 @@ final class ParticipantList extends BaseControl
         protected bool $isOnlineLogin,
         protected bool $isAllowShowUnits,
         protected string $title,
+        protected string $exportType,
     ) {
     }
 
@@ -98,6 +99,7 @@ final class ParticipantList extends BaseControl
             'isAllowParticipantUpdate' => $this->isAllowParticipantUpdate,
             'isAllowParticipantDelete' => $this->isAllowParticipantDelete,
             'isAllowAnyAction' => $this->isAllowParticipantUpdate || $this->isAllowParticipantDelete,
+            'exportType' => $this->exportType,
         ]);
 
         $this->template->render();

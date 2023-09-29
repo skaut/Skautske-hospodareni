@@ -71,10 +71,10 @@ $showUnits bool - zobrazovat číslo jednotky
                         <i class="fas fa-arrow-down"></i> Exportovat&hellip;
                     </button>
                     <div class="dropdown-menu" aria-labelledby="exportParticipantsButton">
-                        <a class="dropdown-item" href="{plink export $aid}">
+                        <a class="dropdown-item" href="{plink export $aid, $exportType}">
                             <span class="mr-1"><i class="far fa-file-pdf"></i></span> PDF
                         </a>
-                        <a class="dropdown-item" href="{plink exportExcel $aid}">
+                        <a class="dropdown-item" href="{plink exportExcel $aid, $exportType}">
                             <span class="mr-1"><i class="far fa-file-excel"></i></span>
                             Excel
                         </a>
