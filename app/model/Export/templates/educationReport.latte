@@ -21,6 +21,9 @@ $chits - paragony akce
 <div class="totalReport">
     <h1>{$education->getDisplayName()}</h1>
 
+    <h3>Pořadatel akce</h3>
+    {$education->getUnitName()} - Ev. číslo: {$education->getUnitRegistrationNumber()}
+
     <h3>Základní údaje</h3>
 
     <b>Vedoucí akce: </b> {if $functions->leader !== NULL}{$functions->leader->name}{/if}<br>
