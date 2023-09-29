@@ -85,6 +85,7 @@ class ExportService
 
     public function getParticipants(int $aid, string $type = EventType::GENERAL, string $participantType = ParticipatingPerson::PARTICIPANT): string
     {
+        $title = 'Seznam účastníků';
         if ($type === EventType::CAMP) {
             $templateFile = __DIR__ . '/templates/participantCamp.latte';
             $camp         = $this->queryBus->handle(new CampQuery(new SkautisCampId($aid)));
@@ -98,14 +99,17 @@ class ExportService
             assert($education instanceof Education);
             $displayName = $education->getDisplayName();
             $unitId      = $education->getUnitId();
-            $list        = $participantType === ParticipatingPerson::INSTRUCTOR
-                ? array_map(
+            if ($participantType === ParticipatingPerson::INSTRUCTOR) {
+                $title = 'Seznam členů týmu';
+                $list  = array_map(
                     function (Instructor $instructor): InstructorEnriched {
                         return $this->queryBus->handle(new EducationInstructorEnrichmentQuery($instructor));
                     },
                     $this->queryBus->handle(new EducationInstructorListQuery($education->getId())),
-                )
-                : $this->queryBus->handle(new EducationParticipantListQuery($education->getId()));
+                );
+            } else {
+                $list = $this->queryBus->handle(new EducationParticipantListQuery($education->getId()));
+            }
         } else {
             $templateFile = __DIR__ . '/templates/participant.latte';
             $event        = $this->queryBus->handle(new EventQuery(new SkautisEventId($aid)));
@@ -116,6 +120,7 @@ class ExportService
         }
 
         return $this->templateFactory->create($templateFile, [
+            'title' => $title,
             'list' => $list,
             'displayName' => $displayName,
             'unitFullNameWithAddress' => $this->units->getOfficialUnit($unitId->toInt())->getFullDisplayNameWithAddress(),
