@@ -13,6 +13,7 @@ use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\Chit;
+use Model\DTO\Instructor\InstructorEnriched;
 use Model\DTO\Participant\Participant;
 use Model\Excel\Builders\CashbookWithCategoriesBuilder;
 use Model\Excel\Range;
@@ -57,6 +58,16 @@ class ExcelService
         $spreadsheet = $this->getNewFile();
         $sheet       = $spreadsheet->getActiveSheet();
         $this->setSheetParticipantCamp($sheet, $participantsDTO);
+
+        return $spreadsheet;
+    }
+
+    /** @param Participant[] $participantsDTO */
+    public function getEducationParticipants(array $participantsDTO): Spreadsheet
+    {
+        $spreadsheet = $this->getNewFile();
+        $sheet       = $spreadsheet->getActiveSheet();
+        $this->setSheetParticipantEducation($sheet, $participantsDTO);
 
         return $spreadsheet;
     }
@@ -108,6 +119,50 @@ class ExcelService
         $this->setSheetItemsOnly($spreadsheetWithActiveSheet->getActiveSheet(), $chits);
 
         return $spreadsheetWithActiveSheet;
+    }
+
+    /** @param Participant[] $data */
+    protected function setSheetParticipantEducation(Worksheet $sheet, array $data): void
+    {
+        $sheet->setCellValue('A1', 'P.č.')
+            ->setCellValue('B1', 'Jméno')
+            ->setCellValue('C1', 'Příjmení')
+            ->setCellValue('D1', 'Přezdívka')
+            ->setCellValue('E1', 'Ulice')
+            ->setCellValue('F1', 'Město')
+            ->setCellValue('G1', 'PSČ')
+            ->setCellValue('H1', 'Datum narození')
+            ->setCellValue('I1', 'Zaplaceno')
+            ->setCellValue('J1', 'Vratka')
+            ->setCellValue('K1', 'Celkem')
+            ->setCellValue('L1', 'Na účet');
+
+        $rowCnt = 2;
+
+        foreach ($data as $row) {
+            assert($row instanceof Participant || $row instanceof InstructorEnriched);
+            $sheet->setCellValue('A' . $rowCnt, $rowCnt - 1)
+                ->setCellValue('B' . $rowCnt, $row->getFirstName())
+                ->setCellValue('C' . $rowCnt, $row->getLastName())
+                ->setCellValue('D' . $rowCnt, $row->getNickName())
+                ->setCellValue('E' . $rowCnt, $row->getStreet())
+                ->setCellValue('F' . $rowCnt, $row->getCity())
+                ->setCellValue('G' . $rowCnt, $row->getPostcode())
+                ->setCellValue('H' . $rowCnt, $row->getBirthday()?->format('d.m.Y') ?? '')
+                ->setCellValue('I' . $rowCnt, $row->getPayment())
+                ->setCellValue('J' . $rowCnt, $row->getRepayment())
+                ->setCellValue('K' . $rowCnt, $row->getPayment() - $row->getRepayment())
+                ->setCellValue('L' . $rowCnt, $row->getOnAccount() === 'Y' ? 'Ano' : 'Ne');
+            $rowCnt++;
+        }
+
+        //format
+        foreach (Range::letters('A', 'L') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        $sheet->getStyle('A1:L1')->getFont()->setBold(true);
+        $sheet->setAutoFilter('A1:L' . ($rowCnt - 1));
     }
 
     /** @param Participant[] $data */
