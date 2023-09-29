@@ -15,6 +15,7 @@ use Nette\SmartObject;
  * @property-read string $lastName
  * @property-read string $nickName
  * @property-read string $displayName
+ * @property-read Payment $paymentObject
  * @property-read float $payment
  * @property-read float $repayment
  * @property-read string $onAccount
@@ -67,6 +68,11 @@ class ParticipatingPerson
     public function getDisplayName(): string
     {
         return $this->lastName . ' ' . $this->firstName . ($this->nickName !== null ? '(' . $this->nickName . ')' : '');
+    }
+
+    public function getPaymentObject(): Payment
+    {
+        return $this->paymentObj;
     }
 
     public function getPayment(): float

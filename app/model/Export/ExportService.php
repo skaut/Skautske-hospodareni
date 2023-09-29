@@ -17,6 +17,7 @@ use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use Model\Cashbook\ReadModel\Queries\EducationCashbookIdQuery;
+use Model\Cashbook\ReadModel\Queries\EducationInstructorEnrichmentQuery;
 use Model\Cashbook\ReadModel\Queries\EducationInstructorListQuery;
 use Model\Cashbook\ReadModel\Queries\EducationParticipantListQuery;
 use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
@@ -27,6 +28,8 @@ use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\CategorySummary;
 use Model\DTO\Cashbook\Chit;
+use Model\DTO\Instructor\Instructor;
+use Model\DTO\Instructor\InstructorEnriched;
 use Model\DTO\Participant\ParticipatingPerson;
 use Model\DTO\Participant\Statistics;
 use Model\Event\Camp;
@@ -96,7 +99,12 @@ class ExportService
             $displayName = $education->getDisplayName();
             $unitId      = $education->getUnitId();
             $list        = $participantType === ParticipatingPerson::INSTRUCTOR
-                ? $this->queryBus->handle(new EducationInstructorListQuery($education->getId()))
+                ? array_map(
+                    function (Instructor $instructor): InstructorEnriched {
+                        return $this->queryBus->handle(new EducationInstructorEnrichmentQuery($instructor));
+                    },
+                    $this->queryBus->handle(new EducationInstructorListQuery($education->getId())),
+                )
                 : $this->queryBus->handle(new EducationParticipantListQuery($education->getId()));
         } else {
             $templateFile = __DIR__ . '/templates/participant.latte';
