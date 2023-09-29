@@ -98,7 +98,7 @@ class ParticipantPresenter extends BasePresenter
                     $this->eventInstructors(),
                 )
                 : $this->eventParticipants();
-            $spreadsheet     = $this->excelService->getEducationParticipants($participantsDTO, $this->event->getStartDate());
+            $spreadsheet     = $this->excelService->getEducationParticipants($participantsDTO);
 
             $typeSlug = $exportType === ParticipatingPerson::INSTRUCTOR ? 'instruktori' : 'ucastnici';
             $this->sendResponse(new ExcelResponse(Strings::webalize($this->event->getDisplayName()) . '-' . $typeSlug . '-' . date('Y_n_j'), $spreadsheet));
