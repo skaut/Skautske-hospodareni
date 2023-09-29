@@ -29,11 +29,13 @@ use Model\DTO\Cashbook\Chit;
 use Model\DTO\Participant\Statistics;
 use Model\Event\Camp;
 use Model\Event\Education;
+use Model\Event\EducationTerm;
 use Model\Event\Event;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\ReadModel\Queries\CampQuery;
 use Model\Event\ReadModel\Queries\EducationFunctions;
 use Model\Event\ReadModel\Queries\EducationQuery;
+use Model\Event\ReadModel\Queries\EducationTermsQuery;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\ReadModel\Queries\EventQuery;
 use Model\Event\Repositories\IEventRepository;
@@ -297,8 +299,11 @@ class ExportService
         $finalRealBalance = MoneyFactory::toFloat($this->queryBus->handle(new FinalRealBalanceQuery($cashbookId)));
         assert(is_float($finalRealBalance));
 
+        $terms = $this->queryBus->handle(new EducationTermsQuery($educationId->toInt()));
+
         return $this->templateFactory->create(__DIR__ . '/templates/educationReport.latte', [
             'education' => $this->queryBus->handle(new EducationQuery($educationId)),
+            'totalDays' => EducationTerm::countTotalDays($terms),
             'incomeCategories' => $incomeCategories[self::CATEGORY_REAL],
             'expenseCategories' => $expenseCategories[self::CATEGORY_REAL],
             'totalIncome' => $total['income'],
