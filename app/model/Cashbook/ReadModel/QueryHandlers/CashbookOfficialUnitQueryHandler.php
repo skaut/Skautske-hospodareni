@@ -10,11 +10,13 @@ use Model\Cashbook\CashbookNotFound;
 use Model\Cashbook\ReadModel\Queries\CashbookOfficialUnitQuery;
 use Model\Cashbook\Repositories\ICampRepository as ICashbookCampRepository;
 use Model\Cashbook\Repositories\ICashbookRepository;
+use Model\Cashbook\Repositories\IEducationRepository as ICashbookEducationRepository;
 use Model\Cashbook\Repositories\IEventRepository as ICashbookEventRepository;
 use Model\Cashbook\Repositories\IUnitRepository;
 use Model\Common\ShouldNotHappen;
 use Model\Common\UnitId;
 use Model\Event\Repositories\ICampRepository;
+use Model\Event\Repositories\IEducationRepository;
 use Model\Event\Repositories\IEventRepository;
 use Model\Payment\IUnitResolver;
 use Model\Unit\Repositories\IUnitRepository as ISkautisUnitRepository;
@@ -28,11 +30,13 @@ class CashbookOfficialUnitQueryHandler
         private ICashbookRepository $cashbooks,
         private IEventRepository $eventRepository,
         private ICampRepository $campRepository,
+        private IEducationRepository $educationRepository,
         private IUnitRepository $unitRepository,
         private IUnitResolver $unitResolver,
         private ISkautisUnitRepository $skautisUnitRepository,
         private ICashbookEventRepository $eventCashbookRepository,
         private ICashbookCampRepository $campCashbookRepository,
+        private ICashbookEducationRepository $educationCashbookRepository,
     ) {
     }
 
@@ -57,6 +61,12 @@ class CashbookOfficialUnitQueryHandler
             $campId = $this->campCashbookRepository->findByCashbookId($cashbook->getId())->getSkautisId();
 
             return $this->campRepository->find($campId)->getUnitId();
+        }
+
+        if ($cashbook->getType()->equalsValue(CashbookType::EDUCATION)) {
+            $educationId = $this->educationCashbookRepository->findByCashbookId($cashbook->getId())->getSkautisId();
+
+            return $this->educationRepository->find($educationId)->getUnitId();
         }
 
         if ($cashbook->getType()->isUnit()) {
