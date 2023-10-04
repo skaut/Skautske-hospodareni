@@ -8966,16 +8966,16 @@
         },
         {
             "name": "tracy/tracy",
-            "version": "v2.10.3",
+            "version": "v2.10.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/tracy.git",
-                "reference": "ec6637866d6836ef6f8de2bab63ae7708b23bcd7"
+                "reference": "cd048d01dca3f48599ae26635ae9bdb71c1cd203"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/tracy/zipball/ec6637866d6836ef6f8de2bab63ae7708b23bcd7",
-                "reference": "ec6637866d6836ef6f8de2bab63ae7708b23bcd7",
+                "url": "https://api.github.com/repos/nette/tracy/zipball/cd048d01dca3f48599ae26635ae9bdb71c1cd203",
+                "reference": "cd048d01dca3f48599ae26635ae9bdb71c1cd203",
                 "shasum": ""
             },
             "require": {
@@ -9035,9 +9035,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/tracy/issues",
-                "source": "https://github.com/nette/tracy/tree/v2.10.3"
+                "source": "https://github.com/nette/tracy/tree/v2.10.4"
             },
-            "time": "2023-07-30T13:56:20+00:00"
+            "time": "2023-09-29T12:44:29+00:00"
         },
         {
             "name": "ublaboo/datagrid",
