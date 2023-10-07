@@ -12,9 +12,6 @@ use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\EducationCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
 use Model\DTO\Cashbook\Cashbook;
-use Model\Event\EducationCourse;
-use Model\Event\EducationCourseParticipationStats;
-use Model\Event\EducationParticipantParticipationStats;
 use Model\Event\EducationTerm;
 use Model\Event\ReadModel\Queries\EducationCourseParticipationStatsQuery;
 use Model\Event\ReadModel\Queries\EducationCoursesQuery;
@@ -65,18 +62,6 @@ class EducationPresenter extends BasePresenter
             ? $this->queryBus->handle(new EducationParticipantParticipationStatsQuery($this->event->grantId->toInt()))
             : null;
 
-        $courseCapacities = array_filter(
-            array_map(
-                static function (EducationCourseParticipationStats $stat) {
-                    return $stat->capacity;
-                },
-                $courseParticipationStats,
-            ),
-            static function (int|null $value) {
-                return $value !== null;
-            },
-        );
-
         $this->template->setParameters([
             'skautISUrl'       => $this->userService->getSkautisUrl(),
             'accessDetail'     => $this->authorizator->isAllowed(Education::ACCESS_DETAIL, $aid),
@@ -88,32 +73,11 @@ class EducationPresenter extends BasePresenter
             'prefixBank'           => $cashbook->getChitNumberPrefix(PaymentMethod::BANK()),
             'totalDays'            => $this->countDays($terms),
             'teamCount'            => count($instructors),
-            'participantsCapacity' => count($courseCapacities) > 0 ? array_sum($courseCapacities) : null,
-            'participantsAccepted' => array_sum(
-                array_map(
-                    static function (EducationCourseParticipationStats $stat) {
-                        return $stat->accepted;
-                    },
-                    $courseParticipationStats,
-                ),
-            ),
-            'personDaysEstimated' => array_sum(
-                array_map(
-                    static function (EducationCourse $course) {
-                        return $course->estimatedPersonDays;
-                    },
-                    $courses,
-                ),
-            ),
-            'personDaysReal' => $participantParticipationStats !== null
-                ? array_sum(
-                    array_map(
-                        static function (EducationParticipantParticipationStats $stat) {
-                            return $stat->totalDays;
-                        },
-                        $participantParticipationStats,
-                    ),
-                )
+            'participantsCapacity' => self::propertySum($courseParticipationStats, 'capacity'),
+            'participantsAccepted' => self::propertySum($courseParticipationStats, 'accepted'),
+            'personDaysEstimated'  => self::propertySum($courses, 'estimatedPersonDays'),
+            'personDaysReal'       => $participantParticipationStats !== null
+                ? self::propertySum($participantParticipationStats, 'totalDays')
                 : null,
         ]);
 
@@ -171,5 +135,27 @@ class EducationPresenter extends BasePresenter
                 ),
             ),
         );
+    }
+
+    /**
+     * @param array<T> $arr
+     *
+     * @template T
+     */
+    private static function propertySum(array $arr, string $property): int|null
+    {
+        $propertyValues = array_filter(
+            array_map(
+                static function ($item) use ($property) {
+                    return $item->$property;
+                },
+                $arr,
+            ),
+            static function (int|null $value) {
+                return $value !== null;
+            },
+        );
+
+        return count($propertyValues) > 0 ? array_sum($propertyValues) : null;
     }
 }
