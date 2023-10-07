@@ -23,7 +23,7 @@ class DefaultPresenter extends BasePresenter
             [],
         );
 
-        $grid->addColumnLink('displayName', 'Název', 'Education:', null, ['aid' => 'id'])
+        $grid->addColumnLink('name', 'Název', 'Education:', null, ['aid' => 'id'])
             ->setSortable();
 
         $grid->addColumnDateTime('startDate', 'Začátek akce')

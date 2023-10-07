@@ -4,7 +4,3 @@
     {include #filter-type-search}
     {include #filter-type-select name => 'year', label => 'Rok', icon => 'fas fa-calendar'}
 {/block}
-
-{define col-displayName}
-    <a href="{plink Education:default $item->getId()}">{$item->getName()}</a>
-{/define}
