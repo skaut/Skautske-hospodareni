@@ -9,7 +9,7 @@ use Nette\SmartObject;
 /**
  * @property-read SkautisEducationCourseId $id
  * @property-read string|null $displayName
- * @property-read int $estimatedPersonDays
+ * @property-read int|null $estimatedPersonDays
  */
 class EducationCourse
 {
@@ -18,7 +18,7 @@ class EducationCourse
     public function __construct(
         private SkautisEducationCourseId $id,
         private string|null $displayName,
-        private int $estimatedPersonDays,
+        private int|null $estimatedPersonDays,
     ) {
     }
 
@@ -32,7 +32,7 @@ class EducationCourse
         return $this->displayName;
     }
 
-    public function getEstimatedPersonDays(): int
+    public function getEstimatedPersonDays(): int|null
     {
         return $this->estimatedPersonDays;
     }
