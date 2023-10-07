@@ -26,6 +26,7 @@ use Model\Event\SkautisEducationId;
 use Model\ExportService;
 use Model\Services\PdfRenderer;
 
+use function array_filter;
 use function array_map;
 use function array_sum;
 use function array_unique;
@@ -64,6 +65,18 @@ class EducationPresenter extends BasePresenter
             ? $this->queryBus->handle(new EducationParticipantParticipationStatsQuery($this->event->grantId->toInt()))
             : null;
 
+        $courseCapacities = array_filter(
+            array_map(
+                static function (EducationCourseParticipationStats $stat) {
+                    return $stat->capacity;
+                },
+                $courseParticipationStats,
+            ),
+            static function (int|null $value) {
+                return $value !== null;
+            },
+        );
+
         $this->template->setParameters([
             'skautISUrl'       => $this->userService->getSkautisUrl(),
             'accessDetail'     => $this->authorizator->isAllowed(Education::ACCESS_DETAIL, $aid),
@@ -75,14 +88,7 @@ class EducationPresenter extends BasePresenter
             'prefixBank'           => $cashbook->getChitNumberPrefix(PaymentMethod::BANK()),
             'totalDays'            => $this->countDays($terms),
             'teamCount'            => count($instructors),
-            'participantsCapacity' => array_sum(
-                array_map(
-                    static function (EducationCourseParticipationStats $stat) {
-                        return $stat->capacity;
-                    },
-                    $courseParticipationStats,
-                ),
-            ),
+            'participantsCapacity' => count($courseCapacities) > 0 ? array_sum($courseCapacities) : null,
             'participantsAccepted' => array_sum(
                 array_map(
                     static function (EducationCourseParticipationStats $stat) {
