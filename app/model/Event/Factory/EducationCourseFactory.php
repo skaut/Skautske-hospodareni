@@ -16,7 +16,7 @@ final class EducationCourseFactory
     {
         return new EducationCourse(
             new SkautisEducationCourseId($skautisEducation->ID),
-            $skautisEducation->DisplayName,
+            $skautisEducation->DisplayName ?? null,
             $skautisEducation->PersonDays,
         );
     }
