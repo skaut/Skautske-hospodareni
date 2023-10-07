@@ -14,7 +14,7 @@ use Nette\SmartObject;
  * @property-read string $displayName
  * @property-read Date|null $startDate
  * @property-read Date|null $endDate
- * @property-read SkautisGrantId $grantId
+ * @property-read SkautisGrantId|null $grantId
  */
 class Education implements ISkautisEvent
 {
@@ -29,7 +29,7 @@ class Education implements ISkautisEvent
         private Date|null $endDate,
         private string $location,
         private string $state,
-        private SkautisGrantId $grantId,
+        private SkautisGrantId|null $grantId,
     ) {
     }
 
@@ -73,7 +73,7 @@ class Education implements ISkautisEvent
         return $this->state;
     }
 
-    public function getGrantId(): SkautisGrantId
+    public function getGrantId(): SkautisGrantId|null
     {
         return $this->grantId;
     }

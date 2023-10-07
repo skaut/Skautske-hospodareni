@@ -60,7 +60,9 @@ class EducationPresenter extends BasePresenter
         $instructors                   = $this->queryBus->handle(new EducationInstructorsQuery($aid));
         $courseParticipationStats      = $this->queryBus->handle(new EducationCourseParticipationStatsQuery($aid));
         $courses                       = $this->queryBus->handle(new EducationCoursesQuery($aid));
-        $participantParticipationStats = $this->queryBus->handle(new EducationParticipantParticipationStatsQuery($this->event->grantId->toInt()));
+        $participantParticipationStats = $this->event->grantId !== null
+            ? $this->queryBus->handle(new EducationParticipantParticipationStatsQuery($this->event->grantId->toInt()))
+            : null;
 
         $this->template->setParameters([
             'skautISUrl'       => $this->userService->getSkautisUrl(),
@@ -97,14 +99,16 @@ class EducationPresenter extends BasePresenter
                     $courses,
                 ),
             ),
-            'personDaysReal' => array_sum(
-                array_map(
-                    static function (EducationParticipantParticipationStats $stat) {
-                        return $stat->totalDays;
-                    },
-                    $participantParticipationStats,
-                ),
-            ),
+            'personDaysReal' => $participantParticipationStats !== null
+                ? array_sum(
+                    array_map(
+                        static function (EducationParticipantParticipationStats $stat) {
+                            return $stat->totalDays;
+                        },
+                        $participantParticipationStats,
+                    ),
+                )
+                : null,
         ]);
 
         if (! $this->isAjax()) {
