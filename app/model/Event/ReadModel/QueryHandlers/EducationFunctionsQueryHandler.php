@@ -8,6 +8,7 @@ use Model\Event\EducationFunctions as EFunctions;
 use Model\Event\ReadModel\PersonFactory;
 use Model\Event\ReadModel\Queries\EducationFunctions;
 use Skautis\Skautis;
+use stdClass;
 
 use function array_map;
 
@@ -26,6 +27,10 @@ class EducationFunctionsQueryHandler
         $assistants = $this->skautis->event->eventFunctionAllEducationAssistant([
             'ID_EventEducation' => $query->getEducationId()->toInt(),
         ]);
+
+        if ($assistants instanceof stdClass) {
+            $assistants = [];
+        }
 
         return new EFunctions(
             PersonFactory::create($functions[0]),
