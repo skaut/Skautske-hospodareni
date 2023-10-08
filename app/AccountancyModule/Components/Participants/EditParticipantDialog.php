@@ -8,11 +8,11 @@ use App\AccountancyModule\Components\Dialog;
 use App\Forms\BaseForm;
 use Assert\Assertion;
 use Closure;
+use Model\DTO\Participant\Participant;
 use Model\DTO\Participant\ParticipatingPerson;
 use Model\DTO\Participant\UpdateParticipant;
 
 use function assert;
-use function method_exists;
 
 final class EditParticipantDialog extends Dialog
 {
@@ -49,10 +49,11 @@ final class EditParticipantDialog extends Dialog
         $form = new BaseForm();
 
         if ($this->isAllowedDaysUpdate) {
+            assert($participant instanceof Participant);
             $days = $form->addInteger('days', 'Počet dní')
                 ->setRequired('Musíte vyplnit počet dní')
                 ->addRule(BaseForm::MIN, 'Minimální počet dní je %d', 0)
-                ->setDefaultValue(method_exists($participant, 'getDays') ? $participant->getDays() : 0);
+                ->setDefaultValue($participant->getDays());
             if ($this->isOnlineLogin && ! $participant->isAccepted()) {
                 $days->setRequired(false)
                     ->setDisabled()
@@ -88,7 +89,7 @@ final class EditParticipantDialog extends Dialog
                 $changes[UpdateParticipant::FIELD_PAYMENT] = $values['payment'];
             }
 
-            if ($this->isAllowedDaysUpdate && isset($values['days']) && method_exists($participant, 'getDays') && $values['days'] !== $participant->getDays()) {
+            if ($this->isAllowedDaysUpdate && isset($values['days']) && $participant instanceof Participant && $values['days'] !== $participant->getDays()) {
                 $changes[UpdateParticipant::FIELD_DAYS] = $values['days'];
             }
 
