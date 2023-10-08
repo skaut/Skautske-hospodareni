@@ -114,7 +114,7 @@ class EducationPresenter extends BasePresenter
         foreach ($terms as $term) {
             $date = $term->startDate;
 
-            while($date->lessThanOrEquals($term->endDate)) {
+            while ($date->lessThanOrEquals($term->endDate)) {
                 $days[] = $date;
                 $date   = $date->addDay();
             }
