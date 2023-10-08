@@ -112,27 +112,17 @@ class EducationPresenter extends BasePresenter
         $days = [];
 
         foreach ($terms as $term) {
-            $date   = $term->startDate;
-            $days[] = $date;
+            $date = $term->startDate;
 
-            // Could be while(true), but don't want to risk infinite loop
-            for ($i = 0; $i < 50; ++$i) {
-                $date   = $date->addDay();
+            while($date->lessThanOrEquals($term->endDate)) {
                 $days[] = $date;
-                if ($date->eq($term->endDate)) {
-                    break;
-                }
+                $date   = $date->addDay();
             }
         }
 
         return count(
             array_unique(
-                array_map(
-                    static function ($date) {
-                        return $date->__toString();
-                    },
-                    $days,
-                ),
+                $days,
             ),
         );
     }
