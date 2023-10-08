@@ -23,10 +23,10 @@ $chits - paragony akce
 
     <h3>Základní údaje</h3>
 
-    <b>Vedoucí akce: </b> {if $functions->leader !== NULL}{$functions->leader->name} {if $functions->leader->email !== NULL}(e-mail: {$functions->leader->email}){/if}{/if}<br>
+    <b>Vedoucí akce: </b> {if $functions->leader !== NULL}{$functions->leader->name}{/if}<br>
 
     {foreach $functions->assistants as $assistant}
-        <b>Zástupce vedoucího: </b> {if $assistant !== NULL}{$assistant->name} {if $assistant->email !== NULL}(e-mail: {$assistant->email}){/if}{/if}<br>
+        <b>Zástupce vedoucího: </b> {if $assistant !== NULL}{$assistant->name}{/if}<br>
     {/foreach}
 
     {var $otherFunctions = [
@@ -35,7 +35,7 @@ $chits - paragony akce
     'Zdravotník' => $functions->medic,
     ]}
     {foreach $otherFunctions as $functionName => $person}
-        <b>{$functionName}: </b> {if $person !== NULL}{$person->name} {if $person->email !== NULL}(e-mail: {$person->email}){/if}{/if}<br>
+        <b>{$functionName}: </b> {if $person !== NULL}{$person->name}{/if}<br>
     {/foreach}
 
     <br />
