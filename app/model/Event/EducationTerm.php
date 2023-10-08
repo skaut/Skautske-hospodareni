@@ -54,16 +54,11 @@ class EducationTerm
         $days = [];
 
         foreach ($terms as $term) {
-            $date   = $term->startDate;
-            $days[] = $date;
+            $date = $term->startDate;
 
-            // Could be while(true), but don't want to risk infinite loop
-            for ($i = 0; $i < 50; ++$i) {
+            while ($date->lessThanOrEquals($term->endDate)) {
+                $days[] = $date;
                 $date   = $date->addDay();
-                $days[] = $date->__toString();
-                if ($date->eq($term->endDate)) {
-                    break;
-                }
             }
         }
 

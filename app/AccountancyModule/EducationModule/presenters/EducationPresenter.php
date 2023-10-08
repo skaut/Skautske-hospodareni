@@ -145,27 +145,6 @@ class EducationPresenter extends BasePresenter
         return $this->queryBus->handle(new EducationCashbookIdQuery(new SkautisEducationId($skautisEducationId)));
     }
 
-    /** @param array<EducationTerm> $terms */
-    private function countDays(array $terms): int
-    {
-        $days = [];
-
-        foreach ($terms as $term) {
-            $date = $term->startDate;
-
-            while ($date->lessThanOrEquals($term->endDate)) {
-                $days[] = $date;
-                $date   = $date->addDay();
-            }
-        }
-
-        return count(
-            array_unique(
-                $days,
-            ),
-        );
-    }
-
     /**
      * @param array<T>|null $arr
      *
