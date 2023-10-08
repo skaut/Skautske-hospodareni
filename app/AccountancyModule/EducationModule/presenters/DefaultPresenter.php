@@ -23,7 +23,7 @@ class DefaultPresenter extends BasePresenter
             [],
         );
 
-        $grid->addColumnLink('displayName', 'Název', 'Education:', null, ['aid' => 'id'])
+        $grid->addColumnLink('name', 'Název', 'Education:', null, ['aid' => 'id'])
             ->setSortable();
 
         $grid->addColumnDateTime('startDate', 'Začátek akce')
@@ -36,6 +36,12 @@ class DefaultPresenter extends BasePresenter
             ->setCondition(function (EducationListDataSource $dataSource, $year): void {
                 $dataSource->filterByYear($year === DataGrid::OPTION_ALL ? null : (int) ($year ?? Date::today()->year));
             });
+
+        $grid->addFilterText('search', 'Název', 'name')
+            ->setPlaceholder('Hledat podle názvu...');
+
+        $grid->addColumnText('prefix', 'Prefix')
+            ->setSortable();
 
         $grid->setDataSource(new EducationListDataSource($this->queryBus));
         $grid->setDefaultSort(['name' => 'ASC']);
