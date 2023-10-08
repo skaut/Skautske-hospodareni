@@ -22,6 +22,16 @@ class PrivilegesPresenter extends BasePresenter
                         'value' => $this->authorizator->isAllowed(Education::ACCESS_DETAIL, $aid),
                         'desc' => 'Lze zobrazovat další údaje o této akci.',
                     ],
+                    [
+                        'label' => 'Upravovat tuto akci',
+                        'value' => $this->authorizator->isAllowed(Education::UPDATE, $aid),
+                        'desc' => 'Lze upravovat základní údaje o této akci.',
+                    ],
+                    [
+                        'label' => 'Zobrazovat vedení akce',
+                        'value' => $this->authorizator->isAllowed(Education::ACCESS_FUNCTIONS, $aid),
+                        'desc' => 'Lze zobrazovat vedení této akce.',
+                    ],
                 ],
             ],
             'participant' => [
