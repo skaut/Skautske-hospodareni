@@ -17,7 +17,6 @@ use Model\Cashbook\Commands\Cashbook\RemoveEventParticipant;
 use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
 use Model\DTO\Participant\NonMemberParticipant;
 use Model\DTO\Participant\Participant;
-use Model\DTO\Participant\ParticipatingPerson;
 use Model\DTO\Participant\UpdateParticipant;
 use Model\ExcelService;
 use Model\ExportService;
@@ -90,10 +89,8 @@ class ParticipantPresenter extends BasePresenter
         $this->redrawControl('contentSnip');
     }
 
-    public function actionExportExcel(int $aid, string $exportType): void
+    public function actionExportExcel(int $aid): void
     {
-        assert($exportType === ParticipatingPerson::PARTICIPANT);
-
         try {
             $participantsDTO = $this->eventParticipants();
             $spreadsheet     = $this->excelService->getGeneralParticipants($participantsDTO, $this->event->getStartDate());
@@ -158,10 +155,8 @@ class ParticipantPresenter extends BasePresenter
         return $control;
     }
 
-    public function actionExport(int $aid, string $exportType): void
+    public function actionExport(int $aid): void
     {
-        assert($exportType === ParticipatingPerson::PARTICIPANT);
-
         try {
             $template = $this->exportService->getParticipants($aid, EventType::GENERAL);
             $this->pdf->render($template, 'seznam-ucastniku.pdf', false);
