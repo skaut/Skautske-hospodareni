@@ -8,6 +8,7 @@ use Cake\Chronos\Date;
 use Model\Common\UnitId;
 use Model\Event\Education;
 use Model\Event\SkautisEducationId;
+use Model\Event\SkautisGrantId;
 use stdClass;
 
 use function mb_ereg_replace;
@@ -35,6 +36,7 @@ final class EducationFactory
             $skautisEducation->EndDate === null ? null : Date::createFromFormat(self::DATETIME_FORMAT, $skautisEducation->EndDate),
             $skautisEducation->Location ?? '',
             $skautisEducation->ID_EventEducationState ?? '',
+            $skautisEducation->ID_Grant !== null ? new SkautisGrantId($skautisEducation->ID_Grant) : null,
         );
     }
 }

@@ -14,6 +14,7 @@ final class Education
 
     public const ACCESS_DETAIL = [self::class, 'EV_EventEducationOther_DETAIL'];
 
+    public const ACCESS_FUNCTIONS    = [self::class, 'EV_EventFunction_ALL_EventEducationLeader'];
     public const ACCESS_PARTICIPANTS = [self::class, 'EV_ParticipantEducation_ALL_EventEducation'];
     public const UPDATE_PARTICIPANT  = [self::class, 'EV_ParticipantEducation_UPDATE_EventEducation'];
 
