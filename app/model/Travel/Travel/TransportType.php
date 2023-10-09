@@ -28,7 +28,6 @@ final class TransportType extends Enum
         self::BUS => 'autobus',
         self::TRAIN => 'vlak',
         self::MOTORCYCLE => 'motocykl vlastní',
-        self::AIRPLANE => 'letadlo',
     ];
 
     public function getLabel(): string
