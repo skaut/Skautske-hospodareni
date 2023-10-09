@@ -15,13 +15,10 @@ use function in_array;
  */
 final class TransportType extends Enum
 {
-    public const CAR           = 'car';
-    public const BUS           = 'bus';
-    public const EXPRESS_TRAIN = 'express_train';
-    public const TRAIN         = 'train';
-    public const MOTORCYCLE    = 'motorcycle';
-    public const ON_FOOT       = 'on_foot';
-    public const AIRPLANE      = 'airplane';
+    public const CAR        = 'car';
+    public const BUS        = 'bus';
+    public const TRAIN      = 'train';
+    public const MOTORCYCLE = 'motorcycle';
 
     private const LABELS = [
         self::CAR => 'auto vlastní',
