@@ -19,7 +19,7 @@ class TravelFactoryTest extends Unit
     {
         $firstDay      = new Date('2018-01-01');
         $secondDay     = new Date('2018-01-02');
-        $transportType = TransportType::get(TransportType::EXPRESS_TRAIN);
+        $transportType = TransportType::get(TransportType::TRAIN);
 
         $travels = [
             m::mock(Command\TransportTravel::class, [
