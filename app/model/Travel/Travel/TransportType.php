@@ -26,10 +26,8 @@ final class TransportType extends Enum
     private const LABELS = [
         self::CAR => 'auto vlastní',
         self::BUS => 'autobus',
-        self::EXPRESS_TRAIN => 'rychlík',
-        self::TRAIN => 'osobní vlak',
+        self::TRAIN => 'vlak',
         self::MOTORCYCLE => 'motocykl vlastní',
-        self::ON_FOOT => 'pěšky',
         self::AIRPLANE => 'letadlo',
     ];
 
