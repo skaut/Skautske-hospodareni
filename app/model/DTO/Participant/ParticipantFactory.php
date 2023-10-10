@@ -29,6 +29,7 @@ final class ParticipantFactory
             $participant->getUnit(),
             $participant->getUnitRegistrationNumber(),
             $participant->getDays(),
+            $participant->getIsAccepted(),
             $participant->getPayment(),
             $participant->getCategory(),
         );

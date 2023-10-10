@@ -31,8 +31,8 @@ final class ParticipantService
                 'ID' => $updateParticipant->getParticipantId(),
                 'Real' => true,
                 'Days' => $updateParticipant->getValue(),
+                'IsAccepted' => $updateParticipant->isAccepted(),
             ];
-
             $this->skautis->event->{'Participant' . $typeName . 'Update'}($sisData, 'participant' . $typeName);
 
             return;

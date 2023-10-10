@@ -34,6 +34,7 @@ final class ParticipantFactory
             $skautisParticipant->Unit ?? '',
             $skautisParticipant->UnitRegistrationNumber ?? $skautisParticipant->PersonUnitRegistrationNumber ?? '',
             (int) ($skautisParticipant->Days ?? 0),
+            (bool) $skautisParticipant->IsAccepted,
             $payment,
             $skautisParticipant->Category ?? null,
         );

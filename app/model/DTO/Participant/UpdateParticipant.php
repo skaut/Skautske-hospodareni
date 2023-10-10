@@ -11,7 +11,7 @@ class UpdateParticipant
     public const FIELD_REPAYMENT  = 'repayment';
     public const FIELD_IS_ACCOUNT = 'isAccount';
 
-    public function __construct(private int $eventId, private int $participantId, private string $field, private string $value)
+    public function __construct(private int $eventId, private int $participantId, private string $field, private string $value, private bool $isAccepted)
     {
     }
 
@@ -33,6 +33,11 @@ class UpdateParticipant
     public function getValue(): string
     {
         return $this->value;
+    }
+
+    public function isAccepted(): bool
+    {
+        return $this->isAccepted;
     }
 
     /** @return string[] */
