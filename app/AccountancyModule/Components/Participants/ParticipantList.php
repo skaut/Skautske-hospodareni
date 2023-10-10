@@ -15,6 +15,7 @@ use Nette\Http\IResponse;
 
 use function array_filter;
 use function array_map;
+use function implode;
 use function in_array;
 use function sprintf;
 use function strcoll;
@@ -232,12 +233,13 @@ final class ParticipantList extends BaseControl
             $currentParticipants[$p->id] = $p;
         }
 
+        $participantUpdateError = [];
         foreach ($button->getForm()->getValues()->participantIds as $participantId) {
             $participant = $currentParticipants[$participantId] ?? throw new ParticipantNotFound('Cannot find participant from the given data');
 
             if ($values['days'] !== null) {
                 if ($this->isOnlineLogin && ! $participant->isAccepted()) {
-                    $this->flashMessage(sprintf('Nelze upravit hodnotu dny na táboře. Účastník %s není na tábor přihlášen.', $participant->displayName), 'warning');
+                    $participantUpdateError[] = $participant->displayName;
                 } else {
                     $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_DAYS, $values['days'], $participant->isAccepted());
                 }
@@ -256,6 +258,13 @@ final class ParticipantList extends BaseControl
             }
 
             $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_IS_ACCOUNT, $values['isAccount'], $participant->isAccepted());
+        }
+
+        if (! empty($participantUpdateError)) {
+            $this->flashMessage(
+                sprintf('Následující účastníci nemají potvrzenou elektronickou přihlášku: %s. U těchto účastníků nelze upravit počet dnů na táboře.', implode(', ', $participantUpdateError)),
+                'warning',
+            );
         }
 
         $this->onUpdate($changes);
