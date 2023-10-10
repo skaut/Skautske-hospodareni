@@ -21,12 +21,9 @@ final class EditParticipantDialog extends Dialog
     /** @var Closure[] */
     public array $onUpdate = [];
 
-    private bool $isAllowedDaysUpdate;
-
     /** @param array<int, Participant> $participants */
-    public function __construct(private array $participants, bool $iAllowedDaysUpdate, private bool $isAccountAllowed, private bool $isRepaymentAllowed)
+    public function __construct(private array $participants, private bool $isAllowedDaysUpdate, private bool $isAccountAllowed, private bool $isRepaymentAllowed)
     {
-        $this->isAllowedDaysUpdate = $iAllowedDaysUpdate;
     }
 
     public function editParticipant(int $participantId): void
