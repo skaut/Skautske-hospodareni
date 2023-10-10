@@ -22,7 +22,7 @@ final class EditParticipantDialog extends Dialog
     public array $onUpdate = [];
 
     /** @param array<int, Participant> $participants */
-    public function __construct(private array $participants, private bool $isAllowedDaysUpdate, private bool $isAccountAllowed, private bool $isRepaymentAllowed)
+    public function __construct(private array $participants, private bool $isAllowedDaysUpdate, private bool $isAccountAllowed, private bool $isRepaymentAllowed, private bool $isOnlineLogin)
     {
     }
 
@@ -48,10 +48,16 @@ final class EditParticipantDialog extends Dialog
         $form = new BaseForm();
 
         if ($this->isAllowedDaysUpdate) {
-            $form->addInteger('days', 'Počet dní')
+            $days = $form->addInteger('days', 'Počet dní')
                 ->setRequired('Musíte vyplnit počet dní')
                 ->addRule(BaseForm::MIN, 'Minimální počet dní je %d', 0)
                 ->setDefaultValue($participant->getDays());
+            if ($this->isOnlineLogin && ! $participant->isAccepted()) {
+                $days->setRequired(false)
+                    ->setDisabled()
+                    ->getControlPrototype()
+                    ->setAttribute('title', 'Nelze upravovat dny pro osoby, které nejsou přijaty přes e-přihlášku');
+            }
         }
 
         $form->addText('payment', 'Částka')
@@ -81,7 +87,7 @@ final class EditParticipantDialog extends Dialog
                 $changes[UpdateParticipant::FIELD_PAYMENT] = $values['payment'];
             }
 
-            if ($this->isAllowedDaysUpdate && $values['days'] !== $participant->getDays()) {
+            if ($this->isAllowedDaysUpdate && isset($values['days']) && $values['days'] !== $participant->getDays()) {
                 $changes[UpdateParticipant::FIELD_DAYS] = $values['days'];
             }
 
@@ -93,7 +99,7 @@ final class EditParticipantDialog extends Dialog
                 $changes[UpdateParticipant::FIELD_IS_ACCOUNT] = $values['isAccount'];
             }
 
-            $this->onUpdate($this->participantId, $changes);
+            $this->onUpdate($this->participantId, $changes, $participant->isAccepted());
             $this->hide();
         };
 

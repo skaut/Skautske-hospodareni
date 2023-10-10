@@ -131,6 +131,7 @@ class ParticipantPresenter extends BasePresenter
             false,
             $this->isAllowParticipantUpdate,
             $this->isAllowParticipantDelete,
+            false,
         );
 
         $control->onUpdate[] = function (array $updates): void {
