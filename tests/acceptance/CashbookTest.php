@@ -151,6 +151,7 @@ class CashbookTest extends Unit
 
     private function fillChitForm(Date $date, string $purpose, Operation $type, string $category, string $recipient, string $amount): void
     {
+        $this->tester->wait(2); // unroll block
         $this->tester->wantToTest('Uložit');
         $this->tester->fillField('Datum', $date->format('d.m. Y'));
         $this->tester->pressKey('body', [WebDriverKeys::ESCAPE]); // close datepicker
