@@ -12,6 +12,7 @@ import {initializeDatePicker} from "./datePicker";
 import netteForms from "./netteForms";
 import 'bootstrap.native/dist/bootstrap-native-v4';
 import {initializeSendMassForm} from "./ChitListExtension"
+import {initializeEditForm} from "./ChitListExtension"
 
 export default function (): void {
     naja.registerExtension(ProgressBar);
@@ -24,6 +25,7 @@ export default function (): void {
         initializeCheckAllCheckboxes(snippet, 'data-dependent-checkboxes');
         initializeCheckboxToggle(snippet, 'data-visible-if-checked', 'data-visible-if-not-checked');
         initializeSendMassForm(snippet, 'chits-');
+        initializeEditForm(snippet,'chits-');
         snippet.querySelectorAll<HTMLElement>('.date').forEach(initializeDatePicker);
         window.BSN.initCallback(snippet);
     });

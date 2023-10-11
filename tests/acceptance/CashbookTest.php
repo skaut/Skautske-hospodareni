@@ -80,13 +80,14 @@ class CashbookTest extends Unit
     private function createExpenseChit(): void
     {
         $I = $this->tester;
+        $I->click('Nový doklad');
         $I->amGoingTo('create expense chit');
 
         $purpose = 'Nákup chleba';
 
         $this->fillChitForm(new Date(), $purpose, Operation::EXPENSE(), 'Potraviny', 'Testovací skaut', '100 + 1');
-        $I->click('Uložit');
-
+        $I->scrollTo('input[name="send"]');
+        $I->click('input[name="send"]');
         $this->waitForBalance('-101,00');
     }
 
@@ -94,23 +95,25 @@ class CashbookTest extends Unit
     {
         $I = $this->tester;
         $I->wantTo('Update expense chit amount');
-
+        $I->scrollTo('h4[id="chitList-payment"]');
         $I->click('.ui--editChit');
         $I->waitForElement('[name="pid"]:not([value=""])');
 
         $I->fillField('items[0][price]', '121');
-        $I->click('Uložit');
-
+        $I->scrollTo('input[name="send"]');
+        $I->click('input[name="send"]');
         $this->waitForBalance('-121,00');
     }
 
     private function addIncomeChit(): void
     {
         $I = $this->tester;
+        $I->click('Nový doklad');
         $I->amGoingTo('add income chit');
 
         $this->fillChitForm(new Date(), 'Účastnické poplatky', Operation::INCOME(), 'Přijmy od účastníků', 'Testovací skaut 2', '100');
-        $I->click('Uložit');
+        $I->scrollTo('input[name="send"]');
+        $I->click('input[name="send"]');
 
         $this->waitForBalance('-21,00');
     }
@@ -120,9 +123,10 @@ class CashbookTest extends Unit
         $I = $this->tester;
         $I->amGoingTo('remove both chits');
 
+        $I->scrollTo('h4[id="chitList-payment"]');
         $this->removeChit(1);
         $this->waitForBalance('-121,00');
-
+        $I->scrollTo('h4[id="chitList-payment"]');
         $this->removeChit(1);
         $I->waitForText(self::NO_CHITS_MESSAGE);
     }

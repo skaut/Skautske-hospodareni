@@ -1,53 +1,59 @@
 {snippet}
-    <div class="card bg-light mb-2" n:if="$isEditable">
-        <div class="card-header"><h5>Nový doklad</h5></div>
-        <div class="card-body">
-            <form n:name="form" class="chit-form">
-                <ul class="alert alert-danger" n:if="$form->hasErrors()">
-                    <li n:foreach="$form->errors as $error">{$error}</li>
-                </ul>
-                <div class="form-row">
-                    <div class="col" id="chit-type">Typ: {input type:in}{label type:in /} {input type:out}{label type:out /}</div>
-                </div>
-                <div class="form-row">
-                    <div class="col">Způsob: {input paymentMethod:cash}{label paymentMethod:cash /} {input paymentMethod:bank}{label paymentMethod:bank /}</div>
-                </div>
-                <div class="form-row mb-1">
-                    <div class="col">{input date}</div>
-                    <div class="col">{input num}</div>
-                </div>
-                <div class="row">
-                    <div class="col">{input recipient}</div>
-                    <datalist id="list-recipient">
-                        <option n:foreach="$dataAutocomplete as $opt">{$opt}</option>
-                    </datalist>
-                </div>
-                <h5 class="card-title mt-2">Položky</h5>
-                {var $itemsCount = iterator_count($form['items']->getContainers())}
-                {foreach $form['items']->getContainers() as $id => $item}
-                    <div class="card mb-2">
-                        <div class="card-body">
-                            <div class="form-row mb-1">
-                                <div class="col">{input "items-$id-purpose"}</div>
-                            </div>
-                            <div class="form-row mb-1">
-                                <div class="col chit-category">
-                                    {input "items-$id-incomeCategories"}
-                                    {input "items-$id-expenseCategories"}
-                                </div>
-                            </div>
-                            <div class="form-row mb-1">
-                                <div class="col">{input "items-$id-price"}</div>
-                            </div>
-                            {if $itemsCount > 1}
-                                {input "items-$id-remove" class=>"btn btn-light btn-sm ajax"}
-                            {/if}
-                        </div>
+    <div class="card bg-light mb-2" n:if="$isEditable" id="chitFormHeader">
+        <div class="card-header">
+            <div class="row justify-content-between">
+                <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#chitCollapse" aria-expanded="false" aria-controls="chitCollapse">
+                    {ifset $edit}Upravit doklad číslo : {if $num}{$num}{else}<span title="systémové Id">{$pid}</span> {/if} {else}Nový doklad{/ifset}
+                </button>
+            </div>
+        </div>
+
+        <div class="collapse {if $displayChitForm}show{/if}" id="chitCollapse">
+            <div class="card-body" >
+                <form n:name="form" class="chit-form">
+                    <ul class="alert alert-danger" n:if="$form->hasErrors()">
+                        <li n:foreach="$form->errors as $error">{$error}</li>
+                    </ul>
+                    <div class="form-row">
+                        <div class="col" id="chit-type">Typ: {input type:in}{label type:in /} {input type:out}{label type:out /}</div>
+                        <div class="col">Způsob: {input paymentMethod:cash}{label paymentMethod:cash /} {input paymentMethod:bank}{label paymentMethod:bank /}</div>
                     </div>
-                {/foreach}
-                {input items-addItem class=>"btn btn-light ajax"}<br /><br />
-                {input send}
-            </form>
+                    <div class="form-row mb-1">
+                        <div class="col">{input date}</div>
+                        <div class="col">{input num}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">{input recipient}</div>
+                        <datalist id="list-recipient">
+                            <option n:foreach="$dataAutocomplete as $opt">{$opt}</option>
+                        </datalist>
+                    </div>
+                    <h5 class="card-title mt-2">Položky</h5>
+                    {var $itemsCount = iterator_count($form['items']->getContainers())}
+                    {foreach $form['items']->getContainers() as $id => $item}
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <div class="form-row mb-1">
+                                    <div class="col">{input "items-$id-purpose"}</div>
+                                </div>
+                                <div class="form-row mb-1">
+                                    <div class="col chit-category">
+                                        {input "items-$id-incomeCategories"}
+                                        {input "items-$id-expenseCategories"}
+                                    </div>
+                                    <div class="col">{input "items-$id-price"}</div>
+                                </div>
+                                {if $itemsCount > 1}
+                                    {input "items-$id-remove" class=>"btn btn-light btn-sm ajax"}
+                                {/if}
+                            </div>
+                        </div>
+                    {/foreach}
+                    {input items-addItem class=>"btn btn-light ajax"}<br /><br />
+                    {input send} {input sendStay}
+                    {ifset $edit}{input cancle}{/ifset}
+                </form>
+            </div>
         </div>
     </div>
 {/snippet}

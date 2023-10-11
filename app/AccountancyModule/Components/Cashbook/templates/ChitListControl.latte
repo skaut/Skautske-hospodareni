@@ -4,14 +4,15 @@
     <div class="card-header">
         <div class="row justify-content-between">
             <div class="col-xl-2 col-md-4">
-                <h4>{$paymentMethod->getName()}</h4>
+                <h4 id="chitList-payment">{$paymentMethod->getName()}</h4>
             </div>
             <div class="col-xl-10 col-md-8 export-panel text-right d-none d-md-block">
                 {include 'ChitListControl.topPanel.latte'}
             </div>
         </div>
     </div>
-    <div class="panel-body chit-list" n:if="!empty($chits)" n:attr="id => $control->getUniqueId()">
+    <div class="panel-body chit-list " n:if="!empty($chits)" n:attr="id => $control->getUniqueId()">
+        <div class="overflow-auto">
             <table class="table table-bordered table-condensed" id="cashbookTable">
                 <thead>
                 <tr>
@@ -57,7 +58,7 @@
                                         class="btn btn-sm btn-info d-none d-lg-inline"><i
                                             class="fas fa-print"></i></a>
                                 {control "chitScan-$chit->id"}
-                                <a n:if="$isEditable && ! $chit->locked" n:href="edit! $chit->id"
+                                <a n:if="$isEditable && ! $chit->locked" n:href="edit! $chit->id" data-toggle="chitEdit"
                                         class="ajax btn btn-sm btn-primary ui--editChit"><i class="far fa-edit"></i></a>
 
                                 <a n:if="$isEditable && ! $chit->locked" n:href="remove! $chit->id"
@@ -110,6 +111,7 @@
                 </tr>
                 <tbody>
             </table>
+    </div>
 
         {if $canMoveChits}
             {control moveChitsDialog}
