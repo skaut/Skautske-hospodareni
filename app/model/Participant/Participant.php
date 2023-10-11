@@ -26,6 +26,7 @@ class Participant
         private string $unit,
         private string $unitRegistrationNumber,
         private int $days,
+        private bool $isAccepted,
         private Payment $payment,
         private string|null $category = null,
     ) {
@@ -120,5 +121,10 @@ class Participant
     public function getCategory(): string|null
     {
         return $this->category;
+    }
+
+    public function getIsAccepted(): bool
+    {
+        return $this->isAccepted;
     }
 }

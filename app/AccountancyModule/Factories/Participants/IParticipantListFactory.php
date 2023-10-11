@@ -18,5 +18,6 @@ interface IParticipantListFactory
         bool $isAllowIsAccount,
         bool $isAllowParticipantUpdate,
         bool $isAllowParticipantDelete,
+        bool $isOnlineLogin,
     ): ParticipantList;
 }

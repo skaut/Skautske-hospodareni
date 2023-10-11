@@ -47,6 +47,7 @@ final class CampFactory
             $skautisCamp->ID_EventCampState,
             $skautisCamp->RegistrationNumber,
             $this->getParticipatingUnits($skautisCamp->ID_UnitArray ?? new stdClass()),
+            $skautisCamp->IsOnlineLogin ?? false,
             $skautisCamp->TotalDays ?? null,
             $stats,
             $skautisCamp->IsRealAutoComputed ?? null,
