@@ -42,6 +42,7 @@ $I->click('//option[text()="test@hospodareni.loc"]');
 
 $I->click('//option[text()="Vyberte bankovní účet"]');
 $I->click('//option[text()="Acceptance"]');
+$I->scrollTo('input[name="send"]');
 $I->click('Založit skupinu');
 
 $I->see('Skupina byla založena');
