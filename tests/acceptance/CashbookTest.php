@@ -62,6 +62,8 @@ class CashbookTest extends Unit
 
         // Go through datagrid
         $I->click('Akce');
+        $I->executeJs('window.scrollTo(0, document.body.scrollHeight);');
+        $I->waitForText($this->eventName);
         $I->click($this->eventName);
     }
 
@@ -149,6 +151,7 @@ class CashbookTest extends Unit
 
     private function fillChitForm(Date $date, string $purpose, Operation $type, string $category, string $recipient, string $amount): void
     {
+        $this->tester->wantToTest('Uložit');
         $this->tester->fillField('Datum', $date->format('d.m. Y'));
         $this->tester->pressKey('body', [WebDriverKeys::ESCAPE]); // close datepicker
         $this->tester->fillField('Účel', $purpose);
@@ -161,6 +164,8 @@ class CashbookTest extends Unit
     private function waitForBalance(string $balance): void
     {
         $this->tester->expectTo(sprintf('see %s CZK as final balance', $balance));
+        $this->tester->executeJs('window.scrollTo(0, document.body.scrollHeight);');
+        $this->tester->wait(2);
         $this->tester->waitForText($balance, 10, self::BALANCE_SELECTOR);
     }
 
