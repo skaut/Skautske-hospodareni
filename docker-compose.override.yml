@@ -10,7 +10,7 @@ services:
 #            - nfsmount:/var/www/html
     mysql:
         ports:
-            - 3306:3306
+            - 33060:3306
 
     adminer:
         container_name: hskauting.adminer
