@@ -5,9 +5,18 @@ declare(strict_types=1);
 namespace App\AccountancyModule\EventModule;
 
 use App\AccountancyModule\Grids\DataSource;
+use Model\Cashbook\Cashbook\CashbookId;
+use Model\Cashbook\Cashbook\PaymentMethod;
+use Model\Cashbook\ReadModel\Queries\CashbookQuery;
+use Model\Cashbook\ReadModel\Queries\EducationCashbookIdQuery;
 use Model\Common\Services\QueryBus;
+use Model\DTO\Cashbook\Cashbook;
+use Model\DTO\Education\EducationListItem;
 use Model\Event\Education;
 use Model\Event\ReadModel\Queries\EducationListQuery;
+
+use function array_map;
+use function assert;
 
 final class EducationListDataSource extends DataSource
 {
@@ -24,9 +33,35 @@ final class EducationListDataSource extends DataSource
         return $this;
     }
 
-    /** @return Education[] */
+    /** @return EducationListItem[] */
     protected function loadData(): array
     {
-        return $this->queryBus->handle(new EducationListQuery($this->year));
+        $educationEvents = $this->queryBus->handle(new EducationListQuery($this->year));
+
+        return array_map(
+            function (Education $education): EducationListItem {
+                return new EducationListItem(
+                    $education->getId()->toInt(),
+                    $education->getDisplayName(),
+                    $education->getStartDate(),
+                    $education->getEndDate(),
+                    $this->chitNumberPrefix($education),
+                );
+            },
+            $educationEvents,
+        );
+    }
+
+    private function chitNumberPrefix(Education $camp): string|null
+    {
+        $cashbookId = $this->queryBus->handle(new EducationCashbookIdQuery($camp->getId()));
+
+        assert($cashbookId instanceof CashbookId);
+
+        $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
+
+        assert($cashbook instanceof Cashbook);
+
+        return $cashbook->getChitNumberPrefix(PaymentMethod::CASH());
     }
 }

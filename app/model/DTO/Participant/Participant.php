@@ -26,6 +26,7 @@ use Nette\SmartObject;
  * @property-read float $repayment
  * @property-read string $onAccount
  * @property-read int $days
+ * @property-read bool $isAccepted
  */
 class Participant
 {
@@ -33,7 +34,7 @@ class Participant
 
     private Payment $paymentObj;
 
-    public function __construct(private int $id, private int $personId, private string $firstName, private string $lastName, private string|null $nickName = null, private int|null $age = null, private Date|null $birthday = null, private string $street, private string $city, private int $postcode, private string $state, private string $unit, private string $unitRegistrationNumber, private int $days, Payment $payment, private string|null $category = null)
+    public function __construct(private int $id, private int $personId, private string $firstName, private string $lastName, private string|null $nickName = null, private int|null $age = null, private Date|null $birthday = null, private string $street, private string $city, private int $postcode, private string $state, private string $unit, private string $unitRegistrationNumber, private int $days, private bool $isAccepted, Payment $payment, private string|null $category = null)
     {
         $this->paymentObj = $payment;
     }
@@ -131,5 +132,10 @@ class Participant
     public function getCategory(): string
     {
         return $this->category ?? '';
+    }
+
+    public function isAccepted(): bool
+    {
+        return $this->isAccepted;
     }
 }

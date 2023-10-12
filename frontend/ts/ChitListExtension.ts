@@ -27,3 +27,15 @@ function submitMassAddEvent(form: HTMLFormElement, event:any, checkboxPrefix: st
     console.log([...formData.entries()]);
     naja.makeRequest(form.method, form.action, formData);
 }
+
+export function initializeEditForm(container: Element, checkboxPrefix: string): void {
+
+    container.querySelectorAll<HTMLFormElement>('[data-toggle="chitEdit"]').forEach(form => {
+        form.addEventListener('click', (event:any) => {
+            const chitForm = document.getElementById('chitFormHeader');
+            if (chitForm) {
+                chitForm.scrollIntoView({  behavior: "smooth"});
+            }
+        });
+    });
+}

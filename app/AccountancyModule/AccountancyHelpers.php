@@ -67,6 +67,43 @@ abstract class AccountancyHelpers
     /**
      * @filter
      *
+     * zobrazuje popisky stavů u vzdělávaček
+     */
+    public static function educationStateLabel(string $s): string
+    {
+        switch ($s) {
+            case 'draft':
+                return '<span class=\'badge badge-warning\'>Rozpracováno</span>';
+
+            case 'published':
+                return '<span class=\'badge badge-info\'>Zveřejněno</span>';
+
+            case 'confirmed':
+                return '<span class=\'badge badge-info\'>Potvrzeno vedoucím</span>';
+
+            case 'waiting':
+                return '<span class=\'badge badge-info\'>Čeká na schválení</span>';
+
+            case 'approved':
+                return '<span class=\'badge badge-info\'>Schváleno</span>';
+
+            case 'closed':
+                return '<span class=\'badge badge-success\'>Uzavřeno</span>';
+
+            case 'rejected':
+                return '<span class=\'badge badge-danger\'>Potvrzení odmítnuto</span>';
+
+            case 'disapproved':
+                return '<span class=\'badge badge-danger\'>Schválení odmítnuto</span>';
+
+            default:
+                return '<span class=\'badge badge-danger\'>Zrušeno</span>';
+        }
+    }
+
+    /**
+     * @filter
+     *
      * zobrazuje popisky stavů u táborů
      */
     public static function campStateLabel(string $s): string

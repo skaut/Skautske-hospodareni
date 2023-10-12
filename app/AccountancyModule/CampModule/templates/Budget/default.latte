@@ -30,7 +30,7 @@
             {do $balance += (float)$categorySummary->total->getAmount()/100}
             <td>{$categorySummary->name}</td>
             <td n:class="text-right,text-nowrap, array_key_exists($categorySummary->id, $toRepair) ? bg-danger-lighter"
-                n:attr="[title => array_key_exists($categorySummary->id, $toRepair) ? 'Součet paragonů je ' . $toRepair[$categorySummary->id]]">
+                n:attr="[title => array_key_exists($categorySummary->id, $toRepair) ? 'Částka ve SkautISu je ' . $toRepair[$categorySummary->id]]">
                 {$categorySummary->total|price}
             </td>
         </tr>

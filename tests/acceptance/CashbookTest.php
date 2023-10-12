@@ -62,6 +62,8 @@ class CashbookTest extends Unit
 
         // Go through datagrid
         $I->click('Akce');
+        $I->executeJs('window.scrollTo(0, document.body.scrollHeight);');
+        $I->waitForText($this->eventName);
         $I->click($this->eventName);
     }
 
@@ -80,13 +82,14 @@ class CashbookTest extends Unit
     private function createExpenseChit(): void
     {
         $I = $this->tester;
+        $I->click('Nový doklad');
         $I->amGoingTo('create expense chit');
 
         $purpose = 'Nákup chleba';
 
         $this->fillChitForm(new Date(), $purpose, Operation::EXPENSE(), 'Potraviny', 'Testovací skaut', '100 + 1');
-        $I->click('Uložit');
-
+        $I->scrollTo('input[name="send"]');
+        $I->click('input[name="send"]');
         $this->waitForBalance('-101,00');
     }
 
@@ -94,23 +97,25 @@ class CashbookTest extends Unit
     {
         $I = $this->tester;
         $I->wantTo('Update expense chit amount');
-
+        $I->scrollTo('h4[id="chitList-payment"]');
         $I->click('.ui--editChit');
         $I->waitForElement('[name="pid"]:not([value=""])');
 
         $I->fillField('items[0][price]', '121');
-        $I->click('Uložit');
-
+        $I->scrollTo('input[name="send"]');
+        $I->click('input[name="send"]');
         $this->waitForBalance('-121,00');
     }
 
     private function addIncomeChit(): void
     {
         $I = $this->tester;
+        $I->click('Nový doklad');
         $I->amGoingTo('add income chit');
 
         $this->fillChitForm(new Date(), 'Účastnické poplatky', Operation::INCOME(), 'Přijmy od účastníků', 'Testovací skaut 2', '100');
-        $I->click('Uložit');
+        $I->scrollTo('input[name="send"]');
+        $I->click('input[name="send"]');
 
         $this->waitForBalance('-21,00');
     }
@@ -120,9 +125,10 @@ class CashbookTest extends Unit
         $I = $this->tester;
         $I->amGoingTo('remove both chits');
 
+        $I->scrollTo('h4[id="chitList-payment"]');
         $this->removeChit(1);
         $this->waitForBalance('-121,00');
-
+        $I->scrollTo('h4[id="chitList-payment"]');
         $this->removeChit(1);
         $I->waitForText(self::NO_CHITS_MESSAGE);
     }
@@ -145,6 +151,8 @@ class CashbookTest extends Unit
 
     private function fillChitForm(Date $date, string $purpose, Operation $type, string $category, string $recipient, string $amount): void
     {
+        $this->tester->wait(2); // unroll block
+        $this->tester->wantToTest('Uložit');
         $this->tester->fillField('Datum', $date->format('d.m. Y'));
         $this->tester->pressKey('body', [WebDriverKeys::ESCAPE]); // close datepicker
         $this->tester->fillField('Účel', $purpose);
@@ -157,6 +165,8 @@ class CashbookTest extends Unit
     private function waitForBalance(string $balance): void
     {
         $this->tester->expectTo(sprintf('see %s CZK as final balance', $balance));
+        $this->tester->executeJs('window.scrollTo(0, document.body.scrollHeight);');
+        $this->tester->wait(2);
         $this->tester->waitForText($balance, 10, self::BALANCE_SELECTOR);
     }
 

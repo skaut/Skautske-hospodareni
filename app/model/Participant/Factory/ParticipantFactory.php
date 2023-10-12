@@ -32,8 +32,9 @@ final class ParticipantFactory
             $skautisParticipant->State ?? $skautisParticipant->PersonAddressState ?? '',
             isset($skautisParticipant->ID_Unit) ? (int) $skautisParticipant->ID_Unit : null,
             $skautisParticipant->Unit ?? '',
-            $skautisParticipant->UnitRegistrationNumber ?? '',
+            $skautisParticipant->UnitRegistrationNumber ?? $skautisParticipant->PersonUnitRegistrationNumber ?? '',
             (int) ($skautisParticipant->Days ?? 0),
+            (bool) ($skautisParticipant->IsAccepted ?? false),
             $payment,
             $skautisParticipant->Category ?? null,
         );

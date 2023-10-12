@@ -6,17 +6,116 @@
 
 <div class="row d-flex align-items-center">
     <div class="col-lg-7 text-center text-lg-left">
+        <span data-toggle="tooltip">
+            {$event->getState()|educationStateLabel|noescape}
+        </span>
+        <span class="ml-2 mr-2">|</span>
+        {$event->getUnitName()}
+        <span class="ml-2 mr-2">|</span>
         <span class="text-nowrap"><i class="fas fa-calendar"></i> {[$event->getStartDate(), $event->getEndDate()]|dateRange}</span>
+        <span class="ml-2 mr-2">|</span>
+        <i class="fas fa-map-marker-alt"></i>
+        {if trim($event->getLocation()) === ''}<i
+                class="text-muted">Nevyplněno</i>{else}{$event->getLocation()}{/if}
     </div>
     <div class="col-lg-5 text-lg-right text-center mt-lg-0 d-flex d-md-block flex-column mt-1">
-        <div class="btn-group mr-md-3 mt-2">
-            <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-                    aria-expanded="false">
-                <i class="fas fa-print"></i> Exportovat
-            </button>
-            <div class="dropdown-menu">
-                <a n:href="Education:report $aid" target="_blank" class="dropdown-item">Záverečná zpráva</a>
+        <a n:href="Education:report 'aid'=>$aid" target="_blank" class="btn btn-info mr-md-2 mb-2 mb-md-0">
+            <i class="fas fa-print"></i>
+            Záverečná zpráva
+        </a>
+
+        <a href="{$skautISUrl}Junak/Events/Education/Detail.aspx?ID={$event->getID()}" target="_blank" class="btn btn-light">
+            <i class="far fa-edit d-none d-xl-inline-block"></i>
+            Upravit ve SkautISu
+        </a>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-4 mb-4" n:if="$accessDetail">
+        <div class="card">
+            <h5 class="card-header">Základní údaje</h5>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex">
+                    <div class="font-weight-bold mr-auto">Výsledek hospodaření</div>
+                    <div>{if $finalRealBalance === null}Chybí povolené automatické dopočítávání!{else}{$finalRealBalance|price} Kč{/if}</div>
+                </li>
+                <li class="list-group-item d-flex">
+                    <div class="font-weight-bold mr-auto">Prefix dokladů pokladny</div>
+                    <div>{$prefixCash}</div>
+                </li>
+                <li class="list-group-item d-flex">
+                    <div class="font-weight-bold mr-auto">Prefix dokladů banky</div>
+                    <div>{$prefixBank}</div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4" n:if="$accessDetail">
+        <div class="card">
+            <h5 class="card-header">Statistiky</h5>
+            <table class="table mb-0">
+                <tr>
+                    <th class="border-top-0">Počet dnů</th>
+                    <td class="border-top-0 text-right">{$totalDays}</td>
+                </tr>
+                <tr>
+                    <th>Počet členů týmu</th>
+                    <td class="text-right">{$teamCount}</td>
+                </tr>
+                <tr>
+                    <th>Předpokládaných účastníků</th>
+                    <td class="text-right">{$participantsCapacity}</td>
+                </tr>
+                <tr>
+                    <th>Přihlášených účastníků</th>
+                    <td class="text-right">{$participantsAccepted}</td>
+                </tr>
+                <tr>
+                    <th>Předpokládáných osobodnů</th>
+                    <td class="text-right">{$personDaysEstimated}</td>
+                </tr>
+                <tr>
+                    <th>Skutečných osobodnů</th>
+                    <td class="text-right">{$personDaysReal}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4" n:if="$functions !== NULL">
+        <div class="card">
+            <div class="card-header d-flex align-items-center">
+                <h5 class="m-0 mr-auto">Vedení akce</h5>
             </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex">
+                    <div class="font-weight-bold mr-auto">Vedoucí akce</div>
+                    <div>
+                        {$functions->leader !== NULL ? $functions->leader->name : "-"}
+                    </div>
+                </li>
+                <li class="list-group-item d-flex" n:foreach="$functions->assistants as $assistant">
+                    <div class="font-weight-bold mr-auto">Zástupce vedoucího</div>
+                    <div>
+                        {$assistant->name}
+                    </div>
+                </li>
+
+                {var $otherFunctionLabels = [
+                    'accountant' => 'Hospodář',
+                    'secretary' => 'Tajemník',
+                    'medic' => 'Zdravotník',
+                ]}
+
+                <li class="list-group-item d-flex" n:foreach="$otherFunctionLabels as $functionName => $label">
+                    <div class="font-weight-bold mr-auto">{$label}</div>
+                    <div>
+                        {$functions->$functionName !== NULL ? $functions->$functionName->name : "-"}
+                    </div>
+                </li>
+            </ul>
         </div>
     </div>
 </div>

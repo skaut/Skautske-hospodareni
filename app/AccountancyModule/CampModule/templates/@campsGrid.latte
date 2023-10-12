@@ -19,10 +19,6 @@
     </span>
 {/block}
 
-{define col-displayName}
-    <a href="{plink Detail:default $item->id->toInt()}">{$item->displayName}</a>
-{/define}
-
 {define col-state}
     {$item->getState()|campStateLabel|noescape}
 {/define}

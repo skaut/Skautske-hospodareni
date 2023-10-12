@@ -39,6 +39,7 @@ class Camp implements ISkautisEvent
         private string $state,
         private string $registrationNumber,
         private array $participatingUnits,
+        private bool $isOnlineLogin,
         private int|null $totalDays = null,
         private ParticipantStatistics|null $participantStatistics = null,
         private bool|null $realAutoComputed = null,
@@ -115,5 +116,10 @@ class Camp implements ISkautisEvent
     public function isRealTotalCostAutoComputed(): bool|null
     {
         return $this->realTotalCostAutoComputed;
+    }
+
+    public function isOnlineLogin(): bool
+    {
+        return $this->isOnlineLogin;
     }
 }

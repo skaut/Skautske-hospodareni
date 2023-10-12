@@ -40,7 +40,7 @@ final class LoginPanel extends BaseControl
             $roles = [];
 
             foreach ($this->userService->getAllSkautisRoles() as $role) {
-                $roles[$role->ID] = isset($role->RegistrationNumber) ? $role->RegistrationNumber . ' - ' . $role->Role : $role->Role;
+                $roles[$role->ID] = $role->DisplayName;
             }
 
             $this->template->setParameters([

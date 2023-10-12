@@ -17,4 +17,11 @@
                         class="fas fa-clipboard-list"></i> Evidence plateb</a>
         </li>
     </ul>
+    <ul class="navbar-nav align-items-center justify-content-center">
+        <li n:class="nav-item, $presenterName === 'Privileges' ? active">
+            <a class="nav-link" n:href="Privileges: $event->getId()->toInt()"><i
+                        class="fas fa-shield-alt"></i>
+                Oprávnění</a>
+        </li>
+    </ul>
 </nav>

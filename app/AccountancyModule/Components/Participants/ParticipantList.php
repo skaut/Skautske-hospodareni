@@ -8,12 +8,14 @@ use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
 use Model\DTO\Participant\Participant;
 use Model\DTO\Participant\UpdateParticipant;
+use Model\Participant\ParticipantNotFound;
 use Nette\Application\BadRequestException;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Http\IResponse;
 
 use function array_filter;
 use function array_map;
+use function implode;
 use function in_array;
 use function sprintf;
 use function strcoll;
@@ -60,6 +62,7 @@ final class ParticipantList extends BaseControl
         protected bool $isAllowIsAccount,
         protected bool $isAllowParticipantUpdate,
         protected bool $isAllowParticipantDelete,
+        protected bool $isOnlineLogin,
     ) {
     }
 
@@ -162,13 +165,13 @@ final class ParticipantList extends BaseControl
 
     protected function createComponentEditDialog(): EditParticipantDialog
     {
-        $dialog = new EditParticipantDialog($this->participantsById(), $this->isAllowDaysUpdate, $this->isAllowIsAccount, $this->isAllowRepayment);
+        $dialog = new EditParticipantDialog($this->participantsById(), $this->isAllowDaysUpdate, $this->isAllowIsAccount, $this->isAllowRepayment, $this->isOnlineLogin);
 
-        $dialog->onUpdate[] = function (int $participantId, array $fields): void {
+        $dialog->onUpdate[] = function (int $participantId, array $fields, bool $isAccepted): void {
             $changes = [];
 
             foreach ($fields as $field => $value) {
-                $changes[] = new UpdateParticipant($this->aid, $participantId, $field, (string) $value);
+                $changes[] = new UpdateParticipant($this->aid, $participantId, $field, (string) $value, $isAccepted);
             }
 
             $this->onUpdate($changes);
@@ -224,25 +227,44 @@ final class ParticipantList extends BaseControl
 
         $values = $button->getForm()->getValues()['edit'];
 
-        $changes = [];
+        $changes             = [];
+        $currentParticipants = [];
+        foreach ($this->currentParticipants as $key => $p) {
+            $currentParticipants[$p->id] = $p;
+        }
+
+        $participantUpdateError = [];
         foreach ($button->getForm()->getValues()->participantIds as $participantId) {
+            $participant = $currentParticipants[$participantId] ?? throw new ParticipantNotFound('Cannot find participant from the given data');
+
             if ($values['days'] !== null) {
-                $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_DAYS, $values['days']);
+                if ($this->isOnlineLogin && ! $participant->isAccepted()) {
+                    $participantUpdateError[] = $participant->displayName;
+                } else {
+                    $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_DAYS, $values['days'], $participant->isAccepted());
+                }
             }
 
             if ($values['payment'] !== null) {
-                $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_PAYMENT, $values['payment']);
+                $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_PAYMENT, $values['payment'], $participant->isAccepted());
             }
 
             if ($values['repayment'] !== null) {
-                $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_REPAYMENT, $values['repayment']);
+                $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_REPAYMENT, $values['repayment'], $participant->isAccepted());
             }
 
             if (in_array($values['isAccount'], [self::NO_ACTION, null])) {
                 continue;
             }
 
-            $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_IS_ACCOUNT, $values['isAccount']);
+            $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_IS_ACCOUNT, $values['isAccount'], $participant->isAccepted());
+        }
+
+        if (! empty($participantUpdateError)) {
+            $this->flashMessage(
+                sprintf('Následující účastníci nemají potvrzenou elektronickou přihlášku: %s. U těchto účastníků nelze upravit počet dnů na táboře.', implode(', ', $participantUpdateError)),
+                'warning',
+            );
         }
 
         $this->onUpdate($changes);

@@ -14,6 +14,9 @@ use Model\Common\UnitId;
 
 class CashbookControl extends BaseControl
 {
+    /** @var bool @persistent */
+    public bool $displayChitForm = false;
+
     private INoteFormFactory $noteFormFactory;
 
     public function __construct(
@@ -39,7 +42,10 @@ class CashbookControl extends BaseControl
 
     protected function createComponentChitForm(): ChitForm
     {
-        return $this->formFactory->create($this->cashbookId, $this->isEditable, $this->unitId);
+        $control = $this->formFactory->create($this->cashbookId, $this->isEditable, $this->unitId);
+        $control->setDisplayChitForm($this->displayChitForm);
+
+        return $control;
     }
 
     protected function createComponentChitListCash(): ChitListControl
@@ -60,6 +66,9 @@ class CashbookControl extends BaseControl
     private function createChitList(PaymentMethod $paymentMethod): ChitListControl
     {
         $control = $this->chitListFactory->create($this->cashbookId, $this->isEditable, $paymentMethod);
+
+        $this->displayChitForm = true;
+        $this['chitForm']->setDisplayChitForm(true);
 
         $control->onEditButtonClicked[] = function (int $chitId): void {
             $form = $this['chitForm'];
