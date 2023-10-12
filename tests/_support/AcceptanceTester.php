@@ -27,7 +27,7 @@ class AcceptanceTester extends Actor
 
     private const PASSWORD = 'chtelbysprachy1';
 
-    public const UNIT_LEADER_ROLE = '621.66 - Středisko: vedoucí/admin';
+    public const UNIT_LEADER_ROLE = 'Středisko: vedoucí/admin - 621.66';
     public const UNIT_ID = 27266;
 
     /**
