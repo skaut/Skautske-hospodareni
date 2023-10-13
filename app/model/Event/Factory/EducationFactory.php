@@ -8,7 +8,7 @@ use Cake\Chronos\Date;
 use Model\Common\UnitId;
 use Model\Event\Education;
 use Model\Event\SkautisEducationId;
-use Model\Event\SkautisGrantId;
+use Model\Grant\SkautisGrantId;
 use stdClass;
 
 use function mb_ereg_replace;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Model\Event;
+namespace Model\Grant;
 
 final class SkautisGrantId
 {
