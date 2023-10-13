@@ -65,6 +65,10 @@
                     <div class="font-weight-bold mr-auto">Podíl na nákladech</div>
                     <div class="text-right">{if $grantCostRatio !== null}{100 * $grantCostRatio|price}%{/if}</div>
                 </li>
+                <li class="list-group-item d-flex">
+                    <div class="font-weight-bold mr-auto">Zbývá vyčerpat</div>
+                    <div class="text-right">{if $grantRemainingPay !== null}{$grantRemainingPay|price} Kč{/if}</div>
+                </li>
             </ul>
         </div>
     </div>
