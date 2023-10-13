@@ -15,8 +15,7 @@
         <span class="text-nowrap"><i class="fas fa-calendar"></i> {[$event->getStartDate(), $event->getEndDate()]|dateRange}</span>
         <span class="ml-2 mr-2">|</span>
         <i class="fas fa-map-marker-alt"></i>
-        {if trim($location) === ''}<i
-                class="text-muted">Nevyplněno</i>{else}{$location}{/if}
+        {if trim($location) === ''}<i class="text-muted">Nevyplněno</i>{else}{$location}{/if}
     </div>
     <div class="col-lg-5 text-lg-right text-center mt-lg-0 d-flex d-md-block flex-column mt-1">
         <a n:href="Education:report 'aid'=>$aid" target="_blank" class="btn btn-info mr-md-2 mb-2 mb-md-0">
