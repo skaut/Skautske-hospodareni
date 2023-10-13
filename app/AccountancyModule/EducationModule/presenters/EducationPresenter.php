@@ -12,6 +12,7 @@ use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\EducationCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
 use Model\DTO\Cashbook\Cashbook;
+use Model\Event\EducationLocation;
 use Model\Event\EducationTerm;
 use Model\Event\ReadModel\Queries\EducationCourseParticipationStatsQuery;
 use Model\Event\ReadModel\Queries\EducationCoursesQuery;
@@ -31,6 +32,7 @@ use function array_unique;
 use function assert;
 use function count;
 use function implode;
+use function in_array;
 
 class EducationPresenter extends BasePresenter
 {
@@ -65,16 +67,29 @@ class EducationPresenter extends BasePresenter
             ? $this->queryBus->handle(new EducationParticipantParticipationStatsQuery($this->event->grantId->toInt()))
             : null;
 
+        $termLocationIds     = array_map(
+            static function (EducationTerm $term) {
+                return $term->locationId;
+            },
+            $terms,
+        );
+        $locationsUsedInTerm = array_filter(
+            $locations,
+            static function (EducationLocation $location) use ($termLocationIds) {
+                return in_array($location->id, $termLocationIds);
+            },
+        );
+
         $this->template->setParameters([
             'skautISUrl'       => $this->userService->getSkautisUrl(),
             'accessDetail'     => $this->authorizator->isAllowed(Education::ACCESS_DETAIL, $aid),
             'location'         => implode(
                 ', ',
                 array_map(
-                    static function ($location) {
+                    static function (EducationLocation $location) {
                         return $location->name;
                     },
-                    $locations,
+                    $locationsUsedInTerm,
                 ),
             ),
             'functions' => $this->authorizator->isAllowed(Education::ACCESS_FUNCTIONS, $aid)
