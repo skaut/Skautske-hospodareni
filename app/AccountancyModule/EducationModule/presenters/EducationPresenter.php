@@ -110,6 +110,7 @@ class EducationPresenter extends BasePresenter
             'personDaysReal'       => $participantParticipationStats !== null
                 ? self::propertySum($participantParticipationStats, 'totalDays')
                 : null,
+            'grantAmountMax'       => $grant?->amountMax,
         ]);
 
         if (! $this->isAjax()) {
