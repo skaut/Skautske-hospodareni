@@ -91,7 +91,6 @@ class EducationPresenter extends BasePresenter
 
         $this->template->setParameters([
             'skautISUrl'       => $this->userService->getSkautisUrl(),
-            'accessDetail'     => $this->authorizator->isAllowed(Education::ACCESS_DETAIL, $aid),
             'canAccessReport'  => $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid),
             'location'         => implode(
                 ', ',
