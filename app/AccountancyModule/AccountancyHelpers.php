@@ -104,6 +104,68 @@ abstract class AccountancyHelpers
     /**
      * @filter
      *
+     * zobrazuje popisky stavů dotací
+     */
+    public static function grantStateLabel(string $s): string
+    {
+        switch ($s) {
+            case 'new':
+                return '<span class=\'badge badge-warning\'>Nová</span>';
+
+            case 'unfinished':
+                return '<span class=\'badge badge-warning\'>Rozpracováno</span>';
+
+            case 'complement':
+            case 'waitsForAmendation':
+                return '<span class=\'badge badge-info\'>Čeká na doplnění</span>';
+
+            case 'waitsForAdvanceSend':
+                return '<span class=\'badge badge-info\'>Čeká na odeslání zálohy</span>';
+
+            case 'waitsForConfirmation':
+                return '<span class=\'badge badge-info\'>Čeká na potvrzení</span>';
+
+            case 'waitsForAuthorization':
+                return '<span class=\'badge badge-info\'>Čeká na potvrzení RK</span>';
+
+            case 'waitsForDecisionApprove':
+                return '<span class=\'badge badge-info\'>Čeká na potvrzení rozhodnutí</span>';
+
+            case 'waitsForApproval':
+                return '<span class=\'badge badge-info\'>Čeká na schválení</span>';
+
+            case 'waitsForAudit':
+                return '<span class=\'badge badge-info\'>Čeká na vyúčtování OJ</span>';
+
+            case 'centralCheck':
+                return '<span class=\'badge badge-info\'>Kontrola ústředím</span>';
+
+            case 'submitted':
+                return '<span class=\'badge badge-info\'>Odevzdáno</span>';
+
+            case 'confirmed':
+                return '<span class=\'badge badge-info\'>Potvrzeno</span>';
+
+            case 'approved':
+                return '<span class=\'badge badge-info\'>Schváleno</span>';
+
+            case 'closed':
+                return '<span class=\'badge badge-success\'>Uzavřeno</span>';
+
+            case 'running':
+                return '<span class=\'badge badge-success\'>V realizaci OJ</span>';
+
+            case 'denied':
+                return '<span class=\'badge badge-danger\'>Zamítnuto</span>';
+
+            default:
+                return '<span class=\'badge badge-danger\'>Zrušeno</span>';
+        }
+    }
+
+    /**
+     * @filter
+     *
      * zobrazuje popisky stavů u táborů
      */
     public static function campStateLabel(string $s): string

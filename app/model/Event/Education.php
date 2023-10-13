@@ -6,6 +6,7 @@ namespace Model\Event;
 
 use Cake\Chronos\Date;
 use Model\Common\UnitId;
+use Model\Grant\SkautisGrantId;
 use Model\Skautis\ISkautisEvent;
 use Nette\SmartObject;
 

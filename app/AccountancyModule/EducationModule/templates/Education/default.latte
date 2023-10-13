@@ -32,7 +32,7 @@
 
 <div class="row mt-4">
     <div class="col-md-4 mb-4" n:if="$accessDetail">
-        <div class="card">
+        <div class="card mb-4">
             <h5 class="card-header">Základní údaje</h5>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item d-flex">
@@ -46,6 +46,32 @@
                 <li class="list-group-item d-flex">
                     <div class="font-weight-bold mr-auto">Prefix dokladů banky</div>
                     <div>{$prefixBank}</div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h5 class="card-header">Dotace</h5>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex">
+                    <div class="font-weight-bold mr-auto">Stav dotace</div>
+                    <div class="text-right">{$grantState|grantStateLabel|noescape}</div>
+                </li>
+                <li class="list-group-item d-flex">
+                    <div class="font-weight-bold mr-auto">Maximální výše</div>
+                    <div class="text-right">{if $grantAmountMax !== null}{$grantAmountMax|price} Kč{/if}</div>
+                </li>
+                <li class="list-group-item d-flex">
+                    <div class="font-weight-bold mr-auto">Reálná výše</div>
+                    <div class="text-right">{if $grantAmountMaxReal !== null}{$grantAmountMaxReal|price} Kč{/if}</div>
+                </li>
+                <li class="list-group-item d-flex">
+                    <div class="font-weight-bold mr-auto">Podíl na nákladech</div>
+                    <div class="text-right">{if $grantCostRatio !== null}{100 * $grantCostRatio|price}%{/if}</div>
+                </li>
+                <li class="list-group-item d-flex">
+                    <div class="font-weight-bold mr-auto">Zbývá vyčerpat</div>
+                    <div class="text-right">{if $grantRemainingPay !== null}{$grantRemainingPay|price} Kč{/if}</div>
                 </li>
             </ul>
         </div>

@@ -23,6 +23,7 @@ use Model\Event\ReadModel\Queries\EducationParticipantParticipationStatsQuery;
 use Model\Event\ReadModel\Queries\EducationTermsQuery;
 use Model\Event\SkautisEducationId;
 use Model\ExportService;
+use Model\Grant\ReadModel\Queries\GrantQuery;
 use Model\Services\PdfRenderer;
 
 use function array_filter;
@@ -58,6 +59,9 @@ class EducationPresenter extends BasePresenter
             $finalRealBalance = null;
         }
 
+        $grant                         = $this->event->grantId !== null
+            ? $this->queryBus->handle(new GrantQuery($this->event->grantId->toInt()))
+            : null;
         $terms                         = $this->queryBus->handle(new EducationTermsQuery($aid));
         $instructors                   = $this->queryBus->handle(new EducationInstructorsQuery($aid));
         $courseParticipationStats      = $this->queryBus->handle(new EducationCourseParticipationStatsQuery($aid));
@@ -106,6 +110,11 @@ class EducationPresenter extends BasePresenter
             'personDaysReal'       => $participantParticipationStats !== null
                 ? self::propertySum($participantParticipationStats, 'totalDays')
                 : null,
+            'grantState'           => $grant?->state,
+            'grantAmountMax'       => $grant?->amountMax,
+            'grantAmountMaxReal'   => $grant?->amountMaxReal,
+            'grantCostRatio'       => $grant?->costRatio,
+            'grantRemainingPay'    => $grant?->remainingPay,
         ]);
 
         if (! $this->isAjax()) {
