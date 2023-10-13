@@ -11,6 +11,7 @@ use Nette\SmartObject;
  * @property-read SkautisGrantId $id
  * @property-read Money $amountMax
  * @property-read Money $amountMaxReal
+ * @property-read float $costRatio
  */
 class Grant
 {
@@ -20,6 +21,7 @@ class Grant
         private SkautisGrantId $id,
         private Money $amountMax,
         private Money $amountMaxReal,
+        private float $costRatio,
     ) {
     }
 
@@ -36,5 +38,10 @@ class Grant
     public function getAmountMaxReal(): Money
     {
         return $this->amountMaxReal;
+    }
+
+    public function getCostRatio(): float
+    {
+        return $this->costRatio;
     }
 }

@@ -112,6 +112,7 @@ class EducationPresenter extends BasePresenter
                 : null,
             'grantAmountMax'       => $grant?->amountMax,
             'grantAmountMaxReal'   => $grant?->amountMaxReal,
+            'grantCostRatio'       => $grant?->costRatio,
         ]);
 
         if (! $this->isAjax()) {

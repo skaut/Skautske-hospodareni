@@ -19,6 +19,7 @@ final class GrantFactory
             new SkautisGrantId($skautisGrant->ID),
             MoneyFactory::fromFloat((float) $skautisGrant->AmountMaxValid),
             MoneyFactory::fromFloat((float) $skautisGrant->AmountMaxRealValid),
+            (float) $skautisGrant->Ratio,
         );
     }
 }
