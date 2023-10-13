@@ -55,7 +55,7 @@ class PrivilegesPresenter extends BasePresenter
                     ],
                     [
                         'label' => 'Zobrazovat účasti účastníků',
-                        'value' => $this->authorizator->isAllowed(Grant::ACCESS_PARTICIPANT_PARTICIPATION, $aid),
+                        'value' => $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::ACCESS_PARTICIPANT_PARTICIPATION, $this->event->grantId->toInt()),
                         'desc' => 'Lze zobrazovat údaje o účasti jednotlivých účastníků této akce.',
                     ],
                 ],

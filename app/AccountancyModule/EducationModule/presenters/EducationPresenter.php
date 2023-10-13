@@ -72,7 +72,7 @@ class EducationPresenter extends BasePresenter
             : null;
         $courses                       = $this->queryBus->handle(new EducationCoursesQuery($aid));
         $locations                     = $this->queryBus->handle(new EducationLocationsQuery($aid));
-        $participantParticipationStats = $this->authorizator->isAllowed(Grant::ACCESS_PARTICIPANT_PARTICIPATION, $aid) && $this->event->grantId !== null
+        $participantParticipationStats = $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::ACCESS_PARTICIPANT_PARTICIPATION, $this->event->grantId->toInt())
             ? $this->queryBus->handle(new EducationParticipantParticipationStatsQuery($this->event->grantId->toInt()))
             : null;
 
