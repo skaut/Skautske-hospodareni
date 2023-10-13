@@ -53,10 +53,12 @@ class EducationPresenter extends BasePresenter
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->getCashbookId($aid)));
         assert($cashbook instanceof Cashbook);
 
-        try {
-            $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId($aid)));
-        } catch (MissingCategory) {
-            $finalRealBalance = null;
+        $finalRealBalance = null;
+        if ($this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid)) {
+            try {
+                $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId($aid)));
+            } catch (MissingCategory) {
+            }
         }
 
         $grant                         = $this->event->grantId !== null
