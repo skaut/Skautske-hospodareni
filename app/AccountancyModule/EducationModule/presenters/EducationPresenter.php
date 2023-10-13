@@ -62,7 +62,7 @@ class EducationPresenter extends BasePresenter
             }
         }
 
-        $grant                         = $this->event->grantId !== null
+        $grant                         = $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::ACCESS_DETAIL, $this->event->grantId->toInt())
             ? $this->queryBus->handle(new GrantQuery($this->event->grantId->toInt()))
             : null;
         $terms                         = $this->queryBus->handle(new EducationTermsQuery($aid));

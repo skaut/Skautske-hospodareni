@@ -50,7 +50,7 @@
             </ul>
         </div>
 
-        <div class="card">
+        <div class="card" n:if="$grantState !== null">
             <h5 class="card-header">Dotace</h5>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item d-flex">
@@ -59,19 +59,19 @@
                 </li>
                 <li class="list-group-item d-flex">
                     <div class="font-weight-bold mr-auto">Maximální výše</div>
-                    <div class="text-right">{if $grantAmountMax !== null}{$grantAmountMax|price} Kč{/if}</div>
+                    <div class="text-right">{$grantAmountMax|price} Kč</div>
                 </li>
                 <li class="list-group-item d-flex">
                     <div class="font-weight-bold mr-auto">Reálná výše</div>
-                    <div class="text-right">{if $grantAmountMaxReal !== null}{$grantAmountMaxReal|price} Kč{/if}</div>
+                    <div class="text-right">{$grantAmountMaxReal|price} Kč</div>
                 </li>
                 <li class="list-group-item d-flex">
                     <div class="font-weight-bold mr-auto">Podíl na nákladech</div>
-                    <div class="text-right">{if $grantCostRatio !== null}{100 * $grantCostRatio|price}%{/if}</div>
+                    <div class="text-right">{100 * $grantCostRatio|price}%</div>
                 </li>
                 <li class="list-group-item d-flex">
                     <div class="font-weight-bold mr-auto">Zbývá vyčerpat</div>
-                    <div class="text-right">{if $grantRemainingPay !== null}{$grantRemainingPay|price} Kč{/if}</div>
+                    <div class="text-right">{$grantRemainingPay|price} Kč</div>
                 </li>
             </ul>
         </div>
