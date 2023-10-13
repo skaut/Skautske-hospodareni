@@ -45,6 +45,11 @@ class CashbookPresenter extends BasePresenter
 
     public function renderDefault(int $aid): void
     {
+        if (! $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $this->aid)) {
+            $this->flashMessage('Nemáte právo prohlížet rozpočet akce', 'danger');
+            $this->redirect('Education:');
+        }
+
         $finalBalance = $this->queryBus->handle(new FinalCashBalanceQuery($this->getCashbookId()));
         try {
             $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId()));
