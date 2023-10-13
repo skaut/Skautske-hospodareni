@@ -17,6 +17,7 @@ use Model\Event\ReadModel\Queries\EducationCourseParticipationStatsQuery;
 use Model\Event\ReadModel\Queries\EducationCoursesQuery;
 use Model\Event\ReadModel\Queries\EducationFunctions;
 use Model\Event\ReadModel\Queries\EducationInstructorsQuery;
+use Model\Event\ReadModel\Queries\EducationLocationsQuery;
 use Model\Event\ReadModel\Queries\EducationParticipantParticipationStatsQuery;
 use Model\Event\ReadModel\Queries\EducationTermsQuery;
 use Model\Event\SkautisEducationId;
@@ -29,6 +30,7 @@ use function array_sum;
 use function array_unique;
 use function assert;
 use function count;
+use function implode;
 
 class EducationPresenter extends BasePresenter
 {
@@ -58,6 +60,7 @@ class EducationPresenter extends BasePresenter
         $instructors                   = $this->queryBus->handle(new EducationInstructorsQuery($aid));
         $courseParticipationStats      = $this->queryBus->handle(new EducationCourseParticipationStatsQuery($aid));
         $courses                       = $this->queryBus->handle(new EducationCoursesQuery($aid));
+        $locations                     = $this->queryBus->handle(new EducationLocationsQuery($aid));
         $participantParticipationStats = $this->event->grantId !== null
             ? $this->queryBus->handle(new EducationParticipantParticipationStatsQuery($this->event->grantId->toInt()))
             : null;
@@ -65,6 +68,15 @@ class EducationPresenter extends BasePresenter
         $this->template->setParameters([
             'skautISUrl'       => $this->userService->getSkautisUrl(),
             'accessDetail'     => $this->authorizator->isAllowed(Education::ACCESS_DETAIL, $aid),
+            'location'         => implode(
+                ', ',
+                array_map(
+                    static function ($location) {
+                        return $location->name;
+                    },
+                    $locations,
+                ),
+            ),
             'functions' => $this->authorizator->isAllowed(Education::ACCESS_FUNCTIONS, $aid)
                 ? $this->queryBus->handle(new EducationFunctions(new SkautisEducationId($aid)))
                 : null,
