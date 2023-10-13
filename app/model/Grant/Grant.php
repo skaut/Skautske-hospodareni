@@ -9,6 +9,7 @@ use Nette\SmartObject;
 
 /**
  * @property-read SkautisGrantId $id
+ * @property-read string $state
  * @property-read Money $amountMax
  * @property-read Money $amountMaxReal
  * @property-read float $costRatio
@@ -20,6 +21,7 @@ class Grant
 
     public function __construct(
         private SkautisGrantId $id,
+        private string $state,
         private Money $amountMax,
         private Money $amountMaxReal,
         private float $costRatio,
@@ -30,6 +32,11 @@ class Grant
     public function getId(): SkautisGrantId
     {
         return $this->id;
+    }
+
+    public function getState(): string
+    {
+        return $this->state;
     }
 
     public function getAmountMax(): Money

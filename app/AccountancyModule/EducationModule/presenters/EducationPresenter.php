@@ -110,6 +110,7 @@ class EducationPresenter extends BasePresenter
             'personDaysReal'       => $participantParticipationStats !== null
                 ? self::propertySum($participantParticipationStats, 'totalDays')
                 : null,
+            'grantState'           => $grant?->state,
             'grantAmountMax'       => $grant?->amountMax,
             'grantAmountMaxReal'   => $grant?->amountMaxReal,
             'grantCostRatio'       => $grant?->costRatio,
