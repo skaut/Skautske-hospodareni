@@ -66,7 +66,9 @@ class EducationPresenter extends BasePresenter
             : null;
         $terms                         = $this->queryBus->handle(new EducationTermsQuery($aid));
         $instructors                   = $this->queryBus->handle(new EducationInstructorsQuery($aid));
-        $courseParticipationStats      = $this->queryBus->handle(new EducationCourseParticipationStatsQuery($aid));
+        $courseParticipationStats      = $this->authorizator->isAllowed(Education::ACCESS_COURSE_PARTICIPANTS, $aid)
+            ? $this->queryBus->handle(new EducationCourseParticipationStatsQuery($aid))
+            : null;
         $courses                       = $this->queryBus->handle(new EducationCoursesQuery($aid));
         $locations                     = $this->queryBus->handle(new EducationLocationsQuery($aid));
         $participantParticipationStats = $this->event->grantId !== null
