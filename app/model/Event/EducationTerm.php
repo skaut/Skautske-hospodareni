@@ -11,6 +11,7 @@ use Nette\SmartObject;
  * @property-read SkautisEducationTermId $id
  * @property-read Date $startDate
  * @property-read Date $endDate
+ * @property-read SkautisEducationLocationId $locationId
  */
 class EducationTerm
 {
@@ -20,6 +21,7 @@ class EducationTerm
         private SkautisEducationTermId $id,
         private Date $startDate,
         private Date $endDate,
+        private SkautisEducationLocationId $locationId,
     ) {
     }
 
@@ -36,5 +38,10 @@ class EducationTerm
     public function getEndDate(): Date
     {
         return $this->endDate;
+    }
+
+    public function getLocationId(): SkautisEducationLocationId
+    {
+        return $this->locationId;
     }
 }

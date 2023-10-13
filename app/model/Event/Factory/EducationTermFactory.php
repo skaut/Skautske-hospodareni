@@ -6,6 +6,7 @@ namespace Model\Skautis\Factory;
 
 use Cake\Chronos\Date;
 use Model\Event\EducationTerm;
+use Model\Event\SkautisEducationLocationId;
 use Model\Event\SkautisEducationTermId;
 use stdClass;
 
@@ -25,6 +26,7 @@ final class EducationTermFactory
             new SkautisEducationTermId($skautisEducationTerm->ID),
             Date::createFromFormat(self::DATETIME_FORMAT, $startDate),
             Date::createFromFormat(self::DATETIME_FORMAT, $endDate),
+            new SkautisEducationLocationId($skautisEducationTerm->ID_EventEducationLocation),
         );
     }
 }
