@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\EducationModule;
 
 use Model\Auth\Resources\Education;
+use Model\Auth\Resources\Grant;
 
 class PrivilegesPresenter extends BasePresenter
 {
@@ -51,6 +52,11 @@ class PrivilegesPresenter extends BasePresenter
                         'label' => 'Zobrazovat účastníky kurzů',
                         'value' => $this->authorizator->isAllowed(Education::ACCESS_COURSE_PARTICIPANTS, $aid),
                         'desc' => 'Lze zobrazovat počty účastníků kurzů této akce.',
+                    ],
+                    [
+                        'label' => 'Zobrazovat účasti účastníky kurzů',
+                        'value' => $this->authorizator->isAllowed(Grant::ACCESS_PARTICIPANT_PARTICIPATION, $aid),
+                        'desc' => 'Lze zobrazovat údaje o účasti jednotlivých účastníků této akce.',
                     ],
                 ],
             ],
