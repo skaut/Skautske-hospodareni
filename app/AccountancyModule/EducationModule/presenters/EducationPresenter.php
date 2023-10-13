@@ -169,12 +169,16 @@ class EducationPresenter extends BasePresenter
     }
 
     /**
-     * @param array<T> $arr
+     * @param array<T>|null $arr
      *
      * @template T
      */
-    private static function propertySum(array $arr, string $property): int|null
+    private static function propertySum(array|null $arr, string $property): int|null
     {
+        if ($arr === null) {
+            return null;
+        }
+
         $propertyValues = array_filter(
             array_map(
                 static function ($item) use ($property) {
