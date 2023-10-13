@@ -37,15 +37,15 @@
             <ul class="list-group list-group-flush">
                 <li class="list-group-item d-flex">
                     <div class="font-weight-bold mr-auto">Výsledek hospodaření</div>
-                    <div>{if $finalRealBalance !== null}{$finalRealBalance|price} Kč{else}Nedostatečná oprávnění{/if}</div>
+                    <div class="text-right">{if $finalRealBalance !== null}{$finalRealBalance|price} Kč{else}Nedostatečná oprávnění{/if}</div>
                 </li>
                 <li class="list-group-item d-flex">
                     <div class="font-weight-bold mr-auto">Prefix dokladů pokladny</div>
-                    <div>{$prefixCash}</div>
+                    <div class="text-right">{$prefixCash}</div>
                 </li>
                 <li class="list-group-item d-flex">
                     <div class="font-weight-bold mr-auto">Prefix dokladů banky</div>
-                    <div>{$prefixBank}</div>
+                    <div class="text-right">{$prefixBank}</div>
                 </li>
             </ul>
         </div>
@@ -80,32 +80,32 @@
     <div class="col-md-4 mb-4">
         <div class="card">
             <h5 class="card-header">Statistiky</h5>
-            <table class="table mb-0">
-                <tr>
-                    <th class="border-top-0">Počet dnů</th>
-                    <td class="border-top-0 text-right">{$totalDays}</td>
-                </tr>
-                <tr>
-                    <th>Počet členů týmu</th>
-                    <td class="text-right">{$teamCount}</td>
-                </tr>
-                <tr>
-                    <th>Předpokládaných účastníků</th>
-                    <td class="text-right">{if $participantsCapacity !== null}{$participantsCapacity}{else}Nedostatečná oprávnění{/if}</td>
-                </tr>
-                <tr>
-                    <th>Přihlášených účastníků</th>
-                    <td class="text-right">{if $participantsAccepted !== null}{$participantsAccepted}{else}Nedostatečná oprávnění{/if}</td>
-                </tr>
-                <tr>
-                    <th>Předpokládáných osobodnů</th>
-                    <td class="text-right">{$personDaysEstimated}</td>
-                </tr>
-                <tr>
-                    <th>Skutečných osobodnů</th>
-                    <td class="text-right">{if $personDaysReal !== null}{$personDaysReal}{else}Nedostatečná oprávnění{/if}</td>
-                </tr>
-            </table>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex">
+                    <div class="font-weight-bold mr-auto">Počet dnů</div>
+                    <div class="text-right">{$totalDays}</div>
+                </li>
+                <li class="list-group-item d-flex">
+                    <div class="font-weight-bold mr-auto">Počet členů týmu</div>
+                    <div class="text-right">{$teamCount}</div>
+                </li>
+                <li class="list-group-item d-flex">
+                    <div class="font-weight-bold mr-auto">Předpokládaných účastníků</div>
+                    <div class="text-right">{if $participantsCapacity !== null}{$participantsCapacity}{else}Nedostatečná oprávnění{/if}</div>
+                </li>
+                <li class="list-group-item d-flex">
+                    <div class="font-weight-bold mr-auto">Přihlášených účastníků</div>
+                    <div class="text-right">{if $participantsAccepted !== null}{$participantsAccepted}{else}Nedostatečná oprávnění{/if}</div>
+                </li>
+                <li class="list-group-item d-flex">
+                    <div class="font-weight-bold mr-auto">Předpokládáných osobodnů</div>
+                    <div class="text-right">{$personDaysEstimated}</div>
+                </li>
+                <li class="list-group-item d-flex">
+                    <div class="font-weight-bold mr-auto">Skutečných osobodnů</div>
+                    <div class="text-right">{if $personDaysReal !== null}{$personDaysReal}{else}Nedostatečná oprávnění{/if}</div>
+                </li>
+            </ul>
         </div>
     </div>
 
@@ -117,13 +117,13 @@
             <ul class="list-group list-group-flush">
                 <li class="list-group-item d-flex">
                     <div class="font-weight-bold mr-auto">Vedoucí akce</div>
-                    <div>
+                    <div class="text-right">
                         {$functions->leader !== NULL ? $functions->leader->name : "-"}
                     </div>
                 </li>
                 <li class="list-group-item d-flex" n:foreach="$functions->assistants as $assistant">
                     <div class="font-weight-bold mr-auto">Zástupce vedoucího</div>
-                    <div>
+                    <div class="text-right">
                         {$assistant->name}
                     </div>
                 </li>
@@ -136,7 +136,7 @@
 
                 <li class="list-group-item d-flex" n:foreach="$otherFunctionLabels as $functionName => $label">
                     <div class="font-weight-bold mr-auto">{$label}</div>
-                    <div>
+                    <div class="text-right">
                         {$functions->$functionName !== NULL ? $functions->$functionName->name : "-"}
                     </div>
                 </li>
