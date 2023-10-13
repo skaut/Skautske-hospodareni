@@ -20,5 +20,6 @@ final class Education
 
     public const UPDATE = [self::class, 'EV_EventEducation_UPDATE'];
 
+    public const ACCESS_BUDGET               = [self::class, 'GR_Statement_ALL_EventEducation'];
     public const UPDATE_REAL_BUDGET_SPENDING = [self::class, 'GR_Statement_UPDATE_EventEducationReal'];
 }

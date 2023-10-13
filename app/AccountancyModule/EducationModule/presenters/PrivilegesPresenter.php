@@ -53,6 +53,11 @@ class PrivilegesPresenter extends BasePresenter
                 'label' => 'Rozpočet',
                 'items' => [
                     [
+                        'label' => 'Zobrazovat rozpočet',
+                        'value' => $isDraft && $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid),
+                        'desc' => 'Lze zobrazovat položky rozpočtu této akce.',
+                    ],
+                    [
                         'label' => 'Upravovat závěrečný rozpočet',
                         'value' => $isDraft && $this->authorizator->isAllowed(Education::UPDATE_REAL_BUDGET_SPENDING, $aid),
                         'desc' => 'Lze upravovat závěrečný rozpočet této akce ve SkautISu.',
