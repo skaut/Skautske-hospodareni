@@ -9,11 +9,11 @@
         <span data-toggle="tooltip">
             {$event->getState()|educationStateLabel|noescape}
         </span>
-        <span class="ml-2 mr-2">|</span>
+        <span class="ms-2 me-2">|</span>
         {$event->getUnitName()}
-        <span class="ml-2 mr-2">|</span>
+        <span class="ms-2 me-2">|</span>
         <span class="text-nowrap"><i class="fas fa-calendar"></i> {[$event->getStartDate(), $event->getEndDate()]|dateRange}</span>
-        <span class="ml-2 mr-2">|</span>
+        <span class="ms-2 me-2">|</span>
         <i class="fas fa-map-marker-alt"></i>
         {if trim($location) === ''}<i class="text-muted">Nevyplněno</i>{else}{$location}{/if}
     </div>

@@ -4,9 +4,9 @@
     <div class="col text-center text-md-left mb-2 mb-md-0">
         <h1 n:inner-block="title">{$group->name}</h1>
         {$group->state|groupState|noescape}
-        <span class="mr-2 ml-2">|</span>
+        <span class="mr-2 ms-2">|</span>
         {control unit}
-        <span class="mr-2 ml-2">|</span>
+        <span class="mr-2 ms-2">|</span>
         {if $group->type === NULL}Obecná
         {elseif $group->type === "camp"}Tábor
         {elseif $group->type === "event"}Akce
