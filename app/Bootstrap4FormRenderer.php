@@ -143,7 +143,7 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
         } elseif ($control instanceof Nette\Forms\Controls\UploadControl) {
             $controlPrototype->appendAttribute('class', 'form-control-file');
         } elseif ($control instanceof Nette\Forms\Controls\SelectBox) {
-            $controlPrototype->appendAttribute('class', 'custom-select');
+            $controlPrototype->appendAttribute('class', 'form-select');
         } else {
             if ($control->hasErrors()) {
                 $control->controlPrototype->appendAttribute('class', 'is-invalid');
