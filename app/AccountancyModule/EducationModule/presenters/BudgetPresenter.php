@@ -36,6 +36,11 @@ class BudgetPresenter extends BasePresenter
 
     public function renderDefault(int $aid): void
     {
+        if (! $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $this->aid)) {
+            $this->flashMessage('Nemáte právo prohlížet rozpočet akce', 'danger');
+            $this->redirect('Education:');
+        }
+
         $educationId = new SkautisEducationId($aid);
 
         $inconsistentTotals = $this->queryBus->handle(new InconsistentEducationCategoryTotalsQuery($educationId));
