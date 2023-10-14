@@ -13,7 +13,6 @@ use Nette\SmartObject;
  * @property-read Money $amountMax
  * @property-read Money $amountPerPersonDays
  * @property-read float $costRatio
- * @property-read Money $remainingPay
  */
 class Grant
 {
@@ -25,7 +24,6 @@ class Grant
         private Money $amountMax,
         private Money $amountPerPersonDays,
         private float $costRatio,
-        private Money $remainingPay,
     ) {
     }
 
@@ -52,10 +50,5 @@ class Grant
     public function getCostRatio(): float
     {
         return $this->costRatio;
-    }
-
-    public function getRemainingPay(): Money
-    {
-        return $this->remainingPay;
     }
 }
