@@ -10,7 +10,7 @@
         </thead>
         <tr n:foreach="$entries as $entry" n:if="$entry->isIncome() === $income">
             <td>{$entry->name}</td>
-            <td class="text-right">
+            <td class="text-end">
                 {$entry->total|price}
             </td>
         </tr>
@@ -29,14 +29,14 @@
         <tr n:foreach="$categoriesSummary as $categorySummary" n:if="$categorySummary->isIncome() === $income && ! $categorySummary->isVirtual()">
             {do $balance += (float)$categorySummary->total->getAmount()/100}
             <td>{$categorySummary->name}</td>
-            <td n:class="text-right,text-nowrap, array_key_exists($categorySummary->id, $toRepair) ? bg-danger-lighter"
+            <td n:class="text-end,text-nowrap, array_key_exists($categorySummary->id, $toRepair) ? bg-danger-lighter"
                 n:attr="[title => array_key_exists($categorySummary->id, $toRepair) ? 'Částka ve SkautISu je ' . $toRepair[$categorySummary->id]]">
                 {$categorySummary->total|price}
             </td>
         </tr>
         <tr>
             <td><b>Celkem</b></td>
-            <td class="text-right text-nowrap"><b>{$balance|price}</b></td>
+            <td class="text-end text-nowrap"><b>{$balance|price}</b></td>
         </tr>
     </table>
 {/define}

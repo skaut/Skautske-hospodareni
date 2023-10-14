@@ -115,7 +115,7 @@ $showUnits bool - zobrazovat číslo jednotky
                     <th n:if="$isAllowIsAccount" data-visible-if-not-checked=".participantCheckboxInput, .allParticipantCheckbox">Na účet?</th>
                     <th n:if="$isAllowAnyAction" data-visible-if-not-checked=".participantCheckboxInput, .allParticipantCheckbox"></th>
                     <th n:if="$isAllowAnyAction"
-                            data-visible-if-checked=".participantCheckboxInput, .allParticipantCheckbox" colspan="4" class="text-right">
+                            data-visible-if-checked=".participantCheckboxInput, .allParticipantCheckbox" colspan="4" class="text-end">
                         <a n:if="$isAllowParticipantUpdate"
                                 href="#massEdit"
                                 data-toggle="modal"
@@ -142,11 +142,11 @@ $showUnits bool - zobrazovat číslo jednotky
                         </td>
                         <td><label for="massParticipants-{$p->id}">{$p->displayName}</label></td>
                         <td n:if="$showUnits">{ifset $p->unitRegistrationNumber}{$p->unitRegistrationNumber}{/ifset}</td>
-                        <td class="text-right" n:if="$isAllowDaysUpdate">{$p->days}</td>
-                        <td class="text-right">{$p->payment|price:false}{do $totalPayment += $p->payment}</td>
-                        <td class="text-right" n:if="$isAllowRepayment">{$p->repayment|price:false}{do $totalRepayment += $p->repayment}</td>
+                        <td class="text-end" n:if="$isAllowDaysUpdate">{$p->days}</td>
+                        <td class="text-end">{$p->payment|price:false}{do $totalPayment += $p->payment}</td>
+                        <td class="text-end" n:if="$isAllowRepayment">{$p->repayment|price:false}{do $totalRepayment += $p->repayment}</td>
                         <td n:if="$isAllowIsAccount">{$p->onAccount === 'Y' ? 'Ano'}</td>
-                        <td n:if="$isAllowAnyAction" class="text-right text-nowrap">
+                        <td n:if="$isAllowAnyAction" class="text-end text-nowrap">
                             <a n:if="$isAllowParticipantUpdate"
                                     n:href="edit! $p->id"
                                     class="btn btn-light btn-sm ajax"
@@ -161,16 +161,16 @@ $showUnits bool - zobrazovat číslo jednotky
                         {var $colspanHeader = 1+($isAllowAnyAction ?1:0)+($showUnits?1:0)+($isAllowDaysUpdate?1:0)}
                         <td colspan="{$colspanHeader}" class="b">Celkem: {= count($participants)} osob</td>
                         {if $isAllowRepayment}
-                            <td class="text-right" id="payment-total">{$totalPayment|price:false}</td>
-                            <td class="text-right" id="repayment-total">{$totalRepayment|price:false}</td>
+                            <td class="text-end" id="payment-total">{$totalPayment|price:false}</td>
+                            <td class="text-end" id="repayment-total">{$totalRepayment|price:false}</td>
                             {include footerFilling}
                         </tr>
                         <tr>
                             <td colspan="{$colspanHeader}"></td>
-                            <td colspan="2" class="font-weight-bold text-right"><span id="total-total">{$total|price:false}</span></td>
+                            <td colspan="2" class="font-weight-bold text-end"><span id="total-total">{$total|price:false}</span></td>
                             {include footerFilling}
                         {else}
-                            <td class="font-weight-bold text-right"><span id="total-total">{$total|price:false}</span></td>
+                            <td class="font-weight-bold text-end"><span id="total-total">{$total|price:false}</span></td>
                             {include footerFilling}
                         {/if}
                     </tr>
