@@ -35,10 +35,8 @@
                 <label n:name="amount"/>
                 <div class="input-group w-50">
                     {include control $form['amount']}
-                    <div class="input-group-append">
-                        <div class="input-group-text">
-                            Kč
-                        </div>
+                    <div class="input-group-text">
+                        Kč
                     </div>
                 </div>
                 {include errors $form['amount']}
@@ -64,12 +62,10 @@
                         <small class="text-muted">volitelný</small>
                         <div class="input-group">
                             {include control $form['variableSymbol']}
-                            <div class="input-group-append"
+                            <div class="input-group-text"
                                  title="Předvyplněná hodnota je dosavadní nejvyšší hodnota +1"
                                  data-toggle="tooltip">
-                                <div class="input-group-text">
-                                    <i class="fas fa-info-circle hidden-xs hidden-sm"></i>
-                                </div>
+                                <i class="fas fa-info-circle hidden-xs hidden-sm"></i>
                             </div>
                         </div>
                         {include errors $form['variableSymbol']}
