@@ -21,6 +21,9 @@ $chits - paragony akce
 <div class="totalReport">
     <h1>{$education->getDisplayName()}</h1>
 
+    <h3>Pořadatel akce</h3>
+    {$education->getUnitName()} - Ev. číslo: {$education->getUnitRegistrationNumber()}
+
     <h3>Základní údaje</h3>
 
     <b>Vedoucí akce: </b> {if $functions->leader !== NULL}{$functions->leader->name}{/if}<br>
@@ -40,13 +43,28 @@ $chits - paragony akce
 
     <br />
     <table border="1" style="width:800px">
+        {$location = trim($education->getLocation())}
         <tr>
             <th style="width: 20%;">Od</th>
             <th style="width: 20%;">Do</th>
+            <th style="width: 15%;">Počet dnů</th>
+            <th n:if="$location !== ''">Místa konání</th>
         </tr>
         <tr>
             <th>{$education->getStartDate()|date:"j.n.Y"}</th>
             <th>{$education->getEndDate()|date:"j.n.Y"}</th>
+            <th>{$totalDays}</th>
+            <th n:if="$location !== ''">{$location}</th>
+        </tr>
+    </table>
+
+    <h3>Účastníci</h3>
+    <table border="1" style="width:500px">
+        <tr>
+            <th style="width: 30%;">Účastníků</th>
+            <td style="width: 20%;">{$participantsAccepted}</td>
+            <th style="width: 30%;">Osobodnů</th>
+            <td style="width: 20%;">{$personDaysReal}</td>
         </tr>
     </table>
 

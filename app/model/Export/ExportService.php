@@ -29,11 +29,17 @@ use Model\DTO\Cashbook\Chit;
 use Model\DTO\Participant\Statistics;
 use Model\Event\Camp;
 use Model\Event\Education;
+use Model\Event\EducationCourseParticipationStats;
+use Model\Event\EducationParticipantParticipationStats;
+use Model\Event\EducationTerm;
 use Model\Event\Event;
 use Model\Event\ReadModel\Queries\CampFunctions;
 use Model\Event\ReadModel\Queries\CampQuery;
+use Model\Event\ReadModel\Queries\EducationCourseParticipationStatsQuery;
 use Model\Event\ReadModel\Queries\EducationFunctions;
+use Model\Event\ReadModel\Queries\EducationParticipantParticipationStatsQuery;
 use Model\Event\ReadModel\Queries\EducationQuery;
+use Model\Event\ReadModel\Queries\EducationTermsQuery;
 use Model\Event\ReadModel\Queries\EventFunctions;
 use Model\Event\ReadModel\Queries\EventQuery;
 use Model\Event\Repositories\IEventRepository;
@@ -46,6 +52,7 @@ use Model\Utils\MoneyFactory;
 
 use function array_column;
 use function array_filter;
+use function array_map;
 use function array_sum;
 use function array_values;
 use function assert;
@@ -297,8 +304,30 @@ class ExportService
         $finalRealBalance = MoneyFactory::toFloat($this->queryBus->handle(new FinalRealBalanceQuery($cashbookId)));
         assert(is_float($finalRealBalance));
 
+        $education                     = $this->queryBus->handle(new EducationQuery($educationId));
+        $terms                         = $this->queryBus->handle(new EducationTermsQuery($educationId->toInt()));
+        $courseParticipationStats      = $this->queryBus->handle(new EducationCourseParticipationStatsQuery($educationId->toInt()));
+        $participantParticipationStats = $this->queryBus->handle(new EducationParticipantParticipationStatsQuery($education->grantId->toInt()));
+
         return $this->templateFactory->create(__DIR__ . '/templates/educationReport.latte', [
-            'education' => $this->queryBus->handle(new EducationQuery($educationId)),
+            'education' => $education,
+            'totalDays' => EducationTerm::countTotalDays($terms),
+            'participantsAccepted' => array_sum(
+                array_map(
+                    static function (EducationCourseParticipationStats $stat) {
+                        return $stat->accepted;
+                    },
+                    $courseParticipationStats,
+                ),
+            ),
+            'personDaysReal' => array_sum(
+                array_map(
+                    static function (EducationParticipantParticipationStats $stat) {
+                        return $stat->totalDays;
+                    },
+                    $participantParticipationStats,
+                ),
+            ),
             'incomeCategories' => $incomeCategories[self::CATEGORY_REAL],
             'expenseCategories' => $expenseCategories[self::CATEGORY_REAL],
             'totalIncome' => $total['income'],

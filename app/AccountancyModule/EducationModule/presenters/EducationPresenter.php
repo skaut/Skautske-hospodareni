@@ -30,7 +30,6 @@ use Model\Services\PdfRenderer;
 use function array_filter;
 use function array_map;
 use function array_sum;
-use function array_unique;
 use function assert;
 use function count;
 use function implode;
@@ -107,7 +106,7 @@ class EducationPresenter extends BasePresenter
             'finalRealBalance'         => $finalRealBalance,
             'prefixCash'               => $cashbook->getChitNumberPrefix(PaymentMethod::CASH()),
             'prefixBank'               => $cashbook->getChitNumberPrefix(PaymentMethod::BANK()),
-            'totalDays'                => $this->countDays($terms),
+            'totalDays'                => EducationTerm::countTotalDays($terms),
             'teamCount'                => count($instructors),
             'participantsCapacity'     => self::propertySum($courseParticipationStats, 'capacity'),
             'participantsAccepted'     => self::propertySum($courseParticipationStats, 'accepted'),
@@ -144,27 +143,6 @@ class EducationPresenter extends BasePresenter
     private function getCashbookId(int $skautisEducationId): CashbookId
     {
         return $this->queryBus->handle(new EducationCashbookIdQuery(new SkautisEducationId($skautisEducationId)));
-    }
-
-    /** @param array<EducationTerm> $terms */
-    private function countDays(array $terms): int
-    {
-        $days = [];
-
-        foreach ($terms as $term) {
-            $date = $term->startDate;
-
-            while ($date->lessThanOrEquals($term->endDate)) {
-                $days[] = $date;
-                $date   = $date->addDay();
-            }
-        }
-
-        return count(
-            array_unique(
-                $days,
-            ),
-        );
     }
 
     /**
