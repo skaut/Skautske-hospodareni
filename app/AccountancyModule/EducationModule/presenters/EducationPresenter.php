@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\EducationModule;
 
 use Model\Auth\Resources\Education;
+use Model\Auth\Resources\Grant;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\MissingCategory;
@@ -53,21 +54,25 @@ class EducationPresenter extends BasePresenter
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->getCashbookId($aid)));
         assert($cashbook instanceof Cashbook);
 
-        try {
-            $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId($aid)));
-        } catch (MissingCategory) {
-            $finalRealBalance = null;
+        $finalRealBalance = null;
+        if ($this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid)) {
+            try {
+                $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId($aid)));
+            } catch (MissingCategory) {
+            }
         }
 
-        $grant                         = $this->event->grantId !== null
+        $grant                         = $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::ACCESS_DETAIL, $this->event->grantId->toInt())
             ? $this->queryBus->handle(new GrantQuery($this->event->grantId->toInt()))
             : null;
         $terms                         = $this->queryBus->handle(new EducationTermsQuery($aid));
         $instructors                   = $this->queryBus->handle(new EducationInstructorsQuery($aid));
-        $courseParticipationStats      = $this->queryBus->handle(new EducationCourseParticipationStatsQuery($aid));
+        $courseParticipationStats      = $this->authorizator->isAllowed(Education::ACCESS_COURSE_PARTICIPANTS, $aid)
+            ? $this->queryBus->handle(new EducationCourseParticipationStatsQuery($aid))
+            : null;
         $courses                       = $this->queryBus->handle(new EducationCoursesQuery($aid));
         $locations                     = $this->queryBus->handle(new EducationLocationsQuery($aid));
-        $participantParticipationStats = $this->event->grantId !== null
+        $participantParticipationStats = $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::ACCESS_PARTICIPANT_PARTICIPATION, $this->event->grantId->toInt())
             ? $this->queryBus->handle(new EducationParticipantParticipationStatsQuery($this->event->grantId->toInt()))
             : null;
 
@@ -86,7 +91,7 @@ class EducationPresenter extends BasePresenter
 
         $this->template->setParameters([
             'skautISUrl'       => $this->userService->getSkautisUrl(),
-            'accessDetail'     => $this->authorizator->isAllowed(Education::ACCESS_DETAIL, $aid),
+            'canAccessReport'  => $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid),
             'location'         => implode(
                 ', ',
                 array_map(
@@ -164,12 +169,16 @@ class EducationPresenter extends BasePresenter
     }
 
     /**
-     * @param array<T> $arr
+     * @param array<T>|null $arr
      *
      * @template T
      */
-    private static function propertySum(array $arr, string $property): int|null
+    private static function propertySum(array|null $arr, string $property): int|null
     {
+        if ($arr === null) {
+            return null;
+        }
+
         $propertyValues = array_filter(
             array_map(
                 static function ($item) use ($property) {

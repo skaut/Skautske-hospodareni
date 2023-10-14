@@ -9,6 +9,7 @@ use Model\Auth\IAuthorizator;
 use Model\Auth\Resources\Camp;
 use Model\Auth\Resources\Education;
 use Model\Auth\Resources\Event;
+use Model\Auth\Resources\Grant;
 use Model\Auth\Resources\Unit;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WebServiceInterface;
@@ -23,6 +24,7 @@ final class SkautisAuthorizator implements IAuthorizator
         Camp::class => Camp::TABLE,
         Education::class => Education::TABLE,
         Event::class => Event::TABLE,
+        Grant::class => Grant::TABLE,
         Unit::class => Unit::TABLE,
     ];
 

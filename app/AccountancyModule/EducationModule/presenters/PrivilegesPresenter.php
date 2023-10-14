@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\EducationModule;
 
 use Model\Auth\Resources\Education;
+use Model\Auth\Resources\Grant;
 
 class PrivilegesPresenter extends BasePresenter
 {
@@ -47,11 +48,31 @@ class PrivilegesPresenter extends BasePresenter
                         'value' => $this->authorizator->isAllowed(Education::UPDATE_PARTICIPANT, $aid),
                         'desc' => 'Lze upravovat účastníky této akce.',
                     ],
+                    [
+                        'label' => 'Zobrazovat účastníky kurzů',
+                        'value' => $this->authorizator->isAllowed(Education::ACCESS_COURSE_PARTICIPANTS, $aid),
+                        'desc' => 'Lze zobrazovat počty účastníků kurzů této akce.',
+                    ],
+                    [
+                        'label' => 'Zobrazovat účasti účastníků',
+                        'value' => $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::ACCESS_PARTICIPANT_PARTICIPATION, $this->event->grantId->toInt()),
+                        'desc' => 'Lze zobrazovat údaje o účasti jednotlivých účastníků této akce.',
+                    ],
                 ],
             ],
             'budget' => [
                 'label' => 'Rozpočet',
                 'items' => [
+                    [
+                        'label' => 'Zobrazovat rozpočet',
+                        'value' => $isDraft && $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid),
+                        'desc' => 'Lze zobrazovat položky rozpočtu této akce.',
+                    ],
+                    [
+                        'label' => 'Zobrazovat dotaci',
+                        'value' => $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::ACCESS_DETAIL, $this->event->grantId->toInt()),
+                        'desc' => 'Lze zobrazovat dotaci této akce.',
+                    ],
                     [
                         'label' => 'Upravovat závěrečný rozpočet',
                         'value' => $isDraft && $this->authorizator->isAllowed(Education::UPDATE_REAL_BUDGET_SPENDING, $aid),

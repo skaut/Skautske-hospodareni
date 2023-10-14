@@ -77,7 +77,7 @@ class ParticipantPresenter extends BasePresenter
         $authorizator = $this->authorizator;
 
         if (! $authorizator->isAllowed(Camp::ACCESS_PARTICIPANTS, $aid)) {
-            $this->flashMessage('Nemáte právo prohlížeč účastníky', 'danger');
+            $this->flashMessage('Nemáte právo prohlížet účastníky', 'danger');
             $this->redirect('Default:');
         }
 
