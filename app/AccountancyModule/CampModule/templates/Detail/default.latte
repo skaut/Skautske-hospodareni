@@ -15,17 +15,17 @@
         data-toggle="tooltip"
         title="Uzavřel {$event->getPersonClosed()} dne {$event->getDateClosed()|date:"j.n.Y"}"
         >{$state|campStateLabel|noescape}</span>
-        <span class="ms-2 mr-2">|</span>
+        <span class="ms-2 me-2">|</span>
         {$event->getUnitName()}
-        <span class="ms-2 mr-2">|</span>
+        <span class="ms-2 me-2">|</span>
         <span class="text-nowrap"><i class="fas fa-calendar"></i> {[$event->getStartDate(), $event->getEndDate()]|dateRange}</span>
-        <span class="ms-2 mr-2">|</span>
+        <span class="ms-2 me-2">|</span>
         <i class="fas fa-map-marker-alt"></i>
         {if trim($event->getLocation()) === ''}<i
                 class="text-muted">Nevyplněno</i>{else}{$event->getLocation()}{/if}
     </div>
     <div class="col-lg-5 text-center text-lg-right mt-3 mt-lg-0 d-flex d-md-block flex-column">
-        <a n:href="Detail:report 'aid'=>$aid" target="_blank" class="btn btn-info mr-md-2 mb-2 mb-md-0">
+        <a n:href="Detail:report 'aid'=>$aid" target="_blank" class="btn btn-info me-md-2 mb-2 mb-md-0">
             <i class="fas fa-print"></i>
             Záverečná zpráva
         </a>
@@ -43,17 +43,17 @@
             <h5 class="card-header">Základní údaje</h5>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">
-                    <div class="font-weight-bold mr-auto">Oddíly</div>
+                    <div class="font-weight-bold me-auto">Oddíly</div>
                     {foreach $troops as $troop}
                         {$troop->getDisplayName()}{if ! $iterator->isLast()},{/if}
                     {/foreach}
                 </li>
                 <li class="list-group-item d-flex">
-                    <div class="font-weight-bold mr-auto">Výsledek hospodaření</div>
+                    <div class="font-weight-bold me-auto">Výsledek hospodaření</div>
                     <div>{if $finalRealBalance === null}Chybí povolené automatické dopočítávání!{else}{$finalRealBalance|price} Kč{/if}</div>
                 </li>
                 <li class="list-group-item d-flex">
-                    <div class="font-weight-bold mr-auto">Prefix čísel dokladů</div>
+                    <div class="font-weight-bold me-auto">Prefix čísel dokladů</div>
                     <div>{$prefix}</div>
                 </li>
             </ul>
@@ -128,11 +128,11 @@
 
         <div class="card">
             <div class="card-header d-flex align-items-center">
-                <h5 class="m-0 mr-auto">Vedení tábora</h5>
+                <h5 class="m-0 me-auto">Vedení tábora</h5>
             </div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item d-flex" n:foreach="$functionLabels as $functionName => $label">
-                    <div class="font-weight-bold mr-auto">{$label}</div>
+                    <div class="font-weight-bold me-auto">{$label}</div>
                     <div>
                         {$functions->$functionName !== NULL ? $functions->$functionName->name : "-"}
                     </div>

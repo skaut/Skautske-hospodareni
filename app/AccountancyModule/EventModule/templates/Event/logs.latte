@@ -6,7 +6,7 @@
 <h3>Poslední změny provedené v rámci akce</h3>
 <ul class="list-group" n:inner-foreach="$logs as $log">
     <li class="list-group-item d-flex align-items-center">
-        <span class="text-muted small mr-2">{$log->date->format("d.m.Y H:i")}</span>
+        <span class="text-muted small me-2">{$log->date->format("d.m.Y H:i")}</span>
         {$log->getDescription()}
     </li>
 </ul>

@@ -60,7 +60,7 @@ $showUnits bool - zobrazovat číslo jednotky
         <div n:ifset="$participants">
             <h2 class="mb-3">Seznam účastníků</h2>
             <div class="d-flex mb-2">
-                <div class="dropdown d-inline-block mr-auto">
+                <div class="dropdown d-inline-block me-auto">
                     <button n:class="btn, btn-light, dropdown-toggle, empty($participants) ? 'disabled'"
                             n:attr="[disabled => empty($participants)]"
                             id="exportParticipantsButton"
@@ -72,15 +72,15 @@ $showUnits bool - zobrazovat číslo jednotky
                     </button>
                     <div class="dropdown-menu" aria-labelledby="exportParticipantsButton">
                         <a class="dropdown-item" href="{plink export $aid}">
-                            <span class="mr-1"><i class="far fa-file-pdf"></i></span> PDF
+                            <span class="me-1"><i class="far fa-file-pdf"></i></span> PDF
                         </a>
                         <a class="dropdown-item" href="{plink exportExcel $aid}">
-                            <span class="mr-1"><i class="far fa-file-excel"></i></span>
+                            <span class="me-1"><i class="far fa-file-excel"></i></span>
                             Excel
                         </a>
                     </div>
                 </div>
-                <span class="dropdown mr-2">
+                <span class="dropdown me-2">
                     <button class="btn btn-light dropdown-toggle" type="button" data-toggle="dropdown">
                         <i class="fas fa-sort-amount-down"></i> {$sortOptions[$sort]}
                         <span class="caret"></span>

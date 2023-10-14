@@ -4,9 +4,9 @@
     <div class="col text-center text-md-left mb-2 mb-md-0">
         <h1 n:inner-block="title">{$group->name}</h1>
         {$group->state|groupState|noescape}
-        <span class="mr-2 ms-2">|</span>
+        <span class="me-2 ms-2">|</span>
         {control unit}
-        <span class="mr-2 ms-2">|</span>
+        <span class="me-2 ms-2">|</span>
         {if $group->type === NULL}Obecná
         {elseif $group->type === "camp"}Tábor
         {elseif $group->type === "event"}Akce
@@ -44,7 +44,7 @@
 </div>
 <div class="mb-3">
     <div class="mt-4 d-lg-flex" n:inner-if="$isEditable && $group->state === 'open'">
-        <div class="mr-auto">
+        <div class="me-auto">
             {if $group->type === 'registration'}
                 <a n:href="Registration:Journal: $group->id" class="btn btn-light"><i class="fas fa-book-reader"></i>
                     Časopisy</a>

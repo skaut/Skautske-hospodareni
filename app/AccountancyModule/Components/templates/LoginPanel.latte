@@ -1,11 +1,11 @@
 {if $user->isLoggedIn()}
-    <span id="timer" class="mr-3 w-auto small p-1 rounded text-nowrap">
+    <span id="timer" class="me-3 w-auto small p-1 rounded text-nowrap">
         <i class="far fa-clock"></i>
         <span id="timer-minutes"></span>
     </span>
 
     <span class="dropdown">
-        <button class="btn btn-light btn-sm dropdown-toggle border-0 mr-sm-3 ui--current-role" type="button"
+        <button class="btn btn-light btn-sm dropdown-toggle border-0 me-sm-3 ui--current-role" type="button"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             {$roles[$currentRoleId]}
         </button>

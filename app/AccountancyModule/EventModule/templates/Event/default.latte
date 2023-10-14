@@ -11,16 +11,16 @@
             data-toggle="tooltip"
             title="Uzavřel {$event->getPersonClosed()} dne {$event->getDateClosed()|date:"j.n.Y"}"
         >{$state|eventStateLabel|noescape}</span>
-        <span class="ms-2 mr-2">|</span>
+        <span class="ms-2 me-2">|</span>
         {$event->getUnitName()}
-        <span class="ms-2 mr-2">|</span>
+        <span class="ms-2 me-2">|</span>
         <span class="text-nowrap"><i class="fas fa-calendar"></i> {[$event->getStartDate(), $event->getEndDate()]|dateRange}</span>
-        <span class="ms-2 mr-2">|</span>
+        <span class="ms-2 me-2">|</span>
         <i class="fas fa-map-marker-alt"></i>
         {if trim($event->getLocation()) === ''}<i class="text-muted">Nevyplněno</i>{else}{$event->getLocation()}{/if}
     </div>
     <div class="col-lg-5 text-lg-right text-center mt-lg-0 d-flex d-md-block flex-column mt-1">
-        <div class="btn-group mr-md-3 mt-2">
+        <div class="btn-group me-md-3 mt-2">
             <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
                     aria-expanded="false">
                 <i class="fas fa-print"></i> Exportovat
@@ -61,11 +61,11 @@
             <h5 class="card-header">Souhrn</h5>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item d-flex">
-                    <div class="font-weight-bold mr-auto">Výsledek hospodaření</div>
+                    <div class="font-weight-bold me-auto">Výsledek hospodaření</div>
                     <div>{$finalRealBalance|price} Kč</div>
                 </li>
                 <li class="list-group-item d-flex">
-                    <div class="font-weight-bold mr-auto">Prefix čísel dokladů</div>
+                    <div class="font-weight-bold me-auto">Prefix čísel dokladů</div>
                     <div>{$prefix}</div>
                 </li>
             </ul>
