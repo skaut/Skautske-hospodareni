@@ -90,9 +90,9 @@ class EducationPresenter extends BasePresenter
         );
 
         $this->template->setParameters([
-            'skautISUrl'       => $this->userService->getSkautisUrl(),
-            'canAccessReport'  => $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid),
-            'location'         => implode(
+            'skautISUrl'               => $this->userService->getSkautisUrl(),
+            'canAccessReport'          => $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid),
+            'location'                 => implode(
                 ', ',
                 array_map(
                     static function (EducationLocation $location) {
@@ -101,25 +101,25 @@ class EducationPresenter extends BasePresenter
                     $locationsUsedInTerm,
                 ),
             ),
-            'functions' => $this->authorizator->isAllowed(Education::ACCESS_FUNCTIONS, $aid)
+            'functions'                => $this->authorizator->isAllowed(Education::ACCESS_FUNCTIONS, $aid)
                 ? $this->queryBus->handle(new EducationFunctions(new SkautisEducationId($aid)))
                 : null,
-            'finalRealBalance' => $finalRealBalance,
-            'prefixCash'           => $cashbook->getChitNumberPrefix(PaymentMethod::CASH()),
-            'prefixBank'           => $cashbook->getChitNumberPrefix(PaymentMethod::BANK()),
-            'totalDays'            => $this->countDays($terms),
-            'teamCount'            => count($instructors),
-            'participantsCapacity' => self::propertySum($courseParticipationStats, 'capacity'),
-            'participantsAccepted' => self::propertySum($courseParticipationStats, 'accepted'),
-            'personDaysEstimated'  => self::propertySum($courses, 'estimatedPersonDays'),
-            'personDaysReal'       => $participantParticipationStats !== null
+            'finalRealBalance'         => $finalRealBalance,
+            'prefixCash'               => $cashbook->getChitNumberPrefix(PaymentMethod::CASH()),
+            'prefixBank'               => $cashbook->getChitNumberPrefix(PaymentMethod::BANK()),
+            'totalDays'                => $this->countDays($terms),
+            'teamCount'                => count($instructors),
+            'participantsCapacity'     => self::propertySum($courseParticipationStats, 'capacity'),
+            'participantsAccepted'     => self::propertySum($courseParticipationStats, 'accepted'),
+            'personDaysEstimated'      => self::propertySum($courses, 'estimatedPersonDays'),
+            'personDaysReal'           => $participantParticipationStats !== null
                 ? self::propertySum($participantParticipationStats, 'totalDays')
                 : null,
-            'grantState'           => $grant?->state,
-            'grantAmountMax'       => $grant?->amountMax,
-            'grantAmountMaxReal'   => $grant?->amountMaxReal,
-            'grantCostRatio'       => $grant?->costRatio,
-            'grantRemainingPay'    => $grant?->remainingPay,
+            'grantState'               => $grant?->state,
+            'grantAmountMax'           => $grant?->amountMax,
+            'grantAmountPerPersonDays' => $grant?->amountPerPersonDays,
+            'grantCostRatio'           => $grant?->costRatio,
+            'grantRemainingPay'        => $grant?->remainingPay,
         ]);
 
         if (! $this->isAjax()) {
