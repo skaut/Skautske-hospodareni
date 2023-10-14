@@ -36,23 +36,19 @@
 
 {block filter-type-select}
     <div class="input-group mr-2 mb-2">
-        <div class="input-group-prepend">
-            <label n:name="filter-{$name}" class="input-group-text">
-                <i n:ifset="$icon" class="{$icon} mr-1"></i>
-                {$label}
-            </label>
-        </div>
+        <label n:name="filter-{$name}" class="input-group-text">
+            <i n:ifset="$icon" class="{$icon} mr-1"></i>
+            {$label}
+        </label>
         <select n:name="filter-{$name}" class="form-control form-select"/>
     </div>
 {/block}
 
 {block filter-type-search}
     <div class="input-group mr-2 mb-2">
-        <div class="input-group-prepend">
-            <label n:name="filter-search" class="input-group-text">
-                <i class="fas fa-search"></i>
-            </label>
-        </div>
+        <label n:name="filter-search" class="input-group-text">
+            <i class="fas fa-search"></i>
+        </label>
         <input n:name="filter-search" class="form-control">
     </div>
 {/block}
