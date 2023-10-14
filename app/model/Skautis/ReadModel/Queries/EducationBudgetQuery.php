@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Skautis\ReadModel\Queries;
 
 use Model\Event\SkautisEducationId;
-use Model\Event\SkautisGrantId;
+use Model\Grant\SkautisGrantId;
 use Model\Skautis\ReadModel\QueryHandlers\EducationBudgetQueryHandler;
 
 /** @see EducationBudgetQueryHandler */
