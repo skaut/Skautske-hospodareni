@@ -36,15 +36,15 @@
             <h5 class="card-header">Základní údaje</h5>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item d-flex">
-                    <div class="font-weight-bold me-auto">Výsledek hospodaření</div>
+                    <div class="fw-bold me-auto">Výsledek hospodaření</div>
                     <div class="text-end">{if $finalRealBalance !== null}{$finalRealBalance|price} Kč{else}Nedostatečná oprávnění{/if}</div>
                 </li>
                 <li class="list-group-item d-flex">
-                    <div class="font-weight-bold me-auto">Prefix dokladů pokladny</div>
+                    <div class="fw-bold me-auto">Prefix dokladů pokladny</div>
                     <div class="text-end">{$prefixCash}</div>
                 </li>
                 <li class="list-group-item d-flex">
-                    <div class="font-weight-bold me-auto">Prefix dokladů banky</div>
+                    <div class="fw-bold me-auto">Prefix dokladů banky</div>
                     <div class="text-end">{$prefixBank}</div>
                 </li>
             </ul>
@@ -54,19 +54,19 @@
             <h5 class="card-header">Dotace</h5>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item d-flex">
-                    <div class="font-weight-bold me-auto">Stav dotace</div>
+                    <div class="fw-bold me-auto">Stav dotace</div>
                     <div class="text-end">{$grantState|grantStateLabel|noescape}</div>
                 </li>
                 <li class="list-group-item d-flex">
-                    <div class="font-weight-bold me-auto">Maximální výše</div>
+                    <div class="fw-bold me-auto">Maximální výše</div>
                     <div class="text-end">{$grantAmountMax|price} Kč</div>
                 </li>
                 <li class="list-group-item d-flex">
-                    <div class="font-weight-bold me-auto">Výše podle osobodnů</div>
+                    <div class="fw-bold me-auto">Výše podle osobodnů</div>
                     <div class="text-end">{$grantAmountPerPersonDays|price} Kč</div>
                 </li>
                 <li class="list-group-item d-flex">
-                    <div class="font-weight-bold me-auto">Podíl na nákladech</div>
+                    <div class="fw-bold me-auto">Podíl na nákladech</div>
                     <div class="text-end">{100 * $grantCostRatio|price}%</div>
                 </li>
             </ul>
@@ -78,27 +78,27 @@
             <h5 class="card-header">Statistiky</h5>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item d-flex">
-                    <div class="font-weight-bold me-auto">Počet dnů</div>
+                    <div class="fw-bold me-auto">Počet dnů</div>
                     <div class="text-end">{$totalDays}</div>
                 </li>
                 <li class="list-group-item d-flex">
-                    <div class="font-weight-bold me-auto">Počet členů týmu</div>
+                    <div class="fw-bold me-auto">Počet členů týmu</div>
                     <div class="text-end">{$teamCount}</div>
                 </li>
                 <li class="list-group-item d-flex">
-                    <div class="font-weight-bold me-auto">Předpokládaných účastníků</div>
+                    <div class="fw-bold me-auto">Předpokládaných účastníků</div>
                     <div class="text-end">{if $participantsCapacity !== null}{$participantsCapacity}{else}Nedostatečná oprávnění{/if}</div>
                 </li>
                 <li class="list-group-item d-flex">
-                    <div class="font-weight-bold me-auto">Přihlášených účastníků</div>
+                    <div class="fw-bold me-auto">Přihlášených účastníků</div>
                     <div class="text-end">{if $participantsAccepted !== null}{$participantsAccepted}{else}Nedostatečná oprávnění{/if}</div>
                 </li>
                 <li class="list-group-item d-flex">
-                    <div class="font-weight-bold me-auto">Předpokládáných osobodnů</div>
+                    <div class="fw-bold me-auto">Předpokládáných osobodnů</div>
                     <div class="text-end">{$personDaysEstimated}</div>
                 </li>
                 <li class="list-group-item d-flex">
-                    <div class="font-weight-bold me-auto">Skutečných osobodnů</div>
+                    <div class="fw-bold me-auto">Skutečných osobodnů</div>
                     <div class="text-end">{if $personDaysReal !== null}{$personDaysReal}{else}Nedostatečná oprávnění{/if}</div>
                 </li>
             </ul>
@@ -112,13 +112,13 @@
             </div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item d-flex">
-                    <div class="font-weight-bold me-auto">Vedoucí akce</div>
+                    <div class="fw-bold me-auto">Vedoucí akce</div>
                     <div class="text-end">
                         {$functions->leader !== NULL ? $functions->leader->name : "-"}
                     </div>
                 </li>
                 <li class="list-group-item d-flex" n:foreach="$functions->assistants as $assistant">
-                    <div class="font-weight-bold me-auto">Zástupce vedoucího</div>
+                    <div class="fw-bold me-auto">Zástupce vedoucího</div>
                     <div class="text-end">
                         {$assistant->name}
                     </div>
@@ -131,7 +131,7 @@
                 ]}
 
                 <li class="list-group-item d-flex" n:foreach="$otherFunctionLabels as $functionName => $label">
-                    <div class="font-weight-bold me-auto">{$label}</div>
+                    <div class="fw-bold me-auto">{$label}</div>
                     <div class="text-end">
                         {$functions->$functionName !== NULL ? $functions->$functionName->name : "-"}
                     </div>
