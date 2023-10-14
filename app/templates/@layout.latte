@@ -80,9 +80,7 @@
         {snippet flash}
             {foreach $flashes as $flash}
                 <div class="alert alert-{$flash->type} alert-dismissible fade show" role="alert">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Zavřít">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Zavřít"></button>
                     {if strpos($flash->message, 'html: ') === 0}
                         {$flash->message|substr:6|noescape}
                     {else}
