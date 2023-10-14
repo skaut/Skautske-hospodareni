@@ -11,9 +11,8 @@ use Nette\SmartObject;
  * @property-read SkautisGrantId $id
  * @property-read string $state
  * @property-read Money $amountMax
- * @property-read Money $amountMaxReal
+ * @property-read Money $amountPerPersonDays
  * @property-read float $costRatio
- * @property-read Money $remainingPay
  */
 class Grant
 {
@@ -23,9 +22,8 @@ class Grant
         private SkautisGrantId $id,
         private string $state,
         private Money $amountMax,
-        private Money $amountMaxReal,
+        private Money $amountPerPersonDays,
         private float $costRatio,
-        private Money $remainingPay,
     ) {
     }
 
@@ -44,18 +42,13 @@ class Grant
         return $this->amountMax;
     }
 
-    public function getAmountMaxReal(): Money
+    public function getAmountPerPersonDays(): Money
     {
-        return $this->amountMaxReal;
+        return $this->amountPerPersonDays;
     }
 
     public function getCostRatio(): float
     {
         return $this->costRatio;
-    }
-
-    public function getRemainingPay(): Money
-    {
-        return $this->remainingPay;
     }
 }
