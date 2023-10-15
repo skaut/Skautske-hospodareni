@@ -5,7 +5,7 @@
 {block outer-filters}
     <div class="d-md-flex justify-content-between">
         <div data-naja-history="on">
-                <div class="form-inline auto-submit">
+                <div class="row auto-submit">
                     {ifset #filters}
                         {include #filters}
                     {/ifset}
@@ -35,21 +35,25 @@
 {/block}
 
 {block filter-type-select}
-    <div class="input-group me-2 mb-2">
-        <label n:name="filter-{$name}" class="input-group-text">
-            <i n:ifset="$icon" class="{$icon} me-1"></i>
-            {$label}
-        </label>
-        <select n:name="filter-{$name}" class="form-control form-select"/>
+    <div class="col-auto mb-2">
+        <div class="input-group">
+            <label n:name="filter-{$name}" class="input-group-text">
+                <i n:ifset="$icon" class="{$icon} me-1"></i>
+                {$label}
+            </label>
+            <select n:name="filter-{$name}" class="form-control form-select"/>
+        </div>
     </div>
 {/block}
 
 {block filter-type-search}
-    <div class="input-group me-2 mb-2">
-        <label n:name="filter-search" class="input-group-text">
-            <i class="fas fa-search"></i>
-        </label>
-        <input n:name="filter-search" class="form-control">
+    <div class="col-auto mb-2">
+        <div class="input-group">
+            <label n:name="filter-search" class="input-group-text">
+                <i class="fas fa-search"></i>
+            </label>
+            <input n:name="filter-search" class="form-control">
+        </div>
     </div>
 {/block}
 
