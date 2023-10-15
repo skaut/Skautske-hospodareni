@@ -5,7 +5,7 @@
 {include ../header.latte}
 
 <div class="row d-flex align-items-center">
-    <div class="col-lg-7 text-center text-lg-left">
+    <div class="col-lg-7 text-lg-left">
         {var $state = $event->getState()}
         <span n:tag-if="$state == 'closed'"
             data-bs-toggle="tooltip"
@@ -19,7 +19,7 @@
         <i class="fas fa-map-marker-alt"></i>
         {if trim($event->getLocation()) === ''}<i class="text-muted">Nevyplněno</i>{else}{$event->getLocation()}{/if}
     </div>
-    <div class="col-lg-5 text-lg-right text-center mt-lg-0 d-flex d-md-block flex-column mt-1">
+    <div class="col-lg-5 text-lg-right text-end mt-lg-0 d-flex d-md-block flex-column mt-1">
         <div class="btn-group me-md-3 mt-2">
             <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
                     aria-expanded="false">

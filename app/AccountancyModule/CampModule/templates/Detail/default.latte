@@ -9,7 +9,7 @@
 {/if}
 
 <div class="row">
-    <div class="col-lg-7 text-center text-lg-left">
+    <div class="col-lg-7 text-lg-left">
         {var $state = $event->getState()}
         <span n:tag-if="$state == 'closed'"
         data-bs-toggle="tooltip"
@@ -24,7 +24,7 @@
         {if trim($event->getLocation()) === ''}<i
                 class="text-muted">Nevyplněno</i>{else}{$event->getLocation()}{/if}
     </div>
-    <div class="col-lg-5 text-center text-lg-right mt-3 mt-lg-0 d-flex d-md-block flex-column">
+    <div class="col-lg-5 text-end text-lg-right mt-3 mt-lg-0 d-flex d-md-block flex-column">
         <a n:href="Detail:report 'aid'=>$aid" target="_blank" class="btn btn-info me-md-2 mb-2 mb-md-0">
             <i class="fas fa-print"></i>
             Záverečná zpráva

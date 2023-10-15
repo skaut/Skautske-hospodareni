@@ -5,7 +5,7 @@
 {include ../header.latte}
 
 <div class="row d-flex align-items-center">
-    <div class="col-lg-7 text-center text-lg-left">
+    <div class="col-lg-7 text-lg-left">
         <span data-bs-toggle="tooltip">
             {$event->getState()|educationStateLabel|noescape}
         </span>
@@ -17,7 +17,7 @@
         <i class="fas fa-map-marker-alt"></i>
         {if trim($location) === ''}<i class="text-muted">Nevyplněno</i>{else}{$location}{/if}
     </div>
-    <div class="col-lg-5 text-lg-right text-center mt-lg-0 d-flex d-md-block flex-column mt-1">
+    <div class="col-lg-5 text-lg-right text-end mt-lg-0 d-flex d-md-block flex-column mt-1">
         <a n:href="Education:report 'aid'=>$aid" target="_blank" class="btn btn-info me-md-2 mb-2 mb-md-0" n:if="$canAccessReport">
             <i class="fas fa-print"></i>
             Záverečná zpráva
