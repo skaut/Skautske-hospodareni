@@ -6,6 +6,7 @@ namespace App\AccountancyModule\Components\Participants;
 
 use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
+use Model\DTO\Participant\Participant;
 use Model\DTO\Participant\ParticipatingPerson;
 use Model\DTO\Participant\UpdateParticipant;
 use Model\Participant\ParticipantNotFound;
@@ -173,7 +174,7 @@ final class ParticipantList extends BaseControl
     {
         $dialog = new EditParticipantDialog($this->participantsById(), $this->isAllowDaysUpdate, $this->isAllowIsAccount, $this->isAllowRepayment, $this->isOnlineLogin);
 
-        $dialog->onUpdate[] = function (int $participantId, array $fields, bool $isAccepted): void {
+        $dialog->onUpdate[] = function (int $participantId, array $fields, bool|null $isAccepted): void {
             $changes = [];
 
             foreach ($fields as $field => $value) {
@@ -243,27 +244,29 @@ final class ParticipantList extends BaseControl
         foreach ($button->getForm()->getValues()->participantIds as $participantId) {
             $participant = $currentParticipants[$participantId] ?? throw new ParticipantNotFound('Cannot find participant from the given data');
 
+            $isAccepted = $participant instanceof Participant ? $participant->isAccepted() : null;
+
             if ($values['days'] !== null) {
-                if ($this->isOnlineLogin && ! $participant->isAccepted()) {
+                if ($this->isOnlineLogin && ! $isAccepted) {
                     $participantUpdateError[] = $participant->displayName;
                 } else {
-                    $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_DAYS, $values['days'], $participant->isAccepted());
+                    $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_DAYS, $values['days'], $isAccepted);
                 }
             }
 
             if ($values['payment'] !== null) {
-                $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_PAYMENT, $values['payment'], $participant->isAccepted());
+                $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_PAYMENT, $values['payment'], $isAccepted);
             }
 
             if ($values['repayment'] !== null) {
-                $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_REPAYMENT, $values['repayment'], $participant->isAccepted());
+                $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_REPAYMENT, $values['repayment'], $isAccepted);
             }
 
             if (in_array($values['isAccount'], [self::NO_ACTION, null])) {
                 continue;
             }
 
-            $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_IS_ACCOUNT, $values['isAccount'], $participant->isAccepted());
+            $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_IS_ACCOUNT, $values['isAccount'], $isAccepted);
         }
 
         if (! empty($participantUpdateError)) {

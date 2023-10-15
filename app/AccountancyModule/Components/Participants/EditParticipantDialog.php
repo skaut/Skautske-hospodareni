@@ -101,7 +101,7 @@ final class EditParticipantDialog extends Dialog
                 $changes[UpdateParticipant::FIELD_IS_ACCOUNT] = $values['isAccount'];
             }
 
-            $this->onUpdate($this->participantId, $changes, $participant->isAccepted());
+            $this->onUpdate($this->participantId, $changes, $participant instanceof Participant ? $participant->isAccepted() : null);
             $this->hide();
         };
 
