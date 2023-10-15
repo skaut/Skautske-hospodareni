@@ -24,22 +24,22 @@ $showUnits bool - zobrazovat číslo jednotky
 
                     {formContainer edit}
                         <div class="modal-body">
-                            <div class="form-group" n:if="$isAllowDaysUpdate">
+                            <div class="mb-3" n:if="$isAllowDaysUpdate">
                                 <label n:name="days"/>
                                 <input n:name="days" class="form-control">
                             </div>
 
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label n:name="payment"/>
                                 <input n:name="payment" class="form-control">
                             </div>
 
-                            <div class="form-group" n:if="$isAllowRepayment">
+                            <div class="mb-3" n:if="$isAllowRepayment">
                                 <label n:name="repayment"/>
                                 <input n:name="repayment" class="form-control">
                             </div>
 
-                            <div class="form-group" n:if="$isAllowIsAccount">
+                            <div class="mb-3" n:if="$isAllowIsAccount">
                                 <label n:name="isAccount"/>
                                 <div n:foreach="$form['edit']['isAccount']->items as $key => $label" class="form-check">
                                     <label>

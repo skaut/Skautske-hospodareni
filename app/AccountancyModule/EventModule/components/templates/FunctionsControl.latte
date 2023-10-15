@@ -19,7 +19,7 @@
                 <form n:name="form">
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item" n:foreach="$functionLabels as $functionName => $label">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label n:name="$functionName" class="fw-bold">{$label}</label>
                                 <select n:name="$functionName" class="form-select"/>
                             </div>

@@ -37,7 +37,7 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
         ],
         'controls' => ['container' => null],
         'pair' => [
-            'container' => 'div class="form-group"',
+            'container' => 'div class="mb-3"',
             '.required' => null,
             '.optional' => null,
             '.odd' => null,
@@ -46,7 +46,7 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
         'control' => [
             'container' => null,
             '.odd' => null,
-            'description' => 'small class="form-text text-muted"',
+            'description' => 'small class="text-muted"',
             'requiredsuffix' => null,
             'errorcontainer' => 'div class="invalid-feedback"',
             'erroritem' => null,

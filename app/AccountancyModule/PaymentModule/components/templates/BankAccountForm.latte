@@ -2,7 +2,7 @@
     {if !empty($form->errors)}
         <div n:foreach="$form->errors as $error" class="alert alert-danger">{$error}</div>
     {/if}
-    <div class="form-group required">
+    <div class="mb-3 required">
         <div class="col-sm-3 control-label">
             {label name /}
         </div>
@@ -10,7 +10,7 @@
             {input name class => form-control}
         </div>
     </div>
-    <div class="form-group required">
+    <div class="mb-3 required">
         <div class="col-sm-3 control-label">
             <label>Číslo účtu</label>
         </div>
@@ -24,7 +24,7 @@
             </div>
         </div>
     </div>
-    <div class="form-group">
+    <div class="mb-3">
         <div class="col-sm-3 control-label">
             <label>{label token /}</label>
         </div>
@@ -32,7 +32,7 @@
             {input token class => form-control}
         </div>
     </div>
-    <div class="form-group">
+    <div class="mb-3">
         <div class="col-sm-offset-3 col-sm-9">
             {input send class => 'btn btn-primary', id => submitButton}
         </div>

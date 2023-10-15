@@ -5,26 +5,26 @@
             <div class="card-header"><h3 n:inner-block="title">Nové vozidlo</h3></div>
             <div class="card-body">
                 <form n:name="formCreateVehicle">
-                    <div class="form-group">
+                    <div class="mb-3">
                         {label type /}
                         {input type}
                     </div>
-                    <div class="form-group">
+                    <div class="mb-3">
                         {label registration /}
                         {input registration}
                     </div>
-                    <div class="form-group">
+                    <div class="mb-3">
                         {label consumption /}
                         <div class="input-group mb-2">
                             {input consumption}
                             <button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#consumptionModal"><i class="fas fa-question"></i></button>
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div class="mb-3">
                         {label subunitId /}
                         {input subunitId}
                     </div>
-                    <div class="form-group">
+                    <div class="mb-3">
                         {input send class => [btn, btn-primary]}
                     </div>
                 </form>

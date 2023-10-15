@@ -15,13 +15,13 @@
         <div class="alert alert-danger">Zadaná platba neexistuje.</div>
     {else}
         <form n:name="form" class="inline-errors">
-            <div class="form-group">
+            <div class="mb-3">
                 <label n:name="name"/>
                 {include control $form['name']}
                 {include errors $form['name']}
             </div>
 
-            <div class="form-group">
+            <div class="mb-3">
                 <label n:name="email"/>
                 <small class="text-muted">volitelný</small>
                 <span title="Pro více příjemců, oddělte jejich e-mailové adresy čárkou" data-bs-toggle="tooltip">
@@ -31,7 +31,7 @@
                 {include errors $form['email']}
             </div>
 
-            <div class="form-group">
+            <div class="mb-3">
                 <label n:name="amount"/>
                 <div class="input-group w-50">
                     {include control $form['amount']}
@@ -42,7 +42,7 @@
                 {include errors $form['amount']}
             </div>
 
-            <div class="form-group">
+            <div class="mb-3">
                 <label n:name="dueDate"/>
                 <div class="input-group w-50">
                     <div class="input-group-text">
@@ -55,7 +55,7 @@
 
             <div class="row">
                 <div class="col-md-6 pe-0">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label n:name="variableSymbol"/>
                         <small class="text-muted">volitelný</small>
                         <div class="input-group">
@@ -70,7 +70,7 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="form-group ms-2">
+                    <div class="mb-3 ms-2">
                         <label n:name="constantSymbol"/>
                         <small class="text-muted">volitelný</small>
                         {include control $form['constantSymbol'], 'w-50'}
@@ -79,7 +79,7 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="mb-3">
                 <label n:name="note"/>
                 <small class="text-muted">volitelná</small>
                 {include control $form['note']}
