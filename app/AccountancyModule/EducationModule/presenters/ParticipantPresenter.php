@@ -85,7 +85,7 @@ class ParticipantPresenter extends BasePresenter
 
         try {
             $participantsDTO = $this->eventParticipants();
-            $spreadsheet     = $this->excelService->getEducationParticipants($participantsDTO, $this->event->getStartDate());
+            $spreadsheet     = $this->excelService->getEducationParticipants($participantsDTO);
 
             $this->sendResponse(new ExcelResponse(Strings::webalize($this->event->getDisplayName()) . '-' . date('Y_n_j'), $spreadsheet));
         } catch (PermissionException $ex) {
