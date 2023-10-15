@@ -108,6 +108,7 @@ class ParticipantPresenter extends BasePresenter
             true,
             false,
             false,
+            false,
             'Seznam instruktorů',
             ParticipatingPerson::INSTRUCTOR,
         );
