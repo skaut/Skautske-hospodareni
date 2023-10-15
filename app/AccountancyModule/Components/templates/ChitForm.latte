@@ -1,11 +1,9 @@
 {snippet}
     <div class="card bg-light mb-2" n:if="$isEditable" id="chitFormHeader">
         <div class="card-header">
-            <div class="row justify-content-between">
-                <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#chitCollapse" aria-expanded="false" aria-controls="chitCollapse">
-                    {ifset $edit}Upravit doklad číslo : {if $num}{$num}{else}<span title="systémové Id">{$pid}</span> {/if} {else}Nový doklad{/ifset}
-                </button>
-            </div>
+            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#chitCollapse" aria-expanded="false" aria-controls="chitCollapse">
+                {ifset $edit}Upravit doklad číslo : {if $num}{$num}{else}<span title="systémové Id">{$pid}</span> {/if} {else}Nový doklad{/ifset}
+            </button>
         </div>
 
         <div class="collapse {if $displayChitForm}show{/if}" id="chitCollapse">
