@@ -30,7 +30,7 @@ function submitMassAddEvent(form: HTMLFormElement, event:any, checkboxPrefix: st
 
 export function initializeEditForm(container: Element, checkboxPrefix: string): void {
 
-    container.querySelectorAll<HTMLFormElement>('[data-toggle="chitEdit"]').forEach(form => {
+    container.querySelectorAll<HTMLFormElement>('[data-bs-toggle="chitEdit"]').forEach(form => {
         form.addEventListener('click', (event:any) => {
             const chitForm = document.getElementById('chitFormHeader');
             if (chitForm) {

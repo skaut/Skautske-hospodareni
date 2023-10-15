@@ -104,8 +104,8 @@ $showUnits bool - zobrazovat číslo jednotky
                         <input type="checkbox"
                                class="allParticipantCheckbox"
                                data-dependent-checkboxes=".participantCheckbox"
-                               data-toggle-checked=".participantList-groupActions"
-                               data-toggle-unchecked=".participantList-th">
+                               data-bs-toggle-checked=".participantList-groupActions"
+                               data-bs-toggle-unchecked=".participantList-th">
                     </th>
                     <th data-visible-if-not-checked=".participantCheckboxInput, .allParticipantCheckbox">Příjmení a jméno ({= count($participants)})</th>
                     <th n:if="$showUnits" data-visible-if-not-checked=".participantCheckboxInput, .allParticipantCheckbox">Jednotka</th>
