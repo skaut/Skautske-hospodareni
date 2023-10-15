@@ -14,11 +14,11 @@
                     <ul class="alert alert-danger" n:if="$form->hasErrors()">
                         <li n:foreach="$form->errors as $error">{$error}</li>
                     </ul>
-                    <div class="form-row">
+                    <div class="row mb-1">
                         <div class="col" id="chit-type">Typ: {input type:in}{label type:in /} {input type:out}{label type:out /}</div>
                         <div class="col">Způsob: {input paymentMethod:cash}{label paymentMethod:cash /} {input paymentMethod:bank}{label paymentMethod:bank /}</div>
                     </div>
-                    <div class="form-row mb-1">
+                    <div class="row mb-1">
                         <div class="col">{input date}</div>
                         <div class="col">{input num}</div>
                     </div>
@@ -33,10 +33,10 @@
                     {foreach $form['items']->getContainers() as $id => $item}
                         <div class="card mb-2">
                             <div class="card-body">
-                                <div class="form-row mb-1">
+                                <div class="row mb-1">
                                     <div class="col">{input "items-$id-purpose"}</div>
                                 </div>
-                                <div class="form-row mb-1">
+                                <div class="row mb-1">
                                     <div class="col chit-category">
                                         {input "items-$id-incomeCategories"}
                                         {input "items-$id-expenseCategories"}
