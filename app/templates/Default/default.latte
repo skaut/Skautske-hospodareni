@@ -25,7 +25,7 @@
     </div>
 
     <div class="col d-none d-lg-block">
-        <div id="homepageCarousel" class="carousel slide my-4" data-ride="carousel">
+        <div id="homepageCarousel" class="carousel slide my-4" data-bs-ride="carousel">
             <div class="carousel-inner" role="listbox">
                 <div class="carousel-item active">
                     <img src="{$baseUrl}/images/front/prehled-akci.png" alt="Seznamu skautských výprav" />
@@ -58,14 +58,14 @@
                     </div>
                 </div>
             </div>
-            <a class="carousel-control-prev" href="#homepageCarousel" role="button" data-slide="prev">
+            <button type="button" class="carousel-control-prev" data-bs-target="#homepageCarousel" data-bs-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="sr-only">Předchozí</span>
-            </a>
-            <a class="carousel-control-next" href="#homepageCarousel" role="button" data-slide="next">
+                <span class="visually-hidden">Předchozí</span>
+            </button>
+            <button type="button" class="carousel-control-next" data-bs-target="#homepageCarousel" data-bs-slide="next">
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="sr-only">Další</span>
-            </a>
+                <span class="visually-hidden">Další</span>
+            </button>
         </div>
     </div>
 </div>
