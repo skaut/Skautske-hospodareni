@@ -2,11 +2,11 @@
 
 {var $style = $style ?? 'primary'}
 {var $attrs = ! $canPair && $groupsCount === 1
-            ? ['data-toggle' => 'tooltip', 'data-placement' => 'bottom', 'title' => 'Skupina nemá nastavený účet']
+            ? ['data-bs-toggle' => 'tooltip', 'data-placement' => 'bottom', 'title' => 'Skupina nemá nastavený účet']
             : []
 }
 <div class="d-inline-block">
-    <div class="btn-group" n:attr="$attrs" {if !$canPair} title="Nemáš dostatečné oprávnění nebo není nastaven FIO API token u bankovního účtu." data-toggle="tooltip"{/if}>
+    <div class="btn-group" n:attr="$attrs" {if !$canPair} title="Nemáš dostatečné oprávnění nebo není nastaven FIO API token u bankovního účtu." data-bs-toggle="tooltip"{/if}>
         <a n:href="pair!" n:class="!$canPair ? disabled, btn, 'btn-' . $style">
             <i class="fas fa-university"></i> Párovat <span class="d-none d-md-inline">platby</span>
         </a>

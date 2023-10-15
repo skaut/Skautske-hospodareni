@@ -12,7 +12,7 @@
     <div class="col-lg-7 text-center text-lg-left">
         {var $state = $event->getState()}
         <span n:tag-if="$state == 'closed'"
-        data-toggle="tooltip"
+        data-bs-toggle="tooltip"
         title="Uzavřel {$event->getPersonClosed()} dne {$event->getDateClosed()|date:"j.n.Y"}"
         >{$state|campStateLabel|noescape}</span>
         <span class="ms-2 me-2">|</span>

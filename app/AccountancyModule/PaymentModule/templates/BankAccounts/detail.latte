@@ -53,7 +53,7 @@
                             {foreach $preparedPayment as $p}
                                 <a href="{link Payment:default $p->groupId}#payment-{$p->id}" class="btn btn-xs btn-default"
                                                                     title='Variabilní symbol odpovídá {if array_key_exists($p->getGroupId(), $groupNames)} ve skupině "{$groupNames[$p->getGroupId()]}"{/if} nespárované platbě "{$p->name}"'
-                                                                    data-toggle='tooltip'>
+                                                                    data-bs-toggle='tooltip'>
                                     <span class="fas fa-exclamation-triangle"></span>
                                 </a>
                             {/foreach}
@@ -62,7 +62,7 @@
 
                         <a n:if="$pairedPayment !== null" href="{link Payment:default $pairedPayment->groupId}#payment-{$pairedPayment->id}" class="btn btn-xs btn-default"
                                                           title='Spárováno s platbou "{$pairedPayment->name}{if array_key_exists($pairedPayment->getGroupId(), $groupNames)} ve skupině "{$groupNames[$pairedPayment->getGroupId()]}"{/if}"'
-                                                          data-toggle='tooltip'>
+                                                          data-bs-toggle='tooltip'>
                             <span class="fas fa-university"></span>
                         </a>
                     </td>
