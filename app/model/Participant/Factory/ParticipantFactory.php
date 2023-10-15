@@ -25,7 +25,13 @@ final class ParticipantFactory
             $matches['last'],
             $matches['nick'] ?? null,
             $skautisParticipant->Age ?? null,
-            isset($skautisParticipant->Birthday) ? new Date($skautisParticipant->Birthday) : null,
+            property_exists($skautisParticipant, 'Birthday')
+                ? new Date($skautisParticipant->Birthday)
+                : (
+                    property_exists($skautisParticipant, 'PersonBirthday')
+                        ? new Date($skautisParticipant->PersonBirthday)
+                        : null
+                ),
             $skautisParticipant->Street ?? $skautisParticipant->PersonAddressStreet,
             $skautisParticipant->City ?? $skautisParticipant->PersonAddressCity,
             (int) ($skautisParticipant->Postcode ?? $skautisParticipant->PersonAddressPostcode),
