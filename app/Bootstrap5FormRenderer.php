@@ -20,7 +20,7 @@ use function is_array;
 /**
  * Inspired by https://github.com/aleswita/FormRenderer
  */
-class Bootstrap4FormRenderer extends DefaultFormRenderer
+class Bootstrap5FormRenderer extends DefaultFormRenderer
 {
     /** @var mixed[] */
     // phpcs:disable SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
