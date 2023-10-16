@@ -11,6 +11,7 @@ Aplikace vyžaduje:
 Pro lokální vývoj je připraven Docker container a konfigurace pro **docker-compose**.
 
 ```bash
+docker volume create --name hskauting_mysql
 docker compose up -d # Spustí container v detached modu
 ```
 
