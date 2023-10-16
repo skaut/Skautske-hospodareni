@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule;
 
-use AccountancyModule\Exception\IconvInvalid;
 use Contributte\Application\Response\PSR7StreamResponse;
 use GuzzleHttp\Psr7\Utils;
 use Model\Auth\Resources\Camp;
@@ -41,7 +40,6 @@ use function array_map;
 use function array_values;
 use function assert;
 use function date;
-use function iconv;
 use function in_array;
 use function sprintf;
 
@@ -166,12 +164,7 @@ class CashbookExportPresenter extends BasePresenter
 
         foreach ($files as $name => $file) {
             assert($file instanceof File);
-            $convertedName = iconv('UTF-8', 'ASCII//TRANSLIT', $name);
-            if (! $convertedName) {
-                throw new IconvInvalid(sprintf('Soubor %s nebylo možné přidat do exportu. Iconv selže', $name));
-            }
-
-            $zip->addFileFromPsr7Stream($convertedName, $file->getContents());
+            $zip->addFileFromPsr7Stream($name, $file->getContents());
         }
 
         $zip->finish();

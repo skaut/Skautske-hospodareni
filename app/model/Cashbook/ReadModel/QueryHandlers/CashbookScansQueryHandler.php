@@ -10,6 +10,7 @@ use Model\Common\File;
 use Model\Common\IScanStorage;
 use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\Chit;
+use Nette\Utils\Strings;
 
 use function assert;
 use function sprintf;
@@ -29,11 +30,12 @@ final class CashbookScansQueryHandler
         foreach ($chits as $chit) {
             assert($chit instanceof Chit);
             foreach ($chit->getScans() as $scan) {
-                $filename       = sprintf(
+                $filename = sprintf(
                     '%s_%s',
-                    $chit->getName(),
-                    $scan->getFilePath()->getOriginalFilename(),
+                    Strings::toAscii($chit->getName()),
+                    Strings::toAscii($scan->getFilePath()->getOriginalFilename()),
                 );
+
                 $arr[$filename] = $this->storage->get($scan->getFilePath());
             }
         }
