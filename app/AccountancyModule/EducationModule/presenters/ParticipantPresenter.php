@@ -85,7 +85,7 @@ class ParticipantPresenter extends BasePresenter
 
         try {
             $participantsDTO = $this->eventParticipants();
-            $spreadsheet     = $this->excelService->getGeneralParticipants($participantsDTO, $this->event->getStartDate());
+            $spreadsheet     = $this->excelService->getEducationParticipants($participantsDTO);
 
             $this->sendResponse(new ExcelResponse(Strings::webalize($this->event->getDisplayName()) . '-' . date('Y_n_j'), $spreadsheet));
         } catch (PermissionException $ex) {
@@ -126,7 +126,7 @@ class ParticipantPresenter extends BasePresenter
     {
         try {
             $template = $this->exportService->getParticipants($aid, EventType::EDUCATION);
-            $this->pdf->render($template, 'seznam-ucastniku.pdf', false);
+            $this->pdf->render($template, 'seznam-ucastniku.pdf', true);
         } catch (PermissionException $ex) {
             $this->flashMessage('Nemáte oprávnění k záznamu osoby! (' . $ex->getMessage() . ')', 'danger');
             $this->redirect('default', ['aid' => $this->aid]);

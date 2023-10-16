@@ -32,19 +32,35 @@ td {
 
 <table class="all" border="1">
     <tr>
-        <th style="width: 5%;">P.č.</th>
-        <th style="width: 30%">Příjmení a jméno</th>
-        <th style="width: 45%">Adresa</th>
-        <th style="width: 12%;">Dat. nar.</th>
-        <th style="width: 8%;">Zaplaceno</th>
+        <th>P.č.</th>
+        <th>Příjmení a jméno</th>
+        <th>Adresa</th>
+        <th>Dat. nar.</th>
+        <th>Zaplaceno</th>
+        <th>Vratka</th>
+        <th>Celkem</th>
+        <th>Na účet?</th>
     </tr>
     {dump $list}
-    <tr n:foreach="$list as $p">
+    {$totPay = $totRepay = $totAccount = 0}
+     <tr n:foreach="$list as $p">
+        {do $totPay += $p->payment}
+        {do $totRepay += $p->repayment}
         <td class="cnt">{$iterator->counter}</td>
         <td>{$p->displayName}</td>
         <td>{if $p->street != ""}{$p->street}{else}&nbsp;{/if}{if $p->city != ""}, {$p->city}{/if}{if $p->postcode != ""}, {(string)$p->postcode|postCode}{/if}</td>
         <td style="text-align: right;">{if $p->birthday !== null}{$p->birthday->format("d.m.Y")}{else}&nbsp;{/if}</td>
-        <td style="text-align: right;">{$p->payment|price:false} Kč</td>
+        <td style="text-align: right;">{$p->payment|price:false}</td>
+        <td style="text-align: right;">{$p->repayment|price:false}</td>
+        <td style="text-align: right;">{= $p->payment - $p->repayment|price}</td>
+        <td style="text-align: right;">{if $p->onAccount == "Y"}Ano{do $totAccount += ($p->payment - $p->repayment)}{else}&nbsp;{/if}</td>
+    </tr>
+    <tr>
+        <td colspan="4">&nbsp;</td>
+        <td style="text-align: right;">{$totPay|price:false}</td>
+        <td style="text-align: right;">{$totRepay|price:false}</td>
+        <td style="text-align: right;"><b>{= $totPay - $totRepay|price}<b></td>
+        <td style="text-align: right;">{$totAccount}</td>
     </tr>
 </table>
 
