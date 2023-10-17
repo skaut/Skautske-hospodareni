@@ -1,3 +1,4 @@
+import BSN from "bootstrap.native";
 import naja from 'naja';
 // @ts-ignore
 import {ProgressBar} from './ProgressBar';
@@ -10,7 +11,6 @@ import {initializeCheckAllCheckboxes, initializeCheckboxToggle} from "./checkbox
 import {DataGridExtension} from "./DataGridExtension";
 import {initializeDatePicker} from "./datePicker";
 import netteForms from "./netteForms";
-import 'bootstrap.native/dist/bootstrap-native-v4';
 import {initializeSendMassForm} from "./ChitListExtension"
 import {initializeEditForm} from "./ChitListExtension"
 
@@ -27,7 +27,7 @@ export default function (): void {
         initializeSendMassForm(snippet, 'chits-');
         initializeEditForm(snippet,'chits-');
         snippet.querySelectorAll<HTMLElement>('.date').forEach(initializeDatePicker);
-        window.BSN.initCallback(snippet);
+        BSN.initCallback(snippet);
     });
 
     naja.registerExtension(DataGridExtension);
