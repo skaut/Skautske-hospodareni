@@ -1169,6 +1169,16 @@
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.21.tgz#5de5a2385a35309427f6011992b544514d559aa1"
   integrity sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==
 
+"@thednp/event-listener@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@thednp/event-listener/-/event-listener-1.0.4.tgz#dc92f2318283390089bfad683faa04939a27872f"
+  integrity sha512-EAYzsRiNPdb1yWeisu0WCGUtloHD6P6IpGekJxgBvPR2qNFuMsfQI3XAq+LEJiFKIGKF503JoRfjHcGTO2F+Pw==
+
+"@thednp/shorty@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@thednp/shorty/-/shorty-1.0.3.tgz#65394e7420d2dd42d219f8da759a68f1a54564f0"
+  integrity sha512-PPaERUGmRpi2eWxYUV5yv/pvalPgPOjwKRmRqGMWGuV8xgkvxgtjKIiFJA2D2ei4l4Ih9mEBktDg6Z9+y+To9Q==
+
 "@types/eslint-scope@^3.7.3":
   version "3.7.4"
   resolved "https://registry.yarnpkg.com/@types/eslint-scope/-/eslint-scope-3.7.4.tgz#37fc1223f0786c39627068a12e94d6e6fc61de16"
@@ -1538,13 +1548,13 @@ binary-extensions@^2.0.0:
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.1.0.tgz#30fa40c9e7fe07dbc895678cd287024dea241dd9"
   integrity sha512-1Yj8h9Q+QDF5FzhMs/c9+6UntbD5MkRfRwac8DoEm9ZfUBZ7tZ55YcGVAzEe4bXsdQHEk+s9S5wsOKVdZrw0tQ==
 
-bootstrap.native@^3.0.15:
-  version "3.0.15"
-  resolved "https://registry.yarnpkg.com/bootstrap.native/-/bootstrap.native-3.0.15.tgz#d30f13a89b0177b68ab2285789d11e2407c4ea9b"
-  integrity sha512-9sHHLo0QFhUkGcQg9cLJBN1g8MKuOdAUR7BJuI3WJch9GvThCgl0UZ8grY4CrmJC9qh5I+G/ENc2t50Zpls3xQ==
+bootstrap.native@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/bootstrap.native/-/bootstrap.native-4.2.0.tgz#61428b9a296c5d5e590477c086b1d8fa65c47d6b"
+  integrity sha512-KefLTHN76MI/bwPUTipTYtU2YcQPf1ATUmtx8zzTqbx0BVvopp+dFGws23+rEcdnA6N0lff/k8Qs7xgEScb3Dg==
   dependencies:
-    minifill "^0.0.16"
-    shorter-js "^0.2.0-alpha4"
+    "@thednp/event-listener" "^1.0.4"
+    "@thednp/shorty" "^1.0.3"
 
 bootstrap@^5.3.2:
   version "5.3.2"
@@ -2544,11 +2554,6 @@ mini-css-extract-plugin@^2.7.6:
   dependencies:
     schema-utils "^4.0.0"
 
-minifill@^0.0.16:
-  version "0.0.16"
-  resolved "https://registry.yarnpkg.com/minifill/-/minifill-0.0.16.tgz#1999956127379e435b6653f3d3f2b70d64544789"
-  integrity sha512-ya61lgDqSRlaOVbD8neOkZMpMpmbfCbRewzJ/rfzc9nbisFthip3YcmBBL3fu+gneIKTrzcOG7mDysJh5ZDjqQ==
-
 moment@>=2.29.2, moment@^2.29.4:
   version "2.29.4"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
@@ -3161,11 +3166,6 @@ shebang-regex@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/shebang-regex/-/shebang-regex-3.0.0.tgz#ae16f1644d873ecad843b0307b143362d4c42172"
   integrity sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==
-
-shorter-js@^0.2.0-alpha4:
-  version "0.2.24"
-  resolved "https://registry.yarnpkg.com/shorter-js/-/shorter-js-0.2.24.tgz#3a20a873cf2c20116ec0a1024f809c37a736fa9a"
-  integrity sha512-gHfrA0/D2DBLB8ARfjX5X6q2AKiGsGpvbDKYKIpJx1B1bhhJAwgDq18bHtcpmp461eF0lsnQzptA9WGtV3c9ew==
 
 signal-exit@^3.0.2:
   version "3.0.2"
