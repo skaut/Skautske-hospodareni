@@ -19,7 +19,7 @@
     <div class="navbar-nav align-items-center justify-content-center">
         <div class="btn-group">
             <div n:ifset="$unitPairs" class="btn-group">
-                <a class="dropdown-toggle btn btn-light" data-toggle="dropdown" href="#">
+                <a class="dropdown-toggle btn btn-light" data-bs-toggle="dropdown" href="#">
                     <i class="fa fa-sitemap"></i>
                     {$unitPairs[$unitId]}
                     <b class="caret"></b>
@@ -31,7 +31,7 @@
             {if $presenter->getName() === 'Accountancy:UnitAccount:Cashbook' && isset($cashbooks)}
             <div class="btn-group">
                 <button class="btn btn-light dropdown-toggle" type="button" id="unit-cashbook-list"
-                        data-toggle="dropdown"
+                        data-bs-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="true">
                     {$year}
                     <span class="caret"></span>
@@ -48,7 +48,7 @@
             </div>
             <div class="btn-group">
                 <button class="btn btn-light dropdown-toggle" type="button" id="unit-cashbook-menu"
-                        data-toggle="dropdown"
+                        data-bs-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="true">
                     <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
                 </button>

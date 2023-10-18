@@ -1,5 +1,5 @@
 <!-- Button trigger modal -->
-<button class="btn btn-sm btn-secondary d-none d-inline" type="button" id="chitScanList" data-toggle="modal" aria-haspopup="true" aria-expanded="false" data-persist="true" data-target="#chitScanModal-{$chitId}">
+<button class="btn btn-sm btn-secondary d-none d-inline" type="button" id="chitScanList" data-bs-toggle="modal" aria-haspopup="true" aria-expanded="false" data-persist="true" data-bs-target="#chitScanModal-{$chitId}">
     <i class="far fa-folder-open"></i>
     <span n:if="count($files) > 0" class="badge bg-light text-dark">{count($files)}</span>
 </button>
@@ -11,7 +11,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLongTitle">Naskenované přílohy</h5>
-                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div n:foreach="$files as $file" class="dropdown-item text-nowrap" title="{$file->getFilePath()->getOriginalFilename()}">
@@ -31,7 +31,7 @@
                 {control uploadForm}
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

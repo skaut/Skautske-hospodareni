@@ -19,7 +19,7 @@ $showUnits bool - zobrazovat číslo jednotky
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Hromadné nastavení</h5>
-                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
                     {formContainer edit}
@@ -65,7 +65,7 @@ $showUnits bool - zobrazovat číslo jednotky
                             n:attr="[disabled => empty($participants)]"
                             id="exportParticipantsButton"
                             type="button"
-                            data-toggle="dropdown"
+                            data-bs-toggle="dropdown"
                             aria-haspopup="true"
                             aria-expanded="false">
                         <i class="fas fa-arrow-down"></i> Exportovat&hellip;
@@ -81,7 +81,7 @@ $showUnits bool - zobrazovat číslo jednotky
                     </div>
                 </div>
                 <span class="dropdown me-2">
-                    <button class="btn btn-light dropdown-toggle" type="button" data-toggle="dropdown">
+                    <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
                         <i class="fas fa-sort-amount-down"></i> {$sortOptions[$sort]}
                         <span class="caret"></span>
                     </button>
@@ -118,7 +118,7 @@ $showUnits bool - zobrazovat číslo jednotky
                             data-visible-if-checked=".participantCheckboxInput, .allParticipantCheckbox" colspan="4" class="text-end">
                         <a n:if="$isAllowParticipantUpdate"
                                 href="#massEdit"
-                                data-toggle="modal"
+                                data-bs-toggle="modal"
                                 class="btn btn-light btn-sm">
                             <i class="far fa-edit"></i>
                             Upravit vybrané

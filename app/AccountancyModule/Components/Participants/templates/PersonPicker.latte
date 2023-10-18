@@ -3,7 +3,7 @@
         <div class="d-flex align-items-start">
             <div>
                 <div class="btn-group">
-                    <a class="btn btn-light btn dropdown-toggle align-items-center" data-toggle="dropdown" href="#" rel="tooltip" title="Jednotka, ze které se zobrazí seznam členů">
+                    <a class="btn btn-light btn dropdown-toggle align-items-center" data-bs-toggle="dropdown" href="#" rel="tooltip" title="Jednotka, ze které se zobrazí seznam členů">
                         {$unit->getDisplayName()|truncate:20, ""}
                     </a>
                     <div class="dropdown-menu">
@@ -32,7 +32,7 @@
                     {if $directMemberOnly}bez členů podjednotek{else}<strong>včetně členů podjednotek</strong>{/if}
                 </div>
             </div>
-            <a class="btn btn-primary btn ms-auto" href="#addParticipant" data-toggle="modal">
+            <a class="btn btn-primary btn ms-auto" href="#addParticipant" data-bs-toggle="modal">
                 <i class="fas fa-plus"></i>
                 Přidat nečlena
             </a>
@@ -86,7 +86,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Založit nového účastníka</h5>
-                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-info"><i class="fas fa-info-circle"></i> Údaje založeného účastníka nelze editovat, lze ho pouze smazat a znovu založit.</div>

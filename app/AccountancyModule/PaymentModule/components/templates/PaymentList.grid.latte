@@ -10,7 +10,7 @@
             <div class="dropdown d-inline-flex">
                 <button class="btn btn-link btn-sm"
                         type="button"
-                        data-toggle="dropdown"
+                        data-bs-toggle="dropdown"
                         data-persist="true"
                         title="Odeslané e-maily">
                     <i class="far fa-envelope-open"></i>&nbsp;{count($emails)}
@@ -64,7 +64,7 @@
     {var $transaction = $item->getTransaction()}
             <div class="dropdown d-inline-block">
                 <button class="btn btn-sm btn-light" type="button"
-                        data-toggle="dropdown" data-persist="true">
+                        data-bs-toggle="dropdown" data-persist="true">
                 {if $transaction !== NULL}
                     <span class="fas fa-university"></span>
                 </button>

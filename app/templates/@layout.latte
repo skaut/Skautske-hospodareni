@@ -28,7 +28,7 @@
     <nav class="navbar navbar-expand-lg {if $testBackground}bg-test navbar-light{else}bg-dark navbar-dark{/if}">
         <div class="container container-lg">
             <a class="navbar-brand" n:href=":Default:">Hospodaření</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMain"
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
                     aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -80,7 +80,7 @@
         {snippet flash}
             {foreach $flashes as $flash}
                 <div class="alert alert-{$flash->type} alert-dismissible fade show" role="alert">
-                    <button type="button" class="btn-close" data-dismiss="alert" aria-label="Zavřít"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zavřít"></button>
                     {if strpos($flash->message, 'html: ') === 0}
                         {$flash->message|substr:6|noescape}
                     {else}

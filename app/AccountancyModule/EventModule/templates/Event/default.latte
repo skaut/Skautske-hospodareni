@@ -21,7 +21,7 @@
     </div>
     <div class="col-lg-5 text-lg-right text-end mt-lg-0 d-flex d-md-block flex-column mt-1">
         <div class="btn-group me-md-3 mt-2">
-            <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+            <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true"
                     aria-expanded="false">
                 <i class="fas fa-print"></i> Exportovat
             </button>
@@ -36,7 +36,7 @@
         <a n:if="$accessOpenEvent && $event->getState() == 'closed'"  n:href="open! $aid"
                 class="btn btn-dark mt-2"><i class="fas fa-lock-open d-none d-xl-inline-block"></i> Znovu otevřít</a>
         <a n:if="$accessEditBase" href="#editBasicInfo" class="btn btn-light mt-2"
-                                  data-toggle="modal"><i class="far fa-edit d-none d-xl-inline-block"></i> Upravit údaje</a>
+                                  data-bs-toggle="modal"><i class="far fa-edit d-none d-xl-inline-block"></i> Upravit údaje</a>
     </div>
 </div>
 
@@ -46,7 +46,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="myModalLabel">Upravit akci</h5>
-                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 {control formEdit}
@@ -139,7 +139,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 <h3 class="modal-title" id="myModalLabel">Upravit akci</h3>
             </div>
             <div class="modal-body">

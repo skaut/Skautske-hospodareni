@@ -1,7 +1,7 @@
 {snippet}
     <div class="card bg-light mb-2" n:if="$isEditable" id="chitFormHeader">
         <div class="card-header">
-            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#chitCollapse" aria-expanded="false" aria-controls="chitCollapse">
+            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#chitCollapse" aria-expanded="false" aria-controls="chitCollapse">
                 {ifset $edit}Upravit doklad číslo : {if $num}{$num}{else}<span title="systémové Id">{$pid}</span> {/if} {else}Nový doklad{/ifset}
             </button>
         </div>
