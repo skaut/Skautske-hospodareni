@@ -26,6 +26,7 @@ use Model\Common\Services\QueryBus;
 use Model\DTO\Cashbook\Cashbook;
 use Model\DTO\Cashbook\CategorySummary;
 use Model\DTO\Cashbook\Chit;
+use Model\DTO\Participant\Participant;
 use Model\DTO\Participant\Statistics;
 use Model\Event\Camp;
 use Model\Event\Education;
@@ -93,7 +94,12 @@ class ExportService
             assert($education instanceof Education);
             $displayName = $education->getDisplayName();
             $unitId      = $education->getUnitId();
-            $list        = $this->queryBus->handle(new EducationParticipantListQuery($education->getId()));
+            $list        = array_filter(
+                $this->queryBus->handle(new EducationParticipantListQuery($education->getId())),
+                static function (Participant $participant) {
+                    return $participant->isAccepted();
+                },
+            );
         } else {
             $templateFile = __DIR__ . '/templates/participant.latte';
             $event        = $this->queryBus->handle(new EventQuery(new SkautisEventId($aid)));
