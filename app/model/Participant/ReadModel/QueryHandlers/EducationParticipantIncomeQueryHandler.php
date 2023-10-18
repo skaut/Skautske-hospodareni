@@ -9,6 +9,7 @@ use Model\Cashbook\ReadModel\Queries\EducationParticipantListQuery;
 use Model\Common\Services\QueryBus;
 use Model\DTO\Participant\Participant;
 
+use function array_filter;
 use function assert;
 
 class EducationParticipantIncomeQueryHandler
@@ -19,7 +20,12 @@ class EducationParticipantIncomeQueryHandler
 
     public function __invoke(EducationParticipantIncomeQuery $query): float
     {
-        $participants = $this->queryBus->handle(new EducationParticipantListQuery($query->getEducationId()));
+        $participants = array_filter(
+            $this->queryBus->handle(new EducationParticipantListQuery($query->getEducationId())),
+            static function (Participant $participant) {
+                return $participant->isAccepted();
+            },
+        );
 
         $participantIncome = 0.0;
         foreach ($participants as $p) {
