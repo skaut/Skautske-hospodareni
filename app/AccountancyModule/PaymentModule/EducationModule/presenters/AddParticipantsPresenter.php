@@ -43,10 +43,15 @@ class AddParticipantsPresenter extends BasePresenter
             $this->redirect('Default:');
         }
 
-        $participants = $this->queryBus->handle(
-            new EducationParticipantListQuery(
-                new SkautisEducationId($group->getSkautisId()),
+        $participants = array_filter(
+            $this->queryBus->handle(
+                new EducationParticipantListQuery(
+                    new SkautisEducationId($group->getSkautisId()),
+                ),
             ),
+            static function (Participant $participant) {
+                return $participant->isAccepted();
+            },
         );
 
         $form = $this['massAddForm'];
