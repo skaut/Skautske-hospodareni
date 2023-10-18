@@ -19,6 +19,7 @@ use Model\Services\PdfRenderer;
 use Nette\Utils\Strings;
 use Skautis\Wsdl\PermissionException;
 
+use function array_filter;
 use function assert;
 use function date;
 use function in_array;
@@ -138,6 +139,11 @@ class ParticipantPresenter extends BasePresenter
     /** @return Participant[] */
     private function eventParticipants(): array
     {
-        return $this->queryBus->handle(new EducationParticipantListQuery($this->event->getId()));
+        return array_filter(
+            $this->queryBus->handle(new EducationParticipantListQuery($this->event->getId())),
+            static function (Participant $participant) {
+                return $participant->isAccepted();
+            },
+        );
     }
 }
