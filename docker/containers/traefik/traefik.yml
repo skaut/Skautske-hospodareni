@@ -1,0 +1,23 @@
+log:
+  level: DEBUG
+
+api:
+  dashboard: true
+  debug: true
+
+entryPoints:
+  web:
+    address: ":80"
+  assets:
+    address: ":3000"
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+    network: traefik
+    watch: true
+
+  file:
+    watch: true
+    filename: /traefik.yml
