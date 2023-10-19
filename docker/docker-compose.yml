@@ -121,4 +121,25 @@ services:
             traefik.http.routers.selenium.entrypoints: web
             traefik.http.services.selenium.loadbalancer.server.port: 7900
 
-
+    adminer:
+        image: adminer:4.8.1
+        volumes:
+            - ./containers/adminer/plugins/import-directory.php:/var/www/html/plugins/import-directory.php
+            - ./containers/adminer/plugins/login-password-less.php:/var/www/html/plugins/login-password-less.php
+            - ./containers/adminer/plugins/readable-dates.php:/var/www/html/plugins/readable-dates.php
+            - ./containers/adminer/import:/var/www/html/import
+        environment:
+            ADMINER_PLUGINS: import-directory readable-dates
+            ADMINER_IMPORT_SERVER_PATH: import/adminer.sql
+            ADMINER_USERNAME: hskauting
+            ADMINER_PASSWORD: hskauting
+            ADMINER_DEFAULT_SERVER: mysql
+        networks:
+            - traefik
+        labels:
+            traefik.enable: true
+            traefik.http.routers.adminer.entrypoints: web
+            traefik.http.routers.adminer.rule: Host(`adminer.localhost`)
+            traefik.http.services.adminer.loadbalancer.server.port: 8080
+        depends_on:
+            - mysql
