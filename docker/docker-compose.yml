@@ -106,4 +106,19 @@ services:
             - mysql-test:/var/lib/mysql
             - ./containers/mysql-test/my.cnf:/etc/mysql/conf.d/my.cnf
 
+    selenium:
+        container_name: hskauting.chrome
+        hostname: selenium.localhost
+        image: selenium/standalone-chrome
+        shm_size: 2g
+        environment:
+            SE_VNC_NO_PASSWORD: 1
+        networks:
+            - traefik
+        labels:
+            traefik.enable: true
+            traefik.http.routers.selenium.rule: Host(`selenium.localhost`)
+            traefik.http.routers.selenium.entrypoints: web
+            traefik.http.services.selenium.loadbalancer.server.port: 7900
+
 
