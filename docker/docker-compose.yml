@@ -1,0 +1,109 @@
+version: "3.8"
+name: hskauting
+
+networks:
+    traefik:
+
+volumes:
+    mysql:
+    mysql-test:
+
+x-php-base:
+    &php-base
+    build:
+        context: ./containers/php
+    working_dir: /app
+    env_file:
+        - ./containers/php/ini/image.ini
+    networks:
+        - traefik
+    volumes:
+        - ../:/app
+        - ./containers/php/ini/php.ini:/etc/php/8.1/fpm/conf.d/php.ini
+        - ./containers/php/ini/php.ini:/etc/php/8.1/cli/conf.d/php.ini
+    depends_on:
+        - mysql
+
+x-mysql-base:
+    &mysql-base
+    image: mysql:8.0
+    networks:
+        - traefik
+    environment:
+        MYSQL_DATABASE: hskauting
+        MYSQL_USER: hskauting
+        MYSQL_PASSWORD: hskauting
+        MYSQL_ROOT_PASSWORD: root
+        MYSQL_COLLATION: utf8mb3_czech_ci
+        MYSQL_CHARACTER_SET: utf8
+
+services:
+    traefik:
+        image: traefik:latest
+        restart: unless-stopped
+        networks:
+            - traefik
+        ports:
+            - "80:80"
+            - "3000:3000"
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+            - ./containers/traefik/traefik.yml:/traefik.yml:ro
+        labels:
+            traefik.enable: true
+            traefik.http.routers.api.rule: Host(`traefik.localhost`)
+            traefik.http.routers.api.entrypoints: web
+            traefik.http.routers.api.service: api@internal
+
+    php:
+        <<: *php-base
+        container_name: hskauting.app #Backward Compatibility
+        labels:
+            traefik.enable: true
+            traefik.http.routers.php.rule: Host(`vite.localhost`)
+            traefik.http.routers.php.entrypoints: web, assets
+            traefik.http.services.php.loadbalancer.server.port: 3000
+
+    php_xdebug:
+        <<: *php-base
+        hostname: php_xdebug.localhost
+        env_file:
+            - containers/php/ini/image.ini
+            - containers/php/ini/xdebug.ini
+
+    nginx:
+        image: nginx:latest
+        restart: unless-stopped
+        working_dir: /
+        hostname: moje-hospodareni.cz
+        networks:
+            - traefik
+        volumes:
+            - ../:/app
+            - ./containers/nginx/conf.d:/etc/nginx/conf.d
+        labels:
+            traefik.enable: true
+            traefik.http.routers.nginx.rule: Host(`moje-hospodareni.cz`) || Host(`hskauting.localhost`) || HostRegexp(`{site:.*}.ngrok.io`)
+            traefik.http.routers.nginx.entrypoints: web
+        depends_on:
+            - php
+
+    mysql:
+        <<: *mysql-base
+        container_name: hskauting.mysql #Backward Compatibility
+        ports:
+            - "3306:3306"
+        hostname: mysql.localhost
+        volumes:
+            - mysql:/var/lib/mysql
+            - ./containers/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+
+    mysql-test:
+        container_name: hskauting.mysql-test #Backward Compatibility
+        <<: *mysql-base
+        hostname: mysql-test.localhost
+        volumes:
+            - mysql-test:/var/lib/mysql
+            - ./containers/mysql-test/my.cnf:/etc/mysql/conf.d/my.cnf
+
+
