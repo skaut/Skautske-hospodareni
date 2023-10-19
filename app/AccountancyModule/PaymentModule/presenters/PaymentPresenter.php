@@ -284,12 +284,13 @@ class PaymentPresenter extends BasePresenter
             $spreadsheet = $this->excelService->getPaymentsList($payments, $group->getName());
             $this->flashMessage('Seznam plateb byl exportován');
             $this->sendResponse(new ExcelResponse(Strings::webalize($group->getName()) . '-' . date('Y_n_j'), $spreadsheet));
-        } catch (Exception) {
-            $this->flashMessage('Nepodařilo se vygenerovat excel');
-            $this->redirect('this');
-        } catch (PermissionException $ex) {
-            $this->flashMessage('Nemáte oprávnění k exportu platební skupiny! (' . $ex->getMessage() . ')', 'danger');
+        } catch (PermissionException $e) {
+            $this->flashMessage('Nemáte oprávnění k exportu platební skupiny! (' . $e->getMessage() . ')', 'danger');
             $this->redirect('default');
+        } catch (Exception $e) {
+            $this->flashMessage('Nepodařilo se vygenerovat excel');
+            $this->logger->error(sprintf('Failed to generate excel (%s: %s)', $e::class, $e->getMessage()), ['exception' => $e]);
+            $this->redirect('this');
         }
     }
 
