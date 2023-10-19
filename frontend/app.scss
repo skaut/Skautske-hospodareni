@@ -80,3 +80,21 @@ table.table a:hover {
 .carousel-control-prev-icon, .carousel-control-next-icon {
   background-color: #000000;
 }
+
+:root[data-bs-theme="dark"] {
+  .bg-test {
+    background-color: #404000;
+  }
+
+  .bg-light, .btn-light {
+    background-color: var(--bs-light-bg-subtle) !important;
+  }
+
+  .btn-light {
+    color: var(--bs-body-color);
+  }
+
+  .navbar-dark {
+    background-color: var(--bs-light-bg-subtle) !important;
+  }
+}
