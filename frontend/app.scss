@@ -59,6 +59,11 @@ table.table a:hover {
   }
 }
 
+.bg-posily {
+  --bs-bg-opacity: 1;
+  background-color: rgba(var(--bs-warning-rgb), var(--bs-bg-opacity)) !important;
+}
+
 .bg-test {
   background-color: #ffff00;
 }
@@ -82,6 +87,10 @@ table.table a:hover {
 }
 
 :root[data-bs-theme="dark"] {
+  .bg-posily {
+    --bs-bg-opacity: 0.2;
+  }
+
   .bg-test {
     background-color: #404000;
   }
@@ -92,6 +101,14 @@ table.table a:hover {
 
   .btn-light {
     color: var(--bs-body-color);
+  }
+
+  .carousel-caption {
+    color: var(--bs-body-color);
+  }
+
+  .carousel-item {
+    background-color: var(--bs-light-bg-subtle) !important;
   }
 
   .navbar-dark {
