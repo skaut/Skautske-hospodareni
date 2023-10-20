@@ -8,13 +8,7 @@ export class DarkModeToggle {
             this.setTheme(document.documentElement.dataset.bsTheme === "dark" ? "light" : "dark");
         };
 
-        if ("theme" in localStorage) {
-            this.setTheme(localStorage.theme);
-        } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-            this.setTheme("dark");
-        } else {
-            this.setTheme("light");
-        }
+        this.setTheme(document.documentElement.dataset.bsTheme as "dark"|"light"|undefined ?? "light");
     }
 
     private setTheme(theme: "dark"|"light"): void {
