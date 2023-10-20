@@ -8,6 +8,8 @@ use Model\Cashbook\ReadModel\Queries\EducationParticipantListQuery;
 use Model\Common\Repositories\IParticipantRepository;
 use Model\DTO\Participant\Participant;
 
+use function array_filter;
+
 final class EducationParticipantListQueryHandler
 {
     public function __construct(private IParticipantRepository $participants)
@@ -17,6 +19,17 @@ final class EducationParticipantListQueryHandler
     /** @return Participant[] */
     public function __invoke(EducationParticipantListQuery $query): array
     {
-        return $this->participants->findByEducation($query->getEducationId());
+        $participants = $this->participants->findByEducation($query->getEducationId());
+
+        if ($query->getOnlyAccepted()) {
+            return array_filter(
+                $participants,
+                static function (Participant $participant) {
+                    return $participant->isAccepted();
+                },
+            );
+        }
+
+        return $participants;
     }
 }

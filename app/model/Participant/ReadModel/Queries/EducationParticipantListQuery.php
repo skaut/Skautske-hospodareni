@@ -12,7 +12,7 @@ final class EducationParticipantListQuery
 {
     private SkautisEducationId $educationId;
 
-    public function __construct(SkautisEducationId $id)
+    public function __construct(SkautisEducationId $id, private bool $onlyAccepted = true)
     {
         $this->educationId = $id;
     }
@@ -20,5 +20,10 @@ final class EducationParticipantListQuery
     public function getEducationId(): SkautisEducationId
     {
         return $this->educationId;
+    }
+
+    public function getOnlyAccepted(): bool
+    {
+        return $this->onlyAccepted;
     }
 }
