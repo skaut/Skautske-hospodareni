@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6be4ff6e0d79e7fe969e8fbefdd04f40",
+    "content-hash": "b02f03318dfb54663bc3514bab2c767f",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -641,6 +641,89 @@
                 }
             ],
             "time": "2023-05-24T08:48:41+00:00"
+        },
+        {
+            "name": "contributte/console-extra",
+            "version": "v0.7.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/contributte/console-extra.git",
+                "reference": "2deeadc71090e3483feeca41200a4179d7c589ef"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/contributte/console-extra/zipball/2deeadc71090e3483feeca41200a4179d7c589ef",
+                "reference": "2deeadc71090e3483feeca41200a4179d7c589ef",
+                "shasum": ""
+            },
+            "require": {
+                "contributte/di": "^0.5.0",
+                "php": ">=7.2",
+                "symfony/console": "^4.0.0 || ^5.0.0 || ^6.0.0"
+            },
+            "conflict": {
+                "nette/schema": "<1.0.1"
+            },
+            "require-dev": {
+                "contributte/console": "~0.7",
+                "latte/latte": "^2.6.0",
+                "nette/application": "^3.1.3",
+                "nette/bootstrap": "^3.1.1",
+                "nette/caching": "^3.1.1",
+                "nette/security": "^3.1.1",
+                "ninjify/nunjuck": "^0.4",
+                "ninjify/qa": "^0.13",
+                "phpstan/phpstan": "^1.0.0",
+                "phpstan/phpstan-deprecation-rules": "^1.0.0",
+                "phpstan/phpstan-nette": "^1.0.0",
+                "phpstan/phpstan-strict-rules": "^1.0.0"
+            },
+            "suggest": {
+                "contributte/console": "Symfony\\Console for Nette"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.7.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Contributte\\Console\\Extra\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Milan Felix Šulc",
+                    "homepage": "https://f3l1x.io"
+                }
+            ],
+            "description": "Nette-based console commands for latte, DIC, security, utils and many others",
+            "homepage": "https://github.com/contributte/console-extra",
+            "keywords": [
+                "console",
+                "nette",
+                "symfony"
+            ],
+            "support": {
+                "issues": "https://github.com/contributte/console-extra/issues",
+                "source": "https://github.com/contributte/console-extra/tree/v0.7.2"
+            },
+            "funding": [
+                {
+                    "url": "https://contributte.org/partners.html",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/f3l1x",
+                    "type": "github"
+                }
+            ],
+            "time": "2022-06-15T07:40:08+00:00"
         },
         {
             "name": "contributte/di",

@@ -52,6 +52,7 @@ extensions:
     skautis: Skautis\Nette\SkautisExtension
     messenger: Fmasa\Messenger\DI\MessengerExtension
     console: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
+    console.cache: Contributte\Console\Extra\DI\CacheConsoleExtension(%consoleMode%)
 
 search:
     command handlers:
