@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Nette\Bootstrap\Configurator;
+
 require __DIR__ . '/../vendor/autoload.php';
 
 setlocale(LC_COLLATE, 'cs_CZ.utf8');
@@ -11,9 +13,11 @@ $logDir  = __DIR__ . '/../log';
 
 putenv('TMPDIR=' . $tempDir);
 
-$configurator = new Nette\Configurator();
+$env = getenv();
+
+$configurator = new Configurator();
 $configurator->setDebugMode(getenv('DEVELOPMENT_MACHINE') === 'true' ?: '89.177.225.213');
-$configurator->enableDebugger($logDir);
+$configurator->enableTracy($logDir);
 $configurator->setTempDirectory($tempDir);
 
 $configurator->createRobotLoader()
