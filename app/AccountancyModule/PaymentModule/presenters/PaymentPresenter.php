@@ -41,6 +41,7 @@ use Model\PaymentService;
 use Model\UnitService;
 use Nette\Utils\Strings;
 use PhpOffice\PhpSpreadsheet\Exception;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Skautis\Wsdl\PermissionException;
 
 use function array_filter;
@@ -48,6 +49,7 @@ use function assert;
 use function count;
 use function date;
 use function sprintf;
+use function substr;
 
 class PaymentPresenter extends BasePresenter
 {
@@ -277,11 +279,12 @@ class PaymentPresenter extends BasePresenter
     {
         $this->assertCanEditGroup();
 
-        $group    = $this->model->getGroup($id);
-        $payments = $this->getPaymentsForGroup($id);
+        $group     = $this->model->getGroup($id);
+        $payments  = $this->getPaymentsForGroup($id);
+        $groupName = substr($group->getName(), 0, Worksheet::SHEET_TITLE_MAXIMUM_LENGTH);
 
         try {
-            $spreadsheet = $this->excelService->getPaymentsList($payments, $group->getName());
+            $spreadsheet = $this->excelService->getPaymentsList($payments, $groupName);
             $this->flashMessage('Seznam plateb byl exportován');
             $this->sendResponse(new ExcelResponse(Strings::webalize($group->getName()) . '-' . date('Y_n_j'), $spreadsheet));
         } catch (PermissionException $e) {
