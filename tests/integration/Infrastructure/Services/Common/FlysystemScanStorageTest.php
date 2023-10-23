@@ -25,7 +25,7 @@ final class FlysystemScanStorageTest extends Unit
 
     protected function _before(): void
     {
-        $this->directory = __DIR__ . '/../../../../_temp/' . uniqid(self::class, true);
+        $this->directory = __DIR__ . '/../../../../../temp/cache/' . uniqid(self::class, true);
         $this->storage   = new FlysystemScanStorage(new Filesystem(new LocalFilesystemAdapter($this->directory)));
     }
 
