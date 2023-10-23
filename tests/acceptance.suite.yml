@@ -24,4 +24,5 @@ modules:
             user: "%DB_USER%"
             password: "%DB_PASSWORD%"
             populate: true
-            dump: 'tests/_data/cleanup.sql'
+            dump: 'tests/_data/acceptance_init.sql'
+            wait: 2
