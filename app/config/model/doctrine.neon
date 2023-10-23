@@ -1,6 +1,7 @@
 parameters:
     mappingDir: %appDir%/model/Infrastructure/mapping
     domainModelDir: %appDir%/model
+    cacheDir: %tempDir%/cache
 
 extensions:
     migrations: Nettrine\Migrations\DI\MigrationsExtension
@@ -75,7 +76,7 @@ dbal:
                 commented: true
 
 services:
-    - Model\Infrastructure\EntityManagerFactory(%debugMode%, %tempDir%)
+    - Model\Infrastructure\EntityManagerFactory(%debugMode%, %cacheDir%)
     - @Model\Infrastructure\EntityManagerFactory::create()
 
     - factory: Doctrine\ORM\Tools\Console\Command\GenerateProxiesCommand

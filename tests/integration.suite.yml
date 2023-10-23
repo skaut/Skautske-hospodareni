@@ -5,7 +5,7 @@ modules:
         - \Helper\Integration
 
         - Contributte\Codeception\Module\NetteDIModule:
-            tempDir: ../_temp/integration
+            tempDir: ../../temp/cache/integration
             appDir: ../../app
             configFiles:
                 - config/doctrine.neon
