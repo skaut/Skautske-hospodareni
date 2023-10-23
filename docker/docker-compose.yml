@@ -58,6 +58,9 @@ services:
     php:
         <<: *php-base
         container_name: hskauting.app #Backward Compatibility
+        env_file:
+            - containers/php/ini/image.ini
+            - ./../.env.local
         labels:
             traefik.enable: true
             traefik.http.routers.php.rule: Host(`vite.localhost`)
@@ -70,6 +73,15 @@ services:
         env_file:
             - containers/php/ini/image.ini
             - containers/php/ini/xdebug.ini
+            - ./../.env.local
+    php_test:
+        <<: *php-base
+        hostname: php_test.localhost
+        container_name: hskauting.app-test
+        env_file:
+            - containers/php/ini/image.ini
+            - containers/php/ini/xdebug.ini
+            - ./../.env.test
 
     nginx:
         image: nginx:latest
