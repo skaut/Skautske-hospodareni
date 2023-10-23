@@ -49,6 +49,7 @@ class AcceptanceTester extends Actor
         $I->fillField('(//input)[9]', self::LOGIN);
         $I->fillField('(//input)[10]', self::PASSWORD);
         $I->click('//button');
+        $I->click('Send anyway'); // bypass ssl redirect
         $I->waitForText('Seznam akcí');
 
         $roleButtonSelector = "//button[contains(@class, 'ui--current-role')]";

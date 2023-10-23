@@ -8,13 +8,14 @@ class_name: AcceptanceTester
 modules:
     enabled:
         - WebDriver:
-            url: http://moje-hospodareni.cz
-            browser: chrome
-            host: chrome
-            capabilities:
-                chromeOptions:
-                    args: ["--headless", "--disable-gpu", "--no-sandbox", "--window-size=1920,1080"]
-                    binary: "/usr/bin/google-chrome"
+              url: http://moje-hospodareni.cz
+              browser: chrome
+              host: selenium.localhost
+              wait: 10
+              capabilities:
+                  acceptInsecureCerts: true
+                  chromeOptions:
+                      args: ["allow-insecure-localhost","--ignore-ssl-errors=yes", "--ignore-certificate-errors","--headless", "--disable-gpu", "--no-sandbox", "--window-size=1920,1080"]
 
         - \Helper\Acceptance
 
