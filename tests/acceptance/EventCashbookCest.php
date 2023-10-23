@@ -6,7 +6,7 @@ namespace acceptance;
 
 use AcceptanceTester;
 use Cake\Chronos\Date;
-use Codeception\Test\Unit;
+
 use Facebook\WebDriver\WebDriverKeys;
 use Model\Cashbook\Operation;
 
@@ -14,23 +14,29 @@ use function date;
 use function sprintf;
 use function time;
 
-class CashbookTest extends Unit
+class EventCashbookCest extends AbstractBaseAcceptanceCest
 {
     private const BALANCE_SELECTOR = '.ui--balance';
     private const NO_CHITS_MESSAGE = 'žádné doklady';
 
-    protected AcceptanceTester $tester;
-
+    protected AcceptanceTester $I;
     private string $eventName;
 
-    protected function _before(): void
+    public function _before(AcceptanceTester $I): void
     {
+        parent::_before($I);
         $this->eventName = 'Acceptance test event ' . time();
+        $this->I = $I;
+
+        $I->login(AcceptanceTester::UNIT_LEADER_ROLE);
+
     }
 
-    public function test(): void
+    /**
+     *@group cashbook
+     */
+    public function createEventCashbook(): void
     {
-        $this->tester->login($this->tester::UNIT_LEADER_ROLE);
 
         $this->createEvent();
         $this->goToCashbookPage();
@@ -43,7 +49,7 @@ class CashbookTest extends Unit
 
     private function createEvent(): void
     {
-        $I = $this->tester;
+        $I = $this->I;
         $I->amGoingTo('create event');
 
         $I->click('Založit novou akci');
@@ -69,7 +75,7 @@ class CashbookTest extends Unit
 
     private function goToCashbookPage(): void
     {
-        $I = $this->tester;
+        $I = $this->I;
         $I->amGoingTo('open cashbook');
 
         $cashbookButton = 'Evidence plateb';
@@ -81,7 +87,7 @@ class CashbookTest extends Unit
 
     private function createExpenseChit(): void
     {
-        $I = $this->tester;
+        $I = $this->I;
         $I->click('Nový doklad');
         $I->amGoingTo('create expense chit');
 
@@ -95,7 +101,7 @@ class CashbookTest extends Unit
 
     private function editExpenseChit(): void
     {
-        $I = $this->tester;
+        $I = $this->I;
         $I->wantTo('Update expense chit amount');
         $I->scrollTo('h4[id="chitList-payment"]');
         $I->click('.ui--editChit');
@@ -109,7 +115,7 @@ class CashbookTest extends Unit
 
     private function addIncomeChit(): void
     {
-        $I = $this->tester;
+        $I = $this->I;
         $I->click('Nový doklad');
         $I->amGoingTo('add income chit');
 
@@ -122,7 +128,7 @@ class CashbookTest extends Unit
 
     private function removeBothChits(): void
     {
-        $I = $this->tester;
+        $I = $this->I;
         $I->amGoingTo('remove both chits');
 
         $I->scrollTo('h4[id="chitList-payment"]');
@@ -135,7 +141,7 @@ class CashbookTest extends Unit
 
     private function cancelEvent(): void
     {
-        $I = $this->tester;
+        $I = $this->I;
         $I->amGoingTo('cancel the event');
 
         $I->click('Akce');
@@ -151,28 +157,28 @@ class CashbookTest extends Unit
 
     private function fillChitForm(Date $date, string $purpose, Operation $type, string $category, string $recipient, string $amount): void
     {
-        $this->tester->wait(2); // unroll block
-        $this->tester->wantToTest('Uložit');
-        $this->tester->fillField('Datum', $date->format('d.m. Y'));
-        $this->tester->pressKey('body', [WebDriverKeys::ESCAPE]); // close datepicker
-        $this->tester->fillField('Účel', $purpose);
-        $this->tester->selectOption('#chit-type', $type->equals(Operation::EXPENSE()) ? 'Výdaje' : 'Příjmy');
-        $this->tester->selectOption(sprintf('items[0][%sCategories]', $type->equals(Operation::EXPENSE()) ? 'expense' : 'income'), $category);
-        $this->tester->fillField('Komu/Od', $recipient);
-        $this->tester->fillField('items[0][price]', $amount);
+        $this->I->wait(2); // unroll block
+        $this->I->wantToTest('Uložit');
+        $this->I->fillField('Datum', $date->format('d.m. Y'));
+        $this->I->pressKey('body', [WebDriverKeys::ESCAPE]); // close datepicker
+        $this->I->fillField('Účel', $purpose);
+        $this->I->selectOption('#chit-type', $type->equals(Operation::EXPENSE()) ? 'Výdaje' : 'Příjmy');
+        $this->I->selectOption(sprintf('items[0][%sCategories]', $type->equals(Operation::EXPENSE()) ? 'expense' : 'income'), $category);
+        $this->I->fillField('Komu/Od', $recipient);
+        $this->I->fillField('items[0][price]', $amount);
     }
 
     private function waitForBalance(string $balance): void
     {
-        $this->tester->expectTo(sprintf('see %s CZK as final balance', $balance));
-        $this->tester->executeJs('window.scrollTo(0, document.body.scrollHeight);');
-        $this->tester->wait(2);
-        $this->tester->waitForText($balance, 10, self::BALANCE_SELECTOR);
+        $this->I->expectTo(sprintf('see %s CZK as final balance', $balance));
+        $this->I->executeJs('window.scrollTo(0, document.body.scrollHeight);');
+        $this->I->wait(2);
+        $this->I->waitForText($balance, 10, self::BALANCE_SELECTOR);
     }
 
     private function removeChit(int $position): void
     {
-        $this->tester->disablePopups();
-        $this->tester->click('.ui--removeChit');
+        $this->I->disablePopups();
+        $this->I->click('.ui--removeChit');
     }
 }
