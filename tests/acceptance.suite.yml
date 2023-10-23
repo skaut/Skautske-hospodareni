@@ -20,8 +20,8 @@ modules:
 
         - \Helper\WaitForDb
         - Db:
-            dsn: 'mysql:host=mysql-test;dbname=hskauting'
-            user: 'root'
-            password: 'root'
+            dsn: "mysql:host=%DB_HOST%;dbname=%DB_NAME%"
+            user: "%DB_USER%"
+            password: "%DB_PASSWORD%"
             populate: true
             dump: 'tests/_data/cleanup.sql'

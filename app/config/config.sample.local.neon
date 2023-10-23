@@ -21,10 +21,10 @@ parameters:
         redirectUri: http://moje-hospodareni.cz/google/token
 
     database:
-        host: mysql
-        user: root
-        password: root
-        name: hskauting
+        host: %env.DB_HOST%
+        user: %env.DB_USER%
+        password: %env.DB_PASSWORD%
+        name: %env.DB_NAME%
 
 services:
     # Pro produkci
