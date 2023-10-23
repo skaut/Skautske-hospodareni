@@ -26,8 +26,8 @@ jobs:
                   restore-keys: |
                       ${{ runner.os }}-composer-
             - run: composer install
-            - name: Remove development docker-compose override
-              run: rm docker-compose.override.yml
+#            - name: Remove development docker-compose override
+#              run: rm docker-compose.override.yml
             - name: Fix permissions
               run: chown 1000:1000 . -R && chmod 777 . -R
             - name: Create tarball
