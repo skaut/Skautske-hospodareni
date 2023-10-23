@@ -83,7 +83,7 @@ services:
             - ./containers/nginx/conf.d:/etc/nginx/conf.d
         labels:
             traefik.enable: true
-            traefik.http.routers.nginx.rule: Host(`moje-hospodareni.cz`) || Host(`hskauting.localhost`) || HostRegexp(`{site:.*}.ngrok.io`)
+            traefik.http.routers.nginx.rule: Host(`moje-hospodareni.cz`) || HostRegexp(`{site:.*}.ngrok.io`)
             traefik.http.routers.nginx.entrypoints: web
         depends_on:
             - php
