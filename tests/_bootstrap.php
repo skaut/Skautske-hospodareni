@@ -11,5 +11,5 @@ date_default_timezone_set('Europe/Prague');
 (new RobotLoader())
     ->addDirectory(__DIR__ . '/../app')
     ->addDirectory(__DIR__)
-    ->setTempDirectory(__DIR__ . '/_temp')
+    ->setTempDirectory(__DIR__ . '/../temp/cache')
     ->register();
