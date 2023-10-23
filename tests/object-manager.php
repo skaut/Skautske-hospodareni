@@ -32,6 +32,7 @@ $configurator->defaultExtensions = [
     'tracy' => [Tracy\Bridges\Nette\TracyExtension::class, ['%debugMode%', '%consoleMode%']],
 ];
 
+$configurator->addStaticParameters(['env' => getenv()]);
 $configurator->addConfig(__DIR__ . '/integration/config/doctrine.neon');
 
 $configurator->addStaticParameters(['logDir' => $logDir]);
