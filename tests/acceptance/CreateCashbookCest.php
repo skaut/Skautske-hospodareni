@@ -6,7 +6,10 @@ namespace acceptance;
 
 use AcceptanceTester;
 
-class CreateCashbookCest extends AbstractBaseAcceptanceCest
+use function date;
+
+// phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+class CreateCashbookCest extends BaseAcceptanceCest
 {
     /**
      * @desc Create cashbooks for current and next year
