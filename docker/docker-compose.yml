@@ -21,8 +21,6 @@ x-php-base:
         - ../:/app
         - ./containers/php/ini/php.ini:/etc/php/8.1/fpm/conf.d/php.ini
         - ./containers/php/ini/php.ini:/etc/php/8.1/cli/conf.d/php.ini
-    depends_on:
-        - mysql
 
 x-mysql-base:
     &mysql-base
@@ -61,23 +59,29 @@ services:
         env_file:
             - containers/php/ini/image.ini
             - ./../.env.local
+        depends_on:
+            - mysql
         labels:
             traefik.enable: true
             traefik.http.routers.php.rule: Host(`vite.localhost`)
             traefik.http.routers.php.entrypoints: web, assets
             traefik.http.services.php.loadbalancer.server.port: 3000
 
-    php_xdebug:
+    php-xdebug:
         <<: *php-base
-        hostname: php_xdebug.localhost
+        hostname: php-xdebug.localhost
+        depends_on:
+            - mysql
         env_file:
             - containers/php/ini/image.ini
             - containers/php/ini/xdebug.ini
             - ./../.env.local
-    php_test:
+    php-test:
         <<: *php-base
-        hostname: php_test.localhost
+        hostname: php-test.localhost
         container_name: hskauting.app-test
+        depends_on:
+            - mysql-test
         env_file:
             - containers/php/ini/image.ini
             - containers/php/ini/xdebug.ini
