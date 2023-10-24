@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace acceptance;
 
-use Page\Payment;
 use AcceptanceTester;
+use Page\Payment;
 
-
-class PaymentCest extends AbstractBaseAcceptanceCest
+// phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+class PaymentCest extends BaseAcceptanceCest
 {
     protected AcceptanceTester $I;
     protected Payment $page;
@@ -16,18 +16,16 @@ class PaymentCest extends AbstractBaseAcceptanceCest
     public function _before(AcceptanceTester $I): void
     {
         parent::_before($I);
-        $this->I = $I;
+
+        $this->I    = $I;
         $this->page = new Payment($I);
         $I->login(AcceptanceTester::UNIT_LEADER_ROLE);
     }
 
-
-    /**
-     * @group payment
-     */
+    /** @group payment */
     public function createPaymentGroup(): void
     {
-        $I = $this->I;
+        $I    = $this->I;
         $page = $this->page;
 
         $I->wantTo('create payment group');
@@ -47,7 +45,6 @@ class PaymentCest extends AbstractBaseAcceptanceCest
         $I->click('Založit skupinu');
 
         $I->see('Skupina byla založena');
-
 
         $I->wantTo('create payments');
 

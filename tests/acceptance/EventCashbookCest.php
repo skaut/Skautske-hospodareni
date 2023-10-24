@@ -6,7 +6,6 @@ namespace acceptance;
 
 use AcceptanceTester;
 use Cake\Chronos\Date;
-
 use Facebook\WebDriver\WebDriverKeys;
 use Model\Cashbook\Operation;
 
@@ -14,7 +13,8 @@ use function date;
 use function sprintf;
 use function time;
 
-class EventCashbookCest extends AbstractBaseAcceptanceCest
+// phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+class EventCashbookCest extends BaseAcceptanceCest
 {
     private const BALANCE_SELECTOR = '.ui--balance';
     private const NO_CHITS_MESSAGE = 'žádné doklady';
@@ -25,19 +25,16 @@ class EventCashbookCest extends AbstractBaseAcceptanceCest
     public function _before(AcceptanceTester $I): void
     {
         parent::_before($I);
+
         $this->eventName = 'Acceptance test event ' . time();
-        $this->I = $I;
+        $this->I         = $I;
 
         $I->login(AcceptanceTester::UNIT_LEADER_ROLE);
-
     }
 
-    /**
-     *@group cashbook
-     */
+    /** @group cashbook */
     public function createEventCashbook(): void
     {
-
         $this->createEvent();
         $this->goToCashbookPage();
         $this->createExpenseChit();
