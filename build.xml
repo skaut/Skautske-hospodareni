@@ -263,6 +263,6 @@
         <exec command="yarn build" passthru="true"/>
 
         <!-- Prepare database schema -->
-        <exec command="bin/console migrations:migrate" passthru="true"/>
+        <exec command="bin/console migrations:migrate --no-interaction" passthru="true"/>
     </target>
 </project>
