@@ -108,7 +108,7 @@ jobs:
             - name: Extract workdir
               run: tar -xzpf workdir.tar.gz
             - name: Start selenium container
-              run: docker compose -f docker/docker-compose.yml up -d selenium
+              run: docker compose -f docker/docker-compose.yml up -d selenium nginx
             - run: mv app/config/config.ci.local.neon app/config/config.local.neon
             - name: Install Node.js
               uses: actions/setup-node@v3
