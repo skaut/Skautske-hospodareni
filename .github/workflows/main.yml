@@ -139,6 +139,12 @@ jobs:
     static-analysis:
         name: "Run PHPStan analysis"
         runs-on: ubuntu-22.04
+        env:
+          DB_HOST: mysql-test
+          DB_USER: hskauting
+          DB_PASSWORD: hskauting
+          DB_NAME: hskauting
+          DB_TEST: true
         container:
             image: skaut/lebeda:8.1
         needs: workdir
