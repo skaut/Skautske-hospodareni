@@ -7,17 +7,20 @@ Aplikace vyžaduje:
 - Composer
 - Yarn
 
+Všechny potřebné nástroje jsou instalovány v příslušných kontejnerech
+Na hostujícím stroji musí být ve výchozím stavu volné porty 80 a 3306. Port 3306 je možné použít pro propojená s IDE
+
 ## Docker
-Pro lokální vývoj je připraven Docker container a konfigurace pro **docker-compose**.
+Pro lokální vývoj je připraven Docker container a konfigurace pro **docker compose**.
+Všechny potřebné příkazy jsou definované v Make file
 
 ```bash
-docker volume create --name hskauting_mysql
-docker compose up -d # Spustí container v detached modu
+make up # Spustí container v detached modu
 ```
 
 V kontejneru je možné spustit bash pomocným skriptem:
 ```bash
-docker/ssh
+make enter
 ```
 
 ## Nastavení hosts
@@ -30,12 +33,4 @@ Stačí přidat tento řádek do souboru `/etc/hosts`:
 ```
 
 ## Příprava projektu
-V kontejneru stačí spustit příkaz `phing init`.
-
-**Poznámka**: Při commitování se automaticky opravuje coding standard v PHP - to však vyžaduje lokálně nainstalované PHP.
-Pokud nemáte mimo kontejner instalované PHP alespoň ve verzi jako používá Hospodaření,
-je možné automatickou opravu coding standardu vypnout nastavením proměnné `HUSKY_SKIP_INSTALL` na `true` při instalaci
-`yarn` závislostí. Tedy např.:
-
-- `export HUSKY_SKIP_INSTALL=true; phing init`
-- `HUSKY_SKIP_INSTALL=true yarn install`
+Stačí spustit příkaz `make init`.
