@@ -174,7 +174,7 @@ jobs:
                   path: .
             - name: Extract workdir
               run: tar -xzpf workdir.tar.gz
-            - run: phing coding-standard
+            - run: phing coding-standard-ci
 
     latte-lint:
         name: "Lint Latte templates"

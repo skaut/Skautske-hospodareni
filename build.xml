@@ -247,6 +247,10 @@
         <exec command="vendor/bin/phpcs" passthru="true" checkreturn="true"/>
     </target>
 
+    <target name="coding-standard-ci">
+        <exec command="vendor/bin/phpcs" passthru="true" checkreturn="true"/>
+    </target>
+
     <target name="app-init">
         <!-- Create config.local.neon -->
         <copy file="app/config/config.sample.local.neon" tofile="app/config/config.local.neon"/>
