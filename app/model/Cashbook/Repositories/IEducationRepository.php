@@ -12,7 +12,7 @@ use Model\Event\SkautisEducationId;
 interface IEducationRepository
 {
     /** @throws CashbookNotFound */
-    public function findBySkautisId(SkautisEducationId $id): Education;
+    public function findBySkautisIdAndYear(SkautisEducationId $id, int $year): Education;
 
     /** @throws CashbookNotFound */
     public function findByCashbookId(CashbookId $cashbookId): Education;

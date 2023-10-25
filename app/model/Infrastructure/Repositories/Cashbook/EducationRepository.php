@@ -24,7 +24,7 @@ final class EducationRepository extends AggregateRepository implements IEducatio
         parent::__construct($entityManager, $eventBus);
     }
 
-    public function findBySkautisId(SkautisEducationId $id): Education
+    public function findBySkautisIdAndYear(SkautisEducationId $id, int $year): Education
     {
         $builder = $this->getEntityManager()->createQueryBuilder();
 
@@ -36,7 +36,7 @@ final class EducationRepository extends AggregateRepository implements IEducatio
                 ->getQuery()
                 ->getSingleResult();
         } catch (NoResultException) {
-            $cashbook = new Education($id, CashbookId::generate());
+            $cashbook = new Education($id, $year, CashbookId::generate());
             $this->save($cashbook);
 
             $this->commandBus->handle(new CreateCashbook($cashbook->getCashbookId(), CashbookType::get(CashbookType::EDUCATION)));

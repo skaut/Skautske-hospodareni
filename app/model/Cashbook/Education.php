@@ -21,18 +21,30 @@ class Education extends Aggregate
      */
     private SkautisEducationId $id;
 
+    /**
+     * @ORM\Id()
+     * @ORM\Column(type="int")
+     */
+    private int $year;
+
     /** @ORM\Column(type="cashbook_id") */
     private CashbookId $cashbookId;
 
-    public function __construct(SkautisEducationId $id, CashbookId $cashbookId)
+    public function __construct(SkautisEducationId $id, int $year, CashbookId $cashbookId)
     {
         $this->id         = $id;
+        $this->year       = $year;
         $this->cashbookId = $cashbookId;
     }
 
     public function getSkautisId(): SkautisEducationId
     {
         return $this->id;
+    }
+
+    public function getYear(): int
+    {
+        return $this->year;
     }
 
     public function getCashbookId(): CashbookId

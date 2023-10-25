@@ -44,12 +44,12 @@ class BudgetPresenter extends BasePresenter
 
         $educationId = new SkautisEducationId($aid);
 
-        $inconsistentTotals = $this->queryBus->handle(new InconsistentEducationCategoryTotalsQuery($educationId));
+        $inconsistentTotals = $this->queryBus->handle(new InconsistentEducationCategoryTotalsQuery($educationId, $this->event->endDate->year));
         $this->template->setParameters([
             'isConsistent'             => count($inconsistentTotals) === 0,
             'toRepair'                 => $inconsistentTotals,
             'budgetEntries'            => $this->queryBus->handle(new EducationBudgetQuery($educationId, $this->event->grantId)),
-            'categoriesSummary'        => $this->queryBus->handle(new CategoriesSummaryQuery($this->getCashbookId($aid))),
+            'categoriesSummary'        => $this->queryBus->handle(new CategoriesSummaryQuery($this->getCashbookId($aid, $this->event->endDate->year))),
             'isUpdateStatementAllowed' => $this->authorizator->isAllowed(Grant::UPDATE_REAL_BUDGET_SPENDING, $this->event->grantId->toInt()),
         ]);
         if (! $this->isAjax()) {
@@ -66,7 +66,7 @@ class BudgetPresenter extends BasePresenter
     {
         $this->editableOnly();
 
-        $this->commandBus->handle(new UpdateEducationCategoryTotals($this->getCashbookId($aid)));
+        $this->commandBus->handle(new UpdateEducationCategoryTotals($this->getCashbookId($aid, $this->event->endDate->year)));
         $this->flashMessage('Kategorie byly přepočítány.');
 
         if ($this->isAjax()) {
@@ -76,8 +76,8 @@ class BudgetPresenter extends BasePresenter
         }
     }
 
-    private function getCashbookId(int $educationId): CashbookId
+    private function getCashbookId(int $educationId, int $year): CashbookId
     {
-        return $this->queryBus->handle(new EducationCashbookIdQuery(new SkautisEducationId($educationId)));
+        return $this->queryBus->handle(new EducationCashbookIdQuery(new SkautisEducationId($educationId), $year));
     }
 }

@@ -23,7 +23,7 @@ class InconsistentEducationCategoryTotalsQueryHandler
     /** @return float[] */
     public function __invoke(InconsistentEducationCategoryTotalsQuery $query): array
     {
-        $cashbookId = $this->queryBus->handle(new EducationCashbookIdQuery($query->getEducationId()));
+        $cashbookId = $this->queryBus->handle(new EducationCashbookIdQuery($query->getEducationId(), $query->getYear()));
         $categories = $this->queryBus->handle(new CategoriesSummaryQuery($cashbookId));
 
         $skautisTotals = [];

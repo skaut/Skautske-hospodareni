@@ -128,7 +128,7 @@ class CashbookPresenter extends BasePresenter
 
     private function getCashbookId(): CashbookId
     {
-        return $this->queryBus->handle(new EducationCashbookIdQuery(new SkautisEducationId($this->aid)));
+        return $this->queryBus->handle(new EducationCashbookIdQuery(new SkautisEducationId($this->aid), $this->event->endDate->year));
     }
 
     private function isCashbookEmpty(): bool

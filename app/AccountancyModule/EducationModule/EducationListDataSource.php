@@ -54,7 +54,7 @@ final class EducationListDataSource extends DataSource
 
     private function chitNumberPrefix(Education $camp): string|null
     {
-        $cashbookId = $this->queryBus->handle(new EducationCashbookIdQuery($camp->getId()));
+        $cashbookId = $this->queryBus->handle(new EducationCashbookIdQuery($camp->getId(), $camp->endDate->year));
 
         assert($cashbookId instanceof CashbookId);
 
