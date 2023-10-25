@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Travel\Commands\Command;
 
+use Model\Travel\Handlers\Command\ReverseTravelHandler;
+
 /** @see ReverseTravelHandler */
 final class ReverseTravel
 {

@@ -221,8 +221,8 @@ class Command
     /** @throws TravelNotFound */
     public function reverseTravel(int $id): void
     {
-        $travel = $this->getTravel($id);
-        $details = $travel->getDetails();
+        $travel          = $this->getTravel($id);
+        $details         = $travel->getDetails();
         $reversedDetails = new TravelDetails($details->getDate(), $details->getTransportType(), $details->getEndPlace(), $details->getStartPlace());
 
         if ($travel instanceof VehicleTravel) {
