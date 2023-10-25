@@ -114,7 +114,7 @@ class CashbookPresenter extends BasePresenter
         $body    = new ChitBody(null, $this->event->getStartDate(), null);
 
         $categoryId    = $this->queryBus->handle(
-            new EducationParticipantCategoryIdQuery(new SkautisEducationId($this->aid)),
+            new EducationParticipantCategoryIdQuery(new SkautisEducationId($this->aid), $this->event->endDate->year),
         );
         $categoriesDto = $this->queryBus->handle(new CategoryListQuery($this->getCashbookId()));
 

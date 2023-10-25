@@ -22,11 +22,12 @@ final class EducationCategoryRepository implements IEducationCategoryRepository
 
     /** @return EducationCategory[] */
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    public function findForEducation(int $educationId): array
+    public function findForEducation(int $educationId, int $year): array
     {
         $skautisCategories = $this->grantsWebService->StatementAll([
             'ID_EventEducation' => $educationId,
             'IsBudget' => false,
+            'Year' => $year,
         ]);
 
         if (is_object($skautisCategories)) {
