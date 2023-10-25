@@ -16,6 +16,8 @@ use stdClass;
  */
 abstract class BaseControl extends Control
 {
+    public const MAX_FILE_SIZE_VALUE = 15 * 1024 * 1024;
+
     abstract public function render(): void;
 
     public function getPresenter(): BasePresenter|null

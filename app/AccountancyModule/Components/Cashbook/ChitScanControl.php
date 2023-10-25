@@ -81,7 +81,7 @@ final class ChitScanControl extends BaseControl
                 BaseForm::MIME_TYPE,
                 'Neplatný formát skenu, povolené formáty jsou ' . implode(', ', array_keys(IScanStorage::ALLOWED_MIME_TYPES)) . '.',
                 IScanStorage::ALLOWED_MIME_TYPES,
-            )->addRule(BaseForm::MAX_FILE_SIZE, 'Maximální povolená velikost souboru je 15 MB', 15 * 1024 * 1024);
+            )->addRule(BaseForm::MAX_FILE_SIZE, 'Maximální povolená velikost souboru je 15 MB', BaseControl::MAX_FILE_SIZE_VALUE);
 
         $form->addSubmit('submit', 'Nahrát');
 
