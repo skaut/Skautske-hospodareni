@@ -450,12 +450,11 @@ class CommandTest extends Unit
         );
 
         $travel = $command->getTravels()[0];
+        $travelDetails = $travel->getDetails();
 
         $command->reverseTravel($travel->getId());
 
         $reversedTravel = $command->getTravels()[0];
-
-        $travelDetails           = $travel->getDetails();
         $reversedTravelDetails = $reversedTravel->getDetails();
 
         self::assertEquals($travel->getId(), $reversedTravel->getId());
@@ -482,12 +481,11 @@ class CommandTest extends Unit
         );
 
         $travel = $command->getTravels()[0];
+        $travelDetails = $travel->getDetails();
 
         $command->reverseTravel($travel->getId());
 
         $reversedTravel = $command->getTravels()[0];
-
-        $travelDetails           = $travel->getDetails();
         $reversedTravelDetails = $reversedTravel->getDetails();
 
         self::assertEquals($travel->getId(), $reversedTravel->getId());
