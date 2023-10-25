@@ -85,7 +85,7 @@
                         <td n:if="$isEditable">
                             <div class="btn-group">
                                 <a n:href="duplicateTravel! $command->id, $t->id" class="btn btn-sm btn-info" title="duplikovat cestu"><i class="far fa-copy"></i></a>
-                                <a n:href="reverseTravel! $command->id, $t->id" class="btn btn-sm btn-info" title="obrátit cestu"><i class="far fa-exchange-alt"></i></a>
+                                <a n:href="reverseTravel! $command->id, $t->id" class="btn btn-sm btn-info" title="obrátit cestu"><i class="fas fa-exchange"></i></a>
                                 <a n:href="editTravel! $t->id" class="ajax btn btn-sm btn-primary"><i class="far fa-edit"></i></a>
                                 <a n:href="removeTravel! $command->id, $t->id" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu chcete smazat cestu?')" title="smazat cestu"><i class="far fa-trash-alt"></i></a>
                             </div>
