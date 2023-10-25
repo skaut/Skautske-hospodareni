@@ -80,6 +80,7 @@ library.add(
     far.faTrashAlt,
     far.faUser,
     far.faQuestionCircle,
+    far.faExchangeAlt,
 
     // Brands
     fab.faGithub as IconDefinition,

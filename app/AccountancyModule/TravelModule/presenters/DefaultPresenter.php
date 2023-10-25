@@ -12,6 +12,7 @@ use App\Forms\BaseForm;
 use Assert\Assertion;
 use Model\Services\PdfRenderer;
 use Model\Travel\Commands\Command\DuplicateTravel;
+use Model\Travel\Commands\Command\ReverseTravel;
 use Model\Travel\Travel\TransportType;
 use Model\TravelService;
 use Model\UserService;
@@ -167,6 +168,20 @@ class DefaultPresenter extends BasePresenter
         $this->commandBus->handle(new DuplicateTravel($commandId, $travelId));
 
         $this->flashMessage('Cesta byla duplikována.', 'success');
+
+        $this->redirect('this');
+    }
+
+    public function handleReverseTravel(int $commandId, int $travelId): void
+    {
+        if (! $this->isCommandEditable($commandId)) {
+            $this->flashMessage('Nemáte oprávnění obrátit cestu.', 'danger');
+            $this->redirect('default');
+        }
+
+        $this->commandBus->handle(new ReverseTravel($commandId, $travelId));
+
+        $this->flashMessage('Cesta byla obrácena.', 'success');
 
         $this->redirect('this');
     }
