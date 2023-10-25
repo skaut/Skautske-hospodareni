@@ -433,6 +433,70 @@ class CommandTest extends Unit
         self::assertEquals($travelDetails->getEndPlace(), $duplicatedTravelDetails->getEndPlace());
     }
 
+    public function testTransportTravelIsReversed(): void
+    {
+        $passenger = new Passenger('Frantisek Masa', '---', 'Brno');
+        $purpose   = 'Cesta na střediskovku';
+        $command   = new Command(1, null, $passenger, $purpose, 'Brno', '', Money::CZK(0), Money::CZK(0), '', null, [], '');
+
+        $command->addTransportTravel(
+            Money::CZK(100),
+            new Command\TravelDetails(
+                new Date('now'),
+                TransportType::get(TransportType::BUS),
+                'Praha',
+                'Brno',
+            ),
+        );
+
+        $travel = $command->getTravels()[0];
+
+        $command->reverseTravel($travel->getId());
+
+        $reversedTravel = $command->getTravels()[0];
+
+        $travelDetails           = $travel->getDetails();
+        $reversedTravelDetails = $reversedTravel->getDetails();
+
+        self::assertEquals($travel->getId(), $reversedTravel->getId());
+        self::assertEquals($travelDetails->getDate(), $reversedTravelDetails->getDate());
+        self::assertEquals($travelDetails->getTransportType(), $reversedTravelDetails->getTransportType());
+        self::assertEquals($travelDetails->getStartPlace(), $reversedTravelDetails->getEndPlace());
+        self::assertEquals($travelDetails->getEndPlace(), $reversedTravelDetails->getStartPlace());
+    }
+
+    public function testVehicleTravelIsReversed(): void
+    {
+        $passenger = new Passenger('Frantisek Masa', '---', 'Brno');
+        $purpose   = 'Cesta na střediskovku';
+        $command   = new Command(1, null, $passenger, $purpose, 'Brno', '', Money::CZK(3120), Money::CZK(500), '', null, [], '');
+
+        $command->addVehicleTravel(
+            123,
+            new Command\TravelDetails(
+                new Date('now'),
+                TransportType::get(TransportType::CAR),
+                'Praha',
+                'Brno',
+            ),
+        );
+
+        $travel = $command->getTravels()[0];
+
+        $command->reverseTravel($travel->getId());
+
+        $reversedTravel = $command->getTravels()[0];
+
+        $travelDetails           = $travel->getDetails();
+        $reversedTravelDetails = $reversedTravel->getDetails();
+
+        self::assertEquals($travel->getId(), $reversedTravel->getId());
+        self::assertEquals($travelDetails->getDate(), $reversedTravelDetails->getDate());
+        self::assertEquals($travelDetails->getTransportType(), $reversedTravelDetails->getTransportType());
+        self::assertEquals($travelDetails->getStartPlace(), $reversedTravelDetails->getEndPlace());
+        self::assertEquals($travelDetails->getEndPlace(), $reversedTravelDetails->getStartPlace());
+    }
+
     private function createCommand(Vehicle|null $vehicle = null): Command
     {
         return new Command(
