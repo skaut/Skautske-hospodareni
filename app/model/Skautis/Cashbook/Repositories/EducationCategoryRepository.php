@@ -27,7 +27,6 @@ final class EducationCategoryRepository implements IEducationCategoryRepository
         $skautisCategories = $this->grantsWebService->StatementAll([
             'ID_EventEducation' => $educationId,
             'IsBudget' => false,
-            'Year' => '',
         ]);
 
         if (is_object($skautisCategories)) {

@@ -1,0 +1,88 @@
+{block #title}{$event->getDisplayName()} - rozpočet{/block}
+
+{define #budgetTable $entries, $income}
+    <table n:ifset="$entries" class="table myTable table-bordered table-sm">
+        <thead>
+        <tr>
+            <th>Položka</th>
+            <th>Částka</th>
+        </tr>
+        </thead>
+        <tr n:foreach="$entries as $entry" n:if="$entry->isIncome() === $income">
+            <td>{$entry->name}</td>
+            <td class="text-right">
+                {$entry->total|price}
+            </td>
+        </tr>
+    </table>
+{/define}
+
+{define #categoriesTable $categoriesSummary, $income}
+    <table n:ifset="$categoriesSummary" class="table myTable table-bordered table-sm">
+        <thead>
+        <tr>
+            <th>Položka</th>
+            <th>Částka</th>
+        </tr>
+        </thead>
+        {var $balance = 0}
+        <tr n:foreach="$categoriesSummary as $categorySummary" n:if="$categorySummary->isIncome() === $income && ! $categorySummary->isVirtual()">
+            {do $balance += (float)$categorySummary->total->getAmount()/100}
+            <td>{$categorySummary->name}</td>
+            <td n:class="text-right,text-nowrap, array_key_exists($categorySummary->id, $toRepair) ? bg-danger-lighter"
+                n:attr="[title => array_key_exists($categorySummary->id, $toRepair) ? 'Částka ve SkautISu je ' . $toRepair[$categorySummary->id]]">
+                {$categorySummary->total|price}
+            </td>
+        </tr>
+        <tr>
+            <td><b>Celkem</b></td>
+            <td class="text-right text-nowrap"><b>{$balance|price}</b></td>
+        </tr>
+    </table>
+{/define}
+
+{block #content}
+
+{include ../header.latte}
+
+<div class="alert alert-warning mb-5" n:if="!$isConsistent">
+    <h4 class="alert-heading">Nekonzistentní data!</h4>
+    <p class="mb-0">Součet paragonů v kategoriích neodpovídá částkám uvedeným ve SkautISu.</p>
+    {if $isEditable}
+        <p>Hospodaření může aktualizovat data ve SkautISu tak, aby byla shodná s evidencí plateb.</p>
+        <hr>
+        {if $isUpdateStatementAllowed}
+            <a n:href="convert! $aid" class="alert-link">
+                <i class="fas fa-tools"></i>
+                Aktualizovat data ve SkautISu
+            </a>
+        {else}
+            <p class="text-muted mb-0">
+                <i class="far fa-times-circle"></i>
+                Nemáte oprávnění pro úpravu částek v rozpočtu uvedených ve skautisu.
+            </p>
+        {/if}
+    {/if}
+</div>
+
+<div class="row">
+    <div class="col-md-3 col-sm-6">
+        <h3>Skutečné náklady</h3>
+        {include #categoriesTable $categoriesSummary, FALSE}
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <h3>Skutečné výnosy</h3>
+        {include #categoriesTable $categoriesSummary, TRUE}
+    </div>
+
+    <div class="clearfix visible-sm-block"></div>
+
+    <div class="col-md-3 col-sm-6 ">
+        <h3>Předpokl. náklady</h3>
+        {include #budgetTable $budgetEntries, FALSE}
+    </div>
+    <div class="col-md-3">
+        <h3>Předpokládané výnosy</h3>
+        {include #budgetTable $budgetEntries, TRUE}
+    </div>
+</div>

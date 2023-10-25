@@ -16,6 +16,10 @@
             <a class="nav-link" n:href="Cashbook: $event->getId()->toInt()"><i
                         class="fas fa-clipboard-list"></i> Evidence plateb</a>
         </li>
+        <li n:class="nav-item, $presenterName === 'Budget' ? active">
+            <a class="nav-link" n:href="Budget: $event->getId()->toInt()"><i
+                        class="fas fa-chart-pie"></i> Rozpočet</a>
+        </li>
     </ul>
     <ul class="navbar-nav align-items-center justify-content-center">
         <li n:class="nav-item, $presenterName === 'Privileges' ? active">
