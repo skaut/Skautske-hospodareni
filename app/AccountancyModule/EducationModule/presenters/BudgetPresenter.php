@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\EducationModule;
 
 use Model\Auth\Resources\Education;
+use Model\Auth\Resources\Grant;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Commands\Cashbook\UpdateEducationCategoryTotals;
 use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
@@ -49,7 +50,7 @@ class BudgetPresenter extends BasePresenter
             'toRepair'                 => $inconsistentTotals,
             'budgetEntries'            => $this->queryBus->handle(new EducationBudgetQuery($educationId, $this->event->grantId)),
             'categoriesSummary'        => $this->queryBus->handle(new CategoriesSummaryQuery($this->getCashbookId($aid))),
-            'isUpdateStatementAllowed' => $this->authorizator->isAllowed(Education::UPDATE_REAL_BUDGET_SPENDING, $aid),
+            'isUpdateStatementAllowed' => $this->authorizator->isAllowed(Grant::UPDATE_REAL_BUDGET_SPENDING, $this->event->grantId->toInt()),
         ]);
         if (! $this->isAjax()) {
             return;

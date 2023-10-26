@@ -13,6 +13,7 @@ class PrivilegesPresenter extends BasePresenter
     {
         $this->setLayout('layout.new');
         $isDraft = $this->event->getState() === 'draft';
+        $grantId = $this->event->grantId->toInt();
 
         $privileges = [
             'event' => [
@@ -55,7 +56,7 @@ class PrivilegesPresenter extends BasePresenter
                     ],
                     [
                         'label' => 'Zobrazovat účasti účastníků',
-                        'value' => $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::ACCESS_PARTICIPANT_PARTICIPATION, $this->event->grantId->toInt()),
+                        'value' => $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::ACCESS_PARTICIPANT_PARTICIPATION, $grantId),
                         'desc' => 'Lze zobrazovat údaje o účasti jednotlivých účastníků této akce.',
                     ],
                 ],
@@ -70,12 +71,12 @@ class PrivilegesPresenter extends BasePresenter
                     ],
                     [
                         'label' => 'Zobrazovat dotaci',
-                        'value' => $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::ACCESS_DETAIL, $this->event->grantId->toInt()),
+                        'value' => $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::ACCESS_DETAIL, $grantId),
                         'desc' => 'Lze zobrazovat dotaci této akce.',
                     ],
                     [
                         'label' => 'Upravovat závěrečný rozpočet',
-                        'value' => $isDraft && $this->authorizator->isAllowed(Education::UPDATE_REAL_BUDGET_SPENDING, $aid),
+                        'value' => $isDraft && $this->authorizator->isAllowed(Grant::UPDATE_REAL_BUDGET_SPENDING, $grantId),
                         'desc' => 'Lze upravovat závěrečný rozpočet této akce ve SkautISu.',
                     ],
                 ],
