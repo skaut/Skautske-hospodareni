@@ -41,7 +41,7 @@ class CashbookPresenter extends BasePresenter
     {
         parent::startup();
 
-        $this->isEditable = $this->isEditable || $this->authorizator->isAllowed(Grant::UPDATE_REAL_BUDGET_SPENDING, $this->event->grantId->toInt());
+        $this->isEditable = $this->isEditable || ( $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::UPDATE_REAL_BUDGET_SPENDING, $this->event->grantId->toInt()));
     }
 
     public function renderDefault(int $aid): void
