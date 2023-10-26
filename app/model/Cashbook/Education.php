@@ -23,7 +23,7 @@ class Education extends Aggregate
 
     /**
      * @ORM\Id()
-     * @ORM\Column(type="int")
+     * @ORM\Column(type="integer")
      */
     private int $year;
 
