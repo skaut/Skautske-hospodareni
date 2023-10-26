@@ -50,13 +50,13 @@ class EducationPresenter extends BasePresenter
             $this->redirect('Default:');
         }
 
-        $cashbook = $this->queryBus->handle(new CashbookQuery($this->getCashbookId($aid, $this->event->endDate->year)));
+        $cashbook = $this->queryBus->handle(new CashbookQuery($this->getCashbookId($aid, $this->event->startDate->year)));
         assert($cashbook instanceof Cashbook);
 
         $finalRealBalance = null;
         if ($this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid)) {
             try {
-                $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId($aid, $this->event->endDate->year)));
+                $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId($aid, $this->event->startDate->year)));
             } catch (MissingCategory) {
             }
         }
@@ -134,7 +134,7 @@ class EducationPresenter extends BasePresenter
             $this->redirect('default', ['aid' => $aid]);
         }
 
-        $template = $this->exportService->getEducationReport(new SkautisEducationId($aid), $this->event->endDate->year);
+        $template = $this->exportService->getEducationReport(new SkautisEducationId($aid), $this->event->startDate->year);
 
         $this->pdf->render($template, 'report.pdf');
         $this->terminate();
