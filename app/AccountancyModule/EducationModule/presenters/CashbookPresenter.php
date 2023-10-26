@@ -114,7 +114,7 @@ class CashbookPresenter extends BasePresenter
         $body    = new ChitBody(null, $this->event->getStartDate(), null);
 
         $categoryId    = $this->queryBus->handle(
-            new EducationParticipantCategoryIdQuery(new SkautisEducationId($this->aid)),
+            new EducationParticipantCategoryIdQuery(new SkautisEducationId($this->aid), $this->event->startDate->year),
         );
         $categoriesDto = $this->queryBus->handle(new CategoryListQuery($this->getCashbookId()));
 
@@ -128,7 +128,7 @@ class CashbookPresenter extends BasePresenter
 
     private function getCashbookId(): CashbookId
     {
-        return $this->queryBus->handle(new EducationCashbookIdQuery(new SkautisEducationId($this->aid)));
+        return $this->queryBus->handle(new EducationCashbookIdQuery(new SkautisEducationId($this->aid), $this->event->startDate->year));
     }
 
     private function isCashbookEmpty(): bool

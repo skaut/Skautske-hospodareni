@@ -8,6 +8,7 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\CategoryNotFound;
 use Model\Cashbook\ICategory;
+use Model\Cashbook\ReadModel\Queries\SkautisEducationYearQuery;
 use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
 use Model\Common\Services\QueryBus;
 
@@ -39,7 +40,8 @@ class CategoryRepository
 
         if ($skautisType->equalsValue(CashbookType::EDUCATION)) {
             $educationId         = $this->queryBus->handle(new SkautisIdQuery($cashbookId));
-            $educationCategories = $this->educationCategories->findForEducation($educationId);
+            $educationYear       = $this->queryBus->handle(new SkautisEducationYearQuery($cashbookId));
+            $educationCategories = $this->educationCategories->findForEducation($educationId, $educationYear);
 
             return array_merge($categories, $educationCategories);
         }

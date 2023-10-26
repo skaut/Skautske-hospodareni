@@ -270,9 +270,9 @@ class ExportService
         ]);
     }
 
-    public function getEducationReport(SkautisEducationId $educationId): string
+    public function getEducationReport(SkautisEducationId $educationId, int $year): string
     {
-        $cashbookId = $this->queryBus->handle(new EducationCashbookIdQuery($educationId));
+        $cashbookId = $this->queryBus->handle(new EducationCashbookIdQuery($educationId, $year));
         $categories = $this->queryBus->handle(new CategoriesSummaryQuery($cashbookId));
 
         $total = [

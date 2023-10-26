@@ -9,5 +9,5 @@ use Model\Cashbook\EducationCategory;
 interface IEducationCategoryRepository
 {
     /** @return EducationCategory[] */
-    public function findForEducation(int $educationId): array;
+    public function findForEducation(int $educationId, int $year): array;
 }

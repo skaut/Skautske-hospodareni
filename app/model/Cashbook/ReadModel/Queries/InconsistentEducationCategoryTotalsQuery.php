@@ -14,12 +14,17 @@ use Model\Event\SkautisEducationId;
  */
 final class InconsistentEducationCategoryTotalsQuery
 {
-    public function __construct(private SkautisEducationId $educationId)
+    public function __construct(private SkautisEducationId $educationId, private int $year)
     {
     }
 
     public function getEducationId(): SkautisEducationId
     {
         return $this->educationId;
+    }
+
+    public function getYear(): int
+    {
+        return $this->year;
     }
 }

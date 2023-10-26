@@ -21,18 +21,32 @@ class Education extends Aggregate
      */
     private SkautisEducationId $id;
 
+    /**
+     * For education events spanning multiple years, a separate cashbook is needed for each year.
+     *
+     * @ORM\Id()
+     * @ORM\Column(type="integer")
+     */
+    private int $year;
+
     /** @ORM\Column(type="cashbook_id") */
     private CashbookId $cashbookId;
 
-    public function __construct(SkautisEducationId $id, CashbookId $cashbookId)
+    public function __construct(SkautisEducationId $id, int $year, CashbookId $cashbookId)
     {
         $this->id         = $id;
+        $this->year       = $year;
         $this->cashbookId = $cashbookId;
     }
 
     public function getSkautisId(): SkautisEducationId
     {
         return $this->id;
+    }
+
+    public function getYear(): int
+    {
+        return $this->year;
     }
 
     public function getCashbookId(): CashbookId

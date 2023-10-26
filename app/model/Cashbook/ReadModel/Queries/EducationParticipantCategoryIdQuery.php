@@ -10,12 +10,17 @@ use Model\Event\SkautisEducationId;
 /** @see EducationParticipantCategoryIdQueryHandler */
 final class EducationParticipantCategoryIdQuery
 {
-    public function __construct(private SkautisEducationId $educationId)
+    public function __construct(private SkautisEducationId $educationId, private int $year)
     {
     }
 
     public function getEducationId(): SkautisEducationId
     {
         return $this->educationId;
+    }
+
+    public function getYear(): int
+    {
+        return $this->year;
     }
 }

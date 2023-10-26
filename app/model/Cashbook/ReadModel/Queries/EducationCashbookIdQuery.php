@@ -11,7 +11,7 @@ final class EducationCashbookIdQuery
 {
     private SkautisEducationId $educationId;
 
-    public function __construct(SkautisEducationId $eventId)
+    public function __construct(SkautisEducationId $eventId, private int $year)
     {
         $this->educationId = $eventId;
     }
@@ -19,5 +19,10 @@ final class EducationCashbookIdQuery
     public function getEducationId(): SkautisEducationId
     {
         return $this->educationId;
+    }
+
+    public function getYear(): int
+    {
+        return $this->year;
     }
 }

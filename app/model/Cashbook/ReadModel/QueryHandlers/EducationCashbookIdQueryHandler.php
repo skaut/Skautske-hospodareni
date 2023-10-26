@@ -16,6 +16,6 @@ final class EducationCashbookIdQueryHandler
 
     public function __invoke(EducationCashbookIdQuery $query): CashbookId
     {
-        return $this->eventRepository->findBySkautisId($query->getEducationId())->getCashbookId();
+        return $this->eventRepository->findBySkautisIdAndYear($query->getEducationId(), $query->getYear())->getCashbookId();
     }
 }

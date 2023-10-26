@@ -16,7 +16,7 @@ class EducationParticipantCategoryIdQueryHandler
 
     public function __invoke(EducationParticipantCategoryIdQuery $query): int
     {
-        foreach ($this->categories->findForEducation($query->getEducationId()->toInt()) as $category) {
+        foreach ($this->categories->findForEducation($query->getEducationId()->toInt(), $query->getYear()) as $category) {
             if ($category->getName() === 'Účastnické poplatky') {
                 return $category->getId();
             }
