@@ -1,12 +1,12 @@
 <!-- Button trigger modal -->
-<button class="btn btn-sm btn-secondary d-none d-inline" type="button" id="chitScanList" data-toggle="modal" aria-haspopup="true" aria-expanded="false" data-persist="true" data-target="#chitScanModal">
+<button class="btn btn-sm btn-secondary d-none d-inline" type="button" id="chitScanList" data-toggle="modal" aria-haspopup="true" aria-expanded="false" data-persist="true" data-target="#chitScanModal-{$chitId}">
     <i class="far fa-folder-open"></i>
     <span n:if="count($files) > 0" class="badge badge-light">{count($files)}</span>
 </button>
 
 
 <!-- Modal -->
-<div class="modal fade" id="chitScanModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal fade" id="chitScanModal-{$chitId}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
