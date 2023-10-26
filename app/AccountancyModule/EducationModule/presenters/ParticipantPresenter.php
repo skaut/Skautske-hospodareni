@@ -26,13 +26,9 @@ use function sprintf;
 
 class ParticipantPresenter extends BasePresenter
 {
-    private bool $canAddParticipants;
-
     private ExportService $exportService;
 
     private ExcelService $excelService;
-
-    private bool $isAllowParticipantUpdate;
 
     public function __construct(
         ExportService $export,
@@ -45,21 +41,6 @@ class ParticipantPresenter extends BasePresenter
 
         $this->exportService = $export;
         $this->excelService  = $excel;
-    }
-
-    protected function startup(): void
-    {
-        parent::startup();
-
-        $isDraft      = $this->event->getState() === 'draft';
-        $authorizator = $this->authorizator;
-
-        $this->canAddParticipants       = $isDraft && $authorizator->isAllowed(Education::UPDATE_PARTICIPANT, $this->aid);
-        $this->isAllowParticipantUpdate = $this->canAddParticipants;
-
-        $this->template->setParameters([
-            'canAddParticipants' => $this->canAddParticipants,
-        ]);
     }
 
     public function renderDefault(int $aid): void
@@ -102,7 +83,7 @@ class ParticipantPresenter extends BasePresenter
             false,
             true,
             true,
-            $this->isAllowParticipantUpdate,
+            false,
             false,
             false,
         );
