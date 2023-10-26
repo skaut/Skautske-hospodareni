@@ -22,6 +22,8 @@ class Education extends Aggregate
     private SkautisEducationId $id;
 
     /**
+     * For education events spanning multiple years, a separate cashbook is needed for each year.
+     *
      * @ORM\Id()
      * @ORM\Column(type="integer")
      */
