@@ -8,6 +8,7 @@ use App\AccountancyModule\Components\CashbookControl;
 use App\AccountancyModule\Factories\ICashbookControlFactory;
 use App\Forms\BaseForm;
 use Model\Auth\Resources\Education;
+use Model\Auth\Resources\Grant;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\ChitBody;
@@ -40,7 +41,7 @@ class CashbookPresenter extends BasePresenter
     {
         parent::startup();
 
-        $this->isEditable = $this->isEditable || $this->authorizator->isAllowed(Education::UPDATE_REAL_BUDGET_SPENDING, $this->aid);
+        $this->isEditable = $this->isEditable || $this->authorizator->isAllowed(Grant::UPDATE_REAL_BUDGET_SPENDING, $this->event->grantId->toInt());
     }
 
     public function renderDefault(int $aid): void

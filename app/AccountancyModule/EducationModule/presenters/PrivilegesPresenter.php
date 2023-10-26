@@ -12,7 +12,6 @@ class PrivilegesPresenter extends BasePresenter
     public function renderDefault(int $aid): void
     {
         $this->setLayout('layout.new');
-        $isDraft = $this->event->getState() === 'draft';
 
         $privileges = [
             'event' => [
@@ -65,7 +64,7 @@ class PrivilegesPresenter extends BasePresenter
                 'items' => [
                     [
                         'label' => 'Zobrazovat rozpočet',
-                        'value' => $isDraft && $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid),
+                        'value' => $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid),
                         'desc' => 'Lze zobrazovat položky rozpočtu této akce.',
                     ],
                     [
@@ -75,7 +74,7 @@ class PrivilegesPresenter extends BasePresenter
                     ],
                     [
                         'label' => 'Upravovat závěrečný rozpočet',
-                        'value' => $isDraft && $this->authorizator->isAllowed(Education::UPDATE_REAL_BUDGET_SPENDING, $aid),
+                        'value' => $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::UPDATE_REAL_BUDGET_SPENDING, $this->event->grantId->toInt()),
                         'desc' => 'Lze upravovat závěrečný rozpočet této akce ve SkautISu.',
                     ],
                 ],
