@@ -12,8 +12,6 @@ class PrivilegesPresenter extends BasePresenter
     public function renderDefault(int $aid): void
     {
         $this->setLayout('layout.new');
-        $isDraft = $this->event->getState() === 'draft';
-        $grantId = $this->event->grantId->toInt();
 
         $privileges = [
             'event' => [
@@ -56,7 +54,7 @@ class PrivilegesPresenter extends BasePresenter
                     ],
                     [
                         'label' => 'Zobrazovat účasti účastníků',
-                        'value' => $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::ACCESS_PARTICIPANT_PARTICIPATION, $grantId),
+                        'value' => $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::ACCESS_PARTICIPANT_PARTICIPATION, $this->event->grantId->toInt()),
                         'desc' => 'Lze zobrazovat údaje o účasti jednotlivých účastníků této akce.',
                     ],
                 ],
@@ -66,17 +64,17 @@ class PrivilegesPresenter extends BasePresenter
                 'items' => [
                     [
                         'label' => 'Zobrazovat rozpočet',
-                        'value' => $isDraft && $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid),
+                        'value' => $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid),
                         'desc' => 'Lze zobrazovat položky rozpočtu této akce.',
                     ],
                     [
                         'label' => 'Zobrazovat dotaci',
-                        'value' => $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::ACCESS_DETAIL, $grantId),
+                        'value' => $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::ACCESS_DETAIL, $this->event->grantId->toInt()),
                         'desc' => 'Lze zobrazovat dotaci této akce.',
                     ],
                     [
                         'label' => 'Upravovat závěrečný rozpočet',
-                        'value' => $isDraft && $this->authorizator->isAllowed(Grant::UPDATE_REAL_BUDGET_SPENDING, $grantId),
+                        'value' => $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::UPDATE_REAL_BUDGET_SPENDING, $this->event->grantId->toInt()),
                         'desc' => 'Lze upravovat závěrečný rozpočet této akce ve SkautISu.',
                     ],
                 ],
