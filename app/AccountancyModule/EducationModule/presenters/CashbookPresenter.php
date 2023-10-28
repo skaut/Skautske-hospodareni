@@ -46,6 +46,11 @@ class CashbookPresenter extends BasePresenter
 
     public function renderDefault(int $aid): void
     {
+        if ($this->event->startDate === null) {
+            $this->flashMessage('Akce nemá vyplněné žádné termíny', 'danger');
+            $this->redirect('Education:', ['aid' => $aid]);
+        }
+
         if (! $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $this->aid)) {
             $this->flashMessage('Nemáte právo prohlížet platby akce', 'danger');
             $this->redirect('Education:', ['aid' => $aid]);
