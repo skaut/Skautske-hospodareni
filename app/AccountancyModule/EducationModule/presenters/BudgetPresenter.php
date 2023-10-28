@@ -39,7 +39,7 @@ class BudgetPresenter extends BasePresenter
     {
         if (! $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $this->aid)) {
             $this->flashMessage('Nemáte právo prohlížet rozpočet akce', 'danger');
-            $this->redirect('Education:');
+            $this->redirect('Education:', ['aid' => $aid]);
         }
 
         $educationId = new SkautisEducationId($aid);

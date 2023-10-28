@@ -47,7 +47,7 @@ class ParticipantPresenter extends BasePresenter
     {
         if (! $this->authorizator->isAllowed(Education::ACCESS_PARTICIPANTS, $this->aid)) {
             $this->flashMessage('Nemáte právo prohlížet účastníky akce', 'danger');
-            $this->redirect('Education:');
+            $this->redirect('Education:', ['aid' => $aid]);
         }
 
         if (! $this->isAjax()) {
