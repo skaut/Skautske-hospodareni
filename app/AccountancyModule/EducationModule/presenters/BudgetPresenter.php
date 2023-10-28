@@ -44,11 +44,16 @@ class BudgetPresenter extends BasePresenter
 
         $educationId = new SkautisEducationId($aid);
 
+        $budgetAvailable = $this->event->grantId !== null;
+
         $inconsistentTotals = $this->queryBus->handle(new InconsistentEducationCategoryTotalsQuery($educationId, $this->event->startDate->year));
         $this->template->setParameters([
+            'budgetAvailable'          => $budgetAvailable,
             'isConsistent'             => count($inconsistentTotals) === 0,
             'toRepair'                 => $inconsistentTotals,
-            'budgetEntries'            => $this->queryBus->handle(new EducationBudgetQuery($educationId, $this->event->grantId)),
+            'budgetEntries'            => $budgetAvailable
+                ? $this->queryBus->handle(new EducationBudgetQuery($educationId, $this->event->grantId))
+                : [],
             'categoriesSummary'        => $this->queryBus->handle(new CategoriesSummaryQuery($this->getCashbookId($aid, $this->event->startDate->year))),
             'isUpdateStatementAllowed' => $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::UPDATE_REAL_BUDGET_SPENDING, $this->event->grantId->toInt()),
         ]);
