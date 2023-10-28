@@ -42,19 +42,27 @@ class BudgetPresenter extends BasePresenter
             $this->redirect('Education:', ['aid' => $aid]);
         }
 
-        $educationId = new SkautisEducationId($aid);
+        $educationId         = new SkautisEducationId($aid);
+        $budgetAvailable     = $this->event->grantId !== null;
+        $categoriesAvailable = $this->event->startDate !== null;
 
-        $budgetAvailable = $this->event->grantId !== null;
+        $budgetEntries      = $budgetAvailable
+            ? $this->queryBus->handle(new EducationBudgetQuery($educationId, $this->event->grantId))
+            : [];
+        $inconsistentTotals = $categoriesAvailable
+            ? $this->queryBus->handle(new InconsistentEducationCategoryTotalsQuery($educationId, $this->event->startDate->year))
+            : [];
+        $categoriesSummary  = $categoriesAvailable
+            ? $this->queryBus->handle(new CategoriesSummaryQuery($this->getCashbookId($aid, $this->event->startDate->year)))
+            : [];
 
-        $inconsistentTotals = $this->queryBus->handle(new InconsistentEducationCategoryTotalsQuery($educationId, $this->event->startDate->year));
         $this->template->setParameters([
             'budgetAvailable'          => $budgetAvailable,
+            'categoriesAvailable'      => $categoriesAvailable,
             'isConsistent'             => count($inconsistentTotals) === 0,
             'toRepair'                 => $inconsistentTotals,
-            'budgetEntries'            => $budgetAvailable
-                ? $this->queryBus->handle(new EducationBudgetQuery($educationId, $this->event->grantId))
-                : [],
-            'categoriesSummary'        => $this->queryBus->handle(new CategoriesSummaryQuery($this->getCashbookId($aid, $this->event->startDate->year))),
+            'budgetEntries'            => $budgetEntries,
+            'categoriesSummary'        => $categoriesSummary,
             'isUpdateStatementAllowed' => $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::UPDATE_REAL_BUDGET_SPENDING, $this->event->grantId->toInt()),
         ]);
         if (! $this->isAjax()) {
