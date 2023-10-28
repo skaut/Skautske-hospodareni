@@ -39,17 +39,30 @@ class BudgetPresenter extends BasePresenter
     {
         if (! $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $this->aid)) {
             $this->flashMessage('Nemáte právo prohlížet rozpočet akce', 'danger');
-            $this->redirect('Education:');
+            $this->redirect('Education:', ['aid' => $aid]);
         }
 
-        $educationId = new SkautisEducationId($aid);
+        $educationId         = new SkautisEducationId($aid);
+        $budgetAvailable     = $this->event->grantId !== null;
+        $categoriesAvailable = $this->event->startDate !== null;
 
-        $inconsistentTotals = $this->queryBus->handle(new InconsistentEducationCategoryTotalsQuery($educationId, $this->event->startDate->year));
+        $budgetEntries      = $budgetAvailable
+            ? $this->queryBus->handle(new EducationBudgetQuery($educationId, $this->event->grantId))
+            : [];
+        $inconsistentTotals = $categoriesAvailable
+            ? $this->queryBus->handle(new InconsistentEducationCategoryTotalsQuery($educationId, $this->event->startDate->year))
+            : [];
+        $categoriesSummary  = $categoriesAvailable
+            ? $this->queryBus->handle(new CategoriesSummaryQuery($this->getCashbookId($aid, $this->event->startDate->year)))
+            : [];
+
         $this->template->setParameters([
+            'budgetAvailable'          => $budgetAvailable,
+            'categoriesAvailable'      => $categoriesAvailable,
             'isConsistent'             => count($inconsistentTotals) === 0,
             'toRepair'                 => $inconsistentTotals,
-            'budgetEntries'            => $this->queryBus->handle(new EducationBudgetQuery($educationId, $this->event->grantId)),
-            'categoriesSummary'        => $this->queryBus->handle(new CategoriesSummaryQuery($this->getCashbookId($aid, $this->event->startDate->year))),
+            'budgetEntries'            => $budgetEntries,
+            'categoriesSummary'        => $categoriesSummary,
             'isUpdateStatementAllowed' => $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::UPDATE_REAL_BUDGET_SPENDING, $this->event->grantId->toInt()),
         ]);
         if (! $this->isAjax()) {

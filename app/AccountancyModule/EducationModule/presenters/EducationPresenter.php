@@ -12,7 +12,6 @@ use Model\Cashbook\MissingCategory;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\EducationCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
-use Model\DTO\Cashbook\Cashbook;
 use Model\Event\EducationLocation;
 use Model\Event\EducationTerm;
 use Model\Event\ReadModel\Queries\EducationCourseParticipationStatsQuery;
@@ -30,7 +29,6 @@ use Model\Services\PdfRenderer;
 use function array_filter;
 use function array_map;
 use function array_sum;
-use function assert;
 use function count;
 use function implode;
 use function in_array;
@@ -50,11 +48,12 @@ class EducationPresenter extends BasePresenter
             $this->redirect('Default:');
         }
 
-        $cashbook = $this->queryBus->handle(new CashbookQuery($this->getCashbookId($aid, $this->event->startDate->year)));
-        assert($cashbook instanceof Cashbook);
+        $cashbook = $this->event->startDate !== null
+            ? $this->queryBus->handle(new CashbookQuery($this->getCashbookId($aid, $this->event->startDate->year)))
+            : null;
 
         $finalRealBalance = null;
-        if ($this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid)) {
+        if ($this->event->startDate !== null && $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid)) {
             try {
                 $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId($aid, $this->event->startDate->year)));
             } catch (MissingCategory) {
@@ -90,7 +89,7 @@ class EducationPresenter extends BasePresenter
 
         $this->template->setParameters([
             'skautISUrl'               => $this->userService->getSkautisUrl(),
-            'canAccessReport'          => $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid),
+            'canAccessReport'          => $this->authorizator->isAllowed(Education::ACCESS_DETAIL, $aid) && $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid) && $this->event->startDate !== null,
             'location'                 => implode(
                 ', ',
                 array_map(
@@ -104,8 +103,8 @@ class EducationPresenter extends BasePresenter
                 ? $this->queryBus->handle(new EducationFunctions(new SkautisEducationId($aid)))
                 : null,
             'finalRealBalance'         => $finalRealBalance,
-            'prefixCash'               => $cashbook->getChitNumberPrefix(PaymentMethod::CASH()),
-            'prefixBank'               => $cashbook->getChitNumberPrefix(PaymentMethod::BANK()),
+            'prefixCash'               => $cashbook?->getChitNumberPrefix(PaymentMethod::CASH()),
+            'prefixBank'               => $cashbook?->getChitNumberPrefix(PaymentMethod::BANK()),
             'totalDays'                => EducationTerm::countTotalDays($terms),
             'teamCount'                => count($instructors),
             'participantsCapacity'     => self::propertySum($courseParticipationStats, 'capacity'),
@@ -129,11 +128,6 @@ class EducationPresenter extends BasePresenter
 
     public function renderReport(int $aid): void
     {
-        if (! $this->authorizator->isAllowed(Education::ACCESS_DETAIL, $aid)) {
-            $this->flashMessage('Nemáte právo přistupovat k akci', 'warning');
-            $this->redirect('default', ['aid' => $aid]);
-        }
-
         $template = $this->exportService->getEducationReport(new SkautisEducationId($aid), $this->event->startDate->year);
 
         $this->pdf->render($template, 'report.pdf');

@@ -52,9 +52,13 @@ final class EducationListDataSource extends DataSource
         );
     }
 
-    private function chitNumberPrefix(Education $camp): string|null
+    private function chitNumberPrefix(Education $education): string|null
     {
-        $cashbookId = $this->queryBus->handle(new EducationCashbookIdQuery($camp->getId(), $camp->startDate->year));
+        if ($education->startDate === null) {
+            return null;
+        }
+
+        $cashbookId = $this->queryBus->handle(new EducationCashbookIdQuery($education->getId(), $education->startDate->year));
 
         assert($cashbookId instanceof CashbookId);
 

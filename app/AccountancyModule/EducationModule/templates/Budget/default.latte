@@ -45,6 +45,16 @@
 
 {include ../header.latte}
 
+<div class="alert alert-warning mb-5" n:if="!$budgetAvailable">
+    <h4 class="alert-heading">Akce nemá rozpočet</h4>
+    <p class="mb-0">Akce nemá ve SkautISu založenou dotaci a tedy nemá žádný rozpočet.</p>
+</div>
+
+<div class="alert alert-warning mb-5" n:if="!$categoriesAvailable">
+    <h4 class="alert-heading">Akce nemá termíny</h4>
+    <p class="mb-0">Akce nemá ve SkautISu vyplněné termíny a tedy nelze vyplňovat pokladní knihu.</p>
+</div>
+
 <div class="alert alert-warning mb-5" n:if="!$isConsistent">
     <h4 class="alert-heading">Nekonzistentní data!</h4>
     <p class="mb-0">Součet paragonů v kategoriích neodpovídá částkám uvedeným ve SkautISu.</p>
@@ -66,23 +76,27 @@
 </div>
 
 <div class="row">
-    <div class="col-md-3 col-sm-6">
-        <h3>Skutečné náklady</h3>
-        {include #categoriesTable $categoriesSummary, FALSE}
-    </div>
-    <div class="col-md-3 col-sm-6">
-        <h3>Skutečné výnosy</h3>
-        {include #categoriesTable $categoriesSummary, TRUE}
-    </div>
+    {if $budgetAvailable}
+        <div class="col-md-3 col-sm-6 ">
+            <h3>Předpokl. náklady</h3>
+            {include #budgetTable $budgetEntries, FALSE}
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <h3>Předpokládané výnosy</h3>
+            {include #budgetTable $budgetEntries, TRUE}
+        </div>
+    {/if}
 
     <div class="clearfix visible-sm-block"></div>
 
-    <div class="col-md-3 col-sm-6 ">
-        <h3>Předpokl. náklady</h3>
-        {include #budgetTable $budgetEntries, FALSE}
-    </div>
-    <div class="col-md-3">
-        <h3>Předpokládané výnosy</h3>
-        {include #budgetTable $budgetEntries, TRUE}
-    </div>
+    {if $categoriesAvailable}
+        <div class="col-md-3 col-sm-6">
+            <h3>Skutečné náklady</h3>
+            {include #categoriesTable $categoriesSummary, FALSE}
+        </div>
+        <div class="col-md-3">
+            <h3>Skutečné výnosy</h3>
+            {include #categoriesTable $categoriesSummary, TRUE}
+        </div>
+    {/if}
 </div>
