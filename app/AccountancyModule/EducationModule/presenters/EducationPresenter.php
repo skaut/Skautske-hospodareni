@@ -12,7 +12,6 @@ use Model\Cashbook\MissingCategory;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use Model\Cashbook\ReadModel\Queries\EducationCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
-use Model\DTO\Cashbook\Cashbook;
 use Model\Event\EducationLocation;
 use Model\Event\EducationTerm;
 use Model\Event\ReadModel\Queries\EducationCourseParticipationStatsQuery;
@@ -30,7 +29,6 @@ use Model\Services\PdfRenderer;
 use function array_filter;
 use function array_map;
 use function array_sum;
-use function assert;
 use function count;
 use function implode;
 use function in_array;
@@ -105,8 +103,8 @@ class EducationPresenter extends BasePresenter
                 ? $this->queryBus->handle(new EducationFunctions(new SkautisEducationId($aid)))
                 : null,
             'finalRealBalance'         => $finalRealBalance,
-            'prefixCash'               => $cashbook !== null ? $cashbook->getChitNumberPrefix(PaymentMethod::CASH()) : null,
-            'prefixBank'               => $cashbook !== null ? $cashbook->getChitNumberPrefix(PaymentMethod::BANK()) : null,
+            'prefixCash'               => $cashbook?->getChitNumberPrefix(PaymentMethod::CASH()),
+            'prefixBank'               => $cashbook?->getChitNumberPrefix(PaymentMethod::BANK()),
             'totalDays'                => EducationTerm::countTotalDays($terms),
             'teamCount'                => count($instructors),
             'participantsCapacity'     => self::propertySum($courseParticipationStats, 'capacity'),
