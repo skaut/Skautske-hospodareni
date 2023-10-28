@@ -26,8 +26,6 @@ jobs:
                   restore-keys: |
                       ${{ runner.os }}-composer-
             - run: composer install
-#            - name: Remove development docker-compose override
-#              run: rm docker-compose.override.yml
             - name: Fix permissions
               run: chown 1000:1000 . -R && chmod 777 . -R
             - name: Create tarball
@@ -59,10 +57,10 @@ jobs:
         runs-on: ubuntu-22.04
         needs: workdir
         steps:
-            - name: Setup PHP
-              uses: shivammathur/setup-php@v2
-              with:
-                php-version: '8.1'
+#            - name: Setup PHP
+#              uses: shivammathur/setup-php@v2
+#              with:
+#                php-version: '8.1'
             - name: Download workdir
               uses: actions/download-artifact@v1
               with:
