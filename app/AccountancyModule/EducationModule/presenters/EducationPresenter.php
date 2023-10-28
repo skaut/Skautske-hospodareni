@@ -50,11 +50,12 @@ class EducationPresenter extends BasePresenter
             $this->redirect('Default:');
         }
 
-        $cashbook = $this->queryBus->handle(new CashbookQuery($this->getCashbookId($aid, $this->event->startDate->year)));
-        assert($cashbook instanceof Cashbook);
+        $cashbook = $this->event->startDate !== null
+            ? $this->queryBus->handle(new CashbookQuery($this->getCashbookId($aid, $this->event->startDate->year)))
+            : null;
 
         $finalRealBalance = null;
-        if ($this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid)) {
+        if ($this->event->startDate !== null && $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid)) {
             try {
                 $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId($aid, $this->event->startDate->year)));
             } catch (MissingCategory) {
@@ -104,8 +105,8 @@ class EducationPresenter extends BasePresenter
                 ? $this->queryBus->handle(new EducationFunctions(new SkautisEducationId($aid)))
                 : null,
             'finalRealBalance'         => $finalRealBalance,
-            'prefixCash'               => $cashbook->getChitNumberPrefix(PaymentMethod::CASH()),
-            'prefixBank'               => $cashbook->getChitNumberPrefix(PaymentMethod::BANK()),
+            'prefixCash'               => $cashbook !== null ? $cashbook->getChitNumberPrefix(PaymentMethod::CASH()) : null,
+            'prefixBank'               => $cashbook !== null ? $cashbook->getChitNumberPrefix(PaymentMethod::BANK()) : null,
             'totalDays'                => EducationTerm::countTotalDays($terms),
             'teamCount'                => count($instructors),
             'participantsCapacity'     => self::propertySum($courseParticipationStats, 'capacity'),
