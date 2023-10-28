@@ -91,7 +91,7 @@ class EducationPresenter extends BasePresenter
 
         $this->template->setParameters([
             'skautISUrl'               => $this->userService->getSkautisUrl(),
-            'canAccessReport'          => $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid),
+            'canAccessReport'          => $this->authorizator->isAllowed(Education::ACCESS_DETAIL, $aid) && $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid),
             'location'                 => implode(
                 ', ',
                 array_map(
@@ -130,11 +130,6 @@ class EducationPresenter extends BasePresenter
 
     public function renderReport(int $aid): void
     {
-        if (! $this->authorizator->isAllowed(Education::ACCESS_DETAIL, $aid)) {
-            $this->flashMessage('Nemáte právo přistupovat k akci', 'warning');
-            $this->redirect('default', ['aid' => $aid]);
-        }
-
         $template = $this->exportService->getEducationReport(new SkautisEducationId($aid), $this->event->startDate->year);
 
         $this->pdf->render($template, 'report.pdf');
