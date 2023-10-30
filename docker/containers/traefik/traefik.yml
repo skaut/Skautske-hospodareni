@@ -8,8 +8,6 @@ api:
 entryPoints:
   web:
     address: ":80"
-  assets:
-    address: ":3000"
 
 providers:
   docker:
