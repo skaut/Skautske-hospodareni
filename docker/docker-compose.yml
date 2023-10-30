@@ -32,7 +32,7 @@ x-mysql-base:
         MYSQL_USER: hskauting
         MYSQL_PASSWORD: hskauting
         MYSQL_ROOT_PASSWORD: root
-        MYSQL_COLLATION: utf8mb3_czech_ci
+        MYSQL_COLLATION: utf8mb4_czech_ci
         MYSQL_CHARACTER_SET: utf8
 
 services:
