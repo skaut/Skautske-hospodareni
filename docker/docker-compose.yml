@@ -43,7 +43,6 @@ services:
             - traefik
         ports:
             - "80:80"
-            - "3000:3000"
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock:ro
             - ./containers/traefik/traefik.yml:/traefik.yml:ro
@@ -63,9 +62,7 @@ services:
             - mysql
         labels:
             traefik.enable: true
-            traefik.http.routers.php.rule: Host(`vite.localhost`)
-            traefik.http.routers.php.entrypoints: web, assets
-            traefik.http.services.php.loadbalancer.server.port: 3000
+            traefik.http.routers.php.entrypoints: web
 
     php-xdebug:
         <<: *php-base
@@ -76,6 +73,7 @@ services:
             - containers/php/ini/image.ini
             - containers/php/ini/xdebug.ini
             - ./../.env.local
+
     php-test:
         <<: *php-base
         hostname: php-test.localhost
