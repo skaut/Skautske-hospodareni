@@ -172,16 +172,16 @@ class DefaultPresenter extends BasePresenter
         $this->redirect('this');
     }
 
-    public function handleReverseTravel(int $commandId, int $travelId): void
+    public function handleAddReturnTravel(int $commandId, int $travelId): void
     {
         if (! $this->isCommandEditable($commandId)) {
-            $this->flashMessage('Nemáte oprávnění obrátit cestu.', 'danger');
+            $this->flashMessage('Nemáte oprávnění přidat zpáteční cestu.', 'danger');
             $this->redirect('default');
         }
 
         $this->commandBus->handle(new AddReturnTravel($commandId, $travelId));
 
-        $this->flashMessage('Cesta byla obrácena.', 'success');
+        $this->flashMessage('Zpáteční cesta byla přidána.', 'success');
 
         $this->redirect('this');
     }
