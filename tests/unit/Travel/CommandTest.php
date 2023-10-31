@@ -449,19 +449,20 @@ class CommandTest extends Unit
             ),
         );
 
-        $travel        = $command->getTravels()[0];
-        $travelDetails = $travel->getDetails();
+        $travel = $command->getTravels()[0];
 
-        $command->reverseTravel($travel->getId());
+        $command->addReturnTravel($travel->getId());
 
-        $reversedTravel        = $command->getTravels()[0];
-        $reversedTravelDetails = $reversedTravel->getDetails();
+        $backTravel = $command->getTravels()[1];
 
-        self::assertEquals($travel->getId(), $reversedTravel->getId());
-        self::assertEquals($travelDetails->getDate(), $reversedTravelDetails->getDate());
-        self::assertEquals($travelDetails->getTransportType(), $reversedTravelDetails->getTransportType());
-        self::assertEquals($travelDetails->getStartPlace(), $reversedTravelDetails->getEndPlace());
-        self::assertEquals($travelDetails->getEndPlace(), $reversedTravelDetails->getStartPlace());
+        $travelDetails     = $travel->getDetails();
+        $backTravelDetails = $backTravel->getDetails();
+
+        self::assertNotEquals($travel->getId(), $backTravel->getId());
+        self::assertEquals($travelDetails->getDate(), $backTravelDetails->getDate());
+        self::assertEquals($travelDetails->getTransportType(), $backTravelDetails->getTransportType());
+        self::assertEquals($travelDetails->getEndPlace(), $backTravelDetails->getStartPlace());
+        self::assertEquals($travelDetails->getStartPlace(), $backTravelDetails->getEndPlace());
     }
 
     public function testVehicleTravelIsReversed(): void
@@ -483,16 +484,18 @@ class CommandTest extends Unit
         $travel        = $command->getTravels()[0];
         $travelDetails = $travel->getDetails();
 
-        $command->reverseTravel($travel->getId());
+        $command->addReturnTravel($travel->getId());
 
-        $reversedTravel        = $command->getTravels()[0];
-        $reversedTravelDetails = $reversedTravel->getDetails();
+        $backTravel = $command->getTravels()[1];
 
-        self::assertEquals($travel->getId(), $reversedTravel->getId());
-        self::assertEquals($travelDetails->getDate(), $reversedTravelDetails->getDate());
-        self::assertEquals($travelDetails->getTransportType(), $reversedTravelDetails->getTransportType());
-        self::assertEquals($travelDetails->getStartPlace(), $reversedTravelDetails->getEndPlace());
-        self::assertEquals($travelDetails->getEndPlace(), $reversedTravelDetails->getStartPlace());
+        $travelDetails     = $travel->getDetails();
+        $backTravelDetails = $backTravel->getDetails();
+
+        self::assertNotEquals($travel->getId(), $backTravel->getId());
+        self::assertEquals($travelDetails->getDate(), $backTravelDetails->getDate());
+        self::assertEquals($travelDetails->getTransportType(), $backTravelDetails->getTransportType());
+        self::assertEquals($travelDetails->getEndPlace(), $backTravelDetails->getStartPlace());
+        self::assertEquals($travelDetails->getStartPlace(), $backTravelDetails->getEndPlace());
     }
 
     private function createCommand(Vehicle|null $vehicle = null): Command

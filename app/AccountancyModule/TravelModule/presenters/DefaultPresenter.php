@@ -11,8 +11,8 @@ use App\AccountancyModule\TravelModule\Factories\IEditTravelDialogFactory;
 use App\Forms\BaseForm;
 use Assert\Assertion;
 use Model\Services\PdfRenderer;
+use Model\Travel\Commands\Command\AddReturnTravel;
 use Model\Travel\Commands\Command\DuplicateTravel;
-use Model\Travel\Commands\Command\ReverseTravel;
 use Model\Travel\Travel\TransportType;
 use Model\TravelService;
 use Model\UserService;
@@ -179,7 +179,7 @@ class DefaultPresenter extends BasePresenter
             $this->redirect('default');
         }
 
-        $this->commandBus->handle(new ReverseTravel($commandId, $travelId));
+        $this->commandBus->handle(new AddReturnTravel($commandId, $travelId));
 
         $this->flashMessage('Cesta byla obrácena.', 'success');
 

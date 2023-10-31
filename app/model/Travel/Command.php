@@ -219,16 +219,16 @@ class Command
     }
 
     /** @throws TravelNotFound */
-    public function reverseTravel(int $id): void
+    public function addReturnTravel(int $id): void
     {
         $travel          = $this->getTravel($id);
         $details         = $travel->getDetails();
         $reversedDetails = new TravelDetails($details->getDate(), $details->getTransportType(), $details->getEndPlace(), $details->getStartPlace());
 
         if ($travel instanceof VehicleTravel) {
-            $travel->update($travel->getDistance(), $reversedDetails);
+            $this->addVehicleTravel($travel->getDistance(), $reversedDetails);
         } elseif ($travel instanceof TransportTravel) {
-            $travel->update($travel->getPrice(), $reversedDetails);
+            $this->addTransportTravel($travel->getPrice(), $reversedDetails);
         } else {
             throw new ShouldNotHappen('Unknown travel type');
         }

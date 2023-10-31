@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Model\Travel\Commands\Command;
 
-use Model\Travel\Handlers\Command\ReverseTravelHandler;
+use Model\Travel\Handlers\Command\AddReturnTravelHandler;
 
-/** @see ReverseTravelHandler */
-final class ReverseTravel
+/** @see AddReturnTravelHandler */
+final class AddReturnTravel
 {
     public function __construct(private int $commandId, private int $travelId)
     {

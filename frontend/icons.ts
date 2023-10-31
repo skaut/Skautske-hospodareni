@@ -60,7 +60,6 @@ library.add(
     fas.faThList,
     fas.faEllipsisV,
     fas.faUserGraduate,
-    fas.faExchange,
 
     // Regular icons
     far.faCalendar,
@@ -81,6 +80,7 @@ library.add(
     far.faTrashAlt,
     far.faUser,
     far.faQuestionCircle,
+    far.faArrowAltCircleLeft,
 
     // Brands
     fab.faGithub as IconDefinition,
