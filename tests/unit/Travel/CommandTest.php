@@ -433,7 +433,7 @@ class CommandTest extends Unit
         self::assertEquals($travelDetails->getEndPlace(), $duplicatedTravelDetails->getEndPlace());
     }
 
-    public function testTransportTravelIsReversed(): void
+    public function testTransportTravelIsReturnAdded(): void
     {
         $passenger = new Passenger('Frantisek Masa', '---', 'Brno');
         $purpose   = 'Cesta na střediskovku';
@@ -465,7 +465,7 @@ class CommandTest extends Unit
         self::assertEquals($travelDetails->getStartPlace(), $backTravelDetails->getEndPlace());
     }
 
-    public function testVehicleTravelIsReversed(): void
+    public function testVehicleTravelIsReturnAdded(): void
     {
         $passenger = new Passenger('Frantisek Masa', '---', 'Brno');
         $purpose   = 'Cesta na střediskovku';
@@ -482,7 +482,6 @@ class CommandTest extends Unit
         );
 
         $travel        = $command->getTravels()[0];
-        $travelDetails = $travel->getDetails();
 
         $command->addReturnTravel($travel->getId());
 
