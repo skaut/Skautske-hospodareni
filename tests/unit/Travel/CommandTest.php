@@ -481,7 +481,7 @@ class CommandTest extends Unit
             ),
         );
 
-        $travel        = $command->getTravels()[0];
+        $travel = $command->getTravels()[0];
 
         $command->addReturnTravel($travel->getId());
 
