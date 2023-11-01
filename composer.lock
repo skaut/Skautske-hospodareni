@@ -4302,34 +4302,37 @@
         },
         {
             "name": "nette/forms",
-            "version": "v3.1.11",
+            "version": "v3.1.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/forms.git",
-                "reference": "64cdc2d6796a8fe1265bb21a6ee5e9ff93e2b3a4"
+                "reference": "94bad1c606de0d6f3dcea2f3ec53b713278f8119"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/forms/zipball/64cdc2d6796a8fe1265bb21a6ee5e9ff93e2b3a4",
-                "reference": "64cdc2d6796a8fe1265bb21a6ee5e9ff93e2b3a4",
+                "url": "https://api.github.com/repos/nette/forms/zipball/94bad1c606de0d6f3dcea2f3ec53b713278f8119",
+                "reference": "94bad1c606de0d6f3dcea2f3ec53b713278f8119",
                 "shasum": ""
             },
             "require": {
                 "nette/component-model": "^3.0",
                 "nette/http": "^3.1",
                 "nette/utils": "^3.2.5 || ~4.0.0",
-                "php": ">=7.2 <8.3"
+                "php": "7.2 - 8.3"
             },
             "conflict": {
                 "latte/latte": ">=3.1"
             },
             "require-dev": {
-                "latte/latte": "^2.10.2 || ^3.0.3",
+                "latte/latte": "^2.10.2 || ^3.0.8",
                 "nette/application": "^3.0",
                 "nette/di": "^3.0",
                 "nette/tester": "^2.4",
                 "phpstan/phpstan-nette": "^1",
                 "tracy/tracy": "^2.9"
+            },
+            "suggest": {
+                "ext-intl": "to use date/time controls"
             },
             "type": "library",
             "extra": {
@@ -4370,9 +4373,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/forms/issues",
-                "source": "https://github.com/nette/forms/tree/v3.1.11"
+                "source": "https://github.com/nette/forms/tree/v3.1.13"
             },
-            "time": "2023-03-08T23:56:24+00:00"
+            "time": "2023-10-29T15:28:11+00:00"
         },
         {
             "name": "nette/http",
