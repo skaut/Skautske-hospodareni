@@ -32,8 +32,8 @@ final class CashbookScansQueryHandler
             foreach ($chit->getScans() as $scan) {
                 $filename = sprintf(
                     '%s_%s',
-                    Strings::toAscii($chit->getName()),
-                    Strings::toAscii($scan->getFilePath()->getOriginalFilename()),
+                    self::__sanitize($chit->getName()),
+                    self::__sanitize($scan->getFilePath()->getOriginalFilename()),
                 );
 
                 $arr[$filename] = $this->storage->get($scan->getFilePath());
@@ -41,5 +41,10 @@ final class CashbookScansQueryHandler
         }
 
         return $arr;
+    }
+
+    private function __sanitize(string $s): string
+    {
+        return Strings::toAscii(Strings::fixEncoding($s));
     }
 }
