@@ -11,6 +11,7 @@ use App\AccountancyModule\TravelModule\Factories\IEditTravelDialogFactory;
 use App\Forms\BaseForm;
 use Assert\Assertion;
 use Model\Services\PdfRenderer;
+use Model\Travel\Commands\Command\AddReturnTravel;
 use Model\Travel\Commands\Command\DuplicateTravel;
 use Model\Travel\Travel\TransportType;
 use Model\TravelService;
@@ -167,6 +168,20 @@ class DefaultPresenter extends BasePresenter
         $this->commandBus->handle(new DuplicateTravel($commandId, $travelId));
 
         $this->flashMessage('Cesta byla duplikována.', 'success');
+
+        $this->redirect('this');
+    }
+
+    public function handleAddReturnTravel(int $commandId, int $travelId): void
+    {
+        if (! $this->isCommandEditable($commandId)) {
+            $this->flashMessage('Nemáte oprávnění přidat zpáteční cestu.', 'danger');
+            $this->redirect('default');
+        }
+
+        $this->commandBus->handle(new AddReturnTravel($commandId, $travelId));
+
+        $this->flashMessage('Zpáteční cesta byla přidána.', 'success');
 
         $this->redirect('this');
     }

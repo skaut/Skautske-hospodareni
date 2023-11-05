@@ -433,6 +433,70 @@ class CommandTest extends Unit
         self::assertEquals($travelDetails->getEndPlace(), $duplicatedTravelDetails->getEndPlace());
     }
 
+    public function testTransportTravelIsReturnAdded(): void
+    {
+        $passenger = new Passenger('Frantisek Masa', '---', 'Brno');
+        $purpose   = 'Cesta na střediskovku';
+        $command   = new Command(1, null, $passenger, $purpose, 'Brno', '', Money::CZK(0), Money::CZK(0), '', null, [], '');
+
+        $command->addTransportTravel(
+            Money::CZK(100),
+            new Command\TravelDetails(
+                new Date('now'),
+                TransportType::get(TransportType::BUS),
+                'Praha',
+                'Brno',
+            ),
+        );
+
+        $travel = $command->getTravels()[0];
+
+        $command->addReturnTravel($travel->getId());
+
+        $backTravel = $command->getTravels()[1];
+
+        $travelDetails     = $travel->getDetails();
+        $backTravelDetails = $backTravel->getDetails();
+
+        self::assertNotEquals($travel->getId(), $backTravel->getId());
+        self::assertEquals($travelDetails->getDate(), $backTravelDetails->getDate());
+        self::assertEquals($travelDetails->getTransportType(), $backTravelDetails->getTransportType());
+        self::assertEquals($travelDetails->getEndPlace(), $backTravelDetails->getStartPlace());
+        self::assertEquals($travelDetails->getStartPlace(), $backTravelDetails->getEndPlace());
+    }
+
+    public function testVehicleTravelIsReturnAdded(): void
+    {
+        $passenger = new Passenger('Frantisek Masa', '---', 'Brno');
+        $purpose   = 'Cesta na střediskovku';
+        $command   = new Command(1, null, $passenger, $purpose, 'Brno', '', Money::CZK(3120), Money::CZK(500), '', null, [], '');
+
+        $command->addVehicleTravel(
+            123,
+            new Command\TravelDetails(
+                new Date('now'),
+                TransportType::get(TransportType::CAR),
+                'Praha',
+                'Brno',
+            ),
+        );
+
+        $travel = $command->getTravels()[0];
+
+        $command->addReturnTravel($travel->getId());
+
+        $backTravel = $command->getTravels()[1];
+
+        $travelDetails     = $travel->getDetails();
+        $backTravelDetails = $backTravel->getDetails();
+
+        self::assertNotEquals($travel->getId(), $backTravel->getId());
+        self::assertEquals($travelDetails->getDate(), $backTravelDetails->getDate());
+        self::assertEquals($travelDetails->getTransportType(), $backTravelDetails->getTransportType());
+        self::assertEquals($travelDetails->getEndPlace(), $backTravelDetails->getStartPlace());
+        self::assertEquals($travelDetails->getStartPlace(), $backTravelDetails->getEndPlace());
+    }
+
     private function createCommand(Vehicle|null $vehicle = null): Command
     {
         return new Command(

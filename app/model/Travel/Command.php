@@ -214,7 +214,23 @@ class Command
         } elseif ($travel instanceof TransportTravel) {
             $this->addTransportTravel($travel->getPrice(), $travel->getDetails());
         } else {
-            throw new ShouldNotHappen('Uknown travel type');
+            throw new ShouldNotHappen('Unknown travel type');
+        }
+    }
+
+    /** @throws TravelNotFound */
+    public function addReturnTravel(int $id): void
+    {
+        $travel          = $this->getTravel($id);
+        $details         = $travel->getDetails();
+        $reversedDetails = new TravelDetails($details->getDate(), $details->getTransportType(), $details->getEndPlace(), $details->getStartPlace());
+
+        if ($travel instanceof VehicleTravel) {
+            $this->addVehicleTravel($travel->getDistance(), $reversedDetails);
+        } elseif ($travel instanceof TransportTravel) {
+            $this->addTransportTravel($travel->getPrice(), $reversedDetails);
+        } else {
+            throw new ShouldNotHappen('Unknown travel type');
         }
     }
 
