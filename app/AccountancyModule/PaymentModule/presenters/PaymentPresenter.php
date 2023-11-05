@@ -281,7 +281,7 @@ class PaymentPresenter extends BasePresenter
 
         $group     = $this->model->getGroup($id);
         $payments  = $this->getPaymentsForGroup($id);
-        $groupName = substr($group->getName(), 0, Worksheet::SHEET_TITLE_MAXIMUM_LENGTH);
+        $groupName = substr(Strings::webalize($group->getName(), null, false), 0, Worksheet::SHEET_TITLE_MAXIMUM_LENGTH);
 
         try {
             $spreadsheet = $this->excelService->getPaymentsList($payments, $groupName);
