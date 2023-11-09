@@ -6,24 +6,34 @@
 
 class_name: AcceptanceTester
 modules:
-    enabled:
-        - WebDriver:
-              url: http://moje-hospodareni.cz
-              browser: chrome
-              host: selenium.localhost
-              wait: 10
-              capabilities:
-                  acceptInsecureCerts: true
-                  chromeOptions:
-                      args: ["allow-insecure-localhost","--ignore-ssl-errors=yes", "--ignore-certificate-errors","--headless", "--disable-gpu", "--no-sandbox", "--window-size=1920,1080"]
+  enabled:
+    - WebDriver:
+        url: 'http://moje-hospodareni.cz' # Base URL for tests
+        browser: 'chrome' # Browser used for testing
+        host: 'selenium.localhost' # Selenium server host
+        wait: 10 # Max wait time in seconds for elements
+        capabilities:
+          acceptInsecureCerts: true # Accept self-signed SSL certificates
+          chromeOptions:
+            args:
+              - 'allow-insecure-localhost' # Allow insecure connections to localhost
+              - '--ignore-ssl-errors=yes' # Ignore SSL errors
+              - '--ignore-certificate-errors' # Ignore certificate errors
+              - '%HEADLESS%' # Turn off UI
+              - '--disable-infobars'
+              - '--disable-gpu' # Disable GPU acceleration
+              - '--no-sandbox' # Disable Chrome's sandboxing
+              - '--window-size=1920,1080' # Set the window size
+              - "--unsafely-treat-insecure-origin-as-secure=http://moje-hospodareni.cz"
 
-        - \Helper\Acceptance
 
-        - \Helper\WaitForDb
-        - Db:
-            dsn: "mysql:host=%DB_HOST%;dbname=%DB_NAME%"
-            user: "%DB_USER%"
-            password: "%DB_PASSWORD%"
-            populate: true
-            dump: 'tests/_data/acceptance_init.sql'
-            wait: 2
+    - \Helper\Acceptance
+
+    - \Helper\WaitForDb
+    - Db:
+        dsn: "mysql:host=%DB_HOST%;dbname=%DB_NAME%"
+        user: "%DB_USER%"
+        password: "%DB_PASSWORD%"
+        populate: true
+        dump: 'tests/_data/acceptance_init.sql'
+        wait: 2
