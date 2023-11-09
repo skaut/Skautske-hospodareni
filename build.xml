@@ -216,7 +216,7 @@
         <exec command="bin/console migrations:migrate --no-interaction" passthru="true"/>
         <exec command="bin/console orm:generate-proxies --no-interaction" passthru="true"/>
 
-        <exec command="vendor/bin/codecept run acceptance" passthru="true" checkreturn="true"/>
+        <exec command="vendor/bin/codecept run acceptance -vv" passthru="true" checkreturn="true"/>
     </target>
 
     <target name="tests">
