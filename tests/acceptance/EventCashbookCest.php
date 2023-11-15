@@ -145,10 +145,10 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->expect('Odebrat položku');
         $this->I->seeElement('input[name="items[0][remove]"]');
         $this->I->click('input[name="items[0][remove]"]');
-        $this->I->wait(3);
+        $this->I->wait(6); //waiting for animation and ajax
         $this->I->dontSeeElement('//input[@type="submit" and @value="Odebrat položku"]');
         $this->I->click('Nový doklad');
-        $this->I->wait(3);
+        $this->I->wait(6); //waiting for animation and ajax
         $this->I->dontSeeElement('//input[@type="submit" and @value="Uložit"]');
     }
 
