@@ -8,10 +8,10 @@ COMPOSE_FILE=-f docker/docker-compose.yml
 CONSOLE?=
 
 up: down
-	docker compose ${COMPOSE_FILE} up -d --force-recreate
+	docker-compose ${COMPOSE_FILE} up -d --force-recreate
 
 down:
-	docker compose ${COMPOSE_FILE} down --remove-orphans
+	docker-compose ${COMPOSE_FILE} down --remove-orphans
 
 enter:
 	@docker exec -it ${CONTAINER_PHP} bash
