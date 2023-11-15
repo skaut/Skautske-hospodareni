@@ -40,116 +40,145 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->createExpenseChit();
         $this->editExpenseChit();
         $this->addIncomeChit();
-        $this->removeBothChits();
+        $this->createTwoLineExpenseChit();
+        $this->removeChits();
+        $this->checkRemoveSecondLineExpenseChit();
         $this->cancelEvent();
     }
 
     private function createEvent(): void
     {
-        $I = $this->I;
-        $I->amGoingTo('create event');
+        $this->I->amGoingTo('create event');
 
-        $I->click('Založit novou akci');
-        $I->waitForText('Název akce');
+        $this->I->click('Založit novou akci');
+        $this->I->waitForText('Název akce');
 
         $today = date('d.m. Y');
 
-        $I->fillField('Název akce', $this->eventName);
-        $I->fillField('Od', $today);
-        $I->click('//body'); // close datepicker
+        $this->I->fillField('Název akce', $this->eventName);
+        $this->I->fillField('Od', $today);
+        $this->I->click('//body'); // close datepicker
 
-        $I->fillField('Do', $today);
+        $this->I->fillField('Do', $today);
 
-        $I->click('.ui--createEvent');
-        $I->see('Základní údaje');
+        $this->I->click('.ui--createEvent');
+        $this->I->see('Základní údaje');
 
         // Go through datagrid
-        $I->click('Akce');
-        $I->executeJs('window.scrollTo(0, document.body.scrollHeight);');
-        $I->waitForText($this->eventName);
-        $I->click($this->eventName);
+        $this->I->click('Akce');
+        $this->I->executeJs('window.scrollTo(0, document.body.scrollHeight);');
+        $this->I->waitForText($this->eventName);
+        $this->I->click($this->eventName);
     }
 
     private function goToCashbookPage(): void
     {
-        $I = $this->I;
-        $I->amGoingTo('open cashbook');
+        $this->I->amGoingTo('open cashbook');
 
         $cashbookButton = 'Evidence plateb';
-        $I->waitForText($cashbookButton);
-        $I->click($cashbookButton);
+        $this->I->waitForText($cashbookButton);
+        $this->I->click($cashbookButton);
 
-        $I->waitForText(self::NO_CHITS_MESSAGE);
+        $this->I->waitForText(self::NO_CHITS_MESSAGE);
     }
 
     private function createExpenseChit(): void
     {
-        $I = $this->I;
-        $I->click('Nový doklad');
-        $I->amGoingTo('create expense chit');
+        $this->I->click('Nový doklad');
+        $this->I->amGoingTo('create expense chit');
 
         $purpose = 'Nákup chleba';
 
         $this->fillChitForm(new Date(), $purpose, Operation::EXPENSE(), 'Potraviny', 'Testovací skaut', '100 + 1');
-        $I->scrollTo('input[name="send"]');
-        $I->click('input[name="send"]');
+        $this->I->scrollTo('input[name="send"]');
+        $this->I->click('input[name="send"]');
         $this->waitForBalance('-101,00');
     }
 
     private function editExpenseChit(): void
     {
-        $I = $this->I;
-        $I->wantTo('Update expense chit amount');
-        $I->scrollTo('h4[id="chitList-payment"]');
-        $I->click('.ui--editChit');
-        $I->waitForElement('[name="pid"]:not([value=""])');
+        $this->I->wantTo('Update expense chit amount');
+        $this->I->scrollTo('h4[id="chitList-payment"]');
+        $this->I->click('.ui--editChit');
+        $this->I->waitForElement('[name="pid"]:not([value=""])');
 
-        $I->fillField('items[0][price]', '121');
-        $I->scrollTo('input[name="send"]');
-        $I->click('input[name="send"]');
+        $this->I->fillField('items[0][price]', '121');
+        $this->I->scrollTo('input[name="send"]');
+        $this->I->click('input[name="send"]');
         $this->waitForBalance('-121,00');
     }
 
     private function addIncomeChit(): void
     {
-        $I = $this->I;
-        $I->click('Nový doklad');
-        $I->amGoingTo('add income chit');
+        $this->I->click('Nový doklad');
+        $this->I->amGoingTo('add income chit');
 
         $this->fillChitForm(new Date(), 'Účastnické poplatky', Operation::INCOME(), 'Přijmy od účastníků', 'Testovací skaut 2', '100');
-        $I->scrollTo('input[name="send"]');
-        $I->click('input[name="send"]');
+        $this->I->scrollTo('input[name="send"]');
+        $this->I->click('input[name="send"]');
 
         $this->waitForBalance('-21,00');
     }
 
-    private function removeBothChits(): void
+    private function createTwoLineExpenseChit(): void
     {
-        $I = $this->I;
-        $I->amGoingTo('remove both chits');
-
-        $I->scrollTo('h4[id="chitList-payment"]');
-        $this->removeChit(1);
+        $this->I->click('Nový doklad');
+        $this->I->amGoingTo('create expense chit');
+        $this->fillChitForm(new Date(), 'Rohlíky', Operation::EXPENSE(), 'Potraviny', 'Testovací skaut', '50');
+        $this->I->click('input[name="items[addItem]"]');
+        $this->I->wait(2);
+        $this->I->expect('Odebrat položku');
+        $this->I->seeElement('input[name="items[1][remove]"]');
+        $this->fillSecondChitForm('Hřebíky', Operation::EXPENSE(), 'Materiál', 'Testovací skaut', '50');
+        $this->I->scrollTo('input[name="send"]');
+        $this->I->click('input[name="send"]');
         $this->waitForBalance('-121,00');
-        $I->scrollTo('h4[id="chitList-payment"]');
+    }
+
+    private function checkRemoveSecondLineExpenseChit(): void
+    {
+        $this->goToCashbookPage();
+
+        $this->I->click('Nový doklad');
+        $this->I->waitForText('Položky');
+        $this->I->click('input[name="items[addItem]"]');
+        $this->I->expect('Odebrat položku');
+        $this->I->seeElement('input[name="items[0][remove]"]');
+        $this->I->click('input[name="items[0][remove]"]');
+        $this->I->wait(3);
+        $this->I->dontSeeElement('//input[@type="submit" and @value="Odebrat položku"]');
+        $this->I->click('Nový doklad');
+        $this->I->wait(3);
+        $this->I->dontSeeElement('//input[@type="submit" and @value="Uložit"]');
+    }
+
+    private function removeChits(): void
+    {
+        $this->I->amGoingTo('remove chits');
+        $this->I->scrollTo('h4[id="chitList-payment"]');
         $this->removeChit(1);
-        $I->waitForText(self::NO_CHITS_MESSAGE);
+        $this->waitForBalance('-221,00');
+        $this->I->scrollTo('h4[id="chitList-payment"]');
+        $this->removeChit(1);
+        $this->waitForBalance('-100,00');
+        $this->I->scrollTo('h4[id="chitList-payment"]');
+        $this->removeChit(1);
+        $this->I->waitForText(self::NO_CHITS_MESSAGE);
     }
 
     private function cancelEvent(): void
     {
-        $I = $this->I;
-        $I->amGoingTo('cancel the event');
+        $this->I->amGoingTo('cancel the event');
 
-        $I->click('Akce');
+        $this->I->click('Akce');
 
         $cancelButton = sprintf("//a[text()='%s']/ancestor::tr//a[contains(@class, 'btn-danger')][1]", $this->eventName);
 
-        $I->waitForElement($cancelButton);
-        $I->disablePopups();
-        $I->click($cancelButton);
+        $this->I->waitForElement($cancelButton);
+        $this->I->disablePopups();
+        $this->I->click($cancelButton);
 
-        $I->waitForElementNotVisible($cancelButton);
+        $this->I->waitForElementNotVisible($cancelButton);
     }
 
     private function fillChitForm(Date $date, string $purpose, Operation $type, string $category, string $recipient, string $amount): void
@@ -163,6 +192,15 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->selectOption(sprintf('items[0][%sCategories]', $type->equals(Operation::EXPENSE()) ? 'expense' : 'income'), $category);
         $this->I->fillField('Komu/Od', $recipient);
         $this->I->fillField('items[0][price]', $amount);
+    }
+
+    private function fillSecondChitForm(string $purpose, Operation $type, string $category, string $recipient, string $amount): void
+    {
+        $this->I->wantToTest('Uložit');
+        $this->I->fillField('items[1][purpose]', $purpose);
+        $this->I->selectOption(sprintf('items[1][%sCategories]', $type->equals(Operation::EXPENSE()) ? 'expense' : 'income'), $category);
+        $this->I->fillField('Komu/Od', $recipient);
+        $this->I->fillField('items[1][price]', $amount);
     }
 
     private function waitForBalance(string $balance): void
