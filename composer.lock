@@ -4308,16 +4308,16 @@
         },
         {
             "name": "nette/di",
-            "version": "v3.1.4",
+            "version": "v3.1.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/di.git",
-                "reference": "9c8a52dac6d7130e658df5cd819d17e1fde715ea"
+                "reference": "adf475076dae08109dd0d57b1a48668d1d1bedf0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/di/zipball/9c8a52dac6d7130e658df5cd819d17e1fde715ea",
-                "reference": "9c8a52dac6d7130e658df5cd819d17e1fde715ea",
+                "url": "https://api.github.com/repos/nette/di/zipball/adf475076dae08109dd0d57b1a48668d1d1bedf0",
+                "reference": "adf475076dae08109dd0d57b1a48668d1d1bedf0",
                 "shasum": ""
             },
             "require": {
@@ -4325,7 +4325,7 @@
                 "nette/neon": "^3.3 || ^4.0",
                 "nette/php-generator": "^3.5.4 || ^4.0",
                 "nette/robot-loader": "^3.2 || ~4.0.0",
-                "nette/schema": "^1.2",
+                "nette/schema": "^1.2.5",
                 "nette/utils": "^3.2.5 || ~4.0.0",
                 "php": "7.2 - 8.3"
             },
@@ -4374,9 +4374,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/di/issues",
-                "source": "https://github.com/nette/di/tree/v3.1.4"
+                "source": "https://github.com/nette/di/tree/v3.1.8"
             },
-            "time": "2023-09-29T12:04:58+00:00"
+            "time": "2023-11-03T00:12:52+00:00"
         },
         {
             "name": "nette/finder",
@@ -4741,16 +4741,16 @@
         },
         {
             "name": "nette/php-generator",
-            "version": "v4.1.0",
+            "version": "v4.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/php-generator.git",
-                "reference": "8b728c622c49b196513c0f95508f2f66342d1e8f"
+                "reference": "abc0e79b2d02d4b8aba5933765b90df3f610c143"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/php-generator/zipball/8b728c622c49b196513c0f95508f2f66342d1e8f",
-                "reference": "8b728c622c49b196513c0f95508f2f66342d1e8f",
+                "url": "https://api.github.com/repos/nette/php-generator/zipball/abc0e79b2d02d4b8aba5933765b90df3f610c143",
+                "reference": "abc0e79b2d02d4b8aba5933765b90df3f610c143",
                 "shasum": ""
             },
             "require": {
@@ -4804,9 +4804,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/php-generator/issues",
-                "source": "https://github.com/nette/php-generator/tree/v4.1.0"
+                "source": "https://github.com/nette/php-generator/tree/v4.1.2"
             },
-            "time": "2023-09-26T12:28:52+00:00"
+            "time": "2023-10-29T22:57:32+00:00"
         },
         {
             "name": "nette/robot-loader",
@@ -4939,16 +4939,16 @@
         },
         {
             "name": "nette/schema",
-            "version": "v1.2.4",
+            "version": "v1.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/schema.git",
-                "reference": "c9ff517a53903b3d4e29ec547fb20feecb05b8ab"
+                "reference": "0462f0166e823aad657c9224d0f849ecac1ba10a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/schema/zipball/c9ff517a53903b3d4e29ec547fb20feecb05b8ab",
-                "reference": "c9ff517a53903b3d4e29ec547fb20feecb05b8ab",
+                "url": "https://api.github.com/repos/nette/schema/zipball/0462f0166e823aad657c9224d0f849ecac1ba10a",
+                "reference": "0462f0166e823aad657c9224d0f849ecac1ba10a",
                 "shasum": ""
             },
             "require": {
@@ -4995,9 +4995,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/schema/issues",
-                "source": "https://github.com/nette/schema/tree/v1.2.4"
+                "source": "https://github.com/nette/schema/tree/v1.2.5"
             },
-            "time": "2023-08-05T18:56:25+00:00"
+            "time": "2023-10-05T20:37:59+00:00"
         },
         {
             "name": "nette/security",
