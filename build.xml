@@ -196,6 +196,12 @@
         </phingcall>
     </target>
 
+    <target name="tests-init">
+        <exec command="bin/console nette:cache:purge" passthru="true" checkreturn="false"/>
+        <exec command="bin/console migrations:drop-all-tables-views --no-interaction" passthru="true" checkreturn="true"/>
+        <exec command="bin/console migrations:migrate --no-interaction" passthru="true"/>
+    </target>
+
     <target name="tests-unit">
         <exec command="vendor/bin/codecept run unit" passthru="true" checkreturn="true"/>
     </target>
@@ -205,12 +211,19 @@
     </target>
 
     <target name="tests-acceptance">
-        <exec command="vendor/bin/codecept run acceptance -vvv" passthru="true" checkreturn="true"/>
+        <exec command="bin/console nette:cache:purge" passthru="true" checkreturn="false"/>
+        <exec command="bin/console migrations:drop-all-tables-views --no-interaction" passthru="true" checkreturn="true"/>
+        <exec command="bin/console migrations:migrate --no-interaction" passthru="true"/>
+        <exec command="bin/console orm:generate-proxies --no-interaction" passthru="true"/>
+
+        <exec command="vendor/bin/codecept run acceptance -vv" passthru="true" checkreturn="true"/>
     </target>
 
     <target name="tests">
+        <phingcall target="tests-init"/>
         <phingcall target="tests-unit"/>
         <phingcall target="tests-integration"/>
+        <phingcall target="tests-acceptance"/>
     </target>
 
     <target name="tests-with-coverage">
@@ -220,15 +233,25 @@
     </target>
 
     <target name="static-analysis">
+        <exec command="bin/console nette:cache:purge " passthru="true" checkreturn="false"/>
         <exec command="php -d memory_limit=2G vendor/bin/phpstan analyse -l 6 -c phpstan.neon app tests --no-progress"
               passthru="true" checkreturn="true"/>
     </target>
 
+    <target name="coding-pretty">
+        <exec command="vendor/bin/phpcbf app" passthru="true" checkreturn="true"/>
+    </target>
+
     <target name="coding-standard">
+        <exec command="vendor/bin/phpcbf app" passthru="true" checkreturn="true"/>
         <exec command="vendor/bin/phpcs" passthru="true" checkreturn="true"/>
     </target>
 
-    <target name="init">
+    <target name="coding-standard-ci">
+        <exec command="vendor/bin/phpcs" passthru="true" checkreturn="true"/>
+    </target>
+
+    <target name="app-init">
         <!-- Create config.local.neon -->
         <copy file="app/config/config.sample.local.neon" tofile="app/config/config.local.neon"/>
 
@@ -240,6 +263,6 @@
         <exec command="yarn build" passthru="true"/>
 
         <!-- Prepare database schema -->
-        <exec command="bin/console migrations:migrate" passthru="true"/>
+        <exec command="bin/console migrations:migrate --no-interaction" passthru="true"/>
     </target>
 </project>

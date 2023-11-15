@@ -1,9 +1,9 @@
 parameters:
     database:
-        host: mysql-test
-        user: root
-        password: root
-        name: hskauting
+        host: %env.DB_HOST%
+        user: %env.DB_USER%
+        password: %env.DB_PASSWORD%
+        name: %env.DB_NAME%
 
 services:
     - Nette\Caching\Storages\DevNullStorage

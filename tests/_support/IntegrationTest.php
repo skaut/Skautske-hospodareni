@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Codeception\Exception\ModuleException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Tools\SchemaTool;
@@ -26,6 +27,20 @@ abstract class IntegrationTest extends Codeception\Test\Unit
     protected function getTestedAggregateRoots() : array
     {
         return [];
+    }
+
+    /**
+     * @return void
+     * @throws ModuleException
+     */
+    public function _setUp()
+    {
+        /** @var Contributte\Codeception\Module\NetteDIModule $module */
+        $module = $this->getModule('Contributte\Codeception\Module\NetteDIModule');
+        $module->onCreateConfigurator[] = function (\Nette\Bootstrap\Configurator $configurator){
+            $configurator->addDynamicParameters(['env' => getenv()]);
+        };
+        parent::_setUp();
     }
 
     protected function _before() : void

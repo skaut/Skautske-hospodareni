@@ -5,7 +5,7 @@ modules:
         - \Helper\Integration
 
         - Contributte\Codeception\Module\NetteDIModule:
-            tempDir: ../_temp/integration
+            tempDir: ../../temp/cache/integration
             appDir: ../../app
             configFiles:
                 - config/doctrine.neon
@@ -14,8 +14,8 @@ modules:
 
         - \Helper\WaitForDb
         - Db:
-            dsn: 'mysql:host=mysql-test;dbname=hskauting;charset=utf8'
-            user: 'root'
-            password: 'root'
+            dsn: 'mysql:host=%DB_HOST%;dbname=%DB_NAME%;charset=utf8'
+            user: "%DB_USER%"
+            password: "%DB_PASSWORD%"
 
         - Mockery

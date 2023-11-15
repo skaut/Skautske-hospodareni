@@ -1,0 +1,160 @@
+version: "3.8"
+name: hskauting
+
+networks:
+    traefik:
+
+volumes:
+    mysql:
+    mysql-test:
+
+x-php-base:
+    &php-base
+    build:
+        context: ./containers/php
+    working_dir: /app
+    env_file:
+        - ./containers/php/ini/image.ini
+    networks:
+        - traefik
+    volumes:
+        - ../:/app
+        - ./containers/php/ini/php.ini:/etc/php/8.1/fpm/conf.d/php.ini
+        - ./containers/php/ini/php.ini:/etc/php/8.1/cli/conf.d/php.ini
+
+x-mysql-base:
+    &mysql-base
+    image: mysql:8.0
+    networks:
+        - traefik
+    environment:
+        MYSQL_DATABASE: hskauting
+        MYSQL_USER: hskauting
+        MYSQL_PASSWORD: hskauting
+        MYSQL_ROOT_PASSWORD: root
+        MYSQL_COLLATION: utf8mb4_czech_ci
+        MYSQL_CHARACTER_SET: utf8
+
+services:
+    traefik:
+        image: traefik:latest
+        restart: unless-stopped
+        networks:
+            - traefik
+        ports:
+            - "80:80"
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+            - ./containers/traefik/traefik.yml:/traefik.yml:ro
+        labels:
+            traefik.enable: true
+            traefik.http.routers.api.rule: Host(`traefik.localhost`)
+            traefik.http.routers.api.entrypoints: web
+            traefik.http.routers.api.service: api@internal
+
+    php:
+        <<: *php-base
+        container_name: hskauting.app #Backward Compatibility
+        env_file:
+            - containers/php/ini/image.ini
+            - ./../.env.local
+        depends_on:
+            - mysql
+        labels:
+            traefik.enable: true
+            traefik.http.routers.php.entrypoints: web
+
+    php-xdebug:
+        <<: *php-base
+        hostname: php-xdebug.localhost
+        depends_on:
+            - mysql
+        env_file:
+            - containers/php/ini/image.ini
+            - containers/php/ini/xdebug.ini
+            - ./../.env.local
+
+    php-test:
+        <<: *php-base
+        hostname: php-test.localhost
+        container_name: hskauting.app-test
+        depends_on:
+            - mysql-test
+        env_file:
+            - containers/php/ini/image.ini
+            - containers/php/ini/xdebug.ini
+            - ./../.env.test
+
+    nginx:
+        image: nginx:latest
+        restart: unless-stopped
+        working_dir: /
+        hostname: moje-hospodareni.cz
+        networks:
+            - traefik
+        volumes:
+            - ../:/app
+            - ./containers/nginx/conf.d:/etc/nginx/conf.d
+        labels:
+            traefik.enable: true
+            traefik.http.routers.nginx.rule: Host(`moje-hospodareni.cz`)
+            traefik.http.routers.nginx.entrypoints: web
+        depends_on:
+            - php
+            - php-test
+
+    mysql:
+        <<: *mysql-base
+        container_name: hskauting.mysql #Backward Compatibility
+        ports:
+            - "3306:3306"
+        hostname: mysql.localhost
+        volumes:
+            - mysql:/var/lib/mysql
+            - ./containers/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+
+    mysql-test:
+        container_name: hskauting.mysql-test #Backward Compatibility
+        <<: *mysql-base
+        hostname: mysql-test.localhost
+        volumes:
+            - mysql-test:/var/lib/mysql
+            - ./containers/mysql-test/my.cnf:/etc/mysql/conf.d/my.cnf
+
+    selenium:
+        container_name: hskauting.chrome
+        hostname: selenium.localhost
+        image: selenium/standalone-chrome
+        shm_size: 2g
+        environment:
+            SE_VNC_NO_PASSWORD: 1
+        networks:
+            - traefik
+        labels:
+            traefik.enable: true
+            traefik.http.routers.selenium.rule: Host(`selenium.localhost`)
+            traefik.http.routers.selenium.entrypoints: web
+            traefik.http.services.selenium.loadbalancer.server.port: 7900
+
+    adminer:
+        image: adminer:4.8.1
+        volumes:
+            - ./containers/adminer/plugins/import-directory.php:/var/www/html/plugins/import-directory.php
+            - ./containers/adminer/plugins/login-password-less.php:/var/www/html/plugins/login-password-less.php
+            - ./containers/adminer/plugins/readable-dates.php:/var/www/html/plugins/readable-dates.php
+            - ./containers/adminer/import:/var/www/html/import
+        environment:
+            ADMINER_PLUGINS: import-directory readable-dates
+            ADMINER_IMPORT_SERVER_PATH: import/adminer.sql
+            ADMINER_USERNAME: hskauting
+            ADMINER_PASSWORD: hskauting
+            ADMINER_DEFAULT_SERVER: mysql
+        networks:
+            - traefik
+        labels:
+            traefik.enable: true
+            traefik.http.routers.adminer.entrypoints: web
+            traefik.http.routers.adminer.rule: Host(`adminer.localhost`)
+            traefik.http.services.adminer.loadbalancer.server.port: 8080
+        depends_on:
+            - mysql

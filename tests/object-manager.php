@@ -8,6 +8,7 @@ declare(strict_types=1);
  */
 
 use Doctrine\Persistence\ObjectManager;
+use Nette\Bootstrap\Configurator;
 use Nette\DI\Extensions\ExtensionsExtension;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -17,9 +18,9 @@ $logDir  = __DIR__ . '/../log';
 
 putenv('TMPDIR=' . $tempDir);
 
-$configurator = new Nette\Configurator();
+$configurator = new Configurator();
 $configurator->setDebugMode(true);
-$configurator->enableDebugger($logDir);
+$configurator->enableTracy($logDir);
 $configurator->setTempDirectory($tempDir);
 
 $configurator->createRobotLoader()
@@ -31,8 +32,9 @@ $configurator->defaultExtensions = [
     'tracy' => [Tracy\Bridges\Nette\TracyExtension::class, ['%debugMode%', '%consoleMode%']],
 ];
 
+$configurator->addStaticParameters(['env' => getenv()]);
 $configurator->addConfig(__DIR__ . '/integration/config/doctrine.neon');
 
-$configurator->addParameters(['logDir' => $logDir]);
+$configurator->addStaticParameters(['logDir' => $logDir]);
 
 return $configurator->createContainer()->getByType(ObjectManager::class);

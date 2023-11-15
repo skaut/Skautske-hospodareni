@@ -52,6 +52,7 @@ extensions:
     skautis: Skautis\Nette\SkautisExtension
     messenger: Fmasa\Messenger\DI\MessengerExtension
     console: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
+    console.cache: Contributte\Console\Extra\DI\CacheConsoleExtension(%consoleMode%)
 
 search:
     command handlers:
@@ -110,6 +111,8 @@ services:
     - Model\Common\Services\MessengerCommandBus(@messenger.commandBus.bus)
     - Model\Common\Services\MessengerQueryBus(@messenger.queryBus.bus)
     - Model\Common\Services\MessengerEventBus(@messenger.eventBus.bus)
+    - Console\MigrationsDropCommand
+
 
     skautisCache:
         factory: Nette\Caching\Cache(namespace: 'skautis')

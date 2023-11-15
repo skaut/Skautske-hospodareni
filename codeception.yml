@@ -1,4 +1,6 @@
 actor: Tester
+params:
+    - .env.test
 
 coverage:
     enabled: true
@@ -10,7 +12,7 @@ paths:
     log: tests/_output
     data: tests/_data
     support: tests/_support
-    envs: tests/_envs
+
 bootstrap: _bootstrap.php
 settings:
     colors: true

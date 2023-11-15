@@ -27,11 +27,20 @@ Jednotlivé testy:
 vendor/bin/codecept run <cesta k souboru>
 ```
 
-Všechny daného typu: 
+Všechny daného typu lze spustit v kontejneru: 
 ```bash
 phing tests
 phing tests-acceptance
 phing tests-integration
 phing tests-unit
 phing tests-with-coverage
+```
+
+Pomocí make na hostitelském stroji:
+```bash
+make tests-all
+make tests-acceptance
+make tests-integration
+make tests-unit
+make tests-with-coverage
 ```
