@@ -243,6 +243,7 @@ final class ChitForm extends BaseControl
                 ->setValidationScope([])
                 ->onClick[] = function (SubmitButton $button): void {
                     $this->removeItem($button);
+                    $this->setDisplayChitForm(true);
                 };
         }, 1);
 
@@ -251,6 +252,7 @@ final class ChitForm extends BaseControl
             ->onClick[] = function () use ($items): void {
                 $items->createOne();
                 $this->reload();
+                $this->setDisplayChitForm(true);
             };
 
         // ID of edited chit
