@@ -50,8 +50,7 @@
         "thecodingmachine/safe": "^2.4",
         "tracy/tracy": "~2.9",
         "ublaboo/datagrid": "^v6.9",
-        "vlucas/phpdotenv": "^5.5",
-        "warhuhn/chronos-doctrine": "^3.0"
+        "vlucas/phpdotenv": "^5.5"
     },
     "require-dev": {
         "codeception/codeception": "^4.1",
