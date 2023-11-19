@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Travel;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use InvalidArgumentException;
 use Mockery;
@@ -47,7 +47,7 @@ class CommandTest extends Unit
 
         $command = $this->createCommand($vehicle);
 
-        $date = Date::now();
+        $date = ChronosDate::now();
         $command->addVehicleTravel(
             200,
             new TravelDetails($date, TransportType::get(TransportType::CAR), 'Brno', 'Praha'),
@@ -88,7 +88,7 @@ class CommandTest extends Unit
 
         $command->addTransportTravel(
             MoneyFactory::fromFloat(500.6),
-            new TravelDetails(Date::now(), TransportType::get(TransportType::CAR), 'Brno', 'Praha'),
+            new TravelDetails(ChronosDate::now(), TransportType::get(TransportType::CAR), 'Brno', 'Praha'),
         );
 
         $this->assertEquals(MoneyFactory::fromFloat(500), $command->calculateTotal());
@@ -98,7 +98,7 @@ class CommandTest extends Unit
     {
         $command = $this->createCommand();
 
-        $date = Date::now();
+        $date = ChronosDate::now();
 
         $command->addVehicleTravel(
             200,
@@ -153,7 +153,7 @@ class CommandTest extends Unit
         $command->addVehicleTravel(200, $this->getDetails());
 
         $distance = 220.0;
-        $details  = new TravelDetails(Date::now(), TransportType::get(TransportType::MOTORCYCLE), 'Praha', 'Brno');
+        $details  = new TravelDetails(ChronosDate::now(), TransportType::get(TransportType::MOTORCYCLE), 'Praha', 'Brno');
 
         $command->updateVehicleTravel(0, $distance, $details);
 
@@ -170,7 +170,7 @@ class CommandTest extends Unit
         $command->addTransportTravel(MoneyFactory::fromFloat(200), $this->getDetails());
 
         $price   = MoneyFactory::fromFloat(320);
-        $details = new TravelDetails(Date::now(), TransportType::get(TransportType::MOTORCYCLE), 'Praha', 'Brno');
+        $details = new TravelDetails(ChronosDate::now(), TransportType::get(TransportType::MOTORCYCLE), 'Praha', 'Brno');
 
         $command->updateTransportTravel(0, $price, $details);
 
@@ -205,7 +205,7 @@ class CommandTest extends Unit
         $command->addVehicleTravel(200, $this->getDetails());
 
         $price   = MoneyFactory::fromFloat(200);
-        $details = new TravelDetails(Date::now(), TransportType::get(TransportType::MOTORCYCLE), 'Praha', 'Brno');
+        $details = new TravelDetails(ChronosDate::now(), TransportType::get(TransportType::MOTORCYCLE), 'Praha', 'Brno');
 
         $command->updateTransportTravel(0, $price, $details);
 
@@ -223,7 +223,7 @@ class CommandTest extends Unit
         $command->addTransportTravel(MoneyFactory::fromFloat(200), $this->getDetails());
 
         $distance = 20;
-        $details  = new TravelDetails(Date::now(), TransportType::get(TransportType::MOTORCYCLE), 'Praha', 'Brno');
+        $details  = new TravelDetails(ChronosDate::now(), TransportType::get(TransportType::MOTORCYCLE), 'Praha', 'Brno');
 
         $command->updateVehicleTravel(0, $distance, $details);
 
@@ -240,11 +240,11 @@ class CommandTest extends Unit
         $command = $this->createCommand();
         $command->addVehicleTravel(
             206,
-            new TravelDetails(Date::now(), TransportType::get(TransportType::CAR), 'Brno', 'Praha'),
+            new TravelDetails(ChronosDate::now(), TransportType::get(TransportType::CAR), 'Brno', 'Praha'),
         );
         $command->addVehicleTravel(
             206,
-            new TravelDetails(Date::now(), TransportType::get(TransportType::CAR), 'Brno', 'Praha'),
+            new TravelDetails(ChronosDate::now(), TransportType::get(TransportType::CAR), 'Brno', 'Praha'),
         );
         $command->removeTravel(0);
         $this->assertSame(1, $command->getTravelCount());
@@ -255,7 +255,7 @@ class CommandTest extends Unit
     public function testGetUsedTransportTypes(): void
     {
         $command = $this->createCommand();
-        $date    = Date::now();
+        $date    = ChronosDate::now();
 
         $command->addVehicleTravel(
             200,
@@ -283,7 +283,7 @@ class CommandTest extends Unit
     public function testCloseCommand(): void
     {
         $command = $this->createCommand();
-        $now     = Date::now();
+        $now     = ChronosDate::now();
         $command->close($now);
 
         $this->assertSame($now, $command->getClosedAt());
@@ -292,7 +292,7 @@ class CommandTest extends Unit
     public function testReopenCommand(): void
     {
         $command = $this->createCommand();
-        $command->close(Date::now());
+        $command->close(ChronosDate::now());
 
         $command->open();
 
@@ -302,7 +302,7 @@ class CommandTest extends Unit
     public function testClosingClosedCommandDoesntChangeClosedTime(): void
     {
         $command  = $this->createCommand();
-        $closedAt = Date::now();
+        $closedAt = ChronosDate::now();
         $command->close($closedAt);
 
         $command->close($closedAt->modify('+ 1 day'));
@@ -378,7 +378,7 @@ class CommandTest extends Unit
         $command->addTransportTravel(
             Money::CZK(100),
             new Command\TravelDetails(
-                new Date('now'),
+                new ChronosDate('now'),
                 TransportType::get(TransportType::BUS),
                 'Praha',
                 'Brno',
@@ -410,7 +410,7 @@ class CommandTest extends Unit
         $command->addVehicleTravel(
             123,
             new Command\TravelDetails(
-                new Date('now'),
+                new ChronosDate('now'),
                 TransportType::get(TransportType::CAR),
                 'Praha',
                 'Brno',
@@ -442,7 +442,7 @@ class CommandTest extends Unit
         $command->addTransportTravel(
             Money::CZK(100),
             new Command\TravelDetails(
-                new Date('now'),
+                new ChronosDate('now'),
                 TransportType::get(TransportType::BUS),
                 'Praha',
                 'Brno',
@@ -474,7 +474,7 @@ class CommandTest extends Unit
         $command->addVehicleTravel(
             123,
             new Command\TravelDetails(
-                new Date('now'),
+                new ChronosDate('now'),
                 TransportType::get(TransportType::CAR),
                 'Praha',
                 'Brno',
@@ -517,6 +517,6 @@ class CommandTest extends Unit
 
     private function getDetails(): TravelDetails
     {
-        return new TravelDetails(Date::now(), TransportType::get(TransportType::CAR), 'Brno', 'Praha');
+        return new TravelDetails(ChronosDate::now(), TransportType::get(TransportType::CAR), 'Brno', 'Praha');
     }
 }

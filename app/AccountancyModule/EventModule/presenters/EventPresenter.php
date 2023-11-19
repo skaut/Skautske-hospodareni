@@ -8,7 +8,7 @@ use App\AccountancyModule\EventModule\Components\FunctionsControl;
 use App\AccountancyModule\EventModule\Factories\IFunctionsControlFactory;
 use App\Forms\BaseForm;
 use App\MyValidators;
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Auth\Resources\Event;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
@@ -58,7 +58,7 @@ class EventPresenter extends BasePresenter
 
         $accessEditBase = $this->authorizator->isAllowed(Event::UPDATE, $aid);
         $this->template->setParameters([
-            'highlightCloseButton' => $this->event->getEndDate()->diffInDays(Date::now(), false) > 14,
+            'highlightCloseButton' => $this->event->getEndDate()->diffInDays(ChronosDate::now(), false) > 14,
         ]);
 
         if ($accessEditBase) {

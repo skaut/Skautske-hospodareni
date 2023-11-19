@@ -7,7 +7,7 @@ namespace App\AccountancyModule\CampModule\Components;
 use App\AccountancyModule\Components\Dialog;
 use App\AccountancyModule\ExcelResponse;
 use App\Forms\BaseForm;
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Common\Services\QueryBus;
 use Model\DTO\Camp\CampListItem;
 use Model\Event\ReadModel\Queries\Excel\ExportCamps;
@@ -61,7 +61,7 @@ final class ExportDialog extends Dialog
     {
         $this->presenter->sendResponse(
             new ExcelResponse(
-                sprintf('Souhrn-táborů-%s', Date::today()->format('Y_n_j')),
+                sprintf('Souhrn-táborů-%s', ChronosDate::today()->format('Y_n_j')),
                 $this->queryBus->handle(new ExportCamps($values->campIds)),
             ),
         );

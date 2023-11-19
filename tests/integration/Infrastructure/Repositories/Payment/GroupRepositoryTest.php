@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Infrastructure\Repositories\Payment;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use IntegrationTest;
 use Mockery;
@@ -70,7 +70,7 @@ class GroupRepositoryTest extends IntegrationTest
         $lastPairing     = new DateTimeImmutable(self::ROW['last_pairing']);
         $paymentDefaults = new Group\PaymentDefaults(
             self::ROW['amount'],
-            new Date('2018-01-29'),
+            new ChronosDate('2018-01-29'),
             self::ROW['constant_symbol'],
             new VariableSymbol(self::ROW['next_variable_symbol']),
         );

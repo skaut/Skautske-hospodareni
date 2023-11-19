@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\DTO\Payment;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Google\OAuthId;
 use Model\Payment\VariableSymbol;
 use Nette\SmartObject;
@@ -16,7 +16,7 @@ use Nette\SmartObject;
  * @property-read int|NULL $skautisId
  * @property-read string $name
  * @property-read float|NULL $defaultAmount
- * @property-read Date|NULL $dueDate
+ * @property-read ChronosDate|NULL $dueDate
  * @property-read int|NULL $constantSymbol
  * @property-read VariableSymbol|NULL $nextVariableSymbol
  * @property-read string $state
@@ -35,7 +35,7 @@ class Group
         private int|null $skautisId = null,
         private string $name,
         private float|null $defaultAmount = null,
-        private Date|null $dueDate = null,
+        private ChronosDate|null $dueDate = null,
         private int|null $constantSymbol = null,
         private VariableSymbol|null $nextVariableSymbol = null,
         private string $state,
@@ -81,7 +81,7 @@ class Group
         return $this->defaultAmount;
     }
 
-    public function getDueDate(): Date|null
+    public function getDueDate(): ChronosDate|null
     {
         return $this->dueDate;
     }

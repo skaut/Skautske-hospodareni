@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Skautis\Factory;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Event\EducationTerm;
 use Model\Event\SkautisEducationLocationId;
 use Model\Event\SkautisEducationTermId;
@@ -24,8 +24,8 @@ final class EducationTermFactory
 
         return new EducationTerm(
             new SkautisEducationTermId($skautisEducationTerm->ID),
-            Date::createFromFormat(self::DATETIME_FORMAT, $startDate),
-            Date::createFromFormat(self::DATETIME_FORMAT, $endDate),
+            ChronosDate::createFromFormat(self::DATETIME_FORMAT, $startDate),
+            ChronosDate::createFromFormat(self::DATETIME_FORMAT, $endDate),
             new SkautisEducationLocationId($skautisEducationTerm->ID_EventEducationLocation),
         );
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\DTO\Cashbook;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookType;
 use Model\Cashbook\Cashbook\ChitBody;
@@ -25,7 +25,7 @@ use function substr;
  * @property-read int               $id
  * @property-read ChitBody          $body
  * @property-read ChitNumber|NULL   $number
- * @property-read Date              $date
+ * @property-read ChronosDate              $date
  * @property-read Recipient|NULL    $recipient
  * @property-read Amount            $amount
  * @property-read string            $purpose
@@ -76,7 +76,7 @@ class Chit
     }
 
     /** @deprecated use getBody() */
-    public function getDate(): Date
+    public function getDate(): ChronosDate
     {
         return $this->body->getDate();
     }

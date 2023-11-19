@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use DateTimeImmutable;
 use Helpers;
@@ -28,7 +28,7 @@ class PaymentTest extends Unit
         $groupId        = 29;
         $name           = 'Jan novák';
         $email          = new EmailAddress('test@gmail.com');
-        $dueDate        = new Date();
+        $dueDate        = new ChronosDate();
         $amount         = 450;
         $variableSymbol = new VariableSymbol('454545');
         $constantSymbol = 666;
@@ -77,7 +77,7 @@ class PaymentTest extends Unit
             'František Maša',
             [new EmailAddress('frantisekmasa1@gmail.com')],
             -500,
-            new Date(),
+            new ChronosDate(),
             null,
             null,
             null,
@@ -94,7 +94,7 @@ class PaymentTest extends Unit
             'František Maša',
             [new EmailAddress('frantisekmasa1@gmail.com')],
             0,
-            new Date(),
+            new ChronosDate(),
             null,
             null,
             null,
@@ -104,7 +104,7 @@ class PaymentTest extends Unit
 
     public function testCancel(): void
     {
-        $time    = Date::now();
+        $time    = ChronosDate::now();
         $payment = $this->createPayment();
         $payment->cancel($time);
         $this->assertSame(State::get(State::CANCELED), $payment->getState());
@@ -113,7 +113,7 @@ class PaymentTest extends Unit
 
     public function testCancelingAlreadyCanceledPaymentThrowsException(): void
     {
-        $time    = Date::now();
+        $time    = ChronosDate::now();
         $payment = $this->createPayment();
         $payment->cancel($time);
 
@@ -123,7 +123,7 @@ class PaymentTest extends Unit
 
     public function testCancelingCompletedPaymentUpdatesClosedAtAndState(): void
     {
-        $time    = Date::now();
+        $time    = ChronosDate::now();
         $payment = $this->createPayment();
         $payment->completeManually($time, 'John Doe');
 
@@ -137,7 +137,7 @@ class PaymentTest extends Unit
 
     public function testCompletePayment(): void
     {
-        $time    = Date::now();
+        $time    = ChronosDate::now();
         $payment = $this->createPayment();
         $payment->completeManually($time, 'John Doe');
         $this->assertSame(State::get(State::COMPLETED), $payment->getState());
@@ -146,7 +146,7 @@ class PaymentTest extends Unit
 
     public function testCompleteClosedPayment(): void
     {
-        $time    = Date::now();
+        $time    = ChronosDate::now();
         $payment = $this->createPayment();
         $payment->cancel($time);
 
@@ -157,7 +157,7 @@ class PaymentTest extends Unit
     public function testCompletePaymentByUser(): void
     {
         $username = 'John Doe';
-        $time     = Date::now();
+        $time     = ChronosDate::now();
         $payment  = $this->createPayment();
         $payment->completeManually($time, $username);
         $this->assertSame($username, $payment->getClosedByUsername());
@@ -206,7 +206,7 @@ class PaymentTest extends Unit
     public function testUpdateVariableForClosedPaymentThrowsException(): void
     {
         $payment = $this->createPayment();
-        $payment->cancel(Date::now());
+        $payment->cancel(ChronosDate::now());
 
         $this->expectException(PaymentClosed::class);
 
@@ -221,7 +221,7 @@ class PaymentTest extends Unit
         $name           = 'František Maša';
         $amount         = 300;
         $email          = new EmailAddress('franta@gmail.com');
-        $dueDate        = Date::now();
+        $dueDate        = ChronosDate::now();
         $variableSymbol = new VariableSymbol('789');
         $constantSymbol = 123;
         $note           = 'Never pays!';
@@ -271,12 +271,12 @@ class PaymentTest extends Unit
         $name           = 'František Maša';
         $amount         = 300;
         $email          = new EmailAddress('franta@gmail.com');
-        $dueDate        = Date::now();
+        $dueDate        = ChronosDate::now();
         $variableSymbol = new VariableSymbol('789');
         $constantSymbol = 123;
         $note           = 'Never pays!';
 
-        $payment->completeManually(Date::now(), 'John Doe');
+        $payment->completeManually(ChronosDate::now(), 'John Doe');
 
         $this->expectException(PaymentClosed::class);
 
@@ -289,7 +289,7 @@ class PaymentTest extends Unit
 
         $transaction = new Transaction('21924318042', '123456789/0800', 'Joe Doe', 'abc');
 
-        $payment->pairWithTransaction(Date::now(), $transaction);
+        $payment->pairWithTransaction(ChronosDate::now(), $transaction);
 
         $this->assertSame($transaction, $payment->getTransaction());
         $this->assertTrue($payment->isClosed());
@@ -303,7 +303,7 @@ class PaymentTest extends Unit
 
         $newVariableSymbol = new VariableSymbol('12345');
 
-        $payment->update('name', [], self::AMOUNT, Date::today(), $newVariableSymbol, null, '');
+        $payment->update('name', [], self::AMOUNT, ChronosDate::today(), $newVariableSymbol, null, '');
 
         $events = $payment->extractEventsToDispatch();
         $this->assertCount(1, $events);
@@ -319,7 +319,7 @@ class PaymentTest extends Unit
     {
         $payment = $this->createPaymentWithVariableSymbol($variableSymbol);
         $payment->extractEventsToDispatch(); // Clear events
-        $payment->update('name', [], self::AMOUNT, Date::today(), $variableSymbol, null, '');
+        $payment->update('name', [], self::AMOUNT, ChronosDate::today(), $variableSymbol, null, '');
 
         $this->assertSame([], $payment->extractEventsToDispatch());
     }
@@ -338,7 +338,7 @@ class PaymentTest extends Unit
         $payment = $this->createPaymentWithVariableSymbol(null);
         $payment->extractEventsToDispatch(); // Clear events
 
-        $payment->update('name', [], self::AMOUNT * 2, Date::today(), null, null, '');
+        $payment->update('name', [], self::AMOUNT * 2, ChronosDate::today(), null, null, '');
 
         $events = $payment->extractEventsToDispatch();
         $this->assertCount(1, $events);
@@ -353,7 +353,7 @@ class PaymentTest extends Unit
     {
         $payment = $this->createPaymentWithVariableSymbol(null);
         $payment->extractEventsToDispatch(); // Clear events
-        $payment->update('name', [], self::AMOUNT, Date::today(), null, null, '');
+        $payment->update('name', [], self::AMOUNT, ChronosDate::today(), null, null, '');
 
         $this->assertSame([], $payment->extractEventsToDispatch());
     }
@@ -378,7 +378,7 @@ class PaymentTest extends Unit
     {
         $email1  = new EmailAddress('test@gmail.com');
         $email2  = new EmailAddress('test@gmail.com');
-        $payment = new Payment($this->mockGroup(29), 'Jan novák', [$email1, $email2], self::AMOUNT, Date::now(), null, null, null, '');
+        $payment = new Payment($this->mockGroup(29), 'Jan novák', [$email1, $email2], self::AMOUNT, ChronosDate::now(), null, null, null, '');
         $this->assertCount(1, $payment->getEmailRecipients());
     }
 
@@ -390,7 +390,7 @@ class PaymentTest extends Unit
     private function createPaymentWithVariableSymbol(VariableSymbol|null $symbol): Payment
     {
         $group   = $this->mockGroup(29);
-        $dueDate = Date::now();
+        $dueDate = ChronosDate::now();
 
         $payment = new Payment($group, 'Jan novák', [new EmailAddress('test@gmail.com')], self::AMOUNT, $dueDate, $symbol, 666, 454, 'Some note');
         Helpers::assignIdentity($payment, 1);

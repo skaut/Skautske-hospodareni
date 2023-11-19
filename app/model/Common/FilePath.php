@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Common;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 
 use function basename;
 use function count;
@@ -35,7 +35,7 @@ final class FilePath
 
     public static function generatePath(string $prefix, string $originalFileName): string
     {
-        return sprintf('%s/%s/%s_%s', $prefix, Date::today()->format('Y/m'), uniqid(), $originalFileName);
+        return sprintf('%s/%s/%s_%s', $prefix, ChronosDate::today()->format('Y/m'), uniqid(), $originalFileName);
     }
 
     public function equals(self $that): bool

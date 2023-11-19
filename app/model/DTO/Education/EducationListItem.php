@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Model\DTO\Education;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 
 final class EducationListItem
 {
     public function __construct(
         private int $id,
         private string $name,
-        private Date|null $startDate,
-        private Date|null $endDate,
+        private ChronosDate|null $startDate,
+        private ChronosDate|null $endDate,
         private string|null $prefix = null,
     ) {
     }
@@ -27,12 +27,12 @@ final class EducationListItem
         return $this->name;
     }
 
-    public function getStartDate(): Date|null
+    public function getStartDate(): ChronosDate|null
     {
         return $this->startDate;
     }
 
-    public function getEndDate(): Date|null
+    public function getEndDate(): ChronosDate|null
     {
         return $this->endDate;
     }

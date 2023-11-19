@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model;
 
 use App\AccountancyModule\AccountancyHelpers;
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;
@@ -42,7 +42,7 @@ class ExcelService
     }
 
     /** @param Participant[] $participantsDTO */
-    public function getGeneralParticipants(array $participantsDTO, Date $startDate): Spreadsheet
+    public function getGeneralParticipants(array $participantsDTO, ChronosDate $startDate): Spreadsheet
     {
         $spreadsheet = $this->getNewFile();
         $sheet       = $spreadsheet->getActiveSheet();
@@ -212,7 +212,7 @@ class ExcelService
     }
 
     /** @param Participant[] $data */
-    protected function setSheetParticipantGeneral(Worksheet $sheet, array $data, Date $startDate): void
+    protected function setSheetParticipantGeneral(Worksheet $sheet, array $data, ChronosDate $startDate): void
     {
         $sheet->setCellValue('A1', 'P.č.')
             ->setCellValue('B1', 'Jméno')

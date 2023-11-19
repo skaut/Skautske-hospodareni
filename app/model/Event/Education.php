@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Event;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Common\UnitId;
 use Model\Grant\SkautisGrantId;
 use Model\Skautis\ISkautisEvent;
@@ -16,8 +16,8 @@ use Nette\SmartObject;
  * @property-read UnitId $unitId
  * @property-read string $unitName
  * @property-read string $unitRegistrationNumber
- * @property-read Date|null $startDate
- * @property-read Date|null $endDate
+ * @property-read ChronosDate|null $startDate
+ * @property-read ChronosDate|null $endDate
  * @property-read string $location
  * @property-read string $state
  * @property-read SkautisGrantId|null $grantId
@@ -32,8 +32,8 @@ class Education implements ISkautisEvent
         private UnitId $unitId,
         private string $unitName,
         private string $unitRegistrationNumber,
-        private Date|null $startDate,
-        private Date|null $endDate,
+        private ChronosDate|null $startDate,
+        private ChronosDate|null $endDate,
         private string $location,
         private string $state,
         private SkautisGrantId|null $grantId,
@@ -65,12 +65,12 @@ class Education implements ISkautisEvent
         return $this->unitRegistrationNumber;
     }
 
-    public function getStartDate(): Date|null
+    public function getStartDate(): ChronosDate|null
     {
         return $this->startDate;
     }
 
-    public function getEndDate(): Date|null
+    public function getEndDate(): ChronosDate|null
     {
         return $this->endDate;
     }

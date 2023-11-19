@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Infrastructure\Repositories\Payment;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Helpers;
 use Hskauting\Tests\NullEventBus;
 use IntegrationTest;
@@ -74,7 +74,7 @@ class PaymentRepositoryTest extends IntegrationTest
         $this->assertSame($data['group_id'], $payment->getGroupId());
         $this->assertSame($data['name'], $payment->getName());
         $this->assertSame($data['amount'], $payment->getAmount());
-        $this->assertEquals(new Date($data['due_date']), $payment->getDueDate());
+        $this->assertEquals(new ChronosDate($data['due_date']), $payment->getDueDate());
         $this->assertTrue($payment->getState()->equalsValue($data['state']), "Payment is not should be 'preparing'");
         $this->assertEquals(new VariableSymbol($data['variable_symbol']), $payment->getVariableSymbol(), 'Variable symbol doesn\'t match');
     }

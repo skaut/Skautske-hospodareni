@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Skautis\Factory;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Participant\Participant;
 use Model\Participant\Payment;
 use stdClass;
@@ -27,10 +27,10 @@ final class ParticipantFactory
             $matches['nick'] ?? null,
             $skautisParticipant->Age ?? null,
             property_exists($skautisParticipant, 'Birthday')
-                ? new Date($skautisParticipant->Birthday)
+                ? new ChronosDate($skautisParticipant->Birthday)
                 : (
                     property_exists($skautisParticipant, 'PersonBirthday')
-                        ? new Date($skautisParticipant->PersonBirthday)
+                        ? new ChronosDate($skautisParticipant->PersonBirthday)
                         : null
                 ),
             $skautisParticipant->Street ?? $skautisParticipant->PersonAddressStreet,

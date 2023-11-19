@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Participant;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 
 class Participant
 {
@@ -17,7 +17,7 @@ class Participant
         private string $lastName,
         string|null $nickname,
         private int|null $age = null,
-        private Date|null $birthday = null,
+        private ChronosDate|null $birthday = null,
         private string $street,
         private string $city,
         private int $postcode,
@@ -63,7 +63,7 @@ class Participant
         return $this->age;
     }
 
-    public function getBirthday(): Date|null
+    public function getBirthday(): ChronosDate|null
     {
         return $this->birthday;
     }

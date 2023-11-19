@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment\Group;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Doctrine\ORM\Mapping as ORM;
 use Model\Payment\DueDateIsNotWorkday;
 use Model\Payment\VariableSymbol;
@@ -16,7 +16,7 @@ final class PaymentDefaults
     private float|null $amount = null;
 
     /** @ORM\Column(type="chronos_date", nullable=true) */
-    private Date|null $dueDate = null;
+    private ChronosDate|null $dueDate = null;
 
     /** @ORM\Column(type="integer", nullable=true) */
     private int|null $constantSymbol = null;
@@ -27,7 +27,7 @@ final class PaymentDefaults
     /** @throws DueDateIsNotWorkday */
     public function __construct(
         float|null $amount,
-        Date|null $dueDate,
+        ChronosDate|null $dueDate,
         int|null $constantSymbol,
         VariableSymbol|null $nextVariableSymbol,
     ) {
@@ -46,7 +46,7 @@ final class PaymentDefaults
         return $this->amount;
     }
 
-    public function getDueDate(): Date|null
+    public function getDueDate(): ChronosDate|null
     {
         return $this->dueDate;
     }

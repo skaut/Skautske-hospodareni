@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -61,7 +61,7 @@ class Payment extends Aggregate
     private float $amount;
 
     /** @ORM\Column(type="chronos_date") */
-    private Date $dueDate;
+    private ChronosDate $dueDate;
 
     /** @ORM\Column(type="variable_symbol", nullable=true, length=10) */
     private VariableSymbol|null $variableSymbol = null;
@@ -107,7 +107,7 @@ class Payment extends Aggregate
         string $name,
         array $recipients,
         float $amount,
-        Date $dueDate,
+        ChronosDate $dueDate,
         VariableSymbol|null $variableSymbol,
         int|null $constantSymbol,
         int|null $personId,
@@ -142,7 +142,7 @@ class Payment extends Aggregate
         string $name,
         array $recipients,
         float $amount,
-        Date $dueDate,
+        ChronosDate $dueDate,
         VariableSymbol|null $variableSymbol,
         int|null $constantSymbol,
         string $note,
@@ -243,7 +243,7 @@ class Payment extends Aggregate
         return $this->amount;
     }
 
-    public function getDueDate(): Date
+    public function getDueDate(): ChronosDate
     {
         return $this->dueDate;
     }
@@ -313,7 +313,7 @@ class Payment extends Aggregate
     private function updateDetails(
         string $name,
         array $recipients,
-        Date $dueDate,
+        ChronosDate $dueDate,
         int|null $constantSymbol,
         string $note,
     ): void {

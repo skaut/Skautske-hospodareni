@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Model\DTO\Event;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 
 final class EventListItem
 {
-    public function __construct(private int $id, private string $name, private Date $startDate, private Date $endDate, private string|null $prefix = null, private string $state)
+    public function __construct(private int $id, private string $name, private ChronosDate $startDate, private ChronosDate $endDate, private string|null $prefix = null, private string $state)
     {
     }
 
@@ -22,12 +22,12 @@ final class EventListItem
         return $this->name;
     }
 
-    public function getStartDate(): Date
+    public function getStartDate(): ChronosDate
     {
         return $this->startDate;
     }
 
-    public function getEndDate(): Date
+    public function getEndDate(): ChronosDate
     {
         return $this->endDate;
     }

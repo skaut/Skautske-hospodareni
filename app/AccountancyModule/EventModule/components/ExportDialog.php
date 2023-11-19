@@ -7,7 +7,7 @@ namespace App\AccountancyModule\EventModule\Components;
 use App\AccountancyModule\Components\Dialog;
 use App\AccountancyModule\ExcelResponse;
 use App\Forms\BaseForm;
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Common\Services\QueryBus;
 use Model\DTO\Event\EventListItem;
 use Model\Event\ReadModel\Queries\Excel\ExportEvents;
@@ -61,7 +61,7 @@ final class ExportDialog extends Dialog
     {
         $this->presenter->sendResponse(
             new ExcelResponse(
-                sprintf('Souhrn-akci-%s', Date::today()->format('Y_n_j')),
+                sprintf('Souhrn-akci-%s', ChronosDate::today()->format('Y_n_j')),
                 $this->queryBus->handle(new ExportEvents($values->eventIds)),
             ),
         );

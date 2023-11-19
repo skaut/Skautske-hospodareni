@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\Queries;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Event\SkautisCampId;
 
 /** @see CampPragueParticipantStatisticsQueryHandler */
 final class CampPragueParticipantsQuery
 {
-    public function __construct(private SkautisCampId $id, private string $registrationNumber, private Date $startDate)
+    public function __construct(private SkautisCampId $id, private string $registrationNumber, private ChronosDate $startDate)
     {
     }
 
@@ -24,7 +24,7 @@ final class CampPragueParticipantsQuery
         return $this->registrationNumber;
     }
 
-    public function getStartDate(): Date
+    public function getStartDate(): ChronosDate
     {
         return $this->startDate;
     }

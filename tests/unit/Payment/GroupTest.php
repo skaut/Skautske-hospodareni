@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use DateTimeImmutable;
 use Helpers;
@@ -20,7 +20,7 @@ class GroupTest extends Unit
 {
     public function testCreate(): void
     {
-        $dueDate         = new Date('2018-01-19'); // friday
+        $dueDate         = new ChronosDate('2018-01-19'); // friday
         $createdAt       = new DateTimeImmutable();
         $variableSymbol  = new VariableSymbol('666');
         $paymentDefaults = new PaymentDefaults(200.2, $dueDate, 203, $variableSymbol);
@@ -66,7 +66,7 @@ class GroupTest extends Unit
             [20, 22],
             null,
             'Skupina 01',
-            new PaymentDefaults(200.2, new Date('2018-01-19'), 203, new VariableSymbol('666')),
+            new PaymentDefaults(200.2, new ChronosDate('2018-01-19'), 203, new VariableSymbol('666')),
             new DateTimeImmutable(),
             Helpers::createEmails(),
             null,
@@ -86,7 +86,7 @@ class GroupTest extends Unit
             [20, 22],
             null,
             'Skupina 01',
-            new PaymentDefaults(200.2, new Date('2018-01-19'), 203, new VariableSymbol('666')),
+            new PaymentDefaults(200.2, new ChronosDate('2018-01-19'), 203, new VariableSymbol('666')),
             new DateTimeImmutable(),
             Helpers::createEmails(),
             $oAuthId,
@@ -109,7 +109,7 @@ class GroupTest extends Unit
 
     public function testUpdate(): void
     {
-        $dueDate     = new Date('2018-01-19'); // friday
+        $dueDate     = new ChronosDate('2018-01-19'); // friday
         $createdAt   = new DateTimeImmutable();
         $group       = $this->createGroup($dueDate, $createdAt);
         $bankAccount = m::mock(BankAccount::class, ['getId' => 33]);
@@ -285,12 +285,12 @@ class GroupTest extends Unit
     }
 
     private function createGroup(
-        Date|null $dueDate = null,
+        ChronosDate|null $dueDate = null,
         DateTimeImmutable|null $createdAt = null,
         BankAccount|null $bankAccount = null,
         OAuthId|null $oAuthId = null,
     ): Group {
-        $dueDate       ??= new Date('2018-01-19'); // defaults to friday
+        $dueDate       ??= new ChronosDate('2018-01-19'); // defaults to friday
         $paymentDefaults = new PaymentDefaults(200.2, $dueDate, 203, new VariableSymbol('666'));
         $createdAt     ??= new DateTimeImmutable();
         $emails          = Helpers::createEmails();
