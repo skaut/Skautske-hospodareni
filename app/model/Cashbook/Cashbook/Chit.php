@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Cashbook\Cashbook;
 
 use Assert\Assertion;
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Consistence\Doctrine\Enum\EnumAnnotation;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -177,7 +177,7 @@ class Chit
         })->toArray());
     }
 
-    public function getDate(): Date
+    public function getDate(): ChronosDate
     {
         return $this->body->getDate();
     }

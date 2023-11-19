@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\DTO\Participant;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Participant\Payment;
 use Model\Utils\MoneyFactory;
 use Nette\SmartObject;
@@ -34,7 +34,7 @@ class Participant
 
     private Payment $paymentObj;
 
-    public function __construct(private int $id, private int $personId, private string $firstName, private string $lastName, private string|null $nickName = null, private int|null $age = null, private Date|null $birthday = null, private string $street, private string $city, private int $postcode, private string $state, private string $unit, private string $unitRegistrationNumber, private int $days, private bool $isAccepted, Payment $payment, private string|null $category = null)
+    public function __construct(private int $id, private int $personId, private string $firstName, private string $lastName, private string|null $nickName = null, private int|null $age = null, private ChronosDate|null $birthday = null, private string $street, private string $city, private int $postcode, private string $state, private string $unit, private string $unitRegistrationNumber, private int $days, private bool $isAccepted, Payment $payment, private string|null $category = null)
     {
         $this->paymentObj = $payment;
     }
@@ -69,7 +69,7 @@ class Participant
         return $this->age;
     }
 
-    public function getBirthday(): Date|null
+    public function getBirthday(): ChronosDate|null
     {
         return $this->birthday;
     }

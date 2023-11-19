@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment\Commands\Payment;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Common\EmailAddress;
 use Model\Payment\Handlers\Payment\CreatePaymentHandler;
 use Model\Payment\VariableSymbol;
@@ -14,15 +14,15 @@ final class CreatePayment
 {
     /** @param EmailAddress[] $recipients */
     public function __construct(
-        private int $groupId,
-        private string $name,
-        private array $recipients,
-        private float $amount,
-        private Date $dueDate,
-        private int|null $personId = null,
+        private int                 $groupId,
+        private string              $name,
+        private array               $recipients,
+        private float               $amount,
+        private ChronosDate         $dueDate,
+        private int|null            $personId = null,
         private VariableSymbol|null $variableSymbol = null,
-        private int|null $constantSymbol = null,
-        private string $note,
+        private int|null            $constantSymbol = null,
+        private string              $note,
     ) {
     }
 
@@ -47,7 +47,7 @@ final class CreatePayment
         return $this->amount;
     }
 
-    public function getDueDate(): Date
+    public function getDueDate(): ChronosDate
     {
         return $this->dueDate;
     }

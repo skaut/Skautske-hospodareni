@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Handlers;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use CommandHandlerTest;
 use Helpers;
 use Model\Cashbook\Cashbook;
@@ -36,7 +36,7 @@ final class MoveChitsToDifferentCashbookHandlerTest extends CommandHandlerTest
 
         for ($i = 0; $i < 3; $i++) {
             $sourceCashbook->addChit(
-                new Cashbook\ChitBody(null, new Date(), null),
+                new Cashbook\ChitBody(null, new ChronosDate(), null),
                 Cashbook\PaymentMethod::get(Cashbook\PaymentMethod::CASH),
                 [new Cashbook\ChitItem(new Amount('100'), $category, 'test')],
                 Helpers::mockCashbookCategories($categoryId),

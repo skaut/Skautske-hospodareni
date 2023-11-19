@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\TravelModule;
 
 use App\Forms\BaseForm;
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Exception;
 use Model\DTO\Travel\Contract;
 use Model\Services\PdfRenderer;
@@ -163,7 +163,7 @@ class ContractPresenter extends BasePresenter
             ->setRequired('Musíte vyplnit zástupce jednotky')
             ->setHtmlAttribute('class', 'form-control');
         $form->addDate('start', 'Platnost od')
-            ->setDefaultValue(Date::now())
+            ->setDefaultValue(ChronosDate::now())
             ->setRequired('Musíte vyplnit od kdy smlouva platí')
             ->setHtmlAttribute('class', 'form-control');
 
@@ -188,7 +188,7 @@ class ContractPresenter extends BasePresenter
             $v->passengerBirthday,
         );
 
-        $this->travelService->createContract($this->getUnitId(), $v->unitRepresentative, new Date($v->start), $passenger);
+        $this->travelService->createContract($this->getUnitId(), $v->unitRepresentative, new ChronosDate($v->start), $passenger);
         $this->flashMessage('Smlouva byla založena.');
 
         $this->redirect('default');

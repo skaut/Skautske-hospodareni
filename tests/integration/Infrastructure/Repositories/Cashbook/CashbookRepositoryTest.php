@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Infrastructure\Repositories\Cashbook;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Doctrine\ORM\EntityManager;
 use Helpers;
 use IntegrationTest;
@@ -83,7 +83,7 @@ class CashbookRepositoryTest extends IntegrationTest
         $cashbook->addChit(
             new ChitBody(
                 new Cashbook\ChitNumber($chit['num']),
-                new Date($chit['date']),
+                new ChronosDate($chit['date']),
                 new Cashbook\Recipient($chit['recipient']),
             ),
             Cashbook\PaymentMethod::get($chit['payment_method']),
@@ -107,7 +107,7 @@ class CashbookRepositoryTest extends IntegrationTest
     public function testOrphanedChitItemsAreRemoved(): void
     {
         $cashbook      = new Cashbook(CashbookId::generate(), Cashbook\CashbookType::get(Cashbook\CashbookType::CAMP));
-        $body          = new ChitBody(null, Date::today(), null);
+        $body          = new ChitBody(null, ChronosDate::today(), null);
         $paymentMethod = Cashbook\PaymentMethod::BANK();
         $category      = Helpers::mockChitItemCategory(1);
         $categoryList  = Helpers::mockCashbookCategories(1, Operation::INCOME());

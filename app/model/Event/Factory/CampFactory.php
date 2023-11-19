@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Skautis\Factory;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Common\UnitId;
 use Model\Event\Camp;
 use Model\Event\ParticipantStatistics;
@@ -41,8 +41,8 @@ final class CampFactory
             $skautisCamp->DisplayName,
             new UnitId($skautisCamp->ID_Unit),
             $skautisCamp->Unit,
-            Date::createFromFormat(self::DATETIME_FORMAT, $skautisCamp->StartDate),
-            Date::createFromFormat(self::DATETIME_FORMAT, $skautisCamp->EndDate),
+            ChronosDate::createFromFormat(self::DATETIME_FORMAT, $skautisCamp->StartDate),
+            ChronosDate::createFromFormat(self::DATETIME_FORMAT, $skautisCamp->EndDate),
             $skautisCamp->Location,
             $skautisCamp->ID_EventCampState,
             $skautisCamp->RegistrationNumber,

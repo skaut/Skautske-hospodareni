@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\PaymentModule;
 
 use App\Forms\BaseForm;
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\DTO\Payment\Group;
 use Model\DTO\Payment\RepaymentCandidate;
 use Model\Payment\BankAccount\AccountNumber;
@@ -50,7 +50,7 @@ final class RepaymentPresenter extends BasePresenter
         $form->addDate('date', 'Datum splatnosti:')
             ->disableWeekends()
             ->setRequired(true)
-            ->setDefaultValue(Date::now()->addWeekday());
+            ->setDefaultValue(ChronosDate::now()->addWeekday());
 
         $form->addSubmit('send', 'Založit příkazy k úhradě')
             ->setHtmlAttribute('class', 'btn btn-primary btn-large');
@@ -142,7 +142,7 @@ final class RepaymentPresenter extends BasePresenter
             $this->commandBus->handle(
                 new CreateRepayments(
                     $bankAccount->getNumber(),
-                    $values->date ?? Date::now(),
+                    $values->date ?? ChronosDate::now(),
                     $repayments,
                     $bankAccount->getToken(),
                 ),

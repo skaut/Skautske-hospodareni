@@ -9,7 +9,7 @@ use App\AccountancyModule\PaymentModule\Components\GroupForm;
 use App\AccountancyModule\PaymentModule\Factories;
 use App\AccountancyModule\PaymentModule\Factories\IGroupFormFactory;
 use Assert\Assertion;
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Common\Registration;
 use Model\Common\UnitId;
 use Model\Payment\Group\SkautisEntity;
@@ -57,7 +57,7 @@ class CreateGroupPresenter extends BasePresenter
         );
 
         $form->fillName('Registrace ' . $registration->getYear());
-        $form->fillDueDate(Date::createFromDate($registration->getYear(), 1, 15));
+        $form->fillDueDate(ChronosDate::createFromDate($registration->getYear(), 1, 15));
 
         return $form;
     }

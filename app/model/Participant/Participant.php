@@ -4,30 +4,30 @@ declare(strict_types=1);
 
 namespace Model\Participant;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 
 class Participant
 {
     private string|null $nickName = null;
 
     public function __construct(
-        private int $id,
-        private int $personId,
-        private string $firstName,
-        private string $lastName,
-        string|null $nickname,
-        private int|null $age = null,
-        private Date|null $birthday = null,
-        private string $street,
-        private string $city,
-        private int $postcode,
-        private string $state,
-        private int|null $unitId = null,
-        private string $unit,
-        private string $unitRegistrationNumber,
-        private int $days,
-        private bool $isAccepted,
-        private Payment $payment,
+        private int              $id,
+        private int              $personId,
+        private string           $firstName,
+        private string           $lastName,
+        string|null              $nickname,
+        private int|null         $age = null,
+        private ChronosDate|null $birthday = null,
+        private string           $street,
+        private string           $city,
+        private int              $postcode,
+        private string           $state,
+        private int|null         $unitId = null,
+        private string           $unit,
+        private string           $unitRegistrationNumber,
+        private int              $days,
+        private bool             $isAccepted,
+        private Payment          $payment,
         private string|null $category = null,
     ) {
         $this->nickName = $nickname;
@@ -63,7 +63,7 @@ class Participant
         return $this->age;
     }
 
-    public function getBirthday(): Date|null
+    public function getBirthday(): ChronosDate|null
     {
         return $this->birthday;
     }

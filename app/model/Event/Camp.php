@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Event;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Common\UnitId;
 use Model\Skautis\ISkautisEvent;
 use Nette\SmartObject;
@@ -29,21 +29,21 @@ class Camp implements ISkautisEvent
 
     /** @param  UnitId[] $participatingUnits */
     public function __construct(
-        private SkautisCampId $id,
-        private string $displayName,
-        private UnitId $unitId,
-        private string $unitName,
-        private Date $startDate,
-        private Date $endDate,
-        private string $location,
-        private string $state,
-        private string $registrationNumber,
-        private array $participatingUnits,
-        private bool $isOnlineLogin,
-        private int|null $totalDays = null,
+        private SkautisCampId              $id,
+        private string                     $displayName,
+        private UnitId                     $unitId,
+        private string                     $unitName,
+        private ChronosDate                $startDate,
+        private ChronosDate                $endDate,
+        private string                     $location,
+        private string                     $state,
+        private string                     $registrationNumber,
+        private array                      $participatingUnits,
+        private bool                       $isOnlineLogin,
+        private int|null                   $totalDays = null,
         private ParticipantStatistics|null $participantStatistics = null,
-        private bool|null $realAutoComputed = null,
-        private bool|null $realTotalCostAutoComputed = null,
+        private bool|null                  $realAutoComputed = null,
+        private bool|null                  $realTotalCostAutoComputed = null,
     ) {
     }
 
@@ -72,12 +72,12 @@ class Camp implements ISkautisEvent
         return $this->state;
     }
 
-    public function getStartDate(): Date
+    public function getStartDate(): ChronosDate
     {
         return $this->startDate;
     }
 
-    public function getEndDate(): Date
+    public function getEndDate(): ChronosDate
     {
         return $this->endDate;
     }

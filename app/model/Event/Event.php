@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Event;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Common\UnitId;
 use Model\Skautis\ISkautisEvent;
 use Nette\SmartObject;
@@ -35,26 +35,26 @@ class Event implements ISkautisEvent
     private bool|null $statisticAutoComputed = null;
 
     public function __construct(
-        private SkautisEventId $id,
-        private string $displayName,
-        private UnitId $unitId,
-        private string $unitName,
-        private string $state,
-        private Date $startDate,
-        private Date $endDate,
-        private int|null $totalDays = null,
-        string|null $location,
-        private string $registrationNumber,
-        string|null $note,
-        private int $scopeId,
-        private int $typeId,
-        bool|null $isStatisticAutoComputed,
-        private int|null $realCount = null,
-        private int|null $realChildDays = null,
-        private int|null $realPersonDays = null,
-        private string|null $personClosed = null,
-        private Date|null $dateClosed = null,
-        private string|null $unitEducativeName = null,
+        private SkautisEventId   $id,
+        private string           $displayName,
+        private UnitId           $unitId,
+        private string           $unitName,
+        private string           $state,
+        private ChronosDate      $startDate,
+        private ChronosDate      $endDate,
+        private int|null         $totalDays = null,
+        string|null              $location,
+        private string           $registrationNumber,
+        string|null              $note,
+        private int              $scopeId,
+        private int              $typeId,
+        bool|null                $isStatisticAutoComputed,
+        private int|null         $realCount = null,
+        private int|null         $realChildDays = null,
+        private int|null         $realPersonDays = null,
+        private string|null      $personClosed = null,
+        private ChronosDate|null $dateClosed = null,
+        private string|null      $unitEducativeName = null,
     ) {
         $this->location              = $location ?? '';
         $this->note                  = $note ?? '';
@@ -62,12 +62,12 @@ class Event implements ISkautisEvent
     }
 
     public function update(
-        string $displayName,
+        string      $displayName,
         string|null $location,
-        Date $startDate,
-        Date $endDate,
-        int $scopeId,
-        int $typeId,
+        ChronosDate $startDate,
+        ChronosDate $endDate,
+        int         $scopeId,
+        int         $typeId,
     ): void {
         $this->displayName = $displayName;
         $this->location    = $location;
@@ -107,12 +107,12 @@ class Event implements ISkautisEvent
         return $this->state;
     }
 
-    public function getStartDate(): Date
+    public function getStartDate(): ChronosDate
     {
         return $this->startDate;
     }
 
-    public function getEndDate(): Date
+    public function getEndDate(): ChronosDate
     {
         return $this->endDate;
     }
@@ -172,7 +172,7 @@ class Event implements ISkautisEvent
         return $this->personClosed;
     }
 
-    public function getDateClosed(): Date|null
+    public function getDateClosed(): ChronosDate|null
     {
         return $this->dateClosed;
     }

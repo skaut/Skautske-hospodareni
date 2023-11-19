@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model;
 
 use Assert\Assert;
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use Model\Bank\Fio\Transaction as BankTransaction;
 use Model\DTO\Payment\PairingResult;
@@ -91,9 +91,9 @@ class BankService
                 continue;
             }
 
-            $pairSince = $daysBack === null ? $this->resolvePairingIntervalStart($groups) : Date::today()->subDays($daysBack);
+            $pairSince = $daysBack === null ? $this->resolvePairingIntervalStart($groups) : ChronosDate::today()->subDays($daysBack);
 
-            $transactions = $this->bank->getTransactions($pairSince, new Date($now), $bankAccount);
+            $transactions = $this->bank->getTransactions($pairSince, new ChronosDate($now), $bankAccount);
             $paired       = $this->markPaymentsAsComplete($transactions, $payments);
 
             $this->payments->saveMany($paired);
@@ -121,15 +121,15 @@ class BankService
     }
 
     /** @param Group[] $groups */
-    private function resolvePairingIntervalStart(array $groups): Date
+    private function resolvePairingIntervalStart(array $groups): ChronosDate
     {
-        $defaultStart = Date::today()->subDays(self::DAYS_BACK_DEFAULT);
+        $defaultStart = ChronosDate::today()->subDays(self::DAYS_BACK_DEFAULT);
 
         if ($groups === []) {
             return $defaultStart;
         }
 
-        return new Date(
+        return new ChronosDate(
             min(
                 array_map(fn (Group $g) => $g->getLastPairing() ?? $defaultStart, $groups),
             ),

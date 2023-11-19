@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Event;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Nette\SmartObject;
 
 use function array_unique;
@@ -21,9 +21,9 @@ class EducationTerm
     use SmartObject;
 
     public function __construct(
-        private SkautisEducationTermId $id,
-        private Date $startDate,
-        private Date $endDate,
+        private SkautisEducationTermId     $id,
+        private ChronosDate                $startDate,
+        private ChronosDate                $endDate,
         private SkautisEducationLocationId $locationId,
     ) {
     }
@@ -33,12 +33,12 @@ class EducationTerm
         return $this->id;
     }
 
-    public function getStartDate(): Date
+    public function getStartDate(): ChronosDate
     {
         return $this->startDate;
     }
 
-    public function getEndDate(): Date
+    public function getEndDate(): ChronosDate
     {
         return $this->endDate;
     }

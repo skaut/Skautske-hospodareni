@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\DTO\Travel;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Travel\Contract\Passenger;
 use Nette\SmartObject;
 
@@ -22,13 +22,13 @@ class Contract
     use SmartObject;
 
     public function __construct(
-        private int $id,
-        private Passenger $passenger,
-        private int $unitId,
-        private string $unitRepresentative,
-        private Date|null $since = null,
-        private Date|null $until = null,
-        private int $templateVersion,
+        private int              $id,
+        private Passenger        $passenger,
+        private int              $unitId,
+        private string           $unitRepresentative,
+        private ChronosDate|null $since = null,
+        private ChronosDate|null $until = null,
+        private int              $templateVersion,
     ) {
     }
 
@@ -52,12 +52,12 @@ class Contract
         return $this->unitRepresentative;
     }
 
-    public function getSince(): Date|null
+    public function getSince(): ChronosDate|null
     {
         return $this->since;
     }
 
-    public function getUntil(): Date|null
+    public function getUntil(): ChronosDate|null
     {
         return $this->until;
     }

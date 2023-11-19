@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace model\DTO\Participant;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Nette\SmartObject;
 
 /**
@@ -54,11 +54,11 @@ class PaymentDetails
         return $this->specificSymbol;
     }
 
-    public function getPaymentTerm(): Date|null
+    public function getPaymentTerm(): ChronosDate|null
     {
         // fix weekends - cannot use weekend for due date
         if ($this->paymentTerm !== null) {
-            $date = new Date($this->paymentTerm);
+            $date = new ChronosDate($this->paymentTerm);
 
             if ($date->isSaturday() || $date->isSunday()) {
                 return $date->modify('next monday');

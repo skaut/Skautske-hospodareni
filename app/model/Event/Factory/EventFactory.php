@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Skautis\Factory;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Common\UnitId;
 use Model\Event\Event;
 use Model\Event\SkautisEventId;
@@ -18,11 +18,11 @@ final class EventFactory
 {
     private const DATETIME_FORMAT = 'Y-m-d\TH:i:s';
 
-    private function createDateFromFormat(string $str): Date
+    private function createDateFromFormat(string $str): ChronosDate
     {
         $matches = explode('.', $str, 2); // remove microseconds
 
-        return Date::createFromFormat(self::DATETIME_FORMAT, $matches[0]);
+        return ChronosDate::createFromFormat(self::DATETIME_FORMAT, $matches[0]);
     }
 
     public function create(stdClass $skautisEvent): Event
@@ -46,7 +46,7 @@ final class EventFactory
             $skautisEvent->ChildDays ?? null,
             $skautisEvent->PersonDays ?? null,
             $skautisEvent->PersonClosed ?? null,
-            isset($skautisEvent->DateClosed) ? Date::createFromFormat('Y-m-d', explode('T', $skautisEvent->DateClosed)[0]) : null,
+            isset($skautisEvent->DateClosed) ? ChronosDate::createFromFormat('Y-m-d', explode('T', $skautisEvent->DateClosed)[0]) : null,
             $skautisEvent->UnitEducative ?? null,
         );
     }

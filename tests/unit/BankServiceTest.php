@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use DateTimeImmutable;
 use Helpers;
@@ -63,7 +63,7 @@ final class BankServiceTest extends Unit
             ->andReturn($transactions);
 
         $payments = [
-            new Payment($group, '-', [], $amount, Date::now(), $vs, null, null, ''),
+            new Payment($group, '-', [], $amount, ChronosDate::now(), $vs, null, null, ''),
         ];
 
         Helpers::assignIdentity($payments[0], 1);
@@ -120,8 +120,8 @@ final class BankServiceTest extends Unit
             ->andReturn($transactions1);
 
         $payments1 = [
-            new Payment($group1, '-', [], $amount, Date::now(), $vs1, null, null, ''),
-            new Payment($group2, '-', [], $amount, Date::now(), $vs2, null, null, ''),
+            new Payment($group1, '-', [], $amount, ChronosDate::now(), $vs1, null, null, ''),
+            new Payment($group2, '-', [], $amount, ChronosDate::now(), $vs2, null, null, ''),
         ];
         Helpers::assignIdentity($payments1[0], 1);
 
@@ -162,8 +162,8 @@ final class BankServiceTest extends Unit
         ];
 
         $payments1 = [
-            new Payment($group1, '-', [], 100, Date::now(), new VariableSymbol('123456'), null, null, ''),
-            new Payment($group2, '-', [], 100, Date::now(), new VariableSymbol('7854'), null, null, ''),
+            new Payment($group1, '-', [], 100, ChronosDate::now(), new VariableSymbol('123456'), null, null, ''),
+            new Payment($group2, '-', [], 100, ChronosDate::now(), new VariableSymbol('7854'), null, null, ''),
         ];
 
         $payments2 = [];
@@ -199,8 +199,8 @@ final class BankServiceTest extends Unit
         $bank->shouldReceive('getTransactions')
             ->once()
             ->withArgs(
-                fn (Date $since, Date $until) => $since->equals(Date::today()->subDays(60))
-                    && $until->equals(Date::today())
+                fn (ChronosDate $since, ChronosDate $until) => $since->equals(ChronosDate::today()->subDays(60))
+                    && $until->equals(ChronosDate::today())
             )
             ->andReturn($transactions1);
 

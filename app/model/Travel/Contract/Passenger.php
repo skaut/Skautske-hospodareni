@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Travel\Contract;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Doctrine\ORM\Mapping as ORM;
 use Nette\SmartObject;
 
@@ -30,9 +30,9 @@ final class Passenger
     private string $address;
 
     /** @ORM\Column(type="chronos_date", nullable=true, name="driver_birthday") */
-    private Date|null $birthday = null;
+    private ChronosDate|null $birthday = null;
 
-    public function __construct(string $name, string $contact, string $address, Date|null $birthday)
+    public function __construct(string $name, string $contact, string $address, ChronosDate|null $birthday)
     {
         $this->name     = $name;
         $this->contact  = $contact;
@@ -55,7 +55,7 @@ final class Passenger
         return $this->address;
     }
 
-    public function getBirthday(): Date|null
+    public function getBirthday(): ChronosDate|null
     {
         return $this->birthday;
     }

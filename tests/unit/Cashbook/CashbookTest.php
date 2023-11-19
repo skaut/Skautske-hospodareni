@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Cashbook;
 
 use Assert\InvalidArgumentException;
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use Helpers;
 use Mockery as m;
@@ -60,7 +60,7 @@ class CashbookTest extends Unit
         Helpers::addChitToCashbook($cashbook, null, null, 1, '300');
         Helpers::addChitToCashbook($cashbook, null, null, 2, '150');
 
-        $chitBody = new ChitBody(null, new Date(), null);
+        $chitBody = new ChitBody(null, new ChronosDate(), null);
         $items    = [
             new Cashbook\ChitItem(new Amount('35'), Helpers::mockChitItemCategory(1), 'čokoláda'),
             new Cashbook\ChitItem(new Amount('75'), Helpers::mockChitItemCategory(2), 'vlak'),
@@ -191,7 +191,7 @@ class CashbookTest extends Unit
     public function testCreateChitWithoutItems(): void
     {
         $cashbook = $this->createEventCashbook();
-        $chitBody = new ChitBody(null, new Date(), null);
+        $chitBody = new ChitBody(null, new ChronosDate(), null);
         $this->expectException(InvalidArgumentException::class);
         $cashbook->addChit($chitBody, PaymentMethod::CASH(), [], []);
     }
@@ -199,7 +199,7 @@ class CashbookTest extends Unit
     public function testCreateChitWithDuplicitItemCategory(): void
     {
         $cashbook   = $this->createEventCashbook();
-        $chitBody   = new ChitBody(null, new Date(), null);
+        $chitBody   = new ChitBody(null, new ChronosDate(), null);
         $categoryId = 1;
         $category   = new \Model\Cashbook\Cashbook\Category($categoryId, Operation::INCOME());
         $items      = [
@@ -213,7 +213,7 @@ class CashbookTest extends Unit
     public function testCreateChitWithVirtualCategory(): void
     {
         $cashbook = $this->createEventCashbook();
-        $chitBody = new ChitBody(null, new Date(), null);
+        $chitBody = new ChitBody(null, new ChronosDate(), null);
 
         $categories =  [
             1 => m::mock(Category::class, ['getId' => 1, 'getOperationType' => Operation::EXPENSE(), 'isVirtual' => true]),

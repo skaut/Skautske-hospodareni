@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\DTO\Payment;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use Model\Common\EmailAddress;
 use Model\Payment\Payment\SentEmail;
@@ -43,21 +43,21 @@ class Payment
      * @param SentEmail[]    $sentEmails
      */
     public function __construct(
-        private int $id,
-        private string $name,
-        private float $amount,
-        private array $recipients,
-        private Date $dueDate,
-        private VariableSymbol|null $variableSymbol,
-        private int|null $constantSymbol,
-        private string $note,
-        private bool $closed,
-        private State $state,
-        private Transaction|null $transaction,
+        private int                    $id,
+        private string                 $name,
+        private float                  $amount,
+        private array                  $recipients,
+        private ChronosDate            $dueDate,
+        private VariableSymbol|null    $variableSymbol,
+        private int|null               $constantSymbol,
+        private string                 $note,
+        private bool                   $closed,
+        private State                  $state,
+        private Transaction|null       $transaction,
         private DateTimeImmutable|null $closedAt,
-        private string|null $closedByUsername,
-        private int|null $personId,
-        private int $groupId,
+        private string|null            $closedByUsername,
+        private int|null               $personId,
+        private int                    $groupId,
         private array $sentEmails,
     ) {
     }
@@ -88,7 +88,7 @@ class Payment
         return implode(', ', array_map(fn (EmailAddress $emailAddress) => Strings::truncate($emailAddress->getValue(), 35), $this->recipients));
     }
 
-    public function getDueDate(): Date
+    public function getDueDate(): ChronosDate
     {
         return $this->dueDate;
     }

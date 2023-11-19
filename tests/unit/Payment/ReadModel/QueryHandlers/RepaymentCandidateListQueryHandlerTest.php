@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment\ReadModel\QueryHandlers;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use DateTimeImmutable;
 use Mockery;
@@ -87,7 +87,7 @@ final class RepaymentCandidateListQueryHandlerTest extends Unit
             'My Name',
             $amount,
             [],
-            Date::create(2021, 06, 17),
+            ChronosDate::create(2021, 06, 17),
             null,
             null,
             '',

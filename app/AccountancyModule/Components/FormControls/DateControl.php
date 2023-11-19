@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\Components\FormControls;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use InvalidArgumentException;
 use Nette\Forms\Controls\BaseControl;
 use Nette\Utils\Html;
@@ -21,8 +21,8 @@ class DateControl extends BaseControl
 
     public function setDefaultValue(mixed $value): self
     {
-        if (! $value instanceof Date && $value !== null) {
-            throw new InvalidArgumentException(sprintf('$value must be instance of %s or NULL', Date::class));
+        if (! $value instanceof ChronosDate && $value !== null) {
+            throw new InvalidArgumentException(sprintf('$value must be instance of %s or NULL', ChronosDate::class));
         }
 
         parent::setDefaultValue($value);
@@ -47,7 +47,7 @@ class DateControl extends BaseControl
         return $this;
     }
 
-    public function getValue(): Date|null
+    public function getValue(): ChronosDate|null
     {
         $value = parent::getValue();
 
@@ -55,11 +55,11 @@ class DateControl extends BaseControl
             return null;
         }
 
-        if ($value instanceof Date) {
+        if ($value instanceof ChronosDate) {
             return $value;
         }
 
-        return Date::createFromFormat(self::DATE_FORMAT, str_replace(' ', '', $value));
+        return ChronosDate::createFromFormat(self::DATE_FORMAT, str_replace(' ', '', $value));
     }
 
     public function getControl(): Html

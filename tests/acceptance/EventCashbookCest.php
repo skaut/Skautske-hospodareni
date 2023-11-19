@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace acceptance;
 
 use AcceptanceTester;
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Facebook\WebDriver\WebDriverKeys;
 use Model\Cashbook\Operation;
 
@@ -90,7 +90,7 @@ class EventCashbookCest extends BaseAcceptanceCest
 
         $purpose = 'Nákup chleba';
 
-        $this->fillChitForm(new Date(), $purpose, Operation::EXPENSE(), 'Potraviny', 'Testovací skaut', '100 + 1');
+        $this->fillChitForm(new ChronosDate(), $purpose, Operation::EXPENSE(), 'Potraviny', 'Testovací skaut', '100 + 1');
         $I->scrollTo('input[name="send"]');
         $I->click('input[name="send"]');
         $this->waitForBalance('-101,00');
@@ -116,7 +116,7 @@ class EventCashbookCest extends BaseAcceptanceCest
         $I->click('Nový doklad');
         $I->amGoingTo('add income chit');
 
-        $this->fillChitForm(new Date(), 'Účastnické poplatky', Operation::INCOME(), 'Přijmy od účastníků', 'Testovací skaut 2', '100');
+        $this->fillChitForm(new ChronosDate(), 'Účastnické poplatky', Operation::INCOME(), 'Přijmy od účastníků', 'Testovací skaut 2', '100');
         $I->scrollTo('input[name="send"]');
         $I->click('input[name="send"]');
 
@@ -152,7 +152,7 @@ class EventCashbookCest extends BaseAcceptanceCest
         $I->waitForElementNotVisible($cancelButton);
     }
 
-    private function fillChitForm(Date $date, string $purpose, Operation $type, string $category, string $recipient, string $amount): void
+    private function fillChitForm(ChronosDate $date, string $purpose, Operation $type, string $category, string $recipient, string $amount): void
     {
         $this->I->wait(2); // unroll block
         $this->I->wantToTest('Uložit');

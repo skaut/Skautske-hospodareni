@@ -8,7 +8,7 @@ use App\AccountancyModule\Components\DataGrid;
 use App\AccountancyModule\EventModule\Components\ExportDialog;
 use App\AccountancyModule\EventModule\Factories\IExportDialogFactory;
 use App\AccountancyModule\Factories\GridFactory;
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Auth\Resources\Event as EventResource;
 use Model\DTO\Event\EventListItem;
 use Model\Event\Commands\CancelEvent;
@@ -102,7 +102,7 @@ class DefaultPresenter extends BasePresenter
 
         $grid->setDefaultFilter([
             'search' => '',
-            'year' => (string) Date::today()->year,
+            'year' => (string) ChronosDate::today()->year,
             'state' => self::DEFAULT_STATE,
         ]);
 

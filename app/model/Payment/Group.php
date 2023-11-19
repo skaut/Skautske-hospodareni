@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Payment;
 
 use Assert\Assertion;
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -235,7 +235,7 @@ class Group
         return $this->paymentDefaults->getAmount();
     }
 
-    public function getDueDate(): Date|null
+    public function getDueDate(): ChronosDate|null
     {
         return $this->paymentDefaults->getDueDate();
     }

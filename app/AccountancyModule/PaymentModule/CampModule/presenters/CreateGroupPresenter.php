@@ -7,7 +7,7 @@ namespace App\AccountancyModule\PaymentModule\CampModule;
 use App\AccountancyModule\PaymentModule\BasePresenter;
 use App\AccountancyModule\PaymentModule\Components\GroupForm;
 use App\AccountancyModule\PaymentModule\Factories\IGroupFormFactory;
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Event\Camp;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\ReadModel\Queries\CampsWithoutGroupQuery;
@@ -23,7 +23,7 @@ final class CreateGroupPresenter extends BasePresenter
 
     public function actionDefault(int $campId): void
     {
-        $camps = $this->queryBus->handle(new CampsWithoutGroupQuery(Date::today()->year));
+        $camps = $this->queryBus->handle(new CampsWithoutGroupQuery(ChronosDate::today()->year));
 
         if (! $this->isEditable || ! isset($camps[$campId])) {
             $this->flashMessage('Pro tento tábor není možné vytvořit skupinu plateb', 'danger');

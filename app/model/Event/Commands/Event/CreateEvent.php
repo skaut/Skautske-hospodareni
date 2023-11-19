@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Model\Event\Commands\Event;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Event\Handlers\Event\CreateEventHandler;
 
 /** @see CreateEventHandler */
 final class CreateEvent
 {
     public function __construct(
-        private string $name,
-        private Date $startDate,
-        private Date $endDate,
-        private int $unitId,
+        private string      $name,
+        private ChronosDate $startDate,
+        private ChronosDate $endDate,
+        private int         $unitId,
         private string|null $location = null,
-        private int $scopeId,
-        private int $typeId,
+        private int         $scopeId,
+        private int         $typeId,
     ) {
     }
 
@@ -26,12 +26,12 @@ final class CreateEvent
         return $this->name;
     }
 
-    public function getStartDate(): Date
+    public function getStartDate(): ChronosDate
     {
         return $this->startDate;
     }
 
-    public function getEndDate(): Date
+    public function getEndDate(): ChronosDate
     {
         return $this->endDate;
     }

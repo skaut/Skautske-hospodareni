@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Consistence\Type\ArrayType\ArrayType;
 use Consistence\Type\ArrayType\KeyValuePair;
 use DateTimeImmutable;
@@ -135,7 +135,7 @@ class TravelService
         );
     }
 
-    public function addTravel(int $commandId, TransportType $transportType, Date $date, string $startPlace, string $endPlace, float $distanceOrPrice): void
+    public function addTravel(int $commandId, TransportType $transportType, ChronosDate $date, string $startPlace, string $endPlace, float $distanceOrPrice): void
     {
         $command = $this->commands->find($commandId);
 
@@ -151,13 +151,13 @@ class TravelService
     }
 
     public function updateTravel(
-        int $commandId,
-        int $travelId,
-        float $distanceOrPrice,
-        Date $date,
+        int           $commandId,
+        int           $travelId,
+        float         $distanceOrPrice,
+        ChronosDate   $date,
         TransportType $transportType,
-        string $startPlace,
-        string $endPlace,
+        string        $startPlace,
+        string        $endPlace,
     ): void {
         $details = new Command\TravelDetails($date, $transportType, $startPlace, $endPlace);
 
@@ -234,7 +234,7 @@ class TravelService
         return $result;
     }
 
-    public function createContract(int $unitId, string $unitRepresentative, Date $since, Contract\Passenger $passenger): void
+    public function createContract(int $unitId, string $unitRepresentative, ChronosDate $since, Contract\Passenger $passenger): void
     {
         $unit = $this->units->find($unitId);
 

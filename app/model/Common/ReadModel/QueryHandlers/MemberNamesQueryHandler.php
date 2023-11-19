@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Common\ReadModel\QueryHandlers;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Common\ReadModel\Queries\MemberNamesQuery;
 use Model\Common\Repositories\IMemberRepository;
 
@@ -18,7 +18,7 @@ final class MemberNamesQueryHandler
     public function __invoke(MemberNamesQuery $query): array
     {
         $minimalAge = $query->getMinimalAge();
-        $today      = Date::today();
+        $today      = ChronosDate::today();
 
         $names = [];
 

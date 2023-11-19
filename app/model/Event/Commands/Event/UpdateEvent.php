@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Model\Event\Commands\Event;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Event\Handlers\Event\UpdateEventHandler;
 use Model\Event\SkautisEventId;
 
 /** @see UpdateEventHandler */
 class UpdateEvent
 {
-    public function __construct(private SkautisEventId $eventId, private string $name, private Date $startDate, private Date $endDate, private string|null $location = null, private int $scopeId, private int $typeId)
+    public function __construct(private SkautisEventId $eventId, private string $name, private ChronosDate $startDate, private ChronosDate $endDate, private string|null $location = null, private int $scopeId, private int $typeId)
     {
     }
 
@@ -25,12 +25,12 @@ class UpdateEvent
         return $this->name;
     }
 
-    public function getStartDate(): Date
+    public function getStartDate(): ChronosDate
     {
         return $this->startDate;
     }
 
-    public function getEndDate(): Date
+    public function getEndDate(): ChronosDate
     {
         return $this->endDate;
     }

@@ -7,7 +7,7 @@ namespace App\AccountancyModule\EducationModule;
 use App\AccountancyModule\Components\DataGrid;
 use App\AccountancyModule\EventModule\EducationListDataSource;
 use App\AccountancyModule\Factories\GridFactory;
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 
 class DefaultPresenter extends BasePresenter
 {
@@ -34,7 +34,7 @@ class DefaultPresenter extends BasePresenter
 
         $grid->addYearFilter('year', 'Rok')
             ->setCondition(function (EducationListDataSource $dataSource, $year): void {
-                $dataSource->filterByYear($year === DataGrid::OPTION_ALL ? null : (int) ($year ?? Date::today()->year));
+                $dataSource->filterByYear($year === DataGrid::OPTION_ALL ? null : (int) ($year ?? ChronosDate::today()->year));
             });
 
         $grid->addFilterText('search', 'Název', 'name')
@@ -47,7 +47,7 @@ class DefaultPresenter extends BasePresenter
         $grid->setDefaultSort(['name' => 'ASC']);
 
         $grid->setDefaultFilter([
-            'year' => (string) Date::today()->year,
+            'year' => (string) ChronosDate::today()->year,
         ]);
 
         return $grid;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment\Fio;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Payment\BankAccount;
 use Nette\Caching\Cache;
 
@@ -19,7 +19,7 @@ class CachingClientDecorator implements IFioClient
     /**
      * {@inheritDoc}
      */
-    public function getTransactions(Date $since, Date $until, BankAccount $account): array
+    public function getTransactions(ChronosDate $since, ChronosDate $until, BankAccount $account): array
     {
         $key = sprintf('%s-%s-%s', $account->getId(), $since->format('d-m-Y'), $until->format('d-m-y'));
 

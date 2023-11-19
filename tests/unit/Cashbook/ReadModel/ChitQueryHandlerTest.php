@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use Helpers;
 use Mockery as m;
@@ -34,7 +34,7 @@ final class ChitQueryHandlerTest extends Unit
         $cashbook = m::mock(Cashbook::class);
 
         $cashbook->shouldReceive('getChits')
-            ->andReturn([Helpers::mockChit(self::EXISTING_CHIT_ID, new Date(), Operation::INCOME, self::CATEGORY_ID)]);
+            ->andReturn([Helpers::mockChit(self::EXISTING_CHIT_ID, new ChronosDate(), Operation::INCOME, self::CATEGORY_ID)]);
 
         $repository = m::mock(ICashbookRepository::class);
         $repository->shouldReceive('find')

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Pairing;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use Helpers;
 use IntegrationTest;
@@ -127,7 +127,7 @@ class BankServiceTest extends IntegrationTest
             Random::generate(),
             [],
             $amount,
-            new Date(),
+            new ChronosDate(),
             $variableSymbol === null ? null : new VariableSymbol($variableSymbol),
             null,
             null,

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\Cashbook;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Doctrine\ORM\Mapping as ORM;
 
 /** @ORM\Embeddable() */
@@ -14,12 +14,12 @@ final class ChitBody
     private ChitNumber|null $number = null;
 
     /** @ORM\Column(type="chronos_date") */
-    private Date $date;
+    private ChronosDate $date;
 
     /** @ORM\Column(type="recipient", length=64, nullable=true) */
     private Recipient|null $recipient = null;
 
-    public function __construct(ChitNumber|null $number, Date $date, Recipient|null $recipient)
+    public function __construct(ChitNumber|null $number, ChronosDate $date, Recipient|null $recipient)
     {
         $this->number    = $number;
         $this->date      = $date;
@@ -41,7 +41,7 @@ final class ChitBody
         return $this->number;
     }
 
-    public function getDate(): Date
+    public function getDate(): ChronosDate
     {
         return $this->date;
     }
