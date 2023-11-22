@@ -11,7 +11,10 @@ use Nette\Forms\Control;
 
 trait CustomControlFactories
 {
-    public function addDate(string $name, string|null $label = null): DateControl
+    /**
+     * {@inheritDoc}
+     */
+    public function addDate(string $name, $label = null): DateControl
     {
         return $this[$name] = new DateControl($label);
     }
