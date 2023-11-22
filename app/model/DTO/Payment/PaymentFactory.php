@@ -17,7 +17,7 @@ class PaymentFactory
             $payment->getName(),
             $payment->getAmount(),
             $payment->getEmailRecipients(),
-            ChronosDate::instance($payment->getDueDate()),
+            new ChronosDate($payment->getDueDate()),
             $payment->getVariableSymbol(),
             $payment->getConstantSymbol(),
             $payment->getNote(),
