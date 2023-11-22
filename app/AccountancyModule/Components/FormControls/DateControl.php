@@ -79,6 +79,7 @@ class DateControl extends DateTimeControl
 
         $control->setAttribute('autocomplete', 'off');
         $control->setAttribute('class', 'form-control date');
+        $control->setAttribute('type', 'text');
 
         return $control;
     }
