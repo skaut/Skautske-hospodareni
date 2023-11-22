@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\Components\FormControls;
 
 use Cake\Chronos\ChronosDate;
+use DateTimeImmutable;
 use InvalidArgumentException;
 use Nette\Forms\Controls\BaseControl;
 use Nette\Utils\Html;
@@ -57,6 +58,10 @@ class DateControl extends BaseControl
 
         if ($value instanceof ChronosDate) {
             return $value;
+        }
+
+        if ($value instanceof DateTimeImmutable) {
+            return new ChronosDate($value);
         }
 
         return ChronosDate::createFromFormat(self::DATE_FORMAT, str_replace(' ', '', $value));
