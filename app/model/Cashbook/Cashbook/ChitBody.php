@@ -54,7 +54,7 @@ final class ChitBody
     public function equals(ChitBody $other): bool
     {
         return (string) $other->number ===  (string) $this->number
-            && $other->date->eq($this->date)
+            && $other->date->equals($this->date)
             && (string) $other->recipient === (string) $this->recipient;
     }
 }

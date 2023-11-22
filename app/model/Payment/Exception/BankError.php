@@ -19,10 +19,6 @@ final class BankError extends Exception
 
     private static function extractMessage(ServerException $exception): string
     {
-        if ($exception->getResponse() === null) {
-            return $exception->getMessage();
-        }
-
         $body = $exception->getResponse()->getBody()->getContents();
 
         if (trim($body) === '') {
