@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Travel;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Doctrine\ORM\Mapping as ORM;
 use Model\Travel\Contract\Passenger as ContractPassenger;
 use Model\Unit\Unit;
@@ -29,10 +29,10 @@ class Contract
     private string $unitRepresentative;
 
     /** @ORM\Column(type="chronos_date", nullable=true) */
-    private Date|null $since = null;
+    private ChronosDate|null $since = null;
 
     /** @ORM\Column(type="chronos_date", nullable=true) */
-    private Date|null $until = null;
+    private ChronosDate|null $until = null;
 
     /** @ORM\Embedded(class=ContractPassenger::class, columnPrefix=false) */
     private ContractPassenger $passenger;
@@ -40,7 +40,7 @@ class Contract
     /** @ORM\Column(type="smallint", options={"comment":"1-old, 2-podle NOZ"}) */
     private int $templateVersion = 2;
 
-    public function __construct(Unit $unit, string $unitRepresentative, Date $since, ContractPassenger $passenger)
+    public function __construct(Unit $unit, string $unitRepresentative, ChronosDate $since, ContractPassenger $passenger)
     {
         $this->unitId             = $unit->getId();
         $this->unitRepresentative = $unitRepresentative;
@@ -64,12 +64,12 @@ class Contract
         return $this->unitRepresentative;
     }
 
-    public function getSince(): Date|null
+    public function getSince(): ChronosDate|null
     {
         return $this->since;
     }
 
-    public function getUntil(): Date|null
+    public function getUntil(): ChronosDate|null
     {
         return $this->until;
     }

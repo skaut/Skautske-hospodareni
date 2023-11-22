@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Bank\Fio;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use FioApi\Downloader;
 use FioApi\Exceptions\InternalErrorException;
@@ -27,16 +27,16 @@ class FioClientTest extends Unit
         $this->expectException(TokenNotSet::class);
 
         $fio->getTransactions(
-            Date::today(),
-            Date::today(),
+            ChronosDate::today(),
+            ChronosDate::today(),
             $this->mockAccount(null),
         );
     }
 
     public function testTooGreedyExceptionResultsInLimitException(): void
     {
-        $since = Date::today();
-        $until = Date::today();
+        $since = ChronosDate::today();
+        $until = ChronosDate::today();
 
         $downloader = m::mock(Downloader::class);
         $downloader->shouldReceive('downloadFromTo')
@@ -54,8 +54,8 @@ class FioClientTest extends Unit
 
     public function tesGeneralApiErrorExceptionResultsInTimeoutException(): void
     {
-        $since = Date::today();
-        $until = Date::today();
+        $since = ChronosDate::today();
+        $until = ChronosDate::today();
 
         $downloader = m::mock(Downloader::class);
         $downloader->shouldReceive('downloadFromTo')
@@ -73,8 +73,8 @@ class FioClientTest extends Unit
 
     public function testInternalErrorResultsInTimeoutException(): void
     {
-        $since = Date::today();
-        $until = Date::today();
+        $since = ChronosDate::today();
+        $until = ChronosDate::today();
 
         $downloader = m::mock(Downloader::class);
         $downloader->shouldReceive('downloadFromTo')

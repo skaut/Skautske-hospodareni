@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Model\DTO\Participant;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 
 class NonMemberParticipant
 {
-    public function __construct(private string $firstName, private string $lastName, private string|null $nickName = null, private Date|null $birthday = null, private string $street, private string $city, private int $postcode)
+    public function __construct(private string $firstName, private string $lastName, private string|null $nickName = null, private ChronosDate|null $birthday = null, private string $street, private string $city, private int $postcode)
     {
     }
 
@@ -27,7 +27,7 @@ class NonMemberParticipant
         return $this->nickName;
     }
 
-    public function getBirthday(): Date|null
+    public function getBirthday(): ChronosDate|null
     {
         return $this->birthday;
     }

@@ -7,7 +7,7 @@ namespace App\AccountancyModule\PaymentModule\EventModule;
 use App\AccountancyModule\PaymentModule\BasePresenter;
 use App\AccountancyModule\PaymentModule\Components\GroupForm;
 use App\AccountancyModule\PaymentModule\Factories\IGroupFormFactory;
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Event\Event;
 use Model\Payment\Group\SkautisEntity;
 use Model\Payment\ReadModel\Queries\EventsWithoutGroupQuery;
@@ -23,7 +23,7 @@ final class CreateGroupPresenter extends BasePresenter
 
     public function actionDefault(int $eventId): void
     {
-        $eventsWithoutGroup = $this->queryBus->handle(new EventsWithoutGroupQuery(Date::today()->year));
+        $eventsWithoutGroup = $this->queryBus->handle(new EventsWithoutGroupQuery(ChronosDate::today()->year));
 
         if (! $this->isEditable || ! isset($eventsWithoutGroup[$eventId])) {
             $this->flashMessage('Pro tuto akci není možné vytvořit skupinu plateb', 'danger');

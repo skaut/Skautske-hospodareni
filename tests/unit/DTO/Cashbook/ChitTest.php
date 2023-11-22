@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\DTO\Travel\Command;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\ChitBody;
@@ -36,6 +36,6 @@ class ChitTest extends Unit
             new ChitItem(new Amount('300'), new Category(1, 'Materiál', 'm', Operation::EXPENSE(), false), 'kleště'),
         ];
 
-        return new Chit(1, new ChitBody(null, new Date(), null), false, [], PaymentMethod::CASH(), $items, Operation::EXPENSE(), new Amount('100+200+300'), []);
+        return new Chit(1, new ChitBody(null, new ChronosDate(), null), false, [], PaymentMethod::CASH(), $items, Operation::EXPENSE(), new Amount('100+200+300'), []);
     }
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Infrastructure\Repositories\Travel;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use IntegrationTest;
 use Model\Travel\Contract;
 
@@ -46,8 +46,8 @@ final class ContractRepositoryTest extends IntegrationTest
         $this->assertSame(1, $contract->getId());
         $this->assertSame(self::CONTRACT['unit_id'], $contract->getUnitId());
         $this->assertSame(self::CONTRACT['unit_representative'], $contract->getUnitRepresentative());
-        $this->assertEquals(new Date(self::CONTRACT['since']), $contract->getSince());
-        $this->assertEquals(new Date(self::CONTRACT['until']), $contract->getUntil());
+        $this->assertEquals(new ChronosDate(self::CONTRACT['since']), $contract->getSince());
+        $this->assertEquals(new ChronosDate(self::CONTRACT['until']), $contract->getUntil());
         $this->assertSame(self::CONTRACT['template_version'], $contract->getTemplateVersion());
 
         $passenger = $contract->getPassenger();

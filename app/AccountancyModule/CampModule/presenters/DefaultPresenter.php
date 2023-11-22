@@ -8,7 +8,7 @@ use App\AccountancyModule\CampModule\Components\ExportDialog;
 use App\AccountancyModule\CampModule\Factories\IExportDialogFactory;
 use App\AccountancyModule\Components\DataGrid;
 use App\AccountancyModule\Factories\GridFactory;
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Event\ReadModel\Queries\CampStates;
 
 use function array_merge;
@@ -50,7 +50,7 @@ class DefaultPresenter extends BasePresenter
 
         $grid->addYearFilter('year', 'Rok')
             ->setCondition(function (CampListDataSource $dataSource, $year): void {
-                $dataSource->filterByYear($year === DataGrid::OPTION_ALL ? null : (int) ($year ?? Date::today()->year));
+                $dataSource->filterByYear($year === DataGrid::OPTION_ALL ? null : (int) ($year ?? ChronosDate::today()->year));
             });
 
         $states = array_merge([DataGrid::OPTION_ALL => 'Nezrušené'], $this->queryBus->handle(new CampStates()));
@@ -67,7 +67,7 @@ class DefaultPresenter extends BasePresenter
 
         $grid->setDefaultFilter([
             'search' => '',
-            'year' => (string) Date::today()->year,
+            'year' => (string) ChronosDate::today()->year,
             'state' => self::DEFAULT_STATE,
         ]);
 

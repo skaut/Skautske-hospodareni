@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Common\ReadModel\QueryHandlers;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use Mockery;
 use Model\Common\Member;
@@ -23,9 +23,9 @@ final class MemberNamesQueryHandlerTest extends Unit
             ->once()
             ->withArgs([$unitId, true])
             ->andReturn([
-                new Member(1, 'Adam', Date::now()->subYears(18)->addDay()),
-                new Member(2, 'Petr', Date::now()->subYears(18)),
-                new Member(3, 'Vojta', Date::now()->subYears(18)->subDay()),
+                new Member(1, 'Adam', ChronosDate::now()->subYears(18)->addDay()),
+                new Member(2, 'Petr', ChronosDate::now()->subYears(18)),
+                new Member(3, 'Vojta', ChronosDate::now()->subYears(18)->subDay()),
                 new Member(4, 'Julie', null),
             ]);
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use DateTimeInterface;
 use InvalidArgumentException;
 use Model\Common\ShouldNotHappen;
@@ -384,7 +384,7 @@ abstract class AccountancyHelpers
     }
 
     /**
-     * @param Date[]|null[] $dates
+     * @param ChronosDate[]|null[] $dates
      *
      * @filter
      */

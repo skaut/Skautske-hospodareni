@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Skautis\Event;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use Model\Common\UnitId;
 use Model\Event\SkautisEventId;
@@ -19,8 +19,8 @@ final class EventFactoryTest extends Unit
         $event   = $factory->create($this->getDraftEvent());
         $this->assertEquals(new SkautisEventId(1402), $event->getId());
         $this->assertEquals(new UnitId(27266), $event->getUnitId());
-        $this->assertTrue($event->getStartDate() instanceof Date);
-        $this->assertTrue($event->getEndDate() instanceof Date);
+        $this->assertTrue($event->getStartDate() instanceof ChronosDate);
+        $this->assertTrue($event->getEndDate() instanceof ChronosDate);
     }
 
     public function testClosedEventCreation(): void
@@ -28,7 +28,7 @@ final class EventFactoryTest extends Unit
         $factory = new EventFactory();
         $event   = $factory->create($this->getClosedEvent());
         $this->assertEquals('Jan Novák (Joe)', $event->getPersonClosed());
-        $this->assertEquals(Date::createFromDate(2019, 9, 3), $event->getDateClosed());
+        $this->assertEquals(ChronosDate::createFromDate(2019, 9, 3), $event->getDateClosed());
     }
 
     private function getDraftEvent(): stdClass

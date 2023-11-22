@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Bank\Fio;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use FioApi\Exceptions\InternalErrorException;
 use FioApi\Exceptions\TooGreedyException;
 use FioApi\Transaction as ApiTransaction;
@@ -29,7 +29,7 @@ class FioClient implements IFioClient
     /**
      * {@inheritDoc}
      */
-    public function getTransactions(Date $since, Date $until, BankAccount $account): array
+    public function getTransactions(ChronosDate $since, ChronosDate $until, BankAccount $account): array
     {
         if ($account->getToken() === null) {
             throw new TokenNotSet();
@@ -61,7 +61,7 @@ class FioClient implements IFioClient
      * @throws BankTimeLimit
      * @throws BankTimeout
      */
-    private function loadTransactionsFromApi(Date $since, Date $until, BankAccount $account): array
+    private function loadTransactionsFromApi(ChronosDate $since, ChronosDate $until, BankAccount $account): array
     {
         $api = $this->downloaderFactory->create($account->getToken());
 

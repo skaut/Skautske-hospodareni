@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\DTO\Travel\Command;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use Mockery as m;
 use Model\Travel\Command;
@@ -17,8 +17,8 @@ class TravelFactoryTest extends Unit
 {
     public function testCreateListCorrectOrder(): void
     {
-        $firstDay      = new Date('2018-01-01');
-        $secondDay     = new Date('2018-01-02');
+        $firstDay      = new ChronosDate('2018-01-01');
+        $secondDay     = new ChronosDate('2018-01-02');
         $transportType = TransportType::get(TransportType::TRAIN);
 
         $travels = [

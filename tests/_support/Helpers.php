@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Mockery as m;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\Amount;
@@ -40,9 +40,9 @@ class Helpers
         return new PaymentDefaults(null, null, null, null);
     }
 
-    public static function getValidDueDate() : Date
+    public static function getValidDueDate() : ChronosDate
     {
-        return new Date('2018-01-19'); // https://youtu.be/kfVsfOSbJY0?t=44s
+        return new ChronosDate('2018-01-19'); // https://youtu.be/kfVsfOSbJY0?t=44s
     }
 
     /**
@@ -58,7 +58,7 @@ class Helpers
         $idProperty->setValue($aggregate, $id);
     }
 
-    public static function mockChit(int $id, Date $date, string $operationValue, int $categoryId) : Chit
+    public static function mockChit(int $id, ChronosDate $date, string $operationValue, int $categoryId) : Chit
     {
         $operation = Operation::get($operationValue);
 
@@ -77,13 +77,13 @@ class Helpers
     }
 
     public static function addChitToCashbook(
-        Cashbook $cashbook,
-        ?string $chitNumber = null,
+        Cashbook       $cashbook,
+        ?string        $chitNumber = null,
         ?PaymentMethod $paymentMethod = null,
-        ?int $categoryId = null,
-        ?string $amount = null,
-        ?Date $date = null,
-        ?Operation $operation = null
+        ?int           $categoryId = null,
+        ?string        $amount = null,
+        ?ChronosDate   $date = null,
+        ?Operation     $operation = null
     ): ChitBody {
         $paymentMethod = $paymentMethod ?? PaymentMethod::CASH ();
         $categoryId = $categoryId ?? 1;
@@ -91,7 +91,7 @@ class Helpers
 
         $chitBody = new ChitBody(
             $chitNumber === null ? null : new ChitNumber($chitNumber),
-            $date ?? new Date(),
+            $date ?? new ChronosDate(),
             null
         );
         $category = self::mockChitItemCategory ($categoryId, $operation ?? null);

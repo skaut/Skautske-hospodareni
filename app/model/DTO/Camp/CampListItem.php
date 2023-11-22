@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Model\DTO\Camp;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 
 final class CampListItem
 {
     public function __construct(
         private int $id,
         private string $name,
-        private Date $startDate,
-        private Date $endDate,
+        private ChronosDate $startDate,
+        private ChronosDate $endDate,
         private string $location,
         private string|null $prefix = null,
         private string $state,
@@ -29,12 +29,12 @@ final class CampListItem
         return $this->name;
     }
 
-    public function getStartDate(): Date
+    public function getStartDate(): ChronosDate
     {
         return $this->startDate;
     }
 
-    public function getEndDate(): Date
+    public function getEndDate(): ChronosDate
     {
         return $this->endDate;
     }

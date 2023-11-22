@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Model\Common;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 
 final class Member
 {
-    public function __construct(private int $id, private string $name, private Date|null $birthday = null)
+    public function __construct(private int $id, private string $name, private ChronosDate|null $birthday = null)
     {
     }
 
@@ -22,7 +22,7 @@ final class Member
         return $this->name;
     }
 
-    public function getBirthday(): Date|null
+    public function getBirthday(): ChronosDate|null
     {
         return $this->birthday;
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Travel;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use Mockery as m;
 use Model\DTO\Participant\Participant;
@@ -27,13 +27,13 @@ class ParticipantTest extends Unit
 
     public function testFromListParticipants(): void
     {
-        $pp = PragueParticipants::fromParticipantList(new Date('2018-01-01'), [
-            m::mock(Participant::class, ['getCity' => 'Praha', 'getBirthday' => new Date('1980-01-01'), 'getDays' => 3]),
-            m::mock(Participant::class, ['getCity' => 'Praha', 'getBirthday' => new Date('2080-01-01'), 'getDays' => 3]),
-            m::mock(Participant::class, ['getCity' => 'Praha', 'getBirthday' => new Date('1995-01-01'), 'getDays' => 3]),
-            m::mock(Participant::class, ['getCity' => 'Praha', 'getBirthday' => new Date('2010-01-01'), 'getDays' => 4]),
-            m::mock(Participant::class, ['getCity' => 'Praha', 'getBirthday' => new Date('2010-01-01'), 'getDays' => 4]),
-            m::mock(Participant::class, ['getCity' => 'Brno', 'getBirthday' => new Date('2010-01-01'), 'getDays' => 4]),
+        $pp = PragueParticipants::fromParticipantList(new ChronosDate('2018-01-01'), [
+            m::mock(Participant::class, ['getCity' => 'Praha', 'getBirthday' => new ChronosDate('1980-01-01'), 'getDays' => 3]),
+            m::mock(Participant::class, ['getCity' => 'Praha', 'getBirthday' => new ChronosDate('2080-01-01'), 'getDays' => 3]),
+            m::mock(Participant::class, ['getCity' => 'Praha', 'getBirthday' => new ChronosDate('1995-01-01'), 'getDays' => 3]),
+            m::mock(Participant::class, ['getCity' => 'Praha', 'getBirthday' => new ChronosDate('2010-01-01'), 'getDays' => 4]),
+            m::mock(Participant::class, ['getCity' => 'Praha', 'getBirthday' => new ChronosDate('2010-01-01'), 'getDays' => 4]),
+            m::mock(Participant::class, ['getCity' => 'Brno', 'getBirthday' => new ChronosDate('2010-01-01'), 'getDays' => 4]),
         ]);
         $this->assertSame(2, $pp->getUnder18());
         $this->assertSame(1, $pp->getBetween18and26());

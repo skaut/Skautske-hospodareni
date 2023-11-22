@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Helpers;
 use IntegrationTest;
 use Model\Cashbook\Cashbook\Amount;
@@ -61,7 +61,7 @@ class CashbookIntegrationTest extends IntegrationTest
         $category      = Helpers::mockChitItemCategory($categoryId);
         $categories    = Helpers::mockCashbookCategories($categoryId);
         $amount        = new Cashbook\Amount('100');
-        $date          = new Date('2017-11-17');
+        $date          = new ChronosDate('2017-11-17');
         $recipient     = new Recipient('František Maša');
         $paymentMethod = PaymentMethod::BANK();
 
@@ -85,7 +85,7 @@ class CashbookIntegrationTest extends IntegrationTest
         $categoryId    = 666;
         $category      = Helpers::mockChitItemCategory($categoryId);
         $categories    = Helpers::mockCashbookCategories($categoryId);
-        $date          = new Date('2017-11-17');
+        $date          = new ChronosDate('2017-11-17');
         $amount        = new Cashbook\Amount('100');
         $paymentMethod = PaymentMethod::CASH();
         $this->expectException(ChitLocked::class);
@@ -106,7 +106,7 @@ class CashbookIntegrationTest extends IntegrationTest
         $category      = Helpers::mockChitItemCategory($categoryId);
         $categories    = Helpers::mockCashbookCategories($categoryId);
         $amount        = new Cashbook\Amount('100');
-        $date          = new Date('2017-11-17');
+        $date          = new ChronosDate('2017-11-17');
         $paymentMethod = PaymentMethod::CASH();
 
         $this->expectException(ChitNotFound::class);
@@ -174,7 +174,7 @@ class CashbookIntegrationTest extends IntegrationTest
         int $originalCategoryId,
         int $newCategoryId,
     ): void {
-        $body             = new ChitBody(new ChitNumber('123'), new Date(), new Recipient('Maša'));
+        $body             = new ChitBody(new ChitNumber('123'), new ChronosDate(), new Recipient('Maša'));
         $originalCashbook = new Cashbook(CashbookId::generate(), CashbookType::get($originalCashbookType));
         $category         = Helpers::mockChitItemCategory($originalCategoryId, Operation::get($originalOperation));
         $categories       = Helpers::mockCashbookCategories($originalCategoryId);
@@ -244,7 +244,7 @@ class CashbookIntegrationTest extends IntegrationTest
         $category         = Helpers::mockChitItemCategory($invalidCategoryId, Operation::EXPENSE());
         $categories       = Helpers::mockCashbookCategories($invalidCategoryId);
         $originalCashbook->addChit(
-            new ChitBody(new ChitNumber('123'), new Date(), new Recipient('FM')),
+            new ChitBody(new ChitNumber('123'), new ChronosDate(), new Recipient('FM')),
             PaymentMethod::CASH(),
             [new ChitItem(new Amount('100'), $category, 'transfer')],
             $categories,
@@ -276,7 +276,7 @@ class CashbookIntegrationTest extends IntegrationTest
         $categoryId = 666;
 
         $cashbook->addChit(
-            new ChitBody(null, new Date(), null),
+            new ChitBody(null, new ChronosDate(), null),
             PaymentMethod::CASH(),
             [new ChitItem(new Amount('100'), Helpers::mockChitItemCategory($categoryId), 'purpose')],
             Helpers::mockCashbookCategories($categoryId),
@@ -293,7 +293,7 @@ class CashbookIntegrationTest extends IntegrationTest
     public function testLock(): void
     {
         $cashbook   = new Cashbook(CashbookId::generate(), CashbookType::get(CashbookType::EVENT));
-        $chitBody   = new ChitBody(null, new Date(), null);
+        $chitBody   = new ChitBody(null, new ChronosDate(), null);
         $categoryId = 666;
         $category   = Helpers::mockChitItemCategory($categoryId);
 
@@ -414,10 +414,10 @@ class CashbookIntegrationTest extends IntegrationTest
     {
         $cashbook = new Cashbook(CashbookId::generate(), CashbookType::get(CashbookType::EVENT));
 
-        Helpers::addChitToCashbook($cashbook, null, PaymentMethod::CASH(), null, null, Date::today());
+        Helpers::addChitToCashbook($cashbook, null, PaymentMethod::CASH(), null, null, ChronosDate::today());
         Helpers::addChitToCashbook($cashbook, null, PaymentMethod::BANK());
-        Helpers::addChitToCashbook($cashbook, null, PaymentMethod::CASH(), null, null, Date::yesterday(), Operation::EXPENSE());
-        Helpers::addChitToCashbook($cashbook, null, PaymentMethod::CASH(), null, null, Date::yesterday(), Operation::INCOME());
+        Helpers::addChitToCashbook($cashbook, null, PaymentMethod::CASH(), null, null, ChronosDate::yesterday(), Operation::EXPENSE());
+        Helpers::addChitToCashbook($cashbook, null, PaymentMethod::CASH(), null, null, ChronosDate::yesterday(), Operation::INCOME());
         Helpers::addChitToCashbook($cashbook, '1', PaymentMethod::CASH());
 
         $this->entityManager->persist($cashbook);

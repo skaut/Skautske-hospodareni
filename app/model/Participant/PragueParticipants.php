@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Participant;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\DTO\Participant\Participant;
 use Nette\SmartObject;
 
@@ -25,7 +25,7 @@ final class PragueParticipants
     public const PRAGUE_UNIT_PREFIX            = '11';
 
     /** @param Participant[] $participants */
-    public static function fromParticipantList(Date $eventStartDate, array $participants): self
+    public static function fromParticipantList(ChronosDate $eventStartDate, array $participants): self
     {
         $under18           = 0;
         $between18and26    = 0;

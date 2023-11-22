@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Model\Payment\Commands\Repayment;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\Repayment;
 
 final class CreateRepayments
 {
     /** @param Repayment[] $repayments */
-    public function __construct(private AccountNumber $sourceAccount, private Date $date, private array $repayments, private string $token)
+    public function __construct(private AccountNumber $sourceAccount, private ChronosDate $date, private array $repayments, private string $token)
     {
     }
 
@@ -20,7 +20,7 @@ final class CreateRepayments
         return $this->sourceAccount;
     }
 
-    public function getDate(): Date
+    public function getDate(): ChronosDate
     {
         return $this->date;
     }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Payment;
 
 use Assert\Assert;
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use Model\Bank\Fio\Transaction;
 use Model\BankTimeLimit;
@@ -152,7 +152,7 @@ class BankAccountService
     {
         Assert::that($daysBack)->greaterThan(0);
         $account = $this->bankAccounts->find($bankAccountId);
-        $today   = Date::today();
+        $today   = ChronosDate::today();
 
         return $this->fio->getTransactions($today->subDays($daysBack), $today, $account);
     }

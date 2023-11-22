@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace acceptance;
 
 use AcceptanceTester;
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Facebook\WebDriver\WebDriverKeys;
 use Model\Cashbook\Operation;
 
@@ -89,7 +89,7 @@ class EventCashbookCest extends BaseAcceptanceCest
 
         $purpose = 'Nákup chleba';
 
-        $this->fillChitForm(new Date(), $purpose, Operation::EXPENSE(), 'Potraviny', 'Testovací skaut', '100 + 1');
+        $this->fillChitForm(new ChronosDate(), $purpose, Operation::EXPENSE(), 'Potraviny', 'Testovací skaut', '100 + 1');
         $this->I->scrollTo('input[name="send"]');
         $this->I->click('input[name="send"]');
         $this->waitForBalance('-101,00');
@@ -113,7 +113,7 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->click('Nový doklad');
         $this->I->amGoingTo('add income chit');
 
-        $this->fillChitForm(new Date(), 'Účastnické poplatky', Operation::INCOME(), 'Přijmy od účastníků', 'Testovací skaut 2', '100');
+        $this->fillChitForm(new ChronosDate(), 'Účastnické poplatky', Operation::INCOME(), 'Přijmy od účastníků', 'Testovací skaut 2', '100');
         $this->I->scrollTo('input[name="send"]');
         $this->I->click('input[name="send"]');
 
@@ -124,7 +124,7 @@ class EventCashbookCest extends BaseAcceptanceCest
     {
         $this->I->click('Nový doklad');
         $this->I->amGoingTo('create expense chit');
-        $this->fillChitForm(new Date(), 'Rohlíky', Operation::EXPENSE(), 'Potraviny', 'Testovací skaut', '50');
+        $this->fillChitForm(new ChronosDate(), 'Rohlíky', Operation::EXPENSE(), 'Potraviny', 'Testovací skaut', '50');
         $this->I->click('input[name="items[addItem]"]');
         $this->I->wait(2);
         $this->I->expect('Odebrat položku');
@@ -181,7 +181,7 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->waitForElementNotVisible($cancelButton);
     }
 
-    private function fillChitForm(Date $date, string $purpose, Operation $type, string $category, string $recipient, string $amount): void
+    private function fillChitForm(ChronosDate $date, string $purpose, Operation $type, string $category, string $recipient, string $amount): void
     {
         $this->I->wait(2); // unroll block
         $this->I->wantToTest('Uložit');

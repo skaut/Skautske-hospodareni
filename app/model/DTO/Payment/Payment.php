@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\DTO\Payment;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use Model\Common\EmailAddress;
 use Model\Payment\Payment\SentEmail;
@@ -22,7 +22,7 @@ use function implode;
  * @property-read string $name
  * @property-read float $amount
  * @property-read EmailAddress[] $recipients
- * @property-read Date $dueDate
+ * @property-read ChronosDate $dueDate
  * @property-read VariableSymbol|NULL $variableSymbol
  * @property-read int|NULL $constantSymbol
  * @property-read string $note
@@ -47,7 +47,7 @@ class Payment
         private string $name,
         private float $amount,
         private array $recipients,
-        private Date $dueDate,
+        private ChronosDate $dueDate,
         private VariableSymbol|null $variableSymbol,
         private int|null $constantSymbol,
         private string $note,
@@ -88,7 +88,7 @@ class Payment
         return implode(', ', array_map(fn (EmailAddress $emailAddress) => Strings::truncate($emailAddress->getValue(), 35), $this->recipients));
     }
 
-    public function getDueDate(): Date
+    public function getDueDate(): ChronosDate
     {
         return $this->dueDate;
     }

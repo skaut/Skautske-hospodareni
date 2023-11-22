@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Cashbook\ReadModel\QueryHandlers;
 
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use Helpers;
 use IntegrationTest;
 use Mockery as m;
@@ -42,7 +42,7 @@ class ChitListQueryHandlerTest extends IntegrationTest
         $cashbook = new Cashbook($this->getCashbookId(), Cashbook\CashbookType::get(Cashbook\CashbookType::CAMP));
 
         foreach ($chits as [$date, $operation, $categoryId, $paymentMethod]) {
-            $body     = new Cashbook\ChitBody(null, new Date($date), null);
+            $body     = new Cashbook\ChitBody(null, new ChronosDate($date), null);
             $category = Helpers::mockChitItemCategory($categoryId, Operation::get($operation));
             $cashbook->addChit(
                 $body,

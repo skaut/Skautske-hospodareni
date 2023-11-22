@@ -8,7 +8,7 @@ use App\AccountancyModule\Components\BaseControl;
 use App\AccountancyModule\Components\FormControls\DateControl;
 use App\Forms\BaseForm;
 use Assert\Assertion;
-use Cake\Chronos\Date;
+use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use Model\Common\Services\QueryBus;
 use Model\Common\UnitId;
@@ -63,7 +63,7 @@ final class GroupForm extends BaseControl
         $nameControl->setDefaultValue($name);
     }
 
-    public function fillDueDate(Date $dueDate): void
+    public function fillDueDate(ChronosDate $dueDate): void
     {
         if ($dueDate->isSaturday()) {
             $dueDate = $dueDate->addDays(2);
