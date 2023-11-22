@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1c9c0a20ecbe23d32808d6b2ba229d2b",
+    "content-hash": "fc47f695b142cec09dd329ae3c74232b",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -9478,6 +9478,52 @@
                 }
             ],
             "time": "2022-10-16T01:01:54+00:00"
+        },
+        {
+            "name": "warhuhn/chronos-doctrine",
+            "version": "v4.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/warhuhn/chronos-doctrine.git",
+                "reference": "7a5bfab9bec2ba8877d55774f09dee11351692b0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/warhuhn/chronos-doctrine/zipball/7a5bfab9bec2ba8877d55774f09dee11351692b0",
+                "reference": "7a5bfab9bec2ba8877d55774f09dee11351692b0",
+                "shasum": ""
+            },
+            "require": {
+                "cakephp/chronos": "^2.4|^3.0.2",
+                "doctrine/dbal": "^2.10|^3.0",
+                "php": ">=7.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Warhuhn\\Doctrine\\DBAL\\Types\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jesko Karwasz",
+                    "email": "warhuhn@gmail.com",
+                    "homepage": "https://www.github.com/warhuhn"
+                }
+            ],
+            "description": "Doctrine DBAL Types to use Chronos' Immutable DateTime Objects",
+            "support": {
+                "issues": "https://github.com/warhuhn/chronos-php/issues",
+                "source": "https://github.com/warhuhn/chronos-php"
+            },
+            "time": "2023-11-19T23:17:49+00:00"
         }
     ],
     "packages-dev": [
