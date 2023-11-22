@@ -50,7 +50,7 @@ final class RepaymentPresenter extends BasePresenter
         $form->addDate('date', 'Datum splatnosti:')
             ->disableWeekends()
             ->setRequired(true)
-            ->setDefaultValue(ChronosDate::now()->addWeekdays());
+            ->setDefaultValue(ChronosDate::now()->addWeekdays(1));
 
         $form->addSubmit('send', 'Založit příkazy k úhradě')
             ->setHtmlAttribute('class', 'btn btn-primary btn-large');
