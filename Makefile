@@ -1,9 +1,10 @@
+include .env.local
+-include .env
+
 CONTAINER_PHP=hskauting.app
 CONTAINER_PHP_TEST=hskauting.app-test
 CONTAINER_DB=hskauting.mysql
 CONTAINER_DB_TEST=hskauting.mysql-test
-
-COMPOSE_FILE=-f docker/docker-compose.yml
 
 CONSOLE?=
 
