@@ -32,7 +32,6 @@ use Nette\Http\IResponse;
 use Nette\Utils\Image;
 use Nette\Utils\Strings;
 use RuntimeException;
-use ZipStream\Option\Archive;
 use ZipStream\ZipStream;
 
 use function array_filter;
@@ -158,9 +157,7 @@ class CashbookExportPresenter extends BasePresenter
 
         $files = $this->queryBus->handle(new CashbookScansQuery(CashbookId::fromString($cashbookId), $method));
 
-        $options = new Archive();
-        $options->setSendHttpHeaders(true);
-        $zip = new ZipStream('Skeny dokladů.zip', $options);
+        $zip = new ZipStream(outputName: 'Skeny dokladů.zip');
 
         foreach ($files as $name => $file) {
             assert($file instanceof File);
