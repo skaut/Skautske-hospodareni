@@ -7,7 +7,7 @@ namespace App\AccountancyModule\Components\FormControls;
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use InvalidArgumentException;
-use Nette\Forms\Controls\BaseControl;
+use Nette\Forms\Controls\DateTimeControl;
 use Nette\Utils\Html;
 
 use function sprintf;
@@ -16,7 +16,7 @@ use function str_replace;
 /**
  * Datetime picker with automatic string <-> Date conversion
  */
-class DateControl extends BaseControl
+class DateControl extends DateTimeControl
 {
     private const DATE_FORMAT = 'd.m.Y';
 
@@ -79,6 +79,7 @@ class DateControl extends BaseControl
 
         $control->setAttribute('autocomplete', 'off');
         $control->setAttribute('class', 'form-control date');
+        $control->setAttribute('type', 'text');
 
         return $control;
     }
