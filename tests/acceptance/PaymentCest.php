@@ -42,6 +42,8 @@ class PaymentCest extends BaseAcceptanceCest
         $I->click('//option[text()="Vyberte bankovní účet"]');
         $I->click('//option[text()="Acceptance"]');
         $I->scrollTo('input[name="send"]');
+        $I->waitForElementClickable('input[name="send"]');
+        $I->wait(2);
         $I->click('Založit skupinu');
 
         $I->see('Skupina byla založena');
