@@ -34,3 +34,9 @@ Stačí přidat tento řádek do souboru `/etc/hosts`:
 
 ## Příprava projektu
 Stačí spustit příkaz `make init`.
+
+## Rozběhnutí na macOS
+Je potřeba si založit v domovské složce `.env` soubor s obsahem 
+```bash
+COMPOSE_FILE=-f docker/docker-compose.yml -f docker/docker-compose.macos.yml
+```
