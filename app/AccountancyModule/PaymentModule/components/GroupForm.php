@@ -68,7 +68,7 @@ final class GroupForm extends BaseControl
         if ($dueDate->isSaturday()) {
             $dueDate = $dueDate->addDays(2);
         } elseif ($dueDate->isSunday()) {
-            $dueDate = $dueDate->addDay(1);
+            $dueDate = $dueDate->addDays(1);
         }
 
         $dueDateControl = $this['form']['dueDate'];
