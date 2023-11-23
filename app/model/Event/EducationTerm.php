@@ -58,7 +58,7 @@ class EducationTerm
 
             while ($date->lessThanOrEquals($term->endDate)) {
                 $days[] = $date;
-                $date   = $date->addDay();
+                $date   = $date->addDays(1);
             }
         }
 

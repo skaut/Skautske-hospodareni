@@ -23,9 +23,9 @@ final class MemberNamesQueryHandlerTest extends Unit
             ->once()
             ->withArgs([$unitId, true])
             ->andReturn([
-                new Member(1, 'Adam', ChronosDate::now()->subYears(18)->addDay()),
+                new Member(1, 'Adam', ChronosDate::now()->subYears(18)->addDays(1)),
                 new Member(2, 'Petr', ChronosDate::now()->subYears(18)),
-                new Member(3, 'Vojta', ChronosDate::now()->subYears(18)->subDay()),
+                new Member(3, 'Vojta', ChronosDate::now()->subYears(18)->subDays(1)),
                 new Member(4, 'Julie', null),
             ]);
 
