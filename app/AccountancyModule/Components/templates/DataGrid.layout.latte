@@ -14,6 +14,12 @@
  * @param InlineEdit|null $inlineAdd   Inline add data
  *}
 
+<style>
+    .dropdown-fix {
+	inset: auto 100% auto auto !important;
+    }
+</style>
+
 <div class="{block datagrid-class}datagrid datagrid-{$control->getFullName()}{/block}" data-refresh-state="{link refreshState!}">
 	<div n:snippet="grid">
 	{snippetArea gridSnippets}
@@ -108,11 +114,11 @@
                                             {$inlineAdd->renderButtonAdd()}
                                         {/if}
 
-                                        <div class="btn-group float-end">
+                                        <div class="btn-group float-end dropstart">
                                             <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" n:if="$control->canHideColumns()">
                                                 <i n:block="icon-gear" class="fas fa-cog"></i>
                                             </button>
-                                            <ul class="dropdown-menu dropdown-menu-right dropdown-menu--grid">
+                                            <ul class="dropdown-menu dropdown-menu-right dropdown-menu--grid dropdown-fix">
                                                 <li n:foreach="$columnsVisibility as $v_key => $visibility">
                                                     {if $visibility['visible']}
                                                         <a n:href="hideColumn!, column => $v_key" class="ajax dropdown-item">
