@@ -5,28 +5,26 @@
             <div class="card-header"><h3 n:inner-block="title">Nové vozidlo</h3></div>
             <div class="card-body">
                 <form n:name="formCreateVehicle">
-                    <div class="form-group">
+                    <div class="mb-3">
                         {label type /}
                         {input type}
                     </div>
-                    <div class="form-group">
+                    <div class="mb-3">
                         {label registration /}
                         {input registration}
                     </div>
-                    <div class="form-group">
+                    <div class="mb-3">
                         {label consumption /}
                         <div class="input-group mb-2">
                             {input consumption}
-                            <div class="input-group-append">
-                                <button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#consumptionModal"><i class="fas fa-question"></i></button>
-                            </div>
+                            <button class="btn btn-secondary" type="button" data-bs-toggle="modal" data-bs-target="#consumptionModal"><i class="fas fa-question"></i></button>
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div class="mb-3">
                         {label subunitId /}
                         {input subunitId}
                     </div>
-                    <div class="form-group">
+                    <div class="mb-3">
                         {input send class => [btn, btn-primary]}
                     </div>
                 </form>
@@ -41,8 +39,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">Harmonizovaná spotřeba</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>
@@ -51,7 +48,7 @@
                 </p>
             </div>
             <div class="modal-footer">
-                <div class="text-right small">Zdroj: <a href="https://krizovatka.skaut.cz/hospodareni/cestovni-nahrady">Metodický list - Cestovní náhrady a vše kolem</a></div>
+                <div class="text-end small">Zdroj: <a href="https://krizovatka.skaut.cz/hospodareni/cestovni-nahrady">Metodický list - Cestovní náhrady a vše kolem</a></div>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->

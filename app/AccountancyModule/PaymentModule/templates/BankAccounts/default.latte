@@ -2,7 +2,7 @@
 <div class="row mb-4 d-flex align-items-center">
     <h1 n:inner-block="title" class="col">Bankovní účty</h1>
 
-    <div class="col-auto"{if !$canEdit} title="Nemáš dostatečné oprávnění pro přidání bankovního účtu." data-toggle="tooltip"{/if}>
+    <div class="col-auto"{if !$canEdit} title="Nemáš dostatečné oprávnění pro přidání bankovního účtu." data-bs-toggle="tooltip"{/if}>
         <a n:href="new" n:class="btn,btn-success, !$canEdit ? disabled"><i class="fas fa-plus"></i> Přidat účet</a>
         <a n:href="import!" n:class="btn, btn-light, !$canEdit ? disabled">Načíst ze Skautisu</a>
     </div>
@@ -15,7 +15,7 @@
                 <div><a n:href="detail $account->getId()" class="text-dark"><strong>{$account->getName()}</strong> ({$account->getNumber()})</a>
                 </div>
                 <div><small>Přidáno {$account->getCreatedAt()|date:'j.n. Y'}</small>
-                    <span class="badge badge-success" n:if="$account->getToken() !== NULL"><i class="fas fa-check"></i> FIO párování</span>
+                    <span class="badge bg-success" n:if="$account->getToken() !== NULL"><i class="fas fa-check"></i> FIO párování</span>
                 </div>
             </div>
 

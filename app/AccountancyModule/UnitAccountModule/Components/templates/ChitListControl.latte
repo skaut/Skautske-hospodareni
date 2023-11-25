@@ -5,7 +5,7 @@
         <th>Účel</th>
         <th>Osoba</th>
         <th>Kategorie</th>
-        <th class="text-right">Částka</th>
+        <th class="text-end">Částka</th>
         <td>&nbsp;</td>
     </tr>
     <tr n:foreach="$chits as $chit" class="pt-2">
@@ -13,10 +13,10 @@
         <td>{$chit->purpose}</td>
         <td>{$chit->recipient}</td>
         <td>{$chit->categories}</td>
-        <td n:class="$chit->isIncome() ? 'text-success' : 'text-danger', 'text-right'">
+        <td n:class="$chit->isIncome() ? 'text-success' : 'text-danger', 'text-end'">
             {$chit->getSignedAmount()|price} Kč
         </td>
-        <td class="text-right">
+        <td class="text-end">
             {if ! $chit->locked}
                 <a n:href="lockChit! $chit->id" class="btn btn-sm btn-dark ajax">
                     <i class="fas fa-lock"></i> Uzamknout</a>

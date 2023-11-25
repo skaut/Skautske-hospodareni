@@ -4,9 +4,9 @@
     <div class="col text-center text-md-left mb-2 mb-md-0">
         <h1 n:inner-block="title">{$group->name}</h1>
         {$group->state|groupState|noescape}
-        <span class="mr-2 ml-2">|</span>
+        <span class="me-2 ms-2">|</span>
         {control unit}
-        <span class="mr-2 ml-2">|</span>
+        <span class="me-2 ms-2">|</span>
         {if $group->type === NULL}Obecná
         {elseif $group->type === "camp"}Tábor
         {elseif $group->type === "event"}Akce
@@ -44,7 +44,7 @@
 </div>
 <div class="mb-3">
     <div class="mt-4 d-lg-flex" n:inner-if="$isEditable && $group->state === 'open'">
-        <div class="mr-auto">
+        <div class="me-auto">
             {if $group->type === 'registration'}
                 <a n:href="Registration:Journal: $group->id" class="btn btn-light"><i class="fas fa-book-reader"></i>
                     Časopisy</a>
@@ -52,7 +52,7 @@
 
             <div class="btn-group">
                 <button class="btn btn-light dropdown-toggle" type="button" id="emailsDropd"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                     <i class="far fa-envelope-open"></i> E-mail <span class="caret"></span>
                 </button>
                 <div class="dropdown-menu" aria-labelledby="emailsDropdown">
@@ -74,8 +74,7 @@
             </a>
             {var $attrs = $nextVS === null
                         ? [
-                            'data-toggle' => 'tooltip',
-                            'data-placement' => 'bottom',
+                            'data-bs-toggle' => 'tooltip',
                             'title' => 'Pro dogenerování VS je třeba nejdříve vyplňit VS k alespoň k jedné platbě (1-10 číslic).<br>'
                                         . ' Další budou podle něj dogenerovány jako +1.'
                         ]
@@ -90,7 +89,7 @@
         </div>
         <div class="dropdown d-inline-block">
             <button class="btn btn-success dropdown-toggle" type="button" id="addPayments"
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                 <i class="fas fa-plus"></i> Přidat platbu <span class="caret"></span>
             </button>
             <div class="dropdown-menu" aria-labelledby="addPayments">

@@ -22,6 +22,14 @@ body > footer {
   width: 100%;
 }
 
+table.table a {
+  text-decoration: none;
+}
+
+table.table a:hover {
+  text-decoration: underline;
+}
+
 .pairForm {
     width: 280px;
 }

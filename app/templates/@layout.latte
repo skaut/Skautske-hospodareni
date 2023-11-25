@@ -28,13 +28,13 @@
     <nav class="navbar navbar-expand-lg {if $testBackground}bg-test navbar-light{else}bg-dark navbar-dark{/if}">
         <div class="container container-lg">
             <a class="navbar-brand" n:href=":Default:">Hospodaření</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMain"
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
                     aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarMain">
-                <ul class="navbar-nav mr-auto">
+                <ul class="navbar-nav me-auto">
                     <li n:class="nav-item">
                         <a class="nav-link" n:href=":Default:reinforcement">Posily</a>
                     </li>
@@ -46,7 +46,7 @@
                             <a class="nav-link" n:href=":Accountancy:Camp:Default:">Tábory</a>
                         </li>
                         <li n:class="nav-item, $module === 'Education' ? active">
-                            <a class="nav-link text-nowrap" n:href=":Accountancy:Education:Default:">Vzdělávačky<sup> <span class="badge badge-warning">Beta</span></sup></a>
+                            <a class="nav-link text-nowrap" n:href=":Accountancy:Education:Default:">Vzdělávačky<sup> <span class="badge bg-warning text-dark">Beta</span></sup></a>
                         </li>
                         <li n:class="nav-item, $module === 'Travel' ? active">
                             <a class="nav-link" n:href=":Accountancy:Travel:Default:">Cesťáky</a>
@@ -80,9 +80,7 @@
         {snippet flash}
             {foreach $flashes as $flash}
                 <div class="alert alert-{$flash->type} alert-dismissible fade show" role="alert">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Zavřít">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zavřít"></button>
                     {if strpos($flash->message, 'html: ') === 0}
                         {$flash->message|substr:6|noescape}
                     {else}
@@ -98,10 +96,10 @@
     <footer class="mt-5 py-2 text-center bg-light">
         <small class="text-muted">
             <span class="d-block text-center d-md-inline">Skautské hospodaření</span>
-            <a n:href=":Default:about" class="ml-3">O projektu</a>
-            <a href="https://github.com/skaut/Skautske-hospodareni/graphs/contributors" class="ml-3">Autoři</a>
-            <a href="https://github.com/skaut/Skautske-hospodareni" class="ml-3"><i class="fab fa-github"></i> Pošli PR</a>
-            <a href="https://headwayapp.co/skautske-hospodareni-changelog" target="_blank" class="ml-3">Changelog</a>
+            <a n:href=":Default:about" class="ms-3">O projektu</a>
+            <a href="https://github.com/skaut/Skautske-hospodareni/graphs/contributors" class="ms-3">Autoři</a>
+            <a href="https://github.com/skaut/Skautske-hospodareni" class="ms-3"><i class="fab fa-github"></i> Pošli PR</a>
+            <a href="https://headwayapp.co/skautske-hospodareni-changelog" target="_blank" class="ms-3">Changelog</a>
         </small>
     </footer>
     {var $jsBundle = '/js/app.min.js'}

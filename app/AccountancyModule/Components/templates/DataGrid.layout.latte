@@ -14,15 +14,21 @@
  * @param InlineEdit|null $inlineAdd   Inline add data
  *}
 
+<style>
+    .dropdown-fix {
+	inset: auto 100% auto auto !important;
+    }
+</style>
+
 <div class="{block datagrid-class}datagrid datagrid-{$control->getFullName()}{/block}" data-refresh-state="{link refreshState!}">
 	<div n:snippet="grid">
 	{snippetArea gridSnippets}
 		{form filter, class => 'ajax'}
 			{if $control->hasOuterFilterRendering()}
 				{block outer-filters}
-					<div class="row text-right datagrid-collapse-filters-button-row" n:if="$control->hasCollapsibleOuterFilters()">
+					<div class="row text-end datagrid-collapse-filters-button-row" n:if="$control->hasCollapsibleOuterFilters()">
 						<div class="col-sm-12">
-							<button class="btn btn-xs btn-primary" type="button" data-toggle="collapse" data-target="#datagrid-{$control->getFullName()}-row-filters">
+							<button class="btn btn-xs btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#datagrid-{$control->getFullName()}-row-filters">
 								<i n:block="icon-filter" class="{$iconPrefix}filter"></i> {='ublaboo_datagrid.show_filter'|translate}
 							</button>
 						</div>
@@ -58,7 +64,7 @@
 								{var $i = $i+1}
 							</div>
 							<div class="col-sm-12" n:if="!$control->hasAutoSubmit()">
-								<div class="text-right datagrid-manual-submit">
+								<div class="text-end datagrid-manual-submit">
 									{input $filter['filter']['submit']}
 								</div>
 							</div>
@@ -108,11 +114,11 @@
                                             {$inlineAdd->renderButtonAdd()}
                                         {/if}
 
-                                        <div class="btn-group float-right">
-                                            <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" n:if="$control->canHideColumns()">
+                                        <div class="btn-group float-end dropstart">
+                                            <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" n:if="$control->canHideColumns()">
                                                 <i n:block="icon-gear" class="fas fa-cog"></i>
                                             </button>
-                                            <ul class="dropdown-menu dropdown-menu-right dropdown-menu--grid">
+                                            <ul class="dropdown-menu dropdown-menu-right dropdown-menu--grid dropdown-fix">
                                                 <li n:foreach="$columnsVisibility as $v_key => $visibility">
                                                     {if $visibility['visible']}
                                                         <a n:href="hideColumn!, column => $v_key" class="ajax dropdown-item">
@@ -384,7 +390,7 @@
                                         <div class="col-pagination text-center">
                                             {control paginator}
                                         </div>
-                                        <div class="col-per-page text-right">
+                                        <div class="col-per-page text-end">
                                             <a n:if="$filter_active" n:href="resetFilter!" class="ajax btn btn-danger btn-sm reset-filter">{='ublaboo_datagrid.reset_filter'|translate}</a>
                                             {if $control->isPaginated()}
                                                 {input $filter['perPage'], data-autosubmit-per-page => TRUE, class => 'form-control input-sm form-control-sm'}

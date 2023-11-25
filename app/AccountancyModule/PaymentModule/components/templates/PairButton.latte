@@ -2,26 +2,24 @@
 
 {var $style = $style ?? 'primary'}
 {var $attrs = ! $canPair && $groupsCount === 1
-            ? ['data-toggle' => 'tooltip', 'data-placement' => 'bottom', 'title' => 'Skupina nemá nastavený účet']
+            ? ['data-bs-toggle' => 'tooltip', 'data-placement' => 'bottom', 'title' => 'Skupina nemá nastavený účet']
             : []
 }
 <div class="d-inline-block">
-    <div class="btn-group" n:attr="$attrs" {if !$canPair} title="Nemáš dostatečné oprávnění nebo není nastaven FIO API token u bankovního účtu." data-toggle="tooltip"{/if}>
+    <div class="btn-group" n:attr="$attrs" {if !$canPair} title="Nemáš dostatečné oprávnění nebo není nastaven FIO API token u bankovního účtu." data-bs-toggle="tooltip"{/if}>
         <a n:href="pair!" n:class="!$canPair ? disabled, btn, 'btn-' . $style">
             <i class="fas fa-university"></i> Párovat <span class="d-none d-md-inline">platby</span>
         </a>
         <button n:attr="!$canPair ? ([disabled => true])"
                 n:class="btn, 'btn-'  . $style, dropdown-toggle" type="button" id="pairPayments"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-persist="true"><span class="caret"></span></button>
+                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true"><span class="caret"></span></button>
 
         <div class="dropdown-menu pairForm" aria-labelledby="pairPayments" n:snippet="form">
             <form n:name="form" class="row w-100 p-3">
                 <div class="col-8 text-nowrap">
                     <span class="input-group">
                     <input n:name="days" class="form-control">
-                    <div class="input-group-append">
-                        <span class="input-group-text">dní</span>
-                    </div>
+                    <span class="input-group-text">dní</span>
                 </span>
                 </div>
                 <div class="col-4">

@@ -15,6 +15,7 @@ library.add(
     fas.faCar,
     fas.faCog,
     fas.faCogs,
+    fas.faComment,
     fas.faChartPie,
     fas.faCheck,
     fas.faChevronLeft,

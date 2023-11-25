@@ -5,7 +5,7 @@
 
 <div class="mb-2 card" n:if="$isEditable">
     <div class="card-body">
-        <a n:if="$isEditable" href="#importHpd" role="button" data-toggle="modal" class="btn btn-primary">
+        <a n:if="$isEditable" href="#importHpd" role="button" data-bs-toggle="modal" class="btn btn-primary">
             <i class="far fa-user"></i>&nbsp;Načíst příjmy od účastníků
         </a>
     </div>
@@ -21,14 +21,14 @@
     {/snippet}
 </div>
 <hr />
-<div class="text-right lead mb-sm-2" title="náklady + výnosy">Výsledek hospodaření: {if $finalRealBalance === null}Chybí povolené automatické dopočítávání!{else}{$finalRealBalance|price} Kč{/if}</div>
+<div class="text-end lead mb-sm-2" title="náklady + výnosy">Výsledek hospodaření: {if $finalRealBalance === null}Chybí povolené automatické dopočítávání!{else}{$finalRealBalance|price} Kč{/if}</div>
 
 <div id="importHpd" class="modal" tabindex="-1" role="dialog" aria-labelledby="importHpdLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title">Import příjmů od účastníků</h3>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"> &times; </span></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 {control formImportHpd}

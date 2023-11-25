@@ -131,6 +131,8 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->seeElement('input[name="items[1][remove]"]');
         $this->fillSecondChitForm('Hřebíky', Operation::EXPENSE(), 'Materiál', 'Testovací skaut', '50');
         $this->I->scrollTo('input[name="send"]');
+        $this->I->waitForElementClickable('input[name="send"]');
+        $this->I->wait(2);
         $this->I->click('input[name="send"]');
         $this->waitForBalance('-121,00');
     }

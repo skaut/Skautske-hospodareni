@@ -7,7 +7,7 @@
     ]}
         <div class="card">
             <div class="card-header d-flex align-items-center">
-                <h5 class="m-0 mr-auto">Vedení akce</h5>
+                <h5 class="m-0 me-auto">Vedení akce</h5>
                 {if $editation}
                     <a n:href="closeEditation!" class="ajax lead close">&times;</a>
                 {elseif $canEdit}
@@ -19,9 +19,9 @@
                 <form n:name="form">
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item" n:foreach="$functionLabels as $functionName => $label">
-                            <div class="form-group">
-                                <label n:name="$functionName" class="font-weight-bold">{$label}</label>
-                                <select n:name="$functionName" class="custom-select"/>
+                            <div class="mb-3">
+                                <label n:name="$functionName" class="fw-bold">{$label}</label>
+                                <select n:name="$functionName" class="form-select"/>
                             </div>
                         </li>
                     </ul>
@@ -32,7 +32,7 @@
             {else}
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item d-flex" n:foreach="$functionLabels as $functionName => $label">
-                        <div class="font-weight-bold mr-auto">{$label}</div>
+                        <div class="fw-bold me-auto">{$label}</div>
                         <div>
                             {$functions->$functionName !== NULL ? $functions->$functionName->name : "-"}
                         </div>

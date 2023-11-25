@@ -2,7 +2,7 @@
 <div class="row mb-4">
     <h1 n:inner-block="title" class="col">{$account->getName()}</h1>
     <div class="col-auto">
-        <a n:href="edit $account->getId()" class="btn btn-light"><i class="fas fa-cogs mr-1"></i> Nastavení</a>
+        <a n:href="edit $account->getId()" class="btn btn-light"><i class="fas fa-cogs me-1"></i> Nastavení</a>
     </div>
 </div>
 
@@ -12,7 +12,7 @@
         <div>Vytvořen {$account->getCreatedAt()|date:'j.n. Y'}</div>
     </div>
     <div class="col-auto">
-        <i class="far fa-calendar mr-1"></i> Transakce za posledních 60 dní
+        <i class="far fa-calendar me-1"></i> Transakce za posledních 60 dní
     </div>
 </div>
 
@@ -53,7 +53,7 @@
                             {foreach $preparedPayment as $p}
                                 <a href="{link Payment:default $p->groupId}#payment-{$p->id}" class="btn btn-xs btn-default"
                                                                     title='Variabilní symbol odpovídá {if array_key_exists($p->getGroupId(), $groupNames)} ve skupině "{$groupNames[$p->getGroupId()]}"{/if} nespárované platbě "{$p->name}"'
-                                                                    data-toggle='tooltip'>
+                                                                    data-bs-toggle='tooltip'>
                                     <span class="fas fa-exclamation-triangle"></span>
                                 </a>
                             {/foreach}
@@ -62,7 +62,7 @@
 
                         <a n:if="$pairedPayment !== null" href="{link Payment:default $pairedPayment->groupId}#payment-{$pairedPayment->id}" class="btn btn-xs btn-default"
                                                           title='Spárováno s platbou "{$pairedPayment->name}{if array_key_exists($pairedPayment->getGroupId(), $groupNames)} ve skupině "{$groupNames[$pairedPayment->getGroupId()]}"{/if}"'
-                                                          data-toggle='tooltip'>
+                                                          data-bs-toggle='tooltip'>
                             <span class="fas fa-university"></span>
                         </a>
                     </td>

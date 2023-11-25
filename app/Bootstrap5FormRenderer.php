@@ -20,7 +20,7 @@ use function is_array;
 /**
  * Inspired by https://github.com/aleswita/FormRenderer
  */
-class Bootstrap4FormRenderer extends DefaultFormRenderer
+class Bootstrap5FormRenderer extends DefaultFormRenderer
 {
     /** @var mixed[] */
     // phpcs:disable SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
@@ -33,11 +33,11 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
         'group' => [
             'container' => null,
             'label' => 'p class="h3 mt-4"',
-            'description' => 'p class="pl-3 lead"',
+            'description' => 'p class="ps-3 lead"',
         ],
         'controls' => ['container' => null],
         'pair' => [
-            'container' => 'div class="form-group"',
+            'container' => 'div class="mb-3"',
             '.required' => null,
             '.optional' => null,
             '.odd' => null,
@@ -46,7 +46,7 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
         'control' => [
             'container' => null,
             '.odd' => null,
-            'description' => 'small class="form-text text-muted"',
+            'description' => 'small class="text-muted"',
             'requiredsuffix' => null,
             'errorcontainer' => 'div class="invalid-feedback"',
             'erroritem' => null,
@@ -143,7 +143,7 @@ class Bootstrap4FormRenderer extends DefaultFormRenderer
         } elseif ($control instanceof Nette\Forms\Controls\UploadControl) {
             $controlPrototype->appendAttribute('class', 'form-control-file');
         } elseif ($control instanceof Nette\Forms\Controls\SelectBox) {
-            $controlPrototype->appendAttribute('class', 'custom-select');
+            $controlPrototype->appendAttribute('class', 'form-select');
         } else {
             if ($control->hasErrors()) {
                 $control->controlPrototype->appendAttribute('class', 'is-invalid');

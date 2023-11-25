@@ -10,8 +10,7 @@
             <div class="dropdown d-inline-flex">
                 <button class="btn btn-link btn-sm"
                         type="button"
-                        data-toggle="dropdown"
-                        data-persist="true"
+                        data-bs-toggle="dropdown"
                         title="Odeslané e-maily">
                     <i class="far fa-envelope-open"></i>&nbsp;{count($emails)}
                 </button>
@@ -27,7 +26,7 @@
                                     Potvrzení o dokončení platby
                                 {/if}
                             </div>
-                            <div class="small text-muted text-center ml-3">
+                            <div class="small text-muted text-center ms-3">
                                 odeslal {$email->getTime()|date:'d.m.Y'} uživatel {$email->getSenderName()}
                             </div>
                         </li>
@@ -64,7 +63,7 @@
     {var $transaction = $item->getTransaction()}
             <div class="dropdown d-inline-block">
                 <button class="btn btn-sm btn-light" type="button"
-                        data-toggle="dropdown" data-persist="true">
+                        data-bs-toggle="dropdown">
                 {if $transaction !== NULL}
                     <span class="fas fa-university"></span>
                 </button>

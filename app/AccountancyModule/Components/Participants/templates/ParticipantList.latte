@@ -19,27 +19,27 @@ $showUnits bool - zobrazovat číslo jednotky
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Hromadné nastavení</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"> &times; </span></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
                     {formContainer edit}
                         <div class="modal-body">
-                            <div class="form-group" n:if="$isAllowDaysUpdate">
+                            <div class="mb-3" n:if="$isAllowDaysUpdate">
                                 <label n:name="days"/>
                                 <input n:name="days" class="form-control">
                             </div>
 
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label n:name="payment"/>
                                 <input n:name="payment" class="form-control">
                             </div>
 
-                            <div class="form-group" n:if="$isAllowRepayment">
+                            <div class="mb-3" n:if="$isAllowRepayment">
                                 <label n:name="repayment"/>
                                 <input n:name="repayment" class="form-control">
                             </div>
 
-                            <div class="form-group" n:if="$isAllowIsAccount">
+                            <div class="mb-3" n:if="$isAllowIsAccount">
                                 <label n:name="isAccount"/>
                                 <div n:foreach="$form['edit']['isAccount']->items as $key => $label" class="form-check">
                                     <label>
@@ -60,28 +60,28 @@ $showUnits bool - zobrazovat číslo jednotky
         <div n:ifset="$participants">
             <h2 class="mb-3">Seznam účastníků</h2>
             <div class="d-flex mb-2">
-                <div class="dropdown d-inline-block mr-auto">
+                <div class="dropdown d-inline-block me-auto">
                     <button n:class="btn, btn-light, dropdown-toggle, empty($participants) ? 'disabled'"
                             n:attr="[disabled => empty($participants)]"
                             id="exportParticipantsButton"
                             type="button"
-                            data-toggle="dropdown"
+                            data-bs-toggle="dropdown"
                             aria-haspopup="true"
                             aria-expanded="false">
                         <i class="fas fa-arrow-down"></i> Exportovat&hellip;
                     </button>
                     <div class="dropdown-menu" aria-labelledby="exportParticipantsButton">
                         <a class="dropdown-item" href="{plink export $aid}">
-                            <span class="mr-1"><i class="far fa-file-pdf"></i></span> PDF
+                            <span class="me-1"><i class="far fa-file-pdf"></i></span> PDF
                         </a>
                         <a class="dropdown-item" href="{plink exportExcel $aid}">
-                            <span class="mr-1"><i class="far fa-file-excel"></i></span>
+                            <span class="me-1"><i class="far fa-file-excel"></i></span>
                             Excel
                         </a>
                     </div>
                 </div>
-                <span class="dropdown mr-2">
-                    <button class="btn btn-light dropdown-toggle" type="button" data-toggle="dropdown">
+                <span class="dropdown me-2">
+                    <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
                         <i class="fas fa-sort-amount-down"></i> {$sortOptions[$sort]}
                         <span class="caret"></span>
                     </button>
@@ -104,8 +104,8 @@ $showUnits bool - zobrazovat číslo jednotky
                         <input type="checkbox"
                                class="allParticipantCheckbox"
                                data-dependent-checkboxes=".participantCheckbox"
-                               data-toggle-checked=".participantList-groupActions"
-                               data-toggle-unchecked=".participantList-th">
+                               data-bs-toggle-checked=".participantList-groupActions"
+                               data-bs-toggle-unchecked=".participantList-th">
                     </th>
                     <th data-visible-if-not-checked=".participantCheckboxInput, .allParticipantCheckbox">Příjmení a jméno ({= count($participants)})</th>
                     <th n:if="$showUnits" data-visible-if-not-checked=".participantCheckboxInput, .allParticipantCheckbox">Jednotka</th>
@@ -115,10 +115,10 @@ $showUnits bool - zobrazovat číslo jednotky
                     <th n:if="$isAllowIsAccount" data-visible-if-not-checked=".participantCheckboxInput, .allParticipantCheckbox">Na účet?</th>
                     <th n:if="$isAllowAnyAction" data-visible-if-not-checked=".participantCheckboxInput, .allParticipantCheckbox"></th>
                     <th n:if="$isAllowAnyAction"
-                            data-visible-if-checked=".participantCheckboxInput, .allParticipantCheckbox" colspan="4" class="text-right">
+                            data-visible-if-checked=".participantCheckboxInput, .allParticipantCheckbox" colspan="4" class="text-end">
                         <a n:if="$isAllowParticipantUpdate"
                                 href="#massEdit"
-                                data-toggle="modal"
+                                data-bs-toggle="modal"
                                 class="btn btn-light btn-sm">
                             <i class="far fa-edit"></i>
                             Upravit vybrané
@@ -142,11 +142,11 @@ $showUnits bool - zobrazovat číslo jednotky
                         </td>
                         <td><label for="massParticipants-{$p->id}">{$p->displayName}</label></td>
                         <td n:if="$showUnits">{ifset $p->unitRegistrationNumber}{$p->unitRegistrationNumber}{/ifset}</td>
-                        <td class="text-right" n:if="$isAllowDaysUpdate">{$p->days}</td>
-                        <td class="text-right">{$p->payment|price:false}{do $totalPayment += $p->payment}</td>
-                        <td class="text-right" n:if="$isAllowRepayment">{$p->repayment|price:false}{do $totalRepayment += $p->repayment}</td>
+                        <td class="text-end" n:if="$isAllowDaysUpdate">{$p->days}</td>
+                        <td class="text-end">{$p->payment|price:false}{do $totalPayment += $p->payment}</td>
+                        <td class="text-end" n:if="$isAllowRepayment">{$p->repayment|price:false}{do $totalRepayment += $p->repayment}</td>
                         <td n:if="$isAllowIsAccount">{$p->onAccount === 'Y' ? 'Ano'}</td>
-                        <td n:if="$isAllowAnyAction" class="text-right text-nowrap">
+                        <td n:if="$isAllowAnyAction" class="text-end text-nowrap">
                             <a n:if="$isAllowParticipantUpdate"
                                     n:href="edit! $p->id"
                                     class="btn btn-light btn-sm ajax"
@@ -161,16 +161,16 @@ $showUnits bool - zobrazovat číslo jednotky
                         {var $colspanHeader = 1+($isAllowAnyAction ?1:0)+($showUnits?1:0)+($isAllowDaysUpdate?1:0)}
                         <td colspan="{$colspanHeader}" class="b">Celkem: {= count($participants)} osob</td>
                         {if $isAllowRepayment}
-                            <td class="text-right" id="payment-total">{$totalPayment|price:false}</td>
-                            <td class="text-right" id="repayment-total">{$totalRepayment|price:false}</td>
+                            <td class="text-end" id="payment-total">{$totalPayment|price:false}</td>
+                            <td class="text-end" id="repayment-total">{$totalRepayment|price:false}</td>
                             {include footerFilling}
                         </tr>
                         <tr>
                             <td colspan="{$colspanHeader}"></td>
-                            <td colspan="2" class="font-weight-bold text-right"><span id="total-total">{$total|price:false}</span></td>
+                            <td colspan="2" class="fw-bold text-end"><span id="total-total">{$total|price:false}</span></td>
                             {include footerFilling}
                         {else}
-                            <td class="font-weight-bold text-right"><span id="total-total">{$total|price:false}</span></td>
+                            <td class="fw-bold text-end"><span id="total-total">{$total|price:false}</span></td>
                             {include footerFilling}
                         {/if}
                     </tr>

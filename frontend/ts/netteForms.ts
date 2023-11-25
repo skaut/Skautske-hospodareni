@@ -29,7 +29,7 @@ netteFormsInstance.showFormErrors = (form: HTMLFormElement, messages: { element:
     messages.forEach(message => {
         message.element.classList.add(invalidControlClass);
 
-        const formGroup = message.element.closest('.form-group');
+        const formGroup = message.element.closest('.mb-3');
 
         console.log(message.element, formGroup);
 

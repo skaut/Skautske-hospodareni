@@ -5,23 +5,23 @@
 {include ../header.latte}
 
 <div class="row d-flex align-items-center">
-    <div class="col-lg-7 text-center text-lg-left">
+    <div class="col-lg-7 text-lg-left">
         {var $state = $event->getState()}
         <span n:tag-if="$state == 'closed'"
-            data-toggle="tooltip"
+            data-bs-toggle="tooltip"
             title="Uzavřel {$event->getPersonClosed()} dne {$event->getDateClosed()|date:"j.n.Y"}"
         >{$state|eventStateLabel|noescape}</span>
-        <span class="ml-2 mr-2">|</span>
+        <span class="ms-2 me-2">|</span>
         {$event->getUnitName()}
-        <span class="ml-2 mr-2">|</span>
+        <span class="ms-2 me-2">|</span>
         <span class="text-nowrap"><i class="fas fa-calendar"></i> {[$event->getStartDate(), $event->getEndDate()]|dateRange}</span>
-        <span class="ml-2 mr-2">|</span>
+        <span class="ms-2 me-2">|</span>
         <i class="fas fa-map-marker-alt"></i>
         {if trim($event->getLocation()) === ''}<i class="text-muted">Nevyplněno</i>{else}{$event->getLocation()}{/if}
     </div>
-    <div class="col-lg-5 text-lg-right text-center mt-lg-0 d-flex d-md-block flex-column mt-1">
-        <div class="btn-group mr-md-3 mt-2">
-            <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+    <div class="col-lg-5 text-lg-right text-end mt-lg-0 d-flex d-md-block flex-column mt-1">
+        <div class="btn-group me-md-3 mt-2">
+            <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true"
                     aria-expanded="false">
                 <i class="fas fa-print"></i> Exportovat
             </button>
@@ -36,7 +36,7 @@
         <a n:if="$accessOpenEvent && $event->getState() == 'closed'"  n:href="open! $aid"
                 class="btn btn-dark mt-2"><i class="fas fa-lock-open d-none d-xl-inline-block"></i> Znovu otevřít</a>
         <a n:if="$accessEditBase" href="#editBasicInfo" class="btn btn-light mt-2"
-                                  data-toggle="modal"><i class="far fa-edit d-none d-xl-inline-block"></i> Upravit údaje</a>
+                                  data-bs-toggle="modal"><i class="far fa-edit d-none d-xl-inline-block"></i> Upravit údaje</a>
     </div>
 </div>
 
@@ -46,8 +46,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="myModalLabel">Upravit akci</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"> &times; </span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 {control formEdit}
@@ -62,11 +61,11 @@
             <h5 class="card-header">Souhrn</h5>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item d-flex">
-                    <div class="font-weight-bold mr-auto">Výsledek hospodaření</div>
+                    <div class="fw-bold me-auto">Výsledek hospodaření</div>
                     <div>{$finalRealBalance|price} Kč</div>
                 </li>
                 <li class="list-group-item d-flex">
-                    <div class="font-weight-bold mr-auto">Prefix čísel dokladů</div>
+                    <div class="fw-bold me-auto">Prefix čísel dokladů</div>
                     <div>{$prefix}</div>
                 </li>
             </ul>
@@ -80,22 +79,22 @@
                         <table class="table table-sm border-bottom">
                             <tr>
                                 <th class="border-top-0">Počet dnů</th>
-                                <td class="border-top-0 text-right">{$event->getTotalDays()}</td>
+                                <td class="border-top-0 text-end">{$event->getTotalDays()}</td>
                             </tr>
                             <tr>
                                 <th>Počet účastníků</th>
-                                <td class="text-right">{$event->getRealCount()}</td>
+                                <td class="text-end">{$event->getRealCount()}</td>
                             </tr>
                             <tr>
                                 <th>Osobodnů/dětodnů</th>
-                                <td class="text-right">{$event->getRealPersonDays()}/{$event->getRealChildDays()}</td>
+                                <td class="text-end">{$event->getRealPersonDays()}/{$event->getRealChildDays()}</td>
                             </tr>
                             <tr>
                                 <th colspan="2" class="pt-4">Účastníci podle věku</th>
                             </tr>
                             <tr n:foreach="$statistic as $item">
                                 <th>{$item->getLabel()}</th>
-                                <td class="text-right">{$item->getCount()}</td>
+                                <td class="text-end">{$item->getCount()}</td>
                             </tr>
                         </table>
                     </div>
@@ -111,23 +110,23 @@
             <table class="table card-body">
                 <tr>
                     <th class="border-top-0">Dotovatelná?</th>
-                    <td class="border-top-0 text-right">{if $pragueParticipants->isSupportable($event->getTotalDays())}Ano{else}Ne{/if}</td>
+                    <td class="border-top-0 text-end">{if $pragueParticipants->isSupportable($event->getTotalDays())}Ano{else}Ne{/if}</td>
                 </tr>
                 <tr>
                     <th>Osobodnů pod 26</th>
-                    <td class="text-right">{$pragueParticipants->personDaysUnder26}</td>
+                    <td class="text-end">{$pragueParticipants->personDaysUnder26}</td>
                 </tr>
                 <tr>
                     <th>Osob pod 18</th>
-                    <td class="text-right">{$pragueParticipants->under18}</td>
+                    <td class="text-end">{$pragueParticipants->under18}</td>
                 </tr>
                 <tr>
                     <th>Osob mezi 18 a 26</th>
-                    <td class="text-right">{$pragueParticipants->between18and26} </td>
+                    <td class="text-end">{$pragueParticipants->between18and26} </td>
                 </tr>
                 <tr>
                     <th>Osob celkem</th>
-                    <td class="text-right">{$pragueParticipants->citizensCount}</td>
+                    <td class="text-end">{$pragueParticipants->citizensCount}</td>
                 </tr>
             </table>
         </div>
@@ -140,7 +139,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"> &times; </span></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 <h3 class="modal-title" id="myModalLabel">Upravit akci</h3>
             </div>
             <div class="modal-body">

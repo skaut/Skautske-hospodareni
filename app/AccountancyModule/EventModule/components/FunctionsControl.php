@@ -64,23 +64,19 @@ class FunctionsControl extends BaseControl
 
         $form->addSelect('leader', 'Vedoucí', $personsOlderThan[18])
             ->setPrompt('')
-            ->setHtmlAttribute('class', 'combobox')
-            ->setHtmlAttribute('data-autocomplete');
+            ->setHtmlAttribute('class', 'combobox');
 
         $form->addSelect('assistant', 'Zástupce', $personsOlderThan[18])
             ->setPrompt('')
-            ->setHtmlAttribute('class', 'combobox')
-            ->setHtmlAttribute('data-autocomplete');
+            ->setHtmlAttribute('class', 'combobox');
 
         $form->addSelect('accountant', 'Hospodář', $personsOlderThan[15])
             ->setPrompt('')
-            ->setHtmlAttribute('class', 'combobox')
-            ->setHtmlAttribute('data-autocomplete');
+            ->setHtmlAttribute('class', 'combobox');
 
         $form->addSelect('medic', 'Zdravotník', $personsOlderThan[15])
             ->setPrompt('')
-            ->setHtmlAttribute('class', 'combobox')
-            ->setHtmlAttribute('data-autocomplete');
+            ->setHtmlAttribute('class', 'combobox');
 
         $form->addSubmit('save', 'Uložit')
             ->setHtmlAttribute('class', 'btn btn-sm btn-primary ajax');

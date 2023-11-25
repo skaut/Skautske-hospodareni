@@ -5,11 +5,11 @@
 {block dialog-body}
     Vyberte tábory, které chcete exportovat.
 
-    <div class="mt-2 ml-2">
+    <div class="mt-2 ms-2">
         <div class="form-check mb-1">
             <input type="checkbox" class="form-check-input" id="export-check-all"
                    data-dependent-checkboxes=".export-dependent-checkboxes">
-            <label for="export-check-all" class="font-weight-bold">Vybrat vše</label>
+            <label for="export-check-all" class="fw-bold">Vybrat vše</label>
         </div>
         <form n:name="form" class="export-dependent-checkboxes">
             <div class="form-check" n:foreach="$form['campIds']->items as $key => $label">

@@ -3,7 +3,7 @@
         <div class="d-flex align-items-start">
             <div>
                 <div class="btn-group">
-                    <a class="btn btn-light btn dropdown-toggle align-items-center" data-toggle="dropdown" href="#" rel="tooltip" title="Jednotka, ze které se zobrazí seznam členů">
+                    <a class="btn btn-light btn dropdown-toggle align-items-center" data-bs-toggle="dropdown" href="#" rel="tooltip" title="Jednotka, ze které se zobrazí seznam členů">
                         {$unit->getDisplayName()|truncate:20, ""}
                     </a>
                     <div class="dropdown-menu">
@@ -28,11 +28,11 @@
                         </a>
                     </div>
                 </div>
-                <div class="small text-muted ml-1">
+                <div class="small text-muted ms-1">
                     {if $directMemberOnly}bez členů podjednotek{else}<strong>včetně členů podjednotek</strong>{/if}
                 </div>
             </div>
-            <a class="btn btn-primary btn ml-auto" href="#addParticipant" data-toggle="modal">
+            <a class="btn btn-primary btn ms-auto" href="#addParticipant" data-bs-toggle="modal">
                 <i class="fas fa-plus"></i>
                 Přidat nečlena
             </a>
@@ -48,7 +48,7 @@
                         <div data-visible-if-not-checked=".personPicker-person-all, .personPicker-person-input">
                             Příjmení a jméno
                         </div>
-                        <div data-visible-if-checked=".personPicker-person-all, .personPicker-person-input" class="text-right">
+                        <div data-visible-if-checked=".personPicker-person-all, .personPicker-person-input" class="text-end">
                             <button n:name="send" class="btn btn-primary btn-sm" type="submit">
                                 <i class="fas fa-plus"></i>
                                 Přidat vybrané
@@ -65,7 +65,7 @@
                             <input n:name="personIds:$id" class="personPicker-person-input" id="personIds-{$id}">
                         </td>
                         <td><label n:name="personIds:$id">{$name}</label></td>
-                        <td class="text-right">
+                        <td class="text-end">
                             <a n:href="add! $id" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i></a>
                         </td>
                     </tr>
@@ -86,7 +86,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Založit nového účastníka</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"> &times; </span></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-info"><i class="fas fa-info-circle"></i> Údaje založeného účastníka nelze editovat, lze ho pouze smazat a znovu založit.</div>

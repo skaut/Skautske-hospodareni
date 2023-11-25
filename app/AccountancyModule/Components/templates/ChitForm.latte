@@ -1,11 +1,9 @@
 {snippet}
     <div class="card bg-light mb-2" n:if="$isEditable" id="chitFormHeader">
         <div class="card-header">
-            <div class="row justify-content-between">
-                <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#chitCollapse" aria-expanded="false" aria-controls="chitCollapse">
-                    {ifset $edit}Upravit doklad číslo : {if $num}{$num}{else}<span title="systémové Id">{$pid}</span> {/if} {else}Nový doklad{/ifset}
-                </button>
-            </div>
+            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#chitCollapse" aria-expanded="false" aria-controls="chitCollapse">
+                {ifset $edit}Upravit doklad číslo : {if $num}{$num}{else}<span title="systémové Id">{$pid}</span> {/if} {else}Nový doklad{/ifset}
+            </button>
         </div>
 
         <div class="collapse {if $displayChitForm}show{/if}" id="chitCollapse">
@@ -14,11 +12,11 @@
                     <ul class="alert alert-danger" n:if="$form->hasErrors()">
                         <li n:foreach="$form->errors as $error">{$error}</li>
                     </ul>
-                    <div class="form-row">
+                    <div class="row mb-1">
                         <div class="col" id="chit-type">Typ: {input type:in}{label type:in /} {input type:out}{label type:out /}</div>
                         <div class="col">Způsob: {input paymentMethod:cash}{label paymentMethod:cash /} {input paymentMethod:bank}{label paymentMethod:bank /}</div>
                     </div>
-                    <div class="form-row mb-1">
+                    <div class="row mb-1">
                         <div class="col">{input date}</div>
                         <div class="col">{input num}</div>
                     </div>
@@ -33,10 +31,10 @@
                     {foreach $form['items']->getContainers() as $id => $item}
                         <div class="card mb-2">
                             <div class="card-body">
-                                <div class="form-row mb-1">
+                                <div class="row mb-1">
                                     <div class="col">{input "items-$id-purpose"}</div>
                                 </div>
-                                <div class="form-row mb-1">
+                                <div class="row mb-1">
                                     <div class="col chit-category">
                                         {input "items-$id-incomeCategories"}
                                         {input "items-$id-expenseCategories"}

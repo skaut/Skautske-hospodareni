@@ -61,7 +61,7 @@
                     <th>Datum</th>
                     <th>Z</th>
                     <th>Do</th>
-                    <th data-toggle="tooltip" data-placement="top" title="Km u vlastního auta nebo motocyklu, jinak cena jízdenky">
+                    <th data-bs-toggle="tooltip" data-placement="top" title="Km u vlastního auta nebo motocyklu, jinak cena jízdenky">
                         km nebo cena <i class="fas fa-info-circle"></i>
                     </th>
                     <th>&nbsp;</th>
@@ -91,18 +91,18 @@
                             </div>
                         </td>
                         <td>{$types[$t->details->transportType->toString()]}</td>
-                        <td class="text-right">{$t->details->date|date:"j. n. Y"}</td>
+                        <td class="text-end">{$t->details->date|date:"j. n. Y"}</td>
                         <td>{$t->details->startPlace}</td>
                         <td>{$t->details->endPlace}</td>
-                        <td class="text-right">{if $t->distance !== NULL}{$t->distance}{else}{$t->price|price}{/if}</td>
-                        <td class="text-right">
+                        <td class="text-end">{if $t->distance !== NULL}{$t->distance}{else}{$t->price|price}{/if}</td>
+                        <td class="text-end">
                             {$t->price|price}
                         </td>
                     </tr>
                     <tr>
                         <th n:if="$isEditable">&nbsp;</th>
-                        <th colspan="5" class="text-right">Celkem po zaokrouhlení dolu: </th>
-                        <th class="text-right">{$command->total|price}&nbsp;Kč</th>
+                        <th colspan="5" class="text-end">Celkem po zaokrouhlení dolu: </th>
+                        <th class="text-end">{$command->total|price}&nbsp;Kč</th>
                     </tr>
                 {/if}
             </table>

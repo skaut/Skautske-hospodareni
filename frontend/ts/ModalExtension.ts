@@ -1,4 +1,4 @@
-import {Modal} from 'bootstrap.native/dist/bootstrap-native-v4';
+import BSN from 'bootstrap.native';
 
 export class ModalExtension {
     constructor(naja: any) {
@@ -10,7 +10,7 @@ export class ModalExtension {
             return;
         }
 
-        const modal = new Modal(snippet);
+        const modal = new BSN.Modal(snippet);
 
         if (snippet.innerHTML === '') {
             modal.hide();
