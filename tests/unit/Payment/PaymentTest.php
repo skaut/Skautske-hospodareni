@@ -287,7 +287,7 @@ class PaymentTest extends Unit
     {
         $payment = $this->createPayment();
 
-        $transaction = new Transaction('21924318042', '123456789/0800', 'Joe Doe', 'abc');
+        $transaction = new Transaction('21924318042', '123456789/0800', 'Joe Doe', 'abc', null);
 
         $payment->pairWithTransaction(ChronosDate::now(), $transaction);
 

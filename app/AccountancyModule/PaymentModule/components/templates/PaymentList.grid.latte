@@ -70,6 +70,7 @@
                 <ul class="dropdown-menu dropdown-menu-right p-3">
                     <li><strong>ID:</strong> {$transaction->getId()}</li>
                     <li><strong>Plátce:</strong> {$transaction->getPayer()}</li>
+                    <li><strong>Datum:</strong> {$transaction->getDate()|date:"j.n.Y"}</li>
                     <li><strong>Účet:</strong> {$transaction->getBankAccount()}</li>
                     <li><strong>Poznámka:</strong> {$transaction->getNote()}</li>
                 </ul>

@@ -98,6 +98,7 @@ class PaymentRepositoryTest extends IntegrationTest
             $data['bank_account'],
             $data['transaction_payer'],
             $data['transaction_note'],
+            null,
         );
 
         $this->assertTrue($expectedTransaction->equals($payment->getTransaction()));
