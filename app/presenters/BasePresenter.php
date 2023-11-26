@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\AccountancyModule\Factories\IDarkModeToggleFactory;
 use App\AccountancyModule\Factories\ILoginPanelFactory;
+use App\Components\DarkModeToggle;
 use App\Components\LoginPanel;
 use Model\Auth\IAuthorizator;
 use Model\Common\Services\CommandBus;
@@ -45,6 +47,8 @@ abstract class BasePresenter extends Presenter
 
     private ILoginPanelFactory $loginPanelFactory;
 
+    private IDarkModeToggleFactory $darkModeToggleFactory;
+
     private NotificationsCollector $notificationsCollector;
 
     protected LoggerInterface $logger;
@@ -60,6 +64,7 @@ abstract class BasePresenter extends Presenter
         QueryBus $queryBus,
         IAuthorizator $authorizator,
         ILoginPanelFactory $loginPanelFactory,
+        IDarkModeToggleFactory $darkModeToggleFactory,
         NotificationsCollector $notificationsCollector,
         LoggerInterface $logger,
         LinkGenerator $linkGenerator,
@@ -71,6 +76,7 @@ abstract class BasePresenter extends Presenter
         $this->queryBus               = $queryBus;
         $this->authorizator           = $authorizator;
         $this->loginPanelFactory      = $loginPanelFactory;
+        $this->darkModeToggleFactory  = $darkModeToggleFactory;
         $this->logger                 = $logger;
         $this->notificationsCollector = $notificationsCollector;
         $this->linkGenerator          = $linkGenerator;
@@ -146,6 +152,11 @@ abstract class BasePresenter extends Presenter
     protected function createComponentLoginPanel(): LoginPanel
     {
         return $this->loginPanelFactory->create();
+    }
+
+    protected function createComponentDarkModeToggle(): DarkModeToggle
+    {
+        return $this->darkModeToggleFactory->create();
     }
 
     protected function updateUserAccess(): void

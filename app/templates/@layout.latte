@@ -7,6 +7,16 @@
     <meta name="author" content="">
     <link rel="icon" href="/favicon.ico">
 
+    <script n:syntax="off">
+        if ("theme" in localStorage) {
+            document.documentElement.setAttribute("data-bs-theme", localStorage.theme);
+        } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+            document.documentElement.setAttribute("data-bs-theme", "dark");
+        } else {
+            document.documentElement.setAttribute("data-bs-theme", "light");
+        }
+    </script>
+
     {if $productionMode}
         <script n:syntax="off">
             ga = function (){ga.q.push(arguments)};
@@ -63,6 +73,9 @@
                         </li>
                     {/if}
                 </ul>
+                <div style="margin-top: -0.15rem">
+                    {control darkModeToggle}
+                </div>
                 <div class="my-2 my-lg-0 d-flex flex-row">
                     {control loginPanel}
                 </div>

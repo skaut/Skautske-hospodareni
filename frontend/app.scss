@@ -59,6 +59,11 @@ table.table a:hover {
   }
 }
 
+.bg-posily {
+  --bs-bg-opacity: 1;
+  background-color: rgba(var(--bs-warning-rgb), var(--bs-bg-opacity)) !important;
+}
+
 .bg-test {
   background-color: #ffff00;
 }
@@ -79,4 +84,34 @@ table.table a:hover {
 }
 .carousel-control-prev-icon, .carousel-control-next-icon {
   background-color: #000000;
+}
+
+:root[data-bs-theme="dark"] {
+  .bg-posily {
+    --bs-bg-opacity: 0.2;
+  }
+
+  .bg-test {
+    background-color: #404000;
+  }
+
+  .bg-light, .btn-light {
+    background-color: var(--bs-light-bg-subtle) !important;
+  }
+
+  .btn-light {
+    color: var(--bs-body-color);
+  }
+
+  .carousel-caption {
+    color: var(--bs-body-color);
+  }
+
+  .carousel-item {
+    background-color: var(--bs-light-bg-subtle) !important;
+  }
+
+  .navbar-dark {
+    background-color: var(--bs-light-bg-subtle) !important;
+  }
 }
