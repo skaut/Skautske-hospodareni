@@ -66,7 +66,7 @@
                                         class="btn btn-sm btn-danger ui--removeChit"><i class="far fa-trash-alt"></i></a>
 
                             <a n:if="$isEditable && $chit->locked" n:href="showLocked" title="Paragon je uzamčen."
-                                    class="btn btn-warning btn-xs"><i class="glyphicon glyphicon-lock"></i></a>
+                                    class="btn btn-warning btn-sm"><i class="fas fa-lock"></i></a>
 
                             <a n:if="$isEditable && count(array_intersect($validInverseCashbookTypes, $chit->inverseCashbookTypes))"
                                     class="ajax btn btn-sm btn-success hidden-xs hidden-sm" n:href="invertChitDialog:open! $chit->id"
