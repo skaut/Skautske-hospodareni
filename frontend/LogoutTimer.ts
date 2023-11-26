@@ -6,6 +6,9 @@ export class LogoutTimer {
 
     constructor(timerId: string, minutesElementId: string) {
         this.timer = document.getElementById(timerId) as HTMLElement;
+        if (this.timer === null) {
+            return;
+        }
         this.minutesElement = document.getElementById(minutesElementId) as HTMLElement;
 
         this.decrementMinutes();
