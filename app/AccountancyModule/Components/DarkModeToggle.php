@@ -12,7 +12,6 @@ final class DarkModeToggle extends BaseControl
     {
     }
 
-    // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     public function render(): void
     {
         $this->template->setFile(__DIR__ . '/templates/DarkModeToggle.latte');
