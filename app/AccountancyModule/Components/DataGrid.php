@@ -57,7 +57,7 @@ final class DataGrid extends \Ublaboo\DataGrid\DataGrid
             function (int $year): string {
                 return (string) $year;
             },
-            array_reverse(range(2012, (int) date('Y'))),
+            array_reverse(range(2012, (int) date('Y') + 1)),
         );
 
         return [self::OPTION_ALL => 'Všechny'] + array_combine($years, $years);
