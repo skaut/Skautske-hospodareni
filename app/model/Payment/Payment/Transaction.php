@@ -80,7 +80,7 @@ class Transaction
         return $this->note;
     }
 
-    public function getDate(): ChronosDate
+    public function getDate(): ChronosDate|null
     {
         return $this->date;
     }
