@@ -93,7 +93,7 @@ final class RepaymentCandidateListQueryHandlerTest extends Unit
             '',
             $state !== State::PREPARING,
             State::get($state),
-            $bankAccount !== null ? new Transaction('123', $bankAccount, '', null) : null,
+            $bankAccount !== null ? new Transaction('123', $bankAccount, '', null, null) : null,
             $state !== State::PREPARING ? new DateTimeImmutable() : null,
             null,
             $personId,
