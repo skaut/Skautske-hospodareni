@@ -56,7 +56,7 @@ final class EditTravelDialog extends Dialog
         $form->addText('endPlace', 'Do')
             ->addRule(Form::FILLED, 'Musíte vyplnit místo konce cesty.');
 
-        $form->addText('distanceOrPrice', 'Vzdálenost')
+        $form->addText('distanceOrPrice', 'km nebo cena')
             ->setRequired('Musíte vyplnit vzdálenost.')
             ->addRule(Form::FLOAT, 'Vzdálenost musí být číslo.')
             ->addRule(Form::MIN, 'Vzdálenost musí být větší než 0.', 0.01);
