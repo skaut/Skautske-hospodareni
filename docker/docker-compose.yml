@@ -101,6 +101,7 @@ services:
             traefik.http.routers.nginx.entrypoints: web
         depends_on:
             - php
+            - php-xdebug
             - php-test
 
     mysql:
