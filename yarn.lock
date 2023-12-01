@@ -1215,10 +1215,10 @@
   resolved "https://registry.yarnpkg.com/@types/nprogress/-/nprogress-0.2.3.tgz#b2150b054a13622fabcba12cf6f0b54c48b14287"
   integrity sha512-k7kRA033QNtC+gLc4VPlfnue58CM1iQLgn1IMAU8VPHGOj7oIHPp9UlhedEnD/Gl8evoCjwkZjlBORtZ3JByUA==
 
-"@types/pikaday@^1.7.8":
-  version "1.7.8"
-  resolved "https://registry.yarnpkg.com/@types/pikaday/-/pikaday-1.7.8.tgz#5af499557f19e3c73d31730d754aa81c495dc6e1"
-  integrity sha512-ajpulv/dZkDsGNZZdv516nkSNqrX6NzqG2AZJVszoFp2B2APd3P1NFTeSvtSABvv0VnmCFAumnC4tYFhQu9uRQ==
+"@types/pikaday@^1.7.9":
+  version "1.7.9"
+  resolved "https://registry.yarnpkg.com/@types/pikaday/-/pikaday-1.7.9.tgz#b8f7387a4daa560975824282d9ece734c7cb23d7"
+  integrity sha512-DZ6oG5WoYX9Es2VTgvJpzxKMTU4WE0jq9noVSs0VTdmCREYv/AXSaybQj0Sm9Q9XO1pmFrdfBCpL4OVRX/QkAg==
   dependencies:
     moment ">=2.29.2"
 
