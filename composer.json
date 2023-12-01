@@ -21,7 +21,7 @@
         "http-interop/http-factory-guzzle": "^1.2",
         "kdyby/forms-replicator": "^2.0",
         "latte/latte": " ~2.11",
-        "league/flysystem": "^2.4",
+        "league/flysystem": "^3.21",
         "maennchen/zipstream-php": "^3.1",
         "mhujer/fio-api-php": "^4.1",
         "moneyphp/money": "^4.1",
