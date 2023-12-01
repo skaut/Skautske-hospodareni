@@ -3,20 +3,15 @@ updates:
 - package-ecosystem: composer
   directory: "/"
   schedule:
-    interval: monthly
+    interval: weekly
     time: "01:00"
   open-pull-requests-limit: 20
 - package-ecosystem: npm
   directory: "/"
   schedule:
-    interval: monthly
+    interval: weekly
     time: "01:00"
   open-pull-requests-limit: 20
   ignore:
-  - dependency-name: sass-loader
-    versions:
-    - 10.1.1
-  - dependency-name: "@fortawesome/*"
-    versions: ["6.x"]
   - dependency-name: "bootstrap.native"
     versions: ["5.x"]
