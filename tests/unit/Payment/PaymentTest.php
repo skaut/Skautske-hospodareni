@@ -104,7 +104,7 @@ class PaymentTest extends Unit
 
     public function testCancel(): void
     {
-        $time    = ChronosDate::now();
+        $time    = new DateTimeImmutable();
         $payment = $this->createPayment();
         $payment->cancel($time);
         $this->assertSame(State::get(State::CANCELED), $payment->getState());
@@ -113,7 +113,7 @@ class PaymentTest extends Unit
 
     public function testCancelingAlreadyCanceledPaymentThrowsException(): void
     {
-        $time    = ChronosDate::now();
+        $time    = new DateTimeImmutable();
         $payment = $this->createPayment();
         $payment->cancel($time);
 
@@ -123,7 +123,7 @@ class PaymentTest extends Unit
 
     public function testCancelingCompletedPaymentUpdatesClosedAtAndState(): void
     {
-        $time    = ChronosDate::now();
+        $time    = new DateTimeImmutable();
         $payment = $this->createPayment();
         $payment->completeManually($time, 'John Doe');
 
@@ -137,7 +137,7 @@ class PaymentTest extends Unit
 
     public function testCompletePayment(): void
     {
-        $time    = ChronosDate::now();
+        $time    = new DateTimeImmutable();
         $payment = $this->createPayment();
         $payment->completeManually($time, 'John Doe');
         $this->assertSame(State::get(State::COMPLETED), $payment->getState());
@@ -146,7 +146,7 @@ class PaymentTest extends Unit
 
     public function testCompleteClosedPayment(): void
     {
-        $time    = ChronosDate::now();
+        $time    = new DateTimeImmutable();
         $payment = $this->createPayment();
         $payment->cancel($time);
 
@@ -157,7 +157,7 @@ class PaymentTest extends Unit
     public function testCompletePaymentByUser(): void
     {
         $username = 'John Doe';
-        $time     = ChronosDate::now();
+        $time     = new DateTimeImmutable();
         $payment  = $this->createPayment();
         $payment->completeManually($time, $username);
         $this->assertSame($username, $payment->getClosedByUsername());
@@ -206,7 +206,7 @@ class PaymentTest extends Unit
     public function testUpdateVariableForClosedPaymentThrowsException(): void
     {
         $payment = $this->createPayment();
-        $payment->cancel(ChronosDate::now());
+        $payment->cancel(new DateTimeImmutable());
 
         $this->expectException(PaymentClosed::class);
 
@@ -276,7 +276,7 @@ class PaymentTest extends Unit
         $constantSymbol = 123;
         $note           = 'Never pays!';
 
-        $payment->completeManually(ChronosDate::now(), 'John Doe');
+        $payment->completeManually(new DateTimeImmutable(), 'John Doe');
 
         $this->expectException(PaymentClosed::class);
 
@@ -289,7 +289,7 @@ class PaymentTest extends Unit
 
         $transaction = new Transaction('21924318042', '123456789/0800', 'Joe Doe', 'abc', null);
 
-        $payment->pairWithTransaction(ChronosDate::now(), $transaction);
+        $payment->pairWithTransaction(new DateTimeImmutable(), $transaction);
 
         $this->assertSame($transaction, $payment->getTransaction());
         $this->assertTrue($payment->isClosed());
@@ -374,7 +374,7 @@ class PaymentTest extends Unit
         $this->assertSame($sender, $sentEmails[0]->getSenderName());
     }
 
-    public function testDucliciteEmailAddress(): void
+    public function testDuplicityEmailAddress(): void
     {
         $email1  = new EmailAddress('test@gmail.com');
         $email2  = new EmailAddress('test@gmail.com');

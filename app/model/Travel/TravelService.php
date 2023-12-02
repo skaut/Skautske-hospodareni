@@ -226,7 +226,7 @@ class TravelService
 
             if ($contract->getUntil() === null || $contract->getUntil() > $now) {
                 $result['valid'][$contract->getId()] = $name;
-            } elseif ($now->diff($contract->getUntil())->y === 0 || $contract->getId() === $includeContractId) {
+            } elseif ($now->diff($contract->getUntil()->toNative())->y === 0 || $contract->getId() === $includeContractId) {
                 $result['past'][$contract->getId()] = $name;
             }
         }

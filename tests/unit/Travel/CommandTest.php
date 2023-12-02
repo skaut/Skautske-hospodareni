@@ -307,7 +307,7 @@ class CommandTest extends Unit
         $closedAt = new DateTimeImmutable();
         $command->close($closedAt);
 
-        $command->close($closedAt->add( DateInterval::createFromDateString('1 day')));
+        $command->close($closedAt->add(DateInterval::createFromDateString('1 day')));
 
         $this->assertSame($closedAt, $command->getClosedAt());
     }

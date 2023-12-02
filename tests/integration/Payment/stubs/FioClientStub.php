@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
-use DateTimeImmutable;
+use Cake\Chronos\ChronosDate;
 use Model\Bank\Fio\Transaction;
 use Model\Payment\Fio\IFioClient;
 
@@ -20,7 +20,7 @@ class FioClientStub implements IFioClient
     }
 
     /** @return Transaction[] */
-    public function getTransactions(DateTimeImmutable $since, DateTimeImmutable $until, BankAccount $account): array
+    public function getTransactions(ChronosDate $since, ChronosDate $until, BankAccount $account): array
     {
         return $this->transactions;
     }

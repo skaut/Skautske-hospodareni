@@ -157,7 +157,7 @@ final class GroupForm extends BaseControl
 
         $paymentDefaults = new PaymentDefaults(
             $v->amount,
-            $v->dueDate,
+            $v->dueDate === null ? null : new ChronosDate($v->dueDate),
             $v->constantSymbol,
             $v->nextVs ?? $originalGroupData['nextVs'] ?? null,
         );
@@ -223,7 +223,7 @@ final class GroupForm extends BaseControl
         return [
             'name' => $group->getName(),
             'amount' => $group->getDefaultAmount(),
-            'dueDate' => $group->getDueDate(),
+            'dueDate' => $group->getDueDate()->toNative(),
             'constantSymbol' => $group->getConstantSymbol(),
             'nextVs' => $group->getNextVariableSymbol(),
             'oAuthId' => $group->getOAuthId()?->toString(),

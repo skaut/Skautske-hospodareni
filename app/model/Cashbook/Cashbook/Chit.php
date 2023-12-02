@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Model\Cashbook\Cashbook;
 
 use Assert\Assertion;
-use Cake\Chronos\ChronosDate;
 use Consistence\Doctrine\Enum\EnumAnnotation;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -177,7 +177,7 @@ class Chit
         })->toArray());
     }
 
-    public function getDate(): ChronosDate
+    public function getDate(): DateTimeImmutable
     {
         return $this->body->getDate();
     }

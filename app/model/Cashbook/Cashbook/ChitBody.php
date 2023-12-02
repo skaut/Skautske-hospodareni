@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Cashbook\Cashbook;
 
 use Cake\Chronos\ChronosDate;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 /** @ORM\Embeddable() */
@@ -41,9 +42,9 @@ final class ChitBody
         return $this->number;
     }
 
-    public function getDate(): ChronosDate
+    public function getDate(): DateTimeImmutable
     {
-        return $this->date;
+        return $this->date->toNative();
     }
 
     public function getRecipient(): Recipient|null

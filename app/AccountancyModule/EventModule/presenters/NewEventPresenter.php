@@ -6,6 +6,7 @@ namespace App\AccountancyModule\EventModule;
 
 use App\Forms\BaseForm;
 use App\MyValidators;
+use Cake\Chronos\ChronosDate;
 use Model\Auth\Resources\Event as EventResource;
 use Model\Event\Commands\Event\CreateEvent;
 use Model\Event\ReadModel\Queries\EventScopes;
@@ -94,8 +95,8 @@ final class NewEventPresenter extends BasePresenter
         $this->commandBus->handle(
             new CreateEvent(
                 $v['name'],
-                $startDate,
-                $endDate,
+                new ChronosDate($startDate),
+                new ChronosDate($endDate),
                 $v->orgID,
                 $v['location'] !== '' ? $v['location'] : null,
                 $v['scope'],

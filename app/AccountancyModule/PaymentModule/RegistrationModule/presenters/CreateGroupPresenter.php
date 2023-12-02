@@ -57,7 +57,7 @@ class CreateGroupPresenter extends BasePresenter
         );
 
         $form->fillName('Registrace ' . $registration->getYear());
-        $form->fillDueDate(ChronosDate::createFromDate($registration->getYear(), 1, 15));
+        $form->fillDueDate(ChronosDate::create($registration->getYear(), 1, 15));
 
         return $form;
     }

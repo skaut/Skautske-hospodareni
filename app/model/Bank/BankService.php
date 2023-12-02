@@ -66,7 +66,7 @@ class BankService
             true,
         );
 
-        $now            = new DateTimeImmutable();
+        $now            = new ChronosDate();
         $pairedCount    = 0;
         $pairingResults = [];
 
@@ -93,7 +93,7 @@ class BankService
 
             $pairSince = $daysBack === null ? $this->resolvePairingIntervalStart($groups) : ChronosDate::today()->subDays($daysBack);
 
-            $transactions = $this->bank->getTransactions($pairSince, new ChronosDate($now), $bankAccount);
+            $transactions = $this->bank->getTransactions($pairSince, $now, $bankAccount);
             $paired       = $this->markPaymentsAsComplete($transactions, $payments);
 
             $this->payments->saveMany($paired);
@@ -105,7 +105,7 @@ class BankService
                 continue;
             }
 
-            $this->updateLastPairing($groups, $now);
+            $this->updateLastPairing($groups, $now->toNative());
         }
 
         return $pairingResults;
