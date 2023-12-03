@@ -1,4 +1,4 @@
-FROM thecodingmachine/php:8.1-v4-fpm-node16
+FROM thecodingmachine/php:8.2-v4-fpm-node16
 
 USER root
 USER docker
