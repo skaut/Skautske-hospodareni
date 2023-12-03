@@ -127,7 +127,7 @@ class PaymentTest extends Unit
         $payment = $this->createPayment();
         $payment->completeManually($time, 'John Doe');
 
-        $canceledAt = $time->modify('+ 30 minutes');
+        $canceledAt = $time->modify('+ 1 day');
 
         $payment->cancel($canceledAt);
 

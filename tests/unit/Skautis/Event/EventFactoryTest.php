@@ -28,7 +28,7 @@ final class EventFactoryTest extends Unit
         $factory = new EventFactory();
         $event   = $factory->create($this->getClosedEvent());
         $this->assertEquals('Jan Novák (Joe)', $event->getPersonClosed());
-        $this->assertEquals(ChronosDate::createFromDate(2019, 9, 3), $event->getDateClosed());
+        $this->assertEquals(ChronosDate::create(2019, 9, 3), $event->getDateClosed());
     }
 
     private function getDraftEvent(): stdClass
