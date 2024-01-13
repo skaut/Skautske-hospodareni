@@ -88,9 +88,9 @@ class Payment
         return implode(', ', array_map(fn (EmailAddress $emailAddress) => Strings::truncate($emailAddress->getValue(), 35), $this->recipients));
     }
 
-    public function getDueDate(): ChronosDate
+    public function getDueDate(): DateTimeImmutable
     {
-        return $this->dueDate;
+        return $this->dueDate->toNative();
     }
 
     public function getVariableSymbol(): VariableSymbol|null
