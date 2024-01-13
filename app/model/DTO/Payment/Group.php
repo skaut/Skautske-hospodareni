@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\DTO\Payment;
 
 use Cake\Chronos\ChronosDate;
+use DateTimeImmutable;
 use Model\Google\OAuthId;
 use Model\Payment\VariableSymbol;
 use Nette\SmartObject;
@@ -81,9 +82,9 @@ class Group
         return $this->defaultAmount;
     }
 
-    public function getDueDate(): ChronosDate|null
+    public function getDueDate(): DateTimeImmutable|null
     {
-        return $this->dueDate;
+        return $this->dueDate?->toNative();
     }
 
     public function getConstantSymbol(): int|null
