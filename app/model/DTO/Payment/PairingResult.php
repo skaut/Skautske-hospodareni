@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Model\DTO\Payment;
 
-use DateTimeImmutable;
+use Cake\Chronos\ChronosDate;
 
 use function sprintf;
 
 class PairingResult
 {
-    public function __construct(private string $accountName, private DateTimeImmutable $since, private DateTimeImmutable $until, private int $count)
+    public function __construct(private string $accountName, private ChronosDate $since, private ChronosDate $until, private int $count)
     {
     }
 
@@ -19,12 +19,12 @@ class PairingResult
         return $this->accountName;
     }
 
-    public function getSince(): DateTimeImmutable
+    public function getSince(): ChronosDate
     {
         return $this->since;
     }
 
-    public function getUntil(): DateTimeImmutable
+    public function getUntil(): ChronosDate
     {
         return $this->until;
     }

@@ -66,7 +66,7 @@ class FioClient implements IFioClient
         $api = $this->downloaderFactory->create($account->getToken());
 
         try {
-            return $api->downloadFromTo($since, $until)->getTransactions();
+            return $api->downloadFromTo($since->toNative(), $until->toNative())->getTransactions();
         } catch (TooGreedyException $e) {
             $this->logger->warning('Bank account #' . $account->getId() . ' hit API limit');
 

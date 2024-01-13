@@ -391,7 +391,7 @@ class Command
         return $this->travels->isEmpty()
             ? null
             : min($this->travels->map(function (Travel|null $travel = null) {
-                return $travel->getDetails()->getDate();
+                return $travel->getDetails()->getDate()->toNative();
             })->toArray());
     }
 

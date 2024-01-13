@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\Components;
 
 use App\Forms\BaseForm;
+use Cake\Chronos\ChronosDate;
 use InvalidArgumentException;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;
@@ -370,6 +371,6 @@ final class ChitForm extends BaseControl
         $number    = $values->num !== '' ? new ChitNumber($values->num) : null;
         $recipient = $values->recipient !== '' ? new Recipient($values->recipient) : null;
 
-        return new ChitBody($number, $values->date, $recipient);
+        return new ChitBody($number, new ChronosDate($values->date), $recipient);
     }
 }

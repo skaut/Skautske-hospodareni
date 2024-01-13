@@ -6,7 +6,7 @@
         "ext-iconv": "*",
         "beberlei/assert": "^2.9",
         "beberlei/doctrineextensions": "^1.3",
-        "cakephp/chronos": "^2.3",
+        "cakephp/chronos": "^3.0",
         "composer/ca-bundle": "^1.3",
         "consistence-community/consistence": "^2.1",
         "consistence-community/consistence-doctrine": "^2.1",

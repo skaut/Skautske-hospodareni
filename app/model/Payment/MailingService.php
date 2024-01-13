@@ -163,7 +163,7 @@ class MailingService
             $payment->getName(),
             $payment->getAmount(),
             $payment->getEmailRecipients(),
-            $payment->getDueDate(),
+            $payment->getDueDate()->toNative(),
             $payment->getVariableSymbol()?->toInt(),
             $payment->getConstantSymbol(),
             $payment->getNote(),

@@ -40,7 +40,7 @@ class FioClientTest extends Unit
 
         $downloader = m::mock(Downloader::class);
         $downloader->shouldReceive('downloadFromTo')
-            ->with($since, $until)
+            ->with($since->toNative(), $until->toNative())
             ->once()
             ->andThrow(TooGreedyException::class);
 
@@ -59,7 +59,7 @@ class FioClientTest extends Unit
 
         $downloader = m::mock(Downloader::class);
         $downloader->shouldReceive('downloadFromTo')
-            ->with($since, $until)
+            ->with($since->toNative(), $until->toNative())
             ->once()
             ->andThrow(TransferException::class);
 
@@ -78,7 +78,7 @@ class FioClientTest extends Unit
 
         $downloader = m::mock(Downloader::class);
         $downloader->shouldReceive('downloadFromTo')
-            ->with($since, $until)
+            ->with($since->toNative(), $until->toNative())
             ->once()
             ->andThrow(InternalErrorException::class);
 

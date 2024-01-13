@@ -8,6 +8,7 @@ use App\AccountancyModule\Components\Dialog;
 use App\Forms\BaseForm;
 use App\MyValidators;
 use Assert\Assertion;
+use Cake\Chronos\ChronosDate;
 use Model\Common\EmailAddress;
 use Model\Common\Services\CommandBus;
 use Model\DTO\Payment\Payment;
@@ -192,7 +193,7 @@ final class PaymentDialog extends Dialog
                 $values->name,
                 $this->processEmails($values->email),
                 $values->amount,
-                $values->dueDate,
+                new ChronosDate($values->dueDate),
                 null,
                 $values->variableSymbol,
                 $values->constantSymbol,

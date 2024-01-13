@@ -66,8 +66,8 @@ class EventPresenter extends BasePresenter
             $form->setDefaults([
                 'aid' => $aid,
                 'name' => $this->event->getDisplayName(),
-                'start' => $this->event->getStartDate(),
-                'end' => $this->event->getEndDate(),
+                'start' => $this->event->getStartDate()->toNative(),
+                'end' => $this->event->getEndDate()->toNative(),
                 'location' => $this->event->getLocation(),
                 'type' => $this->event->getTypeId(),
                 'scope' => $this->event->getScopeId(),

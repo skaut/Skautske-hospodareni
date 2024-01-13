@@ -37,7 +37,7 @@ class DateControl extends DateTimeControl
             function (self $control): bool {
                 $value = $control->getValue();
 
-                return $value === null || $value->isWeekday();
+                return $value === null || (new ChronosDate($value))->isWeekday();
             },
             'Zadané datum musí být pracovní den',
         );
@@ -48,7 +48,7 @@ class DateControl extends DateTimeControl
         return $this;
     }
 
-    public function getValue(): ChronosDate|null
+    public function getValue(): DateTimeImmutable|int|string|null
     {
         $value = parent::getValue();
 
@@ -56,15 +56,13 @@ class DateControl extends DateTimeControl
             return null;
         }
 
-        if ($value instanceof ChronosDate) {
+        if ($value instanceof DateTimeImmutable) {
             return $value;
         }
 
-        if ($value instanceof DateTimeImmutable) {
-            return new ChronosDate($value);
-        }
+        $result = DateTimeImmutable::createFromFormat(self::DATE_FORMAT, str_replace(' ', '', $value));
 
-        return ChronosDate::createFromFormat(self::DATE_FORMAT, str_replace(' ', '', $value));
+        return $result === false ? null : $result;
     }
 
     public function getControl(): Html

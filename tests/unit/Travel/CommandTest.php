@@ -6,6 +6,8 @@ namespace Model\Travel;
 
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
+use DateInterval;
+use DateTimeImmutable;
 use InvalidArgumentException;
 use Mockery;
 use Model\Travel\Command\TransportTravel;
@@ -283,7 +285,7 @@ class CommandTest extends Unit
     public function testCloseCommand(): void
     {
         $command = $this->createCommand();
-        $now     = ChronosDate::now();
+        $now     = new DateTimeImmutable();
         $command->close($now);
 
         $this->assertSame($now, $command->getClosedAt());
@@ -292,7 +294,7 @@ class CommandTest extends Unit
     public function testReopenCommand(): void
     {
         $command = $this->createCommand();
-        $command->close(ChronosDate::now());
+        $command->close(new DateTimeImmutable());
 
         $command->open();
 
@@ -302,10 +304,10 @@ class CommandTest extends Unit
     public function testClosingClosedCommandDoesntChangeClosedTime(): void
     {
         $command  = $this->createCommand();
-        $closedAt = ChronosDate::now();
+        $closedAt = new DateTimeImmutable();
         $command->close($closedAt);
 
-        $command->close($closedAt->modify('+ 1 day'));
+        $command->close($closedAt->add(DateInterval::createFromDateString('1 day')));
 
         $this->assertSame($closedAt, $command->getClosedAt());
     }
