@@ -216,8 +216,8 @@ class EventPresenter extends BasePresenter
             new UpdateEvent(
                 new SkautisEventId($id),
                 $values['name'],
-                $values['start'],
-                $values['end'],
+                new ChronosDate($values['start']),
+                new ChronosDate($values['end']),
                 $values['location'] !== '' ? $values['location'] : null,
                 $values['scope'],
                 $values['type'],

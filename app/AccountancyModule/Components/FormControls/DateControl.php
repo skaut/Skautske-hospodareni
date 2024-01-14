@@ -26,7 +26,7 @@ class DateControl extends DateTimeControl
             throw new InvalidArgumentException(sprintf('$value must be instance of %s or NULL', ChronosDate::class));
         }
 
-        parent::setDefaultValue($value);
+        parent::setDefaultValue($value->toNative());
 
         return $this;
     }
