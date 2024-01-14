@@ -43,8 +43,8 @@ table {
             <th>Místo konání</th>
         </tr>
         <tr>
-            <th>{$camp->getStartDate()|date:"j.n.Y"}</th>
-            <th>{$camp->getEndDate()|date:"j.n.Y"}</th>
+            <th>{$camp->getStartDate()?->toNative()|date:"j.n.Y"}</th>
+            <th>{$camp->getEndDate()?->toNative()|date:"j.n.Y"}</th>
             <th>{$camp->getTotalDays()}</th>
             <th>{trim($camp->getLocation()) ? $camp->getLocation() : "&nbsp;"|stripHtml|noescape}</th>
         </tr>
