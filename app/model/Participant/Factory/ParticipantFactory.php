@@ -26,10 +26,10 @@ final class ParticipantFactory
             $matches['last'],
             $matches['nick'] ?? null,
             $skautisParticipant->Age ?? null,
-            property_exists($skautisParticipant, 'Birthday')
+            property_exists($skautisParticipant, 'Birthday') && $skautisParticipant->Birthday !== null
                 ? new ChronosDate($skautisParticipant->Birthday)
                 : (
-                    property_exists($skautisParticipant, 'PersonBirthday')
+                    property_exists($skautisParticipant, 'PersonBirthday') && $skautisParticipant->PersonBirthday !== null
                         ? new ChronosDate($skautisParticipant->PersonBirthday)
                         : null
                 ),
