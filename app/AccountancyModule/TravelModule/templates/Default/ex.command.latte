@@ -40,10 +40,10 @@
                     <td class="c">Konec cesty</td>
                 </tr>
                 <tr>
-                    <td>{ifset $start}{$start->details->startPlace} {$start->details->date|date:"j. n. Y"}{/ifset}</td>
+                    <td>{ifset $start}{$start->details->startPlace} {$start->details->date?->toNative()|date:"j. n. Y"}{/ifset}</td>
                     <td>{$command->purpose}</td>
                     <td>{$command->place}</td>
-                    <td>{ifset $end}{$end->details->endPlace} {$end->details->date|date:"j. n. Y"}{/ifset}</td>
+                    <td>{ifset $end}{$end->details->endPlace} {$end->details->date?->toNative()|date:"j. n. Y"}{/ifset}</td>
                 </tr>
             </table>
         </div>
@@ -118,7 +118,7 @@
                 </tr>
             {if !empty($travels)}
                 <tr n:foreach="$travels as $t">
-                    <td>{$t->details->date|date:"j. n. Y"}</td>
+                    <td>{$t->details->date?->toNative()|date:"j. n. Y"}</td>
                     <td>{$t->details->startPlace}</td>
                     <td>{$t->details->endPlace}</td>
                     <td>{$t->details->transportType->getLabel()}</td>
