@@ -75,7 +75,7 @@ final class EditTravelDialog extends Dialog
 
         $form->setDefaults([
             'type' => $travel->getDetails()->getTransportType()->toString(),
-            'date' => $travel->getDetails()->getDate()?->toNative(),
+            'date' => $travel->getDetails()->getDate()->toNative(),
             'startPlace' => $travel->getDetails()->getStartPlace(),
             'endPlace' => $travel->getDetails()->getEndPlace(),
             'distanceOrPrice' => $travel->getDistance() ?? MoneyFactory::toFloat($travel->getPrice()),
