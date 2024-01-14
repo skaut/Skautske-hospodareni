@@ -7,6 +7,7 @@ namespace App\AccountancyModule\TravelModule\Components;
 use App\AccountancyModule\Components\Dialog;
 use App\Forms\BaseForm;
 use Assert\Assertion;
+use Cake\Chronos\ChronosDate;
 use Model\Travel\Travel\TransportType;
 use Model\TravelService;
 use Model\Utils\MoneyFactory;
@@ -74,7 +75,7 @@ final class EditTravelDialog extends Dialog
 
         $form->setDefaults([
             'type' => $travel->getDetails()->getTransportType()->toString(),
-            'date' => $travel->getDetails()->getDate(),
+            'date' => $travel->getDetails()->getDate()?->toNative(),
             'startPlace' => $travel->getDetails()->getStartPlace(),
             'endPlace' => $travel->getDetails()->getEndPlace(),
             'distanceOrPrice' => $travel->getDistance() ?? MoneyFactory::toFloat($travel->getPrice()),
@@ -93,7 +94,7 @@ final class EditTravelDialog extends Dialog
             $this->commandId,
             $travelId,
             (float) $values->distanceOrPrice,
-            $values->date,
+            new ChronosDate($values->date),
             TransportType::get($values->type),
             $values->startPlace,
             $values->endPlace,
