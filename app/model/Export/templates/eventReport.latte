@@ -45,8 +45,8 @@ $chits - paragony akce
         <th>Místo konání</th>
     </tr>
     <tr>
-        <th>{$event->startDate|date:"j.n.Y"}</th>
-        <th>{$event->endDate|date:"j.n.Y"}</th>
+        <th>{$event->startDate?->toNative()|date:"j.n.Y"}</th>
+        <th>{$event->endDate?->toNative()|date:"j.n.Y"}</th>
         <th>{$event->totalDays}</th>
         <th>{= trim($event->location) !== '' ? $event->location : "&nbsp;"|stripHtml}</th>
     </tr>
