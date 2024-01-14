@@ -163,7 +163,7 @@ final class PaymentDialog extends Dialog
                 $values->name,
                 $this->processEmails($values->email),
                 $values->amount,
-                $values->dueDate,
+                new ChronosDate($values->dueDate),
                 $values->variableSymbol,
                 $values->constantSymbol,
                 $values->note,
