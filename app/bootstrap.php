@@ -28,6 +28,6 @@ $configurator->addConfig(__DIR__ . '/config/config.neon');
 $configurator->addDynamicParameters(['env' => $env]);
 $configurator->addConfig(__DIR__ . '/config/config.local.neon');
 
-$configurator->addParameters(['logDir' => $logDir]);
+$configurator->addStaticParameters(['logDir' => $logDir]);
 
 return $configurator->createContainer();
