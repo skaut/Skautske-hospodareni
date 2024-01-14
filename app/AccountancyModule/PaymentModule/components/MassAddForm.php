@@ -173,7 +173,7 @@ class MassAddForm extends BaseControl
                     $person->name,
                     array_map(fn (string $email) => new EmailAddress($email), $person->email),
                     (float) ($person->amount ?? $values->amount),
-                    $person->dueDate ?? new ChronosDate($values->dueDate),
+                    new ChronosDate($person->dueDate ?? $values->dueDate),
                     (int) $person->id,
                     $person->variableSymbol,
                     $person->constantSymbol ?? $values->constantSymbol,
