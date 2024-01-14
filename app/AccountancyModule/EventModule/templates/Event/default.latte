@@ -9,7 +9,7 @@
         {var $state = $event->getState()}
         <span n:tag-if="$state == 'closed'"
             data-bs-toggle="tooltip"
-            title="Uzavřel {$event->getPersonClosed()} dne {$event->getDateClosed()|date:"j.n.Y"}"
+            title="Uzavřel {$event->getPersonClosed()} dne {$event->getDateClosed()?->toNative()|date:"j.n.Y"}"
         >{$state|eventStateLabel|noescape}</span>
         <span class="ms-2 me-2">|</span>
         {$event->getUnitName()}
