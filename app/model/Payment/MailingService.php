@@ -87,7 +87,7 @@ class MailingService
             'Testovací účel',
             $group->getDefaultAmount() ?? rand(50, 1000),
             [new EmailAddress($user->getEmail())],
-            $group->getDueDate() ?? new DateTimeImmutable('+ 2 weeks'),
+            $group->getDueDate()?->toNative() ?? new DateTimeImmutable('+ 2 weeks'),
             rand(1000, 100000),
             $group->getConstantSymbol(),
             'obsah poznámky',
