@@ -91,7 +91,7 @@
                             </div>
                         </td>
                         <td>{$types[$t->details->transportType->toString()]}</td>
-                        <td class="text-end">{$t->details->date|date:"j. n. Y"}</td>
+                        <td class="text-end">{$t->details->date?->toNative()|date:"j. n. Y"}</td>
                         <td>{$t->details->startPlace}</td>
                         <td>{$t->details->endPlace}</td>
                         <td class="text-end">{if $t->distance !== NULL}{$t->distance}{else}{$t->price|price}{/if}</td>

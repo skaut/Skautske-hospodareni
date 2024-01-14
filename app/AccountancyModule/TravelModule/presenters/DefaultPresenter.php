@@ -10,6 +10,7 @@ use App\AccountancyModule\TravelModule\Factories\ICommandGridFactory;
 use App\AccountancyModule\TravelModule\Factories\IEditTravelDialogFactory;
 use App\Forms\BaseForm;
 use Assert\Assertion;
+use Cake\Chronos\ChronosDate;
 use Model\Services\PdfRenderer;
 use Model\Travel\Commands\Command\AddReturnTravel;
 use Model\Travel\Commands\Command\DuplicateTravel;
@@ -265,7 +266,7 @@ class DefaultPresenter extends BasePresenter
         $this->travelService->addTravel(
             $commandId,
             TransportType::get($v->type),
-            $v['start_date'],
+            new ChronosDate($v['start_date']),
             $v['start_place'],
             $v['end_place'],
             $v['distance'],
