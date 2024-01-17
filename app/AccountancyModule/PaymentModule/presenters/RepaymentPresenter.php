@@ -142,7 +142,7 @@ final class RepaymentPresenter extends BasePresenter
             $this->commandBus->handle(
                 new CreateRepayments(
                     $bankAccount->getNumber(),
-                    $values->date ?? ChronosDate::now(),
+                    new ChronosDate($values->date),
                     $repayments,
                     $bankAccount->getToken(),
                 ),
