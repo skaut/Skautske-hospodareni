@@ -6,6 +6,7 @@ namespace App\AccountancyModule\Components\Participants;
 
 use App\AccountancyModule\Components\BaseControl;
 use App\Forms\BaseForm;
+use Cake\Chronos\ChronosDate;
 use Model\Common\Services\QueryBus;
 use Model\Common\UnitId;
 use Model\DTO\Participant\NonMemberParticipant;
@@ -133,7 +134,7 @@ final class PersonPicker extends BaseControl
                     $values['firstName'],
                     $values['lastName'],
                     $values['nick'],
-                    $values['birthday'],
+                    $values['birthday'] === null ? null : new ChronosDate($values['birthday']),
                     $values['street'],
                     $values['city'],
                     (int) $values['postcode'],
