@@ -185,7 +185,7 @@ class ContractPresenter extends BasePresenter
             (string) $v->passengerName,
             (string) $v->passengerContact,
             (string) $v->passengerAddress,
-            $v->passengerBirthday,
+            $v->passengerBirthday === null ? null : new ChronosDate($v->passengerBirthday),
         );
 
         $this->travelService->createContract($this->getUnitId(), $v->unitRepresentative, new ChronosDate($v->start), $passenger);
