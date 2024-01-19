@@ -25,8 +25,8 @@
                 </td>
                 <td>{$c->passenger->name}</td>
                 <td>{$c->unitRepresentative}</td>
-                <td>{$c->since|date:"j. n. Y"}</td>
-                <td>{$c->until|date:"j. n. Y"}</td>
+                <td>{$c->since?->toNative()|date:"j. n. Y"}</td>
+                <td>{$c->until?->toNative()|date:"j. n. Y"}</td>
             </tr>
         </table>
     </div>
