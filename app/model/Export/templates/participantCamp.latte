@@ -48,7 +48,7 @@ table {
         <td>{$p->street}</td>
         <td>{$p->city}</td>
         <td>{(string)$p->postcode|postCode}</td>
-        <td style="text-align: right;">{$p->birthday|date:"d.m.Y"}</td>
+        <td style="text-align: right;">{if $p->birthday !== null}{$p->birthday->format("d.m.Y")}{else}&nbsp;{/if}</td>
         <td style="text-align: right;">{$p->days}</td>
         <td style="text-align: right;">{if $p->age < 18}{$p->days}{do $totDDays += $p->days}{else}0{/if}</td>
         <td style="text-align: right;">{$p->payment|price:false}</td>
