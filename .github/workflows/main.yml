@@ -11,7 +11,7 @@ jobs:
         name: "Prepare working directory"
         runs-on: ubuntu-22.04
         container:
-            image: skaut/lebeda:8.1
+            image: skaut/lebeda:8.2
         steps:
             - uses: actions/checkout@v3
             # Copy & paste from https://github.com/actions/cache/blob/master/examples.md#php---composer
@@ -40,7 +40,7 @@ jobs:
         name: "Run unit tests"
         runs-on: ubuntu-22.04
         container:
-            image: skaut/lebeda:8.1
+            image: skaut/lebeda:8.2
         needs: workdir
         steps:
             - name: Download workdir
@@ -126,7 +126,7 @@ jobs:
           DB_NAME: hskauting
           DB_TEST: true
         container:
-            image: skaut/lebeda:8.1
+            image: skaut/lebeda:8.2
         needs: workdir
         steps:
             - name: Download workdir
@@ -144,7 +144,7 @@ jobs:
         name: "Check coding standard"
         runs-on: ubuntu-22.04
         container:
-            image: skaut/lebeda:8.1
+            image: skaut/lebeda:8.2
         needs: workdir
         steps:
             - name: Download workdir
@@ -160,7 +160,7 @@ jobs:
         name: "Lint Latte templates"
         runs-on: ubuntu-22.04
         container:
-            image: skaut/lebeda:8.1
+            image: skaut/lebeda:8.2
         needs: workdir
         env:
             DEVELOPMENT_MACHINE: true
@@ -179,7 +179,7 @@ jobs:
         name: "Validate mapping against migrations"
         runs-on: ubuntu-22.04
         container:
-            image: skaut/lebeda:8.1
+            image: skaut/lebeda:8.2
         needs: workdir
         services:
             mysql-test:
@@ -219,7 +219,7 @@ jobs:
             - validate-mapping
         runs-on: ubuntu-22.04
         container:
-            image: skaut/lebeda:8.1-ci
+            image: skaut/lebeda:8.2-ci
         steps:
             - run: true
 
@@ -229,7 +229,7 @@ jobs:
         needs: [checks-passed]
         runs-on: ubuntu-22.04
         container:
-            image: skaut/lebeda:8.1-ci
+            image: skaut/lebeda:8.2-ci
         steps:
             - name: Download workdir
               uses: actions/download-artifact@v1
@@ -279,7 +279,7 @@ jobs:
         needs: [checks-passed]
         runs-on: ubuntu-22.04
         container:
-            image: skaut/lebeda:8.1-ci
+            image: skaut/lebeda:8.2-ci
         steps:
             - name: Download workdir
               uses: actions/download-artifact@v1
