@@ -39,7 +39,7 @@ Smlouva vstupuje v platnost dnem podpisu obou smluvních stran a uzavírá se na
 
 
 <div style="width: 52%;float: left;">
-    V .................................. dne {$contract->since|date:"j. n. Y"} <br /><br /><br /><br />
+    V .................................. dne {$contract->since?->toNative()|date:"j. n. Y"} <br /><br /><br /><br />
     ..................................................................<br />
     Junák
 </div>
