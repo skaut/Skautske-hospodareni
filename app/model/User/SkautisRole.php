@@ -49,6 +49,11 @@ class SkautisRole
         return Strings::startsWith($this->key, self::ACCOUNTANT_PREFIX);
     }
 
+    public function isEducationAccountant(): bool
+    {
+        return $this->key === 'EventEducationEconomist';
+    }
+
     public function isOfficer(): bool
     {
         return Strings::startsWith($this->key, self::OFFICER_PREFIX);
