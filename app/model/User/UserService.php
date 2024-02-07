@@ -144,7 +144,7 @@ class UserService
                 ];
             }
 
-            if ($role->isLeader() || $role->isAccountant() || $role->isEventManager()) {
+            if ($role->isLeader() || $role->isAccountant() || $role->isEventManager() || $role->isEducationAccountant()) {
                 return [
                     self::ACCESS_READ => $unitIds,
                     self::ACCESS_EDIT => $unitIds,
