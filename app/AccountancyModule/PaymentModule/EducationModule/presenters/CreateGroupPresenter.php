@@ -11,7 +11,7 @@ use Assert\Assertion;
 use Cake\Chronos\ChronosDate;
 use Model\Event\Education;
 use Model\Payment\Group\SkautisEntity;
-use Model\Payment\ReadModel\Queries\EducationsWithoutGroupQuery;
+use Model\Event\ReadModel\Queries\EducationListQuery;
 
 use function array_key_exists;
 
@@ -26,7 +26,7 @@ class CreateGroupPresenter extends BasePresenter
 
     public function actionDefault(int $educationId): void
     {
-        $educations = $this->queryBus->handle(new EducationsWithoutGroupQuery(ChronosDate::today()->year));
+        $educations = $this->queryBus->handle(new EducationListQuery(ChronosDate::today()->year));
 
         if (! $this->isEditable || ! array_key_exists($educationId, $educations)) {
             $this->flashMessage('Pro tuto vzdělávací akci není možné vytvořit skupinu plateb', 'danger');
