@@ -10,8 +10,8 @@ use App\AccountancyModule\PaymentModule\Factories\IGroupFormFactory;
 use Assert\Assertion;
 use Cake\Chronos\ChronosDate;
 use Model\Event\Education;
-use Model\Payment\Group\SkautisEntity;
 use Model\Event\ReadModel\Queries\EducationListQuery;
+use Model\Payment\Group\SkautisEntity;
 
 use function array_key_exists;
 
