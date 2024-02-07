@@ -12,6 +12,6 @@ class SelectForGroupPresenter extends BasePresenter
 {
     public function actionDefault(): void
     {
-        $this->template->setParameters(['educations' => $this->queryBus->handle(new EducationListQuery(ChronosDate::today()->year))]);
+        $this->template->setParameters(['educations' => $this->queryBus->handle(new EducationListQuery(ChronosDate::today()->year)) + $this->queryBus->handle(new EducationListQuery(ChronosDate::today()->year + 1))]);
     }
 }

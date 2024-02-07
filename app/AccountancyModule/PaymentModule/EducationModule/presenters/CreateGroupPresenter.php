@@ -26,7 +26,7 @@ class CreateGroupPresenter extends BasePresenter
 
     public function actionDefault(int $educationId): void
     {
-        $educations = $this->queryBus->handle(new EducationListQuery(ChronosDate::today()->year));
+        $educations = $this->queryBus->handle(new EducationListQuery(ChronosDate::today()->year)) + $this->queryBus->handle(new EducationListQuery(ChronosDate::today()->year + 1));
 
         if (! $this->isEditable || ! array_key_exists($educationId, $educations)) {
             $this->flashMessage('Pro tuto vzdělávací akci není možné vytvořit skupinu plateb', 'danger');
