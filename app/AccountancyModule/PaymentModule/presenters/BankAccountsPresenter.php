@@ -236,7 +236,7 @@ class BankAccountsPresenter extends BasePresenter
         if (
             $role->getUnitId() === $account->getUnitId()
             && $role->isBasicUnit()
-            && ($role->isAccountant() || $role->isOfficer() || $role->isEventManager() || $role->isEducationLeader() || $role->isEducationAccountant())
+            && ($role->isAccountant() || $role->isOfficer() || $role->isEventManager() || $role->isEducationLeader())
         ) {
             return;
         }
