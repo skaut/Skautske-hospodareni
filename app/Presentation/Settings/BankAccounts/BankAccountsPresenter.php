@@ -661,7 +661,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
         if (
             $role->getUnitId() === $account->getUnitId()
             && $role->isBasicUnit()
-            && ($role->isAccountant() || $role->isOfficer() || $role->isEventManager() || $role->isEducationAccountant())
+            && ($role->isAccountant() || $role->isOfficer() || $role->isEventManager() || $role->isEducationLeader() || $role->isEducationAccountant())
         ) {
             return;
         }
