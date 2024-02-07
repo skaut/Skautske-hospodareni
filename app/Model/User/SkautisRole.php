@@ -99,6 +99,11 @@ class SkautisRole
         return $this->isAccountant() && $this->unitId === $unitId;
     }
 
+    public function isEducationLeader(): bool
+    {
+        return $this->key === 'EventEducationLeader';
+    }
+
     public function isEducationAccountant(): bool
     {
         return $this->key === 'EventEducationEconomist';
