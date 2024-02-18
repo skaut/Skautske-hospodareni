@@ -37,7 +37,7 @@
             </tr>
             <tr n:if="$contract->until !== NULL">
                 <th>Konec platnosti</th>
-                <td>{$contract->until|date:"j. n. Y"}</td>
+                <td>{$contract->until?->toNative()|date:"j. n. Y"}</td>
             </tr>
         </table>
     </div>
