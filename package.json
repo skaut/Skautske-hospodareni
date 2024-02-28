@@ -12,7 +12,7 @@
         "@fortawesome/free-solid-svg-icons": "^6.5.1",
         "@types/nprogress": "^0.2.3",
         "@types/pikaday": "^1.7.9",
-        "bootstrap": "^5.3.2",
+        "bootstrap": "^5.3.3",
         "bootstrap.native": "^4.2.0",
         "moment": "^2.30.1",
         "naja": "1.7.0",
