@@ -51,8 +51,8 @@ $chits - paragony akce
             <th n:if="$location !== ''">Místa konání</th>
         </tr>
         <tr>
-            <th>{$education->getStartDate()|date:"j.n.Y"}</th>
-            <th>{$education->getEndDate()|date:"j.n.Y"}</th>
+            <th>{$education->getStartDate()?->toNative()|date:"j.n.Y"}</th>
+            <th>{$education->getEndDate()?->toNative()|date:"j.n.Y"}</th>
             <th>{$totalDays}</th>
             <th n:if="$location !== ''">{$location}</th>
         </tr>
