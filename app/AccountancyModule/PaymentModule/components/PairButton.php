@@ -124,7 +124,7 @@ class PairButton extends BaseControl
             $this->flashMessage(self::TIME_LIMIT_MESSAGE, 'danger');
             bdump(self::TIME_LIMIT_MESSAGE);
         } catch (InvalidOAuth $exc) {
-            $this->flashMessage('Google vrátil chybu: ' . $exc->getMessage(), 'danger');
+            $this->flashMessage($exc->getExplainedMessage(), 'danger');
         }
 
         $this->redirect('this');
