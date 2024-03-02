@@ -250,6 +250,8 @@ class PaymentPresenter extends BasePresenter
             $this->flashMessage('Platba byla zaplacena.');
         } catch (PaymentClosed) {
             $this->flashMessage('Tato platba už je uzavřená', 'danger');
+        } catch (InvalidOAuth $exc) {
+            $this->flashMessage($exc->getExplainedMessage(), 'danger');
         }
 
         $this->redirect('this');
@@ -394,7 +396,7 @@ class PaymentPresenter extends BasePresenter
 
     private function oauthError(InvalidOAuth $e): void
     {
-        $this->flashMessage(sprintf('Google vrátil chybu: %s', $e->getMessage()), 'danger');
+        $this->flashMessage($e->getExplainedMessage(), 'danger');
     }
 
     /** @param Payment[] $payments */
