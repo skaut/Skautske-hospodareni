@@ -78,11 +78,7 @@ class CashbookWithCategoriesBuilder
         $column  = 2;
 
         foreach ($columns as $value) {
-            $this->sheet->setCellValueByColumnAndRow(
-                $column++,
-                self::SUBHEADER_ROW,
-                $value,
-            );
+            $this->sheet->setCellValue([$column++, self::SUBHEADER_ROW], $value);
         }
     }
 
@@ -107,13 +103,13 @@ class CashbookWithCategoriesBuilder
     private function addCategoriesHeader(int $startColumn, string $groupName, array $categories): void
     {
         $lastColumn = $startColumn + count($categories) - 1;
-        $this->sheet->mergeCellsByColumnAndRow($startColumn, self::HEADER_ROW, $lastColumn, self::HEADER_ROW);
-        $this->sheet->setCellValueByColumnAndRow($startColumn, self::HEADER_ROW, $groupName);
+        $this->sheet->mergeCells([$startColumn, self::HEADER_ROW, $lastColumn, self::HEADER_ROW]);
+        $this->sheet->setCellValue([$startColumn, self::HEADER_ROW], $groupName);
 
         foreach ($categories as $index => $category) {
             $column = $startColumn + $index;
 
-            $cell = $this->sheet->getCellByColumnAndRow($column, self::SUBHEADER_ROW);
+            $cell = $this->sheet->getCell([$column, self::SUBHEADER_ROW]);
             $cell->setValue($category->getName());
             $cell->getStyle()
                 ->getAlignment()
@@ -160,13 +156,13 @@ class CashbookWithCategoriesBuilder
             ];
 
             foreach ($cashbookColumns as $column => $value) {
-                $this->sheet->setCellValueByColumnAndRow($column + 1, $row, $value);
+                $this->sheet->setCellValue([$column + 1, $row], $value);
             }
 
             foreach ($chit->getItems() as $item) {
                 $column = $categoryColumns[$item->getCategory()->getId()];
-                $value  = $this->sheet->getCellByColumnAndRow($column, $row)->getValue() + $item->getAmount()->toFloat();
-                $this->sheet->setCellValueByColumnAndRow($column, $row, $value);
+                $value  = $this->sheet->getCell([$column, $row])->getValue() + $item->getAmount()->toFloat();
+                $this->sheet->setCellValue([$column, $row], $value);
             }
 
             $row++;
@@ -194,7 +190,7 @@ class CashbookWithCategoriesBuilder
     private function addColumnSum(int $column, int $resultRow, int $firstRow): void
     {
         $lastRow      = $resultRow - 1;
-        $resultCell   = $this->sheet->getCellByColumnAndRow($column, $resultRow);
+        $resultCell   = $this->sheet->getCell([$column, $resultRow]);
         $stringColumn = $resultCell->getColumn();
 
         $resultCell->setValue('=SUM(' . $stringColumn . $firstRow . ':' . $stringColumn . $lastRow . ')');
@@ -223,12 +219,12 @@ class CashbookWithCategoriesBuilder
         $sheet->getColumnDimensionByColumn(5)->setAutoSize(true);
         $sheet->getColumnDimensionByColumn(6)->setAutoSize(true);
 
-        $header = $sheet->getStyleByColumnAndRow(1, self::HEADER_ROW, $lastColumn, self::HEADER_ROW);
+        $header = $sheet->getStyle([1, self::HEADER_ROW, $lastColumn, self::HEADER_ROW]);
 
         $header->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $header->getFont()->setBold(true);
 
-        $wholeTable = $sheet->getStyleByColumnAndRow(1, self::HEADER_ROW, $lastColumn, $lastRow);
+        $wholeTable = $sheet->getStyle([1, self::HEADER_ROW, $lastColumn, $lastRow]);
 
         // Inner and outer borders
         $wholeTable->getBorders()->applyFromArray([
