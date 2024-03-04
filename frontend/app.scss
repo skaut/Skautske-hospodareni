@@ -96,11 +96,8 @@ table.table a:hover {
     background-color: #404000;
   }
 
-  .bg-light, .btn-light {
-    background-color: var(--bs-light-bg-subtle) !important;
-  }
-
   .btn-light {
+    background-color: var(--bs-light-bg-subtle) !important;
     color: var(--bs-body-color);
   }
 

@@ -12,7 +12,7 @@
     <li n:foreach="$accounts as $account" class="list-group-item">
         <div class="row d-flex align-items-center">
             <div class="col">
-                <div><a n:href="detail $account->getId()" class="text-dark"><strong>{$account->getName()}</strong> ({$account->getNumber()})</a>
+                <div><a n:href="detail $account->getId()" class="text-body"><strong>{$account->getName()}</strong> ({$account->getNumber()})</a>
                 </div>
                 <div><small>Přidáno {$account->getCreatedAt()|date:'j.n. Y'}</small>
                     <span class="badge bg-success" n:if="$account->getToken() !== NULL"><i class="fas fa-check"></i> FIO párování</span>
