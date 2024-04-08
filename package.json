@@ -30,7 +30,7 @@
         "css-loader": "^6.10.0",
         "lint-staged": "^15.2.2",
         "mini-css-extract-plugin": "^2.8.1",
-        "sass": "^1.71.1",
+        "sass": "^1.74.1",
         "sass-loader": "^14.1.1",
         "ts-loader": "^9.5.1",
         "typescript": "^5.4.2",
