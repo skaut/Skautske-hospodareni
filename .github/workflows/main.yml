@@ -13,13 +13,13 @@ jobs:
         container:
             image: skaut/lebeda:8.1
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             # Copy & paste from https://github.com/actions/cache/blob/master/examples.md#php---composer
             - name: Get Composer Cache Directory
               id: composer-cache
               run: |
                   echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-            - uses: actions/cache@v3
+            - uses: actions/cache@v4
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -83,7 +83,7 @@ jobs:
             - name: Run tests with coverage
               run: docker compose -f docker/docker-compose.yml run -T php-test phing tests-with-coverage
             - name: Upload code coverage
-              uses: codecov/codecov-action@v3
+              uses: codecov/codecov-action@v4
               with:
                   token: ${{ secrets.CODECOV_TOKEN }}
                   file: tests/_output/coverage.xml
@@ -110,7 +110,7 @@ jobs:
             - run: mv app/config/config.ci.local.neon app/config/config.local.neon
             - name: Run acceptance tests
               run: docker compose -f docker/docker-compose.yml run -T php-test phing tests-acceptance
-            - uses: actions/upload-artifact@v3
+            - uses: actions/upload-artifact@v4
               if: failure()
               with:
                     name: error-output
@@ -201,7 +201,7 @@ jobs:
             - run: mv app/config/config.ci.local.neon app/config/config.local.neon
             - run: bin/console migrations:migrate --no-interaction
             - run: "! bin/console migrations:diff && bin/console migrations:diff --allow-empty-diff"
-            - uses: actions/upload-artifact@v3
+            - uses: actions/upload-artifact@v4
               if: failure()
               with:
                   name: migrations
@@ -249,7 +249,7 @@ jobs:
               id: yarn-cache
               run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
-            - uses: actions/cache@v3
+            - uses: actions/cache@v4
               with:
                   path: ${{ steps.yarn-cache.outputs.dir }}
                   key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -299,7 +299,7 @@ jobs:
               id: yarn-cache
               run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
-            - uses: actions/cache@v3
+            - uses: actions/cache@v4
               with:
                   path: ${{ steps.yarn-cache.outputs.dir }}
                   key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
