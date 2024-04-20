@@ -33,7 +33,7 @@
         "sass": "^1.71.1",
         "sass-loader": "^14.1.1",
         "ts-loader": "^9.5.1",
-        "typescript": "^5.4.2",
+        "typescript": "^5.4.5",
         "uglify-js": "^3.17.4",
         "webpack": "^5.90.3",
         "webpack-bundle-analyzer": "^4.10.2",
