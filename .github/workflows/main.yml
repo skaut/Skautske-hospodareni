@@ -31,7 +31,7 @@ jobs:
             - name: Create tarball
               run: tar -czpf /tmp/workdir.tar.gz . && mv /tmp/workdir.tar.gz .
             - name: Upload workdir
-              uses: actions/upload-artifact@v1
+              uses: actions/upload-artifact@v4
               with:
                   name: workdir
                   path: workdir.tar.gz
@@ -44,7 +44,7 @@ jobs:
         needs: workdir
         steps:
             - name: Download workdir
-              uses: actions/download-artifact@v1
+              uses: actions/download-artifact@v4
               with:
                   name: workdir
                   path: .
@@ -58,7 +58,7 @@ jobs:
         needs: workdir
         steps:
             - name: Download workdir
-              uses: actions/download-artifact@v1
+              uses: actions/download-artifact@v4
               with:
                   name: workdir
                   path: .
@@ -74,7 +74,7 @@ jobs:
         needs: workdir
         steps:
             - name: Download workdir
-              uses: actions/download-artifact@v1
+              uses: actions/download-artifact@v4
               with:
                   name: workdir
                   path: .
@@ -95,7 +95,7 @@ jobs:
         needs: workdir
         steps:
             - name: Download workdir
-              uses: actions/download-artifact@v1
+              uses: actions/download-artifact@v4
               with:
                   name: workdir
                   path: .
@@ -130,7 +130,7 @@ jobs:
         needs: workdir
         steps:
             - name: Download workdir
-              uses: actions/download-artifact@v1
+              uses: actions/download-artifact@v4
               with:
                   name: workdir
                   path: .
@@ -148,7 +148,7 @@ jobs:
         needs: workdir
         steps:
             - name: Download workdir
-              uses: actions/download-artifact@v1
+              uses: actions/download-artifact@v4
               with:
                   name: workdir
                   path: .
@@ -166,7 +166,7 @@ jobs:
             DEVELOPMENT_MACHINE: true
         steps:
             - name: Download workdir
-              uses: actions/download-artifact@v1
+              uses: actions/download-artifact@v4
               with:
                   name: workdir
                   path: .
@@ -192,7 +192,7 @@ jobs:
             DEVELOPMENT_MACHINE: true
         steps:
             - name: Download workdir
-              uses: actions/download-artifact@v1
+              uses: actions/download-artifact@v4
               with:
                   name: workdir
                   path: .
@@ -232,7 +232,7 @@ jobs:
             image: skaut/lebeda:8.1-ci
         steps:
             - name: Download workdir
-              uses: actions/download-artifact@v1
+              uses: actions/download-artifact@v4
               with:
                   name: workdir
                   path: .
@@ -282,7 +282,7 @@ jobs:
             image: skaut/lebeda:8.1-ci
         steps:
             - name: Download workdir
-              uses: actions/download-artifact@v1
+              uses: actions/download-artifact@v4
               with:
                   name: workdir
                   path: .
