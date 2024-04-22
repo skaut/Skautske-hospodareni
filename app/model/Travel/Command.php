@@ -52,7 +52,7 @@ class Command
     /** @ORM\Column(type="string", length=64) */
     private string $place;
 
-    /** @ORM\Column(type="string", length=64) */
+    /** @ORM\Column(type="string", length=256) */
     private string $fellowPassengers;
 
     /** @ORM\Column(type="money") */
