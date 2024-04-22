@@ -68,7 +68,7 @@ class CommandForm extends Control
             ->setMaxLength(64)
             ->setHtmlAttribute('class', 'form-control');
         $form->addText('fellowPassengers', 'Spolucestující')
-            ->setMaxLength(64)
+            ->setMaxLength(256)
             ->setHtmlAttribute('class', 'form-control');
         $form->addText('note', 'Poznámka')
             ->setMaxLength(64)
