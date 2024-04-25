@@ -1,5 +1,6 @@
 {
     "private": true,
+    "type": "module",
     "scripts": {
         "build": "webpack --mode=development",
         "build-production": "webpack --mode=production",
