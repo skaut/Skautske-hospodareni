@@ -1,14 +1,14 @@
-const path = require('path');
-const { IgnorePlugin } = require('webpack');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+import path from 'path';
+import webpack from 'webpack';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
-module.exports = {
+export default {
     entry: {
         'app': './frontend/app.ts',
     },
     output: {
         filename: 'js/[name].min.js',
-        path: path.resolve(__dirname, 'www')
+        path: path.resolve(import.meta.dirname, 'www')
     },
     module: {
         rules: [
@@ -39,7 +39,7 @@ module.exports = {
         ]
     },
     plugins: [
-        new IgnorePlugin({resourceRegExp: /^\.\/locale$/,contextRegExp: /moment$/}),
+        new webpack.IgnorePlugin({resourceRegExp: /^\.\/locale$/,contextRegExp: /moment$/}),
         new MiniCssExtractPlugin({
             // Options similar to the same options in webpackOptions.output
             // both options are optional
