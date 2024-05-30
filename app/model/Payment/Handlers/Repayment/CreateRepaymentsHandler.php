@@ -21,7 +21,7 @@ final class CreateRepaymentsHandler
         try {
             $this->http->request(
                 'POST',
-                'https://www.fio.cz/ib_api/rest/import/',
+                'https://fioapi.fio.cz/v1/rest/import/',
                 [
                     'multipart' => [
                         [
