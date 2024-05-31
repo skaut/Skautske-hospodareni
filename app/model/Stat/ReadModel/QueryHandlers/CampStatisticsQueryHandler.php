@@ -33,17 +33,18 @@ class CampStatisticsQueryHandler
         ];
         $types  = [Connection::PARAM_INT_ARRAY, ParameterType::INTEGER];
         $sql    = <<<'SQL'
-            SELECT o.skautisId, SUM(ci.price) as sum
+            SELECT o.id, SUM(ci.price) as sum
             FROM `ac_chits` c
             LEFT JOIN `ac_chit_to_item` cti ON c.id = cti.chit_id
             LEFT JOIN `ac_chits_item` ci ON cti.item_id = ci.id
-            JOIN ac_camp_cashbooks o ON c.eventId = o.cashbookId
+            JOIN ac_camp_cashbooks o ON c.eventId = o.cashbook_id
             WHERE o.id IN (?) AND category_operation_type = ? AND YEAR(date) = ?
-            GROUP BY eventId
+            GROUP BY o.id
 SQL;
 
         $stmt = $this->db->executeQuery($sql, $params, $types);
 
-        return array_map('floatval', $stmt->fetchAllAssociative());
+        return $stmt->fetchAllKeyValue();
+        //return array_map('floatval', $stmt->fetchAllAssociative());
     }
 }
