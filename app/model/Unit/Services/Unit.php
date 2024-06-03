@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Model\Unit;
 
 use function array_key_last;
+use function array_map;
+use function array_merge;
 use function explode;
 use function in_array;
 use function sprintf;
@@ -133,5 +135,19 @@ class Unit
             $this->parentId,
             $ch,
         );
+    }
+
+    /** @return array<int|int> */
+    public function getChildrenIds(): array
+    {
+        return array_map(function (Unit $unit): int {
+            return $unit->getId();
+        }, $this->children);
+    }
+
+    /** @return array<int|int> */
+    public function getIdWithChildren(): array
+    {
+        return array_merge([$this->id], $this->getChildrenIds());
     }
 }

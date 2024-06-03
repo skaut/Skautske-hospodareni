@@ -10,12 +10,15 @@ use Model\Event\ReadModel\Queries\CampListQuery;
 use Model\Event\ReadModel\Queries\CampStatisticsQuery;
 use Model\Event\ReadModel\Queries\EventListQuery;
 use Model\Event\ReadModel\Queries\EventStatisticsQuery;
+use Model\Event\ReadModel\Queries\PaymentGroupStatisticsQuery;
 use Model\Skautis\ISkautisEvent;
 use Model\Unit\Unit;
 
 use function array_filter;
 use function array_key_exists;
 use function array_keys;
+use function array_merge;
+use function array_unique;
 use function in_array;
 
 class StatisticsService
@@ -32,15 +35,18 @@ class StatisticsService
         $eventStats = $this->queryBus->handle(new EventStatisticsQuery(array_keys($events), $year));
         $campStats  = $this->queryBus->handle(new CampStatisticsQuery(array_keys($camps), $year));
 
-        $eventCount = $this->sumUpByEventId($events, array_keys($eventStats));
-        $campCount  = $this->sumUpByEventId($camps, array_keys($campStats));
+        $eventCount   = $this->sumUpByEventId($events, array_keys($eventStats));
+        $campCount    = $this->sumUpByEventId($camps, array_keys($campStats));
+        $paymentCount = $this->queryBus->handle(new PaymentGroupStatisticsQuery($unitTree->getIdWithChildren(), $year));
 
-        $keys   = array_keys($eventCount) + array_keys($campCount);
+        $keys = array_unique(array_merge(array_keys($eventCount), array_keys($campCount), array_keys($paymentCount)));
+
         $merged = [];
         foreach ($keys as $k) {
             $merged[$k] = new Counter(
-                $eventCount[$k] ?? 0,
-                $campCount[$k] ?? 0,
+                ($eventCount[$k] ?? 0 ) + ($eventStats[$k] ?? 0),
+                ($campCount[$k] ?? 0) + ($campStats[$k] ?? 0),
+                $paymentCount[$k] ?? 0,
             );
         }
 
