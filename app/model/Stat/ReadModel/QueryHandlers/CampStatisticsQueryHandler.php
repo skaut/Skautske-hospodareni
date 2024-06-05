@@ -33,7 +33,7 @@ class CampStatisticsQueryHandler
         ];
         $types  = [Connection::PARAM_INT_ARRAY, ParameterType::INTEGER];
         $sql    = <<<'SQL'
-            SELECT o.id, SUM(ci.price) as sum
+            SELECT o.id, COUNT(ci.price) as sum
             FROM `ac_chits` c
             LEFT JOIN `ac_chit_to_item` cti ON c.id = cti.chit_id
             LEFT JOIN `ac_chits_item` ci ON cti.item_id = ci.id
