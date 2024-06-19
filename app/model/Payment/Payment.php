@@ -163,6 +163,7 @@ class Payment extends Aggregate
         $this->amount = $amount;
     }
 
+    /** @throws PaymentClosed */
     private function complete(DateTimeImmutable $time): void
     {
         $this->checkNotClosed();
@@ -170,6 +171,7 @@ class Payment extends Aggregate
         $this->closedAt = $time;
     }
 
+    /** @throws PaymentClosed */
     public function completeManually(DateTimeImmutable $time, string $userFullName): void
     {
         $this->complete($time);
@@ -177,6 +179,7 @@ class Payment extends Aggregate
         $this->raise(new PaymentWasCompleted($this->id));
     }
 
+    /** @throws PaymentClosed */
     public function pairWithTransaction(DateTimeImmutable $time, Transaction $transaction): void
     {
         $this->complete($time);
