@@ -104,6 +104,7 @@ class EventCashbookCest extends BaseAcceptanceCest
 
         $this->I->fillField('items[0][price]', '121');
         $this->I->scrollTo('input[name="send"]');
+        $this->I->wait(2);
         $this->I->click('input[name="send"]');
         $this->waitForBalance('-121,00');
     }
@@ -115,6 +116,7 @@ class EventCashbookCest extends BaseAcceptanceCest
 
         $this->fillChitForm(new ChronosDate(), 'Účastnické poplatky', Operation::INCOME(), 'Přijmy od účastníků', 'Testovací skaut 2', '100');
         $this->I->scrollTo('input[name="send"]');
+        $this->I->wait(2);
         $this->I->click('input[name="send"]');
 
         $this->waitForBalance('-21,00');
