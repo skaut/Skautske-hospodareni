@@ -38,3 +38,7 @@ static-analysis:
 
 coding-standard:
 	docker exec -it ${CONTAINER_PHP} /app/vendor/bin/phing coding-standard
+
+fix:
+	docker exec -it ${CONTAINER_PHP} /app/vendor/bin/phing coding-standard
+	docker exec -it ${CONTAINER_PHP} /app/vendor/bin/phing static-analysis
