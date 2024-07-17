@@ -23,7 +23,6 @@ class EducationListQueryHandler
     {
         $educations = $this->skautis->event->EventEducationAllMyActions([
             'Year' => $query->getYear(),
-            'ID_RelationType' => 'team',
         ]);
 
         if (is_object($educations)) {
