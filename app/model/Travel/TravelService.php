@@ -224,7 +224,7 @@ class TravelService
                 $name .= ' (platná do ' . $contract->getUntil()->format('j.n.Y') . ')';
             }
 
-            if ($contract->getUntil() === null || $contract->getUntil() > $now) {
+            if ($contract->getUntil() === null || $contract->getUntil()->toNative() > $now) {
                 $result['valid'][$contract->getId()] = $name;
             } elseif ($now->diff($contract->getUntil()->toNative())->y === 0 || $contract->getId() === $includeContractId) {
                 $result['past'][$contract->getId()] = $name;
