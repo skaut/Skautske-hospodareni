@@ -10,7 +10,7 @@
         "@fortawesome/fontawesome-svg-core": "^6.5.1",
         "@fortawesome/free-brands-svg-icons": "^6.5.1",
         "@fortawesome/free-regular-svg-icons": "^6.5.1",
-        "@fortawesome/free-solid-svg-icons": "^6.5.1",
+        "@fortawesome/free-solid-svg-icons": "^6.6.0",
         "@types/nprogress": "^0.2.3",
         "@types/pikaday": "^1.7.9",
         "bootstrap": "^5.3.3",
