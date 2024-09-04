@@ -2294,10 +2294,10 @@ mimic-function@^5.0.0:
   resolved "https://registry.yarnpkg.com/mimic-function/-/mimic-function-5.0.1.tgz#acbe2b3349f99b9deaca7fb70e48b83e94e67076"
   integrity sha512-VP79XUPxV2CigYP3jWwAUFSku2aKqBH7uTAapFWCBqutsbmDo96KY5o8uh6U+/YSIn5OxJnXp73beVkpqMIGhA==
 
-mini-css-extract-plugin@^2.8.1:
-  version "2.8.1"
-  resolved "https://registry.yarnpkg.com/mini-css-extract-plugin/-/mini-css-extract-plugin-2.8.1.tgz#75245f3f30ce3a56dbdd478084df6fe475f02dc7"
-  integrity sha512-/1HDlyFRxWIZPI1ZpgqlZ8jMw/1Dp/dl3P0L1jtZ+zVcHqwPhGwaJwKL00WVgfnBy6PWCde9W65or7IIETImuA==
+mini-css-extract-plugin@^2.9.1:
+  version "2.9.1"
+  resolved "https://registry.yarnpkg.com/mini-css-extract-plugin/-/mini-css-extract-plugin-2.9.1.tgz#4d184f12ce90582e983ccef0f6f9db637b4be758"
+  integrity sha512-+Vyi+GCCOHnrJ2VPS+6aPoXN2k2jgUzDRhTFLjjTBn23qyXJXkjUWQgTL+mXpF5/A8ixLdCc6kWsoeOjKGejKQ==
   dependencies:
     schema-utils "^4.0.0"
     tapable "^2.2.1"
