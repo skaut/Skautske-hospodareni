@@ -1,5 +1,7 @@
 parameters:
     ignoreErrors:
+        -
+            identifier: missingType.generics
         # Errors related mostly to usage of assert($x instanceof A || $x === null) and similar asserts
         - '~Unreachable statement - code above always terminates.~'
 
@@ -14,7 +16,6 @@ parameters:
     scanDirectories:
         - tests/_support
 
-    checkGenericClassInNonGenericObjectType: false
 
 services:
 	- class: CodeQuality\ObjectIdentityComparisonRule
