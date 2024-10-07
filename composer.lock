@@ -9140,33 +9140,33 @@
         },
         {
             "name": "tracy/tracy",
-            "version": "v2.10.7",
+            "version": "v2.10.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/tracy.git",
-                "reference": "7e7b25ba103968d5318d37db330b2e9c755dc765"
+                "reference": "0e0f3312708fb9c179a92072ebacc24aeee7e2e8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/tracy/zipball/7e7b25ba103968d5318d37db330b2e9c755dc765",
-                "reference": "7e7b25ba103968d5318d37db330b2e9c755dc765",
+                "url": "https://api.github.com/repos/nette/tracy/zipball/0e0f3312708fb9c179a92072ebacc24aeee7e2e8",
+                "reference": "0e0f3312708fb9c179a92072ebacc24aeee7e2e8",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "ext-session": "*",
-                "php": ">=8.0 <8.4"
+                "php": "8.0 - 8.4"
             },
             "conflict": {
                 "nette/di": "<3.0"
             },
             "require-dev": {
-                "latte/latte": "^2.5",
+                "latte/latte": "^2.5 || ^3.0",
                 "nette/di": "^3.0",
                 "nette/http": "^3.0",
-                "nette/mail": "^3.0",
+                "nette/mail": "^3.0 || ^4.0",
                 "nette/tester": "^2.2",
-                "nette/utils": "^3.0",
+                "nette/utils": "^3.0 || ^4.0",
                 "phpstan/phpstan": "^1.0",
                 "psr/log": "^1.0 || ^2.0 || ^3.0"
             },
@@ -9209,9 +9209,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/tracy/issues",
-                "source": "https://github.com/nette/tracy/tree/v2.10.7"
+                "source": "https://github.com/nette/tracy/tree/v2.10.8"
             },
-            "time": "2024-04-29T11:44:00+00:00"
+            "time": "2024-08-07T02:04:53+00:00"
         },
         {
             "name": "ublaboo/datagrid",
