@@ -187,6 +187,36 @@ class TravelCest extends BaseAcceptanceCest
         $I->seeInCurrentUrl('/cestaky/vozidla');
     }
 
+    public function uploadMultipleRoadworthyScans(AcceptanceTester $I): void
+    {
+        $licensePlate = 'RZS-'.time();
+        $I->wantTo('Upload two roadworthy scans in a row (upload control must be re-bound after the AJAX redraw)');
+        $this->navigateToVehicle($I);
+        $this->newVehicle($I, $licensePlate);
+
+        // Navigate to the vehicle detail via a full page load so the upload control is bound on load.
+        $I->amOnPage('/cestaky/vozidla?grid-grid-filter%5Bsearch%5D='.rawurlencode($licensePlate));
+        $I->waitForText($licensePlate, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '#snippet-grid-grid-table');
+        $I->click($licensePlate, '#snippet-grid-grid-table');
+        $I->waitForText('Údaje o vozidle', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeInCurrentUrl('/cestaky/vozidla/detail/');
+        $I->amOnPage($I->grabFromCurrentUrl());
+        $I->waitForElementVisible('[data-test="travel-vehicle-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        // First scan: the control present on page load auto-submits on change.
+        $I->attachFile('#scan-upload-control', 'roadworthy-scan-1.png');
+        $I->waitForJS('return document.querySelectorAll(\'[data-test="roadworthy-file"]\').length === 1;', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        // Second scan: after the first upload redrew the snippet, the freshly rendered control
+        // must still auto-submit on change. This is what breaks when the change handler is bound
+        // only once instead of re-binding after every snippet update.
+        $I->attachFile('#scan-upload-control', 'roadworthy-scan-2.png');
+        $I->waitForJS('return document.querySelectorAll(\'[data-test="roadworthy-file"]\').length === 2;', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        $this->navigateToVehicle($I);
+        $this->deleteVehicle($I, $licensePlate);
+    }
+
     public function createContact(AcceptanceTester $I): void
     {
         $I->wantTo('Create contract');

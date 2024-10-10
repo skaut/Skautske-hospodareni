@@ -1,7 +1,6 @@
 import naja from 'naja';
 import Dropdown from 'bootstrap/js/dist/dropdown';
 import Tooltip from 'bootstrap/js/dist/tooltip';
-// @ts-ignore
 import {ProgressBar} from './ProgressBar';
 import {ModalExtension} from './ModalExtension';
 import {TravelModule} from "../modules/travel";
@@ -30,30 +29,30 @@ function initializeTooltips(root: ParentNode): void {
 }
 
 export default function (): void {
-    naja.registerExtension(ProgressBar);
+    naja.registerExtension(new ProgressBar());
 
-    naja.registerExtension(TravelModule);
-    naja.registerExtension(SnippetProcessor, snippet => {
+    naja.registerExtension(new TravelModule());
+    naja.registerExtension(new SnippetProcessor(snippet => {
         initializeAutoSubmit(naja, snippet, '.auto-submit');
         initializeLinksThatRequireConfirmation(snippet, 'data-confirm');
         initializeCheckAllCheckboxes(snippet, 'data-dependent-checkboxes');
         initializeCheckboxToggle(snippet, 'data-visible-if-checked', 'data-visible-if-not-checked');
         initializeSendMassForm(snippet, 'chits-');
-        initializeEditForm(snippet,'chits-');
+        initializeEditForm(snippet);
         snippet.querySelectorAll<HTMLElement>('.date').forEach(initializeDatePicker);
         initializeDropdowns(snippet);
         initializeTooltips(snippet);
         initializeMassEmailSelection(snippet);
         initializePageEnhancements(snippet);
-    });
+    }));
 
-    naja.registerExtension(ModalExtension);
-    naja.registerExtension(DataGridExtension);
+    naja.registerExtension(new ModalExtension());
+    naja.registerExtension(new DataGridExtension());
 
     naja.formsHandler.netteForms = netteForms;
 
     // Prevents NS_ERROR_ILLEGAL_VALUE on large pages in Firefox
-    (naja as any).historyHandler.historyAdapter = {
+    naja.historyHandler.historyAdapter = {
         replaceState: () => {},
         pushState: () => {},
     };

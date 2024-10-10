@@ -21,7 +21,7 @@
         </span>
         <div class="dropdown-menu dropdown-menu-start roadworthy-menu" n:snippet="">
             {foreach $files as $file}
-            <div class="px-4 py-1">
+            <div class="px-4 py-1" data-test="roadworthy-file">
                 {$file->getOriginalFilename()|truncate:26}
                 <a n:href="remove! $file->getPath()"
                         n:if="$isEditable"

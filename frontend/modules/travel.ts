@@ -1,26 +1,15 @@
-export class TravelModule {
-    private readonly naja: any;
+import type { Extension, Naja } from "naja/dist/Naja";
 
-    private autoSubmitListener: EventListener | undefined;
+export class TravelModule implements Extension {
+    public initialize(naja: Naja): void {
+        // Delegated listener: the upload control lives inside an AJAX snippet and is replaced on
+        // every redraw, so binding it directly would only work until the first snippet update.
+        document.addEventListener('change', event => {
+            const control = event.target;
 
-    constructor(naja: any) {
-        this.naja = naja;
-        naja.addEventListener('load', () => this.enableRoadworthyUploadAutoSubmit());
-    }
-
-    enableRoadworthyUploadAutoSubmit() {
-        const control = document.getElementById('scan-upload-control') as HTMLInputElement | null;
-
-        if (control === null) {
-            return;
-        }
-
-        if (this.autoSubmitListener) {
-            control.removeEventListener('change', this.autoSubmitListener);
-        }
-
-        control.addEventListener('change', () => {
-            this.naja.uiHandler.submitForm(control.form);
+            if (control instanceof HTMLInputElement && control.id === 'scan-upload-control' && control.form !== null) {
+                naja.uiHandler.submitForm(control.form);
+            }
         });
     }
 }

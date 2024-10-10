@@ -1,18 +1,21 @@
 import Modal from 'bootstrap/js/dist/modal';
-import {initializeDatePicker} from './datePicker';
+import type { Extension, Naja } from 'naja/dist/Naja';
+import type { AfterUpdateEvent, BeforeUpdateEvent } from 'naja/dist/core/SnippetHandler';
 
-export class ModalExtension {
+import { initializeDatePicker } from './datePicker';
+
+export class ModalExtension implements Extension {
     private modalInstance: Modal | null = null;
     private modalElement: HTMLElement | null = null;
-    private readonly naja: any;
+    private naja: any;
 
-    constructor(naja: any) {
+    public initialize(naja: Naja): void {
         this.naja = naja;
-        naja.snippetHandler.addEventListener('afterUpdate', (event: any) => this.processSnippet(event.snippet));
-        naja.snippetHandler.addEventListener('beforeUpdate', (event: any) => this.beforeSnippetUpdate(event.snippet));
+        naja.snippetHandler.addEventListener('afterUpdate', (event: AfterUpdateEvent) => this.processSnippet(event.detail.snippet));
+        naja.snippetHandler.addEventListener('beforeUpdate', (event: BeforeUpdateEvent) => this.beforeSnippetUpdate(event.detail.snippet));
     }
 
-    private beforeSnippetUpdate(snippet: HTMLElement): void
+    private beforeSnippetUpdate(snippet: Element): void
     {
         if (! snippet.classList.contains('modal-container')) {
             return;
@@ -25,7 +28,7 @@ export class ModalExtension {
         }
     }
 
-    private processSnippet(snippet: HTMLElement): void {
+    private processSnippet(snippet: Element): void {
         if (! snippet.classList.contains('modal-container')) {
             return;
         }
@@ -165,4 +168,4 @@ export class ModalExtension {
             }
         });
     }
-}
+} 
