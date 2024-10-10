@@ -1,15 +1,16 @@
-import najaInstance, {InteractionEvent} from 'naja';
+import type { Extension, Naja } from 'naja/dist/Naja';
+import type { InteractionEvent } from 'naja/dist/core/UIHandler';
 
-export class DataGridExtension {
-    public constructor(naja: typeof najaInstance) {
-        naja.addEventListener('interaction', DataGridExtension.enableSortHistory);
+export class DataGridExtension implements Extension {
+    public initialize(naja: Naja): void {
+        naja.uiHandler.addEventListener('interaction', DataGridExtension.enableSortHistory);
     }
 
     private static enableSortHistory(event: InteractionEvent): void {
-        const element = event.element;
+        const element = event.detail.element;
 
         if (element.getAttribute('data-naja-history') !== 'off' && element.closest('[data-naja-history="on"]') !== null) {
-            (event.options as any).history = true;
+            event.detail.options.history = true;
         }
     }
 }

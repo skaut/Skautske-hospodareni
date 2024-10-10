@@ -1739,11 +1739,6 @@ esutils@^2.0.2:
   resolved "https://registry.yarnpkg.com/esutils/-/esutils-2.0.3.tgz#74d2eb4de0b8da1293711910d50775b9b710ef64"
   integrity sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==
 
-event-target-shim@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/event-target-shim/-/event-target-shim-2.0.0.tgz#a6c07fb273495a3789e105b49fcc3cb0a308fab4"
-  integrity sha512-ncZITgPe4AeqabDvYAitkMFFHHOe49T9cuaUNfYg/bAsWSAifgOmC4I0WqCt4iMCZVovchn2UlPRMOSxYdeXPw==
-
 eventemitter3@^5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-5.0.1.tgz#53f5ffd0a492ac800721bb42c66b841de96423c4"
@@ -2080,11 +2075,6 @@ jiti@^1.20.0:
   resolved "https://registry.yarnpkg.com/jiti/-/jiti-1.21.0.tgz#7c97f8fe045724e136a397f7340475244156105d"
   integrity sha512-gFqAIbuKyyso/3G2qhiO2OM6shY6EPP/R0+mkDbyspxKazh8BXDC5FiFsUjlczgdNz/vfra0da2y+aHrusLG/Q==
 
-jquery-param@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/jquery-param/-/jquery-param-0.1.2.tgz#17b1871fd7907e03706464bb6f66485b9b9af293"
-  integrity sha512-t3ht49C1/naig6u2PFjcJ4tKtfk/Lx9hv8A3h5GpYU0zTBTxj++IMd7POMV12zMuaJqQNWRqw5LMp3thTkmiYA==
-
 js-tokens@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
@@ -2291,14 +2281,10 @@ ms@2.1.2:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
-naja@1.8.3:
-  version "1.8.3"
-  resolved "https://registry.yarnpkg.com/naja/-/naja-1.8.3.tgz#2884e7d63deab4fc91b7d890a5908e6cb881c3ba"
-  integrity sha512-yNam5J6pcD9b1RfV0ZWUPZp91oRV7wUoqhOwITse7HVzyEqetNhF0/OANr5I6PCVuywe/iUqSwIn6yDdPPJneQ==
-  dependencies:
-    event-target-shim "^2.0.0"
-    object-assign "^4.1.0"
-    qwest "^4.4.5"
+naja@2.6.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/naja/-/naja-2.6.1.tgz#cb25cb0464b6b7722d9613049ae8e4769e6ca482"
+  integrity sha512-xLZPRJeOr6R3Zr5epRDSIzNzsb0RJ9T6LWhcNQbbarMLXQX+O26o1SEENsJ1NWFJfbJe1dWtv+iEiSShSHQZfA==
 
 nanoid@^3.3.7:
   version "3.3.7"
@@ -2341,11 +2327,6 @@ nprogress@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/nprogress/-/nprogress-0.2.0.tgz#cb8f34c53213d895723fcbab907e9422adbcafb1"
   integrity sha512-I19aIingLgR1fmhftnbWWO3dXc0hSxqHQHQb3H8m+K3TnEn/iSeTZZOyvKXWqQESMwuUVnatlCnZdLBZZt2VSA==
-
-object-assign@^4.1.0:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
-  integrity sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==
 
 onetime@^6.0.0:
   version "6.0.0"
@@ -2471,11 +2452,6 @@ pikaday@^1.8.2:
   resolved "https://registry.yarnpkg.com/pikaday/-/pikaday-1.8.2.tgz#72cc73fab7ccc068cbdf7dcaa1ce400fcfd894e3"
   integrity sha512-TNtsE+34BIax3WtkB/qqu5uepV1McKYEgvL3kWzU7aqPCpMEN6rBF3AOwu4WCwAealWlBGobXny/9kJb49C1ew==
 
-pinkyswear@^2.2.2:
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/pinkyswear/-/pinkyswear-2.2.3.tgz#e589b72c268a09d0e46458861d6b8ccc5c921a3b"
-  integrity sha512-DLwyrY2cqAqKT+xfgZkC8HSmf9/1rK34ruDEa97opLE5N0AjvBk+hvmaLM58dW4XpT+hdHFuEnONOyC6g2BPug==
-
 pkg-dir@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/pkg-dir/-/pkg-dir-4.2.0.tgz#f099133df7ede422e81d1d8448270eeb3e4261f3"
@@ -2597,14 +2573,6 @@ queue-microtask@^1.2.2:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.3.tgz#4929228bbc724dfac43e0efb058caf7b6cfb6243"
   integrity sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==
-
-qwest@^4.4.5:
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/qwest/-/qwest-4.5.0.tgz#f331743a268c474a93112bbd30d6c58bafa1a5c8"
-  integrity sha512-50lOOEZQr21NRpOdT9xuwEaC63CkHVnu+K26KlWToSMGL+kmaa4Lbm+onOd6pWOMkJuuCe8WM6MSWkp5QfKGeA==
-  dependencies:
-    jquery-param "^0.1.2"
-    pinkyswear "^2.2.2"
 
 randombytes@^2.1.0:
   version "2.1.0"

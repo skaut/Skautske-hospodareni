@@ -1,14 +1,16 @@
 import { Modal } from "bootstrap";
+import type { Extension, Naja } from 'naja/dist/Naja';
+import type { AfterUpdateEvent, BeforeUpdateEvent } from 'naja/dist/core/SnippetHandler';
 
-export class ModalExtension {
+export class ModalExtension implements Extension {
     private modalInstance: Modal | null;
 
-    constructor(naja: any) {
-        naja.snippetHandler.addEventListener('afterUpdate', (event: any) => this.processSnippet(event.snippet));
-        naja.snippetHandler.addEventListener('beforeUpdate', (event: any) => this.beforeSnippetUpdate(event.snippet));
+    public initialize(naja: Naja): void {
+        naja.snippetHandler.addEventListener('afterUpdate', (event: AfterUpdateEvent) => this.processSnippet(event.detail.snippet));
+        naja.snippetHandler.addEventListener('beforeUpdate', (event: BeforeUpdateEvent) => this.beforeSnippetUpdate(event.detail.snippet));
     }
 
-    private beforeSnippetUpdate(snippet: HTMLElement): void
+    private beforeSnippetUpdate(snippet: Element): void
     {
         if (! snippet.classList.contains('modal-container')) {
             return;
@@ -21,7 +23,7 @@ export class ModalExtension {
         }
     }
 
-    private processSnippet(snippet: HTMLElement): void {
+    private processSnippet(snippet: Element): void {
         if (! snippet.classList.contains('modal-container')) {
             return;
         }
