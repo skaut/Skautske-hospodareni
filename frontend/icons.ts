@@ -86,7 +86,7 @@ library.add(
     far.faArrowAltCircleLeft,
 
     // Brands
-    fab.faGithub as IconDefinition,
+    fab.faGithub,
     fab.faGoogle,
 );
 
