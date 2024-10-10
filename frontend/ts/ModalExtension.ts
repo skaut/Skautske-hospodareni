@@ -1,11 +1,14 @@
 import BSN from 'bootstrap.native';
 
-export class ModalExtension {
-    constructor(naja: any) {
-        naja.snippetHandler.addEventListener('afterUpdate', (event: any) => this.processSnippet(event.snippet));
+import type { Extension, Naja } from 'naja/dist/Naja';
+import type { AfterUpdateEvent } from 'naja/dist/core/SnippetHandler';
+
+export class ModalExtension implements Extension {
+    public initialize(naja: Naja): void {
+        naja.snippetHandler.addEventListener('afterUpdate', (event: AfterUpdateEvent) => this.processSnippet(event.detail.snippet));
     }
 
-    private processSnippet(snippet: HTMLElement): void {
+    private processSnippet(snippet: Element): void {
         if (! snippet.classList.contains('modal')) {
             return;
         }
@@ -22,7 +25,7 @@ export class ModalExtension {
         modal.show();
     }
 
-    private initializeButtons(modal: HTMLElement): void {
+    private initializeButtons(modal: Element): void {
         const forms = modal.querySelectorAll('form');
         const footer = modal.querySelector('.modal-footer');
 

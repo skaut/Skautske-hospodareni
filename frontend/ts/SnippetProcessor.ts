@@ -1,19 +1,18 @@
-type Processor = (snippet: HTMLElement, naja: Naja) => void;
-type Naja = any & EventTarget;
+import type { Extension, Naja } from "naja/dist/Naja";
+import type { AfterUpdateEvent } from "naja/dist/core/SnippetHandler";
 
-export class SnippetProcessor {
-    private readonly naja: Naja;
+type Processor = (snippet: Element, naja: Naja) => void;
+
+export class SnippetProcessor implements Extension {
     private readonly process: Processor;
 
-    constructor(naja: Naja, process: Processor) {
-        this.naja = naja;
+    constructor(process: Processor) {
         this.process = process;
-        this.naja.addEventListener('init', () => this.initialize());
     }
 
-    private initialize() {
-        this.process(window.document.body, this.naja);
-        this.naja.snippetHandler
-            .addEventListener('afterUpdate', (event: any) => this.process(event.snippet, this.naja));
+    public initialize(naja: Naja): void {
+        this.process(window.document.body, naja);
+        naja.snippetHandler
+            .addEventListener('afterUpdate', (event: AfterUpdateEvent) => this.process(event.detail.snippet, naja));
     }
 }
