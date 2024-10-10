@@ -16,7 +16,7 @@
         "@types/pikaday": "^1.7.9",
         "bootstrap": "^5.3.3",
         "moment": "^2.30.1",
-        "naja": "1.8.3",
+        "naja": "2.6.1",
         "nprogress": "^0.2.0",
         "pikaday": "^1.8.2",
         "postcss-cli": "^11.0.0",
