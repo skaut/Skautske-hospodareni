@@ -255,13 +255,13 @@
         <copy file="app/config/config.sample.local.neon" tofile="app/config/config.local.neon"/>
 
         <!-- Install dependencies -->
-        <exec command="composer install" passthru="true"/>
-        <exec command="yarn install" passthru="true"/>
+        <exec command="composer install" passthru="true" checkreturn="true"/>
+        <exec command="yarn install" passthru="true" checkreturn="true"/>
 
         <!-- Build frontend assets -->
-        <exec command="yarn build" passthru="true"/>
+        <exec command="yarn build" passthru="true" checkreturn="true"/>
 
         <!-- Prepare database schema -->
-        <exec command="bin/console migrations:migrate --no-interaction" passthru="true"/>
+        <exec command="bin/console migrations:migrate --no-interaction" passthru="true" checkreturn="true"/>
     </target>
 </project>
