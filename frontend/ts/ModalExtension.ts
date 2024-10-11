@@ -1,6 +1,5 @@
 import Modal from 'bootstrap/js/dist/modal';
-import type { Extension, Naja } from 'naja/dist/Naja';
-import type { AfterUpdateEvent, BeforeUpdateEvent } from 'naja/dist/core/SnippetHandler';
+import type { AfterUpdateEvent, BeforeUpdateEvent, Extension, Naja } from 'naja';
 
 import { initializeDatePicker } from './datePicker';
 
