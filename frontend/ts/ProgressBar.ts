@@ -1,6 +1,6 @@
 import NProgress from 'nprogress';
 
-import type { Extension, Naja } from 'naja/dist/Naja';
+import type { Extension, Naja } from 'naja';
 
 export class ProgressBar implements Extension {
     public initialize(naja: Naja): void {
