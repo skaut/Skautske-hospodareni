@@ -56,6 +56,12 @@ export class ModalExtension implements Extension {
                 document.body.appendChild(modalElement);
             }
 
+            // Re-bind Naja's UI handlers on the moved modal. Naja binds form submits and
+            // `.ajax` links when it processes the updated snippet, but by then this modal
+            // (and its form) has already been moved out of the snippet into <body>, so it
+            // would otherwise be left unbound and its form would submit as a full page load.
+            this.naja.uiHandler.bindUI(modalElement);
+
             // Remove any stale backdrops before showing
             document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
 
