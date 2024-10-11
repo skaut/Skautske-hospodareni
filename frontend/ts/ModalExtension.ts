@@ -1,7 +1,6 @@
 import BSN from 'bootstrap.native';
 
-import type { Extension, Naja } from 'naja/dist/Naja';
-import type { AfterUpdateEvent } from 'naja/dist/core/SnippetHandler';
+import type { AfterUpdateEvent, Extension, Naja } from 'naja';
 
 export class ModalExtension implements Extension {
     public initialize(naja: Naja): void {
