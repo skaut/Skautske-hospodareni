@@ -1,5 +1,4 @@
-import type { Extension, Naja } from 'naja/dist/Naja';
-import type { InteractionEvent } from 'naja/dist/core/UIHandler';
+import type { Extension, InteractionEvent, Naja } from 'naja';
 
 export class DataGridExtension implements Extension {
     public initialize(naja: Naja): void {
