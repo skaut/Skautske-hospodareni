@@ -1,6 +1,6 @@
 import { Modal } from "bootstrap";
-import type { Extension, Naja } from 'naja/dist/Naja';
-import type { AfterUpdateEvent, BeforeUpdateEvent } from 'naja/dist/core/SnippetHandler';
+
+import type { AfterUpdateEvent, BeforeUpdateEvent, Extension, Naja } from 'naja';
 
 export class ModalExtension implements Extension {
     private modalInstance: Modal | null;

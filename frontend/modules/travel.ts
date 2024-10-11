@@ -1,4 +1,4 @@
-import type { Extension, Naja } from "naja/dist/Naja";
+import type { Extension, Naja } from "naja";
 
 export class TravelModule implements Extension {
     public initialize(naja: Naja): void {
