@@ -19,7 +19,7 @@ final class EditableUnitsQueryHandler
     {
         $role = $query->getRole();
 
-        if (! $role->isLeader() && ! $role->isAccountant() && ! $role->isEventManager()) {
+        if (! ($role->isLeader() || $role->isAccountant() || $role->isEventManager() || $role->isEducationLeader())) {
             return [];
         }
 
