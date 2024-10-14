@@ -17,5 +17,6 @@ abstract class BaseAcceptanceCest
             'secure' => false,
             'httpOnly' => false,
         ], true);
+        $I->executeJS('document.documentElement.style.scrollBehavior = "auto !important";');
     }
 }

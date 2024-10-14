@@ -68,6 +68,7 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->click('Akce');
         $this->I->executeJs('window.scrollTo(0, document.body.scrollHeight);');
         $this->I->waitForText($this->eventName);
+        $this->I->wait(4);
         $this->I->click($this->eventName);
     }
 
@@ -180,6 +181,8 @@ class EventCashbookCest extends BaseAcceptanceCest
 
         $this->I->waitForElement($cancelButton);
         $this->I->disablePopups();
+        $this->I->wait(2);
+        $this->I->executeJs('window.scrollTo(0, document.body.scrollHeight);');
         $this->I->click($cancelButton);
 
         $this->I->waitForElementNotVisible($cancelButton);
