@@ -1,4 +1,4 @@
-import BSN from 'bootstrap.native';
+import { Modal } from "bootstrap";
 
 export class ModalExtension {
     constructor(naja: any) {
@@ -10,10 +10,16 @@ export class ModalExtension {
             return;
         }
 
-        const modal = new BSN.Modal(snippet);
+        const modal = new Modal(snippet);
 
         if (snippet.innerHTML === '') {
             modal.hide();
+            snippet.classList.remove('show');
+            snippet.style.display = '';
+            document.body.classList.remove('modal-open')
+            for (const backdrop of document.getElementsByClassName('modal-backdrop')) {
+                backdrop.remove();
+            }
             return;
         }
 
