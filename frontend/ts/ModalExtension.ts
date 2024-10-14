@@ -14,6 +14,12 @@ export class ModalExtension {
 
         if (snippet.innerHTML === '') {
             modal.hide();
+            snippet.classList.remove('show');
+            snippet.style.display = '';
+            document.body.classList.remove('modal-open')
+            for (const backdrop of document.getElementsByClassName('modal-backdrop')) {
+                backdrop.remove();
+            }
             return;
         }
 
