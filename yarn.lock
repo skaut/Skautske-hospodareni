@@ -1045,15 +1045,15 @@
   resolved "https://registry.yarnpkg.com/@sindresorhus/merge-streams/-/merge-streams-2.3.0.tgz#719df7fb41766bc143369eaa0dd56d8dc87c9958"
   integrity sha512-LtoMMhxAlorcGhmFYI+LhPgbPZCkgP6ra1YL604EeF6U98pLlQ3iWIGMdWSC+vWmPBWBNgmDBAhnAobLROJmwg==
 
-"@thednp/event-listener@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@thednp/event-listener/-/event-listener-1.0.4.tgz#dc92f2318283390089bfad683faa04939a27872f"
-  integrity sha512-EAYzsRiNPdb1yWeisu0WCGUtloHD6P6IpGekJxgBvPR2qNFuMsfQI3XAq+LEJiFKIGKF503JoRfjHcGTO2F+Pw==
+"@thednp/event-listener@^2.0.4":
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/@thednp/event-listener/-/event-listener-2.0.6.tgz#46ac5d64863a479f508f439f34777bd919565675"
+  integrity sha512-6u55ydv4+2VHwHU8EJaJXa40QzZ7XOXVo74MMPnGCSzbl0q3yqHfQh8r0Sw/50rutHxecLVQBM/C9Fr0c+m+ew==
 
-"@thednp/shorty@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@thednp/shorty/-/shorty-1.0.3.tgz#65394e7420d2dd42d219f8da759a68f1a54564f0"
-  integrity sha512-PPaERUGmRpi2eWxYUV5yv/pvalPgPOjwKRmRqGMWGuV8xgkvxgtjKIiFJA2D2ei4l4Ih9mEBktDg6Z9+y+To9Q==
+"@thednp/shorty@^2.0.0":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@thednp/shorty/-/shorty-2.0.4.tgz#eb6aea64c93e00a4d8240c2794eae58985cf6386"
+  integrity sha512-7iMeqgiHOTjAWLcl/rbWHgquHnvfawT2gExdAa1TLjZMGcFjx00FZkg6CHuMjLh9ayBnlgabC4Dsx0DV+h9yqQ==
 
 "@types/estree@^1.0.5":
   version "1.0.5"
@@ -1387,13 +1387,13 @@ binary-extensions@^2.0.0:
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.2.0.tgz#75f502eeaf9ffde42fc98829645be4ea76bd9e2d"
   integrity sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==
 
-bootstrap.native@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/bootstrap.native/-/bootstrap.native-4.2.0.tgz#61428b9a296c5d5e590477c086b1d8fa65c47d6b"
-  integrity sha512-KefLTHN76MI/bwPUTipTYtU2YcQPf1ATUmtx8zzTqbx0BVvopp+dFGws23+rEcdnA6N0lff/k8Qs7xgEScb3Dg==
+bootstrap.native@^5.0.13:
+  version "5.0.13"
+  resolved "https://registry.yarnpkg.com/bootstrap.native/-/bootstrap.native-5.0.13.tgz#38b27698c24cf2f9c012579170202385b3a2ea1a"
+  integrity sha512-SiiTxaK3LjuOjPaXEnDBQNY3w0t28Qdx6I8drortuFg6Ch3q6cWoOxlFHThcGOPewziVarQAA4WPE00GFQmbWQ==
   dependencies:
-    "@thednp/event-listener" "^1.0.4"
-    "@thednp/shorty" "^1.0.3"
+    "@thednp/event-listener" "^2.0.4"
+    "@thednp/shorty" "^2.0.0"
 
 bootstrap@^5.3.3:
   version "5.3.3"
