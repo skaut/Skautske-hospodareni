@@ -12,6 +12,3 @@ updates:
     interval: weekly
     time: "01:00"
   open-pull-requests-limit: 20
-  ignore:
-  - dependency-name: "bootstrap.native"
-    versions: ["5.x"]
