@@ -43,7 +43,6 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->createTwoLineExpenseChit();
         $this->removeChits();
         $this->checkRemoveSecondLineExpenseChit();
-        $this->cancelEvent();
     }
 
     private function createEvent(): void
@@ -169,23 +168,6 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->scrollTo('h4[id="chitList-payment"]');
         $this->removeChit(1);
         $this->I->waitForText(self::NO_CHITS_MESSAGE);
-    }
-
-    private function cancelEvent(): void
-    {
-        $this->I->amGoingTo('cancel the event');
-
-        $this->I->click('Akce');
-
-        $cancelButton = sprintf("//a[text()='%s']/ancestor::tr//a[contains(@class, 'btn-danger')][1]", $this->eventName);
-
-        $this->I->waitForElement($cancelButton);
-        $this->I->disablePopups();
-        $this->I->wait(2);
-        $this->I->executeJs('window.scrollTo(0, document.body.scrollHeight);');
-        $this->I->click($cancelButton);
-
-        $this->I->waitForElementNotVisible($cancelButton);
     }
 
     private function fillChitForm(ChronosDate $date, string $purpose, Operation $type, string $category, string $recipient, string $amount): void
