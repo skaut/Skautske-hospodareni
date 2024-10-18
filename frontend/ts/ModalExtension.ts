@@ -1,4 +1,4 @@
-import BSN from 'bootstrap.native';
+import { Modal } from "bootstrap";
 
 export class ModalExtension {
     constructor(naja: any) {
@@ -6,23 +6,26 @@ export class ModalExtension {
     }
 
     private processSnippet(snippet: HTMLElement): void {
-        if (! snippet.classList.contains('modal')) {
+        if (! snippet.classList.contains('modal-container')) {
             return;
         }
 
-        const modal = new BSN.Modal(snippet);
+        const modalElement = snippet.querySelector('.modal');
 
-        if (snippet.innerHTML === '') {
-            modal.hide();
-            return;
+        if (modalElement) {
+            const bootstrapModalInstance = new Modal(modalElement);
+            const modalShouldBeVisible = modalElement.innerHTML !== '';
+
+            if (modalShouldBeVisible) {
+                this.initializeButtons(modalElement);
+                bootstrapModalInstance.show();
+            } else {
+                bootstrapModalInstance.hide();
+            }
         }
-
-        this.initializeButtons(snippet);
-
-        modal.show();
     }
 
-    private initializeButtons(modal: HTMLElement): void {
+    private initializeButtons(modal: Element): void {
         const forms = modal.querySelectorAll('form');
         const footer = modal.querySelector('.modal-footer');
 
