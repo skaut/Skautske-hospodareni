@@ -52,4 +52,15 @@ abstract class Dialog extends BaseControl
         $this->opened = false;
         $this->redrawControl();
     }
+
+    public function handleOpen(): void
+    {
+        $this->show();
+    }
+
+    public function handleClose(): void
+    {
+        $this->hide();
+    }
+
 }
