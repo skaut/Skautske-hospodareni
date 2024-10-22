@@ -26,11 +26,6 @@ final class PrefixControl extends Dialog
     {
     }
 
-    public function handleOpen(): void
-    {
-        $this->show();
-    }
-
     public function beforeRender(): void
     {
         $this->template->setFile(__DIR__ . '/templates/PrefixControl.latte');

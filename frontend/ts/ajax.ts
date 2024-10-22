@@ -1,4 +1,3 @@
-import BSN from "bootstrap.native";
 import naja from 'naja';
 // @ts-ignore
 import {ProgressBar} from './ProgressBar';
@@ -27,7 +26,6 @@ export default function (): void {
         initializeSendMassForm(snippet, 'chits-');
         initializeEditForm(snippet,'chits-');
         snippet.querySelectorAll<HTMLElement>('.date').forEach(initializeDatePicker);
-        BSN.initCallback(snippet);
     });
 
     naja.registerExtension(DataGridExtension);

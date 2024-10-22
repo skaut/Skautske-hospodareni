@@ -1,17 +1,19 @@
-<div n:snippet n:inner-if="$renderModal" class="modal {if $renderModal}rendered{/if}" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Založit pokladní knihu</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Vyberte rok, pro který si přejete založit pokladní knihu</p>
-                {control form}
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Storno</button>
-            </div>
-        </div>
-    </div>
-</div>
+{layout $layout}
+
+{define control $input, $extraClasses}
+    <input n:name="$input" n:class="$input->hasErrors() ? 'is-invalid', form-control, $extraClasses ?? ''">
+{/define}
+
+{define errors $input}
+    <div class="invalid-feedback d-block" n:foreach="$input->getErrors() as $error">{$error}</div>
+{/define}
+
+
+{block dialog-title}Založit pokladní knihu{/block}
+
+{block dialog-body}
+        <p>Vyberte rok, pro který si přejete založit pokladní knihu</p>
+        {control form}
+
+
+{/block}

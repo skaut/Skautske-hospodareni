@@ -1,13 +1,15 @@
-<div n:snippet n:inner-if="$renderModal" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" n:inner-block="dialog-title"></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" n:inner-block="dialog-body"></div>
-            <div class="modal-footer" n:inner-block="dialog-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Storno</button>
+<div n:snippet class="modal-container">
+    <div n:inner-if="$renderModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" n:inner-block="dialog-title"></h5>
+                    <a n:href="close" class="btn-close ajax" data-bs-dismiss="modal" aria-label="Close"></a> {* Duplicate call to data-bs-modal to speed up modal closing. *}
+                </div>
+                <div class="modal-body" n:inner-block="dialog-body"></div>
+                <div class="modal-footer" n:inner-block="dialog-footer">
+                    <a n:href="close" class="btn btn-light ajax" data-bs-dismiss="modal">Storno</a> {* Duplicate call to data-bs-modal to speed up modal closing. *}
+                </div>
             </div>
         </div>
     </div>
