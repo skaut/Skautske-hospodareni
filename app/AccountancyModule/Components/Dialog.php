@@ -62,5 +62,4 @@ abstract class Dialog extends BaseControl
     {
         $this->hide();
     }
-
 }
