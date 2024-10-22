@@ -23,11 +23,6 @@ final class ExportDialog extends Dialog
     {
     }
 
-    public function handleOpen(): void
-    {
-        $this->show();
-    }
-
     protected function beforeRender(): void
     {
         $this->template->setFile(__DIR__ . '/templates/ExportDialog.latte');
