@@ -1,4 +1,6 @@
-export function initializeAutoSubmit(naja: any, container: Element, selector: string): void {
+import type { Naja } from "naja";
+
+export function initializeAutoSubmit(naja: Naja, container: Element, selector: string): void {
     container.querySelectorAll(selector)
         .forEach(snippet => {
             const form = (snippet.tagName.toLowerCase() === 'form' ? snippet : snippet.closest('form')) as HTMLFormElement | null;

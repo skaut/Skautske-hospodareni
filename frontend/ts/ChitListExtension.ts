@@ -2,14 +2,14 @@ import naja from "naja";
 
 export function initializeSendMassForm(container: Element, checkboxPrefix: string): void {
     container.querySelectorAll<HTMLFormElement>('.formMass').forEach(form => {
-        form.addEventListener('submit', (event:any) => {
+        form.addEventListener('submit', (event: SubmitEvent) => {
             submitMassAddEvent(form, event, checkboxPrefix);
             event.preventDefault();
         });
     });
 }
 
-function submitMassAddEvent(form: HTMLFormElement, event:any, checkboxPrefix: string):void {
+function submitMassAddEvent(form: HTMLFormElement, event: SubmitEvent, checkboxPrefix: string):void {
     const formData = new FormData(form);
     const chitList = form.closest('.chit-list');
     if(chitList === null) {
@@ -28,13 +28,13 @@ function submitMassAddEvent(form: HTMLFormElement, event:any, checkboxPrefix: st
     naja.makeRequest(form.method, form.action, formData);
 }
 
-export function initializeEditForm(container: Element, checkboxPrefix: string): void {
+export function initializeEditForm(container: Element): void {
 
     container.querySelectorAll<HTMLFormElement>('[data-bs-toggle="chitEdit"]').forEach(form => {
-        form.addEventListener('click', (event:any) => {
+        form.addEventListener('click', () => {
             const chitForm = document.getElementById('chitFormHeader');
             if (chitForm) {
-                chitForm.scrollIntoView({  behavior: "smooth"});
+                chitForm.scrollIntoView({ behavior: "smooth" });
             }
         });
     });
