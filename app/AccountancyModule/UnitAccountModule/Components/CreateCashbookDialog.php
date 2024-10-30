@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\UnitAccountModule\Components;
 
-use App\AccountancyModule\Components\BaseControl;
+use App\AccountancyModule\Components\Dialog;
 use App\Forms\BaseForm;
 use Model\Cashbook\Commands\Unit\CreateCashbook;
 use Model\Cashbook\Commands\Unit\CreateUnit;
@@ -22,7 +22,7 @@ use function date;
 use function range;
 use function Safe\array_combine;
 
-final class CreateCashbookDialog extends BaseControl
+final class CreateCashbookDialog extends Dialog
 {
     private const YEARS_RANGE = [-5, 2];
 
@@ -36,13 +36,12 @@ final class CreateCashbookDialog extends BaseControl
     {
     }
 
-    public function render(): void
+    public function beforeRender(): void
     {
         $this->template->setFile(__DIR__ . '/templates/CreateCashbookDialog.latte');
         $this->template->setParameters([
             'renderModal' => $this->opened,
         ]);
-        $this->template->render();
     }
 
     public function open(): void
