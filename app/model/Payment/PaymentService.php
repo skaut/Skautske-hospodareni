@@ -9,6 +9,7 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use Model\Common\Repositories\IParticipantRepository;
 use Model\Common\Repositories\IUserRepository;
+use Model\Common\UserNotFound;
 use model\DTO\Participant\PaymentDetails;
 use Model\DTO\Payment as DTO;
 use model\Event\Exception\CampInvitationNotFound;
@@ -24,6 +25,7 @@ use Model\Payment\GroupNotFound;
 use Model\Payment\MissingVariableSymbol;
 use Model\Payment\Payment;
 use Model\Payment\Payment\State;
+use Model\Payment\PaymentClosed;
 use Model\Payment\PaymentNotFound;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
@@ -80,6 +82,11 @@ class PaymentService
         $this->payments->save($payment);
     }
 
+    /**
+     * @throws PaymentClosed
+     * @throws UserNotFound
+     * @throws PaymentNotFound
+     */
     public function completePayment(int $id): void
     {
         $payment = $this->payments->find($id);
