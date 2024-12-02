@@ -23,7 +23,7 @@
         "latte/latte": " ~2.11",
         "league/flysystem": "^3.21",
         "maennchen/zipstream-php": "^3.1",
-        "mhujer/fio-api-php": "^4.1",
+        "mhujer/fio-api-php": "^5.0",
         "moneyphp/money": "^4.1",
         "monolog/monolog": "^2.4",
         "mpdf/mpdf": "^8.0",
