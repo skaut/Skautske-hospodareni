@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\Components\Cashbook;
 
-use App\AccountancyModule\Components\BaseControl;
+use App\AccountancyModule\Components\Dialog;
 use App\Forms\BaseForm;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\CashbookType;
@@ -29,7 +29,7 @@ use function count;
 use function in_array;
 use function sprintf;
 
-class InvertChitDialog extends BaseControl
+class InvertChitDialog extends Dialog
 {
     /**
      * (string because persistent parameters aren't auto-casted)
@@ -46,14 +46,9 @@ class InvertChitDialog extends BaseControl
     {
     }
 
-    public function handleOpen(int $chitId): void
+    public function handleOpen(int|null $chitId = null): void
     {
         $this->chitId = $chitId;
-        $this->redrawControl();
-    }
-
-    public function render(): void
-    {
         if ($this->chitId !== null && ! $this->isChitValid()) {
             throw new BadRequestException(
                 sprintf('Chit %d doesn\'t exist or can\'t be inverted', $this->chitId),
@@ -61,15 +56,16 @@ class InvertChitDialog extends BaseControl
             );
         }
 
-        $template = $this->template;
+        $this->show();
+    }
 
-        $template->setParameters([
+    public function beforeRender(): void
+    {
+        $this->template->setFile(__DIR__ . '/templates/InvertChitDialog.latte');
+        $this->template->setParameters([
             'renderModal' => $this->chitId !== null,
             'noCashbooks' => ! $this->isChitValid() || count($this->getCashbooks()) === 0,
         ]);
-
-        $template->setFile(__DIR__ . '/templates/InvertChitDialog.latte');
-        $template->render();
     }
 
     /** @return CashbookType[] */
@@ -177,6 +173,6 @@ class InvertChitDialog extends BaseControl
     private function close(): void
     {
         $this->chitId = null;
-        $this->redrawControl();
+        $this->hide();
     }
 }
