@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\UnitAccountModule\Components;
 
-use App\AccountancyModule\Components\BaseControl;
+use App\AccountancyModule\Components\Dialog;
 use App\Forms\BaseForm;
 use Model\Cashbook\Commands\Unit\ActivateCashbook;
 use Model\Cashbook\ReadModel\Queries\ActiveUnitCashbookQuery;
@@ -18,7 +18,7 @@ use Nette\Utils\ArrayHash;
 use function assert;
 use function sprintf;
 
-final class ActivateCashbookDialog extends BaseControl
+final class ActivateCashbookDialog extends Dialog
 {
      /** @var bool @persistent */
     public bool $opened = false;
@@ -30,13 +30,12 @@ final class ActivateCashbookDialog extends BaseControl
     {
     }
 
-    public function render(): void
+    public function beforeRender(): void
     {
         $this->template->setFile(__DIR__ . '/templates/ActivateCashbookDialog.latte');
         $this->template->setParameters([
             'renderModal' => $this->opened,
         ]);
-        $this->template->render();
     }
 
     public function open(): void
