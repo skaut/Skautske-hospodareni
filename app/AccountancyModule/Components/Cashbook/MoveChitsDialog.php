@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\Components\Cashbook;
 
-use App\AccountancyModule\Components\BaseControl;
+use App\AccountancyModule\Components\Dialog;
 use App\Forms\BaseForm;
 use Model\Auth\IAuthorizator;
 use Model\Auth\Resources\Camp as CampResource;
@@ -31,7 +31,7 @@ use function explode;
 use function implode;
 use function in_array;
 
-class MoveChitsDialog extends BaseControl
+class MoveChitsDialog extends Dialog
 {
     /**
      * Comma-separated chit IDS (because persistent parameters don't support arrays)
@@ -59,12 +59,11 @@ class MoveChitsDialog extends BaseControl
         $this->redrawControl();
     }
 
-    public function render(): void
+    public function beforeRender(): void
     {
         $this->template->setParameters(['renderModal' => $this->opened]);
 
         $this->template->setFile(__DIR__ . '/templates/MoveChitsDialog.latte');
-        $this->template->render();
     }
 
     protected function createComponentForm(): BaseForm
