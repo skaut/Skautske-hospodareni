@@ -109,6 +109,7 @@
                         n:href="massAdd $group->id" class="dropdown-item">… za člena</a>
 
                 <a n:href="paymentDialog:open!" class="dropdown-item ajax">… obecnou</a>
+                <a n:href="importDialog:open!" class="dropdown-item ajax">… import</a>
             </div>
         </div>
     </div>
@@ -118,6 +119,7 @@
     {control removeGroupDialog}
     {if $group->state === 'open'}
         {control paymentDialog}
+        {control importDialog}
     {/if}
 
     {control paymentNoteDialog}
