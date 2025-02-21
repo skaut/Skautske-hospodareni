@@ -85,18 +85,17 @@ final class ImportDialog extends Dialog
 
         try {
             $csv = $csvParser->parse($this->groupId, $upload->getContents());
-        } catch (ValidationException | InvalidArgumentException $e) {
-            $form->addError($e->getMessage());
-        }
-
-        if (! $form->hasErrors()) {
             foreach ($csv as $value) {
                 $this->commandBus->handle($value);
             }
 
             $this->flashMessage('Platby byly importovány', 'success');
             $this->onSuccess();
-        } else {
+        } catch (ValidationException | InvalidArgumentException $e) {
+            $form->addError($e->getMessage());
+        }
+
+        if ($form->hasErrors()) {
             foreach ($form->getErrors() as $error) {
                 $this->flashMessage($error, 'danger');
             }
