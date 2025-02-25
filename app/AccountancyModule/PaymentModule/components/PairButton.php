@@ -9,6 +9,7 @@ use App\Forms\BaseForm;
 use Model\BankService;
 use Model\BankTimeLimit;
 use Model\BankTimeout;
+use Model\BankWrongTokenAccount;
 use Model\DTO\Payment\Group;
 use Model\DTO\Payment\PairingResult;
 use Model\Google\InvalidOAuth;
@@ -123,10 +124,18 @@ class PairButton extends BaseControl
         } catch (BankTimeLimit) {
             $this->flashMessage(self::TIME_LIMIT_MESSAGE, 'danger');
             bdump(self::TIME_LIMIT_MESSAGE);
+        } catch (BankWrongTokenAccount $e) {
+            $this->flashMessage($this->wrongTokenAccountMessage($e), 'danger');
+            bdump($this->wrongTokenAccountMessage($e));
         } catch (InvalidOAuth $exc) {
             $this->flashMessage($exc->getExplainedMessage(), 'danger');
         }
 
         $this->redirect('this');
+    }
+
+    public static function wrongTokenAccountMessage(BankWrongTokenAccount $exception): string
+    {
+        return 'Zadaný API token patří ke špatnému bankovnímu účtu. Zadaný bankovní účet je ' . $exception->getIntendedAccount() . ', token patří k účtu ' . $exception->getTokenAccount() . '.';
     }
 }
