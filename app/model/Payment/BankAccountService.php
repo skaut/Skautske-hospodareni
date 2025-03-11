@@ -10,6 +10,7 @@ use DateTimeImmutable;
 use Model\Bank\Fio\Transaction;
 use Model\BankTimeLimit;
 use Model\BankTimeout;
+use Model\BankWrongTokenAccount;
 use Model\Common\UnitId;
 use Model\DTO\Payment\BankAccount as BankAccountDTO;
 use Model\DTO\Payment\BankAccountFactory;
@@ -147,6 +148,7 @@ class BankAccountService
      * @throws TokenNotSet
      * @throws BankTimeout
      * @throws BankTimeLimit
+     * @throws BankWrongTokenAccount
      */
     public function getTransactions(int $bankAccountId, int $daysBack): array
     {

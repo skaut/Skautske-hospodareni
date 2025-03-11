@@ -8,6 +8,7 @@ use Cake\Chronos\ChronosDate;
 use Model\Bank\Fio\Transaction;
 use Model\BankTimeLimit;
 use Model\BankTimeout;
+use Model\BankWrongTokenAccount;
 use Model\Payment\BankAccount;
 use Model\Payment\TokenNotSet;
 
@@ -19,6 +20,7 @@ interface IFioClient
      * @throws TokenNotSet
      * @throws BankTimeout
      * @throws BankTimeLimit
+     * @throws BankWrongTokenAccount
      */
     public function getTransactions(ChronosDate $since, ChronosDate $until, BankAccount $account): array;
 }

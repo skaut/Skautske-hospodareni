@@ -49,6 +49,7 @@ class BankService
      *
      * @throws BankTimeLimit
      * @throws BankTimeout
+     * @throws BankWrongTokenAccount
      * @throws InvalidOAuth
      */
     public function pairAllGroups(array $groupIds, int|null $daysBack = null): array
