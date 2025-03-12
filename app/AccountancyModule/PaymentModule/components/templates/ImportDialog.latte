@@ -11,8 +11,28 @@
 {block dialog-title}Importovat platby z CSV souboru{/block}
 
 {block dialog-body}
-    <div>Příklad souboru k importu <a href="{plink '//:Default:default'}examples/import.csv">import.csv</a></div>
-
+    <div class="alert alert-info"><i class="fas fa-info-circle"></i> CSV Import <br/>
+        <ul>
+            <li>soubor musí být ve <b>formátu CSV</b> (např. excel s příponou xlsx se nevloží)</li>
+            <li><b>oddělovač</b> buněk je <b>čárka</b></li>
+            <li>soubor <b>nesmí obsahovat hlavičku/názvy sloupců</b> (data, které chceš vkládat jsou od prvního řádku, prvního sloupce)</li>
+            <li>pořadí sloupců v souboru musí být následující:</li>
+            <ul>
+                <li><b>název</b> (většinou jméno/přezdívka platícího, vkládáš text)</li>
+                <li><b>částka</b> (vkládáš celé číslo. Import neumožňuje vkládat haléřové položky)</li>
+                <li><b>datum splatnosti</b> (vkládáš datum, ve formátu den.měsíc.rok)</li>
+                <li><b>e-mail</b> (vkládáš text, může být i více e-mailů - pak je potřeba je mít ve formátu "email1@example.com,email2@example.com" - text v uvozovkách a oddělené čárkou, bez mezer</li>
+                <li><b>variabilní symbol</b> (vkládáš číslo, max 10 znaků)</li>
+                <li><b>konstantní symbol</b> (vkládáš číslo, v rozsahu 100 - 999)</li>
+                <li><b>poznámka</b> k platbě (vkládáš text)</li>
+            </ul>
+            <li><b>povinný sloupec</b> je název,částka,datum splatnosti</li>
+            <ul>
+                <li>pokud ostatní sloupce nebudou vyplněny, budou vloženy prázdné hodnoty, které budeš moct doplnit přes editaci položky. Oddělovače na konci řádků nejsou povinné.</li>
+            </ul>
+            <br />
+            <div><b>Příklad souboru k importu <a href="{plink '//:Default:default'}examples/import.csv">import.csv</a></b></div>
+    </div>
     <form n:name="form" class="inline-errors">
         <div class="mb-3">
             <label n:name="file"/>
@@ -23,6 +43,11 @@
 
         <input n:name="send" class="btn btn-primary btn-lg w-100 mt-2 ajax">
     </form>
+    <style>
+        .modal {
+            --bs-modal-width: 900px;
+        }
+    </style>
 {/block}
 
 {block dialog-footer}{/block}
