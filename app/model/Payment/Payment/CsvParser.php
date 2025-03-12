@@ -17,12 +17,14 @@ use function array_combine;
 use function array_filter;
 use function array_map;
 use function array_pad;
+use function array_values;
 use function count;
 use function explode;
 use function floatval;
 use function intval;
 use function is_string;
 use function str_getcsv;
+use function trim;
 
 use const PHP_EOL;
 
@@ -73,9 +75,11 @@ class CsvParser
         $schema = Expect::structure([
             'name' => Expect::string()->max(255),
             'emails' => Expect::arrayOf('string')
-                ->before(fn (mixed $value) => is_string($value) ? array_map('trim', explode(',', $value)) : [])
+                ->before(fn (mixed $value) => is_string($value) && trim($value) !== ''
+                    ? array_map('trim', explode(',', $value))
+                    : [])
                 ->assert(function ($emails) {
-                    foreach ($emails as $key => $email) {
+                    foreach ($emails as $email) {
                         if ($email === '') {
                             return true;
                         }
@@ -88,13 +92,10 @@ class CsvParser
                     return true;
                 }, 'Emailová adresa je neplatná')
                 ->nullable()
-                ->transform(function ($emails) {
-                    return array_map(function ($email) {
-                        return $email !== ''
-                            ? new EmailAddress($email)
-                            : null;
-                    }, $emails);
-                }),
+                ->transform(fn ($emails) => array_values(array_filter(array_map(
+                    fn ($email) => $email !== '' ? new EmailAddress($email) : null,
+                    $emails,
+                )))),
             'amount' => Expect::float()
                 ->before(fn (mixed $value) => $value !== null ? floatval($value) : $value),
             'date' => Expect::type(ChronosDate::class)
@@ -112,13 +113,13 @@ class CsvParser
                     return $value;
                 }),
             'variableSymbol' => Expect::int()
-                ->before(fn (mixed $value) => $value !== null ? intval($value) : $value)
+                ->before(fn (mixed $value) => empty($value) ? null : intval($value))
+                ->nullable()
                 ->min(1)
                 ->max(9999999999)
-                ->nullable()
                 ->transform(fn ($value) => $value !== null ? new VariableSymbol((string) $value) : null),
             'constantSymbol' => Expect::int()
-                ->before(fn (mixed $value) => $value !== null ? intval($value) : $value)
+                ->before(fn (mixed $value) => empty($value) ? null : intval($value))
                 ->min(100)
                 ->max(999)
                 ->nullable(),
