@@ -91,7 +91,7 @@ jobs:
 
     tests-acceptance:
         name: "Run acceptance tests"
-        runs-on: ubuntu-22.04
+        runs-on: self-hosted
         needs: workdir
         steps:
             - name: Download workdir
