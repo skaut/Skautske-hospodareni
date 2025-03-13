@@ -31,9 +31,6 @@ netteFormsInstance.showFormErrors = (form: HTMLFormElement, messages: { element:
 
         const formGroup = message.element.closest('.mb-3');
 
-        console.log(message.element, formGroup);
-
-
         if (formGroup === null) {
             return;
         }
