@@ -269,6 +269,7 @@ jobs:
                   ROOT_DIR: /home/vu011961
                   SSH_USERNAME: vu011961
                   SSH_KEY_FILE: /root/.ssh/id_key
+                  CONFIG_APPLICATION_ID: ${{ secrets.CONFIG_BETA_APPLICATION_ID }}
                   CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_BETA_DATABASE_PASSWORD }}
                   CONFIG_GOOGLE_CREDENTIALS: ${{ secrets.CONFIG_BETA_GOOGLE_CREDENTIALS }}
 
