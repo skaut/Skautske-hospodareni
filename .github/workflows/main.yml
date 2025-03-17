@@ -225,7 +225,7 @@ jobs:
 
     deploy-beta:
         name: "Deploy to beta-h.skauting.cz"
-        environment: beta
+        if: github.ref == 'refs/heads/beta'
         needs: [checks-passed]
         runs-on: ubuntu-22.04
         container:
