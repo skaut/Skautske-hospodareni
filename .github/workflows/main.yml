@@ -232,6 +232,9 @@ jobs:
         container:
             image: skaut/lebeda:8.1-ci
         steps:
+            - name: Debug branch
+              run: |
+                echo "Current ref: $GITHUB_REF"
             - name: Download workdir
               uses: actions/download-artifact@v4
               with:
@@ -277,7 +280,7 @@ jobs:
 
     deploy-test:
       name: "Deploy to test-h.skauting.cz"
-      if: github.ref == 'beta'
+      if: github.ref == 'refs/heads/master'
       needs: [checks-passed]
       runs-on: ubuntu-22.04
       container:
