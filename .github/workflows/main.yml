@@ -4,6 +4,7 @@ on:
     push:
         branches:
             - master
+            - beta
     pull_request:
 
 jobs:
@@ -276,7 +277,7 @@ jobs:
 
     deploy-test:
       name: "Deploy to test-h.skauting.cz"
-      if: github.ref == 'refs/heads/master'
+      if: github.ref == 'beta'
       needs: [checks-passed]
       runs-on: ubuntu-22.04
       container:
