@@ -42,6 +42,7 @@ class CreateCashbookCest extends BaseAcceptanceCest
         $I->selectOption('Rok', $year);
         $I->click('Založit', '.modal-footer');
 
+        $I->waitForText('Pokladní kniha byla vytvořena');
         $I->see('Pokladní kniha byla vytvořena');
         $I->see((string) $year);
     }
