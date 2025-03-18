@@ -3,6 +3,7 @@ import 'moment/locale/cs';
 import {dom} from './icons';
 import {DarkModeToggle} from './DarkModeToggle';
 import {LogoutTimer} from './LogoutTimer';
+import './ts/checkAll';
 import initializeAjax from './ts/ajax';
 import './app.scss';
 
