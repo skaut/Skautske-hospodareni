@@ -9,6 +9,7 @@ use GuzzleHttp\Exception\ServerException;
 use Model\Payment\BankError;
 use Model\Payment\Commands\Repayment\CreateRepayments;
 use Model\Utils\MoneyFactory;
+use Throwable;
 
 final class CreateRepaymentsHandler
 {
@@ -39,11 +40,13 @@ final class CreateRepaymentsHandler
                             'contents' => 'cs',
                         ],
                     ],
-                    'timeout' => 60,
+                    'timeout' => 600,
                 ],
             );
         } catch (ServerException $e) {
             throw BankError::fromServerException($e);
+        } catch (Throwable $e) {
+            throw $e;
         }
     }
 
