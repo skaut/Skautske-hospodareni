@@ -23,6 +23,7 @@ abstract class Dialog extends BaseControl
 
     protected function beforeRender(): void
     {
+        $this->template->customClasses = '';
     }
 
     final public function render(): void
