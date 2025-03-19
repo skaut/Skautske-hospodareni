@@ -4,12 +4,19 @@ declare(strict_types=1);
 
 namespace Model\Payment\Handlers\Repayment;
 
+use Exception;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\ServerException;
 use Model\Payment\BankError;
 use Model\Payment\Commands\Repayment\CreateRepayments;
 use Model\Utils\MoneyFactory;
-use Throwable;
+use Psr\Http\Message\ResponseInterface;
+use SimpleXMLElement;
+
+use function implode;
+use function sprintf;
 
 final class CreateRepaymentsHandler
 {
@@ -17,10 +24,14 @@ final class CreateRepaymentsHandler
     {
     }
 
+    /**
+     * @throws GuzzleException
+     * @throws BankError
+     */
     public function __invoke(CreateRepayments $command): void
     {
         try {
-            $this->http->request(
+            $response = $this->http->request(
                 'POST',
                 'https://fioapi.fio.cz/v1/rest/import/',
                 [
@@ -40,14 +51,22 @@ final class CreateRepaymentsHandler
                             'contents' => 'cs',
                         ],
                     ],
-                    'timeout' => 600,
+                    'timeout' => 60,
                 ],
             );
         } catch (ServerException $e) {
             throw BankError::fromServerException($e);
-        } catch (Throwable $e) {
-            throw $e;
+        } catch (ClientException $e) {
+            if ($e->getCode() === 409) {
+                throw BankError::fromMessage('Konflikt vstupních dat. Požadované data jsou již pravděpodobně v bance odeslané.', $e->getCode());
+            }
         }
+
+        if (! isset($response)) {
+            throw new BankError('API neodeslalo požadovanou odpověď');
+        }
+
+        $this->parseResponse($response, $command);
     }
 
     private function buildRequestBody(CreateRepayments $command): string
@@ -71,5 +90,50 @@ final class CreateRepaymentsHandler
         $ret .= '</Orders></Import>';
 
         return $ret;
+    }
+
+    /**
+     * @throws BankError
+     * @throws Exception
+     */
+    private function parseResponse(ResponseInterface $response, CreateRepayments $command): void
+    {
+        $xmlResponse = $response->getBody()->getContents();
+
+        $xml = new SimpleXMLElement($xmlResponse);
+
+        $errorCode = (int) $xml->result->errorCode;
+        if ($errorCode === 0) {
+            return;
+        }
+
+        $repaymentMessages = [];
+        $i                 = 1;
+        foreach ($command->getRepayments() as $repayment) {
+            $repaymentMessages[$i] = $repayment->getMessageForRecipient();
+            $i++;
+        }
+
+        $errorMessages = [];
+
+        foreach ($xml->ordersDetails->detail as $detail) {
+            $detailId = (string) $detail['id'];
+
+            foreach ($detail->messages->message as $message) {
+                $messageStatus    = (string) $message['status'];
+                $messageText      = (string) $message;
+                $messageErrorCode = (int) $message['errorCode'];
+
+                if ($messageStatus !== 'error' && $messageErrorCode === 0) {
+                    continue;
+                }
+
+                $errorMessages[] = sprintf('Transakce "%s" obsahuje následující chybu : "%s"', $repaymentMessages[$detailId], $messageText);
+            }
+        }
+
+        if (! empty($errorMessages)) {
+            throw  BankError::fromMessage('API Error: ' . implode(' | ', $errorMessages), $errorCode);
+        }
     }
 }
