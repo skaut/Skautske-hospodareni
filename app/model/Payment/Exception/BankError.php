@@ -17,6 +17,11 @@ final class BankError extends Exception
         return new self(self::extractMessage($exception), $exception->getCode(), $exception);
     }
 
+    public static function fromMessage(string $message, int $code): self
+    {
+        return new self($message, $code);
+    }
+
     private static function extractMessage(ServerException $exception): string
     {
         $body = $exception->getResponse()->getBody()->getContents();
