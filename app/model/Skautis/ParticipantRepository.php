@@ -91,7 +91,7 @@ final class ParticipantRepository implements IParticipantRepository
                 $invitation                         = $invitations[$person->ID_EventCampInvitation];
                 $paymentDetails[$person->ID_Person] = new PaymentDetails(
                     $person->ID_Person,
-                    $person->VariableSymbol,
+                    $person->VariableSymbol ?? '',
                     (float) $invitation->Price,
                     $invitation->PaymentNote,
                     $invitation->SpecificSymbol,
