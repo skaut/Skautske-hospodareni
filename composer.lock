@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "36ace89ebdb71f8275467472dc02a55b",
+    "content-hash": "8b05a75157285681db08dd196f45a339",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -2806,16 +2806,16 @@
         },
         {
             "name": "heureka/bank-account-validator",
-            "version": "v1.1.1",
+            "version": "v1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/heureka/bank-account-validator.git",
-                "reference": "1622a07c8d0fbf90cb15c0a07193ebcdb4284e8a"
+                "reference": "95a88c212aadbf25cffbd5018d4c6cd8f62d8776"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/heureka/bank-account-validator/zipball/1622a07c8d0fbf90cb15c0a07193ebcdb4284e8a",
-                "reference": "1622a07c8d0fbf90cb15c0a07193ebcdb4284e8a",
+                "url": "https://api.github.com/repos/heureka/bank-account-validator/zipball/95a88c212aadbf25cffbd5018d4c6cd8f62d8776",
+                "reference": "95a88c212aadbf25cffbd5018d4c6cd8f62d8776",
                 "shasum": ""
             },
             "require": {
@@ -2843,7 +2843,11 @@
                 }
             ],
             "description": "Simple validator for bank account number - verify only checksum",
-            "time": "2016-12-05T08:00:41+00:00"
+            "support": {
+                "issues": "https://github.com/heureka/bank-account-validator/issues",
+                "source": "https://github.com/heureka/bank-account-validator/tree/v1.2.1"
+            },
+            "time": "2024-10-29T09:29:13+00:00"
         },
         {
             "name": "http-interop/http-factory-guzzle",
