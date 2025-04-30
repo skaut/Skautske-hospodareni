@@ -13,6 +13,7 @@ use Model\Payment\Payment\CsvParser;
 use Nette\Application\UI\Form;
 use Nette\Http\FileUpload;
 use Nette\Schema\ValidationException;
+use ValueError;
 
 use function array_keys;
 use function array_values;
@@ -94,6 +95,8 @@ final class ImportDialog extends Dialog
             $this->onSuccess();
         } catch (ValidationException | InvalidArgumentException $e) {
             $form->addError($e->getMessage());
+        } catch (ValueError) {
+            $form->addError('Importovaný soubor obsahuje chybu. Data v souboru neodpovají vzoru');
         }
 
         if ($form->hasErrors()) {
