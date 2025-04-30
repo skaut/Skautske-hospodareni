@@ -61,6 +61,8 @@ class MoveChitsDialog extends Dialog
 
     public function beforeRender(): void
     {
+        parent::beforeRender();
+
         $this->template->setParameters(['renderModal' => $this->opened]);
 
         $this->template->setFile(__DIR__ . '/templates/MoveChitsDialog.latte');
