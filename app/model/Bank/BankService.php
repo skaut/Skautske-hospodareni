@@ -14,6 +14,7 @@ use Model\Payment\Fio\IFioClient;
 use Model\Payment\Group;
 use Model\Payment\Payment;
 use Model\Payment\Payment\Transaction;
+use Model\Payment\PaymentClosed;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Model\Payment\Repositories\IPaymentRepository;
@@ -142,6 +143,8 @@ class BankService
      * @param Payment[]         $payments
      *
      * @return Payment[]
+     *
+     * @throws PaymentClosed
      */
     private function markPaymentsAsComplete(array $transactions, array $payments): array
     {
