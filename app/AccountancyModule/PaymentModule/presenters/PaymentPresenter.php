@@ -7,6 +7,7 @@ namespace App\AccountancyModule\PaymentModule;
 use App\AccountancyModule\ExcelResponse;
 use App\AccountancyModule\PaymentModule\Components\GroupProgress;
 use App\AccountancyModule\PaymentModule\Components\GroupUnitControl;
+use App\AccountancyModule\PaymentModule\Components\ImportDialog;
 use App\AccountancyModule\PaymentModule\Components\MassAddForm;
 use App\AccountancyModule\PaymentModule\Components\PairButton;
 use App\AccountancyModule\PaymentModule\Components\PaymentDialog;
@@ -14,6 +15,7 @@ use App\AccountancyModule\PaymentModule\Components\PaymentList;
 use App\AccountancyModule\PaymentModule\Components\PaymentNoteDialog;
 use App\AccountancyModule\PaymentModule\Components\RemoveGroupDialog;
 use App\AccountancyModule\PaymentModule\Factories\IGroupUnitControlFactory;
+use App\AccountancyModule\PaymentModule\Factories\IImportDialogFactory;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
 use App\AccountancyModule\PaymentModule\Factories\IPairButtonFactory;
 use App\AccountancyModule\PaymentModule\Factories\IPaymentDialogFactory;
@@ -75,6 +77,7 @@ class PaymentPresenter extends BasePresenter
         private IGroupUnitControlFactory $unitControlFactory,
         private IRemoveGroupDialogFactory $removeGroupDialogFactory,
         private IPaymentDialogFactory $paymentDialogFactory,
+        private IImportDialogFactory $importDialogFactory,
         private IPaymentNoteDialogFactory $paymentNoteDialogFactory,
         private IPaymentListFactory $paymentListFactory,
     ) {
@@ -342,6 +345,17 @@ class PaymentPresenter extends BasePresenter
 
         $dialog = $this->paymentDialogFactory->create($this->id);
 
+        $dialog->onSuccess[] = function (): void {
+            $this->redrawControl('grid');
+        };
+
+        return $dialog;
+    }
+
+    protected function createComponentImportDialog(): ImportDialog
+    {
+        $this->assertCanEditGroup();
+        $dialog              = $this->importDialogFactory->create($this->id);
         $dialog->onSuccess[] = function (): void {
             $this->redrawControl('grid');
         };

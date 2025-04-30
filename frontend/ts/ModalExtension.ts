@@ -26,6 +26,13 @@ export class ModalExtension {
             return;
         }
 
+        // backdrop element is already displayed remove before processing modal
+        const backdropElement = document.querySelector<HTMLDivElement>('.modal-backdrop.show');
+
+        if (backdropElement) {
+            backdropElement.remove();
+        }
+
         const modalElement = snippet.querySelector('.modal');
 
         if (modalElement) {
@@ -39,7 +46,6 @@ export class ModalExtension {
                 if (this.modalInstance) {
                     this.modalInstance.hide();
                 } else {
-                    // This should never happen
                     console.warn('Modal instance not set! Can\'t close modal');
                 }
             }

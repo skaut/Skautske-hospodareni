@@ -25,6 +25,8 @@ final class ExportDialog extends Dialog
 
     protected function beforeRender(): void
     {
+        parent::beforeRender();
+
         $this->template->setFile(__DIR__ . '/templates/ExportDialog.latte');
     }
 

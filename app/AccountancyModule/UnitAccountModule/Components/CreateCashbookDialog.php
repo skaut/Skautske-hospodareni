@@ -38,6 +38,8 @@ final class CreateCashbookDialog extends Dialog
 
     public function beforeRender(): void
     {
+        parent::beforeRender();
+
         $this->template->setFile(__DIR__ . '/templates/CreateCashbookDialog.latte');
         $this->template->setParameters([
             'renderModal' => $this->opened,

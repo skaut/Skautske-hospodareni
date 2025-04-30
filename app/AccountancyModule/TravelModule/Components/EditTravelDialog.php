@@ -34,6 +34,8 @@ final class EditTravelDialog extends Dialog
 
     protected function beforeRender(): void
     {
+        parent::beforeRender();
+
         $this->template->setFile(__DIR__ . '/templates/EditTravelDialog.latte');
     }
 
