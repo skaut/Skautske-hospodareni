@@ -46,6 +46,8 @@ final class PaymentDialog extends Dialog
 
     protected function beforeRender(): void
     {
+        parent::beforeRender();
+
         $this->template->setFile(__DIR__ . '/templates/PaymentDialog.latte');
         $this->template->setParameters([
             'payment' => $this->payment(),

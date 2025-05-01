@@ -11,6 +11,7 @@ use DateTimeImmutable;
 use Model\Auth\Resources\Unit as UnitResource;
 use Model\BankTimeLimit;
 use Model\BankTimeout;
+use Model\BankWrongTokenAccount;
 use Model\Common\UnitId;
 use Model\DTO\Payment\BankAccount;
 use Model\DTO\Payment\Payment;
@@ -191,6 +192,8 @@ class BankAccountsPresenter extends BasePresenter
             $templateParameters['warningMessage'] = PairButton::TIME_LIMIT_MESSAGE;
         } catch (BankTimeout) {
             $templateParameters['errorMessage'] = PairButton::TIMEOUT_MESSAGE;
+        } catch (BankWrongTokenAccount $e) {
+            $templateParameters['errorMessage'] = PairButton::wrongTokenAccountMessage($e);
         }
 
         $this->template->setParameters($templateParameters);

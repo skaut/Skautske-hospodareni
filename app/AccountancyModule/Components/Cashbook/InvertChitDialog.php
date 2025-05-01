@@ -61,6 +61,8 @@ class InvertChitDialog extends Dialog
 
     public function beforeRender(): void
     {
+        parent::beforeRender();
+
         $this->template->setFile(__DIR__ . '/templates/InvertChitDialog.latte');
         $this->template->setParameters([
             'renderModal' => $this->chitId !== null,

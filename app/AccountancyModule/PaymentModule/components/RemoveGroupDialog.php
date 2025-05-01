@@ -30,6 +30,8 @@ final class RemoveGroupDialog extends Dialog
 
     protected function beforeRender(): void
     {
+        parent::beforeRender();
+
         $group = $this->paymentService->getGroup($this->groupId);
 
         if ($group === null) {

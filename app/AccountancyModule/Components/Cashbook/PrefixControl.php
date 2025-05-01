@@ -28,6 +28,8 @@ final class PrefixControl extends Dialog
 
     public function beforeRender(): void
     {
+        parent::beforeRender();
+
         $this->template->setFile(__DIR__ . '/templates/PrefixControl.latte');
         $this->template->setParameters([
             'isEditable' => $this->isEditable,

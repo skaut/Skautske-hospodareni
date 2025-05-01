@@ -11,6 +11,7 @@ use FioApi\Transaction as ApiTransaction;
 use GuzzleHttp\Exception\TransferException;
 use Model\BankTimeLimit;
 use Model\BankTimeout;
+use Model\BankWrongTokenAccount;
 use Model\Payment\BankAccount;
 use Model\Payment\Fio\IFioClient;
 use Model\Payment\TokenNotSet;
@@ -60,13 +61,24 @@ class FioClient implements IFioClient
      *
      * @throws BankTimeLimit
      * @throws BankTimeout
+     * @throws BankWrongTokenAccount
      */
     private function loadTransactionsFromApi(ChronosDate $since, ChronosDate $until, BankAccount $account): array
     {
         $api = $this->downloaderFactory->create($account->getToken());
 
         try {
-            return $api->downloadFromTo($since->toNative(), $until->toNative())->getTransactions();
+            $list = $api->downloadFromTo($since->toNative(), $until->toNative());
+
+            $intendedAccount = $account->getNumber()->getNumber() . '/' . $account->getNumber()->getBankCode();
+            $tokenAccount    = $list->getAccount()->getAccountNumber() . '/' . $list->getAccount()->getBankCode();
+            if ($intendedAccount !== $tokenAccount) {
+                $this->logger->warning('API token for wrong account. Bank account is ' . $intendedAccount . ', token is for account ' . $tokenAccount . '.');
+
+                throw new BankWrongTokenAccount($intendedAccount, $tokenAccount);
+            }
+
+            return $list->getTransactions();
         } catch (TooGreedyException $e) {
             $this->logger->warning('Bank account #' . $account->getId() . ' hit API limit');
 

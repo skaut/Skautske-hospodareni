@@ -32,6 +32,8 @@ final class ActivateCashbookDialog extends Dialog
 
     public function beforeRender(): void
     {
+        parent::beforeRender();
+
         $this->template->setFile(__DIR__ . '/templates/ActivateCashbookDialog.latte');
         $this->template->setParameters([
             'renderModal' => $this->opened,

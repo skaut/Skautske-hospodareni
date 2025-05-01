@@ -19,6 +19,7 @@ use Nette\Http\FileUpload;
 use Nette\Http\IResponse;
 
 use function array_keys;
+use function array_values;
 use function assert;
 use function implode;
 
@@ -64,8 +65,9 @@ final class RoadworthyControl extends BaseControl
             ->addRule(
                 BaseForm::MIME_TYPE,
                 'Neplatný formát skenu, povolené formáty jsou ' . implode(', ', array_keys(IScanStorage::ALLOWED_MIME_TYPES)) . '.',
-                IScanStorage::ALLOWED_MIME_TYPES,
-            )->addRule(BaseForm::MAX_FILE_SIZE, 'Maximální povolená velikost souboru je 15 MB', BaseControl::MAX_FILE_SIZE_VALUE);
+                array_values(IScanStorage::ALLOWED_MIME_TYPES),
+            )
+            ->addRule(BaseForm::MAX_FILE_SIZE, 'Maximální povolená velikost souboru je 15 MB', BaseControl::MAX_FILE_SIZE_VALUE);
 
         $form->addSubmit('submit', 'Ok');
 
