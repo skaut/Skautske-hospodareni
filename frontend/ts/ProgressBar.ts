@@ -1,8 +1,14 @@
-import * as NProgress from 'nprogress';
+import NProgress from 'nprogress';
 
-export class ProgressBar {
-    constructor(naja: any) {
-        naja.addEventListener('start', () => NProgress.start());
-        naja.addEventListener('complete', () => NProgress.done());
+import type { Extension, Naja } from 'naja';
+
+export class ProgressBar implements Extension {
+    public initialize(naja: Naja): void {
+        naja.addEventListener('start', () => {
+            NProgress.start();
+        });
+        naja.addEventListener('complete', () => {
+            NProgress.done();
+        });
     }
 }
