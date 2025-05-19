@@ -50,7 +50,7 @@
         "skaut/psr6-caching": "^0.3.0@dev",
         "skautis/nette": "^2.2",
         "skautis/skautis": "~2.3",
-        "thecodingmachine/safe": "^2.4",
+        "thecodingmachine/safe": "^3.3",
         "tracy/tracy": "~2.9",
         "ublaboo/datagrid": "^v6.9",
         "vlucas/phpdotenv": "^5.5",
