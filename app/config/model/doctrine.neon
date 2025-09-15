@@ -25,6 +25,10 @@ dbal:
         serverVersion: 8.0
         driver: pdo_mysql
 
+        typesMapping:
+            enum: string_enum
+            set: string
+
         types:
             string_enum:
                 class: Consistence\Doctrine\Enum\Type\StringEnumType
