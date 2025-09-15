@@ -11,7 +11,7 @@ final class Version20190505124219 extends AbstractMigration
 {
     public function up(Schema $schema): void
     {
-        $chits = $this->connection->fetchAll('SELECT id, purpose FROM `ac_chits`');
+        $chits = $this->connection->executeQuery('SELECT id, purpose FROM `ac_chits`')->fetchAllAssociative();
         foreach ($chits as $chit) {
             $this->addSql('UPDATE `ac_chits_item` SET `purpose` = :purpose WHERE `chit_id` = :id;', $chit);
         }

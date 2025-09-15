@@ -23,7 +23,7 @@ final class Version20190604213432 extends AbstractMigration
     {
         parent::postUp($schema);
 
-        $data = $this->connection->fetchAll('SELECT * FROM `ac_participants`');
+        $data = $this->connection->executeQuery('SELECT * FROM `ac_participants`')->fetchAllAssociative();
         foreach ($data as $row) {
             $this->connection->update(
                 'ac_participants',
