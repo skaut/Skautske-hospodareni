@@ -18,7 +18,7 @@ final class Version20200411105206 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $cashbookIds = $this->connection->fetchAll('SELECT id FROM `ac_object` WHERE length(id) < 36');
+        $cashbookIds = $this->connection->executeQuery('SELECT id FROM `ac_object` WHERE length(id) < 36')->fetchAllAssociative();
         $this->connection->beginTransaction();
         try {
             foreach ($cashbookIds as $cashbookId) {

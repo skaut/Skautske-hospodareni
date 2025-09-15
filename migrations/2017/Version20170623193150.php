@@ -32,7 +32,7 @@ class Version20170623193150 extends AbstractMigration
 
     public function postUp(Schema $schema): void
     {
-        $bankConfigurations = $this->connection->fetchAll('SELECT * FROM pa_bank');
+        $bankConfigurations = $this->connection->executeQuery('SELECT * FROM pa_bank')->fetchAllAssociative();
 
         $parser = new Czech();
         $now    = (new DateTimeImmutable())->format('Y-m-d H:i:s');

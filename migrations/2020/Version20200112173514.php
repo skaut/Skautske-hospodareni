@@ -23,14 +23,14 @@ final class Version20200112173514 extends AbstractMigration
         SQL);
         $this->addSql('INSERT INTO `ac_chitsCategory_object` (`categoryId`, `objectTypeId`) VALUES (21,	\'camp\'), (22,	\'camp\');');
 
-        $ids = $this->connection->fetchAll(<<<'SQL'
+        $ids = $this->connection->executeQuery(<<<'SQL'
                 SELECT i.id
                 FROM `ac_chits_item` i
                 left join ac_chit_to_item ci ON i.id = ci.item_id
                 left join ac_chits c ON c.id = ci.chit_id
                 LEFT JOIN ac_object o ON c.eventId = o.id
                 WHERE `category` = '20' AND type ='camp'
-        SQL);
+        SQL)->fetchAllAssociative();
 
         foreach ($ids as $row) {
             $this->connection->update(
@@ -46,14 +46,14 @@ final class Version20200112173514 extends AbstractMigration
     public function down(Schema $schema): void
     {
         $this->addSql('INSERT INTO `ac_chitsCategory_object` (`categoryId`, `objectTypeId`) VALUES (20, \'camp\');');
-        $ids = $this->connection->fetchAll(<<<'SQL'
+        $ids = $this->connection->executeQuery(<<<'SQL'
                 SELECT i.id
                 FROM `ac_chits_item` i
                 left join ac_chit_to_item ci ON i.id = ci.item_id
                 left join ac_chits c ON c.id = ci.chit_id
                 LEFT JOIN ac_object o ON c.eventId = o.id
                 WHERE (`category` = '21' OR `category` = '22') AND type ='camp'
-        SQL);
+        SQL)->fetchAllAssociative();
 
         foreach ($ids as $row) {
             $this->connection->update(
