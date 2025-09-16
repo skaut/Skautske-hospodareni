@@ -95,6 +95,12 @@ jobs:
         runs-on: self-hosted
         needs: workdir
         steps:
+            - name: Clean workspace
+              shell: bash
+              run: |
+                shopt -s dotglob
+                rm -rf -- * || true
+                shopt -u dotglob
             - name: Download workdir
               uses: actions/download-artifact@v4
               with:
