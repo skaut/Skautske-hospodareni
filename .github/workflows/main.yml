@@ -1,386 +1,470 @@
 name: main
 
 on:
-    push:
-        branches:
-            - master
-            - beta
-    pull_request:
+  push:
+    branches: [ master, beta ]
+  pull_request:
 
 jobs:
-    workdir:
-        name: "Prepare working directory"
-        runs-on: ubuntu-22.04
-        container:
-            image: skaut/lebeda:8.2
-        steps:
-            - uses: actions/checkout@v4
-            # Copy & paste from https://github.com/actions/cache/blob/master/examples.md#php---composer
-            - name: Get Composer Cache Directory
-              id: composer-cache
-              run: |
-                  echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-            - uses: actions/cache@v4
-              with:
-                  path: ${{ steps.composer-cache.outputs.dir }}
-                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-                  restore-keys: |
-                      ${{ runner.os }}-composer-
-            - run: composer install
-            - name: Fix permissions
-              run: chown 1000:1000 . -R && chmod 777 . -R
-            - name: Create tarball
-              run: tar -czpf /tmp/workdir.tar.gz . && mv /tmp/workdir.tar.gz .
-            - name: Upload workdir
-              uses: actions/upload-artifact@v4
-              with:
-                  name: workdir
-                  path: workdir.tar.gz
+  workdir:
+    name: Prepare working directory
+    runs-on: ubuntu-22.04
+    container:
+      image: skaut/lebeda:8.2-ci
+    env:
+      COMPOSER_ALLOW_SUPERUSER: "1"   # composer jako root bez varování
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
-    tests-unit:
-        name: "Run unit tests"
-        runs-on: ubuntu-22.04
-        container:
-            image: skaut/lebeda:8.2
-        needs: workdir
-        steps:
-            - name: Download workdir
-              uses: actions/download-artifact@v4
-              with:
-                  name: workdir
-                  path: .
-            - name: Extract workdir
-              run: tar -xzpf workdir.tar.gz
-            - run: phing tests-unit
+      # Composer cache
+      - name: Get Composer cache dir
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
 
-    tests-integration:
-        name: "Run integration tests"
-        runs-on: ubuntu-22.04
-        needs: workdir
-        steps:
-            - name: Download workdir
-              uses: actions/download-artifact@v4
-              with:
-                  name: workdir
-                  path: .
-            - name: Extract workdir
-              run: tar -xzpf workdir.tar.gz
-            - name: Start application containers
-              run: docker compose -f docker/docker-compose.yml run -T php-test phing tests-integration
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
 
-    collect-code-coverage:
-        name: "Collect code coverage"
-        if: github.ref == 'refs/heads/master'
-        runs-on: ubuntu-22.04
-        needs: workdir
-        steps:
-            - name: Download workdir
-              uses: actions/download-artifact@v4
-              with:
-                  name: workdir
-                  path: .
-            - name: Extract workdir
-              run: tar -xzpf workdir.tar.gz
-            - name: Run tests with coverage
-              run: docker compose -f docker/docker-compose.yml run -T php-test phing tests-with-coverage
-            - name: Upload code coverage
-              uses: codecov/codecov-action@v4
-              with:
-                  token: ${{ secrets.CODECOV_TOKEN }}
-                  file: tests/_output/coverage.xml
-                  fail_ci_if_error: true
+      - name: Install Composer deps
+        run: composer install --no-interaction --prefer-dist --no-progress
 
-    tests-acceptance:
-        name: "Run acceptance tests"
-        runs-on: self-hosted
-        needs: workdir
-        steps:
-            - name: Clean workspace
-              shell: bash
-              run: |
-                shopt -s dotglob
-                rm -rf -- * || true
-                shopt -u dotglob
-            - name: Download workdir
-              uses: actions/download-artifact@v4
-              with:
-                  name: workdir
-                  path: .
-            - name: Extract workdir
-              run: tar -xzpf workdir.tar.gz
-            - name: Append to .env file
-              run: echo -e "\nHEADLESS='--headless'" >> .env.test
-            - name: Init app
-              run: docker compose -f docker/docker-compose.yml run -T php-test phing app-init
-            - name: Start selenium container
-              run: docker compose -f docker/docker-compose.yml up -d selenium nginx
-            - run: mv app/config/config.ci.local.neon app/config/config.local.neon
-            - name: Run acceptance tests
-              run: docker compose -f docker/docker-compose.yml run -T php-test phing tests-acceptance
-            - uses: actions/upload-artifact@v4
-              if: failure()
-              with:
-                    name: error-output
-                    path: tests/_output
+      # Node/Yarn + cache (vestavěné v setup-node)
+      - name: Setup Node.js (+ Yarn cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+          cache-dependency-path: '**/yarn.lock'
 
-    static-analysis:
-        name: "Run PHPStan analysis"
-        runs-on: ubuntu-22.04
+      - name: Install JS deps
+        run: yarn install --frozen-lockfile
+
+      # menší artefakt (bez .git)
+      - name: Create tarball
+        run: |
+          tar -C $GITHUB_WORKSPACE \
+              --exclude-vcs \
+              --exclude='.github' \
+              --exclude='workdir.tar.gz' \
+              --warning=no-file-changed \
+              --ignore-failed-read \
+              -czpf /tmp/workdir.tar.gz .
+          mv /tmp/workdir.tar.gz $GITHUB_WORKSPACE/
+
+      - name: Upload workdir
+        uses: actions/upload-artifact@v4
+        with:
+          name: workdir
+          path: workdir.tar.gz
+          if-no-files-found: error
+          retention-days: 7
+
+  tests-unit:
+    name: "Run unit tests"
+    runs-on: ubuntu-22.04
+    container:
+      image: skaut/lebeda:8.2
+    needs: workdir
+    steps:
+      - name: Download workdir
+        uses: actions/download-artifact@v4
+        with:
+          name: workdir
+          path: .
+      - name: Extract workdir
+        run: tar -xzpf workdir.tar.gz
+      - name: Run unit tests
+        run: composer tests:unit
+
+  tests-integration:
+    name: "Run integration tests"
+    runs-on: ubuntu-22.04
+    needs: workdir
+    steps:
+      - name: Download workdir
+        uses: actions/download-artifact@v4
+        with:
+          name: workdir
+          path: .
+      - name: Extract workdir
+        run: tar -xzpf workdir.tar.gz
+      - name: Start application containers
+        run: docker compose -f docker/docker-compose.yml run -T php-test composer tests:integration
+
+  collect-code-coverage:
+    name: "Collect code coverage"
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-22.04
+    needs: workdir
+    steps:
+      - name: Download workdir
+        uses: actions/download-artifact@v4
+        with:
+          name: workdir
+          path: .
+      - name: Extract workdir
+        run: tar -xzpf workdir.tar.gz
+      - name: Run tests with coverage
+        run: docker compose -f docker/docker-compose.yml run -T php-test composer tests-with-coverage
+      - name: Upload code coverage
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: tests/_output/coverage.xml
+          fail_ci_if_error: true
+
+  tests-acceptance:
+    name: "Run acceptance tests"
+    runs-on: self-hosted
+    needs: workdir
+    timeout-minutes: 45
+    env:
+      COMPOSE_FILE: docker/docker-compose.yml:docker/docker-compose.ci.yml
+      COMPOSE_PROJECT_NAME: "acc-${{ github.run_id }}-${{ github.run_attempt }}"
+    steps:
+      # --- pre-clean (pro jistotu)
+      - name: Pre-clean compose project
+        shell: bash
+        run: |
+          docker compose down --remove-orphans -v || true
+
+      - name: Clean workspace
+        shell: bash
+        run: |
+          shopt -s dotglob
+          rm -rf -- * || true
+          shopt -u dotglob
+
+      - name: Download workdir
+        uses: actions/download-artifact@v4
+        with:
+          name: workdir
+          path: .
+      - name: Extract workdir
+        run: tar -xzpf workdir.tar.gz
+      - name: Append to .env file
+        run: echo -e "\nHEADLESS='--headless'" >> .env.test
+      - name: Fix workspace ownership
+        run: |
+          sudo chown -R docker:docker .
+
+      - name: Build php-test image
+        run: docker compose -f docker/docker-compose.yml build php-test
+      - name: Init app
+        run: docker compose -f docker/docker-compose.yml run -T php-test composer app-init
+      - name: Start selenium container
+        run: docker compose -f docker/docker-compose.yml up -d php-test selenium nginx
+      - run: mv app/config/config.ci.local.neon app/config/config.local.neon
+      - name: Run acceptance tests
+        run: docker compose -f docker/docker-compose.yml run -T php-test composer tests:acceptance
+
+      # --- sběr výstupů a logů (i při failu)
+      - name: Pack Codeception output (if present)
+        if: always()
+        shell: bash
+        run: |
+          if [ -d tests/_output ]; then
+            tar -czf tests-output.tar.gz -C tests _output
+          fi
+
+      - name: Collect compose logs
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p artifacts/logs
+          # Uložit ps + logy pro celý projekt
+          docker compose ps --all > artifacts/logs/compose-ps.txt || true
+          docker compose logs --no-color > artifacts/logs/compose-logs.txt || true
+          tar -czf compose-logs.tar.gz -C artifacts logs || true
+
+      - name: Upload test output artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tests-output
+          path: |
+            tests-output.tar.gz
+          if-no-files-found: ignore
+
+      - name: Upload compose logs artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compose-logs
+          path: |
+            compose-logs.tar.gz
+          if-no-files-found: ignore
+
+      # --- finální úklid (vždy)
+      - name: Stop & remove compose project
+        if: always()
+        run: docker compose down --remove-orphans -v
+
+  static-analysis:
+    name: "Run PHPStan analysis"
+    runs-on: ubuntu-22.04
+    env:
+      DB_HOST: mysql-test
+      DB_USER: hskauting
+      DB_PASSWORD: hskauting
+      DB_NAME: hskauting
+      DB_TEST: true
+    container:
+      image: skaut/lebeda:8.2
+    needs: workdir
+    steps:
+      - name: Download workdir
+        uses: actions/download-artifact@v4
+        with:
+          name: workdir
+          path: .
+      - name: Extract workdir
+        run: tar -xzpf workdir.tar.gz
+      - name: Generate Codeception helper code
+        run: vendor/bin/codecept build
+      - run: composer static-analysis
+
+  coding-standard:
+    name: "Check coding standard"
+    runs-on: ubuntu-22.04
+    container:
+      image: skaut/lebeda:8.2
+    needs: workdir
+    steps:
+      - name: Download workdir
+        uses: actions/download-artifact@v4
+        with:
+          name: workdir
+          path: .
+      - name: Extract workdir
+        run: tar -xzpf workdir.tar.gz
+      - run: composer coding-standard-ci
+
+  latte-lint:
+    name: "Lint Latte templates"
+    runs-on: ubuntu-22.04
+    container:
+      image: skaut/lebeda:8.2
+    needs: workdir
+    env:
+      DEVELOPMENT_MACHINE: true
+    steps:
+      - name: Download workdir
+        uses: actions/download-artifact@v4
+        with:
+          name: workdir
+          path: .
+      - name: Extract workdir
+        run: tar -xzf workdir.tar.gz
+      - run: mv app/config/config.ci.local.neon app/config/config.local.neon
+      - run: vendor/bin/latte-lint app
+
+  validate-mapping:
+    name: "Validate mapping against migrations"
+    runs-on: ubuntu-22.04
+    container:
+      image: skaut/lebeda:8.2
+    needs: workdir
+    services:
+      mysql-test:
+        image: mysql:5.7
         env:
-          DB_HOST: mysql-test
-          DB_USER: hskauting
-          DB_PASSWORD: hskauting
-          DB_NAME: hskauting
-          DB_TEST: true
-        container:
-            image: skaut/lebeda:8.2
-        needs: workdir
-        steps:
-            - name: Download workdir
-              uses: actions/download-artifact@v4
-              with:
-                  name: workdir
-                  path: .
-            - name: Extract workdir
-              run: tar -xzpf workdir.tar.gz
-            - name: Generate Codeception helper code
-              run: vendor/bin/codecept build
-            - run: phing static-analysis
+          MYSQL_ROOT_PASSWORD: 'root'
+          MYSQL_DATABASE: hskauting
+        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+    env:
+      DEVELOPMENT_MACHINE: true
+    steps:
+      - name: Download workdir
+        uses: actions/download-artifact@v4
+        with:
+          name: workdir
+          path: .
+      - name: Extract workdir
+        run: tar -xzf workdir.tar.gz
+      - run: mv app/config/config.ci.local.neon app/config/config.local.neon
+      - run: bin/console migrations:migrate --no-interaction
+      - run: "! bin/console migrations:diff && bin/console migrations:diff --allow-empty-diff"
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: migrations
+          path: migrations
 
-    coding-standard:
-        name: "Check coding standard"
-        runs-on: ubuntu-22.04
-        container:
-            image: skaut/lebeda:8.2
-        needs: workdir
-        steps:
-            - name: Download workdir
-              uses: actions/download-artifact@v4
-              with:
-                  name: workdir
-                  path: .
-            - name: Extract workdir
-              run: tar -xzpf workdir.tar.gz
-            - run: phing coding-standard-ci
+  checks-passed:
+    name: "Wait for all checks"
+    needs:
+      - tests-unit
+      - tests-integration
+      - tests-acceptance
+      - coding-standard
+      - static-analysis
+      - latte-lint
+      - validate-mapping
+    runs-on: ubuntu-22.04
+    container:
+      image: skaut/lebeda:8.2-ci
+    steps:
+      - run: true
 
-    latte-lint:
-        name: "Lint Latte templates"
-        runs-on: ubuntu-22.04
-        container:
-            image: skaut/lebeda:8.2
-        needs: workdir
+  deploy-beta:
+    name: "Deploy to beta-h.skauting.cz"
+    if: github.ref == 'refs/heads/beta'
+    needs: [checks-passed]
+    runs-on: ubuntu-22.04
+    container:
+      image: skaut/lebeda:8.2-ci
+    steps:
+      - name: Debug branch
+        run: |
+          echo "Current ref: $GITHUB_REF"
+      - name: Download workdir
+        uses: actions/download-artifact@v4
+        with:
+          name: workdir
+          path: .
+      - name: Extract workdir
+        run: tar -xzpf workdir.tar.gz
+      - name: Setup SSH authentication
+        run: .github/workflows/setup_ssh.sh "$DEPLOY_SSH_KEY" "$SSH_KEY_FILE"
         env:
-            DEVELOPMENT_MACHINE: true
-        steps:
-            - name: Download workdir
-              uses: actions/download-artifact@v4
-              with:
-                  name: workdir
-                  path: .
-            - name: Extract workdir
-              run: tar -xzf workdir.tar.gz
-            - run: mv app/config/config.ci.local.neon app/config/config.local.neon
-            - run: vendor/bin/latte-lint app
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          SSH_KEY_FILE: /root/.ssh/id_key
 
-    validate-mapping:
-        name: "Validate mapping against migrations"
-        runs-on: ubuntu-22.04
-        container:
-            image: skaut/lebeda:8.2
-        needs: workdir
-        services:
-            mysql-test:
-                image: mysql:5.7
-                env:
-                    MYSQL_ROOT_PASSWORD: 'root'
-                    MYSQL_DATABASE: hskauting
-                options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+      # Copy & paste from https://github.com/actions/cache/blob/master/examples.md#node---yarn
+      - name: Get yarn cache
+        id: yarn-cache
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup git safe dir
+        run: git config --global --add safe.directory /__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}
+
+      - name: Deploy to beta-h.skauting.cz
+        run: phing deploy
         env:
-            DEVELOPMENT_MACHINE: true
-        steps:
-            - name: Download workdir
-              uses: actions/download-artifact@v4
-              with:
-                  name: workdir
-                  path: .
-            - name: Extract workdir
-              run: tar -xzf workdir.tar.gz
-            - run: mv app/config/config.ci.local.neon app/config/config.local.neon
-            - run: bin/console migrations:migrate --no-interaction
-            - run: "! bin/console migrations:diff && bin/console migrations:diff --allow-empty-diff"
-            - uses: actions/upload-artifact@v4
-              if: failure()
-              with:
-                  name: migrations
-                  path: migrations
+          ENVIRONMENT: beta
+          ROOT_DIR: /home/vu011961
+          SSH_USERNAME: vu011961
+          SSH_KEY_FILE: /root/.ssh/id_key
+          CONFIG_APPLICATION_ID: ${{ secrets.CONFIG_BETA_SKAUTIS_APPLICATION_ID }}
+          CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_BETA_DATABASE_PASSWORD }}
+          CONFIG_GOOGLE_CREDENTIALS: ${{ secrets.CONFIG_BETA_GOOGLE_CREDENTIALS }}
 
-    checks-passed:
-        name: "Wait for all checks"
-        needs:
-            - tests-unit
-            - tests-integration
-            - tests-acceptance
-            - coding-standard
-            - static-analysis
-            - latte-lint
-            - validate-mapping
-        runs-on: ubuntu-22.04
-        container:
-            image: skaut/lebeda:8.2-ci
-        steps:
-            - run: true
+  deploy-test:
+    name: "Deploy to test-h.skauting.cz"
+    if: github.ref == 'refs/heads/master'
+    needs: [checks-passed]
+    runs-on: ubuntu-22.04
+    container:
+      image: skaut/lebeda:8.1-ci
+    steps:
+      - name: Download workdir
+        uses: actions/download-artifact@v4
+        with:
+          name: workdir
+          path: .
+      - name: Extract workdir
+        run: tar -xzpf workdir.tar.gz
+      - name: Setup SSH authentication
+        run: .github/workflows/setup_ssh.sh "$DEPLOY_SSH_KEY" "$SSH_KEY_FILE"
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          SSH_KEY_FILE: /root/.ssh/id_key
 
-    deploy-beta:
-        name: "Deploy to beta-h.skauting.cz"
-        if: github.ref == 'refs/heads/beta'
-        needs: [checks-passed]
-        runs-on: ubuntu-22.04
-        container:
-            image: skaut/lebeda:8.2-ci
-        steps:
-            - name: Debug branch
-              run: |
-                echo "Current ref: $GITHUB_REF"
-            - name: Download workdir
-              uses: actions/download-artifact@v4
-              with:
-                  name: workdir
-                  path: .
-            - name: Extract workdir
-              run: tar -xzpf workdir.tar.gz
-            - name: Setup SSH authentication
-              run: .github/workflows/setup_ssh.sh "$DEPLOY_SSH_KEY" "$SSH_KEY_FILE"
-              env:
-                  DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-                  SSH_KEY_FILE: /root/.ssh/id_key
+      # Copy & paste from https://github.com/actions/cache/blob/master/examples.md#node---yarn
+      - name: Get yarn cache
+        id: yarn-cache
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
-            # Copy & paste from https://github.com/actions/cache/blob/master/examples.md#node---yarn
-            - name: Get yarn cache
-              id: yarn-cache
-              run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-            - uses: actions/cache@v4
-              with:
-                  path: ${{ steps.yarn-cache.outputs.dir }}
-                  key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-                  restore-keys: |
-                      ${{ runner.os }}-yarn-
-            - name: Install Node.js
-              uses: actions/setup-node@v4
-              with:
-                node-version: '20'
-                
-            - name: Setup git safe dir
-              run: git config --global --add safe.directory /__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}
+      - name: Setup git safe dir
+        run: git config --global --add safe.directory /__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}
 
-            - name: Deploy to beta-h.skauting.cz
-              run: phing deploy
-              env:
-                  ENVIRONMENT: beta
-                  ROOT_DIR: /home/vu011961
-                  SSH_USERNAME: vu011961
-                  SSH_KEY_FILE: /root/.ssh/id_key
-                  CONFIG_APPLICATION_ID: ${{ secrets.CONFIG_BETA_SKAUTIS_APPLICATION_ID }}
-                  CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_BETA_DATABASE_PASSWORD }}
-                  CONFIG_GOOGLE_CREDENTIALS: ${{ secrets.CONFIG_BETA_GOOGLE_CREDENTIALS }}
+      - name: Deploy to test-h.skauting.cz
+        run: phing deploy
+        env:
+          ENVIRONMENT: test
+          ROOT_DIR: /home/vu009010
+          SSH_USERNAME: vu009010
+          SSH_KEY_FILE: /root/.ssh/id_key
+          CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_TEST_DATABASE_PASSWORD }}
+          CONFIG_GOOGLE_CREDENTIALS: ${{ secrets.CONFIG_TEST_GOOGLE_CREDENTIALS }}
 
-    deploy-test:
-      name: "Deploy to test-h.skauting.cz"
-      if: github.ref == 'refs/heads/master'
-      needs: [checks-passed]
-      runs-on: ubuntu-22.04
-      container:
-        image: skaut/lebeda:8.1-ci
-      steps:
-        - name: Download workdir
-          uses: actions/download-artifact@v4
-          with:
-            name: workdir
-            path: .
-        - name: Extract workdir
-          run: tar -xzpf workdir.tar.gz
-        - name: Setup SSH authentication
-          run: .github/workflows/setup_ssh.sh "$DEPLOY_SSH_KEY" "$SSH_KEY_FILE"
-          env:
-            DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-            SSH_KEY_FILE: /root/.ssh/id_key
+  deploy-production:
+    name: "Deploy to h.skauting.cz"
+    if: github.ref == 'refs/heads/master'
+    needs: [checks-passed]
+    runs-on: ubuntu-22.04
+    container:
+      image: skaut/lebeda:8.2-ci
+    steps:
+      - name: Download workdir
+        uses: actions/download-artifact@v4
+        with:
+          name: workdir
+          path: .
+      - name: Extract workdir
+        run: tar -xzpf workdir.tar.gz
+      - name: Setup SSH authentication
+        run: .github/workflows/setup_ssh.sh "$DEPLOY_SSH_KEY" "$SSH_KEY_FILE"
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          SSH_KEY_FILE: /root/.ssh/id_key
 
-        # Copy & paste from https://github.com/actions/cache/blob/master/examples.md#node---yarn
-        - name: Get yarn cache
-          id: yarn-cache
-          run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+      # Copy & paste from https://github.com/actions/cache/blob/master/examples.md#node---yarn
+      - name: Get yarn cache
+        id: yarn-cache
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
-        - uses: actions/cache@v4
-          with:
-            path: ${{ steps.yarn-cache.outputs.dir }}
-            key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-            restore-keys: |
-              ${{ runner.os }}-yarn-
-        - name: Install Node.js
-          uses: actions/setup-node@v4
-          with:
-            node-version: '20'
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-        - name: Setup git safe dir
-          run: git config --global --add safe.directory /__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}
+      - name: Setup git safe dir
+        run: git config --global --add safe.directory /__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}
 
-        - name: Deploy to test-h.skauting.cz
-          run: phing deploy
-          env:
-            ENVIRONMENT: test
-            ROOT_DIR: /home/vu009010
-            SSH_USERNAME: vu009010
-            SSH_KEY_FILE: /root/.ssh/id_key
-            CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_TEST_DATABASE_PASSWORD }}
-            CONFIG_GOOGLE_CREDENTIALS: ${{ secrets.CONFIG_TEST_GOOGLE_CREDENTIALS }}
-
-    deploy-production:
-        name: "Deploy to h.skauting.cz"
-        if: github.ref == 'refs/heads/master'
-        needs: [checks-passed]
-        runs-on: ubuntu-22.04
-        container:
-            image: skaut/lebeda:8.2-ci
-        steps:
-            - name: Download workdir
-              uses: actions/download-artifact@v4
-              with:
-                  name: workdir
-                  path: .
-            - name: Extract workdir
-              run: tar -xzpf workdir.tar.gz
-            - name: Setup SSH authentication
-              run: .github/workflows/setup_ssh.sh "$DEPLOY_SSH_KEY" "$SSH_KEY_FILE"
-              env:
-                  DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-                  SSH_KEY_FILE: /root/.ssh/id_key
-
-            # Copy & paste from https://github.com/actions/cache/blob/master/examples.md#node---yarn
-            - name: Get yarn cache
-              id: yarn-cache
-              run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-
-            - uses: actions/cache@v4
-              with:
-                  path: ${{ steps.yarn-cache.outputs.dir }}
-                  key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-                  restore-keys: |
-                      ${{ runner.os }}-yarn-
-            - name: Install Node.js
-              uses: actions/setup-node@v4
-              with:
-                node-version: '20'
-
-            - name: Setup git safe dir
-              run: git config --global --add safe.directory /__w/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}
-
-            - name: Deploy to h.skauting.cz
-              run: phing deploy
-              env:
-                  ENVIRONMENT: production
-                  ROOT_DIR: /home/vu008930
-                  SSH_USERNAME: vu008930
-                  SSH_KEY_FILE: /root/.ssh/id_key
-                  CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_PRODUCTION_DATABASE_PASSWORD }}
-                  CONFIG_SENTRY_DSN: ${{ secrets.CONFIG_SENTRY_DSN }}
-                  CONFIG_GOOGLE_CREDENTIALS: ${{ secrets.CONFIG_PRODUCTION_GOOGLE_CREDENTIALS }}
+      - name: Deploy to h.skauting.cz
+        run: phing deploy
+        env:
+          ENVIRONMENT: production
+          ROOT_DIR: /home/vu008930
+          SSH_USERNAME: vu008930
+          SSH_KEY_FILE: /root/.ssh/id_key
+          CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_PRODUCTION_DATABASE_PASSWORD }}
+          CONFIG_SENTRY_DSN: ${{ secrets.CONFIG_SENTRY_DSN }}
+          CONFIG_GOOGLE_CREDENTIALS: ${{ secrets.CONFIG_PRODUCTION_GOOGLE_CREDENTIALS }}
