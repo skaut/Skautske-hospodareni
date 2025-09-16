@@ -265,7 +265,6 @@
         <exec command="yarn build" passthru="true" checkreturn="true"/>
 
         <!-- Prepare database schema -->
-        <exec command="bin/console migrations:drop-all-tables-views --no-interaction" passthru="true" checkreturn="true"/>
         <exec command="bin/console migrations:migrate --no-interaction" passthru="true" checkreturn="true"/>
     </target>
 </project>
