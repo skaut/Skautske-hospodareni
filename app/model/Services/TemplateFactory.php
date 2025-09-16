@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Services;
 
 use Latte\Engine;
+use Nette\Bridges\ApplicationLatte\DefaultTemplate;
 use Nette\Bridges\ApplicationLatte\LatteFactory;
 use Nette\Bridges\ApplicationLatte\Template;
 
@@ -31,7 +32,7 @@ class TemplateFactory
     /** @param mixed[] $parameters */
     public function create(string $file, array $parameters): string
     {
-        return (new Template($this->getEngine()))
+        return (new DefaultTemplate($this->getEngine()))
             ->renderToString($file, $parameters);
     }
 }
