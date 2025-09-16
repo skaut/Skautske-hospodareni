@@ -91,7 +91,69 @@
     "prefer-stable": true,
     "minimum-stability": "dev",
     "scripts": {
-        "post-update-cmd": "Google_Task_Composer::cleanup"
+        "post-update-cmd": "Google_Task_Composer::cleanup",
+
+
+        "main": [
+            "composer install --no-interaction",
+            "@static-analysis",
+            "@coding-standard",
+            "@schema:validate",
+            "@tests"
+        ],
+
+
+        "tests:init": [
+            "bin/console nette:cache:purge || true",
+            "bin/console migrations:drop-all-tables-views --no-interaction",
+            "bin/console migrations:migrate --no-interaction"
+        ],
+        "tests:unit": "vendor/bin/codecept run unit",
+        "tests:integration": "vendor/bin/codecept run integration",
+        "tests:acceptance": [
+            "bin/console nette:cache:purge || true",
+            "bin/console migrations:drop-all-tables-views --no-interaction",
+            "bin/console migrations:migrate --no-interaction",
+            "bin/console orm:generate-proxies --no-interaction",
+            "vendor/bin/codecept run acceptance -vv"
+        ],
+        "tests": [
+            "@tests:init",
+            "@tests:unit",
+            "@tests:integration",
+            "@tests:acceptance"
+        ],
+        "tests-with-coverage": "php -d zend_extension=xdebug.so -d xdebug.mode=coverage vendor/bin/codecept run unit,integration --coverage-xml",
+
+
+        "static-analysis": [
+            "bin/console nette:cache:purge || true",
+            "php -d memory_limit=2G vendor/bin/phpstan analyse -l 6 -c phpstan.neon app tests --no-progress"
+        ],
+        "coding-pretty": "vendor/bin/phpcbf app",
+        "coding-standard": [
+            "vendor/bin/phpcbf app",
+            "vendor/bin/phpcs"
+        ],
+        "coding-standard-ci": "vendor/bin/phpcs",
+
+
+        "schema:validate": "bin/console orm:validate-schema --skip-sync",
+        "proxies:generate": "bin/console orm:generate-proxies --no-interaction",
+
+
+        "fix": [
+            "@coding-standard",
+            "@static-analysis"
+        ],
+        "app-init": [
+            "composer install --no-interaction",
+            "cp app/config/config.sample.local.neon app/config/config.local.neon || true",
+            "bin/console nette:cache:purge || true",
+            "yarn install",
+            "yarn build",
+            "bin/console migrations:migrate --no-interaction"
+        ]
     },
     "extra": {
         "google/apiclient-services": [

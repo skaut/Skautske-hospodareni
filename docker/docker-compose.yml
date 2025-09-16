@@ -20,6 +20,7 @@ x-php-base:
         - ../:/app
         - ./containers/php/ini/php.ini:/etc/php/8.2/fpm/conf.d/php.ini
         - ./containers/php/ini/php.ini:/etc/php/8.2/cli/conf.d/php.ini
+#        - ./containers/php/docker.conf:/etc/php/8.2/fpm/pool.d/docker.conf
 
 x-mysql-base:
     &mysql-base
@@ -130,6 +131,13 @@ services:
             SE_VNC_NO_PASSWORD: 1
             SCREEN_WIDTH: 1920
             SCREEN_HEIGHT: 1080
+        depends_on:
+            php-test:
+                condition: service_started
+            nginx:
+                condition: service_started
+            mysql-test:
+                condition: service_started
         networks:
             - traefik
         labels:

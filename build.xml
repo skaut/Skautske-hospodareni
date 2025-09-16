@@ -192,79 +192,8 @@
     <target name="deploy:app-command">
         <phingcall target="deploy:ssh">
             <property name="command"
-                      value="php81-cli &quot;${deploy.release}/bin/console ${command}&quot;"/>
+                      value="php82-cli &quot;${deploy.release}/bin/console ${command}&quot;"/>
         </phingcall>
     </target>
 
-    <target name="tests-init">
-        <exec command="bin/console nette:cache:purge" passthru="true" checkreturn="false"/>
-        <exec command="bin/console migrations:drop-all-tables-views --no-interaction" passthru="true" checkreturn="true"/>
-        <exec command="bin/console migrations:migrate --no-interaction" passthru="true"/>
-    </target>
-
-    <target name="tests-unit">
-        <exec command="vendor/bin/codecept run unit" passthru="true" checkreturn="true"/>
-    </target>
-
-    <target name="tests-integration">
-        <exec command="vendor/bin/codecept run integration" passthru="true" checkreturn="true"/>
-    </target>
-
-    <target name="tests-acceptance">
-        <exec command="bin/console nette:cache:purge" passthru="true" checkreturn="false"/>
-        <exec command="bin/console migrations:drop-all-tables-views --no-interaction" passthru="true" checkreturn="true"/>
-        <exec command="bin/console migrations:migrate --no-interaction" passthru="true"/>
-        <exec command="bin/console orm:generate-proxies --no-interaction" passthru="true"/>
-
-        <exec command="vendor/bin/codecept run acceptance -vv" passthru="true" checkreturn="true"/>
-
-    </target>
-
-    <target name="tests">
-        <phingcall target="tests-init"/>
-        <phingcall target="tests-unit"/>
-        <phingcall target="tests-integration"/>
-        <phingcall target="tests-acceptance"/>
-    </target>
-
-    <target name="tests-with-coverage">
-        <exec command="php -d php -d zend_extension=xdebug.so -d xdebug.mode=coverage vendor/bin/codecept run unit,integration --coverage-xml"
-              passthru="true"
-              checkreturn="true"/>
-    </target>
-
-    <target name="static-analysis">
-        <exec command="bin/console nette:cache:purge " passthru="true" checkreturn="false"/>
-        <exec command="php -d memory_limit=2G vendor/bin/phpstan analyse -l 6 -c phpstan.neon app tests --no-progress"
-              passthru="true" checkreturn="true"/>
-    </target>
-
-    <target name="coding-pretty">
-        <exec command="vendor/bin/phpcbf app" passthru="true" checkreturn="true"/>
-    </target>
-
-    <target name="coding-standard">
-        <exec command="vendor/bin/phpcbf app" passthru="true" checkreturn="true"/>
-        <exec command="vendor/bin/phpcs" passthru="true" checkreturn="true"/>
-    </target>
-
-    <target name="coding-standard-ci">
-        <exec command="vendor/bin/phpcs" passthru="true" checkreturn="true"/>
-    </target>
-
-    <target name="app-init">
-
-        <copy file="app/config/config.sample.local.neon" tofile="app/config/config.local.neon"/>
-
-        <exec command="bin/console nette:cache:purge" passthru="true" checkreturn="false"/>
-        <!-- Install dependencies -->
-        <exec command="composer install" passthru="true" checkreturn="true"/>
-        <exec command="yarn install" passthru="true" checkreturn="true"/>
-
-        <!-- Build frontend assets -->
-        <exec command="yarn build" passthru="true" checkreturn="true"/>
-
-        <!-- Prepare database schema -->
-        <exec command="bin/console migrations:migrate --no-interaction" passthru="true" checkreturn="true"/>
-    </target>
 </project>
