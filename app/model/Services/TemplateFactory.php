@@ -7,7 +7,6 @@ namespace Model\Services;
 use Latte\Engine;
 use Nette\Bridges\ApplicationLatte\DefaultTemplate;
 use Nette\Bridges\ApplicationLatte\LatteFactory;
-use Nette\Bridges\ApplicationLatte\Template;
 
 class TemplateFactory
 {
