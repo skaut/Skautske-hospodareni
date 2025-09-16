@@ -19,26 +19,29 @@ enter:
 
 init:
 	docker exec -it $(CONTAINER_PHP) composer install
-	docker exec -it $(CONTAINER_PHP) /app/vendor/bin/phing app-init
+	docker exec -it $(CONTAINER_PHP) composer run app-init
 
 tests-all:
-	docker exec -it ${CONTAINER_PHP_TEST} /app/vendor/bin/phing tests
+	docker exec -it ${CONTAINER_PHP_TEST} composer run tests
 
 tests-unit:
-	docker exec -it ${CONTAINER_PHP_TEST} /app/vendor/bin/phing tests-unit
+	docker exec -it ${CONTAINER_PHP_TEST} composer run tests:unit
 
 tests-integration:
-	docker exec -it ${CONTAINER_PHP_TEST} /app/vendor/bin/phing tests-integration
+	docker exec -it ${CONTAINER_PHP_TEST} composer run tests:integration
 
 tests-acceptance:
-	docker exec -it ${CONTAINER_PHP_TEST} /app/vendor/bin/phing tests-acceptance
+	docker exec -it ${CONTAINER_PHP_TEST} composer run tests:acceptance
 
 static-analysis:
-	docker exec -it ${CONTAINER_PHP} /app/vendor/bin/phing static-analysis
+	docker exec -it ${CONTAINER_PHP} composer run static-analysis
 
 coding-standard:
-	docker exec -it ${CONTAINER_PHP} /app/vendor/bin/phing coding-standard
+	docker exec -it ${CONTAINER_PHP} composer run coding-standard
 
 fix:
-	docker exec -it ${CONTAINER_PHP} /app/vendor/bin/phing coding-standard
-	docker exec -it ${CONTAINER_PHP} /app/vendor/bin/phing static-analysis
+	docker exec -it ${CONTAINER_PHP} composer run coding-standard
+	docker exec -it ${CONTAINER_PHP} composer run static-analysis
+
+clean:
+	docker exec -it ${CONTAINER_PHP} rm -rf temp/* www/webtemp/* node_modules frontend/.cache || true
