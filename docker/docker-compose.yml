@@ -139,11 +139,12 @@ services:
             traefik.http.services.selenium.loadbalancer.server.port: 7900
 
     adminer:
-        image: adminer:4.8.1
+        image: adminer:5.4.0
         volumes:
             - ./containers/adminer/plugins/import-directory.php:/var/www/html/plugins/import-directory.php
             - ./containers/adminer/plugins/login-password-less.php:/var/www/html/plugins/login-password-less.php
             - ./containers/adminer/plugins/readable-dates.php:/var/www/html/plugins/readable-dates.php
+            - ./containers/adminer/plugins/readable-dates.php:/var/www/html/plugins/dark-switcher.php
             - ./containers/adminer/import:/var/www/html/import
         environment:
             ADMINER_PLUGINS: import-directory readable-dates

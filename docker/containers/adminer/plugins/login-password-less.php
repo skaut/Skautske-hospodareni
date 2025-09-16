@@ -1,35 +1,52 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Allow login without a password.
  */
 class AdminerLoginPasswordLess
 {
-    protected string|null $username = null;
+    /**
+     * @var string|null
+     */
+    protected $username;
 
-    protected string $password;
+    /**
+     * @var string
+     */
+    protected $password;
 
+    /**
+     * AdminerLoginPasswordLess constructor.
+     */
     public function __construct()
     {
         $this->username = getenv('ADMINER_USERNAME') ?: null;
         $this->password = getenv('ADMINER_PASSWORD') ?: '';
     }
 
-    /** @return array */
-    public function credentials(): array
+    /**
+     * @return array
+     */
+    public function credentials()
     {
-        $inputUsername = $_GET['username'];
+        $server = $_GET['server'] ?? 'localhost';
+        $inputUsername = $_GET['username'] ?? '';
 
         if ($this->isPasswordlessUser($inputUsername)) {
-            return [SERVER, $inputUsername, $this->password];
+            return [$server, $inputUsername, $this->password];
         }
 
-        return [SERVER, $inputUsername, get_password()];
+        $inputPassword = $_GET['password'] ?? '';
+
+        return [$server, $inputUsername, $inputPassword];
     }
 
-    public function login(string $username, string $password): bool
+    /**
+     * @param  string $username
+     * @param  string $password
+     * @return bool
+     */
+    public function login($username, $password)
     {
         if ($this->isPasswordlessUser($username)) {
             return true;
