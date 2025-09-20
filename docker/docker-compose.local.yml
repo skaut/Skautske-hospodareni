@@ -1,0 +1,11 @@
+services:
+    php:
+        container_name: hskauting.app #Backward Compatibility
+    php-test:
+        container_name: hskauting.app-test
+    mysql:
+        container_name: hskauting.mysql #Backward Compatibility
+    mysql-test:
+        container_name: hskauting.mysql-test #Backward Compatibility
+    selenium:
+        container_name: hskauting.chrome
