@@ -54,7 +54,6 @@ services:
 
     php:
         <<: *php-base
-        container_name: hskauting.app #Backward Compatibility
         env_file:
             - containers/php/ini/image.ini
             - ./../.env.local
@@ -77,7 +76,6 @@ services:
     php-test:
         <<: *php-base
         hostname: php-test.localhost
-        container_name: hskauting.app-test
         depends_on:
             - mysql-test
         env_file:
@@ -106,7 +104,6 @@ services:
 
     mysql:
         <<: *mysql-base
-        container_name: hskauting.mysql #Backward Compatibility
         ports:
             - "3306:3306"
         hostname: mysql.localhost
@@ -115,7 +112,6 @@ services:
             - ./containers/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
 
     mysql-test:
-        container_name: hskauting.mysql-test #Backward Compatibility
         <<: *mysql-base
         hostname: mysql-test.localhost
         volumes:
@@ -123,7 +119,6 @@ services:
             - ./containers/mysql-test/my.cnf:/etc/mysql/conf.d/my.cnf
 
     selenium:
-        container_name: hskauting.chrome
         hostname: selenium.localhost
         image: selenium/standalone-chrome
         shm_size: 2g
