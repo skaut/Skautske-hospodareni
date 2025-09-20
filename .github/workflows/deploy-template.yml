@@ -35,7 +35,7 @@ jobs:
   deploy:
     runs-on: ubuntu-22.04
     container:
-      image: webwingscz/builder-php82
+      image: webwingscz/lebeda-deployer-php82
     steps:
       - name: Download workdir
         uses: actions/download-artifact@v4
@@ -45,17 +45,15 @@ jobs:
       - name: Extract workdir
         run: tar -xzpf workdir.tar.gz
 
-      - name: Setup SSH authentication
+      - name: Run deploy
+
         run: |
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
           eval $(ssh-agent -s)
           echo "$PRIVATE_KEY" | tr -d '\r' | ssh-add -
+          dep deploy ${{ inputs.environment }} -f /app/deploy.php -vvv
         env:
           PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-
-      - name: Run deploy
-        run: ./dep deploy ${{ inputs.environment }} -vvv
-        env:
           ENVIRONMENT: ${{ inputs.environment }}
           ROOT_DIR: ${{ inputs.root_dir }}
           SSH_USERNAME: ${{ inputs.ssh_username }}
