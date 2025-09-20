@@ -35,7 +35,7 @@ jobs:
   deploy:
     runs-on: ubuntu-22.04
     container:
-      image: webwingscz/builder-php82
+      image: webwingscz/lebeda-deployer-php82
     steps:
       - name: Download workdir
         uses: actions/download-artifact@v4
