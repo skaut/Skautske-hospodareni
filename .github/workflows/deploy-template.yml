@@ -35,8 +35,7 @@ jobs:
   deploy:
     runs-on: ubuntu-22.04
     container:
-      build:
-        context: ./containers/deploy
+      image: webwingscz/builder-php82
     steps:
       - name: Download workdir
         uses: actions/download-artifact@v4
