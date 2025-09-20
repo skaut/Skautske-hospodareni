@@ -1,0 +1,69 @@
+name: Deploy template
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      root_dir:
+        required: true
+        type: string
+      ssh_username:
+        required: true
+        type: string
+      host:
+        required: true
+        type: string
+      port:
+        required: false
+        type: string
+        default: "22"
+    secrets:
+      DEPLOY_SSH_KEY:
+        required: true
+      CONFIG_DATABASE_PASSWORD:
+        required: true
+      CONFIG_GOOGLE_CREDENTIALS:
+        required: true
+      CONFIG_APPLICATION_ID:
+        required: false
+      CONFIG_SENTRY_DSN:
+        required: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    container:
+      build:
+        context: ./containers/deploy
+    steps:
+      - name: Download workdir
+        uses: actions/download-artifact@v4
+        with:
+          name: workdir
+          path: .
+      - name: Extract workdir
+        run: tar -xzpf workdir.tar.gz
+
+      - name: Setup SSH authentication
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          eval $(ssh-agent -s)
+          echo "$PRIVATE_KEY" | tr -d '\r' | ssh-add -
+        env:
+          PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+
+      - name: Run deploy
+        run: ./dep deploy ${{ inputs.environment }} -vvv
+        env:
+          ENVIRONMENT: ${{ inputs.environment }}
+          ROOT_DIR: ${{ inputs.root_dir }}
+          SSH_USERNAME: ${{ inputs.ssh_username }}
+          HOST: ${{ inputs.host }}
+          PORT: ${{ inputs.port }}
+          CONFIG_APPLICATION_ID: ${{ secrets.CONFIG_APPLICATION_ID }}
+          CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_DATABASE_PASSWORD }}
+          CONFIG_GOOGLE_CREDENTIALS: ${{ secrets.CONFIG_GOOGLE_CREDENTIALS }}
+          CONFIG_SENTRY_DSN: ${{ secrets.CONFIG_SENTRY_DSN }}
+          GITHUB_SHA: ${{ github.sha }}
