@@ -314,49 +314,49 @@ jobs:
     steps:
       - run: true
 
-deploy-beta:
-  if: github.ref == 'refs/heads/beta'
-  needs: [checks-passed]
-  uses: ./.github/workflows/deploy-template.yml
-  with:
-    environment: beta
-    root_dir: /home/vu011961
-    ssh_username: vu011961
-    host: www.skauting.cz
-    port: "11961"
-  secrets:
-    DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-    CONFIG_APPLICATION_ID: ${{ secrets.CONFIG_BETA_SKAUTIS_APPLICATION_ID }}
-    CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_BETA_DATABASE_PASSWORD }}
-    CONFIG_GOOGLE_CREDENTIALS: ${{ secrets.CONFIG_BETA_GOOGLE_CREDENTIALS }}
+  deploy-beta:
+    if: github.ref == 'refs/heads/beta'
+    needs: [checks-passed]
+    uses: ./.github/workflows/deploy-template.yml
+    with:
+      environment: beta
+      root_dir: /home/vu011961
+      ssh_username: vu011961
+      host: www.skauting.cz
+      port: "11961"
+    secrets:
+      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+      CONFIG_APPLICATION_ID: ${{ secrets.CONFIG_BETA_SKAUTIS_APPLICATION_ID }}
+      CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_BETA_DATABASE_PASSWORD }}
+      CONFIG_GOOGLE_CREDENTIALS: ${{ secrets.CONFIG_BETA_GOOGLE_CREDENTIALS }}
 
-deploy-test:
-  if: github.ref == 'refs/heads/master'
-  needs: [checks-passed]
-  uses: ./.github/workflows/deploy-template.yml
-  with:
-    environment: test
-    root_dir: /home/vu009010
-    ssh_username: vu009010
-    host: www.skauting.cz
-    port: "9010"
-  secrets:
-    DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-    CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_TEST_DATABASE_PASSWORD }}
-    CONFIG_GOOGLE_CREDENTIALS: ${{ secrets.CONFIG_TEST_GOOGLE_CREDENTIALS }}
+  deploy-test:
+    if: github.ref == 'refs/heads/master'
+    needs: [checks-passed]
+    uses: ./.github/workflows/deploy-template.yml
+    with:
+      environment: test
+      root_dir: /home/vu009010
+      ssh_username: vu009010
+      host: www.skauting.cz
+      port: "9010"
+    secrets:
+      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+      CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_TEST_DATABASE_PASSWORD }}
+      CONFIG_GOOGLE_CREDENTIALS: ${{ secrets.CONFIG_TEST_GOOGLE_CREDENTIALS }}
 
-deploy-production:
-  if: github.ref == 'refs/heads/master'
-  needs: [checks-passed]
-  uses: ./.github/workflows/deploy-template.yml
-  with:
-    environment: production
-    root_dir: /home/vu008930
-    ssh_username: vu008930
-    host: www.skauting.cz
-    port: 8930
-  secrets:
-    DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-    CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_PRODUCTION_DATABASE_PASSWORD }}
-    CONFIG_GOOGLE_CREDENTIALS: ${{ secrets.CONFIG_PRODUCTION_GOOGLE_CREDENTIALS }}
-    CONFIG_SENTRY_DSN: ${{ secrets.CONFIG_SENTRY_DSN }}
+  deploy-production:
+    if: github.ref == 'refs/heads/master'
+    needs: [checks-passed]
+    uses: ./.github/workflows/deploy-template.yml
+    with:
+      environment: production
+      root_dir: /home/vu008930
+      ssh_username: vu008930
+      host: www.skauting.cz
+      port: 8930
+    secrets:
+      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+      CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_PRODUCTION_DATABASE_PASSWORD }}
+      CONFIG_GOOGLE_CREDENTIALS: ${{ secrets.CONFIG_PRODUCTION_GOOGLE_CREDENTIALS }}
+      CONFIG_SENTRY_DSN: ${{ secrets.CONFIG_SENTRY_DSN }}
