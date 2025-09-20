@@ -54,7 +54,7 @@ jobs:
           PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
 
       - name: Run deploy
-        run: ./dep deploy ${{ inputs.environment }} -vvv
+        run: dep deploy ${{ inputs.environment }} -f /app/deploy.php -vvv
         env:
           ENVIRONMENT: ${{ inputs.environment }}
           ROOT_DIR: ${{ inputs.root_dir }}
