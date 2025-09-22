@@ -10,7 +10,6 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\PsrCachedReader;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
-// BC wrapper pro lib očekávající Doctrine Cache
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
@@ -21,14 +20,14 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\Setup;
-// dostupné v novějších ORM
 use DoctrineExtensions\Query\Mysql\Field;
 use Model\Infrastructure\DoctrineNullableEmbeddables\Subscriber;
 use Psr\Cache\CacheItemPoolInterface;
-
 use function class_exists;
-
 use const CASE_LOWER;
+
+// BC wrapper pro lib očekávající Doctrine Cache
+// dostupné v novějších ORM
 
 final class EntityManagerFactory
 {
@@ -44,25 +43,31 @@ final class EntityManagerFactory
     {
         $proxyDir = $this->tempDir . '/doctrine/proxies';
 
-        // Preferuj ORMSetup, fallback na Tools\Setup pro starší ORM
+        // jednotná defaultní cache pro ORMSetup factory – klidně použij "metadata" pool
+        $defaultCache = $this->cache('metadata'); // CacheItemPoolInterface
+
         $configuration = class_exists(ORMSetup::class)
-            ? ORMSetup::createConfiguration($this->debugMode, $proxyDir)
+            // ✅ tímhle obejdeš Redis/Memcached autodetekci uvnitř ORMSetup
+            ? ORMSetup::createConfiguration($this->debugMode, $proxyDir, $defaultCache)
             : Setup::createConfiguration($this->debugMode, $proxyDir);
 
-        // PSR-6 cache (doporučeno od ORM 2.9+, v ORM 3 povinné)
+        // klidně ponech separátní pooly pro jemnější řízení
         $configuration->setMetadataCache($this->cache('metadata'));
         $configuration->setQueryCache($this->cache('query'));
-        // Result cache patří do DBAL: $this->connection->getConfiguration()->setResultCache($this->cache('result'));
+        // DBAL result cache
+        $this->connection->getConfiguration()->setResultCache($this->cache('result'));
+
+
+
 
         $annotationsReader = $this->annotationsReader();
-
-        // POZOR: Annotation driver je v ORM 3 deprecated – dlouhodobě zvaž Attributes/XML.
         $configuration->setMetadataDriverImpl(
             new AnnotationDriver($annotationsReader, [__DIR__ . '/../']),
         );
 
         $configuration->setNamingStrategy(new UnderscoreNamingStrategy(CASE_LOWER, true));
-        $configuration->addCustomStringFunction('field', Field::class);
+        //$configuration->addCustomStringFunction('field', Field::class);
+        $configuration->addCustomStringFunction('field', Dql\FieldFunction::class);
         $configuration->setSecondLevelCacheEnabled(true);
 
         $cacheConfiguration = new CacheConfiguration();
