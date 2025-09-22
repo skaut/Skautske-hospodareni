@@ -30,4 +30,10 @@
     <rule ref="PSR2.Methods.MethodDeclaration.Underscore">
         <exclude-pattern>/tests/*</exclude-pattern>
     </rule>
+    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint">
+        <exclude-pattern>tests/Http/NoOpResponse.php</exclude-pattern>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly.ReferenceViaFullyQualifiedName">
+        <exclude-pattern>tests/Http/NoOpResponse.php</exclude-pattern>
+    </rule>
 </ruleset>

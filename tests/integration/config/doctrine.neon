@@ -10,11 +10,16 @@ services:
     - Model\Common\Services\MessengerCommandBus(@messenger.commandBus.bus)
     - Model\Common\Services\MessengerQueryBus(@messenger.queryBus.bus)
     - Model\Common\Services\MessengerEventBus(@messenger.eventBus.bus)
+    http.response:
+        factory: Tests\Http\NoOpResponse
+        type: Nette\Http\IResponse
+
 
 extensions:
     console: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
     decorator: Nette\DI\Extensions\DecoratorExtension # default extension in Nette DI
     messenger: Fmasa\Messenger\DI\MessengerExtension
+    http: Nette\Bridges\HttpDI\HttpExtension
 
 messenger:
     buses:
