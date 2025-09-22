@@ -133,7 +133,7 @@ final class CreateRepaymentsHandler
         }
 
         if (! empty($errorMessages)) {
-            throw  BankError::fromMessage('API Error: ' . implode(' | ', $errorMessages), $errorCode);
+            throw BankError::fromMessage('API Error: ' . implode(' | ', $errorMessages), $errorCode);
         }
     }
 }

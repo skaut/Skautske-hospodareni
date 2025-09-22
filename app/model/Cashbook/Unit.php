@@ -31,7 +31,7 @@ class Unit extends Aggregate
     /**
      * @ORM\OneToMany(targetEntity=Cashbook::class, mappedBy="unit", cascade={"persist", "remove"}, orphanRemoval=true)
      *
-     * @var ArrayCollection<int, Cashbook>
+     * @var ArrayCollection&iterable<Cashbook>
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
     private $cashbooks;

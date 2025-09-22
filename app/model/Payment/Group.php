@@ -45,7 +45,7 @@ class Group
      *     indexBy="index"
      * )
      *
-     * @var Collection<int, Unit>
+     * @var Collection&iterable<Unit>
      */
     private Collection $units;
 
@@ -78,7 +78,7 @@ class Group
     /**
      * @ORM\OneToMany(targetEntity=Email::class, mappedBy="group", cascade={"persist", "remove"}, orphanRemoval=true)
      *
-     * @var Collection<int, Email>
+     * @var Collection&iterable<Email>
      */
     private Collection $emails;
 

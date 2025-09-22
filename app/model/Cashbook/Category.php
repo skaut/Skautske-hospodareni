@@ -49,7 +49,7 @@ class Category implements ICategory
     /**
      * @ORM\OneToMany(targetEntity=Category\ObjectType::class, mappedBy="category")
      *
-     * @var Collection<int, Category\ObjectType>
+     * @var Collection&iterable<\Model\Cashbook\Category\ObjectType>
      */
     private Collection $types;
 

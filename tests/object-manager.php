@@ -10,6 +10,7 @@ declare(strict_types=1);
 use Doctrine\Persistence\ObjectManager;
 use Nette\Bootstrap\Configurator;
 use Nette\DI\Extensions\ExtensionsExtension;
+use Tracy\Bridges\Nette\TracyExtension;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -29,7 +30,7 @@ $configurator->createRobotLoader()
 
 $configurator->defaultExtensions = [
     'extensions' => ExtensionsExtension::class,
-    'tracy' => [Tracy\Bridges\Nette\TracyExtension::class, ['%debugMode%', '%consoleMode%']],
+    'tracy' => [TracyExtension::class, ['%debugMode%', '%consoleMode%']],
 ];
 
 $configurator->addStaticParameters(['env' => getenv()]);

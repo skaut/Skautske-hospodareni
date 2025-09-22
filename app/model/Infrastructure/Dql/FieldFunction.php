@@ -1,12 +1,16 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Model\Infrastructure\Dql;
 
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
+use Doctrine\ORM\Query\AST\Node;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\TokenType;
+
+use function implode;
 
 /**
  * Kompatibilní implementace MySQL funkce FIELD() pro Doctrine ORM 2.20+.
@@ -15,7 +19,7 @@ use Doctrine\ORM\Query\TokenType;
  */
 final class FieldFunction extends FunctionNode
 {
-    private $expr;
+    private Node|string $expr;
     /** @var array<int,mixed> */
     private array $vals = [];
 
@@ -45,6 +49,7 @@ final class FieldFunction extends FunctionNode
         foreach ($this->vals as $v) {
             $parts[] = $v->dispatch($sqlWalker);
         }
+
         return 'FIELD(' . implode(', ', $parts) . ')';
     }
 }

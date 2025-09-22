@@ -72,8 +72,7 @@ class Vehicle
      *     orphanRemoval=true
      * )
      *
-     * @var Collection|RoadworthyScan[]
-     * @phpstan-var Collection<int, RoadworthyScan>
+     * @var Collection&iterable<RoadworthyScan>
      */
     private Collection $roadworthyScans;
 
