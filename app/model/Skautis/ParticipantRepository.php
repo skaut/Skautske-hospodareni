@@ -226,7 +226,7 @@ final class ParticipantRepository implements IParticipantRepository
 
         usort(
             $participants,
-            fn (Participant $one, Participant $two) => strcoll($one->getDisplayName(), $two->getDisplayName())
+            fn (Participant $one, Participant $two) => strcoll($one->getDisplayName(), $two->getDisplayName()),
         );
 
         return array_map([ParticipantDTOFactory::class, 'create'], $participants);

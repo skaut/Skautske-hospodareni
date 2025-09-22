@@ -216,7 +216,7 @@ class CashbookIntegrationTest extends IntegrationTest
         $this->assertTrue($event->getCashbookId()->equals($cashbookId));
     }
 
-    /** @return list<list<mixed>>> */
+    /** @return list<list<mixed>> */
     public function getValidTransfers(): array
     {
         return [ // expense -> income

@@ -49,8 +49,7 @@ class Payment extends Aggregate
     /**
      * @ORM\OneToMany(targetEntity=EmailRecipient::class, mappedBy="payment", cascade={"persist", "remove"}, orphanRemoval=true)
      *
-     * @phpstan-var Collection<int, EmailRecipient>
-     * @var Collection<int, EmailRecipient>
+     * @var Collection&iterable<EmailRecipient>
      */
     private Collection $emailRecipients;
 
@@ -97,7 +96,7 @@ class Payment extends Aggregate
     /**
      * @ORM\OneToMany(targetEntity=SentEmail::class, mappedBy="payment", cascade={"persist", "remove"}, orphanRemoval=true)
      *
-     * @var Collection<int, SentEmail>
+     * @var Collection&iterable<SentEmail>
      */
     private Collection $sentEmails;
 

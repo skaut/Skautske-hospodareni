@@ -62,7 +62,7 @@ class CashbookType extends Enum
         foreach ([self::TRANSFER_FROM_CATEGORY_IDS, self::TRANSFER_TO_CATEGORY_IDS] as $categoryIdsByType) {
             $types = array_filter(
                 array_keys($categoryIdsByType),
-                fn (string $cashbookType) => $categoryIdsByType[$cashbookType] === $chitCategoryId
+                fn (string $cashbookType) => $categoryIdsByType[$cashbookType] === $chitCategoryId,
             );
 
             if (count($types) !== 0) {

@@ -194,7 +194,7 @@ class ChitListControl extends BaseControl
     protected function createComponentChitScan(): Multiplier
     {
         return new Multiplier(
-            fn (string $chitId) => $this->chitScanFactory->create($this->cashbookId, (int) $chitId, $this->isEditable)
+            fn (string $chitId) => $this->chitScanFactory->create($this->cashbookId, (int) $chitId, $this->isEditable),
         );
     }
 
