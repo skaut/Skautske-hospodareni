@@ -48,7 +48,13 @@ abstract class IntegrationTest extends Codeception\Test\Unit
         $this->entityManager = $this->tester->grabService(EntityManager::class);
         $this->metadata      = array_map([$this->entityManager, 'getClassMetadata'], $this->getTestedEntities());
         $this->schemaTool    = new SchemaTool($this->entityManager);
+        // pro MySQL jistota kvůli FK
+        $conn = $this->entityManager->getConnection();
+        $conn->executeStatement('SET FOREIGN_KEY_CHECKS=0');
+
         $this->schemaTool->dropSchema($this->metadata);
+        $conn->executeStatement('SET FOREIGN_KEY_CHECKS=1');
+
         $this->schemaTool->createSchema($this->metadata);
     }
 
