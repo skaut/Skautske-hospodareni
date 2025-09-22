@@ -60,8 +60,7 @@ class Cashbook extends Aggregate
     /**
      * @ORM\OneToMany(targetEntity=Chit::class, mappedBy="cashbook", cascade={"persist", "remove"}, orphanRemoval=true)
      *
-     * @var Collection|Chit[]
-     * @phpstan-var Collection<int, Chit>
+     * @var Collection&iterable<Chit>
      */
     private Collection $chits;
 

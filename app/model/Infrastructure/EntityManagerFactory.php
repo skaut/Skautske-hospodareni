@@ -20,10 +20,11 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\Setup;
-use DoctrineExtensions\Query\Mysql\Field;
 use Model\Infrastructure\DoctrineNullableEmbeddables\Subscriber;
 use Psr\Cache\CacheItemPoolInterface;
+
 use function class_exists;
+
 use const CASE_LOWER;
 
 // BC wrapper pro lib očekávající Doctrine Cache
@@ -56,9 +57,6 @@ final class EntityManagerFactory
         $configuration->setQueryCache($this->cache('query'));
         // DBAL result cache
         $this->connection->getConfiguration()->setResultCache($this->cache('result'));
-
-
-
 
         $annotationsReader = $this->annotationsReader();
         $configuration->setMetadataDriverImpl(

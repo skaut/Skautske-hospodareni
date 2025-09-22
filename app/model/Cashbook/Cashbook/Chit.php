@@ -57,8 +57,7 @@ class Chit
      *     }
      * )
      *
-     * @var Collection|ChitItem[]
-     * @phpstan-var Collection<int, ChitItem>
+     * @var Collection&iterable<ChitItem>
      */
     private Collection $items;
 
@@ -86,8 +85,7 @@ class Chit
      *     orphanRemoval=true
      * )
      *
-     * @phpstan-var Collection<int, ChitScan>
-     * @var Collection|ChitScan[]
+     * @var Collection&iterable<ChitScan>
      */
     private Collection $scans;
 

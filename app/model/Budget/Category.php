@@ -36,7 +36,7 @@ class Category
      * @ORM\Column(type="string_enum")
      *
      * @var Operation
-     * @EnumAnnotation(class=\Model\Cashbook\Operation::class)
+     * @EnumAnnotation(class=Operation::class)
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
     private $type;
@@ -44,7 +44,7 @@ class Category
     /**
      * @ORM\OneToMany(targetEntity="Category", mappedBy="parent",cascade={"persist"})
      *
-     * @var Collection<int, Category>
+     * @var Collection&iterable<self>
      */
     private Collection $children;
 

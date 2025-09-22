@@ -70,8 +70,7 @@ class Command
     /**
      * @ORM\OneToMany(targetEntity=Travel::class, indexBy="id", mappedBy="command", cascade={"persist", "remove"}, orphanRemoval=true)
      *
-     * @var Collection|Travel[]
-     * @phpstan-var Collection<int, Travel>
+     * @var Collection&iterable<Travel>
      */
     private Collection $travels;
 

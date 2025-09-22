@@ -200,7 +200,7 @@ final class BankServiceTest extends Unit
             ->once()
             ->withArgs(
                 fn (ChronosDate $since, ChronosDate $until) => $since->equals(ChronosDate::today()->subDays(60))
-                    && $until->equals(ChronosDate::today())
+                    && $until->equals(ChronosDate::today()),
             )
             ->andReturn($transactions1);
 
