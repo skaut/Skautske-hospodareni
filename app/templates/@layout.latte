@@ -30,7 +30,7 @@
 
     <title>{block #title|stripHtml|trim}Skautské hospodaření{/block}</title>
 
-    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/app.css?{md5_file($wwwDir . '/css/app.css')}">
 </head>
 
 <body class="pb-5 position-relative">

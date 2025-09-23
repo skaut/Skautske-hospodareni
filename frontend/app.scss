@@ -2,6 +2,7 @@
 @import "scss/pikaday";
 @import  "~nprogress/nprogress";
 @import "scss/modals";
+@import "scss/landing";
 
 .btn-light {
   @include button-variant($light, darken($light, 30%));
