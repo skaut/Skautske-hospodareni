@@ -33,7 +33,17 @@ export default {
                     MiniCssExtractPlugin.loader,
                     'css-loader',
                     'postcss-loader',
-                    'sass-loader',
+                    {
+                        loader: 'sass-loader',
+                        options: {
+                            sassOptions: {
+                                // umlčí warnings z node_modules (Bootstrap apod.)
+                                quietDeps: true,
+                                // volitelné – potlačí konkrétní typy hlášek (Sass >=1.77)
+                                silenceDeprecations: ['mixed-decls', 'color-functions', 'import'],
+                            },
+                        },
+                    },
                 ],
             }
         ]
