@@ -45,6 +45,9 @@ jobs:
 
       - name: Install JS deps
         run: yarn install --frozen-lockfile
+      - name: Build production assets
+        run: yarn build-production
+
 
       # menší artefakt (bez .git)
       - name: Create tarball
@@ -316,7 +319,7 @@ jobs:
 
   deploy-beta:
     if: github.ref == 'refs/heads/beta'
-    needs: [checks-passed]
+    needs: [checks-passed, workdir]
     uses: ./.github/workflows/deploy-template.yml
     with:
       environment: beta
