@@ -49,6 +49,9 @@ jobs:
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
           eval $(ssh-agent -s)
           echo "$PRIVATE_KEY" | tr -d '\r' | ssh-add -
+          dep deploy:ssh_warmup ${{ inputs.environment }} -f /app/deploy.php -vvv          
+          echo "Waiting for container to initialize..."
+          sleep 10        
           dep deploy ${{ inputs.environment }} -f /app/deploy.php -vvv
         env:
           PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
