@@ -1,98 +1,320 @@
 {block title}Skautské hospodaření online{/block}
 
 {block #content}
-<div class="row">
 
-    <div class="col d-lg-none">
-        <h1 class="display-3">Skautské<br />hospodaření online</h1>
-        <p class="lead">Systém pro vyúčtování skautských akcí, online plateb i cestovních příkazů</p>
+
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Efektivní hospodaření pro skautské jednotky</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f9f6ef;
+            color: #2d4739;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .intro {
+            max-width: 1000px;
+            padding: 50px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            margin: 0 auto 30px;
+
+            @media only screen and (min-width: 768px) {
+                flex-direction: row;
+            }
+        }
+        .intro-left,
+        .intro-right {
+            @media only screen and (min-width: 768px) {
+                width: 50%;
+            }
+        }
+        .intro-left {
+            margin: auto 0;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.2rem;
+            color: #2d4739;
+            line-height: 66px;
+            text-transform: uppercase;
+
+            @media only screen and (min-width: 768px) {
+                font-size: 3rem;
+                text-align: left;
+            }
+
+            @media only screen and (min-width: 1000px) {
+                font-size: 4rem;
+            }
+        }
+        .intro-left p {
+            text-align: center;
+            font-size: 1.6rem;
+            color: #4e5e51;
+
+            @media only screen and (min-width: 768px) {
+                text-align: left;
+            }
+        }
+        .intro-right img {
+            width: 100%;
+            height: auto;
+        }
+        .intro-buttons {
+            max-width: 1000px;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 20px 0;
+
+            @media only screen and (min-width: 768px) {
+                flex-direction: row;
+            }
+        }
+        .btn {
+            background-color: #e5d5ae;
+            color: #2d4739;
+            padding: 12px 24px;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            box-shadow: 0 15px 35px 0px rgba(229, 213, 174, .3) !important;
+            transition: transform ease .5s;
+        }
+        .btn:hover {
+            background-color: #d1c09b;
+            transform: translateY(-3px);
+            transition: transform ease .5s;
+        }
+        .features {
+            max-width: 1100px;
+            margin: 0 20px;
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 20px;
+            background: white;
+            border-radius: 20px;
+            transform: translateY(-50px);
+            box-shadow: 0 15px 35px 0px rgba(229, 213, 174, .3) !important;
+            align-content: center;
+
+            @media only screen and (min-width: 768px) {
+                justify-content: space-around;
+                flex-direction: unset;
+            }
+
+            @media only screen and (min-width: 1150px) {
+                margin: 0 auto;
+            }
+        }
+        .features-item {
+            padding: 10px;
+            flex-direction: row;
+            text-align: center;
+            display: flex;
+            gap: 20px;
+
+            @media only screen and (min-width: 768px) {
+                flex: 1 1 250px;
+                flex-direction: unset;
+            }
+        }
+        .features-item-left {
+            margin: auto 0;
+        }
+        .features-item h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        .features-item-right {
+            text-align: left;
+        }
+        .features-item-right p {
+            margin: 0;
+        }
+        .services-container {
+            padding: 20px;
+            background: #e5d5ae;
+        }
+        .services {
+            margin: 0 auto;
+            max-width: 1000px;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            gap: 40px 20px;
+            padding: 50px 0;
+            align-content: center;
+
+            @media only screen and (min-width: 768px) {
+                justify-content: space-around;
+                flex-direction: unset;
+            }
+        }
+        .services-item {
+            text-align: center;
+            display: flex;
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+
+            @media only screen and (min-width: 768px) {
+                flex: 1 1 45%;
+                flex-direction: unset;
+            }
+        }
+        .services-item-right {
+            margin: auto 0;
+        }
+        .services-item-right h3 {
+            text-align: left;
+            font-size: 1.2rem;
+            margin: 0 0 10px;
+            color: #2d4739;
+        }
+        .services-item-right p {
+            margin: 0;
+            text-align: left;
+        }
+        .about {
+            max-width: 1000px;
+            margin: auto;
+            padding: 50px 20px;
+        }
+        .about h2 {
+            font-size: 2.5rem;
+        }
+        .about-button {
+            display: flex;
+        }
+        footer {
+            background-color: #2e5d3e;
+            color: #fff;
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.9rem;
+            margin-top: auto;
+        }
+        footer a {
+            color: #e6d1a8;
+            text-decoration: underline;
+        }
+        footer a:hover {
+            text-decoration: none;
+        }
+
+    </style>
+</head>
+
+
+{php $imgPath = 'images/front'}
+<body>
+<div class="container">
+    <div class="intro">
+        <div class="intro-left">
+            <h1>h.skauting.cz</h1>
+            <p>Efektivní hospodaření pro skautské jednotky</p>
+
+            <div class="intro-buttons">
+                <a href="{plink :Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL}" class="btn">Přihlásit se</a>
+                <a n:href=":Default:about" class="btn">Získat přístup</a>
+            </div>
+        </div>
+        <div class="intro-right">
+            <img src="./{$imgPath}/intro1.png" alt="Úvod">
+        </div>
     </div>
-    <div class="col d-none d-lg-block bg-posily" style="margin-top: 20px;">
-        <h1>Hledáme posily!</h1>
-        <p>
-            22. 10. 2022
-        </p>
-        <p>
-            Po 13 letech už mi dochází síly a hledám další posily. Celý kód je pod MIT licencí veřejný.
-        </p>
-        <p>
-            <a n:href="reinforcement" class="btn btn-success">Koho hledáme?</a>
-        </p>
-        <p>
-            Líbí se ti projekt, ale žádná pozice není pro Tebe? Zeptej se vaší radě jestli někdo nemá zájem!
-        </p>
 
+    <div class="features">
+        <div class="features-item">
+            <div class="features-item-left">
+                <img src="./{$imgPath}/calculate.png" alt="Účetnictví">
+            </div>
+            <div class="features-item-right">
+                <h3>Přehledné účetnictví</h3>
+                <p>Vedení příjmů a výdajů s automatickým generováním přehledů</p>
+            </div>
+        </div>
+        <div class="features-item">
+            <div class="features-item-left">
+                <img src="./{$imgPath}/house.png" alt="Majetek">
+            </div>
+            <div class="features-item-right">
+                <h3>Správa majetku</h3>
+                <p>Evidence vybavení a jeho stavu</p>
+            </div>
+        </div>
+        <div class="features-item">
+            <div class="features-item-left">
+                <img src="./{$imgPath}/file.png" alt="Reporty">
+            </div>
+            <div class="features-item-right">
+                <h3>Exporty a reporty</h3>
+                <p>Generování výkazů pro nadřízené orgány a kontrolní komise</p>
+            </div>
+        </div>
     </div>
-
-    <div class="row d-none mt-3 mb-3 d-lg-block">
-        <div id="homepageCarousel" class="carousel slide ps-0 pe-0" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <img src="{$baseUrl}/images/front/prehled-akci.png" class="d-block w-100" alt="Seznamu skautských výprav" />
-                    <div class="carousel-caption">
-                        <h4>Seznam výprav</h4>
-                        <p>Přehled akcí zobrazený podle aktuální role. Výpravy můžete fitrovat podle stavu zpracování a roku konání.</p>
-                    </div>
+    <div class="services-container">
+        <div class="services">
+            <div class="services-item">
+                <div class="services-item-left">
+                    <img src="./{$imgPath}/database.png" alt="Centralizace">
                 </div>
-                <div class="carousel-item">
-                    <img src="{$baseUrl}/images/front/zakladni-udaje-akce.png" class="d-block w-100" a lt="Základní údaje účtované skautské výpravy" />
-                    <div class="carousel-caption">
-                        <h4>Základní údaje o akci</h4>
-                        <p>Základní informace o akci a jejím vedení. Akci zde můžete upravit nebo ji uzavřít a získat výstupy pro tisk.</p>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <img src="{$baseUrl}/images/front/seznam-ucastniku-akce.png" class="d-block w-100" alt="Seznam účastníků skautské akce" />
-                    <div class="carousel-caption">
-                        <h4>Seznam účastníků</h4>
-                        <p>Kliknutím přidáte účastníka, pak nastavíte poplatek a máte seznam účastníků se všemi údaji hotový.</p>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <img src="{$baseUrl}/images/front/pokladni-kniha.png" class="d-block w-100" alt="Evidence plateb pro hospodaření výpravy" />
-                    <div class="carousel-caption">
-                        <h4>Evidence plateb</h4>
-                        <p>Příjmy a výdaje s kontrolou nezáporného stavu. Částky lze zadávat i jako výraz (např.: 7*52 + 5).</p>
-                    </div>
+                <div class="services-item-right">
+                    <h3>Centralizace dat</h3>
+                    <p>všechna finanční data na jednom místě</p>
                 </div>
             </div>
-            <button type="button" class="carousel-control-prev" data-bs-target="#homepageCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Předchozí</span>
-            </button>
-            <button type="button" class="carousel-control-next" data-bs-target="#homepageCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Další</span>
-            </button>
+            <div class="services-item">
+                <div class="services-item-left">
+                    <img src="./{$imgPath}/badge.png" alt="Bezpečnost">
+                </div>
+                <div class="services-item-right">
+                    <h3>Bezpečnost</h3>
+                    <p>Přístupová práva a zálohování dat</p>
+                </div>
+            </div>
+            <div class="services-item">
+                <div class="services-item-left">
+                    <img src="./{$imgPath}/integration.png" alt="Integrace">
+                </div>
+                <div class="services-item-right">
+                    <h3>Integrace</h3>
+                    <p>Všechna finanční data</p>
+                </div>
+            </div>
+            <div class="services-item">
+                <div class="services-item-left">
+                    <img src="./{$imgPath}/support.png" alt="Podpora">
+                </div>
+                <div class="services-item-right">
+                    <h3>Podpora</h3>
+                    <p>Přístupová práva</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="about">
+        <h2>O projektu</h2>
+        <p>Chceš se dozvědět více o projektu Skautské hospodaření online? Poznat jeho historii nebo vytvářet jeho budoucnost?</p><br>
+        <div class="about-button">
+            <a n:href=":Default:about" class="btn">Chci vědět více</a>
         </div>
     </div>
 </div>
-
-
-<div class="row">
-    <div class="col-lg-3 col-md-6 mb-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <h4 class="card-title">O projektu</h4>
-                <p class="card-text">Chceš se dozvědět více o projektu Skautské hospodaření online? Poznat jeho historii nebo vytvářet jeho budoucnoust?</p>
-            </div>
-            <div class="card-footer">
-                <a n:href=":Default:about" class="btn btn-secondary">Chci vědět víc</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-6 col-md-6 mb-4 d-none d-md-block">
-        <div id="fb-root"></div>
-        <div class="fb-page"
-             data-href="https://www.facebook.com/SkautskeOnlineUcetnictvi"
-             data-width="500"
-             data-height="350"
-             data-tabs="timeline"
-             data-show-facepile="true"
-             data-small-header="true"
-             data-adapt-container-width="true"></div>
-    </div>
-</div>
-
-<script async defer crossorigin="anonymous" src="https://connect.facebook.net/cs_CZ/sdk.js#xfbml=1&version=v6.0"></script>
