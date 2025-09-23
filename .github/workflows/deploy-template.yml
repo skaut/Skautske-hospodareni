@@ -44,9 +44,7 @@ jobs:
           path: .
       - name: Extract workdir
         run: tar -xzpf workdir.tar.gz
-
       - name: Run deploy
-
         run: |
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
           eval $(ssh-agent -s)
