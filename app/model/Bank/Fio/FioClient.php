@@ -21,10 +21,25 @@ use function array_map;
 use function array_reverse;
 use function sprintf;
 
+use const PHP_EOL;
+
 class FioClient implements IFioClient
 {
     public function __construct(private IDownloaderFactory $downloaderFactory, private LoggerInterface $logger)
     {
+    }
+
+    public function get(): void
+    {
+        //TODO
+        /*
+         * Vytvorit tabulku s nastavení účtů a plateb pro automatické párování, nebudou se vždy párovat všechny účtu a všechny platby
+         * Pokud bude mít uživatel možnost nastavit čas párování, pak je potřeba zadat jej do nastavení a zohlednit při stahování z banky
+         * Stáhnout platby všech nastavených účtů
+         * Provést párování a zapsat do dané platby, kolik plateb bylo kdy spárováno. Toto číslo vypsat uživateli
+         * Přesunout do obecné servisy, aby bylo možné případně napojit i jiné banky.
+         */
+        echo 'GET' . PHP_EOL;
     }
 
     /**

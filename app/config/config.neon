@@ -52,6 +52,7 @@ extensions:
     messenger: Fmasa\Messenger\DI\MessengerExtension
     console: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
     console.cache: Contributte\Console\Extra\DI\CacheConsoleExtension(%consoleMode%)
+    scheduler: Contributte\Scheduler\DI\SchedulerExtension
 
 search:
     command handlers:
@@ -237,6 +238,12 @@ services:
           processors:
               - Model\Infrastructure\Log\Monolog\UserContextProcessor()
               - Model\Infrastructure\Log\Monolog\FormContextProcessor()
+
+scheduler:
+	jobs:
+		# stats must be registered as service and have method calculate
+		- { cron: '* * * * *', callback: [ @fio.client, get ] }
+
 
 decorator:
     Monolog\Logger:
