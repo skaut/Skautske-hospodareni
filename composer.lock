@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cc4a21a02bd1ef8d5f904da836989cf7",
+    "content-hash": "9947d46982d53c862ad4bdc5f9b2a7b2",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -881,6 +881,85 @@
                 }
             ],
             "time": "2023-09-05T08:23:55+00:00"
+        },
+        {
+            "name": "contributte/scheduler",
+            "version": "v0.7.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/contributte/scheduler.git",
+                "reference": "eb2c21094fc3563ebbf82c5a280fc59d451af988"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/contributte/scheduler/zipball/eb2c21094fc3563ebbf82c5a280fc59d451af988",
+                "reference": "eb2c21094fc3563ebbf82c5a280fc59d451af988",
+                "shasum": ""
+            },
+            "require": {
+                "contributte/di": "^0.5",
+                "dragonmantank/cron-expression": "^3.0.1",
+                "php": ">=7.2",
+                "symfony/console": "^5.0.0 || ^6.0.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.2.0",
+                "ninjify/nunjuck": "^0.4",
+                "ninjify/qa": "^0.13",
+                "phpstan/phpstan": "^1.0",
+                "phpstan/phpstan-deprecation-rules": "^1.0",
+                "phpstan/phpstan-nette": "^1.0",
+                "phpstan/phpstan-strict-rules": "^1.0",
+                "tracy/tracy": "^2.6.2"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.8.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Contributte\\Scheduler\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Milan Felix Šulc",
+                    "homepage": "https://f3l1x.io"
+                },
+                {
+                    "name": "Josef Benjac",
+                    "homepage": "http://josefbenjac.com"
+                }
+            ],
+            "description": "PHP job scheduler (cron) with locking",
+            "homepage": "https://github.com/contributte/scheduler",
+            "keywords": [
+                "contributte",
+                "cron",
+                "nette",
+                "scheduler"
+            ],
+            "support": {
+                "issues": "https://github.com/contributte/scheduler/issues",
+                "source": "https://github.com/contributte/scheduler/tree/v0.7.3"
+            },
+            "funding": [
+                {
+                    "url": "https://contributte.org/partners.html",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/f3l1x",
+                    "type": "github"
+                }
+            ],
+            "time": "2022-02-10T12:08:12+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -2007,6 +2086,71 @@
                 }
             ],
             "time": "2024-10-30T19:48:12+00:00"
+        },
+        {
+            "name": "dragonmantank/cron-expression",
+            "version": "v3.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dragonmantank/cron-expression.git",
+                "reference": "8c784d071debd117328803d86b2097615b457500"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dragonmantank/cron-expression/zipball/8c784d071debd117328803d86b2097615b457500",
+                "reference": "8c784d071debd117328803d86b2097615b457500",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2|^8.0",
+                "webmozart/assert": "^1.0"
+            },
+            "replace": {
+                "mtdowling/cron-expression": "^1.0"
+            },
+            "require-dev": {
+                "phpstan/extension-installer": "^1.0",
+                "phpstan/phpstan": "^1.0",
+                "phpunit/phpunit": "^7.0|^8.0|^9.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Cron\\": "src/Cron/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Chris Tankersley",
+                    "email": "chris@ctankersley.com",
+                    "homepage": "https://github.com/dragonmantank"
+                }
+            ],
+            "description": "CRON for PHP: Calculate the next or previous run date and determine if a CRON expression is due",
+            "keywords": [
+                "cron",
+                "schedule"
+            ],
+            "support": {
+                "issues": "https://github.com/dragonmantank/cron-expression/issues",
+                "source": "https://github.com/dragonmantank/cron-expression/tree/v3.4.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/dragonmantank",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-10-09T13:47:03+00:00"
         },
         {
             "name": "firebase/php-jwt",
@@ -9816,6 +9960,64 @@
                 "source": "https://github.com/warhuhn/chronos-php"
             },
             "time": "2023-11-19T23:17:49+00:00"
+        },
+        {
+            "name": "webmozart/assert",
+            "version": "1.11.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webmozarts/assert.git",
+                "reference": "11cb2199493b2f8a3b53e7f19068fc6aac760991"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webmozarts/assert/zipball/11cb2199493b2f8a3b53e7f19068fc6aac760991",
+                "reference": "11cb2199493b2f8a3b53e7f19068fc6aac760991",
+                "shasum": ""
+            },
+            "require": {
+                "ext-ctype": "*",
+                "php": "^7.2 || ^8.0"
+            },
+            "conflict": {
+                "phpstan/phpstan": "<0.12.20",
+                "vimeo/psalm": "<4.6.1 || 4.6.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^8.5.13"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.10-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Webmozart\\Assert\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bernhard Schussek",
+                    "email": "bschussek@gmail.com"
+                }
+            ],
+            "description": "Assertions to validate method input/output with nice error messages.",
+            "keywords": [
+                "assert",
+                "check",
+                "validate"
+            ],
+            "support": {
+                "issues": "https://github.com/webmozarts/assert/issues",
+                "source": "https://github.com/webmozarts/assert/tree/1.11.0"
+            },
+            "time": "2022-06-03T18:03:27+00:00"
         }
     ],
     "packages-dev": [
