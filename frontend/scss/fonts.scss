@@ -1,0 +1,22 @@
+$font-cdn: 'https://cdn.skauting.cz/fonts';
+
+@mixin font-face($family, $file, $weight, $style: normal, $svg-id: null) {
+  @font-face {
+    font-family: quote($family);
+    src: url('#{$font-cdn}/#{$file}.eot');
+    src: url('#{$font-cdn}/#{$file}.eot?#iefix') format('embedded-opentype'),
+    url('#{$font-cdn}/#{$file}.woff2') format('woff2'),
+    url('#{$font-cdn}/#{$file}.woff') format('woff'),
+    url('#{$font-cdn}/#{$file}.otf') format('opentype'),
+    url('#{$font-cdn}/#{$file}.svg##{if($svg-id, $svg-id, $family)}') format('svg');
+    font-weight: $weight;
+    font-style: $style;
+  }
+}
+
+@include font-face('themix', 'TheMix_LT_400', 400, normal, 'themix');
+@include font-face('themix', 'TheMix_LT_400i', 400, italic, 'themix');
+@include font-face('themix', 'TheMix_LT_700', 700, normal, 'themix');
+@include font-face('themix', 'TheMix_LT_700i', 700, italic, 'themix');
+
+@include font-face('skautbold', 'skaut-bold-webfont', normal, normal, 'skautbold');
