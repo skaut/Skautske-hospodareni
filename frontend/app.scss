@@ -3,6 +3,7 @@
 @import  "~nprogress/nprogress";
 @import "scss/modals";
 @import "scss/landing";
+@import "scss/fonts";
 
 .btn-light {
   @include button-variant($light, darken($light, 30%));
