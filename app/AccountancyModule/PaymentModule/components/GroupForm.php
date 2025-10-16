@@ -165,6 +165,7 @@ final class GroupForm extends BaseControl
         $emails = [
             EmailType::PAYMENT_INFO => $this->buildEmailTemplate($v, EmailType::PAYMENT_INFO),
             EmailType::PAYMENT_COMPLETED => $this->buildEmailTemplate($v, EmailType::PAYMENT_COMPLETED),
+            EmailType::PAYMENT_REMINDER => $this->buildEmailTemplate($v, EmailType::PAYMENT_REMINDER),
         ];
 
         $emails  = array_filter($emails);
@@ -240,6 +241,8 @@ final class GroupForm extends BaseControl
         $emails = [
             EmailType::PAYMENT_INFO => 'E-mail s platebními údaji',
             EmailType::PAYMENT_COMPLETED => 'E-mail při dokončení platby',
+          //  EmailType::PAYMENT_CANCELED =>  'E-mail při zrušení platby',
+            EmailType::PAYMENT_REMINDER => 'E-mail upomínka platby',
         ];
 
         foreach ($emails as $type => $caption) {
@@ -261,7 +264,7 @@ final class GroupForm extends BaseControl
 
             $container->addText('subject', 'Předmět e-mailu')
                 ->setOption('id', $subjectId);
-            $container->addTextArea('body', 'Text mailu')
+            $container->addTextArea('body', 'Text mailu', 10, 20)
                 ->setOption('id', $bodyId)
                 ->setHtmlAttribute('class', 'form-control')
                 ->setDefaultValue($this->getDefaultEmailBody($type));

@@ -16,6 +16,10 @@ final class EmailType extends Enum
 
     public const PAYMENT_COMPLETED = 'payment_completed';
 
+    public const PAYMENT_CANCELED = 'payment_canceled';
+
+    public const PAYMENT_REMINDER = 'payment_reminder';
+
     public function toString(): string
     {
         return $this->getValue();
