@@ -133,7 +133,7 @@
         ],
         "coding-pretty": "vendor/bin/phpcbf app",
         "coding-standard": [
-            "vendor/bin/phpcbf app",
+            "vendor/bin/phpcbf app tests",
             "vendor/bin/phpcs"
         ],
         "coding-standard-ci": "vendor/bin/phpcs",

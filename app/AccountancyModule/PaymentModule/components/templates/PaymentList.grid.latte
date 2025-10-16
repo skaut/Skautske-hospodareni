@@ -20,11 +20,15 @@
                             <div class="flex-grow-1">
                                 <i class="far fa-envelope-open"></i>
                                 {var $emailType = $email->getType()->toString()}
-                                {if $emailType === 'payment_info'}
+                                {switch $emailType}
+                                    {case \Model\Payment\EmailType::PAYMENT_INFO}
                                     Platební údaje
-                                {elseif $emailType === 'payment_completed'}
+                                    {case \Model\Payment\EmailType::PAYMENT_COMPLETED}
                                     Potvrzení o dokončení platby
-                                {/if}
+                                    {case \Model\Payment\EmailType::PAYMENT_REMINDER}
+                                    Upomínka platby
+                                {/switch}
+
                             </div>
                             <div class="small text-muted text-center ms-3">
                                 odeslal {$email->getTime()|date:'d.m.Y'} uživatel {$email->getSenderName()}
@@ -53,10 +57,15 @@
                 n:class="btn, btn-sm, btn-primary, !empty($item->getEmailRecipients()) ? 'ui--sendEmail', empty($item->getEmailRecipients()) ? disabled"
            title="{empty($item->getEmailRecipients()) ? 'Není uveden email' : 'Odeslat e-mail o platbě'}"><i
                     class="far fa-envelope-open"></i></a>
+        {if $isReminderSendActive}
+        <a href="{plink sendReminder! $item->id}"
+                n:class="btn, btn-sm, btn-warning, !empty($item->getEmailRecipients()) ? 'ui--sendEmail', empty($item->getEmailRecipients()) ? disabled"
+           title="{empty($item->getEmailRecipients()) ? 'Není uveden email' : 'Odeslat e-mail o platbě'}"><i
+                    class="far fa-bell"></i></a>
+        {/if}
         <a href="{plink complete! $item->getId()}" class="btn btn-sm btn-success" title="Zaplaceno"><i
                     class="fas fa-check"></i></a>
     {elseif $item->isClosed()}
-        <span title="Datum uzavření platby">{$item->getClosedAt()|date:'j.n.Y'}</span>
         <a href="{plink paymentNoteDialog:open! $item->getId()}"
            class="btn btn-sm btn-secondary ajax"
            title="Upravit poznámku"><i class="fa fa-comment"></i></a>
