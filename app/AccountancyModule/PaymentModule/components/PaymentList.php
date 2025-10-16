@@ -8,10 +8,21 @@ use App\AccountancyModule\Components\BaseControl;
 use App\AccountancyModule\Components\DataGrid;
 use App\AccountancyModule\Factories\GridFactory;
 use App\AccountancyModule\Grids\DtoListDataSource;
+use Model\Common\Services\CommandBus;
 use Model\Common\Services\QueryBus;
 use Model\DTO\Payment\Payment;
+use Model\Google\Exception\OAuthNotSet;
+use Model\Google\InvalidOAuth;
+use Model\Payment\Commands\Mailing\SendPaymentInfo;
+use Model\Payment\Commands\Mailing\SendPaymentReminder;
+use Model\Payment\EmailType;
+use Model\Payment\InvalidBankAccount;
 use Model\Payment\Payment\State;
+use Model\Payment\PaymentClosed;
+use Model\Payment\PaymentNotFound;
+use Model\Payment\ReadModel\Queries\GroupEmailQuery;
 use Model\Payment\ReadModel\Queries\PaymentListQuery;
+use Model\PaymentService;
 
 use function array_flip;
 use function array_reverse;
@@ -26,7 +37,7 @@ final class PaymentList extends BaseControl
         State::CANCELED,
     ];
 
-    public function __construct(private int $groupId, private bool $isEditable, private QueryBus $queryBus, private GridFactory $gridFactory)
+    public function __construct(private PaymentService $model, private CommandBus $commandBus, private int $groupId, private bool $isEditable, private QueryBus $queryBus, private GridFactory $gridFactory)
     {
     }
 
@@ -38,12 +49,21 @@ final class PaymentList extends BaseControl
 
     protected function createComponentGrid(): DataGrid
     {
-        $grid = $this->gridFactory->createSimpleGrid(
+        $email = $this->queryBus->handle(new GroupEmailQuery($this->groupId, EmailType::get(EmailType::PAYMENT_REMINDER)));
+        $grid  = $this->gridFactory->createSimpleGrid(
             __DIR__ . '/templates/PaymentList.grid.latte',
-            ['isEditable' => $this->isEditable],
+            [
+                'isEditable' => $this->isEditable,
+                'isReminderSendActive' => $email->isEnabled(),
+            ],
         );
         $grid->setRememberState(false, true);
         $grid->setColumnsHideable();
+
+        $grid->addGroupButtonAction('Odeslat email')->onClick[]    = [$this, 'sendMail'];
+        $grid->addGroupButtonAction('Odeslat upomínku')->onClick[] = [$this, 'sendReminder'];
+        $grid->addGroupButtonAction('Zaplaceno')->onClick[]        = [$this, 'setPay'];
+        $grid->addGroupButtonAction('Zrušit')->onClick[]           = [$this, 'setCancel'];
 
         $grid->addColumnText('name', 'Název/účel')
             ->setSortable()
@@ -74,6 +94,9 @@ final class PaymentList extends BaseControl
         $grid->addColumnDateTime('dueDate', 'Splatnost')
             ->setSortable();
 
+        $grid->addColumnDateTime('closedAt', 'Zaplaceno')
+            ->setSortable();
+
         $grid->addColumnDateTime('Note', 'Poznámka')
             ->setSortable()
             ->setDefaultHide();
@@ -98,5 +121,108 @@ final class PaymentList extends BaseControl
         $grid->setDefaultSort(['state' => DataGrid::SORT_ASC]);
 
         return $grid;
+    }
+
+    /** @param array<int,int> $ids */
+    public function sendMail(array $ids): void
+    {
+        $count = 0;
+        foreach ($ids as $id) {
+            try {
+                $this->commandBus->handle(new SendPaymentInfo($id));
+                $count++;
+            } catch (OAuthNotSet) {
+                $this->flashMessage(EmailButton::NO_MAILER_MESSAGE, 'warning');
+                $this->redirect('this');
+            } catch (InvalidBankAccount) {
+                $this->flashMessage(EmailButton::NO_BANK_ACCOUNT_MESSAGE, 'warning');
+                $this->redirect('this');
+            } catch (InvalidOAuth $e) {
+                $this->flashMessage($e->getExplainedMessage(), 'danger');
+                $this->presenter->redirect('this');
+            } catch (PaymentClosed) {
+                $this->flashMessage('Nelze odeslat uzavřenou platbu', 'warning');
+            }
+        }
+
+        if ($count === 1) {
+            $this->presenter->flashMessage($count . ' informační e-mail odeslán', 'info');
+        } else {
+            $this->presenter->flashMessage($count . ' Informačních e-mailů odesláno', 'info');
+        }
+
+        $this->presenter->redirect('this');
+    }
+
+    /** @param array<int,int> $ids */
+    public function sendReminder(array $ids): void
+    {
+        $count = 0;
+        foreach ($ids as $id) {
+            try {
+                $this->commandBus->handle(new SendPaymentReminder($id));
+                $count++;
+            } catch (OAuthNotSet) {
+                $this->flashMessage(EmailButton::NO_MAILER_MESSAGE, 'warning');
+                $this->redirect('this');
+            } catch (InvalidBankAccount) {
+                $this->flashMessage(EmailButton::NO_BANK_ACCOUNT_MESSAGE, 'warning');
+                $this->redirect('this');
+            } catch (InvalidOAuth $e) {
+                $this->flashMessage($e->getExplainedMessage(), 'danger');
+                $this->presenter->redirect('this');
+            } catch (PaymentClosed) {
+                $this->flashMessage('Nelze odeslat uzavřenou platbu', 'warning');
+            }
+        }
+
+        if ($count > 0) {
+            if ($count === 1) {
+                $this->presenter->flashMessage($count . ' upomínkový e-mailů odeslán', 'info');
+            } else {
+                $this->presenter->flashMessage($count . ' upomínkových e-mailů odesláno', 'info');
+            }
+        }
+
+        $this->presenter->redirect('this');
+    }
+
+    /** @param array<int,int> $ids */
+    public function setPay(array $ids): void
+    {
+        if (! $this->isEditable) {
+            $this->flashMessage('Nejste oprávněni k uzavření platby!', 'danger');
+            $this->redirect('this');
+        }
+
+        foreach ($ids as $id) {
+            try {
+                $this->model->completePayment($id);
+                $this->flashMessage('Platba byla zaplacena.');
+            } catch (PaymentClosed) {
+                $this->flashMessage('Tato platba už je uzavřená', 'danger');
+            } catch (InvalidOAuth $exc) {
+                $this->flashMessage($exc->getExplainedMessage(), 'danger');
+            }
+        }
+
+        $this->presenter->redirect('this');
+    }
+
+    /** @param array<int,int> $ids */
+    public function setCancel(array $ids): void
+    {
+        foreach ($ids as $id) {
+            try {
+                $this->model->cancelPayment($id);
+                $this->flashMessage('Platba byla uzavřena');
+            } catch (PaymentNotFound) {
+                $this->flashMessage('Platba nenalezena!', 'danger');
+            } catch (PaymentClosed) {
+                $this->flashMessage('Tato platba už je uzavřená: ' . $id, 'warning');
+            }
+        }
+
+        $this->presenter->redirect('this');
     }
 }
