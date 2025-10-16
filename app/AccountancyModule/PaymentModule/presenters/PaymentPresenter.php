@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\PaymentModule;
 
 use App\AccountancyModule\ExcelResponse;
+use App\AccountancyModule\PaymentModule\Components\EmailButton;
 use App\AccountancyModule\PaymentModule\Components\GroupProgress;
 use App\AccountancyModule\PaymentModule\Components\GroupUnitControl;
 use App\AccountancyModule\PaymentModule\Components\ImportDialog;
@@ -14,6 +15,7 @@ use App\AccountancyModule\PaymentModule\Components\PaymentDialog;
 use App\AccountancyModule\PaymentModule\Components\PaymentList;
 use App\AccountancyModule\PaymentModule\Components\PaymentNoteDialog;
 use App\AccountancyModule\PaymentModule\Components\RemoveGroupDialog;
+use App\AccountancyModule\PaymentModule\Factories\IEmailButtonFactory;
 use App\AccountancyModule\PaymentModule\Factories\IGroupUnitControlFactory;
 use App\AccountancyModule\PaymentModule\Factories\IImportDialogFactory;
 use App\AccountancyModule\PaymentModule\Factories\IMassAddFormFactory;
@@ -29,11 +31,9 @@ use Model\ExcelService;
 use Model\Google\Exception\OAuthNotSet;
 use Model\Google\InvalidOAuth;
 use Model\Payment\Commands\Mailing\SendPaymentInfo;
-use Model\Payment\EmailNotSet;
 use Model\Payment\GroupNotFound;
 use Model\Payment\InvalidBankAccount;
 use Model\Payment\InvalidVariableSymbol;
-use Model\Payment\MailingService;
 use Model\Payment\Payment\State;
 use Model\Payment\PaymentClosed;
 use Model\Payment\PaymentNotFound;
@@ -64,16 +64,16 @@ class PaymentPresenter extends BasePresenter
     /** @var string[] */
     protected array $readUnits;
 
-    private const NO_MAILER_MESSAGE       = 'Nemáte nastavený mail pro odesílání u skupiny';
-    private const NO_BANK_ACCOUNT_MESSAGE = 'Skupina nemá nastavený bankovní účet';
+    /** @var Payment[] */
+    protected array $payments;
 
     public function __construct(
         private PaymentService $model,
         protected UnitService $unitService,
-        private MailingService $mailing,
         private ExcelService $excelService,
         private IMassAddFormFactory $massAddFormFactory,
         private IPairButtonFactory $pairButtonFactory,
+        private IEmailButtonFactory $emailButtonFactory,
         private IGroupUnitControlFactory $unitControlFactory,
         private IRemoveGroupDialogFactory $removeGroupDialogFactory,
         private IPaymentDialogFactory $paymentDialogFactory,
@@ -94,6 +94,7 @@ class PaymentPresenter extends BasePresenter
 
     public function actionDefault(int $id): void
     {
+        $this->assertCanEditGroup();
         $group = $this->model->getGroup($id);
 
         if ($group === null || ! $this->hasAccessToGroup($group)) {
@@ -114,18 +115,15 @@ class PaymentPresenter extends BasePresenter
             $nextVS = null;
         }
 
-        $payments = $this->getPaymentsForGroup($id);
-
-        $paymentsForSendEmail = $this->paymentsAvailableForGroupInfoSending($payments);
+        $this->payments = $this->getPaymentsForGroup($id);
 
         $this->template->setParameters([
             'group' => $group,
             'nextVS' => $nextVS,
-            'payments'  => $payments,
+            'payments'  => $this->payments,
             'summarize' => $this->model->getGroupSummaries([$id])[$id],
             'now'       => new DateTimeImmutable(),
-            'isGroupSendActive' => $group->getState() === 'open' && ! empty($paymentsForSendEmail),
-            'notSentPaymentsCount' => $this->countNotSentPayments($payments),
+            'notSentPaymentsCount' => $this->countNotSentPayments($this->payments),
         ]);
     }
 
@@ -198,47 +196,19 @@ class PaymentPresenter extends BasePresenter
         }
 
         try {
-            $this->sendEmailsForPayments([$payment]);
+            $this->commandBus->handle(new SendPaymentInfo($payment->getId()));
+        } catch (OAuthNotSet) {
+            $this->flashMessage(EmailButton::NO_MAILER_MESSAGE, 'warning');
+            $this->redirect('this');
+        } catch (InvalidBankAccount) {
+            $this->flashMessage(EmailButton::NO_BANK_ACCOUNT_MESSAGE, 'warning');
+            $this->redirect('this');
+        } catch (InvalidOAuth $e) {
+            $this->flashMessage($e->getExplainedMessage(), 'danger');
+            $this->presenter->redirect('this');
         } catch (PaymentClosed) {
             $this->flashMessage('Nelze odeslat uzavřenou platbu');
         }
-    }
-
-    /**
-     * rozešle všechny neposlané e-maily
-     *
-     * @param int $gid groupId
-     */
-    public function handleSendGroup(int $gid): void
-    {
-        $this->assertCanEditGroup();
-
-        $payments = $this->getPaymentsForGroup($gid);
-
-        $this->sendEmailsForPayments($this->paymentsAvailableForGroupInfoSending($payments));
-    }
-
-    public function handleSendTest(int $gid): void
-    {
-        if (! $this->isEditable) {
-            $this->flashMessage('Neplatný požadavek na odeslání testovacího e-mailu!', 'danger');
-            $this->redirect('this');
-        }
-
-        try {
-            $email = $this->mailing->sendTestMail($gid);
-            $this->flashMessage('Testovací e-mail byl odeslán na ' . $email . '.');
-        } catch (OAuthNotSet) {
-            $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
-        } catch (InvalidOAuth $e) {
-            $this->oauthError($e);
-        } catch (InvalidBankAccount) {
-            $this->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
-        } catch (EmailNotSet) {
-            $this->flashMessage('Nemáte nastavený e-mail ve skautisu, na který by se odeslal testovací e-mail!', 'danger');
-        }
-
-        $this->redirect('this');
     }
 
     public function handleComplete(int $pid): void
@@ -386,6 +356,13 @@ class PaymentPresenter extends BasePresenter
         return $this->pairButtonFactory->create();
     }
 
+    protected function createComponentEmailButton(): EmailButton
+    {
+        $group = $this->model->getGroup($this->id);
+
+        return $this->emailButtonFactory->create($this->isEditable, $this->payments, $group);
+    }
+
     protected function createComponentMassAddForm(): MassAddForm
     {
         return $this->massAddFormFactory->create($this->id);
@@ -408,63 +385,10 @@ class PaymentPresenter extends BasePresenter
         return new GroupProgress($this->model->getGroupSummaries([$this->id])[$this->id]);
     }
 
-    private function oauthError(InvalidOAuth $e): void
-    {
-        $this->flashMessage($e->getExplainedMessage(), 'danger');
-    }
-
-    /** @param Payment[] $payments */
-    private function sendEmailsForPayments(array $payments): void
-    {
-        $sentCount = 0;
-
-        try {
-            foreach ($payments as $payment) {
-                $this->commandBus->handle(new SendPaymentInfo($payment->getId()));
-                $sentCount++;
-            }
-        } catch (OAuthNotSet) {
-            $this->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
-            $this->redirect('this');
-        } catch (InvalidBankAccount) {
-            $this->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
-            $this->redirect('this');
-        } catch (InvalidOAuth $e) {
-            $this->oauthError($e);
-            $this->redirect('this');
-        }
-
-        if ($sentCount > 0) {
-            $this->flashMessage(
-                $sentCount === 1
-                    ? 'Informační e-mail byl odeslán'
-                    : 'Informační e-maily (' . $sentCount . ') byly odeslány',
-                'success',
-            );
-        }
-
-        $this->redirect('this');
-    }
-
     /** @return Payment[] */
     private function getPaymentsForGroup(int $groupId): array
     {
         return $this->queryBus->handle(new PaymentListQuery($groupId));
-    }
-
-    /**
-     * @param Payment[] $payments
-     *
-     * @return Payment[]
-     */
-    private function paymentsAvailableForGroupInfoSending(array $payments): array
-    {
-        return array_filter(
-            $payments,
-            function (Payment $p) {
-                return ! $p->isClosed() && ! empty($p->getEmailRecipients()) && $p->getSentEmails() === [];
-            },
-        );
     }
 
     /** @param Payment[] $payments */

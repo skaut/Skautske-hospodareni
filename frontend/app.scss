@@ -90,6 +90,11 @@ table.table a:hover {
   background-color: #000000;
 }
 
+.visually-disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 :root[data-bs-theme="dark"] {
   .bg-posily {
     --bs-bg-opacity: 0.2;
