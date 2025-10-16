@@ -7,6 +7,8 @@ import './ts/checkAll';
 import initializeAjax from './ts/ajax';
 import './app.scss';
 
+import { HelpPanelModule } from './modules/HelpPanelModule';
+
 // Use czech language for dates
 moment.locale('cs');
 
@@ -15,5 +17,11 @@ document.addEventListener('DOMContentLoaded', () => {
     new DarkModeToggle('darkModeToggle');
     new LogoutTimer('timer', 'timer-minutes');
     dom.watch();
-});
 
+    // Naše nová inicializace
+    if (document.getElementById('toggleHelpButton')) {
+        // Pokud tlačítko existuje, modul se inicializuje.
+        const helpPanel = new HelpPanelModule();
+        helpPanel.initialize();
+    }
+});

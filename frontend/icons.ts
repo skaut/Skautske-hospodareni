@@ -63,6 +63,9 @@ library.add(
     fas.faThList,
     fas.faEllipsisV,
     fas.faUserGraduate,
+    fas.faPaperPlane,
+    fas.faPenRuler,
+    fas.faBell,
 
     // Regular icons
     far.faCalendar,
@@ -84,6 +87,9 @@ library.add(
     far.faUser,
     far.faQuestionCircle,
     far.faArrowAltCircleLeft,
+    far.faComment,
+    far.faPaperPlane,
+    far.faBell,
 
     // Brands
     fab.faGithub,
