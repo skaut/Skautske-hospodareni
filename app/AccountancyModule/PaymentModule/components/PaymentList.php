@@ -15,6 +15,7 @@ use Model\Google\Exception\OAuthNotSet;
 use Model\Google\InvalidOAuth;
 use Model\Payment\Commands\Mailing\SendPaymentInfo;
 use Model\Payment\Commands\Mailing\SendPaymentReminder;
+use Model\Payment\EmailTemplateNotSet;
 use Model\Payment\EmailType;
 use Model\Payment\InvalidBankAccount;
 use Model\Payment\Payment\State;
@@ -54,16 +55,19 @@ final class PaymentList extends BaseControl
             __DIR__ . '/templates/PaymentList.grid.latte',
             [
                 'isEditable' => $this->isEditable,
-                'isReminderSendActive' => $email->isEnabled(),
+                'isReminderSendActive' => $email !== null && $email->isEnabled(),
             ],
         );
         $grid->setRememberState(false, true);
         $grid->setColumnsHideable();
 
-        $grid->addGroupButtonAction('Odeslat email')->onClick[]    = [$this, 'sendMail'];
-        $grid->addGroupButtonAction('Odeslat upomínku')->onClick[] = [$this, 'sendReminder'];
-        $grid->addGroupButtonAction('Zaplaceno')->onClick[]        = [$this, 'setPay'];
-        $grid->addGroupButtonAction('Zrušit')->onClick[]           = [$this, 'setCancel'];
+        $grid->addGroupButtonAction('Odeslat email')->onClick[] = [$this, 'sendMail'];
+        if ($email !== null && $email->isEnabled()) {
+            $grid->addGroupButtonAction('Odeslat upomínku')->onClick[] = [$this, 'sendReminder'];
+        }
+
+        $grid->addGroupButtonAction('Zaplaceno')->onClick[] = [$this, 'setPay'];
+        $grid->addGroupButtonAction('Zrušit')->onClick[]    = [$this, 'setCancel'];
 
         $grid->addColumnText('name', 'Název/účel')
             ->setSortable()
@@ -158,30 +162,32 @@ final class PaymentList extends BaseControl
     public function sendReminder(array $ids): void
     {
         $count = 0;
-        foreach ($ids as $id) {
-            try {
-                $this->commandBus->handle(new SendPaymentReminder($id));
-                $count++;
-            } catch (OAuthNotSet) {
-                $this->flashMessage(EmailButton::NO_MAILER_MESSAGE, 'warning');
-                $this->redirect('this');
-            } catch (InvalidBankAccount) {
-                $this->flashMessage(EmailButton::NO_BANK_ACCOUNT_MESSAGE, 'warning');
-                $this->redirect('this');
-            } catch (InvalidOAuth $e) {
-                $this->flashMessage($e->getExplainedMessage(), 'danger');
-                $this->presenter->redirect('this');
-            } catch (PaymentClosed) {
-                $this->flashMessage('Nelze odeslat uzavřenou platbu', 'warning');
+        try {
+            foreach ($ids as $id) {
+                try {
+                    $this->commandBus->handle(new SendPaymentReminder($id));
+                    $count++;
+                } catch (OAuthNotSet) {
+                    $this->flashMessage(EmailButton::NO_MAILER_MESSAGE, 'warning');
+                    $this->redirect('this');
+                } catch (InvalidBankAccount) {
+                    $this->flashMessage(EmailButton::NO_BANK_ACCOUNT_MESSAGE, 'warning');
+                    $this->redirect('this');
+                } catch (InvalidOAuth $e) {
+                    $this->flashMessage($e->getExplainedMessage(), 'danger');
+                    $this->presenter->redirect('this');
+                } catch (PaymentClosed) {
+                    $this->flashMessage('Nelze odeslat uzavřenou platbu', 'warning');
+                }
             }
-        }
 
-        if ($count > 0) {
             if ($count === 1) {
                 $this->presenter->flashMessage($count . ' upomínkový e-mailů odeslán', 'info');
             } else {
                 $this->presenter->flashMessage($count . ' upomínkových e-mailů odesláno', 'info');
             }
+        } catch (EmailTemplateNotSet) {
+            $this->flashMessage('Platební skupina nemá povolené upomínky', 'warning');
         }
 
         $this->presenter->redirect('this');
