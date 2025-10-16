@@ -41,7 +41,7 @@ class EmailButton extends BaseControl
 
         $this->template->setParameters([
             'canSend' => $this->canSend(),
-            'isReminderSendActive' => $email->isEnabled(),
+            'isReminderSendActive' => $email !== null && $email->isEnabled(),
             'isGroupSendActive' => $this->group->getState() === 'open' && ! empty($paymentsForSendEmail),
         ]);
         $this->template->setFile(__DIR__ . '/templates/EmailButton.latte');
