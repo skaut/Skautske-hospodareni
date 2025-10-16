@@ -6,6 +6,7 @@ namespace App\AccountancyModule\Components;
 
 use Ublaboo\DataGrid\Column\Action;
 use Ublaboo\DataGrid\Filter\FilterSelect;
+use Ublaboo\DataGrid\Localization\SimpleTranslator;
 
 use function array_map;
 use function array_reverse;
@@ -29,6 +30,38 @@ final class DataGrid extends \Ublaboo\DataGrid\DataGrid
  //disable autocomplete - issue #1443
             $this['filter']->getElementPrototype()->setAttribute('autocomplete', 'off');
         };
+
+        $translator = new SimpleTranslator([
+            'ublaboo_datagrid.no_item_found_reset' => 'Nenalezeny žádné záznamy. Můžete zrušit filtr',
+            'ublaboo_datagrid.no_item_found' => 'Nenalezeny žádné záznamy.',
+            'ublaboo_datagrid.here' => 'zde',
+            'ublaboo_datagrid.items' => 'Položky',
+            'ublaboo_datagrid.all' => 'vše',
+            'ublaboo_datagrid.from' => 'od',
+            'ublaboo_datagrid.reset_filter' => 'Zrušit filtr',
+            'ublaboo_datagrid.group_actions' => 'Hromadné akce',
+            'ublaboo_datagrid.show' => 'Zobrazit',
+            'ublaboo_datagrid.add' => 'Přidat',
+            'ublaboo_datagrid.edit' => 'Upravit',
+            'ublaboo_datagrid.show_all_columns' => 'Zobrazit všechny sloupce',
+            'ublaboo_datagrid.show_default_columns' => 'Zobrazit výchozí sloupce',
+            'ublaboo_datagrid.hide_column' => 'Skrýt sloupec',
+            'ublaboo_datagrid.action' => 'Akce',
+            'ublaboo_datagrid.previous' => 'Předchozí',
+            'ublaboo_datagrid.next' => 'Další',
+            'ublaboo_datagrid.choose' => 'Vybrat',
+            'ublaboo_datagrid.choose_input_required' => 'Text hromadné akce nesmí být prázdný',
+            'ublaboo_datagrid.execute' => 'Provést',
+            'ublaboo_datagrid.save' => 'Uložit',
+            'ublaboo_datagrid.cancel' => 'Zrušit',
+            'ublaboo_datagrid.multiselect_choose' => 'Vybrat',
+            'ublaboo_datagrid.multiselect_selected' => '{0} vybráno',
+            'ublaboo_datagrid.filter_submit_button' => 'Filtrovat',
+            'ublaboo_datagrid.show_filter' => 'Zobrazit filtr',
+            'ublaboo_datagrid.per_page_submit' => 'Změnit',
+        ]);
+
+        $this->setTranslator($translator);
     }
 
     /**
