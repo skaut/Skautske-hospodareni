@@ -23,7 +23,7 @@ final class SendPaymentReminderHandler
         $payment = $this->payments->find($command->getPaymentId());
 
         if ($payment->isClosed()) {
-            throw new PaymentClosed();
+            throw PaymentClosed::withName($payment->getName());
         }
 
         $this->mailingService->sendEmail($payment->getId(), EmailType::get(EmailType::PAYMENT_REMINDER));

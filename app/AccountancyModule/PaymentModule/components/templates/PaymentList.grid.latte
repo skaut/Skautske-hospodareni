@@ -53,17 +53,17 @@
         <a href="{plink paymentDialog:open! $item->getId()}"
            class="btn btn-sm btn-secondary ajax"
            title="Upravit platbu"><i class="far fa-edit"></i></a>
-        <a href="{plink send! $item->id}"
+        <a href="{$control->getParent()->link(send, $item->getId())}"
                 n:class="btn, btn-sm, btn-primary, !empty($item->getEmailRecipients()) ? 'ui--sendEmail', empty($item->getEmailRecipients()) ? disabled"
            title="{empty($item->getEmailRecipients()) ? 'Není uveden email' : 'Odeslat e-mail o platbě'}"><i
                     class="far fa-envelope-open"></i></a>
         {if $isReminderSendActive}
-        <a href="{plink sendReminder! $item->id}"
+        <a href="{$control->getParent()->link(sendReminder, $item->id)}"
                 n:class="btn, btn-sm, btn-warning, !empty($item->getEmailRecipients()) ? 'ui--sendEmail', empty($item->getEmailRecipients()) ? disabled"
            title="{empty($item->getEmailRecipients()) ? 'Není uveden email' : 'Odeslat e-mail o platbě'}"><i
                     class="far fa-bell"></i></a>
         {/if}
-        <a href="{plink complete! $item->getId()}" class="btn btn-sm btn-success" title="Zaplaceno"><i
+        <a href="{$control->getParent()->link(complete, $item->getId())}" class="btn btn-sm btn-success" title="Zaplaceno"><i
                     class="fas fa-check"></i></a>
     {elseif $item->isClosed()}
         <a href="{plink paymentNoteDialog:open! $item->getId()}"
@@ -93,7 +93,7 @@
             </div>
     {else}&nbsp;{/if}
 
-    <a href="{plink cancel! $item->getId()}" n:if="$isEditable && ! $item->getState()->equalsValue('canceled')"
+    <a href="{$control->getParent()->link(cancel, $item->getId())}" n:if="$isEditable && ! $item->getState()->equalsValue('canceled')"
        class="btn btn-sm btn-danger"
        onclick="return confirm('Opravdu chcete zrušit platbu?');"
        title="Zrušit"><i class="fas fa-times"></i></a>
