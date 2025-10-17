@@ -6,6 +6,12 @@ namespace Model\Payment;
 
 use Exception;
 
+use function sprintf;
+
 class PaymentClosed extends Exception
 {
+    public static function withName(string $name): self
+    {
+        return new self(sprintf('Platba "%s" je již uzavřena.', $name));
+    }
 }

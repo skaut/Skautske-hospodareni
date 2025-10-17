@@ -20,6 +20,7 @@ use Model\Payment\EmailType;
 use Model\Payment\InvalidBankAccount;
 use Model\Payment\Payment\State;
 use Model\Payment\PaymentClosed;
+use Model\Payment\PaymentHasNoEmails;
 use Model\Payment\PaymentNotFound;
 use Model\Payment\ReadModel\Queries\GroupEmailQuery;
 use Model\Payment\ReadModel\Queries\PaymentListQuery;
@@ -127,6 +128,50 @@ final class PaymentList extends BaseControl
         return $grid;
     }
 
+    public function handleSend(int $pid): void
+    {
+        $payment = $this->model->findPayment($pid);
+
+        if ($payment === null) {
+            $this->presenter->flashMessage('Zadaná platba neexistuje', 'danger');
+            $this->presenter->redirect('this');
+        }
+
+        if (empty($payment->getEmailRecipients())) {
+            $this->presenter->flashMessage('Platba nemá vyplněný e-mail', 'danger');
+            $this->presenter->redirect('this');
+        }
+
+        $this->sendMail([$pid]);
+    }
+
+    public function handleSendReminder(int $pid): void
+    {
+        $payment = $this->model->findPayment($pid);
+
+        if ($payment === null) {
+            $this->presenter->flashMessage('Zadaná platba neexistuje', 'danger');
+            $this->presenter->redirect('this');
+        }
+
+        if (empty($payment->getEmailRecipients())) {
+            $this->presenter->flashMessage('Platba nemá vyplněný e-mail', 'danger');
+            $this->presenter->redirect('this');
+        }
+
+        $this->sendReminder([$pid]);
+    }
+
+    public function handleComplete(int $pid): void
+    {
+        $this->setPay([$pid]);
+    }
+
+    public function handleCancel(int $pid): void
+    {
+        $this->setCancel([$pid]);
+    }
+
     /** @param array<int,int> $ids */
     public function sendMail(array $ids): void
     {
@@ -137,15 +182,14 @@ final class PaymentList extends BaseControl
                 $count++;
             } catch (OAuthNotSet) {
                 $this->flashMessage(EmailButton::NO_MAILER_MESSAGE, 'warning');
-                $this->redirect('this');
             } catch (InvalidBankAccount) {
                 $this->flashMessage(EmailButton::NO_BANK_ACCOUNT_MESSAGE, 'warning');
-                $this->redirect('this');
             } catch (InvalidOAuth $e) {
                 $this->flashMessage($e->getExplainedMessage(), 'danger');
-                $this->presenter->redirect('this');
-            } catch (PaymentClosed) {
-                $this->flashMessage('Nelze odeslat uzavřenou platbu', 'warning');
+            } catch (PaymentClosed $e) {
+                $this->flashMessage($e->getMessage(), 'warning');
+            } catch (PaymentHasNoEmails $e) {
+                $this->flashMessage($e->getMessage(), 'warning');
             }
         }
 
@@ -169,15 +213,14 @@ final class PaymentList extends BaseControl
                     $count++;
                 } catch (OAuthNotSet) {
                     $this->flashMessage(EmailButton::NO_MAILER_MESSAGE, 'warning');
-                    $this->redirect('this');
                 } catch (InvalidBankAccount) {
                     $this->flashMessage(EmailButton::NO_BANK_ACCOUNT_MESSAGE, 'warning');
-                    $this->redirect('this');
                 } catch (InvalidOAuth $e) {
                     $this->flashMessage($e->getExplainedMessage(), 'danger');
-                    $this->presenter->redirect('this');
-                } catch (PaymentClosed) {
-                    $this->flashMessage('Nelze odeslat uzavřenou platbu', 'warning');
+                } catch (PaymentClosed $e) {
+                    $this->flashMessage($e->getMessage(), 'warning');
+                } catch (PaymentHasNoEmails $e) {
+                    $this->flashMessage($e->getMessage(), 'warning');
                 }
             }
 
@@ -205,8 +248,8 @@ final class PaymentList extends BaseControl
             try {
                 $this->model->completePayment($id);
                 $this->flashMessage('Platba byla zaplacena.');
-            } catch (PaymentClosed) {
-                $this->flashMessage('Tato platba už je uzavřená', 'danger');
+            } catch (PaymentClosed $e) {
+                $this->flashMessage($e->getMessage(), 'warning');
             } catch (InvalidOAuth $exc) {
                 $this->flashMessage($exc->getExplainedMessage(), 'danger');
             }
@@ -224,8 +267,8 @@ final class PaymentList extends BaseControl
                 $this->flashMessage('Platba byla uzavřena');
             } catch (PaymentNotFound) {
                 $this->flashMessage('Platba nenalezena!', 'danger');
-            } catch (PaymentClosed) {
-                $this->flashMessage('Tato platba už je uzavřená: ' . $id, 'warning');
+            } catch (PaymentClosed $e) {
+                $this->flashMessage($e->getMessage(), 'warning');
             }
         }
 
