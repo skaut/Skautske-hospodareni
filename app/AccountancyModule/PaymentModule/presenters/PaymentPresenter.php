@@ -28,16 +28,9 @@ use DateTimeImmutable;
 use Model\DTO\Payment\Payment;
 use Model\DTO\Payment\Person;
 use Model\ExcelService;
-use Model\Google\Exception\OAuthNotSet;
-use Model\Google\InvalidOAuth;
-use Model\Payment\Commands\Mailing\SendPaymentInfo;
-use Model\Payment\Commands\Mailing\SendPaymentReminder;
 use Model\Payment\GroupNotFound;
-use Model\Payment\InvalidBankAccount;
 use Model\Payment\InvalidVariableSymbol;
 use Model\Payment\Payment\State;
-use Model\Payment\PaymentClosed;
-use Model\Payment\PaymentNotFound;
 use Model\Payment\ReadModel\Queries\MembersWithoutPaymentInGroupQuery;
 use Model\Payment\ReadModel\Queries\PaymentListQuery;
 use Model\PaymentService;
@@ -153,21 +146,6 @@ class PaymentPresenter extends BasePresenter
         ]);
     }
 
-    public function handleCancel(int $pid): void
-    {
-        $this->assertCanEditGroup();
-
-        try {
-            $this->model->cancelPayment($pid);
-        } catch (PaymentNotFound) {
-            $this->flashMessage('Platba nenalezena!', 'danger');
-        } catch (PaymentClosed) {
-            $this->flashMessage('Tato platba už je uzavřená', 'danger');
-        }
-
-        $this->redirect('this');
-    }
-
     private function assertCanEditGroup(): void
     {
         $group = $this->model->getGroup($this->id);
@@ -178,91 +156,6 @@ class PaymentPresenter extends BasePresenter
 
         $this->setView('accessDenied');
         $this->template->setParameters(['message' => 'Nemáte oprávnění pracovat s touto skupinou.']);
-    }
-
-    public function handleSend(int $pid): void
-    {
-        $this->assertCanEditGroup();
-
-        $payment = $this->model->findPayment($pid);
-
-        if ($payment === null) {
-            $this->flashMessage('Zadaná platba neexistuje', 'danger');
-            $this->redirect('this');
-        }
-
-        if (empty($payment->getEmailRecipients())) {
-            $this->flashMessage('Platba nemá vyplněný e-mail', 'danger');
-            $this->redirect('this');
-        }
-
-        try {
-            $this->commandBus->handle(new SendPaymentInfo($payment->getId()));
-            $this->presenter->flashMessage('Informační e-mail byl odeslán', 'success');
-        } catch (OAuthNotSet) {
-            $this->flashMessage(EmailButton::NO_MAILER_MESSAGE, 'warning');
-            $this->redirect('this');
-        } catch (InvalidBankAccount) {
-            $this->flashMessage(EmailButton::NO_BANK_ACCOUNT_MESSAGE, 'warning');
-            $this->redirect('this');
-        } catch (InvalidOAuth $e) {
-            $this->flashMessage($e->getExplainedMessage(), 'danger');
-            $this->presenter->redirect('this');
-        } catch (PaymentClosed) {
-            $this->flashMessage('Nelze odeslat uzavřenou platbu', 'warning');
-        }
-    }
-
-    public function handleSendReminder(int $pid): void
-    {
-        $this->assertCanEditGroup();
-
-        $payment = $this->model->findPayment($pid);
-
-        if ($payment === null) {
-            $this->flashMessage('Zadaná platba neexistuje', 'danger');
-            $this->redirect('this');
-        }
-
-        if (empty($payment->getEmailRecipients())) {
-            $this->flashMessage('Platba nemá vyplněný e-mail', 'danger');
-            $this->redirect('this');
-        }
-
-        try {
-            $this->commandBus->handle(new SendPaymentReminder($payment->getId()));
-            $this->presenter->flashMessage('E-mail s upomínkou byl odeslán', 'success');
-        } catch (OAuthNotSet) {
-            $this->flashMessage(EmailButton::NO_MAILER_MESSAGE, 'warning');
-            $this->redirect('this');
-        } catch (InvalidBankAccount) {
-            $this->flashMessage(EmailButton::NO_BANK_ACCOUNT_MESSAGE, 'warning');
-            $this->redirect('this');
-        } catch (InvalidOAuth $e) {
-            $this->flashMessage($e->getExplainedMessage(), 'danger');
-            $this->presenter->redirect('this');
-        } catch (PaymentClosed) {
-            $this->flashMessage('Nelze odeslat uzavřenou platbu', 'warning');
-        }
-    }
-
-    public function handleComplete(int $pid): void
-    {
-        if (! $this->isEditable) {
-            $this->flashMessage('Nejste oprávněni k uzavření platby!', 'danger');
-            $this->redirect('this');
-        }
-
-        try {
-            $this->model->completePayment($pid);
-            $this->flashMessage('Platba byla zaplacena.');
-        } catch (PaymentClosed) {
-            $this->flashMessage('Tato platba už je uzavřená', 'danger');
-        } catch (InvalidOAuth $exc) {
-            $this->flashMessage($exc->getExplainedMessage(), 'danger');
-        }
-
-        $this->redirect('this');
     }
 
     public function handleGenerateVs(): void
