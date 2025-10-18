@@ -33,7 +33,6 @@ class TravelCest extends BaseAcceptanceCest
         $this->licensePlate = 'RZ-' . time();
     }
 
-    /** @depends createVehicle */
     public function createTravelOrder(AcceptanceTester $I): void
     {
         $name               = 'Porada s vedoucími';
@@ -97,7 +96,8 @@ class TravelCest extends BaseAcceptanceCest
         $I->fillField('#frm-form-form-amortization', '1.20');
 
         // 6) Odeslání
-        $I->scrollTo('[name=send]', 0, -120);
+        $I->scrollTo('footer');
+        $I->waitForElementVisible('[name=send]', 5);
         $I->click('[name=send]');
 
         // 7) Ověření (uprav dle app – flash zpráva / redirect / nadpis)
@@ -118,7 +118,6 @@ class TravelCest extends BaseAcceptanceCest
         $I->waitForText('Cestovní příkaz byl smazán.');
     }
 
-    /** @depends createContract */
     public function createVehicle(AcceptanceTester $I): void
     {
         $I->wantTo('Create vehicle');
@@ -193,7 +192,7 @@ class TravelCest extends BaseAcceptanceCest
         $I->waitForText('Vozidlo bylo odebráno.');
     }
 
-    public function createContract(AcceptanceTester $I): void
+    public function createContact(AcceptanceTester $I): void
     {
         $I->wantTo('Create contract');
         $this->navigationToContract($I);
@@ -227,6 +226,7 @@ class TravelCest extends BaseAcceptanceCest
         $I->click('#frm-formCreateContract-passengerBirthday');
         $I->fillField('#frm-formCreateContract-passengerBirthday', '01.01.1990');
         $I->pressKey('#frm-formCreateContract-passengerBirthday', [WebDriverKeys::TAB]);
+        $I->scrollTo('footer');
         $I->click('#frm-formCreateContract [name=send]');
         $I->waitForText('Smlouva byla založena.');
         $I->see($unitRepresentative);
