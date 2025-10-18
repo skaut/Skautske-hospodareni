@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Travel\Repositories;
 
+use Doctrine\ORM\QueryBuilder;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFound;
 
@@ -18,6 +19,8 @@ interface IVehicleRepository
      * @return Vehicle[]
      */
     public function findByIds(array $ids): array;
+
+    public function findByFilter(): QueryBuilder;
 
     /** @return Vehicle[] */
     public function findByUnit(int $unitId): array;

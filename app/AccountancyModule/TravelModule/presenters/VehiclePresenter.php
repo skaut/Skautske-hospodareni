@@ -12,6 +12,8 @@ use Model\Common\File;
 use Model\DTO\Travel\Vehicle as VehicleDTO;
 use Model\Travel\Commands\Vehicle\CreateVehicle;
 use Model\Travel\ReadModel\Queries\Vehicle\RoadworthyScansQuery;
+use Model\Travel\VehicleLinkedRecord;
+use Model\Travel\VehicleNotFound;
 use Model\TravelService;
 use Model\Unit\ReadModel\Queries\UnitQuery;
 use Model\Unit\Unit;
@@ -113,10 +115,13 @@ class VehiclePresenter extends BasePresenter
             return;
         }
 
-        if ($this->travelService->removeVehicle($vehicleId)) {
+        try {
+            $this->travelService->removeVehicle($vehicleId);
             $this->flashMessage('Vozidlo bylo odebráno.');
-        } else {
+        } catch (VehicleLinkedRecord) {
             $this->flashMessage('Nelze smazat vozidlo s cestovními příkazy.', 'warning');
+        } catch (VehicleNotFound) {
+            $this->flashMessage('Vozidlo nebylo nalezeno', 'warning');
         }
 
         $this->redirect('VehicleList:default');

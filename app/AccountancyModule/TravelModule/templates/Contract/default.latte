@@ -12,21 +12,21 @@
     <div class="col">
         <table class="table table-bordered table-condensed table-striped">
             <tr>
-                <th>&nbsp;</th>
                 <th>Vykonavatel/Řidič</th>
                 <th>Zástupce jednotky</th>
                 <th>Platná od:</th>
                 <th>Platná do:</th>
+                <th>Akce&nbsp;</th>
             </tr>
             <tr n:foreach="$list as $c">
-                <td>
-                    <a n:href="print $c->id" class="btn btn-info d-none d-md-inline-block"><i class="fas fa-print d-none d-lg-inline"></i> Vytisknout</a>
-                    <a n:href="detail $c->id" class="btn btn-primary"><i class="fas fa-search d-none d-lg-inline"></i> Detail</a>
-                </td>
                 <td>{$c->passenger->name}</td>
                 <td>{$c->unitRepresentative}</td>
                 <td>{$c->since?->toNative()|date:"j. n. Y"}</td>
                 <td>{$c->until?->toNative()|date:"j. n. Y"}</td>
+                <td>
+                    <a n:href="print $c->id" class="btn btn-info d-none d-md-inline-block"><i class="fas fa-print d-none d-lg-inline"></i> Vytisknout</a>
+                    <a n:href="detail $c->id" class="btn btn-primary" data-test="{$c->unitRepresentative}"><i class="fas fa-search d-none d-lg-inline"></i> Detail</a>
+                </td>
             </tr>
         </table>
     </div>
