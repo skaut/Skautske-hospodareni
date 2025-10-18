@@ -5,7 +5,7 @@
             <div class="alert alert-warning">Toto vozidlo je archivované.</div>
         {else}
             <a n:if="$isEditable" n:href="archive! $vehicle->id" class="btn btn-secondary">
-                <i class="far fa-trash-alt"></i>
+                <i class="fas fa-box-archive"></i>
                 Archivovat
             </a>
         {/if}
