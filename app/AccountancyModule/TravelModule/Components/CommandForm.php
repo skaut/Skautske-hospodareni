@@ -233,7 +233,7 @@ class CommandForm extends Control
             $values['unit'],
         );
 
-        $this->flashMessage('Cestovní příkaz byl založen.');
+        $this->presenter->flashMessage('Cestovní příkaz byl založen.');
     }
 
     private function updateCommand(ArrayHash $values): void
@@ -253,7 +253,7 @@ class CommandForm extends Control
             $values['unit'],
         );
 
-        $this->flashMessage('Cestovní příkaz byl upraven.');
+        $this->presenter->flashMessage('Cestovní příkaz byl upraven.');
     }
 
     /**

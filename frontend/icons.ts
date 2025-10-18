@@ -66,6 +66,8 @@ library.add(
     fas.faPaperPlane,
     fas.faPenRuler,
     fas.faBell,
+    fas.faTrashCan,
+    fas.faBoxArchive,
 
     // Regular icons
     far.faCalendar,

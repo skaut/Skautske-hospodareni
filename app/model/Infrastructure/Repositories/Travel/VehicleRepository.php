@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Repositories\Travel;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\QueryBuilder;
 use Model\Travel\Repositories\IVehicleRepository;
 use Model\Travel\Vehicle;
 use Model\Travel\VehicleNotFound;
@@ -62,6 +63,14 @@ final class VehicleRepository implements IVehicleRepository
             ->getResult();
 
         return array_values($vehicles);
+    }
+
+    public function findByFilter(): QueryBuilder
+    {
+        return $this->em->createQueryBuilder()
+            ->select('v')
+            ->from(Vehicle::class, 'v', 'v.id')
+            ->where('v.archived = FALSE');
     }
 
     public function save(Vehicle $vehicle): void

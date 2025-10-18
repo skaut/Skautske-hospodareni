@@ -8,6 +8,7 @@ use Cake\Chronos\ChronosDate;
 use Consistence\Type\ArrayType\ArrayType;
 use Consistence\Type\ArrayType\KeyValuePair;
 use DateTimeImmutable;
+use Doctrine\ORM\QueryBuilder;
 use InvalidArgumentException;
 use Model\Common\Services\QueryBus;
 use Model\DTO\Travel as DTO;
@@ -22,6 +23,7 @@ use Model\Travel\Repositories\IVehicleRepository;
 use Model\Travel\Travel\TransportType;
 use Model\Travel\TravelNotFound;
 use Model\Travel\Vehicle;
+use Model\Travel\VehicleLinkedRecord;
 use Model\Travel\VehicleNotFound;
 use Model\Unit\Repositories\IUnitRepository;
 use Model\Utils\MoneyFactory;
@@ -83,21 +85,20 @@ class TravelService
         );
     }
 
-    public function removeVehicle(int $vehicleId): bool
+    public function getVehiclesByFilter(): QueryBuilder
+    {
+        return $this->vehicles->findByFilter();
+    }
+
+    /** @throws VehicleLinkedRecord|VehicleNotFound */
+    public function removeVehicle(int $vehicleId): void
     {
         if ($this->commands->countByVehicle($vehicleId) > 0) {
-            return false; //nelze mazat vozidlo s navazanými příkazy
+            throw new VehicleLinkedRecord('Cannot remove vehicle with linked commands');
         }
 
-        try {
-            $vehicle = $this->vehicles->find($vehicleId);
-
-            $this->vehicles->remove($vehicle);
-
-            return true;
-        } catch (VehicleNotFound) {
-            return false;
-        }
+        $vehicle = $this->vehicles->find($vehicleId);
+        $this->vehicles->remove($vehicle);
     }
 
     /**
