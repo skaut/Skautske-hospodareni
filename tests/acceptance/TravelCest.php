@@ -97,7 +97,7 @@ class TravelCest extends BaseAcceptanceCest
         $I->fillField('#frm-form-form-amortization', '1.20');
 
         // 6) Odeslání
-        $I->scrollTo('[name=send]', 0, -120);
+        $I->scrollTo('[name=send]');
         $I->click('[name=send]');
 
         // 7) Ověření (uprav dle app – flash zpráva / redirect / nadpis)
@@ -227,6 +227,7 @@ class TravelCest extends BaseAcceptanceCest
         $I->click('#frm-formCreateContract-passengerBirthday');
         $I->fillField('#frm-formCreateContract-passengerBirthday', '01.01.1990');
         $I->pressKey('#frm-formCreateContract-passengerBirthday', [WebDriverKeys::TAB]);
+        $I->scrollTo('[name=send]');
         $I->click('#frm-formCreateContract [name=send]');
         $I->waitForText('Smlouva byla založena.');
         $I->see($unitRepresentative);
