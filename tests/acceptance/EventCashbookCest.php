@@ -128,8 +128,7 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->amGoingTo('create expense chit');
         $this->fillChitForm(new ChronosDate(), 'Rohlíky', Operation::EXPENSE(), 'Potraviny', 'Testovací skaut', '50');
         $this->I->click('input[name="items[addItem]"]');
-        $this->I->wait(2);
-        $this->I->expect('Odebrat položku');
+        $this->I->waitForText('Odebrat položku');
         $this->I->seeElement('input[name="items[1][remove]"]');
         $this->fillSecondChitForm('Hřebíky', Operation::EXPENSE(), 'Materiál', 'Testovací skaut', '50');
         $this->I->scrollTo('input[name="send"]');
