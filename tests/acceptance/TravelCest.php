@@ -32,6 +32,7 @@ class TravelCest extends BaseAcceptanceCest
         $I->login(AcceptanceTester::UNIT_LEADER_ROLE);
         $this->licensePlate = 'RZ-' . time();
     }
+
     public function createTravelOrder(AcceptanceTester $I): void
     {
         $name               = 'Porada s vedoucími';
@@ -116,7 +117,6 @@ class TravelCest extends BaseAcceptanceCest
 
         $I->waitForText('Cestovní příkaz byl smazán.');
     }
-
 
     public function createVehicle(AcceptanceTester $I): void
     {
