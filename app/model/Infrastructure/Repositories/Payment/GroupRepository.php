@@ -10,6 +10,7 @@ use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Model\Common\Services\EventBus;
 use Model\Google\OAuthId;
 use Model\Payment\DomainEvents\GroupWasRemoved;
+use Model\Payment\EmailType;
 use Model\Payment\Group;
 use Model\Payment\Group\Type;
 use Model\Payment\GroupNotFound;
@@ -56,6 +57,23 @@ final class GroupRepository implements IGroupRepository
         }
 
         return $groups;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findByReminder(): array
+    {
+        return $this->em->createQueryBuilder()
+            ->select('g')
+            ->from(Group::class, 'g', 'g.id')
+            ->leftJoin(Group\Email::class, 'e', Join::WITH, 'e.group = g')
+            ->where('g.isRemindersEnabled = 1')
+            ->andWhere('e.type = :reminder')
+            ->andWhere('e.enabled = 1')
+            ->setParameter('reminder', EmailType::PAYMENT_REMINDER)
+            ->getQuery()
+            ->getResult();
     }
 
     /**

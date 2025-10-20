@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Repositories\Payment;
 
 use Assert\Assert;
+use DateTimeImmutable;
 use Model\Infrastructure\Repositories\AggregateRepository;
+use Model\Payment\EmailType;
 use Model\Payment\Payment;
 use Model\Payment\Payment\State;
 use Model\Payment\PaymentNotFound;
@@ -102,6 +104,37 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
             ->setParameter('states', self::STATE_ORDER)
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findByReminder(array $groupIds): array
+    {
+        Assert::thatAll($groupIds)->integer();
+
+        if (empty($groupIds)) {
+            return [];
+        }
+
+        return $this->getEntityManager()->createQueryBuilder()
+            ->select('p, e')
+            ->from(Payment::class, 'p')
+            ->leftJoin('p.sentEmails', 'e')
+            ->where('p.groupId IN (:groupIds)')
+            ->andWhere('p.state = :state')
+            ->andWhere('p.dueDate <= :dueDate')
+            ->andWhere(
+                'NOT EXISTS (
+            SELECT 1 FROM ' . Payment\SentEmail::class . ' se
+            WHERE se.payment = p AND se.type = :reminderType)',
+            )
+            ->setParameter('groupIds', $groupIds)
+            ->setParameter('state', State::PREPARING)
+            ->setParameter('dueDate', (new DateTimeImmutable())->format('Y-m-d'))
+            ->setParameter('reminderType', EmailType::PAYMENT_REMINDER)
+
+            ->getQuery()->getResult();
     }
 
     public function save(Payment $payment): void

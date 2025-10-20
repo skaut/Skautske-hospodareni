@@ -44,7 +44,7 @@ class MailingService
      * @throws EmailTemplateNotSet
      * @throws OAuthNotSet
      */
-    public function sendEmail(int $paymentId, EmailType $emailType): void
+    public function sendEmail(int $paymentId, EmailType $emailType, bool $cli = false): void
     {
         $payment = $this->payments->find($paymentId);
         $group   = $this->groups->find($payment->getGroupId());
@@ -57,9 +57,14 @@ class MailingService
             );
         }
 
-        $this->sendForPayment($payment, $group, $template);
+        if ($cli) {
+            $userName = 'AUTOMAT';
+        } else {
+            $userName = $this->users->getCurrentUser()->getName();
+        }
 
-        $payment->recordSentEmail($emailType, new DateTimeImmutable(), $this->users->getCurrentUser()->getName());
+        $this->sendForPayment($payment, $group, $template, $userName);
+        $payment->recordSentEmail($emailType, new DateTimeImmutable(), $userName);
 
         $this->payments->save($payment);
     }
@@ -93,7 +98,7 @@ class MailingService
             'obsah poznámky',
         );
 
-        $this->send($group, $payment, $group->getEmailTemplate(EmailType::get(EmailType::PAYMENT_INFO)));
+        $this->send($group, $payment, $group->getEmailTemplate(EmailType::get(EmailType::PAYMENT_INFO)), $user->getName());
 
         return $user->getEmail();
     }
@@ -106,9 +111,9 @@ class MailingService
      * @throws UserNotFound
      * @throws OAuthNotSet
      */
-    private function sendForPayment(Payment $paymentRow, Group $group, EmailTemplate $template): void
+    private function sendForPayment(Payment $paymentRow, Group $group, EmailTemplate $template, string $userName): void
     {
-        $this->send($group, $this->createPayment($paymentRow), $template);
+        $this->send($group, $this->createPayment($paymentRow), $template, $userName);
     }
 
     /**
@@ -118,7 +123,7 @@ class MailingService
      * @throws OAuthNotSet
      * @throws PaymentHasNoEmails
      */
-    private function send(Group $group, MailPayment $payment, EmailTemplate $emailTemplate): void
+    private function send(Group $group, MailPayment $payment, EmailTemplate $emailTemplate, string $userName): void
     {
         if ($group->getOauthId() === null) {
             throw new OAuthNotSet();
@@ -128,14 +133,12 @@ class MailingService
             throw PaymentHasNoEmails::withName($payment->getName());
         }
 
-        $user = $this->users->getCurrentUser();
-
         $bankAccount       = $group->getBankAccountId() !== null
             ? $this->bankAccounts->find($group->getBankAccountId())
             : null;
         $bankAccountNumber = $bankAccount !== null ? (string) $bankAccount->getNumber() : null;
 
-        $emailTemplate = $emailTemplate->evaluate($group, $payment, $bankAccountNumber, $user->getName());
+        $emailTemplate = $emailTemplate->evaluate($group, $payment, $bankAccountNumber, $userName);
 
         $template = $this->templateFactory->create(
             TemplateFactory::PAYMENT_DETAILS,

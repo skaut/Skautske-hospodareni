@@ -68,6 +68,9 @@ class Group
     /** @ORM\Column(type="datetime_immutable", nullable=true) */
     private DateTimeImmutable|null $createdAt = null;
 
+    /** @ORM\Column(type="boolean", options={"default"=0}) */
+    private bool $isRemindersEnabled = false;
+
     /**
      * @ORM\Embedded(class=Group\BankAccount::class, columnPrefix=false)
      *
@@ -109,6 +112,7 @@ class Group
         BankAccount|null $bankAccount,
         IBankAccountAccessChecker $bankAccountAccessChecker,
         IOAuthAccessChecker $oAuthAccessChecker,
+        bool $isRemindersEnabled = false,
     ) {
         Assertion::notEmpty($unitIds);
         $this->object          = $object;
@@ -133,6 +137,7 @@ class Group
 
         $this->changeBankAccount($bankAccount, $bankAccountAccessChecker);
         $this->changeOAuth($oAuthId, $oAuthAccessChecker);
+        $this->isRemindersEnabled = $isRemindersEnabled;
     }
 
     public function update(
@@ -142,13 +147,15 @@ class Group
         BankAccount|null $bankAccount,
         IBankAccountAccessChecker $bankAccountAccessChecker,
         IOAuthAccessChecker $oAuthAccessChecker,
+        bool $isRemindersEnabled = false,
     ): void {
         $this->changeBankAccount($bankAccount, $bankAccountAccessChecker);
         $this->changeOAuth($oAuthId, $oAuthAccessChecker);
 
-        $this->name            = $name;
-        $this->paymentDefaults = $paymentDefaults;
-        $this->oauthId         = $oAuthId;
+        $this->name               = $name;
+        $this->paymentDefaults    = $paymentDefaults;
+        $this->oauthId            = $oAuthId;
+        $this->isRemindersEnabled = $isRemindersEnabled;
     }
 
     public function open(string $note): void
@@ -248,6 +255,11 @@ class Group
     public function getState(): string
     {
         return $this->state;
+    }
+
+    public function isRemindersEnabled(): bool
+    {
+        return $this->isRemindersEnabled;
     }
 
     public function getCreatedAt(): DateTimeImmutable|null
