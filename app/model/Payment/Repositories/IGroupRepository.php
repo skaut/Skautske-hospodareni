@@ -22,6 +22,9 @@ interface IGroupRepository
      */
     public function findByIds(array $ids): array;
 
+    /** @return Group[] */
+    public function findByReminder(): array;
+
     /**
      * @param int[] $unitIds
      *

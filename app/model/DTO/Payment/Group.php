@@ -21,6 +21,7 @@ use Nette\SmartObject;
  * @property-read int|NULL $constantSymbol
  * @property-read VariableSymbol|NULL $nextVariableSymbol
  * @property-read string $state
+ * @property-read bool $isRemindersEnabled
  * @property-read OAuthId|NULL $oAuthId
  * @property-read string $note
  */
@@ -43,6 +44,7 @@ class Group
         private OAuthId|null $oAuthId = null,
         private string $note,
         private int|null $bankAccountId = null,
+        private bool $isRemindersEnabled = false,
     ) {
     }
 
@@ -115,5 +117,10 @@ class Group
     public function getBankAccountId(): int|null
     {
         return $this->bankAccountId;
+    }
+
+    public function isRemindersEnabled(): bool
+    {
+        return $this->isRemindersEnabled;
     }
 }

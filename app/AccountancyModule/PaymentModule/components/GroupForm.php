@@ -179,6 +179,7 @@ final class GroupForm extends BaseControl
                 $emails,
                 $oAuthId,
                 $v->bankAccount,
+                $v->emails[EmailType::PAYMENT_REMINDER]?->remindersEnabled ?? false,
             );
 
             $this->flashMessage('Skupina byla upravena');
@@ -191,6 +192,7 @@ final class GroupForm extends BaseControl
                 $emails,
                 $oAuthId,
                 $v->bankAccount,
+                $v->emails[EmailType::PAYMENT_REMINDER]?->remindersEnabled ?? false,
             );
 
             $this->flashMessage('Skupina byla založena');
@@ -219,6 +221,11 @@ final class GroupForm extends BaseControl
 
         foreach (EmailType::getAvailableEnums() as $emailType) {
             $emails[$emailType->toString()] = $this->getEmailDefaults($this->groupId, $emailType);
+            if ($emailType->toString() !== EmailType::PAYMENT_REMINDER) {
+                continue;
+            }
+
+            $emails[$emailType->toString()]['remindersEnabled'] = $group->isRemindersEnabled();
         }
 
         return [
@@ -250,8 +257,9 @@ final class GroupForm extends BaseControl
             $container = $emailsContainer->addContainer($type);
             $container->setCurrentGroup($group);
 
-            $subjectId = $type . '_subject';
-            $bodyId    = $type . '_body';
+            $subjectId   = $type . '_subject';
+            $bodyId      = $type . '_body';
+            $remindersId = $type . '_reminders';
 
             // Only payment info email is always saved
             if ($type !== EmailType::PAYMENT_INFO) {
@@ -259,7 +267,13 @@ final class GroupForm extends BaseControl
                     ->setOption('class', 'form-check')
                     ->addCondition($form::FILLED)
                     ->toggle($subjectId)
-                    ->toggle($bodyId);
+                    ->toggle($bodyId)
+                    ->toggle($remindersId);
+            }
+
+            if ($type === EmailType::PAYMENT_REMINDER) {
+                $container->addCheckbox('remindersEnabled', 'Automaticky odeslat email po splatnosti')
+                    ->setOption('id', $remindersId);
             }
 
             $container->addText('subject', 'Předmět e-mailu')

@@ -26,6 +26,7 @@ class GroupFactory
             $group->getOauthId(),
             $group->getNote(),
             $group->getBankAccountId(),
+            $group->isRemindersEnabled(),
         );
     }
 }
