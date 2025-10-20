@@ -129,6 +129,7 @@ class PaymentService
         array $emails,
         OAuthId|null $oAuthId,
         int|null $bankAccountId,
+        bool $remindersEnabled = false,
     ): int {
         $now         = new DateTimeImmutable();
         $bankAccount = $bankAccountId !== null ? $this->bankAccounts->find($bankAccountId) : null;
@@ -144,6 +145,7 @@ class PaymentService
             $bankAccount,
             $this->bankAccountAccessChecker,
             $this->oAuthAccessChecker,
+            $remindersEnabled,
         );
 
         $this->groups->save($group);
@@ -159,11 +161,12 @@ class PaymentService
         array $emails,
         OAuthId|null $oAuthId,
         int|null $bankAccountId,
+        bool $remindersEnabled = false,
     ): void {
         $group       = $this->groups->find($id);
         $bankAccount = $bankAccountId !== null ? $this->bankAccounts->find($bankAccountId) : null;
 
-        $group->update($name, $paymentDefaults, $oAuthId, $bankAccount, $this->bankAccountAccessChecker, $this->oAuthAccessChecker);
+        $group->update($name, $paymentDefaults, $oAuthId, $bankAccount, $this->bankAccountAccessChecker, $this->oAuthAccessChecker, $remindersEnabled);
 
         foreach (EmailType::getAvailableValues() as $typeKey) {
             $type = EmailType::get($typeKey);

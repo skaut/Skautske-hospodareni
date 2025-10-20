@@ -151,6 +151,9 @@ services:
 
     - Model\Services\PdfRenderer(%tempDir%)
 
+    group:
+        factory: Model\GroupService
+
     - Model\PaymentService
     - Model\Payment\BankAccountService(fioCache: @fio.cache)
 
@@ -242,7 +245,8 @@ services:
 scheduler:
 	jobs:
 		# stats must be registered as service and have method calculate
-		- { cron: '* * * * *', callback: [ @fio.client, get ] }
+		#- { cron: '* * * * *', callback: [ @fio.client, get ] }
+		- { cron: '* * * * *', callback: [ @group, reminder ] }
 
 
 decorator:

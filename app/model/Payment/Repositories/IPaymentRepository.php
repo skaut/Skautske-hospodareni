@@ -22,6 +22,13 @@ interface IPaymentRepository
      *
      * @return Payment[]
      */
+    public function findByReminder(array $groupIds): array;
+
+    /**
+     * @param int[] $groupIds
+     *
+     * @return Payment[]
+     */
     public function findByMultipleGroups(array $groupIds): array;
 
     /**
