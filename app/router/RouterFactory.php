@@ -33,6 +33,7 @@ class RouterFactory
             ],
         );
 
+        $router[] = new Route('nastenka', 'Dashboard:default');
         $router[] = new Route(
             'prirucka/<action>[#<anchor>]',
             [
