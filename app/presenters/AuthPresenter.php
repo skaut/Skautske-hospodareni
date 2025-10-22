@@ -83,7 +83,7 @@ class AuthPresenter extends BasePresenter
             $this->redirect(':Auth:');
         }
 
-        $this->redirect(':Accountancy:Default:');
+        $this->redirect('Dashboard:default');
     }
 
     public function actionAjax(string|null $backlink = null): void

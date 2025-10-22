@@ -45,10 +45,10 @@
 
             <div class="collapse navbar-collapse" id="navbarMain">
                 <ul class="navbar-nav me-auto">
-                    <li n:class="nav-item">
-                        <a class="nav-link" n:href=":Default:reinforcement">Posily</a>
-                    </li>
                     {if $user->isLoggedIn()}
+                        <li n:class="nav-item, $module === 'Dashboard' ? active">
+                            <a class="nav-link" href="{$linkGenerator->link('Dashboard:default')}">Přehled</a>
+                        </li>
                         <li n:class="nav-item, $module === 'Event' ? active">
                             <a class="nav-link" href="{$linkGenerator->link('Accountancy:Event:Default:')}">Akce</a>
                         </li>
@@ -56,7 +56,7 @@
                             <a class="nav-link" n:href=":Accountancy:Camp:Default:">Tábory</a>
                         </li>
                         <li n:class="nav-item, $module === 'Education' ? active">
-                            <a class="nav-link text-nowrap" n:href=":Accountancy:Education:Default:">Vzdělávačky<sup> <span class="badge bg-warning text-dark">Beta</span></sup></a>
+                            <a class="nav-link text-nowrap" n:href=":Accountancy:Education:Default:">Vzdělávačky</a>
                         </li>
                         <li n:class="nav-item, $module === 'Travel' ? active">
                             <a class="nav-link" n:href=":Accountancy:Travel:Default:">Cesťáky</a>
@@ -72,6 +72,9 @@
                             <a class="nav-link" n:href=":Default:about">O projektu</a>
                         </li>
                     {/if}
+                    <li n:class="nav-item">
+                        <a class="nav-link" n:href=":Default:reinforcement">Posily</a>
+                    </li>
                 </ul>
                 <div style="margin-top: -0.15rem">
                     {control darkModeToggle}

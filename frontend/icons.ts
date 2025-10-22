@@ -68,6 +68,7 @@ library.add(
     fas.faBell,
     fas.faTrashCan,
     fas.faBoxArchive,
+    fas.faFileInvoiceDollar,
 
     // Regular icons
     far.faCalendar,
@@ -92,6 +93,7 @@ library.add(
     far.faComment,
     far.faPaperPlane,
     far.faBell,
+    far.faMoneyBill1,
 
     // Brands
     fab.faGithub,
