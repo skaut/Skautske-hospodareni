@@ -1,18 +1,11 @@
 /* scss/landing.scss */
-/* Izolace pouze pod .landing (wrapper na homepage) */
 .landing {
-  /* aby absolutní footer nepřekrýval obsah */
-  padding-bottom: 80px; /* uprav dle skutečné výšky footeru */
-
-  /* základní barvy/typografie jen pro landing blok */
+  padding-bottom: 80px;
   background: #f9f6ef;
   color: #2d4739;
   font-family: Arial, sans-serif;
-
-  /* jednotná velikost ikon v .features a .services */
   --icon-size: 64px;
 
-  /* obrázky a typografie – tvrdá ochrana před přetečením */
   img {
     max-width: 100%;
     height: auto;
@@ -26,7 +19,7 @@
     flex-direction: column;
     text-align: center;
     margin: 0 auto 30px;
-    gap: 16px; /* mezera mezi textem a obrázkem */
+    gap: 16px;
 
     @media (min-width: 768px) {
       flex-direction: row;
@@ -43,14 +36,14 @@
   .intro-left {
     margin: auto 0;
     position: relative;
-    z-index: 1; /* zajistí text nad obrázkem */
+    z-index: 1;
   }
 
   .intro-right {
     position: relative;
     z-index: 0;
 
-    img { /* kontrola rozměrů a bez přesahů */
+    img {
       width: 100%;
       height: auto;
       max-width: 420px;
@@ -61,12 +54,11 @@
     }
   }
 
-  /* jen uvnitř landing – neovlivní zbytek app */
   h1 {
     text-align: center;
     font-size: 2.2rem;
     color: #2d4739;
-    line-height: 1.2; /* místo pevného px */
+    line-height: 1.2;
     text-transform: uppercase;
     font-family: skautbold, sans-serif;
 
@@ -117,7 +109,7 @@
     flex-direction: row;
     gap: 20px;
     text-align: center;
-    align-items: center; /* vertikální zarovnání */
+    align-items: center;
     @media (min-width: 768px) { flex: 1 1 250px; flex-direction: unset; }
   }
 
@@ -134,7 +126,7 @@
     img {
       width: 100%;
       height: 100%;
-      object-fit: contain; /* stejná výsledná velikost bez deformace */
+      object-fit: contain;
       display: block;
     }
   }
@@ -150,24 +142,24 @@
     p { margin: 0; }
   }
 
-  /* POZN.: zrušeno původní .features img { width: 57px; } */
-
-  .services-container {
+  .services {
     padding: 20px;
     background: #e5d5ae;
-  }
+    border-radius: 20px;
+    max-width: 1100px;
+    box-shadow: 0 15px 35px 0 rgba(229, 213, 174, .3) !important;
 
-  .services {
-    margin: 0 auto;
-    max-width: 1000px;
+
+    margin: 50px 20px;
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
     gap: 40px 20px;
-    padding: 50px 0;
+
     align-content: center;
 
     @media (min-width: 768px) { justify-content: space-around; flex-direction: unset; }
+    @media (min-width: 1150px) { margin: 0 auto; }
   }
 
   .services-item {
@@ -243,13 +235,13 @@
     }
   }
 
-  /* responzivní úpravy pro mobily */
+
   @media (max-width: 767.98px) {
     .features { transform: none; margin-top: 10px; }
   }
 }
 
-/* menší ikona na velmi malých displejích */
+
 @media (max-width: 360px) {
   .landing { --icon-size: 56px; }
 }
