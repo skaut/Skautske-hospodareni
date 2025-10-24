@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\PaymentModule;
 
+use App\AccountancyModule\PaymentModule\Components\CreateButton;
 use App\AccountancyModule\PaymentModule\Components\GroupProgress;
+use App\AccountancyModule\PaymentModule\Factories\ICreateButtonFactory;
 use Model\DTO\Payment\Group;
 use Model\Payment\BankAccountService;
 use Model\Payment\ReadModel\Queries\GetGroupList;
@@ -26,6 +28,7 @@ final class GroupListPresenter extends BasePresenter
 
     public function __construct(
         private Factories\IPairButtonFactory $pairButtonFactory,
+        private readonly ICreateButtonFactory $createButtonFactory,
         private PaymentService $groups,
         private BankAccountService $bankAccounts,
     ) {
@@ -78,7 +81,18 @@ final class GroupListPresenter extends BasePresenter
 
     protected function createComponentPairButton(): Components\PairButton
     {
-        return $this->pairButtonFactory->create();
+        $control = $this->pairButtonFactory->create();
+        $control->setCss('button', 'btn btn-success dropdown-toggle ms-2');
+
+        return $control;
+    }
+
+    protected function createComponentCreateButton(): CreateButton
+    {
+        $control = $this->createButtonFactory->create();
+        $control->setCss('button', 'btn btn-success dropdown-toggle ms-2');
+
+        return $control;
     }
 
     protected function createComponentProgress(): Multiplier

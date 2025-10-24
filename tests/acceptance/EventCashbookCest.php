@@ -35,6 +35,7 @@ class EventCashbookCest extends BaseAcceptanceCest
     /** @group cashbook */
     public function createEventCashbook(): void
     {
+        $this->I->click('Akce');
         $this->createEvent();
         $this->goToCashbookPage();
         $this->createExpenseChit();

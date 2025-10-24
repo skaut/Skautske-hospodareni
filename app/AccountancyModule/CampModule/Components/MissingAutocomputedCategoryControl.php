@@ -9,6 +9,7 @@ use Model\Auth\IAuthorizator;
 use Model\Auth\Resources\Camp;
 use Model\Common\Services\CommandBus;
 use Model\Common\Services\QueryBus;
+use Model\Event\CampState;
 use Model\Event\Commands\Camp\ActivateAutocomputedCashbook;
 use Model\Event\ReadModel\Queries\CampQuery;
 use Model\Event\SkautisCampId;
@@ -39,7 +40,7 @@ class MissingAutocomputedCategoryControl extends BaseControl
 
         $this->template->setFile(__DIR__ . '/templates/MissingAutocomputedCategoryControl.latte');
         $this->template->setParameters([
-            'isApproved' => in_array($camp->getState(), [\Model\Event\Camp::STATE_APPROVED_PARENT, \Model\Event\Camp::STATE_REAL]),
+            'isApproved' => in_array($camp->getState(), [CampState::APPROVED_PARENT, CampState::REAL->value]),
             'isEditable' => $this->authorizator->isAllowed(Camp::UPDATE_REAL, $this->campId->toInt()),
             'canActivate'   => $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $this->campId->toInt()),
         ]);
