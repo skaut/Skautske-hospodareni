@@ -15,7 +15,7 @@
         title="Nemáš dostatečné oprávnění nebo není nastaven FIO API token u bankovního účtu."
         data-bs-toggle="tooltip"
             {/if}>
-        <a n:href="pair!" n:class="$css['btn'], disabled => !$canPair">
+        <a n:href="pair!" n:class="$css['btn'], !$canPair ? disabled   ">
             <i class="{$css['icon']}" aria-hidden="true"></i>
             Párovat <span class="d-none d-md-inline">platby</span>
         </a>
