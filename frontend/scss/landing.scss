@@ -212,9 +212,8 @@
 
   .about-button { display: flex; }
 
-  /* tlačítko landing – bez potřeby .btn */
   .btn-landing {
-    display: inline-block; /* jistota nad <a> */
+    display: inline-block;
     background-color: #e5d5ae;
     color: #2d4739;
     padding: 12px 24px;
@@ -248,7 +247,7 @@
 
 /* Dark mode pro landing (izolovaně) */
 :root[data-bs-theme="dark"] .landing {
-  /* základ – přebarvení pozadí a textu */
+
   background: var(--bs-body-bg);
   color: var(--bs-body-color);
 
@@ -264,31 +263,29 @@
   .features {
     background: var(--bs-body-bg);
     border: 1px solid var(--bs-border-color);
-    box-shadow: none; /* tmavý režim – méně svítit */
+    box-shadow: none;
   }
 
-  .services-container {
-    /* jemné odlišení sekce */
-    background: var(--bs-secondary-bg);
+  .services {
+    background: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color);
+    box-shadow: none;
   }
 
   .services-item-right h3 {
     color: var(--bs-emphasis-color);
   }
 
-  /* odkazy v landing obsahu */
   a {
     color: var(--bs-link-color);
     &:hover { color: var(--bs-link-hover-color); }
   }
 
-  /* tlačítko landing – tmavý motiv */
   .btn-landing {
     background-color: var(--bs-warning-bg-subtle);
     color: var(--bs-body-color);
     box-shadow: none;
 
-    /* hezčí hover; pokud by prohlížeč neuměl color-mix, ponechá „subtle“ */
     &:hover {
       background-color: color-mix(in oklab, var(--bs-warning-bg-subtle) 85%, var(--bs-body-bg));
       transform: translateY(-3px);
