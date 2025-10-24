@@ -8,6 +8,7 @@ use Model\Auth\Resources\Education;
 use Model\Auth\Resources\Grant;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Commands\Cashbook\UpdateEducationCategoryTotals;
+use Model\Cashbook\MissingCategory;
 use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use Model\Cashbook\ReadModel\Queries\EducationCashbookIdQuery;
 use Model\Cashbook\ReadModel\Queries\InconsistentEducationCategoryTotalsQuery;
@@ -46,15 +47,20 @@ class BudgetPresenter extends BasePresenter
         $budgetAvailable     = $this->event->grantId !== null;
         $categoriesAvailable = $this->event->startDate !== null;
 
-        $budgetEntries      = $budgetAvailable
-            ? $this->queryBus->handle(new EducationBudgetQuery($educationId, $this->event->grantId))
-            : [];
-        $inconsistentTotals = $categoriesAvailable
-            ? $this->queryBus->handle(new InconsistentEducationCategoryTotalsQuery($educationId, $this->event->startDate->year))
-            : [];
-        $categoriesSummary  = $categoriesAvailable
-            ? $this->queryBus->handle(new CategoriesSummaryQuery($this->getCashbookId($aid, $this->event->startDate->year)))
-            : [];
+        try {
+            $budgetEntries      = $budgetAvailable
+                ? $this->queryBus->handle(new EducationBudgetQuery($educationId, $this->event->grantId))
+                : [];
+            $inconsistentTotals = $categoriesAvailable
+                ? $this->queryBus->handle(new InconsistentEducationCategoryTotalsQuery($educationId, $this->event->startDate->year))
+                : [];
+            $categoriesSummary  = $categoriesAvailable
+                ? $this->queryBus->handle(new CategoriesSummaryQuery($this->getCashbookId($aid, $this->event->startDate->year)))
+                : [];
+        } catch (MissingCategory $e) {
+            $this->flashMessage($e->getMessage(), 'danger');
+            $this->redirect('Education:', ['aid' => $aid]);
+        }
 
         $this->template->setParameters([
             'budgetAvailable'          => $budgetAvailable,
