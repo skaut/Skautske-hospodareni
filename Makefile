@@ -45,3 +45,6 @@ fix:
 
 clean:
 	docker exec -it ${CONTAINER_PHP} rm -rf temp/* www/webtemp/* node_modules frontend/.cache || true
+
+build:
+	docker exec -it ${CONTAINER_PHP} yarn build
