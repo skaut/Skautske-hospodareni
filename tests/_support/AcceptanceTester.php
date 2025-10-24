@@ -39,7 +39,6 @@ class AcceptanceTester extends Actor
 
         if ($I->loadSessionSnapshot('login')) {
             $I->amOnPage('/');
-            $I->click('Akce');
              return;
         }
 
@@ -49,7 +48,7 @@ class AcceptanceTester extends Actor
         $I->fillField('(//input)[9]', self::LOGIN);
         $I->fillField('(//input)[10]', self::PASSWORD);
         $I->click('//button');
-        $I->waitForText('Seznam akcí');
+        $I->waitForText('Nástěnka');
 
         $roleButtonSelector = "//button[contains(@class, 'ui--current-role')]";
 

@@ -99,7 +99,7 @@ class Event implements ISkautisEvent
 
     public function isOpen(): bool
     {
-        return $this->state === 'draft';
+        return $this->state === EventState::DRAFT->value;
     }
 
     public function getState(): string

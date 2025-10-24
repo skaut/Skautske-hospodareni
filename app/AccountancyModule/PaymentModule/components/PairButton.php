@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\PaymentModule\Components;
 
-use App\AccountancyModule\Components\BaseControl;
+use App\AccountancyModule\Components\BaseButtonControl;
 use App\Forms\BaseForm;
 use Model\BankService;
 use Model\BankTimeLimit;
@@ -19,10 +19,9 @@ use Model\PaymentService;
 use function array_filter;
 use function array_map;
 use function assert;
-use function bdump;
 use function count;
 
-class PairButton extends BaseControl
+class PairButton extends BaseButtonControl
 {
     public const TIMEOUT_MESSAGE    = 'Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.';
     public const TIME_LIMIT_MESSAGE = 'Mezi dotazy na bankovnictví musí být prodleva 1 minuta!';
@@ -32,6 +31,18 @@ class PairButton extends BaseControl
 
     public function __construct(private PaymentService $payments, private BankService $model, private BankAccountService $bankAccounts)
     {
+        $style = 'primary';
+        // default
+        $this->addCss([
+            'wrap'       => 'd-inline-block',
+            'btn'        => 'btn btn-' . $style,
+            'toggle'     => 'btn btn-' . $style . ' dropdown-toggle',
+            'menu'       => 'dropdown-menu pairForm',
+            'icon'       => 'fas fa-university',
+            'inputGroup' => 'input-group',
+            'submit'     => 'btn btn-primary',
+            'submitCol'  => 'col-4',
+        ]);
     }
 
     public function handlePair(): void
@@ -54,6 +65,7 @@ class PairButton extends BaseControl
         $this->template->setParameters([
             'canPair'     => $this->canPair(),
             'groupsCount' => count($this->groupIds),
+            'css' => $this->css,
         ]);
         $this->template->setFile(__DIR__ . '/templates/PairButton.latte');
         $this->template->render();
@@ -114,24 +126,26 @@ class PairButton extends BaseControl
     {
         try {
             $pairingResults = $this->model->pairAllGroups($this->groupIds, $daysBack);
+
+            if (empty($pairingResults)) {
+                $this->presenter->flashMessage('Nebyla nalezena žádná platby k párování', 'warning');
+            }
+
             foreach ($pairingResults as $p) {
                 assert($p instanceof PairingResult);
-                $this->flashMessage($p->getMessage(), $p->getCount() > 0 ? 'success' : 'info');
+                $this->presenter->flashMessage($p->getMessage(), $p->getCount() > 0 ? 'success' : 'info');
             }
         } catch (BankTimeout) {
-            $this->flashMessage(self::TIMEOUT_MESSAGE, 'danger');
-            bdump(self::TIMEOUT_MESSAGE);
+            $this->presenter->flashMessage(self::TIMEOUT_MESSAGE, 'danger');
         } catch (BankTimeLimit) {
-            $this->flashMessage(self::TIME_LIMIT_MESSAGE, 'danger');
-            bdump(self::TIME_LIMIT_MESSAGE);
+            $this->presenter->flashMessage(self::TIME_LIMIT_MESSAGE, 'danger');
         } catch (BankWrongTokenAccount $e) {
-            $this->flashMessage($this->wrongTokenAccountMessage($e), 'danger');
-            bdump($this->wrongTokenAccountMessage($e));
+            $this->presenter->flashMessage($this->wrongTokenAccountMessage($e), 'danger');
         } catch (InvalidOAuth $exc) {
-            $this->flashMessage($exc->getExplainedMessage(), 'danger');
+            $this->presenter->flashMessage($exc->getExplainedMessage(), 'danger');
         }
 
-        $this->redirect('this');
+        $this->presenter->redirect('this');
     }
 
     public static function wrongTokenAccountMessage(BankWrongTokenAccount $exception): string

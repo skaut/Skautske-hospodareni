@@ -1,3 +1,101 @@
-{block title}Skautské hospodaření online{/block}
+{block title}Přehled{/block}
 
 {block #content}
+    <div class="container dashboard" aria-label="Přehled sekcí">
+        <section class="noticeboard" aria-labelledby="noticeboard-title">
+            <div class="section-head">
+                <h1 id="noticeboard-title" class="section-title">Nástěnka</h1>
+            </div>
+        </section>
+
+        <div class="tiles">
+
+            <div class="tile" role="region" aria-labelledby="tile-events-title">
+                <div class="tile-head">
+                    <a n:href="Accountancy:Event:Default:" class="tile-link" aria-labelledby="tile-events-title">
+                        <i class="fa-solid fa-calendar-check tile-icon" aria-hidden="true"></i>
+                        <h2 id="tile-events-title" class="tile-title">Akce</h2>
+                    </a>
+                </div>
+                <div class="tile-body">
+                    <ul>
+                        <li>Rozpracováno: {$eventsCount[\Model\Event\EventState::DRAFT->value] ?? '—'}</li>
+                        <li>Uzavřené: {$eventsCount[\Model\Event\EventState::CLOSED->value] ?? '—'}</li>
+                        <li>Zrušené: {$eventsCount[\Model\Event\EventState::CANCELLED->value] ?? '—'}</li>
+                    </ul>
+                    {ifset $canCreateEvent}<a n:href="Accountancy:Event:Create:" class="btn btn-sm btn-primary">Nová akce</a>{/ifset}
+                </div>
+            </div>
+
+            <div class="tile" role="region" aria-labelledby="tile-camps-title">
+                <div class="tile-head">
+                    <a n:href=":Accountancy:Camp:Default:" class="tile-link" aria-labelledby="tile-camps-title">
+                        <i class="fa-solid fa-campground tile-icon" aria-hidden="true"></i>
+                        <h2 id="tile-camps-title" class="tile-title">Tábory</h2>
+                    </a>
+                </div>
+                <div class="tile-body">
+                    <ul>
+                        <li>Rozpracováno: {$campsCount[\Model\Event\CampState::DRAFT->value] ?? '—'}</li>
+                        <li>Schválené střediskem: {$campsCount[\Model\Event\CampState::APPROVED_PARENT->value] ?? '—'}</li>
+                        <li>Schválené vedoucím: {$campsCount[\Model\Event\CampState::APPROVED_LEADER->value] ?? '—'}</li>
+                        <li>Skutečnost odevzdána: {$campsCount[\Model\Event\CampState::REAL->value] ?? '—'}</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tile" role="region" aria-labelledby="tile-edu-title">
+                <div class="tile-head">
+                    <a n:href=":Accountancy:Education:Default:" class="tile-link" aria-labelledby="tile-edu-title">
+                        <i class="fa-solid fa-graduation-cap tile-icon" aria-hidden="true"></i>
+                        <h2 id="tile-edu-title" class="tile-title">Vzdělávačky</h2>
+                    </a>
+                </div>
+                <div class="tile-body">
+                    <ul></ul>
+                </div>
+            </div>
+
+            <div class="tile" role="region" aria-labelledby="tile-travel-title">
+                <div class="tile-head">
+                    <a n:href=":Accountancy:Travel:Default:" class="tile-link" aria-labelledby="tile-travel-title">
+                        <i class="fa-solid fa-road tile-icon" aria-hidden="true"></i>
+                        <h2 id="tile-travel-title" class="tile-title">Cesťáky</h2>
+                    </a>
+                </div>
+                <div class="tile-body">
+                    <ul></ul>
+                </div>
+            </div>
+
+            <div class="tile" role="region" aria-labelledby="tile-unit-title">
+                <div class="tile-head">
+                    <a n:href=":Accountancy:UnitAccount:Cashbook:" class="tile-link" aria-labelledby="tile-unit-title">
+                        <i class="fa-solid fa-people-group tile-icon" aria-hidden="true"></i>
+                        <h2 id="tile-unit-title" class="tile-title">Jednotka</h2>
+                    </a>
+                </div>
+                <div class="tile-body">
+                    <ul></ul>
+                </div>
+            </div>
+
+            <div class="tile" role="region" aria-labelledby="tile-payments-title">
+                <div class="tile-head">
+                    <a n:href=":Accountancy:Payment:GroupList:" class="tile-link" aria-labelledby="tile-payments-title">
+                        <i class="fa-solid fa-coins tile-icon" aria-hidden="true"></i>
+                        <h2 id="tile-payments-title" class="tile-title">Platby</h2>
+                    </a>
+                </div>
+                <div class="tile-body">
+                    <ul>
+                        <li>Otevřené: {$groupCount ?? '—'}</li>
+                    </ul>
+                    {control createButton}
+                {control pairButton}
+                </div>
+            </div>
+
+        </div>
+    </div>
+{/block}
