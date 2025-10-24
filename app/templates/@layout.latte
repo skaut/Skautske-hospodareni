@@ -38,7 +38,7 @@
     <nav class="navbar navbar-expand-lg {if $testBackground}bg-test navbar-light{else}bg-dark navbar-dark{/if}">
         <div class="container container-lg">
             {if $user->isLoggedIn()}
-                <a class="navbar-brand" n:href="Dashboard:default">Hospodaření</a>
+                <a class="navbar-brand" n:href=":Dashboard:default">Hospodaření</a>
             {else}
                 <a class="navbar-brand" n:href=":Default:">Hospodaření</a>
             {/if}
@@ -113,7 +113,7 @@
         {include #content}
     </main><!-- /.container -->
 
-    <footer class="mt-5 py-2 text-center bg-body-tertiary">
+    <footer class="mt-5 py-2 text-center bg-body-tertiary" id="footer">
         <small class="text-muted">
             <span class="d-block text-center d-md-inline">Skautské hospodaření</span>
             <a n:href=":Default:about" class="ms-3">O projektu</a>
