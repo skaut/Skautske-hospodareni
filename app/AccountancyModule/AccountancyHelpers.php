@@ -8,6 +8,8 @@ use Cake\Chronos\ChronosDate;
 use DateTimeInterface;
 use InvalidArgumentException;
 use Model\Common\ShouldNotHappen;
+use Model\Event\CampState;
+use Model\Event\EventState;
 use Model\Payment\Payment\State;
 use Money\Money;
 use Nette\Utils\Html;
@@ -51,17 +53,11 @@ abstract class AccountancyHelpers
      */
     public static function eventStateLabel(string $s): string
     {
-        if ($s === 'draft') {
-            return '<span class=\'badge bg-warning text-dark\'>Rozpracováno</span>';
-        }
-
-        if ($s === 'closed') {
-            return '<span class=\'badge bg-success\'>Uzavřeno</span>';
-        }
-
-        return '<span class=\'badge bg-danger\'>Zrušeno</span>';
-
-        //draft, closed, cancelled
+        return match ($s) {
+            EventState::DRAFT->value => '<span class="badge bg-warning text-dark">Rozpracováno</span>',
+            EventState::CLOSED->value => '<span class="badge bg-success">Uzavřeno</span>',
+            default => '<span class="badge bg-danger">Zrušeno</span>',
+        };
     }
 
     /**
@@ -170,22 +166,13 @@ abstract class AccountancyHelpers
      */
     public static function campStateLabel(string $s): string
     {
-        switch ($s) {
-            case 'draft':
-                return '<span class=\'badge bg-warning text-dark\'>Rozpracováno</span>';
-
-            case 'approvedParent':
-                return '<span class=\'badge bg-info text-dark\'>Schválený střediskem</span>';
-
-            case 'approvedLeader':
-                return '<span class=\'badge bg-info text-dark\'>Schválený vedoucím</span>';
-
-            case 'real':
-                return '<span class=\'badge bg-success\'>Skutečnost odevzdána</span>';
-
-            default:
-                return '<span class=\'badge bg-danger\'>Zrušený</span>';
-        }
+        return match ($s) {
+            CampState::DRAFT->value => '<span class=\'badge bg-warning text-dark\'>Rozpracováno</span>',
+            CampState::APPROVED_PARENT->value => '<span class=\'badge bg-info text-dark\'>Schválený střediskem</span>',
+            CampState::APPROVED_LEADER->value => '<span class=\'badge bg-info text-dark\'>Schválený vedoucím</span>',
+            CampState::REAL->value => '<span class=\'badge bg-success\'>Skutečnost odevzdána</span>',
+            default => '<span class=\'badge bg-danger\'>Zrušený</span>',
+        };
     }
 
     /** @filter */

@@ -81,6 +81,7 @@ class BankService
             }
 
             $payments = $this->payments->findByMultipleGroups(array_keys($groups));
+
             $payments = array_filter(
                 $payments,
                 function (Payment $p) {

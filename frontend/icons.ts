@@ -69,6 +69,11 @@ library.add(
     fas.faTrashCan,
     fas.faBoxArchive,
     fas.faFileInvoiceDollar,
+    fas.faCalendarCheck,
+    fas.faGraduationCap,
+    fas.faRoad,
+    fas.faPeopleGroup,
+    fas.faCoins,
 
     // Regular icons
     far.faCalendar,
