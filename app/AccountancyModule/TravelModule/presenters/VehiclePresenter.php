@@ -6,7 +6,7 @@ namespace App\AccountancyModule\TravelModule;
 
 use App\AccountancyModule\TravelModule\Components\RoadworthyControl;
 use App\AccountancyModule\TravelModule\Factories\IRoadworthyControlFactory;
-use App\Forms\BaseForm;
+use Component\Forms\BaseForm;
 use Contributte\Application\Response\PSR7StreamResponse;
 use Model\Common\File;
 use Model\DTO\Travel\Vehicle as VehicleDTO;

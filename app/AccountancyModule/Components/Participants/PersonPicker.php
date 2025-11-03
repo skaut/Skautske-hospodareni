@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\AccountancyModule\Components\Participants;
 
 use App\AccountancyModule\Components\BaseControl;
-use App\Forms\BaseForm;
 use Cake\Chronos\ChronosDate;
+use Component\Forms\BaseForm;
 use Model\Common\Services\QueryBus;
 use Model\Common\UnitId;
 use Model\DTO\Participant\NonMemberParticipant;

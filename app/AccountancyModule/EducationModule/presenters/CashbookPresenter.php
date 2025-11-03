@@ -6,7 +6,7 @@ namespace App\AccountancyModule\EducationModule;
 
 use App\AccountancyModule\Components\CashbookControl;
 use App\AccountancyModule\Factories\ICashbookControlFactory;
-use App\Forms\BaseForm;
+use Component\Forms\BaseForm;
 use Model\Auth\Resources\Education;
 use Model\Auth\Resources\Grant;
 use Model\Cashbook\Cashbook\Amount;

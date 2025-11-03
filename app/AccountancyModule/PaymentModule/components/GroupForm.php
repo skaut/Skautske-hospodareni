@@ -6,9 +6,9 @@ namespace App\AccountancyModule\PaymentModule\Components;
 
 use App\AccountancyModule\Components\BaseControl;
 use App\AccountancyModule\Components\FormControls\DateControl;
-use App\Forms\BaseForm;
 use Assert\Assertion;
 use Cake\Chronos\ChronosDate;
+use Component\Forms\BaseForm;
 use DateTimeImmutable;
 use Model\Common\Services\QueryBus;
 use Model\Common\UnitId;

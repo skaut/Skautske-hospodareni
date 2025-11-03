@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\UnitAccountModule\Components;
 
 use App\AccountancyModule\Components\Dialog;
-use App\Forms\BaseForm;
+use Component\Forms\BaseForm;
 use Model\Cashbook\Commands\Unit\ActivateCashbook;
 use Model\Cashbook\ReadModel\Queries\ActiveUnitCashbookQuery;
 use Model\Cashbook\ReadModel\Queries\UnitCashbookListQuery;

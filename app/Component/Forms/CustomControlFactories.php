@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Forms;
+namespace Component\Forms;
 
 use App\AccountancyModule\Components\FormControls\DateControl;
+use App\AccountancyModule\Components\FormControls\YearSelectControl;
 use Kdyby\Replicator\Container;
 use NasExt\Forms\Controls\DependentSelectBox;
 use Nette\Forms\Control;
@@ -44,5 +45,10 @@ trait CustomControlFactories
         $control->currentGroup = $this->currentGroup;
 
         return $this[$name] = $control;
+    }
+
+    public function addYearSelect(string $name, string|null $label = 'Rok', callable|null $filterCallback = null): YearSelectControl
+    {
+        return $this[$name] = new YearSelectControl($label, $filterCallback);
     }
 }

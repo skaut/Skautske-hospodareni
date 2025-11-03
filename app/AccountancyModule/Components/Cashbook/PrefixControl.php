@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\Components\Cashbook;
 
 use App\AccountancyModule\Components\Dialog;
-use App\Forms\BaseForm;
+use Component\Forms\BaseForm;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Commands\Cashbook\UpdateChitNumberPrefix;

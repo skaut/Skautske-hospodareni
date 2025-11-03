@@ -6,10 +6,10 @@ namespace App\AccountancyModule;
 
 use Cake\Chronos\ChronosDate;
 use DateTimeInterface;
+use Enum\CampState;
+use Enum\EventState;
 use InvalidArgumentException;
 use Model\Common\ShouldNotHappen;
-use Model\Event\CampState;
-use Model\Event\EventState;
 use Model\Payment\Payment\State;
 use Money\Money;
 use Nette\Utils\Html;

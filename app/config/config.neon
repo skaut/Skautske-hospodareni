@@ -24,17 +24,20 @@ tracy:
     bar:
         - Nextras\MailPanel\MailPanel(%tempDir%/mail-panel-latte)
 
+#console:
+#    url: https://h.skauting.cz
+#    helperSet: Symfony\Component\Console\Helper\HelperSet([
+##         Helpery required by Doctrine Migrations commands
+#        em: Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper(),
+#
+#
+##         Helpery required by Doctrine DBAL a ORM commands
+#        entityManager: Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper(),
+#        question: Symfony\Component\Console\Helper\QuestionHelper(),
+#    ])
+
 console:
     url: https://h.skauting.cz
-    helperSet: Symfony\Component\Console\Helper\HelperSet([
-        # Helpery required by Doctrine Migrations commands
-        em: Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper(),
-
-
-        # Helpery required by Doctrine DBAL a ORM commands
-        entityManager: Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper(),
-        question: Symfony\Component\Console\Helper\QuestionHelper(),
-    ])
 
 messenger:
     buses:
@@ -99,6 +102,11 @@ search:
             - Model\Skautis\**
 
             - Model\Services\**
+
+            # New ORM structure
+            - Manager\**
+            - Repository\**
+
         exclude:
             classes:
                 - Model\Skautis\WebserviceFactory

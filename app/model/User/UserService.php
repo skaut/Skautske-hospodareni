@@ -10,6 +10,7 @@ use Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Model\User\SkautisRole;
 use Nette\Application\BadRequestException;
 use Skautis\Skautis;
+use Skautis\User;
 use stdClass;
 
 use function array_key_exists;
@@ -65,6 +66,11 @@ class UserService
         }
 
         return $res;
+    }
+
+    public function getUser(): User
+    {
+        return $this->skautis->getUser();
     }
 
     /**

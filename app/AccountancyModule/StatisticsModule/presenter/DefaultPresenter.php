@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\StatisticsModule;
 
-use App\Forms\BaseForm;
+use Component\Forms\BaseForm;
 use Model\StatisticsService;
 use Model\Unit\ReadModel\Queries\UnitQuery;
 use Nette\Forms\Form;

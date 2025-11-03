@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\PaymentModule\Components;
 
 use App\AccountancyModule\Components\Dialog;
-use App\Forms\BaseForm;
+use Component\Forms\BaseForm;
 use Model\Commands\Payment\UpdateNote;
 use Model\Common\Services\CommandBus;
 use Model\DTO\Payment\Payment;

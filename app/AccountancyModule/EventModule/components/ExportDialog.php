@@ -6,8 +6,8 @@ namespace App\AccountancyModule\EventModule\Components;
 
 use App\AccountancyModule\Components\Dialog;
 use App\AccountancyModule\ExcelResponse;
-use App\Forms\BaseForm;
 use Cake\Chronos\ChronosDate;
+use Component\Forms\BaseForm;
 use Model\Common\Services\QueryBus;
 use Model\DTO\Event\EventListItem;
 use Model\Event\ReadModel\Queries\Excel\ExportEvents;

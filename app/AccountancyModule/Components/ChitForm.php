@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\Components;
 
-use App\Forms\BaseForm;
 use Cake\Chronos\ChronosDate;
+use Component\Forms\BaseForm;
 use InvalidArgumentException;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;

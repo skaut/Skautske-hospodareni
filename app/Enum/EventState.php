@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Model\Event;
+namespace Enum;
 
 use function array_column;
 

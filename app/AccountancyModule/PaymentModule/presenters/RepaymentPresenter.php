@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\PaymentModule;
 
-use App\Forms\BaseForm;
 use Cake\Chronos\ChronosDate;
+use Component\Forms\BaseForm;
 use Model\DTO\Payment\Group;
 use Model\DTO\Payment\RepaymentCandidate;
 use Model\Payment\BankAccount\AccountNumber;

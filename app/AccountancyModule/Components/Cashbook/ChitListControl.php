@@ -9,7 +9,7 @@ use App\AccountancyModule\Factories\Cashbook\IChitScanControlFactory;
 use App\AccountancyModule\Factories\Cashbook\IInvertChitDialogFactory;
 use App\AccountancyModule\Factories\Cashbook\IMoveChitsDialogFactory;
 use App\AccountancyModule\Factories\Cashbook\IPrefixControlFactory;
-use App\Forms\BaseForm;
+use Component\Forms\BaseForm;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\CashbookNotFound;

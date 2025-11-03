@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\UnitAccountModule;
 
-use App\Forms\BaseForm;
+use Component\Forms\BaseForm;
 use Model\BudgetService;
 use NasExt\Forms\DependentData;
 use Nette\Application\UI\Form;

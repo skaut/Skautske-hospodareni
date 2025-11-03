@@ -1,0 +1,14 @@
+{extends $baseTemplate}
+
+{block filters}
+    {include #filter-type-search}
+    {*include #filter-type-select name => 'state', label => 'Stav'*}
+{/block}
+
+{define col-dueDate}
+    {$item->getDueDate()->format('Y m.d')}
+{/define}
+
+{define col-dateOfIssue}
+    {$item->getDateOfIssue()->format('Y m.d')}
+{/define}

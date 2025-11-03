@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\AccountancyModule\PaymentModule\Components;
 
 use App\AccountancyModule\Components\Dialog;
-use App\Forms\BaseForm;
 use App\MyValidators;
 use Assert\Assertion;
 use Cake\Chronos\ChronosDate;
+use Component\Forms\BaseForm;
 use Model\Common\EmailAddress;
 use Model\Common\Services\CommandBus;
 use Model\DTO\Payment\Payment;

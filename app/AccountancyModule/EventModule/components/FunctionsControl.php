@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\EventModule\Components;
 
 use App\AccountancyModule\Components\BaseControl;
-use App\Forms\BaseForm;
+use Component\Forms\BaseForm;
 use Model\Auth\IAuthorizator;
 use Model\Auth\Resources\Event;
 use Model\Common\ReadModel\Queries\MemberNamesQuery;

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Event;
 
 use Cake\Chronos\ChronosDate;
+use Enum\EventState;
 use Model\Common\UnitId;
 use Model\Skautis\ISkautisEvent;
 use Nette\SmartObject;

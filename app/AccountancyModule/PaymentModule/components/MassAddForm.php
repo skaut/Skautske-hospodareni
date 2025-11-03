@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\AccountancyModule\PaymentModule\Components;
 
 use App\AccountancyModule\Components\BaseControl;
-use App\Forms\BaseContainer;
-use App\Forms\BaseForm;
 use Cake\Chronos\ChronosDate;
+use Component\Forms\BaseContainer;
+use Component\Forms\BaseForm;
 use Model\Common\EmailAddress;
 use Model\Common\Services\CommandBus;
 use Model\Payment\Commands\Payment\CreatePayment;
