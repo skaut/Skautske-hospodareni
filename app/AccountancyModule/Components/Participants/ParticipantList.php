@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\Components\Participants;
 
 use App\AccountancyModule\Components\BaseControl;
-use App\Forms\BaseForm;
+use Component\Forms\BaseForm;
 use Model\DTO\Participant\Participant;
 use Model\DTO\Participant\UpdateParticipant;
 use Model\Participant\ParticipantNotFound;

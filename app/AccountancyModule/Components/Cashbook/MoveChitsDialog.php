@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\Components\Cashbook;
 
 use App\AccountancyModule\Components\Dialog;
-use App\Forms\BaseForm;
+use Component\Forms\BaseForm;
 use Model\Auth\IAuthorizator;
 use Model\Auth\Resources\Camp as CampResource;
 use Model\Auth\Resources\Event as EventResource;

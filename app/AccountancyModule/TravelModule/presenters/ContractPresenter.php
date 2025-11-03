@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\TravelModule;
 
-use App\Forms\BaseForm;
 use Cake\Chronos\ChronosDate;
+use Component\Forms\BaseForm;
 use Exception;
 use Model\DTO\Travel\Contract;
 use Model\Services\PdfRenderer;

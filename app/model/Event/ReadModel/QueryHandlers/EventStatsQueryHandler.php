@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Event\ReadModel\QueryHandlers;
 
-use Model\Event\EventState;
+use Enum\EventState;
 use Model\Event\ReadModel\Queries\EventStatsQuery;
 use Skautis\Skautis;
 

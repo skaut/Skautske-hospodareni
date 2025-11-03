@@ -8,7 +8,7 @@ use App\AccountancyModule\Components\CashbookControl;
 use App\AccountancyModule\EventModule\Components\MissingAutocomputedCategoryControl;
 use App\AccountancyModule\EventModule\Factories\IMissingAutocomputedCategoryControlFactory;
 use App\AccountancyModule\Factories\ICashbookControlFactory;
-use App\Forms\BaseForm;
+use Component\Forms\BaseForm;
 use Model\Auth\Resources\Camp;
 use Model\Cashbook\Cashbook\Amount;
 use Model\Cashbook\Cashbook\CashbookId;

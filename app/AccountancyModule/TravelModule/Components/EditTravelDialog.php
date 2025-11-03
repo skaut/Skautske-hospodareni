@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\AccountancyModule\TravelModule\Components;
 
 use App\AccountancyModule\Components\Dialog;
-use App\Forms\BaseForm;
 use Assert\Assertion;
 use Cake\Chronos\ChronosDate;
+use Component\Forms\BaseForm;
 use Model\Travel\Travel\TransportType;
 use Model\TravelService;
 use Model\Utils\MoneyFactory;

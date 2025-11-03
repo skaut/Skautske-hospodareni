@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Forms;
+namespace Component\Forms;
 
 use App\Bootstrap5FormRenderer;
 use Nette\Application\UI\Form;

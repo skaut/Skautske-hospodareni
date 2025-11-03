@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\TravelModule\Components;
 
 use App\AccountancyModule\Components\BaseControl;
-use App\Forms\BaseForm;
+use Component\Forms\BaseForm;
 use Model\Common\FilePath;
 use Model\Common\IScanStorage;
 use Model\Common\ScanNotFound;

@@ -6,7 +6,7 @@ namespace App\AccountancyModule\PaymentModule\Components;
 
 use App\AccountancyModule\Components\BaseControl;
 use App\AccountancyModule\Components\Dialog;
-use App\Forms\BaseForm;
+use Component\Forms\BaseForm;
 use InvalidArgumentException;
 use Model\Common\Services\CommandBus;
 use Model\Payment\Payment\CsvParser;

@@ -10,13 +10,15 @@ final class VariableSymbol
 {
     private const PATTERN = '^(?!0)[0-9]{1,10}$';
 
-    public function __construct(private string $value)
+    /** @throws InvalidVariableSymbol */
+    public function __construct(private readonly string $value)
     {
         if (! Strings::match($value, '/' . self::PATTERN . '/')) {
             throw new InvalidVariableSymbol($value);
         }
     }
 
+    /** @throws InvalidVariableSymbol */
     public function increment(): self
     {
         return new VariableSymbol(

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\UnitAccountModule\Components;
 
 use App\AccountancyModule\Components\Dialog;
-use App\Forms\BaseForm;
+use Component\Forms\BaseForm;
 use Model\Cashbook\Commands\Unit\CreateCashbook;
 use Model\Cashbook\Commands\Unit\CreateUnit;
 use Model\Cashbook\ReadModel\Queries\ActiveUnitCashbookQuery;
@@ -18,14 +18,9 @@ use Nette\Utils\ArrayHash;
 
 use function array_diff;
 use function array_map;
-use function date;
-use function range;
-use function Safe\array_combine;
 
 final class CreateCashbookDialog extends Dialog
 {
-    private const YEARS_RANGE = [-5, 2];
-
     /** @var bool @persistent */
     public bool $opened = false;
 
@@ -56,11 +51,9 @@ final class CreateCashbookDialog extends Dialog
     {
         $form = new BaseForm();
 
-        $yearsDescending = range($this->getYear(self::YEARS_RANGE[1]), $this->getYear(self::YEARS_RANGE[0]));
-        $yearsDescending = array_diff($yearsDescending, $this->getYearsWithCashbook());
-
-        $form->addSelect('year', 'Rok', array_combine($yearsDescending, $yearsDescending))
-            ->setRequired('Musíte vybrat rok');
+        $form->addYearSelect('year', 'Rok', function (array $years) {
+            return array_diff($years, $this->getYearsWithCashbook());
+        });
 
         $form->addSubmit('create', 'Založit')
             ->setHtmlAttribute('class', 'btn btn-primary');
@@ -83,11 +76,6 @@ final class CreateCashbookDialog extends Dialog
         };
 
         return $form;
-    }
-
-    private function getYear(int $yearsDifference): int
-    {
-        return (int) date('Y') + $yearsDifference;
     }
 
     /** @return int[] */

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\AccountancyModule\Components;
 
-use App\Forms\BaseForm;
+use Component\Forms\BaseForm;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Commands\Cashbook\UpdateNote;
 use Model\Cashbook\ReadModel\Queries\CashbookQuery;

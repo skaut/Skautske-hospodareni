@@ -78,15 +78,79 @@ dbal:
             skautis_camp_id:
                 class: Model\Infrastructure\Types\SkautisCampIdType
                 commented: true
+            big_decimal:
+                class: Model\Infrastructure\Types\BigDecimalType
+                commented: true
+            carbon_timestamp_immutable_ms:
+                class: Extension\Doctrine\Types\CarbonTimestampImmutableMsType
+                commented: true
+            uuid_binary: Ramsey\Uuid\Doctrine\UuidBinaryType
 
 services:
-    - Model\Infrastructure\EntityManagerFactory(%debugMode%, %cacheDir%)
-    - @Model\Infrastructure\EntityManagerFactory::create()
+  # ── EntityManager z vaší továrny ──────────────────────────────────────────────
+  doctrine.entityManagerFactory:
+    factory: Model\Infrastructure\EntityManagerFactory(%debugMode%, %cacheDir%)
 
-    - factory: Doctrine\ORM\Tools\Console\Command\GenerateProxiesCommand
-      tags: { console.command: orm:generate-proxies }
-    - factory: Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand
-      tags: { console.command: orm:validate-schema }
+  doctrine.entityManager:
+    factory: [@doctrine.entityManagerFactory, create]
+    type: Doctrine\ORM\EntityManager
+
+  # ── ManagerRegistry (autowiring přes type) ───────────────────────────────────
+  doctrine.managerRegistry:
+    factory: Infrastructure\Doctrine\NetteManagerRegistry(
+      @doctrine.entityManager,
+      @dbal.connection
+    )
+    type: Doctrine\Persistence\ManagerRegistry
+
+  # ── CLI providers (ORM/DBAL) ─────────────────────────────────────────────────
+  doctrine.entityManagerProvider:
+    factory: Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider(
+      @doctrine.entityManager
+    )
+
+  doctrine.connectionProvider:
+    factory: Doctrine\DBAL\Tools\Console\ConnectionProvider\SingleConnectionProvider(
+      @dbal.connection
+    )
+
+  # ── Doctrine ORM/DBAL příkazy registrované s providers ───────────────────────
+  doctrine.orm.command.validate_schema:
+    factory: Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand(
+      @doctrine.entityManagerProvider
+    )
+    tags: { console.command: orm:validate-schema }
+
+  doctrine.orm.command.generate_proxies:
+    factory: Doctrine\ORM\Tools\Console\Command\GenerateProxiesCommand(
+      @doctrine.entityManagerProvider
+    )
+    tags: { console.command: orm:generate-proxies }
+    # Pozn.: v ORM 3 deprecated – až přejdete, klidně odstranit.
+
+  doctrine.orm.command.schema_update:
+    factory: Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand(
+      @doctrine.entityManagerProvider
+    )
+    tags: { console.command: orm:schema-tool:update }
+
+  doctrine.orm.command.schema_create:
+    factory: Doctrine\ORM\Tools\Console\Command\SchemaTool\CreateCommand(
+      @doctrine.entityManagerProvider
+    )
+    tags: { console.command: orm:schema-tool:create }
+
+  doctrine.orm.command.schema_drop:
+    factory: Doctrine\ORM\Tools\Console\Command\SchemaTool\DropCommand(
+      @doctrine.entityManagerProvider
+    )
+    tags: { console.command: orm:schema-tool:drop }
+
+  doctrine.dbal.command.run_sql:
+    factory: Doctrine\DBAL\Tools\Console\Command\RunSqlCommand(
+      @doctrine.connectionProvider
+    )
+    tags: { console.command: dbal:run-sql }
 
 decorator:
     Doctrine\Migrations\Configuration\Configuration:

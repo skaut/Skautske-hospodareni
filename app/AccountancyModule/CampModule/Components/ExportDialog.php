@@ -6,8 +6,8 @@ namespace App\AccountancyModule\CampModule\Components;
 
 use App\AccountancyModule\Components\Dialog;
 use App\AccountancyModule\ExcelResponse;
-use App\Forms\BaseForm;
 use Cake\Chronos\ChronosDate;
+use Component\Forms\BaseForm;
 use Model\Common\Services\QueryBus;
 use Model\DTO\Camp\CampListItem;
 use Model\Event\ReadModel\Queries\Excel\ExportCamps;

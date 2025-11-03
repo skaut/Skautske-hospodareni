@@ -19,9 +19,9 @@
                 </div>
                 <div class="tile-body">
                     <ul>
-                        <li>Rozpracováno: {$eventsCount[\Model\Event\EventState::DRAFT->value] ?? '—'}</li>
-                        <li>Uzavřené: {$eventsCount[\Model\Event\EventState::CLOSED->value] ?? '—'}</li>
-                        <li>Zrušené: {$eventsCount[\Model\Event\EventState::CANCELLED->value] ?? '—'}</li>
+                        <li>Rozpracováno: {$eventsCount[\Enum\EventState::DRAFT->value] ?? '—'}</li>
+                        <li>Uzavřené: {$eventsCount[\Enum\EventState::CLOSED->value] ?? '—'}</li>
+                        <li>Zrušené: {$eventsCount[\Enum\EventState::CANCELLED->value] ?? '—'}</li>
                     </ul>
                     {ifset $canCreateEvent}<a n:href="Accountancy:Event:Create:" class="btn btn-sm btn-primary">Nová akce</a>{/ifset}
                 </div>
@@ -36,10 +36,10 @@
                 </div>
                 <div class="tile-body">
                     <ul>
-                        <li>Rozpracováno: {$campsCount[\Model\Event\CampState::DRAFT->value] ?? '—'}</li>
-                        <li>Schválené střediskem: {$campsCount[\Model\Event\CampState::APPROVED_PARENT->value] ?? '—'}</li>
-                        <li>Schválené vedoucím: {$campsCount[\Model\Event\CampState::APPROVED_LEADER->value] ?? '—'}</li>
-                        <li>Skutečnost odevzdána: {$campsCount[\Model\Event\CampState::REAL->value] ?? '—'}</li>
+                        <li>Rozpracováno: {$campsCount[\Enum\CampState::DRAFT->value] ?? '—'}</li>
+                        <li>Schválené střediskem: {$campsCount[\Enum\CampState::APPROVED_PARENT->value] ?? '—'}</li>
+                        <li>Schválené vedoucím: {$campsCount[\Enum\CampState::APPROVED_LEADER->value] ?? '—'}</li>
+                        <li>Skutečnost odevzdána: {$campsCount[\Enum\CampState::REAL->value] ?? '—'}</li>
                     </ul>
                 </div>
             </div>

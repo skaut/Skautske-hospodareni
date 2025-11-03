@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\AccountancyModule\Components\Participants;
 
 use App\AccountancyModule\Components\Dialog;
-use App\Forms\BaseForm;
 use Assert\Assertion;
 use Closure;
+use Component\Forms\BaseForm;
 use Model\DTO\Participant\Participant;
 use Model\DTO\Participant\UpdateParticipant;
 

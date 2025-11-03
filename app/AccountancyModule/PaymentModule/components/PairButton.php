@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\AccountancyModule\PaymentModule\Components;
 
 use App\AccountancyModule\Components\BaseButtonControl;
-use App\Forms\BaseForm;
+use Component\Forms\BaseForm;
 use Model\BankService;
 use Model\BankTimeLimit;
 use Model\BankTimeout;
