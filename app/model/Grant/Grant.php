@@ -8,11 +8,11 @@ use Money\Money;
 use Nette\SmartObject;
 
 /**
- * @property-read SkautisGrantId $id
- * @property-read string $state
- * @property-read Money $amountMax
- * @property-read Money $amountPerPersonDays
- * @property-read float $costRatio
+ * @property SkautisGrantId $id
+ * @property string         $state
+ * @property Money          $amountMax
+ * @property Money          $amountPerPersonDays
+ * @property float          $costRatio
  */
 class Grant
 {

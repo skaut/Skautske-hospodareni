@@ -15,12 +15,12 @@ use function assert;
 
 abstract class BasePresenter extends \App\BasePresenter
 {
-    protected string|null $backlink = null;
+    protected ?string $backlink = null;
 
     /**
-     * id volane v url, vetsinou id akce
+     * id volane v url, vetsinou id akce.
      */
-    protected int|null $aid = null;
+    protected ?int $aid = null;
 
     protected UnitId $unitId;
 
@@ -56,13 +56,13 @@ abstract class BasePresenter extends \App\BasePresenter
             }
         }
 
-        $aid       = $this->getParameter('aid');
+        $aid = $this->getParameter('aid');
         $this->aid = $aid === null ? null : (int) $aid;
         if ($this->aid !== null) { // Parameters aren't auto-casted to int
             $this->aid = (int) $this->aid;
         }
 
-        $unitId       = $this->getParameter('unitId', null);
+        $unitId = $this->getParameter('unitId', null);
         $this->unitId = new UnitId($unitId !== null ? (int) $unitId : $this->unitService->getUnitId());
 
         $this->userService->updateLogoutTime();
@@ -101,6 +101,6 @@ abstract class BasePresenter extends \App\BasePresenter
 
     public function renderAccessDenied(): void
     {
-        $this->template->setFile(__DIR__ . '/../templates/accessDenied.latte');
+        $this->template->setFile(__DIR__.'/../templates/accessDenied.latte');
     }
 }

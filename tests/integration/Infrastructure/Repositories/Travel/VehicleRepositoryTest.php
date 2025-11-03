@@ -14,7 +14,7 @@ use Model\Unit\Unit;
 
 class VehicleRepositoryTest extends IntegrationTest
 {
-    private const TABLE                 = 'tc_vehicle';
+    private const TABLE = 'tc_vehicle';
     private const TABLE_ROADWORTHY_SCAN = 'tc_vehicle_roadworthy_scan';
 
     private VehicleRepository $repository;
@@ -153,7 +153,7 @@ class VehicleRepositoryTest extends IntegrationTest
     {
         $row = $this->getVehicleRow();
 
-        $unit    = m::mock(Unit::class, ['getId' => $row['unit_id']]);
+        $unit = m::mock(Unit::class, ['getId' => $row['unit_id']]);
         $subunit = m::mock(Unit::class, ['getId' => $row['subunit_id']]);
 
         $vehicle = new Vehicle(

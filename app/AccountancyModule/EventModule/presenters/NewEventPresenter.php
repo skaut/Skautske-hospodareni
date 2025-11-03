@@ -38,13 +38,13 @@ final class NewEventPresenter extends BasePresenter
     protected function createComponentForm(): BaseForm
     {
         $scopes = $this->queryBus->handle(new EventScopes());
-        $types  = $this->queryBus->handle(new EventTypes());
+        $types = $this->queryBus->handle(new EventTypes());
         $unitId = $this->unitService->getUnitId();
 
         $subunits = $this->unitService->getSubunitPairs($unitId);
         $subunits = array_map(
             function (string $name): string {
-                return '» ' . $name;
+                return '» '.$name;
             },
             $subunits,
         );
@@ -90,7 +90,7 @@ final class NewEventPresenter extends BasePresenter
         $v = $form->getValues();
 
         $startDate = $v['start'];
-        $endDate   = $v['end'];
+        $endDate = $v['end'];
 
         $this->commandBus->handle(
             new CreateEvent(

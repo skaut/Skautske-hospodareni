@@ -36,7 +36,7 @@ class CashbookControl extends BaseControl
             'isEditable' => $this->isEditable,
         ]);
 
-        $this->template->setFile(__DIR__ . '/templates/CashbookControl.latte');
+        $this->template->setFile(__DIR__.'/templates/CashbookControl.latte');
         $this->template->render();
     }
 

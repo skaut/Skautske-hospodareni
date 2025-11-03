@@ -30,7 +30,7 @@ use function dumpe;
 
 class InvoiceListPresenter extends BasePresenter
 {
-    protected $groupId = null;
+    protected $groupId;
 
     public function __construct(
         private readonly GridFactory $gridFactory,
@@ -43,7 +43,7 @@ class InvoiceListPresenter extends BasePresenter
     protected function createComponentGrid(): DataGrid
     {
         $grid = $this->gridFactory->createSimpleGrid(
-            __DIR__ . '/../templates/InvoiceList/grid.latte',
+            __DIR__.'/../templates/InvoiceList/grid.latte',
             [],
         );
 
@@ -55,8 +55,8 @@ class InvoiceListPresenter extends BasePresenter
 
         $grid->addColumnText('dateOfIssue', 'Datum vystavení')
             ->setSortable();
-//        $grid->addColumnText('count','Počet')
-//            ->setSortable();
+        //        $grid->addColumnText('count','Počet')
+        //            ->setSortable();
         $grid->addColumnText('issuedBy', 'Vystavil')
             ->setSortable()
             ->setFilterText();

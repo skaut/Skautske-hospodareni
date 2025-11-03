@@ -15,10 +15,10 @@ class VehicleTest extends \Codeception\Test\Unit
 {
     public function testCreateWithSubunit(): void
     {
-        $unit     = m::mock(Unit::class, ['getId' => 10]);
-        $subunit  = m::mock(Unit::class, ['getId' => 20]);
+        $unit = m::mock(Unit::class, ['getId' => 10]);
+        $subunit = m::mock(Unit::class, ['getId' => 20]);
         $metadata = new Metadata(new DateTimeImmutable(), 'František Maša');
-        $vehicle  = new Vehicle('test', $unit, $subunit, '666-666', 6.0, $metadata);
+        $vehicle = new Vehicle('test', $unit, $subunit, '666-666', 6.0, $metadata);
 
         $this->assertSame(10, $vehicle->getUnitId());
         $this->assertSame(20, $vehicle->getSubunitId());
@@ -27,7 +27,7 @@ class VehicleTest extends \Codeception\Test\Unit
 
     public function testAddRoadworthyScan(): void
     {
-        $unit    = m::mock(Unit::class, ['getId' => 10]);
+        $unit = m::mock(Unit::class, ['getId' => 10]);
         $vehicle = new Vehicle('Test', $unit, null, '333-333', 2, new Metadata(new DateTimeImmutable(), 'FM'));
 
         $path = $this->getFilePath('roadworthy.jpg');
@@ -41,7 +41,7 @@ class VehicleTest extends \Codeception\Test\Unit
 
     public function testRemoveRoadworthyScanThrowsExceptionIfScanDoesNotExist(): void
     {
-        $unit    = m::mock(Unit::class, ['getId' => 10]);
+        $unit = m::mock(Unit::class, ['getId' => 10]);
         $vehicle = new Vehicle('Test', $unit, null, '333-333', 2, new Metadata(new DateTimeImmutable(), 'FM'));
 
         $this->expectException(ScanNotFound::class);
@@ -51,9 +51,9 @@ class VehicleTest extends \Codeception\Test\Unit
 
     public function testRemoveRoadworthyScan(): void
     {
-        $unit    = m::mock(Unit::class, ['getId' => 10]);
+        $unit = m::mock(Unit::class, ['getId' => 10]);
         $vehicle = new Vehicle('Test', $unit, null, '333-333', 2, new Metadata(new DateTimeImmutable(), 'FM'));
-        $path    = $this->getFilePath('roadworthy.jpg');
+        $path = $this->getFilePath('roadworthy.jpg');
         $vehicle->addRoadworthyScan($path);
 
         $vehicle->removeRoadworthyScan($path);

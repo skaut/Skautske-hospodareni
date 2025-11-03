@@ -11,16 +11,16 @@ use Model\Skautis\ISkautisEvent;
 use Nette\SmartObject;
 
 /**
- * @property-read SkautisEducationId $id
- * @property-read string $displayName
- * @property-read UnitId $unitId
- * @property-read string $unitName
- * @property-read string $unitRegistrationNumber
- * @property-read ChronosDate|null $startDate
- * @property-read ChronosDate|null $endDate
- * @property-read string $location
- * @property-read string $state
- * @property-read SkautisGrantId|null $grantId
+ * @property SkautisEducationId  $id
+ * @property string              $displayName
+ * @property UnitId              $unitId
+ * @property string              $unitName
+ * @property string              $unitRegistrationNumber
+ * @property ChronosDate|null    $startDate
+ * @property ChronosDate|null    $endDate
+ * @property string              $location
+ * @property string              $state
+ * @property SkautisGrantId|null $grantId
  */
 class Education implements ISkautisEvent
 {
@@ -32,11 +32,11 @@ class Education implements ISkautisEvent
         private UnitId $unitId,
         private string $unitName,
         private string $unitRegistrationNumber,
-        private ChronosDate|null $startDate,
-        private ChronosDate|null $endDate,
+        private ?ChronosDate $startDate,
+        private ?ChronosDate $endDate,
         private string $location,
         private string $state,
-        private SkautisGrantId|null $grantId,
+        private ?SkautisGrantId $grantId,
     ) {
     }
 
@@ -65,12 +65,12 @@ class Education implements ISkautisEvent
         return $this->unitRegistrationNumber;
     }
 
-    public function getStartDate(): ChronosDate|null
+    public function getStartDate(): ?ChronosDate
     {
         return $this->startDate;
     }
 
-    public function getEndDate(): ChronosDate|null
+    public function getEndDate(): ?ChronosDate
     {
         return $this->endDate;
     }
@@ -85,7 +85,7 @@ class Education implements ISkautisEvent
         return $this->state;
     }
 
-    public function getGrantId(): SkautisGrantId|null
+    public function getGrantId(): ?SkautisGrantId
     {
         return $this->grantId;
     }

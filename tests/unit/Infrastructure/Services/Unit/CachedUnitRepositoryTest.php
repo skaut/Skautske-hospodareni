@@ -15,7 +15,7 @@ final class CachedUnitRepositoryTest extends TestCase
 {
     public function testFindResultIsCached(): void
     {
-        $id   = 1;
+        $id = 1;
         $unit = $this->unit($id);
 
         $repository = Mockery::mock(IUnitRepository::class);

@@ -19,8 +19,8 @@ use function count;
 
 final class ChitListControl extends BaseControl
 {
-    /** @var Chit[]|NULL */
-    private array|null $chits = null;
+    /** @var Chit[]|null */
+    private ?array $chits = null;
 
     public function __construct(
         private CashbookId $cashbookId,
@@ -49,7 +49,7 @@ final class ChitListControl extends BaseControl
 
     public function render(): void
     {
-        $this->template->setFile(__DIR__ . '/templates/ChitListControl.latte');
+        $this->template->setFile(__DIR__.'/templates/ChitListControl.latte');
         $this->template->setParameters(['chits' => $this->getChits()]);
 
         $this->template->render();

@@ -44,7 +44,7 @@ final class EntityManagerFactory
 
     public function create(): EntityManager
     {
-        $proxyDir = $this->tempDir . '/doctrine/proxies';
+        $proxyDir = $this->tempDir.'/doctrine/proxies';
 
         // jednotná defaultní cache pro ORMSetup factory – klidně použij "metadata" pool
         $defaultCache = $this->cache('metadata'); // CacheItemPoolInterface
@@ -59,14 +59,14 @@ final class EntityManagerFactory
         $driverChain = new MappingDriverChain();
 
         // Attributes – hlavní doména
-        $attributesPaths = [__DIR__ . '/../../'];          // = %appDir%/Entity
+        $attributesPaths = [__DIR__.'/../../'];          // = %appDir%/Entity
         $attributeDriver = new AttributeDriver($attributesPaths);
         $driverChain->addDriver($attributeDriver, 'Entity');
 
         // Annotations – legacy podsložka
         $annotationsReader = $this->annotationsReader();
-        $annotationsPaths  = [__DIR__ . '/../'];  // = %appDir%/model/
-        $annotationDriver  = new AnnotationDriver($annotationsReader, $annotationsPaths);
+        $annotationsPaths = [__DIR__.'/../'];  // = %appDir%/model/
+        $annotationDriver = new AnnotationDriver($annotationsReader, $annotationsPaths);
         $driverChain->addDriver($annotationDriver, 'Model');
 
         $configuration->setMetadataDriverImpl($driverChain);
@@ -79,7 +79,7 @@ final class EntityManagerFactory
 
         // Naming, DQL
         $configuration->setNamingStrategy(new UnderscoreNamingStrategy(CASE_LOWER, true));
-        //$configuration->addCustomStringFunction('field', Field::class);
+        // $configuration->addCustomStringFunction('field', Field::class);
         $configuration->addCustomStringFunction('field', Dql\FieldFunction::class);
 
         // 2nd level cache
@@ -119,6 +119,6 @@ final class EntityManagerFactory
     private function cache(string $name): CacheItemPoolInterface
     {
         // vytvoří PSR-6 pool (Filesystem/Redis/… podle implementace ICachePoolFactory)
-        return $this->cachePoolFactory->create('doctrine.' . $name);
+        return $this->cachePoolFactory->create('doctrine.'.$name);
     }
 }

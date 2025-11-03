@@ -15,7 +15,7 @@ final class CreateEvent
         private ChronosDate $startDate,
         private ChronosDate $endDate,
         private int $unitId,
-        private string|null $location = null,
+        private ?string $location,
         private int $scopeId,
         private int $typeId,
     ) {
@@ -41,7 +41,7 @@ final class CreateEvent
         return $this->unitId;
     }
 
-    public function getLocation(): string|null
+    public function getLocation(): ?string
     {
         return $this->location;
     }

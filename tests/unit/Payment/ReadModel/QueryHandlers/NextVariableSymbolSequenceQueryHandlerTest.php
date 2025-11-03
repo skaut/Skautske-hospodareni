@@ -20,12 +20,12 @@ use function array_merge;
 
 class NextVariableSymbolSequenceQueryHandlerTest extends TestCase
 {
-    private const YEAR    = '17';
+    private const YEAR = '17';
     private const UNIT_ID = 1;
 
     public function testWithZeroGroups(): void
     {
-        $this->assertReturnsVariableSymbol(self::YEAR . '11101001', 0, '111');
+        $this->assertReturnsVariableSymbol(self::YEAR.'11101001', 0, '111');
     }
 
     public function testUnitWithMoreThanOrEqualTo99GroupsReturnsNull(): void
@@ -35,20 +35,20 @@ class NextVariableSymbolSequenceQueryHandlerTest extends TestCase
 
     public function testUnitWithDashInRegistratioNumber(): void
     {
-        $this->assertReturnsVariableSymbol(self::YEAR . '14166001', 65, '14-1');
+        $this->assertReturnsVariableSymbol(self::YEAR.'14166001', 65, '14-1');
     }
 
     public function testUnitWithShortRegistrationNumber(): void
     {
-        $this->assertReturnsVariableSymbol(self::YEAR . '01402001', 1, '014');
+        $this->assertReturnsVariableSymbol(self::YEAR.'01402001', 1, '014');
     }
 
     public function testWithLongRegistrationNumber(): void
     {
-        $this->assertReturnsVariableSymbol(self::YEAR . '14102001', 1, '014-1');
+        $this->assertReturnsVariableSymbol(self::YEAR.'14102001', 1, '014-1');
     }
 
-    private function assertReturnsVariableSymbol(string|null $expectedSymbol, int $groupsCount, string $unitRegistrationNumber): void
+    private function assertReturnsVariableSymbol(?string $expectedSymbol, int $groupsCount, string $unitRegistrationNumber): void
     {
         $unitDTO = m::mock(Unit::class, ['getShortRegistrationNumber' => $unitRegistrationNumber]);
 

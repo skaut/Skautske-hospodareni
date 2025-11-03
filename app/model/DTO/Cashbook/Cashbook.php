@@ -16,8 +16,8 @@ class Cashbook
     public function __construct(
         private CashbookId $id,
         private CashbookType $type,
-        private string|null $cashChitNumberPrefix = null,
-        private string|null $bankChitNumberPrefix = null,
+        private ?string $cashChitNumberPrefix,
+        private ?string $bankChitNumberPrefix,
         private string $note,
         private bool $hasCashOnlyNumericChitNumbers,
         private bool $hasBankOnlyNumericChitNumbers,
@@ -34,7 +34,7 @@ class Cashbook
         return $this->type;
     }
 
-    public function getChitNumberPrefix(PaymentMethod $paymentMethod): string|null
+    public function getChitNumberPrefix(PaymentMethod $paymentMethod): ?string
     {
         return $paymentMethod->equals(PaymentMethod::CASH()) ? $this->cashChitNumberPrefix : $this->bankChitNumberPrefix;
     }

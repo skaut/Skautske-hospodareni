@@ -63,7 +63,7 @@ use function sprintf;
 class ExportService
 {
     public const CATEGORY_VIRTUAL = 'virtual';
-    public const CATEGORY_REAL    = 'real';
+    public const CATEGORY_REAL = 'real';
 
     public function __construct(
         private UnitService $units,
@@ -81,26 +81,26 @@ class ExportService
     public function getParticipants(int $aid, string $type = EventType::GENERAL): string
     {
         if ($type === EventType::CAMP) {
-            $templateFile = __DIR__ . '/templates/participantCamp.latte';
-            $camp         = $this->queryBus->handle(new CampQuery(new SkautisCampId($aid)));
+            $templateFile = __DIR__.'/templates/participantCamp.latte';
+            $camp = $this->queryBus->handle(new CampQuery(new SkautisCampId($aid)));
             assert($camp instanceof Camp);
             $displayName = $camp->getDisplayName();
-            $unitId      = $camp->getUnitId();
-            $list        = $this->queryBus->handle(new CampParticipantListQuery($camp->getId()));
+            $unitId = $camp->getUnitId();
+            $list = $this->queryBus->handle(new CampParticipantListQuery($camp->getId()));
         } elseif ($type === EventType::EDUCATION) {
-            $templateFile = __DIR__ . '/templates/participantEducation.latte';
-            $education    = $this->queryBus->handle(new EducationQuery(new SkautisEducationId($aid)));
+            $templateFile = __DIR__.'/templates/participantEducation.latte';
+            $education = $this->queryBus->handle(new EducationQuery(new SkautisEducationId($aid)));
             assert($education instanceof Education);
             $displayName = $education->getDisplayName();
-            $unitId      = $education->getUnitId();
-            $list        = $this->queryBus->handle(new EducationParticipantListQuery($education->getId()));
+            $unitId = $education->getUnitId();
+            $list = $this->queryBus->handle(new EducationParticipantListQuery($education->getId()));
         } else {
-            $templateFile = __DIR__ . '/templates/participant.latte';
-            $event        = $this->queryBus->handle(new EventQuery(new SkautisEventId($aid)));
+            $templateFile = __DIR__.'/templates/participant.latte';
+            $event = $this->queryBus->handle(new EventQuery(new SkautisEventId($aid)));
             assert($event instanceof Event);
             $displayName = $event->getDisplayName();
-            $unitId      = $event->getUnitId();
-            $list        = $this->queryBus->handle(new EventParticipantListQuery($event->getId()));
+            $unitId = $event->getUnitId();
+            $list = $this->queryBus->handle(new EventParticipantListQuery($event->getId()));
         }
 
         return $this->templateFactory->create($templateFile, [
@@ -111,7 +111,7 @@ class ExportService
     }
 
     /**
-     * vrací pokladní knihu
+     * vrací pokladní knihu.
      */
     public function getCashbook(CashbookId $cashbookId, PaymentMethod $paymentMethod): string
     {
@@ -124,22 +124,22 @@ class ExportService
             $this->queryBus->handle(new CashbookDisplayNameQuery($cashbookId)),
         );
 
-        return $this->templateFactory->create(__DIR__ . '/templates/cashbook.latte', [
-            'header'  => $header,
-            'prefix'  => $cashbook->getChitNumberPrefix($paymentMethod),
-            'chits'   => $this->queryBus->handle(ChitListQuery::withMethod($paymentMethod, $cashbookId)),
-            'unit'    => $this->queryBus->handle(new CashbookOfficialUnitQuery($cashbookId)),
+        return $this->templateFactory->create(__DIR__.'/templates/cashbook.latte', [
+            'header' => $header,
+            'prefix' => $cashbook->getChitNumberPrefix($paymentMethod),
+            'chits' => $this->queryBus->handle(ChitListQuery::withMethod($paymentMethod, $cashbookId)),
+            'unit' => $this->queryBus->handle(new CashbookOfficialUnitQuery($cashbookId)),
         ]);
     }
 
     /**
-     * vrací seznam dokladů
+     * vrací seznam dokladů.
      */
     public function getChitlist(CashbookId $cashbookId): string
     {
         $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $cashbookId));
 
-        return $this->templateFactory->create(__DIR__ . '/templates/chitlist.latte', [
+        return $this->templateFactory->create(__DIR__.'/templates/chitlist.latte', [
             'list' => array_filter($chits, function (Chit $chit): bool {
                 return ! $chit->isIncome();
             }),
@@ -168,7 +168,7 @@ class ExportService
                 continue;
             }
 
-            $virtual   = $categorySummary->isVirtual() ? self::CATEGORY_VIRTUAL : self::CATEGORY_REAL;
+            $virtual = $categorySummary->isVirtual() ? self::CATEGORY_VIRTUAL : self::CATEGORY_REAL;
             $operation = $categorySummary->getOperationType()->getValue();
 
             $sums[$virtual][$operation][$categorySummary->getId()] = [
@@ -195,10 +195,10 @@ class ExportService
 
         $stats = $this->queryBus->handle(new EventParticipantStatisticsQuery(new SkautisEventId($skautisEventId)));
         assert($stats instanceof Statistics);
-        $events    = $this->events->find(new SkautisEventId($skautisEventId));
+        $events = $this->events->find(new SkautisEventId($skautisEventId));
         $functions = $this->queryBus->handle(new EventFunctions(new SkautisEventId($skautisEventId)));
 
-        return $this->templateFactory->create(__DIR__ . '/templates/eventReport.latte', [
+        return $this->templateFactory->create(__DIR__.'/templates/eventReport.latte', [
             'participantsCnt' => $stats->getPersonsCount(),
             'personsDays' => $stats->getPersonDays(),
             'event' => $events,
@@ -221,13 +221,13 @@ class ExportService
         $categories = $this->queryBus->handle(new CategoriesSummaryQuery($cashbookId));
 
         $total = [
-            'income'  => MoneyFactory::zero(),
+            'income' => MoneyFactory::zero(),
             'expense' => MoneyFactory::zero(),
-            'virtualIncome'  => MoneyFactory::zero(),
+            'virtualIncome' => MoneyFactory::zero(),
             'virtualExpense' => MoneyFactory::zero(),
         ];
 
-        $incomeCategories  = [self::CATEGORY_REAL => [], self::CATEGORY_VIRTUAL => []];
+        $incomeCategories = [self::CATEGORY_REAL => [], self::CATEGORY_VIRTUAL => []];
         $expenseCategories = [self::CATEGORY_REAL => [], self::CATEGORY_VIRTUAL => []];
 
         foreach ($categories as $category) {
@@ -236,12 +236,12 @@ class ExportService
             $virtualCategory = $category->isVirtual() ? self::CATEGORY_VIRTUAL : self::CATEGORY_REAL;
 
             if ($category->isIncome()) {
-                $key                                  = $category->isVirtual() ? 'virtualIncome' : 'income';
-                $total[$key]                          = $total[$key]->add($category->getTotal());
+                $key = $category->isVirtual() ? 'virtualIncome' : 'income';
+                $total[$key] = $total[$key]->add($category->getTotal());
                 $incomeCategories[$virtualCategory][] = $category;
             } else {
-                $key                                   = $category->isVirtual() ? 'virtualExpense' : 'expense';
-                $total[$key]                           = $total[$key]->add($category->getTotal());
+                $key = $category->isVirtual() ? 'virtualExpense' : 'expense';
+                $total[$key] = $total[$key]->add($category->getTotal());
                 $expenseCategories[$virtualCategory][] = $category;
             }
         }
@@ -252,7 +252,7 @@ class ExportService
         $finalRealBalance = MoneyFactory::toFloat($this->queryBus->handle(new FinalRealBalanceQuery($cashbookId)));
         assert(is_float($finalRealBalance));
 
-        return $this->templateFactory->create(__DIR__ . '/templates/campReport.latte', [
+        return $this->templateFactory->create(__DIR__.'/templates/campReport.latte', [
             'participantsCnt' => $stats->getPersonsCount(),
             'personsDays' => $stats->getPersonDays(),
             'camp' => $this->queryBus->handle(new CampQuery(new SkautisCampId($skautisCampId))),
@@ -276,13 +276,13 @@ class ExportService
         $categories = $this->queryBus->handle(new CategoriesSummaryQuery($cashbookId));
 
         $total = [
-            'income'  => MoneyFactory::zero(),
+            'income' => MoneyFactory::zero(),
             'expense' => MoneyFactory::zero(),
-            'virtualIncome'  => MoneyFactory::zero(),
+            'virtualIncome' => MoneyFactory::zero(),
             'virtualExpense' => MoneyFactory::zero(),
         ];
 
-        $incomeCategories  = [self::CATEGORY_REAL => [], self::CATEGORY_VIRTUAL => []];
+        $incomeCategories = [self::CATEGORY_REAL => [], self::CATEGORY_VIRTUAL => []];
         $expenseCategories = [self::CATEGORY_REAL => [], self::CATEGORY_VIRTUAL => []];
 
         foreach ($categories as $category) {
@@ -291,12 +291,12 @@ class ExportService
             $virtualCategory = $category->isVirtual() ? self::CATEGORY_VIRTUAL : self::CATEGORY_REAL;
 
             if ($category->isIncome()) {
-                $key                                  = $category->isVirtual() ? 'virtualIncome' : 'income';
-                $total[$key]                          = $total[$key]->add($category->getTotal());
+                $key = $category->isVirtual() ? 'virtualIncome' : 'income';
+                $total[$key] = $total[$key]->add($category->getTotal());
                 $incomeCategories[$virtualCategory][] = $category;
             } else {
-                $key                                   = $category->isVirtual() ? 'virtualExpense' : 'expense';
-                $total[$key]                           = $total[$key]->add($category->getTotal());
+                $key = $category->isVirtual() ? 'virtualExpense' : 'expense';
+                $total[$key] = $total[$key]->add($category->getTotal());
                 $expenseCategories[$virtualCategory][] = $category;
             }
         }
@@ -304,12 +304,12 @@ class ExportService
         $finalRealBalance = MoneyFactory::toFloat($this->queryBus->handle(new FinalRealBalanceQuery($cashbookId)));
         assert(is_float($finalRealBalance));
 
-        $education                     = $this->queryBus->handle(new EducationQuery($educationId));
-        $terms                         = $this->queryBus->handle(new EducationTermsQuery($educationId->toInt()));
-        $courseParticipationStats      = $this->queryBus->handle(new EducationCourseParticipationStatsQuery($educationId->toInt()));
+        $education = $this->queryBus->handle(new EducationQuery($educationId));
+        $terms = $this->queryBus->handle(new EducationTermsQuery($educationId->toInt()));
+        $courseParticipationStats = $this->queryBus->handle(new EducationCourseParticipationStatsQuery($educationId->toInt()));
         $participantParticipationStats = $this->queryBus->handle(new EducationParticipantParticipationStatsQuery($education->grantId->toInt()));
 
-        return $this->templateFactory->create(__DIR__ . '/templates/educationReport.latte', [
+        return $this->templateFactory->create(__DIR__.'/templates/educationReport.latte', [
             'education' => $education,
             'totalDays' => EducationTerm::countTotalDays($terms),
             'participantsAccepted' => array_sum(

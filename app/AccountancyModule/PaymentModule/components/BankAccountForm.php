@@ -15,7 +15,7 @@ use Nette\Utils\ArrayHash;
 
 class BankAccountForm extends BaseControl
 {
-    public function __construct(private int|null $id = null, private BankAccountService $model, private CommandBus $commandBus)
+    public function __construct(private ?int $id, private BankAccountService $model, private CommandBus $commandBus)
     {
     }
 
@@ -62,8 +62,8 @@ class BankAccountForm extends BaseControl
     private function formSucceeded(BaseForm $form, ArrayHash $values): void
     {
         try {
-            $prefix   = (string) $values->prefix;
-            $number   = (string) $values->number;
+            $prefix = (string) $values->prefix;
+            $number = (string) $values->number;
             $bankCode = (string) $values->bankCode;
             if ($this->id !== null) {
                 $this->model->updateBankAccount(
@@ -92,7 +92,7 @@ class BankAccountForm extends BaseControl
 
     public function render(): void
     {
-        $this->template->setFile(__DIR__ . '/templates/BankAccountForm.latte');
+        $this->template->setFile(__DIR__.'/templates/BankAccountForm.latte');
         $this->template->render();
     }
 }

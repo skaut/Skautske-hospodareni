@@ -29,10 +29,10 @@ class Contract
     private string $unitRepresentative;
 
     /** @ORM\Column(type="chronos_date", nullable=true) */
-    private ChronosDate|null $since = null;
+    private ?ChronosDate $since = null;
 
     /** @ORM\Column(type="chronos_date", nullable=true) */
-    private ChronosDate|null $until = null;
+    private ?ChronosDate $until = null;
 
     /** @ORM\Embedded(class=ContractPassenger::class, columnPrefix=false) */
     private ContractPassenger $passenger;
@@ -42,11 +42,11 @@ class Contract
 
     public function __construct(Unit $unit, string $unitRepresentative, ChronosDate $since, ContractPassenger $passenger)
     {
-        $this->unitId             = $unit->getId();
+        $this->unitId = $unit->getId();
         $this->unitRepresentative = $unitRepresentative;
-        $this->since              = $since;
-        $this->until              = $this->since->modify('+ 3 years');
-        $this->passenger          = $passenger;
+        $this->since = $since;
+        $this->until = $this->since->modify('+ 3 years');
+        $this->passenger = $passenger;
     }
 
     public function getId(): int
@@ -64,12 +64,12 @@ class Contract
         return $this->unitRepresentative;
     }
 
-    public function getSince(): ChronosDate|null
+    public function getSince(): ?ChronosDate
     {
         return $this->since;
     }
 
-    public function getUntil(): ChronosDate|null
+    public function getUntil(): ?ChronosDate
     {
         return $this->until;
     }

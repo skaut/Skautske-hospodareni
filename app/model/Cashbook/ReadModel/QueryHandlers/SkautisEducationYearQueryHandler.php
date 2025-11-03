@@ -26,7 +26,7 @@ class SkautisEducationYearQueryHandler
      */
     public function __invoke(SkautisEducationYearQuery $query): int
     {
-        $cashbook   = $this->cashbooks->find($query->getCashbookId());
+        $cashbook = $this->cashbooks->find($query->getCashbookId());
         $objectType = $cashbook->getType()->getSkautisObjectType();
 
         if (! $objectType->equalsValue(ObjectType::EDUCATION)) {

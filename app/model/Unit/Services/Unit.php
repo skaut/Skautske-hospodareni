@@ -26,14 +26,14 @@ class Unit
         private int $id,
         private string $sortName,
         private string $displayName,
-        private string|null $ic = null,
+        private ?string $ic,
         private string $street,
         private string $city,
         private string $postcode,
         private string $registrationNumber,
         private string $type,
-        private int|null $parentId = null,
-        private array|null $children = null,
+        private ?int $parentId = null,
+        private ?array $children = null,
     ) {
     }
 
@@ -63,15 +63,15 @@ class Unit
 
     public function getFullDisplayNameWithAddress(bool $nonBreakingSpace = false): string
     {
-        return $this->getFullDisplayName($nonBreakingSpace) . ', ' . $this->getAddress() . ', IČO:' . ($nonBreakingSpace ? '&nbsp;' : ' ') . $this->ic;
+        return $this->getFullDisplayName($nonBreakingSpace).', '.$this->getAddress().', IČO:'.($nonBreakingSpace ? '&nbsp;' : ' ').$this->ic;
     }
 
     public function getAddress(): string
     {
-        return $this->street . ', ' . $this->city . ', ' . $this->postcode;
+        return $this->street.', '.$this->city.', '.$this->postcode;
     }
 
-    public function getIc(): string|null
+    public function getIc(): ?string
     {
         return $this->ic;
     }
@@ -86,12 +86,12 @@ class Unit
         return $this->city;
     }
 
-    public function getPostcode(): string|null
+    public function getPostcode(): ?string
     {
         return $this->postcode;
     }
 
-    public function getParentId(): int|null
+    public function getParentId(): ?int
     {
         return $this->parentId;
     }
@@ -114,7 +114,7 @@ class Unit
     }
 
     /** @return Unit[]|null */
-    public function getChildren(): array|null
+    public function getChildren(): ?array
     {
         return $this->children;
     }

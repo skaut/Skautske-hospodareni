@@ -54,18 +54,18 @@ class ParticipantPresenter extends BasePresenter
         parent::__construct();
 
         $this->exportService = $export;
-        $this->excelService  = $excel;
+        $this->excelService = $excel;
     }
 
     protected function startup(): void
     {
         parent::startup();
 
-        $isDraft      = $this->event->getState() === 'draft';
+        $isDraft = $this->event->getState() === 'draft';
         $authorizator = $this->authorizator;
 
         $this->isAllowParticipantDelete = $isDraft && $authorizator->isAllowed(Event::REMOVE_PARTICIPANT, $this->aid);
-        $this->canAddParticipants       = $isDraft && $authorizator->isAllowed(Event::UPDATE_PARTICIPANT, $this->aid);
+        $this->canAddParticipants = $isDraft && $authorizator->isAllowed(Event::UPDATE_PARTICIPANT, $this->aid);
         $this->isAllowParticipantUpdate = $this->canAddParticipants;
 
         $this->template->setParameters([
@@ -93,11 +93,11 @@ class ParticipantPresenter extends BasePresenter
     {
         try {
             $participantsDTO = $this->eventParticipants();
-            $spreadsheet     = $this->excelService->getGeneralParticipants($participantsDTO, $this->event->getStartDate());
+            $spreadsheet = $this->excelService->getGeneralParticipants($participantsDTO, $this->event->getStartDate());
 
-            $this->sendResponse(new ExcelResponse(Strings::webalize($this->event->getDisplayName()) . '-' . date('Y_n_j'), $spreadsheet));
+            $this->sendResponse(new ExcelResponse(Strings::webalize($this->event->getDisplayName()).'-'.date('Y_n_j'), $spreadsheet));
         } catch (PermissionException $ex) {
-            $this->flashMessage('Nemáte oprávnění k záznamu osoby! (' . $ex->getMessage() . ')', 'danger');
+            $this->flashMessage('Nemáte oprávnění k záznamu osoby! ('.$ex->getMessage().')', 'danger');
             $this->redirect('default', ['aid' => $aid]);
         }
     }
@@ -161,7 +161,7 @@ class ParticipantPresenter extends BasePresenter
             $template = $this->exportService->getParticipants($aid, EventType::GENERAL);
             $this->pdf->render($template, 'seznam-ucastniku.pdf', false);
         } catch (PermissionException $ex) {
-            $this->flashMessage('Nemáte oprávnění k záznamu osoby! (' . $ex->getMessage() . ')', 'danger');
+            $this->flashMessage('Nemáte oprávnění k záznamu osoby! ('.$ex->getMessage().')', 'danger');
             $this->redirect('default', ['aid' => $this->aid]);
         }
 

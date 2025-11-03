@@ -82,7 +82,7 @@ class PaymentPresenter extends BasePresenter
     {
         parent::startup();
 
-        //Kontrola ověření přístupu
+        // Kontrola ověření přístupu
         $this->readUnits = $this->unitService->getReadUnits($this->user);
     }
 
@@ -105,7 +105,7 @@ class PaymentPresenter extends BasePresenter
         try {
             $nextVS = $this->model->getNextVS($group->getId());
         } catch (InvalidVariableSymbol $exception) {
-            $this->flashMessage('Nelze vygenerovat následující VS: \'' . $exception->getInvalidValue() . '\'', 'danger');
+            $this->flashMessage('Nelze vygenerovat následující VS: \''.$exception->getInvalidValue().'\'', 'danger');
             $nextVS = null;
         }
 
@@ -114,15 +114,15 @@ class PaymentPresenter extends BasePresenter
         $this->template->setParameters([
             'group' => $group,
             'nextVS' => $nextVS,
-            'payments'  => $this->payments,
+            'payments' => $this->payments,
             'summarize' => $this->model->getGroupSummaries([$id])[$id],
-            'now'       => new DateTimeImmutable(),
+            'now' => new DateTimeImmutable(),
             'notSentPaymentsCount' => $this->countNotSentPayments($this->payments),
         ]);
     }
 
     /** @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY */
-    public function actionMassAdd(int $id, int|null $unitId = null, bool $directMemberOnly = true): void
+    public function actionMassAdd(int $id, ?int $unitId = null, bool $directMemberOnly = true): void
     {
         $this->assertCanEditGroup();
 
@@ -139,9 +139,9 @@ class PaymentPresenter extends BasePresenter
 
         $this->template->setParameters([
             'unitPairs' => $this->readUnits,
-            'group'    => $group,
-            'id'        => $this->id,
-            'showForm'  => count($list) !== 0,
+            'group' => $group,
+            'id' => $this->id,
+            'showForm' => count($list) !== 0,
             'directMemberOnly' => $this->directMemberOnly,
         ]);
     }
@@ -170,10 +170,10 @@ class PaymentPresenter extends BasePresenter
             }
 
             $numberOfUpdatedVS = $this->model->generateVs($this->id);
-            $this->flashMessage('Počet dogenerovaných VS: ' . $numberOfUpdatedVS, 'success');
+            $this->flashMessage('Počet dogenerovaných VS: '.$numberOfUpdatedVS, 'success');
             $this->redirect('this');
         } catch (InvalidVariableSymbol $exception) {
-            $this->flashMessage('Nelze vygenerovat následující VS: \'' . $exception->getInvalidValue() . '\'', 'danger');
+            $this->flashMessage('Nelze vygenerovat následující VS: \''.$exception->getInvalidValue().'\'', 'danger');
             $this->redirect('this');
         }
     }
@@ -182,16 +182,16 @@ class PaymentPresenter extends BasePresenter
     {
         $this->assertCanEditGroup();
 
-        $group     = $this->model->getGroup($id);
-        $payments  = $this->getPaymentsForGroup($id);
+        $group = $this->model->getGroup($id);
+        $payments = $this->getPaymentsForGroup($id);
         $groupName = substr(Strings::webalize($group->getName(), null, false), 0, Worksheet::SHEET_TITLE_MAXIMUM_LENGTH);
 
         try {
             $spreadsheet = $this->excelService->getPaymentsList($payments, $groupName);
             $this->flashMessage('Seznam plateb byl exportován');
-            $this->sendResponse(new ExcelResponse(Strings::webalize($group->getName()) . '-' . date('Y_n_j'), $spreadsheet));
+            $this->sendResponse(new ExcelResponse(Strings::webalize($group->getName()).'-'.date('Y_n_j'), $spreadsheet));
         } catch (PermissionException $e) {
-            $this->flashMessage('Nemáte oprávnění k exportu platební skupiny! (' . $e->getMessage() . ')', 'danger');
+            $this->flashMessage('Nemáte oprávnění k exportu platební skupiny! ('.$e->getMessage().')', 'danger');
             $this->redirect('default');
         } catch (Exception $e) {
             $this->flashMessage('Nepodařilo se vygenerovat excel');
@@ -206,7 +206,7 @@ class PaymentPresenter extends BasePresenter
         $this->assertCanEditGroup();
 
         $userData = $this->userService->getUserDetail();
-        $note     = 'Uživatel ' . $userData->Person . ' uzavřel skupinu plateb dne ' . date('j.n.Y H:i');
+        $note = 'Uživatel '.$userData->Person.' uzavřel skupinu plateb dne '.date('j.n.Y H:i');
 
         try {
             $this->model->closeGroup($this->id, $note);
@@ -221,7 +221,7 @@ class PaymentPresenter extends BasePresenter
         $this->assertCanEditGroup();
 
         $userData = $this->userService->getUserDetail();
-        $note     = 'Uživatel ' . $userData->Person . ' otevřel skupinu plateb dne ' . date('j.n.Y H:i');
+        $note = 'Uživatel '.$userData->Person.' otevřel skupinu plateb dne '.date('j.n.Y H:i');
 
         try {
             $this->model->openGroup($this->id, $note);
@@ -253,7 +253,7 @@ class PaymentPresenter extends BasePresenter
     protected function createComponentImportDialog(): ImportDialog
     {
         $this->assertCanEditGroup();
-        $dialog              = $this->importDialogFactory->create($this->id);
+        $dialog = $this->importDialogFactory->create($this->id);
         $dialog->onSuccess[] = function (): void {
             $this->redrawControl('grid');
         };

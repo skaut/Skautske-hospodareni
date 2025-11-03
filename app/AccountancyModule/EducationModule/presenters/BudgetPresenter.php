@@ -43,18 +43,18 @@ class BudgetPresenter extends BasePresenter
             $this->redirect('Education:', ['aid' => $aid]);
         }
 
-        $educationId         = new SkautisEducationId($aid);
-        $budgetAvailable     = $this->event->grantId !== null;
+        $educationId = new SkautisEducationId($aid);
+        $budgetAvailable = $this->event->grantId !== null;
         $categoriesAvailable = $this->event->startDate !== null;
 
         try {
-            $budgetEntries      = $budgetAvailable
+            $budgetEntries = $budgetAvailable
                 ? $this->queryBus->handle(new EducationBudgetQuery($educationId, $this->event->grantId))
                 : [];
             $inconsistentTotals = $categoriesAvailable
                 ? $this->queryBus->handle(new InconsistentEducationCategoryTotalsQuery($educationId, $this->event->startDate->year))
                 : [];
-            $categoriesSummary  = $categoriesAvailable
+            $categoriesSummary = $categoriesAvailable
                 ? $this->queryBus->handle(new CategoriesSummaryQuery($this->getCashbookId($aid, $this->event->startDate->year)))
                 : [];
         } catch (MissingCategory $e) {
@@ -63,12 +63,12 @@ class BudgetPresenter extends BasePresenter
         }
 
         $this->template->setParameters([
-            'budgetAvailable'          => $budgetAvailable,
-            'categoriesAvailable'      => $categoriesAvailable,
-            'isConsistent'             => count($inconsistentTotals) === 0,
-            'toRepair'                 => $inconsistentTotals,
-            'budgetEntries'            => $budgetEntries,
-            'categoriesSummary'        => $categoriesSummary,
+            'budgetAvailable' => $budgetAvailable,
+            'categoriesAvailable' => $categoriesAvailable,
+            'isConsistent' => count($inconsistentTotals) === 0,
+            'toRepair' => $inconsistentTotals,
+            'budgetEntries' => $budgetEntries,
+            'categoriesSummary' => $categoriesSummary,
             'isUpdateStatementAllowed' => $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::UPDATE_REAL_BUDGET_SPENDING, $this->event->grantId->toInt()),
         ]);
         if (! $this->isAjax()) {
@@ -79,7 +79,7 @@ class BudgetPresenter extends BasePresenter
     }
 
     /**
-     * přepočte hodnoty v jednotlivých kategorich
+     * přepočte hodnoty v jednotlivých kategorich.
      */
     public function handleConvert(int $aid): void
     {

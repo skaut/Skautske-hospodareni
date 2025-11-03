@@ -41,14 +41,14 @@ class CashbookPresenter extends BasePresenter
     {
         parent::startup();
 
-        $isDraft          = $this->event->getState() === 'draft';
+        $isDraft = $this->event->getState() === 'draft';
         $this->isEditable = $isDraft && $this->authorizator->isAllowed(Event::UPDATE_PARTICIPANT, $this->aid);
     }
 
     public function renderDefault(int $aid): void
     {
-        $incomeBalance    = $this->queryBus->handle(new EventParticipantBalanceQuery(new SkautisEventId($aid), $this->getCashbookId()));
-        $finalBalance     = $this->queryBus->handle(new FinalCashBalanceQuery($this->getCashbookId()));
+        $incomeBalance = $this->queryBus->handle(new EventParticipantBalanceQuery(new SkautisEventId($aid), $this->getCashbookId()));
+        $finalBalance = $this->queryBus->handle(new FinalCashBalanceQuery($this->getCashbookId()));
         $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId()));
 
         assert(is_float($incomeBalance));
@@ -87,11 +87,11 @@ class CashbookPresenter extends BasePresenter
 
         assert($functions instanceof Functions);
 
-        $accountant    = $functions->getAccountant() !== null
+        $accountant = $functions->getAccountant() !== null
             ? new Recipient($functions->getAccountant()->getName())
             : null;
-        $amount        = new Amount((string) $totalPayment);
-        $cashbookId    = $this->getCashbookId();
+        $amount = new Amount((string) $totalPayment);
+        $cashbookId = $this->getCashbookId();
         $categoriesDto = $this->queryBus->handle(new CategoryListQuery($this->getCashbookId()));
 
         $this->commandBus->handle(

@@ -44,7 +44,7 @@ class TravelService
     }
 
     /**     VEHICLES    */
-    public function getVehicleDTO(int $id): DTO\Vehicle|null
+    public function getVehicleDTO(int $id): ?DTO\Vehicle
     {
         try {
             return DTO\VehicleFactory::create(
@@ -55,7 +55,7 @@ class TravelService
         }
     }
 
-    public function findVehicle(int $id): Vehicle|null
+    public function findVehicle(int $id): ?Vehicle
     {
         try {
             return $this->vehicles->find($id);
@@ -102,7 +102,7 @@ class TravelService
     }
 
     /**
-     * Archives specified vehicle
+     * Archives specified vehicle.
      */
     public function archiveVehicle(int $vehicleId): void
     {
@@ -117,7 +117,7 @@ class TravelService
     }
 
     /**     TRAVELS    */
-    public function getTravel(int $commandId, int $travelId): DTO\Command\Travel|null
+    public function getTravel(int $commandId, int $travelId): ?DTO\Command\Travel
     {
         $command = $this->commands->find($commandId);
 
@@ -185,7 +185,7 @@ class TravelService
     }
 
     /**     CONTRACTS    */
-    public function getContract(int $contractId): DTO\Contract|null
+    public function getContract(int $contractId): ?DTO\Contract
     {
         try {
             return DTO\ContractFactory::create(
@@ -206,7 +206,7 @@ class TravelService
     }
 
     /** @return string[][] */
-    public function getAllContractsPairs(int $unitId, int|null $includeContractId): array
+    public function getAllContractsPairs(int $unitId, ?int $includeContractId): array
     {
         $contracts = $this->contracts->findByUnit($unitId);
 
@@ -218,11 +218,11 @@ class TravelService
             $name = $contract->getPassenger()->getName();
 
             if ($contract->getUnitRepresentative() !== '') {
-                $name = $contract->getUnitRepresentative() . ' <=> ' . $name;
+                $name = $contract->getUnitRepresentative().' <=> '.$name;
             }
 
             if ($contract->getUntil() !== null) {
-                $name .= ' (platná do ' . $contract->getUntil()->format('j.n.Y') . ')';
+                $name .= ' (platná do '.$contract->getUntil()->format('j.n.Y').')';
             }
 
             if ($contract->getUntil() === null || $contract->getUntil()->toNative() > $now) {
@@ -253,7 +253,7 @@ class TravelService
         }
     }
 
-    public function getCommandDetail(int $id): DTO\Command|null
+    public function getCommandDetail(int $id): ?DTO\Command
     {
         try {
             return DTO\CommandFactory::create($this->commands->find($id));
@@ -265,9 +265,9 @@ class TravelService
     /** @param list<TransportType> $types */
     public function addCommand(
         int $unitId,
-        int|null $contractId,
-        Passenger|null $passenger,
-        int|null $vehicleId,
+        ?int $contractId,
+        ?Passenger $passenger,
+        ?int $vehicleId,
         string $purpose,
         string $place,
         string $passengers,
@@ -303,9 +303,9 @@ class TravelService
     /** @param list<TransportType> $types */
     public function updateCommand(
         int $id,
-        int|null $contractId,
-        Passenger|null $passenger,
-        int|null $vehicleId,
+        ?int $contractId,
+        ?Passenger $passenger,
+        ?int $vehicleId,
         string $purpose,
         string $place,
         string $passengers,
@@ -374,7 +374,7 @@ class TravelService
     }
 
     /**
-     * vraci všechny přikazy navazane na smlouvu
+     * vraci všechny přikazy navazane na smlouvu.
      *
      * @return DTO\Command[]
      */
@@ -387,7 +387,7 @@ class TravelService
     }
 
     /**
-     * vraci všechny přikazy navazane na vozidlo
+     * vraci všechny přikazy navazane na vozidlo.
      *
      * @return DTO\Command[]
      */
@@ -399,7 +399,7 @@ class TravelService
     }
 
     /**
-     * uzavře cestovní příkaz a nastavi cas uzavření
+     * uzavře cestovní příkaz a nastavi cas uzavření.
      */
     public function closeCommand(int $commandId): void
     {
@@ -425,7 +425,7 @@ class TravelService
         $this->commands->remove($command);
     }
 
-    private function selectPassenger(Passenger|null $passenger, int|null $contractId): Passenger
+    private function selectPassenger(?Passenger $passenger, ?int $contractId): Passenger
     {
         if (
             ($passenger === null && $contractId === null)

@@ -12,7 +12,7 @@ use Model\Payment\InvalidBankAccountNumber;
 class AccountNumber
 {
     /** @ORM\Column(type="string", nullable=true, length=6) */
-    private string|null $prefix = null;
+    private ?string $prefix = null;
 
     /** @ORM\Column(type="string", length=10) */
     private string $number;
@@ -21,7 +21,7 @@ class AccountNumber
     private string $bankCode;
 
     /** @throws InvalidBankAccountNumber */
-    public function __construct(string|null $prefix, string $number, string $bankCode)
+    public function __construct(?string $prefix, string $number, string $bankCode)
     {
         $validator = new Czech();
 
@@ -29,8 +29,8 @@ class AccountNumber
             throw self::invalidNumber();
         }
 
-        $this->prefix   = $prefix === '' ? null : $prefix;
-        $this->number   = $number;
+        $this->prefix = $prefix === '' ? null : $prefix;
+        $this->number = $number;
         $this->bankCode = $bankCode;
     }
 
@@ -58,7 +58,7 @@ class AccountNumber
         }
     }
 
-    public function getPrefix(): string|null
+    public function getPrefix(): ?string
     {
         return $this->prefix;
     }
@@ -71,7 +71,7 @@ class AccountNumber
     public function getNumberWithPrefix(): string
     {
         if ($this->prefix !== null) {
-            return $this->prefix . '-' . $this->number;
+            return $this->prefix.'-'.$this->number;
         }
 
         return $this->number;
@@ -84,10 +84,10 @@ class AccountNumber
 
     public function __toString(): string
     {
-        $withoutPrefix = $this->number . '/' . $this->bankCode;
+        $withoutPrefix = $this->number.'/'.$this->bankCode;
 
         return $this->prefix !== null
-            ? $this->prefix . '-' . $withoutPrefix
+            ? $this->prefix.'-'.$withoutPrefix
             : $withoutPrefix;
     }
 

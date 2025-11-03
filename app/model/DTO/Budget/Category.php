@@ -7,9 +7,9 @@ namespace Model\DTO\Budget;
 use Nette\SmartObject;
 
 /**
- * @property-read string $label
- * @property-read float $value
- * @property-read Category[] $children
+ * @property string     $label
+ * @property float      $value
+ * @property Category[] $children
  */
 class Category
 {

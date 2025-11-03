@@ -34,7 +34,7 @@ final class UnitRepository implements IUnitRepository
         $res = [];
         foreach ($units as $u) {
             $u->ID_UnitParent = $parentId;
-            $res[]            = $this->createUnit($u);
+            $res[] = $this->createUnit($u);
         }
 
         return $res;
@@ -59,7 +59,6 @@ final class UnitRepository implements IUnitRepository
         }
     }
 
-    // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     private function createUnit(stdClass $unit): Unit
     {
         return new Unit(

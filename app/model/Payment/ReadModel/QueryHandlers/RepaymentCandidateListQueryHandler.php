@@ -29,13 +29,13 @@ final class RepaymentCandidateListQueryHandler
     /** @return DTO\RepaymentCandidate[] */
     public function __invoke(RepaymentCandidateListQuery $query): array
     {
-        $payments   = array_filter(
+        $payments = array_filter(
             $this->queryBus->handle(new PaymentListQuery($query->getGroupId())),
             fn (DTO\Payment $payment) => $payment->getState()->equalsValue(State::COMPLETED),
         );
         $repayments = array_map([DTO\RepaymentCandidateFactory::class, 'create'], $payments);
 
-        $group  = $this->groups->find($query->getGroupId());
+        $group = $this->groups->find($query->getGroupId());
         $object = $group->getObject();
         if ($object !== null && $object->getType()->equals(Type::CAMP())) {
             $this->setRepaymentsFromCamp(new SkautisCampId($group->getObject()->getId()), $repayments);

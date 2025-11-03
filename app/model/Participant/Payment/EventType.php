@@ -9,8 +9,8 @@ use Consistence\Enum\Enum;
 /** @method string getValue() */
 final class EventType extends Enum
 {
-    public const CAMP      = 'camp';
-    public const GENERAL   = 'general';
+    public const CAMP = 'camp';
+    public const GENERAL = 'general';
     public const EDUCATION = 'education';
 
     public static function CAMP(): self

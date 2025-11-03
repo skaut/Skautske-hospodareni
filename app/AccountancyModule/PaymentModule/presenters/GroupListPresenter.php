@@ -41,20 +41,20 @@ final class GroupListPresenter extends BasePresenter
             new GetGroupList(array_keys($this->unitService->getReadUnits($this->user)), $onlyOpen),
         );
 
-        $groupIds         = [];
-        $bankAccountIds   = [];
+        $groupIds = [];
+        $bankAccountIds = [];
         $unitNamesByGroup = [];
 
         foreach ($groups as $group) {
             assert($group instanceof Group);
-            $groupIds[]       = $group->getId();
+            $groupIds[] = $group->getId();
             $bankAccountIds[] = $group->getBankAccountId();
 
             foreach ($group->getUnitIds() as $unitId) {
                 try {
                     $unitNamesByGroup[$group->getId()] = [$this->queryBus->handle(new UnitQuery($unitId))->getDisplayName()];
                 } catch (UnitNotFound) {
-                    //$this->flashMessage(sprintf('Jednotka s ID: %s nebyla nalezena k platební skupině "%s"(ID:%s).', $unitId, $group->name, $group->getId()), 'danger');
+                    // $this->flashMessage(sprintf('Jednotka s ID: %s nebyla nalezena k platební skupině "%s"(ID:%s).', $unitId, $group->name, $group->getId()), 'danger');
                 }
             }
         }
@@ -63,7 +63,7 @@ final class GroupListPresenter extends BasePresenter
 
         $groupsPairingSupport = [];
         foreach ($groups as $group) {
-            $accountId                             = $group->getBankAccountId();
+            $accountId = $group->getBankAccountId();
             $groupsPairingSupport[$group->getId()] = $accountId !== null && $bankAccounts[$accountId]->getToken() !== null;
         }
 

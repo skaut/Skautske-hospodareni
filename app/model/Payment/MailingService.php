@@ -36,7 +36,7 @@ class MailingService
     }
 
     /**
-     * Sends email to single payment address
+     * Sends email to single payment address.
      *
      * @throws PaymentHasNoEmails
      * @throws PaymentNotFound
@@ -47,14 +47,12 @@ class MailingService
     public function sendEmail(int $paymentId, EmailType $emailType, bool $cli = false): void
     {
         $payment = $this->payments->find($paymentId);
-        $group   = $this->groups->find($payment->getGroupId());
+        $group = $this->groups->find($payment->getGroupId());
 
         $template = $group->getEmailTemplate($emailType);
 
         if ($template === null || ! $group->isEmailEnabled($emailType)) {
-            throw new EmailTemplateNotSet(
-                "E-mail template '" . $emailType->getValue() . "' not found",
-            );
+            throw new EmailTemplateNotSet("E-mail template '".$emailType->getValue()."' not found");
         }
 
         if ($cli) {
@@ -82,7 +80,7 @@ class MailingService
     public function sendTestMail(int $groupId): string
     {
         $group = $this->groups->find($groupId);
-        $user  = $this->users->getCurrentUser();
+        $user = $this->users->getCurrentUser();
 
         if ($user->getEmail() === null) {
             throw new EmailNotSet();
@@ -133,7 +131,7 @@ class MailingService
             throw PaymentHasNoEmails::withName($payment->getName());
         }
 
-        $bankAccount       = $group->getBankAccountId() !== null
+        $bankAccount = $group->getBankAccountId() !== null
             ? $this->bankAccounts->find($group->getBankAccountId())
             : null;
         $bankAccountNumber = $bankAccount !== null ? (string) $bankAccount->getNumber() : null;
@@ -148,7 +146,7 @@ class MailingService
         );
 
         $oAuth = $this->googleRepository->find($group->getOauthId());
-        $mail  = (new Message())
+        $mail = (new Message())
             ->setFrom($oAuth->getEmail())
             ->setSubject($emailTemplate->getSubject())
             ->setHtmlBody($template, __DIR__);

@@ -9,10 +9,10 @@ use Money\Money;
 use Nette\SmartObject;
 
 /**
- * @property-read int       $id
- * @property-read string    $name
- * @property-read Money     $total
- * @property-read Operation $operationType
+ * @property int       $id
+ * @property string    $name
+ * @property Money     $total
+ * @property Operation $operationType
  */
 class CategorySummary
 {

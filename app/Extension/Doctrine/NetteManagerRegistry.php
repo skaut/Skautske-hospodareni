@@ -1,4 +1,5 @@
 <?php
+
 // src/Infrastructure/Doctrine/NetteManagerRegistry.php
 
 declare(strict_types=1);
@@ -26,7 +27,7 @@ final class NetteManagerRegistry extends AbstractManagerRegistry
             Proxy::class,
         );
 
-        $this->services['dbal.connection']        = $connection;
+        $this->services['dbal.connection'] = $connection;
         $this->services['doctrine.entityManager'] = $em;
     }
 

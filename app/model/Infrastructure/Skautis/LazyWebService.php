@@ -17,7 +17,7 @@ use Skautis\Wsdl\WebServiceInterface;
  */
 final class LazyWebService implements WebServiceInterface
 {
-    private WebServiceInterface|null $webService = null;
+    private ?WebServiceInterface $webService = null;
 
     public function __construct(private string $webServiceName, private Skautis $skautis)
     {

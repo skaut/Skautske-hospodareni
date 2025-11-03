@@ -25,7 +25,7 @@ final class EducationFactory
         $eventNameUncombined =
             ! property_exists($skautisEducation, 'DisplayNameCombined') || $skautisEducation->DisplayName === $skautisEducation->DisplayNameCombined
             ? $skautisEducation->DisplayName
-            : mb_ereg_replace(' - ' . $skautisEducation->DisplayName . '$', '', $skautisEducation->DisplayNameCombined);
+            : mb_ereg_replace(' - '.$skautisEducation->DisplayName.'$', '', $skautisEducation->DisplayNameCombined);
 
         return new Education(
             new SkautisEducationId($skautisEducation->ID),

@@ -34,7 +34,7 @@ use function in_array;
 class MoveChitsDialog extends Dialog
 {
     /**
-     * Comma-separated chit IDS (because persistent parameters don't support arrays)
+     * Comma-separated chit IDS (because persistent parameters don't support arrays).
      *
      * @persistent
      */
@@ -55,7 +55,7 @@ class MoveChitsDialog extends Dialog
     public function open(array $chitIds): void
     {
         $this->chitIds = implode(',', $chitIds);
-        $this->opened  = true;
+        $this->opened = true;
         $this->redrawControl();
     }
 
@@ -65,12 +65,12 @@ class MoveChitsDialog extends Dialog
 
         $this->template->setParameters(['renderModal' => $this->opened]);
 
-        $this->template->setFile(__DIR__ . '/templates/MoveChitsDialog.latte');
+        $this->template->setFile(__DIR__.'/templates/MoveChitsDialog.latte');
     }
 
     protected function createComponentForm(): BaseForm
     {
-        $form  = new BaseForm();
+        $form = new BaseForm();
         $items = [
             'Výpravy' => $this->getEventCashbooks(),
             'Tábory' => $this->getCampCashbooks(),
@@ -173,7 +173,7 @@ class MoveChitsDialog extends Dialog
 
     private function canEdit(CashbookId $cashbookId): bool
     {
-        $type      = $this->getCashbookType($cashbookId);
+        $type = $this->getCashbookType($cashbookId);
         $skautisId = $this->getSkautisId($cashbookId);
 
         if ($type->equalsValue(CashbookType::EVENT)) {

@@ -36,7 +36,7 @@ abstract class Travel
 
     protected function __construct(int $id, Command $command, TravelDetails $details)
     {
-        $this->id      = $id;
+        $this->id = $id;
         $this->command = $command;
         $this->setDetails($details);
     }

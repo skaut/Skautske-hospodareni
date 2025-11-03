@@ -32,7 +32,7 @@ final class ChitScanControl extends BaseControl
     public function render(): void
     {
         $template = $this->template;
-        $template->setFile(__DIR__ . '/templates/ChitScanControl.latte');
+        $template->setFile(__DIR__.'/templates/ChitScanControl.latte');
         $this['uploadForm']->setDefaults(['chitId' => $this->chitId]);
 
         $chit = $this->queryBus->handle(new ChitQuery($this->cashbookId, $this->chitId));
@@ -80,7 +80,7 @@ final class ChitScanControl extends BaseControl
             ->setRequired('Musíte vybrat sken dokladu')
             ->addRule(
                 BaseForm::MIME_TYPE,
-                'Neplatný formát skenu, povolené formáty jsou ' . implode(', ', array_keys(IScanStorage::ALLOWED_MIME_TYPES)) . '.',
+                'Neplatný formát skenu, povolené formáty jsou '.implode(', ', array_keys(IScanStorage::ALLOWED_MIME_TYPES)).'.',
                 array_values(IScanStorage::ALLOWED_MIME_TYPES),
             )
             ->addRule(BaseForm::MAX_FILE_SIZE, 'Maximální povolená velikost souboru je 15 MB', BaseControl::MAX_FILE_SIZE_VALUE);

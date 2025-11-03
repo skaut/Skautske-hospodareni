@@ -26,7 +26,7 @@ final class LoginPanel extends BaseControl
 
         assert($identity instanceof SimpleIdentity);
 
-        $identity->access      = $this->userService->getAccessArrays($this->unitService);
+        $identity->access = $this->userService->getAccessArrays($this->unitService);
         $identity->currentRole = $this->userService->getActualRole();
 
         $this->redirect('this');
@@ -35,7 +35,7 @@ final class LoginPanel extends BaseControl
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     public function render(): void
     {
-        $this->template->setFile(__DIR__ . '/templates/LoginPanel.latte');
+        $this->template->setFile(__DIR__.'/templates/LoginPanel.latte');
         if ($this->user->isLoggedIn()) {
             $roles = [];
 

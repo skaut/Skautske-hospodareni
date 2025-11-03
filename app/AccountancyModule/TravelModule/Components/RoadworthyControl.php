@@ -39,7 +39,7 @@ final class RoadworthyControl extends BaseControl
 
         $this->template->getLatte()->addProvider('formsStack', [$this['uploadForm']]);
 
-        $this->template->setFile(__DIR__ . '/templates/RoadworthyControl.latte');
+        $this->template->setFile(__DIR__.'/templates/RoadworthyControl.latte');
         $this->template->render();
     }
 
@@ -64,7 +64,7 @@ final class RoadworthyControl extends BaseControl
             ->setRequired('Musíte vybrat sken technického průkazu')
             ->addRule(
                 BaseForm::MIME_TYPE,
-                'Neplatný formát skenu, povolené formáty jsou ' . implode(', ', array_keys(IScanStorage::ALLOWED_MIME_TYPES)) . '.',
+                'Neplatný formát skenu, povolené formáty jsou '.implode(', ', array_keys(IScanStorage::ALLOWED_MIME_TYPES)).'.',
                 array_values(IScanStorage::ALLOWED_MIME_TYPES),
             )
             ->addRule(BaseForm::MAX_FILE_SIZE, 'Maximální povolená velikost souboru je 15 MB', BaseControl::MAX_FILE_SIZE_VALUE);

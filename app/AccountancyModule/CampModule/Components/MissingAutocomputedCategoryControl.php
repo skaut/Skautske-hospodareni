@@ -38,11 +38,11 @@ class MissingAutocomputedCategoryControl extends BaseControl
         $camp = $this->queryBus->handle(new CampQuery($this->campId));
         assert($camp instanceof \Model\Event\Camp);
 
-        $this->template->setFile(__DIR__ . '/templates/MissingAutocomputedCategoryControl.latte');
+        $this->template->setFile(__DIR__.'/templates/MissingAutocomputedCategoryControl.latte');
         $this->template->setParameters([
             'isApproved' => in_array($camp->getState(), [CampState::APPROVED_PARENT, CampState::REAL->value]),
             'isEditable' => $this->authorizator->isAllowed(Camp::UPDATE_REAL, $this->campId->toInt()),
-            'canActivate'   => $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $this->campId->toInt()),
+            'canActivate' => $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $this->campId->toInt()),
         ]);
         $this->template->render();
     }

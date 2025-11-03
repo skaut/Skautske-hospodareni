@@ -11,10 +11,10 @@ use function array_unique;
 use function count;
 
 /**
- * @property-read SkautisEducationTermId $id
- * @property-read ChronosDate $startDate
- * @property-read ChronosDate $endDate
- * @property-read SkautisEducationLocationId $locationId
+ * @property SkautisEducationTermId     $id
+ * @property ChronosDate                $startDate
+ * @property ChronosDate                $endDate
+ * @property SkautisEducationLocationId $locationId
  */
 class EducationTerm
 {
@@ -58,7 +58,7 @@ class EducationTerm
 
             while ($date->lessThanOrEquals($term->endDate)) {
                 $days[] = $date;
-                $date   = $date->addDays(1);
+                $date = $date->addDays(1);
             }
         }
 

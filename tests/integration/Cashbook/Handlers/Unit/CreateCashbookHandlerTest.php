@@ -16,7 +16,7 @@ use function assert;
 
 final class CreateCashbookHandlerTest extends CommandHandlerTest
 {
-    private const YEAR           = 2019;
+    private const YEAR = 2019;
     private const OFFICIAL_UNITS = [
         1 => 1,
         2 => 1,
@@ -24,7 +24,7 @@ final class CreateCashbookHandlerTest extends CommandHandlerTest
 
     protected function _before(): void
     {
-        $this->tester->useConfigFiles([__DIR__ . '/CreateCashbookHandlerTest.neon']);
+        $this->tester->useConfigFiles([__DIR__.'/CreateCashbookHandlerTest.neon']);
 
         parent::_before();
 

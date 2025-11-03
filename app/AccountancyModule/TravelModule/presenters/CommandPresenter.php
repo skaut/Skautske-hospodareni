@@ -12,7 +12,7 @@ use Nette\Application\ForbiddenRequestException;
 
 class CommandPresenter extends BasePresenter
 {
-    private int|null $id = null;
+    private ?int $id = null;
 
     public function __construct(private ICommandFormFactory $commandFormFactory, private TravelService $model)
     {
@@ -25,7 +25,7 @@ class CommandPresenter extends BasePresenter
     {
         $command = $this->model->getCommandDetail($id);
         if ($command === null || $command->getClosedAt() !== null) {
-            throw new BadRequestException('Cestovní příkaz #' . $id . ' neexistuje');
+            throw new BadRequestException('Cestovní příkaz #'.$id.' neexistuje');
         }
 
         if ($command->getUnitId() !== $this->getUnitId() && $this->getUser()->getId() !== $command->getOwnerId()) {
@@ -37,7 +37,7 @@ class CommandPresenter extends BasePresenter
 
     protected function createComponentForm(): CommandForm
     {
-        $form              = $this->commandFormFactory->create($this->getUnitId(), $this->id);
+        $form = $this->commandFormFactory->create($this->getUnitId(), $this->id);
         $form->onSuccess[] = function (): void {
             if ($this->id !== null) {
                 $this->redirect('Default:detail', ['id' => $this->id]);

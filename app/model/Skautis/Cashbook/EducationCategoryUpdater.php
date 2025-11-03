@@ -36,8 +36,8 @@ final class EducationCategoryUpdater implements IEducationCategoryUpdater
     public function updateCategories(CashbookId $cashbookId, array $cashbookTotals): void
     {
         $educationSkautisId = $this->educationRepository->findByCashbookId($cashbookId)->getSkautisId();
-        $educationYear      = $this->educationRepository->findByCashbookId($cashbookId)->getYear();
-        $skautisTotals      = $this->getSkautisTotals($educationSkautisId, $educationYear);
+        $educationYear = $this->educationRepository->findByCashbookId($cashbookId)->getYear();
+        $skautisTotals = $this->getSkautisTotals($educationSkautisId, $educationYear);
 
         // Update categories that are not in cashbook, has total > 0 in Skautis
         $categoriesOnlyInSkautis = array_diff(array_keys($skautisTotals), array_keys($cashbookTotals));
@@ -78,7 +78,7 @@ final class EducationCategoryUpdater implements IEducationCategoryUpdater
     private function getSkautisTotals(SkautisEducationId $educationSkautisId, int $year): array
     {
         $categories = $this->educationCategories->findForEducation($educationSkautisId->toInt(), $year);
-        $totals     = [];
+        $totals = [];
 
         foreach ($categories as $category) {
             $totals[$category->getId()] = MoneyFactory::toFloat($category->getTotal());

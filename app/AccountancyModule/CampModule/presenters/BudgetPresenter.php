@@ -44,10 +44,10 @@ class BudgetPresenter extends BasePresenter
         try {
             $inconsistentTotals = $this->queryBus->handle(new InconsistentCampCategoryTotalsQuery($campId));
             $this->template->setParameters([
-                'isConsistent'             => count($inconsistentTotals) === 0,
-                'toRepair'                 => $inconsistentTotals,
-                'budgetEntries'            => $this->queryBus->handle(new CampBudgetQuery($campId)),
-                'categoriesSummary'        => $this->queryBus->handle(new CategoriesSummaryQuery($this->getCashbookId($aid))),
+                'isConsistent' => count($inconsistentTotals) === 0,
+                'toRepair' => $inconsistentTotals,
+                'budgetEntries' => $this->queryBus->handle(new CampBudgetQuery($campId)),
+                'categoriesSummary' => $this->queryBus->handle(new CategoriesSummaryQuery($this->getCashbookId($aid))),
                 'isUpdateStatementAllowed' => $this->authorizator->isAllowed(Camp::UPDATE_BUDGET, $aid),
             ]);
             if (! $this->isAjax()) {
@@ -61,7 +61,7 @@ class BudgetPresenter extends BasePresenter
     }
 
     /**
-     * přepočte hodnoty v jednotlivých kategorich
+     * přepočte hodnoty v jednotlivých kategorich.
      */
     public function handleConvert(int $aid): void
     {

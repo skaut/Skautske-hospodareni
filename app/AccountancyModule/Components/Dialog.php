@@ -31,7 +31,7 @@ abstract class Dialog extends BaseControl
         $this->beforeRender();
 
         $this->template->setParameters([
-            'layout' => __DIR__ . '/templates/Dialog.layout.latte',
+            'layout' => __DIR__.'/templates/Dialog.layout.latte',
             'renderModal' => $this->opened,
         ]);
 

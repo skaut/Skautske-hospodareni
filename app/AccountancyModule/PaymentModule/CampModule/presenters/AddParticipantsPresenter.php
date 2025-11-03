@@ -48,7 +48,7 @@ final class AddParticipantsPresenter extends BasePresenter
             $this->redirect(':Accountancy:Payment:Default:');
         }
 
-        $this->group        = $group;
+        $this->group = $group;
         $this->participants = $this->queryBus->handle(
             new CampParticipantListQuery(new SkautisCampId($group->getSkautisId())),
         );
@@ -80,15 +80,15 @@ final class AddParticipantsPresenter extends BasePresenter
         foreach ($participants as $p) {
             $participantPaymentDetail = $this->participantPaymentDetails[$p->getPersonId()] ?? null;
             if ($participantPaymentDetail) {
-                $paymentNote    = $participantPaymentDetail->getPaymentNote();
+                $paymentNote = $participantPaymentDetail->getPaymentNote();
                 $variableSymbol = $participantPaymentDetail->getVariableSymbol();
-                $dueDate        = $participantPaymentDetail->getPaymentTerm();
-                $amount         = $p->getPayment() === 0.0 ? $participantPaymentDetail->getPrice() : $p->getPayment(); // Backward Compatibility
+                $dueDate = $participantPaymentDetail->getPaymentTerm();
+                $amount = $p->getPayment() === 0.0 ? $participantPaymentDetail->getPrice() : $p->getPayment(); // Backward Compatibility
             } else {
-                $paymentNote    = '';
+                $paymentNote = '';
                 $variableSymbol = '';
-                $dueDate        = null;
-                $amount         = $p->getPayment() === 0.0 ? null : $p->getPayment();
+                $dueDate = null;
+                $amount = $p->getPayment() === 0.0 ? null : $p->getPayment();
             }
 
             $form->addPerson(

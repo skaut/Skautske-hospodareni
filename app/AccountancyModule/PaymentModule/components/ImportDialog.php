@@ -44,7 +44,7 @@ final class ImportDialog extends Dialog
 
     protected function beforeRender(): void
     {
-        $this->template->setFile(__DIR__ . '/templates/ImportDialog.latte');
+        $this->template->setFile(__DIR__.'/templates/ImportDialog.latte');
         $this->template->customClasses = 'modal-import';
     }
 
@@ -53,7 +53,7 @@ final class ImportDialog extends Dialog
         $form = new BaseForm();
         $form->addUpload('file')
             ->addRule(Form::REQUIRED, 'Povinná položka')
-            ->addRule(BaseForm::MIME_TYPE, 'Neplatný formát CSV, povolené formáty jsou ' . implode(', ', array_keys(self::ALLOWED_MIME_TYPES)) . '.', array_values(self::ALLOWED_MIME_TYPES))
+            ->addRule(BaseForm::MIME_TYPE, 'Neplatný formát CSV, povolené formáty jsou '.implode(', ', array_keys(self::ALLOWED_MIME_TYPES)).'.', array_values(self::ALLOWED_MIME_TYPES))
             ->addRule(BaseForm::MAX_FILE_SIZE, 'Maximální povolená velikost souboru je 15 MB', BaseControl::MAX_FILE_SIZE_VALUE);
 
         $form->addSubmit('send', 'Importovat položky ze souboru')
@@ -93,7 +93,7 @@ final class ImportDialog extends Dialog
 
             $this->flashMessage('Platby byly importovány', 'success');
             $this->onSuccess();
-        } catch (ValidationException | InvalidArgumentException $e) {
+        } catch (ValidationException|InvalidArgumentException $e) {
             $form->addError($e->getMessage());
         } catch (ValueError) {
             $form->addError('Importovaný soubor obsahuje chybu. Data v souboru neodpovají vzoru');

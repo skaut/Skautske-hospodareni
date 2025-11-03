@@ -24,7 +24,7 @@ class VehicleGrid extends BaseGridControl
         $units = $this->units->getSubunitPairs($this->unitId);
 
         $grid = $this->gridFactory->createSimpleGrid(
-            __DIR__ . '/templates/VehicleGrid.latte',
+            __DIR__.'/templates/VehicleGrid.latte',
             ['units' => $units],
         );
 

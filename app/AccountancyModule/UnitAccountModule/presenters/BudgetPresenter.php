@@ -19,16 +19,16 @@ class BudgetPresenter extends BasePresenter
         parent::__construct();
     }
 
-    public function renderDefault(int|null $year = null): void
+    public function renderDefault(?int $year = null): void
     {
         $this->template->setParameters([
             'categories' => $this->budgetService->getCategories($this->unitId->toInt()),
-            'unitPairs'  => $this->unitService->getReadUnits($this->user),
-            'year'       => $year,
+            'unitPairs' => $this->unitService->getReadUnits($this->user),
+            'year' => $year,
         ]);
     }
 
-    public function renderAdd(int|null $year = null): void
+    public function renderAdd(?int $year = null): void
     {
         $form = $this['addCategoryForm'];
         assert($form instanceof BaseForm);

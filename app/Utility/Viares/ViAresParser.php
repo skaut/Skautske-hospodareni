@@ -29,7 +29,7 @@ class ViAresParser
      * @throws GuzzleException
      * @throws JsonException
      */
-    public function getViAresInfo(string $vat): ViaresInfo
+    public function getViAresInfo(string $vat): ViAresInfo
     {
         [$countryCode, $vat] = $this->splitAndValidate($vat);
         if ($countryCode === self::COUNTRY_CODE_CZ) {
@@ -40,16 +40,16 @@ class ViAresParser
     }
 
     /**
-     * Return info from Ares.cz
+     * Return info from Ares.cz.
      *
      * @throws GuzzleException
      * @throws JsonException
      */
     public function getAres(string $vat): ViAresInfo
     {
-        $url = 'https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/' . $vat;
+        $url = 'https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/'.$vat;
 
-        $client   = new Client();
+        $client = new Client();
         $response = $client->request('GET', $url);
         $response = Json::decode($response->getBody()->getContents());
 
@@ -69,7 +69,7 @@ class ViAresParser
     }
 
     /**
-     * return info from ec.europa.eu
+     * return info from ec.europa.eu.
      *
      * @throws GuzzleException
      * @throws JsonException
@@ -85,11 +85,11 @@ class ViAresParser
         ];
 
         try {
-            $client   = new Client();
+            $client = new Client();
             $response = $client->request('GET', $url);
 
             if ($response->getStatusCode() !== 200) {
-                throw new BadResponseException('Response error code :' . $response->getStatusCode());
+                throw new BadResponseException('Response error code :'.$response->getStatusCode());
             }
 
             $data = Json::decode($response->getBody()->getContents());
@@ -98,7 +98,7 @@ class ViAresParser
                 throw new ValueError('Data from VIES are not valid.');
             }
 
-             $rowValues = $this->processResponse($header, $data);
+            $rowValues = $this->processResponse($header, $data);
         } catch (Throwable $e) {
             throw $e;
         }
@@ -121,7 +121,7 @@ class ViAresParser
         }
 
         $restOfString = substr($inputString, 2);
-        $length       = strlen($restOfString);
+        $length = strlen($restOfString);
         if ($length > 7 && $length < 13) {
             return [strtoupper($firstTwoChars), $restOfString];
         }
@@ -130,7 +130,7 @@ class ViAresParser
     }
 
     /**
-     * Zpracuje odpověď z API a připraví data pro výstup
+     * Zpracuje odpověď z API a připraví data pro výstup.
      *
      * @param array<string, mixed> $header Struktura hlavičky
      * @param object               $data   Data z odpovědi API

@@ -40,7 +40,7 @@ class EventStatsQueryHandler
                 continue;
             }
 
-            $counters[$state]++;
+            ++$counters[$state];
         }
 
         return $counters;

@@ -29,8 +29,8 @@ class InconsistentCampCategoryTotalsQueryQueryHandler
         $skautisTotals = [];
 
         foreach ($this->campCategories->findForCamp($query->getCampId()->toInt()) as $campCategory) {
-            $id       = $campCategory->getId();
-            $total    = $campCategory->getTotal();
+            $id = $campCategory->getId();
+            $total = $campCategory->getTotal();
             $category = $categories[$id];
 
             assert($category instanceof CategorySummary);

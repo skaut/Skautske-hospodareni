@@ -19,7 +19,7 @@ final class CountGroupsWithBankAccountQueryHandlerTest extends IntegrationTest
 
     public function test(): void
     {
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < 3; ++$i) {
             $this->tester->haveInDatabase('pa_group', [
                 'name' => 'Test',
                 'bank_account_id' => 10,

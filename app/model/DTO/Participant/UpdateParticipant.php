@@ -6,13 +6,18 @@ namespace Model\DTO\Participant;
 
 class UpdateParticipant
 {
-    public const FIELD_DAYS       = 'days';
-    public const FIELD_PAYMENT    = 'payment';
-    public const FIELD_REPAYMENT  = 'repayment';
+    public const FIELD_DAYS = 'days';
+    public const FIELD_PAYMENT = 'payment';
+    public const FIELD_REPAYMENT = 'repayment';
     public const FIELD_IS_ACCOUNT = 'isAccount';
 
-    public function __construct(private int $eventId, private int $participantId, private string $field, private string $value, private bool $isAccepted)
-    {
+    public function __construct(
+        private int $eventId,
+        private int $participantId,
+        private string $field,
+        private string $value,
+        private bool $isAccepted,
+    ) {
     }
 
     public function getEventId(): int

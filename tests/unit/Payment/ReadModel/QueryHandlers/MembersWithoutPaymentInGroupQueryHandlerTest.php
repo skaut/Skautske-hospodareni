@@ -17,7 +17,7 @@ final class MembersWithoutPaymentInGroupQueryHandlerTest extends Unit
 {
     public function testMembersWithPaymentAreNotReturned(): void
     {
-        $unitId  = new UnitId(1);
+        $unitId = new UnitId(1);
         $groupId = 5;
 
         $members = Mockery::mock(IMemberRepository::class);

@@ -21,8 +21,8 @@ class TravelCest extends BaseAcceptanceCest
     protected string $vehicleType = 'Osobní';
     protected string $licensePlate;
     protected string $harmonizedConsumption = '5.8';
-    protected string $division              = '621.66.014 - Frantův oddíl';
-    protected string $unitRepresentative    = 'Karel Vedoucí';
+    protected string $division = '621.66.014 - Frantův oddíl';
+    protected string $unitRepresentative = 'Karel Vedoucí';
 
     public function _before(AcceptanceTester $I): void
     {
@@ -30,14 +30,14 @@ class TravelCest extends BaseAcceptanceCest
 
         $this->I = $I;
         $I->login(AcceptanceTester::UNIT_LEADER_ROLE);
-        $this->licensePlate = 'RZ-' . time();
+        $this->licensePlate = 'RZ-'.time();
     }
 
     public function createTravelOrder(AcceptanceTester $I): void
     {
-        $name               = 'Porada s vedoucími';
+        $name = 'Porada s vedoucími';
         $unitRepresentative = 'Pavel Zástupce';
-        $licensePlate       = 'RZA-' . time();
+        $licensePlate = 'RZA-'.time();
         $I->wantTo('Create travel order');
         $this->navigateToVehicle($I);
         $this->newVehicle($I, $licensePlate);
@@ -91,7 +91,7 @@ class TravelCest extends BaseAcceptanceCest
 
         // 5) Vozidlo – po výběru "car" jsou pole povinná
         $I->waitForElementVisible('#frm-form-form-vehicle_id', 5);
-        $I->selectOption('#frm-form-form-vehicle_id', ['text' => 'Osobní (' . $licensePlate . ')']);
+        $I->selectOption('#frm-form-form-vehicle_id', ['text' => 'Osobní ('.$licensePlate.')']);
         $I->fillField('#frm-form-form-fuel_price', '38.50');
         $I->fillField('#frm-form-form-amortization', '1.20');
 
@@ -243,7 +243,7 @@ class TravelCest extends BaseAcceptanceCest
         $urlBefore = $I->grabFromCurrentUrl();
         $I->click('[data-test="contract-print"]');
 
-        $I->waitForJS('return window.location.href !== ' . json_encode($urlBefore) . ';', 10);
+        $I->waitForJS('return window.location.href !== '.json_encode($urlBefore).';', 10);
         $I->seeInCurrentUrl('/print');
 
         $I->moveBack();

@@ -12,7 +12,7 @@ abstract class BaseGridControl extends BaseControl
     public function render(): void
     {
         $this->redrawControl('main');
-        $this->template->setFile(__DIR__ . '/templates/BaseGridControl.latte');
+        $this->template->setFile(__DIR__.'/templates/BaseGridControl.latte');
         $this->template->render();
     }
 

@@ -26,14 +26,14 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
     {
         parent::startup();
 
-        $user          = $this->getUser();
+        $user = $this->getUser();
         $readableUnits = $this->unitService->getReadUnits($user);
 
         $role = $this->queryBus->handle(new ActiveSkautisRoleQuery());
 
         $this->editableUnits = array_keys($this->queryBus->handle(new EditableUnitsQuery($role)));
         $this->readableUnits = array_keys($readableUnits);
-        $this->isEditable    = in_array($this->unitId->toInt(), $this->editableUnits);
+        $this->isEditable = in_array($this->unitId->toInt(), $this->editableUnits);
 
         if (isset($readableUnits[$this->unitId->toInt()])) {
             return;
@@ -47,7 +47,7 @@ abstract class BasePresenter extends \App\AccountancyModule\BasePresenter
         parent::beforeRender();
 
         $this->template->setParameters([
-            'unitId'     => $this->unitId->toInt(),
+            'unitId' => $this->unitId->toInt(),
             'isEditable' => $this->isEditable,
         ]);
     }

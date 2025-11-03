@@ -26,7 +26,7 @@ class UnitService
     /** @throws UserHasNoUnit */
     public function getUnitId(): int
     {
-        $user   = $this->skautis->getUser();
+        $user = $this->skautis->getUser();
         $unitId = $user->getUnitId();
 
         if ($unitId === null || $unitId === 0) {
@@ -55,11 +55,11 @@ class UnitService
     }
 
     /**
-     * vrací jednotku, která má právní subjektivitu
+     * vrací jednotku, která má právní subjektivitu.
      */
-    public function getOfficialUnit(int|null $unitId = null): Unit
+    public function getOfficialUnit(?int $unitId = null): Unit
     {
-        $unitId       ??= $this->getUnitId();
+        $unitId ??= $this->getUnitId();
         $officialUnitId = $this->unitResolver->getOfficialUnitId($unitId);
 
         return $this->units->find($officialUnitId);
@@ -75,7 +75,7 @@ class UnitService
         $data = [$unitId => $this->queryBus->handle(new UnitQuery($unitId))];
         foreach ($this->units->findByParent($unitId) as $u) {
             $data[$u->getId()] = $u;
-            $data             += $this->getAllUnder($u->getId());
+            $data += $this->getAllUnder($u->getId());
         }
 
         return $data;
@@ -92,7 +92,7 @@ class UnitService
     }
 
     /**
-     * vrací seznam jednotek, ke kterým má uživatel právo na čtení
+     * vrací seznam jednotek, ke kterým má uživatel právo na čtení.
      *
      * @return array<int, string> unit ID => unit name
      */

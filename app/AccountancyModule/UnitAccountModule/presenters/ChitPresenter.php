@@ -30,7 +30,7 @@ class ChitPresenter extends BasePresenter
     /**
      * object type => [
      *      cashbook ID (without hyphens) => object
-     * ]
+     * ].
      *
      * @var array<string, array<string, array<string, mixed>>>
      */
@@ -69,7 +69,7 @@ class ChitPresenter extends BasePresenter
         $this->redrawControl();
     }
 
-    public function actionDefault(int|null $year = null): void
+    public function actionDefault(?int $year = null): void
     {
         $this->cashbooks = [
             ObjectType::UNIT => $this->getUnitCashbooks(),
@@ -86,9 +86,9 @@ class ChitPresenter extends BasePresenter
                 ObjectType::CAMP => 'Tábory',
                 ObjectType::UNIT => 'Jednotky',
             ],
-            'info'            => $this->cashbooks,
+            'info' => $this->cashbooks,
             'isCashbookEmpty' => function (string $cashbookId): bool {
-                $chitList = $this['chitList-' . $cashbookId];
+                $chitList = $this['chitList-'.$cashbookId];
 
                 assert($chitList instanceof ChitListControl);
 
@@ -133,7 +133,7 @@ class ChitPresenter extends BasePresenter
 
                 $cashbooks[$cashbook->getCashbookId()->withoutHyphens()] = [
                     'ID' => $id,
-                    'DisplayName' => $name . ' ' . $cashbook->getYear(),
+                    'DisplayName' => $name.' '.$cashbook->getYear(),
                 ];
             }
         }

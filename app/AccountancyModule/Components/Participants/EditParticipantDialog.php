@@ -16,7 +16,7 @@ use function assert;
 final class EditParticipantDialog extends Dialog
 {
     /** @persistent */
-    public int|null $participantId = null;
+    public ?int $participantId = null;
 
     /** @var Closure[] */
     public array $onUpdate = [];
@@ -36,7 +36,7 @@ final class EditParticipantDialog extends Dialog
     {
         parent::beforeRender();
 
-        $this->template->setFile(__DIR__ . '/templates/EditParticipantDialog.latte');
+        $this->template->setFile(__DIR__.'/templates/EditParticipantDialog.latte');
     }
 
     protected function createComponentForm(): BaseForm

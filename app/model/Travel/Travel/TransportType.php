@@ -9,15 +9,15 @@ use Consistence\Enum\Enum;
 use function in_array;
 
 /**
- * @method string getValue()
+ * @method        string   getValue()
  * @method static string[] getAvailableValues()
  * @method static static[] getAvailableEnums() : iterable()
  */
 final class TransportType extends Enum
 {
-    public const CAR        = 'car';
-    public const BUS        = 'bus';
-    public const TRAIN      = 'train';
+    public const CAR = 'car';
+    public const BUS = 'bus';
+    public const TRAIN = 'train';
     public const MOTORCYCLE = 'motorcycle';
 
     private const LABELS = [

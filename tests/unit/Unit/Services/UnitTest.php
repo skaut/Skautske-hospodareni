@@ -13,7 +13,7 @@ class UnitTest extends \Codeception\Test\Unit
     public function testGetFullDisplayNameForOfficialUnit(): void
     {
         $unitName = 'Moje krásné středisko';
-        $unit     = $this->createUnit($unitName, 'stredisko');
+        $unit = $this->createUnit($unitName, 'stredisko');
 
         $this->assertSame(sprintf('Junák - český skaut, %s, z. s.', $unitName), $unit->getFullDisplayName());
     }
@@ -21,7 +21,7 @@ class UnitTest extends \Codeception\Test\Unit
     public function testGetFullDisplayNameForNonOfficialUnit(): void
     {
         $unitName = 'Muj oddíl';
-        $unit     = $this->createUnit($unitName, 'oddil');
+        $unit = $this->createUnit($unitName, 'oddil');
 
         $this->assertSame('', $unit->getFullDisplayName());
     }
@@ -29,12 +29,12 @@ class UnitTest extends \Codeception\Test\Unit
     public function testGetFullDisplayNameWithAddressFullDisplayNameForOfficialUnit(): void
     {
         $regNumber = '123';
-        $unitName  = 'Moje krásné středisko';
-        $ic        = '05596641';
-        $street    = 'Ulička 56';
-        $city      = 'Krno';
-        $postcode  = '43267';
-        $unit      = new Unit(
+        $unitName = 'Moje krásné středisko';
+        $ic = '05596641';
+        $street = 'Ulička 56';
+        $city = 'Krno';
+        $postcode = '43267';
+        $unit = new Unit(
             1,
             sprintf('%s %s', $regNumber, $unitName),
             $unitName,

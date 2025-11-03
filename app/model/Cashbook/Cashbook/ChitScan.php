@@ -35,7 +35,7 @@ class ChitScan
 
     public function __construct(Chit $chit, FilePath $filePath)
     {
-        $this->chit     = $chit;
+        $this->chit = $chit;
         $this->filePath = $filePath;
     }
 

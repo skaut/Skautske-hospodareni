@@ -17,8 +17,8 @@ class MailerFactoryTest extends Unit
     public function testInDisabledModeReturnsDebugMailer(): void
     {
         $googleService = m::mock(GoogleService::class);
-        $mailer        = m::mock(Mailer::class);
-        $factory       = new MailerFactory($mailer, false, $googleService);
+        $mailer = m::mock(Mailer::class);
+        $factory = new MailerFactory($mailer, false, $googleService);
 
         $this->assertSame($mailer, $factory->create($this->getConfig()));
     }
@@ -31,8 +31,8 @@ class MailerFactoryTest extends Unit
                 'setAccessToken' => null,
             ]),
         ]);
-        $mailer        = m::mock(Mailer::class);
-        $factory       = new MailerFactory($mailer, true, $googleService);
+        $mailer = m::mock(Mailer::class);
+        $factory = new MailerFactory($mailer, true, $googleService);
 
         $this->assertInstanceOf(OAuthMailer::class, $factory->create($this->getConfig()));
     }

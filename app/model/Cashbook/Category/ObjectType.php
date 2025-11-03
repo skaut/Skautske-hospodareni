@@ -38,7 +38,7 @@ class ObjectType
     public function __construct(Category $category, ObjectTypeEnum $value)
     {
         $this->category = $category;
-        $this->type     = $value;
+        $this->type = $value;
     }
 
     public function getType(): ObjectTypeEnum

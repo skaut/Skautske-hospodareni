@@ -25,7 +25,7 @@ class Category
 
     public function __construct(int $id, Operation $operationType)
     {
-        $this->id            = $id;
+        $this->id = $id;
         $this->operationType = $operationType;
     }
 

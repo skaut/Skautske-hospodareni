@@ -18,7 +18,7 @@ use function in_array;
 #[ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 abstract class AbstractEntity implements ArrayAccess
 {
-    private PropertyAccessorInterface|null $arrayAccessor = null;
+    private ?PropertyAccessorInterface $arrayAccessor = null;
 
     /** @param iterable<string, mixed> $values */
     public function updateOnly(iterable $values, string ...$keys): static

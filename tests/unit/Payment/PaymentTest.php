@@ -25,15 +25,15 @@ class PaymentTest extends Unit
 
     public function testCreate(): void
     {
-        $groupId        = 29;
-        $name           = 'Jan novák';
-        $email          = new EmailAddress('test@gmail.com');
-        $dueDate        = new ChronosDate();
-        $amount         = 450;
+        $groupId = 29;
+        $name = 'Jan novák';
+        $email = new EmailAddress('test@gmail.com');
+        $dueDate = new ChronosDate();
+        $amount = 450;
         $variableSymbol = new VariableSymbol('454545');
         $constantSymbol = 666;
-        $personId       = 2;
-        $note           = 'Something';
+        $personId = 2;
+        $note = 'Something';
 
         $payment = new Payment(
             $this->mockGroup($groupId),
@@ -104,7 +104,7 @@ class PaymentTest extends Unit
 
     public function testCancel(): void
     {
-        $time    = new DateTimeImmutable();
+        $time = new DateTimeImmutable();
         $payment = $this->createPayment();
         $payment->cancel($time);
         $this->assertSame(State::get(State::CANCELED), $payment->getState());
@@ -113,7 +113,7 @@ class PaymentTest extends Unit
 
     public function testCancelingAlreadyCanceledPaymentThrowsException(): void
     {
-        $time    = new DateTimeImmutable();
+        $time = new DateTimeImmutable();
         $payment = $this->createPayment();
         $payment->cancel($time);
 
@@ -123,7 +123,7 @@ class PaymentTest extends Unit
 
     public function testCancelingCompletedPaymentUpdatesClosedAtAndState(): void
     {
-        $time    = new DateTimeImmutable();
+        $time = new DateTimeImmutable();
         $payment = $this->createPayment();
         $payment->completeManually($time, 'John Doe');
 
@@ -137,7 +137,7 @@ class PaymentTest extends Unit
 
     public function testCompletePayment(): void
     {
-        $time    = new DateTimeImmutable();
+        $time = new DateTimeImmutable();
         $payment = $this->createPayment();
         $payment->completeManually($time, 'John Doe');
         $this->assertSame(State::get(State::COMPLETED), $payment->getState());
@@ -146,7 +146,7 @@ class PaymentTest extends Unit
 
     public function testCompleteClosedPayment(): void
     {
-        $time    = new DateTimeImmutable();
+        $time = new DateTimeImmutable();
         $payment = $this->createPayment();
         $payment->cancel($time);
 
@@ -157,15 +157,15 @@ class PaymentTest extends Unit
     public function testCompletePaymentByUser(): void
     {
         $username = 'John Doe';
-        $time     = new DateTimeImmutable();
-        $payment  = $this->createPayment();
+        $time = new DateTimeImmutable();
+        $payment = $this->createPayment();
         $payment->completeManually($time, $username);
         $this->assertSame($username, $payment->getClosedByUsername());
         $this->assertTrue($payment->isClosed());
     }
 
     /** @dataProvider getVariableSymbolUpdates */
-    public function testUpdateVariableSymbol(VariableSymbol|null $old, VariableSymbol $new): void
+    public function testUpdateVariableSymbol(?VariableSymbol $old, VariableSymbol $new): void
     {
         $payment = $this->createPaymentWithVariableSymbol($old);
         $payment->extractEventsToDispatch(); // Clear events collection;
@@ -193,7 +193,7 @@ class PaymentTest extends Unit
 
     public function testVariableSymbolUpdateToSameSymbolDoesntRaiseEvent(): void
     {
-        $symbol  = '12345';
+        $symbol = '12345';
         $payment = $this->createPaymentWithVariableSymbol(new VariableSymbol($symbol));
         $payment->extractEventsToDispatch(); // Clear events collection
 
@@ -218,13 +218,13 @@ class PaymentTest extends Unit
         $payment = $this->createPayment();
         $payment->extractEventsToDispatch(); // Clear events collection
 
-        $name           = 'František Maša';
-        $amount         = 300;
-        $email          = new EmailAddress('franta@gmail.com');
-        $dueDate        = ChronosDate::now();
+        $name = 'František Maša';
+        $amount = 300;
+        $email = new EmailAddress('franta@gmail.com');
+        $dueDate = ChronosDate::now();
         $variableSymbol = new VariableSymbol('789');
         $constantSymbol = 123;
-        $note           = 'Never pays!';
+        $note = 'Never pays!';
 
         $payment->update($name, [$email], $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
 
@@ -268,13 +268,13 @@ class PaymentTest extends Unit
     {
         $payment = $this->createPayment();
 
-        $name           = 'František Maša';
-        $amount         = 300;
-        $email          = new EmailAddress('franta@gmail.com');
-        $dueDate        = ChronosDate::now();
+        $name = 'František Maša';
+        $amount = 300;
+        $email = new EmailAddress('franta@gmail.com');
+        $dueDate = ChronosDate::now();
         $variableSymbol = new VariableSymbol('789');
         $constantSymbol = 123;
-        $note           = 'Never pays!';
+        $note = 'Never pays!';
 
         $payment->completeManually(new DateTimeImmutable(), 'John Doe');
 
@@ -296,7 +296,7 @@ class PaymentTest extends Unit
     }
 
     /** @dataProvider dataVariableSymbols */
-    public function testChangingVariableSymbolViaUpdateRaisesEvent(VariableSymbol|null $variableSymbol): void
+    public function testChangingVariableSymbolViaUpdateRaisesEvent(?VariableSymbol $variableSymbol): void
     {
         $payment = $this->createPaymentWithVariableSymbol($variableSymbol);
         $payment->extractEventsToDispatch(); // Clear events
@@ -315,7 +315,7 @@ class PaymentTest extends Unit
     }
 
     /** @dataProvider dataVariableSymbols */
-    public function testUpdateWithSameVariableSymbolDoesNotRaiseEvent(VariableSymbol|null $variableSymbol): void
+    public function testUpdateWithSameVariableSymbolDoesNotRaiseEvent(?VariableSymbol $variableSymbol): void
     {
         $payment = $this->createPaymentWithVariableSymbol($variableSymbol);
         $payment->extractEventsToDispatch(); // Clear events
@@ -361,9 +361,9 @@ class PaymentTest extends Unit
     public function testRecordSentEmail(): void
     {
         $payment = $this->createPayment();
-        $type    = EmailType::PAYMENT_COMPLETED;
-        $time    = new DateTimeImmutable();
-        $sender  = 'František Maša';
+        $type = EmailType::PAYMENT_COMPLETED;
+        $time = new DateTimeImmutable();
+        $sender = 'František Maša';
 
         $payment->recordSentEmail(EmailType::get($type), $time, $sender);
 
@@ -376,8 +376,8 @@ class PaymentTest extends Unit
 
     public function testDuplicityEmailAddress(): void
     {
-        $email1  = new EmailAddress('test@gmail.com');
-        $email2  = new EmailAddress('test@gmail.com');
+        $email1 = new EmailAddress('test@gmail.com');
+        $email2 = new EmailAddress('test@gmail.com');
         $payment = new Payment($this->mockGroup(29), 'Jan novák', [$email1, $email2], self::AMOUNT, ChronosDate::now(), null, null, null, '');
         $this->assertCount(1, $payment->getEmailRecipients());
     }
@@ -387,9 +387,9 @@ class PaymentTest extends Unit
         return $this->createPaymentWithVariableSymbol(new VariableSymbol('454545'));
     }
 
-    private function createPaymentWithVariableSymbol(VariableSymbol|null $symbol): Payment
+    private function createPaymentWithVariableSymbol(?VariableSymbol $symbol): Payment
     {
-        $group   = $this->mockGroup(29);
+        $group = $this->mockGroup(29);
         $dueDate = ChronosDate::now();
 
         $payment = new Payment($group, 'Jan novák', [new EmailAddress('test@gmail.com')], self::AMOUNT, $dueDate, $symbol, 666, 454, 'Some note');

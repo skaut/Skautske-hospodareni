@@ -25,7 +25,7 @@ class JournalPresenter extends BasePresenter
         }
 
         $group = $this->model->getGroup($groupId);
-        $year  = $this->model->getRegistrationYear($group->getSkautisId());
+        $year = $this->model->getRegistrationYear($group->getSkautisId());
         if ($year === null) {
             $this->flashMessage('Registrace nebyla nalezena', 'danger');
             $this->redirect(':Accountancy:Payment:GroupList:');
@@ -33,11 +33,11 @@ class JournalPresenter extends BasePresenter
 
         $units = $this->unitService->getAllUnder($this->unitId->toInt());
 
-        $changes      = [];
+        $changes = [];
         $changeExists = false;
         foreach (array_keys($units) as $unitId) {
-            $uch              = $this->model->getJournalChangesAfterRegistration($unitId, $year);
-            $changeExists     = $changeExists || (empty($uch['add']) && $uch['remove']);
+            $uch = $this->model->getJournalChangesAfterRegistration($unitId, $year);
+            $changeExists = $changeExists || (empty($uch['add']) && $uch['remove']);
             $changes[$unitId] = $uch;
         }
 

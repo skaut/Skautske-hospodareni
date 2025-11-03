@@ -18,21 +18,21 @@ use function array_map;
 use function implode;
 
 /**
- * @property-read int $id
- * @property-read string $name
- * @property-read float $amount
- * @property-read EmailAddress[] $recipients
- * @property-read ChronosDate $dueDate
- * @property-read VariableSymbol|NULL $variableSymbol
- * @property-read int|NULL $constantSymbol
- * @property-read string $note
- * @property-read bool $closed
- * @property-read State $state
- * @property-read Transaction $transaction
- * @property-read DateTimeImmutable|NULL $closedAt
- * @property-read string|NULL $closedBy
- * @property-read int|NULL $personId
- * @property-read int $groupId
+ * @property int                    $id
+ * @property string                 $name
+ * @property float                  $amount
+ * @property EmailAddress[]         $recipients
+ * @property ChronosDate            $dueDate
+ * @property VariableSymbol|null    $variableSymbol
+ * @property int|null               $constantSymbol
+ * @property string                 $note
+ * @property bool                   $closed
+ * @property State                  $state
+ * @property Transaction            $transaction
+ * @property DateTimeImmutable|null $closedAt
+ * @property string|null            $closedBy
+ * @property int|null               $personId
+ * @property int                    $groupId
  */
 class Payment
 {
@@ -48,15 +48,15 @@ class Payment
         private float $amount,
         private array $recipients,
         private ChronosDate $dueDate,
-        private VariableSymbol|null $variableSymbol,
-        private int|null $constantSymbol,
+        private ?VariableSymbol $variableSymbol,
+        private ?int $constantSymbol,
         private string $note,
         private bool $closed,
         private State $state,
-        private Transaction|null $transaction,
-        private DateTimeImmutable|null $closedAt,
-        private string|null $closedByUsername,
-        private int|null $personId,
+        private ?Transaction $transaction,
+        private ?DateTimeImmutable $closedAt,
+        private ?string $closedByUsername,
+        private ?int $personId,
         private int $groupId,
         private array $sentEmails,
     ) {
@@ -93,12 +93,12 @@ class Payment
         return $this->dueDate->toNative();
     }
 
-    public function getVariableSymbol(): VariableSymbol|null
+    public function getVariableSymbol(): ?VariableSymbol
     {
         return $this->variableSymbol;
     }
 
-    public function getConstantSymbol(): int|null
+    public function getConstantSymbol(): ?int
     {
         return $this->constantSymbol;
     }
@@ -123,22 +123,22 @@ class Payment
         return $this->state;
     }
 
-    public function getTransaction(): Transaction|null
+    public function getTransaction(): ?Transaction
     {
         return $this->transaction;
     }
 
-    public function getClosedAt(): DateTimeImmutable|null
+    public function getClosedAt(): ?DateTimeImmutable
     {
         return $this->closedAt;
     }
 
-    public function getClosedByUsername(): string|null
+    public function getClosedByUsername(): ?string
     {
         return $this->closedByUsername;
     }
 
-    public function getPersonId(): int|null
+    public function getPersonId(): ?int
     {
         return $this->personId;
     }

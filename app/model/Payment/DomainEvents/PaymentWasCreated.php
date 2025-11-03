@@ -8,7 +8,7 @@ use Model\Payment\VariableSymbol;
 
 final class PaymentWasCreated
 {
-    public function __construct(private int $groupId, private VariableSymbol|null $variableSymbol = null)
+    public function __construct(private int $groupId, private ?VariableSymbol $variableSymbol = null)
     {
     }
 
@@ -17,7 +17,7 @@ final class PaymentWasCreated
         return $this->groupId;
     }
 
-    public function getVariableSymbol(): VariableSymbol|null
+    public function getVariableSymbol(): ?VariableSymbol
     {
         return $this->variableSymbol;
     }

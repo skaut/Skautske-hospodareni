@@ -32,28 +32,24 @@ use function sprintf;
 class InvertChitDialog extends Dialog
 {
     /**
-     * (string because persistent parameters aren't auto-casted)
+     * (string because persistent parameters aren't auto-casted).
      *
-     * @var        int|string|NULL
      * @persistent
      */
     public int|string|null $chitId = null;
 
-    /** @var array<string, string>|NULL */
-    private array|null $cashbooks = null;
+    /** @var array<string, string>|null */
+    private ?array $cashbooks = null;
 
     public function __construct(private CashbookId $cashbookId, private CommandBus $commandBus, private QueryBus $queryBus)
     {
     }
 
-    public function handleOpen(int|null $chitId = null): void
+    public function handleOpen(?int $chitId = null): void
     {
         $this->chitId = $chitId;
         if ($this->chitId !== null && ! $this->isChitValid()) {
-            throw new BadRequestException(
-                sprintf('Chit %d doesn\'t exist or can\'t be inverted', $this->chitId),
-                IResponse::S404_NotFound,
-            );
+            throw new BadRequestException(sprintf('Chit %d doesn\'t exist or can\'t be inverted', $this->chitId), IResponse::S404_NotFound);
         }
 
         $this->show();
@@ -63,7 +59,7 @@ class InvertChitDialog extends Dialog
     {
         parent::beforeRender();
 
-        $this->template->setFile(__DIR__ . '/templates/InvertChitDialog.latte');
+        $this->template->setFile(__DIR__.'/templates/InvertChitDialog.latte');
         $this->template->setParameters([
             'renderModal' => $this->chitId !== null,
             'noCashbooks' => ! $this->isChitValid() || count($this->getCashbooks()) === 0,
@@ -117,7 +113,7 @@ class InvertChitDialog extends Dialog
             return [];
         }
 
-        $units     = $this->queryBus->handle(new EditableUnitsQuery($role));
+        $units = $this->queryBus->handle(new EditableUnitsQuery($role));
         $cashbooks = [];
         foreach ($units as $unit) {
             assert($unit instanceof Unit);
@@ -133,8 +129,8 @@ class InvertChitDialog extends Dialog
             foreach ($unitCashbooks as $cashbook) {
                 assert($cashbook instanceof UnitCashbook);
 
-                $id             = $cashbook->getCashbookId()->toString();
-                $cashbooks[$id] = $unit->getDisplayName() . ' ' . $cashbook->getYear();
+                $id = $cashbook->getCashbookId()->toString();
+                $cashbooks[$id] = $unit->getDisplayName().' '.$cashbook->getYear();
             }
         }
 
@@ -167,7 +163,7 @@ class InvertChitDialog extends Dialog
         return false;
     }
 
-    private function getChit(): Chit|null
+    private function getChit(): ?Chit
     {
         return $this->queryBus->handle(new ChitQuery($this->cashbookId, (int) $this->chitId));
     }

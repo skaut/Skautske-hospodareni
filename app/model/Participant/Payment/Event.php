@@ -22,7 +22,7 @@ final class Event
 
     public function __construct(int $id, EventType $type)
     {
-        $this->id   = $id;
+        $this->id = $id;
         $this->type = $type;
     }
 

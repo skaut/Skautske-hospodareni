@@ -32,7 +32,7 @@ class SkautisIdQueryHandler
      */
     public function __invoke(SkautisIdQuery $query): int
     {
-        $cashbook   = $this->cashbooks->find($query->getCashbookId());
+        $cashbook = $this->cashbooks->find($query->getCashbookId());
         $objectType = $cashbook->getType()->getSkautisObjectType();
 
         if ($objectType->equalsValue(ObjectType::UNIT)) {

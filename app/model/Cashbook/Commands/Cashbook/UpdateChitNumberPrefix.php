@@ -11,7 +11,7 @@ use Model\Cashbook\Handlers\Cashbook\UpdateChitNumberPrefixHandler;
 /** @see UpdateChitNumberPrefixHandler */
 final class UpdateChitNumberPrefix
 {
-    public function __construct(private CashbookId $cashbookId, private PaymentMethod $paymentMethod, private string|null $prefix = null)
+    public function __construct(private CashbookId $cashbookId, private PaymentMethod $paymentMethod, private ?string $prefix = null)
     {
     }
 
@@ -25,7 +25,7 @@ final class UpdateChitNumberPrefix
         return $this->paymentMethod;
     }
 
-    public function getPrefix(): string|null
+    public function getPrefix(): ?string
     {
         return $this->prefix;
     }

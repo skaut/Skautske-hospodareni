@@ -52,7 +52,7 @@ class Category
      * @ORM\ManyToOne(targetEntity="Category", inversedBy="children")
      * @ORM\JoinColumn(name="parentId", referencedColumnName="id")
      */
-    private Category|null $parent = null;
+    private ?Category $parent = null;
 
     /** @ORM\Column(type="float", options={"default"=0}) */
     private float $value;
@@ -60,11 +60,11 @@ class Category
     /** @ORM\Column(type="smallint") */
     private int $year;
 
-    public function __construct(int $unitId, string $label, Operation $type, Category|null $parent, float $value, int $year)
+    public function __construct(int $unitId, string $label, Operation $type, ?Category $parent, float $value, int $year)
     {
-        $this->unitId   = $unitId;
-        $this->label    = $label;
-        $this->type     = $type;
+        $this->unitId = $unitId;
+        $this->label = $label;
+        $this->type = $type;
         $this->children = new ArrayCollection();
         if ($parent !== null) {
             $this->parent = $parent;
@@ -72,7 +72,7 @@ class Category
         }
 
         $this->value = $value;
-        $this->year  = $year;
+        $this->year = $year;
     }
 
     public function getId(): int

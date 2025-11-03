@@ -18,7 +18,7 @@ final class CashbookIdType extends GuidType
         return 'cashbook_id';
     }
 
-    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): CashbookId|null
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?CashbookId
     {
         if ($value === null) {
             return null;
@@ -29,7 +29,7 @@ final class CashbookIdType extends GuidType
         return CashbookId::fromString($value);
     }
 
-    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): string|null
+    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): ?string
     {
         if ($value === null) {
             return null;

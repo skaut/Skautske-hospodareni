@@ -45,7 +45,7 @@ class ExcelService
     public function getGeneralParticipants(array $participantsDTO, ChronosDate $startDate): Spreadsheet
     {
         $spreadsheet = $this->getNewFile();
-        $sheet       = $spreadsheet->getActiveSheet();
+        $sheet = $spreadsheet->getActiveSheet();
         $this->setSheetParticipantGeneral($sheet, $participantsDTO, $startDate);
 
         return $spreadsheet;
@@ -55,7 +55,7 @@ class ExcelService
     public function getCampParticipants(array $participantsDTO): Spreadsheet
     {
         $spreadsheet = $this->getNewFile();
-        $sheet       = $spreadsheet->getActiveSheet();
+        $sheet = $spreadsheet->getActiveSheet();
         $this->setSheetParticipantCamp($sheet, $participantsDTO);
 
         return $spreadsheet;
@@ -65,7 +65,7 @@ class ExcelService
     public function getEducationParticipants(array $participantsDTO): Spreadsheet
     {
         $spreadsheet = $this->getNewFile();
-        $sheet       = $spreadsheet->getActiveSheet();
+        $sheet = $spreadsheet->getActiveSheet();
         $this->setSheetParticipantEducation($sheet, $participantsDTO);
 
         return $spreadsheet;
@@ -74,7 +74,7 @@ class ExcelService
     public function getCashbook(CashbookId $cashbookId, PaymentMethod $paymentMethod): Spreadsheet
     {
         $spreadsheet = $this->getNewFile();
-        $sheet       = $spreadsheet->setActiveSheetIndex(0);
+        $sheet = $spreadsheet->setActiveSheetIndex(0);
         $this->setSheetCashbook($sheet, $cashbookId, $paymentMethod);
 
         return $spreadsheet;
@@ -106,7 +106,7 @@ class ExcelService
     public function getChitsExport(array $chits): Spreadsheet
     {
         $spreadsheet = $this->getNewFile();
-        $sheetChit   = $spreadsheet->setActiveSheetIndex(0);
+        $sheetChit = $spreadsheet->setActiveSheetIndex(0);
         $this->setSheetChitsOnly($sheetChit, $chits);
 
         return $spreadsheet;
@@ -139,28 +139,28 @@ class ExcelService
         $rowCnt = 2;
 
         foreach ($data as $row) {
-            $sheet->setCellValue('A' . $rowCnt, $rowCnt - 1)
-                ->setCellValue('B' . $rowCnt, $row->getFirstName())
-                ->setCellValue('C' . $rowCnt, $row->getLastName())
-                ->setCellValue('D' . $rowCnt, $row->getNickName())
-                ->setCellValue('E' . $rowCnt, $row->getStreet())
-                ->setCellValue('F' . $rowCnt, $row->getCity())
-                ->setCellValue('G' . $rowCnt, $row->getPostcode())
-                ->setCellValue('H' . $rowCnt, $row->getBirthday()?->format('d.m.Y') ?? '')
-                ->setCellValue('I' . $rowCnt, $row->getPayment())
-                ->setCellValue('J' . $rowCnt, $row->getRepayment())
-                ->setCellValue('K' . $rowCnt, $row->getPayment() - $row->getRepayment())
-                ->setCellValue('L' . $rowCnt, $row->getOnAccount() === 'Y' ? 'Ano' : 'Ne');
-            $rowCnt++;
+            $sheet->setCellValue('A'.$rowCnt, $rowCnt - 1)
+                ->setCellValue('B'.$rowCnt, $row->getFirstName())
+                ->setCellValue('C'.$rowCnt, $row->getLastName())
+                ->setCellValue('D'.$rowCnt, $row->getNickName())
+                ->setCellValue('E'.$rowCnt, $row->getStreet())
+                ->setCellValue('F'.$rowCnt, $row->getCity())
+                ->setCellValue('G'.$rowCnt, $row->getPostcode())
+                ->setCellValue('H'.$rowCnt, $row->getBirthday()?->format('d.m.Y') ?? '')
+                ->setCellValue('I'.$rowCnt, $row->getPayment())
+                ->setCellValue('J'.$rowCnt, $row->getRepayment())
+                ->setCellValue('K'.$rowCnt, $row->getPayment() - $row->getRepayment())
+                ->setCellValue('L'.$rowCnt, $row->getOnAccount() === 'Y' ? 'Ano' : 'Ne');
+            ++$rowCnt;
         }
 
-        //format
+        // format
         foreach (Range::letters('A', 'L') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
 
         $sheet->getStyle('A1:L1')->getFont()->setBold(true);
-        $sheet->setAutoFilter('A1:L' . ($rowCnt - 1));
+        $sheet->setAutoFilter('A1:L'.($rowCnt - 1));
     }
 
     /** @param Participant[] $data */
@@ -185,30 +185,30 @@ class ExcelService
 
         foreach ($data as $row) {
             assert($row instanceof Participant);
-            $sheet->setCellValue('A' . $rowCnt, $rowCnt - 1)
-                ->setCellValue('B' . $rowCnt, $row->getFirstName())
-                ->setCellValue('C' . $rowCnt, $row->getLastName())
-                ->setCellValue('D' . $rowCnt, $row->getNickName())
-                ->setCellValue('E' . $rowCnt, $row->getStreet())
-                ->setCellValue('F' . $rowCnt, $row->getCity())
-                ->setCellValue('G' . $rowCnt, $row->getPostcode())
-                ->setCellValue('H' . $rowCnt, $row->getBirthday()?->format('d.m.Y') ?? '')
-                ->setCellValue('I' . $rowCnt, $row->getDays())
-                ->setCellValue('J' . $rowCnt, $row->getAge() < self::ADULT_AGE ? $row->getDays() : 0)
-                ->setCellValue('K' . $rowCnt, $row->getPayment())
-                ->setCellValue('L' . $rowCnt, $row->getRepayment())
-                ->setCellValue('M' . $rowCnt, $row->getPayment() - $row->getRepayment())
-                ->setCellValue('N' . $rowCnt, $row->getOnAccount() === 'Y' ? 'Ano' : 'Ne');
-            $rowCnt++;
+            $sheet->setCellValue('A'.$rowCnt, $rowCnt - 1)
+                ->setCellValue('B'.$rowCnt, $row->getFirstName())
+                ->setCellValue('C'.$rowCnt, $row->getLastName())
+                ->setCellValue('D'.$rowCnt, $row->getNickName())
+                ->setCellValue('E'.$rowCnt, $row->getStreet())
+                ->setCellValue('F'.$rowCnt, $row->getCity())
+                ->setCellValue('G'.$rowCnt, $row->getPostcode())
+                ->setCellValue('H'.$rowCnt, $row->getBirthday()?->format('d.m.Y') ?? '')
+                ->setCellValue('I'.$rowCnt, $row->getDays())
+                ->setCellValue('J'.$rowCnt, $row->getAge() < self::ADULT_AGE ? $row->getDays() : 0)
+                ->setCellValue('K'.$rowCnt, $row->getPayment())
+                ->setCellValue('L'.$rowCnt, $row->getRepayment())
+                ->setCellValue('M'.$rowCnt, $row->getPayment() - $row->getRepayment())
+                ->setCellValue('N'.$rowCnt, $row->getOnAccount() === 'Y' ? 'Ano' : 'Ne');
+            ++$rowCnt;
         }
 
-        //format
+        // format
         foreach (Range::letters('A', 'N') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
 
         $sheet->getStyle('A1:N1')->getFont()->setBold(true);
-        $sheet->setAutoFilter('A1:N' . ($rowCnt - 1));
+        $sheet->setAutoFilter('A1:N'.($rowCnt - 1));
     }
 
     /** @param Participant[] $data */
@@ -229,28 +229,28 @@ class ExcelService
 
         $rowCnt = 2;
         foreach ($data as $row) {
-            $sheet->setCellValue('A' . $rowCnt, $rowCnt - 1)
-                ->setCellValue('B' . $rowCnt, $row->getFirstName())
-                ->setCellValue('C' . $rowCnt, $row->getLastName())
-                ->setCellValue('D' . $rowCnt, $row->getNickName())
-                ->setCellValue('E' . $rowCnt, $row->getStreet())
-                ->setCellValue('F' . $rowCnt, $row->getCity())
-                ->setCellValue('G' . $rowCnt, $row->getPostcode())
-                ->setCellValue('H' . $rowCnt, $row->getBirthday()?->format('d.m.Y') ?? '')
-                ->setCellValue('I' . $rowCnt, $row->getUnitRegistrationNumber())
-                ->setCellValue('J' . $rowCnt, $row->getDays())
-                ->setCellValue('K' . $rowCnt, $row->getBirthday() !== null && $startDate->diffInYears($row->getBirthday()) < self::ADULT_AGE ? $row->getDays() : 0)
-                ->setCellValue('L' . $rowCnt, $row->getPayment());
-            $rowCnt++;
+            $sheet->setCellValue('A'.$rowCnt, $rowCnt - 1)
+                ->setCellValue('B'.$rowCnt, $row->getFirstName())
+                ->setCellValue('C'.$rowCnt, $row->getLastName())
+                ->setCellValue('D'.$rowCnt, $row->getNickName())
+                ->setCellValue('E'.$rowCnt, $row->getStreet())
+                ->setCellValue('F'.$rowCnt, $row->getCity())
+                ->setCellValue('G'.$rowCnt, $row->getPostcode())
+                ->setCellValue('H'.$rowCnt, $row->getBirthday()?->format('d.m.Y') ?? '')
+                ->setCellValue('I'.$rowCnt, $row->getUnitRegistrationNumber())
+                ->setCellValue('J'.$rowCnt, $row->getDays())
+                ->setCellValue('K'.$rowCnt, $row->getBirthday() !== null && $startDate->diffInYears($row->getBirthday()) < self::ADULT_AGE ? $row->getDays() : 0)
+                ->setCellValue('L'.$rowCnt, $row->getPayment());
+            ++$rowCnt;
         }
 
-        //format
+        // format
         foreach (Range::letters('A', 'L') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
 
         $sheet->getStyle('A1:L1')->getFont()->setBold(true);
-        $sheet->setAutoFilter('A1:L' . ($rowCnt - 1));
+        $sheet->setAutoFilter('A1:L'.($rowCnt - 1));
         $sheet->setTitle('Seznam účastníků');
     }
 
@@ -265,40 +265,40 @@ class ExcelService
             ->setCellValue('G1', 'Výdej')
             ->setCellValue('H1', 'Zůstatek');
 
-        $chits    = $this->queryBus->handle(ChitListQuery::withMethod($paymentMethod, $cashbookId));
+        $chits = $this->queryBus->handle(ChitListQuery::withMethod($paymentMethod, $cashbookId));
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
 
         assert($cashbook instanceof Cashbook);
 
         $balance = 0;
-        $rowCnt  = 2;
+        $rowCnt = 2;
         foreach ($chits as $chit) {
             assert($chit instanceof Chit);
 
             $isIncome = $chit->isIncome();
-            $amount   = $chit->getAmount()->toFloat();
-            $prefix   = $cashbook->getChitNumberPrefix($chit->getPaymentMethod());
+            $amount = $chit->getAmount()->toFloat();
+            $prefix = $cashbook->getChitNumberPrefix($chit->getPaymentMethod());
 
             $balance += $isIncome ? $amount : -$amount;
 
-            $sheet->setCellValue('A' . $rowCnt, $chit->getBody()->getDate()->format('d.m.Y'))
-                ->setCellValue('B' . $rowCnt, $prefix . $chit->getBody()->getNumber())
-                ->setCellValue('C' . $rowCnt, $chit->getPurpose())
-                ->setCellValue('D' . $rowCnt, $chit->getCategories())
-                ->setCellValue('E' . $rowCnt, (string) $chit->getBody()->getRecipient())
-                ->setCellValue('F' . $rowCnt, $isIncome ? $amount : '')
-                ->setCellValue('G' . $rowCnt, ! $isIncome ? $amount : '')
-                ->setCellValue('H' . $rowCnt, $balance);
-            $rowCnt++;
+            $sheet->setCellValue('A'.$rowCnt, $chit->getBody()->getDate()->format('d.m.Y'))
+                ->setCellValue('B'.$rowCnt, $prefix.$chit->getBody()->getNumber())
+                ->setCellValue('C'.$rowCnt, $chit->getPurpose())
+                ->setCellValue('D'.$rowCnt, $chit->getCategories())
+                ->setCellValue('E'.$rowCnt, (string) $chit->getBody()->getRecipient())
+                ->setCellValue('F'.$rowCnt, $isIncome ? $amount : '')
+                ->setCellValue('G'.$rowCnt, ! $isIncome ? $amount : '')
+                ->setCellValue('H'.$rowCnt, $balance);
+            ++$rowCnt;
         }
 
-        //format
+        // format
         foreach (Range::letters('A', 'H') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
 
         $sheet->getStyle('A1:H1')->getFont()->setBold(true);
-        $sheet->getStyle('H1:H' . ($rowCnt - 1))->getFont()->setBold(true);
+        $sheet->getStyle('H1:H'.($rowCnt - 1))->getFont()->setBold(true);
         // $sheet->setAutoFilter('A1:H' . ($rowCnt - 1));
 
         $sheet->setTitle('Evidence plateb');
@@ -315,18 +315,18 @@ class ExcelService
             ->setCellValue('G1', 'Typ');
 
         $rowCnt = 2;
-        $sumIn  = $sumOut = 0;
+        $sumIn = $sumOut = 0;
 
         foreach ($chits as $chit) {
             $amount = $chit->getAmount()->toFloat();
 
-            $sheet->setCellValue('A' . $rowCnt, $rowCnt - 1)
-                ->setCellValue('B' . $rowCnt, $chit->getBody()->getDate()->format('d.m.Y'))
-                ->setCellValue('C' . $rowCnt, $chit->getPurpose())
-                ->setCellValue('D' . $rowCnt, $chit->getCategories())
-                ->setCellValue('E' . $rowCnt, $chit->getBody()->getRecipient())
-                ->setCellValue('F' . $rowCnt, $amount)
-                ->setCellValue('G' . $rowCnt, $chit->isIncome() ? 'Příjem' : 'Výdaj');
+            $sheet->setCellValue('A'.$rowCnt, $rowCnt - 1)
+                ->setCellValue('B'.$rowCnt, $chit->getBody()->getDate()->format('d.m.Y'))
+                ->setCellValue('C'.$rowCnt, $chit->getPurpose())
+                ->setCellValue('D'.$rowCnt, $chit->getCategories())
+                ->setCellValue('E'.$rowCnt, $chit->getBody()->getRecipient())
+                ->setCellValue('F'.$rowCnt, $amount)
+                ->setCellValue('G'.$rowCnt, $chit->isIncome() ? 'Příjem' : 'Výdaj');
 
             if ($chit->isIncome()) {
                 $sumIn += $amount;
@@ -334,27 +334,27 @@ class ExcelService
                 $sumOut += $amount;
             }
 
-            $rowCnt++;
+            ++$rowCnt;
         }
 
-        //add border
-        $sheet->getStyle('A1:G' . ($rowCnt - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        // add border
+        $sheet->getStyle('A1:G'.($rowCnt - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
         if ($sumIn > 0) {
-            $rowCnt++;
-            $sheet->setCellValue('E' . $rowCnt, 'Příjmy')
-                ->setCellValue('F' . $rowCnt, $sumIn);
-            $sheet->getStyle('E' . $rowCnt)->getFont()->setBold(true);
+            ++$rowCnt;
+            $sheet->setCellValue('E'.$rowCnt, 'Příjmy')
+                ->setCellValue('F'.$rowCnt, $sumIn);
+            $sheet->getStyle('E'.$rowCnt)->getFont()->setBold(true);
         }
 
         if ($sumOut > 0) {
-            $rowCnt++;
-            $sheet->setCellValue('E' . $rowCnt, 'Výdaje')
-                ->setCellValue('F' . $rowCnt, $sumOut);
-            $sheet->getStyle('E' . $rowCnt)->getFont()->setBold(true);
+            ++$rowCnt;
+            $sheet->setCellValue('E'.$rowCnt, 'Výdaje')
+                ->setCellValue('F'.$rowCnt, $sumOut);
+            $sheet->getStyle('E'.$rowCnt)->getFont()->setBold(true);
         }
 
-        //format
+        // format
         foreach (Range::letters('A', 'G') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
@@ -379,21 +379,21 @@ class ExcelService
             foreach ($chit->getItems() as $item) {
                 $amount = $item->getAmount()->toFloat();
 
-                $sheet->setCellValue('A' . $rowCnt, $rowCnt - 1)
-                    ->setCellValue('B' . $rowCnt, $chit->getBody()->getDate()->format('d.m.Y'))
-                    ->setCellValue('C' . $rowCnt, $chit->getBody()->getNumber())
-                    ->setCellValue('D' . $rowCnt, $item->getPurpose())
-                    ->setCellValue('E' . $rowCnt, $item->getCategory()->getName())
-                    ->setCellValue('F' . $rowCnt, $chit->getBody()->getRecipient())
-                    ->setCellValue('G' . $rowCnt, $amount);
-                $rowCnt++;
+                $sheet->setCellValue('A'.$rowCnt, $rowCnt - 1)
+                    ->setCellValue('B'.$rowCnt, $chit->getBody()->getDate()->format('d.m.Y'))
+                    ->setCellValue('C'.$rowCnt, $chit->getBody()->getNumber())
+                    ->setCellValue('D'.$rowCnt, $item->getPurpose())
+                    ->setCellValue('E'.$rowCnt, $item->getCategory()->getName())
+                    ->setCellValue('F'.$rowCnt, $chit->getBody()->getRecipient())
+                    ->setCellValue('G'.$rowCnt, $amount);
+                ++$rowCnt;
             }
         }
 
-        //add border
-        $sheet->getStyle('A1:G' . ($rowCnt - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        // add border
+        $sheet->getStyle('A1:G'.($rowCnt - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
-        //format
+        // format
         foreach (Range::letters('A', 'G') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
@@ -410,7 +410,7 @@ class ExcelService
     public function getPaymentsList(array $paymentsDTO, string $paymentGroupName): Spreadsheet
     {
         $spreadsheet = $this->getNewFile();
-        $sheet       = $spreadsheet->getActiveSheet();
+        $sheet = $spreadsheet->getActiveSheet();
         $this->setSheetPaymentList($sheet, $paymentsDTO);
         $sheet->setTitle($paymentGroupName);
 
@@ -434,20 +434,20 @@ class ExcelService
         $rowCnt = 2;
 
         foreach ($paymentsDTO as $payment) {
-                $sheet->setCellValue('A' . $rowCnt, $rowCnt - 1)
-                    ->setCellValue('B' . $rowCnt, $payment->getName())
-                    ->setCellValue('C' . $rowCnt, $payment->getRecipientsString())
-                    ->setCellValue('D' . $rowCnt, $payment->getAmount())
-                    ->setCellValue('E' . $rowCnt, $payment->getVariableSymbol())
-                    ->setCellValue('F' . $rowCnt, $payment->getDueDate()->format('d.m.Y'))
-                    ->setCellValue('G' . $rowCnt, AccountancyHelpers::paymentState($payment->getState()->getValue(), false));
-                $rowCnt++;
+            $sheet->setCellValue('A'.$rowCnt, $rowCnt - 1)
+                ->setCellValue('B'.$rowCnt, $payment->getName())
+                ->setCellValue('C'.$rowCnt, $payment->getRecipientsString())
+                ->setCellValue('D'.$rowCnt, $payment->getAmount())
+                ->setCellValue('E'.$rowCnt, $payment->getVariableSymbol())
+                ->setCellValue('F'.$rowCnt, $payment->getDueDate()->format('d.m.Y'))
+                ->setCellValue('G'.$rowCnt, AccountancyHelpers::paymentState($payment->getState()->getValue(), false));
+            ++$rowCnt;
         }
 
-        //add border
-        $sheet->getStyle('A1:G' . ($rowCnt - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        // add border
+        $sheet->getStyle('A1:G'.($rowCnt - 1))->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
-        //format
+        // format
         foreach (Range::letters('A', 'G') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }

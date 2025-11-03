@@ -24,9 +24,7 @@ final class CashbookId
     {
         $uuid = Uuid::fromString($id);
         if ($uuid->getVersion() !== 4) {
-            throw new InvalidArgumentException(
-                sprintf('Invalid id "%s", valid ID is only UUIDv4', $id),
-            );
+            throw new InvalidArgumentException(sprintf('Invalid id "%s", valid ID is only UUIDv4', $id));
         }
 
         $this->id = $uuid->toString(); // valid UUID

@@ -27,7 +27,7 @@ final class CampsWithoutGroupQueryHandler
     {
         $camps = $this->queryBus->handle(new CampListQuery($query->getYear()));
 
-        $campWithGroupIds  = $this->getCampWithGroupIds($camps);
+        $campWithGroupIds = $this->getCampWithGroupIds($camps);
         $campsWithoutGroup = [];
 
         foreach ($camps as $camp) {

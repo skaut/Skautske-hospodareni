@@ -26,7 +26,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
             'aid' => $this->aid,
         ]);
 
-        //pokud je nastavene ID akce tak zjištuje stav dané akce a kontroluje oprávnění
+        // pokud je nastavene ID akce tak zjištuje stav dané akce a kontroluje oprávnění
         if ($this->aid === null) {
             return;
         }

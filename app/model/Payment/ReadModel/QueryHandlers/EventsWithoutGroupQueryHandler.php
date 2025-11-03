@@ -27,7 +27,7 @@ final class EventsWithoutGroupQueryHandler
     {
         $events = $this->queryBus->handle(new EventListQuery($query->getYear()));
 
-        $eventWithGroupIds  = $this->getEventWithGroupIds($events);
+        $eventWithGroupIds = $this->getEventWithGroupIds($events);
         $eventsWithoutGroup = [];
 
         foreach ($events as $event) {

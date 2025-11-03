@@ -27,10 +27,10 @@ class ExportServiceTest extends Unit
 {
     public function testGetEventReport(): void
     {
-        $skautisEventId  = 42;
-        $unitService     = m::mock(UnitService::class);
+        $skautisEventId = 42;
+        $unitService = m::mock(UnitService::class);
         $templateFactory = m::mock(TemplateFactory::class);
-        $events          = m::mock(IEventRepository::class);
+        $events = m::mock(IEventRepository::class);
         $events->expects('find')->andReturn(m::mock(Event::class));
         $queryBus = m::mock(QueryBus::class);
 

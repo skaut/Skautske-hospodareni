@@ -8,14 +8,14 @@ use DateTimeImmutable;
 use Nette;
 
 /**
- * @property-read string                $id
- * @property-read DateTimeImmutable $date
- * @property-read float                 $amount
- * @property-read string                $bankAccount
- * @property-read string                $name
- * @property-read int|NULL              $variableSymbol
- * @property-read int|NULL              $constantSymbol
- * @property-read string|NULL           $note
+ * @property string            $id
+ * @property DateTimeImmutable $date
+ * @property float             $amount
+ * @property string            $bankAccount
+ * @property string            $name
+ * @property int|null          $variableSymbol
+ * @property int|null          $constantSymbol
+ * @property string|null       $note
  */
 class Transaction
 {
@@ -27,9 +27,9 @@ class Transaction
         private float $amount,
         private string $bankAccount,
         private string $name,
-        private int|null $variableSymbol = null,
-        private int|null $constantSymbol = null,
-        private string|null $note = null,
+        private ?int $variableSymbol = null,
+        private ?int $constantSymbol = null,
+        private ?string $note = null,
     ) {
     }
 
@@ -58,17 +58,17 @@ class Transaction
         return $this->name;
     }
 
-    public function getVariableSymbol(): int|null
+    public function getVariableSymbol(): ?int
     {
         return $this->variableSymbol;
     }
 
-    public function getConstantSymbol(): int|null
+    public function getConstantSymbol(): ?int
     {
         return $this->constantSymbol;
     }
 
-    public function getNote(): string|null
+    public function getNote(): ?string
     {
         return $this->note;
     }

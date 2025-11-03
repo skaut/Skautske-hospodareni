@@ -48,7 +48,7 @@ class EventPresenter extends BasePresenter
         parent::__construct();
     }
 
-    public function renderDefault(int|null $aid): void
+    public function renderDefault(?int $aid): void
     {
         if ($aid === null) {
             $this->redirect('Default:');
@@ -148,7 +148,7 @@ class EventPresenter extends BasePresenter
     public function handleActivateStatistic(): void
     {
         $this->commandBus->handle(new ActivateStatistics($this->aid));
-        //flash message?
+        // flash message?
         $this->redirect('this', ['aid' => $this->aid]);
     }
 
@@ -156,9 +156,9 @@ class EventPresenter extends BasePresenter
     {
         $cashbookId = $this->getCashbookId($aid);
 
-        $template  = $this->exportService->getEventReport($aid) . $this->exportService->getNewPage();
-        $template .= $this->exportService->getParticipants($aid) . $this->exportService->getNewPage();
-        $template .= $this->exportService->getCashbook($cashbookId, PaymentMethod::CASH()) . $this->exportService->getNewPage();
+        $template = $this->exportService->getEventReport($aid).$this->exportService->getNewPage();
+        $template .= $this->exportService->getParticipants($aid).$this->exportService->getNewPage();
+        $template .= $this->exportService->getCashbook($cashbookId, PaymentMethod::CASH()).$this->exportService->getNewPage();
         $template .= $this->queryBus->handle(ExportChits::all($cashbookId));
 
         $this->pdf->render($template, 'all.pdf');
@@ -209,7 +209,7 @@ class EventPresenter extends BasePresenter
             $this->redirect('this');
         }
 
-        $id     = (int) $this->aid;
+        $id = (int) $this->aid;
         $values = $button->getForm()->getValues('array');
 
         $this->commandBus->handle(

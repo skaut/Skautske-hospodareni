@@ -9,16 +9,16 @@ use Money\Money;
 use Nette\SmartObject;
 
 /**
- * @property-read int $id
- * @property-read TravelDetails $details
- * @property-read float|NULL $distance
- * @property-read Money $price
+ * @property int           $id
+ * @property TravelDetails $details
+ * @property float|null    $distance
+ * @property Money         $price
  */
 class Travel
 {
     use SmartObject;
 
-    public function __construct(private int $id, private TravelDetails $details, private float|null $distance = null, private Money $price)
+    public function __construct(private int $id, private TravelDetails $details, private ?float $distance, private Money $price)
     {
     }
 
@@ -32,7 +32,7 @@ class Travel
         return $this->details;
     }
 
-    public function getDistance(): float|null
+    public function getDistance(): ?float
     {
         return $this->distance;
     }

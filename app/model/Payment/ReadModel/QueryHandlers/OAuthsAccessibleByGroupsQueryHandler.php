@@ -29,7 +29,7 @@ final class OAuthsAccessibleByGroupsQueryHandler
     /** @return OAuthDTO[] */
     public function __invoke(OAuthsAccessibleByGroupsQuery $query): array
     {
-        $unitIds   = $query->getUnitIds();
+        $unitIds = $query->getUnitIds();
         $allOAuths = array_merge([], ...$this->googleRepository->findByUnits($this->unitsOwningOAuth($unitIds)));
 
         $accessibleOAuths = [];

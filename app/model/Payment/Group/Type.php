@@ -8,10 +8,10 @@ use Consistence\Enum\Enum;
 
 class Type extends Enum
 {
-    public const CAMP         = 'camp';
+    public const CAMP = 'camp';
     public const REGISTRATION = 'registration';
-    public const EVENT        = 'event';
-    public const EDUCATION    = 'education';
+    public const EVENT = 'event';
+    public const EDUCATION = 'education';
 
     public function __toString(): string
     {

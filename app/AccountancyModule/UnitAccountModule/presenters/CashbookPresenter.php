@@ -58,7 +58,7 @@ class CashbookPresenter extends BasePresenter
         $dialog->open();
     }
 
-    public function actionDefault(int|null $unitId = null, int|null $year = null): void
+    public function actionDefault(?int $unitId = null, ?int $year = null): void
     {
         if ($unitId === null) {
             $this->redirect('this', ['unitId' => $this->unitService->getUnitId(), 'year' => $year]);
@@ -112,7 +112,7 @@ class CashbookPresenter extends BasePresenter
 
     /**
      * Do not allow direct access to action.
-     * This is internal action used inside "default" action when there is no unit yet
+     * This is internal action used inside "default" action when there is no unit yet.
      */
     public function actionNoCashbook(int $unitId): void
     {
@@ -153,7 +153,7 @@ class CashbookPresenter extends BasePresenter
         return $chits === [];
     }
 
-    private function getActiveCashbook(): UnitCashbook|null
+    private function getActiveCashbook(): ?UnitCashbook
     {
         return $this->queryBus->handle(new ActiveUnitCashbookQuery($this->unitId));
     }

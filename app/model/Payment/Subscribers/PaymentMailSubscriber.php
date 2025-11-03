@@ -21,7 +21,7 @@ final class PaymentMailSubscriber
     {
         try {
             $this->mailingService->sendEmail($event->getId(), EmailType::get(EmailType::PAYMENT_COMPLETED));
-        } catch (EmailTemplateNotSet | OAuthNotSet | PaymentHasNoEmails) {
+        } catch (EmailTemplateNotSet|OAuthNotSet|PaymentHasNoEmails) {
         }
     }
 }

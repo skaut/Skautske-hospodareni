@@ -12,9 +12,9 @@ use Model\Cashbook\ReadModel\QueryHandlers\ChitListQueryHandler;
 final class ChitListQuery
 {
     /**
-     * Use static factory method
+     * Use static factory method.
      */
-    private function __construct(private CashbookId $cashbookId, private PaymentMethod|null $paymentMethod = null)
+    private function __construct(private CashbookId $cashbookId, private ?PaymentMethod $paymentMethod = null)
     {
     }
 
@@ -33,7 +33,7 @@ final class ChitListQuery
         return $this->cashbookId;
     }
 
-    public function getPaymentMethod(): PaymentMethod|null
+    public function getPaymentMethod(): ?PaymentMethod
     {
         return $this->paymentMethod;
     }

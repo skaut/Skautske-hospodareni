@@ -39,9 +39,6 @@ final class GroupRepository implements IGroupRepository
         return $group;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function findByIds(array $ids): array
     {
         $groups = $this->em->createQueryBuilder()
@@ -53,15 +50,12 @@ final class GroupRepository implements IGroupRepository
             ->getResult();
 
         if (count($ids) !== count($groups)) {
-            throw new GroupNotFound('Groups with id ' . implode(', ', array_diff($ids, array_keys($groups))));
+            throw new GroupNotFound('Groups with id '.implode(', ', array_diff($ids, array_keys($groups))));
         }
 
         return $groups;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function findByReminder(): array
     {
         return $this->em->createQueryBuilder()
@@ -76,9 +70,6 @@ final class GroupRepository implements IGroupRepository
             ->getResult();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function findByUnits(array $unitIds, bool $openOnly): array
     {
         $qb = $this->em->createQueryBuilder()
@@ -95,9 +86,6 @@ final class GroupRepository implements IGroupRepository
         return $qb->getQuery()->getResult();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function findBySkautisEntities(Group\SkautisEntity ...$objects): array
     {
         if (count($objects) === 0) {
@@ -110,8 +98,8 @@ final class GroupRepository implements IGroupRepository
         $resultSetMapping->addRootEntityFromClassMetadata(Group::class, 'g');
 
         $sql = 'SELECT g.* FROM pa_group g '
-            . 'WHERE (g.sisId, g.groupType) IN (' . implode(', ', array_fill(0, count($objects), '(?, ?)'))
-            . ') ORDER BY g.id';
+            .'WHERE (g.sisId, g.groupType) IN ('.implode(', ', array_fill(0, count($objects), '(?, ?)'))
+            .') ORDER BY g.id';
 
         $parameters = [];
         foreach ($objects as $object) {
@@ -124,9 +112,6 @@ final class GroupRepository implements IGroupRepository
             ->getResult();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function findBySkautisEntityType(Type $type): array
     {
         return $this->em->createQueryBuilder()
@@ -138,9 +123,6 @@ final class GroupRepository implements IGroupRepository
             ->getResult();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function findByBankAccount(int $bankAccountId): array
     {
         return $this->em->createQueryBuilder()
@@ -152,9 +134,6 @@ final class GroupRepository implements IGroupRepository
             ->getResult();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function findByOAuth(OAuthId $oAuthId): array
     {
         return $this->em->createQueryBuilder()

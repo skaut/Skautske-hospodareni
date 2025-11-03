@@ -17,7 +17,7 @@ final class ChitQueryHandler
     {
     }
 
-    public function __invoke(ChitQuery $query): Chit|null
+    public function __invoke(ChitQuery $query): ?Chit
     {
         $cashbook = $this->cashbooks->find($query->getCashbookId());
 

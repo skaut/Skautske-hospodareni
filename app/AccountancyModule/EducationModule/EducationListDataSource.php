@@ -20,13 +20,13 @@ use function assert;
 
 final class EducationListDataSource extends DataSource
 {
-    private int|null $year = null;
+    private ?int $year = null;
 
     public function __construct(private QueryBus $queryBus)
     {
     }
 
-    public function filterByYear(int|null $year): self
+    public function filterByYear(?int $year): self
     {
         $this->year = $year;
 
@@ -52,7 +52,7 @@ final class EducationListDataSource extends DataSource
         );
     }
 
-    private function chitNumberPrefix(Education $education): string|null
+    private function chitNumberPrefix(Education $education): ?string
     {
         if ($education->startDate === null) {
             return null;

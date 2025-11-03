@@ -9,13 +9,13 @@ use Model\Travel\Contract\Passenger;
 use Nette\SmartObject;
 
 /**
- * @property-read int                       $id
- * @property-read Passenger                 $passenger
- * @property-read int                       $unitId
- * @property-read string                    $unitRepresentative
- * @property-read ChronosDate|NULL $since
- * @property-read ChronosDate|NULL $until
- * @property-read int                       $templateVersion
+ * @property int              $id
+ * @property Passenger        $passenger
+ * @property int              $unitId
+ * @property string           $unitRepresentative
+ * @property ChronosDate|null $since
+ * @property ChronosDate|null $until
+ * @property int              $templateVersion
  */
 class Contract
 {
@@ -26,8 +26,8 @@ class Contract
         private Passenger $passenger,
         private int $unitId,
         private string $unitRepresentative,
-        private ChronosDate|null $since = null,
-        private ChronosDate|null $until = null,
+        private ?ChronosDate $since,
+        private ?ChronosDate $until,
         private int $templateVersion,
     ) {
     }
@@ -52,12 +52,12 @@ class Contract
         return $this->unitRepresentative;
     }
 
-    public function getSince(): ChronosDate|null
+    public function getSince(): ?ChronosDate
     {
         return $this->since;
     }
 
-    public function getUntil(): ChronosDate|null
+    public function getUntil(): ?ChronosDate
     {
         return $this->until;
     }

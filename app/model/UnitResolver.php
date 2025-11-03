@@ -24,7 +24,7 @@ final class UnitResolver implements IUnitResolver
         }
 
         if ($unit->getParentId() === null) {
-            throw new UnitHasNoParent('Unit ' . $unit->getId() . " doesn't have set parentID");
+            throw new UnitHasNoParent('Unit '.$unit->getId()." doesn't have set parentID");
         }
 
         return $this->getOfficialUnitId($unit->getParentId());

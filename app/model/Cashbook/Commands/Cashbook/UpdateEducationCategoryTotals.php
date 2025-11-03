@@ -8,7 +8,7 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Handlers\Cashbook\UpdateEducationCategoryTotalHandler;
 
 /**
- * Updates category total for education event in Skautis
+ * Updates category total for education event in Skautis.
  *
  * @see UpdateEducationCategoryTotalHandler
  */

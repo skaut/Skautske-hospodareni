@@ -7,7 +7,7 @@ namespace App\AccountancyModule;
 class DefaultPresenter extends BasePresenter
 {
     /**
-     * pouze přesměrovává na jiný presenter
+     * pouze přesměrovává na jiný presenter.
      */
     protected function startup(): void
     {

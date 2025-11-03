@@ -36,7 +36,7 @@ final class PaymentNoteDialog extends Dialog
     {
         parent::beforeRender();
 
-        $this->template->setFile(__DIR__ . '/templates/PaymentNoteDialog.latte');
+        $this->template->setFile(__DIR__.'/templates/PaymentNoteDialog.latte');
         $this->template->setParameters([
             'payment' => $this->payment(),
         ]);
@@ -71,7 +71,7 @@ final class PaymentNoteDialog extends Dialog
 
     private function paymentSubmitted(Form $form): void
     {
-        $values  = $form->getValues();
+        $values = $form->getValues();
         $payment = $this->payment();
         if ($payment === null) {
             $this->presenter->flashMessage('Zadaná platba neexistuje', 'danger');
@@ -92,7 +92,7 @@ final class PaymentNoteDialog extends Dialog
         $this->hide();
     }
 
-    private function payment(): Payment|null
+    private function payment(): ?Payment
     {
         if ($this->paymentId === -1) {
             return null;

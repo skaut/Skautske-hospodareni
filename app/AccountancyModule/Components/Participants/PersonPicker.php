@@ -25,7 +25,7 @@ use function assert;
 final class PersonPicker extends BaseControl
 {
     /** @persistent */
-    public string|null $unitId = null;
+    public ?string $unitId = null;
 
     /** @persistent */
     public bool $directMemberOnly = false;
@@ -58,10 +58,10 @@ final class PersonPicker extends BaseControl
         $this->redrawControl(); // Always redraw
 
         $unitId = $this->selectedUnitId();
-        $unit   = $this->queryBus->handle(new UnitQuery($unitId));
+        $unit = $this->queryBus->handle(new UnitQuery($unitId));
         assert($unit instanceof Unit);
 
-        $this->template->setFile(__DIR__ . '/templates/PersonPicker.latte');
+        $this->template->setFile(__DIR__.'/templates/PersonPicker.latte');
         $this->template->setParameters([
             'directMemberOnly' => $this->directMemberOnly,
             'unit' => $unit,

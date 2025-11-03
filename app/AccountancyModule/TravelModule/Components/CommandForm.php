@@ -31,7 +31,7 @@ class CommandForm extends Control
     /** @var callable[] */
     public array $onSuccess = [];
 
-    public function __construct(private int $unitId, private int|null $commandId = null, private TravelService $model, private QueryBus $queryBus)
+    public function __construct(private int $unitId, private ?int $commandId, private TravelService $model, private QueryBus $queryBus)
     {
     }
 
@@ -152,7 +152,7 @@ class CommandForm extends Control
         $command = $this->model->getCommandDetail($this->commandId);
 
         if ($command === null) {
-            throw new InvalidStateException('Travel command #' . $this->commandId . ' not found');
+            throw new InvalidStateException('Travel command #'.$this->commandId.' not found');
         }
 
         $usedTypes = $command->getTransportTypePairs();
@@ -167,7 +167,7 @@ class CommandForm extends Control
         }
 
         $contractId = $command->getPassenger()->getContractId();
-        $contracts  = $form['contract_id'];
+        $contracts = $form['contract_id'];
 
         assert($contracts instanceof SelectBox);
 
@@ -276,7 +276,7 @@ class CommandForm extends Control
     }
 
     /** @return mixed[] */
-    private function prepareContracts(int|null $includeContractId = null): array
+    private function prepareContracts(?int $includeContractId = null): array
     {
         $contracts = $this->model->getAllContractsPairs(
             $this->unitId,
@@ -290,7 +290,7 @@ class CommandForm extends Control
         return $contracts['valid'];
     }
 
-    private function createPassenger(ArrayHash $values): Passenger|null
+    private function createPassenger(ArrayHash $values): ?Passenger
     {
         return isset($values['contract_id'])
             ? null

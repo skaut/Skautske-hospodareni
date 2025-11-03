@@ -46,8 +46,8 @@ class Unit extends Aggregate
     {
         $cashbook = new Cashbook($this->getCashbookId(), $this, $activeCashbookYear, $activeCashbookId);
 
-        $this->id               = $id;
-        $this->cashbooks        = new ArrayCollection([$cashbook]);
+        $this->id = $id;
+        $this->cashbooks = new ArrayCollection([$cashbook]);
         $this->activeCashbookId = $cashbook->getId();
         $this->raise(new CashbookWasCreated($this->id, $activeCashbookId));
     }
@@ -83,7 +83,7 @@ class Unit extends Aggregate
         $this->activeCashbookId = $cashbookId;
     }
 
-    /** @return Unit\Cashbook[] */
+    /** @return Cashbook[] */
     public function getCashbooks(): array
     {
         return $this->cashbooks->toArray();
@@ -104,7 +104,7 @@ class Unit extends Aggregate
 
     private function cashbookForYearExists(int $year): bool
     {
-        return $this->cashbooks->exists(function (int|null $_x = null, Cashbook|null $cashbook = null) use ($year): bool {
+        return $this->cashbooks->exists(function (?int $_x = null, ?Cashbook $cashbook = null) use ($year): bool {
             return $cashbook->getYear() === $year;
         });
     }

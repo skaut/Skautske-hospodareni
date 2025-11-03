@@ -8,8 +8,8 @@ use Money\Money;
 use Nette\SmartObject;
 
 /**
- * @property-read string $name
- * @property-read Money $total
+ * @property string $name
+ * @property Money  $total
  */
 final class BudgetEntry
 {

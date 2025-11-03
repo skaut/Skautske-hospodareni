@@ -11,19 +11,19 @@ use Model\Payment\VariableSymbol;
 use Nette\SmartObject;
 
 /**
- * @property-read int $id
- * @property-read string|NULL $type
- * @property-read int $unitId
- * @property-read int|NULL $skautisId
- * @property-read string $name
- * @property-read float|NULL $defaultAmount
- * @property-read ChronosDate|NULL $dueDate
- * @property-read int|NULL $constantSymbol
- * @property-read VariableSymbol|NULL $nextVariableSymbol
- * @property-read string $state
- * @property-read bool $isRemindersEnabled
- * @property-read OAuthId|NULL $oAuthId
- * @property-read string $note
+ * @property int                 $id
+ * @property string|null         $type
+ * @property int                 $unitId
+ * @property int|null            $skautisId
+ * @property string              $name
+ * @property float|null          $defaultAmount
+ * @property ChronosDate|null    $dueDate
+ * @property int|null            $constantSymbol
+ * @property VariableSymbol|null $nextVariableSymbol
+ * @property string              $state
+ * @property bool                $isRemindersEnabled
+ * @property OAuthId|null        $oAuthId
+ * @property string              $note
  */
 class Group
 {
@@ -32,18 +32,18 @@ class Group
     /** @param int[] $unitIds */
     public function __construct(
         private int $id,
-        private string|null $type = null,
+        private ?string $type,
         private array $unitIds,
-        private int|null $skautisId = null,
+        private ?int $skautisId,
         private string $name,
-        private float|null $defaultAmount = null,
-        private ChronosDate|null $dueDate = null,
-        private int|null $constantSymbol = null,
-        private VariableSymbol|null $nextVariableSymbol = null,
+        private ?float $defaultAmount,
+        private ?ChronosDate $dueDate,
+        private ?int $constantSymbol,
+        private ?VariableSymbol $nextVariableSymbol,
         private string $state,
-        private OAuthId|null $oAuthId = null,
+        private ?OAuthId $oAuthId,
         private string $note,
-        private int|null $bankAccountId = null,
+        private ?int $bankAccountId,
         private bool $isRemindersEnabled = false,
     ) {
     }
@@ -53,7 +53,7 @@ class Group
         return $this->id;
     }
 
-    public function getType(): string|null
+    public function getType(): ?string
     {
         return $this->type;
     }
@@ -69,7 +69,7 @@ class Group
         return $this->unitId;
     }
 
-    public function getSkautisId(): int|null
+    public function getSkautisId(): ?int
     {
         return $this->skautisId;
     }
@@ -79,22 +79,22 @@ class Group
         return $this->name;
     }
 
-    public function getDefaultAmount(): float|null
+    public function getDefaultAmount(): ?float
     {
         return $this->defaultAmount;
     }
 
-    public function getDueDate(): DateTimeImmutable|null
+    public function getDueDate(): ?DateTimeImmutable
     {
         return $this->dueDate?->toNative();
     }
 
-    public function getConstantSymbol(): int|null
+    public function getConstantSymbol(): ?int
     {
         return $this->constantSymbol;
     }
 
-    public function getNextVariableSymbol(): VariableSymbol|null
+    public function getNextVariableSymbol(): ?VariableSymbol
     {
         return $this->nextVariableSymbol;
     }
@@ -104,7 +104,7 @@ class Group
         return $this->state;
     }
 
-    public function getOAuthId(): OAuthId|null
+    public function getOAuthId(): ?OAuthId
     {
         return $this->oAuthId;
     }
@@ -114,7 +114,7 @@ class Group
         return $this->note;
     }
 
-    public function getBankAccountId(): int|null
+    public function getBankAccountId(): ?int
     {
         return $this->bankAccountId;
     }

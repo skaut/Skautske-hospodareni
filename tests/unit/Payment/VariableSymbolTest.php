@@ -40,7 +40,7 @@ class VariableSymbolTest extends Unit
     {
         $this->expectException(InvalidVariableSymbol::class);
 
-        new VariableSymbol('123' . $data[0]);
+        new VariableSymbol('123'.$data[0]);
     }
 
     /** @return string[][] */
@@ -65,7 +65,7 @@ class VariableSymbolTest extends Unit
 
     public function testAreEqual(): void
     {
-        $first  = new VariableSymbol('123');
+        $first = new VariableSymbol('123');
         $second = new VariableSymbol('123');
 
         $this->assertTrue(
@@ -74,7 +74,7 @@ class VariableSymbolTest extends Unit
         );
     }
 
-    public function areNotEqual(VariableSymbol|null $first, VariableSymbol|null $second): void
+    public function areNotEqual(?VariableSymbol $first, ?VariableSymbol $second): void
     {
         $this->assertFalse(VariableSymbol::areEqual($first, $second));
     }

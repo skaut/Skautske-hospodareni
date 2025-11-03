@@ -59,7 +59,7 @@ final class FlysystemScanStorage implements IScanStorage
         }
     }
 
-    private function detectMimeType(string $contents): string|null
+    private function detectMimeType(string $contents): ?string
     {
         return (new finfo(FILEINFO_MIME_TYPE))->buffer($contents) ?: null;
     }

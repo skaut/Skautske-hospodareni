@@ -11,19 +11,19 @@ use Model\Skautis\ISkautisEvent;
 use Nette\SmartObject;
 
 /**
- * @property-read SkautisEventId $id
- * @property-read string $displayName
- * @property-read UnitId $unitId
- * @property-read string $unitName
- * @property-read string $state
- * @property-read ChronosDate $startDate
- * @property-read ChronosDate $endDate
- * @property-read int $totalDays
- * @property-read string $location
- * @property-read string $registrationNumber
- * @property-read string $note
- * @property-read int $scopeId
- * @property-read int $typeId
+ * @property SkautisEventId $id
+ * @property string         $displayName
+ * @property UnitId         $unitId
+ * @property string         $unitName
+ * @property string         $state
+ * @property ChronosDate    $startDate
+ * @property ChronosDate    $endDate
+ * @property int            $totalDays
+ * @property string         $location
+ * @property string         $registrationNumber
+ * @property string         $note
+ * @property int            $scopeId
+ * @property int            $typeId
  */
 class Event implements ISkautisEvent
 {
@@ -33,7 +33,7 @@ class Event implements ISkautisEvent
 
     private string $note;
 
-    private bool|null $statisticAutoComputed = null;
+    private ?bool $statisticAutoComputed = null;
 
     public function __construct(
         private SkautisEventId $id,
@@ -43,39 +43,39 @@ class Event implements ISkautisEvent
         private string $state,
         private ChronosDate $startDate,
         private ChronosDate $endDate,
-        private int|null $totalDays = null,
-        string|null $location,
+        private ?int $totalDays,
+        ?string $location,
         private string $registrationNumber,
-        string|null $note,
+        ?string $note,
         private int $scopeId,
         private int $typeId,
-        bool|null $isStatisticAutoComputed,
-        private int|null $realCount = null,
-        private int|null $realChildDays = null,
-        private int|null $realPersonDays = null,
-        private string|null $personClosed = null,
-        private ChronosDate|null $dateClosed = null,
-        private string|null $unitEducativeName = null,
+        ?bool $isStatisticAutoComputed,
+        private ?int $realCount = null,
+        private ?int $realChildDays = null,
+        private ?int $realPersonDays = null,
+        private ?string $personClosed = null,
+        private ?ChronosDate $dateClosed = null,
+        private ?string $unitEducativeName = null,
     ) {
-        $this->location              = $location ?? '';
-        $this->note                  = $note ?? '';
+        $this->location = $location ?? '';
+        $this->note = $note ?? '';
         $this->statisticAutoComputed = $isStatisticAutoComputed;
     }
 
     public function update(
         string $displayName,
-        string|null $location,
+        ?string $location,
         ChronosDate $startDate,
         ChronosDate $endDate,
         int $scopeId,
         int $typeId,
     ): void {
         $this->displayName = $displayName;
-        $this->location    = $location;
-        $this->startDate   = $startDate;
-        $this->endDate     = $endDate;
-        $this->scopeId     = $scopeId;
-        $this->typeId      = $typeId;
+        $this->location = $location;
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
+        $this->scopeId = $scopeId;
+        $this->typeId = $typeId;
     }
 
     public function getId(): SkautisEventId
@@ -118,7 +118,7 @@ class Event implements ISkautisEvent
         return $this->endDate;
     }
 
-    public function getTotalDays(): int|null
+    public function getTotalDays(): ?int
     {
         return $this->totalDays;
     }
@@ -148,37 +148,37 @@ class Event implements ISkautisEvent
         return $this->typeId;
     }
 
-    public function isStatisticAutoComputed(): bool|null
+    public function isStatisticAutoComputed(): ?bool
     {
         return $this->statisticAutoComputed;
     }
 
-    public function getRealCount(): int|null
+    public function getRealCount(): ?int
     {
         return $this->realCount;
     }
 
-    public function getRealChildDays(): int|null
+    public function getRealChildDays(): ?int
     {
         return $this->realChildDays;
     }
 
-    public function getRealPersonDays(): int|null
+    public function getRealPersonDays(): ?int
     {
         return $this->realPersonDays;
     }
 
-    public function getPersonClosed(): string|null
+    public function getPersonClosed(): ?string
     {
         return $this->personClosed;
     }
 
-    public function getDateClosed(): ChronosDate|null
+    public function getDateClosed(): ?ChronosDate
     {
         return $this->dateClosed;
     }
 
-    public function getUnitEducativeName(): string|null
+    public function getUnitEducativeName(): ?string
     {
         return $this->unitEducativeName;
     }

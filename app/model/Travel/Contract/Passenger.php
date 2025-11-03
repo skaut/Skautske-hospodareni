@@ -11,10 +11,10 @@ use Nette\SmartObject;
 /**
  * @ORM\Embeddable()
  *
- * @property-read string $name
- * @property-read string $contact
- * @property-read string $address
- * @property-read ChronosDate|NULL $birthday
+ * @property string           $name
+ * @property string           $contact
+ * @property string           $address
+ * @property ChronosDate|null $birthday
  */
 final class Passenger
 {
@@ -30,13 +30,13 @@ final class Passenger
     private string $address;
 
     /** @ORM\Column(type="chronos_date", nullable=true, name="driver_birthday") */
-    private ChronosDate|null $birthday = null;
+    private ?ChronosDate $birthday = null;
 
-    public function __construct(string $name, string $contact, string $address, ChronosDate|null $birthday)
+    public function __construct(string $name, string $contact, string $address, ?ChronosDate $birthday)
     {
-        $this->name     = $name;
-        $this->contact  = $contact;
-        $this->address  = $address;
+        $this->name = $name;
+        $this->contact = $contact;
+        $this->address = $address;
         $this->birthday = $birthday;
     }
 
@@ -55,7 +55,7 @@ final class Passenger
         return $this->address;
     }
 
-    public function getBirthday(): ChronosDate|null
+    public function getBirthday(): ?ChronosDate
     {
         return $this->birthday;
     }

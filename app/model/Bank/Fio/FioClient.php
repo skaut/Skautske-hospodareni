@@ -31,7 +31,7 @@ class FioClient implements IFioClient
 
     public function get(): void
     {
-        //TODO
+        // TODO
         /*
          * Vytvorit tabulku s nastavení účtů a plateb pro automatické párování, nebudou se vždy párovat všechny účtu a všechny platby
          * Pokud bude mít uživatel možnost nastavit čas párování, pak je potřeba zadat jej do nastavení a zohlednit při stahování z banky
@@ -39,12 +39,9 @@ class FioClient implements IFioClient
          * Provést párování a zapsat do dané platby, kolik plateb bylo kdy spárováno. Toto číslo vypsat uživateli
          * Přesunout do obecné servisy, aby bylo možné případně napojit i jiné banky.
          */
-        echo 'GET' . PHP_EOL;
+        echo 'GET'.PHP_EOL;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getTransactions(ChronosDate $since, ChronosDate $until, BankAccount $account): array
     {
         if ($account->getToken() === null) {
@@ -58,7 +55,7 @@ class FioClient implements IFioClient
                     $transaction->getId(),
                     $transaction->getDate(),
                     $transaction->getAmount(),
-                    $transaction->getSenderAccountNumber() . '/' . $transaction->getSenderBankCode(),
+                    $transaction->getSenderAccountNumber().'/'.$transaction->getSenderBankCode(),
                     $transaction->getUserIdentity() ?? $transaction->getPerformedBy() ?? '',
                     $transaction->getVariableSymbol() !== null ? (int) $transaction->getVariableSymbol() : null,
                     $transaction->getConstantSymbol() !== null ? (int) $transaction->getConstantSymbol() : null,
@@ -85,20 +82,20 @@ class FioClient implements IFioClient
         try {
             $list = $api->downloadFromTo($since->toNative(), $until->toNative());
 
-            $intendedAccount = $account->getNumber()->getNumber() . '/' . $account->getNumber()->getBankCode();
-            $tokenAccount    = $list->getAccount()->getAccountNumber() . '/' . $list->getAccount()->getBankCode();
+            $intendedAccount = $account->getNumber()->getNumber().'/'.$account->getNumber()->getBankCode();
+            $tokenAccount = $list->getAccount()->getAccountNumber().'/'.$list->getAccount()->getBankCode();
             if ($intendedAccount !== $tokenAccount) {
-                $this->logger->warning('API token for wrong account. Bank account is ' . $intendedAccount . ', token is for account ' . $tokenAccount . '.');
+                $this->logger->warning('API token for wrong account. Bank account is '.$intendedAccount.', token is for account '.$tokenAccount.'.');
 
                 throw new BankWrongTokenAccount($intendedAccount, $tokenAccount);
             }
 
             return $list->getTransactions();
         } catch (TooGreedyException $e) {
-            $this->logger->warning('Bank account #' . $account->getId() . ' hit API limit');
+            $this->logger->warning('Bank account #'.$account->getId().' hit API limit');
 
             throw new BankTimeLimit('', 0, $e);
-        } catch (TransferException | InternalErrorException $e) {
+        } catch (TransferException|InternalErrorException $e) {
             $this->logger->warning(
                 sprintf('Bank account #%d request failed: %s', $account->getId(), $e->getMessage()),
                 ['previous' => $e],

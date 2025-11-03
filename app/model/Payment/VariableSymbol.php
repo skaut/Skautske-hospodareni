@@ -13,7 +13,7 @@ final class VariableSymbol
     /** @throws InvalidVariableSymbol */
     public function __construct(private readonly string $value)
     {
-        if (! Strings::match($value, '/' . self::PATTERN . '/')) {
+        if (! Strings::match($value, '/'.self::PATTERN.'/')) {
             throw new InvalidVariableSymbol($value);
         }
     }
@@ -26,9 +26,9 @@ final class VariableSymbol
         );
     }
 
-    public static function areEqual(VariableSymbol|null $first, VariableSymbol|null $second): bool
+    public static function areEqual(?VariableSymbol $first, ?VariableSymbol $second): bool
     {
-        $firstInt  = $first?->toInt();
+        $firstInt = $first?->toInt();
         $secondInt = $second?->toInt();
 
         return $firstInt === $secondInt;

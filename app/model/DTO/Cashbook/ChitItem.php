@@ -9,9 +9,9 @@ use Model\Cashbook\Operation;
 use Nette\SmartObject;
 
 /**
- * @property-read Amount   $amount
- * @property-read Category $category
- * @property-read string   $purpose
+ * @property Amount   $amount
+ * @property Category $category
+ * @property string   $purpose
  */
 class ChitItem
 {

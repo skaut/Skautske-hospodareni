@@ -41,9 +41,9 @@ class BankService
     }
 
     /**
-     * Completes payments from info on bank account(s)
+     * Completes payments from info on bank account(s).
      *
-     * @param  int[] $groupIds
+     * @param int[] $groupIds
      *
      * @return PairingResult[] Description of paired payments
      *
@@ -52,7 +52,7 @@ class BankService
      * @throws BankWrongTokenAccount
      * @throws InvalidOAuth
      */
-    public function pairAllGroups(array $groupIds, int|null $daysBack = null): array
+    public function pairAllGroups(array $groupIds, ?int $daysBack = null): array
     {
         Assert::thatAll($groupIds)->integer();
         Assert::that($daysBack)->nullOr()->min(1);
@@ -67,8 +67,8 @@ class BankService
             true,
         );
 
-        $now            = new ChronosDate();
-        $pairedCount    = 0;
+        $now = new ChronosDate();
+        $pairedCount = 0;
         $pairingResults = [];
 
         foreach ($groupsByAccount as $bankAccountId => $groups) {
@@ -96,7 +96,7 @@ class BankService
             $pairSince = $daysBack === null ? $this->resolvePairingIntervalStart($groups) : ChronosDate::today()->subDays($daysBack);
 
             $transactions = $this->bank->getTransactions($pairSince, $now, $bankAccount);
-            $paired       = $this->markPaymentsAsComplete($transactions, $payments);
+            $paired = $this->markPaymentsAsComplete($transactions, $payments);
 
             $this->payments->saveMany($paired);
             $pairedCount += count($paired);
@@ -161,7 +161,7 @@ class BankService
         );
 
         $paired = [];
-        $now    = new DateTimeImmutable();
+        $now = new DateTimeImmutable();
         foreach ($transactions as $transaction) {
             foreach ($paymentsByVS[$transaction->getVariableSymbol()] as $offset => $payment) {
                 assert($payment instanceof Payment);

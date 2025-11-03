@@ -11,5 +11,5 @@ use Model\DTO\Payment\Payment;
 interface IEmailButtonFactory
 {
     /** @param Payment[] $payments */
-    public function create(bool $isEditable, array $payments, Group|null $group): EmailButton;
+    public function create(bool $isEditable, array $payments, ?Group $group): EmailButton;
 }

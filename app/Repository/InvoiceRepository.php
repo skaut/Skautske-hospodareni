@@ -19,6 +19,9 @@ class InvoiceRepository extends AbstractRepository
         return Invoice::class;
     }
 
+    /**
+     * @return Invoice[]
+     */
     public function getGrid()
     {
         /** @var Invoice[] $invoice */

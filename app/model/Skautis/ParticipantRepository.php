@@ -76,19 +76,19 @@ final class ParticipantRepository implements IParticipantRepository
     {
         try {
             $campInvitationPerson = $this->skautis->event->EventCampInvitationAll(['ID_EventCamp' => $id->toInt()]);
-            $invitations          = [];
+            $invitations = [];
             foreach ($campInvitationPerson as $invitation) {
                 $invitations[$invitation->ID] = $invitation;
             }
 
             $campEnrollPerson = $this->skautis->event->EventCampEnrollAll(['ID_EventCamp' => $id->toInt()]);
-            $paymentDetails   = [];
+            $paymentDetails = [];
             foreach ($campEnrollPerson as $person) {
                 if (! isset($invitations[$person->ID_EventCampInvitation])) {
                     continue;
                 }
 
-                $invitation                         = $invitations[$person->ID_EventCampInvitation];
+                $invitation = $invitations[$person->ID_EventCampInvitation];
                 $paymentDetails[$person->ID_Person] = new PaymentDetails(
                     $person->ID_Person,
                     $person->VariableSymbol ?? '',
@@ -209,19 +209,19 @@ final class ParticipantRepository implements IParticipantRepository
     private function processParticipants(array $participantsSis, Event $event): array
     {
         $participantPayments = $this->payments->findByEvent($event);
-        $participants        = [];
+        $participants = [];
         foreach ($participantsSis as $p) {
             if (array_key_exists($p->ID, $participantPayments)) {
-                $payment =  $participantPayments[$p->ID];
+                $payment = $participantPayments[$p->ID];
             } else {
-                $payment =  PaymentFactory::createDefault($p->ID, $event);
+                $payment = PaymentFactory::createDefault($p->ID, $event);
             }
 
             $participants[$p->ID] = ParticipantFactory::create($p, $payment);
         }
 
         foreach (array_diff_key($participantPayments, $participants) as $paymentToRemove) {
-            $this->payments->remove($paymentToRemove); //delete zaznam, protoze neexistuje k nemu ucastnik
+            $this->payments->remove($paymentToRemove); // delete zaznam, protoze neexistuje k nemu ucastnik
         }
 
         usort(

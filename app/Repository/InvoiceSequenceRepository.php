@@ -21,11 +21,14 @@ class InvoiceSequenceRepository extends AbstractRepository
         return InvoiceSequence::class;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getGrid(): array
     {
         /** @var InvoiceSequence[] $invoiceSequence */
         $invoiceSequence = $this->findAll();
-        $data            = [];
+        $data = [];
         foreach ($invoiceSequence as $key => $value) {
             $data[$key] = $value->toArray();
             if ($value->getUnit() !== 0) {

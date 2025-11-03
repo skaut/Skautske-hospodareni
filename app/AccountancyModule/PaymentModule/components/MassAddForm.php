@@ -72,15 +72,15 @@ class MassAddForm extends BaseControl
     }
 
     /** @param string[] $emails */
-    public function addPerson(int $id, array $emails, string $name, float|null $amount = null, string $note = '', string $variableSymbol = '', ChronosDate|null $dueDate = null): void
+    public function addPerson(int $id, array $emails, string $name, ?float $amount = null, string $note = '', string $variableSymbol = '', ?ChronosDate $dueDate = null): void
     {
-        $form          = $this['form'];
-        $persons       = $form['persons'];
+        $form = $this['form'];
+        $persons = $form['persons'];
         $defaultAmount = $form['amount'];
 
         assert($defaultAmount instanceof TextBase && $persons instanceof BaseContainer);
 
-        $container = $persons->addContainer('person' . $id);
+        $container = $persons->addContainer('person'.$id);
 
         $selected = $container->addCheckbox('selected');
 
@@ -131,7 +131,7 @@ class MassAddForm extends BaseControl
 
     public function render(): void
     {
-        $this->template->setFile(__DIR__ . '/templates/MassAddForm.latte');
+        $this->template->setFile(__DIR__.'/templates/MassAddForm.latte');
         $this->template->render();
     }
 

@@ -18,7 +18,7 @@ final class DataGrid extends \Ublaboo\DataGrid\DataGrid
 {
     public const OPTION_ALL = 'all';
 
-    public const SORT_ASC  = 'ASC';
+    public const SORT_ASC = 'ASC';
     public const SORT_DESC = 'DESC';
 
     public function __construct()
@@ -26,8 +26,8 @@ final class DataGrid extends \Ublaboo\DataGrid\DataGrid
         parent::__construct();
 
         Action::$dataConfirmAttributeName = 'data-confirm';
-        $this->onRender[]                 = function (): void {
- //disable autocomplete - issue #1443
+        $this->onRender[] = function (): void {
+            // disable autocomplete - issue #1443
             $this['filter']->getElementPrototype()->setAttribute('autocomplete', 'off');
         };
 
@@ -65,7 +65,7 @@ final class DataGrid extends \Ublaboo\DataGrid\DataGrid
     }
 
     /**
-     * Forces datagrid to filter and sort data source and returns inner data
+     * Forces datagrid to filter and sort data source and returns inner data.
      *
      * @return mixed[]
      */

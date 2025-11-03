@@ -26,7 +26,7 @@ class CashbookTest extends Unit
 {
     public function testCreateCashbook(): void
     {
-        $type       = CashbookType::get(CashbookType::EVENT);
+        $type = CashbookType::get(CashbookType::EVENT);
         $cashbookId = CashbookId::generate();
 
         $cashbook = new Cashbook($cashbookId, $type);
@@ -38,7 +38,7 @@ class CashbookTest extends Unit
     public function testAddingChitRaisesEvent(): void
     {
         $cashbookId = CashbookId::generate();
-        $cashbook   = $this->createEventCashbook($cashbookId);
+        $cashbook = $this->createEventCashbook($cashbookId);
 
         Helpers::addChitToCashbook($cashbook, null, null, null, null);
 
@@ -61,9 +61,9 @@ class CashbookTest extends Unit
         Helpers::addChitToCashbook($cashbook, null, null, 2, '150');
 
         $chitBody = new ChitBody(null, new ChronosDate(), null);
-        $items    = [
-            new Cashbook\ChitItem(new Amount('35'), Helpers::mockChitItemCategory(1), 'čokoláda'),
-            new Cashbook\ChitItem(new Amount('75'), Helpers::mockChitItemCategory(2), 'vlak'),
+        $items = [
+            new ChitItem(new Amount('35'), Helpers::mockChitItemCategory(1), 'čokoláda'),
+            new ChitItem(new Amount('75'), Helpers::mockChitItemCategory(2), 'vlak'),
         ];
 
         $categories = [
@@ -128,7 +128,7 @@ class CashbookTest extends Unit
     }
 
     /** @dataProvider dataValidChitNumberPrefixes */
-    public function testUpdateChitNumberPrefix(string|null $prefix): void
+    public function testUpdateChitNumberPrefix(?string $prefix): void
     {
         $cashbook = $this->createEventCashbook();
 
@@ -152,7 +152,7 @@ class CashbookTest extends Unit
     {
         $cashbook = $this->createEventCashbook();
 
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < 5; ++$i) {
             Helpers::addChitToCashbook($cashbook, null, null, null, null);
         }
 
@@ -163,7 +163,7 @@ class CashbookTest extends Unit
 
     public function testUpdateNote(): void
     {
-        $note     = 'moje poznamka';
+        $note = 'moje poznamka';
         $cashbook = $this->createEventCashbook();
         $this->assertEmpty($cashbook->getNote());
         $cashbook->updateNote($note);
@@ -198,11 +198,11 @@ class CashbookTest extends Unit
 
     public function testCreateChitWithDuplicitItemCategory(): void
     {
-        $cashbook   = $this->createEventCashbook();
-        $chitBody   = new ChitBody(null, new ChronosDate(), null);
+        $cashbook = $this->createEventCashbook();
+        $chitBody = new ChitBody(null, new ChronosDate(), null);
         $categoryId = 1;
-        $category   = new \Model\Cashbook\Cashbook\Category($categoryId, Operation::INCOME());
-        $items      = [
+        $category = new Cashbook\Category($categoryId, Operation::INCOME());
+        $items = [
             new ChitItem(new Amount('100'), $category, ''),
             new ChitItem(new Amount('100'), $category, ''),
         ];
@@ -215,14 +215,14 @@ class CashbookTest extends Unit
         $cashbook = $this->createEventCashbook();
         $chitBody = new ChitBody(null, new ChronosDate(), null);
 
-        $categories =  [
+        $categories = [
             1 => m::mock(Category::class, ['getId' => 1, 'getOperationType' => Operation::EXPENSE(), 'isVirtual' => true]),
             2 => m::mock(Category::class, ['getId' => 2, 'getOperationType' => Operation::EXPENSE(), 'isVirtual' => false]),
         ];
 
         $category1 = Helpers::mockChitItemCategory(1);
         $category2 = Helpers::mockChitItemCategory(2);
-        $items     = [
+        $items = [
             new ChitItem(new Amount('100'), $category1, ''),
             new ChitItem(new Amount('100'), $category2, ''),
         ];
@@ -230,7 +230,7 @@ class CashbookTest extends Unit
         $cashbook->addChit($chitBody, PaymentMethod::CASH(), $items, $categories);
     }
 
-    private function createEventCashbook(CashbookId|null $cashbookId = null): Cashbook
+    private function createEventCashbook(?CashbookId $cashbookId = null): Cashbook
     {
         return new Cashbook($cashbookId ?? CashbookId::generate(), CashbookType::get(CashbookType::EVENT));
     }

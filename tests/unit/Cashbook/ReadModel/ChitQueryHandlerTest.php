@@ -20,7 +20,7 @@ final class ChitQueryHandlerTest extends Unit
     private const CASHBOOK_ID = '04e530c5-ae7c-4f52-9f3b-a7f19d5b4293';
 
     private const EXISTING_CHIT_ID = 10;
-    private const CATEGORY_ID      = 156;
+    private const CATEGORY_ID = 156;
 
     public function testUnexistingChit(): void
     {

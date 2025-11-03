@@ -11,7 +11,7 @@ use Model\Cashbook\ReadModel\QueryHandlers\CategoryPairsQueryHandler;
 /** @see CategoryPairsQueryHandler */
 final class CategoryPairsQuery
 {
-    public function __construct(private CashbookId $cashbookId, private Operation|null $operationType = null)
+    public function __construct(private CashbookId $cashbookId, private ?Operation $operationType = null)
     {
     }
 
@@ -20,7 +20,7 @@ final class CategoryPairsQuery
         return $this->cashbookId;
     }
 
-    public function getOperationType(): Operation|null
+    public function getOperationType(): ?Operation
     {
         return $this->operationType;
     }

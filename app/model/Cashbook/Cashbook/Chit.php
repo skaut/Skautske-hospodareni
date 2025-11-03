@@ -36,7 +36,7 @@ class Chit
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue()
      */
-    private int|null $id = null;
+    private ?int $id = null;
 
     /**
      * @ORM\ManyToOne(targetEntity=Cashbook::class, inversedBy="chits")
@@ -71,11 +71,11 @@ class Chit
     private $paymentMethod;
 
     /**
-     * ID of person that locked this
+     * ID of person that locked this.
      *
      * @ORM\Column(type="integer", nullable=true)
      */
-    private int|null $locked = null;
+    private ?int $locked = null;
 
     /**
      * @ORM\OneToMany(
@@ -97,11 +97,11 @@ class Chit
     {
         Assertion::notEmpty($items, 'At least one chit item was expected');
 
-        $this->cashbook      = $cashbook;
-        $this->body          = $body;
+        $this->cashbook = $cashbook;
+        $this->body = $body;
         $this->paymentMethod = $paymentMethod;
-        $this->items         = new ArrayCollection($items);
-        $this->scans         = new ArrayCollection(array_map(fn (ChitScan $scan) => new ChitScan($this, $scan->getFilePath()), $scans));
+        $this->items = new ArrayCollection($items);
+        $this->scans = new ArrayCollection(array_map(fn (ChitScan $scan) => new ChitScan($this, $scan->getFilePath()), $scans));
     }
 
     /**
@@ -123,7 +123,7 @@ class Chit
     {
         Assertion::notEmpty($items, 'At least one chit item was expected');
 
-        $this->body          = $body;
+        $this->body = $body;
         $this->paymentMethod = $paymentMethod;
         self::validateItems($items, $categories);
 
@@ -170,7 +170,7 @@ class Chit
 
     public function getPurpose(): string
     {
-        return implode(', ', $this->items->map(function (ChitItem|null $item = null) {
+        return implode(', ', $this->items->map(function (?ChitItem $item = null) {
             return $item->getPurpose();
         })->toArray());
     }
@@ -205,7 +205,7 @@ class Chit
             $newCashbook,
             $this->body,
             $this->paymentMethod,
-            $this->items->map(function (ChitItem|null $item = null): ChitItem {
+            $this->items->map(function (?ChitItem $item = null): ChitItem {
                 return clone $item;
             })->toArray(),
             $this->scans->toArray(),
@@ -219,7 +219,7 @@ class Chit
 
     public function copyToCashbookWithUndefinedCategory(Cashbook $newCashbook): self
     {
-        $items = $this->items->map(function (ChitItem|null $item = null): ChitItem {
+        $items = $this->items->map(function (?ChitItem $item = null): ChitItem {
             $category = new Category(
                 $this->isIncome() ? CategoryAggregate::UNDEFINED_INCOME_ID : CategoryAggregate::UNDEFINED_EXPENSE_ID,
                 $item->getCategory()->getOperationType(),
@@ -279,21 +279,21 @@ class Chit
         $itemCategories = [];
         foreach ($items as $item) {
             if (in_array($item->getCategory()->getId(), $itemCategories)) {
-                throw new Cashbook\Chit\DuplicitCategory(sprintf('Category %d is duplicit', $item->getCategory()->getId()));
+                throw new Chit\DuplicitCategory(sprintf('Category %d is duplicit', $item->getCategory()->getId()));
             }
 
             $itemCategories[] = $item->getCategory()->getId();
 
             if (
-                $item->getCategory()->getOperationType()->equals(Operation::INCOME()) &&
-                $item->getCategory()->getId() === ICategory::CATEGORY_HPD_ID &&
-                count($items) > 1
+                $item->getCategory()->getOperationType()->equals(Operation::INCOME())
+                && $item->getCategory()->getId() === ICategory::CATEGORY_HPD_ID
+                && count($items) > 1
             ) {
-                throw new Cashbook\Chit\SingleItemRestriction(sprintf('Chit with category %d should have just one item!', $item->getCategory()->getId()));
+                throw new Chit\SingleItemRestriction(sprintf('Chit with category %d should have just one item!', $item->getCategory()->getId()));
             }
 
             if ($categories[$item->getCategory()->getId()]->isVirtual() && count($items) > 1) {
-                throw new Cashbook\Chit\SingleItemRestriction(sprintf('Chit with virtual category %d should have just one item!', $item->getCategory()->getId()));
+                throw new Chit\SingleItemRestriction(sprintf('Chit with virtual category %d should have just one item!', $item->getCategory()->getId()));
             }
         }
     }

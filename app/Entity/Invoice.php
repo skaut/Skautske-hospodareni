@@ -42,17 +42,16 @@ class Invoice extends AbstractIdEntity
 
     #[Embedded(class: Transaction::class, columnPrefix: false)]
     #[Nullable]
-    private Transaction|null $transaction = null;
+    private ?Transaction $transaction = null;
 
     #[Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private DateTimeImmutable|null $closedAt = null;
+    private ?DateTimeImmutable $closedAt = null;
 
     #[Column(type: Types::STRING, length: 64, nullable: true)]
-    private string|null $closedByUsername = null;
+    private ?string $closedByUsername = null;
 
-    /** @var ?Collection&iterable<InvoiceItem> */
     #[OneToMany(mappedBy: 'item', targetEntity: InvoiceItem::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
-    private Collection|null $items = null;
+    private ?Collection $items = null;
 
     #[Column(type: Types::STRING, length: 255)]
     private string $name;
@@ -61,10 +60,10 @@ class Invoice extends AbstractIdEntity
     private string $address;
 
     #[Column(type: Types::STRING, length: 20, nullable: true)]
-    private string|null $companyNumber;
+    private ?string $companyNumber;
 
     #[Column(type: Types::STRING, length: 20, nullable: true)]
-    private string|null $vatNumber = null;
+    private ?string $vatNumber = null;
 
     #[Column(type: Types::BOOLEAN)]
     private bool $vatPayer = false;
@@ -78,16 +77,16 @@ class Invoice extends AbstractIdEntity
         string $companyNumber,
         string $vatNumber,
         bool $vatPayer,
-        VariableSymbol|null $variableSymbol = null,
+        ?VariableSymbol $variableSymbol = null,
     ) {
-        $this->issuedBy       = $issuedBy;
-        $this->dueDate        = $dueDate;
-        $this->dateOfIssue    = $dateOfIssue;
-        $this->name           = $name;
-        $this->address        = $address;
-        $this->companyNumber  = $companyNumber;
-        $this->vatNumber      = $vatNumber;
-        $this->vatPayer       = $vatPayer;
+        $this->issuedBy = $issuedBy;
+        $this->dueDate = $dueDate;
+        $this->dateOfIssue = $dateOfIssue;
+        $this->name = $name;
+        $this->address = $address;
+        $this->companyNumber = $companyNumber;
+        $this->vatNumber = $vatNumber;
+        $this->vatPayer = $vatPayer;
         $this->variableSymbol = $variableSymbol ?? new VariableSymbol('111');
     }
 
@@ -166,42 +165,42 @@ class Invoice extends AbstractIdEntity
         $this->variableSymbol = $variableSymbol;
     }
 
-    public function getTransaction(): Transaction|null
+    public function getTransaction(): ?Transaction
     {
         return $this->transaction;
     }
 
-    public function setTransaction(Transaction|null $transaction): void
+    public function setTransaction(?Transaction $transaction): void
     {
         $this->transaction = $transaction;
     }
 
-    public function getClosedAt(): DateTimeImmutable|null
+    public function getClosedAt(): ?DateTimeImmutable
     {
         return $this->closedAt;
     }
 
-    public function setClosedAt(DateTimeImmutable|null $closedAt): void
+    public function setClosedAt(?DateTimeImmutable $closedAt): void
     {
         $this->closedAt = $closedAt;
     }
 
-    public function getClosedByUsername(): string|null
+    public function getClosedByUsername(): ?string
     {
         return $this->closedByUsername;
     }
 
-    public function setClosedByUsername(string|null $closedByUsername): void
+    public function setClosedByUsername(?string $closedByUsername): void
     {
         $this->closedByUsername = $closedByUsername;
     }
 
-    public function getItems(): Collection|null
+    public function getItems(): ?Collection
     {
         return $this->items;
     }
 
-    public function setItems(Collection|null $items): void
+    public function setItems(?Collection $items): void
     {
         $this->items = $items;
     }
@@ -226,22 +225,22 @@ class Invoice extends AbstractIdEntity
         $this->address = $address;
     }
 
-    public function getCompanyNumber(): string|null
+    public function getCompanyNumber(): ?string
     {
         return $this->companyNumber;
     }
 
-    public function setCompanyNumber(string|null $companyNumber): void
+    public function setCompanyNumber(?string $companyNumber): void
     {
         $this->companyNumber = $companyNumber;
     }
 
-    public function getVatNumber(): string|null
+    public function getVatNumber(): ?string
     {
         return $this->vatNumber;
     }
 
-    public function setVatNumber(string|null $vatNumber): void
+    public function setVatNumber(?string $vatNumber): void
     {
         $this->vatNumber = $vatNumber;
     }

@@ -8,8 +8,8 @@ use function array_column;
 
 enum InvoiceState: string
 {
-    public const ISSUED    = 'issued';
-    public const PAID      = 'paid';
+    public const ISSUED = 'issued';
+    public const PAID = 'paid';
     public const CANCELLED = 'cancelled';
 
     /** @return array<string> */

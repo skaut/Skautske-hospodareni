@@ -38,7 +38,7 @@ final class RemoveGroupDialog extends Dialog
             throw new BadRequestException('Skupina plateb neexistuje');
         }
 
-        $this->template->setFile(__DIR__ . '/templates/RemoveGroupDialog.latte');
+        $this->template->setFile(__DIR__.'/templates/RemoveGroupDialog.latte');
         $this->template->setParameters(['groupName' => $group->getName()]);
     }
 

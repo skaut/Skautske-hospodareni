@@ -17,8 +17,8 @@ use Model\Common\Services\EventBus;
 
 class CashbookRepositoryTest extends IntegrationTest
 {
-    private const TABLE           = 'ac_cashbook';
-    private const CHIT_TABLE      = 'ac_chits';
+    private const TABLE = 'ac_cashbook';
+    private const CHIT_TABLE = 'ac_chits';
     private const CHIT_ITEM_TABLE = 'ac_chits_item';
 
     private CashbookRepository $repository;
@@ -60,7 +60,7 @@ class CashbookRepositoryTest extends IntegrationTest
     public function testSaveCashbookWithChits(): void
     {
         $cashbookId = CashbookId::generate();
-        $chit       = [
+        $chit = [
             'eventId' => $cashbookId->toString(),
             'date' => '1989-11-17',
             'num' => '123',
@@ -106,11 +106,11 @@ class CashbookRepositoryTest extends IntegrationTest
     /** @see https://github.com/skaut/Skautske-hospodareni/issues/914 */
     public function testOrphanedChitItemsAreRemoved(): void
     {
-        $cashbook      = new Cashbook(CashbookId::generate(), Cashbook\CashbookType::get(Cashbook\CashbookType::CAMP));
-        $body          = new ChitBody(null, ChronosDate::today(), null);
+        $cashbook = new Cashbook(CashbookId::generate(), Cashbook\CashbookType::get(Cashbook\CashbookType::CAMP));
+        $body = new ChitBody(null, ChronosDate::today(), null);
         $paymentMethod = Cashbook\PaymentMethod::BANK();
-        $category      = Helpers::mockChitItemCategory(1);
-        $categoryList  = Helpers::mockCashbookCategories(1, Operation::INCOME());
+        $category = Helpers::mockChitItemCategory(1);
+        $categoryList = Helpers::mockCashbookCategories(1, Operation::INCOME());
 
         $cashbook->addChit(
             $body,

@@ -32,7 +32,7 @@ class EmailRecipient
 
     public function __construct(Payment $payment, EmailAddress $emailAddress)
     {
-        $this->payment      = $payment;
+        $this->payment = $payment;
         $this->emailAddress = $emailAddress;
     }
 

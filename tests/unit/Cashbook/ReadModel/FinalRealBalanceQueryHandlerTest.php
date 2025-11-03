@@ -27,7 +27,6 @@ final class FinalRealBalanceQueryHandlerTest extends Unit
     public function testCashbookWithPositiveAndNegativeChitsReturnsCorrectBalance(): void
     {
         $this->assertBalance(MoneyFactory::fromFloat(-900), [
-
             $this->mockCategorySummary(100, Operation::INCOME, false),
             $this->mockCategorySummary(1000, Operation::EXPENSE, false),
             $this->mockCategorySummary(2000, Operation::INCOME, true),

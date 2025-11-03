@@ -12,18 +12,18 @@ use Doctrine\ORM\Mapping as ORM;
 final class ChitBody
 {
     /** @ORM\Column(type="chit_number", nullable=true, name="num", length=5) */
-    private ChitNumber|null $number = null;
+    private ?ChitNumber $number = null;
 
     /** @ORM\Column(type="chronos_date") */
     private ChronosDate $date;
 
     /** @ORM\Column(type="recipient", length=64, nullable=true) */
-    private Recipient|null $recipient = null;
+    private ?Recipient $recipient = null;
 
-    public function __construct(ChitNumber|null $number, ChronosDate $date, Recipient|null $recipient)
+    public function __construct(?ChitNumber $number, ChronosDate $date, ?Recipient $recipient)
     {
-        $this->number    = $number;
-        $this->date      = $date;
+        $this->number = $number;
+        $this->date = $date;
         $this->recipient = $recipient;
     }
 
@@ -37,7 +37,7 @@ final class ChitBody
         return new self($chitNumber, $this->date, $this->recipient);
     }
 
-    public function getNumber(): ChitNumber|null
+    public function getNumber(): ?ChitNumber
     {
         return $this->number;
     }
@@ -47,14 +47,14 @@ final class ChitBody
         return $this->date->toNative();
     }
 
-    public function getRecipient(): Recipient|null
+    public function getRecipient(): ?Recipient
     {
         return $this->recipient;
     }
 
     public function equals(ChitBody $other): bool
     {
-        return (string) $other->number ===  (string) $this->number
+        return (string) $other->number === (string) $this->number
             && $other->date->equals($this->date)
             && (string) $other->recipient === (string) $this->recipient;
     }

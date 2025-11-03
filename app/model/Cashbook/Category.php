@@ -49,7 +49,7 @@ class Category implements ICategory
     /**
      * @ORM\OneToMany(targetEntity=Category\ObjectType::class, mappedBy="category")
      *
-     * @var Collection&iterable<\Model\Cashbook\Category\ObjectType>
+     * @var Collection&iterable<Category\ObjectType>
      */
     private Collection $types;
 
@@ -72,13 +72,13 @@ class Category implements ICategory
         bool $virtual,
         int $priority,
     ) {
-        $this->id            = $id;
-        $this->name          = $name;
-        $this->shortcut      = $shortcut;
+        $this->id = $id;
+        $this->name = $name;
+        $this->shortcut = $shortcut;
         $this->operationType = $operationType;
-        $this->types         = new ArrayCollection($types);
-        $this->virtual       = $virtual;
-        $this->priority      = $priority;
+        $this->types = new ArrayCollection($types);
+        $this->virtual = $virtual;
+        $this->priority = $priority;
     }
 
     public function getId(): int
@@ -109,7 +109,7 @@ class Category implements ICategory
     public function supportsType(ObjectType $type): bool
     {
         return $this->types->exists(
-            function ($_x = null, Category\ObjectType|null $categoryType = null) use ($type): bool {
+            function ($_x = null, ?Category\ObjectType $categoryType = null) use ($type): bool {
                 return $categoryType->getType()->equals($type);
             },
         );

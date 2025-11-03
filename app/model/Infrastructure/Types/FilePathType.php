@@ -17,7 +17,7 @@ class FilePathType extends StringType
         return 'file_path';
     }
 
-    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): string|null
+    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): ?string
     {
         if ($value === null) {
             return null;
@@ -28,7 +28,7 @@ class FilePathType extends StringType
         return $value->getPath();
     }
 
-    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): FilePath|null
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?FilePath
     {
         return $value === null ? null : FilePath::fromString($value);
     }

@@ -8,12 +8,12 @@ use function array_column;
 
 enum EventState: string
 {
-    case CLOSED    = 'closed';
+    case CLOSED = 'closed';
     case CANCELLED = 'cancelled';
-    case DRAFT     = 'draft';
+    case DRAFT = 'draft';
 
     /**
-     * Vrátí všechny možné stavy jako pole
+     * Vrátí všechny možné stavy jako pole.
      *
      * @return array<string>
      */

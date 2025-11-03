@@ -77,7 +77,7 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
     private function getSkautisTotals(SkautisCampId $campSkautisId): array
     {
         $categories = $this->campCategories->findForCamp($campSkautisId->toInt());
-        $totals     = [];
+        $totals = [];
 
         foreach ($categories as $category) {
             $totals[$category->getId()] = MoneyFactory::toFloat($category->getTotal());

@@ -35,10 +35,10 @@ class OAuth extends Aggregate
 
     private function __construct(OAuthId $id, UnitId $unitId, string $code, string $email, DateTimeImmutable $updatedAt)
     {
-        $this->id        = $id;
-        $this->unitId    = $unitId;
-        $this->token     = $code;
-        $this->email     = $email;
+        $this->id = $id;
+        $this->unitId = $unitId;
+        $this->token = $code;
+        $this->email = $email;
         $this->updatedAt = $updatedAt;
     }
 
@@ -49,7 +49,7 @@ class OAuth extends Aggregate
 
     public function setToken(string $token): void
     {
-        $this->token     = $token;
+        $this->token = $token;
         $this->updatedAt = new DateTimeImmutable();
     }
 

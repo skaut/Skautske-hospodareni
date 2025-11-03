@@ -18,7 +18,7 @@ use function is_array;
 // phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration
 
 /**
- * Inspired by https://github.com/aleswita/FormRenderer
+ * Inspired by https://github.com/aleswita/FormRenderer.
  */
 class Bootstrap5FormRenderer extends DefaultFormRenderer
 {
@@ -68,12 +68,12 @@ class Bootstrap5FormRenderer extends DefaultFormRenderer
         'hidden' => ['container' => null],
     ];
 
-    public function renderErrors(Nette\Forms\Control|null $control = null, bool $own = true): string
+    public function renderErrors(?Nette\Forms\Control $control = null, bool $own = true): string
     {
         if (
-            $control instanceof Nette\Forms\Controls\Checkbox ||
-            $control instanceof Nette\Forms\Controls\RadioList ||
-            $control instanceof Nette\Forms\Controls\UploadControl
+            $control instanceof Nette\Forms\Controls\Checkbox
+            || $control instanceof Nette\Forms\Controls\RadioList
+            || $control instanceof Nette\Forms\Controls\UploadControl
         ) {
             $originalErrorContainer = $this->wrappers['control']['errorcontainer'];
 
@@ -100,7 +100,7 @@ class Bootstrap5FormRenderer extends DefaultFormRenderer
             }
 
             $prototype = $control->getControlPrototype();
-            $class     = $prototype->getAttribute('class') ?? [];
+            $class = $prototype->getAttribute('class') ?? [];
 
             if (is_array($class) && ! Strings::contains(implode(' ', array_keys($class)), 'btn btn-')) {
                 $prototype->appendAttribute('class', $primary ? 'btn btn-outline-primary' : 'btn btn-outline-secondary');

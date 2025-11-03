@@ -14,7 +14,7 @@ final class CampListItem
         private ChronosDate $startDate,
         private ChronosDate $endDate,
         private string $location,
-        private string|null $prefix = null,
+        private ?string $prefix,
         private string $state,
     ) {
     }
@@ -44,7 +44,7 @@ final class CampListItem
         return $this->location;
     }
 
-    public function getPrefix(): string|null
+    public function getPrefix(): ?string
     {
         return $this->prefix;
     }

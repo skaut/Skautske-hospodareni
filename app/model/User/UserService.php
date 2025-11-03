@@ -21,14 +21,14 @@ class UserService
     public const ACCESS_EDIT = 'edit';
 
     /**
-     * krátkodobé lokální úložiště pro ukládání odpovědí ze skautISU
+     * krátkodobé lokální úložiště pro ukládání odpovědí ze skautISU.
      *
      * @var mixed[]
      */
     private static array $storage = [];
 
     /**
-     * slouží pro komunikaci se skautISem
+     * slouží pro komunikaci se skautISem.
      */
     protected Skautis $skautis;
 
@@ -38,15 +38,15 @@ class UserService
     }
 
     /**
-     * varcí ID role aktuálně přihlášeného uživatele
+     * varcí ID role aktuálně přihlášeného uživatele.
      */
-    public function getRoleId(): int|null
+    public function getRoleId(): ?int
     {
         return $this->skautis->getUser()->getRoleId();
     }
 
     /**
-     * Returns all available roles for current user
+     * Returns all available roles for current user.
      *
      * @return stdClass[]
      */
@@ -59,7 +59,7 @@ class UserService
 
     public function getUserDetail(): stdClass
     {
-        $id  = __FUNCTION__;
+        $id = __FUNCTION__;
         $res = $this->loadSes($id);
         if (! $res) {
             $res = $this->saveSes($id, $this->skautis->user->UserDetail());
@@ -74,7 +74,7 @@ class UserService
     }
 
     /**
-     * změní přihlášenou roli do skautISu
+     * změní přihlášenou roli do skautISu.
      */
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     public function updateSkautISRole(int $id): void
@@ -88,14 +88,14 @@ class UserService
     }
 
     /**
-     * informace o aktuálně přihlášené roli
+     * informace o aktuálně přihlášené roli.
      *
      * @internal  Use query bus with ActiveSkautisRoleQuery
      *
      * @see ActiveSkautisRoleQuery
      */
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    public function getActualRole(): SkautisRole|null
+    public function getActualRole(): ?SkautisRole
     {
         foreach ($this->getAllSkautisRoles() as $r) {
             if ($r->ID === $this->getRoleId()) {
@@ -107,17 +107,17 @@ class UserService
     }
 
     /**
-     * vrací kompletní seznam informací o přihlášené osobě
+     * vrací kompletní seznam informací o přihlášené osobě.
      */
     public function getPersonalDetail(): stdClass
     {
         $user = $this->getUserDetail();
 
-        return $this->skautis->org->personDetail((['ID' => $user->ID_Person]));
+        return $this->skautis->org->personDetail(['ID' => $user->ID_Person]);
     }
 
     /**
-     * kontroluje jestli je přihlášení platné
+     * kontroluje jestli je přihlášení platné.
      */
     public function isLoggedIn(): bool
     {
@@ -165,7 +165,7 @@ class UserService
     }
 
     /**
-     * vrací adresu skautisu např.: https://is.skaut.cz/
+     * vrací adresu skautisu např.: https://is.skaut.cz/.
      */
     public function getSkautisUrl(): string
     {
@@ -173,7 +173,7 @@ class UserService
     }
 
     /**
-     * ukládá $val do lokálního úložiště
+     * ukládá $val do lokálního úložiště.
      */
     private function saveSes(mixed $id, mixed $val): mixed
     {
@@ -181,7 +181,7 @@ class UserService
     }
 
     /**
-     * vrací objekt z lokálního úložiště
+     * vrací objekt z lokálního úložiště.
      */
     private function loadSes(string|int $id): mixed
     {

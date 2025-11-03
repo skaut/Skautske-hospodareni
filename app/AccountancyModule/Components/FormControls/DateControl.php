@@ -14,7 +14,7 @@ use function sprintf;
 use function str_replace;
 
 /**
- * Datetime picker with automatic string <-> Date conversion
+ * Datetime picker with automatic string <-> Date conversion.
  */
 class DateControl extends DateTimeControl
 {

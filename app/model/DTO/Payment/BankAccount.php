@@ -14,7 +14,7 @@ class BankAccount
         private int $unitId,
         private string $name,
         private AccountNumber $number,
-        private string|null $token = null,
+        private ?string $token,
         private DateTimeImmutable $createdAt,
         private bool $allowedForSubunits,
     ) {
@@ -40,7 +40,7 @@ class BankAccount
         return $this->number;
     }
 
-    public function getToken(): string|null
+    public function getToken(): ?string
     {
         return $this->token;
     }

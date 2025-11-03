@@ -26,7 +26,7 @@ use function assert;
 
 class InvoiceSequenceListPresenter extends BasePresenter
 {
-    protected $groupId = null;
+    protected $groupId;
 
     public function __construct(
         private readonly GridFactory $gridFactory,
@@ -39,7 +39,7 @@ class InvoiceSequenceListPresenter extends BasePresenter
     protected function createComponentGrid(): DataGrid
     {
         $grid = $this->gridFactory->createSimpleGrid(
-            __DIR__ . '/../templates/InvoiceSequenceList/grid.latte',
+            __DIR__.'/../templates/InvoiceSequenceList/grid.latte',
             [],
         );
 
@@ -51,8 +51,8 @@ class InvoiceSequenceListPresenter extends BasePresenter
 
         $grid->addColumnText('description', 'Popis')
             ->setSortable();
-//        $grid->addColumnText('count','Počet')
-//            ->setSortable();
+        //        $grid->addColumnText('count','Počet')
+        //            ->setSortable();
         $grid->addColumnText('sequence', 'Řada')
             ->setSortable()
             ->setFilterText();
@@ -93,7 +93,7 @@ class InvoiceSequenceListPresenter extends BasePresenter
         $form->addText('sequence', 'Prefix')
             ->addRule(Form::MAX_LENGTH, 'Maximální delka prefixu je 5 znaků', 5)
             ->addRule(Form::MIN_LENGTH, 'Minimální delka prefixu je 1 znak', 1)
-            ->addRule(form::REQUIRED, 'Prefix musí být vyplněný');
+            ->addRule(Form::REQUIRED, 'Prefix musí být vyplněný');
         $form->addYearSelect('year', 'Rok')->setDefaultValue('now');
         $form->addText('description', 'Popis');
         $form->addSelect('bankAccount', 'Bankovní účet', $this->bankAccountItems())
@@ -118,7 +118,7 @@ class InvoiceSequenceListPresenter extends BasePresenter
     {
         $values = $form->getValues();
 
-        $unit            = $this->getCurrentUnitId();
+        $unit = $this->getCurrentUnitId();
         $invoiceSequence = InvoiceSequence::fromForm($unit, $values);
 
         $this->invoiceSequenceManager->create($invoiceSequence);

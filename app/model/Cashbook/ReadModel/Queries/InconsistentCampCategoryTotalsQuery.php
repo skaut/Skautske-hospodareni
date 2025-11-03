@@ -8,7 +8,7 @@ use Model\Cashbook\ReadModel\QueryHandlers\InconsistentCampCategoryTotalsQueryQu
 use Model\Event\SkautisCampId;
 
 /**
- * Returns categories with different total in app and Skautis
+ * Returns categories with different total in app and Skautis.
  *
  * @see InconsistentCampCategoryTotalsQueryQueryHandler
  */

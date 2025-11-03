@@ -39,7 +39,7 @@ final class RemoveGroupHandlerTest extends Unit
         $groupRepository = m::mock(IGroupRepository::class);
 
         $groupId = 123;
-        $group   = m::mock(Group::class, [
+        $group = m::mock(Group::class, [
             'getId' => 123,
             'getState' => Group::STATE_CLOSED,
         ]);

@@ -8,13 +8,13 @@ use Nette\Utils\Strings;
 
 class SkautisRole
 {
-    private const LEADER_PREFIX        = 'vedouci';
-    private const ACCOUNTANT_PREFIX    = 'hospodar';
-    private const OFFICER_PREFIX       = 'cinovnik';
+    private const LEADER_PREFIX = 'vedouci';
+    private const ACCOUNTANT_PREFIX = 'hospodar';
+    private const OFFICER_PREFIX = 'cinovnik';
     private const EVENT_MANAGER_PREFIX = 'spravceAkci';
 
     private const BASIC_UNIT_SUFFIX = 'Stredisko';
-    private const TROOP_SUFFIX      = 'Oddil';
+    private const TROOP_SUFFIX = 'Oddil';
 
     public function __construct(
         private string $key,

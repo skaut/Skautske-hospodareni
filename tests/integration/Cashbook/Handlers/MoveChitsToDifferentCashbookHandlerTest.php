@@ -31,10 +31,10 @@ final class MoveChitsToDifferentCashbookHandlerTest extends CommandHandlerTest
         $type = CashbookType::get(CashbookType::EVENT);
         $this->cashbooks->save(new Cashbook($targetCashbookId, $type));
         $sourceCashbook = new Cashbook($sourceCashbookId, $type);
-        $categoryId     = 123;
-        $category       = Helpers::mockChitItemCategory($categoryId);
+        $categoryId = 123;
+        $category = Helpers::mockChitItemCategory($categoryId);
 
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < 3; ++$i) {
             $sourceCashbook->addChit(
                 new Cashbook\ChitBody(null, new ChronosDate(), null),
                 Cashbook\PaymentMethod::get(Cashbook\PaymentMethod::CASH),
@@ -76,7 +76,7 @@ final class MoveChitsToDifferentCashbookHandlerTest extends CommandHandlerTest
 
     protected function _before(): void
     {
-        $this->tester->useConfigFiles([__DIR__ . '/MoveChitsToDifferentCashbookHandlerTest.neon']);
+        $this->tester->useConfigFiles([__DIR__.'/MoveChitsToDifferentCashbookHandlerTest.neon']);
 
         parent::_before();
 

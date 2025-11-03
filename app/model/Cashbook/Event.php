@@ -26,7 +26,7 @@ class Event extends Aggregate
 
     public function __construct(SkautisEventId $id, CashbookId $cashbookId)
     {
-        $this->id         = $id;
+        $this->id = $id;
         $this->cashbookId = $cashbookId;
     }
 

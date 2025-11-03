@@ -15,7 +15,7 @@ use function array_merge;
 
 class DefaultPresenter extends BasePresenter
 {
-    public const DEFAULT_STATE = 'approvedParent'; //filtrovani zobrazených položek
+    public const DEFAULT_STATE = 'approvedParent'; // filtrovani zobrazených položek
 
     public function __construct(private GridFactory $gridFactory, private IExportDialogFactory $exportDialogFactory)
     {
@@ -29,7 +29,7 @@ class DefaultPresenter extends BasePresenter
 
     protected function createComponentGrid(): DataGrid
     {
-        $grid = $this->gridFactory->createSimpleGrid(__DIR__ . '/../templates/@campsGrid.latte');
+        $grid = $this->gridFactory->createSimpleGrid(__DIR__.'/../templates/@campsGrid.latte');
 
         $grid->addColumnLink('name', 'Název', 'Detail:', null, ['aid' => 'id'])
             ->setSortable();
@@ -55,7 +55,7 @@ class DefaultPresenter extends BasePresenter
 
         $states = array_merge([DataGrid::OPTION_ALL => 'Nezrušené'], $this->queryBus->handle(new CampStates()));
         $grid->addFilterSelect('state', 'Stav', $states)
-            ->setCondition(function (CampListDataSource $dataSource, string|null $state): void {
+            ->setCondition(function (CampListDataSource $dataSource, ?string $state): void {
                 $dataSource->filterByState($state === DataGrid::OPTION_ALL ? null : $state);
             });
 

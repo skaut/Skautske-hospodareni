@@ -30,7 +30,7 @@ final class PrefixControl extends Dialog
     {
         parent::beforeRender();
 
-        $this->template->setFile(__DIR__ . '/templates/PrefixControl.latte');
+        $this->template->setFile(__DIR__.'/templates/PrefixControl.latte');
         $this->template->setParameters([
             'isEditable' => $this->isEditable,
             'prefix' => $this->getPrefix(),
@@ -64,7 +64,7 @@ final class PrefixControl extends Dialog
         return $form;
     }
 
-    private function getPrefix(): string|null
+    private function getPrefix(): ?string
     {
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
 

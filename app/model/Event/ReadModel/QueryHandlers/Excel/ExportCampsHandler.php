@@ -93,37 +93,37 @@ final class ExportCampsHandler
             $functions = $this->queryBus->handle(new CampFunctions($camp->getId()));
             assert($functions instanceof Functions);
 
-            $leader     = $functions->getLeader()?->getName();
+            $leader = $functions->getLeader()?->getName();
             $accountant = $functions->getAccountant()?->getName();
 
             $statistics = $camp->getParticipantStatistics();
 
             Assertion::notNull($statistics);
 
-            $sheet->setCellValue('A' . $rowCnt, $camp->getUnitName())
-                ->setCellValue('B' . $rowCnt, $camp->getDisplayName())
-                ->setCellValue('C' . $rowCnt, implode(', ', $this->getCampTroopNames($camp)))
-                ->setCellValue('D' . $rowCnt, $camp->getLocation())
-                ->setCellValue('E' . $rowCnt, $leader)
-                ->setCellValue('F' . $rowCnt, $accountant)
-                ->setCellValue('G' . $rowCnt, $camp->getStartDate()->format('d.m.Y'))
-                ->setCellValue('H' . $rowCnt, $camp->getEndDate()->format('d.m.Y'))
-                ->setCellValue('I' . $rowCnt, $camp->getTotalDays())
-                ->setCellValue('J' . $rowCnt, $statistics->getRealCount())
-                ->setCellValue('K' . $rowCnt, $statistics->getRealAdult())
-                ->setCellValue('L' . $rowCnt, $statistics->getRealChild())
-                ->setCellValue('M' . $rowCnt, $statistics->getRealPersonDays())
-                ->setCellValue('N' . $rowCnt, $statistics->getRealChildDays());
-            $rowCnt++;
+            $sheet->setCellValue('A'.$rowCnt, $camp->getUnitName())
+                ->setCellValue('B'.$rowCnt, $camp->getDisplayName())
+                ->setCellValue('C'.$rowCnt, implode(', ', $this->getCampTroopNames($camp)))
+                ->setCellValue('D'.$rowCnt, $camp->getLocation())
+                ->setCellValue('E'.$rowCnt, $leader)
+                ->setCellValue('F'.$rowCnt, $accountant)
+                ->setCellValue('G'.$rowCnt, $camp->getStartDate()->format('d.m.Y'))
+                ->setCellValue('H'.$rowCnt, $camp->getEndDate()->format('d.m.Y'))
+                ->setCellValue('I'.$rowCnt, $camp->getTotalDays())
+                ->setCellValue('J'.$rowCnt, $statistics->getRealCount())
+                ->setCellValue('K'.$rowCnt, $statistics->getRealAdult())
+                ->setCellValue('L'.$rowCnt, $statistics->getRealChild())
+                ->setCellValue('M'.$rowCnt, $statistics->getRealPersonDays())
+                ->setCellValue('N'.$rowCnt, $statistics->getRealChildDays());
+            ++$rowCnt;
         }
 
-        //format
+        // format
         foreach (Range::letters('A', 'N') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
 
         $sheet->getStyle('A1:N1')->getFont()->setBold(true);
-        $sheet->setAutoFilter('A1:N' . ($rowCnt - 1));
+        $sheet->setAutoFilter('A1:N'.($rowCnt - 1));
         $sheet->setTitle('Přehled táborů');
     }
 

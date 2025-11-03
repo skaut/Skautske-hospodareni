@@ -63,7 +63,7 @@ final class CampCategoryRepository implements ICampCategoryRepository
     }
 
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    private function getParticipantType(stdClass $category): ParticipantType|null
+    private function getParticipantType(stdClass $category): ?ParticipantType
     {
         $categoryId = $category->ID_EventCampStatementType ?? null;
 

@@ -46,19 +46,19 @@ class ExportChitsHandler
         $chits = new ArrayCollection($this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $query->getCashbookId())));
 
         if ($query->getChitIds() !== null) {
-            $ids   = $query->getChitIds();
-            $chits = $chits->filter(function (Chit|null $chit = null) use ($ids): bool {
+            $ids = $query->getChitIds();
+            $chits = $chits->filter(function (?Chit $chit = null) use ($ids): bool {
                 return in_array($chit->getId(), $ids, true);
             });
         }
 
-        [$income, $outcome] = $chits->partition(function (int|string|null $_x = null, Chit|null $chit = null): bool {
+        [$income, $outcome] = $chits->partition(function (int|string|null $_x = null, ?Chit $chit = null): bool {
             return $chit->isIncome();
         });
 
-        $activeHpd = $chits->exists(function (int|string|null $_x = null, Chit|null $chit = null): bool {
+        $activeHpd = $chits->exists(function (int|string|null $_x = null, ?Chit $chit = null): bool {
             return 0 < count(array_filter($chit->getItems(), function (ChitItem $item) {
-                    return $item->getCategory()->getShortcut() === 'hpd';
+                return $item->getCategory()->getShortcut() === 'hpd';
             }));
         });
 
@@ -79,9 +79,9 @@ class ExportChitsHandler
         $officialUnit = $this->queryBus->handle(new CashbookOfficialUnitQuery($query->getCashbookId()));
         assert($officialUnit instanceof Unit);
         $template['officialName'] = $officialUnit->getFullDisplayNameWithAddress(true);
-        $template['cashbook']     = $cashbook;
+        $template['cashbook'] = $cashbook;
 
-        //HPD
+        // HPD
         if ($activeHpd) {
             $template['totalPayment'] = $this->queryBus->handle($skautisId instanceof SkautisCampId
                     ? CampParticipantIncomeQuery::all($skautisId)
@@ -95,7 +95,7 @@ class ExportChitsHandler
 
             assert($functions instanceof Functions);
 
-            $accountant            = $functions->getAccountant() ?? $functions->getLeader();
+            $accountant = $functions->getAccountant() ?? $functions->getLeader();
             $template['pokladnik'] = $accountant?->getName() ?? '';
 
             $template['list'] = $this->queryBus->handle(
@@ -105,9 +105,9 @@ class ExportChitsHandler
             );
         }
 
-        $template['income']  = $income;
+        $template['income'] = $income;
         $template['outcome'] = $outcome;
 
-        return $this->templateFactory->create(__DIR__ . '/templates/chits.latte', $template);
+        return $this->templateFactory->create(__DIR__.'/templates/chits.latte', $template);
     }
 }

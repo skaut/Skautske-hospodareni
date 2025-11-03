@@ -48,7 +48,7 @@ final class PaymentDialog extends Dialog
     {
         parent::beforeRender();
 
-        $this->template->setFile(__DIR__ . '/templates/PaymentDialog.latte');
+        $this->template->setFile(__DIR__.'/templates/PaymentDialog.latte');
         $this->template->setParameters([
             'payment' => $this->payment(),
             'editing' => $this->isEditing(),
@@ -111,7 +111,7 @@ final class PaymentDialog extends Dialog
             try {
                 $nextVS = $this->paymentService->getNextVS($this->groupId);
             } catch (InvalidVariableSymbol $exception) {
-                $this->flashMessage('Nelze vygenerovat následující VS: \'' . $exception->getInvalidValue() . '\'', 'danger');
+                $this->flashMessage('Nelze vygenerovat následující VS: \''.$exception->getInvalidValue().'\'', 'danger');
                 $nextVS = '';
             }
 
@@ -175,7 +175,7 @@ final class PaymentDialog extends Dialog
     }
 
     /** @return EmailAddress[] */
-    private function processEmails(string|null $emails): array
+    private function processEmails(?string $emails): array
     {
         if ($emails === null) {
             return [];
@@ -212,7 +212,7 @@ final class PaymentDialog extends Dialog
         return $this->paymentId !== -1;
     }
 
-    private function payment(): Payment|null
+    private function payment(): ?Payment
     {
         if ($this->paymentId === -1) {
             return null;

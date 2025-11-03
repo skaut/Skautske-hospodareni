@@ -16,7 +16,7 @@ class EmailAddressTest extends Unit
     {
         $this->assertSame(self::VALID_EMAIL, (new EmailAddress(self::VALID_EMAIL))->getValue());
 
-        $this->assertSame(self::VALID_EMAIL, (new EmailAddress(' ' . self::VALID_EMAIL . ' '))->getValue());
+        $this->assertSame(self::VALID_EMAIL, (new EmailAddress(' '.self::VALID_EMAIL.' '))->getValue());
 
         $this->expectException(InvalidArgumentException::class);
         new EmailAddress('a.cz');

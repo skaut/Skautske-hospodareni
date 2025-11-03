@@ -51,7 +51,7 @@ final class ParticipantList extends BaseControl
     public bool $showUnits = false;
 
     /** @persistent */
-    public string|null $sort = 'displayName';
+    public ?string $sort = 'displayName';
 
     /** @param Participant[] $currentParticipants */
     public function __construct(
@@ -81,11 +81,11 @@ final class ParticipantList extends BaseControl
             unset($sortOptions['onAccount']);
         }
 
-        $this->template->setFile(__DIR__ . '/templates/ParticipantList.latte');
+        $this->template->setFile(__DIR__.'/templates/ParticipantList.latte');
         $this->template->setParameters([
             'aid' => $this->aid,
             'participants' => $this->currentParticipants,
-            'sort'       => $this->sort,
+            'sort' => $this->sort,
             'sortOptions' => $sortOptions,
             'showUnits' => $this->showUnits,
             'isAllowDaysUpdate' => $this->isAllowDaysUpdate,
@@ -154,10 +154,7 @@ final class ParticipantList extends BaseControl
     public function handleEdit(int $participantId): void
     {
         if (! isset($this->participantsById()[$participantId])) {
-            throw new BadRequestException(
-                sprintf('Participant %d does not exist', $participantId),
-                IResponse::S404_NotFound,
-            );
+            throw new BadRequestException(sprintf('Participant %d does not exist', $participantId), IResponse::S404_NotFound);
         }
 
         $this['editDialog']->editParticipant($participantId);
@@ -227,7 +224,7 @@ final class ParticipantList extends BaseControl
 
         $values = $button->getForm()->getValues()['edit'];
 
-        $changes             = [];
+        $changes = [];
         $currentParticipants = [];
         foreach ($this->currentParticipants as $key => $p) {
             $currentParticipants[$p->id] = $p;

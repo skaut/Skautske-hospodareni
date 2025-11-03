@@ -46,9 +46,9 @@ class SentEmail
 
     public function __construct(Payment $payment, EmailType $type, DateTimeImmutable $time, string $senderName)
     {
-        $this->payment    = $payment;
-        $this->type       = $type;
-        $this->time       = $time;
+        $this->payment = $payment;
+        $this->type = $type;
+        $this->time = $time;
         $this->senderName = $senderName;
     }
 

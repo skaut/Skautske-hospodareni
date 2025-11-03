@@ -44,14 +44,14 @@ class Payment
     /** @ORM\Column(type="string") */
     private string $account;
 
-    public function __construct(PaymentId $id, int $participantId, Event $event, Money|null $payment = null, Money|null $repayment = null, string $account = 'N')
+    public function __construct(PaymentId $id, int $participantId, Event $event, ?Money $payment = null, ?Money $repayment = null, string $account = 'N')
     {
-        $this->id            = $id;
+        $this->id = $id;
         $this->participantId = $participantId;
-        $this->event         = $event;
-        $this->payment       = $payment ?? MoneyFactory::zero();
-        $this->repayment     = $repayment ?? MoneyFactory::zero();
-        $this->account       = $account;
+        $this->event = $event;
+        $this->payment = $payment ?? MoneyFactory::zero();
+        $this->repayment = $repayment ?? MoneyFactory::zero();
+        $this->account = $account;
     }
 
     public function getId(): PaymentId
@@ -92,7 +92,7 @@ class Payment
     public function setAccount(string $account): void
     {
         if (! in_array($account, ['Y', 'N'])) {
-            throw new InvalidArgumentException("Payment attribute account shouldn't be " . $account);
+            throw new InvalidArgumentException("Payment attribute account shouldn't be ".$account);
         }
 
         $this->account = $account;

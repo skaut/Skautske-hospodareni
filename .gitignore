@@ -22,3 +22,4 @@ app/config/google-credentials*
 adminer.php
 *.sh
 .env
+/.php-cs-fixer.cache

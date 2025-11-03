@@ -25,7 +25,7 @@ final class DtoListDataSource implements IDataSource
     public function __construct(array $data)
     {
         $this->collection = new ArrayCollection($data);
-        $this->criteria   = Criteria::create();
+        $this->criteria = Criteria::create();
     }
 
     /** @param mixed[] $filters */

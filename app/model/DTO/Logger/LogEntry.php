@@ -9,13 +9,13 @@ use Model\Logger\Log\Type;
 use Nette\SmartObject;
 
 /**
- * @property-read int $id
- * @property-read int $unitId
- * @property-read DateTimeImmutable $date
- * @property-read int $userId
- * @property-read Type $type
- * @property-read ?int $typeId
- * @property-read string $description
+ * @property int               $id
+ * @property int               $unitId
+ * @property DateTimeImmutable $date
+ * @property int               $userId
+ * @property Type              $type
+ * @property ?int              $typeId
+ * @property string            $description
  */
 class LogEntry
 {
@@ -27,7 +27,7 @@ class LogEntry
         private int $userId,
         private string $description,
         private Type $type,
-        private int|null $typeId = null,
+        private ?int $typeId,
     ) {
     }
 
@@ -56,7 +56,7 @@ class LogEntry
         return $this->type->getValue();
     }
 
-    public function getTypeId(): int|null
+    public function getTypeId(): ?int
     {
         return $this->typeId;
     }

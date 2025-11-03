@@ -19,9 +19,6 @@ final class SkautisRegistrationRepository implements IRegistrationRepository
     {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     public function findByUnit(UnitId $unitId): array
     {

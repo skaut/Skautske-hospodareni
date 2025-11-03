@@ -31,7 +31,7 @@ class CampStatsQueryHandler
                 continue;
             }
 
-            $counters[$state]++;
+            ++$counters[$state];
         }
 
         return $counters;

@@ -20,7 +20,7 @@ final class EventParticipantStatisticsQueryHandler
     public function __invoke(EventParticipantStatisticsQuery $query): Statistics
     {
         $participants = $this->queryBus->handle(new EventParticipantListQuery($query->getId()));
-        $days         = 0;
+        $days = 0;
         foreach ($participants as $p) {
             $days += $p->getDays();
         }

@@ -20,7 +20,7 @@ use function sprintf;
 
 final class ActivateCashbookDialog extends Dialog
 {
-     /** @var bool @persistent */
+    /** @var bool @persistent */
     public bool $opened = false;
 
     /** @var callable[] */
@@ -34,7 +34,7 @@ final class ActivateCashbookDialog extends Dialog
     {
         parent::beforeRender();
 
-        $this->template->setFile(__DIR__ . '/templates/ActivateCashbookDialog.latte');
+        $this->template->setFile(__DIR__.'/templates/ActivateCashbookDialog.latte');
         $this->template->setParameters([
             'renderModal' => $this->opened,
         ]);
@@ -87,7 +87,7 @@ final class ActivateCashbookDialog extends Dialog
     private function getCashbooks(): array
     {
         $cashbooks = $this->queryBus->handle(new UnitCashbookListQuery($this->unitId));
-        $pairs     = [];
+        $pairs = [];
 
         foreach ($cashbooks as $cashbook) {
             assert($cashbook instanceof UnitCashbook);

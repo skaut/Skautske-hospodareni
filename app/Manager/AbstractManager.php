@@ -37,8 +37,7 @@ use function max;
 abstract class AbstractManager
 {
     protected EntityManagerInterface $em;
-    //private ManagerRegistry $managerRegistry;
-
+    // private ManagerRegistry $managerRegistry;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
@@ -47,12 +46,12 @@ abstract class AbstractManager
 
     public function setManagerRegistry(EntityManagerInterface $entityManager): void
     {
-        //$this->managerRegistry = $managerRegistry;
-        //$em = $managerRegistry->getManagerForClass($this->getEntityClass());
+        // $this->managerRegistry = $managerRegistry;
+        // $em = $managerRegistry->getManagerForClass($this->getEntityClass());
 
-//        if (! $em instanceof EntityManagerInterface) {
-//            throw new LogicException('Could not find an entity manager for class '.static::class);
-//        }
+        //        if (! $em instanceof EntityManagerInterface) {
+        //            throw new LogicException('Could not find an entity manager for class '.static::class);
+        //        }
 
         $this->em = $entityManager;
     }
@@ -61,7 +60,7 @@ abstract class AbstractManager
     abstract public function getEntityClass(): string;
 
     /**
-     * @param  callable(EntityManagerInterface): T $callback
+     * @param callable(EntityManagerInterface): T $callback
      *
      * @return T
      *
@@ -92,11 +91,11 @@ abstract class AbstractManager
         callable $createCallback,
         callable $editCallback,
         callable $deleteCallback,
-        callable|null $rowIdentifierCallback = null,
-        callable|null $entityIdentifierCallback = null,
+        ?callable $rowIdentifierCallback = null,
+        ?callable $entityIdentifierCallback = null,
         bool $createWhenMissingInCollection = false,
     ): Collection {
-        $rowIdentifierCallback    ??= fn (mixed $row) => $row['id'] ?? null;
+        $rowIdentifierCallback ??= fn (mixed $row) => $row['id'] ?? null;
         $entityIdentifierCallback ??= fn ($entity) => $entity->getId();
 
         /** @var ArrayCollection<array-key, E> $collectionByIdentifier */
@@ -134,9 +133,9 @@ abstract class AbstractManager
     }
 
     /**
-     * @param  Collection<TKey, TValue>            $collection
-     * @param  AbstractRepository<TValue>          $repository
-     * @param  array<array-key, int|string|TValue> $values
+     * @param Collection<TKey, TValue>            $collection
+     * @param AbstractRepository<TValue>          $repository
+     * @param array<array-key, int|string|TValue> $values
      *
      * @return Collection<TKey, TValue>
      *
@@ -210,7 +209,7 @@ abstract class AbstractManager
     }
 
     /** @phpstan-param LockMode::* $lockMode */
-    public function refresh(object $entity, int|null $lockMode = null): void
+    public function refresh(object $entity, ?int $lockMode = null): void
     {
         $this->em->refresh($entity, $lockMode);
     }
@@ -270,7 +269,7 @@ abstract class AbstractManager
 
     /**
      * @param array<string, mixed>[] $rows
-     * @param  string[]               $updateColumns
+     * @param string[]               $updateColumns
      *
      * @throws DbalException
      */
@@ -280,35 +279,35 @@ abstract class AbstractManager
             return 0;
         }
 
-        $query        = null;
+        $query = null;
         $placeholders = null;
-        $columns      = null;
-        $rowCount     = count($rows);
-        $params       = [];
+        $columns = null;
+        $rowCount = count($rows);
+        $params = [];
 
         for ($i = 0; $i < $rowCount; ++$i) {
             $row = $rows[$i];
             ksort($row);
 
             if ($i === 0) {
-                $columns      = array_keys($row);
+                $columns = array_keys($row);
                 $placeholders = implode(', ', array_fill(0, count($columns), '?'));
-                $query        = 'INSERT INTO ' . $table . ' (' . implode(', ', $columns) . ') VALUES ';
+                $query = 'INSERT INTO '.$table.' ('.implode(', ', $columns).') VALUES ';
             } elseif (array_keys($row) !== $columns) {
                 /** @var string[] $columns */
-                throw new InvalidArgumentException("Row [{$i}] must contain exactly these columns: " . implode(', ', $columns));
+                throw new InvalidArgumentException("Row [{$i}] must contain exactly these columns: ".implode(', ', $columns));
             }
 
             $separator = $i === $rowCount - 1 ? '' : ',';
-            $query    .= "($placeholders){$separator}";
-            $params    = [
+            $query .= "($placeholders){$separator}";
+            $params = [
                 ...$params,
                 ...array_values($row),
             ];
         }
 
         if (! empty($updateColumns)) {
-            $query .= ' ON DUPLICATE KEY UPDATE ' . implode(', ', array_map(function ($columnName) {
+            $query .= ' ON DUPLICATE KEY UPDATE '.implode(', ', array_map(function ($columnName) {
                 return "$columnName=VALUES($columnName)";
             }, $updateColumns));
         }
@@ -329,10 +328,10 @@ abstract class AbstractManager
     }
 
     /**
-     * @param  Collection<array-key, T> $collection
-     * @param  T                        $element
+     * @param Collection<array-key, T> $collection
+     * @param T                        $element
      *
-     * @return bool                     true if element was actually added, false otherwise
+     * @return bool true if element was actually added, false otherwise
      *
      * @template T
      */
@@ -352,10 +351,10 @@ abstract class AbstractManager
     }
 
     /**
-     * @param  Collection<array-key, T> $collection
-     * @param  T                        $element
+     * @param Collection<array-key, T> $collection
+     * @param T                        $element
      *
-     * @return bool                     true if element was actually removed, false otherwise
+     * @return bool true if element was actually removed, false otherwise
      *
      * @template T
      */
@@ -375,10 +374,10 @@ abstract class AbstractManager
      *
      * @template T
      */
-    public function batch(iterable $items, int $batchSize, callable $itemCallback, callable|null $flushCallback = null): void
+    public function batch(iterable $items, int $batchSize, callable $itemCallback, ?callable $flushCallback = null): void
     {
         $batchSize = max($batchSize, 1);
-        $i         = 0;
+        $i = 0;
 
         foreach ($items as $item) {
             $itemCallback($item, $this->em);

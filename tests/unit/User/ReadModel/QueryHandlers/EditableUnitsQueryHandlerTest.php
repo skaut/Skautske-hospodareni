@@ -16,7 +16,7 @@ use function count;
 final class EditableUnitsQueryHandlerTest extends \Codeception\Test\Unit
 {
     /**
-     * parent unit ID => sub units ID
+     * parent unit ID => sub units ID.
      */
     private const UNITS_TREE = [
         100 => [101, 102],
@@ -46,7 +46,7 @@ final class EditableUnitsQueryHandlerTest extends \Codeception\Test\Unit
             $this->assertSame($id, $unit->getId());
             $this->assertSame($expectedUnitIdsInResult[$index], $id);
 
-            $index++;
+            ++$index;
         }
     }
 

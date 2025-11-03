@@ -21,7 +21,7 @@ final class UserContextProvider
 
     /** @return array<string, mixed> */
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    public function getUserData(): array|null
+    public function getUserData(): ?array
     {
         $identity = $this->user->getIdentity();
 
@@ -47,7 +47,7 @@ final class UserContextProvider
         ];
     }
 
-    private function formatRole(SkautisRole|null $role): string
+    private function formatRole(?SkautisRole $role): string
     {
         if ($role === null) {
             return '';

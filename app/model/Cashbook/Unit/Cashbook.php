@@ -36,9 +36,9 @@ class Cashbook
     public function __construct(int $id, Unit $unit, int $year, CashbookId $cashbookId)
     {
         Assert::that($year)->greaterThan(0);
-        $this->id         = $id;
-        $this->year       = $year;
-        $this->unit       = $unit;
+        $this->id = $id;
+        $this->year = $year;
+        $this->unit = $unit;
         $this->cashbookId = $cashbookId;
     }
 

@@ -13,14 +13,14 @@ use function date;
 
 class DefaultPresenter extends BasePresenter
 {
-    protected int|null $year;
+    protected ?int $year;
 
     public function __construct(private StatisticsService $statService)
     {
         parent::__construct();
     }
 
-    public function actionDefault(int|null $year = null): void
+    public function actionDefault(?int $year = null): void
     {
         if ($year === null) {
             $year = (int) date('Y');
@@ -29,11 +29,11 @@ class DefaultPresenter extends BasePresenter
         $this->year = $year;
     }
 
-    public function renderDefault(int|null $year = null): void
+    public function renderDefault(?int $year = null): void
     {
-        $unit     = $this->queryBus->handle(new UnitQuery($this->unitId->toInt()));
+        $unit = $this->queryBus->handle(new UnitQuery($this->unitId->toInt()));
         $unitTree = $this->unitService->getTreeUnder($unit);
-        $data     = $this->statService->getEventStatistics($unitTree, $this->year);
+        $data = $this->statService->getEventStatistics($unitTree, $this->year);
 
         $this->template->setParameters([
             'unit' => $unit,
@@ -46,7 +46,7 @@ class DefaultPresenter extends BasePresenter
     private function getYearRange(): array
     {
         $years = [];
-        for ($i = date('Y'); $i >= 2010; $i--) {
+        for ($i = date('Y'); $i >= 2010; --$i) {
             $years[$i] = $i;
         }
 

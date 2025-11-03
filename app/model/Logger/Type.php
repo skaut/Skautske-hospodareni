@@ -8,9 +8,9 @@ use Consistence\Enum\Enum;
 
 class Type extends Enum
 {
-    public const OBJECT           = 'object';
-    public const PAYMENT          = 'payment';
-    public const INVOICE          = 'invoice';
+    public const OBJECT = 'object';
+    public const PAYMENT = 'payment';
+    public const INVOICE = 'invoice';
     public const INVOICE_SEQUENCE = 'invoiceSequence';
 
     public function __toString(): string

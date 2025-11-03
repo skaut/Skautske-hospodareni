@@ -12,11 +12,11 @@ use Nette\SmartObject;
 /**
  * @ORM\Embeddable()
  *
- * @property-read string $id
- * @property-read string|NULL $bankAccount
- * @property-read string $payer
- * @property-read string|NULL $note
- * @property-read ChronosDate|NULL $date
+ * @property string           $id
+ * @property string|null      $bankAccount
+ * @property string           $payer
+ * @property string|null      $note
+ * @property ChronosDate|null $date
  */
 class Transaction
 {
@@ -29,21 +29,21 @@ class Transaction
     private string $bankAccount;
 
     /** @ORM\Column(type="string", nullable=true, name="transaction_payer") */
-    private string|null $payer = null;
+    private ?string $payer = null;
 
     /** @ORM\Column(type="string", nullable=true, name="transaction_note") */
-    private string|null $note = null;
+    private ?string $note = null;
 
     /** @ORM\Column(type="chronos_date", nullable=true) */
-    private ChronosDate|null $date = null;
+    private ?ChronosDate $date = null;
 
-    public function __construct(string $id, string $bankAccount, string $payer, string|null $note, ChronosDate|null $date)
+    public function __construct(string $id, string $bankAccount, string $payer, ?string $note, ?ChronosDate $date)
     {
-        $this->id          = $id;
+        $this->id = $id;
         $this->bankAccount = $bankAccount;
-        $this->payer       = $payer;
-        $this->note        = $note;
-        $this->date        = $date;
+        $this->payer = $payer;
+        $this->note = $note;
+        $this->date = $date;
     }
 
     public static function fromFioTransaction(FioTransaction $transaction): self
@@ -63,24 +63,24 @@ class Transaction
     }
 
     /**
-     * TODO: fix some payment transactions in database, that have NULL bank accounts
+     * TODO: fix some payment transactions in database, that have NULL bank accounts.
      */
-    public function getBankAccount(): string|null
+    public function getBankAccount(): ?string
     {
         return $this->bankAccount;
     }
 
-    public function getPayer(): string|null
+    public function getPayer(): ?string
     {
         return $this->payer;
     }
 
-    public function getNote(): string|null
+    public function getNote(): ?string
     {
         return $this->note;
     }
 
-    public function getDate(): ChronosDate|null
+    public function getDate(): ?ChronosDate
     {
         return $this->date;
     }

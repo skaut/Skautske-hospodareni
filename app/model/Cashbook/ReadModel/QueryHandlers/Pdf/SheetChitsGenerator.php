@@ -38,7 +38,7 @@ class SheetChitsGenerator
         $rowCnt = 2;
         foreach ($cashbooks as $item) {
             $cashbookId = $item->getCashbookId();
-            $cashbook   = $this->queryBus->handle(new CashbookQuery($cashbookId));
+            $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
 
             assert($cashbook instanceof Cashbook);
 
@@ -46,30 +46,30 @@ class SheetChitsGenerator
                 assert($chit instanceof Chit);
 
                 $isIncome = $chit->isIncome();
-                $amount   = $chit->getAmount()->toFloat();
-                $prefix   = $cashbook->getChitNumberPrefix($chit->getPaymentMethod());
+                $amount = $chit->getAmount()->toFloat();
+                $prefix = $cashbook->getChitNumberPrefix($chit->getPaymentMethod());
 
-                $sheet->setCellValue('A' . $rowCnt, $item->getDisplayName())
-                    ->setCellValue('B' . $rowCnt, $chit->getBody()->getDate()->format('d.m.Y'))
-                    ->setCellValue('C' . $rowCnt, $chit->getPaymentMethod()->equals(PaymentMethod::CASH()) ? 'Pokladna' : 'Banka')
-                    ->setCellValue('D' . $rowCnt, $prefix . (string) $chit->getBody()->getNumber())
-                    ->setCellValue('E' . $rowCnt, $chit->getPurpose())
-                    ->setCellValue('F' . $rowCnt, $chit->getCategories())
-                    ->setCellValue('G' . $rowCnt, (string) $chit->getBody()->getRecipient())
-                    ->setCellValue('H' . $rowCnt, $isIncome ? $amount : '')
-                    ->setCellValue('I' . $rowCnt, ! $isIncome ? $amount : '');
+                $sheet->setCellValue('A'.$rowCnt, $item->getDisplayName())
+                    ->setCellValue('B'.$rowCnt, $chit->getBody()->getDate()->format('d.m.Y'))
+                    ->setCellValue('C'.$rowCnt, $chit->getPaymentMethod()->equals(PaymentMethod::CASH()) ? 'Pokladna' : 'Banka')
+                    ->setCellValue('D'.$rowCnt, $prefix.(string) $chit->getBody()->getNumber())
+                    ->setCellValue('E'.$rowCnt, $chit->getPurpose())
+                    ->setCellValue('F'.$rowCnt, $chit->getCategories())
+                    ->setCellValue('G'.$rowCnt, (string) $chit->getBody()->getRecipient())
+                    ->setCellValue('H'.$rowCnt, $isIncome ? $amount : '')
+                    ->setCellValue('I'.$rowCnt, ! $isIncome ? $amount : '');
 
-                $rowCnt++;
+                ++$rowCnt;
             }
         }
 
-        //format
+        // format
         foreach (Range::letters('A', 'H') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
 
         $sheet->getStyle('A1:H1')->getFont()->setBold(true);
-        $sheet->setAutoFilter('A1:H' . ($rowCnt - 1));
+        $sheet->setAutoFilter('A1:H'.($rowCnt - 1));
         $sheet->setTitle('Doklady');
     }
 }

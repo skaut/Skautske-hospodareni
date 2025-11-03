@@ -15,10 +15,10 @@ final class GroupEmailQueryHandler
     {
     }
 
-    public function __invoke(GroupEmailQuery $query): GroupEmail|null
+    public function __invoke(GroupEmailQuery $query): ?GroupEmail
     {
         try {
-            $group    = $this->groups->find($query->getGroupId());
+            $group = $this->groups->find($query->getGroupId());
             $template = $group->getEmailTemplate($query->getEmailType());
 
             if ($template === null) {

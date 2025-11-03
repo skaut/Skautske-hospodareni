@@ -26,11 +26,11 @@ class DashboardPresenter extends BasePresenter
     public function actionDefault(): void
     {
         $this->template->campsCount = $this->queryBus->handle(new CampStatsQuery((int) (new DateTime())->format('Y')));
-        $groups                     = $this->queryBus->handle(
+        $groups = $this->queryBus->handle(
             new GetGroupList(array_keys($this->unitService->getReadUnits($this->user)), true),
         );
 
-        $this->template->groupCount  = count($groups);
+        $this->template->groupCount = count($groups);
         $this->template->eventsCount = $this->queryBus->handle(new EventStatsQuery((int) (new DateTime())->format('Y')));
 
         $groupIds = [];
@@ -45,14 +45,14 @@ class DashboardPresenter extends BasePresenter
     {
         $control = $this->pairButtonFactory->create();
         $control->addCss([
-            'wrap'       => 'section-actions d-inline-flex align-items-center gap-2',
-            'btn'        => 'btn btn-outline-secondary btn-sm btn-surface',
-            'toggle'     => 'btn btn-outline-secondary btn-sm dropdown-toggle btn-surface',
-            'menu'       => 'dropdown-menu pairForm dropdown-menu-end',
-            'icon'       => 'fa-solid fa-building-columns',
+            'wrap' => 'section-actions d-inline-flex align-items-center gap-2',
+            'btn' => 'btn btn-outline-secondary btn-sm btn-surface',
+            'toggle' => 'btn btn-outline-secondary btn-sm dropdown-toggle btn-surface',
+            'menu' => 'dropdown-menu pairForm dropdown-menu-end',
+            'icon' => 'fa-solid fa-building-columns',
             'inputGroup' => 'input-group input-group-sm',
-            'submit'     => 'btn btn-primary btn-sm',
-            'submitCol'  => 'col-4 d-grid',
+            'submit' => 'btn btn-primary btn-sm',
+            'submitCol' => 'col-4 d-grid',
         ]);
 
         return $control;

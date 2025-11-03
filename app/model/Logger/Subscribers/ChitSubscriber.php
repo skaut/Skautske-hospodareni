@@ -33,7 +33,7 @@ final class ChitSubscriber implements MessageSubscriberInterface
         $this->loggerService->log(
             $chit->getUnitId(),
             $chit->getUserId(),
-            "Uživatel '" . $chit->getUserName() . "' upravil paragon (ID=" . $chit->getChitId() . ').',
+            "Uživatel '".$chit->getUserName()."' upravil paragon (ID=".$chit->getChitId().').',
             Type::get(Type::OBJECT),
             $chit->getEventId(),
         );
@@ -44,7 +44,7 @@ final class ChitSubscriber implements MessageSubscriberInterface
         $this->loggerService->log(
             $chit->getUnitId(),
             $chit->getUserId(),
-            "Uživatel '" . $chit->getUserName() . "' odebral paragon (ID=" . $chit->getChitId() . ', účel=' . $chit->getChitPurpose() . ').',
+            "Uživatel '".$chit->getUserName()."' odebral paragon (ID=".$chit->getChitId().', účel='.$chit->getChitPurpose().').',
             Type::get(Type::OBJECT),
             $chit->getEventId(),
         );

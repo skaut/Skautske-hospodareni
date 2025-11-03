@@ -28,7 +28,7 @@ class ChitListQueryHandlerTest extends IntegrationTest
 
     protected function _before(): void
     {
-        $this->tester->useConfigFiles([__DIR__ . '/../../../config/doctrine.neon']);
+        $this->tester->useConfigFiles([__DIR__.'/../../../config/doctrine.neon']);
 
         parent::_before();
 
@@ -42,7 +42,7 @@ class ChitListQueryHandlerTest extends IntegrationTest
         $cashbook = new Cashbook($this->getCashbookId(), Cashbook\CashbookType::get(Cashbook\CashbookType::CAMP));
 
         foreach ($chits as [$date, $operation, $categoryId, $paymentMethod]) {
-            $body     = new Cashbook\ChitBody(null, new ChronosDate($date), null);
+            $body = new Cashbook\ChitBody(null, new ChronosDate($date), null);
             $category = Helpers::mockChitItemCategory($categoryId, Operation::get($operation));
             $cashbook->addChit(
                 $body,
@@ -100,7 +100,7 @@ class ChitListQueryHandlerTest extends IntegrationTest
     {
         $bus = m::mock(QueryBus::class);
 
-        $ids        = [11, 22, 33, 44];
+        $ids = [11, 22, 33, 44];
         $categories = [];
         foreach ($ids as $id) {
             $categories[$id] = m::mock(Category::class, ['getId' => $id]);

@@ -7,9 +7,9 @@ namespace Model\Event;
 use Nette\SmartObject;
 
 /**
- * @property-read SkautisEducationCourseId $id
- * @property-read string|null $displayName
- * @property-read int|null $estimatedPersonDays
+ * @property SkautisEducationCourseId $id
+ * @property string|null              $displayName
+ * @property int|null                 $estimatedPersonDays
  */
 class EducationCourse
 {
@@ -17,8 +17,8 @@ class EducationCourse
 
     public function __construct(
         private SkautisEducationCourseId $id,
-        private string|null $displayName,
-        private int|null $estimatedPersonDays,
+        private ?string $displayName,
+        private ?int $estimatedPersonDays,
     ) {
     }
 
@@ -27,12 +27,12 @@ class EducationCourse
         return $this->id;
     }
 
-    public function getDisplayName(): string|null
+    public function getDisplayName(): ?string
     {
         return $this->displayName;
     }
 
-    public function getEstimatedPersonDays(): int|null
+    public function getEstimatedPersonDays(): ?int
     {
         return $this->estimatedPersonDays;
     }

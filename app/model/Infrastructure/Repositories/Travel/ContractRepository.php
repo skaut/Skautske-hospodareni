@@ -20,7 +20,7 @@ final class ContractRepository implements IContractRepository
         $contract = $this->em->find(Contract::class, $id);
 
         if ($contract === null) {
-            throw new ContractNotFound('Contract with id #' . $id . ' not found');
+            throw new ContractNotFound('Contract with id #'.$id.' not found');
         }
 
         return $contract;

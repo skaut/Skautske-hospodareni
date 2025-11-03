@@ -14,7 +14,7 @@ class PdfRenderer
     }
 
     /**
-     * Renders PDF to output stream
+     * Renders PDF to output stream.
      *
      * @param bool $landscape TRUE for landscape, FALSE for portrait mode
      */

@@ -33,7 +33,7 @@ class BankAccount
     private AccountNumber $number;
 
     /** @ORM\Column(type="string", nullable=true) */
-    private string|null $token = null;
+    private ?string $token = null;
 
     /** @ORM\Column(type="datetime_immutable") */
     private DateTimeImmutable $createdAt;
@@ -45,7 +45,7 @@ class BankAccount
         int $unitId,
         string $name,
         AccountNumber $number,
-        string|null $token,
+        ?string $token,
         DateTimeImmutable $createdAt,
         IUnitResolver $unitResolver,
     ) {
@@ -64,11 +64,11 @@ class BankAccount
         $this->allowedForSubunits = false;
     }
 
-    public function update(string $name, AccountNumber $number, string|null $token): void
+    public function update(string $name, AccountNumber $number, ?string $token): void
     {
-        $this->name   = $name;
+        $this->name = $name;
         $this->number = $number;
-        $this->token  = $number->getBankCode() !== self::FIO_BANK_CODE || $token === '' ? null : $token;
+        $this->token = $number->getBankCode() !== self::FIO_BANK_CODE || $token === '' ? null : $token;
     }
 
     public function getId(): int
@@ -91,7 +91,7 @@ class BankAccount
         return $this->number;
     }
 
-    public function getToken(): string|null
+    public function getToken(): ?string
     {
         return $this->token;
     }

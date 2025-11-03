@@ -13,10 +13,10 @@ use Nette\SmartObject;
 /**
  * @ORM\Embeddable()
  *
- * @property-read ChronosDate $date
- * @property-read TransportType $transportType
- * @property-read string $startPlace
- * @property-read string $endPlace
+ * @property ChronosDate   $date
+ * @property TransportType $transportType
+ * @property string        $startPlace
+ * @property string        $endPlace
  */
 class TravelDetails
 {
@@ -42,10 +42,10 @@ class TravelDetails
 
     public function __construct(ChronosDate $date, TransportType $transportType, string $startPlace, string $endPlace)
     {
-        $this->date          = $date;
+        $this->date = $date;
         $this->transportType = $transportType;
-        $this->startPlace    = $startPlace;
-        $this->endPlace      = $endPlace;
+        $this->startPlace = $startPlace;
+        $this->endPlace = $endPlace;
     }
 
     public function getDate(): ChronosDate
