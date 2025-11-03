@@ -19,7 +19,7 @@ class DefaultPresenter extends BasePresenter
     protected function createComponentGrid(): DataGrid
     {
         $grid = $this->gridFactory->createSimpleGrid(
-            __DIR__ . '/../templates/Default/@eventsGrid.latte',
+            __DIR__.'/../templates/Default/@eventsGrid.latte',
             [],
         );
 

@@ -31,9 +31,9 @@ use function substr;
 
 abstract class AccountancyHelpers
 {
-    private const DATE_FORMAT_FULL      = 'j. n. Y';
+    private const DATE_FORMAT_FULL = 'j. n. Y';
     private const DATE_FORMAT_DAY_MONTH = 'j. n.';
-    private const DATE_FORMAT_DAY       = 'j.';
+    private const DATE_FORMAT_DAY = 'j.';
 
     public static function loader(string $filter): callable
     {
@@ -176,14 +176,14 @@ abstract class AccountancyHelpers
     }
 
     /** @filter */
-    public static function commandState(DateTimeInterface|null $s): string
+    public static function commandState(?DateTimeInterface $s): string
     {
         if ($s === null) {
             return '<span class="hidden-xs hidden-sm badge bg-warning text-dark">Rozpracovaný</span>';
         }
 
-        return '<span class="badge bg-success" title="Uzavřeno dne: ' .
-            $s->format('j.n.Y H:i:s') . '">Uzavřený</span>';
+        return '<span class="badge bg-success" title="Uzavřeno dne: '.
+            $s->format('j.n.Y H:i:s').'">Uzavřený</span>';
     }
 
     /** @filter */
@@ -209,12 +209,12 @@ abstract class AccountancyHelpers
 
         return Html::el('span')
             ->setText(self::paymentState($s->toString(), false))
-            ->setAttribute('class', 'badge ' . ($classes[$s->toString()] ?? 'secondary'));
+            ->setAttribute('class', 'badge '.($classes[$s->toString()] ?? 'secondary'));
     }
 
     /**
      * @param float|string|Money|null $price
-     * http://prirucka.ujc.cas.cz/?id=786
+     *                                       http://prirucka.ujc.cas.cz/?id=786
      *
      * @filter
      * formátuje číslo na částku
@@ -222,7 +222,7 @@ abstract class AccountancyHelpers
     public static function price(float|string|Money|null $price, bool $full = true): string
     {
         if ($price === null || $price === '') {
-            return ' '; //je tam nedělitelná mezera
+            return ' '; // je tam nedělitelná mezera
         }
 
         $decimals = $full ? 2 : 0;
@@ -231,7 +231,7 @@ abstract class AccountancyHelpers
             $price = (float) $price->getAmount() / 100;
         }
 
-        return number_format((float) $price, $decimals, ',', ' '); //nedělitelná mezera
+        return number_format((float) $price, $decimals, ',', ' '); // nedělitelná mezera
     }
 
     /**
@@ -248,7 +248,7 @@ abstract class AccountancyHelpers
         $psc = preg_replace('/[^0-9]/', '', $oldPsc);
 
         if (strlen($psc) === 5) {
-            return substr($psc, 0, 3) . ' ' . substr($psc, -2);
+            return substr($psc, 0, 3).' '.substr($psc, -2);
         }
 
         return $oldPsc;
@@ -260,7 +260,7 @@ abstract class AccountancyHelpers
      */
     public static function priceToString(float $price): string
     {
-        //@todo ošetření správného tvaru
+        // @todo ošetření správného tvaru
 
         $_jednotky = [
             0 => '',
@@ -297,7 +297,7 @@ abstract class AccountancyHelpers
             8 => 'osmdesát',
             9 => 'devadesát',
         ];
-        $_sta     = [
+        $_sta = [
             0 => '',
             1 => 'jednosto',
             2 => 'dvěstě',
@@ -309,7 +309,7 @@ abstract class AccountancyHelpers
             8 => 'osmset',
             9 => 'devětset',
         ];
-        $_tisice  = [
+        $_tisice = [
             0 => '',
             1 => 'jedentisíc',
             2 => 'dvatisíce',
@@ -317,42 +317,42 @@ abstract class AccountancyHelpers
             4 => 'čtyřitisíce',
         ];
 
-        $string  = '';
-        $parts   = explode('.', (string) $price, 2); //0-pred 1-za desitou čárkou
+        $string = '';
+        $parts = explode('.', (string) $price, 2); // 0-pred 1-za desitou čárkou
         $numbers = array_reverse(str_split($parts[0]));
 
         if (count($numbers) > 6) {
             return 'PŘÍLIŠ VYSOKÉ ČÍSLO';
         }
 
-        for ($i = count($numbers); $i < 6; ++$i) { //doplnění nezaplněných řádu
+        for ($i = count($numbers); $i < 6; ++$i) { // doplnění nezaplněných řádu
             $numbers[$i] = 0;
         }
 
-        //tisice
-        $nTisice = (int) ($numbers[5] . $numbers[4] . $numbers[3]);
+        // tisice
+        $nTisice = (int) ($numbers[5].$numbers[4].$numbers[3]);
         if ($nTisice <= 4) {
             $string .= $_tisice[$numbers[3]];
         } elseif ($nTisice < 20) {
-            $string .= $_jednotky[(int) ($numbers[4] . $numbers[3])] . 'tisíc';
+            $string .= $_jednotky[(int) ($numbers[4].$numbers[3])].'tisíc';
         } elseif ($nTisice < 100) {
-            $string .= $_desitky[$numbers[4]] . $_jednotky[$numbers[3]] . 'tisíc';
+            $string .= $_desitky[$numbers[4]].$_jednotky[$numbers[3]].'tisíc';
         } else {
-            $string .= $_sta[$numbers[5]] . $_desitky[$numbers[4]] . $_jednotky[$numbers[3]] . 'tisíc';
+            $string .= $_sta[$numbers[5]].$_desitky[$numbers[4]].$_jednotky[$numbers[3]].'tisíc';
         }
 
-        //sta
+        // sta
         $string .= $_sta[$numbers[2]];
 
-        //desitky a jednotky
-        $nDesitky = (int) ($numbers[1] . $numbers[0]);
+        // desitky a jednotky
+        $nDesitky = (int) ($numbers[1].$numbers[0]);
         if ($nDesitky < 20) {
             $string .= $_jednotky[$nDesitky];
         } else {
-            $string .= $_desitky[$numbers[1]] . $_jednotky[$numbers[0]];
+            $string .= $_desitky[$numbers[1]].$_jednotky[$numbers[0]];
         }
 
-        return mb_strtoupper(mb_substr($string, 0, 1, 'UTF-8'), 'UTF-8') . mb_substr($string, 1, null, 'UTF-8');
+        return mb_strtoupper(mb_substr($string, 0, 1, 'UTF-8'), 'UTF-8').mb_substr($string, 1, null, 'UTF-8');
     }
 
     /** @filter */

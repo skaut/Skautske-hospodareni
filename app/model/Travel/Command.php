@@ -41,7 +41,7 @@ class Command
     private int $unitId;
 
     /** @ORM\ManyToOne(targetEntity=Vehicle::class) */
-    private Vehicle|null $vehicle = null;
+    private ?Vehicle $vehicle = null;
 
     /** @ORM\Embedded(class=Passenger::class, columnPrefix=false) */
     private Passenger $passenger;
@@ -65,7 +65,7 @@ class Command
     private string $note;
 
     /** @ORM\Column(type="datetime_immutable", nullable=true) */
-    private DateTimeImmutable|null $closedAt = null;
+    private ?DateTimeImmutable $closedAt = null;
 
     /**
      * @ORM\OneToMany(targetEntity=Travel::class, indexBy="id", mappedBy="command", cascade={"persist", "remove"}, orphanRemoval=true)
@@ -78,7 +78,7 @@ class Command
     private int $nextTravelId = 0;
 
     /** @ORM\Column(type="integer", nullable=true) */
-    private int|null $ownerId = null;
+    private ?int $ownerId = null;
 
     /**
      * @ORM\Column(type="transport_types")
@@ -88,7 +88,6 @@ class Command
     private array $transportTypes;
 
     /**
-     * @var string
      * * @ORM\Column(type="string", length=64)
      */
     private string $unit;
@@ -96,7 +95,7 @@ class Command
     /** @param list<TransportType> $transportTypes */
     public function __construct(
         int $unitId,
-        Vehicle|null $vehicle,
+        ?Vehicle $vehicle,
         Passenger $passenger,
         string $purpose,
         string $place,
@@ -104,28 +103,28 @@ class Command
         Money $fuelPrice,
         Money $amortization,
         string $note,
-        int|null $ownerId,
+        ?int $ownerId,
         array $transportTypes,
         string $unit,
     ) {
-        $this->unitId           = $unitId;
-        $this->vehicle          = $vehicle;
-        $this->passenger        = $passenger;
-        $this->purpose          = $purpose;
-        $this->place            = $place;
+        $this->unitId = $unitId;
+        $this->vehicle = $vehicle;
+        $this->passenger = $passenger;
+        $this->purpose = $purpose;
+        $this->place = $place;
         $this->fellowPassengers = $fellowPassengers;
-        $this->fuelPrice        = $fuelPrice;
-        $this->amortization     = $amortization;
-        $this->note             = $note;
-        $this->travels          = new ArrayCollection();
-        $this->ownerId          = $ownerId;
-        $this->transportTypes   = array_values(array_unique($transportTypes));
-        $this->unit             = $unit;
+        $this->fuelPrice = $fuelPrice;
+        $this->amortization = $amortization;
+        $this->note = $note;
+        $this->travels = new ArrayCollection();
+        $this->ownerId = $ownerId;
+        $this->transportTypes = array_values(array_unique($transportTypes));
+        $this->unit = $unit;
     }
 
     /** @param list<TransportType> $transportTypes */
     public function update(
-        Vehicle|null $vehicle,
+        ?Vehicle $vehicle,
         Passenger $driver,
         string $purpose,
         string $place,
@@ -136,16 +135,16 @@ class Command
         array $transportTypes,
         string $unit,
     ): void {
-        $this->vehicle          = $vehicle;
-        $this->passenger        = $driver;
-        $this->purpose          = $purpose;
-        $this->place            = $place;
+        $this->vehicle = $vehicle;
+        $this->passenger = $driver;
+        $this->purpose = $purpose;
+        $this->place = $place;
         $this->fellowPassengers = $passengers;
-        $this->fuelPrice        = $fuelPrice;
-        $this->amortization     = $amortization;
-        $this->note             = $note;
-        $this->transportTypes   = array_values(array_unique($transportTypes));
-        $this->unit             = $unit;
+        $this->fuelPrice = $fuelPrice;
+        $this->amortization = $amortization;
+        $this->note = $note;
+        $this->transportTypes = array_values(array_unique($transportTypes));
+        $this->unit = $unit;
     }
 
     public function close(DateTimeImmutable $time): void
@@ -220,8 +219,8 @@ class Command
     /** @throws TravelNotFound */
     public function addReturnTravel(int $id): void
     {
-        $travel          = $this->getTravel($id);
-        $details         = $travel->getDetails();
+        $travel = $this->getTravel($id);
+        $details = $travel->getDetails();
         $reversedDetails = new TravelDetails($details->getDate(), $details->getTransportType(), $details->getEndPlace(), $details->getStartPlace());
 
         if ($travel instanceof VehicleTravel) {
@@ -253,7 +252,7 @@ class Command
     private function getDistance(): float
     {
         $distances = $this->travels
-                    ->map(fn (Travel|null $t = null) => $t instanceof VehicleTravel ? $t->getDistance() : 0)
+                    ->map(fn (?Travel $t = null) => $t instanceof VehicleTravel ? $t->getDistance() : 0)
                     ->toArray();
 
         return array_sum($distances);
@@ -276,7 +275,7 @@ class Command
     }
 
     /**
-     * Rounded price per km - do not use for calculation
+     * Rounded price per km - do not use for calculation.
      */
     public function getPricePerKm(): Money
     {
@@ -328,7 +327,7 @@ class Command
         return $this->unitId;
     }
 
-    public function getVehicleId(): int|null
+    public function getVehicleId(): ?int
     {
         return $this->vehicle?->getId();
     }
@@ -368,13 +367,13 @@ class Command
         return $this->note;
     }
 
-    public function getClosedAt(): DateTimeImmutable|null
+    public function getClosedAt(): ?DateTimeImmutable
     {
         return $this->closedAt;
     }
 
     /**
-     * Only for reading
+     * Only for reading.
      *
      * @internal
      *
@@ -385,11 +384,11 @@ class Command
         return $this->travels->getValues();
     }
 
-    public function getFirstTravelDate(): DateTimeImmutable|null
+    public function getFirstTravelDate(): ?DateTimeImmutable
     {
         return $this->travels->isEmpty()
             ? null
-            : min($this->travels->map(function (Travel|null $travel = null) {
+            : min($this->travels->map(function (?Travel $travel = null) {
                 return $travel->getDetails()->getDate()->toNative();
             })->toArray());
     }
@@ -405,21 +404,21 @@ class Command
         $travel = $this->travels->get($id);
 
         if ($travel === null) {
-            throw new TravelNotFound('Travel #' . $id . ' not found');
+            throw new TravelNotFound('Travel #'.$id.' not found');
         }
 
         return $travel;
     }
 
     /**
-     * Returns all transport types that have at least one travel
+     * Returns all transport types that have at least one travel.
      *
      * @return TransportType[]
      */
     public function getUsedTransportTypes(): array
     {
         return array_unique(
-            $this->travels->map(fn (Travel|null $travel = null) => $travel->getDetails()->getTransportType())->toArray(),
+            $this->travels->map(fn (?Travel $travel = null) => $travel->getDetails()->getTransportType())->toArray(),
         );
     }
 
@@ -428,7 +427,7 @@ class Command
         return $this->nextTravelId++;
     }
 
-    public function getOwnerId(): int|null
+    public function getOwnerId(): ?int
     {
         return $this->ownerId;
     }

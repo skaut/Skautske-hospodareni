@@ -36,8 +36,8 @@ class CsvParser
     public function parse(int $groupId, string $fileContent): array
     {
         $utfContent = Strings::autoUTF($fileContent);
-        $lines      = array_filter(str_getcsv($utfContent, PHP_EOL));
-        $payments   = [];
+        $lines = array_filter(str_getcsv($utfContent, PHP_EOL));
+        $payments = [];
 
         foreach ($lines as $line) {
             $payments[] = $this->parseLine($groupId, $line);
@@ -50,7 +50,7 @@ class CsvParser
     {
         $splitLine = str_getcsv($line, self::CSV_DELIMITER);
 
-        $keys      = ['name', 'amount', 'date', 'emails', 'variableSymbol', 'constantSymbol', 'note'];
+        $keys = ['name', 'amount', 'date', 'emails', 'variableSymbol', 'constantSymbol', 'note'];
         $splitLine = array_pad($splitLine, count($keys), null);
         $splitLine = array_combine($keys, $splitLine);
 

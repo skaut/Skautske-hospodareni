@@ -66,20 +66,20 @@ class CashbookExportPresenter extends BasePresenter
     }
 
     /**
-     * Exports selected chits as PDF for printing
+     * Exports selected chits as PDF for printing.
      *
      * @param int[] $chitIds
      */
     public function actionPrintChits(string $cashbookId, array $chitIds): void
     {
-        $chitIds  = array_map('\intval', $chitIds);
+        $chitIds = array_map('\intval', $chitIds);
         $template = $this->queryBus->handle(ExportChits::withChitIds(CashbookId::fromString($cashbookId), $chitIds));
         $this->pdf->render($template, 'paragony.pdf');
         $this->terminate();
     }
 
     /**
-     * Exports selected chits as XLS file
+     * Exports selected chits as XLS file.
      *
      * @param int[] $chitIds
      */
@@ -95,7 +95,7 @@ class CashbookExportPresenter extends BasePresenter
     }
 
     /**
-     * Exports all chits as PDF for printing
+     * Exports all chits as PDF for printing.
      */
     public function actionPrintAllChits(string $cashbookId): void
     {
@@ -105,7 +105,7 @@ class CashbookExportPresenter extends BasePresenter
     }
 
     /**
-     * Exports cashbook (list of cashbook operations) as PDF for printing
+     * Exports cashbook (list of cashbook operations) as PDF for printing.
      */
     public function actionPrintCashbook(string $cashbookId, string $paymentMethod): void
     {
@@ -113,23 +113,20 @@ class CashbookExportPresenter extends BasePresenter
 
         $template = $this->exportService->getCashbook(CashbookId::fromString($cashbookId), $method);
         $filename = $method->equals(PaymentMethod::CASH()) ? 'pokladni-kniha' : 'bankovni-transakce';
-        $this->pdf->render($template, $filename . '.pdf');
+        $this->pdf->render($template, $filename.'.pdf');
 
         $this->terminate();
     }
 
     /**
-     * Exports cashbook (list of cashbook operations) as XLS file
+     * Exports cashbook (list of cashbook operations) as XLS file.
      */
     public function actionExportCashbook(string $cashbookId, string $paymentMethod): void
     {
         $cashbookId = CashbookId::fromString($cashbookId);
 
         if (! PaymentMethod::isValidValue($paymentMethod)) {
-            throw new BadRequestException(
-                sprintf('Invalid payment method %s', $paymentMethod),
-                IResponse::S400_BadRequest,
-            );
+            throw new BadRequestException(sprintf('Invalid payment method %s', $paymentMethod), IResponse::S400_BadRequest);
         }
 
         $spreadsheet = $this->excelService->getCashbook($cashbookId, PaymentMethod::get($paymentMethod));
@@ -168,15 +165,12 @@ class CashbookExportPresenter extends BasePresenter
     }
 
     /**
-     * Exports cashbook (list of cashbook operations) with category columns as XLS file
+     * Exports cashbook (list of cashbook operations) with category columns as XLS file.
      */
     public function actionExportCashbookWithCategories(string $cashbookId, string $paymentMethod): void
     {
         if (! PaymentMethod::isValidValue($paymentMethod)) {
-            throw new BadRequestException(
-                sprintf('Invalid payment method %s', $paymentMethod),
-                IResponse::S400_BadRequest,
-            );
+            throw new BadRequestException(sprintf('Invalid payment method %s', $paymentMethod), IResponse::S400_BadRequest);
         }
 
         $spreadsheet = $this->excelService->getCashbookWithCategories(
@@ -188,15 +182,12 @@ class CashbookExportPresenter extends BasePresenter
     }
 
     /**
-     * Exports cashbook items columns as XLS file
+     * Exports cashbook items columns as XLS file.
      */
     public function actionExportCashbookItems(string $cashbookId, string $paymentMethod): void
     {
         if (! PaymentMethod::isValidValue($paymentMethod)) {
-            throw new BadRequestException(
-                sprintf('Invalid payment method %s', $paymentMethod),
-                IResponse::S400_BadRequest,
-            );
+            throw new BadRequestException(sprintf('Invalid payment method %s', $paymentMethod), IResponse::S400_BadRequest);
         }
 
         $spreadsheet = $this->excelService->getCashbookItems(

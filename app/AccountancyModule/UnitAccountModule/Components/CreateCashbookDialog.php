@@ -35,7 +35,7 @@ final class CreateCashbookDialog extends Dialog
     {
         parent::beforeRender();
 
-        $this->template->setFile(__DIR__ . '/templates/CreateCashbookDialog.latte');
+        $this->template->setFile(__DIR__.'/templates/CreateCashbookDialog.latte');
         $this->template->setParameters([
             'renderModal' => $this->opened,
         ]);

@@ -9,7 +9,7 @@ use Model\Cashbook\CategoryNotFound;
 use Model\Cashbook\ObjectType;
 
 /**
- * Loads categories that are stored in hskauting
+ * Loads categories that are stored in hskauting.
  */
 interface IStaticCategoryRepository
 {

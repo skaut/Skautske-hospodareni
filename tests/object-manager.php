@@ -12,12 +12,12 @@ use Nette\Bootstrap\Configurator;
 use Nette\DI\Extensions\ExtensionsExtension;
 use Tracy\Bridges\Nette\TracyExtension;
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
-$tempDir = dirname(__DIR__) . '/temp';
-$logDir  = __DIR__ . '/../log';
+$tempDir = dirname(__DIR__).'/temp';
+$logDir = __DIR__.'/../log';
 
-putenv('TMPDIR=' . $tempDir);
+putenv('TMPDIR='.$tempDir);
 
 $configurator = new Configurator();
 $configurator->setDebugMode(true);
@@ -25,7 +25,7 @@ $configurator->enableTracy($logDir);
 $configurator->setTempDirectory($tempDir);
 
 $configurator->createRobotLoader()
-    ->addDirectory(__DIR__ . '/../app')
+    ->addDirectory(__DIR__.'/../app')
     ->register(true);
 
 $configurator->defaultExtensions = [
@@ -34,7 +34,7 @@ $configurator->defaultExtensions = [
 ];
 
 $configurator->addStaticParameters(['env' => getenv()]);
-$configurator->addConfig(__DIR__ . '/integration/config/doctrine.neon');
+$configurator->addConfig(__DIR__.'/integration/config/doctrine.neon');
 
 $configurator->addStaticParameters(['logDir' => $logDir]);
 

@@ -29,18 +29,18 @@ class CategoryRepository
     public function findForCashbook(CashbookId $cashbookId, CashbookType $type): array
     {
         $skautisType = $type->getSkautisObjectType();
-        $categories  = $this->staticCategories->findByObjectType($skautisType);
+        $categories = $this->staticCategories->findByObjectType($skautisType);
 
         if ($skautisType->equalsValue(CashbookType::CAMP)) {
-            $campId         = $this->queryBus->handle(new SkautisIdQuery($cashbookId));
+            $campId = $this->queryBus->handle(new SkautisIdQuery($cashbookId));
             $campCategories = $this->campCategories->findForCamp($campId);
 
             return array_merge($categories, $campCategories);
         }
 
         if ($skautisType->equalsValue(CashbookType::EDUCATION)) {
-            $educationId         = $this->queryBus->handle(new SkautisIdQuery($cashbookId));
-            $educationYear       = $this->queryBus->handle(new SkautisEducationYearQuery($cashbookId));
+            $educationId = $this->queryBus->handle(new SkautisIdQuery($cashbookId));
+            $educationYear = $this->queryBus->handle(new SkautisEducationYearQuery($cashbookId));
             $educationCategories = $this->educationCategories->findForEducation($educationId, $educationYear);
 
             return array_merge($categories, $educationCategories);
@@ -59,17 +59,13 @@ class CategoryRepository
                 }
             }
 
-            throw new CategoryNotFound(
-                sprintf('Category #%d for cashbook #%d not found', $categoryId, $cashbookId),
-            );
+            throw new CategoryNotFound(sprintf('Category #%d for cashbook #%d not found', $categoryId, $cashbookId));
         }
 
         $category = $this->staticCategories->find($categoryId);
 
         if (! $category->supportsType($type->getSkautisObjectType())) {
-            throw new CategoryNotFound(
-                sprintf("Category #%d found, but it doesn't support cashbook type %s", $categoryId, $type->getValue()),
-            );
+            throw new CategoryNotFound(sprintf("Category #%d found, but it doesn't support cashbook type %s", $categoryId, $type->getValue()));
         }
 
         return $category;

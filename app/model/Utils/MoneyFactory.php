@@ -32,7 +32,7 @@ final class MoneyFactory
     }
 
     /**
-     * Removes cents from amount
+     * Removes cents from amount.
      */
     public static function floor(Money $money): Money
     {

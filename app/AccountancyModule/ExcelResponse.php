@@ -19,7 +19,7 @@ final class ExcelResponse implements Response
     }
 
     /**
-     * Redirect output to a client’s web browser (Excel 2007)
+     * Redirect output to a client’s web browser (Excel 2007).
      */
     public function send(Nette\Http\IRequest $httpRequest, Nette\Http\IResponse $httpResponse): void
     {
@@ -29,7 +29,7 @@ final class ExcelResponse implements Response
 
         // If you're serving to IE over SSL, then the following may be needed
         $httpResponse->setHeader('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-        $httpResponse->setHeader('Last-Modified', gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+        $httpResponse->setHeader('Last-Modified', gmdate('D, d M Y H:i:s').' GMT'); // always modified
         $httpResponse->setHeader('Cache-Control', 'cache, must-revalidate'); // HTTP/1.1
         $httpResponse->setHeader('Pragma', 'public'); // HTTP/1.0
 

@@ -36,7 +36,7 @@ final class EventSubscriber implements MessageSubscriberInterface
         $this->loggerService->log(
             $event->getUnitId(),
             $user->ID,
-            "Uživatel '" . $user->Person . "' otevřel akci '" . $event->getEventName() . "' (" . $event->getEventId() . ').',
+            "Uživatel '".$user->Person."' otevřel akci '".$event->getEventName()."' (".$event->getEventId().').',
             Type::get(Type::OBJECT),
             $event->getEventId()->toInt(),
         );
@@ -49,7 +49,7 @@ final class EventSubscriber implements MessageSubscriberInterface
         $this->loggerService->log(
             $event->getUnitId(),
             $user->ID,
-            "Uživatel '" . $user->Person . "' uzavřel akci '" . $event->getEventName() . "' (" . $event->getEventId() . ').',
+            "Uživatel '".$user->Person."' uzavřel akci '".$event->getEventName()."' (".$event->getEventId().').',
             Type::get(Type::OBJECT),
             $event->getEventId()->toInt(),
         );

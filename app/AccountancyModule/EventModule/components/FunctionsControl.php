@@ -59,7 +59,7 @@ class FunctionsControl extends BaseControl
 
     protected function createComponentForm(): BaseForm
     {
-        $form             = new BaseForm();
+        $form = new BaseForm();
         $personsOlderThan = $this->getPersonsOlderThan([15, 18]);
 
         $form->addSelect('leader', 'Vedoucí', $personsOlderThan[18])
@@ -92,11 +92,11 @@ class FunctionsControl extends BaseControl
 
     public function render(): void
     {
-        $this->template->setFile(__DIR__ . '/templates/FunctionsControl.latte');
+        $this->template->setFile(__DIR__.'/templates/FunctionsControl.latte');
         $this->template->setParameters([
             'functions' => $this->getCurrentFunctions(),
             'editation' => $this->editation,
-            'canEdit'   => $this->canEdit(),
+            'canEdit' => $this->canEdit(),
         ]);
         $this->template->render();
     }
@@ -171,7 +171,7 @@ class FunctionsControl extends BaseControl
         return $persons;
     }
 
-    private function getIdOrNull(Person|null $person): int|null
+    private function getIdOrNull(?Person $person): ?int
     {
         if ($person === null) {
             return null;

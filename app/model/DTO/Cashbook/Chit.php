@@ -22,20 +22,20 @@ use function sprintf;
 use function substr;
 
 /**
- * @property-read int               $id
- * @property-read ChitBody          $body
- * @property-read ChitNumber|NULL   $number
- * @property-read DateTimeImmutable $date
- * @property-read Recipient|NULL    $recipient
- * @property-read Amount            $amount
- * @property-read string            $purpose
- * @property-read ChitItem[]        $items
- * @property-read bool              $locked
- * @property-read CashbookType[]    $inverseCashbookTypes
- * @property-read PaymentMethod     $paymentMethod
- * @property-read string            $categories
- * @property-read string            $categoriesShortcut
- * @property-read int               $scansCount
+ * @property int               $id
+ * @property ChitBody          $body
+ * @property ChitNumber|null   $number
+ * @property DateTimeImmutable $date
+ * @property Recipient|null    $recipient
+ * @property Amount            $amount
+ * @property string            $purpose
+ * @property ChitItem[]        $items
+ * @property bool              $locked
+ * @property CashbookType[]    $inverseCashbookTypes
+ * @property PaymentMethod     $paymentMethod
+ * @property string            $categories
+ * @property string            $categoriesShortcut
+ * @property int               $scansCount
  */
 class Chit
 {
@@ -70,7 +70,7 @@ class Chit
     }
 
     /** @deprecated use getBody() */
-    public function getNumber(): ChitNumber|null
+    public function getNumber(): ?ChitNumber
     {
         return $this->body->getNumber();
     }
@@ -82,7 +82,7 @@ class Chit
     }
 
     /** @deprecated use getBody() */
-    public function getRecipient(): Recipient|null
+    public function getRecipient(): ?Recipient
     {
         return $this->body->getRecipient();
     }

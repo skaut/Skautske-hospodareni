@@ -59,22 +59,22 @@ final class RepaymentPresenter extends BasePresenter
 
         foreach ($this->queryBus->handle(new RepaymentCandidateListQuery($this->group->getId())) as $repayment) {
             assert($repayment instanceof RepaymentCandidate);
-            $container = $paymentsContainer->addContainer('payment' . $repayment->getPaymentId());
+            $container = $paymentsContainer->addContainer('payment'.$repayment->getPaymentId());
 
             $checkbox = $container->addCheckbox('selected');
 
             $container->addText('name')
-                ->setDefaultValue('Vratka - ' . $repayment->getName() . ' - ' . $this->group->getName())
+                ->setDefaultValue('Vratka - '.$repayment->getName().' - '.$this->group->getName())
                 ->addConditionOn($checkbox, $form::EQUAL, true)
                 ->setRequired('Zadejte název vratky!');
 
             $container->addText('amount')
                 ->setDefaultValue($repayment->getAmount())
                 ->addConditionOn($checkbox, $form::EQUAL, true)
-                ->setRequired('Zadejte částku vratky u ' . $repayment->getName())
+                ->setRequired('Zadejte částku vratky u '.$repayment->getName())
                 ->addRule($form::NUMERIC, 'Vratka musí být číslo!');
 
-            $invalidBankAccountMessage = 'Zadejte platný bankovní účet u ' . $repayment->getName();
+            $invalidBankAccountMessage = 'Zadejte platný bankovní účet u '.$repayment->getName();
             $container->addText('account')
                 ->setDefaultValue($repayment->getBankAccount() ?? '')
                 ->setRequired(false)
@@ -126,7 +126,7 @@ final class RepaymentPresenter extends BasePresenter
         }
 
         $bankAccountId = $this->group->getBankAccountId();
-        $bankAccount   = $bankAccountId !== null ? $this->bankAccounts->find($bankAccountId) : null;
+        $bankAccount = $bankAccountId !== null ? $this->bankAccounts->find($bankAccountId) : null;
 
         if ($bankAccount === null) {
             $this->flashMessage('Skupina plateb nemá nastavený bankovní účet', 'danger');

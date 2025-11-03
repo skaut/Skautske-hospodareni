@@ -8,15 +8,15 @@ use DateTimeImmutable;
 use Nette\SmartObject;
 
 /**
- * @property-read int $id
- * @property-read string $type
- * @property-read string $registration
- * @property-read string $label
- * @property-read int|NULL $subunitId
- * @property-read float $consumption
- * @property-read bool $archived
- * @property-read DateTimeImmutable $createdAt
- * @property-read string $authorName
+ * @property int               $id
+ * @property string            $type
+ * @property string            $registration
+ * @property string            $label
+ * @property int|null          $subunitId
+ * @property float             $consumption
+ * @property bool              $archived
+ * @property DateTimeImmutable $createdAt
+ * @property string            $authorName
  */
 class Vehicle
 {
@@ -28,7 +28,7 @@ class Vehicle
         private int $unitId,
         private string $registration,
         private string $label,
-        private int|null $subunitId = null,
+        private ?int $subunitId,
         private float $consumption,
         private bool $archived,
         private DateTimeImmutable $createdAt,
@@ -61,7 +61,7 @@ class Vehicle
         return $this->label;
     }
 
-    public function getSubunitId(): int|null
+    public function getSubunitId(): ?int
     {
         return $this->subunitId;
     }

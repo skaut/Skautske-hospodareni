@@ -30,8 +30,8 @@ class GroupService
 
     public function reminder(): void
     {
-        $count            = 0;
-        $reminderGroups   = $this->groups->findByReminder();
+        $count = 0;
+        $reminderGroups = $this->groups->findByReminder();
         $reminderPayments = $this->payments->findByReminder(array_map(function ($group) {
             return (int) $group->getId();
         }, $reminderGroups));
@@ -39,7 +39,7 @@ class GroupService
         foreach ($reminderPayments as $payment) {
             try {
                 $this->commandBus->handle(new SendPaymentReminder($payment->getId(), true));
-                $count++;
+                ++$count;
             } catch (OAuthNotSet) {
                 $this->logger->error('OAuth not set');
             } catch (InvalidBankAccount) {
@@ -53,6 +53,6 @@ class GroupService
             }
         }
 
-        $this->logger->info('Sent reminders for ' . $count . ' payments');
+        $this->logger->info('Sent reminders for '.$count.' payments');
     }
 }

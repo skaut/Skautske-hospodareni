@@ -21,7 +21,7 @@ final class SQLLogger implements \Doctrine\DBAL\Logging\SQLLogger
      * @param mixed[]|null $types
      */
     // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
-    public function startQuery($sql, array|null $params = null, array|null $types = null): void
+    public function startQuery($sql, ?array $params = null, ?array $types = null): void
     {
         $context = [
             'sql' => $sql,

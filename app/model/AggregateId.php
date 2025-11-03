@@ -20,9 +20,7 @@ class AggregateId
         $normalizedId = $this->normalize($id);
 
         if ($normalizedId === null) {
-            throw new InvalidArgumentException(
-                sprintf('Invalid id "%s", valid ID is either UUIDv4 or legacy numeric string', $id),
-            );
+            throw new InvalidArgumentException(sprintf('Invalid id "%s", valid ID is either UUIDv4 or legacy numeric string', $id));
         }
 
         $this->id = $normalizedId;
@@ -64,7 +62,7 @@ class AggregateId
         return $otherValueObject->id === $this->id;
     }
 
-    private function normalize(string $id): string|null
+    private function normalize(string $id): ?string
     {
         $uuid = Uuid::fromString($id);
 

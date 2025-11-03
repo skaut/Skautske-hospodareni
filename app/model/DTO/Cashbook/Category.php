@@ -8,10 +8,10 @@ use Model\Cashbook\Operation;
 use Nette\SmartObject;
 
 /**
- * @property-read int       $id
- * @property-read string    $name
- * @property-read string    $shortcut
- * @property-read Operation $operationType
+ * @property int       $id
+ * @property string    $name
+ * @property string    $shortcut
+ * @property Operation $operationType
  */
 class Category
 {

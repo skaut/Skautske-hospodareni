@@ -37,7 +37,7 @@ class BankAccountsPresenter extends BasePresenter
 {
     private const DAYS_BACK = 60;
 
-    private int|null $id = null;
+    private ?int $id = null;
 
     public function __construct(private IBankAccountFormFactory $formFactory, private BankAccountService $accounts)
     {
@@ -121,7 +121,7 @@ class BankAccountsPresenter extends BasePresenter
 
         $this->template->setParameters([
             'accounts' => $accounts,
-            'canEdit'  => $this->canEdit(),
+            'canEdit' => $this->canEdit(),
         ]);
     }
 
@@ -167,7 +167,7 @@ class BankAccountsPresenter extends BasePresenter
                 $groupNames[$g->getId()] = $g->getName();
             }
 
-            $preparedPayments         = $this->queryBus->handle(
+            $preparedPayments = $this->queryBus->handle(
                 new PreparedPairedPaymentsQuery(
                     new BankAccountId($id),
                 ),
@@ -184,7 +184,7 @@ class BankAccountsPresenter extends BasePresenter
 
             $templateParameters['groupNames'] = $groupNames;
 
-            $templateParameters['payments']                 = $paymentsByTransaction;
+            $templateParameters['payments'] = $paymentsByTransaction;
             $templateParameters['paymentsByVariableSymbol'] = $paymentsByVariableSymbol;
         } catch (TokenNotSet) {
             $templateParameters['warningMessage'] = 'Nemáte vyplněný token pro komunikaci s FIO';
@@ -211,7 +211,7 @@ class BankAccountsPresenter extends BasePresenter
         return;
     }
 
-    private function canEdit(int|null $unitId = null): bool
+    private function canEdit(?int $unitId = null): bool
     {
         return $this->authorizator->isAllowed(UnitResource::EDIT, $unitId ?? $this->getUnitId());
     }
@@ -281,7 +281,7 @@ class BankAccountsPresenter extends BasePresenter
         return false;
     }
 
-    private function findBankAccount(int $id): BankAccount|null
+    private function findBankAccount(int $id): ?BankAccount
     {
         return $this->accounts->find($id);
     }

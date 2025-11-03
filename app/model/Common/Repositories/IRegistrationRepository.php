@@ -10,7 +10,7 @@ use Model\Common\UnitId;
 interface IRegistrationRepository
 {
     /**
-     * Returns list of registrations for given unit sorted by year in descending order
+     * Returns list of registrations for given unit sorted by year in descending order.
      *
      * @return Registration[]
      */

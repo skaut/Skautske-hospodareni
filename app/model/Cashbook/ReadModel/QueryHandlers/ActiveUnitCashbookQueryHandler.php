@@ -15,7 +15,7 @@ final class ActiveUnitCashbookQueryHandler
     {
     }
 
-    public function __invoke(ActiveUnitCashbookQuery $query): UnitCashbook|null
+    public function __invoke(ActiveUnitCashbookQuery $query): ?UnitCashbook
     {
         $unit = $this->entityManager->find(Unit::class, $query->getUnitId());
 

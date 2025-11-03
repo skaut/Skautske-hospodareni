@@ -18,7 +18,7 @@ final class MemberNamesQueryHandler
     public function __invoke(MemberNamesQuery $query): array
     {
         $minimalAge = $query->getMinimalAge();
-        $today      = ChronosDate::today();
+        $today = ChronosDate::today();
 
         $names = [];
 

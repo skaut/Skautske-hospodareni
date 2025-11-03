@@ -13,15 +13,15 @@ class AuthService
     }
 
     /**
-     * vrací přihlašovací url
+     * vrací přihlašovací url.
      */
-    public function getLoginUrl(string|null $backlink): string
+    public function getLoginUrl(?string $backlink): string
     {
         return $this->skautis->getLoginUrl($backlink);
     }
 
     /**
-     * nastavuje základní udaje po prihlášení do SkautISu
+     * nastavuje základní udaje po prihlášení do SkautISu.
      */
     public function setInit(string $token, int $roleId, int $unitId): void
     {
@@ -29,7 +29,7 @@ class AuthService
     }
 
     /**
-     * vrací url pro odhlášení
+     * vrací url pro odhlášení.
      */
     public function getLogoutUrl(): string
     {

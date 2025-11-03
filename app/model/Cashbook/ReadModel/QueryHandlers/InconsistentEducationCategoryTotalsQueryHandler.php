@@ -29,8 +29,8 @@ class InconsistentEducationCategoryTotalsQueryHandler
         $skautisTotals = [];
 
         foreach ($this->educationCategories->findForEducation($query->getEducationId()->toInt(), $query->getYear()) as $educationCategory) {
-            $id       = $educationCategory->getId();
-            $total    = $educationCategory->getTotal();
+            $id = $educationCategory->getId();
+            $total = $educationCategory->getTotal();
             $category = $categories[$id];
 
             assert($category instanceof CategorySummary);

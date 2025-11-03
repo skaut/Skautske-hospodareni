@@ -54,7 +54,7 @@ class Payment extends Aggregate
     private Collection $emailRecipients;
 
     /** @ORM\Column(type="integer", nullable=true) */
-    private int|null $personId = null;
+    private ?int $personId = null;
 
     /** @ORM\Column(type="float") */
     private float $amount;
@@ -63,10 +63,10 @@ class Payment extends Aggregate
     private ChronosDate $dueDate;
 
     /** @ORM\Column(type="variable_symbol", nullable=true, length=10) */
-    private VariableSymbol|null $variableSymbol = null;
+    private ?VariableSymbol $variableSymbol = null;
 
     /** @ORM\Column(type="smallint", nullable=true) */
-    private int|null $constantSymbol = null;
+    private ?int $constantSymbol = null;
 
     /** @ORM\Column(type="string", length=64) */
     private string $note = '';
@@ -76,13 +76,13 @@ class Payment extends Aggregate
      *
      * @Nullable()
      */
-    private Transaction|null $transaction = null;
+    private ?Transaction $transaction = null;
 
     /** @ORM\Column(type="datetime_immutable", nullable=true) */
-    private DateTimeImmutable|null $closedAt = null;
+    private ?DateTimeImmutable $closedAt = null;
 
     /** @ORM\Column(type="string", length=64, nullable=true) */
-    private string|null $closedByUsername = null;
+    private ?string $closedByUsername = null;
 
     /**
      * @ORM\Column(type="string_enum", length=20)
@@ -107,22 +107,22 @@ class Payment extends Aggregate
         array $recipients,
         float $amount,
         ChronosDate $dueDate,
-        VariableSymbol|null $variableSymbol,
-        int|null $constantSymbol,
-        int|null $personId,
+        ?VariableSymbol $variableSymbol,
+        ?int $constantSymbol,
+        ?int $personId,
         string $note,
     ) {
         if ($amount <= 0) {
             throw new InvalidArgumentException('Payment amount must be larger than 0');
         }
 
-        $this->groupId  = $group->getId();
+        $this->groupId = $group->getId();
         $this->personId = $personId;
-        $this->state    = State::get(State::PREPARING);
-        $this->amount   = $amount;
+        $this->state = State::get(State::PREPARING);
+        $this->amount = $amount;
         $this->updateDetails($name, $recipients, $dueDate, $constantSymbol, $note);
         $this->variableSymbol = $variableSymbol;
-        $this->sentEmails     = new ArrayCollection();
+        $this->sentEmails = new ArrayCollection();
 
         $this->raise(new PaymentWasCreated($group->getId(), $variableSymbol));
     }
@@ -142,8 +142,8 @@ class Payment extends Aggregate
         array $recipients,
         float $amount,
         ChronosDate $dueDate,
-        VariableSymbol|null $variableSymbol,
-        int|null $constantSymbol,
+        ?VariableSymbol $variableSymbol,
+        ?int $constantSymbol,
         string $note,
     ): void {
         $this->checkNotClosed();
@@ -165,7 +165,7 @@ class Payment extends Aggregate
     private function complete(DateTimeImmutable $time): void
     {
         $this->checkNotClosed();
-        $this->state    = State::get(State::COMPLETED);
+        $this->state = State::get(State::COMPLETED);
         $this->closedAt = $time;
     }
 
@@ -194,7 +194,7 @@ class Payment extends Aggregate
             throw new PaymentClosed('Payment is already canceled!');
         }
 
-        $this->state    = State::get(State::CANCELED);
+        $this->state = State::get(State::CANCELED);
         $this->closedAt = $time;
     }
 
@@ -228,11 +228,11 @@ class Payment extends Aggregate
     public function getEmailRecipients(): array
     {
         return $this->emailRecipients
-            ->map(fn (EmailRecipient|null $recipient = null) => $recipient->getEmailAddress())
+            ->map(fn (?EmailRecipient $recipient = null) => $recipient->getEmailAddress())
             ->getValues();
     }
 
-    public function getPersonId(): int|null
+    public function getPersonId(): ?int
     {
         return $this->personId;
     }
@@ -247,12 +247,12 @@ class Payment extends Aggregate
         return $this->dueDate;
     }
 
-    public function getVariableSymbol(): VariableSymbol|null
+    public function getVariableSymbol(): ?VariableSymbol
     {
         return $this->variableSymbol;
     }
 
-    public function getConstantSymbol(): int|null
+    public function getConstantSymbol(): ?int
     {
         return $this->constantSymbol;
     }
@@ -262,17 +262,17 @@ class Payment extends Aggregate
         return $this->note;
     }
 
-    public function getTransaction(): Transaction|null
+    public function getTransaction(): ?Transaction
     {
         return $this->transaction;
     }
 
-    public function getClosedAt(): DateTimeImmutable|null
+    public function getClosedAt(): ?DateTimeImmutable
     {
         return $this->closedAt;
     }
 
-    public function getClosedByUsername(): string|null
+    public function getClosedByUsername(): ?string
     {
         return $this->closedByUsername;
     }
@@ -313,13 +313,13 @@ class Payment extends Aggregate
         string $name,
         array $recipients,
         ChronosDate $dueDate,
-        int|null $constantSymbol,
+        ?int $constantSymbol,
         string $note,
     ): void {
-        $this->name            = $name;
-        $this->dueDate         = $dueDate;
-        $this->constantSymbol  = $constantSymbol;
-        $this->note            = $note;
+        $this->name = $name;
+        $this->dueDate = $dueDate;
+        $this->constantSymbol = $constantSymbol;
+        $this->note = $note;
         $this->emailRecipients = new ArrayCollection(array_map(fn (EmailAddress $emailAddress) => new EmailRecipient($this, $emailAddress), array_unique($recipients)));
     }
 }

@@ -36,7 +36,7 @@ final class AddParticipantsPresenter extends BasePresenter
             $this->redirect(':Accountancy:Payment:GroupList:');
         }
 
-        $this->groupId      = $id;
+        $this->groupId = $id;
         $this->participants = $this->queryBus->handle(new EventParticipantsWithoutPaymentQuery($id));
 
         $this->template->setParameters([

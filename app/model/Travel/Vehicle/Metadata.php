@@ -18,7 +18,7 @@ class Metadata
 
     public function __construct(DateTimeImmutable $createdAt, string $authorName)
     {
-        $this->createdAt  = $createdAt;
+        $this->createdAt = $createdAt;
         $this->authorName = $authorName;
     }
 

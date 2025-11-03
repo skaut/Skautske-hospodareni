@@ -13,7 +13,7 @@ class Arrays
     use StaticClass;
 
     /**
-     * Groups given collection by key provided from $keyFunction
+     * Groups given collection by key provided from $keyFunction.
      *
      * @param mixed[] $collection
      * @param bool    $excludeNull Do not add item if keyFunction returns null

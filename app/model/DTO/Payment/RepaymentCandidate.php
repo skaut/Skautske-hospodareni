@@ -10,10 +10,10 @@ class RepaymentCandidate
 {
     public function __construct(
         private int $paymentId,
-        private int|null $personId,
+        private ?int $personId,
         private string $name,
         private float $amount,
-        private AccountNumber|null $bankAccount,
+        private ?AccountNumber $bankAccount,
     ) {
     }
 
@@ -22,7 +22,7 @@ class RepaymentCandidate
         return $this->paymentId;
     }
 
-    public function getPersonId(): int|null
+    public function getPersonId(): ?int
     {
         return $this->personId;
     }
@@ -37,7 +37,7 @@ class RepaymentCandidate
         return $this->amount;
     }
 
-    public function getBankAccount(): AccountNumber|null
+    public function getBankAccount(): ?AccountNumber
     {
         return $this->bankAccount;
     }

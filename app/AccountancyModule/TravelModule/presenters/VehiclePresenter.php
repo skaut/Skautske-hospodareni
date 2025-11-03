@@ -196,7 +196,7 @@ class VehiclePresenter extends BasePresenter
         $this->redirect('VehicleList:default');
     }
 
-    private function isVehicleEditable(VehicleDTO|null $vehicle): bool
+    private function isVehicleEditable(?VehicleDTO $vehicle): bool
     {
         if ($vehicle === null) {
             return false;

@@ -25,12 +25,12 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         $this->type = 'unit';
         $this->year = (int) $this->getParameter('year', date('Y'));
 
-        $user          = $this->getUser();
+        $user = $this->getUser();
         $readableUnits = $this->unitService->getReadUnits($user);
 
         $this->isReadable = $isReadable = isset($readableUnits[$this->unitId->toInt()]);
 
-        $role             = $this->queryBus->handle(new ActiveSkautisRoleQuery());
+        $role = $this->queryBus->handle(new ActiveSkautisRoleQuery());
         $this->isEditable = array_key_exists($this->unitId->toInt(), $this->queryBus->handle(new EditableUnitsQuery($role)));
 
         if ($this->isEditable) {
@@ -47,9 +47,9 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         $presenterName = explode(':', $this->getName());
 
         $this->template->setParameters([
-            'year'       => $this->year,
+            'year' => $this->year,
             'isEditable' => $this->isEditable,
-            'unitId'     => $this->unitId->toInt(),
+            'unitId' => $this->unitId->toInt(),
             'presenterName' => $presenterName[array_key_last($presenterName)],
         ]);
     }

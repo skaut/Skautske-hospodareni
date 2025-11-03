@@ -10,9 +10,9 @@ use Model\Cashbook\Cashbook\CashbookId;
 interface ICampCategoryUpdater
 {
     /**
-     * Updates statistics in Skautis
+     * Updates statistics in Skautis.
      *
-     * @param  array<int, float> $cashbookTotals Category totals indexed by category ID
+     * @param array<int, float> $cashbookTotals Category totals indexed by category ID
      *
      * @throws InvalidArgumentException
      */

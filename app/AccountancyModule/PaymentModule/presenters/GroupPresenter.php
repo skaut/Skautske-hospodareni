@@ -12,7 +12,7 @@ use Model\PaymentService;
 
 class GroupPresenter extends BasePresenter
 {
-    private Group|null $group = null;
+    private ?Group $group = null;
 
     public function __construct(private PaymentService $model, private IGroupFormFactory $groupFormFactory)
     {

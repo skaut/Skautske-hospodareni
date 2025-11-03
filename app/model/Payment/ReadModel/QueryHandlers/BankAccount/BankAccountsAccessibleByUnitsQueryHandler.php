@@ -26,7 +26,7 @@ final class BankAccountsAccessibleByUnitsQueryHandler
     /** @return BankAccount[] */
     public function __invoke(BankAccountsAccessibleByUnitsQuery $query): array
     {
-        $unitIds         = $query->getUnitIds();
+        $unitIds = $query->getUnitIds();
         $officialUnitIds = array_unique(array_map([$this->unitResolver, 'getOfficialUnitId'], $unitIds));
 
         $bankAccounts = [];

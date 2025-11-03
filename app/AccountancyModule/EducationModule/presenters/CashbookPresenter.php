@@ -41,7 +41,7 @@ class CashbookPresenter extends BasePresenter
     {
         parent::startup();
 
-        $this->isEditable = $this->isEditable || ( $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::UPDATE_REAL_BUDGET_SPENDING, $this->event->grantId->toInt()));
+        $this->isEditable = $this->isEditable || ($this->event->grantId !== null && $this->authorizator->isAllowed(Grant::UPDATE_REAL_BUDGET_SPENDING, $this->event->grantId->toInt()));
     }
 
     public function renderDefault(int $aid): void
@@ -115,10 +115,10 @@ class CashbookPresenter extends BasePresenter
             $this->redirect('default', ['aid' => $this->aid]);
         }
 
-        $purpose = 'úč. příspěvky ' . ($values->isAccount === 'Y' ? '- účet' : '- hotovost');
-        $body    = new ChitBody(null, $this->event->getStartDate(), null);
+        $purpose = 'úč. příspěvky '.($values->isAccount === 'Y' ? '- účet' : '- hotovost');
+        $body = new ChitBody(null, $this->event->getStartDate(), null);
 
-        $categoryId    = $this->queryBus->handle(
+        $categoryId = $this->queryBus->handle(
             new EducationParticipantCategoryIdQuery(new SkautisEducationId($this->aid), $this->event->startDate->year),
         );
         $categoriesDto = $this->queryBus->handle(new CategoryListQuery($this->getCashbookId()));

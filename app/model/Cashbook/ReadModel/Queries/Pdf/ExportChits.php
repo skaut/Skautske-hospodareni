@@ -10,16 +10,16 @@ use Model\Cashbook\Cashbook\CashbookId;
 final class ExportChits
 {
     /**
-     * Use static factory method
+     * Use static factory method.
      *
-     * @param int[]|NULL $chitIds
+     * @param int[]|null $chitIds
      */
-    private function __construct(private CashbookId $cashbookId, private array|null $chitIds = null)
+    private function __construct(private CashbookId $cashbookId, private ?array $chitIds = null)
     {
     }
 
     /** @param int[]|null $chitIds */
-    public static function withChitIds(CashbookId $cashbookId, array|null $chitIds): self
+    public static function withChitIds(CashbookId $cashbookId, ?array $chitIds): self
     {
         return new self($cashbookId, $chitIds);
     }
@@ -35,7 +35,7 @@ final class ExportChits
     }
 
     /** @return int[]|null */
-    public function getChitIds(): array|null
+    public function getChitIds(): ?array
     {
         return $this->chitIds;
     }

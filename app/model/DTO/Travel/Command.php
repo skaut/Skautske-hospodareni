@@ -11,38 +11,38 @@ use Money\Money;
 use Nette\SmartObject;
 
 /**
- * @property-read int                       $id
- * @property-read int                       $unitId
- * @property-read int|NULL                  $vehicleId
- * @property-read Passenger                 $passenger
- * @property-read string                    $purpose
- * @property-read string                    $place
- * @property-read string                    $fellowPassengers
- * @property-read Money                     $fuelPrice
- * @property-read Money                     $amortizationPerKm
- * @property-read string                    $note
- * @property-read DateTimeImmutable|NULL $closedAt
- * @property-read Money                     $total
- * @property-read DateTimeImmutable|NULL $firstTravelDate
- * @property-read Money                     $pricePerKm
- * @property-read Money                     $fuelPricePerKm
- * @property-read string                    $state
- * @property-read TransportType[]           $transportTypes
- * @property-read string[]                  $transportTypePairs
- * @property-read string                    $unit
+ * @property int                    $id
+ * @property int                    $unitId
+ * @property int|null               $vehicleId
+ * @property Passenger              $passenger
+ * @property string                 $purpose
+ * @property string                 $place
+ * @property string                 $fellowPassengers
+ * @property Money                  $fuelPrice
+ * @property Money                  $amortizationPerKm
+ * @property string                 $note
+ * @property DateTimeImmutable|null $closedAt
+ * @property Money                  $total
+ * @property DateTimeImmutable|null $firstTravelDate
+ * @property Money                  $pricePerKm
+ * @property Money                  $fuelPricePerKm
+ * @property string                 $state
+ * @property TransportType[]        $transportTypes
+ * @property string[]               $transportTypePairs
+ * @property string                 $unit
  */
 class Command
 {
     use SmartObject;
 
-    public const STATE_CLOSED      = 'closed';
+    public const STATE_CLOSED = 'closed';
     public const STATE_IN_PROGRESS = 'in_progress';
 
     /** @param TransportType[] $transportTypes */
     public function __construct(
         private int $id,
         private int $unitId,
-        private int|null $vehicleId = null,
+        private ?int $vehicleId,
         private Passenger $passenger,
         private string $purpose,
         private string $place,
@@ -50,13 +50,13 @@ class Command
         private Money $fuelPrice,
         private Money $amortizationPerKm,
         private string $note,
-        private DateTimeImmutable|null $closedAt = null,
+        private ?DateTimeImmutable $closedAt,
         private Money $total,
-        private DateTimeImmutable|null $firstTravelDate = null,
+        private ?DateTimeImmutable $firstTravelDate,
         private Money $pricePerKm,
         private Money $fuelPricePerKm,
         private string $state,
-        private int|null $ownerId = null,
+        private ?int $ownerId,
         private array $transportTypes,
         private string $unit,
     ) {
@@ -72,7 +72,7 @@ class Command
         return $this->unitId;
     }
 
-    public function getVehicleId(): int|null
+    public function getVehicleId(): ?int
     {
         return $this->vehicleId;
     }
@@ -112,7 +112,7 @@ class Command
         return $this->note;
     }
 
-    public function getClosedAt(): DateTimeImmutable|null
+    public function getClosedAt(): ?DateTimeImmutable
     {
         return $this->closedAt;
     }
@@ -122,7 +122,7 @@ class Command
         return $this->total;
     }
 
-    public function getFirstTravelDate(): DateTimeImmutable|null
+    public function getFirstTravelDate(): ?DateTimeImmutable
     {
         return $this->firstTravelDate;
     }
@@ -142,7 +142,7 @@ class Command
         return $this->state;
     }
 
-    public function getOwnerId(): int|null
+    public function getOwnerId(): ?int
     {
         return $this->ownerId;
     }

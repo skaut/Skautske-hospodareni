@@ -8,7 +8,7 @@ use Model\Cashbook\ReadModel\QueryHandlers\InconsistentEducationCategoryTotalsQu
 use Model\Event\SkautisEducationId;
 
 /**
- * Returns categories with different total in app and Skautis
+ * Returns categories with different total in app and Skautis.
  *
  * @see InconsistentEducationCategoryTotalsQueryHandler
  */

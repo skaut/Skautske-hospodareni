@@ -61,7 +61,7 @@ final class EventRepository implements IEventRepository
         ], 'eventGeneral');
     }
 
-    public function getNewestEventId(): int|null
+    public function getNewestEventId(): ?int
     {
         $events = $this->webService->eventGeneralAll(['IsRelation' => true]);
 

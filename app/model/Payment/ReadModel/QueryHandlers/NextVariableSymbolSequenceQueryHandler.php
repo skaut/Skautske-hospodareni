@@ -28,9 +28,9 @@ class NextVariableSymbolSequenceQueryHandler
     {
     }
 
-    public function __invoke(NextVariableSymbolSequenceQuery $query): VariableSymbol|null
+    public function __invoke(NextVariableSymbolSequenceQuery $query): ?VariableSymbol
     {
-        $now                = $query->getNow();
+        $now = $query->getNow();
         $groupIncrementPart = $this->getGroupIncrement($query->getUnitId(), $now);
 
         if (Strings::length($groupIncrementPart) > 2) {
@@ -39,7 +39,7 @@ class NextVariableSymbolSequenceQueryHandler
 
         $unitPart = $this->getLastDigitsOfUnitNumber($query->getUnitId());
 
-        return new VariableSymbol($now->format('y') . $unitPart . $groupIncrementPart . '001');
+        return new VariableSymbol($now->format('y').$unitPart.$groupIncrementPart.'001');
     }
 
     private function getGroupIncrement(int $unitId, DateTimeImmutable $now): string

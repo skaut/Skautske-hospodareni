@@ -21,7 +21,7 @@ use function sprintf;
 
 class DefaultPresenter extends BasePresenter
 {
-    public const DEFAULT_STATE = 'draft'; //filtrovani zobrazených položek
+    public const DEFAULT_STATE = 'draft'; // filtrovani zobrazených položek
 
     public function __construct(private IExportDialogFactory $exportDialogFactory, private GridFactory $gridFactory)
     {
@@ -65,7 +65,7 @@ class DefaultPresenter extends BasePresenter
     protected function createComponentGrid(): DataGrid
     {
         $grid = $this->gridFactory->createSimpleGrid(
-            __DIR__ . '/../templates/Default/@eventsGrid.latte',
+            __DIR__.'/../templates/Default/@eventsGrid.latte',
             ['accessCreate' => $this->authorizator->isAllowed(EventResource::CREATE, null)],
         );
 
@@ -90,7 +90,7 @@ class DefaultPresenter extends BasePresenter
 
         $states = array_merge([DataGrid::OPTION_ALL => 'Nezrušené'], $this->queryBus->handle(new EventStates()));
         $grid->addFilterSelect('state', 'Stav', $states)
-            ->setCondition(function (EventListDataSource $dataSource, string|null $state): void {
+            ->setCondition(function (EventListDataSource $dataSource, ?string $state): void {
                 $dataSource->filterByState($state === DataGrid::OPTION_ALL ? null : $state);
             });
 

@@ -13,7 +13,7 @@ class NotificationsCollector
     public const ERROR = 'error';
 
     /**
-     * notification type => [message => number of notifications with this message]
+     * notification type => [message => number of notifications with this message].
      *
      * @var array<string, array<string, int>>
      */
@@ -27,7 +27,7 @@ class NotificationsCollector
     }
 
     /**
-     * Returns collected notifications and clears notifications queue
+     * Returns collected notifications and clears notifications queue.
      *
      * @return array<(string|int)[]> Array of (type, message, count) tuples i.e. [["info", "Something happened", 2]]
      */

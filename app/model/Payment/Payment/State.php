@@ -9,7 +9,7 @@ use Consistence\Enum\Enum;
 /** @method string getValue() */
 class State extends Enum
 {
-    public const CANCELED  = 'canceled';
+    public const CANCELED = 'canceled';
     public const COMPLETED = 'completed';
     public const PREPARING = 'preparing';
 

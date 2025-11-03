@@ -71,8 +71,8 @@ final class ExportEventsHandler
     /** @param array<int, Event> $events */
     private function setSheetEvents(Worksheet $sheet, array $events): void
     {
-        $scopes                     = $this->queryBus->handle(new EventScopes());
-        $types                      = $this->queryBus->handle(new EventTypes());
+        $scopes = $this->queryBus->handle(new EventScopes());
+        $types = $this->queryBus->handle(new EventTypes());
         $pragueParticipantsPerEvent = $this->getPragueParticipantsForEvents($events);
 
         foreach ($events as $index => $event) {
@@ -90,30 +90,30 @@ final class ExportEventsHandler
             $functions = $this->queryBus->handle(new EventFunctions($event->getId()));
             assert($functions instanceof Functions);
 
-            $leader     = $functions->getLeader()?->getName();
+            $leader = $functions->getLeader()?->getName();
             $accountant = $functions->getAccountant()?->getName();
 
             $sheet
-                ->setCellValue('A' . $row, $event->getUnitName())
-                ->setCellValue('B' . $row, $event->getDisplayName())
-                ->setCellValue('C' . $row, $event->getUnitEducativeName() ?? '')
-                ->setCellValue('D' . $row, $types[$event->getTypeId()])
-                ->setCellValue('E' . $row, $scopes[$event->getScopeId()])
-                ->setCellValue('F' . $row, $event->getLocation())
-                ->setCellValue('G' . $row, $leader)
-                ->setCellValue('H' . $row, $accountant)
-                ->setCellValue('I' . $row, $event->getStartDate()->format('d.m.Y'))
-                ->setCellValue('J' . $row, $event->getEndDate()->format('d.m.Y'))
-                ->setCellValue('K' . $row, $event->getTotalDays())
-                ->setCellValue('L' . $row, $event->getRealCount())
-                ->setCellValue('M' . $row, $event->getRealPersonDays())
-                ->setCellValue('N' . $row, $event->getRealChildDays())
-                ->setCellValue('O' . $row, $statistics[1]->getCount())
-                ->setCellValue('P' . $row, $statistics[2]->getCount())
-                ->setCellValue('Q' . $row, $statistics[3]->getCount())
-                ->setCellValue('R' . $row, $statistics[4]->getCount())
-                ->setCellValue('S' . $row, $statistics[5]->getCount())
-                ->setCellValue('T' . $row, $this->getCashbookPrefix($event));
+                ->setCellValue('A'.$row, $event->getUnitName())
+                ->setCellValue('B'.$row, $event->getDisplayName())
+                ->setCellValue('C'.$row, $event->getUnitEducativeName() ?? '')
+                ->setCellValue('D'.$row, $types[$event->getTypeId()])
+                ->setCellValue('E'.$row, $scopes[$event->getScopeId()])
+                ->setCellValue('F'.$row, $event->getLocation())
+                ->setCellValue('G'.$row, $leader)
+                ->setCellValue('H'.$row, $accountant)
+                ->setCellValue('I'.$row, $event->getStartDate()->format('d.m.Y'))
+                ->setCellValue('J'.$row, $event->getEndDate()->format('d.m.Y'))
+                ->setCellValue('K'.$row, $event->getTotalDays())
+                ->setCellValue('L'.$row, $event->getRealCount())
+                ->setCellValue('M'.$row, $event->getRealPersonDays())
+                ->setCellValue('N'.$row, $event->getRealChildDays())
+                ->setCellValue('O'.$row, $statistics[1]->getCount())
+                ->setCellValue('P'.$row, $statistics[2]->getCount())
+                ->setCellValue('Q'.$row, $statistics[3]->getCount())
+                ->setCellValue('R'.$row, $statistics[4]->getCount())
+                ->setCellValue('S'.$row, $statistics[5]->getCount())
+                ->setCellValue('T'.$row, $this->getCashbookPrefix($event));
 
             if (! array_key_exists($event->getId()->toInt(), $pragueParticipantsPerEvent)) {
                 continue;
@@ -121,22 +121,22 @@ final class ExportEventsHandler
 
             $pragueParticipants = $pragueParticipantsPerEvent[$event->getId()->toInt()];
 
-            $sheet->setCellValue('U' . $row, $pragueParticipants->isSupportable($event->getTotalDays()) ? 'Ano' : 'Ne')
-                ->setCellValue('V' . $row, $pragueParticipants->getPersonDaysUnder26())
-                ->setCellValue('W' . $row, $pragueParticipants->getUnder18())
-                ->setCellValue('X' . $row, $pragueParticipants->getBetween18and26())
-                ->setCellValue('Y' . $row, $pragueParticipants->getCitizensCount());
+            $sheet->setCellValue('U'.$row, $pragueParticipants->isSupportable($event->getTotalDays()) ? 'Ano' : 'Ne')
+                ->setCellValue('V'.$row, $pragueParticipants->getPersonDaysUnder26())
+                ->setCellValue('W'.$row, $pragueParticipants->getUnder18())
+                ->setCellValue('X'.$row, $pragueParticipants->getBetween18and26())
+                ->setCellValue('Y'.$row, $pragueParticipants->getCitizensCount());
         }
 
         $lastColumn = $pragueParticipantsPerEvent !== [] ? 'W' : 'S';
 
-        //format
+        // format
         foreach (Range::letters('A', $lastColumn) as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
 
-        $sheet->getStyle('A1:' . $lastColumn . '1')->getFont()->setBold(true);
-        $sheet->setAutoFilter('A1:' . $lastColumn . (count($events) + 2));
+        $sheet->getStyle('A1:'.$lastColumn.'1')->getFont()->setBold(true);
+        $sheet->setAutoFilter('A1:'.$lastColumn.(count($events) + 2));
         $sheet->setTitle('Přehled akcí');
     }
 
@@ -177,7 +177,7 @@ final class ExportEventsHandler
             ->setWidth('200pt')->setHeight('50pt')->getText()
             ->createTextRun(
                 'Ověřte, zda jsou splněny další podmínky - např. akce konaná v době mimo školní '
-                . 'vyučování (u táborů prázdnin), cílovou skupinou je studující mládež do 26 let.',
+                .'vyučování (u táborů prázdnin), cílovou skupinou je studující mládež do 26 let.',
             );
     }
 
@@ -196,7 +196,7 @@ final class ExportEventsHandler
         $pragueParticipantsPerEvent = [];
 
         foreach ($events as $event) {
-            $participants =  $this->queryBus->handle(new EventPragueParticipantsQuery(
+            $participants = $this->queryBus->handle(new EventPragueParticipantsQuery(
                 $event->getId(),
                 $event->getRegistrationNumber(),
                 $event->getStartDate(),
@@ -212,7 +212,7 @@ final class ExportEventsHandler
         return $pragueParticipantsPerEvent;
     }
 
-    private function getCashbookPrefix(Event $event): string|null
+    private function getCashbookPrefix(Event $event): ?string
     {
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->getCashbookId($event)));
         assert($cashbook instanceof Cashbook);

@@ -36,7 +36,7 @@ class RoadworthyScan
 
     public function __construct(Vehicle $vehicle, FilePath $filePath)
     {
-        $this->vehicle  = $vehicle;
+        $this->vehicle = $vehicle;
         $this->filePath = $filePath;
     }
 

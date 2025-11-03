@@ -50,6 +50,6 @@ final class FieldFunction extends FunctionNode
             $parts[] = $v->dispatch($sqlWalker);
         }
 
-        return 'FIELD(' . implode(', ', $parts) . ')';
+        return 'FIELD('.implode(', ', $parts).')';
     }
 }

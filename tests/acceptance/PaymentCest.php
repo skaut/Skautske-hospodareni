@@ -17,7 +17,7 @@ class PaymentCest extends BaseAcceptanceCest
     {
         parent::_before($I);
 
-        $this->I    = $I;
+        $this->I = $I;
         $this->page = new Payment($I);
         $I->login(AcceptanceTester::UNIT_LEADER_ROLE);
     }
@@ -25,7 +25,7 @@ class PaymentCest extends BaseAcceptanceCest
     /** @group payment */
     public function createPaymentGroup(): void
     {
-        $I    = $this->I;
+        $I = $this->I;
         $page = $this->page;
 
         $I->wantTo('create payment group');

@@ -15,11 +15,11 @@ use function in_array;
 
 class CashbookType extends Enum
 {
-    public const EVENT         = 'general';
+    public const EVENT = 'general';
     public const OFFICIAL_UNIT = 'official_unit';
-    public const TROOP         = 'troop';
-    public const CAMP          = 'camp';
-    public const EDUCATION     = 'education';
+    public const TROOP = 'troop';
+    public const CAMP = 'camp';
+    public const EDUCATION = 'education';
 
     private const TRANSFER_FROM_CATEGORY_IDS = [
         self::OFFICIAL_UNIT => 9, // "Převod z pokladny střediska"

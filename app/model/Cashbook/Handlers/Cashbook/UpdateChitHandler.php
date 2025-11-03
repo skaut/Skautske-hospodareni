@@ -29,7 +29,7 @@ final class UpdateChitHandler
      */
     public function __invoke(UpdateChit $command): void
     {
-        $cashbook   = $this->cashbooks->find($command->getCashbookId());
+        $cashbook = $this->cashbooks->find($command->getCashbookId());
         $categories = $this->categories->findForCashbook($command->getCashbookId(), $cashbook->getType());
 
         $items = array_map(function (ChitItemDTO $item): ChitItem {

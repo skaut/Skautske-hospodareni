@@ -22,9 +22,7 @@ final class OAuthId
     {
         $uuid = Uuid::fromString($id);
         if ($uuid->getVersion() !== 4) {
-            throw new InvalidArgumentException(
-                sprintf('Invalid id "%s", valid ID is only UUIDv4', $id),
-            );
+            throw new InvalidArgumentException(sprintf('Invalid id "%s", valid ID is only UUIDv4', $id));
         }
 
         $this->id = $uuid->toString(); // valid UUID
@@ -40,7 +38,7 @@ final class OAuthId
         return new self($id);
     }
 
-    public static function fromStringOrNull(string|null $id): self|null
+    public static function fromStringOrNull(?string $id): ?self
     {
         if ($id === null) {
             return null;

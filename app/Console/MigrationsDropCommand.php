@@ -16,7 +16,7 @@ use function sprintf;
 class MigrationsDropCommand extends Command
 {
     // phpcs:disable SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
-    /** @var string|null $defaultName The default command name */
+    /** @var string|null The default command name */
     protected static $defaultName = 'migrations:drop-all-tables-views';
 
     public function __construct(private EntityManagerInterface $em)
@@ -39,7 +39,7 @@ class MigrationsDropCommand extends Command
             return Command::FAILURE;
         }
 
-        $conn          = $this->em->getConnection();
+        $conn = $this->em->getConnection();
         $schemaManager = $conn->getSchemaManager();
 
         // Drop tables

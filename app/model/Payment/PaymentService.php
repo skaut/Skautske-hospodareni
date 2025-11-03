@@ -63,7 +63,7 @@ class PaymentService
     ) {
     }
 
-    public function findPayment(int $id): DTO\Payment|null
+    public function findPayment(int $id): ?DTO\Payment
     {
         try {
             return DTO\PaymentFactory::create($this->payments->find($id));
@@ -89,7 +89,7 @@ class PaymentService
     }
 
     /**
-     * GROUP
+     * GROUP.
      */
 
     /**
@@ -123,15 +123,15 @@ class PaymentService
     /** @param EmailTemplate[] $emails */
     public function createGroup(
         int $unitId,
-        SkautisEntity|null $skautisEntity,
+        ?SkautisEntity $skautisEntity,
         string $label,
         PaymentDefaults $paymentDefaults,
         array $emails,
-        OAuthId|null $oAuthId,
-        int|null $bankAccountId,
+        ?OAuthId $oAuthId,
+        ?int $bankAccountId,
         bool $remindersEnabled = false,
     ): int {
-        $now         = new DateTimeImmutable();
+        $now = new DateTimeImmutable();
         $bankAccount = $bankAccountId !== null ? $this->bankAccounts->find($bankAccountId) : null;
 
         $group = new Group(
@@ -159,11 +159,11 @@ class PaymentService
         string $name,
         PaymentDefaults $paymentDefaults,
         array $emails,
-        OAuthId|null $oAuthId,
-        int|null $bankAccountId,
+        ?OAuthId $oAuthId,
+        ?int $bankAccountId,
         bool $remindersEnabled = false,
     ): void {
-        $group       = $this->groups->find($id);
+        $group = $this->groups->find($id);
         $bankAccount = $bankAccountId !== null ? $this->bankAccounts->find($bankAccountId) : null;
 
         $group->update($name, $paymentDefaults, $oAuthId, $bankAccount, $this->bankAccountAccessChecker, $this->oAuthAccessChecker, $remindersEnabled);
@@ -182,7 +182,7 @@ class PaymentService
         $this->groups->save($group);
     }
 
-    public function getGroup(int $id): DTO\Group|null
+    public function getGroup(int $id): ?DTO\Group
     {
         try {
             $group = $this->groups->find($id);
@@ -208,15 +208,15 @@ class PaymentService
         $this->groups->save($group);
     }
 
-    public function getMaxVariableSymbol(int $groupId): VariableSymbol|null
+    public function getMaxVariableSymbol(int $groupId): ?VariableSymbol
     {
         return $this->payments->getMaxVariableSymbol($groupId);
     }
 
     /**
-     * vrací nejvyšší hodnotu VS uvedenou ve skupině pro nezrušené platby
+     * vrací nejvyšší hodnotu VS uvedenou ve skupině pro nezrušené platby.
      */
-    public function getNextVS(int $groupId): VariableSymbol|null
+    public function getNextVS(int $groupId): ?VariableSymbol
     {
         $maxVs = $this->payments->getMaxVariableSymbol($groupId);
 
@@ -230,11 +230,11 @@ class PaymentService
     }
 
     /**
-     * REGISTRATION
+     * REGISTRATION.
      */
 
     /**
-     * seznam osob z registrace
+     * seznam osob z registrace.
      *
      * @param int[] $units
      * @param int   $groupId ID platebni skupiny, podle ktere se filtruji osoby bez platby
@@ -263,7 +263,7 @@ class PaymentService
             );
 
             $personsWithPayment = $this->getPersonsWithActivePayment($groupId);
-            $persons            = array_filter(
+            $persons = array_filter(
                 $persons,
                 function ($v) use ($personsWithPayment) {
                     return ! in_array($v->ID_Person, $personsWithPayment);
@@ -271,7 +271,7 @@ class PaymentService
             );
 
             foreach ($persons as $p) {
-                $result[$p->ID_Person]           = (array) $p;
+                $result[$p->ID_Person] = (array) $p;
                 $result[$p->ID_Person]['emails'] = $this->emails->findByMember($p->ID_Person);
             }
         }
@@ -280,7 +280,7 @@ class PaymentService
     }
 
     /** @return stdClass[] */
-    public function getPersonFromRegistration(int|null $registrationId, bool $includeChild = true): array
+    public function getPersonFromRegistration(?int $registrationId, bool $includeChild = true): array
     {
         $persons = $this->skautis->org->PersonRegistrationAll([
             'ID_UnitRegistration' => $registrationId,
@@ -308,7 +308,7 @@ class PaymentService
         }
 
         $registrationId = reset($registrations)->ID;
-        $registration   = $this->getPersonFromRegistration($registrationId, false);
+        $registration = $this->getPersonFromRegistration($registrationId, false);
 
         $regCategories = [];
         foreach ($this->skautis->org->RegistrationCategoryAll(['ID_UnitRegistration' => $registrationId]) as $rc) {
@@ -317,7 +317,7 @@ class PaymentService
 
         $unitJournals = $this->skautis->Journal->PersonJournalAllUnit(['ID_Unit' => $unitId, 'ShowHistory' => false, 'IncludeChild' => true]);
 
-        //seznam osob s casopisem
+        // seznam osob s casopisem
         $personIdsWithJournal = [];
         foreach ($unitJournals as $journal) {
             $personIdsWithJournal[$journal->ID_Person] = true;
@@ -325,7 +325,7 @@ class PaymentService
 
         foreach ($registration as $p) {
             $isRegisteredWithJournal = $regCategories[$p->ID_RegistrationCategory];
-            $hasPersonJournal        = array_key_exists($p->ID_Person, $personIdsWithJournal);
+            $hasPersonJournal = array_key_exists($p->ID_Person, $personIdsWithJournal);
             if ($hasPersonJournal && ! $isRegisteredWithJournal) {
                 $changes['remove'][] = $p->Person;
             } elseif (! $hasPersonJournal && $isRegisteredWithJournal) {
@@ -336,7 +336,7 @@ class PaymentService
         return $changes;
     }
 
-    public function getRegistrationYear(int $registrationId): int|null
+    public function getRegistrationYear(int $registrationId): ?int
     {
         $registration = $this->skautis->org->UnitRegistrationDetail(['ID' => $registrationId]);
 
@@ -344,7 +344,7 @@ class PaymentService
     }
 
     /**
-     * vrací seznam id táborů se založenou aktivní skupinou
+     * vrací seznam id táborů se založenou aktivní skupinou.
      *
      * @return mixed[]
      */

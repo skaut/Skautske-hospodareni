@@ -34,7 +34,7 @@ class CommandGrid extends BaseGridControl
         $vehicleIds = array_unique(array_filter($vehicleIds));
 
         $grid = $this->gridFactory->createSimpleGrid(
-            __DIR__ . '/templates/CommandGrid.latte',
+            __DIR__.'/templates/CommandGrid.latte',
             ['vehicles' => $this->travel->findVehiclesByIds($vehicleIds)],
         );
 

@@ -28,7 +28,7 @@ use function assert;
 use function explode;
 use function sprintf;
 
-/** @property-read DefaultTemplate $template */
+/** @property DefaultTemplate $template */
 abstract class BasePresenter extends Presenter
 {
     protected UserService $userService;
@@ -37,7 +37,7 @@ abstract class BasePresenter extends Presenter
 
     private string $appDir;
 
-    private int|null $unitId = null;
+    private ?int $unitId = null;
 
     protected CommandBus $commandBus;
 
@@ -70,17 +70,17 @@ abstract class BasePresenter extends Presenter
         LinkGenerator $linkGenerator,
         Context $appContext,
     ): void {
-        $this->userService            = $userService;
-        $this->unitService            = $unitService;
-        $this->commandBus             = $commandBus;
-        $this->queryBus               = $queryBus;
-        $this->authorizator           = $authorizator;
-        $this->loginPanelFactory      = $loginPanelFactory;
-        $this->darkModeToggleFactory  = $darkModeToggleFactory;
-        $this->logger                 = $logger;
+        $this->userService = $userService;
+        $this->unitService = $unitService;
+        $this->commandBus = $commandBus;
+        $this->queryBus = $queryBus;
+        $this->authorizator = $authorizator;
+        $this->loginPanelFactory = $loginPanelFactory;
+        $this->darkModeToggleFactory = $darkModeToggleFactory;
+        $this->logger = $logger;
         $this->notificationsCollector = $notificationsCollector;
-        $this->linkGenerator          = $linkGenerator;
-        $this->appContext             = $appContext;
+        $this->linkGenerator = $linkGenerator;
+        $this->appContext = $appContext;
     }
 
     protected function startup(): void
@@ -89,9 +89,9 @@ abstract class BasePresenter extends Presenter
 
         $this->appDir = $this->appContext->getAppDir();
 
-        //adresář s částmi šablon pro použití ve více modulech
+        // adresář s částmi šablon pro použití ve více modulech
         $this->template->setParameters([
-            'templateBlockDir' => $this->appDir . '/templateBlocks/',
+            'templateBlockDir' => $this->appDir.'/templateBlocks/',
             'backlink' => $backlink = $this->getParameter('backlink'),
             'testBackground' => $this->appContext->shouldShowTestBackground(),
         ]);
@@ -101,11 +101,11 @@ abstract class BasePresenter extends Presenter
         }
 
         try {
-            if ($this->getUser()->isLoggedIn()) { //prodluzuje přihlášení při každém požadavku
+            if ($this->getUser()->isLoggedIn()) { // prodluzuje přihlášení při každém požadavku
                 $this->userService->isLoggedIn();
             }
         } catch (AuthenticationException $e) {
-            if ($this->getName() !== 'Auth' || $this->params['action'] !== 'skautisLogout') { //pokud jde o odhlaseni, tak to nevadi
+            if ($this->getName() !== 'Auth' || $this->params['action'] !== 'skautisLogout') { // pokud jde o odhlaseni, tak to nevadi
                 throw $e;
             }
         }
@@ -140,7 +140,7 @@ abstract class BasePresenter extends Presenter
         }
     }
 
-    public function handleChangeRole(int|null $roleId = null): void
+    public function handleChangeRole(?int $roleId = null): void
     {
         if ($roleId === null) {
             throw new BadRequestException();
@@ -169,7 +169,7 @@ abstract class BasePresenter extends Presenter
     }
 
     /**
-     * Returns OFFICIAL unit ID
+     * Returns OFFICIAL unit ID.
      */
     public function getUnitId(): int
     {

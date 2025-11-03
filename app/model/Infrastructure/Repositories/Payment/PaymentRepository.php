@@ -36,9 +36,6 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
         return $payment;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function summarizeByGroup(array $groupIds): array
     {
         $states = [State::PREPARING, State::COMPLETED];
@@ -55,12 +52,12 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
             ->getResult();
 
         $amounts = array_fill_keys($groupIds, array_fill_keys($states, 0));
-        $counts  = array_fill_keys($groupIds, array_fill_keys($states, 0));
+        $counts = array_fill_keys($groupIds, array_fill_keys($states, 0));
 
         foreach ($res as $row) {
-            $id                           = (int) $row['groupId'];
+            $id = (int) $row['groupId'];
             $amounts[$id][$row['state']] += (float) $row['amount'];
-            $counts[$id][$row['state']]   = (int) $row['number'];
+            $counts[$id][$row['state']] = (int) $row['number'];
         }
 
         $summaries = array_fill_keys($groupIds, []);
@@ -74,17 +71,11 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
         return $summaries;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function findByGroup(int $groupId): array
     {
         return $this->findByMultipleGroups([$groupId]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function findByMultipleGroups(array $groupIds): array
     {
         Assert::thatAll($groupIds)->integer();
@@ -106,9 +97,6 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
             ->getResult();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function findByReminder(array $groupIds): array
     {
         Assert::thatAll($groupIds)->integer();
@@ -126,7 +114,7 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
             ->andWhere('p.dueDate <= :dueDate')
             ->andWhere(
                 'NOT EXISTS (
-            SELECT 1 FROM ' . Payment\SentEmail::class . ' se
+            SELECT 1 FROM '.Payment\SentEmail::class.' se
             WHERE se.payment = p AND se.type = :reminderType)',
             )
             ->setParameter('groupIds', $groupIds)
@@ -142,9 +130,6 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
         $this->saveAndDispatchEvents($payment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function saveMany(array $payments): void
     {
         if (empty($payments)) {
@@ -166,7 +151,7 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
         $entityManager->flush();
     }
 
-    public function getMaxVariableSymbol(int $groupId): VariableSymbol|null
+    public function getMaxVariableSymbol(int $groupId): ?VariableSymbol
     {
         $result = $this->getEntityManager()->createQueryBuilder()
             ->select('MAX(p.variableSymbol) as vs')

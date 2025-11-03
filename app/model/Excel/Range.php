@@ -13,7 +13,7 @@ final class Range
     use StaticClass;
 
     /**
-     * This method is workaround for static analysis bug
+     * This method is workaround for static analysis bug.
      *
      * @see https://github.com/phpstan/phpstan/issues/1201
      *

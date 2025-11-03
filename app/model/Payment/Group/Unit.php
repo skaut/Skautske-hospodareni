@@ -35,7 +35,7 @@ class Unit
 
     public function __construct(Group $group, int $unitId)
     {
-        $this->group  = $group;
+        $this->group = $group;
         $this->unitId = $unitId;
     }
 

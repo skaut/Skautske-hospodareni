@@ -17,8 +17,8 @@ class TravelFactoryTest extends Unit
 {
     public function testCreateListCorrectOrder(): void
     {
-        $firstDay      = new ChronosDate('2018-01-01');
-        $secondDay     = new ChronosDate('2018-01-02');
+        $firstDay = new ChronosDate('2018-01-01');
+        $secondDay = new ChronosDate('2018-01-02');
         $transportType = TransportType::get(TransportType::TRAIN);
 
         $travels = [
@@ -47,7 +47,7 @@ class TravelFactoryTest extends Unit
         $travels = TravelFactory::createList($command);
 
         $expectedOrder = [2, 1, 3];
-        $actualOrder   = array_map(static function (Travel $travel) {
+        $actualOrder = array_map(static function (Travel $travel) {
             return $travel->getId();
         }, $travels);
 

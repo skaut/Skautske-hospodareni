@@ -16,7 +16,7 @@ final class EventFactoryTest extends Unit
     public function testDraftEventCreation(): void
     {
         $factory = new EventFactory();
-        $event   = $factory->create($this->getDraftEvent());
+        $event = $factory->create($this->getDraftEvent());
         $this->assertEquals(new SkautisEventId(1402), $event->getId());
         $this->assertEquals(new UnitId(27266), $event->getUnitId());
         $this->assertTrue($event->getStartDate() instanceof ChronosDate);
@@ -26,7 +26,7 @@ final class EventFactoryTest extends Unit
     public function testClosedEventCreation(): void
     {
         $factory = new EventFactory();
-        $event   = $factory->create($this->getClosedEvent());
+        $event = $factory->create($this->getClosedEvent());
         $this->assertEquals('Jan Novák (Joe)', $event->getPersonClosed());
         $this->assertEquals(ChronosDate::create(2019, 9, 3), $event->getDateClosed());
     }

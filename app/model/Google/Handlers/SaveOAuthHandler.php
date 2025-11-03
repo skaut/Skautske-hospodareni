@@ -20,7 +20,7 @@ final class SaveOAuthHandler
     public function __invoke(SaveOAuth $command): void
     {
         $client = $this->googleService->getClient();
-        $token  = $client->fetchAccessTokenWithAuthCode($command->getCode());
+        $token = $client->fetchAccessTokenWithAuthCode($command->getCode());
         $client->setAccessToken($token);
         $email = (new Oauth2($client))->userinfo->get()->getEmail();
 

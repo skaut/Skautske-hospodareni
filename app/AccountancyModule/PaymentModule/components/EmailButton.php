@@ -24,19 +24,19 @@ use function array_filter;
 
 class EmailButton extends BaseControl
 {
-    public const NO_MAILER_MESSAGE       = 'Nemáte nastavený mail pro odesílání u skupiny';
+    public const NO_MAILER_MESSAGE = 'Nemáte nastavený mail pro odesílání u skupiny';
     public const NO_BANK_ACCOUNT_MESSAGE = 'Skupina nemá nastavený bankovní účet';
 
     public const NO_TEMPLATE_ASSIGNED = 'Skupina nemá nastavenou šablonu pro upomínku';
 
     /** @param Payment[] $payments */
-    public function __construct(private QueryBus $queryBus, private CommandBus $commandBus, private MailingService $mailing, private bool $isEditable, private array $payments, private Group|null $group)
+    public function __construct(private QueryBus $queryBus, private CommandBus $commandBus, private MailingService $mailing, private bool $isEditable, private array $payments, private ?Group $group)
     {
     }
 
     public function render(): void
     {
-        $email                = $this->queryBus->handle(new GroupEmailQuery($this->group->id, EmailType::get(EmailType::PAYMENT_REMINDER)));
+        $email = $this->queryBus->handle(new GroupEmailQuery($this->group->id, EmailType::get(EmailType::PAYMENT_REMINDER)));
         $paymentsForSendEmail = $this->paymentsAvailableForGroupInfoSending($this->payments);
 
         $this->template->setParameters([
@@ -44,7 +44,7 @@ class EmailButton extends BaseControl
             'isReminderSendActive' => $email !== null && $email->isEnabled(),
             'isGroupSendActive' => $this->group->getState() === 'open' && ! empty($paymentsForSendEmail),
         ]);
-        $this->template->setFile(__DIR__ . '/templates/EmailButton.latte');
+        $this->template->setFile(__DIR__.'/templates/EmailButton.latte');
         $this->template->render();
     }
 
@@ -60,7 +60,7 @@ class EmailButton extends BaseControl
     }
 
     /**
-     * rozešle všechny neposlané e-maily
+     * rozešle všechny neposlané e-maily.
      */
     public function handleSendGroup(): void
     {
@@ -81,7 +81,7 @@ class EmailButton extends BaseControl
 
         try {
             $email = $this->mailing->sendTestMail($this->group->id);
-            $this->presenter->flashMessage('Testovací e-mail byl odeslán na ' . $email . '.');
+            $this->presenter->flashMessage('Testovací e-mail byl odeslán na '.$email.'.');
         } catch (OAuthNotSet) {
             $this->presenter->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
         } catch (InvalidOAuth $e) {
@@ -103,7 +103,7 @@ class EmailButton extends BaseControl
         try {
             foreach ($payments as $payment) {
                 $this->commandBus->handle(new SendPaymentInfo($payment->getId()));
-                $sentCount++;
+                ++$sentCount;
             }
         } catch (OAuthNotSet) {
             $this->presenter->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
@@ -120,7 +120,7 @@ class EmailButton extends BaseControl
             $this->presenter->flashMessage(
                 $sentCount === 1
                     ? 'Informační e-mail byl odeslán'
-                    : 'Informační e-maily (' . $sentCount . ') byly odeslány',
+                    : 'Informační e-maily ('.$sentCount.') byly odeslány',
                 'success',
             );
         }
@@ -136,7 +136,7 @@ class EmailButton extends BaseControl
         try {
             foreach ($payments as $payment) {
                 $this->commandBus->handle(new SendPaymentReminder($payment->getId()));
-                $sentCount++;
+                ++$sentCount;
             }
         } catch (OAuthNotSet) {
             $this->presenter->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
@@ -156,7 +156,7 @@ class EmailButton extends BaseControl
             $this->presenter->flashMessage(
                 $sentCount === 1
                     ? 'E-mail s upomínkou byl odeslán'
-                    : 'E-maily s upomínkou  byly odeslány (celkem: ' . $sentCount . ')',
+                    : 'E-maily s upomínkou  byly odeslány (celkem: '.$sentCount.')',
                 'success',
             );
         }

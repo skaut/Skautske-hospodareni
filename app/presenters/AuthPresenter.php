@@ -23,33 +23,33 @@ class AuthPresenter extends BasePresenter
     }
 
     /**
-     * pokud je uziatel uz prihlasen, staci udelat referesh
+     * pokud je uziatel uz prihlasen, staci udelat referesh.
      */
-    public function actionDefault(string|null $backlink = null): void
+    public function actionDefault(?string $backlink = null): void
     {
         $this->redirect(':Default:');
     }
 
     /**
-     * přesměruje na stránku s přihlášením
+     * přesměruje na stránku s přihlášením.
      */
-    public function actionLogOnSkautIs(string|null $backlink = null): void
+    public function actionLogOnSkautIs(?string $backlink = null): void
     {
         if ($backlink !== null) {
-            $backlink = $this->getHttpRequest()->getUrl()->getBaseUrl() . $backlink;
+            $backlink = $this->getHttpRequest()->getUrl()->getBaseUrl().$backlink;
         }
 
         $this->redirectUrl($this->authService->getLoginUrl($backlink));
     }
 
     /**
-     * zajistuje zpracovani prihlaseni na skautIS
+     * zajistuje zpracovani prihlaseni na skautIS.
      */
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    public function actionSkautIS(string|null $ReturnUrl = null): void
+    public function actionSkautIS(?string $ReturnUrl = null): void
     {
         $post = $this->getRequest()->getPost();
-        if (! isset($post['skautIS_Token'])) { //pokud není nastavený token, tak zde nemá co dělat
+        if (! isset($post['skautIS_Token'])) { // pokud není nastavený token, tak zde nemá co dělat
             $this->redirect(':Default:');
         }
 
@@ -86,7 +86,7 @@ class AuthPresenter extends BasePresenter
         $this->redirect('Dashboard:default');
     }
 
-    public function actionAjax(string|null $backlink = null): void
+    public function actionAjax(?string $backlink = null): void
     {
         $this->template->setParameters(['backlink' => $backlink]);
         $this->flashMessage('Vypršel čas přihlášení. Přihlaste se prosím znovu.', 'warning');
@@ -95,7 +95,7 @@ class AuthPresenter extends BasePresenter
 
     /**
      * zajištuje odhlašení ze skautisu
-     * Skautis po svém odhlášení přesměruje na actionSkautisLogout
+     * Skautis po svém odhlášení přesměruje na actionSkautisLogout.
      */
     public function actionLogoutSIS(): void
     {
@@ -103,7 +103,7 @@ class AuthPresenter extends BasePresenter
     }
 
     /**
-     * slouží pouze jako návratová adresa po odhlášení ze skautisu
+     * slouží pouze jako návratová adresa po odhlášení ze skautisu.
      */
     public function actionSkautisLogout(): void
     {

@@ -18,7 +18,7 @@ class EducationParticipantBalanceQueryHandler
     public function __invoke(EducationParticipantBalanceQuery $query): float
     {
         $participantIncome = $this->queryBus->handle(new EducationParticipantIncomeQuery($query->getEducationId()));
-        $chitSum           = $this->queryBus->handle(new ParticipantChitSumQuery($query->getCashbookId()));
+        $chitSum = $this->queryBus->handle(new ParticipantChitSumQuery($query->getCashbookId()));
 
         return $participantIncome - $chitSum;
     }

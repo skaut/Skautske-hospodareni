@@ -13,50 +13,50 @@ use Model\Payment\VariableSymbol;
 final class PaymentDefaults
 {
     /** @ORM\Column(type="float", nullable=true) */
-    private float|null $amount = null;
+    private ?float $amount = null;
 
     /** @ORM\Column(type="chronos_date", nullable=true) */
-    private ChronosDate|null $dueDate = null;
+    private ?ChronosDate $dueDate = null;
 
     /** @ORM\Column(type="integer", nullable=true) */
-    private int|null $constantSymbol = null;
+    private ?int $constantSymbol = null;
 
     /** @ORM\Column(type="variable_symbol", nullable=true) */
-    private VariableSymbol|null $nextVariableSymbol = null;
+    private ?VariableSymbol $nextVariableSymbol = null;
 
     /** @throws DueDateIsNotWorkday */
     public function __construct(
-        float|null $amount,
-        ChronosDate|null $dueDate,
-        int|null $constantSymbol,
-        VariableSymbol|null $nextVariableSymbol,
+        ?float $amount,
+        ?ChronosDate $dueDate,
+        ?int $constantSymbol,
+        ?VariableSymbol $nextVariableSymbol,
     ) {
         if ($dueDate !== null && ! $dueDate->isWeekday()) {
             throw new DueDateIsNotWorkday();
         }
 
-        $this->amount             = $amount !== 0.0 ? $amount : null;
-        $this->dueDate            = $dueDate;
-        $this->constantSymbol     = $constantSymbol;
+        $this->amount = $amount !== 0.0 ? $amount : null;
+        $this->dueDate = $dueDate;
+        $this->constantSymbol = $constantSymbol;
         $this->nextVariableSymbol = $nextVariableSymbol;
     }
 
-    public function getAmount(): float|null
+    public function getAmount(): ?float
     {
         return $this->amount;
     }
 
-    public function getDueDate(): ChronosDate|null
+    public function getDueDate(): ?ChronosDate
     {
         return $this->dueDate;
     }
 
-    public function getConstantSymbol(): int|null
+    public function getConstantSymbol(): ?int
     {
         return $this->constantSymbol;
     }
 
-    public function getNextVariableSymbol(): VariableSymbol|null
+    public function getNextVariableSymbol(): ?VariableSymbol
     {
         return $this->nextVariableSymbol;
     }

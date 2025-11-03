@@ -20,7 +20,7 @@ class BigDecimalType extends DecimalType
         return self::NAME;
     }
 
-    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): string|null
+    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): ?string
     {
         if ($value instanceof BigDecimal) {
             return (string) $value;
@@ -33,7 +33,7 @@ class BigDecimalType extends DecimalType
         throw new InvalidArgumentException('BigDecimal field accepts only BigDecimal|null');
     }
 
-    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): BigDecimal|null
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?BigDecimal
     {
         if (is_numeric($value)) {
             return BigDecimal::of($value);

@@ -56,9 +56,9 @@ final class NoteForm extends BaseControl
 
         $this['form']->setDefaults(['note' => $cashbook->getNote()]);
 
-        $note    = nl2br(htmlspecialchars($cashbook->getNote()));
+        $note = nl2br(htmlspecialchars($cashbook->getNote()));
         $pattern = '~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i';
-        $note    = preg_replace($pattern, '<a href="$0" target="_blank" title="$0">$0</a>', $note);
+        $note = preg_replace($pattern, '<a href="$0" target="_blank" title="$0">$0</a>', $note);
 
         $this->template->setParameters([
             'isEditable' => $this->isEditable,
@@ -66,7 +66,7 @@ final class NoteForm extends BaseControl
             'note' => $note,
         ]);
 
-        $this->template->setFile(__DIR__ . '/templates/NoteForm.latte');
+        $this->template->setFile(__DIR__.'/templates/NoteForm.latte');
         $this->template->render();
     }
 

@@ -11,7 +11,7 @@ use PDOException;
 use function sleep;
 
 /**
- * Waits until database is ready
+ * Waits until database is ready.
  */
 final class WaitForDb extends Module
 {
@@ -30,7 +30,7 @@ final class WaitForDb extends Module
                     throw $e;
                 }
 
-                $retriesLeft--;
+                --$retriesLeft;
 
                 $this->debug('Connection to database refused, will retry in 5 seconds');
                 sleep(5);

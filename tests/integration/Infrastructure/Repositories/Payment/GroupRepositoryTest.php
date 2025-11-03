@@ -53,7 +53,7 @@ class GroupRepositoryTest extends IntegrationTest
 
         parent::_before();
 
-        $this->eventBus   = Mockery::mock(EventBus::class);
+        $this->eventBus = Mockery::mock(EventBus::class);
         $this->repository = new GroupRepository($this->entityManager, $this->eventBus);
     }
 
@@ -66,8 +66,8 @@ class GroupRepositoryTest extends IntegrationTest
 
     public function testFind(): void
     {
-        $createdAt       = new DateTimeImmutable(self::ROW['created_at']);
-        $lastPairing     = new DateTimeImmutable(self::ROW['last_pairing']);
+        $createdAt = new DateTimeImmutable(self::ROW['created_at']);
+        $lastPairing = new DateTimeImmutable(self::ROW['last_pairing']);
         $paymentDefaults = new Group\PaymentDefaults(
             self::ROW['amount'],
             new ChronosDate('2018-01-29'),

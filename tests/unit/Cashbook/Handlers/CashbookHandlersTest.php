@@ -102,8 +102,8 @@ final class CashbookHandlersTest extends Unit
         ];
     }
 
-    private function getCashbookId(): Cashbook\CashbookId
+    private function getCashbookId(): CashbookId
     {
-        return Cashbook\CashbookId::fromString('4cdc75f1-ed2b-49a0-a596-af44aae19d70');
+        return CashbookId::fromString('4cdc75f1-ed2b-49a0-a596-af44aae19d70');
     }
 }

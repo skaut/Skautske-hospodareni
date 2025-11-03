@@ -21,7 +21,7 @@ class MailPresenter extends BasePresenter
         parent::__construct();
     }
 
-    public function actionDefault(int|null $unitId = null): void
+    public function actionDefault(?int $unitId = null): void
     {
         if ($unitId === null) {
             $this->redirect('this', ['unitId' => $this->unitService->getUnitId()]);
@@ -34,8 +34,8 @@ class MailPresenter extends BasePresenter
         }
 
         $this->template->setParameters([
-            'oauthList'     => $this->queryBus->handle(new UnitOAuthListQuery($this->unitId)),
-            'list'          => $this->model->getAll($this->getEditableUnitIds()),
+            'oauthList' => $this->queryBus->handle(new UnitOAuthListQuery($this->unitId)),
+            'list' => $this->model->getAll($this->getEditableUnitIds()),
             'editableUnits' => $this->getEditableUnits(),
         ]);
     }
@@ -43,7 +43,7 @@ class MailPresenter extends BasePresenter
     public function handleRemoveOAuth(string $id): void
     {
         $oauthId = OAuthId::fromString($id);
-        $oauth   = $this->queryBus->handle(new OAuthQuery($oauthId));
+        $oauth = $this->queryBus->handle(new OAuthQuery($oauthId));
         if ($oauth === null) {
             $this->flashMessage('Google účet nenalezen!', 'warning');
             $this->redirect('default');

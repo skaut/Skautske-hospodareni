@@ -25,7 +25,7 @@ class YearSelectControl extends SelectBox
         return range(self::getYear(self::YEARS_RANGE[1]), self::getYear(self::YEARS_RANGE[0]));
     }
 
-    public function __construct(string|null $label = 'Rok', callable|null $filterCallback = null)
+    public function __construct(?string $label = 'Rok', ?callable $filterCallback = null)
     {
         $yearsDescending = $this->getYearsDescending();
 

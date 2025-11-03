@@ -87,7 +87,7 @@ final class GoogleRepositoryTest extends IntegrationTest
     public function testFindByUnitIdAndEmailThrowsExceptionIfAggregateDoesNotExist(): void
     {
         $unitId = new UnitId(1);
-        $email  = 'test@skaut.cz';
+        $email = 'test@skaut.cz';
 
         $repository = $this->repository();
 

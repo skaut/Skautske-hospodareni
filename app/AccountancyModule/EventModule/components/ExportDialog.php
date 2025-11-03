@@ -27,7 +27,7 @@ final class ExportDialog extends Dialog
     {
         parent::beforeRender();
 
-        $this->template->setFile(__DIR__ . '/templates/ExportDialog.latte');
+        $this->template->setFile(__DIR__.'/templates/ExportDialog.latte');
     }
 
     protected function createComponentForm(): BaseForm

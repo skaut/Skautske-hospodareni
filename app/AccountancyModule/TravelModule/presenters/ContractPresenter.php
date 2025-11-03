@@ -31,7 +31,7 @@ class ContractPresenter extends BasePresenter
         $this->setLayout('layout.new');
     }
 
-    private function isContractAccessible(Contract|null $contract): bool
+    private function isContractAccessible(?Contract $contract): bool
     {
         $identity = $this->getUser()->getIdentity();
 
@@ -40,7 +40,7 @@ class ContractPresenter extends BasePresenter
         return $contract !== null && array_key_exists($contract->getUnitId(), $identity->access[UserService::ACCESS_READ]);
     }
 
-    private function isContractEditable(Contract|null $contract): bool
+    private function isContractEditable(?Contract $contract): bool
     {
         $identity = $this->getUser()->getIdentity();
 
@@ -52,7 +52,7 @@ class ContractPresenter extends BasePresenter
     public function renderDefault(): void
     {
         $identity = $this->getUser()->getIdentity();
-        $unitId   = $this->officialUnit->getId();
+        $unitId = $this->officialUnit->getId();
 
         assert($identity instanceof SimpleIdentity);
 
@@ -78,7 +78,7 @@ class ContractPresenter extends BasePresenter
             return;
         }
 
-        $commands   = $this->travelService->getAllCommandsByContract($contract->getId());
+        $commands = $this->travelService->getAllCommandsByContract($contract->getId());
         $vehicleIds = array_filter(array_column($commands, 'vehicleId'));
 
         $this->template->setParameters([
@@ -106,14 +106,14 @@ class ContractPresenter extends BasePresenter
                 $templateName = 'ex.contract.noz.latte';
                 break;
             default:
-                throw new Exception('Neznámá šablona pro ' . $contract->getTemplateVersion());
+                throw new Exception('Neznámá šablona pro '.$contract->getTemplateVersion());
         }
 
         $template = $this->template;
-        $template->setFile(dirname(__FILE__) . '/../templates/Contract/' . $templateName);
+        $template->setFile(dirname(__FILE__).'/../templates/Contract/'.$templateName);
         $template->setParameters([
             'contract' => $contract,
-            'unit'     => $this->queryBus->handle(new UnitQuery($contract->getUnitId())),
+            'unit' => $this->queryBus->handle(new UnitQuery($contract->getUnitId())),
         ]);
 
         $this->pdf->render((string) $template, 'Smlouva-o-proplaceni-cestovnich-nahrad.pdf');

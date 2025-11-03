@@ -21,7 +21,7 @@ class InvoiceSettingPresenter extends BasePresenter
 
     public function renderPdf(): void
     {
-// Toto pole můžete předat do Latte šablony, např.: $latte->render('faktura.latte', $data);
+        // Toto pole můžete předat do Latte šablony, např.: $latte->render('faktura.latte', $data);
 
         $data = [
             // Data dodavatele (proměnná {$supplier->...})
@@ -128,7 +128,7 @@ class InvoiceSettingPresenter extends BasePresenter
 
     public function handleSend(BaseForm $form): void
     {
-        //dumpe('form',$form->isSubmitted()->name);
+        // dumpe('form',$form->isSubmitted()->name);
     }
 
     public function handleGetContactInfo(SubmitButton $button): void

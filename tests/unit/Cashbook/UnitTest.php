@@ -17,9 +17,9 @@ final class UnitTest extends TestCase
 {
     public function testCreateWithInitialCashbook(): void
     {
-        $id         = new UnitId(15);
+        $id = new UnitId(15);
         $cashbookId = CashbookId::generate();
-        $year       = 2018;
+        $year = 2018;
 
         $unit = new Unit($id, $cashbookId, $year);
 
@@ -41,7 +41,7 @@ final class UnitTest extends TestCase
 
     public function testCreateCashbook(): void
     {
-        $id   = new UnitId(15);
+        $id = new UnitId(15);
         $unit = new Unit($id, CashbookId::generate(), 2018);
         $unit->extractEventsToDispatch(); // clear events
 

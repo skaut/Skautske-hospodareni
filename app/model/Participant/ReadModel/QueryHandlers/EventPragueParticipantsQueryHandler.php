@@ -16,7 +16,7 @@ final class EventPragueParticipantsQueryHandler
     {
     }
 
-    public function __invoke(EventPragueParticipantsQuery $query): PragueParticipants|null
+    public function __invoke(EventPragueParticipantsQuery $query): ?PragueParticipants
     {
         if (! Strings::startsWith($query->getRegistrationNumber(), PragueParticipants::PRAGUE_UNIT_PREFIX)) {
             return null;

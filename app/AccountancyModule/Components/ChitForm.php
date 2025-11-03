@@ -99,7 +99,7 @@ final class ChitForm extends BaseControl
             'displayChitForm' => $this->displayChitForm,
         ]);
 
-        $this->template->setFile(__DIR__ . '/templates/ChitForm.latte');
+        $this->template->setFile(__DIR__.'/templates/ChitForm.latte');
         $this->template->render();
     }
 
@@ -212,7 +212,7 @@ final class ChitForm extends BaseControl
             ->setHtmlAttribute('class', 'form-control input-sm');
 
         $items = $form->addDynamic('items', function (Container $container) use ($typePicker): void {
-            $this->itemsCount++;
+            ++$this->itemsCount;
             $container->addText('purpose')
                 ->setMaxLength(120)
                 ->setRequired('Zadejte účel výplaty')
@@ -221,15 +221,15 @@ final class ChitForm extends BaseControl
 
             $container->addSelect('incomeCategories', null, $this->getCategoryPairsByType(Operation::get(Operation::INCOME)))
                 ->setHtmlAttribute('class', 'form-control input-sm')
-                ->setHtmlId('incomeCategories' . $this->itemsCount)
+                ->setHtmlId('incomeCategories'.$this->itemsCount)
                 ->addConditionOn($typePicker, Form::EQUAL, Operation::INCOME)
-                ->toggle('incomeCategories' . $this->itemsCount);
+                ->toggle('incomeCategories'.$this->itemsCount);
 
             $container->addSelect('expenseCategories', null, $this->getCategoryPairsByType(Operation::get(Operation::EXPENSE)))
                 ->setHtmlAttribute('class', 'form-control input-sm')
-                ->setHtmlId('expenseCategories' . $this->itemsCount)
+                ->setHtmlId('expenseCategories'.$this->itemsCount)
                 ->addConditionOn($typePicker, Form::EQUAL, Operation::EXPENSE)
-                ->toggle('expenseCategories' . $this->itemsCount);
+                ->toggle('expenseCategories'.$this->itemsCount);
 
             $container->addText('price')
                 ->setRequired('Musíte vyplnit částku')
@@ -294,7 +294,7 @@ final class ChitForm extends BaseControl
 
     private function removeItem(SubmitButton $button): void
     {
-        $container  = $button->getParent();
+        $container = $button->getParent();
         $replicator = $container->getParent();
         assert($replicator instanceof \Kdyby\Replicator\Container && $container instanceof Container);
         $replicator->remove($container, true);
@@ -307,17 +307,17 @@ final class ChitForm extends BaseControl
             $this->reload('Nemáte oprávnění upravovat pokladní knihu', 'danger');
         }
 
-        $chitId        = $values['pid'] !== '' ? (int) $values['pid'] : null;
-        $cashbookId    = $this->cashbookId;
-        $chitBody      = $this->buildChitBodyFromValues($values);
-        $method        = PaymentMethod::get($values->paymentMethod);
-        $items         = [];
-        $operation     = Operation::get($values->type);
+        $chitId = $values['pid'] !== '' ? (int) $values['pid'] : null;
+        $cashbookId = $this->cashbookId;
+        $chitBody = $this->buildChitBodyFromValues($values);
+        $method = PaymentMethod::get($values->paymentMethod);
+        $items = [];
+        $operation = Operation::get($values->type);
         $categoriesDto = $this->queryBus->handle(new CategoryListQuery($cashbookId));
 
         foreach ($values->items as $item) {
             $categoryId = $operation->equals(Operation::INCOME()) ? $item->incomeCategories : $item->expenseCategories;
-            $items[]    = new ChitItem(
+            $items[] = new ChitItem(
                 new Amount($item->price),
                 $categoriesDto[$categoryId],
                 $item->purpose,
@@ -334,7 +334,7 @@ final class ChitForm extends BaseControl
             }
 
             $this->reload();
-        } catch (InvalidArgumentException | CashbookNotFound $exc) {
+        } catch (InvalidArgumentException|CashbookNotFound $exc) {
             $this->flashMessage('Paragon se nepodařilo přidat do seznamu.', 'danger');
             $this->logger->error(sprintf('Can\'t add chit to cashbook (%s: %s)', $exc::class, $exc->getMessage()));
         } catch (ChitLocked) {
@@ -361,14 +361,14 @@ final class ChitForm extends BaseControl
     }
 
     /** @return string[] */
-    private function getCategoryPairsByType(Operation|null $operation): array
+    private function getCategoryPairsByType(?Operation $operation): array
     {
         return $this->queryBus->handle(new CategoryPairsQuery($this->cashbookId, $operation));
     }
 
     private function buildChitBodyFromValues(ArrayHash $values): ChitBody
     {
-        $number    = $values->num !== '' ? new ChitNumber($values->num) : null;
+        $number = $values->num !== '' ? new ChitNumber($values->num) : null;
         $recipient = $values->recipient !== '' ? new Recipient($values->recipient) : null;
 
         return new ChitBody($number, new ChronosDate($values->date), $recipient);

@@ -6,7 +6,7 @@ namespace Model\Payment;
 
 class User
 {
-    public function __construct(private int $id, private string $name, private string|null $email = null)
+    public function __construct(private int $id, private string $name, private ?string $email = null)
     {
     }
 
@@ -20,7 +20,7 @@ class User
         return $this->name;
     }
 
-    public function getEmail(): string|null
+    public function getEmail(): ?string
     {
         return $this->email;
     }

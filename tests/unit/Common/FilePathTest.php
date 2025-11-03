@@ -11,7 +11,7 @@ final class FilePathTest extends Unit
     public function testGenerateUniqPath(): void
     {
         $prefix = '';
-        $path   = '';
+        $path = '';
         $this->assertFalse(FilePath::generate($prefix, $path)->equals(FilePath::generate($prefix, $path)));
     }
 }

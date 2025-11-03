@@ -23,7 +23,7 @@ class CategoryListQueryHandler
      */
     public function __invoke(CategoryListQuery $query): array
     {
-        $cashbook   = $this->cashbooks->find($query->getCashbookId());
+        $cashbook = $this->cashbooks->find($query->getCashbookId());
         $categories = $this->categories->findForCashbook($cashbook->getId(), $cashbook->getType());
 
         $categoriesById = [];

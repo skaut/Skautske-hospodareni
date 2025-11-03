@@ -21,7 +21,7 @@ final class GroupProgress extends BaseControl
     {
         $template = $this->template;
 
-        $template->setFile(__DIR__ . '/templates/GroupProgress.latte');
+        $template->setFile(__DIR__.'/templates/GroupProgress.latte');
         $template->setParameters([
             'allPayments' => array_reduce(
                 $this->summaries,

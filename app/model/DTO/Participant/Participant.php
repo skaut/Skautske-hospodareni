@@ -10,23 +10,23 @@ use Model\Utils\MoneyFactory;
 use Nette\SmartObject;
 
 /**
- * @property-read int $id
- * @property-read int $personId
- * @property-read string $firstName
- * @property-read string $lastName
- * @property-read string $nickName
- * @property-read int|null $age
- * @property-read string $displayName
- * @property-read string $street
- * @property-read string $city
- * @property-read int $postcode
- * @property-read ChronosDate|null $birthday
- * @property-read string $unitRegistrationNumber
- * @property-read float $payment
- * @property-read float $repayment
- * @property-read string $onAccount
- * @property-read int $days
- * @property-read bool $isAccepted
+ * @property int              $id
+ * @property int              $personId
+ * @property string           $firstName
+ * @property string           $lastName
+ * @property string           $nickName
+ * @property int|null         $age
+ * @property string           $displayName
+ * @property string           $street
+ * @property string           $city
+ * @property int              $postcode
+ * @property ChronosDate|null $birthday
+ * @property string           $unitRegistrationNumber
+ * @property float            $payment
+ * @property float            $repayment
+ * @property string           $onAccount
+ * @property int              $days
+ * @property bool             $isAccepted
  */
 class Participant
 {
@@ -34,8 +34,25 @@ class Participant
 
     private Payment $paymentObj;
 
-    public function __construct(private int $id, private int $personId, private string $firstName, private string $lastName, private string|null $nickName = null, private int|null $age = null, private ChronosDate|null $birthday = null, private string $street, private string $city, private int $postcode, private string $state, private string $unit, private string $unitRegistrationNumber, private int $days, private bool $isAccepted, Payment $payment, private string|null $category = null)
-    {
+    public function __construct(
+        private int $id,
+        private int $personId,
+        private string $firstName,
+        private string $lastName,
+        private ?string $nickName,
+        private ?int $age,
+        private ?ChronosDate $birthday,
+        private string $street,
+        private string $city,
+        private int $postcode,
+        private string $state,
+        private string $unit,
+        private string $unitRegistrationNumber,
+        private int $days,
+        private bool $isAccepted,
+        Payment $payment,
+        private ?string $category,
+    ) {
         $this->paymentObj = $payment;
     }
 
@@ -59,17 +76,17 @@ class Participant
         return $this->lastName;
     }
 
-    public function getNickName(): string|null
+    public function getNickName(): ?string
     {
         return $this->nickName;
     }
 
-    public function getAge(): int|null
+    public function getAge(): ?int
     {
         return $this->age;
     }
 
-    public function getBirthday(): ChronosDate|null
+    public function getBirthday(): ?ChronosDate
     {
         return $this->birthday;
     }
@@ -106,7 +123,7 @@ class Participant
 
     public function getDisplayName(): string
     {
-        return $this->lastName . ' ' . $this->firstName . ($this->nickName !== null ? '(' . $this->nickName . ')' : '');
+        return $this->lastName.' '.$this->firstName.($this->nickName !== null ? '('.$this->nickName.')' : '');
     }
 
     public function getDays(): int

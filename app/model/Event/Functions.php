@@ -7,35 +7,35 @@ namespace Model\Event;
 use Nette\SmartObject;
 
 /**
- * @property-read Person|NULL $leader
- * @property-read Person|NULL $assistant
- * @property-read Person|NULL $accountant
- * @property-read Person|NULL $medic
+ * @property Person|null $leader
+ * @property Person|null $assistant
+ * @property Person|null $accountant
+ * @property Person|null $medic
  */
 class Functions
 {
     use SmartObject;
 
-    public function __construct(private Person|null $leader = null, private Person|null $assistant = null, private Person|null $accountant = null, private Person|null $medic = null)
+    public function __construct(private ?Person $leader = null, private ?Person $assistant = null, private ?Person $accountant = null, private ?Person $medic = null)
     {
     }
 
-    public function getLeader(): Person|null
+    public function getLeader(): ?Person
     {
         return $this->leader;
     }
 
-    public function getAssistant(): Person|null
+    public function getAssistant(): ?Person
     {
         return $this->assistant;
     }
 
-    public function getAccountant(): Person|null
+    public function getAccountant(): ?Person
     {
         return $this->accountant;
     }
 
-    public function getMedic(): Person|null
+    public function getMedic(): ?Person
     {
         return $this->medic;
     }

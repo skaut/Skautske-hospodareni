@@ -10,15 +10,15 @@ use Model\Skautis\ISkautisEvent;
 use Nette\SmartObject;
 
 /**
- * @property-read SkautisCampId $id
- * @property-read string $displayName
- * @property-read UnitId $unitId
- * @property-read string $unitName
- * @property-read ChronosDate $startDate
- * @property-read ChronosDate $endDate
- * @property-read string $location
- * @property-read string $state
- * @property-read string $registrationNumber
+ * @property SkautisCampId $id
+ * @property string        $displayName
+ * @property UnitId        $unitId
+ * @property string        $unitName
+ * @property ChronosDate   $startDate
+ * @property ChronosDate   $endDate
+ * @property string        $location
+ * @property string        $state
+ * @property string        $registrationNumber
  */
 class Camp implements ISkautisEvent
 {
@@ -37,10 +37,10 @@ class Camp implements ISkautisEvent
         private string $registrationNumber,
         private array $participatingUnits,
         private bool $isOnlineLogin,
-        private int|null $totalDays = null,
-        private ParticipantStatistics|null $participantStatistics = null,
-        private bool|null $realAutoComputed = null,
-        private bool|null $realTotalCostAutoComputed = null,
+        private ?int $totalDays = null,
+        private ?ParticipantStatistics $participantStatistics = null,
+        private ?bool $realAutoComputed = null,
+        private ?bool $realTotalCostAutoComputed = null,
     ) {
     }
 
@@ -95,22 +95,22 @@ class Camp implements ISkautisEvent
         return $this->participatingUnits;
     }
 
-    public function getTotalDays(): int|null
+    public function getTotalDays(): ?int
     {
         return $this->totalDays;
     }
 
-    public function getParticipantStatistics(): ParticipantStatistics|null
+    public function getParticipantStatistics(): ?ParticipantStatistics
     {
         return $this->participantStatistics;
     }
 
-    public function isRealAutoComputed(): bool|null
+    public function isRealAutoComputed(): ?bool
     {
         return $this->realAutoComputed;
     }
 
-    public function isRealTotalCostAutoComputed(): bool|null
+    public function isRealTotalCostAutoComputed(): ?bool
     {
         return $this->realTotalCostAutoComputed;
     }

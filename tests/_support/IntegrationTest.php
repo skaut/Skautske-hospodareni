@@ -24,7 +24,7 @@ abstract class IntegrationTest extends Codeception\Test\Unit
     /**
      * @return string[] FQCN of aggregate roots
      */
-    protected function getTestedAggregateRoots() : array
+    protected function getTestedAggregateRoots(): array
     {
         return [];
     }
@@ -37,17 +37,17 @@ abstract class IntegrationTest extends Codeception\Test\Unit
     {
         /** @var Contributte\Codeception\Module\NetteDIModule $module */
         $module = $this->getModule('Contributte\Codeception\Module\NetteDIModule');
-        $module->onCreateConfigurator[] = function (\Nette\Bootstrap\Configurator $configurator){
+        $module->onCreateConfigurator[] = function (Nette\Bootstrap\Configurator $configurator) {
             $configurator->addDynamicParameters(['env' => getenv()]);
         };
         parent::_setUp();
     }
 
-    protected function _before() : void
+    protected function _before(): void
     {
         $this->entityManager = $this->tester->grabService(EntityManager::class);
-        $this->metadata      = array_map([$this->entityManager, 'getClassMetadata'], $this->getTestedEntities());
-        $this->schemaTool    = new SchemaTool($this->entityManager);
+        $this->metadata = array_map([$this->entityManager, 'getClassMetadata'], $this->getTestedEntities());
+        $this->schemaTool = new SchemaTool($this->entityManager);
         // pro MySQL jistota kvůli FK
         $conn = $this->entityManager->getConnection();
         $conn->executeStatement('SET FOREIGN_KEY_CHECKS=0');
@@ -58,15 +58,14 @@ abstract class IntegrationTest extends Codeception\Test\Unit
         $this->schemaTool->createSchema($this->metadata);
     }
 
-    protected function _after() : void
+    protected function _after(): void
     {
         $this->schemaTool->dropSchema($this->metadata);
     }
 
-
     /**
      * Returns FQCN of entities used in test case.
-     * Database schema is generated from mapping of these entities
+     * Database schema is generated from mapping of these entities.
      *
      * @return string[]
      */
@@ -109,7 +108,7 @@ abstract class IntegrationTest extends Codeception\Test\Unit
     /**
      * @return string[]
      */
-    private function getChildEntityClasses(string $parentEntityClass) : array
+    private function getChildEntityClasses(string $parentEntityClass): array
     {
         $childEntities = [];
 

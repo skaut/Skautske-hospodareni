@@ -8,7 +8,7 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Handlers\Cashbook\UpdateCampCategoryTotalHandler;
 
 /**
- * Updates category total for camp in Skautis
+ * Updates category total for camp in Skautis.
  *
  * @see UpdateCampCategoryTotalHandler
  */

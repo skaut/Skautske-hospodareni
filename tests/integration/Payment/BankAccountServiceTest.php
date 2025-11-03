@@ -33,9 +33,9 @@ class BankAccountServiceTest extends IntegrationTest
         parent::_before();
 
         $this->bankAccountService = $this->tester->grabService(BankAccountService::class);
-        $this->bankAccounts       = $this->tester->grabService(IBankAccountRepository::class);
-        $this->groups             = $this->tester->grabService(IGroupRepository::class);
-        $this->unitResolver       = $this->tester->grabService(UnitResolverStub::class);
+        $this->bankAccounts = $this->tester->grabService(IBankAccountRepository::class);
+        $this->groups = $this->tester->grabService(IGroupRepository::class);
+        $this->unitResolver = $this->tester->grabService(UnitResolverStub::class);
     }
 
     /** @return string[] */
@@ -87,7 +87,7 @@ class BankAccountServiceTest extends IntegrationTest
     private function addGroup(int $unitId, BankAccount $account): void
     {
         $paymentDefaults = new Group\PaymentDefaults(null, null, null, null);
-        $emails          = Helpers::createEmails();
+        $emails = Helpers::createEmails();
 
         $group = new Group(
             [$unitId],

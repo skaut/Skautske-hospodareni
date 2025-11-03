@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace Tests\Http;
 
+use AllowDynamicProperties;
 use DateTimeInterface;
 use Nette\Http\IResponse;
 
-#[\AllowDynamicProperties]   // ← přidat
+#[AllowDynamicProperties] // ← přidat
 final class NoOpResponse implements IResponse
 {
     private int $code = IResponse::S200_OK;
 
-    public function setCode(int $code, string|null $reason = null): static
+    public function setCode(int $code, ?string $reason = null): static
     {
         $this->code = $code;
 
@@ -39,7 +40,7 @@ final class NoOpResponse implements IResponse
         return $this;
     }
 
-    public function getHeader(string $header): string|null
+    public function getHeader(string $header): ?string
     {
         return null;
     }
@@ -50,7 +51,7 @@ final class NoOpResponse implements IResponse
         return [];
     }
 
-    public function setExpiration(string|null $expire): static
+    public function setExpiration(?string $expire): static
     {
         return $this;
     }
@@ -60,27 +61,27 @@ final class NoOpResponse implements IResponse
         return false;
     }
 
-    public function setContentType(string $type, string|null $charset = null): static
+    public function setContentType(string $type, ?string $charset = null): static
     {
         return $this;
     }
 
     public function redirect(string $url, int $code = IResponse::S302_Found): void
     {
- /* no-op */
+        /* no-op */
     }
 
     /**
-     *  @param string|int|DateTimeInterface $expire time, value null means "until the browser session ends"
+     * @param string|int|DateTimeInterface $expire time, value null means "until the browser session ends"
      *
      * @return $this
      */
-    public function setCookie(string $name, string $value, $expire, string|null $path = null, string|null $domain = null, bool|null $secure = null, bool|null $httpOnly = null, string|null $sameSite = null): static
+    public function setCookie(string $name, string $value, $expire, ?string $path = null, ?string $domain = null, ?bool $secure = null, ?bool $httpOnly = null, ?string $sameSite = null): static
     {
         return $this;
     }
 
-    public function deleteCookie(string $name, string|null $path = null, string|null $domain = null, bool|null $secure = null): static
+    public function deleteCookie(string $name, ?string $path = null, ?string $domain = null, ?bool $secure = null): static
     {
         return $this;
     }

@@ -7,11 +7,11 @@ namespace Model\Event\ReadModel\Queries;
 /** @see EventStatsQueryHandler */
 final class EventStatsQuery
 {
-    public function __construct(private readonly int|null $year = null)
+    public function __construct(private readonly ?int $year = null)
     {
     }
 
-    public function getYear(): int|null
+    public function getYear(): ?int
     {
         return $this->year;
     }

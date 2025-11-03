@@ -10,10 +10,10 @@ use Nette\SmartObject;
 /**
  * @ORM\Embeddable()
  *
- * @property-read string    $name
- * @property-read string    $contact
- * @property-read string    $address
- * @property-read int|NULL  $contractId
+ * @property string   $name
+ * @property string   $contact
+ * @property string   $address
+ * @property int|null $contractId
  */
 final class Passenger
 {
@@ -29,17 +29,17 @@ final class Passenger
     private string $address;
 
     /** @ORM\Column(type="integer", nullable=true) */
-    private int|null $contractId = null;
+    private ?int $contractId = null;
 
     public function __construct(string $name, string $contact, string $address)
     {
-        $this->name    = $name;
+        $this->name = $name;
         $this->contact = $contact;
         $this->address = $address;
     }
 
     /**
-     * nezbytné pro řazení v Gridu cestovních příkazů
+     * nezbytné pro řazení v Gridu cestovních příkazů.
      */
     public function __toString(): string
     {
@@ -80,7 +80,7 @@ final class Passenger
         return $this->address;
     }
 
-    public function getContractId(): int|null
+    public function getContractId(): ?int
     {
         return $this->contractId;
     }

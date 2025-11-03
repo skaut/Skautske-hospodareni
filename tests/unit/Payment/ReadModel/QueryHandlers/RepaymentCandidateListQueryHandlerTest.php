@@ -30,7 +30,7 @@ use function count;
 final class RepaymentCandidateListQueryHandlerTest extends Unit
 {
     private const GROUP_ID = 1;
-    private const CAMP_ID  = 7;
+    private const CAMP_ID = 7;
 
     public function test(): void
     {
@@ -73,14 +73,14 @@ final class RepaymentCandidateListQueryHandlerTest extends Unit
 
         $repaymentCandidates = $handler(new RepaymentCandidateListQuery(self::GROUP_ID));
 
-        //total count of candidates
+        // total count of candidates
         $this->assertSame(3, count($repaymentCandidates));
 
-        //total amount of suggested repayments
+        // total amount of suggested repayments
         $this->assertSame(630.0, array_sum(array_map(fn (RepaymentCandidate $candidate) => $candidate->getAmount(), $repaymentCandidates)));
     }
 
-    private function createPayment(string $state, int|null $personId, float $amount, string|null $bankAccount): Payment
+    private function createPayment(string $state, ?int $personId, float $amount, ?string $bankAccount): Payment
     {
         return new Payment(
             1,

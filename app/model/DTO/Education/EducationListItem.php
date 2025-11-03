@@ -11,9 +11,9 @@ final class EducationListItem
     public function __construct(
         private int $id,
         private string $name,
-        private ChronosDate|null $startDate,
-        private ChronosDate|null $endDate,
-        private string|null $prefix = null,
+        private ?ChronosDate $startDate,
+        private ?ChronosDate $endDate,
+        private ?string $prefix,
     ) {
     }
 
@@ -27,17 +27,17 @@ final class EducationListItem
         return $this->name;
     }
 
-    public function getStartDate(): ChronosDate|null
+    public function getStartDate(): ?ChronosDate
     {
         return $this->startDate;
     }
 
-    public function getEndDate(): ChronosDate|null
+    public function getEndDate(): ?ChronosDate
     {
         return $this->endDate;
     }
 
-    public function getPrefix(): string|null
+    public function getPrefix(): ?string
     {
         return $this->prefix;
     }

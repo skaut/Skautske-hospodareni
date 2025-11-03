@@ -34,8 +34,8 @@ class Education extends Aggregate
 
     public function __construct(SkautisEducationId $id, int $year, CashbookId $cashbookId)
     {
-        $this->id         = $id;
-        $this->year       = $year;
+        $this->id = $id;
+        $this->year = $year;
         $this->cashbookId = $cashbookId;
     }
 

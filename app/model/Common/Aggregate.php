@@ -11,7 +11,7 @@ abstract class Aggregate
 
     /**
      * Adds event to aggregate event list,
-     * so it can be published to event bus before saving
+     * so it can be published to event bus before saving.
      */
     protected function raise(object $event): void
     {
@@ -19,13 +19,13 @@ abstract class Aggregate
     }
 
     /**
-     * Returns events to dispatch and clears events collection
+     * Returns events to dispatch and clears events collection.
      *
      * @return object[]
      */
     public function extractEventsToDispatch(): array
     {
-        $events                 = $this->eventsToDispatch;
+        $events = $this->eventsToDispatch;
         $this->eventsToDispatch = [];
 
         return $events;

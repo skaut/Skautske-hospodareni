@@ -6,7 +6,6 @@ namespace App\AccountancyModule\PaymentModule\RegistrationModule;
 
 use App\AccountancyModule\PaymentModule\BasePresenter;
 use App\AccountancyModule\PaymentModule\Components\GroupForm;
-use App\AccountancyModule\PaymentModule\Factories;
 use App\AccountancyModule\PaymentModule\Factories\IGroupFormFactory;
 use Assert\Assertion;
 use Cake\Chronos\ChronosDate;
@@ -22,7 +21,7 @@ class CreateGroupPresenter extends BasePresenter
 
     private IGroupFormFactory $groupFormFactory;
 
-    public function __construct(Factories\IGroupFormFactory $groupFormFactory)
+    public function __construct(IGroupFormFactory $groupFormFactory)
     {
         parent::__construct();
 
@@ -56,7 +55,7 @@ class CreateGroupPresenter extends BasePresenter
             new SkautisEntity($registration->getId(), Type::get(Type::REGISTRATION)),
         );
 
-        $form->fillName('Registrace ' . $registration->getYear());
+        $form->fillName('Registrace '.$registration->getYear());
         $form->fillDueDate(ChronosDate::create($registration->getYear(), 1, 15));
 
         return $form;

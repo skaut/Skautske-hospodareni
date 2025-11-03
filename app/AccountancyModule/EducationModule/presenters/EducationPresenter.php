@@ -42,7 +42,7 @@ class EducationPresenter extends BasePresenter
         parent::__construct();
     }
 
-    public function renderDefault(int|null $aid): void
+    public function renderDefault(?int $aid): void
     {
         if ($aid === null) {
             $this->redirect('Default:');
@@ -60,21 +60,21 @@ class EducationPresenter extends BasePresenter
             }
         }
 
-        $grant                         = $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::ACCESS_DETAIL, $this->event->grantId->toInt())
+        $grant = $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::ACCESS_DETAIL, $this->event->grantId->toInt())
             ? $this->queryBus->handle(new GrantQuery($this->event->grantId->toInt()))
             : null;
-        $terms                         = $this->queryBus->handle(new EducationTermsQuery($aid));
-        $instructors                   = $this->queryBus->handle(new EducationInstructorsQuery($aid));
-        $courseParticipationStats      = $this->authorizator->isAllowed(Education::ACCESS_COURSE_PARTICIPANTS, $aid)
+        $terms = $this->queryBus->handle(new EducationTermsQuery($aid));
+        $instructors = $this->queryBus->handle(new EducationInstructorsQuery($aid));
+        $courseParticipationStats = $this->authorizator->isAllowed(Education::ACCESS_COURSE_PARTICIPANTS, $aid)
             ? $this->queryBus->handle(new EducationCourseParticipationStatsQuery($aid))
             : null;
-        $courses                       = $this->queryBus->handle(new EducationCoursesQuery($aid));
-        $locations                     = $this->queryBus->handle(new EducationLocationsQuery($aid));
+        $courses = $this->queryBus->handle(new EducationCoursesQuery($aid));
+        $locations = $this->queryBus->handle(new EducationLocationsQuery($aid));
         $participantParticipationStats = $this->event->grantId !== null && $this->authorizator->isAllowed(Grant::ACCESS_PARTICIPANT_PARTICIPATION, $this->event->grantId->toInt())
             ? $this->queryBus->handle(new EducationParticipantParticipationStatsQuery($this->event->grantId->toInt()))
             : null;
 
-        $termLocationIds     = array_map(
+        $termLocationIds = array_map(
             static function (EducationTerm $term) {
                 return $term->locationId;
             },
@@ -88,9 +88,9 @@ class EducationPresenter extends BasePresenter
         );
 
         $this->template->setParameters([
-            'skautISUrl'               => $this->userService->getSkautisUrl(),
-            'canAccessReport'          => $this->authorizator->isAllowed(Education::ACCESS_DETAIL, $aid) && $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid) && $this->event->startDate !== null,
-            'location'                 => implode(
+            'skautISUrl' => $this->userService->getSkautisUrl(),
+            'canAccessReport' => $this->authorizator->isAllowed(Education::ACCESS_DETAIL, $aid) && $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid) && $this->event->startDate !== null,
+            'location' => implode(
                 ', ',
                 array_map(
                     static function (EducationLocation $location) {
@@ -99,24 +99,24 @@ class EducationPresenter extends BasePresenter
                     $locationsUsedInTerm,
                 ),
             ),
-            'functions'                => $this->authorizator->isAllowed(Education::ACCESS_FUNCTIONS, $aid)
+            'functions' => $this->authorizator->isAllowed(Education::ACCESS_FUNCTIONS, $aid)
                 ? $this->queryBus->handle(new EducationFunctions(new SkautisEducationId($aid)))
                 : null,
-            'finalRealBalance'         => $finalRealBalance,
-            'prefixCash'               => $cashbook?->getChitNumberPrefix(PaymentMethod::CASH()),
-            'prefixBank'               => $cashbook?->getChitNumberPrefix(PaymentMethod::BANK()),
-            'totalDays'                => EducationTerm::countTotalDays($terms),
-            'teamCount'                => count($instructors),
-            'participantsCapacity'     => self::propertySum($courseParticipationStats, 'capacity'),
-            'participantsAccepted'     => self::propertySum($courseParticipationStats, 'accepted'),
-            'personDaysEstimated'      => self::propertySum($courses, 'estimatedPersonDays'),
-            'personDaysReal'           => $participantParticipationStats !== null
+            'finalRealBalance' => $finalRealBalance,
+            'prefixCash' => $cashbook?->getChitNumberPrefix(PaymentMethod::CASH()),
+            'prefixBank' => $cashbook?->getChitNumberPrefix(PaymentMethod::BANK()),
+            'totalDays' => EducationTerm::countTotalDays($terms),
+            'teamCount' => count($instructors),
+            'participantsCapacity' => self::propertySum($courseParticipationStats, 'capacity'),
+            'participantsAccepted' => self::propertySum($courseParticipationStats, 'accepted'),
+            'personDaysEstimated' => self::propertySum($courses, 'estimatedPersonDays'),
+            'personDaysReal' => $participantParticipationStats !== null
                 ? self::propertySum($participantParticipationStats, 'totalDays')
                 : null,
-            'grantState'               => $grant?->state,
-            'grantAmountMax'           => $grant?->amountMax,
+            'grantState' => $grant?->state,
+            'grantAmountMax' => $grant?->amountMax,
             'grantAmountPerPersonDays' => $grant?->amountPerPersonDays,
-            'grantCostRatio'           => $grant?->costRatio,
+            'grantCostRatio' => $grant?->costRatio,
         ]);
 
         if (! $this->isAjax()) {
@@ -144,7 +144,7 @@ class EducationPresenter extends BasePresenter
      *
      * @template T
      */
-    private static function propertySum(array|null $arr, string $property): int|null
+    private static function propertySum(?array $arr, string $property): ?int
     {
         if ($arr === null) {
             return null;
@@ -157,7 +157,7 @@ class EducationPresenter extends BasePresenter
                 },
                 $arr,
             ),
-            static function (int|null $value) {
+            static function (?int $value) {
                 return $value !== null;
             },
         );

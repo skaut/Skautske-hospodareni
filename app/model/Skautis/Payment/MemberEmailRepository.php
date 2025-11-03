@@ -37,7 +37,7 @@ final class MemberEmailRepository implements IMemberEmailRepository
 
             $email = $c->Value;
             assert(is_string($email));
-            $emails[$email] =  ( $c->ParentType ?? $c->ContactType) . ' – ' . $email;
+            $emails[$email] = ($c->ParentType ?? $c->ContactType).' – '.$email;
         }
 
         try {
@@ -50,7 +50,7 @@ final class MemberEmailRepository implements IMemberEmailRepository
                 $email = $parent->Email;
                 assert(is_string($email));
 
-                $emails[$email] = $parent->ParentType . ' - ' . $email;
+                $emails[$email] = $parent->ParentType.' - '.$email;
             }
         } catch (PermissionException) {
         }

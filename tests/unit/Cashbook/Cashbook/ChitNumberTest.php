@@ -18,7 +18,7 @@ class ChitNumberTest extends Unit
 
         new ChitNumber($value);
 
-        $this->fail('Exception for \'' . $reason . '\' not thrown');
+        $this->fail('Exception for \''.$reason.'\' not thrown');
     }
 
     /** @dataProvider getValidNumbers */

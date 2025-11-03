@@ -66,13 +66,13 @@ class DetailPresenter extends BasePresenter
         try {
             $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId()));
         } catch (MissingCategory) {
-            $finalRealBalance  = null;
+            $finalRealBalance = null;
             $missingCategories = true;
         }
 
         $this->template->setParameters([
             'troops' => $troops,
-            'skautISUrl'   => $this->userService->getSkautisUrl(),
+            'skautISUrl' => $this->userService->getSkautisUrl(),
             'accessDetail' => $this->authorizator->isAllowed(Camp::ACCESS_DETAIL, $aid),
             'functions' => $this->authorizator->isAllowed(Camp::ACCESS_FUNCTIONS, $aid)
                 ? $this->queryBus->handle(new CampFunctions(new SkautisCampId($aid)))

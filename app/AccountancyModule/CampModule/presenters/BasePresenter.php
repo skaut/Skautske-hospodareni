@@ -34,7 +34,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         }
 
         $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($this->aid)));
-        $cashbook   = $this->queryBus->handle(new CashbookQuery($cashbookId));
+        $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
         assert($cashbook instanceof Cashbook);
 
         $this->isEditable = $this->authorizator->isAllowed(CampResource::UPDATE_REAL, $this->aid);
@@ -64,7 +64,7 @@ class BasePresenter extends \App\AccountancyModule\BasePresenter
         }
     }
 
-    protected function getCampId(): int|null
+    protected function getCampId(): ?int
     {
         return $this->aid;
     }

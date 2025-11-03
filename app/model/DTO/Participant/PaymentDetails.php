@@ -8,12 +8,12 @@ use Cake\Chronos\ChronosDate;
 use Nette\SmartObject;
 
 /**
- * @property-read int $personId
- * @property-read string|null $variableSymbol
- * @property-read float|null $price
- * @property-read string|null $paymentNote
- * @property-read int|null $specificSymbol
- * @property-read ChronosDate|null $paymentTerm
+ * @property int              $personId
+ * @property string|null      $variableSymbol
+ * @property float|null       $price
+ * @property string|null      $paymentNote
+ * @property int|null         $specificSymbol
+ * @property ChronosDate|null $paymentTerm
  */
 class PaymentDetails
 {
@@ -21,11 +21,11 @@ class PaymentDetails
 
     public function __construct(
         private int $personId,
-        private string|null $variableSymbol = null,
-        private float|null $price = null,
-        private string|null $paymentNote = null,
-        private int|null $specificSymbol = null,
-        private string|null $paymentTerm = null,
+        private ?string $variableSymbol,
+        private ?float $price,
+        private ?string $paymentNote,
+        private ?int $specificSymbol,
+        private ?string $paymentTerm,
     ) {
     }
 
@@ -34,27 +34,27 @@ class PaymentDetails
         return $this->personId;
     }
 
-    public function getVariableSymbol(): string|null
+    public function getVariableSymbol(): ?string
     {
         return $this->variableSymbol;
     }
 
-    public function getPrice(): float|null
+    public function getPrice(): ?float
     {
         return $this->price;
     }
 
-    public function getPaymentNote(): string|null
+    public function getPaymentNote(): ?string
     {
         return $this->paymentNote;
     }
 
-    public function getSpecificSymbol(): int|null
+    public function getSpecificSymbol(): ?int
     {
         return $this->specificSymbol;
     }
 
-    public function getPaymentTerm(): ChronosDate|null
+    public function getPaymentTerm(): ?ChronosDate
     {
         // fix weekends - cannot use weekend for due date
         if ($this->paymentTerm !== null) {

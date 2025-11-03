@@ -54,7 +54,7 @@ class Group
      *
      * @Nullable()
      */
-    private SkautisEntity|null $object = null;
+    private ?SkautisEntity $object = null;
 
     /** @ORM\Column(type="string", length=64) */
     private string $name;
@@ -66,7 +66,7 @@ class Group
     private string $state = self::STATE_OPEN;
 
     /** @ORM\Column(type="datetime_immutable", nullable=true) */
-    private DateTimeImmutable|null $createdAt = null;
+    private ?DateTimeImmutable $createdAt = null;
 
     /** @ORM\Column(type="boolean", options={"default"=0}) */
     private bool $isRemindersEnabled = false;
@@ -76,7 +76,7 @@ class Group
      *
      * @Nullable()
      */
-    private Group\BankAccount|null $bankAccount = null;
+    private ?Group\BankAccount $bankAccount = null;
 
     /**
      * @ORM\OneToMany(targetEntity=Email::class, mappedBy="group", cascade={"persist", "remove"}, orphanRemoval=true)
@@ -86,15 +86,15 @@ class Group
     private Collection $emails;
 
     /** @ORM\Column(type="oauth_id", nullable=true) */
-    private OAuthId|null $oauthId;
+    private ?OAuthId $oauthId;
 
     /** @ORM\Column(type="string", length=250) */
     private string $note = '';
 
     /** @ORM\Column(type="integer", nullable=true) */
-    private int|null $smtpId = null;
+    private ?int $smtpId = null;
 
-    public const STATE_OPEN   = 'open';
+    public const STATE_OPEN = 'open';
     public const STATE_CLOSED = 'closed';
 
     /**
@@ -103,32 +103,32 @@ class Group
      */
     public function __construct(
         array $unitIds,
-        SkautisEntity|null $object,
+        ?SkautisEntity $object,
         string $name,
         PaymentDefaults $paymentDefaults,
         DateTimeImmutable $createdAt,
         array $emails,
-        OAuthId|null $oAuthId,
-        BankAccount|null $bankAccount,
+        ?OAuthId $oAuthId,
+        ?BankAccount $bankAccount,
         IBankAccountAccessChecker $bankAccountAccessChecker,
         IOAuthAccessChecker $oAuthAccessChecker,
         bool $isRemindersEnabled = false,
     ) {
         Assertion::notEmpty($unitIds);
-        $this->object          = $object;
-        $this->name            = $name;
+        $this->object = $object;
+        $this->name = $name;
         $this->paymentDefaults = $paymentDefaults;
-        $this->createdAt       = $createdAt;
+        $this->createdAt = $createdAt;
 
         $this->emails = new ArrayCollection();
-        $this->units  = new ArrayCollection();
+        $this->units = new ArrayCollection();
 
         foreach ($unitIds as $unitId) {
             $this->units->add(new Unit($this, $unitId));
         }
 
         if (! isset($emails[EmailType::PAYMENT_INFO])) {
-            throw new InvalidArgumentException("Required email template '" . EmailType::PAYMENT_INFO . "' is missing");
+            throw new InvalidArgumentException("Required email template '".EmailType::PAYMENT_INFO."' is missing");
         }
 
         foreach ($emails as $typeKey => $template) {
@@ -143,8 +143,8 @@ class Group
     public function update(
         string $name,
         PaymentDefaults $paymentDefaults,
-        OAuthId|null $oAuthId,
-        BankAccount|null $bankAccount,
+        ?OAuthId $oAuthId,
+        ?BankAccount $bankAccount,
         IBankAccountAccessChecker $bankAccountAccessChecker,
         IOAuthAccessChecker $oAuthAccessChecker,
         bool $isRemindersEnabled = false,
@@ -152,9 +152,9 @@ class Group
         $this->changeBankAccount($bankAccount, $bankAccountAccessChecker);
         $this->changeOAuth($oAuthId, $oAuthAccessChecker);
 
-        $this->name               = $name;
-        $this->paymentDefaults    = $paymentDefaults;
-        $this->oauthId            = $oAuthId;
+        $this->name = $name;
+        $this->paymentDefaults = $paymentDefaults;
+        $this->oauthId = $oAuthId;
         $this->isRemindersEnabled = $isRemindersEnabled;
     }
 
@@ -165,7 +165,7 @@ class Group
         }
 
         $this->state = self::STATE_OPEN;
-        $this->note  = $note;
+        $this->note = $note;
     }
 
     public function close(string $note): void
@@ -175,7 +175,7 @@ class Group
         }
 
         $this->state = self::STATE_CLOSED;
-        $this->note  = $note;
+        $this->note = $note;
     }
 
     public function removeBankAccount(): void
@@ -207,7 +207,7 @@ class Group
         $this->oauthId = null;
     }
 
-    public function getId(): int|null
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -216,13 +216,13 @@ class Group
     public function getUnitIds(): array
     {
         return $this->units->map(
-            function (Unit|null $unit = null): int {
+            function (?Unit $unit = null): int {
                 return $unit->getUnitId();
             },
         )->toArray();
     }
 
-    public function getObject(): SkautisEntity|null
+    public function getObject(): ?SkautisEntity
     {
         return $this->object;
     }
@@ -237,17 +237,17 @@ class Group
         return $this->paymentDefaults;
     }
 
-    public function getDefaultAmount(): float|null
+    public function getDefaultAmount(): ?float
     {
         return $this->paymentDefaults->getAmount();
     }
 
-    public function getDueDate(): ChronosDate|null
+    public function getDueDate(): ?ChronosDate
     {
         return $this->paymentDefaults->getDueDate();
     }
 
-    public function getConstantSymbol(): int|null
+    public function getConstantSymbol(): ?int
     {
         return $this->paymentDefaults->getConstantSymbol();
     }
@@ -262,12 +262,12 @@ class Group
         return $this->isRemindersEnabled;
     }
 
-    public function getCreatedAt(): DateTimeImmutable|null
+    public function getCreatedAt(): ?DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function getEmailTemplate(EmailType $type): EmailTemplate|null
+    public function getEmailTemplate(EmailType $type): ?EmailTemplate
     {
         $email = $this->getEmail($type);
 
@@ -299,12 +299,12 @@ class Group
         $this->bankAccount = $this->bankAccount->invalidateLastPairing();
     }
 
-    public function getLastPairing(): DateTimeImmutable|null
+    public function getLastPairing(): ?DateTimeImmutable
     {
         return $this->bankAccount?->getLastPairing();
     }
 
-    public function getOauthId(): OAuthId|null
+    public function getOauthId(): ?OAuthId
     {
         return $this->oauthId;
     }
@@ -314,12 +314,12 @@ class Group
         return $this->note;
     }
 
-    public function getBankAccountId(): int|null
+    public function getBankAccountId(): ?int
     {
         return $this->bankAccount?->getId();
     }
 
-    private function changeBankAccount(BankAccount|null $bankAccount, IBankAccountAccessChecker $accessChecker): void
+    private function changeBankAccount(?BankAccount $bankAccount, IBankAccountAccessChecker $accessChecker): void
     {
         if ($bankAccount === null) {
             $this->bankAccount = null;
@@ -360,7 +360,7 @@ class Group
         $email->disable();
     }
 
-    private function getEmail(EmailType $type): Email|null
+    private function getEmail(EmailType $type): ?Email
     {
         foreach ($this->emails as $email) {
             assert($email instanceof Email);
@@ -378,7 +378,7 @@ class Group
         $this->oauthId = null;
     }
 
-    private function changeOAuth(OAuthId|null $oAuthId, IOAuthAccessChecker $checker): void
+    private function changeOAuth(?OAuthId $oAuthId, IOAuthAccessChecker $checker): void
     {
         $unitIds = $this->getUnitIds();
 

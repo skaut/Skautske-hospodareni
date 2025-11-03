@@ -46,8 +46,8 @@ class PaymentCompletedEmailTest extends IntegrationTest
         parent::_before();
 
         $this->paymentService = $this->tester->grabService(PaymentService::class);
-        $this->users          = $this->tester->grabService(UserRepositoryStub::class);
-        $this->commandBus     = $this->tester->grabService(CommandBus::class);
+        $this->users = $this->tester->grabService(UserRepositoryStub::class);
+        $this->commandBus = $this->tester->grabService(CommandBus::class);
     }
 
     /** @see bug https://github.com/skaut/Skautske-hospodareni/pull/511 */
@@ -85,7 +85,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
 
     public function testEmailIsSentWhenPaymentIsCompleted(): void
     {
-        $email   = new EmailTemplate('subject', 'body');
+        $email = new EmailTemplate('subject', 'body');
         $oAuthId = $this->createOAuth();
         $this->initEntities(
             [
@@ -102,14 +102,14 @@ class PaymentCompletedEmailTest extends IntegrationTest
     }
 
     /** @param EmailTemplate[]|null $emails */
-    private function initEntities(array|null $emails = null, string|null $paymentEmail = self::EMAIL, OAuthId|null $oAuthId = null): void
+    private function initEntities(?array $emails = null, ?string $paymentEmail = self::EMAIL, ?OAuthId $oAuthId = null): void
     {
         if ($oAuthId === null) {
             $oAuthId = OAuthId::generate();
         }
 
         $paymentDefaults = Helpers::createEmptyPaymentDefaults();
-        $emails        ??= [
+        $emails ??= [
             EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
         ];
 

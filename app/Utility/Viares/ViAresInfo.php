@@ -6,13 +6,13 @@ namespace Utility\Ares;
 
 class ViAresInfo
 {
-    private string|null $vat = null;
+    private ?string $vat = null;
 
-    private string|null $companyName = null;
-    private string|null $name        = null;
-    private string|null $address     = null;
-    private bool $vatPayer           = false;
-    private string|null $countryCode = null;
+    private ?string $companyName = null;
+    private ?string $name = null;
+    private ?string $address = null;
+    private bool $vatPayer = false;
+    private ?string $countryCode = null;
 
     /** @param array<string, string> $data */
     public function __construct(array $data = [])
@@ -24,36 +24,36 @@ class ViAresInfo
         $this->fromArray($data);
     }
 
-    public function getVat(): string|null
+    public function getVat(): ?string
     {
         return $this->vat;
     }
 
-    public function setVat(string|null $vat): self
+    public function setVat(?string $vat): self
     {
         $this->vat = $vat;
 
         return $this;
     }
 
-    public function getName(): string|null
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName(string|null $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function getAddress(): string|null
+    public function getAddress(): ?string
     {
         return $this->address;
     }
 
-    public function setAddress(string|null $address): self
+    public function setAddress(?string $address): self
     {
         $this->address = $address;
 
@@ -114,24 +114,24 @@ class ViAresInfo
         ];
     }
 
-    public function getCountryCode(): string|null
+    public function getCountryCode(): ?string
     {
         return $this->countryCode;
     }
 
-    public function setCountryCode(string|null $countryCode): self
+    public function setCountryCode(?string $countryCode): self
     {
         $this->countryCode = $countryCode;
 
         return $this;
     }
 
-    public function getCompanyName(): string|null
+    public function getCompanyName(): ?string
     {
         return $this->companyName;
     }
 
-    public function setCompanyName(string|null $companyName): self
+    public function setCompanyName(?string $companyName): self
     {
         $this->companyName = $companyName;
 

@@ -35,7 +35,7 @@ final class PairedPaymentsQueryHandlerTest extends IntegrationTest
         $this->tester->haveInDatabase('pa_group', $group); // Group #1
         $this->tester->haveInDatabase('pa_group', $group); // Group #2
 
-        $inRange    = new DateTimeImmutable('2018-09-25 00:00:00');
+        $inRange = new DateTimeImmutable('2018-09-25 00:00:00');
         $outOfRange = new DateTimeImmutable('2018-03-20 00:00:00');
 
         $this->insertPaymentToDb(1, '123', $inRange); // Payment #1
@@ -59,7 +59,7 @@ final class PairedPaymentsQueryHandlerTest extends IntegrationTest
         $this->assertSame(5, $payments[1]->getId());
     }
 
-    private function insertPaymentToDb(int $groupId, string|null $transactionId, DateTimeImmutable $closedAt): void
+    private function insertPaymentToDb(int $groupId, ?string $transactionId, DateTimeImmutable $closedAt): void
     {
         $payment = [
             'name' => 'Test',

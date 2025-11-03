@@ -20,7 +20,7 @@ use Model\Payment\Group\PaymentDefaults;
 
 class Helpers
 {
-    public static function createAccountNumber() : AccountNumber
+    public static function createAccountNumber(): AccountNumber
     {
         return new AccountNumber(null, '2000942144', '2010');
     }
@@ -28,19 +28,19 @@ class Helpers
     /**
      * @return EmailTemplate[]
      */
-    public static function createEmails() : array
+    public static function createEmails(): array
     {
         return [
             EmailType::PAYMENT_INFO => new EmailTemplate('test subject', 'test body'),
         ];
     }
 
-    public static function createEmptyPaymentDefaults() : PaymentDefaults
+    public static function createEmptyPaymentDefaults(): PaymentDefaults
     {
         return new PaymentDefaults(null, null, null, null);
     }
 
-    public static function getValidDueDate() : ChronosDate
+    public static function getValidDueDate(): ChronosDate
     {
         return new ChronosDate('2018-01-19'); // https://youtu.be/kfVsfOSbJY0?t=44s
     }
@@ -48,7 +48,7 @@ class Helpers
     /**
      * @param object $aggregate
      */
-    public static function assignIdentity($aggregate, int $id) : void
+    public static function assignIdentity($aggregate, int $id): void
     {
         $class = new ReflectionClass(get_class($aggregate));
 
@@ -58,15 +58,16 @@ class Helpers
         $idProperty->setValue($aggregate, $id);
     }
 
-    public static function mockChit(int $id, ChronosDate $date, string $operationValue, int $categoryId) : Chit
+    public static function mockChit(int $id, ChronosDate $date, string $operationValue, int $categoryId): Chit
     {
         $operation = Operation::get($operationValue);
 
         $body = new ChitBody(new ChitNumber('123'), $date, new Recipient('František Maša'));
-        return Mockery::mock(Chit::class, [
+
+        return m::mock(Chit::class, [
             'getId' => $id,
             'getBody' => $body,
-            'getCategory' => self::mockChitItemCategory ($categoryId, $operation),
+            'getCategory' => self::mockChitItemCategory($categoryId, $operation),
             'getCategoryId' => $categoryId,
             'getDate' => $date,
             'isLocked' => true,
@@ -77,15 +78,15 @@ class Helpers
     }
 
     public static function addChitToCashbook(
-        Cashbook       $cashbook,
-        ?string        $chitNumber = null,
+        Cashbook $cashbook,
+        ?string $chitNumber = null,
         ?PaymentMethod $paymentMethod = null,
-        ?int           $categoryId = null,
-        ?string        $amount = null,
-        ?ChronosDate   $date = null,
-        ?Operation     $operation = null
+        ?int $categoryId = null,
+        ?string $amount = null,
+        ?ChronosDate $date = null,
+        ?Operation $operation = null,
     ): ChitBody {
-        $paymentMethod = $paymentMethod ?? PaymentMethod::CASH ();
+        $paymentMethod = $paymentMethod ?? PaymentMethod::CASH();
         $categoryId = $categoryId ?? 1;
         $amount = new Amount($amount ?? '100');
 
@@ -94,37 +95,37 @@ class Helpers
             $date ?? new ChronosDate(),
             null
         );
-        $category = self::mockChitItemCategory ($categoryId, $operation ?? null);
+        $category = self::mockChitItemCategory($categoryId, $operation ?? null);
 
-        $cashbook->addChit (
+        $cashbook->addChit(
             $chitBody,
             $paymentMethod,
             [new Cashbook\ChitItem($amount, $category, 'čokoláda')],
-            Helpers::mockCashbookCategories ($categoryId)
+            Helpers::mockCashbookCategories($categoryId)
         );
+
         return $chitBody;
     }
 
-    public static function mockChitItemCategory(?int $categoryId = null, ?Operation $operation = null): \Model\Cashbook\Cashbook\Category
+    public static function mockChitItemCategory(?int $categoryId = null, ?Operation $operation = null): Cashbook\Category
     {
-        return new Model\Cashbook\Cashbook\Category(
+        return new Cashbook\Category(
             $categoryId ?? 1,
-            $operation ?? Operation::INCOME ()
+            $operation ?? Operation::INCOME()
         );
     }
 
     /**
      * @return list<ICategory>
      */
-    public static function mockCashbookCategories(?int $categoryId = null, ?Operation $operation = null) : array
+    public static function mockCashbookCategories(?int $categoryId = null, ?Operation $operation = null): array
     {
         return [
-            $categoryId => m::mock (\Model\Cashbook\Category::class, [
-            'getId'=>$categoryId ?? 1,
-            'getOperationType'=> $operation ?? Operation::INCOME (),
-            'isVirtual'=>false,
+            $categoryId => m::mock(Model\Cashbook\Category::class, [
+                'getId' => $categoryId ?? 1,
+                'getOperationType' => $operation ?? Operation::INCOME(),
+                'isVirtual' => false,
             ]),
         ];
-
     }
 }

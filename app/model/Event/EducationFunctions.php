@@ -7,37 +7,37 @@ namespace Model\Event;
 use Nette\SmartObject;
 
 /**
- * @property-read Person|NULL $leader
- * @property-read Person|NULL $accountant
- * @property-read Person|NULL $secretary
- * @property-read Person|NULL $medic
- * @property-read Person[] $assistants
+ * @property Person|null $leader
+ * @property Person|null $accountant
+ * @property Person|null $secretary
+ * @property Person|null $medic
+ * @property Person[]    $assistants
  */
 class EducationFunctions
 {
     use SmartObject;
 
     /** @param array<Person> $assistants */
-    public function __construct(private Person|null $leader = null, private Person|null $accountant = null, private Person|null $secretary = null, private Person|null $medic = null, private array $assistants = [])
+    public function __construct(private ?Person $leader = null, private ?Person $accountant = null, private ?Person $secretary = null, private ?Person $medic = null, private array $assistants = [])
     {
     }
 
-    public function getLeader(): Person|null
+    public function getLeader(): ?Person
     {
         return $this->leader;
     }
 
-    public function getAccountant(): Person|null
+    public function getAccountant(): ?Person
     {
         return $this->accountant;
     }
 
-    public function getSecretary(): Person|null
+    public function getSecretary(): ?Person
     {
         return $this->secretary;
     }
 
-    public function getMedic(): Person|null
+    public function getMedic(): ?Person
     {
         return $this->medic;
     }

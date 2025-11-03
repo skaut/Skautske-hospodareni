@@ -16,7 +16,7 @@ final class OAuthQueryHandler
     {
     }
 
-    public function __invoke(OAuthQuery $query): OAuthDTO|null
+    public function __invoke(OAuthQuery $query): ?OAuthDTO
     {
         try {
             $oAuth = $this->repository->find($query->getOAuthId());

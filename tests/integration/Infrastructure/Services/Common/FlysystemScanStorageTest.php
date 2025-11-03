@@ -25,8 +25,8 @@ final class FlysystemScanStorageTest extends Unit
 
     protected function _before(): void
     {
-        $this->directory = __DIR__ . '/../../../../../temp/cache/' . uniqid(self::class, true);
-        $this->storage   = new FlysystemScanStorage(new Filesystem(new LocalFilesystemAdapter($this->directory)));
+        $this->directory = __DIR__.'/../../../../../temp/cache/'.uniqid(self::class, true);
+        $this->storage = new FlysystemScanStorage(new Filesystem(new LocalFilesystemAdapter($this->directory)));
     }
 
     protected function _after(): void
@@ -43,7 +43,7 @@ final class FlysystemScanStorageTest extends Unit
 
         $this->assertSame(
             $contents,
-            FileSystemUtil::read($this->directory . '/' . $filepath->getPath()),
+            FileSystemUtil::read($this->directory.'/'.$filepath->getPath()),
         );
     }
 
@@ -59,7 +59,7 @@ final class FlysystemScanStorageTest extends Unit
         $this->storage->save($this->getFilePath('foo'), Image::fromBlank(1, 1)->toString());
         $this->storage->delete($this->getFilePath('foo'));
 
-        $this->assertFileNotExists($this->directory . '/' . FilePath::generatePath(self::FILE_PATH_PREFIX, 'foo'));
+        $this->assertFileNotExists($this->directory.'/'.FilePath::generatePath(self::FILE_PATH_PREFIX, 'foo'));
     }
 
     public function testDeleteWithNonexistentFileDoesNothing(): void

@@ -46,15 +46,15 @@ class Email
 
     public function __construct(Group $group, EmailType $type, EmailTemplate $template)
     {
-        $this->group    = $group;
-        $this->type     = $type;
+        $this->group = $group;
+        $this->type = $type;
         $this->template = $template;
     }
 
     public function updateTemplate(EmailTemplate $template): void
     {
         $this->template = $template;
-        $this->enabled  = true;
+        $this->enabled = true;
     }
 
     public function getId(): int

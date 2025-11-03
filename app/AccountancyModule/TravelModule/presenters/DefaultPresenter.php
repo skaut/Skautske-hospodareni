@@ -34,7 +34,7 @@ use function str_replace;
 
 class DefaultPresenter extends BasePresenter
 {
-    private int|null $commandId = null;
+    private ?int $commandId = null;
 
     public function __construct(
         private TravelService $travelService,
@@ -58,25 +58,25 @@ class DefaultPresenter extends BasePresenter
 
         assert($identity instanceof SimpleIdentity);
 
-        return $command->getOwnerId() === $this->getUser()->getId() ||
-            array_key_exists($command->getUnitId(), $identity->access[UserService::ACCESS_READ]);
+        return $command->getOwnerId() === $this->getUser()->getId()
+            || array_key_exists($command->getUnitId(), $identity->access[UserService::ACCESS_READ]);
     }
 
     private function isCommandEditable(int $id): bool
     {
-        $command  = $this->travelService->getCommandDetail($id);
+        $command = $this->travelService->getCommandDetail($id);
         $identity = $this->getUser()->getIdentity();
 
         assert($identity instanceof SimpleIdentity);
 
-        $unitOrOwner = $command->getOwnerId() === $this->getUser()->getId() ||
-            array_key_exists($command->getUnitId(), $identity->access[UserService::ACCESS_EDIT]);
+        $unitOrOwner = $command->getOwnerId() === $this->getUser()->getId()
+            || array_key_exists($command->getUnitId(), $identity->access[UserService::ACCESS_EDIT]);
 
-        return $this->isCommandAccessible($id) &&
-            $command->getClosedAt() === null && $unitOrOwner;
+        return $this->isCommandAccessible($id)
+            && $command->getClosedAt() === null && $unitOrOwner;
     }
 
-    public function actionDetail(int|null $id): void
+    public function actionDetail(?int $id): void
     {
         if ($id === null) {
             $this->redirect('default');
@@ -105,11 +105,11 @@ class DefaultPresenter extends BasePresenter
             : null;
 
         $this->template->setParameters([
-            'command'    => $command,
-            'vehicle'    => $vehicle,
-            'types'      => $command->getTransportTypePairs(),
+            'command' => $command,
+            'vehicle' => $vehicle,
+            'types' => $command->getTransportTypePairs(),
             'isEditable' => $this->isCommandEditable($command->getId()),
-            'travels'    => $this->travelService->getTravels($command->getId()),
+            'travels' => $this->travelService->getTravels($command->getId()),
         ]);
     }
 
@@ -120,8 +120,8 @@ class DefaultPresenter extends BasePresenter
             $this->redirect('default');
         }
 
-        $command   = $this->travelService->getCommandDetail($commandId);
-        $travels   = $this->travelService->getTravels($commandId);
+        $command = $this->travelService->getCommandDetail($commandId);
+        $travels = $this->travelService->getTravels($commandId);
         $vehicleId = $command->getVehicleId();
 
         $template = $this->getTemplateFactory()->createTemplate();
@@ -132,7 +132,7 @@ class DefaultPresenter extends BasePresenter
 
         $this->pdf->render(
             $template->renderToString(
-                __DIR__ . '/../templates/Default/ex.command.latte',
+                __DIR__.'/../templates/Default/ex.command.latte',
                 [
                     'command' => $command,
                     'travels' => $travels,
@@ -253,7 +253,7 @@ class DefaultPresenter extends BasePresenter
 
     private function formAddTravelSubmitted(Form $form): void
     {
-        $v         = $form->getValues();
+        $v = $form->getValues();
         $commandId = (int) $v['command_id'];
 
         if (! $this->isCommandEditable($commandId)) {

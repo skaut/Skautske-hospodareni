@@ -10,7 +10,7 @@ use Model\Payment\VariableSymbol;
 
 class VariableSymbolType extends StringType
 {
-    public const NAME   = 'variable_symbol';
+    public const NAME = 'variable_symbol';
     public const LENGTH = 10;
 
     public function getName(): string
@@ -23,7 +23,7 @@ class VariableSymbolType extends StringType
         return self::LENGTH;
     }
 
-    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): VariableSymbol|null
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?VariableSymbol
     {
         if ($value === null || $value === '' || $value === '0') {
             return null;
@@ -32,7 +32,7 @@ class VariableSymbolType extends StringType
         return new VariableSymbol($value);
     }
 
-    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): string|null
+    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): ?string
     {
         if ($value === null) {
             return null;

@@ -39,9 +39,7 @@ class TransportTravel extends Travel
     private function setPrice(Money $price): void
     {
         if (! $price->isPositive()) {
-            throw new InvalidArgumentException(
-                sprintf('Price must be positive number, %01.2f given', MoneyFactory::toFloat($price)),
-            );
+            throw new InvalidArgumentException(sprintf('Price must be positive number, %01.2f given', MoneyFactory::toFloat($price)));
         }
 
         $this->price = $price;

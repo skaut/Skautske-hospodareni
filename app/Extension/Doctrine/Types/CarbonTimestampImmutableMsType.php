@@ -20,7 +20,7 @@ class CarbonTimestampImmutableMsType extends BigIntType
         return self::NAME;
     }
 
-    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): int|null
+    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): ?int
     {
         if ($value instanceof CarbonImmutable) {
             return $value->getTimestampMs();
@@ -33,7 +33,7 @@ class CarbonTimestampImmutableMsType extends BigIntType
         throw new InvalidArgumentException('Carbon timestamp field accepts only CarbonImmutable|null');
     }
 
-    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): CarbonImmutable|null
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?CarbonImmutable
     {
         if (is_numeric($value)) {
             return CarbonImmutable::createFromTimestampMs((int) $value);

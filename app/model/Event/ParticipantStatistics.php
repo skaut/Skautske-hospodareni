@@ -31,7 +31,7 @@ final class ParticipantStatistics
     }
 
     /**
-     * Returns number of children x days on camp
+     * Returns number of children x days on camp.
      */
     public function getRealChildDays(): int
     {
@@ -39,7 +39,7 @@ final class ParticipantStatistics
     }
 
     /**
-     * Returns number of persons x days on camp
+     * Returns number of persons x days on camp.
      */
     public function getRealPersonDays(): int
     {

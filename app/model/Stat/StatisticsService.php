@@ -30,13 +30,13 @@ class StatisticsService
     /** @return array<int, Counter> */
     public function getEventStatistics(Unit $unitTree, int $year): array
     {
-        $events     = $this->queryBus->handle(new EventListQuery($year, null));
-        $camps      = $this->queryBus->handle(new CampListQuery($year));
+        $events = $this->queryBus->handle(new EventListQuery($year, null));
+        $camps = $this->queryBus->handle(new CampListQuery($year));
         $eventStats = $this->queryBus->handle(new EventStatisticsQuery(array_keys($events), $year));
-        $campStats  = $this->queryBus->handle(new CampStatisticsQuery(array_keys($camps), $year));
+        $campStats = $this->queryBus->handle(new CampStatisticsQuery(array_keys($camps), $year));
 
-        $eventCount   = $this->sumUpByEventId($events, array_keys($eventStats));
-        $campCount    = $this->sumUpByEventId($camps, array_keys($campStats));
+        $eventCount = $this->sumUpByEventId($events, array_keys($eventStats));
+        $campCount = $this->sumUpByEventId($camps, array_keys($campStats));
         $paymentCount = $this->queryBus->handle(new PaymentGroupStatisticsQuery($unitTree->getIdWithChildren(), $year));
 
         $keys = array_unique(array_merge(array_keys($eventCount), array_keys($campCount), array_keys($paymentCount)));
@@ -44,7 +44,7 @@ class StatisticsService
         $merged = [];
         foreach ($keys as $k) {
             $merged[$k] = new Counter(
-                ($eventCount[$k] ?? 0 ) + ($eventStats[$k] ?? 0),
+                ($eventCount[$k] ?? 0) + ($eventStats[$k] ?? 0),
                 ($campCount[$k] ?? 0) + ($campStats[$k] ?? 0),
                 $paymentCount[$k] ?? 0,
             );
@@ -74,7 +74,7 @@ class StatisticsService
 
             $unitId = $e->getUnitId()->toInt();
             if (array_key_exists($unitId, $cnt)) {
-                $cnt[$unitId] += 1;
+                ++$cnt[$unitId];
             } else {
                 $cnt[$unitId] = 1;
             }

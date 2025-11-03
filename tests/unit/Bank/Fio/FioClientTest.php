@@ -22,7 +22,7 @@ class FioClientTest extends Unit
     public function testBankAccountWithoutTokenThrowsException(): void
     {
         $factory = m::mock(IDownloaderFactory::class);
-        $fio     = new FioClient($factory, new NullLogger());
+        $fio = new FioClient($factory, new NullLogger());
 
         $this->expectException(TokenNotSet::class);
 
@@ -45,7 +45,7 @@ class FioClientTest extends Unit
             ->andThrow(TooGreedyException::class);
 
         $factory = $this->buildDownloaderFactory($downloader);
-        $fio     = new FioClient($factory, new NullLogger());
+        $fio = new FioClient($factory, new NullLogger());
 
         $this->expectException(BankTimeLimit::class);
 
@@ -64,7 +64,7 @@ class FioClientTest extends Unit
             ->andThrow(TransferException::class);
 
         $factory = $this->buildDownloaderFactory($downloader);
-        $fio     = new FioClient($factory, new NullLogger());
+        $fio = new FioClient($factory, new NullLogger());
 
         $this->expectException(BankTimeout::class);
 
@@ -83,14 +83,14 @@ class FioClientTest extends Unit
             ->andThrow(InternalErrorException::class);
 
         $factory = $this->buildDownloaderFactory($downloader);
-        $fio     = new FioClient($factory, new NullLogger());
+        $fio = new FioClient($factory, new NullLogger());
 
         $this->expectException(BankTimeout::class);
 
         $fio->getTransactions($since, $until, $this->mockAccount());
     }
 
-    private function mockAccount(string|null $token = 'token'): BankAccount
+    private function mockAccount(?string $token = 'token'): BankAccount
     {
         return m::mock(BankAccount::class, [
             'getId' => 10,

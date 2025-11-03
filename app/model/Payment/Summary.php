@@ -7,8 +7,8 @@ namespace Model\Payment;
 use Nette\SmartObject;
 
 /**
- * @property-read int $count
- * @property-read float $amount
+ * @property int   $count
+ * @property float $amount
  */
 class Summary
 {

@@ -15,7 +15,7 @@ class CreateCashbookHandlerTest extends Unit
 {
     public function test(): void
     {
-        $type       = Cashbook\CashbookType::get(Cashbook\CashbookType::CAMP);
+        $type = Cashbook\CashbookType::get(Cashbook\CashbookType::CAMP);
         $cashbookId = Cashbook\CashbookId::generate();
 
         $repository = m::mock(ICashbookRepository::class);

@@ -18,8 +18,8 @@ use function str_replace;
 /**
  * @ORM\Embeddable()
  *
- * @property-read string $expression
- * @property-read float $value
+ * @property string $expression
+ * @property float  $value
  */
 class Amount
 {
@@ -34,7 +34,7 @@ class Amount
     public function __construct(string $expression)
     {
         $this->expression = str_replace(',', '.', $expression);
-        $this->value      = $this->calculateValue();
+        $this->value = $this->calculateValue();
 
         if ($this->value <= 0) {
             throw new InvalidArgumentException(sprintf('Expression "%s" result must be larger than 0', $expression));
@@ -68,20 +68,20 @@ class Amount
     }
 
     /**
-     * Evaluates expression of numbers and + and * operators
+     * Evaluates expression of numbers and + and * operators.
      */
     private function calculateValue(): float
     {
         $expression = str_replace(' ', '', $this->expression);
         preg_match_all('/(?P<number>-?[0-9]+([.][0-9]{1,})?)(?P<operator>[\+\*]+)?/', $expression, $matches);
         $maxIndex = count($matches['number']);
-        foreach ($matches['operator'] as $index => $op) { //vyřeší operaci násobení
+        foreach ($matches['operator'] as $index => $op) { // vyřeší operaci násobení
             if ($op !== '*' || $index >= $maxIndex) {
                 continue;
             }
 
             $matches['number'][$index + 1] = $matches['number'][$index] * $matches['number'][$index + 1];
-            $matches['number'][$index]     = 0;
+            $matches['number'][$index] = 0;
         }
 
         return array_sum($matches['number']);

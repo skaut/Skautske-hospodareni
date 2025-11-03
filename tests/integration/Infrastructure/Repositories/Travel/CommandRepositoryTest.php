@@ -83,7 +83,7 @@ class CommandRepositoryTest extends IntegrationTest
 
     public function testFindByContract(): void
     {
-        $now      = '2018-01-01 00:00:00';
+        $now = '2018-01-01 00:00:00';
         $commands = [
             ['contract_id' => 1, 'closed_at' => $now],    // command #1
             ['contract_id' => 2, 'closed_at' => null],    // command #2

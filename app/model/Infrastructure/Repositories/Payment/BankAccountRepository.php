@@ -29,9 +29,6 @@ final class BankAccountRepository implements IBankAccountRepository
         return $account;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function findByIds(array $ids): array
     {
         $ids = array_unique($ids);
@@ -57,9 +54,6 @@ final class BankAccountRepository implements IBankAccountRepository
         $this->entityManager->flush();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function findByUnit(int $unitId): array
     {
         return $this->entityManager->getRepository(BankAccount::class)->findBy(['unitId' => $unitId]);

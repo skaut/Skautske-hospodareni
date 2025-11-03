@@ -18,7 +18,7 @@ use Model\Payment\Services\IOAuthAccessChecker;
 
 final class LastPairingInvalidationTest extends IntegrationTest
 {
-    private const UNIT_ID         = 101;
+    private const UNIT_ID = 101;
     private const ORIGINAL_AMOUNT = 200;
 
     private CommandBus $commandBus;
@@ -37,14 +37,14 @@ final class LastPairingInvalidationTest extends IntegrationTest
 
     protected function _before(): void
     {
-        $this->tester->useConfigFiles([__DIR__ . '/LastPairingInvalidationTest.neon']);
+        $this->tester->useConfigFiles([__DIR__.'/LastPairingInvalidationTest.neon']);
 
         parent::_before();
 
         $this->tester->grabService(UnitResolverStub::class)
             ->setOfficialUnits([self::UNIT_ID => self::UNIT_ID]);
 
-        $this->commandBus      = $this->tester->grabService(CommandBus::class);
+        $this->commandBus = $this->tester->grabService(CommandBus::class);
         $this->groupRepository = $this->tester->grabService(IGroupRepository::class);
     }
 
@@ -172,7 +172,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
         );
     }
 
-    private function createGroupWithInitialPayment(VariableSymbol|null $variableSymbol): void
+    private function createGroupWithInitialPayment(?VariableSymbol $variableSymbol): void
     {
         $this->groupRepository->save(
             new Group(

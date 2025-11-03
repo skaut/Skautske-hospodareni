@@ -60,15 +60,15 @@ class ChitListControl extends BaseControl
         IChitScanControlFactory $chitScanControlFactory,
         private IPrefixControlFactory $prefixFactory,
     ) {
-        $this->isEditable      = $isEditable;
+        $this->isEditable = $isEditable;
         $this->chitScanFactory = $chitScanControlFactory;
     }
 
     public function render(): void
     {
-        $cashbook          = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
-        $chits             = $this->queryBus->handle(ChitListQuery::withMethod($this->paymentMethod, $this->cashbookId));
-        $totals            = $this->getTotals($chits);
+        $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
+        $chits = $this->queryBus->handle(ChitListQuery::withMethod($this->paymentMethod, $this->cashbookId));
+        $totals = $this->getTotals($chits);
         $duplicatesNumbers = $this->findDuplicates($chits);
 
         assert($cashbook instanceof Cashbook);
@@ -91,7 +91,7 @@ class ChitListControl extends BaseControl
             'hasOnlyNumericChitNumbers' => $cashbook->hasOnlyNumericChitNumbers($this->paymentMethod),
         ]);
 
-        $this->template->setFile(__DIR__ . '/templates/ChitListControl.latte');
+        $this->template->setFile(__DIR__.'/templates/ChitListControl.latte');
         $this->template->render();
     }
 
@@ -107,7 +107,7 @@ class ChitListControl extends BaseControl
             $this->flashMessage('Paragon byl smazán');
         } catch (ChitLocked) {
             $this->flashMessage('Nelze smazat zamčený paragon', 'error');
-        } catch (CashbookNotFound | ChitNotFound) {
+        } catch (CashbookNotFound|ChitNotFound) {
             $this->flashMessage('Paragon se nepodařilo smazat');
         }
 
@@ -147,12 +147,12 @@ class ChitListControl extends BaseControl
     {
         $form = new BaseForm();
 
-        $printButton     = $form->addSubmit('massPrintSend');
-        $exportButton    = $form->addSubmit('massExportSend');
+        $printButton = $form->addSubmit('massPrintSend');
+        $exportButton = $form->addSubmit('massExportSend');
         $moveChitsButton = $form->addSubmit('massMoveSend');
 
         $form->onSuccess[] = function (BaseForm $form) use ($printButton, $exportButton, $moveChitsButton): void {
-            $chitIds = $form->getHttpData($form::DATA_TEXT, 'chits-' . $this->paymentMethod . '[]');
+            $chitIds = $form->getHttpData($form::DATA_TEXT, 'chits-'.$this->paymentMethod.'[]');
             $chitIds = array_map('\intval', $chitIds);
 
             if ($printButton->isSubmittedBy()) {
@@ -230,7 +230,7 @@ class ChitListControl extends BaseControl
      */
     private function getTotals(array $chits): array
     {
-        $income  = 0;
+        $income = 0;
         $expense = 0;
         foreach ($chits as $chit) {
             if ($chit->isIncome()) {

@@ -21,7 +21,7 @@ class OAuthMailer implements Mailer
     public function __construct(GoogleService $googleService, OAuth $oAuth)
     {
         $client = $googleService->getClient();
-        $token  = $client->fetchAccessTokenWithRefreshToken($oAuth->getToken());
+        $token = $client->fetchAccessTokenWithRefreshToken($oAuth->getToken());
         if (array_key_exists('error', $token)) {
             $errMsg = $token['error'];
             if (array_key_exists('error_description', $token)) {

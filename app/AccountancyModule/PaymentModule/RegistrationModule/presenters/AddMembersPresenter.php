@@ -37,11 +37,11 @@ class AddMembersPresenter extends BasePresenter
     }
 
     /** @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY */
-    public function actionDefault(int $id, int|null $unitId = null): void
+    public function actionDefault(int $id, ?int $unitId = null): void
     {
         $this->id = $id;
 
-        //ověření přístupu
+        // ověření přístupu
         try {
             $list = $this->model->getPersonsFromRegistrationWithoutPayment(array_keys($this->readUnits), $id);
         } catch (InvalidArgumentException) {
@@ -77,12 +77,12 @@ class AddMembersPresenter extends BasePresenter
                 $p['emails'],
                 $p['Person'],
                 $totalAmount,
-                $stsCount !== 0 ? $stsCount . 'x STS' : '',
+                $stsCount !== 0 ? $stsCount.'x STS' : '',
             );
         }
 
         $this->template->setParameters([
-            'group'    => $group,
+            'group' => $group,
             'showForm' => ! empty($list),
             'unitName' => $this->readUnits[$unitId ?? $this->unitId->toInt()],
         ]);

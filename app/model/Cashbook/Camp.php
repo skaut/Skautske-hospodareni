@@ -26,7 +26,7 @@ class Camp extends Aggregate
 
     public function __construct(SkautisCampId $id, CashbookId $cashbookId)
     {
-        $this->id         = $id;
+        $this->id = $id;
         $this->cashbookId = $cashbookId;
     }
 

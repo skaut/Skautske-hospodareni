@@ -8,27 +8,27 @@ use Cake\Chronos\ChronosDate;
 
 class Participant
 {
-    private string|null $nickName = null;
+    private ?string $nickName;
 
     public function __construct(
         private int $id,
         private int $personId,
         private string $firstName,
         private string $lastName,
-        string|null $nickname,
-        private int|null $age = null,
-        private ChronosDate|null $birthday = null,
+        ?string $nickname,
+        private ?int $age,
+        private ?ChronosDate $birthday,
         private string $street,
         private string $city,
         private int $postcode,
         private string $state,
-        private int|null $unitId = null,
+        private ?int $unitId,
         private string $unit,
         private string $unitRegistrationNumber,
         private int $days,
         private bool $isAccepted,
         private Payment $payment,
-        private string|null $category = null,
+        private ?string $category,
     ) {
         $this->nickName = $nickname;
     }
@@ -53,17 +53,17 @@ class Participant
         return $this->lastName;
     }
 
-    public function getNickName(): string|null
+    public function getNickName(): ?string
     {
         return $this->nickName;
     }
 
-    public function getAge(): int|null
+    public function getAge(): ?int
     {
         return $this->age;
     }
 
-    public function getBirthday(): ChronosDate|null
+    public function getBirthday(): ?ChronosDate
     {
         return $this->birthday;
     }
@@ -88,7 +88,7 @@ class Participant
         return $this->state;
     }
 
-    public function getUnitId(): int|null
+    public function getUnitId(): ?int
     {
         return $this->unitId;
     }
@@ -115,10 +115,10 @@ class Participant
 
     public function getDisplayName(): string
     {
-        return $this->lastName . ' ' . $this->firstName . ($this->nickName !== null ? '(' . $this->nickName . ')' : '');
+        return $this->lastName.' '.$this->firstName.($this->nickName !== null ? '('.$this->nickName.')' : '');
     }
 
-    public function getCategory(): string|null
+    public function getCategory(): ?string
     {
         return $this->category;
     }

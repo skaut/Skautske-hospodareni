@@ -37,7 +37,7 @@ class TravelFactory
         return $dtos;
     }
 
-    public static function create(Command $command, int $travelId): Travel|null
+    public static function create(Command $command, int $travelId): ?Travel
     {
         foreach ($command->getTravels() as $travel) {
             if ($travel->getId() === $travelId) {
@@ -50,7 +50,7 @@ class TravelFactory
 
     private static function createSingle(Command\Travel $travel, Command $command): Travel
     {
-        $id      = $travel->getId();
+        $id = $travel->getId();
         $details = $travel->getDetails();
 
         if ($travel instanceof Command\VehicleTravel) {
@@ -61,6 +61,6 @@ class TravelFactory
             return new Travel($id, $details, null, $travel->getPrice());
         }
 
-        throw new RuntimeException('Invalid travel type ' . $travel::class);
+        throw new RuntimeException('Invalid travel type '.$travel::class);
     }
 }

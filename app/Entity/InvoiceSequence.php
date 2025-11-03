@@ -25,32 +25,32 @@ class InvoiceSequence extends AbstractIdEntity
     private string $sequence;
 
     #[ORM\Column(type: Types::INTEGER, nullable: true)]
-    private int $year;
+    private ?int $year;
 
     #[ORM\Column(type: Types::STRING, length: 255)]
     private string $description;
 
     #[ORM\Embedded(class: BankAccount::class, columnPrefix: false)]
     #[Nullable]
-    private BankAccount|null $bankAccount = null;
+    private ?BankAccount $bankAccount;
 
     #[ORM\Column(type: 'oauth_id', nullable: true)]
-    private OAuthId|null $oauthId;
+    private ?OAuthId $oauthId;
 
     #[ORM\Column(type: Types::INTEGER, nullable: true)]
-    private int|null $defaultDueDate = null;
+    private ?int $defaultDueDate;
 
     #[ORM\Column(type: 'string_enum', length: 20)]
     private string $state = InvoiceSequenceState::OPEN;
 
-    public function __construct(int $unit, string $sequence, int $year, string $description, BankAccount|null $bankAccount = null, OAuthId|null $oauthId = null, int|null $defaultDueDate = null)
+    public function __construct(int $unit, string $sequence, int $year, string $description, ?BankAccount $bankAccount = null, ?OAuthId $oauthId = null, ?int $defaultDueDate = null)
     {
-        $this->unit           = $unit;
-        $this->sequence       = $sequence;
-        $this->year           = $year;
-        $this->description    = $description;
-        $this->bankAccount    = $bankAccount;
-        $this->oauthId        = $oauthId;
+        $this->unit = $unit;
+        $this->sequence = $sequence;
+        $this->year = $year;
+        $this->description = $description;
+        $this->bankAccount = $bankAccount;
+        $this->oauthId = $oauthId;
         $this->defaultDueDate = $defaultDueDate;
     }
 
@@ -77,12 +77,12 @@ class InvoiceSequence extends AbstractIdEntity
         $this->sequence = $sequence;
     }
 
-    public function getYear(): int
+    public function getYear(): ?int
     {
         return $this->year;
     }
 
-    public function setYear(int $year): void
+    public function setYear(?int $year): void
     {
         $this->year = $year;
     }
@@ -97,32 +97,32 @@ class InvoiceSequence extends AbstractIdEntity
         $this->description = $description;
     }
 
-    public function getBankAccount(): BankAccount|null
+    public function getBankAccount(): ?BankAccount
     {
         return $this->bankAccount;
     }
 
-    public function setBankAccount(BankAccount|null $bankAccount): void
+    public function setBankAccount(?BankAccount $bankAccount): void
     {
         $this->bankAccount = $bankAccount;
     }
 
-    public function getOauthId(): OAuthId|null
+    public function getOauthId(): ?OAuthId
     {
         return $this->oauthId;
     }
 
-    public function setOauthId(OAuthId|null $oauthId): void
+    public function setOauthId(?OAuthId $oauthId): void
     {
         $this->oauthId = $oauthId;
     }
 
-    public function getDefaultDueDate(): int|null
+    public function getDefaultDueDate(): ?int
     {
         return $this->defaultDueDate;
     }
 
-    public function setDefaultDueDate(int|null $defaultDueDate): void
+    public function setDefaultDueDate(?int $defaultDueDate): void
     {
         $this->defaultDueDate = $defaultDueDate;
     }

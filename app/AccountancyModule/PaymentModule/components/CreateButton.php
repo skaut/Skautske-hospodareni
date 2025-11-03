@@ -11,9 +11,9 @@ class CreateButton extends BaseButtonControl
     public function render(): void
     {
         $this->template->setParameters([
-            'css'     => $this->css,
+            'css' => $this->css,
         ]);
-        $this->template->setFile(__DIR__ . '/templates/CreateButton.latte');
+        $this->template->setFile(__DIR__.'/templates/CreateButton.latte');
         $this->template->render();
     }
 }

@@ -16,7 +16,7 @@ use function assert;
 
 final class CreateUnitHandlerTest extends CommandHandlerTest
 {
-    private const YEAR           = 2019;
+    private const YEAR = 2019;
     private const OFFICIAL_UNITS = [
         1 => 1,
         2 => 1,
@@ -24,7 +24,7 @@ final class CreateUnitHandlerTest extends CommandHandlerTest
 
     protected function _before(): void
     {
-        $this->tester->useConfigFiles([__DIR__ . '/CreateUnitHandlerTest.neon']);
+        $this->tester->useConfigFiles([__DIR__.'/CreateUnitHandlerTest.neon']);
 
         parent::_before();
 

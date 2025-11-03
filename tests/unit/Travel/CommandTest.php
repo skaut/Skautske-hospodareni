@@ -27,7 +27,7 @@ class CommandTest extends Unit
         $vehicle = Mockery::mock(Vehicle::class);
         $vehicle->shouldReceive('getId')->andReturn(6);
 
-        $driver  = new Passenger('Frantisek Masa', '---', 'Brno');
+        $driver = new Passenger('Frantisek Masa', '---', 'Brno');
         $purpose = 'Cesta na střediskovku';
         $command = new Command(2, $vehicle, $driver, $purpose, 'Brno', '', Money::CZK(3120), Money::CZK(500), '', null, [], '');
 
@@ -125,15 +125,15 @@ class CommandTest extends Unit
         $vehicle = Mockery::mock(Vehicle::class);
         $vehicle->shouldReceive('getId')->andReturn(5);
 
-        $driver            = new Passenger('Stig', '000000000', 'Neznámá');
-        $purpose           = 'Akce';
-        $place             = 'Praha';
-        $fuelPrice         = Money::CZK(3000);
-        $passengers        = 'Frantisek Masa';
+        $driver = new Passenger('Stig', '000000000', 'Neznámá');
+        $purpose = 'Akce';
+        $place = 'Praha';
+        $fuelPrice = Money::CZK(3000);
+        $passengers = 'Frantisek Masa';
         $amortizationPerKm = Money::CZK(300);
-        $note              = 'Nothing';
-        $transport_types   = [TransportType::get(TransportType::CAR), TransportType::get(TransportType::MOTORCYCLE)];
-        $unit              = '123.45';
+        $note = 'Nothing';
+        $transport_types = [TransportType::get(TransportType::CAR), TransportType::get(TransportType::MOTORCYCLE)];
+        $unit = '123.45';
 
         $command->update($vehicle, $driver, $purpose, $place, $passengers, $fuelPrice, $amortizationPerKm, $note, $transport_types, $unit);
 
@@ -155,7 +155,7 @@ class CommandTest extends Unit
         $command->addVehicleTravel(200, $this->getDetails());
 
         $distance = 220.0;
-        $details  = new TravelDetails(ChronosDate::now(), TransportType::get(TransportType::MOTORCYCLE), 'Praha', 'Brno');
+        $details = new TravelDetails(ChronosDate::now(), TransportType::get(TransportType::MOTORCYCLE), 'Praha', 'Brno');
 
         $command->updateVehicleTravel(0, $distance, $details);
 
@@ -171,7 +171,7 @@ class CommandTest extends Unit
         $command = $this->createCommand();
         $command->addTransportTravel(MoneyFactory::fromFloat(200), $this->getDetails());
 
-        $price   = MoneyFactory::fromFloat(320);
+        $price = MoneyFactory::fromFloat(320);
         $details = new TravelDetails(ChronosDate::now(), TransportType::get(TransportType::MOTORCYCLE), 'Praha', 'Brno');
 
         $command->updateTransportTravel(0, $price, $details);
@@ -206,7 +206,7 @@ class CommandTest extends Unit
         $command = $this->createCommand();
         $command->addVehicleTravel(200, $this->getDetails());
 
-        $price   = MoneyFactory::fromFloat(200);
+        $price = MoneyFactory::fromFloat(200);
         $details = new TravelDetails(ChronosDate::now(), TransportType::get(TransportType::MOTORCYCLE), 'Praha', 'Brno');
 
         $command->updateTransportTravel(0, $price, $details);
@@ -225,7 +225,7 @@ class CommandTest extends Unit
         $command->addTransportTravel(MoneyFactory::fromFloat(200), $this->getDetails());
 
         $distance = 20;
-        $details  = new TravelDetails(ChronosDate::now(), TransportType::get(TransportType::MOTORCYCLE), 'Praha', 'Brno');
+        $details = new TravelDetails(ChronosDate::now(), TransportType::get(TransportType::MOTORCYCLE), 'Praha', 'Brno');
 
         $command->updateVehicleTravel(0, $distance, $details);
 
@@ -257,7 +257,7 @@ class CommandTest extends Unit
     public function testGetUsedTransportTypes(): void
     {
         $command = $this->createCommand();
-        $date    = ChronosDate::now();
+        $date = ChronosDate::now();
 
         $command->addVehicleTravel(
             200,
@@ -285,7 +285,7 @@ class CommandTest extends Unit
     public function testCloseCommand(): void
     {
         $command = $this->createCommand();
-        $now     = new DateTimeImmutable();
+        $now = new DateTimeImmutable();
         $command->close($now);
 
         $this->assertSame($now, $command->getClosedAt());
@@ -303,7 +303,7 @@ class CommandTest extends Unit
 
     public function testClosingClosedCommandDoesntChangeClosedTime(): void
     {
-        $command  = $this->createCommand();
+        $command = $this->createCommand();
         $closedAt = new DateTimeImmutable();
         $command->close($closedAt);
 
@@ -374,12 +374,12 @@ class CommandTest extends Unit
     public function testTransportTravelIsDuplicated(): void
     {
         $passenger = new Passenger('Frantisek Masa', '---', 'Brno');
-        $purpose   = 'Cesta na střediskovku';
-        $command   = new Command(1, null, $passenger, $purpose, 'Brno', '', Money::CZK(0), Money::CZK(0), '', null, [], '');
+        $purpose = 'Cesta na střediskovku';
+        $command = new Command(1, null, $passenger, $purpose, 'Brno', '', Money::CZK(0), Money::CZK(0), '', null, [], '');
 
         $command->addTransportTravel(
             Money::CZK(100),
-            new Command\TravelDetails(
+            new TravelDetails(
                 new ChronosDate('now'),
                 TransportType::get(TransportType::BUS),
                 'Praha',
@@ -393,7 +393,7 @@ class CommandTest extends Unit
 
         $duplicatedTravel = $command->getTravels()[1];
 
-        $travelDetails           = $travel->getDetails();
+        $travelDetails = $travel->getDetails();
         $duplicatedTravelDetails = $duplicatedTravel->getDetails();
 
         self::assertNotEquals($travel->getId(), $duplicatedTravel->getId());
@@ -406,12 +406,12 @@ class CommandTest extends Unit
     public function testVehicleTravelIsDuplicated(): void
     {
         $passenger = new Passenger('Frantisek Masa', '---', 'Brno');
-        $purpose   = 'Cesta na střediskovku';
-        $command   = new Command(1, null, $passenger, $purpose, 'Brno', '', Money::CZK(3120), Money::CZK(500), '', null, [], '');
+        $purpose = 'Cesta na střediskovku';
+        $command = new Command(1, null, $passenger, $purpose, 'Brno', '', Money::CZK(3120), Money::CZK(500), '', null, [], '');
 
         $command->addVehicleTravel(
             123,
-            new Command\TravelDetails(
+            new TravelDetails(
                 new ChronosDate('now'),
                 TransportType::get(TransportType::CAR),
                 'Praha',
@@ -425,7 +425,7 @@ class CommandTest extends Unit
 
         $duplicatedTravel = $command->getTravels()[1];
 
-        $travelDetails           = $travel->getDetails();
+        $travelDetails = $travel->getDetails();
         $duplicatedTravelDetails = $duplicatedTravel->getDetails();
 
         self::assertNotEquals($travel->getId(), $duplicatedTravel->getId());
@@ -438,12 +438,12 @@ class CommandTest extends Unit
     public function testTransportTravelIsReturnAdded(): void
     {
         $passenger = new Passenger('Frantisek Masa', '---', 'Brno');
-        $purpose   = 'Cesta na střediskovku';
-        $command   = new Command(1, null, $passenger, $purpose, 'Brno', '', Money::CZK(0), Money::CZK(0), '', null, [], '');
+        $purpose = 'Cesta na střediskovku';
+        $command = new Command(1, null, $passenger, $purpose, 'Brno', '', Money::CZK(0), Money::CZK(0), '', null, [], '');
 
         $command->addTransportTravel(
             Money::CZK(100),
-            new Command\TravelDetails(
+            new TravelDetails(
                 new ChronosDate('now'),
                 TransportType::get(TransportType::BUS),
                 'Praha',
@@ -457,7 +457,7 @@ class CommandTest extends Unit
 
         $backTravel = $command->getTravels()[1];
 
-        $travelDetails     = $travel->getDetails();
+        $travelDetails = $travel->getDetails();
         $backTravelDetails = $backTravel->getDetails();
 
         self::assertNotEquals($travel->getId(), $backTravel->getId());
@@ -470,12 +470,12 @@ class CommandTest extends Unit
     public function testVehicleTravelIsReturnAdded(): void
     {
         $passenger = new Passenger('Frantisek Masa', '---', 'Brno');
-        $purpose   = 'Cesta na střediskovku';
-        $command   = new Command(1, null, $passenger, $purpose, 'Brno', '', Money::CZK(3120), Money::CZK(500), '', null, [], '');
+        $purpose = 'Cesta na střediskovku';
+        $command = new Command(1, null, $passenger, $purpose, 'Brno', '', Money::CZK(3120), Money::CZK(500), '', null, [], '');
 
         $command->addVehicleTravel(
             123,
-            new Command\TravelDetails(
+            new TravelDetails(
                 new ChronosDate('now'),
                 TransportType::get(TransportType::CAR),
                 'Praha',
@@ -489,7 +489,7 @@ class CommandTest extends Unit
 
         $backTravel = $command->getTravels()[1];
 
-        $travelDetails     = $travel->getDetails();
+        $travelDetails = $travel->getDetails();
         $backTravelDetails = $backTravel->getDetails();
 
         self::assertNotEquals($travel->getId(), $backTravel->getId());
@@ -499,7 +499,7 @@ class CommandTest extends Unit
         self::assertEquals($travelDetails->getStartPlace(), $backTravelDetails->getEndPlace());
     }
 
-    private function createCommand(Vehicle|null $vehicle = null): Command
+    private function createCommand(?Vehicle $vehicle = null): Command
     {
         return new Command(
             10,

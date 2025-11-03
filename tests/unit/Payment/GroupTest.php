@@ -20,13 +20,13 @@ class GroupTest extends Unit
 {
     public function testCreate(): void
     {
-        $dueDate         = new ChronosDate('2018-01-19'); // friday
-        $createdAt       = new DateTimeImmutable();
-        $variableSymbol  = new VariableSymbol('666');
+        $dueDate = new ChronosDate('2018-01-19'); // friday
+        $createdAt = new DateTimeImmutable();
+        $variableSymbol = new VariableSymbol('666');
         $paymentDefaults = new PaymentDefaults(200.2, $dueDate, 203, $variableSymbol);
-        $bankAccount     = m::mock(BankAccount::class, ['getId' => 23]);
-        $emails          = Helpers::createEmails();
-        $oAuthId         = OAuthId::generate();
+        $bankAccount = m::mock(BankAccount::class, ['getId' => 23]);
+        $emails = Helpers::createEmails();
+        $oAuthId = OAuthId::generate();
 
         $group = new Group(
             [20, 22],
@@ -98,8 +98,8 @@ class GroupTest extends Unit
 
     public function testCreatingGroupWithNotAllEmailsThrowsException(): void
     {
-        $paymentDefaults   = new PaymentDefaults(null, null, null, null);
-        $accessChecker     = m::mock(IBankAccountAccessChecker::class);
+        $paymentDefaults = new PaymentDefaults(null, null, null, null);
+        $accessChecker = m::mock(IBankAccountAccessChecker::class);
         $mailAccessChecker = m::mock(IOAuthAccessChecker::class);
 
         $this->expectException(InvalidArgumentException::class);
@@ -109,11 +109,11 @@ class GroupTest extends Unit
 
     public function testUpdate(): void
     {
-        $dueDate     = new ChronosDate('2018-01-19'); // friday
-        $createdAt   = new DateTimeImmutable();
-        $group       = $this->createGroup($dueDate, $createdAt);
+        $dueDate = new ChronosDate('2018-01-19'); // friday
+        $createdAt = new DateTimeImmutable();
+        $group = $this->createGroup($dueDate, $createdAt);
         $bankAccount = m::mock(BankAccount::class, ['getId' => 33]);
-        $oAuthId     = OAuthId::generate();
+        $oAuthId = OAuthId::generate();
 
         $group->update(
             'Skupina Jiná',
@@ -139,7 +139,7 @@ class GroupTest extends Unit
     public function testClose(): void
     {
         $group = $this->createGroup();
-        $note  = 'Closed because of ...';
+        $note = 'Closed because of ...';
 
         $group->close($note);
 
@@ -187,7 +187,7 @@ class GroupTest extends Unit
 
     public function testBankAccountIsRemovedWhenChangedUnitHasNoAccessToIt(): void
     {
-        $unitIds       = [50];
+        $unitIds = [50];
         $bankAccountId = 20;
 
         $group = $this->createGroup(null, null, $this->mockBankAccount($bankAccountId));
@@ -204,7 +204,7 @@ class GroupTest extends Unit
 
     public function testBankAccountIsKeptWhenChangedUnitHasAccessToIt(): void
     {
-        $unitIds       = [50];
+        $unitIds = [50];
         $bankAccountId = 20;
 
         $group = $this->createGroup(null, null, $this->mockBankAccount($bankAccountId));
@@ -285,15 +285,15 @@ class GroupTest extends Unit
     }
 
     private function createGroup(
-        ChronosDate|null $dueDate = null,
-        DateTimeImmutable|null $createdAt = null,
-        BankAccount|null $bankAccount = null,
-        OAuthId|null $oAuthId = null,
+        ?ChronosDate $dueDate = null,
+        ?DateTimeImmutable $createdAt = null,
+        ?BankAccount $bankAccount = null,
+        ?OAuthId $oAuthId = null,
     ): Group {
-        $dueDate       ??= new ChronosDate('2018-01-19'); // defaults to friday
+        $dueDate ??= new ChronosDate('2018-01-19'); // defaults to friday
         $paymentDefaults = new PaymentDefaults(200.2, $dueDate, 203, new VariableSymbol('666'));
-        $createdAt     ??= new DateTimeImmutable();
-        $emails          = Helpers::createEmails();
+        $createdAt ??= new DateTimeImmutable();
+        $emails = Helpers::createEmails();
 
         return new Group(
             [20],

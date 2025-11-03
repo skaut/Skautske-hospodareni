@@ -32,7 +32,7 @@ class InvoiceManager extends AbstractManager
     public function delete(Invoice $invoice): void
     {
         $this->wrapInTransaction(function () use ($invoice): void {
-            //$this->logger->log($invoice->getUnit(), $this->userService->getUserDetail()->ID, 'Invoice paymet deleted', Type::get(Type::INVOICE_SEQUENCE), $invoiceSequence->getId());
+            // $this->logger->log($invoice->getUnit(), $this->userService->getUserDetail()->ID, 'Invoice paymet deleted', Type::get(Type::INVOICE_SEQUENCE), $invoiceSequence->getId());
             $this->deleteEntity($invoice);
         });
     }

@@ -7,9 +7,9 @@ namespace Model\DTO\Stat;
 use Nette\SmartObject;
 
 /**
- * @property-read int $events
- * @property-read int $camps
- * @property-read int $paymentGroups
+ * @property int $events
+ * @property int $camps
+ * @property int $paymentGroups
  */
 final class Counter
 {
@@ -41,8 +41,8 @@ final class Counter
 
     public function takeIn(Counter $counter): void
     {
-        $this->events        += $counter->getEvents();
-        $this->camps         += $counter->getCamps();
+        $this->events += $counter->getEvents();
+        $this->camps += $counter->getCamps();
         $this->paymentGroups += $counter->getPaymentGroups();
     }
 }

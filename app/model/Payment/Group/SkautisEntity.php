@@ -29,7 +29,7 @@ final class SkautisEntity
 
     public function __construct(int $id, Type $type)
     {
-        $this->id   = $id;
+        $this->id = $id;
         $this->type = $type;
     }
 

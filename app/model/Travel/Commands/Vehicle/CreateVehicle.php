@@ -12,7 +12,7 @@ final class CreateVehicle
     public function __construct(
         private string $type,
         private int $unitId,
-        private int|null $subunitId = null,
+        private ?int $subunitId,
         private string $registration,
         private float $consumption,
         private int $userId,
@@ -29,7 +29,7 @@ final class CreateVehicle
         return $this->unitId;
     }
 
-    public function getSubunitId(): int|null
+    public function getSubunitId(): ?int
     {
         return $this->subunitId;
     }

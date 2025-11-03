@@ -14,7 +14,7 @@ final class DarkModeToggle extends BaseControl
 
     public function render(): void
     {
-        $this->template->setFile(__DIR__ . '/templates/DarkModeToggle.latte');
+        $this->template->setFile(__DIR__.'/templates/DarkModeToggle.latte');
         $this->template->render();
     }
 }

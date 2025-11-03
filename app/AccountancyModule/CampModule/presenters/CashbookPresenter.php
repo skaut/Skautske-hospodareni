@@ -49,19 +49,19 @@ class CashbookPresenter extends BasePresenter
     {
         parent::startup();
 
-        $this->isEditable                  = $this->isEditable || $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $this->getCampId());
+        $this->isEditable = $this->isEditable || $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $this->getCampId());
         $this->isRealTotalCostAutoComputed = ! $this->event->isRealTotalCostAutoComputed();
     }
 
     public function renderDefault(int $aid): void
     {
-        $finalBalance      = $this->queryBus->handle(new FinalCashBalanceQuery($this->getCashbookId()));
+        $finalBalance = $this->queryBus->handle(new FinalCashBalanceQuery($this->getCashbookId()));
         $missingCategories = $this->isRealTotalCostAutoComputed;
         try {
             $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId()));
             assert($finalRealBalance instanceof Money);
         } catch (MissingCategory) {
-            $finalRealBalance  = null;
+            $finalRealBalance = null;
             $missingCategories = true;
         }
 
@@ -137,10 +137,10 @@ class CashbookPresenter extends BasePresenter
             $this->redirect('default', ['aid' => $this->getCampId()]);
         }
 
-        $purpose = 'úč. příspěvky ' . ($values->isAccount === 'Y' ? '- účet' : '- hotovost');
-        $body    = new ChitBody(null, $this->event->getStartDate(), null);
+        $purpose = 'úč. příspěvky '.($values->isAccount === 'Y' ? '- účet' : '- hotovost');
+        $body = new ChitBody(null, $this->event->getStartDate(), null);
 
-        $categoryId    = $this->queryBus->handle(
+        $categoryId = $this->queryBus->handle(
             new CampParticipantCategoryIdQuery(new SkautisCampId($this->getCampId()), ParticipantType::get($values->cat === 'adult' ? ParticipantType::ADULT : ParticipantType::CHILD)),
         );
         $categoriesDto = $this->queryBus->handle(new CategoryListQuery($this->getCashbookId()));

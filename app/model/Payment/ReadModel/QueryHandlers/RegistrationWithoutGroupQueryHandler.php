@@ -19,7 +19,7 @@ final class RegistrationWithoutGroupQueryHandler
     {
     }
 
-    public function __invoke(RegistrationWithoutGroupQuery $query): Registration|null
+    public function __invoke(RegistrationWithoutGroupQuery $query): ?Registration
     {
         $registrations = $this->registrations->findByUnit($query->getUnitId());
 

@@ -28,10 +28,10 @@ class AddParticipantsPresenter extends BasePresenter
     }
 
     /** @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY */
-    public function actionDefault(int $id, int|null $unitId = null): void
+    public function actionDefault(int $id, ?int $unitId = null): void
     {
         $this->id = $id;
-        $group    = $this->model->getGroup($id);
+        $group = $this->model->getGroup($id);
 
         if ($group === null || ! $this->isEditable) {
             $this->flashMessage('Neoprávněný přístup ke skupině.', 'danger');
@@ -71,7 +71,7 @@ class AddParticipantsPresenter extends BasePresenter
 
         $this->template->setParameters([
             'unit' => $this->queryBus->handle(new UnitQuery($this->getCurrentUnitId()->toInt())),
-            'group'    => $group,
+            'group' => $group,
             'showForm' => ! empty($participants),
         ]);
     }

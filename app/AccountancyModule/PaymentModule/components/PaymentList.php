@@ -45,15 +45,15 @@ final class PaymentList extends BaseControl
 
     public function render(): void
     {
-        $this->template->setFile(__DIR__ . '/templates/PaymentList.latte');
+        $this->template->setFile(__DIR__.'/templates/PaymentList.latte');
         $this->template->render();
     }
 
     protected function createComponentGrid(): DataGrid
     {
         $email = $this->queryBus->handle(new GroupEmailQuery($this->groupId, EmailType::get(EmailType::PAYMENT_REMINDER)));
-        $grid  = $this->gridFactory->createSimpleGrid(
-            __DIR__ . '/templates/PaymentList.grid.latte',
+        $grid = $this->gridFactory->createSimpleGrid(
+            __DIR__.'/templates/PaymentList.grid.latte',
             [
                 'isEditable' => $this->isEditable,
                 'isReminderSendActive' => $email !== null && $email->isEnabled(),
@@ -68,7 +68,7 @@ final class PaymentList extends BaseControl
         }
 
         $grid->addGroupButtonAction('Zaplaceno')->onClick[] = [$this, 'setPay'];
-        $grid->addGroupButtonAction('Zrušit')->onClick[]    = [$this, 'setCancel'];
+        $grid->addGroupButtonAction('Zrušit')->onClick[] = [$this, 'setCancel'];
 
         $grid->addColumnText('name', 'Název/účel')
             ->setSortable()
@@ -110,7 +110,7 @@ final class PaymentList extends BaseControl
             ->setSortable()
             ->setSortableCallback(function (DtoListDataSource $dataSource, array $sort): DtoListDataSource {
                 $statePriority = array_flip(self::STATE_ORDER);
-                $data          = $dataSource->getData();
+                $data = $dataSource->getData();
 
                 usort($data, function (Payment $a, Payment $b) use ($statePriority): int {
                     return $statePriority[$a->getState()->toString()] <=> $statePriority[$b->getState()->toString()];
@@ -179,7 +179,7 @@ final class PaymentList extends BaseControl
         foreach ($ids as $id) {
             try {
                 $this->commandBus->handle(new SendPaymentInfo($id));
-                $count++;
+                ++$count;
             } catch (OAuthNotSet) {
                 $this->flashMessage(EmailButton::NO_MAILER_MESSAGE, 'warning');
             } catch (InvalidBankAccount) {
@@ -194,9 +194,9 @@ final class PaymentList extends BaseControl
         }
 
         if ($count === 1) {
-            $this->presenter->flashMessage($count . ' informační e-mail odeslán', 'info');
+            $this->presenter->flashMessage($count.' informační e-mail odeslán', 'info');
         } else {
-            $this->presenter->flashMessage($count . ' Informačních e-mailů odesláno', 'info');
+            $this->presenter->flashMessage($count.' Informačních e-mailů odesláno', 'info');
         }
 
         $this->presenter->redirect('this');
@@ -210,7 +210,7 @@ final class PaymentList extends BaseControl
             foreach ($ids as $id) {
                 try {
                     $this->commandBus->handle(new SendPaymentReminder($id));
-                    $count++;
+                    ++$count;
                 } catch (OAuthNotSet) {
                     $this->flashMessage(EmailButton::NO_MAILER_MESSAGE, 'warning');
                 } catch (InvalidBankAccount) {
@@ -225,9 +225,9 @@ final class PaymentList extends BaseControl
             }
 
             if ($count === 1) {
-                $this->presenter->flashMessage($count . ' upomínkový e-mailů odeslán', 'info');
+                $this->presenter->flashMessage($count.' upomínkový e-mailů odeslán', 'info');
             } else {
-                $this->presenter->flashMessage($count . ' upomínkových e-mailů odesláno', 'info');
+                $this->presenter->flashMessage($count.' upomínkových e-mailů odesláno', 'info');
             }
         } catch (EmailTemplateNotSet) {
             $this->flashMessage('Platební skupina nemá povolené upomínky', 'warning');

@@ -19,7 +19,7 @@ use function assert;
 final class EditTravelDialog extends Dialog
 {
     /** @var int|null @persistent */
-    public int|null $travelId = null;
+    public ?int $travelId = null;
 
     public function __construct(private int $commandId, private TravelService $model)
     {
@@ -36,7 +36,7 @@ final class EditTravelDialog extends Dialog
     {
         parent::beforeRender();
 
-        $this->template->setFile(__DIR__ . '/templates/EditTravelDialog.latte');
+        $this->template->setFile(__DIR__.'/templates/EditTravelDialog.latte');
     }
 
     protected function createComponentForm(): BaseForm

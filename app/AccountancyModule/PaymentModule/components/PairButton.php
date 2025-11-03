@@ -23,7 +23,7 @@ use function count;
 
 class PairButton extends BaseButtonControl
 {
-    public const TIMEOUT_MESSAGE    = 'Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.';
+    public const TIMEOUT_MESSAGE = 'Nepodařilo se připojit k bankovnímu serveru. Zkontrolujte svůj API token pro přístup k účtu.';
     public const TIME_LIMIT_MESSAGE = 'Mezi dotazy na bankovnictví musí být prodleva 1 minuta!';
 
     /** @var int[] */
@@ -34,14 +34,14 @@ class PairButton extends BaseButtonControl
         $style = 'primary';
         // default
         $this->addCss([
-            'wrap'       => 'd-inline-block',
-            'btn'        => 'btn btn-' . $style,
-            'toggle'     => 'btn btn-' . $style . ' dropdown-toggle',
-            'menu'       => 'dropdown-menu pairForm',
-            'icon'       => 'fas fa-university',
+            'wrap' => 'd-inline-block',
+            'btn' => 'btn btn-'.$style,
+            'toggle' => 'btn btn-'.$style.' dropdown-toggle',
+            'menu' => 'dropdown-menu pairForm',
+            'icon' => 'fas fa-university',
             'inputGroup' => 'input-group',
-            'submit'     => 'btn btn-primary',
-            'submitCol'  => 'col-4',
+            'submit' => 'btn btn-primary',
+            'submitCol' => 'col-4',
         ]);
     }
 
@@ -51,7 +51,7 @@ class PairButton extends BaseButtonControl
     }
 
     /**
-     * Select groups to pair
+     * Select groups to pair.
      *
      * @param int[] $groupIds
      */
@@ -63,11 +63,11 @@ class PairButton extends BaseButtonControl
     public function render(): void
     {
         $this->template->setParameters([
-            'canPair'     => $this->canPair(),
+            'canPair' => $this->canPair(),
             'groupsCount' => count($this->groupIds),
             'css' => $this->css,
         ]);
-        $this->template->setFile(__DIR__ . '/templates/PairButton.latte');
+        $this->template->setFile(__DIR__.'/templates/PairButton.latte');
         $this->template->render();
     }
 
@@ -102,7 +102,7 @@ class PairButton extends BaseButtonControl
             return false;
         }
 
-        $groups         = $this->payments->findGroupsByIds($this->groupIds);
+        $groups = $this->payments->findGroupsByIds($this->groupIds);
         $bankAccountIds = array_map(
             function (Group $g) {
                 return $g->getBankAccountId();
@@ -122,7 +122,7 @@ class PairButton extends BaseButtonControl
         return false;
     }
 
-    private function pair(int|null $daysBack = null): void
+    private function pair(?int $daysBack = null): void
     {
         try {
             $pairingResults = $this->model->pairAllGroups($this->groupIds, $daysBack);
@@ -150,6 +150,6 @@ class PairButton extends BaseButtonControl
 
     public static function wrongTokenAccountMessage(BankWrongTokenAccount $exception): string
     {
-        return 'Zadaný API token patří ke špatnému bankovnímu účtu. Zadaný bankovní účet je ' . $exception->getIntendedAccount() . ', token patří k účtu ' . $exception->getTokenAccount() . '.';
+        return 'Zadaný API token patří ke špatnému bankovnímu účtu. Zadaný bankovní účet je '.$exception->getIntendedAccount().', token patří k účtu '.$exception->getTokenAccount().'.';
     }
 }

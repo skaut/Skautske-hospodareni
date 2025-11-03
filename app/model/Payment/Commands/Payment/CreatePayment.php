@@ -19,9 +19,9 @@ final class CreatePayment
         private array $recipients,
         private float $amount,
         private ChronosDate $dueDate,
-        private int|null $personId = null,
-        private VariableSymbol|null $variableSymbol = null,
-        private int|null $constantSymbol = null,
+        private ?int $personId,
+        private ?VariableSymbol $variableSymbol,
+        private ?int $constantSymbol,
         private string $note,
     ) {
     }
@@ -52,17 +52,17 @@ final class CreatePayment
         return $this->dueDate;
     }
 
-    public function getPersonId(): int|null
+    public function getPersonId(): ?int
     {
         return $this->personId;
     }
 
-    public function getVariableSymbol(): VariableSymbol|null
+    public function getVariableSymbol(): ?VariableSymbol
     {
         return $this->variableSymbol;
     }
 
-    public function getConstantSymbol(): int|null
+    public function getConstantSymbol(): ?int
     {
         return $this->constantSymbol;
     }

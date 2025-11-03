@@ -41,8 +41,8 @@ final class GroupForm extends BaseControl
 {
     public function __construct(
         private UnitId $unitId,
-        private SkautisEntity|null $skautisEntity = null,
-        private int|null $groupId = null,
+        private ?SkautisEntity $skautisEntity,
+        private ?int $groupId,
         private PaymentService $model,
         private QueryBus $queryBus,
     ) {
@@ -50,7 +50,7 @@ final class GroupForm extends BaseControl
 
     public function render(): void
     {
-        $this->template->setFile(__DIR__ . '/templates/GroupForm.latte');
+        $this->template->setFile(__DIR__.'/templates/GroupForm.latte');
         $this->template->render();
     }
 
@@ -168,10 +168,10 @@ final class GroupForm extends BaseControl
             EmailType::PAYMENT_REMINDER => $this->buildEmailTemplate($v, EmailType::PAYMENT_REMINDER),
         ];
 
-        $emails  = array_filter($emails);
+        $emails = array_filter($emails);
         $oAuthId = OAuthId::fromStringOrNull($v->oAuthId);
 
-        if ($this->groupId !== null) {//EDIT
+        if ($this->groupId !== null) {// EDIT
             $this->model->updateGroup(
                 $this->groupId,
                 $v->name,
@@ -183,7 +183,7 @@ final class GroupForm extends BaseControl
             );
 
             $this->flashMessage('Skupina byla upravena');
-        } else {//ADD
+        } else {// ADD
             $this->groupId = $this->model->createGroup(
                 $this->unitId->toInt(),
                 $this->skautisEntity,
@@ -203,7 +203,7 @@ final class GroupForm extends BaseControl
 
     private function getDefaultEmailBody(string $name): string
     {
-        return FileSystem::read(__DIR__ . '/../templates/defaultEmails/' . $name . '.html');
+        return FileSystem::read(__DIR__.'/../templates/defaultEmails/'.$name.'.html');
     }
 
     /** @return mixed[] */
@@ -248,18 +248,18 @@ final class GroupForm extends BaseControl
         $emails = [
             EmailType::PAYMENT_INFO => 'E-mail s platebními údaji',
             EmailType::PAYMENT_COMPLETED => 'E-mail při dokončení platby',
-          //  EmailType::PAYMENT_CANCELED =>  'E-mail při zrušení platby',
+            //  EmailType::PAYMENT_CANCELED =>  'E-mail při zrušení platby',
             EmailType::PAYMENT_REMINDER => 'E-mail upomínka platby',
         ];
 
         foreach ($emails as $type => $caption) {
-            $group     = $form->addGroup($caption, false);
+            $group = $form->addGroup($caption, false);
             $container = $emailsContainer->addContainer($type);
             $container->setCurrentGroup($group);
 
-            $subjectId   = $type . '_subject';
-            $bodyId      = $type . '_body';
-            $remindersId = $type . '_reminders';
+            $subjectId = $type.'_subject';
+            $bodyId = $type.'_body';
+            $remindersId = $type.'_reminders';
 
             // Only payment info email is always saved
             if ($type !== EmailType::PAYMENT_INFO) {
@@ -287,7 +287,7 @@ final class GroupForm extends BaseControl
         $form->setCurrentGroup();
     }
 
-    private function buildEmailTemplate(ArrayHash $values, string $emailType): EmailTemplate|null
+    private function buildEmailTemplate(ArrayHash $values, string $emailType): ?EmailTemplate
     {
         $emailValues = $values->emails->{$emailType};
 

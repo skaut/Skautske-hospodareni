@@ -33,7 +33,7 @@ final class SkautisAuthorizator implements IAuthorizator
     }
 
     /** @param mixed[] $action */
-    public function isAllowed(array $action, int|null $resourceId): bool
+    public function isAllowed(array $action, ?int $resourceId): bool
     {
         if (count($action) !== 2 || ! isset(self::RESOURCE_CLASS_TO_SKAUTIS_TABLE_MAP[$action[0]])) {
             throw new InvalidArgumentException('Unknown action');
@@ -51,7 +51,7 @@ final class SkautisAuthorizator implements IAuthorizator
     }
 
     /** @return stdClass[] */
-    private function getAvailableActions(string $skautisTable, int|null $id): array
+    private function getAvailableActions(string $skautisTable, ?int $id): array
     {
         try {
             $result = $this->userWebservice->ActionVerify([

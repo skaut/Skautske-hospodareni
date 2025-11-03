@@ -26,8 +26,8 @@ class EventCashbookCest extends BaseAcceptanceCest
     {
         parent::_before($I);
 
-        $this->eventName = 'Acceptance test event ' . time();
-        $this->I         = $I;
+        $this->eventName = 'Acceptance test event '.time();
+        $this->I = $I;
 
         $I->login(AcceptanceTester::UNIT_LEADER_ROLE);
     }
@@ -150,10 +150,10 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->expect('Odebrat položku');
         $this->I->seeElement('input[name="items[0][remove]"]');
         $this->I->click('input[name="items[0][remove]"]');
-        $this->I->wait(6); //waiting for animation and ajax
+        $this->I->wait(6); // waiting for animation and ajax
         $this->I->dontSeeElement('//input[@type="submit" and @value="Odebrat položku"]');
         $this->I->click('Nový doklad');
-        $this->I->wait(6); //waiting for animation and ajax
+        $this->I->wait(6); // waiting for animation and ajax
         $this->I->dontSeeElement('//input[@type="submit" and @value="Uložit"]');
     }
 

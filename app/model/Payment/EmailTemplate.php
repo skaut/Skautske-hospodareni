@@ -27,10 +27,10 @@ class EmailTemplate
     public function __construct(string $subject, string $body)
     {
         $this->subject = $subject;
-        $this->body    = $body;
+        $this->body = $body;
     }
 
-    public function evaluate(Group $group, Payment $payment, string|null $bankAccount, string $user): EmailTemplate
+    public function evaluate(Group $group, Payment $payment, ?string $bankAccount, string $user): EmailTemplate
     {
         $accountRequired = Strings::contains($this->body, '%qrcode') || Strings::contains($this->body, '%account');
         if ($bankAccount === null && $accountRequired) {
@@ -108,9 +108,9 @@ class EmailTemplate
             $params['message'] = $payment->getName();
         }
 
-        $file = 'http://api.paylibo.com/paylibo/generator/czech/image?' . http_build_query($params);
+        $file = 'http://api.paylibo.com/paylibo/generator/czech/image?'.http_build_query($params);
 
-        return '<img alt="QR platbu se nepodařilo zobrazit" src="' . $file . '">';
+        return '<img alt="QR platbu se nepodařilo zobrazit" src="'.$file.'">';
     }
 
     public function equals(EmailTemplate $other): bool

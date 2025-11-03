@@ -20,7 +20,7 @@ class ChitItem
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue()
      */
-    private int|null $id = null;
+    private ?int $id = null;
 
     /** @ORM\Embedded(class=Amount::class, columnPrefix=false) */
     private Amount $amount;
@@ -33,9 +33,9 @@ class ChitItem
 
     public function __construct(Amount $amount, Category $category, string $purpose)
     {
-        $this->amount   = $amount;
+        $this->amount = $amount;
         $this->category = $category;
-        $this->purpose  = $purpose;
+        $this->purpose = $purpose;
     }
 
     public function getAmount(): Amount

@@ -16,7 +16,7 @@ final class CampPragueParticipantsQueryHandler
     {
     }
 
-    public function __invoke(CampPragueParticipantsQuery $query): PragueParticipants|null
+    public function __invoke(CampPragueParticipantsQuery $query): ?PragueParticipants
     {
         if (! Strings::startsWith($query->getRegistrationNumber(), PragueParticipants::PRAGUE_UNIT_PREFIX)) {
             return null;

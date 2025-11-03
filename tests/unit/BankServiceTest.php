@@ -34,25 +34,25 @@ final class BankServiceTest extends Unit
     /** @see https://github.com/skaut/Skautske-hospodareni/pull/508 */
     public function testPaymentIsPairedOnlyOnceForDuplicateTransactions(): void
     {
-        $groupId       = 123;
+        $groupId = 123;
         $bankAccountId = 456;
 
-        $group  = $this->group($groupId, $bankAccountId, new DateTimeImmutable('- 5 days'));
+        $group = $this->group($groupId, $bankAccountId, new DateTimeImmutable('- 5 days'));
         $groups = $this->mockGroupRepository([$groupId => $group]);
 
         $bankAccount = $this->mockBankAccount($bankAccountId, '123');
 
         $bankAccounts = $this->mockBankAccountRepository([$bankAccountId => $bankAccount]);
 
-        $amount  = 200.50;
-        $vs      = new VariableSymbol('123456');
+        $amount = 200.50;
+        $vs = new VariableSymbol('123456');
         $account = (string) Helpers::createAccountNumber();
 
         $transactions = array_map(
             static function (string $id) use ($amount, $vs, $account) {
                 $today = new DateTimeImmutable();
 
-                return new Transaction($id, $today, $amount, $account, 'František Maša', $vs->toInt(), null, 'note' . $id);
+                return new Transaction($id, $today, $amount, $account, 'František Maša', $vs->toInt(), null, 'note'.$id);
             },
             ['123', '456'],
         );
@@ -83,13 +83,13 @@ final class BankServiceTest extends Unit
 
     public function testPaymentIsPairedOnlyByJoinedAccount(): void
     {
-        $groupId1       = 12;
+        $groupId1 = 12;
         $bankAccountId1 = 159;
-        $lastPairing    = new DateTimeImmutable('- 5 days');
+        $lastPairing = new DateTimeImmutable('- 5 days');
 
         $group1 = $this->group($groupId1, $bankAccountId1, $lastPairing);
 
-        $groupId2       = 34;
+        $groupId2 = 34;
         $bankAccountId2 = 357;
 
         $group2 = $this->group($groupId2, $bankAccountId2, $lastPairing);
@@ -104,11 +104,11 @@ final class BankServiceTest extends Unit
             $bankAccountId2 => $bankAccount2,
         ]);
 
-        $today   = new DateTimeImmutable();
-        $amount  = 200.50;
-        $vs1     = new VariableSymbol('123456');
+        $today = new DateTimeImmutable();
+        $amount = 200.50;
+        $vs1 = new VariableSymbol('123456');
         $account = (string) Helpers::createAccountNumber();
-        $vs2     = new VariableSymbol('7854');
+        $vs2 = new VariableSymbol('7854');
 
         $transactions1 = [
             new Transaction('123', $today, $amount, $account, 'František Maša', $vs1->toInt(), null, null),
@@ -269,7 +269,7 @@ final class BankServiceTest extends Unit
         return $repository;
     }
 
-    private function group(int $groupId, int $bankAccountId, DateTimeImmutable|null $lastPairing): Group
+    private function group(int $groupId, int $bankAccountId, ?DateTimeImmutable $lastPairing): Group
     {
         $group = new Group(
             [1],

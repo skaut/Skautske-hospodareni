@@ -11,8 +11,8 @@ use Nette\InvalidStateException;
 use stdClass;
 
 /**
- * @property-read DefaultTemplate $template
- * @property-read BasePresenter $presenter
+ * @property DefaultTemplate $template
+ * @property BasePresenter   $presenter
  */
 abstract class BaseControl extends Control
 {
@@ -20,14 +20,12 @@ abstract class BaseControl extends Control
 
     abstract public function render(): void;
 
-    public function getPresenter(): BasePresenter|null
+    public function getPresenter(): ?BasePresenter
     {
         $presenter = parent::getPresenter();
 
         if (! $presenter instanceof BasePresenter) {
-            throw new InvalidStateException(
-                'Presenter using BaseControl derived controls must inherit from ' . BasePresenter::class,
-            );
+            throw new InvalidStateException('Presenter using BaseControl derived controls must inherit from '.BasePresenter::class);
         }
 
         return $presenter;
@@ -40,7 +38,7 @@ abstract class BaseControl extends Control
         return $this->getPresenter()->flashMessage($message, $type);
     }
 
-    protected function reload(string|null $message = null, string $type = 'info'): void
+    protected function reload(?string $message = null, string $type = 'info'): void
     {
         if ($message !== null) {
             $this->flashMessage($message, $type);

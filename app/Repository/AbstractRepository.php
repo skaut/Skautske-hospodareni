@@ -31,7 +31,6 @@ use function is_int;
  * @phpstan-type QueryByCriteria string|Comparison|Composite|Func|callable(Expr $expr): (string|Comparison|Composite|Func)
  * @phpstan-type QueryByParameters array<string, mixed>
  */
-
 abstract class AbstractRepository extends EntityRepository
 {
     public function __construct(EntityManagerInterface $entityManager)
@@ -50,8 +49,8 @@ abstract class AbstractRepository extends EntityRepository
      */
     public function findOrFail(mixed $id): object
     {
+        /** @var T|null $result */
         $result = $this->find($id);
-        assert($result instanceof T || $result === null);
 
         if ($result === null) {
             throw new NoResultException();
@@ -78,7 +77,7 @@ abstract class AbstractRepository extends EntityRepository
      *
      * @throws NoResultException
      */
-    public function findOrFailWithEagerLoad(mixed $id, array $associations, int|null $hydrationMode = null): mixed
+    public function findOrFailWithEagerLoad(mixed $id, array $associations, ?int $hydrationMode = null): mixed
     {
         if (empty($associations)) {
             return $this->findOrFail($id);
@@ -112,17 +111,17 @@ abstract class AbstractRepository extends EntityRepository
     }
 
     /**
-     * @param  array<string, mixed>       $criteria
-     * @param  array<string, string>|null $orderBy
+     * @param array<string, mixed>       $criteria
+     * @param array<string, string>|null $orderBy
      *
      * @return T
      *
      * @throws NoResultException
      */
-    public function findOneByOrFail(array $criteria, array|null $orderBy = null): object
+    public function findOneByOrFail(array $criteria, ?array $orderBy = null): object
     {
+        /** @var T|null $result */
         $result = $this->findOneBy($criteria, $orderBy);
-        assert($result instanceof T || $result === null);
 
         if ($result === null) {
             throw new NoResultException();
@@ -141,7 +140,6 @@ abstract class AbstractRepository extends EntityRepository
         $reference = $this
             ->getEntityManager()
             ->getReference($this->getEntityClass(), $id);
-        assert($reference instanceof T || $reference === null);
 
         if ($reference === null) {
             throw new NoResultException();
@@ -161,7 +159,7 @@ abstract class AbstractRepository extends EntityRepository
             ->getSingleColumnResult();
     }
 
-    public function andWhereDeleted(QueryBuilder $builder, bool|null $deleted = false, string|null $alias = null): void
+    public function andWhereDeleted(QueryBuilder $builder, ?bool $deleted = false, ?string $alias = null): void
     {
         if ($alias === null) {
             [$alias] = $builder->getRootAliases();
@@ -194,24 +192,24 @@ abstract class AbstractRepository extends EntityRepository
     }
 
     /**
-     * @param  array<string, mixed>       $criteria
-     * @param  array<string, string>|null $orderBy
+     * @param array<string, mixed>       $criteria
+     * @param array<string, string>|null $orderBy
      *
      * @return iterable<T>
      */
-    public function findByIterable(array $criteria, array|null $orderBy = null, int|null $limit = null, int|null $offset = null): iterable
+    public function findByIterable(array $criteria, ?array $orderBy = null, ?int $limit = null, ?int $offset = null): iterable
     {
         // This is the same logic as for EntityRepository::findBy(), but modified to return iterable instead
-        $entityManager   = $this->getEntityManager();
+        $entityManager = $this->getEntityManager();
         $entityPersister = $entityManager->getUnitOfWork()->getEntityPersister($this->getEntityClass());
-        $connection      = $entityManager->getConnection();
+        $connection = $entityManager->getConnection();
 
-        $sql              = $entityPersister->getSelectSQL($criteria, limit: $limit, offset: $offset, orderBy: $orderBy);
+        $sql = $entityPersister->getSelectSQL($criteria, limit: $limit, offset: $offset, orderBy: $orderBy);
         [$params, $types] = $entityPersister->expandParameters($criteria);
-        $stmt             = $connection->executeQuery($sql, $params, $types);
+        $stmt = $connection->executeQuery($sql, $params, $types);
 
         $hydrator = $entityManager->newHydrator(AbstractQuery::HYDRATE_OBJECT);
-        $rsm      = $entityPersister->getResultSetMapping();
+        $rsm = $entityPersister->getResultSetMapping();
 
         return $hydrator->toIterable($stmt, $rsm, [Query::HINT_INTERNAL_ITERATION => true]);
     }
@@ -250,8 +248,8 @@ abstract class AbstractRepository extends EntityRepository
     }
 
     /**
-     * @param  Comparison        $criteria
-     * @param  QueryByParameters $parameters
+     * @param Comparison        $criteria
+     * @param QueryByParameters $parameters
      *
      * @return int<0, max>
      */

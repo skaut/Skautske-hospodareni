@@ -8,9 +8,9 @@ use Model\Cashbook\Cashbook\CashbookId;
 use Nette\SmartObject;
 
 /**
- * @property-read int $id
- * @property-read CashbookId $cashbookId
- * @property-read int $year
+ * @property int        $id
+ * @property CashbookId $cashbookId
+ * @property int        $year
  */
 class UnitCashbook
 {

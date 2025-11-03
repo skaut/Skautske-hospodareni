@@ -37,13 +37,13 @@ final class RemoveOAuthTest extends IntegrationTest
 
     protected function _before(): void
     {
-        $this->tester->useConfigFiles([__DIR__ . '/RemoveOAuthTest.neon']);
+        $this->tester->useConfigFiles([__DIR__.'/RemoveOAuthTest.neon']);
 
         parent::_before();
 
         $this->repository = $this->tester->grabService(IGoogleRepository::class);
-        $this->groups     = $this->tester->grabService(IGroupRepository::class);
-        $this->handler    = $this->tester->grabService(RemoveOAuthHandler::class);
+        $this->groups = $this->tester->grabService(IGroupRepository::class);
+        $this->handler = $this->tester->grabService(RemoveOAuthHandler::class);
     }
 
     public function test(): void

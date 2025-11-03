@@ -47,10 +47,10 @@ class GroupUnitControl extends BaseControl
         );
 
         $this->template->setParameters([
-            'unitNames'  => $unitNames,
-            'canEdit'   => $this->canEdit($group),
+            'unitNames' => $unitNames,
+            'canEdit' => $this->canEdit($group),
         ]);
-        $this->template->setFile(__DIR__ . '/templates/GroupUnitControl.latte');
+        $this->template->setFile(__DIR__.'/templates/GroupUnitControl.latte');
         $this->template->render();
     }
 
@@ -144,7 +144,7 @@ class GroupUnitControl extends BaseControl
                 continue;
             }
 
-            $unitsDetail         = $this->queryBus->handle(new UnitsDetailQuery([$unitId]));
+            $unitsDetail = $this->queryBus->handle(new UnitsDetailQuery([$unitId]));
             $officialUnitPairs[] = [$unitId => $unitsDetail[$unitId]->getDisplayName()];
         }
 
@@ -156,10 +156,7 @@ class GroupUnitControl extends BaseControl
         $group = $this->groups->getGroup($groupId);
 
         if ($group === null) {
-            throw new ShouldNotHappen(sprintf(
-                'Group used with %s should always exist',
-                self::class,
-            ));
+            throw new ShouldNotHappen(sprintf('Group used with %s should always exist', self::class));
         }
 
         return $group;

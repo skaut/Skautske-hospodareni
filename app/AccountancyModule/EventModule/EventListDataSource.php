@@ -20,22 +20,22 @@ use function assert;
 
 final class EventListDataSource extends DataSource
 {
-    private int|null $year = null;
+    private ?int $year = null;
 
-    private string|null $state = null;
+    private ?string $state = null;
 
     public function __construct(private QueryBus $queryBus)
     {
     }
 
-    public function filterByYear(int|null $year): self
+    public function filterByYear(?int $year): self
     {
         $this->year = $year;
 
         return $this;
     }
 
-    public function filterByState(string|null $state): self
+    public function filterByState(?string $state): self
     {
         $this->state = $state;
 
@@ -62,7 +62,7 @@ final class EventListDataSource extends DataSource
         );
     }
 
-    private function chitNumberPrefix(Event $event): string|null
+    private function chitNumberPrefix(Event $event): ?string
     {
         $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery($event->getId()));
 

@@ -10,10 +10,10 @@ use Nette\Bridges\ApplicationLatte\LatteFactory;
 
 class TemplateFactory
 {
-    public const OAUTH_ADDED     = __DIR__ . '/../emails/oAuthAdded.latte';
-    public const PAYMENT_DETAILS = __DIR__ . '/../emails/payment.base.latte';
+    public const OAUTH_ADDED = __DIR__.'/../emails/oAuthAdded.latte';
+    public const PAYMENT_DETAILS = __DIR__.'/../emails/payment.base.latte';
 
-    private Engine|null $engine = null;
+    private ?Engine $engine = null;
 
     public function __construct(private LatteFactory $latteFactory)
     {

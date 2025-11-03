@@ -34,7 +34,7 @@ final class CashbookDisplayNameQueryHandler
 
     public function __invoke(CashbookDisplayNameQuery $query): string
     {
-        $cashbook  = $this->queryBus->handle(new CashbookQuery($query->getCashbookId()));
+        $cashbook = $this->queryBus->handle(new CashbookQuery($query->getCashbookId()));
         $skautisId = $this->queryBus->handle(new SkautisIdQuery($query->getCashbookId()));
         assert($cashbook instanceof Cashbook);
 

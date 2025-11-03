@@ -11,7 +11,7 @@ final class CampParticipantIncomeQuery
 {
     private SkautisCampId $campId;
 
-    public function __construct(SkautisCampId $id, private bool|null $isAdult = null, private bool|null $onAccount = null)
+    public function __construct(SkautisCampId $id, private ?bool $isAdult = null, private ?bool $onAccount = null)
     {
         $this->campId = $id;
     }
@@ -26,12 +26,12 @@ final class CampParticipantIncomeQuery
         return $this->campId;
     }
 
-    public function isAdult(): bool|null
+    public function isAdult(): ?bool
     {
         return $this->isAdult;
     }
 
-    public function isOnAccount(): bool|null
+    public function isOnAccount(): ?bool
     {
         return $this->onAccount;
     }

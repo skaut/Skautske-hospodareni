@@ -18,7 +18,7 @@ use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
 use function assert;
 
 /**
- * Update category total in Skautis for camp cashbook
+ * Update category total in Skautis for camp cashbook.
  */
 final class CampCashbookSubscriber implements MessageSubscriberInterface
 {

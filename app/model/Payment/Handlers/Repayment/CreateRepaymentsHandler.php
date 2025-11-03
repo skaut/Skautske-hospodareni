@@ -75,13 +75,13 @@ final class CreateRepaymentsHandler
 
         foreach ($command->getRepayments() as $r) {
             $ret .= '<DomesticTransaction>';
-            $ret .= '<accountFrom>' . $command->getSourceAccount()->getNumberWithPrefix() . '</accountFrom>';
+            $ret .= '<accountFrom>'.$command->getSourceAccount()->getNumberWithPrefix().'</accountFrom>';
             $ret .= '<currency>CZK</currency>';
-            $ret .= '<amount>' . MoneyFactory::toFloat($r->getAmount()) . '</amount>';
-            $ret .= '<accountTo>' . $r->getTargetAccount()->getNumberWithPrefix() . '</accountTo>';
-            $ret .= '<bankCode>' . $r->getTargetAccount()->getBankCode() . '</bankCode>';
-            $ret .= '<date>' . $command->getDate()->format('Y-m-d') . '</date>';
-            $ret .= '<messageForRecipient>' . $r->getMessageForRecipient() . '</messageForRecipient>';
+            $ret .= '<amount>'.MoneyFactory::toFloat($r->getAmount()).'</amount>';
+            $ret .= '<accountTo>'.$r->getTargetAccount()->getNumberWithPrefix().'</accountTo>';
+            $ret .= '<bankCode>'.$r->getTargetAccount()->getBankCode().'</bankCode>';
+            $ret .= '<date>'.$command->getDate()->format('Y-m-d').'</date>';
+            $ret .= '<messageForRecipient>'.$r->getMessageForRecipient().'</messageForRecipient>';
             $ret .= '<comment></comment>';
             $ret .= '<paymentType>431001</paymentType>';
             $ret .= '</DomesticTransaction>';
@@ -108,10 +108,10 @@ final class CreateRepaymentsHandler
         }
 
         $repaymentMessages = [];
-        $i                 = 1;
+        $i = 1;
         foreach ($command->getRepayments() as $repayment) {
             $repaymentMessages[$i] = $repayment->getMessageForRecipient();
-            $i++;
+            ++$i;
         }
 
         $errorMessages = [];
@@ -120,8 +120,8 @@ final class CreateRepaymentsHandler
             $detailId = (string) $detail['id'];
 
             foreach ($detail->messages->message as $message) {
-                $messageStatus    = (string) $message['status'];
-                $messageText      = (string) $message;
+                $messageStatus = (string) $message['status'];
+                $messageText = (string) $message;
                 $messageErrorCode = (int) $message['errorCode'];
 
                 if ($messageStatus !== 'error' && $messageErrorCode === 0) {
@@ -133,7 +133,7 @@ final class CreateRepaymentsHandler
         }
 
         if (! empty($errorMessages)) {
-            throw BankError::fromMessage('API Error: ' . implode(' | ', $errorMessages), $errorCode);
+            throw BankError::fromMessage('API Error: '.implode(' | ', $errorMessages), $errorCode);
         }
     }
 }

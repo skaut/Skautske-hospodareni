@@ -4,35 +4,38 @@ declare(strict_types=1);
 
 namespace Page;
 
+use AcceptanceTester;
+use DateTime;
+
 use function date;
 use function sprintf;
 
 class Payment
 {
-    /** @var \AcceptanceTester */
+    /** @var AcceptanceTester */
     private $tester;
 
-    public function __construct(\AcceptanceTester $tester)
+    public function __construct(AcceptanceTester $tester)
     {
         $this->tester = $tester;
     }
 
-    public function fillName(string $name) : void
+    public function fillName(string $name): void
     {
         $this->tester->fillField('Název', $name);
     }
 
-    public function fillEmail(string $name) : void
+    public function fillEmail(string $name): void
     {
         $this->tester->fillField('E-mail', $name);
     }
 
-    public function fillAmount(float $amount) : void
+    public function fillAmount(float $amount): void
     {
         $this->tester->fillField('Částka', $amount);
     }
 
-    public function addPayment(string $name, ?string $email, float $amount) : void
+    public function addPayment(string $name, ?string $email, float $amount): void
     {
         $this->tester->click('//button[contains(.,\'Přidat platbu\')]');
         $this->tester->click('… obecnou');
@@ -49,12 +52,12 @@ class Payment
         $this->submitPayment();
     }
 
-    public function seeNumberOfPaymentsWithState(string $state, int $count) : void
+    public function seeNumberOfPaymentsWithState(string $state, int $count): void
     {
         $this->tester->seeNumberOfElements("(//*[text()='$state'])", $count);
     }
 
-    public function selectNextWorkdayForDueDate() : void
+    public function selectNextWorkdayForDueDate(): void
     {
         $I = $this->tester;
 
@@ -62,13 +65,13 @@ class Payment
 
         $daysToNextWorkday = $dayOfWeek < 5 ? 1 : 8 - $dayOfWeek;
 
-        $date = (new \DateTime())->modify(sprintf('+ %d days', $daysToNextWorkday))->format('d.m. Y');
+        $date = (new DateTime())->modify(sprintf('+ %d days', $daysToNextWorkday))->format('d.m. Y');
 
         $I->fillField('Splatnost', $date);
         $I->click('.modal-dialog'); // Close date picker
     }
 
-    public function submitPayment() : void
+    public function submitPayment(): void
     {
         $this->tester->click('Přidat platbu', '.modal-footer');
         $this->tester->waitForElementNotVisible('.modal-dialog');

@@ -27,13 +27,13 @@ final class ParticipantService
     {
         if ($updateParticipant->getField() === 'days') {
             $typeName = ucfirst($eventType->toString());
-            $sisData  = [
+            $sisData = [
                 'ID' => $updateParticipant->getParticipantId(),
                 'Real' => true,
                 'Days' => $updateParticipant->getValue(),
                 'IsAccepted' => $updateParticipant->isAccepted(),
             ];
-            $this->skautis->event->{'Participant' . $typeName . 'Update'}($sisData, 'participant' . $typeName);
+            $this->skautis->event->{'Participant'.$typeName.'Update'}($sisData, 'participant'.$typeName);
 
             return;
         }
