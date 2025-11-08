@@ -122,6 +122,16 @@ services:
     - Console\MigrationsDropCommand
 
 
+    # Console command
+    console.doctrineCacheClear:
+        factory: App\Console\DoctrineCacheClearCommand(
+            @Contributte\Psr6\ICachePoolFactory,
+            @cache.storage,
+            %tempDir%
+        )
+        tags: [contributte.console.command]
+
+
     skautisCache:
         factory: Nette\Caching\Cache(namespace: 'skautis')
         autowired: false

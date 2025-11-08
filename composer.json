@@ -157,6 +157,11 @@
             "yarn install",
             "yarn build",
             "bin/console migrations:migrate --no-interaction"
+        ],
+        "diff": [
+            "console doctrine:cache:clear",
+            "console migrations:diff --no-interaction",
+            "console migrations:migrate --no-interaction"
         ]
     },
     "extra": {
