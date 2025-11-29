@@ -26,7 +26,7 @@ final class CachedUnitRepository implements IUnitRepository
         return $this->cache->load(
             'byParent-'.$parentId,
             function (?array &$options) use ($parentId): array {
-                $options[Cache::EXPIRE] = self::EXPIRATION;
+                $options[Cache::Expire] = self::EXPIRATION;
 
                 return $this->inner->findByParent($parentId);
             },
@@ -38,7 +38,7 @@ final class CachedUnitRepository implements IUnitRepository
         return $this->cache->load(
             'byId-'.$id,
             function (?array &$options) use ($id): Unit {
-                $options[Cache::EXPIRE] = self::EXPIRATION;
+                $options[Cache::Expire] = self::EXPIRATION;
 
                 return $this->inner->find($id);
             },
