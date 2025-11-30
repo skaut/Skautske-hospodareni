@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Repositories\Payment;
 
 use Doctrine\ORM\EntityManager;
-use Model\Payment\BankAccount;
+use Entity\BankAccount;
 use Model\Payment\BankAccountNotFound;
 use Model\Payment\Repositories\IBankAccountRepository;
 

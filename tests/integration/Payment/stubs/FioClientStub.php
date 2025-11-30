@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Payment;
 
 use Cake\Chronos\ChronosDate;
+use Entity\BankAccount;
 use Model\Bank\Fio\Transaction;
 use Model\Payment\Fio\IFioClient;
 

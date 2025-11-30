@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\DTO\Payment;
 
 use DateTimeImmutable;
-use Model\Payment\BankAccount\AccountNumber;
+use Entity\Embeddable\AccountNumber;
 
 class BankAccount
 {

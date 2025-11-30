@@ -6,6 +6,7 @@ namespace Model\Bank\Fio;
 
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
+use Entity\BankAccount;
 use FioApi\Downloader;
 use FioApi\Exceptions\InternalErrorException;
 use FioApi\Exceptions\TooGreedyException;
@@ -13,7 +14,6 @@ use GuzzleHttp\Exception\TransferException;
 use Mockery as m;
 use Model\BankTimeLimit;
 use Model\BankTimeout;
-use Model\Payment\BankAccount;
 use Model\Payment\TokenNotSet;
 use Psr\Log\NullLogger;
 

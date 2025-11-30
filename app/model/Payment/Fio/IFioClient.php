@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Model\Payment\Fio;
 
 use Cake\Chronos\ChronosDate;
+use Entity\BankAccount;
 use Model\Bank\Fio\Transaction;
 use Model\BankTimeLimit;
 use Model\BankTimeout;
 use Model\BankWrongTokenAccount;
-use Model\Payment\BankAccount;
 use Model\Payment\TokenNotSet;
 
 interface IFioClient

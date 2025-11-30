@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Payment\Fio;
 
 use Cake\Chronos\ChronosDate;
-use Model\Payment\BankAccount;
+use Entity\BankAccount;
 use Nette\Caching\Cache;
 
 use function sprintf;

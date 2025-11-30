@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Payment;
 
 use DateTimeImmutable;
+use Entity\BankAccount;
 use Helpers;
 use IntegrationTest;
 use Model\BankService;

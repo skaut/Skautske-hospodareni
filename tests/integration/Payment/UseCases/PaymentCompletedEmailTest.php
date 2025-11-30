@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Model\Payment\IntegrationTests;
 
+use Entity\GoogleOAuth;
 use Helpers;
 use IntegrationTest;
 use Model\Common\EmailAddress;
 use Model\Common\Services\CommandBus;
 use Model\Common\User;
-use Model\Google\OAuth;
 use Model\Google\OAuthId;
 use Model\Payment\Commands\Payment\CreatePayment;
 use Model\Payment\EmailTemplate;
@@ -35,7 +35,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
         return [
             Group::class,
             Payment::class,
-            OAuth::class,
+            GoogleOAuth::class,
         ];
     }
 

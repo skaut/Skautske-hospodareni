@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Integration\Pairing;
 
 use DateTimeImmutable;
+use Entity\BankAccount;
 use Helpers;
 use IntegrationTest;
-use Model\Payment\BankAccount;
 use Model\Payment\BankAccountService;
 use Model\Payment\Group;
 use Model\Payment\Repositories\IBankAccountRepository;

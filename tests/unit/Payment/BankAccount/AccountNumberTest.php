@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Payment\BankAccount;
 
 use Codeception\Test\Unit;
+use Entity\Embeddable\AccountNumber;
 
 class AccountNumberTest extends Unit
 {

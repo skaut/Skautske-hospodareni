@@ -2,43 +2,45 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment;
+namespace Entity;
 
 use DateTimeImmutable;
-use Doctrine\ORM\Mapping as ORM;
-use Model\Payment\BankAccount\AccountNumber;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Embedded;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Table;
+use Entity\Embeddable\AccountNumber;
+use Model\Payment\IUnitResolver;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(name="pa_bank_account")
- */
+#[Entity]
+#[Table(name: 'pa_bank_account')]
 class BankAccount
 {
-    private const FIO_BANK_CODE = '2010';
+    public const FIO_BANK_CODE = '2010';
 
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
-     */
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
+    #[Column(type: 'integer')]
     private int $id;
 
-    /** @ORM\Column(type="integer") */
+    #[Column(type: 'integer')]
     private int $unitId;
 
-    /** @ORM\Column(type="string") */
+    #[Column(type: 'string')]
     private string $name;
 
-    /** @ORM\Embedded(class=AccountNumber::class) */
+    #[Embedded(class: AccountNumber::class)]
     private AccountNumber $number;
 
-    /** @ORM\Column(type="string", nullable=true) */
+    #[Column(type: 'string', nullable: true)]
     private ?string $token = null;
 
-    /** @ORM\Column(type="datetime_immutable") */
+    #[Column(type: 'datetime_immutable')]
     private DateTimeImmutable $createdAt;
 
-    /** @ORM\Column(type="boolean") */
+    #[Column(type: 'boolean')]
     private bool $allowedForSubunits = false;
 
     public function __construct(

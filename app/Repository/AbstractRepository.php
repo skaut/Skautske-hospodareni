@@ -33,12 +33,14 @@ use function is_int;
  */
 abstract class AbstractRepository extends EntityRepository
 {
+    protected EntityManagerInterface $entityManager;
+
     public function __construct(EntityManagerInterface $entityManager)
     {
         $entityClass = $this->getEntityClass();
         /** @var ClassMetadata<T> $metadata */
         $metadata = $entityManager->getClassMetadata($entityClass);
-
+        $this->entityManager = $entityManager;
         parent::__construct($entityManager, $metadata);
     }
 

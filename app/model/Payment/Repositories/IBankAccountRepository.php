@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment\Repositories;
 
-use Model\Payment\BankAccount;
+use Entity\BankAccount;
 use Model\Payment\BankAccountNotFound;
 
 interface IBankAccountRepository

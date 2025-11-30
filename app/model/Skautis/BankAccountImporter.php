@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Skautis;
 
-use Model\Payment\BankAccount\AccountNumber;
+use Entity\Embeddable\AccountNumber;
 use Model\Payment\BankAccount\IBankAccountImporter;
 use Model\Payment\InvalidBankAccountNumber;
 use Skautis\Skautis;
