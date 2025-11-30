@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\DTO\Payment;
 
-use Model\Payment\BankAccount as BankAccountEntity;
+use Entity\BankAccount as BankAccountEntity;
 use Nette\StaticClass;
 
 final class BankAccountFactory

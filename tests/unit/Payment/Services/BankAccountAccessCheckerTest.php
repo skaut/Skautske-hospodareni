@@ -6,9 +6,9 @@ namespace Model\Payment\Services;
 
 use Codeception\Test\Unit;
 use DateTimeImmutable;
+use Entity\BankAccount;
 use Helpers;
 use Mockery;
-use Model\Payment\BankAccount;
 use Model\Payment\BankAccountNotFound;
 use Model\Payment\IUnitResolver;
 use Model\Payment\Repositories\IBankAccountRepository;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Payment;
 
-use Model\Payment\BankAccount\AccountNumber;
+use Entity\Embeddable\AccountNumber;
 use Money\Money;
 
 final class Repayment

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Payment\Commands\Repayment;
 
 use Cake\Chronos\ChronosDate;
-use Model\Payment\BankAccount\AccountNumber;
+use Entity\Embeddable\AccountNumber;
 use Model\Payment\Repayment;
 
 final class CreateRepayments

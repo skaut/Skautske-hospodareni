@@ -7,6 +7,7 @@ namespace Model\Payment;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use DateTimeImmutable;
+use Entity\BankAccount;
 use Helpers;
 use InvalidArgumentException;
 use Mockery as m;

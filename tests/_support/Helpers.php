@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Cake\Chronos\ChronosDate;
+use Entity\Embeddable\AccountNumber;
 use Mockery as m;
 use Model\Cashbook\Cashbook;
 use Model\Cashbook\Cashbook\Amount;
@@ -13,7 +14,6 @@ use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\Cashbook\Recipient;
 use Model\Cashbook\ICategory;
 use Model\Cashbook\Operation;
-use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\EmailTemplate;
 use Model\Payment\EmailType;
 use Model\Payment\Group\PaymentDefaults;

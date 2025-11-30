@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Repositories\Payment;
 
 use DateTimeImmutable;
+use Entity\BankAccount;
+use Entity\Embeddable\AccountNumber;
 use IntegrationTest;
 use Mockery as m;
-use Model\Payment\BankAccount;
 use Model\Payment\BankAccountNotFound;
 use Model\Payment\IUnitResolver;
 
@@ -154,7 +155,7 @@ class BankAccountRepositoryTest extends IntegrationTest
         return new BankAccount(
             1,
             'Hlavní',
-            new BankAccount\AccountNumber(null, '2000942144', '2010'),
+            new AccountNumber(null, '2000942144', '2010'),
             'test-token',
             $createdAt ?? new DateTimeImmutable(),
             m::mock(IUnitResolver::class, ['getOfficialUnitId' => $unitId]),

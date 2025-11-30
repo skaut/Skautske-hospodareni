@@ -10,6 +10,7 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Entity\BankAccount;
 use InvalidArgumentException;
 use Model\Google\Exception\NoAccessToOAuth;
 use Model\Google\OAuthId;

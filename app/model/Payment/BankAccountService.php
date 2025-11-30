@@ -7,6 +7,8 @@ namespace Model\Payment;
 use Assert\Assert;
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
+use Entity\BankAccount;
+use Entity\Embeddable\AccountNumber;
 use Model\Bank\Fio\Transaction;
 use Model\BankTimeLimit;
 use Model\BankTimeout;
@@ -14,12 +16,14 @@ use Model\BankWrongTokenAccount;
 use Model\Common\UnitId;
 use Model\DTO\Payment\BankAccount as BankAccountDTO;
 use Model\DTO\Payment\BankAccountFactory;
-use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\BankAccount\IBankAccountImporter;
 use Model\Payment\Fio\IFioClient;
 use Model\Payment\Repositories\IBankAccountRepository;
 use Model\Payment\Repositories\IGroupRepository;
 use Nette\Caching\Cache;
+use Utility\Cnb\BankAccountValidator;
+use Utility\Cnb\BankInfoDTO;
+use Utility\Cnb\BankNotFoundException;
 
 use function array_filter;
 use function array_map;
@@ -28,6 +32,8 @@ use function in_array;
 
 class BankAccountService
 {
+    protected BankAccountValidator $bankAccountValidator;
+
     public function __construct(
         private IBankAccountRepository $bankAccounts,
         private IGroupRepository $groups,
@@ -36,6 +42,7 @@ class BankAccountService
         private IBankAccountImporter $importer,
         private Cache $fioCache,
     ) {
+        $this->bankAccountValidator = new BankAccountValidator();
     }
 
     /** @throws BankAccountNotFound */
@@ -204,6 +211,43 @@ class BankAccountService
      */
     private function cleanFioCache(int $bankAccountId): void
     {
-        $this->fioCache->clean([Cache::TAGS => 'fio/'.$bankAccountId]);
+        $this->fioCache->clean([Cache::Tags => 'fio/'.$bankAccountId]);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getCzechBankAccountCodes(): array
+    {
+        $codes = [];
+        foreach ($this->bankAccountValidator->getValidBankCodes() as $key => $value) {
+            $codes[(string) $key] = sprintf('%s - %s', $key, $value);
+        }
+
+        return $codes;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getCzechBankAccountNames(): array
+    {
+        return $this->bankAccountValidator->getValidBankCodes();
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getCzechBankAccountBic(): array
+    {
+        return $this->bankAccountValidator->getBankBics();
+    }
+
+    /**
+     * @throws BankNotFoundException
+     */
+    public function getBankInfo(string $bankCode): BankInfoDTO
+    {
+        return $this->bankAccountValidator->getBankInfo($bankCode);
     }
 }

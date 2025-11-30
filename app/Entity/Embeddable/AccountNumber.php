@@ -2,28 +2,39 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\BankAccount;
+namespace Entity\Embeddable;
 
-use BankAccountValidator\Czech;
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Embeddable;
 use Model\Payment\InvalidBankAccountNumber;
+use Utility\Cnb\BankAccountValidator;
 
-/** @ORM\Embeddable() */
+#[Embeddable]
 class AccountNumber
 {
-    /** @ORM\Column(type="string", nullable=true, length=6) */
+    #[Column(type: 'string', length: 6, nullable: true)]
     private ?string $prefix = null;
 
-    /** @ORM\Column(type="string", length=10) */
+    #[Column(type: 'string', length: 10)]
     private string $number;
 
-    /** @ORM\Column(type="string", length=4) */
+    #[Column(type: 'string', length: 4)]
     private string $bankCode;
 
-    /** @throws InvalidBankAccountNumber */
-    public function __construct(?string $prefix, string $number, string $bankCode)
+    #[Column(type: 'string', length: 255, nullable: true)]
+    private ?string $bankName;
+
+    #[Column(type: 'string', length: 255, nullable: true)]
+    private ?string $iban;
+    #[Column(type: 'string', length: 255, nullable: true)]
+    private ?string $bic;
+
+    /**
+     * @throws InvalidBankAccountNumber
+     */
+    public function __construct(?string $prefix, string $number, string $bankCode, ?string $bankName = null, ?string $iban = null, ?string $bic = null)
     {
-        $validator = new Czech();
+        $validator = new BankAccountValidator();
 
         if (! $validator->validate([$prefix, $number, $bankCode])) {
             throw self::invalidNumber();
@@ -32,12 +43,17 @@ class AccountNumber
         $this->prefix = $prefix === '' ? null : $prefix;
         $this->number = $number;
         $this->bankCode = $bankCode;
+        $this->bankName = $bankName;
+        $this->iban = $iban;
+        $this->bic = $bic;
     }
 
-    /** @throws InvalidBankAccountNumber */
+    /**
+     * @throws InvalidBankAccountNumber
+     */
     public static function fromString(string $number): self
     {
-        $parser = new Czech();
+        $parser = new BankAccountValidator();
         $number = $parser->parseNumber($number);
 
         if ($number[1] === null || $number[2] === null) {
@@ -77,9 +93,44 @@ class AccountNumber
         return $this->number;
     }
 
+    public function getNumberWithPrefixAndBankCode(): string
+    {
+        return $this->getNumberWithPrefix().'/'.$this->bankCode;
+    }
+
     public function getBankCode(): string
     {
         return $this->bankCode;
+    }
+
+    public function getBankName(): ?string
+    {
+        return $this->bankName;
+    }
+
+    public function setBankName(string $bankName): void
+    {
+        $this->bankName = $bankName;
+    }
+
+    public function getIban(): string
+    {
+        return $this->iban;
+    }
+
+    public function setIban(string $iban): void
+    {
+        $this->iban = $iban;
+    }
+
+    public function getBic(): string
+    {
+        return $this->bic;
+    }
+
+    public function setBic(string $bic): void
+    {
+        $this->bic = $bic;
     }
 
     public function __toString(): string

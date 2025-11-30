@@ -6,6 +6,8 @@ namespace Tests\Integration\Pairing;
 
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
+use Entity\BankAccount;
+use Entity\Embeddable\AccountNumber;
 use Helpers;
 use IntegrationTest;
 use IntegrationTester;
@@ -13,7 +15,6 @@ use Mockery as m;
 use Model\Bank\Fio\Transaction;
 use Model\BankService;
 use Model\DTO\Payment\PairingResult;
-use Model\Payment\BankAccount;
 use Model\Payment\FioClientStub;
 use Model\Payment\Group;
 use Model\Payment\IUnitResolver;
@@ -77,7 +78,7 @@ class BankServiceTest extends IntegrationTest
         $bankAccount = new BankAccount(
             1,
             'Hlavní',
-            new BankAccount\AccountNumber(null, '2000942144', '2010'),
+            new AccountNumber(null, '2000942144', '2010'),
             'test-token',
             new DateTimeImmutable(),
             m::mock(IUnitResolver::class, ['getOfficialUnitId' => 1]),

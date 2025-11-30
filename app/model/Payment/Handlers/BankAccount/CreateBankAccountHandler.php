@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Model\Payment\Handlers\BankAccount;
 
 use DateTimeImmutable;
-use Model\Payment\BankAccount;
+use Entity\BankAccount;
 use Model\Payment\Commands\BankAccount\CreateBankAccount;
 use Model\Payment\IUnitResolver;
 use Model\Payment\Repositories\IBankAccountRepository;

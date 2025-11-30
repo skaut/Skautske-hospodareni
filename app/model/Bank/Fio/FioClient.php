@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Model\Bank\Fio;
 
 use Cake\Chronos\ChronosDate;
+use Entity\BankAccount;
 use FioApi\Exceptions\InternalErrorException;
 use FioApi\Exceptions\TooGreedyException;
 use FioApi\Transaction as ApiTransaction;
@@ -12,7 +13,6 @@ use GuzzleHttp\Exception\TransferException;
 use Model\BankTimeLimit;
 use Model\BankTimeout;
 use Model\BankWrongTokenAccount;
-use Model\Payment\BankAccount;
 use Model\Payment\Fio\IFioClient;
 use Model\Payment\TokenNotSet;
 use Psr\Log\LoggerInterface;
