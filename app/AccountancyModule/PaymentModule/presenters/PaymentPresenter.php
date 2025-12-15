@@ -23,6 +23,7 @@ use App\AccountancyModule\PaymentModule\Factories\IPaymentListFactory;
 use App\AccountancyModule\PaymentModule\Factories\IPaymentNoteDialogFactory;
 use App\AccountancyModule\PaymentModule\Factories\IRemoveGroupDialogFactory;
 use DateTimeImmutable;
+use Model\Common\UserNotFound;
 use Model\DTO\Payment\Payment;
 use Model\DTO\Payment\Person;
 use Model\ExcelService;
@@ -253,8 +254,10 @@ class PaymentPresenter extends BasePresenter
             $this->flashMessage('Platba byla zaplacena.');
         } catch (PaymentClosed) {
             $this->flashMessage('Tato platba už je uzavřená', 'danger');
-        } catch (InvalidOAuth $exc) {
-            $this->flashMessage($exc->getExplainedMessage(), 'danger');
+        } catch (UserNotFound) {
+            $this->flashMessage('Uživatel nebyl nalezen', 'danger');
+        } catch (PaymentNotFound) {
+            $this->flashMessage('Platba nebyla nalezena', 'danger');
         }
 
         $this->redirect('this');
