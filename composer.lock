@@ -8546,16 +8546,16 @@
         },
         {
             "name": "symfony/polyfill-php80",
-            "version": "v1.31.0",
+            "version": "v1.33.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php80.git",
-                "reference": "60328e362d4c2c802a54fcbf04f9d3fb892b4cf8"
+                "reference": "0cc9dd0f17f61d8131e7df6b84bd344899fe2608"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/60328e362d4c2c802a54fcbf04f9d3fb892b4cf8",
-                "reference": "60328e362d4c2c802a54fcbf04f9d3fb892b4cf8",
+                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/0cc9dd0f17f61d8131e7df6b84bd344899fe2608",
+                "reference": "0cc9dd0f17f61d8131e7df6b84bd344899fe2608",
                 "shasum": ""
             },
             "require": {
@@ -8606,7 +8606,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-php80/tree/v1.31.0"
+                "source": "https://github.com/symfony/polyfill-php80/tree/v1.33.0"
             },
             "funding": [
                 {
@@ -8618,11 +8618,15 @@
                     "type": "github"
                 },
                 {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
                     "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-09-09T11:45:10+00:00"
+            "time": "2025-01-02T08:10:11+00:00"
         },
         {
             "name": "symfony/property-access",
@@ -13391,21 +13395,20 @@
         },
         {
             "name": "symfony/process",
-            "version": "v5.4.11",
+            "version": "v6.4.33",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "6e75fe6874cbc7e4773d049616ab450eff537bf1"
+                "reference": "c46e854e79b52d07666e43924a20cb6dc546644e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/6e75fe6874cbc7e4773d049616ab450eff537bf1",
-                "reference": "6e75fe6874cbc7e4773d049616ab450eff537bf1",
+                "url": "https://api.github.com/repos/symfony/process/zipball/c46e854e79b52d07666e43924a20cb6dc546644e",
+                "reference": "c46e854e79b52d07666e43924a20cb6dc546644e",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.2.5",
-                "symfony/polyfill-php80": "^1.16"
+                "php": ">=8.1"
             },
             "type": "library",
             "autoload": {
@@ -13433,7 +13436,7 @@
             "description": "Executes commands in sub-processes",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/process/tree/v5.4.11"
+                "source": "https://github.com/symfony/process/tree/v6.4.33"
             },
             "funding": [
                 {
@@ -13445,11 +13448,15 @@
                     "type": "github"
                 },
                 {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
                     "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-06-27T16:58:25+00:00"
+            "time": "2026-01-23T16:02:12+00:00"
         },
         {
             "name": "symfony/yaml",
@@ -13576,9 +13583,9 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "roave/security-advisories": 20,
         "skaut/dependent-select-box": 20,
-        "skaut/psr6-caching": 20,
-        "roave/security-advisories": 20
+        "skaut/psr6-caching": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
@@ -13590,5 +13597,5 @@
     "platform-dev": {
         "ext-pdo": "*"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
