@@ -24,6 +24,10 @@ dbal:
         dbname: %database.name%
         serverVersion: 8.0
         driver: pdo_mysql
+        charset: utf8mb4
+        default_table_options:
+          charset: utf8mb4
+          collate: utf8mb4_czech_ci
 
         typesMapping:
             enum: string_enum

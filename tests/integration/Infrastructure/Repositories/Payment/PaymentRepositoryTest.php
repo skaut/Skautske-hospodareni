@@ -93,7 +93,7 @@ class PaymentRepositoryTest extends IntegrationTest
 
         $payment = $this->repository->find(1);
 
-        $expectedTransaction = new Payment\Transaction(
+        $expectedTransaction = new \Entity\Embeddable\Transaction(
             $data['transactionId'],
             $data['bank_account'],
             $data['transaction_payer'],

@@ -6,38 +6,117 @@ namespace App\AccountancyModule\PaymentModule;
 
 use App\AccountancyModule\Components\DataGrid;
 use App\AccountancyModule\Factories\GridFactory;
-use Component\Forms\BaseForm;
+use App\AccountancyModule\PaymentModule\Factories\IInvoiceFormFactory;
 use Entity\Invoice;
+use Entity\InvoiceSequence;
+use Http\Discovery\Exception\NotFoundException;
 use Manager\InvoiceManager;
-use Model\DTO\Google\OAuth;
-use Model\DTO\Payment\BankAccount;
-use Model\Payment\ReadModel\Queries\BankAccount\BankAccountsAccessibleByUnitsQuery;
-use Model\Payment\ReadModel\Queries\OAuthsAccessibleByGroupsQuery;
-use Model\Unit\ReadModel\Queries\UnitsDetailQuery;
-use Model\Unit\Unit;
-use Nette\Forms\Controls\SubmitButton;
-use Nette\Forms\Form;
+use Model\ExportService;
+use Model\Services\PdfRenderer;
 use Nette\Utils\ArrayHash;
 use Repository\InvoiceRepository;
-use Throwable;
+use Repository\InvoiceSequenceRepository;
 use Ublaboo\DataGrid\Column\Action\Confirmation\StringConfirmation;
-use Utility\Ares\ViAresParser;
-
-use function array_map;
-use function array_unique;
-use function assert;
-use function dumpe;
 
 class InvoiceListPresenter extends BasePresenter
 {
-    protected $groupId;
+    protected ?int $groupId = null;
+    protected InvoiceSequence $invoiceSequence;
 
     public function __construct(
         private readonly GridFactory $gridFactory,
         protected InvoiceManager $invoiceManager,
         protected InvoiceRepository $invoiceRepository,
+        protected InvoiceSequenceRepository $invoiceSequenceRepository,
+        protected IInvoiceFormFactory $invoiceFormFactory,
+        protected ExportService $exportService,
+        protected PdfRenderer $pdf,
     ) {
         parent::__construct();
+    }
+
+    public function actionDefault(int $invoiceSequenceId): void
+    {
+        $invoiceSequence = $this->invoiceSequenceRepository->find($invoiceSequenceId);
+        if ($invoiceSequence === null) {
+            $this->flashMessage('Fakturační řada nebyla nalezena', 'danger');
+            $this->redirect('InvoiceSequenceList:default');
+        }
+        $this->invoiceSequence = $invoiceSequence;
+        // dump($this->invoiceSequence->getInvoices()->first()->getInvoiceNumber());
+    }
+
+    public function renderEdit(int $id): void
+    {
+        $this->template->setParameters(['invoice' => $this->invoiceRepository->find($id)]);
+    }
+
+    public function renderDetail(int $id): void
+    {
+        /** @var Invoice $invoice */
+        $invoice = $this->invoiceRepository->find($id);
+
+        $data = [
+            // Data dodavatele (proměnná {$supplier->...})
+            'supplier' => [
+                'name' => $invoice->getSupplier()->getName(),
+                'street' => $invoice->getSupplier()->getAddress()->getStreet(),
+                'city' => $invoice->getSupplier()->getAddress()->getCity(),
+                'zip' => $invoice->getSupplier()->getAddress()->getZipCode(),
+                'country' => 'Česká republika',
+                'ic' => $invoice->getSupplier()->getCompanyNumber(),
+
+                'mobil' => $invoice->getSequence()->getPhone(),
+                'email' => $invoice->getSequence()->getOauth()->getEmail(),
+
+                'bankName' => $invoice->getBankName(),
+                'bankAccount' => $invoice->getAccountNumber()->getNumberWithPrefixAndBankCode(),
+                'iban' => $invoice->getIban(),
+                'bic' => $invoice->getBic(),
+
+                'vatStatusText' => $invoice->getSupplier()->isVatPayer() ? 'Plátce DPH' : 'Neplátce DPH',
+                'vat' => $invoice->getSupplier()->getVatNumber(),
+            ],
+
+            // Data odběratele (proměnná {$customer->...})
+            'customer' => [
+                'name' => $invoice->getCustomer()->getName(),
+                'address' => $invoice->getCustomer()->getAddress()->getFullAddress(),
+                'ic' => $invoice->getCustomer()->getCompanyNumber(),
+                'dic' => $invoice->getCustomer()->getVatNumber(),
+            ],
+
+            // Data faktury (proměnná {$invoice->...})
+            'invoice' => [
+                'number' => $invoice->getInvoiceNumber(),
+                'variableSymbol' => $invoice->getVariableSymbol(),
+                'constantSymbol' => '0008',
+                'specificSymbol' => '',
+                'paymentMethod' => $invoice->getPaymentType(),
+
+                'dateIssued' => $invoice->getDateOfIssue(),
+                'dateDue' => $invoice->getDueDate(),
+
+                'items' => $invoice->getItems(),
+
+                // Celkové částky
+                'totalAmount' => $invoice->getTotalAmount(),
+                'deposits' => 0.00, // [cite: 38]
+                'amountDue' => $invoice->getTotalAmount(),
+            ],
+            'user' => [
+                'name' => $invoice->getIssuedBy(),
+            ],
+        ];
+
+        $param = ArrayHash::from($data);
+
+        $this->template->setParameters((array) $param);
+    }
+
+    protected function createComponentCreateForm(): Components\InvoiceForm
+    {
+        return $this->invoiceFormFactory->create($this->invoiceSequence);
     }
 
     protected function createComponentGrid(): DataGrid
@@ -47,7 +126,16 @@ class InvoiceListPresenter extends BasePresenter
             [],
         );
 
-        $grid->addColumnNumber('name', 'Název')
+        $grid->addColumnNumber('id', 'Id')
+             ->setSortable()
+             ->setFilterText();
+        $grid->addColumnNumber('invoiceId', 'Id Faktury')
+            ->setSortable()
+            ->setFilterText();
+        $grid->addColumnText('variable_symbol', 'VS')
+            ->setSortable()
+            ->setFilterText();
+        $grid->addColumnText('name', 'Název', 'customer.name')
             ->setSortable()
             ->setFilterText();
         $grid->addColumnText('dueDate', 'Datum splatnosti')
@@ -61,7 +149,11 @@ class InvoiceListPresenter extends BasePresenter
             ->setSortable()
             ->setFilterText();
 
-        $grid->addAction('edit', '', 'default', ['id' => 'id'])
+        $grid->addAction('edit', '', 'edit', ['id' => 'id'])
+            ->setIcon('far fa-edit')
+            ->setTitle('Detail')
+            ->setClass('btn btn-sm btn-secondary');
+        $grid->addAction('downloadPdf', '', 'downloadPdf!', ['id' => 'id'])
             ->setIcon('far fa-edit')
             ->setTitle('Detail')
             ->setClass('btn btn-sm btn-secondary');
@@ -71,150 +163,41 @@ class InvoiceListPresenter extends BasePresenter
             ->setTitle('Smazat fakturační řadu')
             ->setClass('btn btn-sm btn-danger')
             ->setConfirmation(
-                new StringConfirmation('Opravdu chceš smazat řádek %s?', 'name'), // Second parameter is optional
+                new StringConfirmation('Opravdu chceš smazat řádek %s?', 'customer.name'), // Second parameter is optional
             );
 
         $grid->addFilterText('search', '', ['year', 'description', 'sequence'])
             ->setPlaceholder('Hledej...');
 
-        $grid->setDataSource($this->invoiceRepository->getGrid());
+        $grid->setDataSource($this->invoiceRepository->getGrid($this->invoiceSequence));
 
         return $grid;
     }
 
+    public function handleDownloadPdf(int $id): void
+    {
+        /*if (! $this->authorizator->isAllowed(Camp::ACCESS_FUNCTIONS, $aid)) {
+            $this->flashMessage('Nemáte právo přistupovat k táboru', 'warning');
+            $this->redirect('default', ['aid' => $aid]);
+        }*/
+
+        /** @var Invoice $invoice */
+        $invoice = $this->invoiceRepository->find($id);
+
+        try {
+            $template = $this->exportService->getInvoice($invoice);
+            $this->pdf->render($template, $invoice->getInvoiceNumber().'.pdf');
+            $this->terminate();
+        } catch (NotFoundException $e) {
+        }
+    }
+
     public function handleRemove(int $id): void
     {
-        $invoiceSequence = $this->invoiceRepository->find($id);
+        /*$invoiceSequence = $this->invoiceRepository->find($id);
         try {
             $this->invoiceManager->delete($invoiceSequence);
         } catch (Throwable) {
-        }
-    }
-
-    protected function createComponentCreateForm(): BaseForm
-    {
-        $form = new BaseForm();
-        $form->addDate('dueDate', 'Datum splatnosti')->addRule(Form::REQUIRED);
-
-        $form->addDate('dateOfIssue', 'Datum vystavení')->addRule(Form::REQUIRED);
-
-        $form->addText('issuedBy', 'Vystavil')->addRule(Form::REQUIRED);
-
-        $customerContainer = $form->addContainer('customer');
-        $customerContainer->addText('companyNumber', 'IČO');
-        $customerContainer->addSubmit('ares', 'Získat z Aresu')
-            ->setValidationScope([$customerContainer->getComponent('companyNumber')])
-            ->setHtmlAttribute('class', 'btn btn-sm btn-primary ajax')
-            ->onClick[] = function (SubmitButton $button): void {
-                $this->getContactInfo($button);
-            };
-
-        $customerContainer->addText('vat', 'DIČ');
-        $customerContainer->addText('name', 'Název');
-        $customerContainer->addText('address', 'Adresa');
-        $customerContainer->addCheckbox('vatPayer', 'Plátce DPH');
-
-        $form->addSubmit('send', 'Send');
-        $form->onSuccess[] = function (BaseForm $form, ArrayHash $values): void {
-            if ($form->isSubmitted() !== $form['send']) {
-                return;
-            }
-
-            $this->formSucceeded($form, $values);
-        };
-
-        return $form;
-    }
-
-    public function getContactInfo(SubmitButton $button): void
-    {
-        $values = $button->getForm()->getComponent('customer')->getValues();
-
-        try {
-            $companyInfo = (new ViAresParser())->getAres($values->companyNumber);
-        } catch (Throwable $e) {
-            dumpe($e);
-        }
-
-        $this['createForm']['customer']->setValues($companyInfo->toArray());
-
-        if ($this->isAjax()) {
-            $this->redrawControl('createForm');
-        } else {
-            $this->redirect('this');
-        }
-    }
-
-    public function formSucceeded(BaseForm $form, ArrayHash $values): void
-    {
-        $invoice = Invoice::formForm($values);
-
-        $this->invoiceManager->create($invoice);
-
-        $this->flashMessage('Faktura byla vytvořena');
-        if ($this->isAjax()) {
-            $this['createForm']->setValues([], true);
-            $this->redrawControl('grid');
-            $this->redrawControl('createForm');
-        } else {
-            $this->redirect('this');
-        }
-    }
-
-    /** @return array<int, string> */
-    private function bankAccountItems(): array
-    {
-        $bankAccounts = $this->queryBus->handle(new BankAccountsAccessibleByUnitsQuery($this->groupUnitIds()));
-
-        $items = [];
-
-        foreach ($bankAccounts as $bankAccount) {
-            assert($bankAccount instanceof BankAccount);
-            $items[$bankAccount->getId()] = $bankAccount->getName();
-        }
-
-        return $items;
-    }
-
-    /** @return array<string, array<string, string>> */
-    private function oAuthItems(): array
-    {
-        $oAuths = $this->queryBus->handle(new OAuthsAccessibleByGroupsQuery($this->groupUnitIds()));
-
-        $units = $this->queryBus->handle(
-            new UnitsDetailQuery(
-                array_unique(array_map(
-                    function (OAuth $oAuth): int {
-                        return $oAuth->getUnitId();
-                    },
-                    $oAuths,
-                )),
-            ),
-        );
-
-        $items = [];
-        foreach ($oAuths as $oAuth) {
-            assert($oAuth instanceof OAuth);
-
-            $unit = $units[$oAuth->getUnitId()];
-            assert($unit instanceof Unit);
-
-            $items[$unit->getDisplayName()][$oAuth->getId()] = $oAuth->getEmail();
-        }
-
-        return $items;
-    }
-
-    /** @return int[] */
-    private function groupUnitIds(): array
-    {
-        if ($this->groupId === null) {
-            return [$this->unitId->toInt()]; // New group will be created with user's current unit
-        }
-
-        $group = $this->model->getGroup($this->groupId);
-        assert($group !== null);
-
-        return $group->getUnitIds();
+        }*/
     }
 }

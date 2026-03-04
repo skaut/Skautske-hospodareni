@@ -6,9 +6,9 @@ namespace App\AccountancyModule\PaymentModule;
 
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
+use Entity\Embeddable\AccountNumber;
 use Model\DTO\Payment\Group;
 use Model\DTO\Payment\RepaymentCandidate;
-use Model\Payment\BankAccount\AccountNumber;
 use Model\Payment\BankAccountService;
 use Model\Payment\BankError;
 use Model\Payment\Commands\Repayment\CreateRepayments;

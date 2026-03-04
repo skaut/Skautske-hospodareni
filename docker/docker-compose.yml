@@ -37,7 +37,7 @@ x-mysql-base:
 
 services:
     traefik:
-        image: traefik:latest
+        image: traefik:v3.6.8
         restart: unless-stopped
         networks:
             - traefik
@@ -51,7 +51,12 @@ services:
             traefik.http.routers.api.rule: Host(`traefik.localhost`)
             traefik.http.routers.api.entrypoints: web
             traefik.http.routers.api.service: api@internal
-
+    deploy:
+        image: webwingscz/lebeda-deployer-php82
+        command: tail -F /dev/null
+        container_name: hskauting.deploy
+        volumes:
+            - ../:/app
     php:
         <<: *php-base
         env_file:

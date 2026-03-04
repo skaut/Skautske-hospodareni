@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Model\Payment\IntegrationTests;
 
 use DateTimeImmutable;
+use Entity\GoogleOAuth;
 use Helpers;
 use IntegrationTest;
 use Model\Common\UnitId;
 use Model\Google\Commands\RemoveOAuth;
 use Model\Google\Exception\OAuthNotFound;
 use Model\Google\Handlers\RemoveOAuthHandler;
-use Model\Google\OAuth;
 use Model\Mail\Repositories\IGoogleRepository;
 use Model\Payment\Group;
 use Model\Payment\Repositories\IGroupRepository;
@@ -30,7 +30,7 @@ final class RemoveOAuthTest extends IntegrationTest
     protected function getTestedAggregateRoots(): array
     {
         return [
-            OAuth::class,
+            GoogleOAuth::class,
             Group::class,
         ];
     }
@@ -48,7 +48,7 @@ final class RemoveOAuthTest extends IntegrationTest
 
     public function test(): void
     {
-        $oAuth = OAuth::create(new UnitId(123), 'code-xxx', 'test@hospodareni.loc');
+        $oAuth = GoogleOAuth::create(new UnitId(123), 'code-xxx', 'test@hospodareni.loc');
         $this->repository->save($oAuth);
         $oAuthId = $oAuth->getId();
 

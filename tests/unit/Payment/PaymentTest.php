@@ -7,6 +7,7 @@ namespace Model\Payment;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use DateTimeImmutable;
+use Entity\Embeddable\Transaction;
 use Helpers;
 use InvalidArgumentException;
 use Mockery as m;
@@ -15,7 +16,6 @@ use Model\Payment\DomainEvents\PaymentAmountWasChanged;
 use Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
 use Model\Payment\DomainEvents\PaymentWasCreated;
 use Model\Payment\Payment\State;
-use Model\Payment\Payment\Transaction;
 
 use function assert;
 

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Repository;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
 use Entity\InvoiceSequence;
+use Model\Common\UnitId;
 use Model\Unit\Repositories\IUnitRepository;
 use Model\Unit\UnitNotFound;
 
@@ -43,5 +45,26 @@ class InvoiceSequenceRepository extends AbstractRepository
         }
 
         return $data;
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function getNextSequenceId(UnitId $unitId, int $year): int
+    {
+        try {
+            $sequenceId = $this->createQueryBuilder('entity')
+                ->select('MAX(entity.sequenceId) as id')
+                ->where('entity.unit = :unit')
+                ->andWhere('entity.year = :year')
+                ->setParameter('unit', $unitId->toInt())
+                ->setParameter('year', $year)
+                ->getQuery()
+                ->getSingleScalarResult();
+        } catch (\Doctrine\ORM\NoResultException) {
+            return 1;
+        }
+
+        return $sequenceId === null ? 1 : $sequenceId + 1;
     }
 }

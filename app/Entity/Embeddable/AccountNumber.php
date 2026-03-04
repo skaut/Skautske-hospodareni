@@ -34,9 +34,7 @@ class AccountNumber
      */
     public function __construct(?string $prefix, string $number, string $bankCode, ?string $bankName = null, ?string $iban = null, ?string $bic = null)
     {
-        $validator = new BankAccountValidator();
-
-        if (! $validator->validate([$prefix, $number, $bankCode])) {
+        if (! self::validateParts($prefix, $number, $bankCode)) {
             throw self::invalidNumber();
         }
 
@@ -72,6 +70,13 @@ class AccountNumber
         } catch (InvalidBankAccountNumber) {
             return false;
         }
+    }
+
+    public static function validateParts(?string $prefix, string $number, string $bankCode): bool
+    {
+        $validator = new BankAccountValidator();
+
+        return $validator->validate([$prefix, $number, $bankCode]);
     }
 
     public function getPrefix(): ?string

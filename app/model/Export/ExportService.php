@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model;
 
+use Entity\Invoice;
 use Model\Cashbook\Cashbook\CashbookId;
 use Model\Cashbook\Cashbook\PaymentMethod;
 use Model\Cashbook\ICategory;
@@ -49,6 +50,7 @@ use Model\Event\SkautisEventId;
 use Model\Participant\Payment\EventType;
 use Model\Services\TemplateFactory;
 use Model\Utils\MoneyFactory;
+use Nette\Utils\ArrayHash;
 
 use function array_column;
 use function array_filter;
@@ -339,5 +341,79 @@ class ExportService
             'functions' => $this->queryBus->handle(new EducationFunctions($educationId)),
             'finalRealBalance' => $finalRealBalance,
         ]);
+    }
+
+    public function getInvoice(Invoice $invoice): string
+    {
+        $vatRows = [];
+        foreach ($invoice->getItems() as $item) {
+            if (isset($vatRows[$item->getVat()->toFloat()])) {
+                $row['vat'] = $item->getVat()->toFloat();
+                $row['vatPrice'] = $item->getPriceVat()->plus($row['vatPrice']);
+                $row['basePrice'] = $item->getPriceBase()->plus($row['basePrice']);
+            } else {
+                $row['vat'] = $item->getVat()->toFloat();
+                $row['vatPrice'] = $item->getPriceVat();
+                $row['basePrice'] = $item->getPriceBase();
+            }
+            $vatRows[$item->getVat()->toInt()] = $row;
+        }
+
+        $data = [
+            // Data dodavatele (proměnná {$supplier->...})
+            'supplier' => [
+                'name' => $invoice->getSupplier()->getName(),
+                'street' => $invoice->getSupplier()->getAddress()->getStreet(),
+                'city' => $invoice->getSupplier()->getAddress()->getCity(),
+                'zip' => $invoice->getSupplier()->getAddress()->getZipCode(),
+                'country' => 'Česká republika',
+                'ic' => $invoice->getSupplier()->getCompanyNumber(),
+
+                'mobil' => $invoice->getSequence()->getPhone(),
+                'email' => $invoice->getSequence()->getOauth()->getEmail(),
+
+                'bankName' => $invoice->getBankName(),
+                'bankAccount' => $invoice->getAccountNumber()->getNumberWithPrefixAndBankCode(),
+                'iban' => $invoice->getIban(),
+                'bic' => $invoice->getBic(),
+                'vatPayer' => $invoice->getSupplier()->isVatPayer(),
+                'vatStatusText' => $invoice->getSupplier()->isVatPayer() ? 'Plátce DPH' : 'Neplátce DPH',
+                'vat' => $invoice->getSupplier()->getVatNumber(),
+            ],
+
+            // Data odběratele (proměnná {$customer->...})
+            'customer' => [
+                'name' => $invoice->getCustomer()->getName(),
+                'address' => $invoice->getCustomer()->getAddress()->getFullAddress(),
+                'ic' => $invoice->getCustomer()->getCompanyNumber(),
+                'dic' => $invoice->getCustomer()->getVatNumber(),
+            ],
+
+            'vatRows' => $vatRows,
+
+            // Data faktury (proměnná {$invoice->...})
+            'invoice' => [
+                'number' => $invoice->getInvoiceNumber(),
+                'variableSymbol' => $invoice->getVariableSymbol(),
+                'constantSymbol' => '0008',
+                'specificSymbol' => '',
+                'paymentMethod' => $invoice->getPaymentType(),
+
+                'dateIssued' => $invoice->getDateOfIssue(),
+                'dateDue' => $invoice->getDueDate(),
+
+                'items' => $invoice->getItems(),
+
+                // Celkové částky
+                'totalAmount' => $invoice->getTotalAmount(),
+                'deposits' => 0.00, // [cite: 38]
+                'amountDue' => $invoice->getTotalAmount(),
+            ],
+            'user' => [
+                'name' => $invoice->getIssuedBy(),
+            ],
+        ];
+
+        return $this->templateFactory->create(__DIR__.'/templates/invoice.latte', (array) ArrayHash::from($data));
     }
 }

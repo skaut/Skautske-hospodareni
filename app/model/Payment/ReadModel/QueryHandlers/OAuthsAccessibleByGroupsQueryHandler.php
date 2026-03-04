@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Model\Payment\ReadModel\QueryHandlers;
 
+use Entity\GoogleOAuth;
 use Model\DTO\Google\OAuth as OAuthDTO;
 use Model\DTO\Google\OAuthFactory;
-use Model\Google\OAuth;
 use Model\Mail\Repositories\IGoogleRepository;
 use Model\Payment\IUnitResolver;
 use Model\Payment\ReadModel\Queries\OAuthsAccessibleByGroupsQuery;
@@ -35,7 +35,7 @@ final class OAuthsAccessibleByGroupsQueryHandler
         $accessibleOAuths = [];
 
         foreach ($allOAuths as $oAuth) {
-            assert($oAuth instanceof OAuth);
+            assert($oAuth instanceof GoogleOAuth);
 
             if (! $this->accessChecker->allUnitsHaveAccessToOAuth($unitIds, $oAuth->getId())) {
                 continue;

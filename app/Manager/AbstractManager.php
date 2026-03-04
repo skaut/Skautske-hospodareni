@@ -26,7 +26,6 @@ use RuntimeException;
 use function array_fill;
 use function array_keys;
 use function array_map;
-use function array_search;
 use function array_values;
 use function collect;
 use function count;
@@ -232,9 +231,7 @@ abstract class AbstractManager
 
     public function resetEntityManager(): void
     {
-        $managerName = array_search($this->em, $this->managerRegistry->getManagers()) ?: null;
-
-        $this->managerRegistry->resetManager($managerName);
+        throw new RuntimeException('Entity manager reset is not supported in this implementation.');
     }
 
     public function isEntityManagerOpen(): bool

@@ -240,7 +240,10 @@ class BankAccountService
      */
     public function getCzechBankAccountBic(): array
     {
-        return $this->bankAccountValidator->getBankBics();
+        return array_map(
+            static fn (?string $bic): string => $bic ?? '',
+            $this->bankAccountValidator->getBankBics(),
+        );
     }
 
     /**

@@ -6,10 +6,10 @@ namespace Model\DTO\Payment;
 
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
+use Entity\Embeddable\Transaction;
 use Model\Common\EmailAddress;
 use Model\Payment\Payment\SentEmail;
 use Model\Payment\Payment\State;
-use Model\Payment\Payment\Transaction;
 use Model\Payment\VariableSymbol;
 use Nette\SmartObject;
 use Nette\Utils\Strings;

@@ -9,9 +9,10 @@ use BankAccountValidator\MissingBankCodesFileException;
 
 class BankAccountValidator extends Czech
 {
+    /** @var array<string, BankInfoDTO> */
     protected array $fullBankInfo;
 
-    public function __construct($cnfFile = __DIR__.'/../../../vendor/heureka/bank-account-validator/cnf/czech-bank-codes.csv')
+    public function __construct(string $cnfFile = __DIR__.'/../../../vendor/heureka/bank-account-validator/cnf/czech-bank-codes.csv')
     {
         parent::__construct($cnfFile);
         $this->fullBankInfo = $this->parse($cnfFile);
@@ -21,7 +22,7 @@ class BankAccountValidator extends Czech
      * @return array<string, BankInfoDTO>
      * @throws MissingBankCodesFileException
      */
-    private function parse($codesFile): array
+    private function parse(string $codesFile): array
     {
         if (! is_file($codesFile)) {
             throw new MissingBankCodesFileException('Czech bank codes CSV file is not valid. '.$codesFile);
@@ -39,6 +40,7 @@ class BankAccountValidator extends Czech
         return $validBank;
     }
 
+    /** @return array<string, string|null> */
     public function getBankBics(): array
     {
         return array_map(function ($bankInfo) {

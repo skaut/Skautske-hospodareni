@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Model\Infrastructure\Repositories\Mail;
 
+use Entity\GoogleOAuth;
 use IntegrationTest;
 use Model\Common\UnitId;
 use Model\Google\Exception\OAuthNotFound;
-use Model\Google\OAuth;
 use Model\Google\OAuthId;
 
 use function array_map;
@@ -20,14 +20,14 @@ final class GoogleRepositoryTest extends IntegrationTest
      */
     protected function getTestedAggregateRoots(): array
     {
-        return [OAuth::class];
+        return [GoogleOAuth::class];
     }
 
     public function testAggregateIsCorrectlySavedAndHydrated(): void
     {
         $repository = $this->repository();
 
-        $aggregate = OAuth::create(new UnitId(123), 'foo', 'test@skaut.cz');
+        $aggregate = GoogleOAuth::create(new UnitId(123), 'foo', 'test@skaut.cz');
 
         $repository->save($aggregate);
         $this->entityManager->clear();
@@ -56,9 +56,9 @@ final class GoogleRepositoryTest extends IntegrationTest
         $unitIds = [1, 2, 3];
 
         $aggregates = [
-            OAuth::create(new UnitId(1), 'a', 'mail3@skaut.cz'),
-            OAuth::create(new UnitId(2), 'b', 'mail2@skaut.cz'),
-            OAuth::create(new UnitId(1), 'c', 'mail1@skaut.cz'),
+            GoogleOAuth::create(new UnitId(1), 'a', 'mail3@skaut.cz'),
+            GoogleOAuth::create(new UnitId(2), 'b', 'mail2@skaut.cz'),
+            GoogleOAuth::create(new UnitId(1), 'c', 'mail1@skaut.cz'),
         ];
 
         $repository = $this->repository();
@@ -70,7 +70,7 @@ final class GoogleRepositoryTest extends IntegrationTest
         $this->entityManager->clear();
 
         $returnedIds = array_map(
-            fn (array $oauths) => array_map(fn (OAuth $oauth) => $oauth->getId()->toString(), $oauths),
+            fn (array $oauths) => array_map(fn (GoogleOAuth $oauth) => $oauth->getId()->toString(), $oauths),
             $repository->findByUnits($unitIds),
         );
 
@@ -92,10 +92,10 @@ final class GoogleRepositoryTest extends IntegrationTest
         $repository = $this->repository();
 
         // Just Unit ID matching
-        $repository->save(OAuth::create($unitId, 'code', 'different@email.cz'));
+        $repository->save(GoogleOAuth::create($unitId, 'code', 'different@email.cz'));
 
         // Just email matching
-        $repository->save(OAuth::create(new UnitId(2), 'code', $email));
+        $repository->save(GoogleOAuth::create(new UnitId(2), 'code', $email));
 
         $this->entityManager->clear();
 
@@ -106,7 +106,7 @@ final class GoogleRepositoryTest extends IntegrationTest
 
     public function testFindByUnitIdAndEmailReturnsAggregateIfItExists(): void
     {
-        $aggregate = OAuth::create(new UnitId(1), 'code', 'test@skaut.cz');
+        $aggregate = GoogleOAuth::create(new UnitId(1), 'code', 'test@skaut.cz');
 
         $repository = $this->repository();
 
@@ -122,7 +122,7 @@ final class GoogleRepositoryTest extends IntegrationTest
 
     public function testRemoveDeletesAggregateFromDatabase(): void
     {
-        $aggregate = OAuth::create(new UnitId(1), 'code', 'test@skaut.cz');
+        $aggregate = GoogleOAuth::create(new UnitId(1), 'code', 'test@skaut.cz');
 
         $repository = $this->repository();
 

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Console;
@@ -11,6 +12,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
 final class DoctrineCacheClearCommand extends Command
 {
@@ -40,11 +42,12 @@ final class DoctrineCacheClearCommand extends Command
     {
         if ($input->getOption('list')) {
             foreach ($this->poolNames as $name) {
-                $output->writeln('pool: doctrine.' . $name);
+                $output->writeln('pool: doctrine.'.$name);
             }
             $output->writeln('ns: doctrine.annotations   (Nette FileStorage)');
-            $output->writeln('dir: ' . $this->tempDir . '/_doctrine.annotations');
-            $output->writeln('dir: ' . $this->tempDir . '/doctrine/proxies');
+            $output->writeln('dir: '.$this->tempDir.'/_doctrine.annotations');
+            $output->writeln('dir: '.$this->tempDir.'/doctrine/proxies');
+
             return Command::SUCCESS;
         }
 
@@ -53,7 +56,7 @@ final class DoctrineCacheClearCommand extends Command
 
         // PSR-6 pooly (přes stejný factory jako v EntityManagerFactory)
         foreach ($targetPools as $name) {
-            $pool = $this->psr6Factory->create('doctrine.' . $name);
+            $pool = $this->psr6Factory->create('doctrine.'.$name);
             $ok = $pool->clear();
             $output->writeln(sprintf('pool: doctrine.%s: %s', $name, $ok ? '<info>cleared</info>' : '<error>failed</error>'));
         }
@@ -65,14 +68,14 @@ final class DoctrineCacheClearCommand extends Command
 
         // Volitelně fyzicky smazat adresáře v %tempDir%
         if ($input->getOption('purge-dirs')) {
-            foreach ([$this->tempDir . '/_doctrine.annotations', $this->tempDir . '/doctrine/proxies'] as $dir) {
+            foreach ([$this->tempDir.'/_doctrine.annotations', $this->tempDir.'/doctrine/proxies'] as $dir) {
                 try {
                     if (is_dir($dir)) {
                         FileSystem::delete($dir);
-                        $output->writeln('dir: ' . $dir . ': <info>deleted</info>');
+                        $output->writeln('dir: '.$dir.': <info>deleted</info>');
                     }
-                } catch (\Throwable $e) {
-                    $output->writeln('dir: ' . $dir . ': <error>' . $e->getMessage() . '</error>');
+                } catch (Throwable $e) {
+                    $output->writeln('dir: '.$dir.': <error>'.$e->getMessage().'</error>');
                 }
             }
         }

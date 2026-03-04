@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Faktura {$invoice->number}</title>
+    <style n:syntax="off">
+        body {
+            font-family: sans-serif;
+            font-size: 10px;
+            color: #333;
+        }
+        .invoice-box {
+            width: 100%;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        .header {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .header td {
+            vertical-align: top;
+        }
+        .header .title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .header .invoice-number {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .header .contact-info {
+            text-align: right;
+        }
+        .parties {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .parties td {
+            width: 50%;
+            vertical-align: top;
+            padding: 5px;
+            border: 1px solid #eee;
+        }
+        .parties .party-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .payment-details {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .payment-details td {
+            width: 50%;
+            vertical-align: top;
+        }
+        .payment-details table {
+            width: 100%;
+        }
+        .payment-details td td {
+            padding: 2px 5px;
+        }
+        .payment-details .label {
+            font-weight: bold;
+            width: 120px;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .items-table th, .items-table td {
+            border: 1px solid #ddd;
+            padding: 6px;
+        }
+        .items-table th {
+            background-color: #f9f9f9;
+            text-align: left;
+        }
+        .items-table .text-right {
+            text-align: right;
+        }
+        .items-table .text-center {
+            text-align: center;
+        }
+        .totals {
+            width: 100%;
+        }
+        .totals .vat-note {
+            font-weight: bold;
+            padding-top: 10px;
+            margin-bottom: 10px;
+        }
+        .totals-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .totals-table td {
+            vertical-align: top;
+            width: 50%;
+        }
+        .summary-table-vat {
+            width: 80%;
+            border-collapse: collapse;
+        }
+        .summary-table-vat td {
+            padding: 5px;
+            border: 1px solid #ddd;
+        }
+        .summary-table {
+            width: 80%;
+            border-collapse: collapse;
+            margin-left: auto;
+        }
+        .summary-table td {
+            padding: 5px;
+            border: 1px solid #ddd;
+        }
+        .label {
+            font-weight: bold;
+        }
+        .total-due {
+            font-weight: bold;
+            font-size: 14px;
+            background-color: #f0f0f0;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .footer {
+            width: 100%;
+            margin-top: 50px;
+            font-size: 9px;
+            color: #777;
+        }
+        .footer .signature {
+            text-align: right;
+            padding-top: 20px;
+        }
+        .footer .signature-line {
+            border-top: 1px solid #999;
+            width: 200px;
+            margin-left: auto;
+            padding-top: 5px;
+            text-align: center;
+        }
+        .footer .print-info {
+            padding-top: 30px;
+        }
+        .footer .page-info {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+<div class="invoice-box">
+
+    {* --- Hlavička: Název, Číslo faktury, Kontakty dodavatele --- *}
+        <table class="header">
+            <tr>
+                <td>
+                    <div class="title">Faktura - daňový doklad</div>
+                    <div class="invoice-number">{$invoice->number}</div>
+                </td>
+                <td class="contact-info">
+                    {if $supplier->mobil}<strong>Mobil:</strong> {$supplier->mobil}<br>{/if}
+                    {if $supplier->email}<strong>E-mail:</strong> {$supplier->email}<br>{/if}
+                </td>
+            </tr>
+        </table>
+
+        {* --- Dodavatel a Odběratel --- *}
+        <table class="parties">
+            <tr>
+                <td>
+                    <div class="party-title">Dodavatel:</div>
+                    <strong>{$supplier->name}</strong><br>
+                    {$supplier->street}<br>
+                    {$supplier->city} {$supplier->zip}<br>
+                    {$supplier->country}<br><br>
+                    IČ: {$supplier->ic}
+                </td>
+                <td>
+                    <div class="party-title">Odběratel - sidlo:</div>
+                    <strong>{$customer->name}</strong><br>
+                    {$customer->address}<br><br>
+                    IČ: {$customer->ic}, DIČ: {$customer->dic}
+                </td>
+            </tr>
+        </table>
+
+        {* --- Platební údaje a Datumy --- *}
+        <table class="payment-details">
+            <tr>
+                <td>
+                    {* Bankovní spojení *}
+                    <table>
+                        <tr>
+                            <td class="label">Banka:</td>
+                            <td>{$supplier->bankName}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Bankovní účet:</td>
+                            <td>{$supplier->bankAccount}</td>
+                        </tr>
+                        <tr n:if="$supplier->iban !== null">
+                            <td class="label">IBAN:</td>
+                            <td>{$supplier->iban}</td>
+                        </tr>
+                        <tr n:if="$supplier->bic !== null">
+                            <td class="label">BIC:</td>
+                            <td>{$supplier->bic}</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    {* Symboly a datumy *}
+                    <table>
+                        <tr>
+                            <td class="label">Var. sym.:</td>
+                            <td>{$invoice->variableSymbol}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Konst. sym.:</td>
+                            <td>{$invoice->constantSymbol}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Spec. sym.:</td>
+                            <td>{$invoice->specificSymbol}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Forma úhrady:</td>
+                            <td>{$invoice->paymentMethod->value}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Vystaveno:</td>
+                            <td>{$invoice->dateIssued|date:'d.m.Y'}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Datum splatnosti:</td>
+                            <td>{$invoice->dateDue|date:'d.m.Y'}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+
+        {* --- Položky faktury --- *}
+        <table class="items-table">
+            <thead>
+            <tr>
+                <th>Označení dodávky</th>
+                <th class="text-center">Množství</th>
+                <th class="text-center">MJ</th>
+                <th class="text-right">Cena za MJ</th>
+                <th n:if="$supplier->vatPayer" class="text-right">Sazba DPH</th>
+                <th n:if="$supplier->vatPayer" class="text-right">Základ [Kč]</th>
+                <th n:if="$supplier->vatPayer" class="text-right">DPH [Kč]</th>
+                <th class="text-right">Celkem [Kč]</th>
+            </tr>
+            </thead>
+            <tbody>
+            {foreach $invoice->items as $item}
+                <tr>
+                    <td>{nl2br($item->getPurpose())}</td>
+                    <td class="text-center">{$item->getQuantity()|number:2,',',' '}</td>
+                    <td class="text-center">{$item->getUnit()}</td>
+                    <td class="text-right">{$item->getPrice()}</td>
+                    <td n:if="$supplier->vatPayer" class="text-right">{$item->getVat()}%</td>
+                    <td n:if="$supplier->vatPayer" class="text-right">{$item->getPriceBase()}</td>
+                    <td n:if="$supplier->vatPayer" class="text-right">{$item->getPriceVat()}</td>
+                    <td class="text-right">{$item->getTotalPrice()}</td>
+                </tr>
+            {/foreach}
+            </tbody>
+        </table>
+
+        {* --- Celkové součty --- *}
+        <div class="totals">
+            <div class="vat-note">
+                {$supplier->vatStatusText}
+            </div>
+
+            <table class="totals-table">
+                <tr>
+                    <td>
+                        <table class="summary-table-vat">
+                            <tr n:foreach="$vatRows as $r">
+                                <td class="label">Základ&nbsp;{$r['vat']}%</td>
+                                <td class="text-right">{$r['basePrice']}</td>
+                                <td class="label">DPH&nbsp;{$r['vat']}%</td>
+                                <td class="text-right">{$r['vatPrice']}</td>
+                            </tr>
+
+                        </table>
+                    </td>
+                    <td>
+                        <table class="summary-table">
+                            <tr>
+                                <td class="label">Celkem k úhradě</td>
+                                <td class="text-right">{$invoice->totalAmount}</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Zálohy</td>
+                                <td class="text-right">{$invoice->deposits|number:2,',',' '}</td>
+                            </tr>
+                            <tr class="total-due">
+                                <td class="label">Zbývá uhradit Kč</td>
+                                <td class="text-right">{$invoice->amountDue}</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        {* --- Patička --- *}
+    <table class="footer">
+        <tr>
+            <td>&nbsp;</td>
+            <td class="signature">
+                <div class="signature-line">
+                    Razítko a podpis
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="print-info">
+                {if $user}Vytiskl: {$user->name}<br>{/if}
+                Vytištěno systémem <a href="h.skauting.cz">H.skauting.cz</a>
+            </td>
+            <td class="print-info page-info">
+                Stránka 1
+            </td>
+        </tr>
+    </table>
+
+</div>
+</body>
+</html>

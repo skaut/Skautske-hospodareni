@@ -185,6 +185,7 @@ services:
     fio.cache: Nette\Caching\Cache
     - Model\Payment\Fio\CachingClientDecorator(@fio.client, @fio.cache)
     - Model\Bank\Fio\DownloaderFactory
+    - Model\Bank\Fio\UploaderFactory
 
     router: @App\RouterFactory::createRouter
 

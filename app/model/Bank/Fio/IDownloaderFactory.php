@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Bank\Fio;
 
-use FioApi\Downloader;
+use FioApi\Download\Downloader;
 
 interface IDownloaderFactory
 {

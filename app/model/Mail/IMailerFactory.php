@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Model\Mail;
 
-use Model\Google\OAuth;
+use Entity\GoogleOAuth;
 use Nette\Mail\Mailer;
 
 interface IMailerFactory
 {
-    public function create(OAuth $oAuth): Mailer;
+    public function create(GoogleOAuth $oAuth): Mailer;
 }

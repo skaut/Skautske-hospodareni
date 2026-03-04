@@ -6,8 +6,12 @@ namespace Manager;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Entity\Invoice;
+use LogicException;
 use Model\LoggerService;
+use Model\Payment\InvalidVariableSymbol;
+use Model\Payment\VariableSymbol;
 use Model\UserService;
+use Repository\InvoiceRepository;
 
 class InvoiceManager extends AbstractManager
 {
@@ -21,10 +25,20 @@ class InvoiceManager extends AbstractManager
         return Invoice::class;
     }
 
-    public function create(Invoice $invoice): Invoice
+    public function create(Invoice $invoice, InvoiceRepository $invoiceRepository): Invoice
     {
-        $this->em->persist($invoice);
-        $this->saveEntity($invoice);
+        $this->wrapInTransaction(function () use ($invoice, $invoiceRepository): void {
+            $invoice->setInvoiceId($invoiceRepository->getNextInvoiceId($invoice->getSequence()));
+            try {
+                $variableSymbol = new VariableSymbol(sprintf('%d%04d%d', $invoice->getSequence()->getSequenceId(), $invoice->getInvoiceId(), $invoice->getSequence()->getYear()));
+            } catch (InvalidVariableSymbol $e) {
+                throw new LogicException('Generated invoice variable symbol is invalid.', 0, $e);
+            }
+            $invoice->setVariableSymbol($variableSymbol);
+
+            $this->em->persist($invoice);
+            $this->saveEntity($invoice);
+        });
 
         return $invoice;
     }

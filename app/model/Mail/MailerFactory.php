@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Model\Mail;
 
+use Entity\GoogleOAuth;
 use Model\Google\GoogleService;
-use Model\Google\OAuth;
 use Model\Google\OAuthMailer;
 use Nette\Mail\Mailer;
 
@@ -15,7 +15,7 @@ class MailerFactory implements IMailerFactory
     {
     }
 
-    public function create(OAuth $oAuth): Mailer
+    public function create(GoogleOAuth $oAuth): Mailer
     {
         if (! $this->enabled) {
             return $this->debugMailer;

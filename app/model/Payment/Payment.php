@@ -10,6 +10,7 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Entity\Embeddable\Transaction;
 use InvalidArgumentException;
 use Model\Common\Aggregate;
 use Model\Common\EmailAddress;
@@ -21,7 +22,6 @@ use Model\Payment\DomainEvents\PaymentWasCreated;
 use Model\Payment\Payment\EmailRecipient;
 use Model\Payment\Payment\SentEmail;
 use Model\Payment\Payment\State;
-use Model\Payment\Payment\Transaction;
 
 use function array_map;
 use function array_unique;

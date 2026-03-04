@@ -7,7 +7,7 @@ namespace Model\Bank\Fio;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use Entity\BankAccount;
-use FioApi\Downloader;
+use FioApi\Download\Downloader;
 use FioApi\Exceptions\InternalErrorException;
 use FioApi\Exceptions\TooGreedyException;
 use GuzzleHttp\Exception\TransferException;

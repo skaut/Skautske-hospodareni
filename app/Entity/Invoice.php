@@ -4,17 +4,26 @@ declare(strict_types=1);
 
 namespace Entity;
 
+use Brick\Math\BigDecimal;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Embedded;
 use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
+use Entity\Embeddable\AccountNumber;
+use Entity\Embeddable\InvoiceCustomer;
+use Entity\Embeddable\InvoiceSupplier;
+use Entity\Embeddable\Transaction;
+use Enum\InvoicePaymentType;
 use Enum\InvoiceState;
+use LogicException;
 use Model\Infrastructure\DoctrineNullableEmbeddables\Nullable;
-use Model\Payment\Payment\Transaction;
 use Model\Payment\VariableSymbol;
 use Nette\Utils\ArrayHash;
 
@@ -23,7 +32,17 @@ use Nette\Utils\ArrayHash;
 class Invoice extends AbstractIdEntity
 {
     #[Column(type: Types::INTEGER, nullable: true)]
-    private int $invoiceId;
+    private ?int $invoiceId = null;
+
+    #[ManyToOne(targetEntity: InvoiceSequence::class, inversedBy: 'invoices')]
+    #[JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    private InvoiceSequence $sequence;
+
+    #[Embedded(class: InvoiceSupplier::class)]
+    private InvoiceSupplier $supplier;
+
+    #[Embedded(class: InvoiceCustomer::class)]
+    private InvoiceCustomer $customer;
 
     #[Column(type: Types::STRING, length: 255)]
     private string $issuedBy;
@@ -33,6 +52,9 @@ class Invoice extends AbstractIdEntity
 
     #[Column(type: Types::DATETIME_IMMUTABLE, nullable: false)]
     private DateTimeImmutable $dateOfIssue;
+
+    #[Column(type: Types::DATETIME_IMMUTABLE, nullable: false)]
+    private DateTimeImmutable $dateOfTaxPayment;
 
     #[Column(type: 'string_enum', length: 20)]
     private string $state = InvoiceState::ISSUED;
@@ -50,69 +72,156 @@ class Invoice extends AbstractIdEntity
     #[Column(type: Types::STRING, length: 64, nullable: true)]
     private ?string $closedByUsername = null;
 
-    #[OneToMany(mappedBy: 'item', targetEntity: InvoiceItem::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
-    private ?Collection $items = null;
+    /** @var Collection<int, InvoiceItem>&iterable<InvoiceItem> */
+    #[OneToMany(mappedBy: 'invoice', targetEntity: InvoiceItem::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $items;
 
-    #[Column(type: Types::STRING, length: 255)]
-    private string $name;
+    #[Column(type: 'string_enum', length: 20)]
+    private string $paymentType;
 
-    #[Column(type: Types::STRING, length: 255)]
-    private string $address;
+    #[Column(type: Types::STRING, length: 255, nullable: true)]
+    private ?string $bankName;
 
-    #[Column(type: Types::STRING, length: 20, nullable: true)]
-    private ?string $companyNumber;
+    #[Embedded(class: AccountNumber::class)]
+    private AccountNumber $accountNumber;
 
-    #[Column(type: Types::STRING, length: 20, nullable: true)]
-    private ?string $vatNumber = null;
-
-    #[Column(type: Types::BOOLEAN)]
-    private bool $vatPayer = false;
+    #[Column(type: Types::STRING, length: 255, nullable: true)]
+    private ?string $iban = null;
+    #[Column(type: Types::STRING, length: 255, nullable: true)]
+    private ?string $bic = null;
 
     public function __construct(
+        InvoiceSequence $sequence,
+        InvoiceSupplier $invoiceSupplier,
+        InvoiceCustomer $invoiceCustomer,
         string $issuedBy,
         DateTimeImmutable $dueDate,
         DateTimeImmutable $dateOfIssue,
-        string $name,
-        string $address,
-        string $companyNumber,
-        string $vatNumber,
-        bool $vatPayer,
+        DateTimeImmutable $dateOfTaxPayment,
+        InvoicePaymentType $paymentType,
+        AccountNumber $accountNumber,
+        ?string $bankName = null,
+        ?string $iban = null,
+        ?string $bic = null,
         ?VariableSymbol $variableSymbol = null,
     ) {
+        $this->sequence = $sequence;
+        $this->supplier = $invoiceSupplier;
+        $this->customer = $invoiceCustomer;
+        $this->items = new ArrayCollection();
         $this->issuedBy = $issuedBy;
         $this->dueDate = $dueDate;
         $this->dateOfIssue = $dateOfIssue;
-        $this->name = $name;
-        $this->address = $address;
-        $this->companyNumber = $companyNumber;
-        $this->vatNumber = $vatNumber;
-        $this->vatPayer = $vatPayer;
+        $this->dateOfTaxPayment = $dateOfTaxPayment;
+        $this->accountNumber = $accountNumber;
+        $this->bankName = $bankName;
+        $this->iban = $iban;
+        $this->bic = $bic;
+        $this->paymentType = $paymentType->value;
         $this->variableSymbol = $variableSymbol ?? new VariableSymbol('111');
     }
 
-    public static function formForm(ArrayHash $values): self
+    public static function formForm(ArrayHash $values, InvoiceSequence $invoiceSequence, InvoiceSupplier $supplier, InvoiceCustomer $customer): self
     {
-        return new self(
+        $invoice = new self(
+            $invoiceSequence,
+            $supplier,
+            $customer,
             $values->issuedBy,
             $values->dueDate,
             $values->dateOfIssue,
-            $values->customer->name,
-            $values->customer->address,
-            $values->customer->companyNumber,
-            $values->customer->vat,
-            $values->customer->vatPayer,
-            null,
+            $values->dateOfTaxPayment,
+            constant(InvoicePaymentType::class.'::'.$values->paymentType),
+            $invoiceSequence->getBankAccount()->getNumber(),
+            $invoiceSequence->getBankAccount()->getNumber()->getBankName(),
+            $invoiceSequence->getBankAccount()->getNumber()->getIban(),
+            $invoiceSequence->getBankAccount()->getNumber()->getBic(),
         );
+
+        return $invoice;
+    }
+
+    public function getTotalAmount(): BigDecimal
+    {
+        $sum = BigDecimal::zero();
+        foreach ($this->getItems() as $item) {
+            $sum = $sum->plus($item->getTotalPrice());
+        }
+
+        return $sum;
+    }
+
+    public function getInvoiceNumber(): string
+    {
+        return sprintf('%s-%s/%s', $this->sequence->getSequence(), $this->getInvoiceId(), $this->sequence->getYear());
+    }
+
+    /** @return Collection<int, InvoiceItem> */
+    public function getItems(): Collection
+    {
+        return $this->items;
+    }
+
+    public function addItem(InvoiceItem $item): void
+    {
+        if (! $this->items->contains($item)) {
+            $this->items->add($item);
+            $item->setInvoice($this);
+        }
+    }
+
+    public function removeItem(InvoiceItem $item): void
+    {
+        $this->items->removeElement($item);
+    }
+
+    public function getPaymentType(): InvoicePaymentType
+    {
+        return InvoicePaymentType::from($this->paymentType);
     }
 
     public function getInvoiceId(): int
     {
+        if ($this->invoiceId === null) {
+            throw new LogicException('Invoice ID has not been assigned yet.');
+        }
+
         return $this->invoiceId;
     }
 
     public function setInvoiceId(int $invoiceId): void
     {
         $this->invoiceId = $invoiceId;
+    }
+
+    public function getSequence(): InvoiceSequence
+    {
+        return $this->sequence;
+    }
+
+    public function setSequence(InvoiceSequence $sequence): void
+    {
+        $this->sequence = $sequence;
+    }
+
+    public function getSupplier(): InvoiceSupplier
+    {
+        return $this->supplier;
+    }
+
+    public function setSupplier(InvoiceSupplier $supplier): void
+    {
+        $this->supplier = $supplier;
+    }
+
+    public function getCustomer(): InvoiceCustomer
+    {
+        return $this->customer;
+    }
+
+    public function setCustomer(InvoiceCustomer $customer): void
+    {
+        $this->customer = $customer;
     }
 
     public function getIssuedBy(): string
@@ -195,63 +304,53 @@ class Invoice extends AbstractIdEntity
         $this->closedByUsername = $closedByUsername;
     }
 
-    public function getItems(): ?Collection
+    public function getBankName(): ?string
     {
-        return $this->items;
+        return $this->bankName;
     }
 
-    public function setItems(?Collection $items): void
+    public function setBankName(?string $bankName): void
     {
-        $this->items = $items;
+        $this->bankName = $bankName;
     }
 
-    public function getName(): string
+    public function getAccountNumber(): AccountNumber
     {
-        return $this->name;
+        return $this->accountNumber;
     }
 
-    public function setName(string $name): void
+    public function setAccountNumber(AccountNumber $accountNumber): void
     {
-        $this->name = $name;
+        $this->accountNumber = $accountNumber;
     }
 
-    public function getAddress(): string
+    public function getIban(): ?string
     {
-        return $this->address;
+        return $this->iban;
     }
 
-    public function setAddress(string $address): void
+    public function setIban(?string $iban): void
     {
-        $this->address = $address;
+        $this->iban = $iban;
     }
 
-    public function getCompanyNumber(): ?string
+    public function getBic(): ?string
     {
-        return $this->companyNumber;
+        return $this->bic;
     }
 
-    public function setCompanyNumber(?string $companyNumber): void
+    public function setBic(?string $bic): void
     {
-        $this->companyNumber = $companyNumber;
+        $this->bic = $bic;
     }
 
-    public function getVatNumber(): ?string
+    public function getDateOfTaxPayment(): DateTimeImmutable
     {
-        return $this->vatNumber;
+        return $this->dateOfTaxPayment;
     }
 
-    public function setVatNumber(?string $vatNumber): void
+    public function setDateOfTaxPayment(DateTimeImmutable $dateOfTaxPayment): void
     {
-        $this->vatNumber = $vatNumber;
-    }
-
-    public function isVatPayer(): bool
-    {
-        return $this->vatPayer;
-    }
-
-    public function setVatPayer(bool $vatPayer): void
-    {
-        $this->vatPayer = $vatPayer;
+        $this->dateOfTaxPayment = $dateOfTaxPayment;
     }
 }

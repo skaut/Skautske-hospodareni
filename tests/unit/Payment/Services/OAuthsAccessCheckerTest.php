@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Model\Payment\Services;
 
 use Codeception\Test\Unit;
+use Entity\GoogleOAuth;
 use Mockery;
 use Model\Common\UnitId;
-use Model\Google\OAuth;
 use Model\Google\OAuthId;
 use Model\Mail\Repositories\IGoogleRepository;
 use Model\Payment\UnitResolverStub;
@@ -63,7 +63,7 @@ final class OAuthsAccessCheckerTest extends Unit
             ->once()
             ->withArgs([$this->oAuthId])
             ->andReturn(
-                OAuth::create(new UnitId($oAuthOwnerUnitId), 'code', 'foo@gmail.com'),
+                GoogleOAuth::create(new UnitId($oAuthOwnerUnitId), 'code', 'foo@gmail.com'),
             );
 
         return new OAuthsAccessChecker($repository, $this->unitResolver);

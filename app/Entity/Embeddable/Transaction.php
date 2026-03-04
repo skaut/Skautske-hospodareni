@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\Payment;
+namespace Entity\Embeddable;
 
 use Cake\Chronos\ChronosDate;
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Embeddable;
 use Model\Bank\Fio\Transaction as FioTransaction;
 use Nette\SmartObject;
 
+#[Embeddable]
 /**
- * @ORM\Embeddable()
- *
  * @property string           $id
  * @property string|null      $bankAccount
  * @property string           $payer
@@ -22,19 +22,19 @@ class Transaction
 {
     use SmartObject;
 
-    /** @ORM\Column(type="string", length=64, nullable=true, name="transactionId") */
+    #[Column(name: 'transactionId', type: 'string', length: 64, nullable: true)]
     private string $id;
 
-    /** @ORM\Column(type="string", length=64, nullable=true) */
+    #[Column(type: 'string', length: 64, nullable: true)]
     private string $bankAccount;
 
-    /** @ORM\Column(type="string", nullable=true, name="transaction_payer") */
+    #[Column(name: 'transaction_payer', type: 'string', nullable: true)]
     private ?string $payer = null;
 
-    /** @ORM\Column(type="string", nullable=true, name="transaction_note") */
+    #[Column(name: 'transaction_note', type: 'string', nullable: true)]
     private ?string $note = null;
 
-    /** @ORM\Column(type="chronos_date", nullable=true) */
+    #[Column(type: 'chronos_date', nullable: true)]
     private ?ChronosDate $date = null;
 
     public function __construct(string $id, string $bankAccount, string $payer, ?string $note, ?ChronosDate $date)

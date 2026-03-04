@@ -43,17 +43,23 @@ class BankAccountForm extends BaseControl
         $form->addText('prefix')
             ->setRequired(false)
             ->addRule($form::INTEGER, 'Neplatné předčíslí')
-            ->addRule($form::MAX_LENGTH, 'Maximální délka předčíslí je %d znaků', 6);
+            ->addRule($form::MAX_LENGTH, 'Maximální délka předčíslí je %d znaků', 6)
+            ->setHtmlAttribute('inputmode', 'numeric')
+            ->setHtmlAttribute('pattern', '[0-9]*')
+            ->setHtmlAttribute('maxlength', 6);
         $form->addText('number')
             ->setRequired('Musíte vyplnit číslo účtu')
             ->addRule($form::INTEGER, 'Neplatné číslo účtu')
-            ->addRule($form::MAX_LENGTH, 'Maximální délka čísla účtu je %d znaků', 10);
+            ->addRule($form::MAX_LENGTH, 'Maximální délka čísla účtu je %d znaků', 10)
+            ->setHtmlAttribute('inputmode', 'numeric')
+            ->setHtmlAttribute('pattern', '[0-9]*')
+            ->setHtmlAttribute('maxlength', 10);
 
         $form->addSelect('bankCode', 'Kód banky', $this->model->getCzechBankAccountCodes())
             ->setRequired('Musíte vyplnit kód banky')
             ->setHtmlAttribute('id', 'bankCode')
             ->setHtmlAttribute('onchange', 'updateInfo(this)')
-            ->addRule($form::PATTERN, 'Kod banky musí být 4 číslice', '[0-9]{4}')
+            ->addRule($form::PATTERN, 'Kód banky musí být 4 číslice', '[0-9]{4}')
             ->addCondition($form::Equal, BankAccount::FIO_BANK_CODE)
             ->toggle('#api');
 
@@ -66,10 +72,22 @@ class BankAccountForm extends BaseControl
             ->setDisabled();
 
         $form->addText('token', 'Token pro párování plateb (FIO)');
-
         $form->addSubmit('send', 'Uložit');
 
-        // EDIT
+        $form->onValidate[] = function (BaseForm $form, ArrayHash $values): void {
+            if ($form->isSubmitted() !== $form['send']) {
+                return;
+            }
+
+            if (! AccountNumber::validateParts(
+                $values->prefix === '' ? null : (string) $values->prefix,
+                (string) $values->number,
+                (string) $values->bankCode,
+            )) {
+                $form->addError('Neplatné číslo účtu');
+            }
+        };
+
         if ($this->id !== null) {
             $account = $this->model->find($this->id);
             $form->setDefaults([
@@ -85,9 +103,10 @@ class BankAccountForm extends BaseControl
         }
 
         $form->onSuccess[] = function (BaseForm $form, ArrayHash $values): void {
-            if ($form->isSubmitted() != $form['send']) {
+            if ($form->isSubmitted() !== $form['send']) {
                 return;
             }
+
             $this->formSucceeded($form, $values);
         };
 
@@ -97,15 +116,17 @@ class BankAccountForm extends BaseControl
     private function formSucceeded(BaseForm $form, ArrayHash $values): void
     {
         try {
-            $bankInfo = $this->model->getBankInfo($values->bankCode);
-            $prefix = (string) $values->prefix;
+            $prefix = $values->prefix === '' ? null : (string) $values->prefix;
             $number = (string) $values->number;
             $bankCode = (string) $values->bankCode;
+            $bankInfo = $this->model->getBankInfo($bankCode);
+            $accountNumber = new AccountNumber($prefix, $number, $bankCode, $bankInfo->getName(), $values->iban, $bankInfo->getBic());
+
             if ($this->id !== null) {
                 $this->model->updateBankAccount(
                     $this->id,
                     $values->name,
-                    new AccountNumber($prefix, $number, $bankCode, $bankInfo->getName(), $values->iban, $bankInfo->getBic()),
+                    $accountNumber,
                     $values->token,
                 );
             } else {
@@ -113,7 +134,7 @@ class BankAccountForm extends BaseControl
                     new CreateBankAccount(
                         $this->getPresenter()->getUnitId(),
                         $values->name,
-                        new AccountNumber($prefix, $number, $bankCode, $bankInfo->getName(), $values->iban, $bankInfo->getBic()),
+                        $accountNumber,
                         $values->token,
                     ),
                 );

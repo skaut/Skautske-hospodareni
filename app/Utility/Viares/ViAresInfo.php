@@ -10,7 +10,12 @@ class ViAresInfo
 
     private ?string $companyName = null;
     private ?string $name = null;
-    private ?string $address = null;
+    private ?string $street = null;
+    private ?string $streetNumber = null;
+    private ?string $streetNumberSuffix = null;
+    private ?string $city = null;
+    private ?string $zipCode = null;
+
     private bool $vatPayer = false;
     private ?string $countryCode = null;
 
@@ -48,14 +53,14 @@ class ViAresInfo
         return $this;
     }
 
-    public function getAddress(): ?string
+    public function getStreet(): ?string
     {
-        return $this->address;
+        return $this->street;
     }
 
-    public function setAddress(?string $address): self
+    public function setStreet(?string $street): self
     {
-        $this->address = $address;
+        $this->street = $street;
 
         return $this;
     }
@@ -87,8 +92,20 @@ class ViAresInfo
             $this->name = $data['name'];
         }
 
-        if (isset($data['address'])) {
-            $this->address = $data['address'];
+        if (isset($data['companyName'])) {
+            $this->companyName = $data['companyName'];
+        }
+
+        if (isset($data['street'])) {
+            $this->street = $data['street'];
+        }
+
+        if (isset($data['streetNumber'])) {
+            $this->streetNumber = $data['streetNumber'];
+        }
+
+        if (isset($data['streetNumberSuffix'])) {
+            $this->streetNumberSuffix = $data['streetNumberSuffix'];
         }
 
         if (isset($data['vatPayer'])) {
@@ -106,11 +123,18 @@ class ViAresInfo
     public function toArray(): array
     {
         return [
-            'vat' => $this->vat,
-            'name' => $this->name,
-            'address' => $this->address,
+            'companyName' => $this->getCompanyName(),
+            'vat' => $this->getVat(),
+            'name' => $this->getName(),
+            'street' => $this->getStreet(),
+            'streetNumber' => $this->getStreetNumber(),
+            'streetNumberSuffix' => $this->getStreetNumberSuffix(),
+            'city' => $this->getCity(),
+            'zipCode' => $this->getZipCode(),
             'vatPayer' => $this->vatPayer ? 1 : 0,
-            'countryCode' => $this->countryCode,
+            'countryCode' => $this->getCountryCode(),
+            'address' => $this->getAddress(),
+            'fullAddress' => $this->getFullAddress(),
         ];
     }
 
@@ -136,5 +160,63 @@ class ViAresInfo
         $this->companyName = $companyName;
 
         return $this;
+    }
+
+    public function getStreetNumber(): ?string
+    {
+        return $this->streetNumber;
+    }
+
+    public function setStreetNumber(?string $streetNumber): self
+    {
+        $this->streetNumber = $streetNumber;
+
+        return $this;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(?string $city): self
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    public function getZipCode(): ?string
+    {
+        return $this->zipCode;
+    }
+
+    public function setZipCode(?string $zipCode): self
+    {
+        $this->zipCode = $zipCode;
+
+        return $this;
+    }
+
+    public function getStreetNumberSuffix(): ?string
+    {
+        return $this->streetNumberSuffix;
+    }
+
+    public function setStreetNumberSuffix(?string $streetNumberSuffix): self
+    {
+        $this->streetNumberSuffix = $streetNumberSuffix;
+
+        return $this;
+    }
+
+    private function getAddress(): string
+    {
+        return sprintf('%s %s/%s', $this->street, $this->streetNumber, $this->streetNumberSuffix);
+    }
+
+    public function getFullAddress(): string
+    {
+        return sprintf('%s, %s %s', $this->getAddress(), $this->city, $this->zipCode);
     }
 }

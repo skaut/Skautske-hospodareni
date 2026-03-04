@@ -5,14 +5,17 @@ declare(strict_types=1);
 namespace Model\Payment\Handlers\Repayment;
 
 use Exception;
-use GuzzleHttp\ClientInterface;
+use FioApi\Exceptions\UnexpectedPaymentOrderValueException;
+use FioApi\Upload\Entity\PaymentOrderCzech;
+use FioApi\Upload\Entity\UploadResponse;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\ServerException;
+use Model\Bank\Fio\IUploaderFactory;
 use Model\Payment\BankError;
 use Model\Payment\Commands\Repayment\CreateRepayments;
+use Model\Payment\Repayment;
 use Model\Utils\MoneyFactory;
-use Psr\Http\Message\ResponseInterface;
 use SimpleXMLElement;
 
 use function implode;
@@ -20,7 +23,7 @@ use function sprintf;
 
 final class CreateRepaymentsHandler
 {
-    public function __construct(private ClientInterface $http)
+    public function __construct(private IUploaderFactory $uploaderFactory)
     {
     }
 
@@ -31,76 +34,61 @@ final class CreateRepaymentsHandler
     public function __invoke(CreateRepayments $command): void
     {
         try {
-            $response = $this->http->request(
-                'POST',
-                'https://fioapi.fio.cz/v1/rest/import/',
-                [
-                    'multipart' => [
-                        [
-                            'name' => 'token',
-                            'contents' => $command->getToken(),
-                        ],
-                        ['name' => 'type', 'contents' => 'xml'],
-                        [
-                            'name' => 'file',
-                            'contents' => $this->buildRequestBody($command),
-                            'filename' => 'request.xml',
-                        ],
-                        [
-                            'name' => 'lng',
-                            'contents' => 'cs',
-                        ],
-                    ],
-                    'timeout' => 60,
-                ],
+            $uploader = $this->uploaderFactory->create(
+                $command->getToken(),
+                $this->formatSourceAccount($command),
             );
+
+            foreach ($command->getRepayments() as $repayment) {
+                $uploader->addPaymentOrder($this->createPaymentOrder($command, $repayment));
+            }
+
+            $response = $uploader->uploadPaymentOrders();
         } catch (ServerException $e) {
             throw BankError::fromServerException($e);
         } catch (ClientException $e) {
             if ($e->getCode() === 409) {
-                throw BankError::fromMessage('Konflikt vstupních dat. Požadované data jsou již pravděpodobně v bance odeslané.', $e->getCode());
+                throw BankError::fromMessage('Konflikt vstupnich dat. Pozadovana data jsou jiz pravdepodobne v bance odeslana.', $e->getCode());
             }
-        }
 
-        if (! isset($response)) {
-            throw new BankError('API neodeslalo požadovanou odpověď');
+            throw $e;
+        } catch (UnexpectedPaymentOrderValueException $e) {
+            throw BankError::fromMessage($e->getMessage(), 0);
         }
 
         $this->parseResponse($response, $command);
     }
 
-    private function buildRequestBody(CreateRepayments $command): string
+    private function formatSourceAccount(CreateRepayments $command): string
     {
-        $ret = '<?xml version="1.0" encoding="UTF-8"?><Import xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.fio.cz/schema/importIB.xsd"> <Orders>';
+        return ($command->getSourceAccount()->getPrefix() ?? '').$command->getSourceAccount()->getNumber();
+    }
 
-        foreach ($command->getRepayments() as $r) {
-            $ret .= '<DomesticTransaction>';
-            $ret .= '<accountFrom>'.$command->getSourceAccount()->getNumberWithPrefix().'</accountFrom>';
-            $ret .= '<currency>CZK</currency>';
-            $ret .= '<amount>'.MoneyFactory::toFloat($r->getAmount()).'</amount>';
-            $ret .= '<accountTo>'.$r->getTargetAccount()->getNumberWithPrefix().'</accountTo>';
-            $ret .= '<bankCode>'.$r->getTargetAccount()->getBankCode().'</bankCode>';
-            $ret .= '<date>'.$command->getDate()->format('Y-m-d').'</date>';
-            $ret .= '<messageForRecipient>'.$r->getMessageForRecipient().'</messageForRecipient>';
-            $ret .= '<comment></comment>';
-            $ret .= '<paymentType>431001</paymentType>';
-            $ret .= '</DomesticTransaction>';
-        }
-
-        $ret .= '</Orders></Import>';
-
-        return $ret;
+    private function createPaymentOrder(CreateRepayments $command, Repayment $repayment): PaymentOrderCzech
+    {
+        return new PaymentOrderCzech(
+            'CZK',
+            MoneyFactory::toFloat($repayment->getAmount()),
+            $repayment->getTargetAccount()->getNumberWithPrefix(),
+            $repayment->getTargetAccount()->getBankCode(),
+            $command->getDate()->toNative(),
+            null,
+            null,
+            null,
+            $repayment->getMessageForRecipient(),
+            null,
+            null,
+            PaymentOrderCzech::PAYMENT_TYPE_STANDARD,
+        );
     }
 
     /**
      * @throws BankError
      * @throws Exception
      */
-    private function parseResponse(ResponseInterface $response, CreateRepayments $command): void
+    private function parseResponse(UploadResponse $response, CreateRepayments $command): void
     {
-        $xmlResponse = $response->getBody()->getContents();
-
-        $xml = new SimpleXMLElement($xmlResponse);
+        $xml = $response->getXml();
 
         $errorCode = (int) $xml->result->errorCode;
         if ($errorCode === 0) {
@@ -115,25 +103,39 @@ final class CreateRepaymentsHandler
         }
 
         $errorMessages = [];
+        $details = $xml->ordersDetails?->detail;
 
-        foreach ($xml->ordersDetails->detail as $detail) {
-            $detailId = (string) $detail['id'];
+        if ($details instanceof SimpleXMLElement) {
+            foreach ($details as $detail) {
+                $detailId = (string) $detail['id'];
+                $messages = $detail->messages?->message;
 
-            foreach ($detail->messages->message as $message) {
-                $messageStatus = (string) $message['status'];
-                $messageText = (string) $message;
-                $messageErrorCode = (int) $message['errorCode'];
-
-                if ($messageStatus !== 'error' && $messageErrorCode === 0) {
+                if (! $messages instanceof SimpleXMLElement) {
                     continue;
                 }
 
-                $errorMessages[] = sprintf('Transakce "%s" obsahuje následující chybu : "%s"', $repaymentMessages[$detailId], $messageText);
+                foreach ($messages as $message) {
+                    $messageStatus = (string) $message['status'];
+                    $messageText = (string) $message;
+                    $messageErrorCode = (int) $message['errorCode'];
+
+                    if ($messageStatus !== 'error' && $messageErrorCode === 0) {
+                        continue;
+                    }
+
+                    $errorMessages[] = sprintf(
+                        'Transakce "%s" obsahuje nasledujici chybu: "%s"',
+                        $repaymentMessages[$detailId] ?? $detailId,
+                        $messageText,
+                    );
+                }
             }
         }
 
         if (! empty($errorMessages)) {
             throw BankError::fromMessage('API Error: '.implode(' | ', $errorMessages), $errorCode);
         }
+
+        throw BankError::fromMessage('API Error: '.((string) ($xml->result->message ?? $xml->result->status ?? 'Neznama chyba bankovniho API')), $errorCode);
     }
 }
