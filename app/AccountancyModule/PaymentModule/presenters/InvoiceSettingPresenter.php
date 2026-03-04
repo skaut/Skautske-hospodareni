@@ -110,10 +110,14 @@ class InvoiceSettingPresenter extends BasePresenter
         $unit = $this->unitService->getOfficialUnit();
         $form->addSelect('unitId', 'Jednotka', [$unit->getDisplayName()])->setDisabled(true);
         $form->addText('companyNumber', 'ICO');
-        $form['companyNumber']->setDefaultValue($unit->getIc());
+        $companyNumber = $form['companyNumber'];
+        assert($companyNumber instanceof \Nette\Forms\Controls\TextInput);
+        $companyNumber->setDefaultValue($unit->getIc());
         $form->addSubmit('getContactInfo', 'Získat data z registru')->onClick[] = [$this, 'handleGetContactInfo'];
-        $form['getContactInfo']->setHtmlAttribute('class', 'btn btn-primary ajax');
-        $form['getContactInfo']->setValidationScope([$form['companyNumber']]);
+        $getContactInfo = $form['getContactInfo'];
+        assert($getContactInfo instanceof SubmitButton);
+        $getContactInfo->setHtmlAttribute('class', 'btn btn-primary ajax');
+        $getContactInfo->setValidationScope([$companyNumber]);
         $form->addText('name', 'Název')->addRule(BaseForm::FILLED, 'Nazev musi byt vyplněn');
         $form->addText('address', 'Adresa')->addRule(BaseForm::FILLED, 'Adresa');
         $form->addText('city', 'Město')->addRule(BaseForm::Filled, 'Město');
@@ -134,6 +138,7 @@ class InvoiceSettingPresenter extends BasePresenter
     public function handleGetContactInfo(SubmitButton $button): void
     {
         $values = $button->getForm()->getValues();
+        $companyInfo = null;
 
         try {
             $companyInfo = (new ViAresParser())->getAres($values->companyNumber);
@@ -141,7 +146,11 @@ class InvoiceSettingPresenter extends BasePresenter
             dumpe($e);
         }
 
-        $this['form']->setValues($companyInfo->toArray());
+        if ($companyInfo !== null) {
+            $form = $this->getComponent('form');
+            assert($form instanceof BaseForm);
+            $form->setValues($companyInfo->toArray());
+        }
 
         if ($this->isAjax()) {
             $this->redrawControl();

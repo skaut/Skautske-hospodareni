@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Model\Google\Handlers;
 
 use CommandHandlerTest;
+use Entity\GoogleOAuth;
 use Model\Google\Commands\RemoveOAuth;
-use Model\Google\OAuth;
 use Model\Google\OAuthId;
 use Model\Payment\Group;
 
@@ -23,7 +23,7 @@ class RemoveOAuthHandlerTest extends CommandHandlerTest
     public function getTestedAggregateRoots(): array
     {
         return [
-            OAuth::class,
+            GoogleOAuth::class,
             Group::class,
         ];
     }

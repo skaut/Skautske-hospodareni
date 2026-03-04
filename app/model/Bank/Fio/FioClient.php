@@ -6,9 +6,9 @@ namespace Model\Bank\Fio;
 
 use Cake\Chronos\ChronosDate;
 use Entity\BankAccount;
+use FioApi\Download\Entity\Transaction as ApiTransaction;
 use FioApi\Exceptions\InternalErrorException;
 use FioApi\Exceptions\TooGreedyException;
-use FioApi\Transaction as ApiTransaction;
 use GuzzleHttp\Exception\TransferException;
 use Model\BankTimeLimit;
 use Model\BankTimeout;

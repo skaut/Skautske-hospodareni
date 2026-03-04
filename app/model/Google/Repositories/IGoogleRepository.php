@@ -4,26 +4,26 @@ declare(strict_types=1);
 
 namespace Model\Mail\Repositories;
 
+use Entity\GoogleOAuth;
 use Model\Common\UnitId;
 use Model\Google\Exception\OAuthNotFound;
-use Model\Google\OAuth;
 use Model\Google\OAuthId;
 
 interface IGoogleRepository
 {
-    public function save(OAuth $oAuth): void;
+    public function save(GoogleOAuth $oAuth): void;
 
     /** @throws OAuthNotFound */
-    public function find(OAuthId $oauthId): OAuth;
+    public function find(OAuthId $oauthId): GoogleOAuth;
 
     /**
      * @param int[] $unitIds
      *
-     * @return array<int, OAuth[]> unitId => OAuth[]
+     * @return array<int, GoogleOAuth[]> unitId => OAuth[]
      */
     public function findByUnits(array $unitIds): array;
 
-    public function findByUnitAndEmail(UnitId $unitId, string $email): OAuth;
+    public function findByUnitAndEmail(UnitId $unitId, string $email): GoogleOAuth;
 
-    public function remove(OAuth $oAuth): void;
+    public function remove(GoogleOAuth $oAuth): void;
 }

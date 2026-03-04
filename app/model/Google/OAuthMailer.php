@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Model\Google;
 
+use Entity\GoogleOAuth;
 use Google\Service\Gmail;
 use Nette\Mail\Mailer;
 use Nette\Mail\Message;
@@ -18,7 +19,7 @@ class OAuthMailer implements Mailer
 {
     private Gmail $gmailService;
 
-    public function __construct(GoogleService $googleService, OAuth $oAuth)
+    public function __construct(GoogleService $googleService, GoogleOAuth $oAuth)
     {
         $client = $googleService->getClient();
         $token = $client->fetchAccessTokenWithRefreshToken($oAuth->getToken());

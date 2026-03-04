@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "430d43c8d3b05c095a47c1f5c7e08e5a",
+    "content-hash": "a8339954e0860dd8221bbf8b6eba7dbd",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -3992,61 +3992,6 @@
                 "source": "https://github.com/MarkBaker/PHPMatrix/tree/3.0.1"
             },
             "time": "2022-12-02T22:17:43+00:00"
-        },
-        {
-            "name": "mhujer/fio-api-php",
-            "version": "5.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mhujer/fio-api-php.git",
-                "reference": "8afee613fabb0ea313da84afa7c04594ff3892b2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mhujer/fio-api-php/zipball/8afee613fabb0ea313da84afa7c04594ff3892b2",
-                "reference": "8afee613fabb0ea313da84afa7c04594ff3892b2",
-                "shasum": ""
-            },
-            "require": {
-                "composer/ca-bundle": "^1.5",
-                "ext-curl": "*",
-                "guzzlehttp/guzzle": "~6.1|~7.0",
-                "php": "~7.4||~8.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "9.5.10",
-                "squizlabs/php_codesniffer": "3.6.1"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "FioApi\\": "src/FioApi"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Martin Hujer",
-                    "email": "mhujer@gmail.com",
-                    "homepage": "https://www.martinhujer.cz/",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Fio API PHP implemention",
-            "homepage": "https://github.com/mhujer/fio-api-php",
-            "keywords": [
-                "Banking",
-                "api",
-                "fio"
-            ],
-            "support": {
-                "issues": "https://github.com/mhujer/fio-api-php/issues",
-                "source": "https://github.com/mhujer/fio-api-php/tree/5.0.0"
-            },
-            "time": "2024-06-07T14:56:22+00:00"
         },
         {
             "name": "moneyphp/money",
@@ -10965,6 +10910,74 @@
                 "source": "https://github.com/webmozarts/assert/tree/1.11.0"
             },
             "time": "2022-06-03T18:03:27+00:00"
+        },
+        {
+            "name": "webwingscz/fio-api-php",
+            "version": "v6.0.0-rc3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webwingscz/fio-api-php.git",
+                "reference": "b1bf62ebb3361cdd050f53291938e942bbc33ef0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webwingscz/fio-api-php/zipball/b1bf62ebb3361cdd050f53291938e942bbc33ef0",
+                "reference": "b1bf62ebb3361cdd050f53291938e942bbc33ef0",
+                "shasum": ""
+            },
+            "require": {
+                "composer/ca-bundle": "^1.5",
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "ext-simplexml": "*",
+                "ext-xmlwriter": "*",
+                "guzzlehttp/guzzle": "~6.1|~7.0",
+                "php": "^7.4 || ^8.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^2.1",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpstan/phpstan-strict-rules": "^2.0",
+                "phpunit/phpunit": "^9.6",
+                "squizlabs/php_codesniffer": "3.6.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "FioApi\\": "src/FioApi"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Hujer",
+                    "email": "mhujer@gmail.com",
+                    "homepage": "https://www.martinhujer.cz/",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Jiří Dorazil",
+                    "email": "dorazil@webwings.cz",
+                    "homepage": "https://www.webwings.cz/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Fio API PHP implemention",
+            "homepage": "https://github.com/mhujer/fio-api-php",
+            "keywords": [
+                "Banking",
+                "api",
+                "fio"
+            ],
+            "support": {
+                "issues": "https://github.com/webwingscz/fio-api-php/issues",
+                "source": "https://github.com/webwingscz/fio-api-php/tree/v6.0.0-rc3"
+            },
+            "time": "2026-03-04T13:49:22+00:00"
         }
     ],
     "packages-dev": [

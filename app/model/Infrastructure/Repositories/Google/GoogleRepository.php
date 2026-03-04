@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Model\Infrastructure\Repositories\Mail;
 
 use Doctrine\ORM\EntityManager;
+use Entity\GoogleOAuth;
 use Model\Common\UnitId;
 use Model\Google\Exception\OAuthNotFound;
-use Model\Google\OAuth;
 use Model\Google\OAuthId;
 use Model\Mail\Repositories\IGoogleRepository;
 
@@ -24,16 +24,16 @@ final class GoogleRepository implements IGoogleRepository
         $this->entityManager = $em;
     }
 
-    public function save(OAuth $oAuth): void
+    public function save(GoogleOAuth $oAuth): void
     {
         $this->entityManager->persist($oAuth);
         $this->entityManager->flush();
     }
 
     /** @throws OAuthNotFound */
-    public function find(OAuthId $oAuthId): OAuth
+    public function find(OAuthId $oAuthId): GoogleOAuth
     {
-        $oAuth = $this->entityManager->getRepository(OAuth::class)->find($oAuthId);
+        $oAuth = $this->entityManager->getRepository(GoogleOAuth::class)->find($oAuthId);
 
         if ($oAuth === null) {
             throw new OAuthNotFound();
@@ -45,7 +45,7 @@ final class GoogleRepository implements IGoogleRepository
     /**
      * @param int[] $unitIds
      *
-     * @return array<int, OAuth[]>
+     * @return array<int, GoogleOAuth[]>
      */
     public function findByUnits(array $unitIds): array
     {
@@ -56,13 +56,13 @@ final class GoogleRepository implements IGoogleRepository
         $byUnit = array_fill_keys($unitIds, []);
 
         $oAuthList = $this->entityManager->createQuery(<<<'DQL'
-            SELECT o FROM Model\Google\OAuth o WHERE o.unitId IN (:ids) ORDER BY o.email 
+            SELECT o FROM Entity\GoogleOAuth o WHERE o.unitId IN (:ids) ORDER BY o.email 
         DQL)
             ->setParameter('ids', $unitIds)
             ->getResult();
 
         foreach ($oAuthList as $oAuth) {
-            assert($oAuth instanceof OAuth);
+            assert($oAuth instanceof GoogleOAuth);
 
             $byUnit[$oAuth->getUnitId()->toInt()][] = $oAuth;
         }
@@ -70,10 +70,10 @@ final class GoogleRepository implements IGoogleRepository
         return $byUnit;
     }
 
-    public function findByUnitAndEmail(UnitId $unitId, string $email): OAuth
+    public function findByUnitAndEmail(UnitId $unitId, string $email): GoogleOAuth
     {
         $oAuth = $this->entityManager->createQuery(<<<'DQL'
-            SELECT o FROM Model\Google\OAuth o WHERE o.unitId = :unitId AND o.email = :email
+            SELECT o FROM Entity\GoogleOAuth o WHERE o.unitId = :unitId AND o.email = :email
         DQL)
             ->setParameter('unitId', $unitId->toInt())
             ->setParameter('email', $email)
@@ -86,7 +86,7 @@ final class GoogleRepository implements IGoogleRepository
         return $oAuth[0];
     }
 
-    public function remove(OAuth $oAuth): void
+    public function remove(GoogleOAuth $oAuth): void
     {
         $this->entityManager->remove($oAuth);
         $this->entityManager->flush();

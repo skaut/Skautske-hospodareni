@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Model\Mail;
 
 use Codeception\Test\Unit;
+use Entity\GoogleOAuth;
 use Google_Client;
 use Mockery as m;
 use Model\Google\GoogleService;
-use Model\Google\OAuth;
 use Model\Google\OAuthMailer;
 use Nette\Mail\Mailer;
 
@@ -37,9 +37,9 @@ class MailerFactoryTest extends Unit
         $this->assertInstanceOf(OAuthMailer::class, $factory->create($this->getConfig()));
     }
 
-    private function getConfig(): OAuth
+    private function getConfig(): GoogleOAuth
     {
-        $mock = m::mock(OAuth::class);
+        $mock = m::mock(GoogleOAuth::class);
         $mock->shouldReceive(['getToken' => 'XXX']);
 
         return $mock;

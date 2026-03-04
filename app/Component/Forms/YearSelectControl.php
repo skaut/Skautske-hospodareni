@@ -40,7 +40,7 @@ class YearSelectControl extends SelectBox
         $this->setRequired('Musíte vybrat rok');
     }
 
-    public function setDefaultValue($value): YearSelectControl
+    public function setDefaultValue(mixed $value): YearSelectControl
     {
         if ($value === 'now') {
             $value = (int) date('Y');

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Model;
 
+use Entity\GoogleOAuth;
 use Model\DTO\Google\OAuth as OAuthDTO;
 use Model\DTO\Google\OAuthFactory;
-use Model\Google\OAuth;
 use Model\Mail\Repositories\IGoogleRepository;
 use Model\Payment\IUnitResolver;
 
@@ -48,13 +48,13 @@ class MailService
             $res[] = $this->unitResolver->getOfficialUnitId($uid);
         }
 
-        return array_unique($unitIds);
+        return array_unique($res);
     }
 
     /**
      * @param int[] $unitIds
      *
-     * @return array<int, OAuth[]> unitId => OAuth[]
+     * @return array<int, GoogleOAuth[]> unitId => OAuth[]
      */
     private function findForUnits(array $unitIds): array
     {

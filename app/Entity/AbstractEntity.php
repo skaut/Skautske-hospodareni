@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Entity;
 
 use ArrayAccess;
-use Doctrine\ORM\Mapping\ChangeTrackingPolicy; // Import pro atribut
-use Doctrine\ORM\Mapping\MappedSuperclass; // Import pro atribut
+use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
+use Doctrine\ORM\Mapping\MappedSuperclass;
 use InvalidArgumentException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;

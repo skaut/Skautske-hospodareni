@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Repository;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Entity\Invoice;
+use Entity\InvoiceSequence;
 
 class InvoiceRepository extends AbstractRepository
 {
@@ -22,11 +25,30 @@ class InvoiceRepository extends AbstractRepository
     /**
      * @return Invoice[]
      */
-    public function getGrid()
+    public function getGrid(InvoiceSequence $invoiceSequence): array
     {
         /** @var Invoice[] $invoice */
-        $invoice = $this->findAll();
+        $invoice = $this->findBy(['sequence' => $invoiceSequence], ['invoiceId' => 'ASC']);
 
         return $invoice;
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function getNextInvoiceId(InvoiceSequence $invoiceSequence): int
+    {
+        try {
+            $invoiceId = $this->createQueryBuilder('entity')
+                ->select('MAX(entity.invoiceId) as invoiceId')
+                ->where('entity.sequence = :sequence')
+                ->setParameter('sequence', $invoiceSequence)
+                ->getQuery()
+                ->getSingleScalarResult();
+        } catch (NoResultException) {
+            return 1;
+        }
+
+        return $invoiceId === null ? 1 : (int) $invoiceId + 1;
     }
 }

@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Utility\Ares;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\GuzzleException;
 use Nette\Utils\Json;
 use Nette\Utils\JsonException;
+use RuntimeException;
 use Throwable;
 use ValueError;
 
@@ -51,19 +51,26 @@ class ViAresParser
 
         $client = new Client();
         $response = $client->request('GET', $url);
-        $response = Json::decode($response->getBody()->getContents());
+        $responseData = Json::decode($response->getBody()->getContents(), Json::FORCE_ARRAY);
 
-        if (! isset($response->ico) || $response->ico !== $vat) {
+        if (! is_array($responseData) || ! isset($responseData['ico']) || $responseData['ico'] !== $vat) {
             return new ViAresInfo();
         }
 
+        $address = isset($responseData['sidlo']) && is_array($responseData['sidlo'])
+            ? $responseData['sidlo']
+            : [];
+
         $aresInfo = new ViAresInfo();
-        $aresInfo->setCompanyName(strval($response->ico))
-            ->setName(strval($response->obchodniJmeno))
-            ->setAddress(strval($response->sidlo->textovaAdresa))
-            ->setVatPayer(isset($response->dic))
-            ->setVat($response->dic)
-            ->setCountryCode(self::COUNTRY_CODE_CZ);
+        $aresInfo->setCompanyName(strval($responseData['ico']))
+            ->setName(isset($responseData['obchodniJmeno']) ? strval($responseData['obchodniJmeno']) : null)
+            ->setStreet(isset($address['nazevUlice']) ? strval($address['nazevUlice']) : null)
+            ->setCity(isset($address['nazevObce']) ? strval($address['nazevObce']) : null)
+            ->setZipCode(isset($address['psc']) ? strval($address['psc']) : null)
+            ->setStreetNumber(isset($address['cisloDomovni']) ? strval($address['cisloDomovni']) : null)
+            ->setStreetNumberSuffix(isset($address['cisloOrientacni']) ? strval($address['cisloOrientacni']) : null)
+            ->setVatPayer(isset($responseData['dic']))
+            ->setVat(isset($responseData['dic']) ? strval($responseData['dic']) : null);
 
         return $aresInfo;
     }
@@ -89,7 +96,7 @@ class ViAresParser
             $response = $client->request('GET', $url);
 
             if ($response->getStatusCode() !== 200) {
-                throw new BadResponseException('Response error code :'.$response->getStatusCode());
+                throw new RuntimeException('Response error code :'.$response->getStatusCode());
             }
 
             $data = Json::decode($response->getBody()->getContents());
@@ -135,7 +142,7 @@ class ViAresParser
      * @param array<string, mixed> $header Struktura hlavičky
      * @param object               $data   Data z odpovědi API
      *
-     * @return array<string, string>
+     * @return array<string, string|null>
      */
     private function processResponse(array $header, object $data): array
     {

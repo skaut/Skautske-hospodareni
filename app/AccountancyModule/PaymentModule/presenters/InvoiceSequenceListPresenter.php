@@ -7,16 +7,20 @@ namespace App\AccountancyModule\PaymentModule;
 use App\AccountancyModule\Components\DataGrid;
 use App\AccountancyModule\Factories\GridFactory;
 use Component\Forms\BaseForm;
+use Entity\BankAccount;
+use Entity\GoogleOAuth;
 use Entity\InvoiceSequence;
+use Illuminate\Support\Collection;
 use Manager\InvoiceSequenceManager;
 use Model\DTO\Google\OAuth;
-use Model\DTO\Payment\BankAccount;
-use Model\Payment\ReadModel\Queries\BankAccount\BankAccountsAccessibleByUnitsQuery;
 use Model\Payment\ReadModel\Queries\OAuthsAccessibleByGroupsQuery;
 use Model\Unit\ReadModel\Queries\UnitsDetailQuery;
 use Model\Unit\Unit;
+use Model\UnitService;
 use Nette\Forms\Form;
+use Repository\BankAccountRepository;
 use Repository\InvoiceSequenceRepository;
+use Repository\RepositoryService;
 use Throwable;
 use Ublaboo\DataGrid\Column\Action\Confirmation\StringConfirmation;
 
@@ -26,12 +30,15 @@ use function assert;
 
 class InvoiceSequenceListPresenter extends BasePresenter
 {
-    protected $groupId;
+    protected ?int $groupId = null;
 
     public function __construct(
         private readonly GridFactory $gridFactory,
         protected InvoiceSequenceManager $invoiceSequenceManager,
         protected InvoiceSequenceRepository $invoiceSequenceRepository,
+        protected UnitService $unitRepository,
+        protected BankAccountRepository $bankAccountRepository,
+        protected RepositoryService $repositoryService,
     ) {
         parent::__construct();
     }
@@ -57,7 +64,7 @@ class InvoiceSequenceListPresenter extends BasePresenter
             ->setSortable()
             ->setFilterText();
 
-        $grid->addAction('edit', '', 'InvoiceList:default', ['id' => 'id'])
+        $grid->addAction('edit', '', 'InvoiceList:default', ['invoiceSequenceId' => 'id'])
             ->setIcon('far fa-edit')
             ->setTitle('Detail')
             ->setClass('btn btn-sm btn-secondary');
@@ -89,7 +96,39 @@ class InvoiceSequenceListPresenter extends BasePresenter
 
     protected function createComponentCreateForm(): BaseForm
     {
+        $unit = $this->unitRepository->getOfficialUnit();
+
         $form = new BaseForm();
+        $supplier = $form->addContainer('supplier');
+        $supplier->addText('name', 'Jméno')
+            ->setHtmlAttribute('title', 'Data jsou načteny ze skautiIsu')
+            ->setDisabled()
+            ->setDefaultValue($unit->getDisplayName());
+        $supplier->addText('street', 'Ulice')
+            ->setHtmlAttribute('title', 'Data jsou načteny ze skautiIsu')
+            ->setDisabled()
+            ->setDefaultValue($unit->getStreet());
+        $supplier->addText('city', 'Město')
+            ->setHtmlAttribute('title', 'Data jsou načteny ze skautiIsu')
+            ->setDisabled()
+            ->setDefaultValue($unit->getCity());
+        $supplier->addText('zip', 'PSČ')
+            ->setHtmlAttribute('title', 'Data jsou načteny ze skautiIsu')
+            ->setDisabled()
+            ->setDefaultValue($unit->getPostcode());
+        $supplier->addText('companyNumber', 'Ičo')
+            ->setHtmlAttribute('title', 'Data jsou načteny ze skautiIsu')
+            ->setDisabled()
+        ->setDefaultValue($unit->getIc());
+        $vatControl = $supplier->addCheckbox('isVatPayer', 'Jednotka je plátce DPH');
+        $vatControl
+            ->addCondition(Form::EQUAL, true)
+            ->toggle('frm-createForm-supplier-vatNumber');
+        $supplier->addText('vatNumber', 'DIČ')
+            ->addConditionOn($vatControl, Form::EQUAL, true)
+            ->setRequired('Plátce DPH musí mít vyplněné DIČ');
+        $supplier->addText('phone', 'Kontaktní telefon');
+
         $form->addText('sequence', 'Prefix')
             ->addRule(Form::MAX_LENGTH, 'Maximální delka prefixu je 5 znaků', 5)
             ->addRule(Form::MIN_LENGTH, 'Minimální delka prefixu je 1 znak', 1)
@@ -119,7 +158,10 @@ class InvoiceSequenceListPresenter extends BasePresenter
         $values = $form->getValues();
 
         $unit = $this->getCurrentUnitId();
-        $invoiceSequence = InvoiceSequence::fromForm($unit, $values);
+        $account = $this->repositoryService->castToEntity(BankAccount::class)($values->bankAccount, new Collection()) ?? null;
+        $googleOAuth = $this->repositoryService->castToEntity(GoogleOAuth::class)($values->oAuthId, new Collection()) ?? null;
+        $invoiceSequence = InvoiceSequence::fromForm($unit, $values, $account, $googleOAuth);
+        $invoiceSequence->setSequenceId($this->invoiceSequenceRepository->getNextSequenceId($this->unitId, $values->year));
 
         $this->invoiceSequenceManager->create($invoiceSequence);
 
@@ -134,8 +176,7 @@ class InvoiceSequenceListPresenter extends BasePresenter
     /** @return array<int, string> */
     private function bankAccountItems(): array
     {
-        $bankAccounts = $this->queryBus->handle(new BankAccountsAccessibleByUnitsQuery($this->groupUnitIds()));
-
+        $bankAccounts = $this->bankAccountRepository->findByUnitId($this->unitId->toInt());
         $items = [];
 
         foreach ($bankAccounts as $bankAccount) {
@@ -178,13 +219,6 @@ class InvoiceSequenceListPresenter extends BasePresenter
     /** @return int[] */
     private function groupUnitIds(): array
     {
-        if ($this->groupId === null) {
-            return [$this->unitId->toInt()]; // New group will be created with user's current unit
-        }
-
-        $group = $this->model->getGroup($this->groupId);
-        assert($group !== null);
-
-        return $group->getUnitIds();
+        return [$this->unitId->toInt()];
     }
 }
