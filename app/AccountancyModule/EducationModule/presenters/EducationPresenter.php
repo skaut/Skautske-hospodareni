@@ -128,6 +128,15 @@ class EducationPresenter extends BasePresenter
 
     public function renderReport(int $aid): void
     {
+        if (
+            $this->event->startDate === null
+            || ! $this->authorizator->isAllowed(Education::ACCESS_DETAIL, $aid)
+            || ! $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid)
+        ) {
+            $this->flashMessage('Nemáte právo přistupovat ke kurzu', 'warning');
+            $this->redirect('default', ['aid' => $aid]);
+        }
+
         $template = $this->exportService->getEducationReport(new SkautisEducationId($aid), $this->event->startDate->year);
 
         $this->pdf->render($template, 'report.pdf');
