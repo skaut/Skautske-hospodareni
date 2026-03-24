@@ -1,0 +1,46 @@
+
+
+{block title}Automatizace{/block}
+
+{block #content}
+<div data-test="settings-automation-page">
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h1 class="h3 mb-2">Automatizace</h1>
+            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3">
+                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
+                <span class="text-body-secondary">Přehled pravidelných úloh, které systém spouští automaticky na pozadí. Konfigurace intervalů je v&nbsp;<code>scheduler.neon</code>.</span>
+            </div>
+        </div>
+    </div>
+
+    <article class="card shadow-sm mb-4" data-test="settings-automation-card-cron">
+        <div class="card-body">
+            <strong>Pravidelné úlohy</strong>
+        </div>
+        <div class="list-group list-group-flush">
+            <div n:foreach="$jobs as $job" class="list-group-item">
+                <div class="d-flex align-items-start gap-3">
+                    <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary" style="width:2.5rem;height:2.5rem;font-size:1rem;flex-shrink:0">
+                        <i class="fi fi-rr-time-check" aria-hidden="true"></i>
+                    </span>
+                    <div class="flex-grow-1">
+                        <strong>{$job['name']}</strong>
+                        <span class="badge text-bg-light ms-2" title="CRON: {$job['cron']}">{$job['interval']}</span>
+                        <p class="text-body-secondary small mb-0 mt-1">{$job['description']}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <article class="card shadow-sm" data-test="settings-automation-card-history">
+        <div class="card-body">
+            <strong>Historie běhů</strong>
+            <div class="alert alert-light mt-3 mb-0">
+                Log posledních spuštění a jejich výsledků zatím není implementován. Připravuje se jako navazující krok.
+            </div>
+        </div>
+    </article>
+</div>
+{/block}

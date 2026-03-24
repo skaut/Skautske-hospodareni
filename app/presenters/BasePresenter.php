@@ -4,16 +4,21 @@ declare(strict_types=1);
 
 namespace App;
 
-use App\AccountancyModule\Factories\IDarkModeToggleFactory;
-use App\AccountancyModule\Factories\ILoginPanelFactory;
 use App\Components\DarkModeToggle;
+use App\Components\Factories\IDarkModeToggleFactory;
+use App\Components\Factories\ILoginPanelFactory;
 use App\Components\LoginPanel;
-use Model\Auth\IAuthorizator;
-use Model\Common\Services\CommandBus;
-use Model\Common\Services\NotificationsCollector;
-use Model\Common\Services\QueryBus;
-use Model\UnitService;
-use Model\UserService;
+use App\Model\Auth\IAuthorizator;
+use App\Model\Auth\Resources\Admin;
+use App\Model\Common\Services\CommandBus;
+use App\Model\Common\Services\NotificationsCollector;
+use App\Model\Common\Services\QueryBus;
+use App\Model\Unit\UnitService;
+use App\Model\User\UserService;
+use Contributte\MenuControl\IMenuItem;
+use Contributte\MenuControl\MenuContainer;
+use Contributte\MenuControl\UI\IMenuComponentFactory;
+use Contributte\MenuControl\UI\MenuComponent;
 use Nette\Application\BadRequestException;
 use Nette\Application\LinkGenerator;
 use Nette\Application\Response;
@@ -25,8 +30,13 @@ use Skautis\Wsdl\AuthenticationException;
 
 use function array_key_last;
 use function assert;
+use function dirname;
 use function explode;
+use function is_file;
+use function preg_match;
 use function sprintf;
+use function str_contains;
+use function str_replace;
 
 /** @property DefaultTemplate $template */
 abstract class BasePresenter extends Presenter
@@ -57,6 +67,10 @@ abstract class BasePresenter extends Presenter
 
     private Context $appContext;
 
+    private IMenuComponentFactory $menuComponentFactory;
+
+    private MenuContainer $menuContainer;
+
     public function injectAll(
         UserService $userService,
         UnitService $unitService,
@@ -69,6 +83,8 @@ abstract class BasePresenter extends Presenter
         LoggerInterface $logger,
         LinkGenerator $linkGenerator,
         Context $appContext,
+        IMenuComponentFactory $menuComponentFactory,
+        MenuContainer $menuContainer,
     ): void {
         $this->userService = $userService;
         $this->unitService = $unitService;
@@ -81,6 +97,8 @@ abstract class BasePresenter extends Presenter
         $this->notificationsCollector = $notificationsCollector;
         $this->linkGenerator = $linkGenerator;
         $this->appContext = $appContext;
+        $this->menuComponentFactory = $menuComponentFactory;
+        $this->menuContainer = $menuContainer;
     }
 
     protected function startup(): void
@@ -115,14 +133,16 @@ abstract class BasePresenter extends Presenter
     {
         parent::beforeRender();
 
-        $presenterNameParts = explode(':', $this->getName());
+        [$module, $presenterName] = $this->resolveTemplateSection();
 
         $this->template->setParameters([
-            'module' => $presenterNameParts[1] ?? null,
-            'presenterName' => $presenterNameParts[array_key_last($presenterNameParts)],
+            'module' => $module,
+            'presenterName' => $presenterName,
             'linkGenerator' => $this->linkGenerator,
+            'navigationBreadcrumbs' => $this->resolveNavigationBreadcrumbs($module),
             'productionMode' => $this->appContext->isProduction(),
             'wwwDir' => $this->appContext->getWwwDir(),
+            'canAccessAdmin' => $this->authorizator->isAllowed(Admin::ACCESS, null),
         ]);
 
         if (! $this->getUser()->isLoggedIn()) {
@@ -159,6 +179,31 @@ abstract class BasePresenter extends Presenter
         return $this->darkModeToggleFactory->create();
     }
 
+    protected function createComponentMainMenu(): MenuComponent
+    {
+        return $this->menuComponentFactory->create('main');
+    }
+
+    protected function createComponentPaymentsMenu(): MenuComponent
+    {
+        return $this->menuComponentFactory->create('payments');
+    }
+
+    protected function createComponentSettingsMenu(): MenuComponent
+    {
+        return $this->menuComponentFactory->create('settings');
+    }
+
+    protected function createComponentAdminMenu(): MenuComponent
+    {
+        return $this->menuComponentFactory->create('admin');
+    }
+
+    protected function createComponentTravelMenu(): MenuComponent
+    {
+        return $this->menuComponentFactory->create('travel');
+    }
+
     protected function updateUserAccess(): void
     {
         $identity = $this->user->getIdentity();
@@ -193,5 +238,113 @@ abstract class BasePresenter extends Presenter
 
             $this->flashMessage($message, $type);
         }
+    }
+
+    /** @return string[] */
+    public function formatTemplateFiles(): array
+    {
+        if (! $this->usesPresentationDirectory()) {
+            return parent::formatTemplateFiles();
+        }
+
+        $presenterDir = dirname((string) static::getReflection()->getFileName());
+
+        return [
+            $presenterDir.'/'.$this->view.'.latte',
+            ...parent::formatTemplateFiles(),
+        ];
+    }
+
+    /** @return string[] */
+    public function formatLayoutTemplateFiles(): array
+    {
+        if (preg_match('#/|\\\\#', (string) $this->layout)) {
+            return [(string) $this->layout];
+        }
+
+        if (! $this->usesPresentationDirectory()) {
+            return parent::formatLayoutTemplateFiles();
+        }
+
+        $layout = $this->layout ?: 'layout';
+        $presenterDir = dirname((string) static::getReflection()->getFileName());
+        $moduleDir = dirname($presenterDir);
+        $presentationRoot = dirname($moduleDir);
+
+        $files = [
+            $presenterDir.'/@'.$layout.'.latte',
+        ];
+
+        while ($moduleDir !== $presentationRoot && is_file($moduleDir.'/@'.$layout.'.latte') === false) {
+            $files[] = $moduleDir.'/@'.$layout.'.latte';
+            $moduleDir = dirname($moduleDir);
+        }
+
+        $files[] = $moduleDir.'/@'.$layout.'.latte';
+
+        return [
+            ...$files,
+            ...parent::formatLayoutTemplateFiles(),
+            $this->appDir.'/templates/@'.$layout.'.latte',
+        ];
+    }
+
+    /** @return array{0: string|null, 1: string} */
+    private function resolveTemplateSection(): array
+    {
+        $presenterNameParts = explode(':', $this->getName());
+        $presenterName = $presenterNameParts[array_key_last($presenterNameParts)];
+
+        if (($presenterNameParts[0] ?? null) === 'Accountancy') {
+            return [$presenterNameParts[1] ?? null, $presenterName];
+        }
+
+        return [$presenterNameParts[0] ?? null, $presenterName];
+    }
+
+    private function usesPresentationDirectory(): bool
+    {
+        $file = static::getReflection()->getFileName();
+
+        return $file !== false && str_contains(str_replace('\\', '/', $file), '/app/Presentation/');
+    }
+
+    /** @return array<int, array{title: string, link: string|null, current: bool}> */
+    private function resolveNavigationBreadcrumbs(?string $module): array
+    {
+        $menuName = match ($module) {
+            'Payment', 'Payments' => 'payments',
+            default => null,
+        };
+
+        if ($menuName === null) {
+            return [];
+        }
+
+        $menu = $this->menuContainer->getMenu($menuName);
+        $menu->setActivePresenter($this);
+
+        $rootItem = $menu->findActiveItem();
+        if (! $rootItem instanceof IMenuItem) {
+            return [];
+        }
+
+        $activeItem = $rootItem->findActiveItem();
+
+        $items = [[
+            'title' => $rootItem->getRealTitle(),
+            'link' => $activeItem instanceof IMenuItem ? $rootItem->getRealLink() : null,
+            'current' => ! $activeItem instanceof IMenuItem,
+        ]];
+
+        if ($activeItem instanceof IMenuItem) {
+            $items[] = [
+                'title' => $activeItem->getRealTitle(),
+                'link' => null,
+                'current' => true,
+            ];
+        }
+
+        return $items;
     }
 }

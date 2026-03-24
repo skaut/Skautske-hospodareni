@@ -1,0 +1,253 @@
+menu:
+    main:
+        authorizator: @App\Presentation\Accessory\Navigation\NavigationAuthorizator
+        templates:
+            menu: %appDir%/Presentation/Accessory/Navigation/templates/mainMenu.latte
+        items:
+            dashboard:
+                title: Přehled
+                action: 'Dashboard:default'
+                include:
+                    - '^Dashboard:.*$'
+                data:
+                    test: global-nav-dashboard
+            events:
+                title: Akce
+                action: 'Events:Default:default'
+                include:
+                    - '^Events:.*$'
+                data:
+                    test: global-nav-events
+            camps:
+                title: Tábory
+                action: 'Camps:Default:default'
+                include:
+                    - '^Camps:.*$'
+                data:
+                    test: global-nav-camps
+            education:
+                title: Vzdělávačky
+                action: 'Education:Default:default'
+                include:
+                    - '^Education:.*$'
+                data:
+                    test: global-nav-education
+            travel:
+                title: Cesťáky
+                action: 'Travel:Default:default'
+                include:
+                    - '^Travel:.*$'
+                data:
+                    test: global-nav-travel
+            unit:
+                title: Jednotka
+                action: 'Unit:Cashbook:default'
+                include:
+                    - '^Unit:.*$'
+                data:
+                    test: global-nav-unit
+            payments:
+                title: Platby
+                action: 'Payments:Dashboard:default'
+                include:
+                    - '^Payments:.*$'
+                data:
+                    test: global-nav-payments
+            admin:
+                title: Admin
+                action: 'Admin:Default:default'
+                include:
+                    - '^Admin:.*$'
+                data:
+                    test: global-nav-admin
+                    requiresAdmin: true
+            settings:
+                title: Nastavení
+                action: 'Settings:Default:default'
+                include:
+                    - '^Settings:.*$'
+                data:
+                    test: global-nav-settings
+
+    payments:
+        authorizator: @App\Presentation\Accessory\Navigation\NavigationAuthorizator
+        linkGenerator: @App\Presentation\Accessory\Navigation\PreservingLinkGenerator
+        templates:
+            menu: %appDir%/Presentation/Accessory/Navigation/templates/subMenu.latte
+        items:
+            payments:
+                title: Platby
+                action: 'Payments:Dashboard:default'
+                include:
+                    - '^Payments:.*$'
+                data:
+                    preserveParameters:
+                        jednotka: unitId
+                        rok: year
+                items:
+                    overview:
+                        title: Přehled
+                        action: 'Payments:Dashboard:default'
+                        include:
+                            - '^Payments:Dashboard:.*$'
+                        data:
+                            test: payment-nav-overview
+                            icon: fas fa-compass
+                            preserveParameters:
+                                jednotka: unitId
+                                rok: year
+                    groups:
+                        title: Platební skupiny
+                        action: 'Payments:GroupList:default'
+                        include:
+                            - '^Payments:(GroupList|Group|Payment|Participants|People|Repayment|Journal|CampAddParticipants|CampCreateGroup|CampSelectForGroup|EventAddParticipants|EventCreateGroup|EventSelectForGroup|EducationAddParticipants|EducationCreateGroup|EducationSelectForGroup|RegistrationAddMembers|RegistrationCreateGroup|RegistrationJournal):.*$'
+                        data:
+                            test: payment-nav-groups
+                            icon: far fa-list-alt
+                            preserveParameters:
+                                jednotka: unitId
+                                rok: year
+                    invoices:
+                        title: Faktury
+                        action: 'Payments:InvoiceList:default'
+                        include:
+                            - '^Payments:(InvoiceList|InvoiceSequence|InvoiceSequenceList):.*$'
+                        data:
+                            test: payment-nav-invoices
+                            icon: fas fa-file-invoice-dollar
+                            preserveParameters:
+                                jednotka: unitId
+                                rok: year
+                    settings:
+                        title: Nastavení
+                        action: 'Settings:Default:default'
+                        include:
+                            - '^Settings:.*$'
+                        data:
+                            test: payment-nav-settings
+                            icon: fas fa-sliders-h
+                            preserveParameters:
+                                jednotka: unitId
+                                rok: year
+
+    settings:
+        authorizator: @App\Presentation\Accessory\Navigation\NavigationAuthorizator
+        linkGenerator: @App\Presentation\Accessory\Navigation\PreservingLinkGenerator
+        templates:
+            menu: %appDir%/Presentation/Accessory/Navigation/templates/subMenu.latte
+        items:
+            overview:
+                title: Přehled
+                action: 'Settings:Default:default'
+                include:
+                    - '^Settings:Default:.*$'
+                data:
+                    test: settings-subnav-overview
+                    icon: fi fi-rr-apps
+                    preserveParameters:
+                        jednotka: unitId
+                        rok: year
+            bankAccounts:
+                title: Bankovní účty
+                action: 'Settings:BankAccounts:default'
+                include:
+                    - '^Settings:BankAccounts:.*$'
+                data:
+                    test: settings-subnav-bank-accounts
+                    icon: fi fi-rr-bank
+                    preserveParameters:
+                        jednotka: unitId
+                        rok: year
+            mails:
+                title: E-maily
+                action: 'Settings:Mails:default'
+                include:
+                    - '^Settings:Mails:.*$'
+                data:
+                    test: settings-subnav-mails
+                    icon: fi fi-rr-envelope
+                    preserveParameters:
+                        jednotka: unitId
+                        rok: year
+            invoices:
+                title: Faktury
+                action: 'Settings:Invoices:default'
+                include:
+                    - '^Settings:Invoices:.*$'
+                data:
+                    test: settings-subnav-invoices
+                    icon: fi fi-rr-file-invoice
+                    preserveParameters:
+                        jednotka: unitId
+                        rok: year
+            automation:
+                title: Automatizace
+                action: 'Settings:Automation:default'
+                include:
+                    - '^Settings:Automation:.*$'
+                data:
+                    test: settings-subnav-automation
+                    icon: fi fi-rr-settings-sliders
+                    preserveParameters:
+                        jednotka: unitId
+                        rok: year
+
+    admin:
+        authorizator: @App\Presentation\Accessory\Navigation\NavigationAuthorizator
+        templates:
+            menu: %appDir%/Presentation/Accessory/Navigation/templates/subMenu.latte
+        items:
+            overview:
+                title: Přehled
+                action: 'Admin:Default:default'
+                include:
+                    - '^Admin:Default:.*$'
+                data:
+                    test: admin-nav-overview
+                    icon: fi fi-rr-apps
+            users:
+                title: Uživatelé
+                action: 'Admin:Users:default'
+                include:
+                    - '^Admin:Users:.*$'
+                data:
+                    test: admin-nav-users
+                    icon: fi fi-rr-users-alt
+            statistics:
+                title: Statistiky
+                action: 'Admin:Statistics:default'
+                include:
+                    - '^Admin:Statistics:.*$'
+                data:
+                    test: admin-nav-statistics
+                    icon: fi fi-rr-chart-pie
+
+    travel:
+        authorizator: @App\Presentation\Accessory\Navigation\NavigationAuthorizator
+        templates:
+            menu: %appDir%/Presentation/Accessory/Navigation/templates/subMenu.latte
+        items:
+            commands:
+                title: Cestovní příkazy
+                action: 'Travel:Default:default'
+                include:
+                    - '^Travel:Default:.*$'
+                data:
+                    test: travel-subnav-commands
+                    icon: fas fa-route
+            vehicles:
+                title: Vozidla
+                action: 'Travel:VehicleList:default'
+                include:
+                    - '^Travel:(VehicleList|Vehicle):.*$'
+                data:
+                    test: travel-subnav-vehicles
+                    icon: fas fa-car
+            contracts:
+                title: Smlouvy
+                action: 'Travel:Contract:default'
+                include:
+                    - '^Travel:Contract:.*$'
+                data:
+                    test: travel-subnav-contracts
+                    icon: fas fa-file-contract
