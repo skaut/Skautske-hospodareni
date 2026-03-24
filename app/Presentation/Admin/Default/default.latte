@@ -1,0 +1,49 @@
+{block title}Admin{/block}
+
+{block content}
+<div data-test="admin-page">
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h1 class="h3 mb-2">Admin</h1>
+            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3">
+                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
+                <span class="text-body-secondary">Systémová sekce pro správu aplikace. Odtud můžete spravovat administrátory a sledovat statistiky.</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12 col-md-6">
+            <article class="card h-100 shadow-sm" data-test="admin-card-users">
+                <div class="card-body">
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary" style="width:3rem;height:3rem;font-size:1.15rem;flex-shrink:0">
+                            <i class="fi fi-rr-users-alt" aria-hidden="true"></i>
+                        </span>
+                        <div>
+                            <h2 class="h5 mb-1"><a n:href=":Admin:Users:" class="text-decoration-none" data-test="admin-link-users">Uživatelé</a></h2>
+                            <p class="text-body-secondary small mb-0">Správa persistentního seznamu administrátorů uloženého v databázi podle skautIS <code>user_id</code>.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <article class="card h-100 shadow-sm" data-test="admin-card-stats">
+                <div class="card-body">
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary" style="width:3rem;height:3rem;font-size:1.15rem;flex-shrink:0">
+                            <i class="fi fi-rr-chart-pie" aria-hidden="true"></i>
+                        </span>
+                        <div>
+                            <h2 class="h5 mb-1"><a n:href=":Admin:Statistics: unitId => $unitId" class="text-decoration-none" data-test="admin-link-statistics">Statistiky</a></h2>
+                            <p class="text-body-secondary small mb-0">Přehled statistik a metrik z provozních agend v samostatném admin kontextu.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+</div>
+{/block}
