@@ -1,0 +1,69 @@
+{block #content}
+{include ../header.latte}
+
+<div data-test="unit-chits-page">
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h1 n:inner-block="title" class="h3 mb-2">Přehled dokladů jednotky</h1>
+            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3 mb-3">
+                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
+                <span class="text-body-secondary">Centrální přehled paragonů a rychlý přístup do návazných pokladních knih.</span>
+            </div>
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <div class="dropdown" data-test="unit-chits-filter">
+                    <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-test="unit-chits-filter-toggle"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fi fi-rr-eye" aria-hidden="true"></i>
+                        {if $onlyUnlocked}Pouze odemčené{else}Všechny paragony{/if}
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a
+                            n:class="dropdown-item, $onlyUnlocked ? disabled"
+                            n:href="default unitId: $unitId, year: $year, onlyUnlocked: true"
+                            n:attr="aria-disabled: $onlyUnlocked, tabindex: $onlyUnlocked ? -1 : null"
+                            data-test="unit-chits-filter-unlocked"
+                        >Pouze odemčené</a>
+                        <a
+                            n:class="dropdown-item, ! $onlyUnlocked ? disabled"
+                            n:href="default unitId: $unitId, year: $year, onlyUnlocked: false"
+                            n:attr="aria-disabled: ! $onlyUnlocked, tabindex: ! $onlyUnlocked ? -1 : null"
+                            data-test="unit-chits-filter-all"
+                        >Vše</a>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap gap-1">
+                    <a n:for="$y= 2015; $y <= date('Y'); $y++" n:href="default unitId: $unitId, year: $y, onlyUnlocked: $onlyUnlocked" n:class="btn, btn-sm, btn-light, $year == $y ? active">{$y}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {snippet tableChits}
+        {foreach $types as $type => $label}
+            <h2 class="h5 mb-3">{$label}</h2>
+
+            {foreach $info[$type] as $cashbookId => $object}
+                <div class="card shadow-sm mb-4" n:if=" ! $isCashbookEmpty($cashbookId)">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        {var $id = $object['ID']}
+                        <h5 class="mb-0">
+                            <a href="{if $type === 'event'}{link :Events:Cashbook: $id}{elseif $type === 'camp'}{link :Camps:Cashbook: $id}{elseif $type === 'unit'}{link :Unit:Cashbook:default, unitId: $id, year: $year}{/if}" class="text-decoration-none">
+                                {$object['DisplayName']}
+                            </a>
+                            {ifset $object['StartDate']}
+                                <small class="text-body-secondary">({$object['StartDate']|date:'j.n'} – {$object['EndDate']|date:'j.n.Y'})</small>
+                            {/ifset}
+                        </h5>
+                        <a n:href="lockCashbook! $cashbookId" class="btn btn-sm btn-dark ajax flex-shrink-0">
+                            <i class="fi fi-rr-lock" aria-hidden="true"></i> Zamknout vše
+                        </a>
+                    </div>
+                    <div class="card-body p-0">
+                        {control "chitList-$cashbookId"}
+                    </div>
+                </div>
+            {/foreach}
+        {/foreach}
+    {/snippet}
+</div>
+{/block}
