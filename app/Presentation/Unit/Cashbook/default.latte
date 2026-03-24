@@ -1,0 +1,21 @@
+{block #content}
+{include ../header.latte}
+
+<div data-test="unit-cashbook-page">
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h1 n:inner-block="title" class="h3 mb-2">{$unitPairs[$unitId]}</h1>
+            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3">
+                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
+                <span class="text-body-secondary">Evidence plateb, přehled dokladů a rozpočet pro vybranou jednotku na jednom místě.</span>
+            </div>
+        </div>
+    </div>
+
+    <div n:snippet="paragony">
+        {control cashbook}
+    </div>
+    {control activateCashbookDialog}
+    {control createCashbookDialog}
+</div>
+{/block}
