@@ -1,0 +1,12 @@
+{block title}Cestovní příkazy jednotky {$unit->getDisplayName()}{/block}
+
+{block #content}
+<div data-test="travel-default-page">
+    <div class="card shadow-sm mb-4"><div class="card-body">
+            <h1 class="h3 mb-2">Cestovní příkazy</h1>
+            <p class="text-body-secondary mb-0">Přehled cestovních příkazů, vozidel a souvisejících podkladů pro jednotku {$unit->getDisplayName()}.</p>
+    </div></div>
+
+    {control grid}
+</div>
+{/block}

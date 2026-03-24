@@ -1,0 +1,41 @@
+{block #content}
+<div class="card shadow-sm mb-4"><div class="card-body">
+        <h1 class="h3 mb-2" n:inner-block="title">Smlouvy o proplácení cestovních náhrad</h1>
+        <p class="text-body-secondary mb-3">Přehled uzavřených smluv o cestovních náhradách, tisk a správa smluvních dokumentů.</p>
+        <div n:if="$canCreate" class="d-flex flex-wrap gap-2">
+            <a n:href="new" class="btn btn-sm btn-success"><i class="fi fi-rr-plus-small" aria-hidden="true"></i> Založit smlouvu</a>
+        </div>
+</div></div>
+
+{if !empty($list)}
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-striped table-sm mb-0">
+            <thead>
+            <tr>
+                <th>Vykonavatel/Řidič</th>
+                <th>Zástupce jednotky</th>
+                <th>Platná od:</th>
+                <th>Platná do:</th>
+                <th class="text-end">Akce</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr n:foreach="$list as $c">
+                <td>{$c->passenger->name}</td>
+                <td>{$c->unitRepresentative}</td>
+                <td>{$c->since?->toNative()|date:"j. n. Y"}</td>
+                <td>{$c->until?->toNative()|date:"j. n. Y"}</td>
+                <td class="text-end">
+                    <div class="btn-group btn-group-sm">
+                        <a n:href="print $c->id" class="btn btn-info d-none d-md-inline-block" title="Vytisknout"><i class="fi fi-rr-print" aria-hidden="true"></i></a>
+                        <a n:href="detail $c->id" class="btn btn-primary" title="Detail" data-test="{$c->unitRepresentative}"><i class="fi fi-rr-search" aria-hidden="true"></i></a>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{/if}
+{/block}
