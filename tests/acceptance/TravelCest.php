@@ -9,6 +9,7 @@ use Facebook\WebDriver\WebDriverKeys;
 use Throwable;
 
 use function json_encode;
+use function rawurlencode;
 use function sprintf;
 use function time;
 
@@ -56,14 +57,15 @@ class TravelCest extends BaseAcceptanceCest
     protected function navigateToTravelOrder(AcceptanceTester $I): void
     {
         $I->amOnPage('/');
-        $I->click('Cesťáky');
+        $I->click('[data-test="global-nav-travel"]');
         $I->seeInCurrentUrl('/cestaky');
     }
 
     protected function newTravelOrder(AcceptanceTester $I, string $name, string $licensePlate): void
     {
-        $I->click('Založit cestovní příkaz');
+        $I->click('[data-test="travel-command-create-link"]');
         $I->waitForText('Založit cestovní příkaz');
+        $I->seeInCurrentUrl('/cestaky/prikazy/new');
 
         $I->waitForElementVisible('#frm-form-form-purpose', 10);
 
@@ -109,6 +111,7 @@ class TravelCest extends BaseAcceptanceCest
     {
         $I->click($name);
         $I->waitForText('Cestovní příkaz');
+        $I->seeInCurrentUrl('/cestaky/prikazy/');
         $I->click('Smazat');
         try {
             $I->acceptPopup();
@@ -132,9 +135,9 @@ class TravelCest extends BaseAcceptanceCest
     protected function navigateToVehicle(AcceptanceTester $I): void
     {
         $I->amOnPage('/');
-        $I->click('Cesťáky');
+        $I->click('[data-test="global-nav-travel"]');
         $I->seeInCurrentUrl('/cestaky');
-        $I->click('Vozidla');
+        $I->click('[data-test="travel-subnav-vehicles"]');
         $I->seeInCurrentUrl('/cestaky/vozidla');
     }
 
@@ -142,6 +145,7 @@ class TravelCest extends BaseAcceptanceCest
     {
         $I->click('Založit nové vozidlo');
         $I->see('Nové vozidlo');
+        $I->seeInCurrentUrl('/cestaky/vozidla/new');
 
         $I->fillField(['id' => 'frm-formCreateVehicle-type'], $this->vehicleType);
         $I->fillField(['id' => 'frm-formCreateVehicle-registration'], $licensePlate);
@@ -164,19 +168,14 @@ class TravelCest extends BaseAcceptanceCest
         $I->see($licensePlate);
         $I->see($this->vehicleType);
         $I->see($this->division);
-        $I->click('#frm-grid-grid-filter-filter-search');
-        $I->fillField('#frm-grid-grid-filter-filter-search', 'AUV');
-        $I->pressKey('#frm-grid-grid-filter-filter-search', [WebDriverKeys::ENTER]);
-        $I->wait(3);
+        $I->amOnPage('/cestaky/vozidla?grid-grid-filter%5Bsearch%5D=AUV');
         $I->dontSee($licensePlate, '#snippet-grid-grid-table');
         $I->see('Nenalezeny žádné záznamy.', '#snippet-grid-grid-table');
-        $I->click('#frm-grid-grid-filter-filter-search');
-        $I->fillField('#frm-grid-grid-filter-filter-search', $licensePlate);
-        $I->pressKey('#frm-grid-grid-filter-filter-search', [WebDriverKeys::ENTER]);
+        $I->amOnPage('/cestaky/vozidla?grid-grid-filter%5Bsearch%5D='.rawurlencode($licensePlate));
         $I->waitForText($licensePlate, 10, '#snippet-grid-grid-table');
-        $I->wait(3);
         $I->click($licensePlate, '#snippet-grid-grid-table');
         $I->waitForText('Údaje o vozidle');
+        $I->seeInCurrentUrl('/cestaky/vozidla/detail/');
     }
 
     protected function deleteVehicle(AcceptanceTester $I, string $licensePlate): void
@@ -206,9 +205,9 @@ class TravelCest extends BaseAcceptanceCest
     protected function navigationToContract(AcceptanceTester $I): void
     {
         $I->amOnPage('/');
-        $I->click('Cesťáky');
+        $I->click('[data-test="global-nav-travel"]');
         $I->seeInCurrentUrl('/cestaky');
-        $I->click('Smlouvy');
+        $I->click('[data-test="travel-subnav-contracts"]');
         $I->seeInCurrentUrl('/cestaky/smlouvy');
         $I->waitForText('Smlouvy');
     }

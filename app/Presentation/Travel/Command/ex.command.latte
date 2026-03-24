@@ -1,0 +1,163 @@
+<style>
+    body { font-family: Tahoma, 'Lucida Grande CE', lucida, sans-serif; font-size: 13px;line-height: 1.5em;}
+    table.bigTable tr td { padding: 5px 2px 2px 5px}
+    .box45 { width: 45%;font-size: 11px;float:left; }
+    .box24 { width: 24%;font-size: 11px;float:left; }
+    .c { text-align: center;}
+    table.smallTable tr td { width: 20%;padding: 0;}
+    table.travels { width: 100%; }
+    table.travels tr td, table.travels tr th { text-align: center;}
+    table.travels tr th { width: 12.5%;}
+    table.bordered { border: 1px solid #000000;border-collapse: collapse;}
+    table.bordered tr, table.bordered tr td, table.bordered tr th { border: 1px solid #000000;}
+    .sekce { border-bottom: 2px solid #000000;padding: 5px 0 0 5px;}
+    .fl { float: left;}
+</style>
+      
+<body>
+    
+    <div style="border: 1px solid #000000;">
+        <div class="sekce">
+            <div style="float:left; width: 140px;">
+                <img src="{$baseUrl}/images/layout/lilie.png" style="" />
+            </div>
+            <div style="float: left;width: 390px;height: 76px;">
+                <div style="text-align: center;font: 23px bold;padding: 5px 0 10px;">Cestovní příkaz</div>
+                <b>1.</b> Příjmení, jméno: <span style="font-size: 15px;font-weight: bold;">{$command->passenger->name}</span><br />
+                <b>2.</b> Bydliště: <b>{$command->passenger->address}</b><br />
+            </div>
+            <div style="float: left;width: 180px;line-height: 2em;padding-top: 5px;">
+                Jednotka: {$command->unit}<br />
+                Kontakt: {$command->passenger->contact}
+            </div>
+        </div>
+        <div style="border-bottom: 2px solid #000000;"><!--    SEKCE 2    -->
+            <table style="width: 100%;" class="bordered">
+                <tr>
+                    <td class="c">Počátek cesty</td>
+                    <td class="c">Účel cesty</td>
+                    <td class="c">Místo</td>
+                    <td class="c">Konec cesty</td>
+                </tr>
+                <tr>
+                    <td>{ifset $start}{$start->details->startPlace} {$start->details->date?->toNative()|date:"j. n. Y"}{/ifset}</td>
+                    <td>{$command->purpose}</td>
+                    <td>{$command->place}</td>
+                    <td>{ifset $end}{$end->details->endPlace} {$end->details->date?->toNative()|date:"j. n. Y"}{/ifset}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="sekce"><!--    SEKCE 3    -->
+            <b>3.</b> Spolucestující: {$command->fellowPassengers} <br />
+            <b>4.</b> Určený dopr. prostředek: {$types|implode:", "} {if $vehicle !== NULL}– {$vehicle->label}{/if} <br />
+            <b>5.</b> Předpokládaná část výdajů Kč: ----- <br />
+            <b>6.</b> Povolená záloha Kč: ----- <br />
+            <div style="width: 50%;font-size: 11px;float:left;text-align: center;margin-top: 8px;">.................................................................................................<br />podpis pokladníka</div>
+            <div class="box45 c" style="margin-top: 8px;">.................................................................................................<br />Datum a podpis pracovníka oprávněného k povolení cesty</div>
+        </div>
+        <div class="sekce"><!--    SEKCE 4    -->
+            <div style="font: 16px bold; text-align: center;">Vyúčtování pracovní cesty</div>
+            <div style="width: 300px;font-size: 11px;float:left;">
+                <b>7.</b> Zpráva o výsledku pracovní cesty byla podána dne<br />
+                Se způsobem provedení souhlasí:
+            </div>
+            <div class="box45">
+                ............................<br />
+                .................................................................................................<br />Datum a podpis oprávněného pracovníka
+            </div>
+        </div>
+        <div class="sekce" style="padding-top: 0;"><!--    SEKCE 5    -->
+            <div style="float: left;width: 380px;">            
+                <b>8. Výdajový - příjmový doklad</b><br />
+                číslo <br />
+                Účtovaná náhrada byla přezkoušena a upravena na &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Kč<br />
+                Vyplacená záloha &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Kč<br />
+                Doplatek - přeplatek &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Kč<br />
+                Slovy ................................................................................
+            </div>
+            <div style="float: right;width: 330px;">
+                <table class="bordered" style="width: 100%;">
+                    <tr>
+                        <td colspan="5">Účtovací předpis</td>
+                    </tr>
+                    <tr><td style="width: 20%">Má dáti</td><td style="width: 20%">Dal</td><td style="width: 20%">Částka</td><td style="width: 20%">Středisko</td><td style="width: 20%">Zakázka</td></tr>
+                    <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                    <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                    <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                    <tr><td colspan="5">Poznámka o zaúčtování</td></tr>
+                </table>
+            </div>
+            <div style="clear:both; padding-top: 10px;">
+                <div class="box24 c">............................................<br /> Datum a podpis upravitele</div>
+                <div class="box24 c">............................................<br /> Datum a podpis příjemce</div>
+                <div class="box24 c">............................................<br /> Datum a podpis pokladníka</div>
+                <div class="box24 c">............................................<br /> Schválil - datum a podpis</div>
+            </div>
+        </div>
+        <div class="sekce" style=" padding: 0 auto 0 0;"><!--    SEKCE 6    -->
+                    <div style="font-size: 0.9em;padding-bottom: 4px;">
+                        <div style="font: 16px bold; text-align: center;">Vyúčtování pracovní cesty</div>
+                        {if $vehicle !== NULL}
+                            <div class="fl" style="width: 130px; padding-left: 5px;">Cena paliva: <b>{$command->fuelPrice|price}</b> Kč/l</div>
+                            <div class="fl" style="width: 175px;">Spotřeba dle t.p.: <b>{$vehicle->consumption}</b> l/100km</div>
+                            <div class="fl" style="width: 120px;">Cena PHM 1 km: {$command->fuelPricePerKm|price}</div>
+                            <div class="fl" style="width: 115px;">Opotřebení: {$command->amortizationPerKm|price} Kč/km</div>
+                            <div class="fl" style="width: 155px;">Sazba náhrady: <b>{$command->pricePerKm|price}</b> Kč/km</div>
+                        {/if}
+                    </div>
+                    <table class="bordered travels">
+                <tr>
+                    <th>Datum</th>
+                    <th>Z</th>
+                    <th>Do</th>
+                    <th>Prostředek</th>
+                    <th>Sazba náhr.</th>
+                    <th>Počet km</th>
+                    <th>Cena</th>
+                    <th>Upraveno</th>
+                </tr>
+            {if !empty($travels)}
+                <tr n:foreach="$travels as $t">
+                    <td>{$t->details->date?->toNative()|date:"j. n. Y"}</td>
+                    <td>{$t->details->startPlace}</td>
+                    <td>{$t->details->endPlace}</td>
+                    <td>{$t->details->transportType->getLabel()}</td>
+                    {if $t->distance !== NULL}
+                    <td>{$command->pricePerKm|price}</td>
+                    <td>{$t->distance}</td>
+                    {else}
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    {/if}
+                    <td>{$t->price|price}</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="3" rowspan="3" style='vertical-align: bottom;'>K vyúčtování připojuji .......... dokladů.</td>
+                    <td colspan="3">Celkem po zaokrouhlení dolu</td>
+                    <td>{$command->total|price}</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="3">Záloha</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="3">Doplatek - přeplatek</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                {/if}
+            </table>
+        </div> <!--   KONEC SEKCE 6     -->
+        <div class="sekce" style="padding-left: 10px;">
+            <br />
+            Prohlašuji, že jsem všechny údaje uvedl úplně a správně:
+            ......................................................................... <span style="font-size: 10px;font-style: italic;">(Datum a podpis)</span>
+        </div>
+    </div>
+</table>
+
+</body>
+

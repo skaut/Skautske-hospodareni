@@ -1,0 +1,42 @@
+{extends $baseTemplate}
+
+{block filters}
+    {include #filter-type-search}
+    {include #filter-type-select name => 'state', label => 'Stav'}
+{/block}
+
+{block global-actions}
+    <a href="{plink :Travel:Command:default}" class="btn btn-success" data-test="travel-command-create-link">
+        <span class="fi fi-rr-plus-small" aria-hidden="true"></span>
+        Založit cestovní příkaz
+    </a>
+{/block}
+
+{define col-passenger}
+    {$item->passenger->name}
+    {var $contractId = $item->passenger->contractId}
+    {if $contractId !== NULL}
+        (<a n:tag-if="$contractId !== NULL" href="{plink :Travel:Contract:detail $contractId}">smlouva</a>)
+    {/if}
+{/define}
+
+{define col-vehicle}
+    {var $vehicleId = $item->vehicleId}
+    {var $vehicle = $vehicleId !== NULL ? ($vehicles[$vehicleId] ?? NULL) : NULL}
+    <a n:if="$vehicle !== NULL && $vehicleId !== NULL" href="{plink :Travel:Vehicle:detail $vehicleId}">
+        {$vehicle->label} <i n:if="$vehicle->archived" class="fi fi-rr-trash" aria-hidden="true"></i>
+    </a>
+    <span n:if="$vehicleId !== NULL && $vehicle === NULL" class="text-body-secondary">Neznáme vozidlo</span>
+
+    <div n:inner-foreach="$item->getTransportTypePairs() as $type">
+        <span class="badge bg-info">{$type}</span>
+    </div>
+{/define}
+
+{define col-total}
+    {if ! $item->total->isZero()}{$item->total|price:false} Kč{else}-{/if}
+{/define}
+
+{define col-state}
+    {$item->closedAt|commandState|noescape}
+{/define}
