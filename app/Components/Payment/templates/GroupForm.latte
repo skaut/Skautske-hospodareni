@@ -1,0 +1,63 @@
+{control form}
+
+<script>
+    (() => {
+        const form = document.querySelector('[data-help-form] form, #leftPanel form');
+        const bankAccountSelect = form?.querySelector('select[name$="[bankAccount]"]');
+
+        if (!form || !bankAccountSelect) {
+            return;
+        }
+
+        const originalValue = bankAccountSelect.dataset.originalValue ?? null;
+        const message = bankAccountSelect.dataset.bankAccountChangeMessage;
+
+        if (originalValue === null || !message) {
+            return;
+        }
+
+        form.addEventListener('submit', (event) => {
+            if (bankAccountSelect.value !== originalValue && !window.confirm(message)) {
+                event.preventDefault();
+            }
+        });
+    })();
+
+    (() => {
+        const form = document.querySelector('[data-help-form] form, #leftPanel form');
+        if (!form) return;
+
+        const emailSelect = form.querySelector('.ui--emailSelectbox');
+        if (!emailSelect) return;
+
+        const emailFields = form.querySelectorAll('[data-email-field]');
+        const emailLabels = [];
+
+        emailFields.forEach(field => {
+            const wrapper = field.closest('.mb-3, .form-group, .form-check, div[id]');
+            if (wrapper) emailLabels.push(wrapper);
+        });
+
+        function toggleEmailFields() {
+            const hasEmail = emailSelect.value !== '';
+
+            emailFields.forEach(field => {
+                field.disabled = !hasEmail;
+                if (!hasEmail) {
+                    field.style.opacity = '0.5';
+                    field.style.pointerEvents = 'none';
+                } else {
+                    field.style.opacity = '';
+                    field.style.pointerEvents = '';
+                }
+            });
+
+            emailLabels.forEach(wrapper => {
+                wrapper.style.opacity = hasEmail ? '' : '0.5';
+            });
+        }
+
+        toggleEmailFields();
+        emailSelect.addEventListener('change', toggleEmailFields);
+    })();
+</script>

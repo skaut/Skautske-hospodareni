@@ -1,0 +1,198 @@
+// Design Showcase — minimal structural CSS
+// All component styling handled by Bootstrap 5 utility classes in the template.
+
+.design-showcase {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.5rem 0 3rem;
+}
+
+.design-showcase__section {
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-lg);
+  background: var(--bs-body-bg);
+  box-shadow: var(--bs-box-shadow-sm);
+}
+
+.design-showcase__section > h3 {
+  margin: 0;
+}
+
+// ── Shared admin surface primitives ──
+// Used across real pages (Settings, BankAccounts, Mail, Invoices, Admin).
+
+.design-showcase__surface {
+  display: grid;
+  gap: 1rem;
+  padding: 1.4rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-lg);
+  background: var(--bs-body-bg);
+  box-shadow: var(--bs-box-shadow-sm);
+}
+
+.design-showcase__section-head {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.design-showcase__title {
+  margin: 0;
+  font-family: skautbold, sans-serif;
+  font-size: clamp(1.55rem, 2.4vw, 2.05rem);
+  line-height: 1.15;
+}
+
+.design-showcase__section-copy {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  background: var(--bs-tertiary-bg);
+}
+
+.design-showcase__section-copy p {
+  margin: 0;
+  color: var(--bs-secondary-color);
+  line-height: 1.7;
+}
+
+.design-mini-panel {
+  display: grid;
+  gap: 0.55rem;
+  padding: 1rem 1.1rem;
+  border-radius: var(--bs-border-radius-lg);
+  background: var(--bs-tertiary-bg);
+  border: 1px solid var(--bs-border-color);
+}
+
+.design-mini-panel strong {
+  color: var(--bs-body-color);
+}
+
+.design-mini-panel p {
+  margin: 0;
+  color: var(--bs-secondary-color);
+  line-height: 1.7;
+}
+
+// Icon-only buttons (square, consistent)
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.45rem;
+  height: 2.45rem;
+  padding: 0;
+  border-radius: 50%;
+}
+
+// Icon line-height fix inside buttons
+.design-showcase .btn i {
+  line-height: 0;
+}
+
+// Split button — scales with btn-sm / default / btn-lg
+.design-split-button {
+  width: fit-content;
+
+  > .btn {
+    border-color: rgba(39, 84, 213, 0.88);
+    background: linear-gradient(180deg, #3d72ff 0%, #2c5fe2 100%);
+
+    &:first-child {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45em;
+    }
+  }
+
+  > .dropdown-toggle-split {
+    border-left-color: rgba(255, 255, 255, 0.18);
+  }
+
+  > .btn:hover,
+  > .btn:focus-visible {
+    background: linear-gradient(180deg, #3568f0 0%, #2754d5 100%);
+    border-color: rgba(39, 84, 213, 0.96);
+  }
+
+  .dropdown-menu {
+    left: 0;
+    right: auto;
+    min-width: 100%;
+  }
+}
+
+// Wireframe blocks for layout showcase (dashed borders)
+.design-wireframe-block {
+  display: grid;
+  gap: 0.4rem;
+  min-height: 5rem;
+  border: 1px dashed var(--bs-primary-border-subtle);
+  background: var(--bs-tertiary-bg);
+}
+
+// Collapsible help layout — form + sidebar
+.design-help-layout {
+  display: grid;
+  gap: 1rem;
+
+  @media (min-width: 1200px) {
+    grid-template-columns: minmax(0, 1.5fr) minmax(18rem, 0.85fr);
+    align-items: start;
+  }
+}
+
+.design-help-sidebar {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--bs-primary-border-subtle);
+  border-radius: var(--bs-border-radius-lg);
+  background: var(--bs-primary-bg-subtle);
+  position: sticky;
+  top: 5rem;
+  align-self: start;
+}
+
+// Collapsed state — sidebar shrinks to icon, content hides
+[data-help-layout][data-help-collapsed="true"] {
+  @media (min-width: 1200px) {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
+
+[data-help-layout][data-help-collapsed="true"] [data-help-content] {
+  display: none;
+}
+
+[data-help-layout][data-help-collapsed="true"] .design-help-sidebar {
+  justify-items: center;
+  padding: 0.75rem;
+}
+
+// Mobile full-width buttons
+@media (max-width: 767.98px) {
+  .design-showcase {
+    padding-top: 1rem;
+  }
+}
+
+// Dark-mode overrides for custom elements only
+:root[data-bs-theme="dark"] {
+  .design-split-button {
+    > .btn {
+      border-color: rgba(98, 130, 255, 0.88);
+      background: linear-gradient(180deg, #446de3 0%, #3657b8 100%);
+    }
+
+    > .btn:hover,
+    > .btn:focus-visible {
+      background: linear-gradient(180deg, #4a75f0 0%, #3d61cb 100%);
+      border-color: rgba(122, 151, 255, 0.92);
+    }
+  }
+}
