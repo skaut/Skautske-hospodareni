@@ -18,12 +18,24 @@ class RouterFactory
     {
         $router = new RouteList();
 
+        // Static pages
         $router[] = new Route('app.manifest', 'Offline:manifest');
         $router[] = new Route('o-projektu', 'Default:about');
         $router[] = new Route('posily', 'Default:reinforcement');
         $router[] = new Route('changelog', 'Default:changelog');
-        $router[] = new Route('debugging', 'Accountancy:Debugging:default');
-        $router[] = new Route('google/<action>', 'Accountancy:Google:default');
+        $router[] = new Route('design', 'Design:default');
+
+        // Sections
+        $this->addTravelRoutes($router);
+        $this->addEventRoutes($router);
+        $this->addUnitRoutes($router);
+        $this->addPaymentRoutes($router);
+        $this->addAdminRoutes($router);
+        $this->addSettingsRoutes($router);
+
+        // Utility & auth
+        $router[] = new Route('debugging', 'Admin:Debugging:default');
+        $router[] = new Route('google/<action>', 'Settings:Google:default');
         $router[] = new Route(
             'sign/<action>[/back-<backlink>]',
             [
@@ -32,7 +44,6 @@ class RouterFactory
                 'backlink' => null,
             ],
         );
-
         $router[] = new Route('nastenka', 'Dashboard:default');
         $router[] = new Route(
             'prirucka/<action>[#<anchor>]',
@@ -41,7 +52,6 @@ class RouterFactory
                 'action' => [
                     Route::VALUE => 'default',
                     Route::FILTER_TABLE => [
-                        // řetězec v URL => presenter
                         'vyprava' => 'event',
                         'tabor' => 'camp',
                         'cestovni-prikaz' => 'travelCommand',
@@ -49,7 +59,6 @@ class RouterFactory
                 ],
             ],
         );
-
         $router[] = new Route(
             'offline/<action>.html',
             [
@@ -57,176 +66,174 @@ class RouterFactory
                 'action' => 'list',
             ],
         );
-
-        $router[] = $accountancy = new RouteList('Accountancy');
-
-        $accountancy->addRoute('export/<action>/<cashbookId>', ['presenter' => 'CashbookExport']);
-
-        $this->createCampRoutes($accountancy);
-        $this->createEventRoutes($accountancy);
-        $this->createEducationRoutes($accountancy);
-        $this->createTravelRoutes($accountancy);
-        $this->createUnitAccountRoutes($accountancy);
-        $this->createPaymentRoutes($accountancy);
-        $this->createStatRoutes($accountancy);
-
-        $accountancy->addRoute('<module>/<presenter>[/<action>]', ['action' => 'default']);
+        $router[] = new Route('export/<action>/<cashbookId>', ['presenter' => 'Unit:CashbookExport', 'action' => 'default']);
 
         $router->add(new SimpleRouter('Default:default'));
 
         return $router;
     }
 
-    private function createCampRoutes(RouteList $parent): void
+    private function addTravelRoutes(RouteList $router): void
     {
-        $parent
-            ->withModule('Camp')
-            ->addRoute('tabory', 'Default:default')
-            ->withPath('tabory')
-            ->addRoute(
-                '<aid [0-9]+>[/<presenter>[/<action>]]',
-                [
-                    'presenter' => [
-                        Route::VALUE => 'Detail',
-                        Route::FILTER_TABLE => [
-                            'ucastnici' => 'Participant',
-                            'kniha' => 'Cashbook',
-                            'rozpocet' => 'Budget',
-                        ],
+        $router[] = $travel = new RouteList('Travel');
+        $travel
+            ->addRoute('cestaky/prikazy/new', 'Command:default')
+            ->addRoute('cestaky/prikazy/<id [0-9]+>/edit', 'Command:edit')
+            ->addRoute('cestaky/prikazy/<id [0-9]+>/print', 'Command:print')
+            ->addRoute('cestaky/prikazy/<id [0-9]+>', 'Command:detail')
+            ->addRoute('cestaky/vozidla', 'VehicleList:default')
+            ->addRoute('cestaky/vozidla/<action>[/<id [0-9]+>]', ['presenter' => 'Vehicle', 'action' => 'default'])
+            ->addRoute('cestaky/smlouvy[/<action>][/<id [0-9]+>]', ['presenter' => 'Contract', 'action' => 'default'])
+            ->addRoute('cestaky', 'Default:default');
+    }
+
+    private function addEventRoutes(RouteList $router): void
+    {
+        // Education
+        $router[] = new Route(
+            'vzdelavacky/<aid [0-9]+>[/<presenter>[/<action>]]',
+            [
+                'presenter' => [
+                    Route::VALUE => 'Education:Education',
+                    Route::PATTERN => 'ucastnici|kniha|rozpocet|opravneni',
+                    Route::FILTER_TABLE => [
+                        'ucastnici' => 'Education:Participant',
+                        'kniha' => 'Education:Cashbook',
+                        'rozpocet' => 'Education:Budget',
+                        'opravneni' => 'Education:Privileges',
                     ],
-                    'action' => 'default',
                 ],
-            )
+                'action' => 'default',
+            ],
+        );
+        $router[] = new Route('vzdelavacky', 'Education:Default:default');
+
+        // Camps
+        $router[] = new Route(
+            'tabory/<aid [0-9]+>[/<presenter>[/<action>]]',
+            [
+                'presenter' => [
+                    Route::VALUE => 'Camps:Detail',
+                    Route::PATTERN => 'ucastnici|kniha|rozpocet',
+                    Route::FILTER_TABLE => [
+                        'ucastnici' => 'Camps:Participant',
+                        'kniha' => 'Camps:Cashbook',
+                        'rozpocet' => 'Camps:Budget',
+                    ],
+                ],
+                'action' => 'default',
+            ],
+        );
+        $router[] = new Route('tabory', 'Camps:Default:default');
+
+        // Events
+        $router[] = new Route('akce/nova', 'Events:NewEvent:default');
+        $router[] = new Route(
+            'akce/<aid [0-9]+>[/<presenter>[/<action>]]',
+            [
+                'presenter' => [
+                    Route::VALUE => 'Events:Event',
+                    Route::PATTERN => 'ucastnici|kniha|opravneni',
+                    Route::FILTER_TABLE => [
+                        'ucastnici' => 'Events:Participant',
+                        'kniha' => 'Events:Cashbook',
+                        'opravneni' => 'Events:Privileges',
+                    ],
+                ],
+                'action' => 'default',
+            ],
+        );
+        $router[] = new Route('akce', 'Events:Default:default');
+    }
+
+    private function addUnitRoutes(RouteList $router): void
+    {
+        $router[] = new Route(
+            'jednotka/<unitId [0-9]+>/rozpocet[/<action>] ? rok=<year>',
+            [
+                'presenter' => 'Unit:Budget',
+                'action' => [
+                    Route::VALUE => 'default',
+                    Route::FILTER_TABLE => ['pridat' => 'add'],
+                ],
+            ],
+        );
+        $router[] = new Route('jednotka/<unitId [0-9]+>/paragony ? rok=<year> & onlyUnlocked=<onlyUnlocked>', 'Unit:Chit:default');
+        $router[] = new Route('jednotka/<unitId [0-9]+>/kniha ? rok=<year>', 'Unit:Cashbook:default');
+        $router[] = new Route('jednotka ? jednotka=<unitId> & rok=<year>', 'Unit:Cashbook:default');
+    }
+
+    private function addPaymentRoutes(RouteList $router): void
+    {
+        $router[] = $payments = new RouteList('Payments');
+        $payments
+            ->addRoute('platby', 'Dashboard:default')
+            // Groups
+            ->addRoute('platby/skupiny ? onlyOpen=<onlyOpen>', 'GroupList:default')
+            ->addRoute('platby/skupiny/nova', 'Group:newGroup')
+            ->addRoute('platby/skupiny/<id [0-9]+>/upravit', 'Group:edit')
+            ->addRoute('platby/skupiny/<id [0-9]+>/platby', 'Payment:default')
+            ->addRoute('platby/skupiny/<id [0-9]+>/ucastnici', 'Participants:default')
+            ->addRoute('platby/skupiny/<id [0-9]+>/osoby', 'People:default')
+            ->addRoute('platby/skupiny/<groupId [0-9]+>/casopisy', 'Journal:default')
+            ->addRoute('platby/skupiny/<id [0-9]+>/vratky', 'Repayment:default')
+            // Event-based group creation
+            ->addRoute('platby/tabory/<campId [0-9]+>/nova', 'CampCreateGroup:default')
+            ->addRoute('platby/tabory', 'CampSelectForGroup:default')
+            ->addRoute('platby/akce/<eventId [0-9]+>/nova', 'EventCreateGroup:default')
+            ->addRoute('platby/akce', 'EventSelectForGroup:default')
+            ->addRoute('platby/vzdelavacky/<educationId [0-9]+>/nova', 'EducationCreateGroup:default')
+            ->addRoute('platby/vzdelavacky', 'EducationSelectForGroup:default')
+            ->addRoute('platby/registrace/nova', 'RegistrationCreateGroup:default')
+            ->addRoute('platby/registrace/<id [0-9]+>/osoby', 'RegistrationAddMembers:default')
+            ->addRoute('platby/registrace/<groupId [0-9]+>/casopisy', 'RegistrationJournal:default')
+            // Invoices
+            ->addRoute('platby/faktury/<id [0-9]+>', 'InvoiceList:detail')
+            ->addRoute('platby/rady/<id [0-9]+>/upravit ? jednotka=<unitId>', 'InvoiceSequence:edit')
+            ->addRoute('platby/rady/nova ? jednotka=<unitId>', 'InvoiceSequence:default')
+            ->addRoute('platby/rady/<invoiceSequenceId [0-9]+> ? jednotka=<unitId>', 'InvoiceList:default')
+            ->addRoute('platby/rady ? jednotka=<unitId>', 'InvoiceSequenceList:default')
+            ->addRoute('platby/faktury ? jednotka=<unitId>', 'InvoiceList:default');
+    }
+
+    private function addAdminRoutes(RouteList $router): void
+    {
+        $router[] = $admin = new RouteList('Admin');
+        $admin
+            ->addRoute('admin', 'Default:default')
+            ->withPath('admin')
+            ->addRoute('uzivatele', 'Users:default')
+            ->addRoute('statistiky ? jednotka=<unitId>', 'Statistics:default')
             ->addRoute('<presenter>[/<action>]', ['action' => 'default']);
     }
 
-    private function createEventRoutes(RouteList $parent): void
+    private function addSettingsRoutes(RouteList $router): void
     {
-        $parent
-            ->withModule('Event')
-            ->addRoute('akce', 'Default:default')
-            ->withPath('akce')
+        $router[] = $settings = new RouteList('Settings');
+        $settings
             ->addRoute(
-                '<aid [0-9]+>/<presenter>[/<action>]',
-                [
-                    'presenter' => [
-                        Route::VALUE => 'Event',
-                        Route::FILTER_TABLE => [
-                            'ucastnici' => 'Participant',
-                            'kniha' => 'Cashbook',
-                        ],
-                    ],
-                    'action' => 'default',
-                ],
-            )
-            ->addRoute('<presenter>[/<action>]', ['action' => 'default']);
-    }
-
-    private function createEducationRoutes(RouteList $parent): void
-    {
-        $parent
-            ->withModule('Education')
-            ->addRoute('vzdelavacky', 'Default:default')
-            ->withPath('vzdelavacky')
-            ->addRoute(
-                '<aid [0-9]+>/<presenter>[/<action>]',
-                [
-                    'presenter' => [
-                        Route::VALUE => 'Education',
-                        Route::FILTER_TABLE => [
-                            'ucastnici' => 'Participant',
-                            'kniha' => 'Cashbook',
-                            'rozpocet' => 'Budget',
-                        ],
-                    ],
-                    'action' => 'default',
-                ],
-            )
-            ->addRoute('<presenter>[/<action>]', ['action' => 'default']);
-    }
-
-    private function createTravelRoutes(RouteList $parent): void
-    {
-        $parent
-            ->withModule('Travel')
-            ->addRoute('cestaky', 'Default:default')
-            ->withPath('cestaky')
-            ->addRoute('vozidla', 'VehicleList:default')
-            ->addRoute(
-                '<presenter>[/<action>][/<id>]',
-                [
-                    'presenter' => [
-                        Route::FILTER_TABLE => [
-                            'vozidla' => 'Vehicle',
-                            'smlouvy' => 'Contract',
-                        ],
-                    ],
-                    'action' => 'default',
-                ],
-            );
-    }
-
-    private function createUnitAccountRoutes(RouteList $parent): void
-    {
-        $parent
-            ->withModule('UnitAccount')
-            ->addRoute('jednotka', 'Default:default')
-            ->withPath('jednotka')
-            ->addRoute(
-                '<unitId [0-9]+>[/<presenter>][/<action>][/<year>]',
-                [
-                    'presenter' => [
-                        Route::VALUE => 'Default',
-                        Route::FILTER_TABLE => [
-                            'kniha' => 'Cashbook',
-                            'paragony' => 'Chit',
-                            'rozpocet' => 'Budget',
-                        ],
-                    ],
-                    'action' => 'default',
-                ],
-            )
-            ->addRoute('<presenter>[/<action>]', ['action' => 'default']);
-    }
-
-    private function createPaymentRoutes(RouteList $parent): void
-    {
-        $parent
-            ->withModule('Payment')
-            ->withPath('platby')
-            ->addRoute('emaily ? jednotka=<unitId>', 'Mail:default')
-            ->addRoute('bankovni-ucty ? jednotka=<unitId>', 'BankAccounts:default')
-            ->addRoute(
-                'bankovni-ucty/<id [0-9]+>[/<action>] ? jednotka=<unitId>',
+                'nastaveni/bankovni-ucty/<id [0-9]+>[/<action>] ? jednotka=<unitId>',
                 [
                     'presenter' => 'BankAccounts',
                     'action' => [
-                        Route::VALUE => 'default',
+                        Route::VALUE => 'detail',
                         Route::FILTER_TABLE => ['upravit' => 'edit'],
                     ],
                 ],
             )
-            ->addRoute('', 'GroupList:default')
-            ->addRoute('skupiny/<id [0-9]+>[/<action>]', [
-                'presenter' => 'Payment',
-                'action' => 'default',
-            ])
-            ->addRoute('[<presenter>[/<action>]]', ['action' => 'default']);
-    }
-
-    private function createStatRoutes(RouteList $parent): void
-    {
-        $parent
-            ->withModule('Statistics')
-            ->addRoute('statistiky', 'Default:default')
-            ->withPath('statistiky')
             ->addRoute(
-                '<unitId [0-9]+>[/<presenter>][/<action>]',
+                'nastaveni/bankovni-ucty[/<action>] ? jednotka=<unitId>',
                 [
-                    'presenter' => [Route::VALUE => 'Default'],
-                    'action' => 'default',
+                    'presenter' => 'BankAccounts',
+                    'action' => [
+                        Route::VALUE => 'default',
+                        Route::FILTER_TABLE => ['novy' => 'new'],
+                    ],
                 ],
             )
-            ->addRoute('[<presenter>][/<action>]', ['action' => 'default']);
+            ->addRoute('nastaveni/emaily ? jednotka=<unitId>', 'Mails:default')
+            ->addRoute('nastaveni/faktury ? jednotka=<unitId> & rok=<year>', 'Invoices:default')
+            ->addRoute('nastaveni/automatizace ? jednotka=<unitId>', 'Automation:default')
+            ->addRoute('nastaveni ? jednotka=<unitId>', 'Default:default');
     }
 }
