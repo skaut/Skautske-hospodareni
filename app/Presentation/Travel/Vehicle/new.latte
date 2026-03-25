@@ -1,43 +1,51 @@
 {block #content}
-<div class="card shadow-sm mb-4"><div class="card-body">
-        <h1 class="h3 mb-2" n:inner-block="title">Nové vozidlo</h1>
-        <p class="text-body-secondary mb-0">Zadejte údaje o novém vozidle pro cestovní příkazy.</p>
-</div></div>
+<div data-test="travel-vehicle-form-page">
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h1 class="h3 mb-2" n:inner-block="title">Nové vozidlo</h1>
+            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3">
+                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
+                <span class="text-body-secondary">Zadejte údaje o novém vozidle pro cestovní příkazy.</span>
+            </div>
+        </div>
+    </div>
 
-<div class="row justify-content-center">
-    <div class="col-8">
-        <div class="card">
-            <h5 class="card-header">Údaje vozidla</h5>
-            <div class="card-body">
-                <form n:name="formCreateVehicle">
-                    <div class="mb-3">
-                        {label type /}
-                        {input type}
+    <div class="row justify-content-center">
+        <div class="col-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <strong>Údaje vozidla</strong>
+                    <div class="mt-3">
+                        <form n:name="formCreateVehicle">
+                            <div class="mb-3">
+                                {label type /}
+                                {input type}
+                            </div>
+                            <div class="mb-3">
+                                {label registration /}
+                                {input registration}
+                            </div>
+                            <div class="mb-3">
+                                {label consumption /}
+                                <div class="input-group mb-2">
+                                    {input consumption}
+                                    <button class="btn btn-secondary" type="button" data-bs-toggle="modal" data-bs-target="#consumptionModal"><i class="fi fi-rr-interrogation" aria-hidden="true"></i></button>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                {label subunitId /}
+                                {input subunitId}
+                            </div>
+                            <div class="mb-3">
+                                {input send class => [btn, btn-primary]}
+                            </div>
+                        </form>
                     </div>
-                    <div class="mb-3">
-                        {label registration /}
-                        {input registration}
-                    </div>
-                    <div class="mb-3">
-                        {label consumption /}
-                        <div class="input-group mb-2">
-                            {input consumption}
-                            <button class="btn btn-secondary" type="button" data-bs-toggle="modal" data-bs-target="#consumptionModal"><i class="fi fi-rr-interrogation" aria-hidden="true"></i></button>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        {label subunitId /}
-                        {input subunitId}
-                    </div>
-                    <div class="mb-3">
-                        {input send class => [btn, btn-primary]}
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
 
 <div class="modal fade" tabindex="-1" role="dialog" id="consumptionModal">
     <div class="modal-dialog" role="document">
