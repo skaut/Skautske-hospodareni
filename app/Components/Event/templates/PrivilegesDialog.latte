@@ -1,0 +1,37 @@
+{layout $layout}
+
+{block dialog-title}Oprávnění přihlášené osoby{/block}
+
+{block dialog-body}
+<div class="table-responsive">
+    <table class="table table-bordered table-sm mb-0">
+        <tr>
+            <th>Sekce</th>
+            <th>Událost</th>
+            <th class="text-center">Máš&nbsp;oprávnění?</th>
+        </tr>
+        {foreach $privileges as $section}
+            <tr>
+                <th rowspan="{= count($section['items'])+1}">{$section['label']}</th>
+            </tr>
+            <tr n:foreach="$section['items'] as $p">
+                <td>
+                    {$p['label']}
+                    <div class="small text-body-secondary">{$p['desc']}</div>
+                </td>
+                <td class="text-center align-middle">
+                    {if $p['value']}
+                        <span class="text-success"><i class="fi fi-rr-check-circle" aria-hidden="true"></i> Ano</span>
+                    {else}
+                        <span class="text-body-secondary"><i class="fi fi-rr-cross-circle" aria-hidden="true"></i> Ne</span>
+                    {/if}
+                </td>
+            </tr>
+        {/foreach}
+    </table>
+</div>
+{/block}
+
+{block dialog-footer}
+    <a n:href="close" class="btn btn-light ajax" data-bs-dismiss="modal">Zavřít</a>
+{/block}

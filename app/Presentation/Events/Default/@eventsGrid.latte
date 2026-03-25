@@ -1,0 +1,22 @@
+{extends $baseTemplate}
+
+{block filters}
+    {include #filter-type-search}
+    {include #filter-type-select name => 'year', label => 'Rok', icon => 'fi fi-rr-calendar'}
+    {include #filter-type-select name => 'state', label => 'Stav'}
+{/block}
+
+{block global-actions}
+    <span n:tag-if="count($rows) === 0"
+            title="Nebyly nalezeny žádné akce" class="d-inline-block" data-bs-toggle="tooltip">
+                <a href="{plink exportDialog:open!}" n:class="count($rows) === 0 ? disabled, btn, btn-light, ajax, mb-2" data-naja-history="off">
+                    <i class="fi fi-rr-arrow-down" aria-hidden="true"></i>
+                    Exportovat&hellip;
+                </a>
+            </span>
+    <a href="{plink :Events:NewEvent:}" n:if="$accessCreate" class="btn btn-success ms-2 mb-2"><i class="fi fi-rr-plus-small" aria-hidden="true"></i> Založit novou akci</a>
+{/block}
+
+{block col-state}
+    {$item->getState()|eventStateLabel|noescape}
+{/block}
