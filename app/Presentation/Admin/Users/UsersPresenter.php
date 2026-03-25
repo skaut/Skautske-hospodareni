@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Presentation\Admin\Users;
 
-use Component\Forms\BaseForm;
+use App\Model\Admin\Services\AdminAccessChecker;
 use App\Model\User\Entity\AdminUser;
 use App\Model\User\Manager\AdminUserManager;
-use App\Model\Admin\Services\AdminAccessChecker;
+use App\Model\User\Repository\AdminUserRepository;
+use Component\Forms\BaseForm;
 use Nette\Application\AbortException;
 use Nette\Application\UI\Form;
-use App\Model\User\Repository\AdminUserRepository;
 
 final class UsersPresenter extends \App\Presentation\Admin\AdminBasePresenter
 {

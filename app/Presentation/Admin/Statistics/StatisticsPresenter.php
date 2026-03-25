@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Presentation\Admin\Statistics;
 
-use Component\Forms\BaseForm;
 use App\Model\Stat\StatisticsService;
 use App\Model\Unit\ReadModel\Queries\UnitQuery;
+use Component\Forms\BaseForm;
 use Nette\Forms\Form;
 
 use function date;
