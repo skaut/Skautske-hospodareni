@@ -1,0 +1,157 @@
+{block #title}{$event->getDisplayName()} - základní informace{/block}
+
+{block #subMenu}{include ../header.latte}{/block}
+
+{block #content}
+<div data-test="education-detail-page">
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h1 class="h3 mb-2">{$event->getDisplayName()}</h1>
+            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3 mb-3">
+                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
+                <span class="text-body-secondary">Základní údaje vzdělávací akce, stav, termín a návazné finanční informace.</span>
+            </div>
+            <div class="d-flex flex-wrap gap-2 align-items-center text-body-secondary small mb-3">
+                <span data-bs-toggle="tooltip">
+                    {$event->getState()|educationStateLabel|noescape}
+                </span>
+                <span>·</span>
+                {$event->getUnitName()}
+                <span>·</span>
+                <span class="text-nowrap"><i class="fi fi-rr-calendar" aria-hidden="true"></i> {[$event->getStartDate(), $event->getEndDate()]|dateRange}</span>
+                <span>·</span>
+                <i class="fi fi-rr-marker" aria-hidden="true"></i>
+                {if trim($location) === ''}<i class="text-body-secondary">Nevyplněno</i>{else}{$location}{/if}
+            </div>
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <a n:href="Education:report 'aid'=>$aid" target="_blank" class="btn btn-sm btn-outline-secondary" n:if="$canAccessReport">
+                    <i class="fi fi-rr-print" aria-hidden="true"></i>
+                    Záverečná zpráva
+                </a>
+                <a href="{$skautISUrl}Junak/Events/Education/Detail.aspx?ID={$event->getID()}" target="_blank" class="btn btn-sm btn-light">
+                    <i class="fi fi-rr-edit" aria-hidden="true"></i>
+                    Upravit ve SkautISu
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <strong>Základní údaje</strong>
+                    <ul class="list-group list-group-flush mt-3">
+                        <li class="list-group-item d-flex">
+                            <div class="fw-bold me-auto">Výsledek hospodaření</div>
+                            <div class="text-end">{if $finalRealBalance !== null}{$finalRealBalance|price} Kč{else}Nedostatečná oprávnění{/if}</div>
+                        </li>
+                        <li class="list-group-item d-flex">
+                            <div class="fw-bold me-auto">Prefix dokladů pokladny</div>
+                            <div class="text-end">{$prefixCash}</div>
+                        </li>
+                        <li class="list-group-item d-flex">
+                            <div class="fw-bold me-auto">Prefix dokladů banky</div>
+                            <div class="text-end">{$prefixBank}</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mt-4" n:if="$grantState !== null">
+                <div class="card-body">
+                    <strong>Dotace</strong>
+                    <ul class="list-group list-group-flush mt-3">
+                        <li class="list-group-item d-flex">
+                            <div class="fw-bold me-auto">Stav dotace</div>
+                            <div class="text-end">{$grantState|grantStateLabel|noescape}</div>
+                        </li>
+                        <li class="list-group-item d-flex">
+                            <div class="fw-bold me-auto">Maximální výše</div>
+                            <div class="text-end">{$grantAmountMax|price} Kč</div>
+                        </li>
+                        <li class="list-group-item d-flex">
+                            <div class="fw-bold me-auto">Výše podle osobodnů</div>
+                            <div class="text-end">{$grantAmountPerPersonDays|price} Kč</div>
+                        </li>
+                        <li class="list-group-item d-flex">
+                            <div class="fw-bold me-auto">Podíl na nákladech</div>
+                            <div class="text-end">{100 * $grantCostRatio|price}%</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <strong>Statistiky</strong>
+                    <ul class="list-group list-group-flush mt-3">
+                        <li class="list-group-item d-flex">
+                            <div class="fw-bold me-auto">Počet dnů</div>
+                            <div class="text-end">{$totalDays}</div>
+                        </li>
+                        <li class="list-group-item d-flex">
+                            <div class="fw-bold me-auto">Počet členů týmu</div>
+                            <div class="text-end">{$teamCount}</div>
+                        </li>
+                        <li class="list-group-item d-flex">
+                            <div class="fw-bold me-auto">Předpokládaných účastníků</div>
+                            <div class="text-end">{if $participantsCapacity !== null}{$participantsCapacity}{else}Nedostatečná oprávnění{/if}</div>
+                        </li>
+                        <li class="list-group-item d-flex">
+                            <div class="fw-bold me-auto">Přihlášených účastníků</div>
+                            <div class="text-end">{if $participantsAccepted !== null}{$participantsAccepted}{else}Nedostatečná oprávnění{/if}</div>
+                        </li>
+                        <li class="list-group-item d-flex">
+                            <div class="fw-bold me-auto">Předpokládáných osobodnů</div>
+                            <div class="text-end">{$personDaysEstimated}</div>
+                        </li>
+                        <li class="list-group-item d-flex">
+                            <div class="fw-bold me-auto">Skutečných osobodnů</div>
+                            <div class="text-end">{if $personDaysReal !== null}{$personDaysReal}{else}Nedostatečná oprávnění{/if}</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4" n:if="$functions !== NULL">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <strong>Vedení akce</strong>
+                    <ul class="list-group list-group-flush mt-3">
+                        <li class="list-group-item d-flex">
+                            <div class="fw-bold me-auto">Vedoucí akce</div>
+                            <div class="text-end">
+                                {$functions->leader !== NULL ? $functions->leader->name : "-"}
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex" n:foreach="$functions->assistants as $assistant">
+                            <div class="fw-bold me-auto">Zástupce vedoucího</div>
+                            <div class="text-end">
+                                {$assistant->name}
+                            </div>
+                        </li>
+
+                        {var $otherFunctionLabels = [
+                            'accountant' => 'Hospodář',
+                            'secretary' => 'Tajemník',
+                            'medic' => 'Zdravotník',
+                        ]}
+
+                        <li class="list-group-item d-flex" n:foreach="$otherFunctionLabels as $functionName => $label">
+                            <div class="fw-bold me-auto">{$label}</div>
+                            <div class="text-end">
+                                {$functions->$functionName !== NULL ? $functions->$functionName->name : "-"}
+                            </div>
+                        </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    {control privilegesDialog}
+</div>
