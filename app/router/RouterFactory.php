@@ -129,6 +129,15 @@ class RouterFactory
         // Events
         $router[] = new Route('akce/nova', 'Events:NewEvent:default');
         $router[] = new Route(
+            'akce/<aid [0-9]+>/<action>',
+            [
+                'presenter' => 'Events:Event',
+                'action' => [
+                    Route::PATTERN => 'report|printAll|logs',
+                ],
+            ],
+        );
+        $router[] = new Route(
             'akce/<aid [0-9]+>[/<presenter>[/<action>]]',
             [
                 'presenter' => [

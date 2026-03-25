@@ -1,0 +1,41 @@
+{block #title}{$event->getDisplayName()} - evidence plateb{/block}
+
+{block #subMenu}{include ../header.latte}{/block}
+
+{block #content}
+<div data-test="event-cashbook-page">
+
+    {* Hero *}
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h1 class="h3 mb-2">{$event->getDisplayName()}</h1>
+            <p class="text-body-secondary mb-3">Evidence plateb akce, kontrola zůstatku a návaznost na příjmy od účastníků.</p>
+            <div n:if="$isEditable" class="d-flex flex-wrap gap-2">
+                <a n:href="importHpd! aid => $aid" class="btn btn-sm btn-primary">
+                    <i class="fi fi-rr-user" aria-hidden="true"></i>&nbsp;Načíst příjmy od účastníků
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {* Alerts *}
+    <div n:snippet="paragony" class="mt-1">
+        <div n:if="$isInMinus" class="alert alert-danger">
+            Evidence plateb je v záporných číslech a to nesmí nastat! Je importovaný HPD?
+        </div>
+        <div n:if="$incomeBalance !=0" class="alert alert-danger">
+            <strong>Mezi příjmy u účastníků a evidencí plateb je rozdíl {$incomeBalance}!</strong>
+        </div>
+
+        {snippet}
+            {control cashbook}
+        {/snippet}
+    </div>
+
+    {* Balance summary *}
+    <div class="bg-body-tertiary rounded-3 p-3 text-end mt-3">
+        <span class="fw-semibold" title="náklady + výnosy">Výsledek hospodaření: {$finalRealBalance|price} Kč</span>
+    </div>
+
+    {control privilegesDialog}
+</div>

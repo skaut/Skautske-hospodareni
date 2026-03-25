@@ -1,0 +1,28 @@
+{block #title}Logy akce - {$event->getDisplayName()}{/block}
+
+{block #subMenu}{include ../header.latte}{/block}
+
+{block #content}
+<div data-test="event-logs-page">
+
+    {* Hero *}
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h1 class="h3 mb-2">{$event->getDisplayName()}</h1>
+            <p class="text-body-secondary mb-0">Historie změn provedených nad akcí a navazujícími agendami.</p>
+        </div>
+    </div>
+
+    {* Logs *}
+    <article class="card shadow-sm mt-1">
+        <h5 class="card-header">Poslední změny provedené v rámci akce</h5>
+        <ul class="list-group list-group-flush" n:inner-foreach="$logs as $log">
+            <li class="list-group-item d-flex align-items-center">
+                <span class="text-body-secondary small me-2">{$log->date->format("d.m.Y H:i")}</span>
+                {$log->getDescription()}
+            </li>
+        </ul>
+    </article>
+
+    {control privilegesDialog}
+</div>
