@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Components\Event;
 
-use App\Components\Dialog;
+use App\Components\AbstractPrivilegesDialog;
 use App\Model\Auth\IAuthorizator;
 use App\Model\Auth\Resources\Event;
 
-final class PrivilegesDialog extends Dialog
+final class PrivilegesDialog extends AbstractPrivilegesDialog
 {
     public function __construct(
         private int $eventId,
@@ -17,19 +17,8 @@ final class PrivilegesDialog extends Dialog
     ) {
     }
 
-    protected function beforeRender(): void
-    {
-        parent::beforeRender();
-
-        $this->template->setFile(__DIR__ . '/templates/PrivilegesDialog.latte');
-        $this->template->setParameters([
-            'customClasses' => 'modal-lg',
-            'privileges' => $this->buildPrivileges(),
-        ]);
-    }
-
     /** @return array<string, array{label: string, items: array<mixed>}> */
-    private function buildPrivileges(): array
+    protected function buildPrivileges(): array
     {
         $aid = $this->eventId;
 
