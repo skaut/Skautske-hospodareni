@@ -1,9 +1,0 @@
-{block #content}
-    <h1 n:inner-block="title" class="mt-5">{$unitPairs[$unitId]}</h1>
-    {include ../header.latte}
-
-    <div n:snippet="paragony">
-        {control cashbook}
-    </div>
-    {control activateCashbookDialog}
-    {control createCashbookDialog}
