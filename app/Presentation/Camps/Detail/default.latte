@@ -1,0 +1,156 @@
+{block #title}{$event->getDisplayName()} - základní údaje{/block}
+
+{block #subMenu}{include ../header.latte}{/block}
+
+{block #content}
+<div data-test="camp-detail-page">
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h1 class="h3 mb-2">{$event->getDisplayName()}</h1>
+            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3 mb-3">
+                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
+                <span class="text-body-secondary">Základní údaje tábora, stav, termíny a přehled návazných finančních podkladů.</span>
+            </div>
+            <div class="d-flex flex-wrap gap-2 align-items-center text-body-secondary small mb-3">
+                {var $state = $event->getState()}
+                <span n:tag-if="$state == 'closed'"
+                    data-bs-toggle="tooltip"
+                    title="Uzavřel {$event->getPersonClosed()} dne {$event->getDateClosed()?->toNative()|date:"j.n.Y"}"
+                >{$state|campStateLabel|noescape}</span>
+                <span>·</span>
+                {$event->getUnitName()}
+                <span>·</span>
+                <span class="text-nowrap"><i class="fi fi-rr-calendar" aria-hidden="true"></i> {[$event->getStartDate(), $event->getEndDate()]|dateRange}</span>
+                <span>·</span>
+                <i class="fi fi-rr-marker" aria-hidden="true"></i>
+                {if trim($event->getLocation()) === ''}<i class="text-body-secondary">Nevyplněno</i>{else}{$event->getLocation()}{/if}
+            </div>
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <a n:href="Detail:report 'aid'=>$aid" target="_blank" class="btn btn-sm btn-outline-secondary">
+                    <i class="fi fi-rr-print" aria-hidden="true"></i>
+                    Záverečná zpráva
+                </a>
+                <a href="{$skautISUrl}Junak/Events/Camp/Detail.aspx?ID={$event->getID()}" target="_blank" class="btn btn-sm btn-light">
+                    <i class="fi fi-rr-edit" aria-hidden="true"></i>
+                    Upravit ve SkautISu
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {if $missingCategories}
+        {control categoryAutocomputedControl}
+    {/if}
+
+    <div class="row g-4">
+        <div class="col-md-4 mb-4" n:if="$accessDetail">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <strong>Základní údaje</strong>
+                    <ul class="list-group list-group-flush mt-3">
+                        <li class="list-group-item">
+                            <div class="fw-bold me-auto">Oddíly</div>
+                            {foreach $troops as $troop}
+                                {$troop->getDisplayName()}{if ! $iterator->isLast()},{/if}
+                            {/foreach}
+                        </li>
+                        <li class="list-group-item d-flex">
+                            <div class="fw-bold me-auto">Výsledek hospodaření</div>
+                            <div>{if $finalRealBalance === null}Chybí povolené automatické dopočítávání!{else}{$finalRealBalance|price} Kč{/if}</div>
+                        </li>
+                        <li class="list-group-item d-flex">
+                            <div class="fw-bold me-auto">Prefix čísel dokladů</div>
+                            <div>{$prefix}</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4" n:if="$accessDetail">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <strong>Statistiky</strong>
+                    <table class="table table-sm mb-0 mt-3">
+                        <tr>
+                            <th>Počet dnů</th>
+                            <td class="text-end">{$event->getTotalDays()}</td>
+                        </tr>
+                        {if $event->getParticipantStatistics() !== null}
+                            {var $stats = $event->getParticipantStatistics()}
+                            <tr>
+                                <th>Počet dospělých</th>
+                                <td class="text-end">{$stats->getRealAdult()}</td>
+                            </tr>
+                            <tr>
+                                <th>Počet dětí</th>
+                                <td class="text-end">{$stats->getRealChild()}</td>
+                            </tr>
+                            <tr>
+                                <th>Počet celkem</th>
+                                <td class="text-end">{$stats->getRealCount()}</td>
+                            </tr>
+                            <tr>
+                                <th>Osobodnů</th>
+                                <td class="text-end">{$stats->getRealPersonDays() ?? "-"}</td>
+                            </tr>
+                            <tr>
+                                <th>Dětodnů</th>
+                                <td class="text-end">{$stats->getRealChildDays() ?? "-"}</td>
+                            </tr>
+                        {/if}
+                    </table>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mt-4" n:if="$pragueParticipants !== NULL">
+                <div class="card-body">
+                    <strong>Pražští účastníci</strong>
+                    <table class="table table-sm mb-0 mt-3">
+                        <tr>
+                            <th>Osobodnů pod 26</th>
+                            <td class="text-end">{$pragueParticipants->personDaysUnder26}</td>
+                        </tr>
+                        <tr>
+                            <th>Osob pod 18</th>
+                            <td class="text-end">{$pragueParticipants->under18}</td>
+                        </tr>
+                        <tr>
+                            <th>Osob mezi 18 a 26</th>
+                            <td class="text-end">{$pragueParticipants->between18and26}</td>
+                        </tr>
+                        <tr>
+                            <th>Osob celkem</th>
+                            <td class="text-end">{$pragueParticipants->citizensCount}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4" n:if="$functions !== NULL">
+            {var $functionLabels = [
+                'leader' => 'Vedoucí akce',
+                'assistant' => 'Zástupce vedoucího',
+                'accountant' => 'Hospodář',
+                'medic' => 'Zdravotník',
+            ]}
+
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <strong>Vedení tábora</strong>
+                    <ul class="list-group list-group-flush mt-3">
+                        <li class="list-group-item d-flex" n:foreach="$functionLabels as $functionName => $label">
+                            <div class="fw-bold me-auto">{$label}</div>
+                            <div>
+                                {$functions->$functionName !== NULL ? $functions->$functionName->name : "-"}
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {control privilegesDialog}
+</div>

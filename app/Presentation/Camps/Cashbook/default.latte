@@ -1,0 +1,54 @@
+{block #title}{$event->getDisplayName()} - evidence plateb{/block}
+
+{block #subMenu}{include ../header.latte}{/block}
+
+{block #content}
+<div data-test="camp-cashbook-page">
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h1 class="h3 mb-2">{$event->getDisplayName()}</h1>
+            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3 mb-3">
+                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
+                <span class="text-body-secondary">Evidence plateb tábora, import příjmů od účastníků a kontrola výsledku hospodaření.</span>
+            </div>
+        </div>
+    </div>
+
+    {if $missingCategories}
+        {control categoryAutocomputedControl}
+    {else}
+        <div n:if="$isEditable" class="d-flex flex-wrap gap-2 mb-3">
+            <a href="#importHpd" role="button" data-bs-toggle="modal" class="btn btn-sm btn-success">
+                <i class="fi fi-rr-user" aria-hidden="true"></i>&nbsp;Načíst příjmy od účastníků
+            </a>
+        </div>
+
+        <div n:snippet="paragony">
+            <p n:if="$isInMinus" class="alert alert-danger">
+                Evidence plateb je v záporných číslech a to nesmí nastat! Je importovaný HPD?
+            </p>
+
+            {snippet}
+                {control cashbook}
+            {/snippet}
+        </div>
+        <hr />
+        <div class="text-end lead mb-sm-2" title="náklady + výnosy">Výsledek hospodaření: {if $finalRealBalance === null}Chybí povolené automatické dopočítávání!{else}{$finalRealBalance|price} Kč{/if}</div>
+
+        <div id="importHpd" class="modal" tabindex="-1" role="dialog" aria-labelledby="importHpdLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Import příjmů od účastníků</h3>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {control formImportHpd}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {/if}
+
+    {control privilegesDialog}
+</div>
