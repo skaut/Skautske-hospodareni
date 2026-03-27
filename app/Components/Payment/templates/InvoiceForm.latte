@@ -1,0 +1,14 @@
+<div class="row">
+    <div class="col-sm-12" n:snippet="form">
+        <div class="alert alert-info mb-3">
+            <strong>Číslo faktury a VS se generují automaticky.</strong>
+            Faktura bude zařazena do {$invoiceSequence->getDisplayContextLabel()}.
+            První číslo bude <strong>{$invoiceNumberPattern}</strong>, VS <strong>{$variableSymbolPattern}</strong>.
+            Částky zadáváte jako konečné částky bez rozlišení DPH.
+            {if ! $hasBankAccount}
+                Úhradu lze u této řady nastavit pouze <strong>v hotovosti</strong>, protože řada nemá bankovní účet.
+            {/if}
+        </div>
+        {control form}
+    </div>
+</div>

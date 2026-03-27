@@ -1,0 +1,108 @@
+{extends $baseTemplate}
+
+{block col-state}
+    <div class="text-center">
+        {$item->getState()|paymentStateLabel|noescape}
+        {var $emails = $item->getSentEmails()}
+        {var $note = $item->getNote()}
+
+        {if count($emails) > 0}
+            <div class="dropdown d-inline-flex">
+                <button class="btn btn-link btn-sm"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        title="Odeslané e-maily">
+                    <i class="far fa-envelope-open"></i>&nbsp;{count($emails)}
+                </button>
+                <div class="dropdown-menu dropdown-menu-right p-0 border-0 text-nowrap">
+                    <ul class="list-group" n:inner-foreach="$emails as $email">
+                        <li class="list-group-item align-items-center d-flex">
+                            <div class="flex-grow-1">
+                                <i class="far fa-envelope-open"></i>
+                                {var $emailType = $email->getType()->toString()}
+                                {switch $emailType}
+                                    {case \Model\Payment\EmailType::PAYMENT_INFO}
+                                    Platební údaje
+                                    {case \Model\Payment\EmailType::PAYMENT_COMPLETED}
+                                    Potvrzení o dokončení platby
+                                    {case \Model\Payment\EmailType::PAYMENT_REMINDER}
+                                    Upomínka platby
+                                {/switch}
+
+                            </div>
+                            <div class="small text-muted text-center ms-3">
+                                odeslal {$email->getTime()|date:'d.m.Y'} uživatel {$email->getSenderName()}
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        {/if}
+        {if $note}
+            <div class="dropdown d-inline-flex">
+                <button class="btn btn-sm" type="button" title="{$note}" >
+                    <i class="far fa-comment"></i>
+                </button>
+            </div>
+        {/if}
+    </div>
+{/block}
+
+{block col-actions}
+    {if !$item->isClosed() && $isEditable}
+        <a href="{plink paymentDialog:open! $item->getId()}"
+           class="btn btn-sm btn-secondary ajax"
+           title="Upravit platbu"><i class="far fa-edit"></i></a>
+        <a href="{$control->getParent()->link(send, $item->getId())}"
+                n:class="btn, btn-sm, btn-primary, !empty($item->getEmailRecipients()) ? 'ui--sendEmail', empty($item->getEmailRecipients()) ? disabled"
+           title="{empty($item->getEmailRecipients()) ? 'Není uveden email' : 'Odeslat e-mail o platbě'}"><i
+                    class="far fa-envelope-open"></i></a>
+        {if $isReminderSendActive}
+        <a href="{$control->getParent()->link(sendReminder, $item->id)}"
+                n:class="btn, btn-sm, btn-warning, !empty($item->getEmailRecipients()) ? 'ui--sendEmail', empty($item->getEmailRecipients()) ? disabled"
+           title="{empty($item->getEmailRecipients()) ? 'Není uveden email' : 'Odeslat e-mail o platbě'}"><i
+                    class="far fa-bell"></i></a>
+        {/if}
+        <a
+            n:if="$bankAccountId !== null && $item->canBePaired()"
+            href="{$control->getPresenter()->link('BankAccounts:detail', ['id' => $bankAccountId, 'paymentId' => $item->getId()])}"
+            class="btn btn-sm btn-light"
+            title="Ruční párování s bankovní transakcí"
+        ><i class="fas fa-university"></i></a>
+        <a href="{$control->getParent()->link(complete, $item->getId())}" class="btn btn-sm btn-success" title="Zaplaceno"><i
+                    class="fas fa-check"></i></a>
+    {elseif $item->isClosed()}
+        <a href="{plink paymentNoteDialog:open! $item->getId()}"
+           class="btn btn-sm btn-secondary ajax"
+           title="Upravit poznámku"><i class="fa fa-comment"></i></a>
+    {var $transaction = $item->getTransaction()}
+            <div class="dropdown d-inline-block">
+                <button class="btn btn-sm btn-light" type="button"
+                        data-bs-toggle="dropdown">
+                {if $transaction !== NULL}
+                    <span class="fas fa-university"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right p-3">
+                    <li><strong>ID:</strong> {$transaction->getId()}</li>
+                    <li><strong>Plátce:</strong> {$transaction->getPayer()}</li>
+                    <li><strong>Datum:</strong> {$transaction->getDate()?->toNative()|date:"j.n.Y"}</li>
+                    <li><strong>Účet:</strong> {$transaction->getBankAccount()}</li>
+                    <li><strong>Poznámka:</strong> {$transaction->getNote()}</li>
+                </ul>
+                {else}
+                    <span class="far fa-user"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right p-3">
+                    <li><strong>Uzavřel:</strong> {$item->getClosedByUsername()}</li>
+                </ul>
+                {/if}
+            </div>
+    {else}&nbsp;{/if}
+
+    <a href="{$control->getParent()->link(cancel, $item->getId())}" n:if="$isEditable && ! $item->getState()->equalsValue('canceled')"
+       class="btn btn-sm btn-danger"
+       onclick="return confirm('Opravdu chcete zrušit platbu?');"
+       title="Zrušit"><i class="fas fa-times"></i></a>
+{/block}
+
+{block action-col-classes}w-15{/block}

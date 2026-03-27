@@ -1,0 +1,16 @@
+{layout $layout}
+
+{define control $input, $extraClasses}
+    <input n:name="$input" n:class="$input->hasErrors() ? 'is-invalid', form-control, $extraClasses ?? ''">
+{/define}
+
+{define errors $input}
+    <div class="invalid-feedback d-block" n:foreach="$input->getErrors() as $error">{$error}</div>
+{/define}
+
+
+{block dialog-title}Hromadný přesun dokladů{/block}
+
+{block dialog-body}
+    {control form}
+{/block}

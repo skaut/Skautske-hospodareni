@@ -1,0 +1,15 @@
+{if $user->isLoggedIn()}
+    <span class="dropdown">
+        <button class="btn btn-light btn-sm dropdown-toggle border-0 me-sm-3 ui--current-role" type="button"
+                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {$roles[$currentRoleId]}
+        </button>
+        <span class="dropdown-menu" n:inner-foreach="$roles as $roleId => $roleName">
+            <a n:class="dropdown-item, $roleId === $currentRoleId ? disabled" n:href="changeRole! $roleId">{$roleName}</a>
+        </span>
+    </span>
+
+    <a href="{plink :Auth:logoutSis}" class="btn btn-sm btn-secondary my-2 my-sm-0 text-nowrap">Odhlásit se</a>
+{else}
+    <a href="{plink :Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL}" class="btn btn-sm btn-primary my-2 my-sm-0 text-nowrap" data-test="login-link">Přihlásit se</a>
+{/if}

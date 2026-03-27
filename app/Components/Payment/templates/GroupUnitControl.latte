@@ -1,0 +1,37 @@
+<div class="d-inline-block">
+    <span n:snippet="unit">
+        <span class="d-inline d-md-none">
+            {if count($unitNames) === 1}
+                {$unitNames[0]}
+            {elseif count($unitNames) < 5}
+                {count($unitNames)} jednotky
+            {else}
+                {count($unitNames)} jednotek
+            {/if}
+        </span>
+        <span class="d-none d-md-inline-block">{$unitNames|implode: ', '}</span>
+    </span>
+
+    <div class="dropdown d-inline-flex">
+          <button class="btn btn-link btn-sm p-0 ms-1" type="button" data-bs-toggle="dropdown">
+              <i class="far fa-edit"></i>
+          </button>
+          <div class="dropdown-menu dropdown-menu-right px-4 py-3 text-nowrap">
+              {snippet form}
+              <form n:name="form">
+                  <h5>Jednotky s přístupem</h5>
+                  <div class="form-check" n:foreach="$form['unitIds']->items as $key => $label">
+                      <label n:name="unitIds:$key" class="form-check-label">
+                          <input n:name="unitIds:$key" class="form-check-input">
+                          {$label}
+                      </label>
+                  </div>
+                  <div class="dropdown-divider"></div>
+                  <button class="btn btn-sm btn-primary ajax float-end" n:name="save">
+                      <i class="fas fa-check"></i> Uložit
+                  </button>
+              </form>
+              {/snippet}
+          </div>
+    </div>
+</div>

@@ -1,0 +1,23 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Components\Factories\Participants;
+
+use App\Components\Participants\ParticipantList;
+use App\Model\DTO\Participant\Participant;
+
+interface IParticipantListFactory
+{
+    /** @param Participant[] $currentParticipants */
+    public function create(
+        int $aid,
+        array $currentParticipants,
+        bool $isAllowDaysUpdate,
+        bool $isAllowRepayment,
+        bool $isAllowIsAccount,
+        bool $isAllowParticipantUpdate,
+        bool $isAllowParticipantDelete,
+        bool $isOnlineLogin,
+    ): ParticipantList;
+}

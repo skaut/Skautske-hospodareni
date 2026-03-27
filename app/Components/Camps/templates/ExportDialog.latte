@@ -1,0 +1,22 @@
+{layout $layout}
+
+{block dialog-title}Exportovat souhrn táborů{/block}
+
+{block dialog-body}
+    Vyberte tábory, které chcete exportovat.
+
+    <div class="mt-2 ms-2">
+        <div class="form-check mb-1">
+            <input type="checkbox" class="form-check-input" id="export-check-all"
+                   data-dependent-checkboxes=".export-dependent-checkboxes">
+            <label for="export-check-all" class="fw-bold">Vybrat vše</label>
+        </div>
+        <form n:name="form" class="export-dependent-checkboxes">
+            <div class="form-check" n:foreach="$form['campIds']->items as $key => $label">
+                <input n:name="campIds:$key" class="form-check-input">
+                <label n:name="campIds:$key" class="form-check-label">{$label}</label>
+            </div>
+            <input n:name="download" class="btn btn-primary">
+        </form>
+    </div>
+{/block}
