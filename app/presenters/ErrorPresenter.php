@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App;
 
-use App\AccountancyModule\SkautisMaintenance;
-use Model\Cashbook\Commands\Cashbook\SelectFirstActiveRole;
-use Model\Common\Services\CommandBus;
-use Model\Skautis\Exception\MissingCurrentRole;
-use Model\Unit\UserHasNoUnit;
-use Model\User\Exception\UserHasNoRole;
+use App\Model\Cashbook\Commands\Cashbook\SelectFirstActiveRole;
+use App\Model\Common\Services\CommandBus;
+use App\Model\Skautis\Exception\MissingCurrentRole;
+use App\Model\Unit\UserHasNoUnit;
+use App\Model\User\Exception\UserHasNoRole;
 use Nette;
 use Nette\Application\Request;
 use Nette\Application\UI\Presenter;

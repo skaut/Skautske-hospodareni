@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App;
 
-use Model\AuthService;
+use App\Model\Auth\AuthService;
 use Nette\Security\SimpleIdentity;
 use Skautis\Wsdl\AuthenticationException;
 

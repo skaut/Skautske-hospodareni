@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Presentation\Education;
 
-use App\Components\Education\IPrivilegesDialogFactory;
+use App\Components\Factories\Education\IPrivilegesDialogFactory;
 use App\Components\Education\PrivilegesDialog;
 use App\Model\Auth\Resources\Education as ResourceEducation;
 use App\Model\Cashbook\ObjectType;

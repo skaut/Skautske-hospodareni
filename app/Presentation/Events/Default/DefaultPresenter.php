@@ -7,7 +7,7 @@ namespace App\Presentation\Events\Default;
 use App\Components\DataGrid;
 use App\Components\Event\EventListDataSource;
 use App\Components\Event\ExportDialog;
-use App\Components\Event\IExportDialogFactory;
+use App\Components\Factories\Event\IExportDialogFactory;
 use App\Components\Grids\GridFactory;
 use App\Model\Auth\Resources\Event as EventResource;
 use App\Model\DTO\Event\EventListItem;
