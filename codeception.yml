@@ -17,6 +17,7 @@ bootstrap: _bootstrap.php
 settings:
     colors: true
     memory_limit: 1024M
+    process_timeout: 600
 extensions:
     enabled:
         - Codeception\Extension\RunFailed

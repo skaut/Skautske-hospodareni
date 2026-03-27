@@ -23,3 +23,5 @@ adminer.php
 *.sh
 .env
 /.php-cs-fixer.cache
+/_newDesign/
+/_newDesign/

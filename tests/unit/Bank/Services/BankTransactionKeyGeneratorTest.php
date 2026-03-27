@@ -25,20 +25,20 @@ final class BankTransactionKeyGeneratorTest extends Unit
             new DateTimeImmutable('2026-02-28 12:00:00'),
             -24.20,
             null,
-            'Openai *Chatgpt Subs',
+            'Najem kancelari 1/26',
             null,
             8402,
-            'Openai *Chatgpt Subs',
+            'Najem kancelari 1/26',
         );
         $second = $generator->fromGpc(
             '8310192897/2010',
             new DateTimeImmutable('2026-02-28 12:00:00'),
             -24.20,
             null,
-            'Openai *Chatgpt Subs',
+            'Najem kancelari 1/26',
             null,
             8402,
-            'Openai *Chatgpt Subs',
+            'Najem kancelari 1/26',
         );
 
         self::assertSame($first, $second);
