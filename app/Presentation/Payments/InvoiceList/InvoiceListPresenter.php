@@ -29,7 +29,7 @@ use App\Model\Invoice\Repository\InvoiceSequenceRepository;
 use App\Model\Mail\Repositories\IGoogleRepository;
 use App\Model\Services\PdfRenderer;
 use App\Presentation\Payments\PaymentsBasePresenter;
-use Http\Discovery\Exception\NotFoundException;
+
 use InvalidArgumentException;
 use Nette\Utils\ArrayHash;
 use Throwable;
@@ -268,12 +268,15 @@ final class InvoiceListPresenter extends PaymentsBasePresenter
 
         try {
             $template = $this->exportService->getInvoice($invoice);
-            $this->pdf->render($template, $invoice->getInvoiceNumber().'.pdf');
-            $this->terminate();
-        } catch (NotFoundException $e) {
+        } catch (Throwable $e) {
             $this->flashMessage('Nepodařilo se vygenerovat PDF faktury.', 'danger');
             $this->redirectAfterInvoiceAction($invoice);
+
+            return;
         }
+
+        $this->pdf->render($template, $invoice->getInvoiceNumber().'.pdf');
+        $this->terminate();
     }
 
     public function handleRemove(int $id): void
