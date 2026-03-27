@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Presentation\Events\Event;
 
 use App\Components\Event\FunctionsControl;
-use App\Components\Event\IFunctionsControlFactory;
+use App\Components\Factories\Event\IFunctionsControlFactory;
 use App\Model\Auth\Resources\Event;
 use App\Model\Cashbook\Cashbook\CashbookId;
 use App\Model\Cashbook\Cashbook\PaymentMethod;

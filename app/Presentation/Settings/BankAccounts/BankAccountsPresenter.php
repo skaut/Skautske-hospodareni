@@ -9,7 +9,7 @@ use App\Components\Payment\BankAccountDetail\BankAccountManualPairingOutcome;
 use App\Components\Payment\BankAccountDetail\BankAccountManualPairingService;
 use App\Components\Payment\BankAccountForm;
 use App\Components\Payment\GpcImportDialog;
-use App\Components\Payment\IBankAccountFormFactory;
+use App\Components\Factories\Payment\IBankAccountFormFactory;
 use App\Model\Auth\Resources\Unit as UnitResource;
 use App\Model\Bank\BankTransactionAmountMismatch;
 use App\Model\Bank\BankTransactionPairingNotAllowed;

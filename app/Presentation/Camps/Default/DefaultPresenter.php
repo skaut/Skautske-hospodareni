@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Presentation\Camps\Default;
 
-use App\Components\Camp\CampListDataSource;
-use App\Components\Camp\ExportDialog;
-use App\Components\Camp\IExportDialogFactory;
+use App\Components\Camps\CampListDataSource;
+use App\Components\Camps\ExportDialog;
+use App\Components\Factories\Camps\IExportDialogFactory;
 use App\Components\DataGrid;
 use App\Components\Grids\GridFactory;
 use App\Model\Event\ReadModel\Queries\CampStates;

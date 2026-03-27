@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Presentation\Camps;
 
-use App\Components\Camps\IPrivilegesDialogFactory;
+use App\Components\Factories\Camps\IPrivilegesDialogFactory;
 use App\Components\Camps\PrivilegesDialog;
 use App\Model\Auth\Resources\Camp as CampResource;
 use App\Model\Cashbook\ObjectType;
