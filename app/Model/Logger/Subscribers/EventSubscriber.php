@@ -1,0 +1,57 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Model\Logger\Subscribers;
+
+use App\Model\Events\Events\EventWasClosed;
+use App\Model\Events\Events\EventWasOpened;
+use App\Model\Logger\Log\Type;
+use App\Model\Logger\LoggerService;
+use App\Model\User\UserService;
+use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
+
+final class EventSubscriber implements MessageSubscriberInterface
+{
+    private LoggerService $loggerService;
+
+    public function __construct(LoggerService $logger, private UserService $userService)
+    {
+        $this->loggerService = $logger;
+    }
+
+    /** @return array<string, mixed> */
+    public static function getHandledMessages(): array
+    {
+        return [
+            EventWasOpened::class => ['method' => 'handleOpened'],
+            EventWasClosed::class => ['method' => 'handleClosed'],
+        ];
+    }
+
+    // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    public function handleOpened(EventWasOpened $event): void
+    {
+        $user = $this->userService->getUserDetail();
+        $this->loggerService->log(
+            $event->getUnitId(),
+            $user->ID,
+            "Uživatel '".$user->Person."' otevřel akci '".$event->getEventName()."' (".$event->getEventId().').',
+            Type::get(Type::OBJECT),
+            $event->getEventId()->toInt(),
+        );
+    }
+
+    public function handleClosed(EventWasClosed $event): void
+    {
+        $user = $this->userService->getUserDetail();
+
+        $this->loggerService->log(
+            $event->getUnitId(),
+            $user->ID,
+            "Uživatel '".$user->Person."' uzavřel akci '".$event->getEventName()."' (".$event->getEventId().').',
+            Type::get(Type::OBJECT),
+            $event->getEventId()->toInt(),
+        );
+    }
+}

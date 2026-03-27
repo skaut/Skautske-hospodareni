@@ -1,0 +1,69 @@
+{* seznam účastníků tábora 
+$displayName - název tábora
+$list - seznam účastníků
+$unitFullNameWithAddress - oficialni nazev jednotky s adresou
+*}
+<style>
+.all{
+    width: 800px;
+}
+
+table {
+    border-spacing: 0;
+}
+.smaller {
+    font-size: 0.8em;
+    color: #999;
+}
+
+</style>
+<div class="smaller">
+    {$unitFullNameWithAddress}
+</div>
+<h2>Seznam účastníků - {$displayName}</h2>
+<table class="all" border="1">
+    <tr>
+        <th>P.č.</th>
+        <th>Jméno</th>
+        <th>Příjmení</th>
+        <th>Ulice</th>
+        <th>Město</th>
+        <th>PSČ</th>
+        <th>Dat. nar.</th>
+        <th>Osobodny</th>
+        <th>Dětodny</th>
+        <th>Zaplaceno</th>
+        <th>Vratka</th>
+        <th>Celkem</th>
+        <th>Na účet?</th>
+    </tr>
+    {$totPDays = $totDDays = $totPay = $totRepay = $totAccount = 0}
+    <tr n:foreach="$list as $p">
+        {do $totPDays += $p->days}
+        {do $totPay += $p->payment}
+        {do $totRepay += $p->repayment}
+        <td>{$iterator->counter}</td>
+        <td>{$p->firstName}</td>
+        <td>{$p->lastName}</td>
+        <td>{$p->street}</td>
+        <td>{$p->city}</td>
+        <td>{(string)$p->postcode|postCode}</td>
+        <td style="text-align: right;">{if $p->birthday !== null}{$p->birthday->format("d.m.Y")}{else}&nbsp;{/if}</td>
+        <td style="text-align: right;">{$p->days}</td>
+        <td style="text-align: right;">{if $p->age < 18}{$p->days}{do $totDDays += $p->days}{else}0{/if}</td>
+        <td style="text-align: right;">{$p->payment|price:false}</td>
+        <td style="text-align: right;">{$p->repayment|price:false}</td>
+        <td style="text-align: right;">{= $p->payment - $p->repayment|price}</td>
+        <td style="text-align: right;">{if $p->onAccount == "Y"}Ano{do $totAccount += ($p->payment - $p->repayment)}{else}&nbsp;{/if}</td>
+    </tr>
+    <tr>
+        <td colspan="7">&nbsp;</td>
+        <td style="text-align: right;">{$totPDays}</td>
+        <td style="text-align: right;">{$totDDays}</td>
+        <td style="text-align: right;">{$totPay|price:false}</td>
+        <td style="text-align: right;">{$totRepay|price:false}</td>
+        <td style="text-align: right;"><b>{= $totPay - $totRepay|price}<b></td>
+        <td style="text-align: right;">{$totAccount}</td>
+    </tr>
+</table>
+

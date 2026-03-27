@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 namespace App\Model\User\Manager;
-use App\Model\Infrastructure\Manager\AbstractManager;
 
-use Doctrine\ORM\EntityManagerInterface;
+use App\Model\Infrastructure\Manager\AbstractManager;
 use App\Model\User\Entity\AdminUser;
+use Doctrine\ORM\EntityManagerInterface;
 
 class AdminUserManager extends AbstractManager
 {

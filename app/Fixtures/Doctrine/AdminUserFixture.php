@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Fixtures\Doctrine;
 
+use App\Model\User\Entity\AdminUser;
+use App\Model\User\Repository\AdminUserRepository;
 use DateTimeImmutable;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Persistence\ObjectManager;
-use App\Model\User\Entity\AdminUser;
-use App\Model\User\Repository\AdminUserRepository;
 
 final class AdminUserFixture extends AbstractFixture
 {
@@ -17,6 +17,10 @@ final class AdminUserFixture extends AbstractFixture
 
     public function load(ObjectManager $manager): void
     {
+        if (! $manager instanceof \Doctrine\ORM\EntityManagerInterface) {
+            return;
+        }
+
         if (! $manager->getConnection()->createSchemaManager()->tablesExist(['admin_user'])) {
             return;
         }

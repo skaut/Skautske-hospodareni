@@ -6,8 +6,12 @@ namespace App;
 
 final class Context
 {
-    public function __construct(private string $appDir, private string $wwwDir, private bool $productionMode, private bool $showTestBackground)
-    {
+    public function __construct(
+        private string $appDir,
+        private string $wwwDir,
+        private bool $productionMode,
+        private bool $showTestBackground,
+    ) {
     }
 
     public function getAppDir(): string

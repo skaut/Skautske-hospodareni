@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Model\Admin\Services;
 
+use App\Model\User\Repository\AdminUserRepository;
 use Nette\Security\IIdentity;
 use Nette\Security\User;
-use App\Model\User\Repository\AdminUserRepository;
 
-use function array_unique;
 use function array_map;
+use function array_unique;
 use function in_array;
 use function is_numeric;
 use function sort;
