@@ -212,14 +212,14 @@ final class AdminCest extends BaseAcceptanceCest
         // ── UPDATE ───────────────────────────────────────────────
         // Find the new user's row and click edit
         $newUser = $I->grabFromDatabase('admin_user', 'id', ['user_id' => self::NEW_ADMIN_USER_ID]);
-        $I->seeElement('[data-test="admin-user-edit-' . $newUser . '"]');
-        $I->click('[data-test="admin-user-edit-' . $newUser . '"]');
+        $I->seeElement('[data-test="admin-user-edit-'.$newUser.'"]');
+        $I->click('[data-test="admin-user-edit-'.$newUser.'"]');
 
         // Form should be visible with edit mode
         $I->waitForElementVisible('[data-test="admin-users-form-collapse"]', 10);
         $I->seeElement('[data-test="admin-users-form"]');
         $I->seeElement('[data-test="admin-users-form-cancel"]');
-        $I->seeInCurrentUrl('edit=' . $newUser);
+        $I->seeInCurrentUrl('edit='.$newUser);
 
         // Change user_id
         $updatedUserId = self::NEW_ADMIN_USER_ID + 1;
@@ -234,7 +234,7 @@ final class AdminCest extends BaseAcceptanceCest
 
         // ── DELETE ───────────────────────────────────────────────
         $I->disablePopups();
-        $I->click('[data-test="admin-user-delete-' . $newUser . '"]');
+        $I->click('[data-test="admin-user-delete-'.$newUser.'"]');
         $I->waitForElementVisible('[data-test="admin-users-page"]', 10);
 
         // Verify deletion
@@ -276,7 +276,7 @@ final class AdminCest extends BaseAcceptanceCest
         // Get our admin user ID
         $adminId = $I->grabFromDatabase('admin_user', 'id', ['user_id' => self::ACCEPTANCE_ADMIN_USER_ID]);
 
-        $I->amOnPage('/admin/uzivatele?edit=' . $adminId);
+        $I->amOnPage('/admin/uzivatele?edit='.$adminId);
         $I->waitForElementVisible('[data-test="admin-users-form-collapse"]', 10);
         $I->seeElement('[data-test="admin-users-form-cancel"]');
 

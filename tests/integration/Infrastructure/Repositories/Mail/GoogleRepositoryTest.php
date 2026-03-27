@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Model\Infrastructure\Repositories\Mail;
+namespace App\Model\Infrastructure\Repositories\Mail;
 
-use Entity\GoogleOAuth;
+use App\Model\Common\UnitId;
+use App\Model\Google\Entity\GoogleOAuth;
+use App\Model\Google\Exception\OAuthNotFound;
+use App\Model\Google\OAuthId;
 use IntegrationTest;
-use Model\Common\UnitId;
-use Model\Google\Exception\OAuthNotFound;
-use Model\Google\OAuthId;
 
 use function array_map;
 

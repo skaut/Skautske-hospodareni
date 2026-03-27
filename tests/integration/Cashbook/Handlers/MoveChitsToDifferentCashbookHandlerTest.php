@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook\Handlers;
+namespace App\Model\Cashbook\Handlers;
 
+use App\Model\Cashbook\Cashbook;
+use App\Model\Cashbook\Cashbook\Amount;
+use App\Model\Cashbook\Cashbook\CashbookId;
+use App\Model\Cashbook\Cashbook\CashbookType;
+use App\Model\Cashbook\Commands\Cashbook\AddChitScan;
+use App\Model\Cashbook\Commands\Cashbook\MoveChitsToDifferentCashbook;
+use App\Model\Cashbook\Repositories\ICashbookRepository;
 use Cake\Chronos\ChronosDate;
 use CommandHandlerTest;
 use Helpers;
-use Model\Cashbook\Cashbook;
-use Model\Cashbook\Cashbook\Amount;
-use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\Cashbook\CashbookType;
-use Model\Cashbook\Commands\Cashbook\AddChitScan;
-use Model\Cashbook\Commands\Cashbook\MoveChitsToDifferentCashbook;
-use Model\Cashbook\Repositories\ICashbookRepository;
 use Nette\Utils\Image;
 
 final class MoveChitsToDifferentCashbookHandlerTest extends CommandHandlerTest

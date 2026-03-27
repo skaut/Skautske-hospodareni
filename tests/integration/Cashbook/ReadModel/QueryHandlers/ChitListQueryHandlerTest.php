@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook\ReadModel\QueryHandlers;
+namespace App\Model\Cashbook\ReadModel\QueryHandlers;
 
+use App\Model\Cashbook\Cashbook;
+use App\Model\Cashbook\Cashbook\PaymentMethod;
+use App\Model\Cashbook\Operation;
+use App\Model\Cashbook\ReadModel\Queries\CategoryListQuery;
+use App\Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use App\Model\Common\Services\QueryBus;
+use App\Model\DTO\Cashbook\Category;
 use Cake\Chronos\ChronosDate;
 use Helpers;
 use IntegrationTest;
 use Mockery as m;
-use Model\Cashbook\Cashbook;
-use Model\Cashbook\Cashbook\PaymentMethod;
-use Model\Cashbook\Operation;
-use Model\Cashbook\ReadModel\Queries\CategoryListQuery;
-use Model\Cashbook\ReadModel\Queries\ChitListQuery;
-use Model\Common\Services\QueryBus;
-use Model\DTO\Cashbook\Category;
 
 use function count;
 

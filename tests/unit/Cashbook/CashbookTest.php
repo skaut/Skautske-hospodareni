@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook;
+namespace App\Model\Cashbook;
 
+use App\Model\Cashbook\Cashbook\Amount;
+use App\Model\Cashbook\Cashbook\CashbookId;
+use App\Model\Cashbook\Cashbook\CashbookType;
+use App\Model\Cashbook\Cashbook\Chit\DuplicitCategory;
+use App\Model\Cashbook\Cashbook\Chit\SingleItemRestriction;
+use App\Model\Cashbook\Cashbook\ChitBody;
+use App\Model\Cashbook\Cashbook\ChitItem;
+use App\Model\Cashbook\Cashbook\PaymentMethod;
+use App\Model\Cashbook\Events\ChitWasAdded;
 use Assert\InvalidArgumentException;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use Helpers;
 use Mockery as m;
-use Model\Cashbook\Cashbook\Amount;
-use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\Cashbook\CashbookType;
-use Model\Cashbook\Cashbook\Chit\DuplicitCategory;
-use Model\Cashbook\Cashbook\Chit\SingleItemRestriction;
-use Model\Cashbook\Cashbook\ChitBody;
-use Model\Cashbook\Cashbook\ChitItem;
-use Model\Cashbook\Cashbook\PaymentMethod;
-use Model\Cashbook\Events\ChitWasAdded;
 
 use function assert;
 use function ksort;

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Model\Travel;
+namespace App\Model\Travel;
 
+use App\Model\Common\FilePath;
+use App\Model\Common\ScanNotFound;
+use App\Model\Travel\Vehicle\Metadata;
+use App\Model\Unit\Unit;
 use DateTimeImmutable;
 use Mockery as m;
-use Model\Common\FilePath;
-use Model\Common\ScanNotFound;
-use Model\Travel\Vehicle\Metadata;
-use Model\Unit\Unit;
 
 class VehicleTest extends \Codeception\Test\Unit
 {

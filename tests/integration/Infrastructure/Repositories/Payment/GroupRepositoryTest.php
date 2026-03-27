@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Model\Infrastructure\Repositories\Payment;
+namespace App\Model\Infrastructure\Repositories\Payment;
 
+use App\Model\Common\Services\EventBus;
+use App\Model\Payment\DomainEvents\GroupWasRemoved;
+use App\Model\Payment\EmailTemplate;
+use App\Model\Payment\EmailType;
+use App\Model\Payment\Group;
+use App\Model\Payment\GroupNotFound;
+use App\Model\Payment\VariableSymbol;
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use IntegrationTest;
 use Mockery;
 use Mockery\MockInterface;
-use Model\Common\Services\EventBus;
-use Model\Payment\DomainEvents\GroupWasRemoved;
-use Model\Payment\EmailTemplate;
-use Model\Payment\EmailType;
-use Model\Payment\Group;
-use Model\Payment\GroupNotFound;
-use Model\Payment\VariableSymbol;
 
 use function array_map;
 use function sort;

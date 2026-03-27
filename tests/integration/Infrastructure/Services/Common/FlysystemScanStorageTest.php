@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Model\Infrastructure\Services\Common;
+namespace App\Model\Infrastructure\Services\Common;
 
+use App\Model\Common\Exception\InvalidScanFile;
+use App\Model\Common\FileNotFound;
+use App\Model\Common\FilePath;
 use Codeception\Test\Unit;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
-use Model\Common\Exception\InvalidScanFile;
-use Model\Common\FileNotFound;
-use Model\Common\FilePath;
 use Nette\Utils\FileSystem as FileSystemUtil;
 use Nette\Utils\Image;
 

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Model\Common\ReadModel\QueryHandlers;
+namespace App\Model\Common\ReadModel\QueryHandlers;
 
+use App\Model\Common\Member;
+use App\Model\Common\ReadModel\Queries\MemberNamesQuery;
+use App\Model\Common\Repositories\IMemberRepository;
+use App\Model\Common\UnitId;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use Mockery;
-use Model\Common\Member;
-use Model\Common\ReadModel\Queries\MemberNamesQuery;
-use Model\Common\Repositories\IMemberRepository;
-use Model\Common\UnitId;
 
 final class MemberNamesQueryHandlerTest extends Unit
 {

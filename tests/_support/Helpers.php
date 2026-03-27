@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
+use App\Model\Cashbook\Cashbook;
+use App\Model\Cashbook\Cashbook\Amount;
+use App\Model\Cashbook\Cashbook\Chit;
+use App\Model\Cashbook\Cashbook\ChitBody;
+use App\Model\Cashbook\Cashbook\ChitNumber;
+use App\Model\Cashbook\Cashbook\PaymentMethod;
+use App\Model\Cashbook\Cashbook\Recipient;
+use App\Model\Cashbook\ICategory;
+use App\Model\Cashbook\Operation;
+use App\Model\Common\Embeddable\AccountNumber;
+use App\Model\Payment\EmailTemplate;
+use App\Model\Payment\EmailType;
+use App\Model\Payment\Group\PaymentDefaults;
 use Cake\Chronos\ChronosDate;
-use Entity\Embeddable\AccountNumber;
 use Mockery as m;
-use Model\Cashbook\Cashbook;
-use Model\Cashbook\Cashbook\Amount;
-use Model\Cashbook\Cashbook\Chit;
-use Model\Cashbook\Cashbook\ChitBody;
-use Model\Cashbook\Cashbook\ChitNumber;
-use Model\Cashbook\Cashbook\PaymentMethod;
-use Model\Cashbook\Cashbook\Recipient;
-use Model\Cashbook\ICategory;
-use Model\Cashbook\Operation;
-use Model\Payment\EmailTemplate;
-use Model\Payment\EmailType;
-use Model\Payment\Group\PaymentDefaults;
 
 class Helpers
 {
@@ -121,7 +121,7 @@ class Helpers
     public static function mockCashbookCategories(?int $categoryId = null, ?Operation $operation = null): array
     {
         return [
-            $categoryId => m::mock(Model\Cashbook\Category::class, [
+            $categoryId => m::mock(App\Model\Cashbook\Category::class, [
                 'getId' => $categoryId ?? 1,
                 'getOperationType' => $operation ?? Operation::INCOME(),
                 'isVirtual' => false,

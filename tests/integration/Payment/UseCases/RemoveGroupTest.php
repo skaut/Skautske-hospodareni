@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\IntegrationTests;
+namespace App\Model\Payment\IntegrationTests;
 
+use App\Model\Payment\Commands\Group\RemoveGroup;
+use App\Model\Payment\Group;
+use App\Model\Payment\GroupNotFound;
+use App\Model\Payment\Handlers\Group\RemoveGroupHandler;
+use App\Model\Payment\Payment;
+use App\Model\Payment\Repositories\IGroupRepository;
+use App\Model\Payment\Repositories\IPaymentRepository;
 use DateTimeImmutable;
 use Helpers;
 use IntegrationTest;
-use Model\Payment\Commands\Group\RemoveGroup;
-use Model\Payment\Group;
-use Model\Payment\GroupNotFound;
-use Model\Payment\Handlers\Group\RemoveGroupHandler;
-use Model\Payment\Payment;
-use Model\Payment\Repositories\IGroupRepository;
-use Model\Payment\Repositories\IPaymentRepository;
 use Stubs\BankAccountAccessCheckerStub;
 use Stubs\OAuthsAccessCheckerStub;
 

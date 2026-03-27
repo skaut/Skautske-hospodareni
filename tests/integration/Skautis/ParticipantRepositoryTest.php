@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Model\Skautis;
+namespace App\Model\Skautis;
 
+use App\Model\Event\SkautisEducationId;
+use App\Model\Infrastructure\Repositories\Participant\PaymentRepository;
+use App\Model\Participant\Payment;
 use Doctrine\ORM\EntityManager;
 use Hskauting\Tests\SkautisTest;
-use Model\Event\SkautisEducationId;
-use Model\Infrastructure\Repositories\Participant\PaymentRepository;
-use Model\Participant\Payment;
 use VCR\VCR;
 
 final class ParticipantRepositoryTest extends SkautisTest

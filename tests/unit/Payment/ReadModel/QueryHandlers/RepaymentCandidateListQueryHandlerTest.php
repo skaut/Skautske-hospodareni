@@ -2,26 +2,26 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\ReadModel\QueryHandlers;
+namespace App\Model\Payment\ReadModel\QueryHandlers;
 
+use App\Model\Common\Embeddable\Transaction;
+use App\Model\Common\Repositories\IParticipantRepository;
+use App\Model\Common\Services\QueryBus;
+use App\Model\DTO\Participant\Participant;
+use App\Model\DTO\Payment\Payment;
+use App\Model\DTO\Payment\RepaymentCandidate;
+use App\Model\Event\SkautisCampId;
+use App\Model\Payment\Group;
+use App\Model\Payment\Group\SkautisEntity;
+use App\Model\Payment\Group\Type;
+use App\Model\Payment\Payment\State;
+use App\Model\Payment\ReadModel\Queries\PaymentListQuery;
+use App\Model\Payment\ReadModel\Queries\RepaymentCandidateListQuery;
+use App\Model\Payment\Repositories\IGroupRepository;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use DateTimeImmutable;
-use Entity\Embeddable\Transaction;
 use Mockery;
-use Model\Common\Repositories\IParticipantRepository;
-use Model\Common\Services\QueryBus;
-use Model\DTO\Participant\Participant;
-use Model\DTO\Payment\Payment;
-use Model\DTO\Payment\RepaymentCandidate;
-use Model\Event\SkautisCampId;
-use Model\Payment\Group;
-use Model\Payment\Group\SkautisEntity;
-use Model\Payment\Group\Type;
-use Model\Payment\Payment\State;
-use Model\Payment\ReadModel\Queries\PaymentListQuery;
-use Model\Payment\ReadModel\Queries\RepaymentCandidateListQuery;
-use Model\Payment\Repositories\IGroupRepository;
 
 use function array_map;
 use function array_sum;

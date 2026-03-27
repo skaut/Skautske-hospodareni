@@ -2,19 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Model\Bank\Fio;
+namespace App\Model\Bank\Fio;
 
+use App\Model\Bank\Entity\BankAccount;
+use App\Model\Bank\Exception\BankTimeLimit;
+use App\Model\Bank\Exception\BankTimeout;
+use App\Model\Bank\Services\BankTransactionKeyGenerator;
+use App\Model\Payment\TokenNotSet;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
-use Entity\BankAccount;
 use FioApi\Download\Downloader;
 use FioApi\Exceptions\InternalErrorException;
 use FioApi\Exceptions\TooGreedyException;
 use GuzzleHttp\Exception\TransferException;
 use Mockery as m;
-use Model\BankTimeLimit;
-use Model\BankTimeout;
-use Model\Payment\TokenNotSet;
 use Psr\Log\NullLogger;
 
 class FioClientTest extends Unit
@@ -22,7 +23,7 @@ class FioClientTest extends Unit
     public function testBankAccountWithoutTokenThrowsException(): void
     {
         $factory = m::mock(IDownloaderFactory::class);
-        $fio = new FioClient($factory, new NullLogger());
+        $fio = new FioClient($factory, new NullLogger(), new BankTransactionKeyGenerator());
 
         $this->expectException(TokenNotSet::class);
 
@@ -45,7 +46,7 @@ class FioClientTest extends Unit
             ->andThrow(TooGreedyException::class);
 
         $factory = $this->buildDownloaderFactory($downloader);
-        $fio = new FioClient($factory, new NullLogger());
+        $fio = new FioClient($factory, new NullLogger(), new BankTransactionKeyGenerator());
 
         $this->expectException(BankTimeLimit::class);
 
@@ -64,7 +65,7 @@ class FioClientTest extends Unit
             ->andThrow(TransferException::class);
 
         $factory = $this->buildDownloaderFactory($downloader);
-        $fio = new FioClient($factory, new NullLogger());
+        $fio = new FioClient($factory, new NullLogger(), new BankTransactionKeyGenerator());
 
         $this->expectException(BankTimeout::class);
 
@@ -83,7 +84,7 @@ class FioClientTest extends Unit
             ->andThrow(InternalErrorException::class);
 
         $factory = $this->buildDownloaderFactory($downloader);
-        $fio = new FioClient($factory, new NullLogger());
+        $fio = new FioClient($factory, new NullLogger(), new BankTransactionKeyGenerator());
 
         $this->expectException(BankTimeout::class);
 

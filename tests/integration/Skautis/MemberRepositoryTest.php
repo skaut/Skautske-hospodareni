@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Model\Skautis;
+namespace App\Model\Skautis;
 
+use App\Model\Common\UnitId;
 use Hskauting\Tests\SkautisTest;
-use Model\Common\UnitId;
 use VCR\VCR;
 
 final class MemberRepositoryTest extends SkautisTest

@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\IntegrationTests;
+namespace App\Model\Payment\IntegrationTests;
 
+use App\Model\Common\UnitId;
+use App\Model\Google\Commands\RemoveOAuth;
+use App\Model\Google\Entity\GoogleOAuth;
+use App\Model\Google\Exception\OAuthNotFound;
+use App\Model\Google\Handlers\RemoveOAuthHandler;
+use App\Model\Mail\Repositories\IGoogleRepository;
+use App\Model\Payment\Group;
+use App\Model\Payment\Repositories\IGroupRepository;
 use DateTimeImmutable;
-use Entity\GoogleOAuth;
 use Helpers;
 use IntegrationTest;
-use Model\Common\UnitId;
-use Model\Google\Commands\RemoveOAuth;
-use Model\Google\Exception\OAuthNotFound;
-use Model\Google\Handlers\RemoveOAuthHandler;
-use Model\Mail\Repositories\IGoogleRepository;
-use Model\Payment\Group;
-use Model\Payment\Repositories\IGroupRepository;
 use Stubs\BankAccountAccessCheckerStub;
 use Stubs\OAuthsAccessCheckerStub;
 

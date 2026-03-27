@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Model\Unit\Services;
+namespace App\Model\Unit\Services;
 
+use App\Model\Unit\Repositories\IUnitRepository;
+use App\Model\Unit\Unit;
 use Mockery as m;
-use Model\Unit\Repositories\IUnitRepository;
-use Model\Unit\Unit;
 
 class UnitResolverTest extends \Codeception\Test\Unit
 {

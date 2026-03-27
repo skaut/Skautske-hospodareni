@@ -1,7 +1,7 @@
 
 services:
-    - Model\Infrastructure\Repositories\Mail\GoogleRepository
-    - class: Model\Google\Handlers\RemoveOAuthHandler
+    - App\Model\Infrastructure\Repositories\Mail\GoogleRepository
+    - class: App\Model\Google\Handlers\RemoveOAuthHandler
       tags:
           messenger.messageHandler:
               bus: commandBus

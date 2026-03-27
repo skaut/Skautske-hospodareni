@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook\Repositories;
+namespace App\Model\Cashbook\Repositories;
 
+use App\Model\Cashbook\CampCategory;
+use App\Model\Cashbook\Cashbook\CashbookId;
+use App\Model\Cashbook\Cashbook\CashbookType;
+use App\Model\Cashbook\Category;
+use App\Model\Cashbook\ObjectType;
+use App\Model\Cashbook\Operation;
+use App\Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
+use App\Model\Common\Services\QueryBus;
 use Codeception\Test\Unit;
 use Mockery;
-use Model\Cashbook\CampCategory;
-use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\Cashbook\CashbookType;
-use Model\Cashbook\Category;
-use Model\Cashbook\ObjectType;
-use Model\Cashbook\Operation;
-use Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
-use Model\Common\Services\QueryBus;
 use Money\Money;
 
 use function array_merge;

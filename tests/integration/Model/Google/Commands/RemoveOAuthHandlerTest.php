@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Model\Google\Handlers;
+namespace App\Model\Google\Handlers;
 
+use App\Model\Google\Commands\RemoveOAuth;
+use App\Model\Google\Entity\GoogleOAuth;
+use App\Model\Google\OAuthId;
+use App\Model\Payment\Group;
 use CommandHandlerTest;
-use Entity\GoogleOAuth;
-use Model\Google\Commands\RemoveOAuth;
-use Model\Google\OAuthId;
-use Model\Payment\Group;
 
 class RemoveOAuthHandlerTest extends CommandHandlerTest
 {

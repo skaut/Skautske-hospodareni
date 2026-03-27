@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Model\Infrastructure\Repositories\Payment;
+namespace App\Model\Infrastructure\Repositories\Payment;
 
+use App\Model\Bank\Entity\BankAccount;
+use App\Model\Common\Embeddable\AccountNumber;
+use App\Model\Payment\BankAccountNotFound;
+use App\Model\Payment\IUnitResolver;
 use DateTimeImmutable;
-use Entity\BankAccount;
-use Entity\Embeddable\AccountNumber;
 use IntegrationTest;
 use Mockery as m;
-use Model\Payment\BankAccountNotFound;
-use Model\Payment\IUnitResolver;
 
 use function array_keys;
 

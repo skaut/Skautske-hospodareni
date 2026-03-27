@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Model\User;
+namespace App\Model\User;
 
 use Codeception\Test\Unit;
 

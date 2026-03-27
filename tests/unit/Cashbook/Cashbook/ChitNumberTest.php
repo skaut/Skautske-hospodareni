@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook\Cashbook;
+namespace App\Model\Cashbook\Cashbook;
 
 use Codeception\Test\Unit;
 use InvalidArgumentException;

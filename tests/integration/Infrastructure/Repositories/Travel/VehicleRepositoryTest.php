@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Model\Infrastructure\Repositories\Travel;
+namespace App\Model\Infrastructure\Repositories\Travel;
 
+use App\Model\Travel\Vehicle;
+use App\Model\Travel\VehicleNotFound;
+use App\Model\Unit\Unit;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManager;
 use IntegrationTest;
 use Mockery as m;
-use Model\Travel\Vehicle;
-use Model\Travel\VehicleNotFound;
-use Model\Unit\Unit;
 
 class VehicleRepositoryTest extends IntegrationTest
 {

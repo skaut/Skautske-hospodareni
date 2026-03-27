@@ -1,12 +1,22 @@
 
 services:
-    - Model\Payment\BankAccountService
-    - Model\Payment\FioClientStub
-    - Model\Infrastructure\Repositories\Payment\GroupRepository
-    - Model\Infrastructure\Repositories\Payment\BankAccountRepository
-    - Model\Payment\UnitResolverStub
-    - Model\Payment\BankAccountImporterStub
+    - App\Model\Payment\BankAccountService
+    - App\Model\Payment\FioClientStub
+    - App\Model\Bank\Services\BankTransactionService
+    - App\Model\Bank\Services\GpcParser
+    - App\Model\Bank\Services\BankTransactionKeyGenerator
+    - App\Model\Infrastructure\Repositories\Payment\GroupRepository
+    - App\Model\Infrastructure\Repositories\Payment\BankAccountRepository
+    - App\Model\Infrastructure\Repositories\Payment\PaymentRepository
+    - App\Model\Bank\Repository\BankTransactionRepository
+    - App\Model\Bank\Repository\BankTransactionImportBatchRepository
+    - App\Model\Invoice\Repository\InvoiceRepository
+    - App\Model\Invoice\Repository\InvoiceSequenceRepository
+    - App\Model\Bank\Manager\BankTransactionImportManager
+    - App\Model\Payment\UnitResolverStub
+    - App\Model\Payment\BankAccountImporterStub
     - Nette\Caching\Cache
+    - Stubs\UnitRepositoryStub
 
 includes:
     - ../config/doctrine.neon

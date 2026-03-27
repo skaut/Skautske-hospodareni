@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\BankAccount;
+namespace App\Model\Payment\BankAccount;
 
+use App\Model\Common\Embeddable\AccountNumber;
 use Codeception\Test\Unit;
-use Entity\Embeddable\AccountNumber;
 
 class AccountNumberTest extends Unit
 {

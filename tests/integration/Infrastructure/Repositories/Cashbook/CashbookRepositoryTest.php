@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Model\Infrastructure\Repositories\Cashbook;
+namespace App\Model\Infrastructure\Repositories\Cashbook;
 
+use App\Model\Cashbook\Cashbook;
+use App\Model\Cashbook\Cashbook\CashbookId;
+use App\Model\Cashbook\Cashbook\ChitBody;
+use App\Model\Cashbook\CashbookNotFound;
+use App\Model\Cashbook\Operation;
+use App\Model\Common\Services\EventBus;
 use Cake\Chronos\ChronosDate;
 use Doctrine\ORM\EntityManager;
 use Helpers;
 use IntegrationTest;
-use Model\Cashbook\Cashbook;
-use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\Cashbook\ChitBody;
-use Model\Cashbook\CashbookNotFound;
-use Model\Cashbook\Operation;
-use Model\Common\Services\EventBus;
 
 class CashbookRepositoryTest extends IntegrationTest
 {

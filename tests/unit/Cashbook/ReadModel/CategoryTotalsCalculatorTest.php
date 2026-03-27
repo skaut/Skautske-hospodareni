@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook\ReadModel\QueryHandlers;
+namespace App\Model\Cashbook\ReadModel\QueryHandlers;
 
+use App\Model\Cashbook\CampCategory;
+use App\Model\Cashbook\Cashbook;
+use App\Model\Cashbook\ICategory;
+use App\Model\Cashbook\Operation;
+use App\Model\Cashbook\ParticipantType;
+use App\Model\Cashbook\ReadModel\CategoryTotalsCalculator;
+use App\Model\Utils\MoneyFactory;
 use Codeception\Test\Unit;
 use Mockery as m;
-use Model\Cashbook\CampCategory;
-use Model\Cashbook\Cashbook;
-use Model\Cashbook\ICategory;
-use Model\Cashbook\Operation;
-use Model\Cashbook\ParticipantType;
-use Model\Cashbook\ReadModel\CategoryTotalsCalculator;
-use Model\Utils\MoneyFactory;
 
 use function array_key_exists;
 

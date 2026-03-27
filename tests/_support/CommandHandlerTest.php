@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Model\Common\Services\CommandBus;
+use App\Model\Common\Services\CommandBus;
 
 abstract class CommandHandlerTest extends IntegrationTest
 {

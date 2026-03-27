@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\ReadModel\QueryHandlers;
+namespace App\Model\Payment\ReadModel\QueryHandlers;
 
+use App\Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
+use App\Model\Common\Services\QueryBus;
+use App\Model\DTO\Participant\Participant;
+use App\Model\Payment\Group;
+use App\Model\Payment\Group\SkautisEntity;
+use App\Model\Payment\PaymentService;
+use App\Model\Payment\ReadModel\Queries\EventParticipantsWithoutPaymentQuery;
+use App\Model\Payment\Repositories\IGroupRepository;
 use Assert\InvalidArgumentException;
 use Codeception\Test\Unit;
 use Mockery;
-use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
-use Model\Common\Services\QueryBus;
-use Model\DTO\Participant\Participant;
-use Model\Payment\Group;
-use Model\Payment\Group\SkautisEntity;
-use Model\Payment\ReadModel\Queries\EventParticipantsWithoutPaymentQuery;
-use Model\Payment\Repositories\IGroupRepository;
-use Model\PaymentService;
 
 final class EventParticipantsWithoutPaymentQueryHandlerTest extends Unit
 {

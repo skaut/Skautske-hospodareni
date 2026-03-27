@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook;
+namespace App\Model\Cashbook;
 
-use App\AccountancyModule\AccountancyHelpers;
+use App\Helpers\AccountancyHelpers;
+use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use InvalidArgumentException;
-use Model\Utils\MoneyFactory;
 use Money\Money;
 
 class AccountancyHelpersTest extends Unit

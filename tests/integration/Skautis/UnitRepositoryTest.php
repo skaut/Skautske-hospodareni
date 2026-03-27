@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Model\Skautis;
+namespace App\Model\Skautis;
 
+use App\Model\Unit\Unit;
+use App\Model\Unit\UnitNotFound;
 use Hskauting\Tests\SkautisTest;
-use Model\Unit\Unit;
-use Model\Unit\UnitNotFound;
 use VCR\VCR;
 
 final class UnitRepositoryTest extends SkautisTest

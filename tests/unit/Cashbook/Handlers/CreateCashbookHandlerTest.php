@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook\Handlers;
+namespace App\Model\Cashbook\Handlers;
 
+use App\Model\Cashbook\Cashbook;
+use App\Model\Cashbook\Commands\Cashbook\CreateCashbook;
+use App\Model\Cashbook\Handlers\Cashbook\CreateCashbookHandler;
+use App\Model\Cashbook\Repositories\ICashbookRepository;
 use Codeception\Test\Unit;
 use Mockery as m;
-use Model\Cashbook\Cashbook;
-use Model\Cashbook\Commands\Cashbook\CreateCashbook;
-use Model\Cashbook\Handlers\Cashbook\CreateCashbookHandler;
-use Model\Cashbook\Repositories\ICashbookRepository;
 
 class CreateCashbookHandlerTest extends Unit
 {

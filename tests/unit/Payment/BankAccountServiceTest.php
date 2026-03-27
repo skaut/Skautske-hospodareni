@@ -2,19 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment;
+namespace App\Model\Payment;
 
-use Cake\Chronos\ChronosDate;
+use App\Model\Bank\Entity\BankAccount;
+use App\Model\Bank\Repository\BankTransactionImportBatchRepository;
+use App\Model\Bank\Services\BankTransactionService;
+use App\Model\Common\Embeddable\AccountNumber;
+use App\Model\Invoice\Repository\InvoiceRepository;
+use App\Model\Invoice\Repository\InvoiceSequenceRepository;
+use App\Model\Payment\BankAccount\IBankAccountImporter;
+use App\Model\Payment\Repositories\IBankAccountRepository;
+use App\Model\Payment\Repositories\IGroupRepository;
 use Codeception\Test\Unit;
 use DateTimeImmutable;
-use Entity\BankAccount;
-use Entity\Embeddable\AccountNumber;
 use Helpers;
 use Mockery as m;
-use Model\Payment\BankAccount\IBankAccountImporter;
-use Model\Payment\Fio\IFioClient;
-use Model\Payment\Repositories\IBankAccountRepository;
-use Model\Payment\Repositories\IGroupRepository;
 use Nette\Caching\Cache;
 
 final class BankAccountServiceTest extends Unit
@@ -49,7 +51,7 @@ final class BankAccountServiceTest extends Unit
             unitResolver: $this->unitResolver([10 => 20]),
         );
 
-        $result = $service->findByUnit(new \Model\Common\UnitId(10));
+        $result = $service->findByUnit(new \App\Model\Common\UnitId(10));
 
         self::assertCount(2, $result);
         self::assertSame([$owned->getName(), $shared->getName()], array_map(static fn ($account) => $account->getName(), $result));
@@ -115,26 +117,15 @@ final class BankAccountServiceTest extends Unit
         $service->importFromSkautis(10);
     }
 
-    public function testGetTransactionsDelegatesToFioClient(): void
+    public function testGetTransactionsDelegatesToBankTransactionService(): void
     {
-        $account = $this->bankAccount(20, false);
-        $repository = m::mock(IBankAccountRepository::class);
-        $repository->shouldReceive('find')
+        $transactions = m::mock(BankTransactionService::class);
+        $transactions->shouldReceive('getTransactions')
             ->once()
-            ->with(5)
-            ->andReturn($account);
-
-        $fio = m::mock(IFioClient::class);
-        $fio->shouldReceive('getTransactions')
-            ->once()
-            ->withArgs(static function (ChronosDate $since, ChronosDate $until, BankAccount $passedAccount) use ($account): bool {
-                return $since->equals(ChronosDate::today()->subDays(10))
-                    && $until->equals(ChronosDate::today())
-                    && spl_object_id($passedAccount) === spl_object_id($account);
-            })
+            ->with(5, 10)
             ->andReturn(['tx']);
 
-        $service = $this->createService(bankAccounts: $repository, fio: $fio);
+        $service = $this->createService(transactions: $transactions);
 
         self::assertSame(['tx'], $service->getTransactions(5, 10));
     }
@@ -143,25 +134,30 @@ final class BankAccountServiceTest extends Unit
         ?IBankAccountRepository $bankAccounts = null,
         ?IGroupRepository $groups = null,
         ?IUnitResolver $unitResolver = null,
-        ?IFioClient $fio = null,
+        ?BankTransactionService $transactions = null,
         ?IBankAccountImporter $importer = null,
         ?Cache $cache = null,
+        ?InvoiceSequenceRepository $invoiceSequences = null,
+        ?BankTransactionImportBatchRepository $transactionImportBatches = null,
     ): BankAccountService {
         return new BankAccountService(
             $bankAccounts ?? m::mock(IBankAccountRepository::class),
             $groups ?? m::mock(IGroupRepository::class),
             $unitResolver ?? $this->unitResolver(),
-            $fio ?? m::mock(IFioClient::class),
+            $transactions ?? m::mock(BankTransactionService::class),
             $importer ?? m::mock(IBankAccountImporter::class),
             $cache ?? m::mock(Cache::class),
+            m::mock(Repositories\IPaymentRepository::class),
+            m::mock(InvoiceRepository::class),
+            $invoiceSequences ?? m::mock(InvoiceSequenceRepository::class),
+            $transactionImportBatches ?? m::mock(BankTransactionImportBatchRepository::class),
         );
     }
 
     /** @param array<int, int> $map */
     private function unitResolver(array $map = []): IUnitResolver
     {
-        return new class($map) implements IUnitResolver
-        {
+        return new class($map) implements IUnitResolver {
             /** @param array<int, int> $map */
             public function __construct(private array $map)
             {

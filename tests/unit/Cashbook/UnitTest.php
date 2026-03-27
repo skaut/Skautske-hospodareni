@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook;
+namespace App\Model\Cashbook;
 
+use App\Model\Cashbook\Cashbook\CashbookId;
+use App\Model\Cashbook\Events\Unit\CashbookWasCreated;
+use App\Model\Cashbook\Exception\YearCashbookAlreadyExists;
+use App\Model\Common\UnitId;
 use Codeception\Test\Unit as TestCase;
-use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\Events\Unit\CashbookWasCreated;
-use Model\Cashbook\Exception\YearCashbookAlreadyExists;
-use Model\Common\UnitId;
 use Ramsey\Uuid\Uuid;
 
 use function assert;

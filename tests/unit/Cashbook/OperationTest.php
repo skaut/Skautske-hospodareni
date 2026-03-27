@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook;
+namespace App\Model\Cashbook;
 
 use Codeception\Test\Unit;
 

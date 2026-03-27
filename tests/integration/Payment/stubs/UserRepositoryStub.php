@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment;
+namespace App\Model\Payment;
 
-use Model\Common\Repositories\IUserRepository;
-use Model\Common\User;
+use App\Model\Common\Repositories\IUserRepository;
+use App\Model\Common\User;
 
 class UserRepositoryStub implements IUserRepository
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Model\Infrastructure\Skautis;
+namespace App\Model\Infrastructure\Skautis;
 
 use Codeception\Test\Unit;
 use Mockery;

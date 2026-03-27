@@ -1,18 +1,20 @@
 services:
-    - Model\PaymentService
-    - Model\Infrastructure\Repositories\Payment\PaymentRepository
-    - Model\Infrastructure\Repositories\Payment\GroupRepository
-    - Model\Infrastructure\Repositories\Payment\BankAccountRepository
-    - Model\Skautis\Payment\MemberEmailRepository
+    - App\Model\Payment\PaymentService
+    - App\Model\Infrastructure\Repositories\Payment\PaymentRepository
+    - App\Model\Infrastructure\Repositories\Payment\GroupRepository
+    - App\Model\Infrastructure\Repositories\Payment\BankAccountRepository
+    - App\Model\Skautis\Payment\MemberEmailRepository
+    - App\Model\Invoice\Repository\InvoiceRepository
+    - App\Model\Payment\Services\VariableSymbolCollisionChecker
     - GuzzleHttp\Client
     - Stubs\Skautis
     - Stubs\BankAccountAccessCheckerStub
     - Stubs\OAuthsAccessCheckerStub
-    - Model\Payment\UserRepositoryStub
-    - Model\Skautis\ParticipantRepository
-    - Model\Infrastructure\Repositories\Participant\PaymentRepository
+    - App\Model\Payment\UserRepositoryStub
+    - App\Model\Skautis\ParticipantRepository
+    - App\Model\Infrastructure\Repositories\Participant\PaymentRepository
 
-    - class: Model\Payment\Handlers\Payment\CreatePaymentHandler
+    - class: App\Model\Payment\Handlers\Payment\CreatePaymentHandler
       tags:
           messenger.messageHandler:
               bus: commandBus

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Model\Infrastructure\Repositories\Budget;
+namespace App\Model\Infrastructure\Repositories\Budget;
 
+use App\Model\Budget\Unit\Category;
+use App\Model\Cashbook\Operation;
 use Doctrine\ORM\EntityManager;
 use IntegrationTest;
-use Model\Budget\Unit\Category;
-use Model\Cashbook\Operation;
 
 class CategoryRepositoryTest extends IntegrationTest
 {

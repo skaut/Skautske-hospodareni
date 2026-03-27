@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Model\Skautis;
+namespace App\Model\Skautis;
 
 use Hskauting\Tests\SkautisTest;
 use VCR\VCR;

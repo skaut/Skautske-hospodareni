@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Admin;
 
 use App\Model\User\Entity\AdminUser;
-use IntegrationTest;
 use App\Model\User\Manager\AdminUserManager;
 use App\Model\User\Repository\AdminUserRepository;
+use IntegrationTest;
 
 final class AdminUserManagerTest extends IntegrationTest
 {

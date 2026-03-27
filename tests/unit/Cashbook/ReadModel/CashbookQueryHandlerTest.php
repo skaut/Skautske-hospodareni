@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook\ReadModel\QueryHandlers;
+namespace App\Model\Cashbook\ReadModel\QueryHandlers;
 
+use App\Model\Cashbook\Cashbook;
+use App\Model\Cashbook\Cashbook\CashbookId;
+use App\Model\Cashbook\Cashbook\CashbookType;
+use App\Model\Cashbook\Cashbook\PaymentMethod;
+use App\Model\Cashbook\ReadModel\Queries\CashbookQuery;
+use App\Model\Cashbook\Repositories\ICashbookRepository;
 use Codeception\Test\Unit;
 use Mockery as m;
-use Model\Cashbook\Cashbook;
-use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\Cashbook\CashbookType;
-use Model\Cashbook\Cashbook\PaymentMethod;
-use Model\Cashbook\ReadModel\Queries\CashbookQuery;
-use Model\Cashbook\Repositories\ICashbookRepository;
 
 final class CashbookQueryHandlerTest extends Unit
 {

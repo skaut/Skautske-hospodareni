@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment;
+namespace App\Model\Payment;
 
+use App\Model\Bank\Entity\BankAccount;
+use App\Model\Bank\Transaction;
+use App\Model\Payment\Fio\IFioClient;
 use Cake\Chronos\ChronosDate;
-use Entity\BankAccount;
-use Model\Bank\Fio\Transaction;
-use Model\Payment\Fio\IFioClient;
 
 class FioClientStub implements IFioClient
 {

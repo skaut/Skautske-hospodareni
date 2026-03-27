@@ -4,15 +4,26 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Pairing;
 
+use App\Model\Bank\Entity\BankAccount;
+use App\Model\Invoice\Embeddable\InvoiceCustomer;
+use App\Model\Invoice\Embeddable\InvoiceSupplier;
+use App\Model\Invoice\Entity\Invoice;
+use App\Model\Invoice\Entity\InvoiceItem;
+use App\Model\Invoice\Entity\InvoiceSequence;
+use App\Model\Invoice\Enum\InvoicePaymentType;
+use App\Model\Invoice\Repository\InvoiceRepository;
+use App\Model\Invoice\Repository\InvoiceSequenceRepository;
+use App\Model\Payment\BankAccountService;
+use App\Model\Payment\Group;
+use App\Model\Payment\Repositories\IBankAccountRepository;
+use App\Model\Payment\Repositories\IGroupRepository;
+use App\Model\Payment\UnitResolverStub;
+use App\Model\Payment\VariableSymbol;
+use Brick\Math\BigDecimal;
 use DateTimeImmutable;
-use Entity\BankAccount;
+use Doctrine\ORM\EntityManagerInterface;
 use Helpers;
 use IntegrationTest;
-use Model\Payment\BankAccountService;
-use Model\Payment\Group;
-use Model\Payment\Repositories\IBankAccountRepository;
-use Model\Payment\Repositories\IGroupRepository;
-use Model\Payment\UnitResolverStub;
 use Stubs\BankAccountAccessCheckerStub;
 use Stubs\OAuthsAccessCheckerStub;
 
@@ -23,6 +34,12 @@ class BankAccountServiceTest extends IntegrationTest
     private IBankAccountRepository $bankAccounts;
 
     private IGroupRepository $groups;
+
+    private InvoiceSequenceRepository $invoiceSequences;
+
+    private InvoiceRepository $invoiceRepository;
+
+    private EntityManagerInterface $em;
 
     private UnitResolverStub $unitResolver;
 
@@ -35,6 +52,9 @@ class BankAccountServiceTest extends IntegrationTest
         $this->bankAccountService = $this->tester->grabService(BankAccountService::class);
         $this->bankAccounts = $this->tester->grabService(IBankAccountRepository::class);
         $this->groups = $this->tester->grabService(IGroupRepository::class);
+        $this->invoiceSequences = $this->tester->grabService(InvoiceSequenceRepository::class);
+        $this->invoiceRepository = $this->tester->grabService(InvoiceRepository::class);
+        $this->em = $this->tester->grabService(EntityManagerInterface::class);
         $this->unitResolver = $this->tester->grabService(UnitResolverStub::class);
     }
 
@@ -44,6 +64,9 @@ class BankAccountServiceTest extends IntegrationTest
         return [
             BankAccount::class,
             Group::class,
+            InvoiceSequence::class,
+            Invoice::class,
+            InvoiceItem::class,
         ];
     }
 
@@ -60,16 +83,53 @@ class BankAccountServiceTest extends IntegrationTest
         $this->addGroup(5, $bankAccount);
         $this->addGroup(5, $bankAccount);
         $this->addGroup(10, $bankAccount); // This one belongs to official unit
+        $sequence1 = $this->addSequence(5, $bankAccount, 1);
+        $sequence2 = $this->addSequence(5, $bankAccount, 2);
+        $sequence3 = $this->addSequence(10, $bankAccount, 3);
 
         $this->bankAccountService->disallowForSubunits($bankAccount->getId());
 
         $group1 = $this->groups->find(1); // subunit
         $group2 = $this->groups->find(2); // subunit
         $group3 = $this->groups->find(3);
+        $sequence1 = $this->invoiceSequences->find($sequence1->getId());
+        $sequence2 = $this->invoiceSequences->find($sequence2->getId());
+        $sequence3 = $this->invoiceSequences->find($sequence3->getId());
 
         $this->assertNull($group1->getBankAccountId());
         $this->assertNull($group2->getBankAccountId());
-        $this->assertSame(1, $group3->getBankAccountId());
+        $this->assertSame($bankAccount->getId(), $group3->getBankAccountId());
+        $this->assertNull($sequence1->getBankAccount());
+        $this->assertNull($sequence2->getBankAccount());
+        $this->assertSame($bankAccount->getId(), $sequence3->getBankAccount()?->getId());
+    }
+
+    public function testRemovingBankAccountDetachesLiveRelationsAndKeepsInvoiceSnapshot(): void
+    {
+        $this->unitResolver->setOfficialUnits([
+            5 => 10,
+            10 => 10,
+        ]);
+        $bankAccount = $this->createBankAccount();
+        $bankAccount->allowForSubunits();
+        $this->bankAccounts->save($bankAccount);
+
+        $this->addGroup(5, $bankAccount);
+        $sequence = $this->addSequence(5, $bankAccount, 1);
+        $invoice = $this->addInvoice($sequence, $bankAccount, 'FA000001', '1');
+
+        $this->bankAccountService->removeBankAccount($bankAccount->getId());
+        $this->em->clear();
+
+        $group = $this->groups->find(1);
+        $reloadedSequence = $this->invoiceSequences->find($sequence->getId());
+        $reloadedInvoice = $this->invoiceRepository->find($invoice->getId());
+
+        $this->assertNull($group->getBankAccountId());
+        $this->assertNull($reloadedSequence->getBankAccount());
+        $this->assertNull($reloadedInvoice->getBankAccount());
+        $this->assertSame((string) $bankAccount->getNumber(), (string) $reloadedInvoice->getAccountNumber());
+        $this->assertSame($bankAccount->getName(), $reloadedInvoice->getBankName());
     }
 
     private function createBankAccount(): BankAccount
@@ -103,5 +163,39 @@ class BankAccountServiceTest extends IntegrationTest
         );
 
         $this->groups->save($group);
+    }
+
+    private function addSequence(int $unitId, BankAccount $account, int $id): InvoiceSequence
+    {
+        $sequence = new InvoiceSequence($unitId, 'FA', 2026, 'Faktury', $account, null, 14, '00001');
+        $sequence->setSequenceId($id);
+        Helpers::assignIdentity($sequence, $id);
+        $this->invoiceSequences->save($sequence);
+
+        return $sequence;
+    }
+
+    private function addInvoice(InvoiceSequence $sequence, BankAccount $account, string $number, string $variableSymbol): Invoice
+    {
+        $invoice = new Invoice(
+            $sequence,
+            new InvoiceSupplier(10, 'Dodavatel', 'Ulice', 'Praha', '11000', '12345678'),
+            new InvoiceCustomer('Odběratel', 'Ulice', 'Brno', '60200', '1', '', ''),
+            'Tester',
+            new DateTimeImmutable('2026-03-20'),
+            new DateTimeImmutable('2026-03-10'),
+            new DateTimeImmutable('2026-03-10'),
+            InvoicePaymentType::TRANSFER,
+            $account->getNumber(),
+            null,
+            null,
+            $account->getName(),
+        );
+        $invoice->addItem(new InvoiceItem(BigDecimal::of('150.00'), 'Položka'));
+        $invoice->assignNumbering(1, $number, new VariableSymbol($variableSymbol));
+        $this->em->persist($invoice);
+        $this->em->flush();
+
+        return $invoice;
     }
 }

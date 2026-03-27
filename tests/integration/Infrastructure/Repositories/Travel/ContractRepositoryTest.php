@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Model\Infrastructure\Repositories\Travel;
+namespace App\Model\Infrastructure\Repositories\Travel;
 
+use App\Model\Travel\Contract;
 use Cake\Chronos\ChronosDate;
 use IntegrationTest;
-use Model\Travel\Contract;
 
 final class ContractRepositoryTest extends IntegrationTest
 {

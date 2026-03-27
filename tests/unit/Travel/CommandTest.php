@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Model\Travel;
+namespace App\Model\Travel;
 
+use App\Model\Travel\Command\TransportTravel;
+use App\Model\Travel\Command\TravelDetails;
+use App\Model\Travel\Command\VehicleTravel;
+use App\Model\Travel\Travel\TransportType;
+use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use DateInterval;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use Mockery;
-use Model\Travel\Command\TransportTravel;
-use Model\Travel\Command\TravelDetails;
-use Model\Travel\Command\VehicleTravel;
-use Model\Travel\Travel\TransportType;
-use Model\Utils\MoneyFactory;
 use Money\Money;
 use Throwable;
 

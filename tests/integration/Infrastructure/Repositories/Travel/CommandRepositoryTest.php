@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Model\Infrastructure\Repositories\Travel;
+namespace App\Model\Infrastructure\Repositories\Travel;
 
+use App\Model\Travel\Command;
+use App\Model\Travel\Travel\TransportType;
+use App\Model\Travel\Vehicle;
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManager;
 use IntegrationTest;
-use Model\Travel\Command;
-use Model\Travel\Travel\TransportType;
-use Model\Travel\Vehicle;
 use Money\Money;
 use Nette\Utils\Json;
 

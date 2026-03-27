@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Model\Participant\ReadModel\QueryHandlers;
+namespace App\Model\Participant\ReadModel\QueryHandlers;
 
+use App\Model\Common\Member;
+use App\Model\Common\Repositories\IMemberRepository;
+use App\Model\Common\UnitId;
+use App\Model\DTO\Participant\Participant;
+use App\Model\Participant\ReadModel\Queries\PotentialParticipantListQuery;
 use Codeception\Test\Unit;
 use Mockery;
-use Model\Common\Member;
-use Model\Common\Repositories\IMemberRepository;
-use Model\Common\UnitId;
-use Model\DTO\Participant\Participant;
-use Model\Participant\ReadModel\Queries\PotentialParticipantListQuery;
 
 final class PotentialParticipantQueryHandlerTest extends Unit
 {

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Stubs;
 
-use Entity\GoogleOAuth;
-use Model\Common\UnitId;
-use Model\Google\OAuthId;
-use Model\Mail\Repositories\IGoogleRepository;
+use App\Model\Common\UnitId;
+use App\Model\Google\Entity\GoogleOAuth;
+use App\Model\Google\OAuthId;
+use App\Model\Mail\Repositories\IGoogleRepository;
 
 use function array_fill_keys;
 
