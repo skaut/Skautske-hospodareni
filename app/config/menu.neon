@@ -75,60 +75,50 @@ menu:
         templates:
             menu: %appDir%/Presentation/Accessory/Navigation/templates/subMenu.latte
         items:
-            payments:
-                title: Platby
+            overview:
+                title: Přehled
                 action: 'Payments:Dashboard:default'
                 include:
-                    - '^Payments:.*$'
+                    - '^Payments:Dashboard:.*$'
                 data:
+                    test: payment-nav-overview
+                    icon: fi fi-rr-apps
                     preserveParameters:
                         jednotka: unitId
                         rok: year
-                items:
-                    overview:
-                        title: Přehled
-                        action: 'Payments:Dashboard:default'
-                        include:
-                            - '^Payments:Dashboard:.*$'
-                        data:
-                            test: payment-nav-overview
-                            icon: fas fa-compass
-                            preserveParameters:
-                                jednotka: unitId
-                                rok: year
-                    groups:
-                        title: Platební skupiny
-                        action: 'Payments:GroupList:default'
-                        include:
-                            - '^Payments:(GroupList|Group|Payment|Participants|People|Repayment|Journal|CampAddParticipants|CampCreateGroup|CampSelectForGroup|EventAddParticipants|EventCreateGroup|EventSelectForGroup|EducationAddParticipants|EducationCreateGroup|EducationSelectForGroup|RegistrationAddMembers|RegistrationCreateGroup|RegistrationJournal):.*$'
-                        data:
-                            test: payment-nav-groups
-                            icon: far fa-list-alt
-                            preserveParameters:
-                                jednotka: unitId
-                                rok: year
-                    invoices:
-                        title: Faktury
-                        action: 'Payments:InvoiceList:default'
-                        include:
-                            - '^Payments:(InvoiceList|InvoiceSequence|InvoiceSequenceList):.*$'
-                        data:
-                            test: payment-nav-invoices
-                            icon: fas fa-file-invoice-dollar
-                            preserveParameters:
-                                jednotka: unitId
-                                rok: year
-                    settings:
-                        title: Nastavení
-                        action: 'Settings:Default:default'
-                        include:
-                            - '^Settings:.*$'
-                        data:
-                            test: payment-nav-settings
-                            icon: fas fa-sliders-h
-                            preserveParameters:
-                                jednotka: unitId
-                                rok: year
+            groups:
+                title: Platební skupiny
+                action: 'Payments:GroupList:default'
+                include:
+                    - '^Payments:(GroupList|Group|Payment|Participants|People|Repayment|Journal|CampAddParticipants|CampCreateGroup|CampSelectForGroup|EventAddParticipants|EventCreateGroup|EventSelectForGroup|EducationAddParticipants|EducationCreateGroup|EducationSelectForGroup|RegistrationAddMembers|RegistrationCreateGroup|RegistrationJournal):.*$'
+                data:
+                    test: payment-nav-groups
+                    icon: far fa-list-alt
+                    preserveParameters:
+                        jednotka: unitId
+                        rok: year
+            invoices:
+                title: Faktury
+                action: 'Payments:InvoiceList:default'
+                include:
+                    - '^Payments:(InvoiceList|InvoiceSequence|InvoiceSequenceList):.*$'
+                data:
+                    test: payment-nav-invoices
+                    icon: fas fa-file-invoice-dollar
+                    preserveParameters:
+                        jednotka: unitId
+                        rok: year
+            settings:
+                title: Nastavení
+                action: 'Settings:Default:default'
+                include:
+                    - '^Settings:.*$'
+                data:
+                    test: payment-nav-settings
+                    icon: fas fa-sliders-h
+                    preserveParameters:
+                        jednotka: unitId
+                        rok: year
 
     settings:
         authorizator: @App\Presentation\Accessory\Navigation\NavigationAuthorizator

@@ -1,0 +1,15 @@
+messenger:
+    buses:
+        commandBus:
+            singleHandlerPerMessage: true
+            middleware:
+                - App\Model\Infrastructure\Services\Messenger\LoggingMiddleware(level: 'debug')
+        eventBus:
+            allowNoHandlers: true
+        queryBus:
+            singleHandlerPerMessage: true
+
+scheduler:
+    jobs:
+        - { cron: '* * * * *', callback: [ @group, reminder ] }
+        - { cron: '*/10 * * * *', callback: [ @App\Model\Bank\InvoiceBankService, pairAutomaticSequences ] }

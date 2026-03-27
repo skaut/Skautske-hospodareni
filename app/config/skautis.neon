@@ -1,0 +1,76 @@
+services:
+    # Skautis authorizator
+    skautisAuthorizator:
+        factory: App\Model\Skautis\Auth\SkautisAuthorizator(@skautis.webservice.user)
+        autowired: false
+
+    # Skautis cache
+    skautisCache:
+        factory: Nette\Caching\Cache(namespace: 'skautis')
+        autowired: false
+
+    # Skautis webservices
+    skautis.org: App\Model\Skautis\WebserviceFactory::createCached('org')
+    skautis.event: App\Model\Skautis\WebserviceFactory::create('event')
+    skautis.webservice.user: App\Model\Skautis\WebserviceFactory::createCached('user')
+    skautis.cached.event: App\Model\Skautis\WebserviceFactory::createCached('event')
+    skautis.cached.grants: App\Model\Skautis\WebserviceFactory::createCached('Grants')
+
+    # Skautis repositories
+    unitRepository:
+        factory: App\Model\Skautis\UnitRepository(@skautis.org)
+        autowired: false
+    - App\Model\Infrastructure\Services\Unit\CachedUnitRepository(@unitRepository)
+    - App\Model\Skautis\Common\Repositories\UserRepository(@skautis.webservice.user, @skautis.org)
+    - App\Model\Skautis\EventRepository(@skautis.event)
+    - App\Model\Skautis\CampRepository(@skautis.cached.event)
+    - App\Model\Skautis\EducationRepository(@skautis.cached.event)
+    - App\Model\Skautis\Cashbook\Repositories\CampCategoryRepository(@skautis.cached.event)
+    - App\Model\Skautis\Cashbook\Repositories\EducationCategoryRepository(@skautis.cached.grants)
+    - App\Model\Infrastructure\Repositories\Mail\GoogleRepository
+
+    # Skautis read model query handlers
+    - factory: App\Model\Event\ReadModel\QueryHandlers\EventScopesHandler(@skautis.event, @skautisCache)
+      tags:
+          messenger.messageHandler:
+              bus: queryBus
+
+    - factory: App\Model\Event\ReadModel\QueryHandlers\EventTypesHandler(@skautis.event, @skautisCache)
+      tags:
+          messenger.messageHandler:
+              bus: queryBus
+
+    - factory: App\Model\Event\ReadModel\QueryHandlers\CampStatesHandler(@skautis.event, @skautisCache)
+      tags:
+          messenger.messageHandler:
+              bus: queryBus
+
+    - factory: App\Model\Event\ReadModel\QueryHandlers\EventStatesHandler(@skautis.event, @skautisCache)
+      tags:
+          messenger.messageHandler:
+              bus: queryBus
+
+    - factory: App\Model\Cashbook\ReadModel\QueryHandlers\EventParticipantListQueryHandler
+      tags:
+          messenger.messageHandler:
+              bus: queryBus
+
+    - factory: App\Model\Skautis\ReadModel\QueryHandlers\EducationBudgetQueryHandler(@skautis.cached.grants)
+      tags:
+          messenger.messageHandler:
+              bus: queryBus
+
+    - factory: App\Model\Skautis\ReadModel\QueryHandlers\CampBudgetQueryHandler(@skautis.cached.event)
+      tags:
+          messenger.messageHandler:
+              bus: queryBus
+
+    - factory: App\Model\Skautis\ReadModel\QueryHandlers\EventStatisticsQueryHandler(@skautis.cached.event)
+      tags:
+          messenger.messageHandler:
+              bus: queryBus
+
+    # Skautis call listener
+    @Skautis\Wsdl\WsdlManager:
+        setup:
+            - @App\Model\Infrastructure\Services\SkautisCallListener::register
