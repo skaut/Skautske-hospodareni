@@ -1,0 +1,14 @@
+{block content}
+<div data-test="payment-education-create-group-page">
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h1 n:inner-block="title" class="h3 mb-2">Nová skupina plateb <span class="text-body-secondary fw-normal">{$education->displayName}</span></h1>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            {control form}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,14 @@
+{var $items = array_filter($menu->getVisibleItemsOnMenu(), fn ($item) => $item->isAllowed())}
+{if $items !== []}
+    <div class="d-flex flex-wrap gap-2 align-items-center">
+        <a
+            n:foreach="$items as $item"
+            href="{$item->getRealLink()}"
+            n:class="btn, btn-sm, rounded-pill, $item->isActive() ? btn-primary : btn-light"
+            n:attr="data-test => $item->getData('test')"
+        >
+            <i n:if="$item->hasData('icon')" class="{$item->getData('icon')}" aria-hidden="true"></i>
+            <span>{$item->getRealTitle()}</span>
+        </a>
+    </div>
+{/if}

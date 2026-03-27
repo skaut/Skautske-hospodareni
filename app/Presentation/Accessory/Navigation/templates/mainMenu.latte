@@ -1,0 +1,8 @@
+{var $items = array_filter($menu->getVisibleItemsOnMenu(), fn ($item) => $item->isAllowed())}
+{foreach $items as $item}
+    <li n:class="nav-item, $item->isActive() ? active">
+        <a href="{$item->getRealLink()}" n:class="nav-link, $item->isActive() ? active" n:attr="data-test => $item->getData('test')">
+            {$item->getRealTitle()}
+        </a>
+    </li>
+{/foreach}

@@ -1,0 +1,140 @@
+{extends $baseTemplate}
+
+{block filters}
+    {include #filter-type-search}
+    {*include #filter-type-select name => 'state', label => 'Stav'*}
+{/block}
+
+{define col-dueDate}
+    {$item->getDueDate()->format('d.m.Y')}
+{/define}
+
+{define col-dateOfIssue}
+    {$item->getDateOfIssue()->format('d.m.Y')}
+{/define}
+
+{define col-sequenceDisplayLabel}
+    <span class="invoice-grid-sequence">
+        {$item->getSequenceDisplayLabel()}
+    </span>
+{/define}
+
+{define col-recipientsString}
+    {if $item->hasEmailRecipients()}
+        {$item->getRecipientsString()}
+    {else}
+        <span class="text-muted">Bez e-mailu</span>
+    {/if}
+{/define}
+
+{block col-stateLabel}
+    <div class="text-center">
+        <span n:class="'badge', $item->isPaid() ? 'bg-success' : ($item->isOverdue() ? 'bg-warning text-dark' : 'bg-secondary')">
+            {$item->getStateLabel()}
+        </span>
+
+        {if ! $item->isPaid() && $item->canSendReminder()}
+            <div class="small text-warning mt-1">Po splatnosti, lze odeslat upomínku</div>
+        {elseif ! $item->isPaid() && $item->isOverdue()}
+            <div class="small text-muted mt-1">Po splatnosti</div>
+        {/if}
+
+        {if $item->isPaid()}
+            <div class="small text-success mt-1">
+                {if $item->getCashReceiptNumber() !== null}
+                    Hotově<br>PD {$item->getCashReceiptNumber()}
+                {elseif $item->getTransaction() !== null}
+                    Zaplaceno převodem<br>
+                    <span class="text-muted">
+                        {$item->getClosedAt()|date:'d.m.Y'}
+                        {if $item->getTransaction()->getId() !== ''}
+                            / transakce {$item->getTransaction()->getId()}
+                        {/if}
+                    </span>
+                {/if}
+            </div>
+        {/if}
+
+        {var $emails = $item->getSentEmails()}
+        {if count($emails) > 0}
+            <div class="dropdown d-inline-flex mt-1">
+                <button class="btn btn-link btn-sm"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        title="Historie e-mailů">
+                    <i class="fi fi-rr-envelope" aria-hidden="true"></i>&nbsp;{count($emails)}
+                </button>
+                <div class="dropdown-menu dropdown-menu-end p-0 border-0 text-nowrap">
+                    <ul class="list-group" n:inner-foreach="$emails as $email">
+                        <li class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <i n:class="$email->wasSuccessful() ? 'fi fi-rr-envelope text-success' : 'fi fi-rr-triangle-warning text-danger'" aria-hidden="true"></i>
+                                    {switch $email->getType()->toString()}
+                                        {case \Model\Invoice\EmailType::INVOICE_INFO}
+                                        Faktura
+                                        {case \Model\Invoice\EmailType::INVOICE_REMINDER}
+                                        Upomínka
+                                    {/switch}
+                                </div>
+                                <div class="small text-muted text-center ms-3">
+                                    {$email->getTime()|date:'d.m.Y H:i'}<br>
+                                    {$email->getSenderName()}
+                                </div>
+                            </div>
+                            {if ! $email->wasSuccessful() && $email->getErrorMessage() !== null}
+                                <div class="small text-danger mt-1">{$email->getErrorMessage()}</div>
+                            {/if}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        {/if}
+    </div>
+{/block}
+
+{block col-actions}
+    {if ($showOpenSequenceAction ?? false)}
+        <a href="{$control->getPresenter()->link('default', ['invoiceSequenceId' => $item->getSequence()->getId()])}"
+           class="btn btn-sm btn-light"
+           title="Otevřít řadu"><i class="fi fi-rr-folder-open" aria-hidden="true"></i></a>
+    {/if}
+
+    <a href="{$control->getPresenter()->link('detail', ['id' => $item->getId()])}"
+       class="btn btn-sm btn-secondary"
+       data-test="invoice-detail-{$item->getId()}"
+       data-test-invoice-number="{$item->getInvoiceNumber()}"
+       title="Detail faktury"><i class="fi fi-rr-eye" aria-hidden="true"></i></a>
+    <a href="{$control->getPresenter()->link('downloadPdf!', ['id' => $item->getId()])}"
+       class="btn btn-sm btn-secondary"
+       title="Stáhnout PDF"><i class="fi fi-rr-file-pdf" aria-hidden="true"></i></a>
+
+    {var $reminderDisabledReason = $control->getPresenter()->getInvoiceEmailDisabledReason($item)}
+
+    {if ! $item->hasBeenDelivered() && ! $item->isPaid()}
+        <a href="{$control->getPresenter()->link('markAsDelivered!', ['id' => $item->getId()])}"
+           class="btn btn-sm btn-primary"
+           title="Potvrdit fyzické předání faktury"><i class="fi fi-rr-handshake" aria-hidden="true"></i></a>
+    {/if}
+
+    {if ($enableCashPaymentDialog ?? true) && $item->canBePaidInCash()}
+        <a href="{$control->getPresenter()->link('cashPaymentDialog:open!', ['invoiceId' => $item->getId()])}"
+           class="btn btn-sm btn-success ajax"
+           title="Označit jako proplacenou v hotovosti"><i class="fi fi-rr-money-bill-wave" aria-hidden="true"></i></a>
+    {/if}
+
+    {if $item->getPaymentType() === \App\Model\Invoice\Enum\InvoicePaymentType::TRANSFER && ! $item->isPaid() && $item->getBankAccount() !== null}
+        <a href="{$control->getPresenter()->link(':Settings:BankAccounts:detail', ['id' => $item->getBankAccount()->getId(), 'invoiceId' => $item->getId()])}"
+           class="btn btn-sm btn-light"
+           title="Ruční párování s bankovní transakcí"><i class="fi fi-rr-bank" aria-hidden="true"></i></a>
+    {/if}
+
+    {if $item->canSendReminder()}
+        <a href="{$reminderDisabledReason === null ? $control->getPresenter()->link('sendReminder!', ['id' => $item->getId()]) : '#'}"
+                n:class="btn, btn-sm, btn-warning, $reminderDisabledReason === null ? '' : disabled"
+           title="{$reminderDisabledReason ?? 'Odeslat upomínku'}"
+           {if $reminderDisabledReason !== null}onclick="return false;"{/if}><i class="fi fi-rr-bell" aria-hidden="true"></i></a>
+    {/if}
+{/block}
+
+{block action-col-classes}w-15{/block}
