@@ -6,7 +6,6 @@ parameters:
 extensions:
     migrations: Nettrine\Migrations\DI\MigrationsExtension
     dbal: Nettrine\DBAL\DI\DbalExtension
-    doctrineCache: Nettrine\Cache\DI\CacheExtension
     psr6: Contributte\Psr6\DI\Psr6CachingExtension
 
 migrations:
@@ -16,6 +15,9 @@ migrations:
 dbal:
     debug:
         panel: %debugMode%
+
+    configuration:
+        resultCache: Doctrine\Common\Cache\Psr6\DoctrineProvider::wrap(Symfony\Component\Cache\Adapter\ArrayAdapter())
 
     connection:
         host: %database.host%
