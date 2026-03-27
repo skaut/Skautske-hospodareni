@@ -1,0 +1,97 @@
+    {snippet persons}
+        <h2 class="mb-3">Osoby v jednotce</h2>
+        <div class="d-flex align-items-start">
+            <div>
+                <div class="btn-group">
+                    <a class="btn btn-light btn dropdown-toggle align-items-center" data-bs-toggle="dropdown" href="#" rel="tooltip" title="Jednotka, ze které se zobrazí seznam členů">
+                        {$unit->getDisplayName()|truncate:20, ""}
+                    </a>
+                    <div class="dropdown-menu">
+                        <a n:href="this directMemberOnly => !$directMemberOnly" class="dropdown-item">
+                            <span class="form-check-inline">
+                                <input type="checkbox" n:attr="[checked => !$directMemberOnly]" class="form-check-input">
+                                Včetně podjednotek
+                            </span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a n:if="$parentUnit !== null" n:href="this unitId => $parentUnit->getId()" class="dropdown-item">
+                            <i class="fas fa-arrow-up"></i>
+                            {$parentUnit->getDisplayName()}
+                        </a>
+                        <a class="dropdown-item active" href="#">
+                            {$unit->getDisplayName()}
+                        </a>
+                        <a n:foreach="$subunits as $subunit" n:href="this unitId => $subunit->getId()" class="dropdown-item">
+
+                            <i class="fas fa-arrow-right"></i>
+                            {$subunit->getDisplayName()}
+                        </a>
+                    </div>
+                </div>
+                <div class="small text-muted ms-1">
+                    {if $directMemberOnly}bez členů podjednotek{else}<strong>včetně členů podjednotek</strong>{/if}
+                </div>
+            </div>
+            <a class="btn btn-primary btn ms-auto" href="#addParticipant" data-bs-toggle="modal">
+                <i class="fas fa-plus"></i>
+                Přidat nečlena
+            </a>
+        </div>
+        {form massAddForm}
+            <table class="table table-striped table-bordered table-condensed mt-2">
+                <thead class="onlyWithUnitPersons">
+                <tr>
+                    <th class="text-center">
+                        <input type="checkbox" class="personPicker-person-all" data-dependent-checkboxes=".personPicker-person">
+                    </th>
+                    <th>
+                        <div data-visible-if-not-checked=".personPicker-person-all, .personPicker-person-input">
+                            Příjmení a jméno
+                        </div>
+                        <div data-visible-if-checked=".personPicker-person-all, .personPicker-person-input" class="text-end">
+                            <button n:name="send" class="btn btn-primary btn-sm" type="submit">
+                                <i class="fas fa-plus"></i>
+                                Přidat vybrané
+                            </button>
+                        </div>
+                    </th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {if count($form['personIds']->items) > 0}
+                    <tr n:foreach="$form['personIds']->items as $id => $name">
+                        <td class="personPicker-person text-center">
+                            <input n:name="personIds:$id" class="personPicker-person-input" id="personIds-{$id}">
+                        </td>
+                        <td><label n:name="personIds:$id">{$name}</label></td>
+                        <td class="text-end">
+                            <a n:href="add! $id" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i></a>
+                        </td>
+                    </tr>
+                {else}
+                    <tr class="alert info no-unit-persons">
+                        <td colspan="3">
+                            <b>Nejsou žádné nevybrané osoby v jednotce.</b>
+                        </td>
+                    </tr>
+                {/if}
+                </tbody>
+            </table>
+        {/form}
+    {/snippet}
+
+    <div class="modal myModal fade" id="addParticipant">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Založit nového účastníka</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info"><i class="fas fa-info-circle"></i> Údaje založeného účastníka nelze editovat, lze ho pouze smazat a znovu založit.</div>
+                    {control nonMemberParticipantForm}
+                </div>
+            </div>
+        </div>
+    </div>

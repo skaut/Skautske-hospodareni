@@ -1,0 +1,47 @@
+<div class="{$css['wrap']}">
+    <div class="{$css['group']}">
+        <a href="{$control->getParent()->link(':Payments:Group:newGroup')}" class="{$css['main']}" data-test="create-button-main">
+            <i class="fi fi-rr-plus-small" aria-hidden="true"></i>
+            <span>
+                <span>Založit skupinu</span>
+                <span class="d-none d-md-inline">plateb</span>
+            </span>
+        </a>
+        <button class="{$css['toggle']}" type="button" id="createGroup"
+                data-test="create-button-toggle"
+                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="visually-hidden">Další typy skupin plateb</span>
+        </button>
+        <div class="{$css['menu']}" aria-labelledby="createGroup" data-test="create-button-menu">
+            <a href="{$control->getParent()->link(':Payments:Group:newGroup')}" class="dropdown-item" data-test="create-button-item-general"><i class="fas fa-list-alt"></i> Obecná</a>
+
+            <div class="dropdown-divider"></div>
+
+            <a href="{$control->getParent()->link(':Payments:CampSelectForGroup:')}" class="dropdown-item" data-test="create-button-item-camp">
+                <i class="fas fa-campground"></i> Tábor
+                <span class="small d-block">Umožnuje načíst účastnické poplatky.</span>
+            </a>
+
+            <div class="dropdown-divider"></div>
+
+            <a href="{$control->getParent()->link(':Payments:EventSelectForGroup:')}" class="dropdown-item" data-test="create-button-item-event">
+                <span class="me-1"><i class="fas fa-calendar"></i></span> Akce
+                <span class="small d-block">Umožnuje načíst účastnické poplatky.</span>
+            </a>
+
+            <div class="dropdown-divider"></div>
+
+            <a href="{$control->getParent()->link(':Payments:RegistrationCreateGroup:')}" class="dropdown-item" data-test="create-button-item-registration">
+                <i class="fa fa-users"></i> Registrace
+                <span class="small d-block">Umožnuje načíst osoby z aktuální registrace.</span>
+            </a>
+
+            <div class="dropdown-divider"></div>
+
+            <a href="{$control->getParent()->link(':Payments:EducationSelectForGroup:')}" class="dropdown-item" data-test="create-button-item-education">
+                <i class="fas fa-user-graduate"></i> Vzdělávačka
+                <span class="small d-block">Umožnuje načíst účastnické poplatky.</span>
+            </a>
+        </div>
+    </div>
+</div>

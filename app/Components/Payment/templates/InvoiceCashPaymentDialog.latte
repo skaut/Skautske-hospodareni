@@ -1,0 +1,41 @@
+{layout $layout}
+
+{define control $input, $extraClasses}
+    <input n:name="$input" n:class="$input->hasErrors() ? 'is-invalid', form-control, $extraClasses ?? ''">
+{/define}
+
+{define errors $input}
+    <div class="invalid-feedback d-block" n:foreach="$input->getErrors() as $error">{$error}</div>
+{/define}
+
+{block dialog-title}Označit jako proplacenou v hotovosti{/block}
+
+{block dialog-body}
+    {if $invoice === null}
+        <div class="alert alert-danger">Zadaná faktura neexistuje.</div>
+    {else}
+        <div class="alert alert-info mb-3">
+            Příjmový doklad se vystavuje mimo aplikaci. Do systému se eviduje pouze jeho číslo.
+            Bez vyplnění čísla příjmového dokladu nelze fakturu označit jako proplacenou v hotovosti.
+        </div>
+
+        <form n:name="form" class="inline-errors">
+            <div class="mb-3">
+                <label n:name="cashReceiptNumber"/>
+                <small class="text-muted">povinné</small>
+                <span title="Zadejte číslo příjmového dokladu vystaveného mimo aplikaci." data-bs-toggle="tooltip">
+                    <i class="fas fa-info-circle hidden-xs hidden-sm"></i>
+                </span>
+                {include control $form['cashReceiptNumber']}
+                <div class="form-text">
+                    Uloží se pouze číslo příjmového dokladu. Samotný doklad se dál vede mimo aplikaci.
+                </div>
+                {include errors $form['cashReceiptNumber']}
+            </div>
+
+            <input n:name="send" class="btn btn-primary btn-lg w-100 mt-2 ajax">
+        </form>
+    {/if}
+{/block}
+
+{block dialog-footer}{/block}
