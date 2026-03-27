@@ -40,7 +40,7 @@ export default {
                                 // umlčí warnings z node_modules (Bootstrap apod.)
                                 quietDeps: true,
                                 // volitelné – potlačí konkrétní typy hlášek (Sass >=1.77)
-                                silenceDeprecations: ['mixed-decls', 'color-functions', 'import'],
+                                silenceDeprecations: ['mixed-decls', 'color-functions'],
                             },
                         },
                     },
