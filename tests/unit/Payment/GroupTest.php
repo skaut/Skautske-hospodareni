@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment;
+namespace App\Model\Payment;
 
+use App\Model\Bank\Entity\BankAccount;
+use App\Model\Google\Exception\NoAccessToOAuth;
+use App\Model\Google\OAuthId;
+use App\Model\Payment\Group\PaymentDefaults;
+use App\Model\Payment\Services\IBankAccountAccessChecker;
+use App\Model\Payment\Services\IOAuthAccessChecker;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use DateTimeImmutable;
-use Entity\BankAccount;
 use Helpers;
 use InvalidArgumentException;
 use Mockery as m;
-use Model\Google\Exception\NoAccessToOAuth;
-use Model\Google\OAuthId;
-use Model\Payment\Group\PaymentDefaults;
-use Model\Payment\Services\IBankAccountAccessChecker;
-use Model\Payment\Services\IOAuthAccessChecker;
 
 class GroupTest extends Unit
 {
@@ -171,6 +171,28 @@ class GroupTest extends Unit
         $group->removeBankAccount();
 
         $this->assertNull($group->getBankAccountId());
+    }
+
+    public function testChangingBankAccountResetsLastPairingCursor(): void
+    {
+        $group = $this->createGroup(
+            null,
+            null,
+            m::mock(BankAccount::class, ['getId' => 10, 'getUnitId' => 20]),
+        );
+        $group->updateLastPairing(new DateTimeImmutable('2026-03-14 10:00:00'));
+
+        $group->update(
+            $group->getName(),
+            $group->getPaymentDefaults(),
+            $group->getOauthId(),
+            m::mock(BankAccount::class, ['getId' => 11, 'getUnitId' => 20]),
+            $this->mockBankAccountAccessChecker([20], 11, true),
+            m::mock(IOAuthAccessChecker::class),
+        );
+
+        $this->assertSame(11, $group->getBankAccountId());
+        $this->assertNull($group->getLastPairing());
     }
 
     public function testChangeUnitForGroupWithoutBankAccountAndOAuth(): void

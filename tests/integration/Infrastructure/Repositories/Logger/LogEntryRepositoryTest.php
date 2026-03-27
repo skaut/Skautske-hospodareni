@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Model\Infrastructure\Repositories\Logger;
+namespace App\Model\Infrastructure\Repositories\Logger;
 
+use App\Model\Logger\Log\Type;
+use App\Model\Logger\LogEntry;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManager;
 use IntegrationTest;
-use Model\Logger\Log\Type;
-use Model\Logger\LogEntry;
 
 use function array_merge;
 

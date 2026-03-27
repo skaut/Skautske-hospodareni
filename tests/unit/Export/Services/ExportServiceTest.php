@@ -2,26 +2,25 @@
 
 declare(strict_types=1);
 
-namespace Model\Export;
+namespace App\Model\Export;
 
+use App\Model\Cashbook\Cashbook\CashbookId;
+use App\Model\Cashbook\ICategory;
+use App\Model\Cashbook\Operation;
+use App\Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
+use App\Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+use App\Model\Cashbook\ReadModel\Queries\EventParticipantStatisticsQuery;
+use App\Model\Common\Services\QueryBus;
+use App\Model\DTO\Cashbook\CategorySummary;
+use App\Model\DTO\Participant\Statistics;
+use App\Model\Event\Event;
+use App\Model\Event\Functions;
+use App\Model\Event\Repositories\IEventRepository;
+use App\Model\Services\TemplateFactory;
+use App\Model\Unit\UnitService;
+use App\Model\Utils\MoneyFactory;
 use Codeception\Test\Unit;
 use Mockery as m;
-use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\ICategory;
-use Model\Cashbook\Operation;
-use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
-use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
-use Model\Cashbook\ReadModel\Queries\EventParticipantStatisticsQuery;
-use Model\Common\Services\QueryBus;
-use Model\DTO\Cashbook\CategorySummary;
-use Model\DTO\Participant\Statistics;
-use Model\Event\Event;
-use Model\Event\Functions;
-use Model\Event\Repositories\IEventRepository;
-use Model\ExportService;
-use Model\Services\TemplateFactory;
-use Model\UnitService;
-use Model\Utils\MoneyFactory;
 
 class ExportServiceTest extends Unit
 {

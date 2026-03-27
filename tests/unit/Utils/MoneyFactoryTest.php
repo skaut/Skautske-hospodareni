@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Model\Utils;
+namespace App\Model\Utils;
 
 use Codeception\Test\Unit;
 use Money\Currency;

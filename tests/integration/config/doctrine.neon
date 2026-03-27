@@ -7,9 +7,9 @@ parameters:
 
 services:
     - Nette\Caching\Storages\DevNullStorage
-    - Model\Common\Services\MessengerCommandBus(@messenger.commandBus.bus)
-    - Model\Common\Services\MessengerQueryBus(@messenger.queryBus.bus)
-    - Model\Common\Services\MessengerEventBus(@messenger.eventBus.bus)
+    - App\Model\Common\Services\MessengerCommandBus(@messenger.commandBus.bus)
+    - App\Model\Common\Services\MessengerQueryBus(@messenger.queryBus.bus)
+    - App\Model\Common\Services\MessengerEventBus(@messenger.eventBus.bus)
     http.response:
         factory: Tests\Http\NoOpResponse
         type: Nette\Http\IResponse

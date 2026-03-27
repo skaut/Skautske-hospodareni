@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook\ReadModel\QueryHandlers;
+namespace App\Model\Cashbook\ReadModel\QueryHandlers;
 
+use App\Model\Cashbook\Cashbook;
+use App\Model\Cashbook\Cashbook\CashbookId;
+use App\Model\Cashbook\Operation;
+use App\Model\Cashbook\ReadModel\Queries\ChitQuery;
+use App\Model\Cashbook\Repositories\ICashbookRepository;
+use App\Model\Common\Services\QueryBus;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use Helpers;
 use Mockery as m;
-use Model\Cashbook\Cashbook;
-use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\Operation;
-use Model\Cashbook\ReadModel\Queries\ChitQuery;
-use Model\Cashbook\Repositories\ICashbookRepository;
-use Model\Common\Services\QueryBus;
 
 final class ChitQueryHandlerTest extends Unit
 {

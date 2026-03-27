@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\Services;
+namespace App\Model\Payment\Services;
 
+use App\Model\Bank\Entity\BankAccount;
+use App\Model\Payment\BankAccountNotFound;
+use App\Model\Payment\IUnitResolver;
+use App\Model\Payment\Repositories\IBankAccountRepository;
+use App\Model\Payment\UnitResolverStub;
 use Codeception\Test\Unit;
 use DateTimeImmutable;
-use Entity\BankAccount;
 use Helpers;
 use Mockery;
-use Model\Payment\BankAccountNotFound;
-use Model\Payment\IUnitResolver;
-use Model\Payment\Repositories\IBankAccountRepository;
-use Model\Payment\UnitResolverStub;
 
 final class BankAccountAccessCheckerTest extends Unit
 {

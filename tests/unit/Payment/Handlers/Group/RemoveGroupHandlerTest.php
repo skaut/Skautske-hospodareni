@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\Handlers\Group;
+namespace App\Model\Payment\Handlers\Group;
 
+use App\Model\Payment\Commands\Group\RemoveGroup;
+use App\Model\Payment\Group;
+use App\Model\Payment\GroupNotClosed;
+use App\Model\Payment\Repositories\IGroupRepository;
 use Codeception\Test\Unit;
 use Mockery as m;
-use Model\Payment\Commands\Group\RemoveGroup;
-use Model\Payment\Group;
-use Model\Payment\GroupNotClosed;
-use Model\Payment\Repositories\IGroupRepository;
 
 final class RemoveGroupHandlerTest extends Unit
 {

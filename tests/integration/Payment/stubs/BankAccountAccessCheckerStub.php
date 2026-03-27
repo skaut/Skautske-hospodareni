@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Stubs;
 
-use Model\Payment\Services\IBankAccountAccessChecker;
+use App\Model\Payment\Services\IBankAccountAccessChecker;
 
 final class BankAccountAccessCheckerStub implements IBankAccountAccessChecker
 {

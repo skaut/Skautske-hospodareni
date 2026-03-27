@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Model\DTO\Travel\Command;
+namespace App\Model\DTO\Travel\Command;
 
+use App\Model\Common\EmailAddress;
 use Codeception\Test\Unit;
 use InvalidArgumentException;
-use Model\Common\EmailAddress;
 
 class EmailAddressTest extends Unit
 {

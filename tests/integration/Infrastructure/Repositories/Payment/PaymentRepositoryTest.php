@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Model\Infrastructure\Repositories\Payment;
+namespace App\Model\Infrastructure\Repositories\Payment;
 
+use App\Model\Payment\EmailType;
+use App\Model\Payment\Group;
+use App\Model\Payment\Payment;
+use App\Model\Payment\PaymentNotFound;
+use App\Model\Payment\Summary;
+use App\Model\Payment\VariableSymbol;
 use Cake\Chronos\ChronosDate;
 use Helpers;
 use Hskauting\Tests\NullEventBus;
 use IntegrationTest;
-use Model\Payment\EmailType;
-use Model\Payment\Group;
-use Model\Payment\Payment;
-use Model\Payment\PaymentNotFound;
-use Model\Payment\Summary;
-use Model\Payment\VariableSymbol;
 
 use function array_fill;
 use function array_map;
@@ -93,7 +93,7 @@ class PaymentRepositoryTest extends IntegrationTest
 
         $payment = $this->repository->find(1);
 
-        $expectedTransaction = new \Entity\Embeddable\Transaction(
+        $expectedTransaction = new \App\Model\Common\Embeddable\Transaction(
             $data['transactionId'],
             $data['bank_account'],
             $data['transaction_payer'],

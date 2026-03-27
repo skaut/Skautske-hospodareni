@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Model\Skautis\Event;
+namespace App\Model\Skautis\Event;
 
+use App\Model\Common\UnitId;
+use App\Model\Event\SkautisEventId;
+use App\Model\Skautis\Factory\EventFactory;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
-use Model\Common\UnitId;
-use Model\Event\SkautisEventId;
-use Model\Skautis\Factory\EventFactory;
 use stdClass;
 
 final class EventFactoryTest extends Unit

@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment;
+namespace App\Model\Payment;
 
+use App\Model\Common\EmailAddress;
+use App\Model\Common\Embeddable\Transaction;
+use App\Model\Payment\DomainEvents\PaymentAmountWasChanged;
+use App\Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
+use App\Model\Payment\DomainEvents\PaymentWasCreated;
+use App\Model\Payment\Payment\State;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use DateTimeImmutable;
-use Entity\Embeddable\Transaction;
 use Helpers;
 use InvalidArgumentException;
 use Mockery as m;
-use Model\Common\EmailAddress;
-use Model\Payment\DomainEvents\PaymentAmountWasChanged;
-use Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
-use Model\Payment\DomainEvents\PaymentWasCreated;
-use Model\Payment\Payment\State;
 
 use function assert;
 

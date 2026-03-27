@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment;
+namespace App\Model\Payment;
 
 use Assert\Assertion;
 use Nette\Mail\Mailer;

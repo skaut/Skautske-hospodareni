@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Model;
+namespace App\Model\Mail;
 
+use App\Model\Common\UnitId;
+use App\Model\Google\Entity\GoogleOAuth;
+use App\Model\Mail\Repositories\IGoogleRepository;
+use App\Model\Payment\IUnitResolver;
 use Codeception\Test\Unit;
-use Entity\GoogleOAuth;
 use Mockery as m;
-use Model\Common\UnitId;
-use Model\Mail\Repositories\IGoogleRepository;
-use Model\Payment\IUnitResolver;
 
 final class MailServiceTest extends Unit
 {
@@ -26,8 +26,7 @@ final class MailServiceTest extends Unit
                 20 => [$officialOAuth],
             ]);
 
-        $unitResolver = new class() implements IUnitResolver
-        {
+        $unitResolver = new class implements IUnitResolver {
             public function getOfficialUnitId(int $unitId): int
             {
                 return $unitId === 10 ? 20 : $unitId;

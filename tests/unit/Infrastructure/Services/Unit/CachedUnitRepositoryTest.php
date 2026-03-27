@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Model\Infrastructure\Services\Unit;
+namespace App\Model\Infrastructure\Services\Unit;
 
+use App\Model\Unit\Repositories\IUnitRepository;
+use App\Model\Unit\Unit;
+use App\Model\Unit\UnitNotFound;
 use Codeception\Test\Unit as TestCase;
 use Mockery;
-use Model\Unit\Repositories\IUnitRepository;
-use Model\Unit\Unit;
-use Model\Unit\UnitNotFound;
 use Nette\Caching\Storages\MemoryStorage;
 
 final class CachedUnitRepositoryTest extends TestCase

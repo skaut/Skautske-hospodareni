@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\ReadModel\QueryHandlers;
+namespace App\Model\Payment\ReadModel\QueryHandlers;
 
+use App\Model\Common\Member;
+use App\Model\Common\Repositories\IMemberRepository;
+use App\Model\Common\UnitId;
+use App\Model\Payment\PaymentService;
+use App\Model\Payment\ReadModel\Queries\MembersWithoutPaymentInGroupQuery;
+use App\Model\Payment\Repositories\IMemberEmailRepository;
 use Codeception\Test\Unit;
 use Mockery;
-use Model\Common\Member;
-use Model\Common\Repositories\IMemberRepository;
-use Model\Common\UnitId;
-use Model\Payment\ReadModel\Queries\MembersWithoutPaymentInGroupQuery;
-use Model\Payment\Repositories\IMemberEmailRepository;
-use Model\PaymentService;
 
 final class MembersWithoutPaymentInGroupQueryHandlerTest extends Unit
 {

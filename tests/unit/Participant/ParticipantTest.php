@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Model\Travel;
+namespace App\Model\Travel;
 
+use App\Model\DTO\Participant\Participant;
+use App\Model\Participant\PragueParticipants;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use Mockery as m;
-use Model\DTO\Participant\Participant;
-use Model\Participant\PragueParticipants;
 
 class ParticipantTest extends Unit
 {

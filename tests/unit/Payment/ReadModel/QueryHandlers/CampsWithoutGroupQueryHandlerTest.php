@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\ReadModel\QueryHandlers;
+namespace App\Model\Payment\ReadModel\QueryHandlers;
 
+use App\Model\Common\Services\QueryBus;
+use App\Model\Event\Camp;
+use App\Model\Event\ReadModel\Queries\CampListQuery;
+use App\Model\Event\SkautisCampId;
+use App\Model\Payment\Group;
+use App\Model\Payment\Group\SkautisEntity;
+use App\Model\Payment\Group\Type;
+use App\Model\Payment\ReadModel\Queries\CampsWithoutGroupQuery;
+use App\Model\Payment\Repositories\IGroupRepository;
 use Codeception\Test\Unit;
 use Mockery;
-use Model\Common\Services\QueryBus;
-use Model\Event\Camp;
-use Model\Event\ReadModel\Queries\CampListQuery;
-use Model\Event\SkautisCampId;
-use Model\Payment\Group;
-use Model\Payment\Group\SkautisEntity;
-use Model\Payment\Group\Type;
-use Model\Payment\ReadModel\Queries\CampsWithoutGroupQuery;
-use Model\Payment\Repositories\IGroupRepository;
 
 final class CampsWithoutGroupQueryHandlerTest extends Unit
 {

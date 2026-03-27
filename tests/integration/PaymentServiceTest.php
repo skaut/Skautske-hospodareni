@@ -2,16 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Model;
+namespace App\Model\Payment;
 
+use App\Model\Common\Services\CommandBus;
+use App\Model\Payment\Commands\Payment\CreatePayment;
+use App\Model\Payment\Repositories\IPaymentRepository;
 use Helpers;
 use IntegrationTest;
-use Model\Common\Services\CommandBus;
-use Model\Payment\Commands\Payment\CreatePayment;
-use Model\Payment\Group;
-use Model\Payment\Payment;
-use Model\Payment\Repositories\IPaymentRepository;
-use Model\Payment\VariableSymbol;
 
 class PaymentServiceTest extends IntegrationTest
 {

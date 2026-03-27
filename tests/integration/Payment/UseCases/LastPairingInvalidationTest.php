@@ -2,20 +2,25 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment;
+namespace App\Model\Payment;
 
+use App\Model\Bank\BankService;
+use App\Model\Bank\Entity\BankAccount;
+use App\Model\Bank\Entity\BankTransaction;
+use App\Model\Bank\Entity\BankTransactionPairing;
+use App\Model\Common\Services\CommandBus;
+use App\Model\Invoice\Entity\Invoice;
+use App\Model\Invoice\Entity\InvoiceItem;
+use App\Model\Invoice\Entity\InvoiceSequence;
+use App\Model\Payment\Commands\BankAccount\CreateBankAccount;
+use App\Model\Payment\Commands\Payment\CreatePayment;
+use App\Model\Payment\Commands\Payment\UpdatePayment;
+use App\Model\Payment\Repositories\IGroupRepository;
+use App\Model\Payment\Services\BankAccountAccessChecker;
+use App\Model\Payment\Services\IOAuthAccessChecker;
 use DateTimeImmutable;
-use Entity\BankAccount;
 use Helpers;
 use IntegrationTest;
-use Model\BankService;
-use Model\Common\Services\CommandBus;
-use Model\Payment\Commands\BankAccount\CreateBankAccount;
-use Model\Payment\Commands\Payment\CreatePayment;
-use Model\Payment\Commands\Payment\UpdatePayment;
-use Model\Payment\Repositories\IGroupRepository;
-use Model\Payment\Services\BankAccountAccessChecker;
-use Model\Payment\Services\IOAuthAccessChecker;
 
 final class LastPairingInvalidationTest extends IntegrationTest
 {
@@ -31,8 +36,13 @@ final class LastPairingInvalidationTest extends IntegrationTest
     {
         return [
             BankAccount::class,
+            BankTransaction::class,
+            BankTransactionPairing::class,
             Group::class,
             Payment::class,
+            InvoiceSequence::class,
+            Invoice::class,
+            InvoiceItem::class,
         ];
     }
 
@@ -56,7 +66,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
         $this->pairPayments();
 
         $this->commandBus->handle(
-            new CreatePayment(1, 'a', [], 2, Helpers::getValidDueDate(), null, new VariableSymbol('1'), null, ''),
+            new CreatePayment(1, 'a', [], 2, Helpers::getValidDueDate(), null, new VariableSymbol('2'), null, ''),
         );
 
         $this->assertGroupHasEmptyLastPairing();

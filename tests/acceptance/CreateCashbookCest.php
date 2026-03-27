@@ -7,6 +7,7 @@ namespace acceptance;
 use AcceptanceTester;
 
 use function date;
+use function str_contains;
 
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 class CreateCashbookCest extends BaseAcceptanceCest
@@ -20,26 +21,45 @@ class CreateCashbookCest extends BaseAcceptanceCest
         $I->login(AcceptanceTester::UNIT_LEADER_ROLE);
 
         $I->click('Jednotka');
+        $I->waitForElementVisible('[data-test="unit-cashbook-page"], [data-test="unit-no-cashbook"]', 10);
+
         $I->amGoingTo('Create first unit cashbook - for current year');
-        $this->createCashbook($I, (int) date('Y'));
+        $this->openCreateDialog($I);
+        $this->selectFirstAvailableYear($I);
+
         $I->amGoingTo('Create cashbook for different year');
-        $I->click('#unit-cashbook-menu');
-        $createCashbookButton = 'Přidat pokladní knihu';
-        $I->waitForText($createCashbookButton);
-        $I->click($createCashbookButton);
-        $this->fillModalAndSubmit($I, (int) date('Y') + 1);
+        $this->openCreateFromMenu($I);
+        $this->selectFirstAvailableYear($I);
     }
 
-    private function createCashbook(AcceptanceTester $I, int $year): void
+    private function openCreateDialog(AcceptanceTester $I): void
     {
-        $I->click('Založit novou pokladní knihu');
-        $this->fillModalAndSubmit($I, $year);
+        $source = $I->grabPageSource();
+
+        if (str_contains($source, 'Založit novou pokladní knihu')) {
+            // Empty state — big CTA button
+            $I->click('Založit novou pokladní knihu');
+        } else {
+            // Cashbook exists — use dropdown menu
+            $this->openCreateFromMenu($I);
+        }
     }
 
-    private function fillModalAndSubmit(AcceptanceTester $I, int $year): void
+    private function openCreateFromMenu(AcceptanceTester $I): void
+    {
+        $I->click('#unit-cashbook-menu');
+        $I->waitForText('Přidat pokladní knihu');
+        $I->click('Přidat pokladní knihu');
+    }
+
+    private function selectFirstAvailableYear(AcceptanceTester $I): void
     {
         $I->waitForText('Vyberte rok');
-        $I->selectOption('Rok', $year);
+        // Grab the first available option value (years with existing cashbooks are removed)
+        $year = (int) $I->executeJS(
+            'return document.querySelector("select[name=\'year\'] option:not([value=\'\'])").value',
+        );
+        $I->selectOption('Rok', (string) $year);
         $I->click('Založit', '.modal-footer');
 
         $I->waitForText('Pokladní kniha byla vytvořena');
@@ -47,3 +67,4 @@ class CreateCashbookCest extends BaseAcceptanceCest
         $I->see((string) $year);
     }
 }
+

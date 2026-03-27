@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook\ReadModel\QueryHandlers;
+namespace App\Model\Cashbook\ReadModel\QueryHandlers;
 
+use App\Model\Cashbook\Cashbook;
+use App\Model\Cashbook\Cashbook\CashbookId;
+use App\Model\Cashbook\Cashbook\CashbookType;
+use App\Model\Cashbook\ICategory;
+use App\Model\Cashbook\Operation;
+use App\Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
+use App\Model\Cashbook\Repositories\CategoryRepository;
+use App\Model\Cashbook\Repositories\ICashbookRepository;
 use Codeception\Test\Unit;
 use Mockery as m;
-use Model\Cashbook\Cashbook;
-use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\Cashbook\CashbookType;
-use Model\Cashbook\ICategory;
-use Model\Cashbook\Operation;
-use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
-use Model\Cashbook\Repositories\CategoryRepository;
-use Model\Cashbook\Repositories\ICashbookRepository;
 
 use function array_map;
 

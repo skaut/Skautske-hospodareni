@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\ReadModel\QueryHandlers;
+namespace App\Model\Payment\ReadModel\QueryHandlers;
 
+use App\Model\Common\UnitId;
+use App\Model\Google\Entity\GoogleOAuth;
+use App\Model\Mail\Repositories\IGoogleRepository;
+use App\Model\Payment\IUnitResolver;
+use App\Model\Payment\ReadModel\Queries\OAuthsAccessibleByGroupsQuery;
+use App\Model\Payment\Services\IOAuthAccessChecker;
 use Codeception\Test\Unit;
-use Entity\GoogleOAuth;
 use Mockery as m;
-use Model\Common\UnitId;
-use Model\Mail\Repositories\IGoogleRepository;
-use Model\Payment\IUnitResolver;
-use Model\Payment\ReadModel\Queries\OAuthsAccessibleByGroupsQuery;
-use Model\Payment\Services\IOAuthAccessChecker;
 
 final class OAuthsAccessibleByGroupsQueryHandlerTest extends Unit
 {
@@ -39,8 +39,7 @@ final class OAuthsAccessibleByGroupsQueryHandlerTest extends Unit
             ->with([10], $deniedOAuth->getId())
             ->andReturn(false);
 
-        $unitResolver = new class() implements IUnitResolver
-        {
+        $unitResolver = new class implements IUnitResolver {
             public function getOfficialUnitId(int $unitId): int
             {
                 return $unitId === 10 ? 20 : $unitId;

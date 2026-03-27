@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Model\DTO\Travel\Command;
+namespace App\Model\DTO\Travel\Command;
 
+use App\Model\Travel\Command;
+use App\Model\Travel\Travel\TransportType;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use Mockery as m;
-use Model\Travel\Command;
-use Model\Travel\Travel\TransportType;
 use Money\Money;
 
 use function array_map;

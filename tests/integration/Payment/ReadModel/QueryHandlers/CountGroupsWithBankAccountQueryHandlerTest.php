@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\ReadModel\QueryHandlers;
+namespace App\Model\Payment\ReadModel\QueryHandlers;
 
+use App\Model\Payment\BankAccount\BankAccountId;
+use App\Model\Payment\Group;
+use App\Model\Payment\ReadModel\Queries\CountGroupsWithBankAccountQuery;
 use IntegrationTest;
-use Model\Payment\BankAccount\BankAccountId;
-use Model\Payment\Group;
-use Model\Payment\ReadModel\Queries\CountGroupsWithBankAccountQuery;
 
 final class CountGroupsWithBankAccountQueryHandlerTest extends IntegrationTest
 {

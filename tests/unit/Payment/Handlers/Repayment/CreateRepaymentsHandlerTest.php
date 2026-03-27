@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\Handlers\Repayment;
+namespace App\Model\Payment\Handlers\Repayment;
 
+use App\Model\Bank\Fio\IUploaderFactory;
+use App\Model\Common\Embeddable\AccountNumber;
+use App\Model\Payment\BankError;
+use App\Model\Payment\Commands\Repayment\CreateRepayments;
+use App\Model\Payment\Repayment;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
-use Entity\Embeddable\AccountNumber;
 use FioApi\Upload\Entity\UploadResponse;
 use FioApi\Upload\Uploader;
 use Mockery as m;
-use Model\Bank\Fio\IUploaderFactory;
-use Model\Payment\BankError;
-use Model\Payment\Commands\Repayment\CreateRepayments;
-use Model\Payment\Repayment;
 use Money\Money;
 
 final class CreateRepaymentsHandlerTest extends Unit

@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace acceptance;
 
 use AcceptanceTester;
+use App\Model\Cashbook\Operation;
 use Cake\Chronos\ChronosDate;
 use Facebook\WebDriver\WebDriverKeys;
-use Model\Cashbook\Operation;
+use Throwable;
 
+use function count;
 use function date;
 use function sprintf;
 use function time;
@@ -21,15 +23,26 @@ class EventCashbookCest extends BaseAcceptanceCest
 
     protected AcceptanceTester $I;
     private string $eventName;
+    private bool $eventCreated = false;
 
     public function _before(AcceptanceTester $I): void
     {
         parent::_before($I);
 
         $this->eventName = 'Acceptance test event '.time();
+        $this->eventCreated = false;
         $this->I = $I;
 
         $I->login(AcceptanceTester::UNIT_LEADER_ROLE);
+    }
+
+    public function _after(AcceptanceTester $I): void
+    {
+        if (! $this->eventCreated) {
+            return;
+        }
+
+        $this->cleanupEvent($I);
     }
 
     /** @group cashbook */
@@ -63,6 +76,7 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->fillField('Do', $today);
 
         $this->I->click('.ui--createEvent');
+        $this->eventCreated = true;
         $this->I->see('Základní údaje');
 
         // Go through datagrid
@@ -105,7 +119,7 @@ class EventCashbookCest extends BaseAcceptanceCest
 
         $this->I->fillField('items[0][price]', '121');
         $this->I->scrollTo('input[name="send"]');
-        $this->I->wait(2);
+        $this->I->waitForElementClickable('input[name="send"]');
         $this->I->click('input[name="send"]');
         $this->waitForBalance('-121,00');
     }
@@ -117,7 +131,7 @@ class EventCashbookCest extends BaseAcceptanceCest
 
         $this->fillChitForm(new ChronosDate(), 'Účastnické poplatky', Operation::INCOME(), 'Přijmy od účastníků', 'Testovací skaut 2', '100');
         $this->I->scrollTo('input[name="send"]');
-        $this->I->wait(2);
+        $this->I->waitForElementClickable('input[name="send"]');
         $this->I->click('input[name="send"]');
 
         $this->waitForBalance('-21,00');
@@ -129,13 +143,12 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->amGoingTo('create expense chit');
         $this->fillChitForm(new ChronosDate(), 'Rohlíky', Operation::EXPENSE(), 'Potraviny', 'Testovací skaut', '50');
         $this->I->click('input[name="items[addItem]"]');
-        $this->I->wait(2);
+        $this->I->waitForElement('input[name="items[1][remove]"]');
         $this->I->expect('Odebrat položku');
         $this->I->seeElement('input[name="items[1][remove]"]');
         $this->fillSecondChitForm('Hřebíky', Operation::EXPENSE(), 'Materiál', 'Testovací skaut', '50');
         $this->I->scrollTo('input[name="send"]');
         $this->I->waitForElementClickable('input[name="send"]');
-        $this->I->wait(2);
         $this->I->click('input[name="send"]');
         $this->waitForBalance('-121,00');
     }
@@ -150,10 +163,10 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->expect('Odebrat položku');
         $this->I->seeElement('input[name="items[0][remove]"]');
         $this->I->click('input[name="items[0][remove]"]');
-        $this->I->wait(6); // waiting for animation and ajax
+        $this->I->waitForElementNotVisible('input[name="items[0][remove]"]', 10);
         $this->I->dontSeeElement('//input[@type="submit" and @value="Odebrat položku"]');
         $this->I->click('Nový doklad');
-        $this->I->wait(6); // waiting for animation and ajax
+        $this->I->waitForText('Položky', 10);
         $this->I->dontSeeElement('//input[@type="submit" and @value="Uložit"]');
     }
 
@@ -174,21 +187,38 @@ class EventCashbookCest extends BaseAcceptanceCest
     private function cancelEvent(): void
     {
         $this->I->amGoingTo('cancel the event');
+        $this->cleanupEvent($this->I);
+    }
 
-        $this->I->click('Akce');
-
+    private function cleanupEvent(AcceptanceTester $I): void
+    {
         $cancelButton = sprintf("//a[text()='%s']/ancestor::tr//a[contains(@class, 'btn-danger')][1]", $this->eventName);
 
-        $this->I->waitForElement($cancelButton);
-        $this->I->disablePopups();
-        $this->I->click($cancelButton);
+        try {
+            $I->amOnPage('/');
+            $I->click('Akce');
+            $I->waitForText('Seznam akcí');
+            $I->executeJs('window.scrollTo(0, document.body.scrollHeight);');
+            $I->wait(2);
 
-        $this->I->waitForElementNotVisible($cancelButton);
+            if (count($I->grabMultiple($cancelButton)) === 0) {
+                $this->eventCreated = false;
+
+                return;
+            }
+
+            $I->disablePopups();
+            $I->click($cancelButton);
+            $I->waitForElementNotVisible($cancelButton);
+            $this->eventCreated = false;
+        } catch (Throwable $e) {
+            $I->comment(sprintf('Cleanup of event "%s" failed: %s', $this->eventName, $e->getMessage()));
+        }
     }
 
     private function fillChitForm(ChronosDate $date, string $purpose, Operation $type, string $category, string $recipient, string $amount): void
     {
-        $this->I->wait(2); // unroll block
+        $this->I->waitForElement('input[name="send"]', 10);
         $this->I->wantToTest('Uložit');
         $this->I->fillField('Datum', $date->format('d.m. Y'));
         $this->I->pressKey('body', [WebDriverKeys::ESCAPE]); // close datepicker
@@ -212,7 +242,6 @@ class EventCashbookCest extends BaseAcceptanceCest
     {
         $this->I->expectTo(sprintf('see %s CZK as final balance', $balance));
         $this->I->executeJs('window.scrollTo(0, document.body.scrollHeight);');
-        $this->I->wait(2);
         $this->I->waitForText($balance, 10, self::BALANCE_SELECTOR);
     }
 

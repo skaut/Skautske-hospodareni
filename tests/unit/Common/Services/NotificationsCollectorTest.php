@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Model\Common\Services;
+namespace App\Model\Common\Services;
 
 use Codeception\Test\Unit;
 

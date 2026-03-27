@@ -44,7 +44,7 @@ class AcceptanceTester extends Actor
         }
 
         $I->amOnPage('/');
-        $I->click('Přihlásit se');
+        $I->click('[data-test="login-link"]');
         $I->waitForText('přihlášení');
         $I->fillField('(//input)[9]', self::LOGIN);
         $I->fillField('(//input)[10]', self::PASSWORD);

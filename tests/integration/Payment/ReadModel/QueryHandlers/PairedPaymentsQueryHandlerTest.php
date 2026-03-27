@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\ReadModel\QueryHandlers;
+namespace App\Model\Payment\ReadModel\QueryHandlers;
 
+use App\Model\Payment\BankAccount\BankAccountId;
+use App\Model\Payment\Group;
+use App\Model\Payment\Payment;
+use App\Model\Payment\ReadModel\Queries\PairedPaymentsQuery;
 use DateTimeImmutable;
 use IntegrationTest;
-use Model\Payment\BankAccount\BankAccountId;
-use Model\Payment\Group;
-use Model\Payment\Payment;
-use Model\Payment\ReadModel\Queries\PairedPaymentsQuery;
 
 final class PairedPaymentsQueryHandlerTest extends IntegrationTest
 {

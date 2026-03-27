@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Model\DTO\Travel\Command;
+namespace App\Model\DTO\Travel\Command;
 
+use App\Model\Cashbook\Cashbook\Amount;
+use App\Model\Cashbook\Cashbook\ChitBody;
+use App\Model\Cashbook\Cashbook\PaymentMethod;
+use App\Model\Cashbook\Operation;
+use App\Model\DTO\Cashbook\Category;
+use App\Model\DTO\Cashbook\Chit;
+use App\Model\DTO\Cashbook\ChitItem;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
-use Model\Cashbook\Cashbook\Amount;
-use Model\Cashbook\Cashbook\ChitBody;
-use Model\Cashbook\Cashbook\PaymentMethod;
-use Model\Cashbook\Operation;
-use Model\DTO\Cashbook\Category;
-use Model\DTO\Cashbook\Chit;
-use Model\DTO\Cashbook\ChitItem;
 
 class ChitTest extends Unit
 {

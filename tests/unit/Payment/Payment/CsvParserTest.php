@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\Payment;
+namespace App\Model\Payment\Payment;
 
+use App\Model\Payment\Commands\Payment\CreatePayment;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
-use Model\Payment\Commands\Payment\CreatePayment;
 use Nette\Schema\ValidationException;
 
 final class CsvParserTest extends Unit
@@ -15,7 +15,7 @@ final class CsvParserTest extends Unit
     {
         $payments = (new CsvParser())->parse(
             123,
-            "Alice,150.5,4.3.2026,\"alice@example.com,bob@example.com\",123456,308,poznamka",
+            'Alice,150.5,4.3.2026,"alice@example.com,bob@example.com",123456,308,poznamka',
         );
 
         self::assertCount(1, $payments);
@@ -36,7 +36,7 @@ final class CsvParserTest extends Unit
     {
         $payments = (new CsvParser())->parse(
             456,
-            "Bob,99.9,04.03.2026,,,,",
+            'Bob,99.9,04.03.2026,,,,',
         );
 
         self::assertCount(1, $payments);
@@ -54,7 +54,7 @@ final class CsvParserTest extends Unit
 
         (new CsvParser())->parse(
             123,
-            "Alice,150,4.3.2026,\"not-an-email\",,,",
+            'Alice,150,4.3.2026,"not-an-email",,,',
         );
     }
 }

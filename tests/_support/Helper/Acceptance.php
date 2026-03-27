@@ -22,6 +22,6 @@ class Acceptance extends Module
     {
         /** @var Db $db */
         $db = $this->getModule('Db');
-        $db->driver->deleteQueryByCriteria($table, $criteria);
+        $db->_getDriver()->deleteQueryByCriteria($table, $criteria);
     }
 }

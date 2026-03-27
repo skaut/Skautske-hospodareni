@@ -1,35 +1,47 @@
 
 services:
-    - Model\Infrastructure\Repositories\Payment\PaymentRepository
-    - Model\Infrastructure\Repositories\Payment\GroupRepository
-    - Model\Infrastructure\Repositories\Payment\BankAccountRepository
+    - App\Model\Bank\BankService
+    - App\Model\Bank\Services\BankAccountPairingRunner
+    - App\Model\Bank\Services\AutomaticBankPairingService
+    - App\Model\Bank\Services\BankPairingCandidateProvider
+    - App\Model\Bank\Services\BankTransactionPairingService
+    - App\Model\Bank\Services\BankTransactionService
+    - App\Model\Bank\Services\GpcParser
+    - App\Model\Bank\Services\BankTransactionKeyGenerator
+    - App\Model\Infrastructure\Repositories\Payment\PaymentRepository
+    - App\Model\Infrastructure\Repositories\Payment\GroupRepository
+    - App\Model\Infrastructure\Repositories\Payment\BankAccountRepository
+    - App\Model\Invoice\Repository\InvoiceRepository
+    - App\Model\Bank\Manager\BankTransactionImportManager
+    - App\Model\Bank\Manager\BankTransactionPairingManager
+    - App\Model\Bank\Repository\BankTransactionRepository
+    - App\Model\Bank\Repository\BankTransactionPairingRepository
+    - App\Model\Payment\Services\VariableSymbolCollisionChecker
 
-    - class: Model\Payment\Subscribers\PaymentSubscriber
+    - class: App\Model\Payment\Subscribers\PaymentSubscriber
       tags:
           messenger.messageHandler:
               bus: eventBus
 
-    - class: Model\Payment\Handlers\Payment\CreatePaymentHandler
+    - class: App\Model\Payment\Handlers\Payment\CreatePaymentHandler
       tags:
           messenger.messageHandler:
               bus: commandBus
 
-    - class: Model\Payment\Handlers\Payment\UpdatePaymentHandler
+    - class: App\Model\Payment\Handlers\Payment\UpdatePaymentHandler
       tags:
           messenger.messageHandler:
               bus: commandBus
 
-    - class: Model\Payment\Handlers\BankAccount\CreateBankAccountHandler
+    - class: App\Model\Payment\Handlers\BankAccount\CreateBankAccountHandler
       tags:
           messenger.messageHandler:
               bus: commandBus
 
-    - Model\Payment\Services\BankAccountAccessChecker
+    - App\Model\Payment\Services\BankAccountAccessChecker
     - Stubs\OAuthsAccessCheckerStub
 
-    - Model\Payment\UnitResolverStub
-    - Model\Payment\FioClientStub
-    - Model\BankService
-
+    - App\Model\Payment\UnitResolverStub
+    - App\Model\Payment\FioClientStub
 includes:
     - ../../config/doctrine.neon

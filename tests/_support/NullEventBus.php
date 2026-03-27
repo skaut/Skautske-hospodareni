@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Hskauting\Tests;
 
-use Model\Common\Services\EventBus;
+use App\Model\Common\Services\EventBus;
 
 final class NullEventBus implements EventBus
 {

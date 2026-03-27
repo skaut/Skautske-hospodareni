@@ -3,10 +3,13 @@
 declare(strict_types=1);
 
 use Nette\Loaders\RobotLoader;
+use Nette\Utils\FileSystem;
 
 require_once __DIR__.'/../vendor/autoload.php';
 
 date_default_timezone_set('Europe/Prague');
+
+FileSystem::createDir(__DIR__.'/../temp/cache/integration');
 
 (new RobotLoader())
     ->addDirectory(__DIR__.'/../app')

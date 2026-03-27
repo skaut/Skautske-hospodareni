@@ -51,16 +51,22 @@ abstract class IntegrationTest extends Codeception\Test\Unit
         // pro MySQL jistota kvůli FK
         $conn = $this->entityManager->getConnection();
         $conn->executeStatement('SET FOREIGN_KEY_CHECKS=0');
-
-        $this->schemaTool->dropSchema($this->metadata);
+        $this->clearDatabase();
         $conn->executeStatement('SET FOREIGN_KEY_CHECKS=1');
-
         $this->schemaTool->createSchema($this->metadata);
     }
 
     protected function _after(): void
     {
-        $this->schemaTool->dropSchema($this->metadata);
+        try {
+            $conn = $this->entityManager->getConnection();
+            $conn->executeStatement('SET FOREIGN_KEY_CHECKS=0');
+            $this->clearDatabase();
+            $conn->executeStatement('SET FOREIGN_KEY_CHECKS=1');
+        } finally {
+            $this->entityManager->clear();
+            $this->entityManager->getConnection()->close();
+        }
     }
 
     /**
@@ -119,5 +125,19 @@ abstract class IntegrationTest extends Codeception\Test\Unit
         }
 
         return $childEntities;
+    }
+
+    private function clearDatabase(): void
+    {
+        $connection = $this->entityManager->getConnection();
+        $schemaManager = $connection->createSchemaManager();
+
+        foreach ($schemaManager->listViews() as $view) {
+            $connection->executeStatement('DROP VIEW IF EXISTS '.$connection->quoteIdentifier($view->getName()));
+        }
+
+        foreach ($schemaManager->listTableNames() as $tableName) {
+            $connection->executeStatement('DROP TABLE IF EXISTS '.$connection->quoteIdentifier($tableName));
+        }
     }
 }

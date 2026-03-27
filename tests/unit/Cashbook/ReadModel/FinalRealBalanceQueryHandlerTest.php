@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook\ReadModel\QueryHandlers;
+namespace App\Model\Cashbook\ReadModel\QueryHandlers;
 
+use App\Model\Cashbook\Cashbook;
+use App\Model\Cashbook\Operation;
+use App\Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
+use App\Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
+use App\Model\Common\Services\QueryBus;
+use App\Model\DTO\Cashbook\CategorySummary;
+use App\Model\Utils\MoneyFactory;
 use Codeception\Test\Unit;
 use Mockery as m;
-use Model\Cashbook\Cashbook;
-use Model\Cashbook\Operation;
-use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
-use Model\Cashbook\ReadModel\Queries\FinalRealBalanceQuery;
-use Model\Common\Services\QueryBus;
-use Model\DTO\Cashbook\CategorySummary;
-use Model\Utils\MoneyFactory;
 use Money\Money;
 
 final class FinalRealBalanceQueryHandlerTest extends Unit

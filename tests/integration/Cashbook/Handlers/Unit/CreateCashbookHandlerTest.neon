@@ -1,5 +1,5 @@
 services:
-    - class: Model\Cashbook\Handlers\Unit\CreateCashbookHandler
+    - class: App\Model\Cashbook\Handlers\Unit\CreateCashbookHandler
       tags:
           messenger.messageHandler:
               bus: commandBus

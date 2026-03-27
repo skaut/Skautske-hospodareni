@@ -2,20 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Model;
+namespace App\Model\Payment;
 
-use App\AccountancyModule\PaymentModule\Components\EmailButton;
+use App\Components\Payment\EmailButton;
+use App\Model\Common\Services\CommandBus;
+use App\Model\Google\Exception\OAuthNotSet;
+use App\Model\Google\InvalidOAuth;
+use App\Model\Payment\Commands\Mailing\SendPaymentReminder;
+use App\Model\Payment\Repositories\IGroupRepository;
+use App\Model\Payment\Repositories\IPaymentRepository;
 use Codeception\Test\Unit;
 use Mockery as m;
-use Model\Common\Services\CommandBus;
-use Model\Google\Exception\OAuthNotSet;
-use Model\Google\InvalidOAuth;
-use Model\Payment\Commands\Mailing\SendPaymentReminder;
-use Model\Payment\EmailTemplateNotSet;
-use Model\Payment\InvalidBankAccount;
-use Model\Payment\PaymentHasNoEmails;
-use Model\Payment\Repositories\IGroupRepository;
-use Model\Payment\Repositories\IPaymentRepository;
 use Psr\Log\LoggerInterface;
 
 final class GroupServiceTest extends Unit

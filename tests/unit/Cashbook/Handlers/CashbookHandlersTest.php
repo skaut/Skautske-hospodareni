@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook\Handlers;
+namespace App\Model\Cashbook\Handlers;
 
+use App\Model\Cashbook\Cashbook;
+use App\Model\Cashbook\Cashbook\CashbookId;
+use App\Model\Cashbook\Commands\Cashbook as Commands;
+use App\Model\Cashbook\Handlers\Cashbook\ClearCashbookHandler;
+use App\Model\Cashbook\Handlers\Cashbook\GenerateChitNumbersHandler;
+use App\Model\Cashbook\Handlers\Cashbook\LockCashbookHandler;
+use App\Model\Cashbook\Handlers\Cashbook\LockChitHandler;
+use App\Model\Cashbook\Handlers\Cashbook\RemoveChitFromCashbookHandler;
+use App\Model\Cashbook\Handlers\Cashbook\UnlockChitHandler;
+use App\Model\Cashbook\Handlers\Cashbook\UpdateChitNumberPrefixHandler;
+use App\Model\Cashbook\Repositories\ICashbookRepository;
 use Codeception\Test\Unit;
 use Mockery as m;
-use Model\Cashbook\Cashbook;
-use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\Commands\Cashbook as Commands;
-use Model\Cashbook\Handlers\Cashbook\ClearCashbookHandler;
-use Model\Cashbook\Handlers\Cashbook\GenerateChitNumbersHandler;
-use Model\Cashbook\Handlers\Cashbook\LockCashbookHandler;
-use Model\Cashbook\Handlers\Cashbook\LockChitHandler;
-use Model\Cashbook\Handlers\Cashbook\RemoveChitFromCashbookHandler;
-use Model\Cashbook\Handlers\Cashbook\UnlockChitHandler;
-use Model\Cashbook\Handlers\Cashbook\UpdateChitNumberPrefixHandler;
-use Model\Cashbook\Repositories\ICashbookRepository;
 
 final class CashbookHandlersTest extends Unit
 {

@@ -1,13 +1,13 @@
 services:
-    - Model\Infrastructure\Repositories\Cashbook\CashbookRepository
-    - Model\Infrastructure\Repositories\Cashbook\UnitRepository
-    - Model\Payment\UnitResolverStub
+    - App\Model\Infrastructure\Repositories\Cashbook\CashbookRepository
+    - App\Model\Infrastructure\Repositories\Cashbook\UnitRepository
+    - App\Model\Payment\UnitResolverStub
 
-    - class: Model\Cashbook\Handlers\Cashbook\CreateCashbookHandler
+    - class: App\Model\Cashbook\Handlers\Cashbook\CreateCashbookHandler
       tags:
           messenger.messageHandler:
               bus: commandBus
-    - class: Model\Cashbook\Subscribers\UnitCashbookWasCreatedSubscriber
+    - class: App\Model\Cashbook\Subscribers\UnitCashbookWasCreatedSubscriber
       tags:
           messenger.messageHandler:
               bus: eventBus

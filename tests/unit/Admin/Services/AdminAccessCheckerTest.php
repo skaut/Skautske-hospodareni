@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Model\Admin\Services;
 
+use App\Model\User\Repository\AdminUserRepository;
 use Codeception\Test\Unit;
 use Mockery;
 use Nette\Security\IUserStorage;
 use Nette\Security\SimpleIdentity;
 use Nette\Security\User;
-use App\Model\User\Repository\AdminUserRepository;
 
 final class AdminAccessCheckerTest extends Unit
 {

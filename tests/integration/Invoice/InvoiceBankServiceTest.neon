@@ -1,0 +1,22 @@
+services:
+    - App\Model\Bank\InvoiceBankService
+    - App\Model\Bank\Services\BankAccountPairingRunner
+    - App\Model\Bank\Services\AutomaticBankPairingService
+    - App\Model\Bank\Services\BankPairingCandidateProvider
+    - App\Model\Bank\Services\BankTransactionPairingService
+    - App\Model\Bank\Services\BankTransactionService
+    - App\Model\Bank\Services\GpcParser
+    - App\Model\Bank\Services\BankTransactionKeyGenerator
+    - App\Model\Invoice\Repository\InvoiceRepository
+    - App\Model\Invoice\Repository\InvoiceSequenceRepository
+    - App\Model\Bank\Manager\BankTransactionImportManager
+    - App\Model\Bank\Manager\BankTransactionPairingManager
+    - App\Model\Bank\Repository\BankTransactionRepository
+    - App\Model\Bank\Repository\BankTransactionPairingRepository
+    - App\Model\Payment\FioClientStub
+    - App\Model\Infrastructure\Repositories\Payment\PaymentRepository
+    - App\Model\Infrastructure\Repositories\Payment\GroupRepository
+    - App\Model\Infrastructure\Repositories\Payment\BankAccountRepository
+    - Stubs\UnitRepositoryStub
+includes:
+    - ../config/doctrine.neon

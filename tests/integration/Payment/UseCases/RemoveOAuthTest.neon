@@ -1,10 +1,10 @@
 services:
-    - Model\Infrastructure\Repositories\Mail\GoogleRepository
-    - Model\Google\GoogleService('', '')
-    - Model\Infrastructure\Repositories\Payment\GroupRepository
-    - Model\Google\Handlers\RemoveOAuthHandler
+    - App\Model\Infrastructure\Repositories\Mail\GoogleRepository
+    - App\Model\Google\GoogleService('', '')
+    - App\Model\Infrastructure\Repositories\Payment\GroupRepository
+    - App\Model\Google\Handlers\RemoveOAuthHandler
 
-    - class: Model\Payment\Subscribers\OAuthRemovedSubscriber
+    - class: App\Model\Payment\Subscribers\OAuthRemovedSubscriber
       tags:
           messenger.messageHandler:
               bus: eventBus

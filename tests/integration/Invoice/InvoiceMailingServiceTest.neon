@@ -1,0 +1,12 @@
+services:
+    - App\Model\Payment\UserRepositoryStub
+    - App\Model\Payment\MailerFactoryStub
+    - Stubs\GoogleRepositoryStub
+    - App\Model\Services\TemplateFactory
+    - App\Model\Services\PdfRenderer(%tempDir%)
+
+includes:
+    - ../config/doctrine.neon
+
+extensions:
+    latte: Nette\Bridges\ApplicationDI\LatteExtension(%tempDir%, true)

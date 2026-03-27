@@ -37,8 +37,7 @@ class Payment
 
     public function addPayment(string $name, ?string $email, float $amount): void
     {
-        $this->tester->click('//button[contains(.,\'Přidat platbu\')]');
-        $this->tester->click('… obecnou');
+        $this->tester->executeJS('document.querySelector(\'[data-test="payment-add-button-item-general"]\').click();');
 
         $this->tester->waitForElementVisible('.modal-dialog');
         $this->fillName($name);
@@ -73,9 +72,9 @@ class Payment
 
     public function submitPayment(): void
     {
-        $this->tester->click('Přidat platbu', '.modal-footer');
+        $this->tester->click('.modal-footer input[type="submit"][form="frm-paymentDialog-form"]');
         $this->tester->waitForElementNotVisible('.modal-dialog');
         $this->tester->wait(3);
-        $this->tester->waitForElementClickable('(//button[contains(.,\'Přidat platbu\')])');
+        $this->tester->waitForElementClickable('[data-test="payment-add-button-toggle"]');
     }
 }

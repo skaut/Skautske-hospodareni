@@ -203,14 +203,16 @@ class SettingsCest extends BaseAcceptanceCest
 
         // Fill form
         $I->fillField('input[name="name"]', 'Testovací účet Selenium');
-        $I->fillField('input[name="number"]', '1234567890');
+        $I->fillField('input[name="number"]', '2000942144');
         $I->selectOption('select[name="bankCode"]', '0100');
         $I->selectOption('select[name="transactionSource"]', 'gpc');
+        $I->scrollTo('input[type="submit"]');
+        $I->waitForElementClickable('input[type="submit"]');
         $I->click('input[type="submit"]');
 
-        // Verify redirect back to list with success flash
+        // Wait for PRG redirect to complete — flash message is the reliable indicator
+        $I->waitForText('Bankovní účet byl uložen', 15);
         $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', 10);
-        $I->seeElement('.alert-success');
 
         // ── READ ─────────────────────────────────────────────────
         // Verify the new account appears in DB
@@ -232,9 +234,11 @@ class SettingsCest extends BaseAcceptanceCest
         $I->waitForElementVisible('[data-test="settings-bank-account-edit-page"]', 10);
 
         $I->fillField('input[name="name"]', 'Upravený účet Selenium');
+        $I->scrollTo('input[type="submit"]');
+        $I->waitForElementClickable('input[type="submit"]');
         $I->click('input[type="submit"]');
+        $I->waitForText('Bankovní účet byl uložen', 15);
         $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', 10);
-        $I->seeElement('.alert-success');
 
         // Verify update in DB
         $I->seeInDatabase('pa_bank_account', ['id' => $accountId, 'name' => 'Upravený účet Selenium']);
@@ -245,10 +249,10 @@ class SettingsCest extends BaseAcceptanceCest
         $I->waitForElementVisible('[data-test="settings-bank-account-edit-page"]', 10);
 
         $I->click('[data-test="settings-bank-account-remove"]');
+        $I->waitForText('smazán', 15);
         $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', 10);
 
         // Verify deletion
-        $I->seeElement('.alert-success');
         $I->dontSeeInDatabase('pa_bank_account', ['id' => $accountId]);
     }
 

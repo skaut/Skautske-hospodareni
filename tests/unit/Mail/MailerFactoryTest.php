@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Model\Mail;
+namespace App\Model\Mail;
 
+use App\Model\Google\Entity\GoogleOAuth;
+use App\Model\Google\GoogleService;
+use App\Model\Google\OAuthMailer;
 use Codeception\Test\Unit;
-use Entity\GoogleOAuth;
 use Google_Client;
 use Mockery as m;
-use Model\Google\GoogleService;
-use Model\Google\OAuthMailer;
 use Nette\Mail\Mailer;
 
 class MailerFactoryTest extends Unit

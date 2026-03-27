@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Model\Unit\Services;
+namespace App\Model\Unit\Services;
 
-use Model\Unit\Unit;
+use App\Model\Unit\Unit;
 
 use function sprintf;
 

@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\IntegrationTests;
+namespace App\Model\Payment\IntegrationTests;
 
-use Entity\GoogleOAuth;
+use App\Model\Common\EmailAddress;
+use App\Model\Common\Services\CommandBus;
+use App\Model\Common\User;
+use App\Model\Google\Entity\GoogleOAuth;
+use App\Model\Google\OAuthId;
+use App\Model\Payment\Commands\Payment\CreatePayment;
+use App\Model\Payment\EmailTemplate;
+use App\Model\Payment\EmailType;
+use App\Model\Payment\Group;
+use App\Model\Payment\Payment;
+use App\Model\Payment\PaymentService;
+use App\Model\Payment\UserRepositoryStub;
 use Helpers;
 use IntegrationTest;
-use Model\Common\EmailAddress;
-use Model\Common\Services\CommandBus;
-use Model\Common\User;
-use Model\Google\OAuthId;
-use Model\Payment\Commands\Payment\CreatePayment;
-use Model\Payment\EmailTemplate;
-use Model\Payment\EmailType;
-use Model\Payment\Group;
-use Model\Payment\Payment;
-use Model\Payment\UserRepositoryStub;
-use Model\PaymentService;
 
 class PaymentCompletedEmailTest extends IntegrationTest
 {

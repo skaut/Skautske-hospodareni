@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Model\User\ReadModel\QueryHandlers;
+namespace App\Model\User\ReadModel\QueryHandlers;
 
+use App\Model\Unit\Repositories\IUnitRepository;
+use App\Model\Unit\Unit;
+use App\Model\User\ReadModel\Queries\EditableUnitsQuery;
+use App\Model\User\SkautisRole;
 use Mockery as m;
-use Model\Unit\Repositories\IUnitRepository;
-use Model\Unit\Unit;
-use Model\User\ReadModel\Queries\EditableUnitsQuery;
-use Model\User\SkautisRole;
 
 use function array_map;
 use function count;

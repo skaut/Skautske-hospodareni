@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\Services;
+namespace App\Model\Payment\Services;
 
+use App\Model\Common\UnitId;
+use App\Model\Google\Entity\GoogleOAuth;
+use App\Model\Google\OAuthId;
+use App\Model\Mail\Repositories\IGoogleRepository;
+use App\Model\Payment\UnitResolverStub;
 use Codeception\Test\Unit;
-use Entity\GoogleOAuth;
 use Mockery;
-use Model\Common\UnitId;
-use Model\Google\OAuthId;
-use Model\Mail\Repositories\IGoogleRepository;
-use Model\Payment\UnitResolverStub;
 
 final class OAuthsAccessCheckerTest extends Unit
 {

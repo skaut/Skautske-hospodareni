@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\Group;
+namespace App\Model\Payment\Group;
 
+use App\Model\Common\EmailAddress;
+use App\Model\Payment\EmailTemplate;
+use App\Model\Payment\Group;
+use App\Model\Payment\Mailing\Payment;
 use Codeception\Test\Unit;
 use DateTimeImmutable;
 use Mockery as m;
-use Model\Common\EmailAddress;
-use Model\Payment\EmailTemplate;
-use Model\Payment\Group;
-use Model\Payment\Mailing\Payment;
 
 use function urlencode;
 

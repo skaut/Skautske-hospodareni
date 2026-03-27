@@ -1,32 +1,34 @@
 
 services:
-    - Model\Infrastructure\Repositories\Payment\BankAccountRepository
-    - Model\Infrastructure\Repositories\Payment\PaymentRepository
-    - Model\Infrastructure\Repositories\Payment\GroupRepository
-    - Model\Skautis\Payment\MemberEmailRepository
-    - Model\Skautis\ParticipantRepository
-    - Model\Infrastructure\Repositories\Participant\PaymentRepository
-    - Model\Common\Services\NotificationsCollector
+    - App\Model\Infrastructure\Repositories\Payment\BankAccountRepository
+    - App\Model\Infrastructure\Repositories\Payment\PaymentRepository
+    - App\Model\Infrastructure\Repositories\Payment\GroupRepository
+    - App\Model\Skautis\Payment\MemberEmailRepository
+    - App\Model\Skautis\ParticipantRepository
+    - App\Model\Infrastructure\Repositories\Participant\PaymentRepository
+    - App\Model\Invoice\Repository\InvoiceRepository
+    - App\Model\Common\Services\NotificationsCollector
+    - App\Model\Payment\Services\VariableSymbolCollisionChecker
     - GuzzleHttp\Client
 
     - Stubs\Skautis
-    - Model\Payment\UserRepositoryStub
+    - App\Model\Payment\UserRepositoryStub
     - Stubs\BankAccountAccessCheckerStub
     - Stubs\OAuthsAccessCheckerStub
-    - Model\PaymentService
+    - App\Model\Payment\PaymentService
     - Stubs\GoogleRepositoryStub
-    - Model\Google\GoogleService('', '')
+    - App\Model\Google\GoogleService('', '')
 
-    - Model\Mail\MailerFactory(Model\Payment\NullMailer(), false)
-    - Model\Services\TemplateFactory
-    - Model\Payment\MailingService
+    - App\Model\Mail\MailerFactory(App\Model\Payment\NullMailer(), false)
+    - App\Model\Services\TemplateFactory
+    - App\Model\Payment\MailingService
 
-    - class: Model\Payment\Handlers\Payment\CreatePaymentHandler
+    - class: App\Model\Payment\Handlers\Payment\CreatePaymentHandler
       tags:
           messenger.messageHandler:
               bus: commandBus
 
-    - class: Model\Payment\Subscribers\PaymentMailSubscriber
+    - class: App\Model\Payment\Subscribers\PaymentMailSubscriber
       tags:
           messenger.messageHandler:
               bus: eventBus
