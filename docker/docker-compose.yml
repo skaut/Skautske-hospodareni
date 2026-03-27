@@ -12,6 +12,8 @@ x-php-base:
     build:
         context: ./containers/php
     working_dir: /app
+    environment:
+        SHELL: /bin/bash
     env_file:
         - ./containers/php/ini/image.ini
     networks:

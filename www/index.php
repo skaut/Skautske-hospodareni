@@ -5,6 +5,6 @@ declare(strict_types=1);
 $container = require __DIR__ . '/../app/bootstrap.php';
 
 ini_set('memory_limit', '128M');
-set_time_limit(60);
+set_time_limit(120);
 
 $container->getService('application')->run();

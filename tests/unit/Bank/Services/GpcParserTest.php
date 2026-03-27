@@ -22,7 +22,7 @@ final class GpcParserTest extends Unit
         self::assertNotFalse($cp1250Text);
 
         $count = 0;
-        $contents = str_replace('Openai *Chatgpt Subs', $cp1250Text, $contents, $count);
+        $contents = str_replace('Najem kancelari 1/26', $cp1250Text, $contents, $count);
 
         self::assertSame(1, $count);
 
@@ -53,7 +53,7 @@ final class GpcParserTest extends Unit
         self::assertCount(1, $transactions);
         self::assertSame('8310192897', $parsedFile->statementAccountNumber);
         self::assertSame(-24.20, $transactions[0]->getAmount());
-        self::assertSame('Openai *Chatgpt Subs', $transactions[0]->getName());
+        self::assertSame('Najem kancelari 1/26', $transactions[0]->getName());
         self::assertNull($transactions[0]->getVariableSymbol());
         self::assertNull($transactions[0]->getConstantSymbol());
         self::assertSame('2026-02-28', $transactions[0]->getDate()->format('Y-m-d'));

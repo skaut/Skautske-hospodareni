@@ -1,12 +1,14 @@
 include .env.local
 -include .env
 
-CONTAINER_PHP=hskauting.app
-CONTAINER_PHP_TEST=hskauting.app-test
-CONTAINER_DB=hskauting.mysql
-CONTAINER_DB_TEST=hskauting.mysql-test
+CONTAINER_PHP=hskauting-php-1
+CONTAINER_PHP_TEST=hskauting-php-test-1
+CONTAINER_DB=hskauting-mysql-1
+CONTAINER_DB_TEST=hskauting-mysql-test-1
 
 CONSOLE?=
+WITH_FIXTURES?=0
+FIXTURES_ARGS?=--append --no-interaction
 
 up: down
 	docker compose ${COMPOSE_FILE} up -d --force-recreate
@@ -18,11 +20,19 @@ enter:
 	@docker exec -it ${CONTAINER_PHP} bash
 
 init:
-	docker exec -it $(CONTAINER_PHP) composer install
-	docker exec -it $(CONTAINER_PHP) composer run app-init
+	docker exec $(CONTAINER_PHP) composer run app-init
+ifneq ($(WITH_FIXTURES),0)
+	docker exec $(CONTAINER_PHP) php bin/console doctrine:fixtures:load $(FIXTURES_ARGS)
+endif
+
+init-fixtures:
+	$(MAKE) init WITH_FIXTURES=1
 
 tests-all:
 	docker exec -it ${CONTAINER_PHP_TEST} composer run tests
+
+latte-lint:
+	docker exec -it ${CONTAINER_PHP} composer run latte-lint
 
 tests-unit:
 	docker exec -it ${CONTAINER_PHP_TEST} composer run tests:unit
