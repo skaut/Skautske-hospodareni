@@ -1,0 +1,34 @@
+<div class="card">
+    <div class="card-body">
+        <p><b>E-mail odesílatele</b><br/>E-mail, ze kterého se budou zasílat informace o {$entityLabel}.</p>
+        <p><b>Proměnné v e-mailu</b><br/>Proměnné v e-mailu budou před odesláním nahrazeny údaji z {$entityLabelGenitive}. Jsou zapsány formou: "%Název_proměnné%".</p>
+
+{if $mode === 'payment'}
+        <ul>
+            <li>%account% - celé číslo účtu i s předčíslím a kódem banky</li>
+            <li>%qrcode% - vygenerovaný obrázek QR kódu (nelze použít v předmětu)</li>
+            <li>%name% - název/účel platby</li>
+            <li>%groupname% - název platební skupiny</li>
+            <li>%amount% - částka</li>
+            <li>%maturity% - splatnost</li>
+            <li>%maturityus% - splatnost v americkém formátu (např. 2022-12-24)</li>
+            <li>%vs% - variabilní symbol</li>
+            <li>%ks% - konstantní symbol</li>
+            <li>%note% - poznámka</li>
+            <li>%user% - jméno uživatele, který e-mail odeslal</li>
+        </ul>
+{/if}
+
+{if $mode === 'invoice'}
+        <ul>
+            <li>%number% - číslo faktury</li>
+            <li>%customer_name% - jméno / název odběratele</li>
+            <li>%amount% - celková částka faktury</li>
+            <li>%maturity% - splatnost</li>
+            <li>%maturityus% - splatnost v americkém formátu (např. 2026-12-24)</li>
+            <li>%vs% - variabilní symbol</li>
+            <li>%user% - jméno uživatele, který e-mail odeslal</li>
+        </ul>
+{/if}
+    </div>
+</div>

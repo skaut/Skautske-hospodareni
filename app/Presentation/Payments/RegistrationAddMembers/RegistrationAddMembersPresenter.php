@@ -1,0 +1,94 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Presentation\Payments\RegistrationAddMembers;
+
+use App\Components\Factories\Payment\IMassAddFormFactory;
+use App\Components\Payment\MassAddForm;
+use App\Model\Payment\PaymentService;
+use App\Presentation\Payments\PaymentsBasePresenter as BasePresenter;
+use InvalidArgumentException;
+
+use function array_keys;
+use function array_slice;
+use function assert;
+use function intdiv;
+
+final class RegistrationAddMembersPresenter extends BasePresenter
+{
+    private int $id;
+
+    /** @var string[] */
+    protected array $readUnits;
+
+    private const STS_PRICE = 200;
+
+    public function __construct(private IMassAddFormFactory $massAddFormFactory, private PaymentService $model)
+    {
+        parent::__construct();
+    }
+
+    protected function startup(): void
+    {
+        parent::startup();
+
+        $this->readUnits = $this->unitService->getReadUnits($this->user);
+    }
+
+    /** @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY */
+    public function actionDefault(int $id, ?int $unitId = null): void
+    {
+        $this->id = $id;
+
+        try {
+            $list = $this->model->getPersonsFromRegistrationWithoutPayment(array_keys($this->readUnits), $id);
+        } catch (InvalidArgumentException) {
+            $this->flashMessage('Neoprávněný přístup ke skupině.', 'danger');
+            $this->redirect(':Payments:GroupList:');
+
+            return;
+        }
+
+        $group = $this->model->getGroup($id);
+
+        if ($group === null) {
+            $this->flashMessage('Neplatný požadavek na přidání registračních plateb', 'danger');
+            $this->redirect(':Payments:GroupList:');
+        }
+
+        $form = $this['form'];
+        assert($form instanceof MassAddForm);
+
+        // performance issue - při větším množství zobrazených osob se nezpracuje formulář
+        $list = array_slice($list, 0, 50);
+
+        foreach ($list as $p) {
+            $totalAmount = (float) $p['AmountTotal'];
+            if ($totalAmount === 0.0) {
+                continue;
+            }
+
+            $stsCount = intdiv((int) $p['AmountServices'], self::STS_PRICE);
+
+            $form->addPerson(
+                $p['ID_Person'],
+                $p['emails'],
+                $p['Person'],
+                $totalAmount,
+                $stsCount !== 0 ? $stsCount.'x STS' : '',
+            );
+        }
+
+        $this->template->setParameters([
+            'group' => $group,
+            'showForm' => ! empty($list),
+            'unitName' => $this->readUnits[$unitId ?? $this->unitId->toInt()],
+        ]);
+    }
+
+    protected function createComponentForm(): MassAddForm
+    {
+        return $this->massAddFormFactory->create($this->id);
+    }
+}

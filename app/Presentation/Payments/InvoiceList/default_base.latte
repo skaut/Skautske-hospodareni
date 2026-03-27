@@ -1,0 +1,134 @@
+{block #content}
+<div class="d-grid gap-4 mt-3" n:attr="data-test => $isSequenceContext ? 'invoice-sequence-page' : 'invoice-home'">
+    <div>
+        <h1 n:inner-block="title" class="h3 mb-1">
+            {if $isSequenceContext}
+                Faktury v řadě {$invoiceSequence->getDisplayLabel()}
+            {else}
+                Faktury
+            {/if}
+        </h1>
+        <p class="text-body-secondary mb-0">
+            {if $isSequenceContext}
+                {if $invoiceSequence->getDescription() !== ''}{$invoiceSequence->getDescription()}. {/if}
+                Vystavení nové faktury, párování úhrad a správa otevřených dokladů v jedné řadě.
+            {else}
+                Seznam vystavených faktur, rychlé párování úhrad a přímý vstup do jednotlivých fakturačních řad.
+            {/if}
+        </p>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+            <div n:if="$canPairInvoices" data-test="invoice-action-pair">
+                {control pairButton:light}
+            </div>
+            <a n:if="$isEditable && ! $isSequenceContext"
+               n:href=":Payments:InvoiceSequence:default, unitId => $unitId"
+               class="btn btn-primary btn-sm"
+               data-test="invoice-action-create-sequence">
+                <i class="fi fi-rr-plus-small" aria-hidden="true"></i>
+                Založit fakturační řadu
+            </a>
+            <a n:if="$isEditable"
+               n:href=":Settings:Invoices:default, unitId => $unitId"
+               class="btn btn-outline-secondary btn-sm"
+               data-test="invoice-action-settings">
+                <i class="fi fi-rr-settings-sliders" aria-hidden="true"></i>
+                Nastavení faktur
+            </a>
+        </div>
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+            <a n:if="$isSequenceContext"
+               n:href=":Payments:InvoiceList:default, unitId => $unitId"
+               class="btn btn-outline-secondary btn-sm"
+               data-test="invoice-action-back">
+                <i class="fi fi-rr-arrow-left" aria-hidden="true"></i>
+                Zpět na přehled faktur
+            </a>
+            <a n:if="$isSequenceContext && $canPairInvoices"
+               n:href=":Payments:InvoiceSequence:edit, id => $invoiceSequence->getId(), unitId => $unitId"
+               class="btn btn-outline-secondary btn-sm"
+               data-test="invoice-action-edit-sequence">
+                <i class="fi fi-rr-edit" aria-hidden="true"></i>
+                Upravit řadu
+            </a>
+            <a n:if="! $isSequenceContext"
+               n:href=":Payments:InvoiceSequenceList:default, unitId => $unitId"
+               class="btn btn-outline-secondary btn-sm"
+               data-test="invoice-action-manage-sequences">
+                <i class="fi fi-rr-list" aria-hidden="true"></i>
+                Správa fakturačních řad
+            </a>
+        </div>
+    </div>
+
+    <section n:if="! $isSequenceContext" class="card shadow-sm" data-test="invoice-sequences">
+        <div class="card-body">
+            <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
+                <h2 class="h5 mb-0">Rychlý vstup do řad</h2>
+                <a n:href=":Payments:InvoiceSequenceList:default, unitId => $unitId" class="btn btn-outline-secondary btn-sm">
+                    Otevřít správu řad
+                </a>
+            </div>
+
+            <div n:if="$invoiceSequences !== []" class="invoice-sequence-grid">
+                <article n:foreach="$invoiceSequences as $sequence"
+                         class="card border"
+                         data-test="invoice-sequence-card-{$sequence['id']}">
+                    <div class="card-body d-grid gap-2">
+                        <div class="d-flex justify-content-between text-body-secondary small fw-semibold">
+                            <span>{$sequence['year']}</span>
+                            <span>{$sequence['invoiceCount']} faktur</span>
+                        </div>
+                        <h3 class="h6 fw-bold mb-0">{$sequence['sequence']}/{$sequence['year']}</h3>
+                        <p class="text-body-secondary small mb-0">
+                            {if $sequence['description'] !== ''}{$sequence['description']}{/if}
+                        </p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a n:href=":Payments:InvoiceList:default, invoiceSequenceId => $sequence['id'], unitId => $unitId"
+                               class="btn btn-primary btn-sm"
+                               data-test="invoice-sequence-open-{$sequence['id']}">
+                                Otevřít řadu
+                            </a>
+                            <a n:if="in_array((int) $sequence['id'], $editableSequenceIds, true)"
+                               n:href=":Payments:InvoiceSequence:edit, id => $sequence['id'], unitId => $unitId"
+                               class="btn btn-outline-secondary btn-sm"
+                               data-test="invoice-sequence-settings-{$sequence['id']}">
+                                Nastavení řady
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <div n:if="$invoiceSequences === []" class="border border-dashed rounded-3 p-3 text-body-secondary">
+                Zatím není založena žádná fakturační řada. Nejprve vytvořte řadu a potom v ní začněte vystavovat faktury.
+            </div>
+        </div>
+    </section>
+
+    <section n:if="$isSequenceContext" class="card shadow-sm" data-test="invoice-create-form">
+        <div class="card-body">
+            <h2 class="h5 mb-3">Nová faktura</h2>
+            <div n:snippet="createForm">
+                {control createForm}
+            </div>
+        </div>
+    </section>
+
+    <section class="card shadow-sm" data-test="invoice-issued-list">
+        <div class="card-body">
+            <h2 class="h5 mb-3">
+                {if $isSequenceContext}Vystavené faktury v této řadě{else}Vystavené faktury{/if}
+            </h2>
+            <div class="table-responsive" n:snippet="grid">
+                {control grid}
+            </div>
+        </div>
+    </section>
+
+    {if $isSequenceContext}
+        {control cashPaymentDialog}
+    {/if}
+</div>

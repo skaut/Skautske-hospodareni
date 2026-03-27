@@ -1,0 +1,69 @@
+{block #content}
+<div data-test="payments-groups-page">
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h1 n:inner-block="title" class="h3 mb-2">Platební skupiny</h1>
+            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3 mb-3">
+                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
+                <span class="text-body-secondary">Seznam všech platebních skupin. Filtrujte podle stavu, párujte úhrady a spravujte platby.</span>
+            </div>
+            <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                    <div class="dropdown">
+                        <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropdownMenuButton"
+                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fi fi-rr-eye" aria-hidden="true"></i>
+                            {if $onlyOpen}Pouze otevřené{else}Vše{/if}
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" n:href="this true" n:attr="$onlyOpen ? 'disabled'">Pouze otevřené</a>
+                            <a class="dropdown-item" n:href="this false" n:attr="!$onlyOpen ? 'disabled'">Vše</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2 align-items-center" n:if="$isEditable">
+                    {control pairButton}
+                    {control createButton}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="card shadow-sm" data-test="payments-groups-table">
+        <div class="card-body">
+            <div class="table-responsive" n:if="!empty($groups)">
+                <table class="table table-bordered table-hover mb-0">
+                    <thead>
+                    <tr>
+                        <th>Název</th>
+                        <th>Jednotky</th>
+                        <th>Zaplaceno</th>
+                        <th class="text-center">Stav</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr n:foreach="$groups as $g">
+                        <td class="align-middle">
+                            <a n:href=":Payments:Payment:default $g->id">{$g->name}</a>
+                        </td>
+                        <td class="align-middle">
+                            {$groupUnits[$g->id]|implode:', '}</td>
+                        <td>{control "progress-$g->id"}</td>
+                        <td class="align-middle text-center">
+                            {$g->state|groupState|noescape}
+                            <span class="text-success" title="Lze párovat s bankou" n:if="$groupsPairingSupport[$g->id] === TRUE">
+                                <i class="fi fi-rr-bank" aria-hidden="true"></i>
+                            </span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div n:if="empty($groups)" class="border border-dashed rounded-3 p-3 text-body-secondary">
+                Žádné platební skupiny k zobrazení.
+            </div>
+        </div>
+    </section>
+</div>
+{/block}
