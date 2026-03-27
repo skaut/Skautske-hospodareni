@@ -38,52 +38,52 @@ dbal:
                 class: Consistence\Doctrine\Enum\Type\StringEnumType
                 commented: true
             money:
-                class: Model\Infrastructure\Types\MoneyType
+                class: App\Model\Infrastructure\Types\MoneyType
                 commented: true
             variable_symbol:
-                class: Model\Infrastructure\Types\VariableSymbolType
+                class: App\Model\Infrastructure\Types\VariableSymbolType
                 commented: true
             chit_number:
-                class: Model\Infrastructure\Types\ChitNumberType
+                class: App\Model\Infrastructure\Types\ChitNumberType
                 commented: true
             recipient:
-                class: Model\Infrastructure\Types\RecipientType
+                class: App\Model\Infrastructure\Types\RecipientType
                 commented: true
             chronos_date:
                 class: Warhuhn\Doctrine\DBAL\Types\ChronosDateType
                 commented: true
             cashbook_id:
-                class: Model\Infrastructure\Types\CashbookIdType
+                class: App\Model\Infrastructure\Types\CashbookIdType
                 commented: true
             unit_id:
-                class: Model\Infrastructure\Types\UnitIdType
+                class: App\Model\Infrastructure\Types\UnitIdType
                 commented: true
             payment_id:
-                class: Model\Infrastructure\Types\PaymentIdType
+                class: App\Model\Infrastructure\Types\PaymentIdType
                 commented: true
             file_path:
-                class: Model\Infrastructure\Types\FilePathType
+                class: App\Model\Infrastructure\Types\FilePathType
                 commented: true
             oauth_id:
-                class: Model\Infrastructure\Types\OAuthIdType
+                class: App\Model\Infrastructure\Types\OAuthIdType
                 commented: true
             transport_types:
-                class: Model\Infrastructure\Types\TransportTypeListType
+                class: App\Model\Infrastructure\Types\TransportTypeListType
                 commented: true
             email_address:
-                class: Model\Infrastructure\Types\EmailAddressType
+                class: App\Model\Infrastructure\Types\EmailAddressType
                 commented: true
             skautis_event_id:
-                class: Model\Infrastructure\Types\SkautisEventIdType
+                class: App\Model\Infrastructure\Types\SkautisEventIdType
                 commented: true
             skautis_education_id:
-                class: Model\Infrastructure\Types\SkautisEducationIdType
+                class: App\Model\Infrastructure\Types\SkautisEducationIdType
                 commented: true
             skautis_camp_id:
-                class: Model\Infrastructure\Types\SkautisCampIdType
+                class: App\Model\Infrastructure\Types\SkautisCampIdType
                 commented: true
             big_decimal:
-                class: Model\Infrastructure\Types\BigDecimalType
+                class: App\Model\Infrastructure\Types\BigDecimalType
                 commented: true
             carbon_timestamp_immutable_ms:
                 class: Extension\Doctrine\Types\CarbonTimestampImmutableMsType
@@ -93,7 +93,7 @@ dbal:
 services:
   # ── EntityManager z vaší továrny ──────────────────────────────────────────────
   doctrine.entityManagerFactory:
-    factory: Model\Infrastructure\EntityManagerFactory(%debugMode%, %cacheDir%)
+    factory: App\Model\Infrastructure\EntityManagerFactory(%debugMode%, %cacheDir%)
 
   doctrine.entityManager:
     factory: [@doctrine.entityManagerFactory, create]

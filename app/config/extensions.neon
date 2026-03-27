@@ -1,0 +1,8 @@
+extensions:
+    skautis: Skautis\Nette\SkautisExtension
+    messenger: Fmasa\Messenger\DI\MessengerExtension
+    console: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
+    console.cache: Contributte\Console\Extra\DI\CacheConsoleExtension(%consoleMode%)
+    menu: Contributte\MenuControl\DI\MenuExtension
+    scheduler: Contributte\Scheduler\DI\SchedulerExtension
+    fixtures: Nettrine\Fixtures\DI\FixturesExtension
