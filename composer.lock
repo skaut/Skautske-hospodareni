@@ -4839,22 +4839,22 @@
         },
         {
             "name": "nette/bootstrap",
-            "version": "v3.2.6",
+            "version": "v3.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/bootstrap.git",
-                "reference": "287240831efe4936b23a1b643df0d54069a4eda0"
+                "reference": "10fdb1cb05497da39396f2ce1785cea67c8aa439"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/bootstrap/zipball/287240831efe4936b23a1b643df0d54069a4eda0",
-                "reference": "287240831efe4936b23a1b643df0d54069a4eda0",
+                "url": "https://api.github.com/repos/nette/bootstrap/zipball/10fdb1cb05497da39396f2ce1785cea67c8aa439",
+                "reference": "10fdb1cb05497da39396f2ce1785cea67c8aa439",
                 "shasum": ""
             },
             "require": {
                 "nette/di": "^3.1",
                 "nette/utils": "^3.2.1 || ^4.0",
-                "php": "8.0 - 8.4"
+                "php": "8.0 - 8.5"
             },
             "conflict": {
                 "tracy/tracy": "<2.6"
@@ -4871,7 +4871,7 @@
                 "nette/safe-stream": "^2.2",
                 "nette/security": "^3.0",
                 "nette/tester": "^2.4",
-                "phpstan/phpstan-nette": "^1.0",
+                "phpstan/phpstan-nette": "^2.0@stable",
                 "tracy/tracy": "^2.9"
             },
             "suggest": {
@@ -4885,6 +4885,9 @@
                 }
             },
             "autoload": {
+                "psr-4": {
+                    "Nette\\": "src"
+                },
                 "classmap": [
                     "src/"
                 ]
@@ -4914,9 +4917,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/bootstrap/issues",
-                "source": "https://github.com/nette/bootstrap/tree/v3.2.6"
+                "source": "https://github.com/nette/bootstrap/tree/v3.2.7"
             },
-            "time": "2025-05-22T06:18:42+00:00"
+            "time": "2025-08-01T02:02:03+00:00"
         },
         {
             "name": "nette/caching",
