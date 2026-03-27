@@ -1,9 +1,11 @@
-import { Modal } from "bootstrap";
+import Modal from 'bootstrap/js/dist/modal';
 
 export class ModalExtension {
-    private modalInstance: Modal | null;
+    private modalInstance: Modal | null = null;
+    private readonly naja: any;
 
     constructor(naja: any) {
+        this.naja = naja;
         naja.snippetHandler.addEventListener('afterUpdate', (event: any) => this.processSnippet(event.snippet));
         naja.snippetHandler.addEventListener('beforeUpdate', (event: any) => this.beforeSnippetUpdate(event.snippet));
     }
@@ -26,30 +28,56 @@ export class ModalExtension {
             return;
         }
 
-        // backdrop element is already displayed remove before processing modal
-        const backdropElement = document.querySelector<HTMLDivElement>('.modal-backdrop.show');
+        const modalElement = snippet.querySelector<HTMLElement>('.modal');
 
-        if (backdropElement) {
-            backdropElement.remove();
+        if (! modalElement) {
+            this.hideCurrentModal();
+
+            return;
         }
 
-        const modalElement = snippet.querySelector('.modal');
+        const modalShouldBeVisible = modalElement.innerHTML.trim() !== '';
 
-        if (modalElement) {
-            const bootstrapModalInstance = new Modal(modalElement);
-            const modalShouldBeVisible = modalElement.innerHTML.trim() !== '';
+        if (modalShouldBeVisible) {
+            // Reset protective inline styles set by server-side template
+            modalElement.style.removeProperty('display');
+            modalElement.style.removeProperty('pointer-events');
 
-            if (modalShouldBeVisible) {
-                this.initializeButtons(modalElement);
-                bootstrapModalInstance.show();
-            } else {
-                if (this.modalInstance) {
-                    this.modalInstance.hide();
-                } else {
-                    console.warn('Modal instance not set! Can\'t close modal');
-                }
+            // Move modal to body to avoid stacking context issues (same as DesignShowcase)
+            if (modalElement.parentElement !== document.body) {
+                document.body.appendChild(modalElement);
             }
+
+            // Remove any stale backdrops before showing
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+
+            const bootstrapModalInstance = Modal.getOrCreateInstance(modalElement);
+            this.initializeButtons(modalElement);
+            this.modalInstance = bootstrapModalInstance;
+            bootstrapModalInstance.show();
+        } else {
+            this.hideCurrentModal();
         }
+    }
+
+    private hideCurrentModal(): void
+    {
+        if (this.modalInstance !== null) {
+            try {
+                this.modalInstance.hide();
+            } catch {
+                // Modal element may have been removed from DOM already
+            }
+            this.modalInstance = null;
+        }
+
+        // Force-remove any leftover backdrops (Bootstrap adds these to document.body)
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+
+        // Restore body scroll state that Bootstrap's modal sets
+        document.body.classList.remove('modal-open');
+        document.body.style.removeProperty('overflow');
+        document.body.style.removeProperty('padding-right');
     }
 
     private initializeButtons(modal: Element): void {
@@ -62,15 +90,14 @@ export class ModalExtension {
 
         const form: HTMLFormElement = forms.item(0);
         const buttons = Array.from(form.querySelectorAll<HTMLInputElement>('input[type="submit"]'));
+        const formId = this.ensureFormId(form);
 
-        // Add "copy" of buttons to footer
+        // Render footer actions as native submit buttons bound to the form.
         footer.prepend(
             ...buttons.map(button => {
-                const newButton = document.createElement('button');
-                newButton.classList.add(...button.classList);
-                newButton.innerHTML = button.value;
-
-                newButton.addEventListener('click', () => button.click());
+                const newButton = button.cloneNode() as HTMLInputElement;
+                newButton.classList.remove('d-none');
+                newButton.setAttribute('form', formId);
 
                 return newButton;
             })
@@ -78,5 +105,18 @@ export class ModalExtension {
 
         // Hide original buttons
         buttons.forEach(button => button.classList.add('d-none'));
+        this.naja.uiHandler.bindUI(footer);
+    }
+
+    private ensureFormId(form: HTMLFormElement): string
+    {
+        if (form.id !== '') {
+            return form.id;
+        }
+
+        const formId = `modal-form-${Math.random().toString(36).slice(2)}`;
+        form.id = formId;
+
+        return formId;
     }
 } 

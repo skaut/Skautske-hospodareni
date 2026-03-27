@@ -1,4 +1,5 @@
 import naja from 'naja';
+import Dropdown from 'bootstrap/js/dist/dropdown';
 // @ts-ignore
 import {ProgressBar} from './ProgressBar';
 import {ModalExtension} from './ModalExtension';
@@ -13,6 +14,12 @@ import netteForms from "./netteForms";
 import {initializeSendMassForm} from "./ChitListExtension"
 import {initializeEditForm} from "./ChitListExtension"
 
+function initializeDropdowns(root: ParentNode): void {
+    root.querySelectorAll<HTMLElement>('[data-bs-toggle="dropdown"]').forEach((element) => {
+        Dropdown.getOrCreateInstance(element);
+    });
+}
+
 export default function (): void {
     naja.registerExtension(ProgressBar);
     naja.registerExtension(ModalExtension);
@@ -26,6 +33,7 @@ export default function (): void {
         initializeSendMassForm(snippet, 'chits-');
         initializeEditForm(snippet,'chits-');
         snippet.querySelectorAll<HTMLElement>('.date').forEach(initializeDatePicker);
+        initializeDropdowns(snippet);
     });
 
     naja.registerExtension(DataGridExtension);
