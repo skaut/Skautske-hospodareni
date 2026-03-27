@@ -1,0 +1,25 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Model\Cashbook\ReadModel\QueryHandlers;
+
+use App\Model\Cashbook\ReadModel\Queries\EducationParticipantBalanceQuery;
+use App\Model\Cashbook\ReadModel\Queries\EducationParticipantIncomeQuery;
+use App\Model\Cashbook\ReadModel\Queries\ParticipantChitSumQuery;
+use App\Model\Common\Services\QueryBus;
+
+class EducationParticipantBalanceQueryHandler
+{
+    public function __construct(private QueryBus $queryBus)
+    {
+    }
+
+    public function __invoke(EducationParticipantBalanceQuery $query): float
+    {
+        $participantIncome = $this->queryBus->handle(new EducationParticipantIncomeQuery($query->getEducationId()));
+        $chitSum = $this->queryBus->handle(new ParticipantChitSumQuery($query->getCashbookId()));
+
+        return $participantIncome - $chitSum;
+    }
+}

@@ -1,0 +1,30 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Model\Event\ReadModel\QueryHandlers;
+
+use App\Model\Event\Functions;
+use App\Model\Event\ReadModel\PersonFactory;
+use App\Model\Event\ReadModel\Queries\EventFunctions;
+use Skautis\Skautis;
+
+use function array_map;
+
+class EventFunctionsQueryHandler
+{
+    public function __construct(private Skautis $skautis)
+    {
+    }
+
+    public function __invoke(EventFunctions $query): Functions
+    {
+        $functions = $this->skautis->event->eventFunctionAllGeneral([
+            'ID_EventGeneral' => $query->getEventId()->toInt(),
+        ]);
+
+        return new Functions(
+            ...array_map([PersonFactory::class, 'create'], $functions),
+        );
+    }
+}

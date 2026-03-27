@@ -1,0 +1,143 @@
+{* souhrná zpráva z tábora
+$camp - informace o táboře
+$functions - seznam funkcí na akci
+$participants - účastníci akce
+$personsDays - počet osobodní
+$chits - paragony akce
+*}
+<style type="text/css">
+    .totalReport {
+        width: 800px;
+    }
+
+    .totalReport td {
+        text-align: center;
+    }
+    
+table {
+    border-spacing: 0;
+}
+</style>
+<div class="totalReport">
+    <h1>{$camp->getDisplayName()}</h1>
+    <h3>Pořadatel tábora</h3>
+    {$camp->getUnitName()} - Ev. číslo: {$camp->getRegistrationNumber()}
+
+    <h3>Základní údaje</h3>
+    {var $functionsWithName = [
+        'Vedoucí tábora' => $functions->leader,
+        'Zástupce vedoucího tábora' => $functions->assistant,
+        'Hospodář' => $functions->accountant,
+        'Zdravotník' => $functions->medic,
+    ]}
+    {foreach $functionsWithName as $functionName => $person}
+        <b>{$functionName}: </b> {if $person !== NULL}{$person->name} {if $person->email !== NULL}(e-mail: {$person->email}){/if}{/if}<br>
+    {/foreach}
+
+    <br />
+    <table border="1" style="width:800px">
+        <tr>
+            <th style="width: 20%;">Od</th>
+            <th style="width: 20%;">Do</th>
+            <th style="width: 15%;">Počet dnů</th>
+            <th>Místo konání</th>
+        </tr>
+        <tr>
+            <th>{$camp->getStartDate()?->toNative()|date:"j.n.Y"}</th>
+            <th>{$camp->getEndDate()?->toNative()|date:"j.n.Y"}</th>
+            <th>{$camp->getTotalDays()}</th>
+            <th>{trim($camp->getLocation()) ? $camp->getLocation() : "&nbsp;"|stripHtml|noescape}</th>
+        </tr>
+    </table>
+
+    <h3>Účastníci</h3>
+    <table border="1" style="width:500px">
+        <tr>
+            <th style="width: 30%;">Účastníků</th>
+            <td style="width: 20%;">{$participantsCnt}</td>
+            <th style="width: 30%;">Osobodnů</th>
+            <td style="width: 20%;">{$personsDays}</td>
+        </tr>
+    </table>
+
+    <h3>Výnosy a náklady</h3>
+    <table border="1" style="width:800px">
+        <tr>
+            <th style="width: 30%;">Výnosy</th>
+            <th style="width: 20%;text-align: right;">Kč</th>
+            <th style="width: 30%;">Náklady</th>
+            <th style="width: 20%;text-align: right;">Kč</th>
+        </tr>
+
+        {var $rowsCount = max(count($incomeCategories)+1, count($expenseCategories))}
+
+        <tr n:for="$i = 0; $i < $rowsCount; $i++">
+            {ifset $incomeCategories[$i]}
+                <td>{$incomeCategories[$i]->name}</td>
+                <td>{$incomeCategories[$i]->total|price}</td>
+            {else}
+                <td></td>
+                <td></td>
+            {/ifset}
+            {ifset $expenseCategories[$i]}
+                <td>{$expenseCategories[$i]->name}</td>
+                <td>{$expenseCategories[$i]->total|price}</td>
+            {else}
+                <td></td>
+                <td></td>
+            {/ifset}
+        </tr>
+
+        <tr>
+            <td>Celkem</td>
+            <td><b>{$totalIncome|price}</b></td>
+            <td>Celkem</td>
+            <td><b>{$totalExpense|price}</b></td>
+        </tr>
+    </table>
+
+    <h3>Příjmy a výdaje</h3>
+    <table border="1" style="width:800px">
+        <tr>
+            <th style="width: 30%;">Příjmy</th>
+            <th style="width: 20%;text-align: right;">Kč</th>
+            <th style="width: 30%;">Výdaje</th>
+            <th style="width: 20%;text-align: right;">Kč</th>
+        </tr>
+
+        {var $rowsCount = max(count($virtualIncomeCategories), count($virtualExpenseCategories))}
+
+        <tr n:for="$i = 0; $i < $rowsCount; $i++">
+            {ifset $virtualIncomeCategories[$i]}
+                <td>{$virtualIncomeCategories[$i]->name}</td>
+                <td>{$virtualIncomeCategories[$i]->total|price}</td>
+            {else}
+                <td></td>
+                <td></td>
+            {/ifset}
+            {ifset $virtualExpenseCategories[$i]}
+                <td>{$virtualExpenseCategories[$i]->name}</td>
+                <td>{$virtualExpenseCategories[$i]->total|price}</td>
+            {else}
+                <td></td>
+                <td></td>
+            {/ifset}
+        </tr>
+
+        <tr>
+            <td>Celkem</td>
+            <td><b>{$virtualTotalIncome|price}</b></td>
+            <td>Celkem</td>
+            <td><b>{$virtualTotalExpense|price}</b></td>
+        </tr>
+    </table>
+    <p n:if="!$areTotalsConsistentWithSkautis">
+        <b>Data v účtech a ve skautisu jsou nekonzistentní!</b>
+    </p>
+
+    <h4>Výsledek hospodaření: {$finalRealBalance |number:2, ',', ' '} Kč</h4>
+
+    <h4>Hlášení předkládá</h4>
+    V _________________ dne _____________ &nbsp; &nbsp;Zpracoval:
+</div>
+

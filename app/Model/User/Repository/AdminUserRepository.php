@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 namespace App\Model\User\Repository;
-use App\Model\Infrastructure\Repository\AbstractRepository;
 
-use Doctrine\ORM\EntityManagerInterface;
+use App\Model\Infrastructure\Repository\AbstractRepository;
 use App\Model\User\Entity\AdminUser;
+use Doctrine\ORM\EntityManagerInterface;
 
 class AdminUserRepository extends AbstractRepository
 {

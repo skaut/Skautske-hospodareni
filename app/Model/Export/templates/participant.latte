@@ -1,0 +1,50 @@
+{* seznam účastníků akce
+$displayName - název akce
+$list - seznam účastníků
+$unitFullNameWithAddress - oficialni nazev jednotky s adresou
+*}
+<style>
+.all{
+    width: 800px;
+}
+table {
+    border-spacing: 0;
+}
+
+.cnt {
+    text-align: right;
+}
+td {
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+.smaller {
+    font-size: 0.8em;
+    color: #999;
+}
+
+</style>
+<div class="smaller">
+    {$unitFullNameWithAddress}
+</div>
+<h2>Seznam účastníků - {$displayName}</h2>
+
+<table class="all" border="1">
+    <tr>
+        <th style="width: 5%;">P.č.</th>
+        <th style="width: 30%">Příjmení a jméno</th>
+        <th style="width: 45%">Adresa</th>
+        <th style="width: 12%;">Dat. nar.</th>
+        <th style="width: 8%;">Zaplaceno</th>
+    </tr>
+    {dump $list}
+    <tr n:foreach="$list as $p">
+        <td class="cnt">{$iterator->counter}</td>
+        <td>{$p->displayName}</td>
+        <td>{if $p->street != ""}{$p->street}{else}&nbsp;{/if}{if $p->city != ""}, {$p->city}{/if}{if $p->postcode != ""}, {(string)$p->postcode|postCode}{/if}</td>
+        <td style="text-align: right;">{if $p->birthday !== null}{$p->birthday->format("d.m.Y")}{else}&nbsp;{/if}</td>
+        <td style="text-align: right;">{$p->payment|price:false} Kč</td>
+    </tr>
+</table>
+

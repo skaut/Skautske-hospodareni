@@ -1,0 +1,116 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Model\Cashbook;
+
+use App\Model\Cashbook\Cashbook\CashbookId;
+use App\Model\Cashbook\Events\Unit\CashbookWasCreated;
+use App\Model\Cashbook\Exception\YearCashbookAlreadyExists;
+use App\Model\Cashbook\Unit\Cashbook;
+use App\Model\Common\Aggregate;
+use App\Model\Common\ShouldNotHappen;
+use App\Model\Common\UnitId;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
+
+use function assert;
+
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="ac_units")
+ */
+class Unit extends Aggregate
+{
+    /**
+     * @ORM\Id()
+     * @ORM\Column(type="unit_id")
+     */
+    private UnitId $id;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Cashbook::class, mappedBy="unit", cascade={"persist", "remove"}, orphanRemoval=true)
+     *
+     * @var ArrayCollection&iterable<Cashbook>
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
+     */
+    private $cashbooks;
+
+    /** @ORM\Column(type="integer") */
+    private int $activeCashbookId;
+
+    /** @ORM\Column(type="integer") */
+    private int $nextCashbookId = 1;
+
+    public function __construct(UnitId $id, CashbookId $activeCashbookId, int $activeCashbookYear)
+    {
+        $cashbook = new Cashbook($this->getCashbookId(), $this, $activeCashbookYear, $activeCashbookId);
+
+        $this->id = $id;
+        $this->cashbooks = new ArrayCollection([$cashbook]);
+        $this->activeCashbookId = $cashbook->getId();
+        $this->raise(new CashbookWasCreated($this->id, $activeCashbookId));
+    }
+
+    /**
+     * @see CashbookWasCreated - event raised on success
+     *
+     * @throws YearCashbookAlreadyExists
+     */
+    public function createCashbook(int $year): void
+    {
+        if ($this->cashbookForYearExists($year)) {
+            throw YearCashbookAlreadyExists::forYear($year, $this->id);
+        }
+
+        $cashbookId = CashbookId::generate();
+        $this->cashbooks->add(new Cashbook($this->getCashbookId(), $this, $year, $cashbookId));
+
+        $this->raise(new CashbookWasCreated($this->id, $cashbookId));
+    }
+
+    public function getId(): UnitId
+    {
+        return $this->id;
+    }
+
+    public function activateCashbook(int $cashbookId): void
+    {
+        if ($cashbookId >= $this->nextCashbookId) {
+            throw UnitCashbookNotFound::withId($cashbookId, $this->id);
+        }
+
+        $this->activeCashbookId = $cashbookId;
+    }
+
+    /** @return Cashbook[] */
+    public function getCashbooks(): array
+    {
+        return $this->cashbooks->toArray();
+    }
+
+    public function getActiveCashbook(): Cashbook
+    {
+        foreach ($this->cashbooks as $cashbook) {
+            assert($cashbook instanceof Cashbook);
+
+            if ($cashbook->getId() === $this->activeCashbookId) {
+                return $cashbook;
+            }
+        }
+
+        throw new ShouldNotHappen('Unit always should have active cashbook set');
+    }
+
+    private function cashbookForYearExists(int $year): bool
+    {
+        return $this->cashbooks->exists(function (?int $_x = null, ?Cashbook $cashbook = null) use ($year): bool {
+            return $cashbook->getYear() === $year;
+        });
+    }
+
+    private function getCashbookId(): int
+    {
+        return $this->nextCashbookId++;
+    }
+}

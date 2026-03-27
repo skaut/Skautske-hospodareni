@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\AccountancyModule\Components\FormControls;
+namespace Component\Forms;
 
 use Nette\Forms\Controls\SelectBox;
 

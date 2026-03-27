@@ -1,0 +1,40 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Model\Cashbook\Handlers\Cashbook;
+
+use App\Model\Cashbook\Cashbook\Category;
+use App\Model\Cashbook\Cashbook\ChitItem;
+use App\Model\Cashbook\CashbookNotFound;
+use App\Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
+use App\Model\Cashbook\Repositories\CategoryRepository;
+use App\Model\Cashbook\Repositories\ICashbookRepository;
+use App\Model\DTO\Cashbook\ChitItem as ChitItemDTO;
+
+use function array_map;
+
+final class AddChitToCashbookHandler
+{
+    public function __construct(private ICashbookRepository $cashbooks, private CategoryRepository $categories)
+    {
+    }
+
+    /** @throws CashbookNotFound */
+    public function __invoke(AddChitToCashbook $command): void
+    {
+        $cashbook = $this->cashbooks->find($command->getCashbookId());
+
+        $items = array_map(function (ChitItemDTO $item): ChitItem {
+            $category = new Category($item->getCategory()->getId(), $item->getCategory()->getOperationType());
+
+            return new ChitItem($item->getAmount(), $category, $item->getPurpose());
+        }, $command->getItems());
+
+        $categories = $this->categories->findForCashbook($cashbook->getId(), $cashbook->getType());
+
+        $cashbook->addChit($command->getBody(), $command->getPaymentMethod(), $items, $categories);
+
+        $this->cashbooks->save($cashbook);
+    }
+}

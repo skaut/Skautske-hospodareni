@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Utility\Ares;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use Nette\Utils\Json;
 use Nette\Utils\JsonException;
@@ -15,15 +16,22 @@ use ValueError;
 use function ctype_alpha;
 use function is_array;
 use function is_null;
+use function preg_replace;
 use function sprintf;
 use function strlen;
 use function strtoupper;
 use function strval;
 use function substr;
+use function trim;
 
 class ViAresParser
 {
     private const COUNTRY_CODE_CZ = 'CZ';
+
+    public function __construct(
+        private readonly ClientInterface $client = new Client(),
+    ) {
+    }
 
     /**
      * @throws GuzzleException
@@ -47,13 +55,13 @@ class ViAresParser
      */
     public function getAres(string $vat): ViAresInfo
     {
-        $url = 'https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/'.$vat;
+        $companyNumber = $this->normalizeCompanyNumber($vat);
+        $url = 'https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/'.$companyNumber;
 
-        $client = new Client();
-        $response = $client->request('GET', $url);
+        $response = $this->client->request('GET', $url);
         $responseData = Json::decode($response->getBody()->getContents(), Json::FORCE_ARRAY);
 
-        if (! is_array($responseData) || ! isset($responseData['ico']) || $responseData['ico'] !== $vat) {
+        if (! is_array($responseData) || ! isset($responseData['ico']) || strval($responseData['ico']) !== $companyNumber) {
             return new ViAresInfo();
         }
 
@@ -92,8 +100,7 @@ class ViAresParser
         ];
 
         try {
-            $client = new Client();
-            $response = $client->request('GET', $url);
+            $response = $this->client->request('GET', $url);
 
             if ($response->getStatusCode() !== 200) {
                 throw new RuntimeException('Response error code :'.$response->getStatusCode());
@@ -171,5 +178,10 @@ class ViAresParser
         }
 
         return $rowValues;
+    }
+
+    private function normalizeCompanyNumber(string $companyNumber): string
+    {
+        return trim((string) preg_replace('/\s+/', '', $companyNumber));
     }
 }

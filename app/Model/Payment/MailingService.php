@@ -1,0 +1,173 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Model\Payment;
+
+use App\Model\Common\EmailAddress;
+use App\Model\Common\Repositories\IUserRepository;
+use App\Model\Common\UserNotFound;
+use App\Model\Google\Exception\OAuthNotSet;
+use App\Model\Google\InvalidOAuth;
+use App\Model\Mail\IMailerFactory;
+use App\Model\Mail\Repositories\IGoogleRepository;
+use App\Model\Payment\Mailing\Payment as MailPayment;
+use App\Model\Payment\Repositories\IBankAccountRepository;
+use App\Model\Payment\Repositories\IGroupRepository;
+use App\Model\Payment\Repositories\IPaymentRepository;
+use App\Model\Services\TemplateFactory;
+use DateTimeImmutable;
+use Nette\Mail\Message;
+
+use function nl2br;
+use function rand;
+
+class MailingService
+{
+    public function __construct(
+        private IGroupRepository $groups,
+        private IMailerFactory $mailerFactory,
+        private IPaymentRepository $payments,
+        private IBankAccountRepository $bankAccounts,
+        private TemplateFactory $templateFactory,
+        private IUserRepository $users,
+        private IGoogleRepository $googleRepository,
+    ) {
+    }
+
+    /**
+     * Sends email to single payment address.
+     *
+     * @throws PaymentHasNoEmails
+     * @throws PaymentNotFound
+     * @throws InvalidOAuth
+     * @throws EmailTemplateNotSet
+     * @throws OAuthNotSet
+     */
+    public function sendEmail(int $paymentId, EmailType $emailType, bool $cli = false): void
+    {
+        $payment = $this->payments->find($paymentId);
+        $group = $this->groups->find($payment->getGroupId());
+
+        $template = $group->getEmailTemplate($emailType);
+
+        if ($template === null || ! $group->isEmailEnabled($emailType)) {
+            throw new EmailTemplateNotSet("E-mail template '".$emailType->getValue()."' not found");
+        }
+
+        if ($cli) {
+            $userName = 'AUTOMAT';
+        } else {
+            $userName = $this->users->getCurrentUser()->getName();
+        }
+
+        $this->sendForPayment($payment, $group, $template, $userName);
+        $payment->recordSentEmail($emailType, new DateTimeImmutable(), $userName);
+
+        $this->payments->save($payment);
+    }
+
+    /**
+     * @return string User's email
+     *
+     * @throws BankAccountNotFound
+     * @throws EmailNotSet
+     * @throws GroupNotFound
+     * @throws InvalidBankAccount
+     * @throws InvalidOAuth
+     * @throws UserNotFound
+     */
+    public function sendTestMail(int $groupId): string
+    {
+        $group = $this->groups->find($groupId);
+        $user = $this->users->getCurrentUser();
+
+        if ($user->getEmail() === null) {
+            throw new EmailNotSet();
+        }
+
+        $payment = new MailPayment(
+            'Testovací účel',
+            $group->getDefaultAmount() ?? rand(50, 1000),
+            [new EmailAddress($user->getEmail())],
+            $group->getDueDate()?->toNative() ?? new DateTimeImmutable('+ 2 weeks'),
+            rand(1000, 100000),
+            $group->getConstantSymbol(),
+            'obsah poznámky',
+        );
+
+        $this->send($group, $payment, $group->getEmailTemplate(EmailType::get(EmailType::PAYMENT_INFO)), $user->getName());
+
+        return $user->getEmail();
+    }
+
+    /**
+     * @throws BankAccountNotFound
+     * @throws InvalidBankAccount
+     * @throws PaymentHasNoEmails
+     * @throws InvalidOAuth
+     * @throws UserNotFound
+     * @throws OAuthNotSet
+     */
+    private function sendForPayment(Payment $paymentRow, Group $group, EmailTemplate $template, string $userName): void
+    {
+        $this->send($group, $this->createPayment($paymentRow), $template, $userName);
+    }
+
+    /**
+     * @throws InvalidBankAccount
+     * @throws BankAccountNotFound
+     * @throws UserNotFound
+     * @throws OAuthNotSet
+     * @throws PaymentHasNoEmails
+     */
+    private function send(Group $group, MailPayment $payment, EmailTemplate $emailTemplate, string $userName): void
+    {
+        if ($group->getOauthId() === null) {
+            throw new OAuthNotSet();
+        }
+
+        if ($payment->getRecipients() === []) {
+            throw PaymentHasNoEmails::withName($payment->getName());
+        }
+
+        $bankAccount = $group->getBankAccountId() !== null
+            ? $this->bankAccounts->find($group->getBankAccountId())
+            : null;
+        $bankAccountNumber = $bankAccount !== null ? (string) $bankAccount->getNumber() : null;
+
+        $emailTemplate = $emailTemplate->evaluate($group, $payment, $bankAccountNumber, $userName);
+
+        $template = $this->templateFactory->create(
+            TemplateFactory::PAYMENT_DETAILS,
+            [
+                'body' => nl2br($emailTemplate->getBody(), false),
+            ],
+        );
+
+        $oAuth = $this->googleRepository->find($group->getOauthId());
+        $mail = (new Message())
+            ->setFrom($oAuth->getEmail())
+            ->setSubject($emailTemplate->getSubject())
+            ->setHtmlBody($template, __DIR__);
+
+        foreach ($payment->getRecipients() as $emailRecipient) {
+            $mail->addTo($emailRecipient->getValue());
+        }
+
+        $this->mailerFactory->create($oAuth)->send($mail);
+    }
+
+    private function createPayment(Payment $payment): MailPayment
+    {
+        return new MailPayment(
+            $payment->getName(),
+            $payment->getAmount(),
+            $payment->getEmailRecipients(),
+            $payment->getDueDate()->toNative(),
+            $payment->getVariableSymbol()?->toInt(),
+            $payment->getConstantSymbol(),
+            $payment->getNote(),
+        );
+    }
+}

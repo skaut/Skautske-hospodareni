@@ -219,4 +219,15 @@ class ViAresInfo
     {
         return sprintf('%s, %s %s', $this->getAddress(), $this->city, $this->zipCode);
     }
+
+    public function isEmpty(): bool
+    {
+        return $this->vat === null
+            && $this->name === null
+            && $this->street === null
+            && $this->streetNumber === null
+            && $this->streetNumberSuffix === null
+            && $this->city === null
+            && $this->zipCode === null;
+    }
 }

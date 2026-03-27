@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 namespace App\Model\User\Entity;
-use App\Model\Infrastructure\Entity\AbstractIdEntity;
 
+use App\Model\Infrastructure\Entity\AbstractIdEntity;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Column;
