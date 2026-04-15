@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Presentation\Travel\Command;
 
-use App\Components\Travel\CommandForm;
-use App\Components\Travel\EditTravelDialog;
 use App\Components\Factories\Travel\ICommandFormFactory;
 use App\Components\Factories\Travel\IEditTravelDialogFactory;
+use App\Components\Travel\CommandForm;
+use App\Components\Travel\EditTravelDialog;
 use App\Model\Services\PdfRenderer;
 use App\Model\Travel\Commands\Command\AddReturnTravel;
 use App\Model\Travel\Commands\Command\DuplicateTravel;

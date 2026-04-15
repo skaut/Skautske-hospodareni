@@ -6,7 +6,6 @@ namespace acceptance;
 
 use AcceptanceTester;
 
-use function date;
 use function str_contains;
 
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
@@ -67,4 +66,3 @@ class CreateCashbookCest extends BaseAcceptanceCest
         $I->see((string) $year);
     }
 }
-

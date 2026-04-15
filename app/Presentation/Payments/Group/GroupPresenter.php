@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Presentation\Payments\Group;
 
-use App\Components\Payment\GroupForm;
 use App\Components\Factories\Payment\IGroupFormFactory;
+use App\Components\Payment\GroupForm;
 use App\Model\DTO\Payment\Group;
 use App\Model\Payment\PaymentService;
 use App\Presentation\Payments\PaymentsBasePresenter;

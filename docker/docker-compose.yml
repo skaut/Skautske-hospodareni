@@ -18,8 +18,8 @@ x-php-base: &php-base
     - traefik
   volumes:
     - ../:/app
-    - ./containers/php/ini/php.ini:/etc/php/8.2/fpm/conf.d/php.ini
-    - ./containers/php/ini/php.ini:/etc/php/8.2/cli/conf.d/php.ini
+    - ./containers/php/ini/php.ini:/etc/php/8.3/fpm/conf.d/php.ini
+    - ./containers/php/ini/php.ini:/etc/php/8.3/cli/conf.d/php.ini
 
 x-mysql-base: &mysql-base
   image: mysql:8.0
@@ -151,6 +151,9 @@ services:
       - test
     environment:
       SE_VNC_NO_PASSWORD: 1
+      SE_SESSION_REQUEST_TIMEOUT: 1000
+      SE_NODE_SESSION_TIMEOUT: 1000
+      SE_SESSION_RETRY_INTERVAL: 5
       SCREEN_WIDTH: 1920
       SCREEN_HEIGHT: 1080
     depends_on:

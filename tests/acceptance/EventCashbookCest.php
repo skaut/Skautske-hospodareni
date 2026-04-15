@@ -199,7 +199,7 @@ class EventCashbookCest extends BaseAcceptanceCest
             $I->click('Akce');
             $I->waitForText('Seznam akcí');
             $I->executeJs('window.scrollTo(0, document.body.scrollHeight);');
-            $I->wait(2);
+            $I->waitForText($this->eventName, 5);
 
             if (count($I->grabMultiple($cancelButton)) === 0) {
                 $this->eventCreated = false;

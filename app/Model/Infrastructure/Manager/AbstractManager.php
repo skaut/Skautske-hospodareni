@@ -255,7 +255,7 @@ abstract class AbstractManager
 
     protected function restoreDeletedEntity(object $entity): void
     {
-        if (! ($entity instanceof SoftDeletableEntityInterface)) {
+        if (! $entity instanceof SoftDeletableEntityInterface) {
             return;
         }
 

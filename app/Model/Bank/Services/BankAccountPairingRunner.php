@@ -22,13 +22,13 @@ final class BankAccountPairingRunner
     }
 
     /**
-     * @param  list<mixed>                                                                    $scopeItems
-     * @param  callable(mixed): (int|null)                                                    $bankAccountIdResolver
-     * @param  callable(int, list<mixed>): (BankAccount|null)                                 $bankAccountResolver
-     * @param  callable(list<mixed>): list<PairingCandidate>                                  $scopeCandidatesResolver
-     * @param  callable(list<mixed>): ChronosDate                                             $pairSinceResolver
+     * @param  list<mixed>                                                                                   $scopeItems
+     * @param  callable(mixed): (int|null)                                                                   $bankAccountIdResolver
+     * @param  callable(int, list<mixed>): (BankAccount|null)                                                $bankAccountResolver
+     * @param  callable(list<mixed>): list<PairingCandidate>                                                 $scopeCandidatesResolver
+     * @param  callable(list<mixed>): ChronosDate                                                            $pairSinceResolver
      * @param  callable(BankAccount, ChronosDate, ChronosDate): list<\App\Model\Bank\Entity\BankTransaction> $transactionsLoader
-     * @param  callable(BankAccount, list<mixed>): bool|null                                  $canPairResolver
+     * @param  callable(BankAccount, list<mixed>): bool|null                                                 $canPairResolver
      * @return list<BankAccountPairingRunResult>
      */
     public function run(

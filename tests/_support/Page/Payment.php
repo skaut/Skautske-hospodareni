@@ -74,7 +74,7 @@ class Payment
     {
         $this->tester->click('.modal-footer input[type="submit"][form="frm-paymentDialog-form"]');
         $this->tester->waitForElementNotVisible('.modal-dialog');
-        $this->tester->wait(3);
+        $this->tester->waitForText('Platba byla přidána', 10);
         $this->tester->waitForElementClickable('[data-test="payment-add-button-toggle"]');
     }
 }

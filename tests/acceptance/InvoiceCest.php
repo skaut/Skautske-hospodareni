@@ -117,9 +117,8 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->executeJS('document.querySelector("#frm-createForm input[type=submit]").click()');
 
         $I->waitForText('Fakturační řada byla založena.');
-        $I->waitForElementVisible('[data-test="invoice-sequence-page"]', 10);
-        $I->seeInCurrentUrl('/platby/rady/');
-        $I->see('FA27/2027', '[data-test="invoice-sequence-page"]');
+        $I->waitForElementVisible('[data-test="payments-page"]', 10);
+        $I->seeInCurrentUrl('/platby');
     }
 
     /** @group invoice */
@@ -154,8 +153,12 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->waitForElementClickable('#frm-createForm input[type="submit"]');
         $I->executeJS('document.querySelector("#frm-createForm input[type=submit]").click()');
         $I->waitForText('Fakturační řada byla založena.');
-        $I->waitForElementVisible('[data-test="invoice-sequence-page"]', 10);
-        $I->seeInCurrentUrl('/platby/rady/');
+        $I->waitForElementVisible('[data-test="payments-page"]', 10);
+
+        // Navigate to the newly created sequence to issue an invoice
+        $this->openInvoices();
+        $I->click('[data-test^="invoice-sequence-create-invoice-"]');
+        $I->waitForElementVisible('[data-test="invoice-create-form"]', 10);
 
         $I->see('Číslo faktury a VS se generují automaticky.');
         $I->see('Cena za jednotku');
@@ -193,13 +196,13 @@ class InvoiceCest extends BaseAcceptanceCest
             $this->I->click('[data-test="global-nav-payments"]');
             $this->I->waitForElementVisible('[data-test="payments-page"]', 10);
             Assert::assertMatchesRegularExpression(
-                '~^/platby/faktury(?:\?jednotka=\d+)?$~',
+                '~(/platby/faktury(?:\?jednotka=\d+)?)$~',
                 (string) $this->I->grabAttributeFrom('[data-test="payments-link-invoices"]', 'href'),
             );
             $this->I->click('[data-test="payments-link-invoices"]');
         } else {
             Assert::assertMatchesRegularExpression(
-                '~^/platby/faktury(?:\?jednotka=\d+)?$~',
+                '~(/platby/faktury(?:\?jednotka=\d+)?)$~',
                 (string) $this->I->grabAttributeFrom('[data-test="payment-nav-invoices"]', 'href'),
             );
             $this->I->click('[data-test="payment-nav-invoices"]');
@@ -295,7 +298,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $this->openInvoices();
         $I->click('[data-test="invoice-action-settings"]');
         $I->waitForElementVisible('[data-test="invoice-settings-page"]', 10);
-        $this->fillYearlySettings($lifecycleYear, 'Selenium Lifecycle ' . $lifecycleYear);
+        $this->fillYearlySettings($lifecycleYear, 'Selenium Lifecycle '.$lifecycleYear);
         $I->scrollTo('input[name="save"]');
         $I->waitForElementClickable('input[name="save"]');
         $I->click('input[name="save"]');
@@ -305,7 +308,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $this->openInvoices();
         $I->click('[data-test="invoice-action-create-sequence"]');
         $I->waitForElementVisible('[data-test="invoice-sequence-form-page"]', 10);
-        $seqPrefix = 'LC' . substr((string) $lifecycleYear, -2);
+        $seqPrefix = 'LC'.substr((string) $lifecycleYear, -2);
         $I->fillField('input[name="sequence"]', $seqPrefix);
         $I->fillField('input[name="firstNumber"]', '00001');
         $I->selectOption('select[name="year"]', (string) $lifecycleYear);
@@ -316,7 +319,12 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->waitForElementClickable('#frm-createForm input[type="submit"]');
         $I->executeJS('document.querySelector("#frm-createForm input[type=submit]").click()');
         $I->waitForText('Fakturační řada byla založena.');
-        $I->waitForElementVisible('[data-test="invoice-sequence-page"]', 10);
+        $I->waitForElementVisible('[data-test="payments-page"]', 10);
+
+        // Navigate to the newly created sequence to issue an invoice
+        $this->openInvoices();
+        $I->click('[data-test^="invoice-sequence-create-invoice-"]');
+        $I->waitForElementVisible('[data-test="invoice-create-form"]', 10);
 
         // ── 3. Issue invoice ─────────────────────────────────────
         $I->fillField('input[name="issuedBy"]', 'Selenium lifecycle');
@@ -336,28 +344,28 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->waitForElementClickable('input[name="send"]');
         $I->click('input[name="send"]');
 
-        $expectedInvNumber = $seqPrefix . '00001';
-        $expectedVS = substr((string) $lifecycleYear, -2) . '00001';
+        $expectedInvNumber = $seqPrefix.'00001';
+        $expectedVS = substr((string) $lifecycleYear, -2).'00001';
 
         $I->waitForText('Faktura byla vytvořena');
         $I->see($expectedInvNumber);
 
         // ── 4. Open invoice detail ───────────────────────────────
-        $I->click('[data-test-invoice-number="' . $expectedInvNumber . '"]');
+        $I->click('[data-test-invoice-number="'.$expectedInvNumber.'"]');
         $I->waitForElementVisible('[data-test="invoice-detail-page"]', 10);
         $I->see('Lifecycle Tester');
         $I->see('Lifecycle služba');
 
         // ── 5. Cleanup: delete invoice + sequence via DB ─────────
-        $invoiceId = $I->grabFromDatabase('in_invoice', 'id', ['variable_symbol' => $expectedVS]);
-        $sequenceId = $I->grabFromDatabase('in_sequence', 'id', ['prefix' => $seqPrefix]);
+        $invoiceId = $I->grabFromDatabase('invoice', 'id', ['variable_symbol' => $expectedVS]);
+        $sequenceId = $I->grabFromDatabase('invoice_sequence', 'id', ['prefix' => $seqPrefix]);
 
         // Delete in FK order
         $I->executeJS(''); // noop to ensure WebDriver is responsive
         // Use grab to verify then clean tables
-        $I->seeInDatabase('in_invoice_item', ['invoice_id' => $invoiceId]);
-        $I->seeInDatabase('in_invoice', ['id' => $invoiceId]);
-        $I->seeInDatabase('in_sequence', ['id' => $sequenceId]);
+        $I->seeInDatabase('invoice_item', ['invoice_id' => $invoiceId]);
+        $I->seeInDatabase('invoice', ['id' => $invoiceId]);
+        $I->seeInDatabase('invoice_sequence', ['id' => $sequenceId]);
 
         // Cleanup via haveInDatabase-injected rows will be rolled back by Db module
         // For data created via UI, we verify it exists then trust DB repopulation

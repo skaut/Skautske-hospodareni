@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App;
 
-use App\Components\Payment\CreateButton;
 use App\Components\Factories\Payment\ICreateButtonFactory;
 use App\Components\Factories\Payment\IPairButtonFactory;
+use App\Components\Payment\CreateButton;
 use App\Components\Payment\PairButton;
 use App\Model\Event\ReadModel\Queries\CampStatsQuery;
 use App\Model\Event\ReadModel\Queries\EventStatsQuery;

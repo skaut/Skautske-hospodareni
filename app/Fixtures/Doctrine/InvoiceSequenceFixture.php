@@ -20,6 +20,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Nette\DI\Container;
 use Nettrine\Fixtures\ContainerAwareInterface;
+use RuntimeException;
 
 use function assert;
 use function sprintf;
@@ -81,7 +82,7 @@ final class InvoiceSequenceFixture extends AbstractFixture implements ContainerA
         int $sequenceId,
     ): InvoiceSequence {
         if (! $manager instanceof \Doctrine\ORM\EntityManagerInterface) {
-            throw new \RuntimeException('Expected EntityManagerInterface');
+            throw new RuntimeException('Expected EntityManagerInterface');
         }
 
         $existing = $manager->createQueryBuilder()

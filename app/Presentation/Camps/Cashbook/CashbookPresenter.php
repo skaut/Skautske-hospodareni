@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Presentation\Camps\Cashbook;
 
-use App\Components\Factories\Camps\IMissingAutocomputedCategoryControlFactory;
 use App\Components\Camps\MissingAutocomputedCategoryControl;
 use App\Components\CashbookControl;
+use App\Components\Factories\Camps\IMissingAutocomputedCategoryControlFactory;
 use App\Components\Factories\ICashbookControlFactory;
 use App\Model\Auth\Resources\Camp;
 use App\Model\Cashbook\Cashbook\Amount;

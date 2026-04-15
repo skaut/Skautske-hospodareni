@@ -12,7 +12,7 @@ jobs:
     name: Prepare working directory
     runs-on: ubuntu-22.04
     container:
-      image: skaut/lebeda:8.2-ci
+      image: skaut/lebeda:8.3-ci
     env:
       COMPOSER_ALLOW_SUPERUSER: "1"   # composer jako root bez varování
     steps:
@@ -75,7 +75,7 @@ jobs:
     name: "Run unit tests"
     runs-on: ubuntu-22.04
     container:
-      image: skaut/lebeda:8.2
+      image: skaut/lebeda:8.3
     needs: workdir
     steps:
       - name: Download workdir
@@ -222,7 +222,7 @@ jobs:
       DB_NAME: hskauting
       DB_TEST: true
     container:
-      image: skaut/lebeda:8.2
+      image: skaut/lebeda:8.3
     needs: workdir
     steps:
       - name: Download workdir
@@ -240,7 +240,7 @@ jobs:
     name: "Check coding standard"
     runs-on: ubuntu-22.04
     container:
-      image: skaut/lebeda:8.2
+      image: skaut/lebeda:8.3
     needs: workdir
     steps:
       - name: Download workdir
@@ -256,7 +256,7 @@ jobs:
     name: "Lint Latte templates"
     runs-on: ubuntu-22.04
     container:
-      image: skaut/lebeda:8.2
+      image: skaut/lebeda:8.3
     needs: workdir
     env:
       DEVELOPMENT_MACHINE: true
@@ -275,7 +275,7 @@ jobs:
     name: "Validate mapping against migrations"
     runs-on: ubuntu-22.04
     container:
-      image: skaut/lebeda:8.2
+      image: skaut/lebeda:8.3
     needs: workdir
     services:
       mysql-test:
@@ -315,7 +315,7 @@ jobs:
       - validate-mapping
     runs-on: ubuntu-22.04
     container:
-      image: skaut/lebeda:8.2-ci
+      image: skaut/lebeda:8.3-ci
     steps:
       - run: true
 

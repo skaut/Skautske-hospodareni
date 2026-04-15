@@ -15,7 +15,7 @@ abstract class AbstractPrivilegesDialog extends Dialog
     {
         parent::beforeRender();
 
-        $this->template->setFile(__DIR__ . '/templates/PrivilegesDialog.latte');
+        $this->template->setFile(__DIR__.'/templates/PrivilegesDialog.latte');
         $this->template->setParameters([
             'customClasses' => 'modal-lg',
             'privileges' => $this->buildPrivileges(),

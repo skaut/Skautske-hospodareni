@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Presentation\Payments\GroupList;
 
-use App\Components\Payment\CreateButton;
-use App\Components\Payment\GroupProgress;
 use App\Components\Factories\Payment\ICreateButtonFactory;
 use App\Components\Factories\Payment\IPairButtonFactory;
+use App\Components\Payment\CreateButton;
+use App\Components\Payment\GroupProgress;
 use App\Components\Payment\PairButton;
 use App\Model\DTO\Payment\Group;
 use App\Model\Payment\BankAccountService;

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presentation\Settings\BankAccounts;
 
+use App\Components\Factories\Payment\IBankAccountFormFactory;
 use App\Components\Payment\BankAccountDetail\BankAccountDetailViewFactory;
 use App\Components\Payment\BankAccountDetail\BankAccountManualPairingOutcome;
 use App\Components\Payment\BankAccountDetail\BankAccountManualPairingService;
 use App\Components\Payment\BankAccountForm;
 use App\Components\Payment\GpcImportDialog;
-use App\Components\Factories\Payment\IBankAccountFormFactory;
 use App\Model\Auth\Resources\Unit as UnitResource;
 use App\Model\Bank\BankTransactionAmountMismatch;
 use App\Model\Bank\BankTransactionPairingNotAllowed;

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Components\Factories\Payment;
 
 use App\Components\Payment\EmailButton;
-
 use App\Model\DTO\Payment\Group;
 use App\Model\DTO\Payment\Payment;
 

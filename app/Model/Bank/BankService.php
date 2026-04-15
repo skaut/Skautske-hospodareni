@@ -64,14 +64,14 @@ class BankService
         foreach ($this->pairingRunner->run(
             $foundGroups,
             static fn (Group $group): ?int => $group->getBankAccountId(),
-            fn (int $bankAccountId): Entity\BankAccount => $this->bankAccounts->find($bankAccountId),
+            fn (int $bankAccountId): BankAccount => $this->bankAccounts->find($bankAccountId),
             fn (array $groups): array => $this->pairingCandidates->getScopedCandidatesForGroups(
                 array_values(array_map(static fn (Group $group): int => $group->getId(), $groups)),
             ),
             fn (array $groups): ChronosDate => $daysBack === null
                 ? $this->resolvePairingIntervalStart($groups)
                 : ChronosDate::today()->subDays($daysBack),
-            fn (Entity\BankAccount $bankAccount, ChronosDate $pairSince, ChronosDate $now): array => $this->transactions->getPersistentTransactionsForPeriod($bankAccount, $pairSince, $now),
+            fn (BankAccount $bankAccount, ChronosDate $pairSince, ChronosDate $now): array => $this->transactions->getPersistentTransactionsForPeriod($bankAccount, $pairSince, $now),
             fn (BankAccount $bankAccount, array $groups): bool => ! (
                 $bankAccount->getTransactionSource()->value === BankTransactionSource::FIO->value
                 && $bankAccount->getToken() === null

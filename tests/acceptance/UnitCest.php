@@ -105,7 +105,7 @@ final class UnitCest extends BaseAcceptanceCest
         $I->wantTo('create a budget category and verify it appears');
 
         $year = (int) date('Y');
-        $categoryLabel = 'Selenium Test ' . time();
+        $categoryLabel = 'Selenium Test '.time();
 
         // Navigate to budget add page
         $I->amOnPage('/jednotka/'.AcceptanceTester::UNIT_ID.'/rozpocet');
@@ -162,9 +162,9 @@ final class UnitCest extends BaseAcceptanceCest
 
         // Click previous year
         $prevYear = (string) ((int) $currentYear - 1);
-        $I->clickWithLeftButton('//a[contains(@class,"btn") and normalize-space()="' . $prevYear . '"]');
+        $I->clickWithLeftButton('//a[contains(@class,"btn") and normalize-space()="'.$prevYear.'"]');
         $I->waitForElementVisible('[data-test="unit-chits-page"]', 10);
-        $I->seeInCurrentUrl('rok=' . $prevYear);
+        $I->seeInCurrentUrl('rok='.$prevYear);
     }
 
     /** @group unit */
