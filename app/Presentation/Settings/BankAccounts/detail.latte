@@ -82,7 +82,7 @@
                                 </div>
 
                                 <div n:if="$row->manualCandidates !== []">
-                                    <div class="small text-muted">Ruční párování podle částky:</div>
+                                    <div class="small text-body-secondary">Ruční párování podle částky:</div>
                                     <div n:foreach="$row->manualCandidates as $candidate" class="mb-1">
                                         <span n:class="$candidate->type === 'invoice' ? 'badge bg-secondary' : 'badge bg-primary'">
                                             {$candidate->type === 'invoice' ? 'Faktura' : 'Platba'}
@@ -98,7 +98,7 @@
                                 </div>
 
                                 <div n:if="$row->exactCandidates !== []">
-                                    <div class="small text-muted">Jednoznačné automatické shody:</div>
+                                    <div class="small text-body-secondary">Jednoznačné automatické shody:</div>
                                     <div n:foreach="$row->exactCandidates as $candidate">
                                         <span n:class="$candidate->type === 'invoice' ? 'badge bg-secondary' : 'badge bg-primary'">
                                             {$candidate->type === 'invoice' ? 'Faktura' : 'Platba'}
@@ -112,7 +112,7 @@
                                 </div>
 
                                 <div n:if="$row->variableSymbolCandidates !== [] && $row->exactCandidates === []">
-                                    <div class="small text-muted">Položky se shodným VS:</div>
+                                    <div class="small text-body-secondary">Položky se shodným VS:</div>
                                     <div n:foreach="$row->variableSymbolCandidates as $candidate">
                                         <span n:class="$candidate->type === 'invoice' ? 'badge bg-secondary' : 'badge bg-primary'">
                                             {$candidate->type === 'invoice' ? 'Faktura' : 'Platba'}
@@ -152,7 +152,7 @@
                         <td>{$batch->getSource()->value|upper}</td>
                         <td>
                             <div>{$batch->getFileName()}</div>
-                            <div class="small text-muted">hash {$batch->getFileHash()|truncate:16,''}</div>
+                            <div class="small text-body-secondary">hash {$batch->getFileHash()|truncate:16,''}</div>
                         </td>
                         <td>{$batch->getImportedBy()}</td>
                         <td class="r">{$batch->getTransactionCount()}</td>

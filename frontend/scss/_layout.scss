@@ -1,0 +1,40 @@
+// Layout — body, shell, main structural rules
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+body.dashboard-shell {
+  background:
+    radial-gradient(circle at top left, rgba(56, 118, 255, 0.12) 0%, rgba(56, 118, 255, 0) 24rem),
+    radial-gradient(circle at top right, rgba(148, 163, 184, 0.16) 0%, rgba(148, 163, 184, 0) 22rem),
+    radial-gradient(circle at bottom center, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0) 26rem),
+    linear-gradient(180deg, #fbfcfe 0%, #f3f7fb 24%, #edf2f8 62%, #f7f9fc 100%);
+  background-attachment: fixed;
+}
+
+main[role="main"] {
+  flex: 1 0 auto;
+  width: 100%;
+}
+
+.shell-main {
+  position: relative;
+}
+
+.shell-main--dashboard {
+  padding-right: 0.75rem;
+  padding-left: 0.75rem;
+
+  @media (min-width: 992px) {
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
+}
+
+body > footer {
+  width: 100%;
+  margin-top: auto;
+}

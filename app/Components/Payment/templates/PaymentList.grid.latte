@@ -14,7 +14,7 @@
                         title="Odeslané e-maily">
                     <i class="far fa-envelope-open"></i>&nbsp;{count($emails)}
                 </button>
-                <div class="dropdown-menu dropdown-menu-right p-0 border-0 text-nowrap">
+                <div class="dropdown-menu dropdown-menu-end p-0 border-0 text-nowrap">
                     <ul class="list-group" n:inner-foreach="$emails as $email">
                         <li class="list-group-item align-items-center d-flex">
                             <div class="flex-grow-1">
@@ -30,7 +30,7 @@
                                 {/switch}
 
                             </div>
-                            <div class="small text-muted text-center ms-3">
+                            <div class="small text-body-secondary text-center ms-3">
                                 odeslal {$email->getTime()|date:'d.m.Y'} uživatel {$email->getSenderName()}
                             </div>
                         </li>
@@ -82,7 +82,7 @@
                 {if $transaction !== NULL}
                     <span class="fas fa-university"></span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-right p-3">
+                <ul class="dropdown-menu dropdown-menu-end p-3">
                     <li><strong>ID:</strong> {$transaction->getId()}</li>
                     <li><strong>Plátce:</strong> {$transaction->getPayer()}</li>
                     <li><strong>Datum:</strong> {$transaction->getDate()?->toNative()|date:"j.n.Y"}</li>
@@ -92,7 +92,7 @@
                 {else}
                     <span class="far fa-user"></span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-right p-3">
+                <ul class="dropdown-menu dropdown-menu-end p-3">
                     <li><strong>Uzavřel:</strong> {$item->getClosedByUsername()}</li>
                 </ul>
                 {/if}

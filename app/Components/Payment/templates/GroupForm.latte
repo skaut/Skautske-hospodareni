@@ -1,34 +1,82 @@
+<div id="bankAccountUnavailableAlert" class="alert alert-secondary small d-none">
+    <strong>Bankovní párování je zatím nedostupné.</strong>
+    Nejprve vyberte bankovní účet a uložte skupinu.
+</div>
+<div id="emailUnavailableAlert" class="alert alert-secondary small d-none">
+    <strong>E-mailové šablony jsou zatím nedostupné.</strong>
+    Nejprve vyberte e-mail odesílatele a uložte skupinu.
+</div>
 {control form}
 
 <script>
     (() => {
         const form = document.querySelector('[data-help-form] form, #leftPanel form');
-        const bankAccountSelect = form?.querySelector('select[name$="[bankAccount]"]');
-
-        if (!form || !bankAccountSelect) {
-            return;
-        }
-
-        const originalValue = bankAccountSelect.dataset.originalValue ?? null;
-        const message = bankAccountSelect.dataset.bankAccountChangeMessage;
-
-        if (originalValue === null || !message) {
-            return;
-        }
-
-        form.addEventListener('submit', (event) => {
-            if (bankAccountSelect.value !== originalValue && !window.confirm(message)) {
-                event.preventDefault();
-            }
-        });
-    })();
-
-    (() => {
-        const form = document.querySelector('[data-help-form] form, #leftPanel form');
         if (!form) return;
 
+        // --- Bank account change confirmation ---
+        const bankAccountSelect = form.querySelector('select[name$="bankAccount"]');
+        if (bankAccountSelect) {
+            const originalValue = bankAccountSelect.dataset.originalValue ?? null;
+            const message = bankAccountSelect.dataset.bankAccountChangeMessage;
+
+            if (originalValue !== null && message) {
+                form.addEventListener('submit', (event) => {
+                    if (bankAccountSelect.value !== originalValue && !window.confirm(message)) {
+                        event.preventDefault();
+                    }
+                });
+            }
+        }
+
+        // --- Bank account alert: position above bankAccount select, toggle ---
+        const bankAlert = document.getElementById('bankAccountUnavailableAlert');
+        const pairingFields = form.querySelectorAll('[data-bank-pairing-field]');
+        const pairingLabels = [];
+        pairingFields.forEach(field => {
+            const wrapper = field.closest('.mb-3, .form-group, .form-check, div[id]');
+            if (wrapper) pairingLabels.push(wrapper);
+        });
+
+        if (bankAccountSelect && bankAlert) {
+            const bankWrapper = bankAccountSelect.closest('.mb-3, .form-group, div[id]');
+            if (bankWrapper) {
+                bankWrapper.parentNode.insertBefore(bankAlert, bankWrapper);
+            }
+
+            function toggleBankFields() {
+                const hasBankAccount = bankAccountSelect.value !== '';
+                bankAlert.classList.toggle('d-none', hasBankAccount);
+
+                pairingFields.forEach(field => {
+                    field.disabled = !hasBankAccount;
+                    if (!hasBankAccount) {
+                        field.style.opacity = '0.5';
+                        field.style.pointerEvents = 'none';
+                    } else {
+                        field.style.opacity = '';
+                        field.style.pointerEvents = '';
+                    }
+                });
+                pairingLabels.forEach(wrapper => {
+                    wrapper.style.opacity = hasBankAccount ? '' : '0.5';
+                });
+            }
+
+            toggleBankFields();
+            bankAccountSelect.addEventListener('change', toggleBankFields);
+        }
+
+        // --- Email alert: position above email select, toggle fields ---
         const emailSelect = form.querySelector('.ui--emailSelectbox');
         if (!emailSelect) return;
+
+        const emailAlert = document.getElementById('emailUnavailableAlert');
+        if (emailAlert) {
+            const emailWrapper = emailSelect.closest('.mb-3, .form-group, div[id]');
+            if (emailWrapper) {
+                emailWrapper.parentNode.insertBefore(emailAlert, emailWrapper);
+            }
+        }
 
         const emailFields = form.querySelectorAll('[data-email-field]');
         const emailLabels = [];
@@ -40,6 +88,10 @@
 
         function toggleEmailFields() {
             const hasEmail = emailSelect.value !== '';
+
+            if (emailAlert) {
+                emailAlert.classList.toggle('d-none', hasEmail);
+            }
 
             emailFields.forEach(field => {
                 field.disabled = !hasEmail;

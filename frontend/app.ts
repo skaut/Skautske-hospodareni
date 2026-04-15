@@ -4,7 +4,7 @@ import 'bootstrap/js/dist/collapse';
 import Dropdown from 'bootstrap/js/dist/dropdown';
 import {dom} from './icons';
 import {DarkModeToggle} from './DarkModeToggle';
-import { DesignShowcase } from './modules/DesignShowcase';
+
 import {LogoutTimer} from './LogoutTimer';
 import './ts/checkAll';
 import initializeAjax from './ts/ajax';
@@ -26,7 +26,5 @@ document.addEventListener('DOMContentLoaded', () => {
     dom.watch();
     initializeDropdowns();
 
-    if (document.querySelector('[data-test="design-showcase"]')) {
-        new DesignShowcase().initialize();
-    }
+
 });

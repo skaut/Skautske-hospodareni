@@ -23,9 +23,9 @@
 
             <div class="mb-3">
                 <label n:name="email"/>
-                <small class="text-muted">volitelný</small>
+                <small class="text-body-secondary">volitelný</small>
                 <span title="Pro více příjemců, oddělte jejich e-mailové adresy čárkou" data-bs-toggle="tooltip">
-                        <i class="fas fa-info-circle hidden-xs hidden-sm"></i>
+                        <i class="fas fa-info-circle d-none d-md-inline"></i>
                 </span>
                 {include control $form['email']}
                 {include errors $form['email']}
@@ -57,13 +57,13 @@
                 <div class="col-md-6 pe-0">
                     <div class="mb-3">
                         <label n:name="variableSymbol"/>
-                        <small class="text-muted">volitelný</small>
+                        <small class="text-body-secondary">volitelný</small>
                         <div class="input-group">
                             {include control $form['variableSymbol']}
                             <div class="input-group-text"
                                  title="Předvyplněná hodnota je dosavadní nejvyšší hodnota +1"
                                  data-bs-toggle="tooltip">
-                                <i class="fas fa-info-circle hidden-xs hidden-sm"></i>
+                                <i class="fas fa-info-circle d-none d-md-inline"></i>
                             </div>
                         </div>
                         {include errors $form['variableSymbol']}
@@ -72,7 +72,7 @@
                 <div class="col-md-6">
                     <div class="mb-3 ms-2">
                         <label n:name="constantSymbol"/>
-                        <small class="text-muted">volitelný</small>
+                        <small class="text-body-secondary">volitelný</small>
                         {include control $form['constantSymbol'], 'w-50'}
                         {include errors $form['constantSymbol']}
                     </div>
@@ -81,7 +81,7 @@
 
             <div class="mb-3">
                 <label n:name="note"/>
-                <small class="text-muted">volitelná</small>
+                <small class="text-body-secondary">volitelná</small>
                 {include control $form['note']}
                 {include errors $form['note']}
             </div>

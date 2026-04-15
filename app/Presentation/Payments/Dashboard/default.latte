@@ -1,8 +1,8 @@
 {block title}Platby{/block}
 
 {block #content}
-<div data-test="payments-page">
-    <div class="card shadow-sm mb-4">
+<div data-test="payments-page" class="d-grid gap-4">
+    <div class="card shadow-sm">
         <div class="card-body">
             <h1 class="h3 mb-2">Platby</h1>
             <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3">
@@ -17,7 +17,7 @@
             <article class="card h-100 shadow-sm" data-test="payments-card-groups">
                 <div class="card-body">
                     <div class="d-flex align-items-start gap-3 mb-3">
-                        <a n:href=":Payments:GroupList:" class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary text-decoration-none" style="width:3rem;height:3rem;font-size:1.15rem;flex-shrink:0" data-test="payments-link-groups">
+                        <a n:href=":Payments:GroupList:" class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary text-decoration-none tile-icon" data-test="payments-link-groups">
                             <i class="fi fi-rr-list" aria-hidden="true"></i>
                         </a>
                         <div>
@@ -36,7 +36,7 @@
             <article class="card h-100 shadow-sm" data-test="payments-card-invoices">
                 <div class="card-body">
                     <div class="d-flex align-items-start gap-3 mb-3">
-                        <a n:href=":Payments:InvoiceList:default, unitId => $unitId" class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary text-decoration-none" style="width:3rem;height:3rem;font-size:1.15rem;flex-shrink:0" data-test="payments-link-invoices">
+                        <a n:href=":Payments:InvoiceList:default, unitId => $unitId" class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary text-decoration-none tile-icon" data-test="payments-link-invoices">
                             <i class="fi fi-rr-file-invoice" aria-hidden="true"></i>
                         </a>
                         <div>
@@ -59,7 +59,7 @@
             <article class="card h-100 shadow-sm" data-test="payments-card-settings">
                 <div class="card-body">
                     <div class="d-flex align-items-start gap-3">
-                        <a n:href=":Settings:Default:default" class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary text-decoration-none" style="width:3rem;height:3rem;font-size:1.15rem;flex-shrink:0" data-test="payments-link-settings">
+                        <a n:href=":Settings:Default:default" class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary text-decoration-none tile-icon" data-test="payments-link-settings">
                             <i class="fi fi-rr-settings-sliders" aria-hidden="true"></i>
                         </a>
                         <div>

@@ -95,6 +95,12 @@ class Group
     /** @ORM\Column(type="integer", nullable=true) */
     private ?int $smtpId = null;
 
+    /** @ORM\Column(type="boolean", options={"default"=0}) */
+    private bool $automaticPairingEnabled = false;
+
+    /** @ORM\Column(type="integer", nullable=true) */
+    private ?int $pairingDaysBack = null;
+
     public const STATE_OPEN = 'open';
     public const STATE_CLOSED = 'closed';
 
@@ -139,6 +145,26 @@ class Group
         $this->changeBankAccount($bankAccount, $bankAccountAccessChecker);
         $this->changeOAuth($oAuthId, $oAuthAccessChecker);
         $this->isRemindersEnabled = $isRemindersEnabled;
+    }
+
+    public function isAutomaticPairingEnabled(): bool
+    {
+        return $this->automaticPairingEnabled;
+    }
+
+    public function setAutomaticPairingEnabled(bool $automaticPairingEnabled): void
+    {
+        $this->automaticPairingEnabled = $automaticPairingEnabled;
+    }
+
+    public function getPairingDaysBack(): ?int
+    {
+        return $this->pairingDaysBack;
+    }
+
+    public function setPairingDaysBack(?int $pairingDaysBack): void
+    {
+        $this->pairingDaysBack = $pairingDaysBack;
     }
 
     public function update(

@@ -1,0 +1,106 @@
+// Utilities — small helpers used across multiple templates
+
+table.table a {
+  text-decoration: none;
+}
+
+table.table a:hover {
+  text-decoration: underline;
+}
+
+.col-action {
+  text-align: right;
+}
+
+.w-15 {
+  width: 15%;
+}
+
+.bg-test {
+  background: linear-gradient(135deg, #f8d778 0%, #f5c94e 100%);
+}
+
+.visually-disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+// Auto-fit card grid — used by invoices and payment groups dashboard
+.invoice-sequence-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+// Sequence badge pill used in invoice grid rows
+.invoice-grid-sequence {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.28rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(var(--bs-primary-rgb), 0.1);
+  color: var(--bs-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+// Card tile icon — used in dashboard and payments overview cards
+.tile-icon {
+  width: 3rem;
+  height: 3rem;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.tile-icon-sm {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+// Dashboard payment action buttons — keep compact
+[data-test="dashboard-payment-actions"] {
+  .btn {
+    box-shadow: none;
+  }
+}
+
+// Help sidebar layout — form + collapsible sidebar side by side
+.design-help-layout {
+  display: grid;
+  gap: 1.5rem;
+
+  @media (min-width: 992px) {
+    grid-template-columns: 1fr 20rem;
+  }
+}
+
+.design-help-sidebar {
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-lg);
+  padding: 1rem 1.25rem;
+  background: var(--bs-body-bg);
+  align-self: start;
+  position: sticky;
+  top: 5rem;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  transition: opacity 0.2s ease;
+}
+
+// Collapsed state — hide content, keep toggle visible
+[data-help-collapsed="true"] {
+  .design-help-sidebar [data-help-content] {
+    display: none;
+  }
+
+  @media (min-width: 992px) {
+    grid-template-columns: 1fr auto;
+
+    .design-help-sidebar {
+      width: auto;
+      min-width: 0;
+    }
+  }
+}

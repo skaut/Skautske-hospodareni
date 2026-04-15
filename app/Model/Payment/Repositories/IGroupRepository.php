@@ -47,4 +47,7 @@ interface IGroupRepository
     public function save(Group $group): void;
 
     public function remove(Group $group): void;
+
+    /** @return Group[] */
+    public function findAutomaticPairingEnabled(): array;
 }
