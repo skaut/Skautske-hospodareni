@@ -1,9 +1,0 @@
-// Dashboard — minimal custom styles beyond Bootstrap 5
-// Grid, cards, buttons, shadows, colors are all handled by BS5 utilities in the template.
-
-// Payment action buttons inside dashboard — keep compact
-[data-test="dashboard-payment-actions"] {
-  .btn {
-    box-shadow: none;
-  }
-}

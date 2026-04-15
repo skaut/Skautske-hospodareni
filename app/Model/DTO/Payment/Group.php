@@ -45,6 +45,8 @@ class Group
         private string $note,
         private ?int $bankAccountId,
         private bool $isRemindersEnabled = false,
+        private bool $automaticPairingEnabled = false,
+        private ?int $pairingDaysBack = null,
     ) {
     }
 
@@ -122,5 +124,15 @@ class Group
     public function isRemindersEnabled(): bool
     {
         return $this->isRemindersEnabled;
+    }
+
+    public function isAutomaticPairingEnabled(): bool
+    {
+        return $this->automaticPairingEnabled;
+    }
+
+    public function getPairingDaysBack(): ?int
+    {
+        return $this->pairingDaysBack;
     }
 }

@@ -27,6 +27,8 @@ class GroupFactory
             $group->getNote(),
             $group->getBankAccountId(),
             $group->isRemindersEnabled(),
+            $group->isAutomaticPairingEnabled(),
+            $group->getPairingDaysBack(),
         );
     }
 }

@@ -23,7 +23,7 @@
     {if $item->hasEmailRecipients()}
         {$item->getRecipientsString()}
     {else}
-        <span class="text-muted">Bez e-mailu</span>
+        <span class="text-body-secondary">Bez e-mailu</span>
     {/if}
 {/define}
 
@@ -36,7 +36,7 @@
         {if ! $item->isPaid() && $item->canSendReminder()}
             <div class="small text-warning mt-1">Po splatnosti, lze odeslat upomínku</div>
         {elseif ! $item->isPaid() && $item->isOverdue()}
-            <div class="small text-muted mt-1">Po splatnosti</div>
+            <div class="small text-body-secondary mt-1">Po splatnosti</div>
         {/if}
 
         {if $item->isPaid()}
@@ -45,7 +45,7 @@
                     Hotově<br>PD {$item->getCashReceiptNumber()}
                 {elseif $item->getTransaction() !== null}
                     Zaplaceno převodem<br>
-                    <span class="text-muted">
+                    <span class="text-body-secondary">
                         {$item->getClosedAt()|date:'d.m.Y'}
                         {if $item->getTransaction()->getId() !== ''}
                             / transakce {$item->getTransaction()->getId()}
@@ -77,7 +77,7 @@
                                         Upomínka
                                     {/switch}
                                 </div>
-                                <div class="small text-muted text-center ms-3">
+                                <div class="small text-body-secondary text-center ms-3">
                                     {$email->getTime()|date:'d.m.Y H:i'}<br>
                                     {$email->getSenderName()}
                                 </div>

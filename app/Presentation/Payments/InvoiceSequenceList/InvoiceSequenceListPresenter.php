@@ -233,6 +233,8 @@ class InvoiceSequenceListPresenter extends PaymentsBasePresenter
 
         $form->addYearSelect('year', 'Rok')->setDefaultValue('now');
         $form->addText('description', 'Popis');
+        $form->addInteger('defaultDueDate', 'Výchozí datum splatnosti')->setDefaultValue(14);
+
         $bankAccount = $form->addSelect('bankAccount', 'Bankovní účet', $this->bankAccountItems($invoiceSequence))
             ->setRequired(false)
             ->setPrompt('Vyberte bankovní účet');
@@ -245,6 +247,23 @@ class InvoiceSequenceListPresenter extends PaymentsBasePresenter
             );
         }
 
+        $pairingGroup = $form->addGroup('Bankovní párování', false);
+        $form->setCurrentGroup($pairingGroup);
+        $form->addCheckbox('automaticPairingEnabled', 'Automaticky párovat úhrady v cronu')
+            ->setOption('description', 'Cron páruje jen řady, které mají tuto volbu výslovně zapnutou.')
+            ->setHtmlAttribute('data-bank-pairing-field', '1');
+        $form->addText('pairingDaysBack', 'Rozšířit hledání zpětně o dnů')
+            ->setDefaultValue((string) InvoiceBankService::DAYS_BACK_DEFAULT)
+            ->setRequired(false)
+            ->setNullable()
+            ->addRule(Form::INTEGER, 'Počet dnů musí být celé číslo.')
+            ->addRule(Form::MIN, 'Počet dnů musí být alespoň 1.', 1)
+            ->setOption('description', 'Použije se při prvním nebo resetovaném automatickém párování této řady.')
+            ->setHtmlAttribute('data-bank-pairing-field', '1');
+        $form->setCurrentGroup();
+
+        $emailGroup = $form->addGroup('E-mailová komunikace', false);
+        $form->setCurrentGroup($emailGroup);
         $oAuthId = $form->addSelect('oAuthId', 'E-mail odesílatele', $this->oAuthItems())
             ->setPrompt('Vyberte e-mail')
             ->setHtmlAttribute('class', 'ui--emailSelectbox');
@@ -252,22 +271,8 @@ class InvoiceSequenceListPresenter extends PaymentsBasePresenter
         if (! $this->hasAvailableOAuths()) {
             $oAuthId->setOption('description', 'V systému není dostupný žádný odesílací e-mail.');
         }
-
-        $form->addInteger('defaultDueDate', 'Výchozí datum splatnosti')->setDefaultValue(14);
-
-        $pairingGroup = $form->addGroup('Bankovní párování', false);
-        $form->setCurrentGroup($pairingGroup);
-        $form->addCheckbox('automaticPairingEnabled', 'Automaticky párovat úhrady v cronu')
-            ->setOption('description', 'Cron páruje jen řady, které mají tuto volbu výslovně zapnutou.');
-        $form->addText('pairingDaysBack', 'Rozšířit hledání zpětně o dnů')
-            ->setDefaultValue((string) InvoiceBankService::DAYS_BACK_DEFAULT)
-            ->setRequired(false)
-            ->setNullable()
-            ->addRule(Form::INTEGER, 'Počet dnů musí být celé číslo.')
-            ->addRule(Form::MIN, 'Počet dnů musí být alespoň 1.', 1)
-            ->setOption('description', 'Použije se při prvním nebo resetovaném automatickém párování této řady.');
-
         $form->setCurrentGroup();
+
         $this->addEmailTemplatesToForm($form, $emailConfigurationUnavailableReason);
 
         $form->addSubmit('send', $invoiceSequence instanceof InvoiceSequence ? 'Uložit řadu' : 'Založit řadu');
@@ -398,6 +403,7 @@ class InvoiceSequenceListPresenter extends PaymentsBasePresenter
 
         $emails = [
             EmailType::INVOICE_INFO => 'E-mail s fakturou',
+            EmailType::INVOICE_COMPLETED => 'E-mail při dokončení platby',
             EmailType::INVOICE_REMINDER => 'E-mail upomínka faktury',
         ];
 
@@ -408,42 +414,33 @@ class InvoiceSequenceListPresenter extends PaymentsBasePresenter
 
             $subjectId = $type.'_subject';
             $bodyId = $type.'_body';
-            $isDisabled = $unavailableReason !== null;
 
             if ($type !== EmailType::INVOICE_INFO) {
-                $enabled = $container->addCheckbox('enabled', 'Aktivní');
-                $enabled->setOption('class', 'form-check');
-                $enabled->addCondition($form::FILLED)
+                $container->addCheckbox('enabled', 'Aktivní')
+                    ->setOption('class', 'form-check')
+                    ->setHtmlAttribute('data-email-field', '1')
+                    ->addCondition($form::FILLED)
                     ->toggle($subjectId)
                     ->toggle($bodyId);
-
-                if ($isDisabled) {
-                    $enabled->setDisabled();
-                    $enabled->setHtmlAttribute('title', $unavailableReason);
-                }
             }
+
+            $defaultSubjects = [
+                EmailType::INVOICE_INFO => 'Faktura č. %number%',
+                EmailType::INVOICE_COMPLETED => 'Potvrzení o úhradě – faktura č. %number%',
+                EmailType::INVOICE_REMINDER => 'Upomínka – faktura č. %number%',
+            ];
 
             $subject = $container->addText('subject', 'Předmět e-mailu')
                 ->setOption('id', $subjectId)
+                ->setHtmlAttribute('data-email-field', '1')
+                ->setDefaultValue($defaultSubjects[$type])
                 ->setRequired($type === EmailType::INVOICE_INFO ? 'Předmět e-mailu musí být vyplněn' : false);
-            $body = $container->addTextArea('body', 'Text e-mailu', 10, 20)
+            $body = $container->addTextArea('body', 'Text e-mailu', null, 15)
                 ->setOption('id', $bodyId)
                 ->setHtmlAttribute('class', 'form-control')
+                ->setHtmlAttribute('data-email-field', '1')
                 ->setDefaultValue($this->getDefaultEmailBody($type))
                 ->setRequired($type === EmailType::INVOICE_INFO ? 'Text e-mailu musí být vyplněn' : false);
-
-            if (! $isDisabled) {
-                continue;
-            }
-
-            $subject->setDisabled();
-            $subject->setRequired(false);
-            $subject->setOption('description', $unavailableReason);
-            $subject->setHtmlAttribute('title', $unavailableReason);
-
-            $body->setDisabled();
-            $body->setRequired(false);
-            $body->setHtmlAttribute('title', $unavailableReason);
         }
 
         $form->setCurrentGroup();
@@ -459,7 +456,7 @@ class InvoiceSequenceListPresenter extends PaymentsBasePresenter
     {
         $emails = [];
 
-        foreach ([EmailType::INVOICE_INFO, EmailType::INVOICE_REMINDER] as $type) {
+        foreach ([EmailType::INVOICE_INFO, EmailType::INVOICE_COMPLETED, EmailType::INVOICE_REMINDER] as $type) {
             $emails[$type] = $this->getEmailDefaults($invoiceSequence, EmailType::get($type));
         }
 
@@ -482,6 +479,7 @@ class InvoiceSequenceListPresenter extends PaymentsBasePresenter
     {
         $emails = [
             EmailType::INVOICE_INFO => $this->buildEmailTemplate($values, EmailType::INVOICE_INFO),
+            EmailType::INVOICE_COMPLETED => $this->buildEmailTemplate($values, EmailType::INVOICE_COMPLETED),
             EmailType::INVOICE_REMINDER => $this->buildEmailTemplate($values, EmailType::INVOICE_REMINDER),
         ];
 
@@ -509,7 +507,7 @@ class InvoiceSequenceListPresenter extends PaymentsBasePresenter
 
     private function syncEmailTemplates(InvoiceSequence $invoiceSequence, ArrayHash $values): void
     {
-        foreach ([EmailType::INVOICE_INFO, EmailType::INVOICE_REMINDER] as $type) {
+        foreach ([EmailType::INVOICE_INFO, EmailType::INVOICE_COMPLETED, EmailType::INVOICE_REMINDER] as $type) {
             $template = $this->buildEmailTemplate($values, $type);
 
             if ($template === null) {

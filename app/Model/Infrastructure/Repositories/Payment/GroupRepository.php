@@ -163,4 +163,17 @@ final class GroupRepository implements IGroupRepository
             },
         );
     }
+
+    public function findAutomaticPairingEnabled(): array
+    {
+        return $this->em->createQueryBuilder()
+            ->select('g')
+            ->from(Group::class, 'g')
+            ->where('g.automaticPairingEnabled = :enabled')
+            ->andWhere('g.state = :state')
+            ->setParameter('enabled', true)
+            ->setParameter('state', Group::STATE_OPEN)
+            ->getQuery()
+            ->getResult();
+    }
 }

@@ -18,8 +18,8 @@ class CreateButton extends BaseControl
         $this->css = [
             'wrap' => 'd-inline-block ms-2',
             'group' => 'btn-group',
-            'main' => 'btn btn-success',
-            'toggle' => 'btn btn-success dropdown-toggle dropdown-toggle-split',
+            'main' => 'btn btn-sm btn-success',
+            'toggle' => 'btn btn-sm btn-success dropdown-toggle dropdown-toggle-split',
             'menu' => 'dropdown-menu dropdown-menu-end',
         ];
     }

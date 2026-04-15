@@ -35,7 +35,7 @@ jobs:
             ${{ runner.os }}-php-
 
       - name: Install Composer deps
-        run: composer install --no-interaction --prefer-dist --no-progress
+        run: composer install --no-interaction --prefer-dist --no-progress --ignore-platform-reqs
 
       # Node/Yarn + cache (vestavěné v setup-node)
       - name: Setup Node.js (+ Yarn cache)

@@ -28,7 +28,7 @@
 				{block outer-filters}
 					<div class="row text-end datagrid-collapse-filters-button-row" n:if="$control->hasCollapsibleOuterFilters()">
 						<div class="col-sm-12">
-							<button class="btn btn-xs btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#datagrid-{$control->getFullName()}-row-filters">
+							<button class="btn btn-sm btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#datagrid-{$control->getFullName()}-row-filters">
 								<i n:block="icon-filter" class="{$iconPrefix}filter"></i> {='ublaboo_datagrid.show_filter'|translate}
 							</button>
 						</div>
@@ -118,7 +118,7 @@
                                             <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" n:if="$control->canHideColumns()">
                                                 <i n:block="icon-gear" class="fas fa-cog"></i>
                                             </button>
-                                            <ul class="dropdown-menu dropdown-menu-right dropdown-menu--grid dropdown-fix">
+                                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu--grid dropdown-fix">
                                                 <li n:foreach="$columnsVisibility as $v_key => $visibility">
                                                     {if $visibility['visible']}
                                                         <a n:href="hideColumn!, column => $v_key" class="ajax dropdown-item">
@@ -268,8 +268,8 @@
                                             {/foreach}
 
                                             <td class="col-action col-action-inline-edit">
-                                                {input $filter['inline_edit']['cancel'], class => 'btn btn-xs btn-danger'}
-                                                {input $filter['inline_edit']['submit'], class => 'btn btn-xs btn-primary'}
+                                                {input $filter['inline_edit']['cancel'], class => 'btn btn-sm btn-danger'}
+                                                {input $filter['inline_edit']['submit'], class => 'btn btn-sm btn-primary'}
                                                 {input $filter['inline_edit']['_id']}
                                                 {input $filter['inline_edit']['_primary_where_column']}
                                             </td>
@@ -299,7 +299,7 @@
                                                         {/if}
                                                     {/if}
                                                 {/foreach}
-                                                <span class="handle-sort btn btn-xs btn-default btn-secondary" n:if="$control->isSortable()">
+                                                <span class="handle-sort btn btn-sm btn-secondary" n:if="$control->isSortable()">
                                                     <i n:block="icon-arrows-v" class="{$iconPrefix}arrows-v {$iconPrefix}arrows-alt-v"></i>
                                                 </span>
                                                 {if $inlineEdit && $row->hasInlineEdit()}
@@ -376,7 +376,7 @@
                                 <tr n:block="pagination">
                                     <td colspan="{$control->getColumnsCount()}" n:if="!$control->isTreeView()" class="row-grid-bottom">
                                         <div class="col-items">
-                                            <small class="text-muted" n:if="$control->isPaginated()">
+                                            <small class="text-body-secondary" n:if="$control->isPaginated()">
                                                 ({var $paginator = $control['paginator']->getPaginator()}
 
                                                 {if $control->getPerPage() === 'all'}

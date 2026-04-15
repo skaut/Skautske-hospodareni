@@ -11,15 +11,15 @@
             </div>
         </div>
     </div>
-    <div class="panel-body chit-list " n:if="!empty($chits)" n:attr="id => $control->getUniqueId()">
+    <div class="card-body chit-list" n:if="!empty($chits)" n:attr="id => $control->getUniqueId()">
         <div class="overflow-auto">
-            <table class="table table-bordered table-condensed" id="cashbookTable">
+            <table class="table table-bordered table-sm" id="cashbookTable">
                 <thead>
                 <tr>
-                    <th class='col-xs-1'>
+                    <th>
                         <form n:name="formMass" class="formMass">
                             <input type="checkbox" name="chits-all"
-                                   class="hidden-xs hidden-sm" data-dependent-checkboxes="#{$control->getUniqueId()} .dependent-checkbox"/>
+                                   class="d-none d-md-inline" data-dependent-checkboxes="#{$control->getUniqueId()} .dependent-checkbox"/>
                             <button n:if="$isCash"
                                     n:name="massPrintSend" title="Vytisknout vybrané"
                                     class="btn btn-info btn-sm"
@@ -32,11 +32,11 @@
                                     class="btn btn-info btn-sm" type="submit"><i class="fas fa-download"></i></button>
                         </form>
                     </th>
-                    <th class="col-xs-1">Ze dne</th>
-                    <th class="col-xs-1">Číslo</th>
+                    <th>Ze dne</th>
+                    <th>Číslo</th>
                     <th>Účel výplaty</th>
-                    <th class="hidden-xs hidden-sm">Typ</th>
-                    <th class="hidden-xs hidden-sm">Komu/Od koho</th>
+                    <th class="d-none d-md-table-cell">Typ</th>
+                    <th class="d-none d-md-table-cell">Komu/Od koho</th>
                     <th>Příjem</th>
                     <th>Výdej</th>
                     <th>Zůstatek</th>
@@ -69,7 +69,7 @@
                                     class="btn btn-warning btn-sm"><i class="fas fa-lock"></i></a>
 
                             <a n:if="$isEditable && count(array_intersect($validInverseCashbookTypes, $chit->inverseCashbookTypes))"
-                                    class="ajax btn btn-sm btn-success hidden-xs hidden-sm" n:href="invertChitDialog:open! $chit->id"
+                                    class="ajax btn btn-sm btn-success d-none d-md-inline" n:href="invertChitDialog:open! $chit->id"
                                     title="Vytvořit protidoklad">
                                 <i class="fas fa-exchange-alt"></i>
                             </a>
@@ -79,8 +79,8 @@
                         </td>
                         <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} title="{$prefix}{$chit->number}" n:class="array_key_exists((string)$chit->number, $duplicatesNumbers) ? 'alert alert-danger'">{$chit->number}</td>
                         <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} title="{$chit->purpose}">{$chit->purpose|truncate:"120"}</td>
-                        <td class="hidden-xs hidden-sm" title="{$chit->categories}">{$chit->categoriesShortcut}</td>
-                        <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} class="hidden-xs hidden-sm">{$chit->recipient}</td>
+                        <td class="d-none d-md-table-cell" title="{$chit->categories}">{$chit->categoriesShortcut}</td>
+                        <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} class="d-none d-md-table-cell">{$chit->recipient}</td>
                         {if $isIncome}
                             <td class="r" title="{$chit->amount->expression}">{$chit->amount->value|price}</td>
                             <td class="r">&nbsp;</td>
@@ -93,8 +93,8 @@
                     {if $itemsCount > 1}
                         {foreach $chit->items as $item}
                             <tr>
-                                <td class="text-muted">{$item->category->shortcut}</td>
-                                <td class="r text-muted" colspan="2" title="{$item->amount->expression}">{$item->amount->value|price}</td>
+                                <td class="text-body-secondary">{$item->category->shortcut}</td>
+                                <td class="r text-body-secondary" colspan="2" title="{$item->amount->expression}">{$item->amount->value|price}</td>
                             </tr>
                         {/foreach}
                     {/if}
@@ -102,8 +102,8 @@
                 <tr>
                     <td colspan="2">&nbsp;</td>
                     <td>&nbsp;</td>
-                    <td class="hidden-xs hidden-sm">&nbsp;</td>
-                    <td class='hidden-xs hidden-sm'>&nbsp;</td>
+                    <td class="d-none d-md-table-cell">&nbsp;</td>
+                    <td class="d-none d-md-table-cell">&nbsp;</td>
                     <td><b>Konečný stav</b></td>
                     <td class="r">{$totalIncome|price}</td>
                     <td class="r">{$totalExpense|price}</td>
@@ -118,7 +118,7 @@
         {/if}
         {control invertChitDialog}
     </div>
-    <div class="panel-body info" n:if="count($chits) === 0">
+    <div class="card-body" n:if="count($chits) === 0">
         <div class="text-center">Zatím zde nemáte žádné doklady.</div>
     </div>
 </div>

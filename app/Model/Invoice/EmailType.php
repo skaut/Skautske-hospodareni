@@ -11,6 +11,8 @@ final class EmailType extends Enum
 {
     public const INVOICE_INFO = 'invoice_info';
 
+    public const INVOICE_COMPLETED = 'invoice_completed';
+
     public const INVOICE_REMINDER = 'invoice_reminder';
 
     public function toString(): string

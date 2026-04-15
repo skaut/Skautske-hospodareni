@@ -1,0 +1,92 @@
+// Footer — site footer and dashboard variant
+
+.site-footer {
+  margin-top: 4rem;
+  border-top: 1px solid rgba(31, 54, 80, 0.1);
+  background:
+    linear-gradient(180deg, rgba(242, 246, 251, 0.92) 0%, rgba(255, 255, 255, 0.98) 100%);
+}
+
+.site-footer--dashboard {
+  margin-top: 3rem;
+  border-top: 1px solid rgba(214, 223, 235, 0.72);
+  background:
+    linear-gradient(180deg, rgba(247, 250, 253, 0.2) 0%, rgba(243, 247, 251, 0.78) 24%, rgba(251, 252, 254, 0.96) 100%);
+  backdrop-filter: blur(8px);
+}
+
+.site-footer__inner {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.5rem 1rem 2rem;
+
+  @media (min-width: 992px) {
+    grid-template-columns: minmax(0, 1.1fr) auto;
+    align-items: end;
+    gap: 2rem;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+.site-footer__brand {
+  display: grid;
+  gap: 0.55rem;
+  max-width: 34rem;
+  justify-items: center;
+  text-align: center;
+
+  @media (min-width: 992px) {
+    justify-items: start;
+    text-align: left;
+  }
+}
+
+.site-footer__title {
+  color: #17324d;
+  font-family: skautbold, sans-serif;
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+
+.site-footer__text {
+  margin: 0;
+  color: #5d7388;
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+.site-footer__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+
+  @media (min-width: 992px) {
+    justify-content: flex-end;
+  }
+}
+
+.site-footer__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.7rem 0.95rem;
+  border: 1px solid rgba(31, 54, 80, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #17324d;
+  font-size: 0.92rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+
+  &:hover,
+  &:focus {
+    color: #17324d;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.96);
+    border-color: rgba(45, 108, 223, 0.24);
+    transform: translateY(-1px);
+  }
+}

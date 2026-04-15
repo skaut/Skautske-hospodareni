@@ -3,6 +3,10 @@
     <div class="card shadow-sm mb-4">
         <div class="card-body">
             <h1 n:inner-block="title" class="h3 mb-2">Editace skupiny: {$group->getName()}</h1>
+            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3 mb-3">
+                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
+                <span class="text-body-secondary">Upravte název, bankovní účet nebo e-mailové šablony platební skupiny.</span>
+            </div>
             <div class="d-flex flex-wrap gap-2">
                 <a n:href=":Payments:Payment:default $group->id" class="btn btn-outline-secondary btn-sm">
                     <i class="fi fi-rr-arrow-left" aria-hidden="true"></i>
@@ -12,9 +16,56 @@
         </div>
     </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            {control editGroupForm}
+    <div class="design-help-layout" data-help-layout>
+        <div class="card shadow-sm" data-help-form>
+            <div class="card-body">
+                {control editGroupForm}
+            </div>
         </div>
+        <aside class="design-help-sidebar" data-help-card data-test="help-sidebar">
+            <button
+                type="button"
+                class="btn btn-link p-0 pb-2 border-bottom w-100 text-start text-decoration-none d-inline-flex align-items-center gap-2"
+                data-help-toggle
+                data-test="help-toggle"
+                aria-expanded="true"
+                title="Skrýt nápovědu"
+            >
+                <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary bg-opacity-10 p-2">
+                    <i class="fi fi-rr-lightbulb-on text-primary" aria-hidden="true"></i>
+                </span>
+                <span class="fw-semibold text-primary-emphasis" data-help-content>Nápověda</span>
+            </button>
+            <div data-help-content data-test="help-content">
+                <p><b>E-mail odesílatele</b><br/>E-mail, ze kterého se budou zasílat informace o platbách.</p>
+                <p><b>Proměnné v e-mailu</b><br/>Proměnné v e-mailu budou před odesláním nahrazeny údaji z platby. Jsou zapsány formou: "%Název_proměnné%".</p>
+                <ul class="small">
+                    <li>%account% - celé číslo účtu i s předčíslím a kódem banky</li>
+                    <li>%qrcode% - vygenerovaný obrázek QR kódu (nelze použít v předmětu)</li>
+                    <li>%name% - název/účel platby</li>
+                    <li>%groupname% - název platební skupiny</li>
+                    <li>%amount% - částka</li>
+                    <li>%maturity% - splatnost</li>
+                    <li>%maturityus% - splatnost v americkém formátu (např. 2022-12-24)</li>
+                    <li>%vs% - variabilní symbol</li>
+                    <li>%ks% - konstantní symbol</li>
+                    <li>%note% - poznámka</li>
+                    <li>%user% - jméno uživatele, který e-mail odeslal</li>
+                </ul>
+            </div>
+        </aside>
     </div>
 </div>
+
+<script>
+    document.querySelectorAll('[data-help-layout]').forEach((layout) => {
+        const toggle = layout.querySelector('[data-help-toggle]');
+        if (!toggle) return;
+        toggle.addEventListener('click', () => {
+            const isCollapsed = layout.dataset.helpCollapsed === 'true';
+            layout.dataset.helpCollapsed = (!isCollapsed).toString();
+            toggle.setAttribute('aria-expanded', isCollapsed ? 'true' : 'false');
+            toggle.setAttribute('title', isCollapsed ? 'Skrýt nápovědu' : 'Zobrazit nápovědu');
+        });
+    });
+</script>

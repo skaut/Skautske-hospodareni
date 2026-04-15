@@ -56,12 +56,12 @@
                         <h3 class="h6 mb-1">
                             <a n:href="detail $account->getId()">{$account->getName()}</a>
                         </h3>
-                        <p class="text-muted small mb-1">{$account->getNumber()}</p>
+                        <p class="text-body-secondary small mb-1">{$account->getNumber()}</p>
                         <div class="d-flex gap-1 mb-1">
                             <span class="badge bg-success" n:if="$account->getTransactionSource()->value === 'fio' && $account->getToken() !== NULL"><i class="fi fi-rr-check" aria-hidden="true"></i> FIO API</span>
                             <span class="badge bg-secondary" n:if="$account->getTransactionSource()->value === 'gpc'"><i class="fi fi-rr-file-upload" aria-hidden="true"></i> GPC soubor</span>
                         </div>
-                        <p class="text-muted small mb-0">Přidáno {$account->getCreatedAt()|date:'j.n. Y'}</p>
+                        <p class="text-body-secondary small mb-0">Přidáno {$account->getCreatedAt()|date:'j.n. Y'}</p>
                     </div>
 
                     <div class="d-flex gap-1">

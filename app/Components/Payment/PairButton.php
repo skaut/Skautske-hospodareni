@@ -37,7 +37,7 @@ class PairButton extends BaseControl
             'wrap' => 'd-inline-block',
             'btn' => 'btn btn-sm btn-'.$style,
             'toggle' => 'btn btn-sm btn-'.$style.' dropdown-toggle',
-            'menu' => 'dropdown-menu pairForm',
+            'menu' => 'dropdown-menu dropdown-menu-end p-3',
             'icon' => 'fi fi-rr-bank',
             'inputGroup' => 'input-group input-group-sm',
             'submit' => 'btn btn-sm btn-primary',

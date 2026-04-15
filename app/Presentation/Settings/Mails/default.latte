@@ -40,7 +40,7 @@
             >
                 <div class="me-auto">
                     <strong>{$l->email}</strong>
-                    <div class="text-muted small">Naposledy upraveno {$l->updatedAt|date:"H:i j.n.Y"}</div>
+                    <div class="text-body-secondary small">Naposledy upraveno {$l->updatedAt|date:"H:i j.n.Y"}</div>
                 </div>
 
                 <div n:if="in_array($l->unitId, $editableUnits, true)">

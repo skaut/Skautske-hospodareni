@@ -123,6 +123,8 @@ class PaymentService
         ?OAuthId $oAuthId,
         ?int $bankAccountId,
         bool $remindersEnabled = false,
+        bool $automaticPairingEnabled = false,
+        ?int $pairingDaysBack = null,
     ): int {
         $now = new DateTimeImmutable();
         $bankAccount = $bankAccountId !== null ? $this->bankAccounts->find($bankAccountId) : null;
@@ -141,6 +143,9 @@ class PaymentService
             $remindersEnabled,
         );
 
+        $group->setAutomaticPairingEnabled($automaticPairingEnabled);
+        $group->setPairingDaysBack($pairingDaysBack);
+
         $this->groups->save($group);
 
         return $group->getId();
@@ -155,6 +160,8 @@ class PaymentService
         ?OAuthId $oAuthId,
         ?int $bankAccountId,
         bool $remindersEnabled = false,
+        bool $automaticPairingEnabled = false,
+        ?int $pairingDaysBack = null,
     ): void {
         $group = $this->groups->find($id);
         $bankAccount = $bankAccountId !== null ? $this->bankAccounts->find($bankAccountId) : null;
@@ -164,6 +171,8 @@ class PaymentService
         }
 
         $group->update($name, $paymentDefaults, $oAuthId, $bankAccount, $this->bankAccountAccessChecker, $this->oAuthAccessChecker, $remindersEnabled);
+        $group->setAutomaticPairingEnabled($automaticPairingEnabled);
+        $group->setPairingDaysBack($pairingDaysBack);
 
         foreach (EmailType::getAvailableValues() as $typeKey) {
             $type = EmailType::get($typeKey);

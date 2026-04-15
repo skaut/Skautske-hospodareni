@@ -93,6 +93,29 @@ class BankService
         return $pairingResults;
     }
 
+    /**
+     * Pair groups that have automatic pairing enabled (cron).
+     *
+     * @return PairingResult[]
+     *
+     * @throws BankTimeLimit
+     * @throws BankTimeout
+     * @throws BankWrongTokenAccount
+     * @throws InvalidOAuth
+     */
+    public function pairAutomaticGroups(): array
+    {
+        $groups = $this->groups->findAutomaticPairingEnabled();
+
+        if ($groups === []) {
+            return [];
+        }
+
+        $groupIds = array_values(array_map(static fn (Group $g): int => $g->getId(), $groups));
+
+        return $this->pairAllGroups($groupIds);
+    }
+
     /** @param Group[] $groups */
     private function updateLastPairing(array $groups, DateTimeImmutable $time): void
     {
@@ -113,7 +136,11 @@ class BankService
 
         return new ChronosDate(
             min(
-                array_map(fn (Group $g) => $g->getLastPairing() ?? $defaultStart, $groups),
+                array_map(
+                    fn (Group $g) => $g->getLastPairing()
+                        ?? ChronosDate::today()->subDays($g->getPairingDaysBack() ?? self::DAYS_BACK_DEFAULT)->toNative(),
+                    $groups,
+                ),
             ),
         );
     }

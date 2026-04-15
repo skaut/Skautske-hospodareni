@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Components\Payment;
 
 use App\Components\BaseControl;
+use App\Model\Bank\BankService;
 use App\Model\Common\Services\QueryBus;
 use App\Model\Common\UnitId;
 use App\Model\DTO\Google\OAuth;
@@ -129,9 +130,27 @@ final class GroupForm extends BaseControl
             );
         }
 
+        $pairingGroup = $form->addGroup('Bankovní párování', false);
+        $form->setCurrentGroup($pairingGroup);
+        $form->addCheckbox('automaticPairingEnabled', 'Automaticky párovat úhrady v cronu')
+            ->setOption('description', 'Cron páruje jen skupiny, které mají tuto volbu výslovně zapnutou.')
+            ->setHtmlAttribute('data-bank-pairing-field', '1');
+        $form->addText('pairingDaysBack', 'Rozšířit hledání zpětně o dnů')
+            ->setDefaultValue((string) BankService::DAYS_BACK_DEFAULT)
+            ->setRequired(false)
+            ->setNullable()
+            ->addRule(Form::INTEGER, 'Počet dnů musí být celé číslo.')
+            ->addRule(Form::MIN, 'Počet dnů musí být alespoň 1.', 1)
+            ->setOption('description', 'Použije se při prvním nebo resetovaném automatickém párování této skupiny.')
+            ->setHtmlAttribute('data-bank-pairing-field', '1');
+        $form->setCurrentGroup();
+
+        $emailGroup = $form->addGroup('E-mailová komunikace', false);
+        $form->setCurrentGroup($emailGroup);
         $form->addSelect('oAuthId', 'E-mail odesílatele', $this->oAuthItems())
             ->setPrompt('Vyberte e-mail')
             ->setHtmlAttribute('class', 'ui--emailSelectbox'); // For acceptance testing
+        $form->setCurrentGroup();
 
         $this->addEmailsToForm($form);
 
@@ -189,6 +208,8 @@ final class GroupForm extends BaseControl
                 $oAuthId,
                 $v->bankAccount,
                 $v->emails[EmailType::PAYMENT_REMINDER]?->remindersEnabled ?? false,
+                (bool) $v->automaticPairingEnabled,
+                $v->pairingDaysBack !== null && $v->pairingDaysBack !== '' ? (int) $v->pairingDaysBack : null,
             );
 
             $this->flashMessage('Skupina byla upravena');
@@ -202,6 +223,8 @@ final class GroupForm extends BaseControl
                 $oAuthId,
                 $v->bankAccount,
                 $v->emails[EmailType::PAYMENT_REMINDER]?->remindersEnabled ?? false,
+                (bool) $v->automaticPairingEnabled,
+                $v->pairingDaysBack !== null && $v->pairingDaysBack !== '' ? (int) $v->pairingDaysBack : null,
             );
 
             $this->flashMessage('Skupina byla založena');
@@ -247,6 +270,8 @@ final class GroupForm extends BaseControl
             'emails' => $emails,
             'groupId' => $this->groupId,
             'bankAccount' => $group->getBankAccountId(),
+            'automaticPairingEnabled' => $group->isAutomaticPairingEnabled(),
+            'pairingDaysBack' => $group->getPairingDaysBack() ?? BankService::DAYS_BACK_DEFAULT,
         ];
     }
 
@@ -287,9 +312,16 @@ final class GroupForm extends BaseControl
                     ->setHtmlAttribute('data-email-field', '1');
             }
 
+            $defaultSubjects = [
+                EmailType::PAYMENT_INFO => 'Platební údaje – %name%',
+                EmailType::PAYMENT_COMPLETED => 'Potvrzení o úhradě – %name%',
+                EmailType::PAYMENT_REMINDER => 'Upomínka platby – %name%',
+            ];
+
             $container->addText('subject', 'Předmět e-mailu')
                 ->setOption('id', $subjectId)
-                ->setHtmlAttribute('data-email-field', '1');
+                ->setHtmlAttribute('data-email-field', '1')
+                ->setDefaultValue($defaultSubjects[$type]);
             $container->addTextArea('body', 'Text mailu', 10, 20)
                 ->setOption('id', $bodyId)
                 ->setHtmlAttribute('class', 'form-control')
