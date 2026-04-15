@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Presentation\Payments\RegistrationCreateGroup;
 
-use App\Components\Payment\GroupForm;
 use App\Components\Factories\Payment\IGroupFormFactory;
+use App\Components\Payment\GroupForm;
 use App\Model\Common\Registration;
 use App\Model\Common\UnitId;
 use App\Model\Payment\Group\SkautisEntity;

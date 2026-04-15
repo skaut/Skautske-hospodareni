@@ -15,7 +15,7 @@ abstract class BaseAcceptanceCest
         // WebDriver warmup — retry initial page load to survive Selenium startup lag
         $lastException = null;
 
-        for ($attempt = 1; $attempt <= 3; $attempt++) {
+        for ($attempt = 1; $attempt <= 3; ++$attempt) {
             try {
                 $I->amOnPage('/');
                 $lastException = null;
@@ -38,4 +38,3 @@ abstract class BaseAcceptanceCest
         ], true);
     }
 }
-

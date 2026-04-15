@@ -224,7 +224,7 @@ class SettingsCest extends BaseAcceptanceCest
 
         // ── DETAIL ───────────────────────────────────────────────
         // Navigate to detail page
-        $I->amOnPage('/nastaveni/bankovni-ucty/detail/' . $accountId);
+        $I->amOnPage('/nastaveni/bankovni-ucty/'.$accountId);
         $I->waitForElementVisible('[data-test="settings-bank-account-detail-page"]', 10);
         $I->see('Testovací účet Selenium');
         $I->seeElement('[data-test="settings-bank-account-open-settings"]');
@@ -245,9 +245,10 @@ class SettingsCest extends BaseAcceptanceCest
         $I->dontSeeInDatabase('pa_bank_account', ['name' => 'Testovací účet Selenium']);
 
         // ── DELETE ───────────────────────────────────────────────
-        $I->amOnPage('/nastaveni/bankovni-ucty/upravit/' . $accountId);
+        $I->amOnPage('/nastaveni/bankovni-ucty/'.$accountId.'/upravit');
         $I->waitForElementVisible('[data-test="settings-bank-account-edit-page"]', 10);
 
+        $I->disablePopups();
         $I->click('[data-test="settings-bank-account-remove"]');
         $I->waitForText('smazán', 15);
         $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', 10);

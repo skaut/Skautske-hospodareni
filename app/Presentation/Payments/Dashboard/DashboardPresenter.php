@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Presentation\Payments\Dashboard;
 
-use App\Components\Payment\CreateButton;
 use App\Components\Factories\Payment\ICreateButtonFactory;
+use App\Components\Payment\CreateButton;
 use App\Model\DTO\Payment\Group;
 use App\Model\Invoice\Repository\InvoiceSequenceRepository;
 use App\Model\Payment\ReadModel\Queries\GetGroupList;

@@ -55,8 +55,7 @@ class BankAccountValidator extends Czech
     {
         if (isset($this->fullBankInfo[$bankCode])) {
             return $this->fullBankInfo[$bankCode];
-        } else {
-            throw new BankNotFoundException('Bank code not found');
         }
+        throw new BankNotFoundException('Bank code not found');
     }
 }

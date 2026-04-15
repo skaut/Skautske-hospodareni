@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Presentation\Payments\EducationCreateGroup;
 
-use App\Components\Payment\GroupForm;
 use App\Components\Factories\Payment\IGroupFormFactory;
+use App\Components\Payment\GroupForm;
 use App\Model\Event\Education;
 use App\Model\Event\ReadModel\Queries\EducationListQuery;
 use App\Model\Payment\Group\SkautisEntity;

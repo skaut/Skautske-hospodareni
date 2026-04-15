@@ -71,7 +71,7 @@ final class ExportCampsHandler
     }
 
     /** @param Camp[] $camps */
-    protected function setSheetCamps(Worksheet $sheet, array $camps): void
+    private function setSheetCamps(Worksheet $sheet, array $camps): void
     {
         $sheet->setCellValue('A1', 'Pořadatel')
             ->setCellValue('B1', 'Název akce')

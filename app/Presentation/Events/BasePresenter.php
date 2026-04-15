@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Presentation\Events;
 
-use App\Components\Factories\Event\IPrivilegesDialogFactory;
 use App\Components\Event\PrivilegesDialog;
+use App\Components\Factories\Event\IPrivilegesDialogFactory;
 use App\Model\Auth\Resources\Event as ResourceEvent;
 use App\Model\Cashbook\ObjectType;
 use App\Model\Event\Event;
@@ -80,4 +80,3 @@ class BasePresenter extends \App\BaseSectionPresenter
         }
     }
 }
-

@@ -26,6 +26,7 @@ class DashboardCest extends BaseAcceptanceCest
 
         $I->wantTo('see dashboard agenda cards and payment quick actions');
 
+        $I->amOnPage('/nastenka');
         $I->waitForElementVisible('[data-test="dashboard"]', 10);
         $I->seeNumberOfElements('[data-test^="dashboard-card-"]', 6);
         $I->seeElement('[data-test="dashboard-card-events"]');

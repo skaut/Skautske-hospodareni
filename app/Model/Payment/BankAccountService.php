@@ -257,7 +257,7 @@ class BankAccountService
      *
      * @return array{int, int, int} [importedCount, skautisCount, existingCount]
      *
-     * @throws BankAccountNotFound When no new accounts to import.
+     * @throws BankAccountNotFound when no new accounts to import
      */
     public function importFromSkautis(int $unitId): array
     {

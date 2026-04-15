@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Presentation\Camps;
 
-use App\Components\Factories\Camps\IPrivilegesDialogFactory;
 use App\Components\Camps\PrivilegesDialog;
+use App\Components\Factories\Camps\IPrivilegesDialogFactory;
 use App\Model\Auth\Resources\Camp as CampResource;
 use App\Model\Cashbook\ObjectType;
 use App\Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;

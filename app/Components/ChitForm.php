@@ -110,7 +110,7 @@ final class ChitForm extends BaseControl
 
     public function setDisplayChitParent(bool $displayChitForm): void
     {
-        if (! ($this->parent instanceof CashbookControl)) {
+        if (! $this->parent instanceof CashbookControl) {
             return;
         }
 

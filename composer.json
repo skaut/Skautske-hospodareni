@@ -88,7 +88,7 @@
         "classmap": ["code-quality/", "tests/_hacks"]
     },
     "config": {
-        "process-timeout": 600,
+        "process-timeout": 1200,
         "sort-packages": true,
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
