@@ -94,19 +94,12 @@ services:
   php-test:
     <<: *php-base
     hostname: php-test.localhost
-    profiles:
-      - test
     depends_on:
       - mysql-test
     env_file:
       - containers/php/ini/image.ini
       - containers/php/ini/xdebug.ini
-    environment:
-      DB_HOST: mysql-test
-      DB_NAME: ${MYSQL_DATABASE}
-      DB_USER: ${MYSQL_USER}
-      DB_PASSWORD: ${MYSQL_PASSWORD}
-      DB_TEST: "true"
+      - ./../.env.test
 
   nginx:
     image: nginx:latest
@@ -117,6 +110,7 @@ services:
     depends_on:
       - php
       - php-xdebug
+      - php-test
     volumes:
       - ../:/app
       - ./containers/nginx/conf.d:/etc/nginx/conf.d
@@ -137,8 +131,6 @@ services:
   mysql-test:
     <<: *mysql-base
     hostname: mysql-test.localhost
-    profiles:
-      - test
     volumes:
       - mysql-test:/var/lib/mysql
       - ./containers/mysql-test/my.cnf:/etc/mysql/conf.d/my.cnf
@@ -147,8 +139,6 @@ services:
     image: selenium/standalone-chrome
     hostname: selenium.localhost
     shm_size: 2g
-    profiles:
-      - test
     environment:
       SE_VNC_NO_PASSWORD: 1
       SE_SESSION_REQUEST_TIMEOUT: 1000
@@ -157,12 +147,9 @@ services:
       SCREEN_WIDTH: 1920
       SCREEN_HEIGHT: 1080
     depends_on:
-      php-test:
-        condition: service_started
-      nginx:
-        condition: service_started
-      mysql-test:
-        condition: service_started
+      - php-test
+      - nginx
+      - mysql-test
     networks:
       - traefik
     labels:
