@@ -34,6 +34,7 @@ Stačí přidat tento řádek do souboru `/etc/hosts`:
 
 ## Příprava projektu
 Stačí spustit příkaz `make init`.
+Ten udělá čistou lokální inicializaci: pročistí cache, smaže lokální data v DB, znovu aplikuje migrace a vytvoří čistý frontend build.
 
 ## Rozběhnutí na macOS
 Je potřeba si založit v domovské složce `.env` soubor s obsahem 
