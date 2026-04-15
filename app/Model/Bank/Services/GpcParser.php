@@ -22,7 +22,6 @@ use function fflush;
 use function fwrite;
 use function iconv;
 use function is_resource;
-use function is_string;
 use function ltrim;
 use function preg_match;
 use function preg_split;
@@ -178,9 +177,9 @@ final class GpcParser
 
             fflush($temporaryFile);
             $metadata = stream_get_meta_data($temporaryFile);
-            $temporaryFilePath = $metadata['uri'] ?? null;
+            $temporaryFilePath = $metadata['uri'];
 
-            if (! is_string($temporaryFilePath) || $temporaryFilePath === '') {
+            if ($temporaryFilePath === '') {
                 throw new RuntimeException('Nepodarilo se zjistit cestu k docasnemu GPC souboru.');
             }
 
