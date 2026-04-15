@@ -113,6 +113,11 @@ class Payment
         return $this->closed;
     }
 
+    public function canBePaired(): bool
+    {
+        return ! $this->closed && $this->variableSymbol !== null;
+    }
+
     public function isOverdue(): bool
     {
         return ! $this->closed && $this->dueDate->isPast() && $this->state->equalsValue(State::PREPARING);
