@@ -22,15 +22,15 @@ up: down ## Restartuje dev kontejnery
 	docker compose ${COMPOSE_FILE} up -d --force-recreate
 
 up-test: down ## Restartuje dev + test kontejnery
-	docker compose ${COMPOSE_FILE} --profile test up -d --force-recreate
+	docker compose ${COMPOSE_FILE} up -d --force-recreate
 
 down: ## Zastaví a odstraní kontejnery
-	docker compose ${COMPOSE_FILE} --profile test down --remove-orphans
+	docker compose ${COMPOSE_FILE} down --remove-orphans
 
 down-test: down ## Alias pro down (zastaví vše včetně test profilu)
 
 ensure-test: ## Zajistí běh test kontejnerů (idempotentní)
-	@docker compose ${COMPOSE_FILE} --profile test up -d
+	@docker compose ${COMPOSE_FILE} up -d
 
 enter: ## Otevře bash v PHP kontejneru
 	@docker exec -it ${CONTAINER_PHP} bash

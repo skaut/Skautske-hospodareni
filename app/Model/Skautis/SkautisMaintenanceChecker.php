@@ -46,10 +46,9 @@ class SkautisMaintenanceChecker
         }
 
         $this->cache->save(self::CACHE_KEY, $result, [
-            Cache::Expire => self::CACHE_TTL . ' seconds',
+            Cache::Expire => self::CACHE_TTL.' seconds',
         ]);
 
         return $result;
     }
 }
-
