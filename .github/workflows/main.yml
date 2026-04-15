@@ -64,7 +64,7 @@ jobs:
           mv /tmp/workdir.tar.gz $GITHUB_WORKSPACE/
 
       - name: Upload workdir
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: workdir
           path: workdir.tar.gz
@@ -79,7 +79,7 @@ jobs:
     needs: workdir
     steps:
       - name: Download workdir
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: workdir
           path: .
@@ -94,7 +94,7 @@ jobs:
     needs: workdir
     steps:
       - name: Download workdir
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: workdir
           path: .
@@ -110,7 +110,7 @@ jobs:
     needs: workdir
     steps:
       - name: Download workdir
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: workdir
           path: .
@@ -148,7 +148,7 @@ jobs:
           shopt -u dotglob
 
       - name: Download workdir
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: workdir
           path: .
@@ -191,7 +191,7 @@ jobs:
 
       - name: Upload test output artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: tests-output
           path: |
@@ -200,7 +200,7 @@ jobs:
 
       - name: Upload compose logs artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: compose-logs
           path: |
@@ -226,7 +226,7 @@ jobs:
     needs: workdir
     steps:
       - name: Download workdir
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: workdir
           path: .
@@ -244,7 +244,7 @@ jobs:
     needs: workdir
     steps:
       - name: Download workdir
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: workdir
           path: .
@@ -262,7 +262,7 @@ jobs:
       DEVELOPMENT_MACHINE: true
     steps:
       - name: Download workdir
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: workdir
           path: .
@@ -288,7 +288,7 @@ jobs:
       DEVELOPMENT_MACHINE: true
     steps:
       - name: Download workdir
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: workdir
           path: .
@@ -297,7 +297,7 @@ jobs:
       - run: mv app/config/config.ci.local.neon app/config/config.local.neon
       - run: bin/console migrations:migrate --no-interaction
       - run: "! bin/console migrations:diff && bin/console migrations:diff --allow-empty-diff"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: migrations
