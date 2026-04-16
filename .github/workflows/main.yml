@@ -178,7 +178,7 @@ jobs:
     needs: workdir
     timeout-minutes: 45
     env:
-      COMPOSE_FILE: docker/docker-compose.yml:docker/docker-compose.ci.yml
+      COMPOSE_FILE: docker/docker-compose.yml
       COMPOSE_PROJECT_NAME: "acc-${{ github.run_id }}-${{ github.run_attempt }}"
     steps:
       - name: Pre-clean compose project
@@ -199,11 +199,21 @@ jobs:
       - name: Fix workspace ownership
         run: sudo chown -R docker:docker .
 
-      - run: docker compose -f docker/docker-compose.yml build php-test
-      - run: docker compose -f docker/docker-compose.yml run -T php-test composer app-init
-      - run: docker compose -f docker/docker-compose.yml up -d php-test selenium nginx
-      - run: mv app/config/config.ci.local.neon app/config/config.local.neon
-      - run: docker compose -f docker/docker-compose.yml run -T php-test composer tests:acceptance
+      - name: Swap CI config (must exist before app-init reads it)
+        run: cp app/config/config.ci.local.neon app/config/config.local.neon
+
+      - run: docker compose build php-test
+      - name: Start MySQL and wait for readiness
+        run: |
+          docker compose up -d mysql-test
+          for i in $(seq 1 30); do
+            docker compose exec -T mysql-test mysqladmin ping -h localhost -u root -proot --silent 2>/dev/null && break
+            echo "Waiting for MySQL... ($i/30)"
+            sleep 2
+          done
+      - run: docker compose run -T php-test composer app-init
+      - run: docker compose up -d php-test selenium nginx
+      - run: docker compose run -T php-test composer tests:acceptance
 
       # --- sběr výstupů a logů (i při failu)
       - name: Pack Codeception output
