@@ -208,6 +208,7 @@ class EventCashbookCest extends BaseAcceptanceCest
             }
 
             $I->disablePopups();
+            $I->scrollTo($cancelButton, 0, -150);
             $I->click($cancelButton);
             $I->waitForElementNotVisible($cancelButton);
             $this->eventCreated = false;
