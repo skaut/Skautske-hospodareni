@@ -27,12 +27,12 @@ x-mysql-base:
     networks:
         - traefik
     environment:
-        MYSQL_DATABASE: ${MYSQL_DATABASE}
-        MYSQL_USER: ${MYSQL_USER}
-        MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-        MYSQL_COLLATION: ${MYSQL_COLLATION:-utf8mb4_czech_ci}
-        MYSQL_CHARACTER_SET: ${MYSQL_CHARACTER_SET:-utf8}
+        MYSQL_DATABASE: hskauting
+        MYSQL_USER: hskauting
+        MYSQL_PASSWORD: hskauting
+        MYSQL_ROOT_PASSWORD: root
+        MYSQL_COLLATION: utf8mb4_czech_ci
+        MYSQL_CHARACTER_SET: utf8
 
 services:
     traefik:
@@ -148,8 +148,8 @@ services:
         environment:
             ADMINER_PLUGINS: import-directory readable-dates
             ADMINER_IMPORT_SERVER_PATH: import/adminer.sql
-            ADMINER_USERNAME: ${MYSQL_USER}
-            ADMINER_PASSWORD: ${MYSQL_PASSWORD}
+            ADMINER_USERNAME: hskauting
+            ADMINER_PASSWORD: hskauting
             ADMINER_DEFAULT_SERVER: mysql
         networks:
             - traefik
