@@ -1,9 +1,0 @@
-services:
-  php:
-    container_name: "${COMPOSE_PROJECT_NAME}-app"
-  mysql-test:
-    container_name: "${COMPOSE_PROJECT_NAME}-mysql-test"
-  selenium:
-    container_name: "${COMPOSE_PROJECT_NAME}-selenium"
-  nginx:
-    container_name: "${COMPOSE_PROJECT_NAME}-nginx"

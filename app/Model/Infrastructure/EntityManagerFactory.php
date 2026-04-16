@@ -64,7 +64,7 @@ final class EntityManagerFactory
         $driverChain = new MappingDriverChain();
 
         // Attributes – hlavní doména
-        $attributesPaths = [__DIR__.'/../../'];          // = %appDir%
+        $attributesPaths = [__DIR__.'/../'];              // = %appDir%/Model/
         $attributeDriver = new AttributeDriver($attributesPaths);
         $driverChain->addDriver($attributeDriver, 'Entity');
         $driverChain->addDriver($attributeDriver, 'App\Model\Infrastructure\Entity');

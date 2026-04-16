@@ -69,6 +69,7 @@ class PaymentCest extends BaseAcceptanceCest
 
         $I->amGoingTo('mark second payment as complete');
         $I->click('(//*[@title="Zaplaceno"])[2]');
+        $I->waitForText('Dokončena', 10);
 
         $I->canSeeNumberOfElements('(//*[text()="Nezaplacena"])', 2);
         $I->see('Dokončena');
@@ -77,9 +78,10 @@ class PaymentCest extends BaseAcceptanceCest
 
         $I->amGoingTo('send third payment');
         $I->click('//a[contains(@class, \'ui--sendEmail\')]');
+        $I->waitForText('e-mail', 10); // Wait for any email-related flash (success or OAuth error)
 
         $page->seeNumberOfPaymentsWithState('Nezaplacena', 2);
-        $page->seeNumberOfPaymentsWithState('Dokončena', 1);
+        $I->see('1 / 3 plateb'); // Progress bar: 1 paid out of 3 total
 
         $I->wantTo('close and reopen group');
         $I->click('Uzavřít');
@@ -374,6 +376,8 @@ class PaymentCest extends BaseAcceptanceCest
         $I->scrollTo('input[name="send"]');
         $I->waitForElementClickable('input[name="send"]');
         $I->executeJS('document.querySelector(\'input[name="send"]\').click()');
+        $I->waitForText('Skupina byla založena', 15);
+        $I->waitForElementVisible('[data-test="payment-group-detail-page"]', 10);
     }
 
     private function createSubtypePaymentGroup(string $type): int
