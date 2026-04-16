@@ -9,7 +9,7 @@ use PHPUnit\Framework\Assert;
 
 final class AdminCest extends BaseAcceptanceCest
 {
-    private const ACCEPTANCE_ADMIN_USER_ID = 2465;
+    private const ACCEPTANCE_ADMIN_USER_ID = 1942;
     private const NEW_ADMIN_USER_ID = 9999;
 
     protected AcceptanceTester $I;
