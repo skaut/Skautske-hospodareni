@@ -22,6 +22,5 @@ app/config/google-credentials*
 adminer.php
 *.sh
 .env
-!docker/.env
 /.php-cs-fixer.cache
 
