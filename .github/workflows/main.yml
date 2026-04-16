@@ -92,6 +92,8 @@ jobs:
     name: "Run integration tests"
     runs-on: ubuntu-22.04
     needs: workdir
+    env:
+      COMPOSE_PROFILES: test
     steps:
       - name: Download workdir
         uses: actions/download-artifact@v7
@@ -108,6 +110,8 @@ jobs:
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-22.04
     needs: workdir
+    env:
+      COMPOSE_PROFILES: test
     steps:
       - name: Download workdir
         uses: actions/download-artifact@v7
@@ -133,6 +137,7 @@ jobs:
     env:
       COMPOSE_FILE: docker/docker-compose.yml:docker/docker-compose.ci.yml
       COMPOSE_PROJECT_NAME: "acc-${{ github.run_id }}-${{ github.run_attempt }}"
+      COMPOSE_PROFILES: test
     steps:
       # --- pre-clean (pro jistotu)
       - name: Pre-clean compose project

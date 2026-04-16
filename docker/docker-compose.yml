@@ -94,6 +94,8 @@ services:
   php-test:
     <<: *php-base
     hostname: php-test.localhost
+    profiles:
+      - test
     depends_on:
       - mysql-test
     env_file:
@@ -110,7 +112,6 @@ services:
     depends_on:
       - php
       - php-xdebug
-      - php-test
     volumes:
       - ../:/app
       - ./containers/nginx/conf.d:/etc/nginx/conf.d
@@ -131,6 +132,8 @@ services:
   mysql-test:
     <<: *mysql-base
     hostname: mysql-test.localhost
+    profiles:
+      - test
     volumes:
       - mysql-test:/var/lib/mysql
       - ./containers/mysql-test/my.cnf:/etc/mysql/conf.d/my.cnf
@@ -138,6 +141,8 @@ services:
   selenium:
     image: selenium/standalone-chrome
     hostname: selenium.localhost
+    profiles:
+      - test
     shm_size: 2g
     environment:
       SE_VNC_NO_PASSWORD: 1
