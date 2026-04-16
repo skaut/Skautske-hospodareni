@@ -9,7 +9,7 @@ use PHPUnit\Framework\Assert;
 
 final class AdminCest extends BaseAcceptanceCest
 {
-    private const ACCEPTANCE_ADMIN_USER_ID = 2465;
+    private const ACCEPTANCE_ADMIN_USER_ID = 1942;
     private const NEW_ADMIN_USER_ID = 9999;
 
     protected AcceptanceTester $I;
@@ -190,8 +190,7 @@ final class AdminCest extends BaseAcceptanceCest
         // ── CREATE ───────────────────────────────────────────────
         // Open form
         $I->click('[data-test="admin-users-form-toggle"]');
-        $I->waitForElementVisible('[data-test="admin-users-form-collapse"]', 10);
-        $I->seeElement('[data-test="admin-users-form"]');
+        $I->waitForElementVisible('[data-test="admin-users-form"] input[name="userId"]', 10);
 
         // Fill and submit
         $I->fillField('[data-test="admin-users-form"] input[name="userId"]', (string) self::NEW_ADMIN_USER_ID);
@@ -257,7 +256,7 @@ final class AdminCest extends BaseAcceptanceCest
 
         // Open form and try adding existing user_id
         $I->click('[data-test="admin-users-form-toggle"]');
-        $I->waitForElementVisible('[data-test="admin-users-form-collapse"]', 10);
+        $I->waitForElementVisible('[data-test="admin-users-form"] input[name="userId"]', 10);
 
         $I->fillField('[data-test="admin-users-form"] input[name="userId"]', (string) self::ACCEPTANCE_ADMIN_USER_ID);
         $I->click('[data-test="admin-users-form"] input[type="submit"]');

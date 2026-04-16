@@ -140,7 +140,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->seeInCurrentUrl('/nastaveni/faktury');
         $I->dontSee('Jednotka je plátce DPH');
         $this->fillYearlySettings(2026, 'Selenium 2026');
-        $I->scrollTo('input[name="save"]');
+        $I->scrollTo('input[name="save"]', 0, -150);
         $I->waitForElementClickable('input[name="save"]');
         $I->click('input[name="save"]');
         $I->waitForText('Roční nastavení fakturace bylo uloženo.');
@@ -314,7 +314,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->fillField('input[name="items[0][quantity]"]', '2');
         $I->fillField('input[name="items[0][unit]"]', 'ks');
         $I->fillField('input[name="items[0][price]"]', '750');
-        $I->scrollTo('input[name="send"]');
+        $I->scrollTo('input[name="send"]', 0, -150);
         $I->waitForElementClickable('input[name="send"]');
         $I->click('input[name="send"]');
 
