@@ -27,10 +27,10 @@ x-mysql-base: &mysql-base
   networks:
     - traefik
   environment:
-    MYSQL_DATABASE: ${MYSQL_DATABASE}
-    MYSQL_USER: ${MYSQL_USER}
-    MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    MYSQL_DATABASE: ${MYSQL_DATABASE:-hskauting}
+    MYSQL_USER: ${MYSQL_USER:-hskauting}
+    MYSQL_PASSWORD: ${MYSQL_PASSWORD:-hskauting}
+    MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
     MYSQL_COLLATION: utf8mb4_czech_ci
     MYSQL_CHARACTER_SET: utf8
 
@@ -67,9 +67,9 @@ services:
       - ./../.env.local
     environment:
       DB_HOST: mysql
-      DB_NAME: ${MYSQL_DATABASE}
-      DB_USER: ${MYSQL_USER}
-      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME: ${MYSQL_DATABASE:-hskauting}
+      DB_USER: ${MYSQL_USER:-hskauting}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-hskauting}
     depends_on:
       - mysql
     labels:
@@ -87,9 +87,9 @@ services:
       - ./../.env.local
     environment:
       DB_HOST: mysql
-      DB_NAME: ${MYSQL_DATABASE}
-      DB_USER: ${MYSQL_USER}
-      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME: ${MYSQL_DATABASE:-hskauting}
+      DB_USER: ${MYSQL_USER:-hskauting}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-hskauting}
 
   php-test:
     <<: *php-base
@@ -164,8 +164,8 @@ services:
     environment:
       ADMINER_PLUGINS: import-directory readable-dates
       ADMINER_IMPORT_SERVER_PATH: import/adminer.sql
-      ADMINER_USERNAME: ${MYSQL_USER}
-      ADMINER_PASSWORD: ${MYSQL_PASSWORD}
+      ADMINER_USERNAME: ${MYSQL_USER:-hskauting}
+      ADMINER_PASSWORD: ${MYSQL_PASSWORD:-hskauting}
       ADMINER_DEFAULT_SERVER: mysql
     networks:
       - traefik
