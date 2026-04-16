@@ -12,6 +12,8 @@ use function sprintf;
 
 class Payment
 {
+    private const MODAL_FORM = '.modal.show #frm-paymentDialog-form';
+
     /** @var AcceptanceTester */
     private $tester;
 
@@ -20,33 +22,33 @@ class Payment
         $this->tester = $tester;
     }
 
-    public function fillName(string $name): void
-    {
-        $this->tester->fillField('Název', $name);
-    }
-
-    public function fillEmail(string $name): void
-    {
-        $this->tester->fillField('E-mail', $name);
-    }
-
-    public function fillAmount(float $amount): void
-    {
-        $this->tester->fillField('Částka', $amount);
-    }
-
     public function addPayment(string $name, ?string $email, float $amount): void
     {
-        $this->tester->executeJS('document.querySelector(\'[data-test="payment-add-button-item-general"]\').click();');
+        $I = $this->tester;
 
-        $this->tester->waitForElementVisible('.modal-dialog');
-        $this->fillName($name);
+        // Open the dropdown and click "add general"
+        $I->click('[data-test="payment-add-button-toggle"]');
+        $I->waitForElementVisible('[data-test="payment-add-button-menu"]', 10);
+        $I->waitForElementClickable('[data-test="payment-add-button-item-general"]', 10);
+        $I->click('[data-test="payment-add-button-item-general"]');
+
+        // Wait for Bootstrap modal animation to complete and form to be rendered
+        $I->waitForJS(
+            'var m = document.querySelector(".modal.show");'
+            .'return m && getComputedStyle(m).opacity === "1"'
+            .' && m.querySelector("#frm-paymentDialog-form") !== null',
+            15,
+        );
+        $I->wait(1); // Let CSS animation fully complete
+
+        // Scope ALL selectors to .modal.show to avoid stale hidden duplicates
+        $I->fillField(self::MODAL_FORM.' input[name="name"]', $name);
 
         if ($email !== null) {
-            $this->fillEmail($email);
+            $I->fillField(self::MODAL_FORM.' input[name="email"]', $email);
         }
 
-        $this->fillAmount($amount);
+        $I->fillField(self::MODAL_FORM.' input[name="amount"]', $amount);
         $this->selectNextWorkdayForDueDate();
         $this->submitPayment();
     }
@@ -66,15 +68,22 @@ class Payment
 
         $date = (new DateTime())->modify(sprintf('+ %d days', $daysToNextWorkday))->format('d.m. Y');
 
-        $I->fillField('Splatnost', $date);
-        $I->click('.modal-dialog'); // Close date picker
+        $I->fillField(self::MODAL_FORM.' input[name="dueDate"]', $date);
+        $I->click('.modal.show .modal-dialog'); // Close date picker
     }
 
     public function submitPayment(): void
     {
-        $this->tester->click('.modal-footer input[type="submit"][form="frm-paymentDialog-form"]');
-        $this->tester->waitForElementNotVisible('.modal-dialog');
-        $this->tester->waitForText('Platba byla přidána', 10);
-        $this->tester->waitForElementClickable('[data-test="payment-add-button-toggle"]');
+        $I = $this->tester;
+
+        // Submit the form INSIDE the visible modal (not via form= attribute
+        // which targets the first #frm-paymentDialog-form in DOM — could be a stale hidden one)
+        $I->executeJS('document.querySelector(".modal.show #frm-paymentDialog-form input[name=send]").click()');
+
+        // Wait for AJAX to complete: modal closes, flash appears
+        $I->waitForJS('return document.querySelector(".modal.show") === null', 15);
+        $I->waitForText('Platba byla přidána', 10);
+        $I->waitForElementNotVisible('.modal-backdrop', 10);
+        $I->waitForElementClickable('[data-test="payment-add-button-toggle"]', 10);
     }
 }

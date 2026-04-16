@@ -250,7 +250,7 @@ class SettingsCest extends BaseAcceptanceCest
 
         $I->disablePopups();
         $I->click('[data-test="settings-bank-account-remove"]');
-        $I->waitForText('smazán', 15);
+        $I->waitForText('odstraněn', 15);
         $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', 10);
 
         // Verify deletion

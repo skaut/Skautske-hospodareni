@@ -22,6 +22,57 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->login(AcceptanceTester::UNIT_LEADER_ROLE);
     }
 
+    // ─── Setup tests (must run first — later tests depend on data) ──
+
+    /** @group invoice */
+    public function saveInvoiceYearlySettings(): void
+    {
+        $I = $this->I;
+
+        $I->wantTo('save yearly invoice settings');
+
+        $this->openInvoices();
+        $I->click('[data-test="invoice-action-settings"]');
+        $I->waitForElementVisible('[data-test="invoice-settings-page"]', 10);
+        $I->seeInCurrentUrl('/nastaveni/faktury');
+        $I->dontSee('Jednotka je plátce DPH');
+
+        $this->fillYearlySettings(2028, 'Selenium 2028');
+        $I->scrollTo('input[name="save"]');
+        $I->waitForElementClickable('input[name="save"]');
+        $I->click('input[name="save"]');
+
+        $I->waitForText('Roční nastavení fakturace bylo uloženo.');
+    }
+
+    /** @group invoice */
+    public function createInvoiceSequence(): void
+    {
+        $I = $this->I;
+
+        $I->wantTo('create invoice sequence');
+
+        $this->openInvoices();
+        $I->click('[data-test="invoice-action-create-sequence"]');
+        $I->waitForElementVisible('[data-test="invoice-sequence-form-page"]', 10);
+        $I->seeInCurrentUrl('/platby/rady/nova');
+        $I->fillField('input[name="sequence"]', 'FA27');
+        $I->fillField('input[name="firstNumber"]', '00001');
+        $I->selectOption('select[name="year"]', '2027');
+        $I->fillField('input[name="description"]', 'Selenium řada 2027');
+        $I->selectOption('select[name="bankAccount"]', 'Acceptance');
+        $I->selectOption('.ui--emailSelectbox', 'test@hospodareni.loc');
+        $I->scrollTo('#frm-createForm input[type="submit"]');
+        $I->waitForElementClickable('#frm-createForm input[type="submit"]');
+        $I->executeJS('document.querySelector("#frm-createForm input[type=submit]").click()');
+
+        $I->waitForText('Fakturační řada byla založena.');
+        $I->waitForElementVisible('[data-test="payments-page"]', 10);
+        $I->seeInCurrentUrl('/platby');
+    }
+
+    // ─── Tests that depend on an existing sequence ──────────────────
+
     /** @group invoice */
     public function openInvoiceSequenceList(): void
     {
@@ -74,52 +125,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->seeInCurrentUrl('/platby/faktury/');
     }
 
-    /** @group invoice */
-    public function saveInvoiceYearlySettings(): void
-    {
-        $I = $this->I;
-
-        $I->wantTo('save yearly invoice settings');
-
-        $this->openInvoices();
-        $I->click('[data-test="invoice-action-settings"]');
-        $I->waitForElementVisible('[data-test="invoice-settings-page"]', 10);
-        $I->seeInCurrentUrl('/nastaveni/faktury');
-        $I->dontSee('Jednotka je plátce DPH');
-
-        $this->fillYearlySettings(2028, 'Selenium 2028');
-        $I->scrollTo('input[name="save"]');
-        $I->waitForElementClickable('input[name="save"]');
-        $I->click('input[name="save"]');
-
-        $I->waitForText('Roční nastavení fakturace bylo uloženo.');
-    }
-
-    /** @group invoice */
-    public function createInvoiceSequence(): void
-    {
-        $I = $this->I;
-
-        $I->wantTo('create invoice sequence');
-
-        $this->openInvoices();
-        $I->click('[data-test="invoice-action-create-sequence"]');
-        $I->waitForElementVisible('[data-test="invoice-sequence-form-page"]', 10);
-        $I->seeInCurrentUrl('/platby/rady/nova');
-        $I->fillField('input[name="sequence"]', 'FA27');
-        $I->fillField('input[name="firstNumber"]', '00001');
-        $I->selectOption('select[name="year"]', '2027');
-        $I->fillField('input[name="description"]', 'Selenium řada 2027');
-        $I->selectOption('select[name="bankAccount"]', 'Acceptance');
-        $I->selectOption('.ui--emailSelectbox', 'test@hospodareni.loc');
-        $I->scrollTo('#frm-createForm input[type="submit"]');
-        $I->waitForElementClickable('#frm-createForm input[type="submit"]');
-        $I->executeJS('document.querySelector("#frm-createForm input[type=submit]").click()');
-
-        $I->waitForText('Fakturační řada byla založena.');
-        $I->waitForElementVisible('[data-test="payments-page"]', 10);
-        $I->seeInCurrentUrl('/platby');
-    }
+    // ─── Issue Invoice ──────────────────────────────────────────────
 
     /** @group invoice */
     public function issueInvoice(): void
@@ -155,9 +161,10 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->waitForText('Fakturační řada byla založena.');
         $I->waitForElementVisible('[data-test="payments-page"]', 10);
 
-        // Navigate to the newly created sequence to issue an invoice
+        // Navigate to the newly created FA26 sequence specifically
+        $sequenceId = $I->grabFromDatabase('invoice_sequence', 'id', ['sequence' => 'FA26']);
         $this->openInvoices();
-        $I->click('[data-test^="invoice-sequence-create-invoice-"]');
+        $I->click('[data-test="invoice-sequence-create-invoice-'.$sequenceId.'"]');
         $I->waitForElementVisible('[data-test="invoice-create-form"]', 10);
 
         $I->see('Číslo faktury a VS se generují automaticky.');
@@ -184,45 +191,11 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->waitForText('Faktura byla vytvořena');
         $I->see('FA2600001');
         $I->see('2600001');
-        $I->click('[data-test-invoice-number="FA2600001"]');
+        $I->waitForElementVisible('[data-test-invoice-number="FA2600001"]', 10);
+        $I->executeJS('document.querySelector("[data-test-invoice-number=FA2600001]").click()');
         $I->waitForElementVisible('[data-test="invoice-detail-page"]', 10);
         $I->seeInCurrentUrl('/platby/faktury/');
         $I->see('Jan Novák');
-    }
-
-    private function openInvoices(): void
-    {
-        if (! str_contains($this->I->grabPageSource(), 'data-test="payment-nav-invoices"')) {
-            $this->I->click('[data-test="global-nav-payments"]');
-            $this->I->waitForElementVisible('[data-test="payments-page"]', 10);
-            Assert::assertMatchesRegularExpression(
-                '~(/platby/faktury(?:\?jednotka=\d+)?)$~',
-                (string) $this->I->grabAttributeFrom('[data-test="payments-link-invoices"]', 'href'),
-            );
-            $this->I->click('[data-test="payments-link-invoices"]');
-        } else {
-            Assert::assertMatchesRegularExpression(
-                '~(/platby/faktury(?:\?jednotka=\d+)?)$~',
-                (string) $this->I->grabAttributeFrom('[data-test="payment-nav-invoices"]', 'href'),
-            );
-            $this->I->click('[data-test="payment-nav-invoices"]');
-        }
-
-        $this->I->waitForElementVisible('[data-test="invoice-home"]', 10);
-        $this->I->seeInCurrentUrl('/platby/faktury');
-    }
-
-    private function fillYearlySettings(int $year, string $name): void
-    {
-        $I = $this->I;
-
-        $I->selectOption('select[name="year"]', (string) $year);
-        $I->fillField('input[name="companyNumber"]', '12345678');
-        $I->fillField('input[name="name"]', $name);
-        $I->fillField('input[name="street"]', 'Křižíkova 12');
-        $I->fillField('input[name="city"]', 'Praha');
-        $I->fillField('input[name="zipcode"]', '18600');
-        $I->fillField('input[name="phone"]', '+420123456789');
     }
 
     // ─── Help Panel Toggle ──────────────────────────────────────
@@ -321,9 +294,10 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->waitForText('Fakturační řada byla založena.');
         $I->waitForElementVisible('[data-test="payments-page"]', 10);
 
-        // Navigate to the newly created sequence to issue an invoice
+        // Navigate to the newly created sequence specifically by DB id
+        $sequenceId = $I->grabFromDatabase('invoice_sequence', 'id', ['sequence' => $seqPrefix]);
         $this->openInvoices();
-        $I->click('[data-test^="invoice-sequence-create-invoice-"]');
+        $I->click('[data-test="invoice-sequence-create-invoice-'.$sequenceId.'"]');
         $I->waitForElementVisible('[data-test="invoice-create-form"]', 10);
 
         // ── 3. Issue invoice ─────────────────────────────────────
@@ -351,14 +325,15 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->see($expectedInvNumber);
 
         // ── 4. Open invoice detail ───────────────────────────────
-        $I->click('[data-test-invoice-number="'.$expectedInvNumber.'"]');
+        $I->waitForElementVisible('[data-test-invoice-number="'.$expectedInvNumber.'"]', 10);
+        $I->executeJS('document.querySelector("[data-test-invoice-number='.$expectedInvNumber.']").click()');
         $I->waitForElementVisible('[data-test="invoice-detail-page"]', 10);
         $I->see('Lifecycle Tester');
         $I->see('Lifecycle služba');
 
         // ── 5. Cleanup: delete invoice + sequence via DB ─────────
         $invoiceId = $I->grabFromDatabase('invoice', 'id', ['variable_symbol' => $expectedVS]);
-        $sequenceId = $I->grabFromDatabase('invoice_sequence', 'id', ['prefix' => $seqPrefix]);
+        $sequenceId = $I->grabFromDatabase('invoice_sequence', 'id', ['sequence' => $seqPrefix]);
 
         // Delete in FK order
         $I->executeJS(''); // noop to ensure WebDriver is responsive
@@ -369,5 +344,40 @@ class InvoiceCest extends BaseAcceptanceCest
 
         // Cleanup via haveInDatabase-injected rows will be rolled back by Db module
         // For data created via UI, we verify it exists then trust DB repopulation
+    }
+
+    private function openInvoices(): void
+    {
+        if (! str_contains($this->I->grabPageSource(), 'data-test="payment-nav-invoices"')) {
+            $this->I->click('[data-test="global-nav-payments"]');
+            $this->I->waitForElementVisible('[data-test="payments-page"]', 10);
+            Assert::assertMatchesRegularExpression(
+                '~(/platby/faktury(?:\?jednotka=\d+)?)$~',
+                (string) $this->I->grabAttributeFrom('[data-test="payments-link-invoices"]', 'href'),
+            );
+            $this->I->click('[data-test="payments-link-invoices"]');
+        } else {
+            Assert::assertMatchesRegularExpression(
+                '~(/platby/faktury(?:\?jednotka=\d+)?)$~',
+                (string) $this->I->grabAttributeFrom('[data-test="payment-nav-invoices"]', 'href'),
+            );
+            $this->I->click('[data-test="payment-nav-invoices"]');
+        }
+
+        $this->I->waitForElementVisible('[data-test="invoice-home"]', 10);
+        $this->I->seeInCurrentUrl('/platby/faktury');
+    }
+
+    private function fillYearlySettings(int $year, string $name): void
+    {
+        $I = $this->I;
+
+        $I->selectOption('select[name="year"]', (string) $year);
+        $I->fillField('input[name="companyNumber"]', '12345678');
+        $I->fillField('input[name="name"]', $name);
+        $I->fillField('input[name="street"]', 'Křižíkova 12');
+        $I->fillField('input[name="city"]', 'Praha');
+        $I->fillField('input[name="zipcode"]', '18600');
+        $I->fillField('input[name="phone"]', '+420123456789');
     }
 }

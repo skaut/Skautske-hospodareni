@@ -150,6 +150,11 @@
         "schema:validate": "bin/console orm:validate-schema --skip-sync",
         "proxies:generate": "bin/console orm:generate-proxies --no-interaction",
 
+        "validate-mapping": [
+            "bin/console migrations:migrate --no-interaction",
+            "! bin/console migrations:diff && bin/console migrations:diff --allow-empty-diff"
+        ],
+
 
         "fix": [
             "@lint",

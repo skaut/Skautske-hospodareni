@@ -233,8 +233,10 @@ final class AdminCest extends BaseAcceptanceCest
         $I->dontSeeInDatabase('admin_user', ['user_id' => self::NEW_ADMIN_USER_ID]);
 
         // ── DELETE ───────────────────────────────────────────────
+        $I->waitForElementVisible('[data-test="admin-user-delete-'.$newUser.'"]', 10);
         $I->disablePopups();
         $I->click('[data-test="admin-user-delete-'.$newUser.'"]');
+        $I->waitForText('odebrán', 15);
         $I->waitForElementVisible('[data-test="admin-users-page"]', 10);
 
         // Verify deletion
