@@ -220,22 +220,22 @@ class EventCashbookCest extends BaseAcceptanceCest
     {
         $this->I->waitForElement('input[name="send"]', 10);
         $this->I->wantToTest('Uložit');
-        $this->I->fillField('Datum', $date->format('d.m. Y'));
+        $this->I->fillFieldStable('input[name="date"]', $date->format('d.m. Y'));
         $this->I->pressKey('body', [WebDriverKeys::ESCAPE]); // close datepicker
-        $this->I->fillField('Účel', $purpose);
+        $this->I->fillFieldStable('input[name="items[0][purpose]"]', $purpose);
         $this->I->selectOption('#chit-type', $type->equals(Operation::EXPENSE()) ? 'Výdaje' : 'Příjmy');
         $this->I->selectOption(sprintf('items[0][%sCategories]', $type->equals(Operation::EXPENSE()) ? 'expense' : 'income'), $category);
-        $this->I->fillField('Komu/Od', $recipient);
-        $this->I->fillField('items[0][price]', $amount);
+        $this->I->fillFieldStable('input[name="recipient"]', $recipient);
+        $this->I->fillFieldStable('input[name="items[0][price]"]', $amount);
     }
 
     private function fillSecondChitForm(string $purpose, Operation $type, string $category, string $recipient, string $amount): void
     {
         $this->I->wantToTest('Uložit');
-        $this->I->fillField('items[1][purpose]', $purpose);
+        $this->I->fillFieldStable('input[name="items[1][purpose]"]', $purpose);
         $this->I->selectOption(sprintf('items[1][%sCategories]', $type->equals(Operation::EXPENSE()) ? 'expense' : 'income'), $category);
-        $this->I->fillField('Komu/Od', $recipient);
-        $this->I->fillField('items[1][price]', $amount);
+        $this->I->fillFieldStable('input[name="recipient"]', $recipient);
+        $this->I->fillFieldStable('input[name="items[1][price]"]', $amount);
     }
 
     private function waitForBalance(string $balance): void

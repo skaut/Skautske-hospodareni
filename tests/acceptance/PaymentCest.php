@@ -37,7 +37,7 @@ class PaymentCest extends BaseAcceptanceCest
 
         $I->click('[data-test="global-nav-payments"]');
         $I->waitForElementVisible('[data-test="payments-page"]', 10);
-        $I->click('[data-test="payment-nav-groups"]');
+        $I->clickStable('[data-test="payment-nav-groups"]');
         $I->waitForText('Platební skupiny');
         $I->click('Založit skupinu plateb');
         $I->waitForText('Nová platební skupina - Obecná');
@@ -105,7 +105,7 @@ class PaymentCest extends BaseAcceptanceCest
         $I->click('[data-test="payment-nav-groups"]');
         $I->waitForElementVisible('[data-test="payments-groups-page"]', 10);
         $I->seeInCurrentUrl('/platby/skupiny');
-        $I->click('[data-test="create-button-toggle"]');
+        $I->clickStable('[data-test="create-button-toggle"]');
         $I->waitForElementVisible('[data-test="create-button-menu"]', 10);
 
         Assert::assertSame(
@@ -132,23 +132,23 @@ class PaymentCest extends BaseAcceptanceCest
         Assert::assertSame('/platby/akce', $I->grabAttributeFrom('[data-test="create-button-item-event"]', 'href'));
         Assert::assertSame('/platby/vzdelavacky', $I->grabAttributeFrom('[data-test="create-button-item-education"]', 'href'));
 
-        $I->click('[data-test="create-button-item-camp"]');
+        $I->clickStable('[data-test="create-button-item-camp"]');
         $I->waitForText('Nová táborová skupina plateb', 10);
         $I->seeInCurrentUrl('/platby/tabory');
 
-        $I->click('[data-test="payment-nav-groups"]');
+        $I->clickStable('[data-test="payment-nav-groups"]');
         $I->waitForText('Platební skupiny');
-        $I->click('[data-test="create-button-toggle"]');
+        $I->clickStable('[data-test="create-button-toggle"]');
         $I->waitForElementVisible('[data-test="create-button-menu"]', 10);
-        $I->click('[data-test="create-button-item-event"]');
+        $I->clickStable('[data-test="create-button-item-event"]');
         $I->waitForText('Nová skupina plateb pro akci', 10);
         $I->seeInCurrentUrl('/platby/akce');
 
-        $I->click('[data-test="payment-nav-groups"]');
+        $I->clickStable('[data-test="payment-nav-groups"]');
         $I->waitForText('Platební skupiny');
-        $I->click('[data-test="create-button-toggle"]');
+        $I->clickStable('[data-test="create-button-toggle"]');
         $I->waitForElementVisible('[data-test="create-button-menu"]', 10);
-        $I->click('[data-test="create-button-item-education"]');
+        $I->clickStable('[data-test="create-button-item-education"]');
         $I->waitForText('Nová skupina plateb vzdělávací akce', 10);
         $I->seeInCurrentUrl('/platby/vzdelavacky');
     }
@@ -180,7 +180,7 @@ class PaymentCest extends BaseAcceptanceCest
                     '~^/platby/akce/\d+/nova(?:\?.*)?$~',
                     $eventHref,
                 );
-                $I->click('[data-test^="payment-event-create-"]');
+                $I->clickStable('[data-test^="payment-event-create-"]');
                 $I->waitForText('Nová skupina plateb', 10);
                 $I->seeCurrentUrlMatches('~^/platby/akce/\d+/nova(?:\?.*)?$~');
             } else {
@@ -274,9 +274,9 @@ class PaymentCest extends BaseAcceptanceCest
         $this->createGeneralPaymentGroup($groupName);
 
         $I->seeCurrentUrlMatches('~^/platby/skupiny/\d+/platby(?:\?.*)?$~');
-        $I->click('[data-test="payment-add-button-toggle"]');
+        $I->clickStable('[data-test="payment-add-button-toggle"]');
         $I->waitForElementVisible('[data-test="payment-add-button-menu"]', 10);
-        $I->click('[data-test="payment-add-button-item-member"]');
+        $I->clickStable('[data-test="payment-add-button-item-member"]');
         $I->waitForElementVisible('[data-test="payment-mass-add-page"]', 10);
         $I->waitForText('Přidat osoby z jednotky');
         $I->seeCurrentUrlMatches('~^/platby/skupiny/\d+/osoby(?:\?.*)?$~');
@@ -294,7 +294,7 @@ class PaymentCest extends BaseAcceptanceCest
 
             $I->amOnPage('/platby/skupiny/'.$groupId.'/platby');
             $I->waitForText('Přidat platbu');
-            $I->click('[data-test="payment-add-button-toggle"]');
+            $I->clickStable('[data-test="payment-add-button-toggle"]');
             $I->waitForElementVisible('[data-test="payment-add-button-menu"]', 10);
 
             Assert::assertSame(
@@ -315,7 +315,7 @@ class PaymentCest extends BaseAcceptanceCest
 
         $I->amOnPage('/platby/skupiny/'.$groupId.'/platby');
         $I->waitForText('Přidat platbu');
-        $I->click('[data-test="payment-add-button-toggle"]');
+        $I->clickStable('[data-test="payment-add-button-toggle"]');
         $I->waitForElementVisible('[data-test="payment-add-button-menu"]', 10);
 
         Assert::assertSame(
@@ -346,13 +346,13 @@ class PaymentCest extends BaseAcceptanceCest
     {
         $I = $this->I;
 
-        $I->click('[data-test="global-nav-payments"]');
+        $I->clickStable('[data-test="global-nav-payments"]');
         $I->waitForElementVisible('[data-test="payments-page"]', 10);
-        $I->click('[data-test="payment-nav-groups"]');
+        $I->clickStable('[data-test="payment-nav-groups"]');
         $I->waitForText('Platební skupiny');
-        $I->click('[data-test="create-button-toggle"]');
+        $I->clickStable('[data-test="create-button-toggle"]');
         $I->waitForElementVisible('[data-test="create-button-menu"]', 10);
-        $I->click($menuItemSelector);
+        $I->clickStable($menuItemSelector);
         $I->waitForText($pageTitle, 10);
         $I->seeInCurrentUrl($currentUrl);
     }
