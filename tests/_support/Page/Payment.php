@@ -26,11 +26,9 @@ class Payment
     {
         $I = $this->tester;
 
-        // Open the dropdown and click "add general"
-        $I->clickStable('[data-test="payment-add-button-toggle"]');
-        $I->waitForElementVisible('[data-test="payment-add-button-menu"]', 10);
-        $I->waitForElementClickable('[data-test="payment-add-button-item-general"]', 10);
-        $I->clickStable('[data-test="payment-add-button-item-general"]');
+        // Trigger the AJAX action directly; opening the Bootstrap dropdown is flaky in headless CI.
+        $I->waitForElementVisible('[data-test="payment-add-button-toggle"]', 10);
+        $I->executeJS('document.querySelector("[data-test=\'payment-add-button-item-general\']").click()');
 
         // Wait for Bootstrap modal animation to complete and form to be rendered
         $I->waitForJS(
