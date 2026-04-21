@@ -24,7 +24,7 @@
                         <div>
                             <h5 class="mb-1">{$education->displayName}</h5>
                         </div>
-                        <a n:href="CreateGroup: $education->id->toInt()" class="btn btn-outline-primary btn-sm" data-test="payment-education-create-{$education->id->toInt()}">Vytvořit skupinu</a>
+                        <a n:href=":Payments:EducationCreateGroup: $education->id->toInt()" class="btn btn-outline-primary btn-sm" data-test="payment-education-create-{$education->id->toInt()}">Vytvořit skupinu</a>
                     </div>
                 </li>
             </ul>

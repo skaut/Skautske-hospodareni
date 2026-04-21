@@ -27,7 +27,7 @@
                             <h5 class="mb-1">{$event->displayName}</h5>
                             <small class="text-body-secondary">{$event->unitName}</small>
                         </div>
-                        <a n:href="CreateGroup: $event->id->toInt()"
+                        <a n:href=":Payments:EventCreateGroup: $event->id->toInt()"
                                 class="btn btn-outline-primary btn-sm"
                                 data-test="payment-event-create-{$event->id->toInt()}">Vytvořit skupinu</a>
                     </div>
