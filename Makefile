@@ -60,12 +60,19 @@ test-mapping: ## Validace DB schématu vs migrace
 	$(RUN_PHP_TEST) composer validate-mapping
 
 ci-acceptance:
-	$(COMPOSE) up -d mysql-test selenium nginx php-test
+	$(COMPOSE) up -d traefik mysql-test selenium nginx php-test
 	@for i in $$(seq 1 30); do \
 		if $(COMPOSE) exec -T selenium wget -q -O - http://localhost:4444/wd/hub/status 2>/dev/null | grep -q '"ready":[[:space:]]*true'; then \
 			break; \
 		fi; \
 		echo "Waiting for Selenium... ($$i/30)"; \
+		sleep 2; \
+	done
+	@for i in $$(seq 1 30); do \
+		if $(COMPOSE) exec -T php-test sh -lc "wget -S -O /dev/null http://moje-hospodareni.cz/ 2>&1 | grep -q 'HTTP/[0-9.][0-9.]* 200'"; then \
+			break; \
+		fi; \
+		echo "Waiting for application... ($$i/30)"; \
 		sleep 2; \
 	done
 	$(RUN_PHP_TEST) composer tests:acceptance-ci; \

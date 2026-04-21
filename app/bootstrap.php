@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Environment;
 use Nette\Bootstrap\Configurator;
+use Nette\Utils\FileSystem;
 
 require __DIR__.'/../vendor/autoload.php';
 require_once __DIR__.'/Environment.php';
@@ -21,9 +22,11 @@ $environment = Environment::getConfiguration();
 $appEnv = $environment['appEnv'];
 
 $configurator = new Configurator();
-$configurator->setDebugMode($appEnv === 'dev');
+$configurator->setDebugMode($appEnv === 'dev' || $appEnv === 'test');
 $configurator->enableTracy($logDir);
 $configurator->setTempDirectory($tempDir);
+
+FileSystem::createDir($tempDir.'/sessions');
 
 $configurator->createRobotLoader()
     ->addDirectory(__DIR__)
