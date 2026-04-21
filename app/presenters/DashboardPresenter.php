@@ -26,6 +26,10 @@ class DashboardPresenter extends BasePresenter
 
     public function actionDefault(): void
     {
+        if (! $this->getUser()->isLoggedIn()) {
+            $this->redirect(':Default:default');
+        }
+
         try {
             $this->template->campsCount = $this->queryBus->handle(new CampStatsQuery((int) (new DateTime())->format('Y')));
             $groups = $this->queryBus->handle(

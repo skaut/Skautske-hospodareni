@@ -10,9 +10,21 @@ includes:
     - sentry.neon
 
 parameters:
+    appEnv: %envConfig.appEnv%
+    appBaseUrl: %envConfig.appBaseUrl%
     uploadDirectory: %appDir%/../uploads
-    testBackground: false
+    sendEmail: %envConfig.sendEmail%
+    testBackground: %envConfig.testBackground%
+    tracyShowBar: %envConfig.tracyShowBar%
     adminAllowedUserIds: []
+    database: %envConfig.database%
+    google:
+        credentials: %envConfig.google.credentialsPath%
+        redirectUri: %envConfig.google.redirectUri%
+    sentry:
+        dsn: %envConfig.sentry.dsn%
+        releaseHash: %envConfig.sentry.releaseHash%
+    skautisConfig: %envConfig.skautis%
 
 php:
     date.timezone: Europe/Prague

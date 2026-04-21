@@ -11,13 +11,14 @@ final class Version20260310130000 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return 'create final invoice and bank transaction schema';
+        return 'create final invoice and bank transaction schema and align legacy transaction identifiers';
     }
 
     public function up(Schema $schema): void
     {
         $this->addSql('ALTER TABLE pa_bank_account ADD transaction_source VARCHAR(20) DEFAULT NULL');
         $this->addSql('ALTER TABLE pa_bank_account CHANGE number_number number_number VARCHAR(10) DEFAULT NULL, CHANGE number_bank_code number_bank_code VARCHAR(4) DEFAULT NULL');
+        $this->addSql('ALTER TABLE pa_payment CHANGE transactionId transactionId VARCHAR(191) DEFAULT NULL');
 
         $this->addSql("CREATE TABLE invoice_sequence (id INT UNSIGNED AUTO_INCREMENT NOT NULL, bank_account_id INT DEFAULT NULL, unit INT NOT NULL, sequence_id INT DEFAULT 1 NOT NULL, sequence VARCHAR(20) NOT NULL, first_number VARCHAR(10) DEFAULT '00001' NOT NULL, year INT DEFAULT NULL, description VARCHAR(255) NOT NULL, oauth_id CHAR(36) COLLATE utf8mb4_czech_ci DEFAULT NULL COMMENT '(DC2Type:oauth_id)', default_due_date INT DEFAULT NULL, automatic_pairing_enabled TINYINT(1) DEFAULT 0 NOT NULL, pairing_days_back INT DEFAULT NULL, last_pairing DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)', state VARCHAR(20) NOT NULL COMMENT '(DC2Type:string_enum)', phone VARCHAR(255) DEFAULT NULL, INDEX IDX_4DAE8D7312CB990C (bank_account_id), UNIQUE INDEX invoice_sequence_id_unit_sequence_year_unique (unit, sequence_id, year), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_czech_ci` ENGINE = InnoDB");
         $this->addSql('CREATE TABLE invoice_unit_setting (id INT UNSIGNED AUTO_INCREMENT NOT NULL, unit INT NOT NULL, year INT NOT NULL, name VARCHAR(255) NOT NULL, street VARCHAR(255) NOT NULL, city VARCHAR(64) NOT NULL, zipcode VARCHAR(10) NOT NULL, company_number VARCHAR(64) NOT NULL, phone VARCHAR(64) DEFAULT NULL, UNIQUE INDEX invoice_unit_setting_unit_year_unique (unit, year), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_czech_ci` ENGINE = InnoDB');
@@ -75,5 +76,6 @@ final class Version20260310130000 extends AbstractMigration
 
         $this->addSql('ALTER TABLE pa_bank_account DROP transaction_source');
         $this->addSql('ALTER TABLE pa_bank_account CHANGE number_number number_number VARCHAR(10) NOT NULL, CHANGE number_bank_code number_bank_code VARCHAR(4) NOT NULL');
+        $this->addSql('ALTER TABLE pa_payment CHANGE transactionId transactionId VARCHAR(64) DEFAULT NULL');
     }
 }

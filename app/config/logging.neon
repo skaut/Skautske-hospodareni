@@ -5,6 +5,7 @@ tracy:
     strictMode: TRUE
     maxDepth: 6
     maxLength: 500
+    showBar: %tracyShowBar%
     bar:
         - Nextras\MailPanel\MailPanel(%tempDir%/mail-panel-latte)
 

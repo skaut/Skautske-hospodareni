@@ -36,7 +36,7 @@ application:
         '*': App\*Module\*Presenter
 
 console:
-    url: https://h.skauting.cz
+    url: %appBaseUrl%
 
 fixtures:
     paths:

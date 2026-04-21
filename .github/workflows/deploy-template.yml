@@ -22,18 +22,19 @@ on:
     secrets:
       DEPLOY_SSH_KEY:
         required: true
-      CONFIG_DATABASE_PASSWORD:
-        required: true
-      CONFIG_GOOGLE_CREDENTIALS:
-        required: true
-      CONFIG_APPLICATION_ID:
-        required: false
-      CONFIG_SENTRY_DSN:
-        required: false
 
 jobs:
   deploy:
     runs-on: ubuntu-22.04
+    # Required GitHub Environment vars:
+    # APP_ENV, APP_BASE_URL, SEND_EMAIL, DB_HOST, DB_NAME, DB_USER
+    # Optional GitHub Environment vars:
+    # SKAUTIS_TEST_MODE, TEST_BACKGROUND, TRACY_SHOW_BAR, GOOGLE_CREDENTIALS_FILE
+    # Required GitHub Environment secrets:
+    # APPLICATION_ID, DB_PASSWORD, GOOGLE_CREDENTIALS
+    # Optional GitHub Environment secret:
+    # SENTRY_DSN
+    environment: ${{ inputs.environment }}
     container:
       image: webwingscz/lebeda-deployer-php82
     steps:
@@ -55,13 +56,22 @@ jobs:
           dep deploy ${{ inputs.environment }} -f /app/deploy.php -vvv
         env:
           PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          ENVIRONMENT: ${{ inputs.environment }}
           ROOT_DIR: ${{ inputs.root_dir }}
           SSH_USERNAME: ${{ inputs.ssh_username }}
           HOST: ${{ inputs.host }}
           PORT: ${{ inputs.port }}
-          CONFIG_APPLICATION_ID: ${{ secrets.CONFIG_APPLICATION_ID }}
-          CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_DATABASE_PASSWORD }}
-          CONFIG_GOOGLE_CREDENTIALS: ${{ secrets.CONFIG_GOOGLE_CREDENTIALS }}
-          CONFIG_SENTRY_DSN: ${{ secrets.CONFIG_SENTRY_DSN }}
+          APP_ENV: ${{ vars.APP_ENV }}
+          APP_BASE_URL: ${{ vars.APP_BASE_URL }}
+          APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+          SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
+          SEND_EMAIL: ${{ vars.SEND_EMAIL }}
+          TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
+          TRACY_SHOW_BAR: ${{ vars.TRACY_SHOW_BAR }}
+          DB_HOST: ${{ vars.DB_HOST }}
+          DB_NAME: ${{ vars.DB_NAME }}
+          DB_USER: ${{ vars.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          GOOGLE_CREDENTIALS_FILE: ${{ vars.GOOGLE_CREDENTIALS_FILE }}
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           GITHUB_SHA: ${{ github.sha }}

@@ -1,6 +1,8 @@
 actor: Tester
 params:
+    - .env
     - .env.test
+    - env
 
 coverage:
     enabled: true

@@ -1,3 +1,7 @@
+skautis:
+    applicationId: %skautisConfig.applicationId%
+    testMode: %skautisConfig.testMode%
+
 services:
     # Skautis authorizator
     skautisAuthorizator:
