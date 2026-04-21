@@ -26,7 +26,7 @@
                             <h5 class="mb-1">{$camp->displayName}</h5>
                             <small class="text-body-secondary">{$camp->unitName}</small>
                         </div>
-                        <a n:href="CreateGroup: $camp->id->toInt()" class="btn btn-outline-primary btn-sm" data-test="payment-camp-create-{$camp->id->toInt()}">Vytvořit skupinu</a>
+                        <a n:href=":Payments:CampCreateGroup: $camp->id->toInt()" class="btn btn-outline-primary btn-sm" data-test="payment-camp-create-{$camp->id->toInt()}">Vytvořit skupinu</a>
                     </div>
                 </li>
             </ul>
