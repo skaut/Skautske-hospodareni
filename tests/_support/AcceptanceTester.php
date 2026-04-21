@@ -70,18 +70,22 @@ class AcceptanceTester extends Actor
         $this->executeJS('window.confirm = function(msg){return true;};');
     }
 
-    public function clickStable(string $locator, int $timeout = 10): void
+    public function clickStable(string $locator, int $timeout = 10, bool $waitForOverlays = true): void
     {
         $this->waitForElementVisible($locator, $timeout);
-        $this->waitForUiOverlaysToDisappear($timeout);
+        if ($waitForOverlays) {
+            $this->waitForUiOverlaysToDisappear($timeout);
+        }
         $this->scrollElementToCenter($locator);
         $this->executeJS($this->buildLocatorScript($locator, 'el.click(); return true;'));
     }
 
-    public function fillFieldStable(string $locator, string $value, int $timeout = 10): void
+    public function fillFieldStable(string $locator, string $value, int $timeout = 10, bool $waitForOverlays = true): void
     {
         $this->waitForElementVisible($locator, $timeout);
-        $this->waitForUiOverlaysToDisappear($timeout);
+        if ($waitForOverlays) {
+            $this->waitForUiOverlaysToDisappear($timeout);
+        }
         $this->scrollElementToCenter($locator);
         $this->executeJS($this->buildLocatorScript(
             $locator,

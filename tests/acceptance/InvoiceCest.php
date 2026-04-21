@@ -316,7 +316,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->fillField('input[name="items[0][price]"]', '750');
         $I->scrollTo('input[name="send"]');
         $I->waitForElementClickable('input[name="send"]');
-        $I->click('input[name="send"]');
+        $I->clickStable('input[name="send"]');
 
         $expectedInvNumber = $seqPrefix.'00001';
         $expectedVS = substr((string) $lifecycleYear, -2).'00001';

@@ -42,13 +42,13 @@ class Payment
         $I->wait(1); // Let CSS animation fully complete
 
         // Scope ALL selectors to .modal.show to avoid stale hidden duplicates
-        $I->fillFieldStable(self::MODAL_FORM.' input[name="name"]', $name);
+        $I->fillFieldStable(self::MODAL_FORM.' input[name="name"]', $name, 10, false);
 
         if ($email !== null) {
-            $I->fillFieldStable(self::MODAL_FORM.' input[name="email"]', $email);
+            $I->fillFieldStable(self::MODAL_FORM.' input[name="email"]', $email, 10, false);
         }
 
-        $I->fillFieldStable(self::MODAL_FORM.' input[name="amount"]', (string) $amount);
+        $I->fillFieldStable(self::MODAL_FORM.' input[name="amount"]', (string) $amount, 10, false);
         $this->selectNextWorkdayForDueDate();
         $this->submitPayment();
     }
@@ -68,7 +68,7 @@ class Payment
 
         $date = (new DateTime())->modify(sprintf('+ %d days', $daysToNextWorkday))->format('d.m. Y');
 
-        $I->fillFieldStable(self::MODAL_FORM.' input[name="dueDate"]', $date);
+        $I->fillFieldStable(self::MODAL_FORM.' input[name="dueDate"]', $date, 10, false);
         $I->click('.modal.show .modal-dialog'); // Close date picker
     }
 
