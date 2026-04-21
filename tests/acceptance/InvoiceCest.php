@@ -142,7 +142,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $this->fillYearlySettings(2026, 'Selenium 2026');
         $I->scrollTo('input[name="save"]');
         $I->waitForElementClickable('input[name="save"]');
-        $I->click('input[name="save"]');
+        $I->clickStable('input[name="save"]');
         $I->waitForText('Roční nastavení fakturace bylo uloženo.');
 
         $this->openInvoices();
@@ -186,7 +186,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->fillField('input[name="items[0][price]"]', '1500');
         $I->scrollTo('input[name="send"]');
         $I->waitForElementClickable('input[name="send"]');
-        $I->click('input[name="send"]');
+        $I->clickStable('input[name="send"]');
 
         $I->waitForText('Faktura byla vytvořena');
         $I->see('FA2600001');

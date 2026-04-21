@@ -27,10 +27,10 @@ class Payment
         $I = $this->tester;
 
         // Open the dropdown and click "add general"
-        $I->click('[data-test="payment-add-button-toggle"]');
+        $I->clickStable('[data-test="payment-add-button-toggle"]');
         $I->waitForElementVisible('[data-test="payment-add-button-menu"]', 10);
         $I->waitForElementClickable('[data-test="payment-add-button-item-general"]', 10);
-        $I->click('[data-test="payment-add-button-item-general"]');
+        $I->clickStable('[data-test="payment-add-button-item-general"]');
 
         // Wait for Bootstrap modal animation to complete and form to be rendered
         $I->waitForJS(
@@ -42,13 +42,13 @@ class Payment
         $I->wait(1); // Let CSS animation fully complete
 
         // Scope ALL selectors to .modal.show to avoid stale hidden duplicates
-        $I->fillField(self::MODAL_FORM.' input[name="name"]', $name);
+        $I->fillFieldStable(self::MODAL_FORM.' input[name="name"]', $name);
 
         if ($email !== null) {
-            $I->fillField(self::MODAL_FORM.' input[name="email"]', $email);
+            $I->fillFieldStable(self::MODAL_FORM.' input[name="email"]', $email);
         }
 
-        $I->fillField(self::MODAL_FORM.' input[name="amount"]', $amount);
+        $I->fillFieldStable(self::MODAL_FORM.' input[name="amount"]', (string) $amount);
         $this->selectNextWorkdayForDueDate();
         $this->submitPayment();
     }
@@ -68,7 +68,7 @@ class Payment
 
         $date = (new DateTime())->modify(sprintf('+ %d days', $daysToNextWorkday))->format('d.m. Y');
 
-        $I->fillField(self::MODAL_FORM.' input[name="dueDate"]', $date);
+        $I->fillFieldStable(self::MODAL_FORM.' input[name="dueDate"]', $date);
         $I->click('.modal.show .modal-dialog'); // Close date picker
     }
 

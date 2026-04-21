@@ -69,4 +69,60 @@ class AcceptanceTester extends Actor
     {
         $this->executeJS('window.confirm = function(msg){return true;};');
     }
+
+    public function clickStable(string $locator, int $timeout = 10): void
+    {
+        $this->waitForElementVisible($locator, $timeout);
+        $this->waitForUiOverlaysToDisappear($timeout);
+        $this->scrollElementToCenter($locator);
+        $this->executeJS($this->buildLocatorScript($locator, 'el.click(); return true;'));
+    }
+
+    public function fillFieldStable(string $locator, string $value, int $timeout = 10): void
+    {
+        $this->waitForElementVisible($locator, $timeout);
+        $this->waitForUiOverlaysToDisappear($timeout);
+        $this->scrollElementToCenter($locator);
+        $this->executeJS($this->buildLocatorScript(
+            $locator,
+            'el.focus(); el.value = ""; el.dispatchEvent(new Event("input", { bubbles: true }));'
+            .' el.value = '.json_encode($value).';'
+            .' el.dispatchEvent(new Event("input", { bubbles: true }));'
+            .' el.dispatchEvent(new Event("change", { bubbles: true }));'
+            .' return true;',
+        ));
+    }
+
+    public function waitForUiOverlaysToDisappear(int $timeout = 10): void
+    {
+        $this->waitForJS(
+            'return document.querySelector(".modal-backdrop.show, .offcanvas-backdrop.show") === null;',
+            $timeout,
+        );
+    }
+
+    private function scrollElementToCenter(string $locator): void
+    {
+        $this->executeJS($this->buildLocatorScript(
+            $locator,
+            'el.scrollIntoView({block: "center", inline: "center"}); return true;',
+        ));
+    }
+
+    private function buildLocatorScript(string $locator, string $action): string
+    {
+        $quotedLocator = json_encode($locator);
+
+        return '(function(){'
+            .'var locator = '.$quotedLocator.';'
+            .'var el = null;'
+            .'if (locator.startsWith("//") || locator.startsWith("(") || locator.startsWith(".//")) {'
+                .'el = document.evaluate(locator, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;'
+            .'} else {'
+                .'el = document.querySelector(locator);'
+            .'}'
+            .'if (!el) { return false; }'
+            .$action
+            .'})()';
+    }
 }
