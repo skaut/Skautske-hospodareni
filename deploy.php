@@ -23,15 +23,13 @@ set('ssh_multiplexing', false);
 
 // === Shared / writable dirs ===
 set('shared_dirs', []);
+set('shared_files', ['.env.local', 'app/config/google-credentials.json']);
 
 // === Rsync ===
 set('rsync_src', __DIR__ . '/');
 set('rsync_dest', '{{release_path}}');
 set('rsync', static function () {
-    $stage = currentHost()->get('stage');
-
     return [
-        // běžné exclude vzory – BEZ "./"
         'exclude' => [
             '.git',
             '.github',
@@ -44,15 +42,11 @@ set('rsync', static function () {
             'workdir.tar.gz',
             '/log/',
             '/uploads/',
+            '.env.local',
+            '.env.*.local',
+            'app/config/config.*.local.neon',
+            'app/config/google-credentials.json',
         ],
-
-        // řešení priority: nejdřív explicitně povol konkrétní soubor, pak zakaž wildcard
-        'filter' => [
-            '+ app/config/config.' . $stage . '.local.neon',
-            '- app/config/config.*.local.neon',
-        ],
-
-        // ostatní volby
         'exclude-file'  => false,
         'include'       => [],
         'include-file'  => false,
@@ -64,32 +58,82 @@ set('rsync', static function () {
     ];
 });
 
+function requiredEnv(string $name): string
+{
+    $value = getenv($name);
 
-
-task('build:config', function () {
-    $env = getenv('ENVIRONMENT') ?: 'local';
-    $src = sprintf('app/config/config.%s.local.neon', $env);
-    $dest = 'app/config/config.local.neon';
-
-    if (!file_exists($src)) {
-        throw new \RuntimeException("Missing template: $src");
+    if ($value === false || $value === '') {
+        throw new \RuntimeException(sprintf('Missing required deploy variable "%s".', $name));
     }
 
-    $content = file_get_contents($src);
+    return $value;
+}
 
-    // nahrazení tokenů __TOKEN__
-    $replacements = [
-        '__CONFIG_DATABASE_PASSWORD__' => getenv('CONFIG_DATABASE_PASSWORD') ?: '',
-        '__CONFIG_SENTRY_DSN__'        => getenv('CONFIG_SENTRY_DSN') ?: '',
-        '__CONFIG_APPLICATION_ID__'    => getenv('CONFIG_APPLICATION_ID') ?: '',
+function optionalEnv(string $name): ?string
+{
+    $value = getenv($name);
+
+    if ($value === false || $value === '') {
+        return null;
+    }
+
+    return $value;
+}
+
+function buildDotenvContent(array $values): string
+{
+    $lines = [];
+
+    foreach ($values as $name => $value) {
+        $escaped = str_replace(["\\", "\n", "\r", "\""], ["\\\\", "\\n", '', "\\\""], $value);
+        $lines[] = sprintf('%s="%s"', $name, $escaped);
+    }
+
+    return implode(PHP_EOL, $lines).PHP_EOL;
+}
+
+task('build:runtime_files', function () {
+    $runtimeDir = __DIR__.'/.deployment';
+    $appEnv = requiredEnv('APP_ENV');
+
+    if (! is_dir($runtimeDir) && ! mkdir($runtimeDir, 0777, true) && ! is_dir($runtimeDir)) {
+        throw new \RuntimeException(sprintf('Unable to create runtime directory "%s".', $runtimeDir));
+    }
+
+    $values = [
+        'APP_ENV' => $appEnv,
+        'APP_BASE_URL' => requiredEnv('APP_BASE_URL'),
+        'APPLICATION_ID' => requiredEnv('APPLICATION_ID'),
+        'SEND_EMAIL' => requiredEnv('SEND_EMAIL'),
+        'TRACY_SHOW_BAR' => optionalEnv('TRACY_SHOW_BAR') ?? ($appEnv === 'dev' ? 'true' : 'false'),
+        'DB_HOST' => requiredEnv('DB_HOST'),
+        'DB_NAME' => requiredEnv('DB_NAME'),
+        'DB_USER' => requiredEnv('DB_USER'),
+        'DB_PASSWORD' => requiredEnv('DB_PASSWORD'),
+        'GOOGLE_CREDENTIALS_FILE' => optionalEnv('GOOGLE_CREDENTIALS_FILE') ?? 'google-credentials.json',
+        'APP_RELEASE_HASH' => optionalEnv('APP_RELEASE_HASH') ?? get('build_hash'),
     ];
-    $content = strtr($content, $replacements);
 
-    file_put_contents($dest, $content);
+    foreach (['SKAUTIS_TEST_MODE', 'TEST_BACKGROUND', 'SENTRY_DSN'] as $name) {
+        $value = optionalEnv($name);
+        if ($value !== null) {
+            $values[$name] = $value;
+        }
+    }
 
-    writeln("<info>Config generated → $dest</info>");
-})->desc('Generate local config.local.neon');
+    file_put_contents($runtimeDir.'/.env.local', buildDotenvContent($values));
+    file_put_contents($runtimeDir.'/google-credentials.json', requiredEnv('GOOGLE_CREDENTIALS'));
 
+    writeln('<info>Runtime files prepared.</info>');
+})->desc('Prepare shared runtime files');
+
+task('deploy:runtime_files', function () {
+    $runtimeDir = __DIR__.'/.deployment';
+
+    run('mkdir -p {{deploy_path}}/shared/app/config');
+    upload($runtimeDir.'/.env.local', '{{deploy_path}}/shared/.env.local');
+    upload($runtimeDir.'/google-credentials.json', '{{deploy_path}}/shared/app/config/google-credentials.json');
+})->desc('Upload shared runtime files');
 
 // --- úkol: vytvoř kořenové sdílené složky a symlinky v release ---
 desc('Symlink root-level shared folders (log, uploads) into the release and update /www');
@@ -163,10 +207,12 @@ task('deploy', [
   //  'deploy:ssh_warmup',
     'deploy:info',
     'deploy:setup',
-    'build:config',
+    'build:runtime_files',
     'deploy:lock',
     'deploy:release',
     'rsync',
+    'deploy:runtime_files',
+    'deploy:shared',
     'custom:shared_symlinks',
     'app:proxies',
     //'app:migrate',

@@ -7,6 +7,8 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Tools\SchemaTool;
 
+require_once __DIR__.'/../env-bootstrap.php';
+
 abstract class IntegrationTest extends Codeception\Test\Unit
 {
     /** @var IntegrationTester */
@@ -38,7 +40,7 @@ abstract class IntegrationTest extends Codeception\Test\Unit
         /** @var Contributte\Codeception\Module\NetteDIModule $module */
         $module = $this->getModule('Contributte\Codeception\Module\NetteDIModule');
         $module->onCreateConfigurator[] = function (Nette\Bootstrap\Configurator $configurator) {
-            $configurator->addDynamicParameters(['env' => getenv()]);
+            $configurator->addStaticParameters(['envConfig' => loadTestEnvironmentConfiguration()]);
         };
         parent::_setUp();
     }

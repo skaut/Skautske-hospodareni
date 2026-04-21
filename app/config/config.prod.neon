@@ -1,0 +1,6 @@
+application:
+    catchExceptions: true
+    debugger: false
+
+services:
+    tracy.logger: Tracy\Bridges\Psr\PsrToTracyLoggerAdapter

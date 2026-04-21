@@ -70,72 +70,60 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-  # ── Jednoduché kontroly (matrix) ────────────────────────────
+  # ── Kontroly v test runtime ────────────────────────────────
   checks:
     name: ${{ matrix.name }}
     runs-on: ubuntu-22.04
-    container:
-      image: skaut/lebeda:8.3
     needs: workdir
     env:
-      DB_HOST: mysql-test
-      DB_USER: hskauting
-      DB_PASSWORD: hskauting
-      DB_NAME: hskauting
-      DB_TEST: "true"
+      APPLICATION_ID: ${{ secrets.CONFIG_TEST_SKAUTIS_APPLICATION_ID }}
     strategy:
       fail-fast: false
       matrix:
         include:
           - name: Unit tests
-            command: composer tests:unit
+            command: make test-unit
 
           - name: Coding standard
-            command: composer coding-standard-ci
+            command: make check-cs-check
 
           - name: PHPStan
-            setup: vendor/bin/codecept build
-            command: composer static-analysis
+            command: make check-phpstan
 
           - name: Latte lint
-            config_swap: true
-            env_dev: true
-            command: composer lint
+            command: make check-latte
     steps:
       - uses: actions/download-artifact@v7
         with: { name: workdir, path: . }
       - run: tar -xzpf workdir.tar.gz
-      - name: Swap CI config
-        if: matrix.config_swap
-        run: mv app/config/config.ci.local.neon app/config/config.local.neon
-      - name: Setup
-        if: matrix.setup
-        run: ${{ matrix.setup }}
       - name: Run
         run: ${{ matrix.command }}
-        env:
-          DEVELOPMENT_MACHINE: ${{ matrix.env_dev && 'true' || '' }}
 
   # ── Docker compose joby ─────────────────────────────────────
   tests-integration:
     name: Integration tests
     runs-on: ubuntu-22.04
     needs: workdir
+    env:
+      APPLICATION_ID: ${{ secrets.CONFIG_TEST_SKAUTIS_APPLICATION_ID }}
     steps:
       - uses: actions/download-artifact@v7
         with: { name: workdir, path: . }
       - run: tar -xzpf workdir.tar.gz
-      - run: docker compose -f docker/docker-compose.yml run -T php-test composer tests:integration
+      - run: make test-integration
 
   collect-code-coverage:
     name: Collect code coverage
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-22.04
     needs: workdir
+    env:
+      APPLICATION_ID: ${{ secrets.CONFIG_TEST_SKAUTIS_APPLICATION_ID }}
     steps:
       - uses: actions/download-artifact@v7
         with: { name: workdir, path: . }
       - run: tar -xzpf workdir.tar.gz
+      - run: docker compose -f docker/docker-compose.yml up -d mysql-test
       - run: docker compose -f docker/docker-compose.yml run -T php-test composer tests-with-coverage
       - uses: codecov/codecov-action@v4
         with:
@@ -147,24 +135,14 @@ jobs:
   validate-mapping:
     name: Validate mapping
     runs-on: ubuntu-22.04
-    container:
-      image: skaut/lebeda:8.3
     needs: workdir
-    services:
-      mysql-test:
-        image: mysql:5.7
-        env:
-          MYSQL_ROOT_PASSWORD: 'root'
-          MYSQL_DATABASE: hskauting
-        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
     env:
-      DEVELOPMENT_MACHINE: "true"
+      APPLICATION_ID: ${{ secrets.CONFIG_TEST_SKAUTIS_APPLICATION_ID }}
     steps:
       - uses: actions/download-artifact@v7
         with: { name: workdir, path: . }
       - run: tar -xzpf workdir.tar.gz
-      - run: mv app/config/config.ci.local.neon app/config/config.local.neon
-      - run: composer validate-mapping
+      - run: make test-mapping
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
@@ -180,6 +158,7 @@ jobs:
     env:
       COMPOSE_FILE: docker/docker-compose.yml
       COMPOSE_PROJECT_NAME: "acc-${{ github.run_id }}-${{ github.run_attempt }}"
+      APPLICATION_ID: ${{ secrets.CONFIG_TEST_SKAUTIS_APPLICATION_ID }}
     steps:
       - name: Pre-clean compose project
         shell: bash
@@ -195,25 +174,11 @@ jobs:
       - uses: actions/download-artifact@v7
         with: { name: workdir, path: . }
       - run: tar -xzpf workdir.tar.gz
-      - run: echo -e "\nHEADLESS='--headless'" >> .env.test
       - name: Fix workspace ownership
         run: sudo chown -R docker:docker .
 
-      - name: Swap CI config (must exist before app-init reads it)
-        run: cp app/config/config.ci.local.neon app/config/config.local.neon
-
       - run: docker compose build php-test
-      - name: Start MySQL and wait for readiness
-        run: |
-          docker compose up -d mysql-test
-          for i in $(seq 1 30); do
-            docker compose exec -T mysql-test mysqladmin ping -h localhost -u root -proot --silent 2>/dev/null && break
-            echo "Waiting for MySQL... ($i/30)"
-            sleep 2
-          done
-      - run: docker compose run -T php-test composer app-init
-      - run: docker compose up -d php-test selenium nginx
-      - run: docker compose run -T php-test composer tests:acceptance
+      - run: make ci-acceptance
 
       # --- sběr výstupů a logů (i při failu)
       - name: Pack Codeception output
@@ -278,9 +243,6 @@ jobs:
       port: "11961"
     secrets:
       DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-      CONFIG_APPLICATION_ID: ${{ secrets.CONFIG_BETA_SKAUTIS_APPLICATION_ID }}
-      CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_BETA_DATABASE_PASSWORD }}
-      CONFIG_GOOGLE_CREDENTIALS: ${{ secrets.CONFIG_BETA_GOOGLE_CREDENTIALS }}
 
   deploy-test:
     if: github.ref == 'refs/heads/master'
@@ -294,8 +256,6 @@ jobs:
       port: "9010"
     secrets:
       DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-      CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_TEST_DATABASE_PASSWORD }}
-      CONFIG_GOOGLE_CREDENTIALS: ${{ secrets.CONFIG_TEST_GOOGLE_CREDENTIALS }}
 
   deploy-production:
     if: github.ref == 'refs/heads/master'
@@ -309,6 +269,3 @@ jobs:
       port: 8930
     secrets:
       DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-      CONFIG_DATABASE_PASSWORD: ${{ secrets.CONFIG_PRODUCTION_DATABASE_PASSWORD }}
-      CONFIG_GOOGLE_CREDENTIALS: ${{ secrets.CONFIG_PRODUCTION_GOOGLE_CREDENTIALS }}
-      CONFIG_SENTRY_DSN: ${{ secrets.CONFIG_SENTRY_DSN }}

@@ -1,9 +1,5 @@
 parameters:
-    database:
-        host: %env.DB_HOST%
-        user: %env.DB_USER%
-        password: %env.DB_PASSWORD%
-        name: %env.DB_NAME%
+    database: %envConfig.database%
 
 services:
     - Nette\Caching\Storages\DevNullStorage

@@ -1,12 +1,11 @@
 COMPOSE     = docker compose -f docker/docker-compose.yml
-RUN_PHP     = $(COMPOSE) run --rm -T -e DB_TEST=true php-test
-CONFIG_LOCAL = app/config/config.local.neon
-CONFIG_CI    = app/config/config.ci.local.neon
-CONFIG_BAK   = app/config/config.local.neon.bak
+RUN_PHP_DEV = $(COMPOSE) run --rm -T php
+RUN_PHP_TEST = $(COMPOSE) run --rm -T php-test
 
-.PHONY: help up down enter init \
-        unit integration acceptance phpstan cs cs-check latte mapping fix \
-        ci _ci-config-swap _ci-config-restore
+.PHONY: help up down enter init test-enter test-init test-services \
+        test-unit test-integration test-acceptance test-mapping ci-acceptance \
+        check-phpstan check-cs check-cs-check check-latte \
+        fix ci
 
 # ── Nápověda ──────────────────────────────────────────────────
 help: ## Zobrazí tuto nápovědu
@@ -20,83 +19,100 @@ down: ## Zastaví dev kontejnery
 	$(COMPOSE) down --remove-orphans
 
 enter: ## Shell do PHP kontejneru
-	@docker exec -it $$($(COMPOSE) ps -q php-test) bash
+	@docker exec -it $$($(COMPOSE) ps -q php) bash
 
 init: ## Inicializace aplikace (composer app-init)
-	$(RUN_PHP) composer app-init
+	$(RUN_PHP_DEV) composer app-init
+
+test-enter: ## Shell do test PHP kontejneru
+	@docker exec -it $$($(COMPOSE) ps -q php-test) bash
+
+test-init: ## Inicializace testovací aplikace
+	$(RUN_PHP_TEST) composer app-init
+
+test-services: ## Start test DB container
+	$(COMPOSE) up -d mysql-test
 
 # ── Testy ─────────────────────────────────────────────────────
-unit: ## Unit testy
-	$(RUN_PHP) composer tests:unit
+test-unit: ## Unit testy
+	$(RUN_PHP_TEST) composer tests:unit
 
-integration: ## Integrační testy
-	$(RUN_PHP) composer tests:integration
+test-integration: ## Integrační testy
+	$(MAKE) test-services
+	$(RUN_PHP_TEST) composer tests:integration
 
-acceptance: _ci-config-swap ## Akceptační testy (selenium + headless)
-	$(COMPOSE) up -d mysql-test selenium nginx php-test
-	$(RUN_PHP) composer tests:acceptance; \
+test-acceptance: ## Akceptační testy lokálně s viditelným Selenium preview
+	$(COMPOSE) up -d traefik mysql-test selenium nginx php-test
+	@for i in $$(seq 1 30); do \
+		if $(COMPOSE) exec -T selenium wget -q -O - http://localhost:4444/wd/hub/status 2>/dev/null | grep -q '"ready":[[:space:]]*true'; then \
+			break; \
+		fi; \
+		echo "Waiting for Selenium... ($$i/30)"; \
+		sleep 2; \
+	done
+	$(RUN_PHP_TEST) composer tests:acceptance; \
 	status=$$?; \
-	$(MAKE) --no-print-directory _ci-config-restore; \
+	$(COMPOSE) stop selenium nginx; \
+	exit $$status
+
+test-mapping: ## Validace DB schématu vs migrace
+	$(MAKE) test-services
+	$(RUN_PHP_TEST) composer validate-mapping
+
+ci-acceptance:
+	$(COMPOSE) up -d mysql-test selenium nginx php-test
+	@for i in $$(seq 1 30); do \
+		if $(COMPOSE) exec -T selenium wget -q -O - http://localhost:4444/wd/hub/status 2>/dev/null | grep -q '"ready":[[:space:]]*true'; then \
+			break; \
+		fi; \
+		echo "Waiting for Selenium... ($$i/30)"; \
+		sleep 2; \
+	done
+	$(RUN_PHP_TEST) composer tests:acceptance-ci; \
+	status=$$?; \
 	$(COMPOSE) stop selenium nginx; \
 	exit $$status
 
 # ── Kontroly kódu ────────────────────────────────────────────
-phpstan: ## PHPStan analýza
-	$(RUN_PHP) sh -c "vendor/bin/codecept build && composer static-analysis"
+check-phpstan: ## PHPStan analýza
+	$(RUN_PHP_TEST) sh -c "vendor/bin/codecept build && composer static-analysis"
 
-cs: ## Coding standard (opraví)
-	$(RUN_PHP) composer coding-standard
+check-cs: ## Coding standard (opraví)
+	$(RUN_PHP_TEST) composer coding-standard
 
-cs-check: ## Coding standard (dry-run pro CI)
-	$(RUN_PHP) composer coding-standard-ci
+check-cs-check: ## Coding standard (dry-run pro CI)
+	$(RUN_PHP_TEST) composer coding-standard-ci
 
-latte: _ci-config-swap ## Latte lint
-	$(RUN_PHP) sh -c "DEVELOPMENT_MACHINE=true composer lint"; \
-	status=$$?; \
-	$(MAKE) --no-print-directory _ci-config-restore; \
-	exit $$status
+check-latte: ## Latte lint
+	$(RUN_PHP_TEST) composer lint
 
-mapping: _ci-config-swap ## Validace DB schématu vs migrace
-	$(RUN_PHP) sh -c "DEVELOPMENT_MACHINE=true composer validate-mapping"; \
-	status=$$?; \
-	$(MAKE) --no-print-directory _ci-config-restore; \
-	exit $$status
-
-fix: ## Coding standard + PHPStan
-	$(RUN_PHP) composer coding-standard
-	$(RUN_PHP) sh -c "vendor/bin/codecept build && composer static-analysis"
-
-# ── Config swap helper ────────────────────────────────────────
-_ci-config-swap:
-	@if [ -f $(CONFIG_LOCAL) ]; then cp $(CONFIG_LOCAL) $(CONFIG_BAK); fi
-	cp $(CONFIG_CI) $(CONFIG_LOCAL)
-
-_ci-config-restore:
-	@if [ -f $(CONFIG_BAK) ]; then mv $(CONFIG_BAK) $(CONFIG_LOCAL); \
-	else rm -f $(CONFIG_LOCAL); fi
+fix: ## Opravitelné kontroly bez testů
+	$(MAKE) check-cs
+	$(MAKE) check-latte
+	$(MAKE) check-phpstan
 
 # ── Kompletní CI pipeline ────────────────────────────────────
 ci: ## Kompletní pipeline (jako GitHub Actions)
 	@echo ""
 	@echo "\033[1;35m══════ Unit tests ══════\033[0m"
-	$(MAKE) unit
+	$(MAKE) test-unit
 	@echo ""
 	@echo "\033[1;35m══════ Integration tests ══════\033[0m"
-	$(MAKE) integration
+	$(MAKE) test-integration
 	@echo ""
 	@echo "\033[1;35m══════ Acceptance tests ══════\033[0m"
-	$(MAKE) acceptance
+	$(MAKE) ci-acceptance
 	@echo ""
 	@echo "\033[1;35m══════ PHPStan ══════\033[0m"
-	$(MAKE) phpstan
+	$(MAKE) check-phpstan
 	@echo ""
 	@echo "\033[1;35m══════ Coding standard ══════\033[0m"
-	$(MAKE) cs-check
+	$(MAKE) check-cs-check
 	@echo ""
 	@echo "\033[1;35m══════ Latte lint ══════\033[0m"
-	$(MAKE) latte
+	$(MAKE) check-latte
 	@echo ""
 	@echo "\033[1;35m══════ Mapping validation ══════\033[0m"
-	$(MAKE) mapping
+	$(MAKE) test-mapping
 	@echo ""
 	@echo "\033[1;32m══════ ALL PASSED ✓ ══════\033[0m"

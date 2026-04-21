@@ -118,12 +118,19 @@
         ],
         "tests:unit": "vendor/bin/codecept run unit",
         "tests:integration": "vendor/bin/codecept run integration",
-        "tests:acceptance": [
+        "tests:acceptance:init": [
             "bin/console nette:cache:purge || true",
             "bin/console migrations:drop-all-tables-views --no-interaction",
             "bin/console migrations:migrate --no-interaction",
-            "bin/console orm:generate-proxies --no-interaction",
+            "bin/console orm:generate-proxies --no-interaction"
+        ],
+        "tests:acceptance": [
+            "@tests:acceptance:init",
             "vendor/bin/codecept run acceptance -vv"
+        ],
+        "tests:acceptance-ci": [
+            "@tests:acceptance:init",
+            "vendor/bin/codecept run acceptance --env ci -vv"
         ],
         "tests": [
             "@tests:init",
@@ -163,14 +170,12 @@
         ],
         "app-init": [
             "composer install --no-interaction",
-            "cp app/config/config.sample.local.neon app/config/config.local.neon || true",
-            "bin/console nette:cache:purge || true",
+            "[ -f .env.local ] || cp .env.local.example .env.local",
             "yarn install",
-            "bash -lc 'rm -rf temp/cache/* temp/sessions/* temp/mail-panel-latte/* temp/mail-panel-mails/* temp/mpdf/* www/webtemp/* frontend/.cache node_modules/.cache && rm -f temp/.phpcs-cache temp/vite-dev-server.log www/js/app.min.js www/css/app.css'",
+            "bash -lc 'mkdir -p temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf www/webtemp && rm -rf temp/cache/* temp/sessions/* temp/mail-panel-latte/* temp/mail-panel-mails/* temp/mpdf/* www/webtemp/* frontend/.cache node_modules/.cache && rm -f temp/.phpcs-cache temp/vite-dev-server.log www/js/app.min.js www/css/app.css'",
             "bin/console migrations:drop-all-tables-views --force --no-interaction",
             "bin/console migrations:migrate --no-interaction",
-            "yarn build",
-            "bin/console nette:cache:purge || true"
+            "yarn build"
         ],
         "diff": [
             "console doctrine:cache:clear",

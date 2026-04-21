@@ -6,8 +6,11 @@ use Nette\Loaders\RobotLoader;
 use Nette\Utils\FileSystem;
 
 require_once __DIR__.'/../vendor/autoload.php';
+require_once __DIR__.'/env-bootstrap.php';
 
 date_default_timezone_set('Europe/Prague');
+
+loadTestEnvironmentConfiguration();
 
 FileSystem::createDir(__DIR__.'/../temp/cache/integration');
 

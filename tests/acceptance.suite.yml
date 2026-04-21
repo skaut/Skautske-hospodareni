@@ -19,7 +19,6 @@ modules:
               - 'allow-insecure-localhost' # Allow insecure connections to localhost
               - '--ignore-ssl-errors=yes' # Ignore SSL errors
               - '--ignore-certificate-errors' # Ignore certificate errors
-              - '%HEADLESS%' # Turn off UI
               - '--disable-infobars'
               - '--disable-gpu' # Disable GPU acceleration
               - '--no-sandbox' # Disable Chrome's sandboxing
@@ -37,3 +36,21 @@ modules:
         populate: true
         dump: 'tests/_data/acceptance_init.sql'
         wait: 2
+
+env:
+  ci:
+    modules:
+      config:
+        WebDriver:
+          capabilities:
+            chromeOptions:
+              args:
+                - 'allow-insecure-localhost'
+                - '--ignore-ssl-errors=yes'
+                - '--ignore-certificate-errors'
+                - '--headless'
+                - '--disable-infobars'
+                - '--disable-gpu'
+                - '--no-sandbox'
+                - '--window-size=1920,1080'
+                - "--unsafely-treat-insecure-origin-as-secure=http://moje-hospodareni.cz"
