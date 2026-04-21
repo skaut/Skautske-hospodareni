@@ -65,7 +65,7 @@
         {/if}
         <a
             n:if="$bankAccountId !== null && $item->canBePaired()"
-            href="{$control->getPresenter()->link('BankAccounts:detail', ['id' => $bankAccountId, 'paymentId' => $item->getId()])}"
+            href="{$control->getPresenter()->link(':Settings:BankAccounts:detail', ['id' => $bankAccountId, 'paymentId' => $item->getId()])}"
             class="btn btn-sm btn-light"
             title="Ruční párování s bankovní transakcí"
         ><i class="fas fa-university"></i></a>

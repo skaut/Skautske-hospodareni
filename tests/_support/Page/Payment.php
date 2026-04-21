@@ -6,13 +6,17 @@ namespace Page;
 
 use AcceptanceTester;
 use DateTime;
+use Facebook\WebDriver\WebDriverKeys;
 
 use function date;
 use function sprintf;
 
 class Payment
 {
-    private const MODAL_FORM = '.modal.show #frm-paymentDialog-form';
+    private const MODAL_NAME_INPUT = '#frm-paymentDialog-form-name';
+    private const ADD_BUTTON_TOGGLE = '[data-test="payment-add-button-toggle"]';
+    private const ADD_BUTTON_MENU = '[data-test="payment-add-button-menu"]';
+    private const ADD_BUTTON_ITEM_GENERAL = '[data-test="payment-add-button-item-general"]';
 
     /** @var AcceptanceTester */
     private $tester;
@@ -26,27 +30,14 @@ class Payment
     {
         $I = $this->tester;
 
-        // Trigger the AJAX action directly; opening the Bootstrap dropdown is flaky in headless CI.
-        $I->waitForElementVisible('[data-test="payment-add-button-toggle"]', 10);
-        $I->executeJS('document.querySelector("[data-test=\'payment-add-button-item-general\']").click()');
-
-        // Wait for Bootstrap modal animation to complete and form to be rendered
-        $I->waitForJS(
-            'var m = document.querySelector(".modal.show");'
-            .'return m && getComputedStyle(m).opacity === "1"'
-            .' && m.querySelector("#frm-paymentDialog-form") !== null',
-            15,
-        );
-        $I->wait(1); // Let CSS animation fully complete
-
-        // Scope ALL selectors to .modal.show to avoid stale hidden duplicates
-        $I->fillFieldStable(self::MODAL_FORM.' input[name="name"]', $name, 10, false);
+        $this->openPaymentDialog();
+        $I->fillFieldStable(self::MODAL_NAME_INPUT, $name, 10, false);
 
         if ($email !== null) {
-            $I->fillFieldStable(self::MODAL_FORM.' input[name="email"]', $email, 10, false);
+            $I->fillFieldStable('#frm-paymentDialog-form-email', $email, 10, false);
         }
 
-        $I->fillFieldStable(self::MODAL_FORM.' input[name="amount"]', (string) $amount, 10, false);
+        $I->fillFieldStable('#frm-paymentDialog-form-amount', (string) $amount, 10, false);
         $this->selectNextWorkdayForDueDate();
         $this->submitPayment();
     }
@@ -66,20 +57,34 @@ class Payment
 
         $date = (new DateTime())->modify(sprintf('+ %d days', $daysToNextWorkday))->format('d.m. Y');
 
-        $I->fillFieldStable(self::MODAL_FORM.' input[name="dueDate"]', $date, 10, false);
-        $I->click('.modal.show .modal-dialog'); // Close date picker
+        $I->fillFieldStable('#frm-paymentDialog-form-dueDate', $date, 10, false);
+        $I->pressKey('body', [WebDriverKeys::ESCAPE]); // Close date picker
+    }
+
+    private function openPaymentDialog(): void
+    {
+        $I = $this->tester;
+
+        $I->waitForElementClickable(self::ADD_BUTTON_TOGGLE, 10);
+        $I->clickStable(self::ADD_BUTTON_TOGGLE);
+        $I->waitForElementVisible(self::ADD_BUTTON_MENU, 10);
+        $I->waitForElementVisible(self::ADD_BUTTON_ITEM_GENERAL, 10);
+        $I->clickStable(self::ADD_BUTTON_ITEM_GENERAL);
+        $I->waitForElementVisible(self::MODAL_NAME_INPUT, 15);
     }
 
     public function submitPayment(): void
     {
         $I = $this->tester;
 
-        // Submit the form INSIDE the visible modal (not via form= attribute
-        // which targets the first #frm-paymentDialog-form in DOM — could be a stale hidden one)
-        $I->executeJS('document.querySelector(".modal.show #frm-paymentDialog-form input[name=send]").click()');
+        $I->executeJS('document.querySelector("#frm-paymentDialog-form input[name=send]").click()');
 
         // Wait for AJAX to complete: modal closes, flash appears
-        $I->waitForJS('return document.querySelector(".modal.show") === null', 15);
+        $I->waitForJS(
+            'var input = document.querySelector("#frm-paymentDialog-form-name");'
+            .'return !input || input.offsetParent === null || input.getClientRects().length === 0;',
+            15,
+        );
         $I->waitForText('Platba byla přidána', 10);
         $I->waitForElementNotVisible('.modal-backdrop', 10);
         $I->waitForElementClickable('[data-test="payment-add-button-toggle"]', 10);
