@@ -2,17 +2,18 @@
 
 declare(strict_types=1);
 
-use function ctype_xdigit;
-use function escapeshellarg;
-use function getenv;
-use function hash_equals;
-use function http_response_code;
-use function is_resource;
-use function sprintf;
-use function strlen;
-use function trim;
+use App\Environment;
+use Doctrine\Migrations\Tools\Console\Command\MigrateCommand;
+use Nette\DI\Container;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
+
+require_once __DIR__.'/../vendor/autoload.php';
+require_once __DIR__.'/../app/Environment.php';
 
 header('Content-Type: text/plain; charset=utf-8');
+
+Environment::load(dirname(__DIR__));
 
 $configuredToken = trim((string) getenv('DB_FIX_TOKEN_SHA256'));
 $providedToken = trim((string) ($_GET['token'] ?? $_POST['token'] ?? ''));
@@ -31,32 +32,40 @@ if (
     exit;
 }
 
-$projectRoot = dirname(__DIR__);
-$command = sprintf(
-    '%s %s migrations:migrate --no-interaction 2>&1',
-    escapeshellarg(PHP_BINARY),
-    escapeshellarg($projectRoot . '/bin/console'),
-);
+$container = require __DIR__.'/../app/bootstrap.php';
 
-$descriptors = [
-    1 => ['pipe', 'w'],
-];
-
-$process = proc_open($command, $descriptors, $pipes, $projectRoot);
-
-if (! is_resource($process)) {
+if (! $container instanceof Container) {
     http_response_code(500);
-    echo "Unable to start migrations.\n";
+    echo "Unable to bootstrap application container.\n";
 
     exit;
 }
 
-$output = stream_get_contents($pipes[1]);
-fclose($pipes[1]);
+$command = $container->getService('migrations.migrateCommand');
 
-$exitCode = proc_close($process);
+if (! $command instanceof MigrateCommand) {
+    http_response_code(500);
+    echo "Unable to initialize migrate command.\n";
+
+    exit;
+}
+
+$input = new ArrayInput([]);
+$input->setInteractive(false);
+$output = new BufferedOutput();
+$exitCode = $command->run($input, $output);
+$contents = $output->fetch();
 
 http_response_code($exitCode === 0 ? 200 : 500);
 
-echo $output;
+if ($contents === '') {
+    echo $exitCode === 0 ? "Migrations completed.\n" : "Migration command failed.\n";
+} else {
+    echo $contents;
+}
 
+if ($exitCode !== 0) {
+    exit($exitCode);
+}
+
+exit;
