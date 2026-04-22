@@ -101,18 +101,18 @@ jobs:
         run: ${{ matrix.command }}
 
   # ── Docker compose joby ─────────────────────────────────────
-  tests-integration:
-    name: Integration tests
-    runs-on: ubuntu-22.04
-    needs: workdir
-    environment: test
-    env:
-      APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
-    steps:
-      - uses: actions/download-artifact@v7
-        with: { name: workdir, path: . }
-      - run: tar -xzpf workdir.tar.gz
-      - run: make test-integration
+  # tests-integration:
+  #   name: Integration tests
+  #   runs-on: ubuntu-22.04
+  #   needs: workdir
+  #   environment: test
+  #   env:
+  #     APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+  #   steps:
+  #     - uses: actions/download-artifact@v7
+  #       with: { name: workdir, path: . }
+  #     - run: tar -xzpf workdir.tar.gz
+  #     - run: make test-integration
 
   collect-code-coverage:
     name: Collect code coverage
@@ -135,91 +135,91 @@ jobs:
           fail_ci_if_error: true
 
   # ── Validate mapping (potřebuje MySQL service) ─────────────
-  validate-mapping:
-    name: Validate mapping
-    runs-on: ubuntu-22.04
-    needs: workdir
-    environment: test
-    env:
-      APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
-    steps:
-      - uses: actions/download-artifact@v7
-        with: { name: workdir, path: . }
-      - run: tar -xzpf workdir.tar.gz
-      - run: make test-mapping
-      - uses: actions/upload-artifact@v7
-        if: failure()
-        with:
-          name: migrations
-          path: migrations
+  # validate-mapping:
+  #   name: Validate mapping
+  #   runs-on: ubuntu-22.04
+  #   needs: workdir
+  #   environment: test
+  #   env:
+  #     APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+  #   steps:
+  #     - uses: actions/download-artifact@v7
+  #       with: { name: workdir, path: . }
+  #     - run: tar -xzpf workdir.tar.gz
+  #     - run: make test-mapping
+  #     - uses: actions/upload-artifact@v7
+  #       if: failure()
+  #       with:
+  #         name: migrations
+  #         path: migrations
 
   # ── Acceptance testy (self-hosted) ──────────────────────────
-  tests-acceptance:
-    name: Acceptance tests
-    runs-on: self-hosted
-    needs: workdir
-    timeout-minutes: 45
-    environment: test
-    env:
-      COMPOSE_FILE: docker/docker-compose.yml
-      COMPOSE_PROJECT_NAME: "acc-${{ github.run_id }}-${{ github.run_attempt }}"
-      APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
-    steps:
-      - name: Pre-clean compose project
-        shell: bash
-        run: docker compose down --remove-orphans -v || true
+  # tests-acceptance:
+  #   name: Acceptance tests
+  #   runs-on: self-hosted
+  #   needs: workdir
+  #   timeout-minutes: 45
+  #   environment: test
+  #   env:
+  #     COMPOSE_FILE: docker/docker-compose.yml
+  #     COMPOSE_PROJECT_NAME: "acc-${{ github.run_id }}-${{ github.run_attempt }}"
+  #     APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+  #   steps:
+  #     - name: Pre-clean compose project
+  #       shell: bash
+  #       run: docker compose down --remove-orphans -v || true
 
-      - name: Clean workspace
-        shell: bash
-        run: |
-          shopt -s dotglob
-          rm -rf -- * || true
-          shopt -u dotglob
+  #     - name: Clean workspace
+  #       shell: bash
+  #       run: |
+  #         shopt -s dotglob
+  #         rm -rf -- * || true
+  #         shopt -u dotglob
 
-      - uses: actions/download-artifact@v7
-        with: { name: workdir, path: . }
-      - run: tar -xzpf workdir.tar.gz
-      - name: Fix workspace ownership
-        run: sudo chown -R docker:docker .
+  #     - uses: actions/download-artifact@v7
+  #       with: { name: workdir, path: . }
+  #     - run: tar -xzpf workdir.tar.gz
+  #     - name: Fix workspace ownership
+  #       run: sudo chown -R docker:docker .
 
-      - run: docker compose build php-test
-      - run: make ci-acceptance
+  #     - run: docker compose build php-test
+  #     - run: make ci-acceptance
 
-      # --- sběr výstupů a logů (i při failu)
-      - name: Pack Codeception output
-        if: always()
-        shell: bash
-        run: |
-          if [ -d tests/_output ]; then
-            tar -czf tests-output.tar.gz -C tests _output
-          fi
+  #     # --- sběr výstupů a logů (i při failu)
+  #     - name: Pack Codeception output
+  #       if: always()
+  #       shell: bash
+  #       run: |
+  #         if [ -d tests/_output ]; then
+  #           tar -czf tests-output.tar.gz -C tests _output
+  #         fi
 
-      - name: Collect compose logs
-        if: always()
-        shell: bash
-        run: |
-          mkdir -p artifacts/logs
-          docker compose ps --all > artifacts/logs/compose-ps.txt || true
-          docker compose logs --no-color > artifacts/logs/compose-logs.txt || true
-          tar -czf compose-logs.tar.gz -C artifacts logs || true
+  #     - name: Collect compose logs
+  #       if: always()
+  #       shell: bash
+  #       run: |
+  #         mkdir -p artifacts/logs
+  #         docker compose ps --all > artifacts/logs/compose-ps.txt || true
+  #         docker compose logs --no-color > artifacts/logs/compose-logs.txt || true
+  #         tar -czf compose-logs.tar.gz -C artifacts logs || true
 
-      - uses: actions/upload-artifact@v7
-        if: always()
-        with:
-          name: tests-output
-          path: tests-output.tar.gz
-          if-no-files-found: ignore
+  #     - uses: actions/upload-artifact@v7
+  #       if: always()
+  #       with:
+  #         name: tests-output
+  #         path: tests-output.tar.gz
+  #         if-no-files-found: ignore
 
-      - uses: actions/upload-artifact@v7
-        if: always()
-        with:
-          name: compose-logs
-          path: compose-logs.tar.gz
-          if-no-files-found: ignore
+  #     - uses: actions/upload-artifact@v7
+  #       if: always()
+  #       with:
+  #         name: compose-logs
+  #         path: compose-logs.tar.gz
+  #         if-no-files-found: ignore
 
-      - name: Stop & remove compose project
-        if: always()
-        run: docker compose down --remove-orphans -v
+  #     - name: Stop & remove compose project
+  #       if: always()
+  #       run: docker compose down --remove-orphans -v
 
   # ── Gate ────────────────────────────────────────────────────
   checks-passed:

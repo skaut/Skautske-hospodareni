@@ -48,7 +48,7 @@ final class Environment
 
         self::loadFile($projectDir.'/.env', $protectedVariables);
 
-        if (self::getString('APP_ENV', 'dev') !== 'test') {
+        if (self::getString('APP_ENV', 'dev') !== 'ci') {
             self::loadFile($projectDir.'/.env.local', $protectedVariables);
         }
 
@@ -159,7 +159,7 @@ final class Environment
         $baseUrl = rtrim(self::getString('APP_BASE_URL', 'http://moje-hospodareni.cz'), '/');
         $googleCredentialsFile = self::getString(
             'GOOGLE_CREDENTIALS_FILE',
-            $appEnv === 'test' ? 'ci-google-credentials.json' : 'google-credentials.json',
+            $appEnv === 'ci' ? 'ci-google-credentials.json' : 'google-credentials.json',
         );
 
         return [

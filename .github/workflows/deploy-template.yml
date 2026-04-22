@@ -28,6 +28,7 @@ jobs:
     runs-on: ubuntu-22.04
     # Required GitHub Environment vars:
     # APP_ENV, APP_BASE_URL, SEND_EMAIL, DB_HOST, DB_NAME, DB_USER
+    # APP_ENV should be one of: staging, prod
     # Optional GitHub Environment vars:
     # SKAUTIS_TEST_MODE, TEST_BACKGROUND, TRACY_SHOW_BAR, GOOGLE_CREDENTIALS_FILE
     # Required GitHub Environment secrets:
@@ -45,6 +46,42 @@ jobs:
           path: .
       - name: Extract workdir
         run: tar -xzpf workdir.tar.gz
+      - name: Debug deploy environment
+        run: |
+          echo "=== GitHub Actions deploy environment ==="
+          echo "APP_ENV=$APP_ENV"
+          echo "APP_BASE_URL=$APP_BASE_URL"
+          echo "APPLICATION_ID=$APPLICATION_ID"
+          echo "SEND_EMAIL=$SEND_EMAIL"
+          echo "DB_HOST=$DB_HOST"
+          echo "DB_NAME=$DB_NAME"
+          echo "DB_USER=$DB_USER"
+          if [ -n "$DB_PASSWORD" ]; then echo "DB_PASSWORD=<set>"; else echo "DB_PASSWORD=<missing>"; fi
+          echo "GOOGLE_CREDENTIALS=$GOOGLE_CREDENTIALS"
+          if [ -n "$DB_FIX_TOKEN_SHA256" ]; then echo "DB_FIX_TOKEN_SHA256=<set>"; else echo "DB_FIX_TOKEN_SHA256=<missing>"; fi
+          echo "SKAUTIS_TEST_MODE=$SKAUTIS_TEST_MODE"
+          echo "TEST_BACKGROUND=$TEST_BACKGROUND"
+          echo "TRACY_SHOW_BAR=$TRACY_SHOW_BAR"
+          echo "GOOGLE_CREDENTIALS_FILE=$GOOGLE_CREDENTIALS_FILE"
+          echo "SENTRY_DSN=$SENTRY_DSN"
+          echo "APP_RELEASE_HASH=$APP_RELEASE_HASH"
+        env:
+          APP_ENV: ${{ vars.APP_ENV }}
+          APP_BASE_URL: ${{ vars.APP_BASE_URL }}
+          APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+          DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
+          SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
+          SEND_EMAIL: ${{ vars.SEND_EMAIL }}
+          TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
+          TRACY_SHOW_BAR: ${{ vars.TRACY_SHOW_BAR }}
+          DB_HOST: ${{ vars.DB_HOST }}
+          DB_NAME: ${{ vars.DB_NAME }}
+          DB_USER: ${{ vars.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          GOOGLE_CREDENTIALS_FILE: ${{ vars.GOOGLE_CREDENTIALS_FILE }}
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          APP_RELEASE_HASH: ${{ vars.APP_RELEASE_HASH }}
       - name: Run deploy
         run: |
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
