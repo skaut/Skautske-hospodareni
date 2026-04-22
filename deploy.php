@@ -50,6 +50,7 @@ set('rsync', static function () {
         'exclude-file'  => false,
         'include'       => [],
         'include-file'  => false,
+        'filter'        => [],
         'filter-file'   => false,
         'filter-perdir' => false,
         'flags'         => 'rz',
@@ -92,51 +93,6 @@ function buildDotenvContent(array $values): string
 
     return implode(PHP_EOL, $lines).PHP_EOL;
 }
-
-function previewEnvValue(string|false $value): string
-{
-    if ($value === false || $value === '') {
-        return '<missing>';
-    }
-
-    return substr($value, 0, 3).'...';
-}
-
-task('debug:runtime_env', function () {
-    writeln('<comment>=== Deploy runtime environment ===</comment>');
-
-    $requiredVariables = [
-        'APP_ENV',
-        'APP_BASE_URL',
-        'APPLICATION_ID',
-        'SEND_EMAIL',
-        'DB_HOST',
-        'DB_NAME',
-        'DB_USER',
-        'DB_PASSWORD',
-        'GOOGLE_CREDENTIALS',
-        'DB_FIX_TOKEN_SHA256',
-    ];
-
-    $optionalVariables = [
-        'SKAUTIS_TEST_MODE',
-        'TEST_BACKGROUND',
-        'TRACY_SHOW_BAR',
-        'GOOGLE_CREDENTIALS_FILE',
-        'SENTRY_DSN',
-        'APP_RELEASE_HASH',
-    ];
-
-    foreach ($requiredVariables as $name) {
-        $value = getenv($name);
-        writeln(sprintf('%s=%s', $name, previewEnvValue($value)));
-    }
-
-    foreach ($optionalVariables as $name) {
-        $value = getenv($name);
-        writeln(sprintf('%s=%s', $name, previewEnvValue($value)));
-    }
-})->desc('Print deploy runtime environment');
 
 task('build:runtime_files', function () {
     $runtimeDir = __DIR__.'/.deployment';
@@ -272,7 +228,6 @@ task('deploy', [
   //  'deploy:ssh_warmup',
     'deploy:info',
     'deploy:setup',
-    'debug:runtime_env',
     'build:runtime_files',
     'deploy:lock',
     'deploy:release',

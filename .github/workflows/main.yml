@@ -249,49 +249,6 @@ jobs:
           name: workdir
           path: .
       - run: tar -xzpf workdir.tar.gz
-      - name: Debug deploy environment
-        run: |
-          preview() {
-            if [ -z "$1" ]; then
-              echo "<missing>"
-            else
-              printf '%.3s...\n' "$1"
-            fi
-          }
-          echo "=== GitHub Actions deploy environment ==="
-          echo "APP_ENV=$(preview "$APP_ENV")"
-          echo "APP_BASE_URL=$(preview "$APP_BASE_URL")"
-          echo "APPLICATION_ID=$(preview "$APPLICATION_ID")"
-          echo "SEND_EMAIL=$(preview "$SEND_EMAIL")"
-          echo "DB_HOST=$(preview "$DB_HOST")"
-          echo "DB_NAME=$(preview "$DB_NAME")"
-          echo "DB_USER=$(preview "$DB_USER")"
-          echo "DB_PASSWORD=$(preview "$DB_PASSWORD")"
-          echo "GOOGLE_CREDENTIALS=$(preview "$GOOGLE_CREDENTIALS")"
-          echo "DB_FIX_TOKEN_SHA256=$(preview "$DB_FIX_TOKEN_SHA256")"
-          echo "SKAUTIS_TEST_MODE=$(preview "$SKAUTIS_TEST_MODE")"
-          echo "TEST_BACKGROUND=$(preview "$TEST_BACKGROUND")"
-          echo "TRACY_SHOW_BAR=$(preview "$TRACY_SHOW_BAR")"
-          echo "GOOGLE_CREDENTIALS_FILE=$(preview "$GOOGLE_CREDENTIALS_FILE")"
-          echo "SENTRY_DSN=$(preview "$SENTRY_DSN")"
-          echo "APP_RELEASE_HASH=$(preview "$APP_RELEASE_HASH")"
-        env:
-          APP_ENV: ${{ vars.APP_ENV }}
-          APP_BASE_URL: ${{ vars.APP_BASE_URL }}
-          APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
-          DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
-          SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
-          SEND_EMAIL: ${{ vars.SEND_EMAIL }}
-          TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
-          TRACY_SHOW_BAR: ${{ vars.TRACY_SHOW_BAR }}
-          DB_HOST: ${{ vars.DB_HOST }}
-          DB_NAME: ${{ vars.DB_NAME }}
-          DB_USER: ${{ vars.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          GOOGLE_CREDENTIALS_FILE: ${{ vars.GOOGLE_CREDENTIALS_FILE }}
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          APP_RELEASE_HASH: ${{ vars.APP_RELEASE_HASH }}
       - name: Run deploy
         run: |
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
@@ -337,49 +294,6 @@ jobs:
           name: workdir
           path: .
       - run: tar -xzpf workdir.tar.gz
-      - name: Debug deploy environment
-        run: |
-          preview() {
-            if [ -z "$1" ]; then
-              echo "<missing>"
-            else
-              printf '%.3s...\n' "$1"
-            fi
-          }
-          echo "=== GitHub Actions deploy environment ==="
-          echo "APP_ENV=$(preview "$APP_ENV")"
-          echo "APP_BASE_URL=$(preview "$APP_BASE_URL")"
-          echo "APPLICATION_ID=$(preview "$APPLICATION_ID")"
-          echo "SEND_EMAIL=$(preview "$SEND_EMAIL")"
-          echo "DB_HOST=$(preview "$DB_HOST")"
-          echo "DB_NAME=$(preview "$DB_NAME")"
-          echo "DB_USER=$(preview "$DB_USER")"
-          echo "DB_PASSWORD=$(preview "$DB_PASSWORD")"
-          echo "GOOGLE_CREDENTIALS=$(preview "$GOOGLE_CREDENTIALS")"
-          echo "DB_FIX_TOKEN_SHA256=$(preview "$DB_FIX_TOKEN_SHA256")"
-          echo "SKAUTIS_TEST_MODE=$(preview "$SKAUTIS_TEST_MODE")"
-          echo "TEST_BACKGROUND=$(preview "$TEST_BACKGROUND")"
-          echo "TRACY_SHOW_BAR=$(preview "$TRACY_SHOW_BAR")"
-          echo "GOOGLE_CREDENTIALS_FILE=$(preview "$GOOGLE_CREDENTIALS_FILE")"
-          echo "SENTRY_DSN=$(preview "$SENTRY_DSN")"
-          echo "APP_RELEASE_HASH=$(preview "$APP_RELEASE_HASH")"
-        env:
-          APP_ENV: ${{ vars.APP_ENV }}
-          APP_BASE_URL: ${{ vars.APP_BASE_URL }}
-          APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
-          DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
-          SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
-          SEND_EMAIL: ${{ vars.SEND_EMAIL }}
-          TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
-          TRACY_SHOW_BAR: ${{ vars.TRACY_SHOW_BAR }}
-          DB_HOST: ${{ vars.DB_HOST }}
-          DB_NAME: ${{ vars.DB_NAME }}
-          DB_USER: ${{ vars.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          GOOGLE_CREDENTIALS_FILE: ${{ vars.GOOGLE_CREDENTIALS_FILE }}
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          APP_RELEASE_HASH: ${{ vars.APP_RELEASE_HASH }}
       - name: Run deploy
         run: |
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
@@ -425,49 +339,6 @@ jobs:
           name: workdir
           path: .
       - run: tar -xzpf workdir.tar.gz
-      - name: Debug deploy environment
-        run: |
-          preview() {
-            if [ -z "$1" ]; then
-              echo "<missing>"
-            else
-              printf '%.3s...\n' "$1"
-            fi
-          }
-          echo "=== GitHub Actions deploy environment ==="
-          echo "APP_ENV=$(preview "$APP_ENV")"
-          echo "APP_BASE_URL=$(preview "$APP_BASE_URL")"
-          echo "APPLICATION_ID=$(preview "$APPLICATION_ID")"
-          echo "SEND_EMAIL=$(preview "$SEND_EMAIL")"
-          echo "DB_HOST=$(preview "$DB_HOST")"
-          echo "DB_NAME=$(preview "$DB_NAME")"
-          echo "DB_USER=$(preview "$DB_USER")"
-          echo "DB_PASSWORD=$(preview "$DB_PASSWORD")"
-          echo "GOOGLE_CREDENTIALS=$(preview "$GOOGLE_CREDENTIALS")"
-          echo "DB_FIX_TOKEN_SHA256=$(preview "$DB_FIX_TOKEN_SHA256")"
-          echo "SKAUTIS_TEST_MODE=$(preview "$SKAUTIS_TEST_MODE")"
-          echo "TEST_BACKGROUND=$(preview "$TEST_BACKGROUND")"
-          echo "TRACY_SHOW_BAR=$(preview "$TRACY_SHOW_BAR")"
-          echo "GOOGLE_CREDENTIALS_FILE=$(preview "$GOOGLE_CREDENTIALS_FILE")"
-          echo "SENTRY_DSN=$(preview "$SENTRY_DSN")"
-          echo "APP_RELEASE_HASH=$(preview "$APP_RELEASE_HASH")"
-        env:
-          APP_ENV: ${{ vars.APP_ENV }}
-          APP_BASE_URL: ${{ vars.APP_BASE_URL }}
-          APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
-          DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
-          SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
-          SEND_EMAIL: ${{ vars.SEND_EMAIL }}
-          TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
-          TRACY_SHOW_BAR: ${{ vars.TRACY_SHOW_BAR }}
-          DB_HOST: ${{ vars.DB_HOST }}
-          DB_NAME: ${{ vars.DB_NAME }}
-          DB_USER: ${{ vars.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          GOOGLE_CREDENTIALS_FILE: ${{ vars.GOOGLE_CREDENTIALS_FILE }}
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          APP_RELEASE_HASH: ${{ vars.APP_RELEASE_HASH }}
       - name: Run deploy
         run: |
           mkdir -p ~/.ssh && chmod 700 ~/.ssh

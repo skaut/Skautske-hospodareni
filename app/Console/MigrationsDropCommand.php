@@ -35,7 +35,7 @@ class MigrationsDropCommand extends Command
     /** @throws Exception */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $isTestingEnvironment = getenv('APP_ENV') === 'test' || getenv('DB_TEST') === 'true';
+        $isTestingEnvironment = getenv('APP_ENV') === 'ci' || getenv('DB_TEST') === 'true';
 
         if (! $isTestingEnvironment && ! $input->getOption('force')) {
             $output->writeln('Cannot run on non testing environment without --force.');

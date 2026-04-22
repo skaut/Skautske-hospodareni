@@ -22,7 +22,7 @@ $environment = Environment::getConfiguration();
 $appEnv = $environment['appEnv'];
 
 $configurator = new Configurator();
-$configurator->setDebugMode($appEnv === 'dev' || $appEnv === 'test');
+$configurator->setDebugMode($appEnv === 'dev' || $appEnv === 'ci');
 $configurator->enableTracy($logDir);
 $configurator->setTempDirectory($tempDir);
 
