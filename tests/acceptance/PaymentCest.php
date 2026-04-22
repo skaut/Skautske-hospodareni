@@ -77,8 +77,12 @@ class PaymentCest extends BaseAcceptanceCest
         $I->wantTo('send payment email');
 
         $I->amGoingTo('send third payment');
-        $I->click('//a[contains(@class, \'ui--sendEmail\')]');
-        $I->waitForText('e-mail', 10); // Wait for any email-related flash (success or OAuth error)
+        $I->clickStable('(//a[contains(@class, "ui--sendEmail")])[last()]');
+        $I->waitForJS(
+            'return Array.from(document.querySelectorAll(".alert"))'
+            .'.some(function (alert) { return alert.textContent.toLowerCase().includes("e-mail"); });',
+            10,
+        );
 
         $page->seeNumberOfPaymentsWithState('Nezaplacena', 2);
         $I->see('1 / 3 plateb'); // Progress bar: 1 paid out of 3 total
