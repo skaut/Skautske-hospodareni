@@ -22,16 +22,6 @@ on:
     secrets:
       DEPLOY_SSH_KEY:
         required: true
-      APPLICATION_ID:
-        required: true
-      DB_FIX_TOKEN_SHA256:
-        required: false
-      DB_PASSWORD:
-        required: true
-      GOOGLE_CREDENTIALS:
-        required: false
-      SENTRY_DSN:
-        required: false
 
 jobs:
   deploy:
