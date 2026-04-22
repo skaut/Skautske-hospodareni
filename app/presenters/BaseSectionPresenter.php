@@ -101,6 +101,6 @@ abstract class BaseSectionPresenter extends BasePresenter
 
     public function renderAccessDenied(): void
     {
-        $this->template->setFile(__DIR__.'/../accessDenied.latte');
+        $this->template->setFile(__DIR__.'/accessDenied.latte');
     }
 }
