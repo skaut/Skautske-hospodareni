@@ -239,38 +239,263 @@ jobs:
   deploy-beta:
     if: ${{ startsWith(github.ref_name, 'beta') }}
     needs: [checks-passed, workdir]
-    uses: ./.github/workflows/deploy-template.yml
-    with:
-      environment: beta
-      root_dir: /home/vu011961
-      ssh_username: vu011961
-      host: www.skauting.cz
-      port: "11961"
-    secrets:
-      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+    runs-on: ubuntu-22.04
+    environment: beta
+    container:
+      image: webwingscz/lebeda-deployer-php82
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: workdir
+          path: .
+      - run: tar -xzpf workdir.tar.gz
+      - name: Debug deploy environment
+        run: |
+          preview() {
+            if [ -z "$1" ]; then
+              echo "<missing>"
+            else
+              printf '%.3s...\n' "$1"
+            fi
+          }
+          echo "=== GitHub Actions deploy environment ==="
+          echo "APP_ENV=$(preview "$APP_ENV")"
+          echo "APP_BASE_URL=$(preview "$APP_BASE_URL")"
+          echo "APPLICATION_ID=$(preview "$APPLICATION_ID")"
+          echo "SEND_EMAIL=$(preview "$SEND_EMAIL")"
+          echo "DB_HOST=$(preview "$DB_HOST")"
+          echo "DB_NAME=$(preview "$DB_NAME")"
+          echo "DB_USER=$(preview "$DB_USER")"
+          echo "DB_PASSWORD=$(preview "$DB_PASSWORD")"
+          echo "GOOGLE_CREDENTIALS=$(preview "$GOOGLE_CREDENTIALS")"
+          echo "DB_FIX_TOKEN_SHA256=$(preview "$DB_FIX_TOKEN_SHA256")"
+          echo "SKAUTIS_TEST_MODE=$(preview "$SKAUTIS_TEST_MODE")"
+          echo "TEST_BACKGROUND=$(preview "$TEST_BACKGROUND")"
+          echo "TRACY_SHOW_BAR=$(preview "$TRACY_SHOW_BAR")"
+          echo "GOOGLE_CREDENTIALS_FILE=$(preview "$GOOGLE_CREDENTIALS_FILE")"
+          echo "SENTRY_DSN=$(preview "$SENTRY_DSN")"
+          echo "APP_RELEASE_HASH=$(preview "$APP_RELEASE_HASH")"
+        env:
+          APP_ENV: ${{ vars.APP_ENV }}
+          APP_BASE_URL: ${{ vars.APP_BASE_URL }}
+          APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+          DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
+          SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
+          SEND_EMAIL: ${{ vars.SEND_EMAIL }}
+          TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
+          TRACY_SHOW_BAR: ${{ vars.TRACY_SHOW_BAR }}
+          DB_HOST: ${{ vars.DB_HOST }}
+          DB_NAME: ${{ vars.DB_NAME }}
+          DB_USER: ${{ vars.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          GOOGLE_CREDENTIALS_FILE: ${{ vars.GOOGLE_CREDENTIALS_FILE }}
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          APP_RELEASE_HASH: ${{ vars.APP_RELEASE_HASH }}
+      - name: Run deploy
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          eval $(ssh-agent -s)
+          echo "$PRIVATE_KEY" | tr -d '\r' | ssh-add -
+          dep deploy:ssh_warmup beta -f /app/deploy.php -vvv
+          echo "Waiting for container to initialize..."
+          sleep 10
+          dep deploy beta -f /app/deploy.php -vvv
+        env:
+          PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          ROOT_DIR: /home/vu011961
+          SSH_USERNAME: vu011961
+          HOST: www.skauting.cz
+          PORT: "11961"
+          APP_ENV: ${{ vars.APP_ENV }}
+          APP_BASE_URL: ${{ vars.APP_BASE_URL }}
+          APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+          DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
+          SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
+          SEND_EMAIL: ${{ vars.SEND_EMAIL }}
+          TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
+          TRACY_SHOW_BAR: ${{ vars.TRACY_SHOW_BAR }}
+          DB_HOST: ${{ vars.DB_HOST }}
+          DB_NAME: ${{ vars.DB_NAME }}
+          DB_USER: ${{ vars.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          GOOGLE_CREDENTIALS_FILE: ${{ vars.GOOGLE_CREDENTIALS_FILE }}
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          GITHUB_SHA: ${{ github.sha }}
 
   deploy-test:
     if: github.ref == 'refs/heads/master'
     needs: [checks-passed]
-    uses: ./.github/workflows/deploy-template.yml
-    with:
-      environment: test
-      root_dir: /home/vu009010
-      ssh_username: vu009010
-      host: www.skauting.cz
-      port: "9010"
-    secrets:
-      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+    runs-on: ubuntu-22.04
+    environment: test
+    container:
+      image: webwingscz/lebeda-deployer-php82
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: workdir
+          path: .
+      - run: tar -xzpf workdir.tar.gz
+      - name: Debug deploy environment
+        run: |
+          preview() {
+            if [ -z "$1" ]; then
+              echo "<missing>"
+            else
+              printf '%.3s...\n' "$1"
+            fi
+          }
+          echo "=== GitHub Actions deploy environment ==="
+          echo "APP_ENV=$(preview "$APP_ENV")"
+          echo "APP_BASE_URL=$(preview "$APP_BASE_URL")"
+          echo "APPLICATION_ID=$(preview "$APPLICATION_ID")"
+          echo "SEND_EMAIL=$(preview "$SEND_EMAIL")"
+          echo "DB_HOST=$(preview "$DB_HOST")"
+          echo "DB_NAME=$(preview "$DB_NAME")"
+          echo "DB_USER=$(preview "$DB_USER")"
+          echo "DB_PASSWORD=$(preview "$DB_PASSWORD")"
+          echo "GOOGLE_CREDENTIALS=$(preview "$GOOGLE_CREDENTIALS")"
+          echo "DB_FIX_TOKEN_SHA256=$(preview "$DB_FIX_TOKEN_SHA256")"
+          echo "SKAUTIS_TEST_MODE=$(preview "$SKAUTIS_TEST_MODE")"
+          echo "TEST_BACKGROUND=$(preview "$TEST_BACKGROUND")"
+          echo "TRACY_SHOW_BAR=$(preview "$TRACY_SHOW_BAR")"
+          echo "GOOGLE_CREDENTIALS_FILE=$(preview "$GOOGLE_CREDENTIALS_FILE")"
+          echo "SENTRY_DSN=$(preview "$SENTRY_DSN")"
+          echo "APP_RELEASE_HASH=$(preview "$APP_RELEASE_HASH")"
+        env:
+          APP_ENV: ${{ vars.APP_ENV }}
+          APP_BASE_URL: ${{ vars.APP_BASE_URL }}
+          APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+          DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
+          SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
+          SEND_EMAIL: ${{ vars.SEND_EMAIL }}
+          TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
+          TRACY_SHOW_BAR: ${{ vars.TRACY_SHOW_BAR }}
+          DB_HOST: ${{ vars.DB_HOST }}
+          DB_NAME: ${{ vars.DB_NAME }}
+          DB_USER: ${{ vars.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          GOOGLE_CREDENTIALS_FILE: ${{ vars.GOOGLE_CREDENTIALS_FILE }}
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          APP_RELEASE_HASH: ${{ vars.APP_RELEASE_HASH }}
+      - name: Run deploy
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          eval $(ssh-agent -s)
+          echo "$PRIVATE_KEY" | tr -d '\r' | ssh-add -
+          dep deploy:ssh_warmup test -f /app/deploy.php -vvv
+          echo "Waiting for container to initialize..."
+          sleep 10
+          dep deploy test -f /app/deploy.php -vvv
+        env:
+          PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          ROOT_DIR: /home/vu009010
+          SSH_USERNAME: vu009010
+          HOST: www.skauting.cz
+          PORT: "9010"
+          APP_ENV: ${{ vars.APP_ENV }}
+          APP_BASE_URL: ${{ vars.APP_BASE_URL }}
+          APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+          DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
+          SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
+          SEND_EMAIL: ${{ vars.SEND_EMAIL }}
+          TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
+          TRACY_SHOW_BAR: ${{ vars.TRACY_SHOW_BAR }}
+          DB_HOST: ${{ vars.DB_HOST }}
+          DB_NAME: ${{ vars.DB_NAME }}
+          DB_USER: ${{ vars.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          GOOGLE_CREDENTIALS_FILE: ${{ vars.GOOGLE_CREDENTIALS_FILE }}
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          GITHUB_SHA: ${{ github.sha }}
 
   deploy-production:
     if: github.ref == 'refs/heads/master'
     needs: [checks-passed]
-    uses: ./.github/workflows/deploy-template.yml
-    with:
-      environment: production
-      root_dir: /home/vu008930
-      ssh_username: vu008930
-      host: www.skauting.cz
-      port: 8930
-    secrets:
-      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+    runs-on: ubuntu-22.04
+    environment: production
+    container:
+      image: webwingscz/lebeda-deployer-php82
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: workdir
+          path: .
+      - run: tar -xzpf workdir.tar.gz
+      - name: Debug deploy environment
+        run: |
+          preview() {
+            if [ -z "$1" ]; then
+              echo "<missing>"
+            else
+              printf '%.3s...\n' "$1"
+            fi
+          }
+          echo "=== GitHub Actions deploy environment ==="
+          echo "APP_ENV=$(preview "$APP_ENV")"
+          echo "APP_BASE_URL=$(preview "$APP_BASE_URL")"
+          echo "APPLICATION_ID=$(preview "$APPLICATION_ID")"
+          echo "SEND_EMAIL=$(preview "$SEND_EMAIL")"
+          echo "DB_HOST=$(preview "$DB_HOST")"
+          echo "DB_NAME=$(preview "$DB_NAME")"
+          echo "DB_USER=$(preview "$DB_USER")"
+          echo "DB_PASSWORD=$(preview "$DB_PASSWORD")"
+          echo "GOOGLE_CREDENTIALS=$(preview "$GOOGLE_CREDENTIALS")"
+          echo "DB_FIX_TOKEN_SHA256=$(preview "$DB_FIX_TOKEN_SHA256")"
+          echo "SKAUTIS_TEST_MODE=$(preview "$SKAUTIS_TEST_MODE")"
+          echo "TEST_BACKGROUND=$(preview "$TEST_BACKGROUND")"
+          echo "TRACY_SHOW_BAR=$(preview "$TRACY_SHOW_BAR")"
+          echo "GOOGLE_CREDENTIALS_FILE=$(preview "$GOOGLE_CREDENTIALS_FILE")"
+          echo "SENTRY_DSN=$(preview "$SENTRY_DSN")"
+          echo "APP_RELEASE_HASH=$(preview "$APP_RELEASE_HASH")"
+        env:
+          APP_ENV: ${{ vars.APP_ENV }}
+          APP_BASE_URL: ${{ vars.APP_BASE_URL }}
+          APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+          DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
+          SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
+          SEND_EMAIL: ${{ vars.SEND_EMAIL }}
+          TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
+          TRACY_SHOW_BAR: ${{ vars.TRACY_SHOW_BAR }}
+          DB_HOST: ${{ vars.DB_HOST }}
+          DB_NAME: ${{ vars.DB_NAME }}
+          DB_USER: ${{ vars.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          GOOGLE_CREDENTIALS_FILE: ${{ vars.GOOGLE_CREDENTIALS_FILE }}
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          APP_RELEASE_HASH: ${{ vars.APP_RELEASE_HASH }}
+      - name: Run deploy
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          eval $(ssh-agent -s)
+          echo "$PRIVATE_KEY" | tr -d '\r' | ssh-add -
+          dep deploy:ssh_warmup production -f /app/deploy.php -vvv
+          echo "Waiting for container to initialize..."
+          sleep 10
+          dep deploy production -f /app/deploy.php -vvv
+        env:
+          PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          ROOT_DIR: /home/vu008930
+          SSH_USERNAME: vu008930
+          HOST: www.skauting.cz
+          PORT: "8930"
+          APP_ENV: ${{ vars.APP_ENV }}
+          APP_BASE_URL: ${{ vars.APP_BASE_URL }}
+          APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+          DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
+          SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
+          SEND_EMAIL: ${{ vars.SEND_EMAIL }}
+          TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
+          TRACY_SHOW_BAR: ${{ vars.TRACY_SHOW_BAR }}
+          DB_HOST: ${{ vars.DB_HOST }}
+          DB_NAME: ${{ vars.DB_NAME }}
+          DB_USER: ${{ vars.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          GOOGLE_CREDENTIALS_FILE: ${{ vars.GOOGLE_CREDENTIALS_FILE }}
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          GITHUB_SHA: ${{ github.sha }}
