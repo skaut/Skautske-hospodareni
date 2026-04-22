@@ -13,9 +13,9 @@ require_once __DIR__.'/../app/Environment.php';
  */
 function loadTestEnvironmentConfiguration(): array
 {
-    putenv('APP_ENV=test');
-    $_ENV['APP_ENV'] = 'test';
-    $_SERVER['APP_ENV'] = 'test';
+    putenv('APP_ENV=ci');
+    $_ENV['APP_ENV'] = 'ci';
+    $_SERVER['APP_ENV'] = 'ci';
 
     $projectDir = dirname(__DIR__);
 

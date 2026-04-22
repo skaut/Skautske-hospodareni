@@ -2,8 +2,6 @@
 
 namespace Deployer;
 
-use function Safe\eio_busy;
-
 require_once 'contrib/rsync.php';
 require_once 'recipe/common.php';
 
@@ -63,8 +61,7 @@ set('rsync', static function () {
 function requiredEnv(string $name): string
 {
     $value = getenv($name);
-    echo "$name - $value";
-    if ($value === false || $value === '') {
+    if ($value === false ) {
         throw new \RuntimeException(sprintf('Missing required deploy variable "%s".', $name));
     }
 
@@ -93,6 +90,50 @@ function buildDotenvContent(array $values): string
 
     return implode(PHP_EOL, $lines).PHP_EOL;
 }
+
+task('debug:runtime_env', function () {
+    writeln('<comment>=== Deploy runtime environment ===</comment>');
+
+    $requiredVariables = [
+        'APP_ENV',
+        'APP_BASE_URL',
+        'APPLICATION_ID',
+        'SEND_EMAIL',
+        'DB_HOST',
+        'DB_NAME',
+        'DB_USER',
+        'GOOGLE_CREDENTIALS',
+    ];
+
+    $maskedRequiredVariables = [
+        'DB_PASSWORD',
+        'DB_FIX_TOKEN_SHA256',
+    ];
+
+    $optionalVariables = [
+        'SKAUTIS_TEST_MODE',
+        'TEST_BACKGROUND',
+        'TRACY_SHOW_BAR',
+        'GOOGLE_CREDENTIALS_FILE',
+        'SENTRY_DSN',
+        'APP_RELEASE_HASH',
+    ];
+
+    foreach ($requiredVariables as $name) {
+        $value = getenv($name);
+        writeln(sprintf('%s=%s', $name, $value === false ? '<missing>' : $value));
+    }
+
+    foreach ($maskedRequiredVariables as $name) {
+        $value = getenv($name);
+        writeln(sprintf('%s=%s', $name, $value === false || $value === '' ? '<missing>' : '<set>'));
+    }
+
+    foreach ($optionalVariables as $name) {
+        $value = getenv($name);
+        writeln(sprintf('%s=%s', $name, $value === false ? '<missing>' : $value));
+    }
+})->desc('Print deploy runtime environment');
 
 task('build:runtime_files', function () {
     $runtimeDir = __DIR__.'/.deployment';
@@ -228,6 +269,7 @@ task('deploy', [
   //  'deploy:ssh_warmup',
     'deploy:info',
     'deploy:setup',
+    'debug:runtime_env',
     'build:runtime_files',
     'deploy:lock',
     'deploy:release',

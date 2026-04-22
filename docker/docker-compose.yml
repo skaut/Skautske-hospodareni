@@ -81,7 +81,7 @@ services:
             - containers/php/ini/image.ini
             - containers/php/ini/xdebug.ini
         environment:
-            APP_ENV: test
+            APP_ENV: ci
             HEADLESS: ${HEADLESS:-}
 
     nginx:
