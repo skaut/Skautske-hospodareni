@@ -1,0 +1,33 @@
+{block #content}
+<div data-test="invoice-create-page">
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h1 n:inner-block="title" class="h3 mb-2">Nová faktura v řadě {$invoiceSequence->getDisplayLabel()}</h1>
+            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3 mb-3">
+                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
+                <span class="text-body-secondary">
+                    {if $invoiceSequence->getDescription() !== ''}{$invoiceSequence->getDescription()}. {/if}
+                    Číslo faktury a variabilní symbol se vygenerují po uložení podle pravidel této řady.
+                </span>
+            </div>
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <a n:href=":Payments:InvoiceList:default, invoiceSequenceId => $invoiceSequence->getId(), unitId => $unitId" class="btn btn-outline-secondary btn-sm" data-test="invoice-create-back-list">
+                    <i class="fi fi-rr-file-invoice" aria-hidden="true"></i>
+                    Zpět na seznam faktur
+                </a>
+                <a n:href=":Payments:InvoiceSequence:edit, id => $invoiceSequence->getId(), unitId => $unitId" class="btn btn-outline-secondary btn-sm">
+                    <i class="fi fi-rr-settings-sliders" aria-hidden="true"></i>
+                    Nastavení řady
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div n:snippet="createForm">
+                {control createForm}
+            </div>
+        </div>
+    </div>
+</div>

@@ -269,8 +269,7 @@ class Invoice extends AbstractIdEntity
         $this->sentEmails[] = new InvoiceSentEmail($this, $type, $time, $senderName, $successful, $errorMessage);
 
         if ($successful && $type->equalsValue(EmailType::INVOICE_INFO)) {
-            $this->sentAt = $time;
-            $this->sentBy = $senderName;
+            $this->setDeliveryData($time, $senderName);
         }
     }
 
@@ -282,6 +281,11 @@ class Invoice extends AbstractIdEntity
     public function getPaymentType(): InvoicePaymentType
     {
         return InvoicePaymentType::from($this->paymentType);
+    }
+
+    public function setPaymentType(InvoicePaymentType $paymentType): void
+    {
+        $this->paymentType = $paymentType->value;
     }
 
     public function getInvoiceId(): int
@@ -455,7 +459,7 @@ class Invoice extends AbstractIdEntity
         $this->closedByUsername = null;
 
         if ($this->state !== InvoiceState::CANCELLED) {
-            $this->state = InvoiceState::ISSUED;
+            $this->state = $this->hasBeenDelivered() ? InvoiceState::DELIVERED : InvoiceState::ISSUED;
         }
 
         return true;
@@ -542,8 +546,7 @@ class Invoice extends AbstractIdEntity
             return false;
         }
 
-        $this->sentAt = $time;
-        $this->sentBy = $senderName;
+        $this->setDeliveryData($time, $senderName);
 
         return true;
     }
@@ -622,7 +625,16 @@ class Invoice extends AbstractIdEntity
             return 'Zaplaceno';
         }
 
+        if ($this->getState() === InvoiceState::DELIVERED) {
+            return 'Doručená';
+        }
+
         return 'Vystavená';
+    }
+
+    public function canBeEdited(): bool
+    {
+        return $this->getState() === InvoiceState::ISSUED;
     }
 
     public function canSendReminder(?DateTimeImmutable $today = null): bool
@@ -659,5 +671,15 @@ class Invoice extends AbstractIdEntity
     public function getCashReceiptNumber(): ?string
     {
         return $this->cashReceiptNumber;
+    }
+
+    private function setDeliveryData(DateTimeImmutable $time, string $senderName): void
+    {
+        $this->sentAt = $time;
+        $this->sentBy = $senderName;
+
+        if ($this->state === InvoiceState::ISSUED) {
+            $this->state = InvoiceState::DELIVERED;
+        }
     }
 }

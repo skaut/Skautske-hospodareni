@@ -400,6 +400,8 @@ class InvoiceSequenceListPresenter extends PaymentsBasePresenter
     private function addEmailTemplatesToForm(BaseForm $form, ?string $unavailableReason = null): void
     {
         $emailsContainer = $form->addContainer('emails');
+        $oAuthId = $form['oAuthId'];
+        assert($oAuthId instanceof \Nette\Forms\Controls\SelectBox);
 
         $emails = [
             EmailType::INVOICE_INFO => 'E-mail s fakturou',
@@ -433,14 +435,21 @@ class InvoiceSequenceListPresenter extends PaymentsBasePresenter
             $subject = $container->addText('subject', 'Předmět e-mailu')
                 ->setOption('id', $subjectId)
                 ->setHtmlAttribute('data-email-field', '1')
-                ->setDefaultValue($defaultSubjects[$type])
-                ->setRequired($type === EmailType::INVOICE_INFO ? 'Předmět e-mailu musí být vyplněn' : false);
+                ->setDefaultValue($defaultSubjects[$type]);
             $body = $container->addTextArea('body', 'Text e-mailu', null, 15)
                 ->setOption('id', $bodyId)
                 ->setHtmlAttribute('class', 'form-control')
                 ->setHtmlAttribute('data-email-field', '1')
-                ->setDefaultValue($this->getDefaultEmailBody($type))
-                ->setRequired($type === EmailType::INVOICE_INFO ? 'Text e-mailu musí být vyplněn' : false);
+                ->setDefaultValue($this->getDefaultEmailBody($type));
+
+            if ($type === EmailType::INVOICE_INFO) {
+                $subject
+                    ->addConditionOn($oAuthId, Form::FILLED)
+                    ->setRequired('Předmět e-mailu musí být vyplněn');
+                $body
+                    ->addConditionOn($oAuthId, Form::FILLED)
+                    ->setRequired('Text e-mailu musí být vyplněn');
+            }
         }
 
         $form->setCurrentGroup();

@@ -168,7 +168,7 @@
                 </td>
                 <td>
                     <div class="party-title">Odběratel:</div>
-                    <strong>{$customer->name}</strong><br n:if="! $customer->isAnonymous">
+                    <strong n:if="$customer->name !== ''">{$customer->name}</strong><br n:if="$customer->name !== ''">
                     <span n:if="$customer->address !== ''">{$customer->address}<br><br></span>
                     <div n:if="$customer->hasCompanyNumber">IČ: {$customer->ic}</div>
                     <div n:if="$customer->hasVatNumber">DIČ: {$customer->dic}</div>
@@ -182,23 +182,23 @@
                 <td>
                     {* Bankovní spojení *}
                     <table>
-                        <tr n:if="$supplier->bankAccount !== null">
+                        <tr n:if="$invoice->paymentMethod->value !== 'V hotovosti' && $supplier->bankAccount !== null">
                             <td class="label">Banka:</td>
                             <td>{$supplier->bankName}</td>
                         </tr>
-                        <tr n:if="$supplier->bankAccount !== null">
+                        <tr n:if="$invoice->paymentMethod->value !== 'V hotovosti' && $supplier->bankAccount !== null">
                             <td class="label">Bankovní účet:</td>
                             <td>{$supplier->bankAccount}</td>
                         </tr>
-                        <tr n:if="$supplier->iban !== null">
+                        <tr n:if="$invoice->paymentMethod->value !== 'V hotovosti' && $supplier->iban !== null">
                             <td class="label">IBAN:</td>
                             <td>{$supplier->iban}</td>
                         </tr>
-                        <tr n:if="$supplier->bic !== null">
+                        <tr n:if="$invoice->paymentMethod->value !== 'V hotovosti' && $supplier->bic !== null">
                             <td class="label">BIC:</td>
                             <td>{$supplier->bic}</td>
                         </tr>
-                        <tr n:if="$supplier->bankAccount === null">
+                        <tr n:if="$invoice->paymentMethod->value !== 'V hotovosti' && $supplier->bankAccount === null">
                             <td class="label">Úhrada:</td>
                             <td>Bez bankovního účtu</td>
                         </tr>

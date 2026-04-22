@@ -8,5 +8,5 @@ use App\Components\Payment\InvoiceCashPaymentDialog;
 
 interface IInvoiceCashPaymentDialogFactory
 {
-    public function create(int $invoiceSequenceId): InvoiceCashPaymentDialog;
+    public function create(?int $invoiceSequenceId): InvoiceCashPaymentDialog;
 }

@@ -197,9 +197,11 @@ class RouterFactory
             ->addRoute('platby/registrace/<id [0-9]+>/osoby', 'RegistrationAddMembers:default')
             ->addRoute('platby/registrace/<groupId [0-9]+>/casopisy', 'RegistrationJournal:default')
             // Invoices
+            ->addRoute('platby/faktury/<id [0-9]+>/upravit', 'InvoiceList:edit')
             ->addRoute('platby/faktury/<id [0-9]+>', 'InvoiceList:detail')
             ->addRoute('platby/rady/<id [0-9]+>/upravit ? jednotka=<unitId>', 'InvoiceSequence:edit')
             ->addRoute('platby/rady/nova ? jednotka=<unitId>', 'InvoiceSequence:default')
+            ->addRoute('platby/rady/<invoiceSequenceId [0-9]+>/nova ? jednotka=<unitId>', 'InvoiceList:create')
             ->addRoute('platby/rady/<invoiceSequenceId [0-9]+> ? jednotka=<unitId>', 'InvoiceList:default')
             ->addRoute('platby/rady ? jednotka=<unitId>', 'InvoiceSequenceList:default')
             ->addRoute('platby/faktury ? jednotka=<unitId>', 'InvoiceList:default');

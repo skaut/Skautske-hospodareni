@@ -6,6 +6,7 @@ namespace App\Presentation\Payments\InvoiceList;
 
 use App\Components\DataGrid;
 use App\Components\Factories\Payment\IInvoiceCashPaymentDialogFactory;
+use App\Components\Factories\Payment\IInvoiceDuplicateDialogFactory;
 use App\Components\Factories\Payment\IInvoiceFormFactory;
 use App\Components\Factories\Payment\IPairButtonFactory;
 use App\Components\Grids\GridFactory;
@@ -41,6 +42,8 @@ final class InvoiceListPresenter extends PaymentsBasePresenter
 {
     protected ?int $groupId = null;
     protected ?InvoiceSequence $invoiceSequence = null;
+    private bool $createMode = false;
+    private ?Invoice $editedInvoice = null;
     /** @var array<int, string|null> */
     private array $sequenceEmailDisabledReasons = [];
 
@@ -51,6 +54,7 @@ final class InvoiceListPresenter extends PaymentsBasePresenter
         protected InvoiceSequenceRepository $invoiceSequenceRepository,
         protected IInvoiceFormFactory $invoiceFormFactory,
         protected IInvoiceCashPaymentDialogFactory $invoiceCashPaymentDialogFactory,
+        protected IInvoiceDuplicateDialogFactory $invoiceDuplicateDialogFactory,
         private readonly IPairButtonFactory $pairButtonFactory,
         protected ExportService $exportService,
         protected PdfRenderer $pdf,
@@ -103,9 +107,39 @@ final class InvoiceListPresenter extends PaymentsBasePresenter
         ]);
     }
 
-    public function renderEdit(int $id): void
+    public function actionEdit(int $id): void
     {
-        $this->redirect('detail', ['id' => $id]);
+        $invoice = $this->invoiceRepository->findAccessibleByUnits($id, $this->getEditableUnits());
+        if (! $invoice instanceof Invoice) {
+            $this->flashMessage('Faktura nebyla nalezena.', 'danger');
+            $this->redirect('default');
+        }
+
+        if (! $invoice->canBeEdited()) {
+            $this->flashMessage('Upravit lze pouze fakturu ve stavu Vystavená.', 'warning');
+            $this->redirect('detail', ['id' => $invoice->getId()]);
+        }
+
+        $this->editedInvoice = $invoice;
+        $this->invoiceSequence = $invoice->getSequence();
+        $this->template->setParameters([
+            'invoice' => $invoice,
+        ]);
+    }
+
+    public function actionCreate(int $invoiceSequenceId): void
+    {
+        $invoiceSequence = $this->invoiceSequenceRepository->findAccessibleByUnits($invoiceSequenceId, $this->getEditableUnits());
+        if (! $invoiceSequence instanceof InvoiceSequence) {
+            $this->flashMessage('Fakturační řada nebyla nalezena.', 'danger');
+            $this->redirect('default');
+        }
+
+        $this->invoiceSequence = $invoiceSequence;
+        $this->createMode = true;
+        $this->template->setParameters([
+            'invoiceSequence' => $invoiceSequence,
+        ]);
     }
 
     public function actionDetail(int $id): void
@@ -146,7 +180,7 @@ final class InvoiceListPresenter extends PaymentsBasePresenter
                 'bic' => $invoice->getBic(),
             ],
             'customer' => [
-                'name' => $invoice->getCustomer()->getDisplayName(),
+                'name' => $invoice->getCustomer()->getName(),
                 'address' => $invoice->getCustomer()->getDisplayAddress(),
                 'ic' => $invoice->getCustomer()->getCompanyNumber(),
                 'dic' => $invoice->getCustomer()->getVatNumber(),
@@ -186,19 +220,32 @@ final class InvoiceListPresenter extends PaymentsBasePresenter
         return $this->invoiceFormFactory->create($this->invoiceSequence);
     }
 
-    protected function createComponentCashPaymentDialog(): Payment\InvoiceCashPaymentDialog
+    protected function createComponentEditForm(): Payment\InvoiceForm
     {
-        if (! $this->invoiceSequence instanceof InvoiceSequence) {
-            throw new InvalidArgumentException('Dialog hotovostní úhrady lze otevřít jen v kontextu konkrétní řady.');
+        if (! $this->invoiceSequence instanceof InvoiceSequence || ! $this->editedInvoice instanceof Invoice) {
+            throw new InvalidArgumentException('Editační formulář faktury lze vytvořit jen v kontextu konkrétní faktury.');
         }
 
-        $dialog = $this->invoiceCashPaymentDialogFactory->create($this->invoiceSequence->getId());
+        return $this->invoiceFormFactory->create($this->invoiceSequence, $this->editedInvoice);
+    }
+
+    protected function createComponentCashPaymentDialog(): Payment\InvoiceCashPaymentDialog
+    {
+        $dialog = $this->invoiceCashPaymentDialogFactory->create($this->invoiceSequence?->getId());
 
         $dialog->onSuccess[] = function (): void {
             $this->redrawControl('grid');
         };
 
         return $dialog;
+    }
+
+    protected function createComponentDuplicateInvoiceDialog(): Payment\InvoiceDuplicateDialog
+    {
+        return $this->invoiceDuplicateDialogFactory->create(
+            $this->invoiceSequence?->getId(),
+            $this->getEditableUnits(),
+        );
     }
 
     protected function createComponentPairButton(): PairButton
@@ -212,7 +259,8 @@ final class InvoiceListPresenter extends PaymentsBasePresenter
             __DIR__.'/grid.latte',
             [
                 'showOpenSequenceAction' => ! $this->invoiceSequence instanceof InvoiceSequence,
-                'enableCashPaymentDialog' => $this->invoiceSequence instanceof InvoiceSequence,
+                'enableCashPaymentDialog' => true,
+                'enableInvoiceDuplicateDialog' => $this->invoiceSequence instanceof InvoiceSequence,
             ],
         );
 
@@ -254,6 +302,14 @@ final class InvoiceListPresenter extends PaymentsBasePresenter
         );
 
         return $grid;
+    }
+
+    public function renderCreate(int $invoiceSequenceId): void
+    {
+        if (! $this->invoiceSequence instanceof InvoiceSequence || ! $this->createMode) {
+            $this->flashMessage('Fakturační řada nebyla nalezena.', 'danger');
+            $this->redirect('default');
+        }
     }
 
     public function handleDownloadPdf(int $id): void

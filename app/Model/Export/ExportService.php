@@ -370,7 +370,7 @@ class ExportService
 
             // Data odběratele (proměnná {$customer->...})
             'customer' => [
-                'name' => $invoice->getCustomer()->getDisplayName(),
+                'name' => $invoice->getCustomer()->getName(),
                 'address' => $invoice->getCustomer()->getDisplayAddress(),
                 'ic' => $invoice->getCustomer()->getCompanyNumber(),
                 'dic' => $invoice->getCustomer()->getVatNumber(),
