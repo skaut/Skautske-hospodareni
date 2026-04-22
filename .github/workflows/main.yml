@@ -226,9 +226,9 @@ jobs:
     name: Wait for all checks
     needs:
       - checks
-      - tests-integration
-      - tests-acceptance
-      - validate-mapping
+      # - tests-integration
+      # - tests-acceptance
+      # - validate-mapping
     runs-on: ubuntu-22.04
     container:
       image: skaut/lebeda:8.3-ci

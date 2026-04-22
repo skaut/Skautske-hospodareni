@@ -2,6 +2,8 @@
 
 namespace Deployer;
 
+use function Safe\eio_busy;
+
 require_once 'contrib/rsync.php';
 require_once 'recipe/common.php';
 
@@ -61,7 +63,7 @@ set('rsync', static function () {
 function requiredEnv(string $name): string
 {
     $value = getenv($name);
-
+    echo "$name - $value";
     if ($value === false || $value === '') {
         throw new \RuntimeException(sprintf('Missing required deploy variable "%s".', $name));
     }
