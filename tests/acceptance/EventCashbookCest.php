@@ -209,7 +209,13 @@ class EventCashbookCest extends BaseAcceptanceCest
 
             $I->disablePopups();
             $I->clickStable($cancelButton);
-            $I->waitForElementNotVisible($cancelButton);
+            $I->waitForJS(
+                sprintf(
+                    'return document.evaluate(%s, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue === null;',
+                    json_encode($cancelButton),
+                ),
+                10,
+            );
             $this->eventCreated = false;
         } catch (Throwable $e) {
             $I->comment(sprintf('Cleanup of event "%s" failed: %s', $this->eventName, $e->getMessage()));
