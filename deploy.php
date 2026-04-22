@@ -121,6 +121,11 @@ task('build:runtime_files', function () {
         }
     }
 
+    $dbFixTokenSha256 = optionalEnv('DB_FIX_TOKEN_SHA256');
+    if ($dbFixTokenSha256 !== null) {
+        $values['DB_FIX_TOKEN_SHA256'] = $dbFixTokenSha256;
+    }
+
     file_put_contents($runtimeDir.'/.env.local', buildDotenvContent($values));
     file_put_contents($runtimeDir.'/google-credentials.json', requiredEnv('GOOGLE_CREDENTIALS'));
 
@@ -192,6 +197,20 @@ task('app:migrate', function () {
     run('cd {{release_path}} && {{bin/php}} bin/console migrations:migrate --no-interaction');
 });
 
+desc('Run DB fix endpoint via HTTP');
+task('app:db_fix', function () {
+    $appBaseUrl = rtrim(requiredEnv('APP_BASE_URL'), '/');
+    $dbFixTokenSha256 = requiredEnv('DB_FIX_TOKEN_SHA256');
+    $dbFixUrl = sprintf('%s/db_fix.php?token=%s', $appBaseUrl, rawurlencode($dbFixTokenSha256));
+
+    runLocally(sprintf('curl --fail --silent --show-error %s', escapeshellarg($dbFixUrl)));
+});
+
+desc('Disable db fix script in current release');
+task('app:disable_db_fix', function () {
+    run('rm -f {{release_path}}/www/db_fix.php');
+});
+
 desc('Run DB migrations (remote)');
 task('deploy:ssh_warmup', function () {
     $h = currentHost()->connectionString();
@@ -215,8 +234,10 @@ task('deploy', [
     'deploy:shared',
     'custom:shared_symlinks',
     'app:proxies',
-    //'app:migrate',
-    'deploy:publish'
+    //'app:migrate', -- nelze na lebedě
+    'deploy:publish',
+    'app:db_fix', //lebeda...
+    'app:disable_db_fix',
 ]);
 
 after('deploy:failed', 'deploy:unlock');

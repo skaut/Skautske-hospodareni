@@ -22,6 +22,16 @@ on:
     secrets:
       DEPLOY_SSH_KEY:
         required: true
+      APPLICATION_ID:
+        required: false
+      DB_FIX_TOKEN_SHA256:
+        required: false
+      DB_PASSWORD:
+        required: false
+      GOOGLE_CREDENTIALS:
+        required: false
+      SENTRY_DSN:
+        required: false
 
 jobs:
   deploy:
@@ -31,7 +41,7 @@ jobs:
     # Optional GitHub Environment vars:
     # SKAUTIS_TEST_MODE, TEST_BACKGROUND, TRACY_SHOW_BAR, GOOGLE_CREDENTIALS_FILE
     # Required GitHub Environment secrets:
-    # APPLICATION_ID, DB_PASSWORD, GOOGLE_CREDENTIALS
+    # APPLICATION_ID, DB_FIX_TOKEN_SHA256, DB_PASSWORD, GOOGLE_CREDENTIALS
     # Optional GitHub Environment secret:
     # SENTRY_DSN
     environment: ${{ inputs.environment }}
@@ -63,6 +73,7 @@ jobs:
           APP_ENV: ${{ vars.APP_ENV }}
           APP_BASE_URL: ${{ vars.APP_BASE_URL }}
           APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+          DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
           SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
           SEND_EMAIL: ${{ vars.SEND_EMAIL }}
           TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
