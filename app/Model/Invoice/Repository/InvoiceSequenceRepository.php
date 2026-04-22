@@ -118,6 +118,31 @@ class InvoiceSequenceRepository extends AbstractRepository
             ->getOneOrNullResult();
     }
 
+    /**
+     * @param int[] $unitIds
+     *
+     * @return list<InvoiceSequence>
+     */
+    public function findOpenAccessibleByUnits(array $unitIds): array
+    {
+        if ($unitIds === []) {
+            return [];
+        }
+
+        /** @var list<InvoiceSequence> $sequences */
+        $sequences = $this->createQueryBuilder('entity')
+            ->where('entity.unit IN (:unitIds)')
+            ->andWhere('entity.state = :state')
+            ->setParameter('unitIds', $unitIds)
+            ->setParameter('state', InvoiceSequenceState::OPEN)
+            ->orderBy('entity.year', 'DESC')
+            ->addOrderBy('entity.sequenceId', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        return $sequences;
+    }
+
     public function save(InvoiceSequence $sequence): void
     {
         $this->entityManager->persist($sequence);

@@ -13,6 +13,7 @@ use App\Model\Invoice\Entity\InvoiceItem;
 use App\Model\Invoice\Entity\InvoiceSequence;
 use App\Model\Invoice\Entity\InvoiceUnitSetting;
 use App\Model\Invoice\Enum\InvoicePaymentType;
+use App\Model\Invoice\Enum\InvoiceState;
 use App\Model\Invoice\Manager\InvoiceManager;
 use App\Model\Invoice\Repository\InvoiceUnitSettingRepository;
 use App\Model\Payment\VariableSymbolCollision;
@@ -21,8 +22,10 @@ use App\MyValidators;
 use Brick\Math\BigDecimal;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
+use LogicException;
 use Nette\Forms\Container;
 use Nette\Forms\Controls\RadioList;
+use Nette\Forms\Controls\SelectBox;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Forms\Controls\TextInput;
 use Nette\Forms\Form;
@@ -31,9 +34,12 @@ use Throwable;
 use Utility\Ares\ViAresParser;
 
 use function array_map;
+use function count;
 use function explode;
+use function implode;
 use function in_array;
 use function preg_replace;
+use function sprintf;
 use function trim;
 
 class InvoiceForm extends BaseControl
@@ -45,6 +51,7 @@ class InvoiceForm extends BaseControl
         private readonly InvoiceManager $invoiceManager,
         private readonly UnitService $unitRepository,
         private readonly InvoiceUnitSettingRepository $invoiceUnitSettings,
+        private readonly ?Invoice $invoice = null,
     ) {
     }
 
@@ -55,6 +62,8 @@ class InvoiceForm extends BaseControl
         $this->template->invoiceNumberPattern = $this->invoiceSequence->formatInvoiceNumber($this->invoiceSequence->getFirstNumberValue());
         $this->template->variableSymbolPattern = (string) $this->invoiceSequence->generateVariableSymbol($this->invoiceSequence->getFirstNumberValue());
         $this->template->hasBankAccount = $this->invoiceSequence->getBankAccount() !== null;
+        $this->template->isEditMode = $this->isEditMode();
+        $this->template->submitLabel = $this->isEditMode() ? 'Uložit změny' : 'Vystavit';
         $this->template->render();
     }
 
@@ -71,7 +80,7 @@ class InvoiceForm extends BaseControl
 
         $form->addText('issuedBy', 'Vystavil')->addRule(Form::REQUIRED);
         $paymentType = $form->addSelect('paymentType', 'Způsob platby', $this->paymentTypeOptions())
-            ->setDefaultValue($this->defaultPaymentType()->name)
+            ->setDefaultValue($this->editedPaymentType()->name)
             ->setRequired();
 
         if ($this->invoiceSequence->getBankAccount() === null) {
@@ -88,19 +97,14 @@ class InvoiceForm extends BaseControl
             'person' => 'Fyzická osoba',
             'anonymous' => 'Bez identifikace odběratele',
         ]);
-        assert($customerType instanceof RadioList);
+        if (! $customerType instanceof RadioList) {
+            throw new LogicException('Nepodařilo se vytvořit volbu typu odběratele.');
+        }
         $customerType->setDefaultValue('company')
             ->setRequired('Vyberte typ odběratele');
 
         $customerContainer->addText('companyNumber', 'IČO')
             ->addFilter(fn (string $value) => trim((string) preg_replace('/\s+/', '', $value)));
-        $customerContainer->addSubmit('ares', 'Získat z Aresu')
-            ->setValidationScope([$customerContainer->getComponent('companyNumber')])
-            ->setHtmlAttribute('class', 'btn btn-sm btn-primary ajax')
-            ->onClick[] = function (SubmitButton $button): void {
-                $this->getContactInfo($button);
-            };
-
         $customerContainer->addText('vat', 'DIČ');
         $customerContainer->addText('name', 'Název');
         $customerContainer->addText('street', 'Ulice');
@@ -109,6 +113,29 @@ class InvoiceForm extends BaseControl
         $customerContainer->addText('city', 'Město');
         $customerContainer->addText('zipCode', 'PSČ');
 
+        $loadAres = $form->addSubmit('loadAres', 'Získat z Aresu');
+        $loadAres
+            ->setValidationScope([])
+            ->setHtmlAttribute('class', 'btn btn-sm btn-outline-primary ajax')
+            ->setHtmlAttribute('formnovalidate', 'formnovalidate');
+        $loadAres->onClick[] = function (SubmitButton $button): void {
+            $form = $button->getForm();
+            if (! $form instanceof BaseForm) {
+                throw new LogicException('ARES lze načíst jen z fakturačního formuláře.');
+            }
+
+            $this->loadAresData($form);
+        };
+        $loadAres->onInvalidClick[] = function (SubmitButton $button): void {
+            $form = $button->getForm();
+            if (! $form instanceof BaseForm) {
+                throw new LogicException('ARES lze načíst jen z fakturačního formuláře.');
+            }
+
+            $this->loadAresData($form);
+        };
+
+        $itemDefaults = $this->itemDefaults();
         $items = $form->addDynamic('items', function (Container $container): void {
             ++$this->itemsCount;
             $container->addText('purpose')
@@ -133,7 +160,7 @@ class InvoiceForm extends BaseControl
                 ->onClick[] = function (SubmitButton $button): void {
                     $this->removeItem($button);
                 };
-        }, 1);
+        }, count($itemDefaults));
 
         $items->addSubmit('addItem', 'Přidat další položku')
             ->setHtmlAttribute('class', 'btn btn-light ajax')
@@ -146,7 +173,7 @@ class InvoiceForm extends BaseControl
                 $this->reload();
             };
 
-        $form->addSubmit('send', 'Vystavit');
+        $form->addSubmit('send', $this->isEditMode() ? 'Uložit změny' : 'Vystavit');
         $form->onValidate[] = function (BaseForm $form, ArrayHash $values): void {
             if ($form->isSubmitted() !== $form['send']) {
                 return;
@@ -162,6 +189,10 @@ class InvoiceForm extends BaseControl
             $this->formSucceeded($form, $values);
         };
 
+        $form->onAnchor[] = function () use ($form, $items): void {
+            $this->applyDefaults($form, $items);
+        };
+
         return $form;
     }
 
@@ -169,36 +200,51 @@ class InvoiceForm extends BaseControl
     {
         $container = $button->getParent();
         $replicator = $container->getParent();
-        assert($replicator instanceof \Kdyby\Replicator\Container && $container instanceof Container);
+
+        if (! $replicator instanceof \Kdyby\Replicator\Container || ! $container instanceof Container) {
+            throw new LogicException('Nepodařilo se odebrat položku faktury.');
+        }
+
         $replicator->remove($container, true);
         $this->reload();
     }
 
-    public function getContactInfo(SubmitButton $button): void
+    private function loadAresData(BaseForm $form): void
     {
-        $form = $button->getForm();
-        assert($form instanceof BaseForm);
+        $form->cleanErrors();
 
-        $customerContainer = $button->getForm()->getComponent('customer');
-        assert($customerContainer instanceof Container);
+        $customerContainer = $form->getComponent('customer');
+        if (! $customerContainer instanceof Container) {
+            throw new LogicException('Kontejner odběratele nebyl nalezen.');
+        }
 
-        $values = $customerContainer->getValues();
-        if (($values->companyNumber ?? '') === '') {
-            $this->reload('Pro načtení z ARES zadejte IČO.', 'warning');
+        $values = $customerContainer->getUntrustedValues();
+        $companyNumber = trim((string) ($values->companyNumber ?? ''));
+
+        if ($companyNumber === '') {
+            $presenter = $this->getPresenter();
+            $rawCustomer = $presenter->getHttpRequest()->getPost('customer');
+            if (is_array($rawCustomer)) {
+                $companyNumber = trim((string) ($rawCustomer['companyNumber'] ?? ''));
+            }
+        }
+
+        if ($companyNumber === '') {
+            $this->redrawAfterAres('Pro načtení z ARES zadejte IČO.', 'warning');
 
             return;
         }
 
         try {
-            $companyInfo = (new ViAresParser())->getAres($values->companyNumber);
+            $companyInfo = (new ViAresParser())->getAres($companyNumber);
         } catch (Throwable) {
-            $this->reload('Nepodařilo se načíst údaje z ARES.', 'danger');
+            $this->redrawAfterAres('Nepodařilo se načíst údaje z ARES.', 'danger');
 
             return;
         }
 
         if ($companyInfo->isEmpty()) {
-            $this->reload('V ARES nebyly nalezeny údaje pro zadané IČO.', 'warning');
+            $this->redrawAfterAres('V ARES nebyly nalezeny údaje pro zadané IČO.', 'warning');
 
             return;
         }
@@ -206,7 +252,7 @@ class InvoiceForm extends BaseControl
         $form->setValues([
             'customer' => [
                 'type' => 'company',
-                'companyNumber' => $companyInfo->getCompanyName() ?? $values->companyNumber,
+                'companyNumber' => $companyNumber,
                 'vat' => $companyInfo->getVat(),
                 'name' => $companyInfo->getName(),
                 'street' => $companyInfo->getStreet(),
@@ -217,13 +263,25 @@ class InvoiceForm extends BaseControl
             ],
         ]);
 
-        $this->reload('Údaje byly načteny z ARES.', 'success');
+        $this->redrawAfterAres('Údaje byly načteny z ARES.', 'success');
+    }
+
+    private function redrawAfterAres(string $message, string $type): void
+    {
+        $this->flashMessage($message, $type);
+
+        $presenter = $this->getPresenter();
+        if ($presenter->isAjax()) {
+            $this->redrawControl();
+        }
     }
 
     private function validateInvoiceData(BaseForm $form, ArrayHash $values): void
     {
         $customerContainer = $form['customer'];
-        assert($customerContainer instanceof Container);
+        if (! $customerContainer instanceof Container) {
+            throw new LogicException('Kontejner odběratele nebyl nalezen.');
+        }
 
         $customerValues = $values->customer;
         $customerType = $customerValues->type;
@@ -239,7 +297,9 @@ class InvoiceForm extends BaseControl
 
         foreach ($requiredFields as $field) {
             $control = $customerContainer[$field];
-            assert($control instanceof TextInput);
+            if (! $control instanceof TextInput) {
+                throw new LogicException('Očekává se textové pole odběratele.');
+            }
 
             if (trim((string) $customerValues->{$field}) === '') {
                 $control->addError('Pole je povinné.');
@@ -248,42 +308,59 @@ class InvoiceForm extends BaseControl
 
         if ($customerType === 'anonymous' && $this->calculateTotalAmount($values)->isGreaterThan(BigDecimal::of('10000'))) {
             $name = $customerContainer['name'];
-            assert($name instanceof TextInput);
+            if (! $name instanceof TextInput) {
+                throw new LogicException('Pole názvu odběratele nebylo nalezeno.');
+            }
+
             $name->addError('Fakturu bez identifikace odběratele lze vystavit pouze do 10 000 Kč.');
         }
 
         $selectedPaymentType = $values->paymentType ?? $this->defaultPaymentType()->name;
         if (! in_array($selectedPaymentType, array_keys($this->paymentTypeOptions()), true)) {
             $paymentType = $form['paymentType'];
-            assert($paymentType instanceof \Nette\Forms\Controls\SelectBox);
+            if (! $paymentType instanceof SelectBox) {
+                throw new LogicException('Pole způsobu platby nebylo nalezeno.');
+            }
+
             $paymentType->addError('Vybraný způsob platby není pro tuto fakturační řadu dostupný.');
         }
     }
 
     public function formSucceeded(BaseForm $form, ArrayHash $values): void
     {
-        $invoiceSupplier = $this->createInvoiceSupplier();
-        $invoiceCustomer = InvoiceCustomer::fromForm($values->customer);
-
-        $invoice = Invoice::formForm($values, $this->invoiceSequence, $invoiceSupplier, $invoiceCustomer);
-        $invoice->updateEmailRecipients($this->processEmails($values->email));
-
-        foreach ($values['items'] as $item) {
-            $invoice->addItem(InvoiceItem::fromForm($item));
-        }
-
         try {
-            $this->invoiceManager->create($invoice);
+            if ($this->isEditMode()) {
+                $this->updateInvoice($values);
+            } else {
+                $this->createInvoice($values);
+            }
         } catch (VariableSymbolCollision $exception) {
             $this->presenter->flashMessage($exception->getMessage(), 'danger');
 
             return;
         }
 
-        $this->presenter->flashMessage('Faktura byla vytvořena');
+        $message = $this->isEditMode() ? 'Faktura byla upravena' : 'Faktura byla vytvořena';
+        $this->presenter->flashMessage($message);
+        if ($this->isEditMode()) {
+            if ($this->invoice === null) {
+                throw new LogicException('Upravovaná faktura nebyla nalezena.');
+            }
+
+            $this->presenter->redirect(':Payments:InvoiceList:default', [
+                'invoiceSequenceId' => $this->invoiceSequence->getId(),
+                'unitId' => $this->invoiceSequence->getUnit(),
+            ]);
+
+            return;
+        }
+
         if ($this->presenter->isAjax()) {
             $formComponent = $this->getComponent('form');
-            assert($formComponent instanceof BaseForm);
+            if (! $formComponent instanceof BaseForm) {
+                throw new LogicException('Formulář faktury nebyl nalezen.');
+            }
+
             $formComponent->setValues([], true);
             $this->presenter->redrawControl('form');
         } else {
@@ -361,5 +438,222 @@ class InvoiceForm extends BaseControl
         return $this->invoiceSequence->getBankAccount() === null
             ? InvoicePaymentType::CASH
             : InvoicePaymentType::TRANSFER;
+    }
+
+    private function isEditMode(): bool
+    {
+        return $this->invoice instanceof Invoice;
+    }
+
+    private function editedPaymentType(): InvoicePaymentType
+    {
+        return $this->invoice?->getPaymentType() ?? $this->defaultPaymentType();
+    }
+
+    private function applyDefaults(BaseForm $form, \Kdyby\Replicator\Container $items): void
+    {
+        if (! $this->isEditMode()) {
+            return;
+        }
+
+        if ($this->invoice === null) {
+            throw new LogicException('Upravovaná faktura nebyla nalezena.');
+        }
+
+        $customer = $this->invoice->getCustomer();
+        $address = $customer->getAddress();
+
+        $dueDate = $form['dueDate'];
+        if (! $dueDate instanceof \Component\Forms\DateControl) {
+            throw new LogicException('Pole data splatnosti nebylo nalezeno.');
+        }
+
+        $dateOfIssue = $form['dateOfIssue'];
+        if (! $dateOfIssue instanceof \Component\Forms\DateControl) {
+            throw new LogicException('Pole data vystavení nebylo nalezeno.');
+        }
+
+        $dueDate->setDefaultValue(new ChronosDate($this->invoice->getDueDate()));
+        $dateOfIssue->setDefaultValue(new ChronosDate($this->invoice->getDateOfIssue()));
+        $issuedBy = $form['issuedBy'];
+        if (! $issuedBy instanceof TextInput) {
+            throw new LogicException('Pole vystavil nebylo nalezeno.');
+        }
+
+        $paymentType = $form['paymentType'];
+        if (! $paymentType instanceof SelectBox) {
+            throw new LogicException('Pole způsobu platby nebylo nalezeno.');
+        }
+
+        $email = $form['email'];
+        if (! $email instanceof TextInput) {
+            throw new LogicException('Pole e-mailu příjemce nebylo nalezeno.');
+        }
+
+        $issuedBy->setDefaultValue($this->invoice->getIssuedBy());
+        $paymentType->setDefaultValue($this->invoice->getPaymentType()->name);
+        $email->setDefaultValue(implode(
+            MyValidators::EMAIL_SEPARATOR,
+            array_map(
+                static fn (EmailAddress $emailAddress): string => $emailAddress->getValue(),
+                $this->invoice->getEmailRecipients(),
+            ),
+        ));
+
+        $customerContainer = $form['customer'];
+        if (! $customerContainer instanceof Container) {
+            throw new LogicException('Kontejner odběratele nebyl nalezen.');
+        }
+
+        $this->setTextDefault($customerContainer, 'companyNumber', $customer->getCompanyNumber());
+        $this->setTextDefault($customerContainer, 'vat', $customer->getVatNumber());
+        $this->setTextDefault($customerContainer, 'name', $customer->getName());
+        $this->setTextDefault($customerContainer, 'street', $address->getStreet());
+        $this->setTextDefault($customerContainer, 'streetNumber', (string) $address->getStreetNumber());
+        $this->setTextDefault($customerContainer, 'streetNumberSuffix', (string) $address->getStreetNumberSuffix());
+        $this->setTextDefault($customerContainer, 'city', $address->getCity());
+        $this->setTextDefault($customerContainer, 'zipCode', $address->getZipCode());
+
+        $customerType = $customerContainer['type'];
+        if (! $customerType instanceof RadioList) {
+            throw new LogicException('Pole typu odběratele nebylo nalezeno.');
+        }
+
+        $customerType->setDefaultValue($this->customerType());
+
+        foreach ($this->itemDefaults() as $index => $itemDefault) {
+            $itemContainer = $items->getComponent((string) $index);
+            if (! $itemContainer instanceof Container) {
+                throw new LogicException('Kontejner položky faktury nebyl nalezen.');
+            }
+
+            foreach ($itemDefault as $field => $value) {
+                $this->setItemDefault($itemContainer, $field, $value);
+            }
+        }
+    }
+
+    private function setTextDefault(Container $container, string $name, string $value): void
+    {
+        $control = $container[$name];
+        if (! $control instanceof TextInput) {
+            throw new LogicException(sprintf('Pole "%s" nebylo nalezeno.', $name));
+        }
+
+        $control->setDefaultValue($value);
+    }
+
+    private function setItemDefault(Container $container, string $name, int|string $value): void
+    {
+        $control = $container[$name];
+        if (! $control instanceof TextInput) {
+            throw new LogicException(sprintf('Pole položky "%s" nebylo nalezeno.', $name));
+        }
+
+        $control->setDefaultValue($value);
+    }
+
+    /**
+     * @return list<array{purpose: string, quantity: int, unit: string, price: string}>
+     */
+    private function itemDefaults(): array
+    {
+        if (! $this->isEditMode()) {
+            return [[
+                'purpose' => '',
+                'quantity' => 1,
+                'unit' => 'ks',
+                'price' => '0.00',
+            ]];
+        }
+
+        if ($this->invoice === null) {
+            throw new LogicException('Upravovaná faktura nebyla nalezena.');
+        }
+
+        return array_map(
+            static fn (InvoiceItem $item): array => [
+                'purpose' => $item->getPurpose(),
+                'quantity' => $item->getQuantity(),
+                'unit' => $item->getUnit(),
+                'price' => (string) $item->getPrice(),
+            ],
+            $this->invoice->getItems()->toArray(),
+        );
+    }
+
+    private function customerType(): string
+    {
+        if ($this->invoice === null) {
+            return 'company';
+        }
+
+        $customer = $this->invoice->getCustomer();
+        if ($customer->isAnonymous()) {
+            return 'anonymous';
+        }
+
+        return $customer->hasCompanyNumber() ? 'company' : 'person';
+    }
+
+    private function createInvoice(ArrayHash $values): void
+    {
+        $invoice = $this->buildNewInvoice($values);
+        $this->invoiceManager->create($invoice);
+    }
+
+    private function buildNewInvoice(ArrayHash $values): Invoice
+    {
+        $invoiceSupplier = $this->createInvoiceSupplier();
+        $invoiceCustomer = InvoiceCustomer::fromForm($values->customer);
+
+        $invoice = Invoice::formForm($values, $this->invoiceSequence, $invoiceSupplier, $invoiceCustomer);
+        $invoice->updateEmailRecipients($this->processEmails($values->email));
+
+        foreach ($values['items'] as $item) {
+            $invoice->addItem(InvoiceItem::fromForm($item));
+        }
+
+        return $invoice;
+    }
+
+    private function updateInvoice(ArrayHash $values): void
+    {
+        if ($this->invoice === null) {
+            throw new LogicException('Upravovaná faktura nebyla nalezena.');
+        }
+
+        if ($this->invoice->getState() !== InvoiceState::ISSUED) {
+            throw new LogicException('Upravit lze pouze fakturu ve stavu Vystavená.');
+        }
+
+        $this->invoice->setSupplier($this->createInvoiceSupplier());
+        $this->invoice->setCustomer(InvoiceCustomer::fromForm($values->customer));
+        $this->invoice->setIssuedBy((string) $values->issuedBy);
+        $this->invoice->setDueDate($values->dueDate);
+        $this->invoice->setDateOfIssue($values->dateOfIssue);
+        $this->invoice->setDateOfTaxPayment($values->dateOfIssue);
+        $paymentType = constant(InvoicePaymentType::class.'::'.$values->paymentType);
+        if (! $paymentType instanceof InvoicePaymentType) {
+            throw new LogicException('Vybraný způsob platby není platný.');
+        }
+
+        $this->invoice->setPaymentType($paymentType);
+        $this->invoice->setBankAccount($this->invoiceSequence->getBankAccount());
+        $this->invoice->setAccountNumber($this->invoiceSequence->getBankAccount()?->getNumber());
+        $this->invoice->setBankName($this->invoiceSequence->getBankAccount()?->getNumber()->getBankName());
+        $this->invoice->setIban($this->invoiceSequence->getBankAccount()?->getNumber()->getIban());
+        $this->invoice->setBic($this->invoiceSequence->getBankAccount()?->getNumber()->getBic());
+        $this->invoice->updateEmailRecipients($this->processEmails((string) $values->email));
+
+        foreach ($this->invoice->getItems()->toArray() as $item) {
+            $this->invoice->removeItem($item);
+        }
+
+        foreach ($values['items'] as $item) {
+            $this->invoice->addItem(InvoiceItem::fromForm($item));
+        }
+
+        $this->invoiceManager->update($this->invoice);
     }
 }

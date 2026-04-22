@@ -40,7 +40,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $this->fillYearlySettings(2028, 'Selenium 2028');
         $I->scrollTo('input[name="save"]');
         $I->waitForElementClickable('input[name="save"]');
-        $I->click('input[name="save"]');
+        $I->clickStable('input[name="save"]');
 
         $I->waitForText('Roční nastavení fakturace bylo uloženo.');
     }
@@ -62,6 +62,31 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->fillField('input[name="description"]', 'Selenium řada 2027');
         $I->selectOption('select[name="bankAccount"]', 'Acceptance');
         $I->selectOption('.ui--emailSelectbox', 'test@hospodareni.loc');
+        $I->scrollTo('#frm-createForm input[type="submit"]');
+        $I->waitForElementClickable('#frm-createForm input[type="submit"]');
+        $I->executeJS('document.querySelector("#frm-createForm input[type=submit]").click()');
+
+        $I->waitForText('Fakturační řada byla založena.');
+        $I->waitForElementVisible('[data-test="payments-page"]', 10);
+        $I->seeInCurrentUrl('/platby');
+    }
+
+    /** @group invoice */
+    public function createInvoiceSequenceWithoutEmailConfiguration(): void
+    {
+        $I = $this->I;
+
+        $I->wantTo('create invoice sequence without sender email configuration');
+
+        $this->openInvoices();
+        $I->click('[data-test="invoice-action-create-sequence"]');
+        $I->waitForElementVisible('[data-test="invoice-sequence-form-page"]', 10);
+        $I->seeInCurrentUrl('/platby/rady/nova');
+        $I->fillField('input[name="sequence"]', 'FAE27');
+        $I->fillField('input[name="firstNumber"]', '00002');
+        $I->selectOption('select[name="year"]', '2027');
+        $I->fillField('input[name="description"]', 'Selenium řada bez emailu');
+        $I->selectOption('select[name="bankAccount"]', 'Acceptance');
         $I->scrollTo('#frm-createForm input[type="submit"]');
         $I->waitForElementClickable('#frm-createForm input[type="submit"]');
         $I->executeJS('document.querySelector("#frm-createForm input[type=submit]").click()');
@@ -125,6 +150,182 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->seeInCurrentUrl('/platby/faktury/');
     }
 
+    /** @group invoice */
+    public function editIssuedInvoice(): void
+    {
+        $I = $this->I;
+        $editYear = 2028;
+        $sequencePrefix = 'ED28';
+
+        $I->wantTo('edit invoice while it is still in issued state');
+
+        $this->openInvoices();
+        $I->click('[data-test="invoice-action-settings"]');
+        $I->waitForElementVisible('[data-test="invoice-settings-page"]', 10);
+        $this->fillYearlySettings($editYear, 'Selenium Edit '.$editYear);
+        $I->scrollTo('input[name="save"]');
+        $I->waitForElementClickable('input[name="save"]');
+        $I->clickStable('input[name="save"]');
+        $I->waitForText('Roční nastavení fakturace bylo uloženo.');
+
+        $this->openInvoices();
+        $I->click('[data-test="invoice-action-create-sequence"]');
+        $I->waitForElementVisible('[data-test="invoice-sequence-form-page"]', 10);
+        $I->fillField('input[name="sequence"]', $sequencePrefix);
+        $I->fillField('input[name="firstNumber"]', '00001');
+        $I->selectOption('select[name="year"]', (string) $editYear);
+        $I->fillField('input[name="description"]', 'Selenium editační řada');
+        $I->selectOption('select[name="bankAccount"]', 'Acceptance');
+        $I->selectOption('.ui--emailSelectbox', 'test@hospodareni.loc');
+        $I->scrollTo('#frm-createForm input[type="submit"]');
+        $I->waitForElementClickable('#frm-createForm input[type="submit"]');
+        $I->executeJS('document.querySelector("#frm-createForm input[type=submit]").click()');
+        $I->waitForText('Fakturační řada byla založena.');
+
+        $sequenceId = $I->grabFromDatabase('invoice_sequence', 'id', ['sequence' => $sequencePrefix]);
+        $this->openInvoices();
+        $I->click('[data-test="invoice-sequence-create-invoice-'.$sequenceId.'"]');
+        $I->waitForElementVisible('[data-test="invoice-create-page"]', 10);
+        $I->seeInCurrentUrl('/platby/rady/'.$sequenceId.'/nova');
+
+        $I->fillField('input[name="issuedBy"]', 'Původní vystavil');
+        $I->fillField('input[name="email"]', 'edit@example.test');
+        $I->scrollTo('input[name="customer[type]"][value="person"]');
+        $I->waitForElementClickable('input[name="customer[type]"][value="person"]', 10);
+        $I->checkOption('input[name="customer[type]"][value="person"]');
+        $I->fillField('input[name="customer[name]"]', 'Editovaný odběratel');
+        $I->fillField('input[name="customer[street]"]', 'Editační 1');
+        $I->fillField('input[name="customer[city]"]', 'Praha');
+        $I->fillField('input[name="customer[zipCode]"]', '10000');
+        $I->fillField('input[name="items[0][purpose]"]', 'Původní položka');
+        $I->fillField('input[name="items[0][quantity]"]', '1');
+        $I->fillField('input[name="items[0][unit]"]', 'ks');
+        $I->fillField('input[name="items[0][price]"]', '500');
+        $I->scrollTo('input[name="send"]');
+        $I->waitForElementClickable('input[name="send"]');
+        $I->clickStable('input[name="send"]');
+        $I->waitForText('Faktura byla vytvořena');
+
+        $expectedInvoiceNumber = $sequencePrefix.'00001';
+        $invoiceId = $I->grabFromDatabase('invoice', 'id', ['sequence_id' => $sequenceId, 'invoice_number' => $expectedInvoiceNumber]);
+
+        $I->waitForElementVisible('[data-test="invoice-edit-'.$invoiceId.'"]', 10);
+        $I->clickStable('[data-test="invoice-edit-'.$invoiceId.'"]');
+        $I->waitForElementVisible('[data-test="invoice-edit-page"]', 10);
+        $I->seeInCurrentUrl('/platby/faktury/'.$invoiceId.'/upravit');
+        $I->seeInField('input[name="issuedBy"]', 'Původní vystavil');
+        $I->seeInField('input[name="items[0][purpose]"]', 'Původní položka');
+
+        $I->fillField('input[name="issuedBy"]', 'Upravený vystavil');
+        $I->fillField('input[name="items[0][purpose]"]', 'Upravená položka');
+        $I->scrollTo('input[name="send"]');
+        $I->waitForElementClickable('input[name="send"]');
+        $I->clickStable('input[name="send"]');
+
+        $I->waitForText($expectedInvoiceNumber, 10);
+        $I->seeInCurrentUrl('/platby/rady/'.$sequenceId);
+    }
+
+    /** @group invoice */
+    public function duplicateInvoiceToAnotherSequence(): void
+    {
+        $I = $this->I;
+        $duplicateYear = (int) date('Y') + 3;
+        $sourcePrefix = 'DUA'.substr((string) $duplicateYear, -2);
+        $targetPrefix = 'DUB'.substr((string) $duplicateYear, -2);
+
+        $I->wantTo('duplicate invoice to another invoice sequence and continue in edit');
+
+        $this->openInvoices();
+        $I->click('[data-test="invoice-action-settings"]');
+        $I->waitForElementVisible('[data-test="invoice-settings-page"]', 10);
+        $this->fillYearlySettings($duplicateYear, 'Selenium Duplicate '.$duplicateYear);
+        $I->scrollTo('input[name="save"]');
+        $I->waitForElementClickable('input[name="save"]');
+        $I->clickStable('input[name="save"]');
+        $I->waitForText('Roční nastavení fakturace bylo uloženo.');
+
+        $this->openInvoices();
+        $I->click('[data-test="invoice-action-create-sequence"]');
+        $I->waitForElementVisible('[data-test="invoice-sequence-form-page"]', 10);
+        $I->fillField('input[name="sequence"]', $sourcePrefix);
+        $I->fillField('input[name="firstNumber"]', '00001');
+        $I->selectOption('select[name="year"]', (string) $duplicateYear);
+        $I->fillField('input[name="description"]', 'Selenium zdrojová řada');
+        $I->fillField('input[name="defaultDueDate"]', '14');
+        $I->selectOption('select[name="bankAccount"]', 'Acceptance');
+        $I->selectOption('.ui--emailSelectbox', 'test@hospodareni.loc');
+        $I->scrollTo('#frm-createForm input[type="submit"]');
+        $I->waitForElementClickable('#frm-createForm input[type="submit"]');
+        $I->executeJS('document.querySelector("#frm-createForm input[type=submit]").click()');
+        $I->waitForText('Fakturační řada byla založena.');
+
+        $this->openInvoices();
+        $I->click('[data-test="invoice-action-create-sequence"]');
+        $I->waitForElementVisible('[data-test="invoice-sequence-form-page"]', 10);
+        $I->fillField('input[name="sequence"]', $targetPrefix);
+        $I->fillField('input[name="firstNumber"]', '00001');
+        $I->selectOption('select[name="year"]', (string) $duplicateYear);
+        $I->fillField('input[name="description"]', 'Selenium cílová řada');
+        $I->fillField('input[name="defaultDueDate"]', '10');
+        $I->selectOption('select[name="bankAccount"]', 'Acceptance');
+        $I->selectOption('.ui--emailSelectbox', 'test@hospodareni.loc');
+        $I->scrollTo('#frm-createForm input[type="submit"]');
+        $I->waitForElementClickable('#frm-createForm input[type="submit"]');
+        $I->executeJS('document.querySelector("#frm-createForm input[type=submit]").click()');
+        $I->waitForText('Fakturační řada byla založena.');
+
+        $sourceSequenceId = $I->grabFromDatabase('invoice_sequence', 'id', ['sequence' => $sourcePrefix]);
+        $targetSequenceId = $I->grabFromDatabase('invoice_sequence', 'id', ['sequence' => $targetPrefix]);
+
+        $this->openInvoices();
+        $I->click('[data-test="invoice-sequence-create-invoice-'.$sourceSequenceId.'"]');
+        $I->waitForElementVisible('[data-test="invoice-create-page"]', 10);
+        $I->seeInCurrentUrl('/platby/rady/'.$sourceSequenceId.'/nova');
+
+        $I->fillField('input[name="issuedBy"]', 'Duplicitní vystavil');
+        $I->fillField('input[name="email"]', 'duplicate@example.test');
+        $I->scrollTo('input[name="customer[type]"][value="person"]');
+        $I->waitForElementClickable('input[name="customer[type]"][value="person"]', 10);
+        $I->checkOption('input[name="customer[type]"][value="person"]');
+        $I->fillField('input[name="customer[name]"]', 'Duplikovaný odběratel');
+        $I->fillField('input[name="customer[street]"]', 'Duplikační 1');
+        $I->fillField('input[name="customer[city]"]', 'Praha');
+        $I->fillField('input[name="customer[zipCode]"]', '11000');
+        $I->fillField('input[name="items[0][purpose]"]', 'Duplikovaná položka');
+        $I->fillField('input[name="items[0][quantity]"]', '3');
+        $I->fillField('input[name="items[0][unit]"]', 'hod');
+        $I->fillField('input[name="items[0][price]"]', '250');
+        $I->scrollTo('input[name="send"]');
+        $I->waitForElementClickable('input[name="send"]');
+        $I->clickStable('input[name="send"]');
+        $I->waitForText('Faktura byla vytvořena');
+
+        $sourceInvoiceNumber = $sourcePrefix.'00001';
+        $sourceInvoiceId = $I->grabFromDatabase('invoice', 'id', ['sequence_id' => $sourceSequenceId, 'invoice_number' => $sourceInvoiceNumber]);
+
+        $I->waitForElementVisible('[data-test="invoice-duplicate-'.$sourceInvoiceId.'"]', 10);
+        $I->clickStable('[data-test="invoice-duplicate-'.$sourceInvoiceId.'"]');
+        $I->waitForElementVisible('[data-test="invoice-duplicate-form"]', 10);
+        $I->selectOption('select[name="targetSequenceId"]', (string) $targetSequenceId);
+        $I->clickStable('[data-test="invoice-duplicate-submit"]');
+
+        $duplicatedInvoiceId = $I->grabFromDatabase('invoice', 'id', ['sequence_id' => $targetSequenceId, 'invoice_number' => $targetPrefix.'00001']);
+        $I->waitForElementVisible('[data-test="invoice-edit-page"]', 10);
+        $I->seeInCurrentUrl('/platby/faktury/'.$duplicatedInvoiceId.'/upravit');
+        $I->seeInField('input[name="issuedBy"]', 'Duplicitní vystavil');
+        $I->seeInField('input[name="customer[name]"]', 'Duplikovaný odběratel');
+        $I->seeInField('input[name="customer[street]"]', 'Duplikační 1');
+        $I->seeInField('input[name="items[0][purpose]"]', 'Duplikovaná položka');
+        $I->seeInField('input[name="items[0][quantity]"]', '3');
+        $I->seeInField('input[name="items[0][unit]"]', 'hod');
+        $I->seeInField('input[name="items[0][price]"]', '250');
+        Assert::assertSame('TRANSFER', (string) $I->grabValueFrom('select[name="paymentType"]'));
+
+        $I->seeInField('input[name="dateOfIssue"]', date('Y-m-d'));
+        $I->seeInField('input[name="dueDate"]', date('Y-m-d', strtotime('+10 days')));
+    }
+
     // ─── Issue Invoice ──────────────────────────────────────────────
 
     /** @group invoice */
@@ -165,7 +366,8 @@ class InvoiceCest extends BaseAcceptanceCest
         $sequenceId = $I->grabFromDatabase('invoice_sequence', 'id', ['sequence' => 'FA26']);
         $this->openInvoices();
         $I->click('[data-test="invoice-sequence-create-invoice-'.$sequenceId.'"]');
-        $I->waitForElementVisible('[data-test="invoice-create-form"]', 10);
+        $I->waitForElementVisible('[data-test="invoice-create-page"]', 10);
+        $I->seeInCurrentUrl('/platby/rady/'.$sequenceId.'/nova');
 
         $I->see('Číslo faktury a VS se generují automaticky.');
         $I->see('Cena za jednotku');
@@ -298,7 +500,8 @@ class InvoiceCest extends BaseAcceptanceCest
         $sequenceId = $I->grabFromDatabase('invoice_sequence', 'id', ['sequence' => $seqPrefix]);
         $this->openInvoices();
         $I->click('[data-test="invoice-sequence-create-invoice-'.$sequenceId.'"]');
-        $I->waitForElementVisible('[data-test="invoice-create-form"]', 10);
+        $I->waitForElementVisible('[data-test="invoice-create-page"]', 10);
+        $I->seeInCurrentUrl('/platby/rady/'.$sequenceId.'/nova');
 
         // ── 3. Issue invoice ─────────────────────────────────────
         $I->fillField('input[name="issuedBy"]', 'Selenium lifecycle');

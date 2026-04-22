@@ -1,6 +1,8 @@
 COMPOSE     = docker compose -f docker/docker-compose.yml
 RUN_PHP_DEV = $(COMPOSE) run --rm -T php
 RUN_PHP_TEST = $(COMPOSE) run --rm -T php-test
+TEST ?=
+TEST_ARGS = $(if $(strip $(TEST)),$(TEST),)
 
 .PHONY: help up down enter init test-enter test-init test-services \
         test-unit test-integration test-acceptance test-mapping ci-acceptance \
@@ -34,14 +36,14 @@ test-services: ## Start test DB container
 	$(COMPOSE) up -d mysql-test
 
 # ── Testy ─────────────────────────────────────────────────────
-test-unit: ## Unit testy
-	$(RUN_PHP_TEST) composer tests:unit
+test-unit: ## Unit testy (volitelně TEST=tests/unit/FooTest.php)
+	$(RUN_PHP_TEST) vendor/bin/codecept run unit $(TEST_ARGS)
 
-test-integration: ## Integrační testy
+test-integration: ## Integrační testy (volitelně TEST=tests/integration/FooTest.php)
 	$(MAKE) test-services
-	$(RUN_PHP_TEST) composer tests:integration
+	$(RUN_PHP_TEST) vendor/bin/codecept run integration $(TEST_ARGS)
 
-test-acceptance: ## Akceptační testy lokálně s viditelným Selenium preview
+test-acceptance: ## Akceptační testy lokálně s viditelným Selenium preview (volitelně TEST=tests/acceptance/FooCest.php:testBar)
 	$(COMPOSE) up -d traefik mysql-test selenium nginx php-test
 	@for i in $$(seq 1 30); do \
 		if $(COMPOSE) exec -T selenium wget -q -O - http://localhost:4444/wd/hub/status 2>/dev/null | grep -q '"ready":[[:space:]]*true'; then \
@@ -50,7 +52,8 @@ test-acceptance: ## Akceptační testy lokálně s viditelným Selenium preview
 		echo "Waiting for Selenium... ($$i/30)"; \
 		sleep 2; \
 	done
-	$(RUN_PHP_TEST) composer tests:acceptance; \
+	$(RUN_PHP_TEST) composer tests:acceptance:init; \
+	$(RUN_PHP_TEST) vendor/bin/codecept run acceptance -vv $(TEST_ARGS); \
 	status=$$?; \
 	$(COMPOSE) stop selenium nginx; \
 	exit $$status
@@ -75,7 +78,8 @@ ci-acceptance:
 		echo "Waiting for application... ($$i/30)"; \
 		sleep 2; \
 	done
-	$(RUN_PHP_TEST) composer tests:acceptance-ci; \
+	$(RUN_PHP_TEST) composer tests:acceptance:init; \
+	$(RUN_PHP_TEST) vendor/bin/codecept run acceptance --env ci -vv $(TEST_ARGS); \
 	status=$$?; \
 	$(COMPOSE) stop selenium nginx; \
 	exit $$status

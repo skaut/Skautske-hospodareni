@@ -12,9 +12,11 @@ use App\Model\Invoice\Entity\InvoiceSequence;
 use App\Model\Invoice\Enum\InvoicePaymentType;
 use App\Model\Invoice\Manager\InvoiceManager;
 use App\Model\Invoice\Repository\InvoiceRepository;
+use App\Model\Invoice\Repository\InvoiceUnitSettingRepository;
 use App\Model\Logger\LoggerService;
 use App\Model\Payment\Repositories\IPaymentRepository;
 use App\Model\Payment\Services\VariableSymbolCollisionChecker;
+use App\Model\Unit\UnitService;
 use App\Model\User\UserService;
 use DateTimeImmutable;
 use IntegrationTest;
@@ -51,6 +53,8 @@ final class InvoiceManagerTest extends IntegrationTest
             $this->createMock(LoggerService::class),
             new InvoiceRepository($this->entityManager),
             $this->createVariableSymbolCollisionChecker(),
+            $this->createMock(UnitService::class),
+            $this->createMock(InvoiceUnitSettingRepository::class),
         );
 
         $firstInvoice = $this->createInvoice($sequence);
@@ -81,6 +85,8 @@ final class InvoiceManagerTest extends IntegrationTest
             $this->createMock(LoggerService::class),
             new InvoiceRepository($this->entityManager),
             $this->createVariableSymbolCollisionChecker(),
+            $this->createMock(UnitService::class),
+            $this->createMock(InvoiceUnitSettingRepository::class),
         );
 
         $invoice = new Invoice(
@@ -198,6 +204,8 @@ final class InvoiceManagerTest extends IntegrationTest
             $this->createMock(LoggerService::class),
             new InvoiceRepository($this->entityManager),
             $this->createVariableSymbolCollisionChecker(),
+            $this->createMock(UnitService::class),
+            $this->createMock(InvoiceUnitSettingRepository::class),
         );
     }
 

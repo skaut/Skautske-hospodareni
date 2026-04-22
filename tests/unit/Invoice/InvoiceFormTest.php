@@ -259,7 +259,7 @@ final class InvoiceFormTest extends Unit
 
         /** @var Container $customer */
         $customer = $form->getComponent('customer');
-        $ares = $customer['ares'];
+        $ares = $form['loadAres'];
         $name = $customer['name'];
 
         self::assertInstanceOf(SubmitButton::class, $ares);

@@ -37,6 +37,13 @@
                 <i class="fi fi-rr-settings-sliders" aria-hidden="true"></i>
                 Nastavení faktur
             </a>
+            <a n:if="$isSequenceContext && $canPairInvoices"
+               n:href=":Payments:InvoiceList:create, invoiceSequenceId => $invoiceSequence->getId(), unitId => $unitId"
+               class="btn btn-primary btn-sm"
+               data-test="invoice-action-create-invoice">
+                <i class="fi fi-rr-plus-small" aria-hidden="true"></i>
+                Založit fakturu
+            </a>
         </div>
         <div class="d-flex flex-wrap gap-2 align-items-center">
             <a n:if="$isSequenceContext"
@@ -108,15 +115,6 @@
         </div>
     </section>
 
-    <section n:if="$isSequenceContext" class="card shadow-sm" data-test="invoice-create-form">
-        <div class="card-body">
-            <h2 class="h5 mb-3">Nová faktura</h2>
-            <div n:snippet="createForm">
-                {control createForm}
-            </div>
-        </div>
-    </section>
-
     <section class="card shadow-sm" data-test="invoice-issued-list">
         <div class="card-body">
             <h2 class="h5 mb-3">
@@ -128,7 +126,6 @@
         </div>
     </section>
 
-    {if $isSequenceContext}
-        {control cashPaymentDialog}
-    {/if}
+    {control cashPaymentDialog}
+    {control duplicateInvoiceDialog}
 </div>

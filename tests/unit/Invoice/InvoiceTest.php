@@ -14,6 +14,7 @@ use App\Model\Invoice\Entity\Invoice;
 use App\Model\Invoice\Entity\InvoiceItem;
 use App\Model\Invoice\Entity\InvoiceSequence;
 use App\Model\Invoice\Enum\InvoicePaymentType;
+use App\Model\Invoice\Enum\InvoiceState;
 use App\Model\Payment\VariableSymbol;
 use Brick\Math\BigDecimal;
 use Codeception\Test\Unit;
@@ -34,6 +35,8 @@ final class InvoiceTest extends Unit
         self::assertTrue($invoice->hasBeenSent());
         self::assertSame($time, $invoice->getSentAt());
         self::assertSame('Tester', $invoice->getSentBy());
+        self::assertSame(InvoiceState::DELIVERED, $invoice->getState());
+        self::assertSame('Doručená', $invoice->getStateLabel());
         self::assertCount(1, $invoice->getSentEmails());
         self::assertTrue($invoice->getSentEmails()[0]->wasSuccessful());
     }
@@ -49,6 +52,8 @@ final class InvoiceTest extends Unit
         self::assertTrue($invoice->hasBeenDelivered());
         self::assertSame($time, $invoice->getSentAt());
         self::assertSame('Tester', $invoice->getSentBy());
+        self::assertSame(InvoiceState::DELIVERED, $invoice->getState());
+        self::assertSame('Doručená', $invoice->getStateLabel());
         self::assertCount(0, $invoice->getSentEmails());
     }
 
@@ -162,6 +167,24 @@ final class InvoiceTest extends Unit
         self::assertFalse($invoice->isOverdue(new DateTimeImmutable('2026-03-10')));
         self::assertSame('Bank bot', $invoice->getClosedByUsername());
         self::assertNotNull($invoice->getClosedAt());
+    }
+
+    public function testUnpairReturnsDeliveredInvoiceBackToDeliveredState(): void
+    {
+        $invoice = $this->createInvoice(new DateTimeImmutable('2026-03-01'));
+        $invoice->markAsDelivered(new DateTimeImmutable('2026-03-02 08:00:00'), 'Tester');
+
+        $invoice->pairWithBankTransaction(new DateTimeImmutable('2026-03-10 12:00:00'), 'Bank bot', new Transaction(
+            'txn-123',
+            '2300228890/2010',
+            'Jan Novák',
+            'Úhrada faktury',
+            null,
+        ));
+
+        self::assertTrue($invoice->unpairBankTransaction());
+        self::assertSame(InvoiceState::DELIVERED, $invoice->getState());
+        self::assertSame('Doručená', $invoice->getStateLabel());
     }
 
     public function testEmptyTransactionDoesNotMarkInvoiceAsPaid(): void

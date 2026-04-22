@@ -23,7 +23,7 @@ final class InvoiceCashPaymentDialog extends Dialog
     public int $invoiceId = -1;
 
     public function __construct(
-        private readonly int $invoiceSequenceId,
+        private readonly ?int $invoiceSequenceId,
         private readonly InvoiceRepository $invoiceRepository,
         private readonly InvoiceManager $invoiceManager,
     ) {
@@ -110,7 +110,11 @@ final class InvoiceCashPaymentDialog extends Dialog
 
         $invoice = $this->invoiceRepository->find($this->invoiceId);
 
-        if (! $invoice instanceof Invoice || $invoice->getSequence()->getId() !== $this->invoiceSequenceId) {
+        if (! $invoice instanceof Invoice) {
+            return null;
+        }
+
+        if ($this->invoiceSequenceId !== null && $invoice->getSequence()->getId() !== $this->invoiceSequenceId) {
             return null;
         }
 

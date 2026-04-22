@@ -105,9 +105,21 @@
        data-test="invoice-detail-{$item->getId()}"
        data-test-invoice-number="{$item->getInvoiceNumber()}"
        title="Detail faktury"><i class="fi fi-rr-eye" aria-hidden="true"></i></a>
+    <a n:if="$item->canBeEdited()"
+       href="{$control->getPresenter()->link('edit', ['id' => $item->getId()])}"
+       class="btn btn-sm btn-secondary"
+       data-test="invoice-edit-{$item->getId()}"
+       title="Upravit fakturu"><i class="fi fi-rr-edit" aria-hidden="true"></i></a>
     <a href="{$control->getPresenter()->link('downloadPdf!', ['id' => $item->getId()])}"
        class="btn btn-sm btn-secondary"
        title="Stáhnout PDF"><i class="fi fi-rr-file-pdf" aria-hidden="true"></i></a>
+
+    {if ($enableInvoiceDuplicateDialog ?? false)}
+        <a href="{$control->getPresenter()->link('duplicateInvoiceDialog:open!', ['invoiceId' => $item->getId()])}"
+           class="btn btn-sm btn-secondary ajax"
+           data-test="invoice-duplicate-{$item->getId()}"
+           title="Duplikovat fakturu do jiné řady"><i class="fi fi-rr-copy" aria-hidden="true"></i></a>
+    {/if}
 
     {var $reminderDisabledReason = $control->getPresenter()->getInvoiceEmailDisabledReason($item)}
 
