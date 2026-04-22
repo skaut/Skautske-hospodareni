@@ -23,11 +23,11 @@ on:
       DEPLOY_SSH_KEY:
         required: true
       APPLICATION_ID:
-        required: false
+        required: true
       DB_FIX_TOKEN_SHA256:
         required: false
       DB_PASSWORD:
-        required: false
+        required: true
       GOOGLE_CREDENTIALS:
         required: false
       SENTRY_DSN:
