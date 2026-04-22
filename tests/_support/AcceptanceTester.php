@@ -72,7 +72,7 @@ class AcceptanceTester extends Actor
 
     public function clickStable(string $locator, int $timeout = 10, bool $waitForOverlays = true): void
     {
-        $this->waitForElementVisible($locator, $timeout);
+        $this->waitForStableLocatorVisible($locator, $timeout);
         if ($waitForOverlays) {
             $this->waitForUiOverlaysToDisappear($timeout);
         }
@@ -82,7 +82,7 @@ class AcceptanceTester extends Actor
 
     public function fillFieldStable(string $locator, string $value, int $timeout = 10, bool $waitForOverlays = true): void
     {
-        $this->waitForElementVisible($locator, $timeout);
+        $this->waitForStableLocatorVisible($locator, $timeout);
         if ($waitForOverlays) {
             $this->waitForUiOverlaysToDisappear($timeout);
         }
@@ -103,6 +103,26 @@ class AcceptanceTester extends Actor
             'return document.querySelector(".modal-backdrop.show, .offcanvas-backdrop.show") === null;',
             $timeout,
         );
+    }
+
+    public function waitForStableLocatorVisible(string $locator, int $timeout = 10): void
+    {
+        if (! $this->isXPathLocator($locator)) {
+            $this->waitForElementVisible($locator, $timeout);
+
+            return;
+        }
+
+        $this->waitForJS($this->buildLocatorScript(
+            $locator,
+            'var style = window.getComputedStyle(el);'
+            .' return style.display !== "none" && style.visibility !== "hidden" && el.getClientRects().length > 0;',
+        ), $timeout);
+    }
+
+    private function isXPathLocator(string $locator): bool
+    {
+        return str_starts_with($locator, '//') || str_starts_with($locator, '(') || str_starts_with($locator, './/');
     }
 
     private function scrollElementToCenter(string $locator): void

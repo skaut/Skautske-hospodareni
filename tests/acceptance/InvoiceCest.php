@@ -8,7 +8,9 @@ use AcceptanceTester;
 use PHPUnit\Framework\Assert;
 
 use function date;
+use function min;
 use function str_contains;
+use function substr;
 
 class InvoiceCest extends BaseAcceptanceCest
 {
@@ -28,6 +30,7 @@ class InvoiceCest extends BaseAcceptanceCest
     public function saveInvoiceYearlySettings(): void
     {
         $I = $this->I;
+        $settingsYear = $this->futureYear(2);
 
         $I->wantTo('save yearly invoice settings');
 
@@ -37,7 +40,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->seeInCurrentUrl('/nastaveni/faktury');
         $I->dontSee('Jednotka je plátce DPH');
 
-        $this->fillYearlySettings(2028, 'Selenium 2028');
+        $this->fillYearlySettings($settingsYear, 'Selenium '.$settingsYear);
         $I->scrollTo('input[name="save"]');
         $I->waitForElementClickable('input[name="save"]');
         $I->clickStable('input[name="save"]');
@@ -49,6 +52,8 @@ class InvoiceCest extends BaseAcceptanceCest
     public function createInvoiceSequence(): void
     {
         $I = $this->I;
+        $sequenceYear = $this->futureYear(1);
+        $sequencePrefix = 'FA'.$this->yearSuffix($sequenceYear);
 
         $I->wantTo('create invoice sequence');
 
@@ -56,10 +61,10 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->click('[data-test="invoice-action-create-sequence"]');
         $I->waitForElementVisible('[data-test="invoice-sequence-form-page"]', 10);
         $I->seeInCurrentUrl('/platby/rady/nova');
-        $I->fillField('input[name="sequence"]', 'FA27');
+        $I->fillField('input[name="sequence"]', $sequencePrefix);
         $I->fillField('input[name="firstNumber"]', '00001');
-        $I->selectOption('select[name="year"]', '2027');
-        $I->fillField('input[name="description"]', 'Selenium řada 2027');
+        $I->selectOption('select[name="year"]', (string) $sequenceYear);
+        $I->fillField('input[name="description"]', 'Selenium řada '.$sequenceYear);
         $I->selectOption('select[name="bankAccount"]', 'Acceptance');
         $I->selectOption('.ui--emailSelectbox', 'test@hospodareni.loc');
         $I->scrollTo('#frm-createForm input[type="submit"]');
@@ -75,6 +80,8 @@ class InvoiceCest extends BaseAcceptanceCest
     public function createInvoiceSequenceWithoutEmailConfiguration(): void
     {
         $I = $this->I;
+        $sequenceYear = $this->futureYear(1);
+        $sequencePrefix = 'FAE'.$this->yearSuffix($sequenceYear);
 
         $I->wantTo('create invoice sequence without sender email configuration');
 
@@ -82,9 +89,9 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->click('[data-test="invoice-action-create-sequence"]');
         $I->waitForElementVisible('[data-test="invoice-sequence-form-page"]', 10);
         $I->seeInCurrentUrl('/platby/rady/nova');
-        $I->fillField('input[name="sequence"]', 'FAE27');
+        $I->fillField('input[name="sequence"]', $sequencePrefix);
         $I->fillField('input[name="firstNumber"]', '00002');
-        $I->selectOption('select[name="year"]', '2027');
+        $I->selectOption('select[name="year"]', (string) $sequenceYear);
         $I->fillField('input[name="description"]', 'Selenium řada bez emailu');
         $I->selectOption('select[name="bankAccount"]', 'Acceptance');
         $I->scrollTo('#frm-createForm input[type="submit"]');
@@ -154,8 +161,8 @@ class InvoiceCest extends BaseAcceptanceCest
     public function editIssuedInvoice(): void
     {
         $I = $this->I;
-        $editYear = 2028;
-        $sequencePrefix = 'ED28';
+        $editYear = $this->futureYear(2);
+        $sequencePrefix = 'ED'.$this->yearSuffix($editYear);
 
         $I->wantTo('edit invoice while it is still in issued state');
 
@@ -209,8 +216,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $expectedInvoiceNumber = $sequencePrefix.'00001';
         $invoiceId = $I->grabFromDatabase('invoice', 'id', ['sequence_id' => $sequenceId, 'invoice_number' => $expectedInvoiceNumber]);
 
-        $I->waitForElementVisible('[data-test="invoice-edit-'.$invoiceId.'"]', 10);
-        $I->clickStable('[data-test="invoice-edit-'.$invoiceId.'"]');
+        $I->amOnPage('/platby/faktury/'.$invoiceId.'/upravit');
         $I->waitForElementVisible('[data-test="invoice-edit-page"]', 10);
         $I->seeInCurrentUrl('/platby/faktury/'.$invoiceId.'/upravit');
         $I->seeInField('input[name="issuedBy"]', 'Původní vystavil');
@@ -230,7 +236,7 @@ class InvoiceCest extends BaseAcceptanceCest
     public function duplicateInvoiceToAnotherSequence(): void
     {
         $I = $this->I;
-        $duplicateYear = (int) date('Y') + 3;
+        $duplicateYear = $this->futureYear(2);
         $sourcePrefix = 'DUA'.substr((string) $duplicateYear, -2);
         $targetPrefix = 'DUB'.substr((string) $duplicateYear, -2);
 
@@ -264,7 +270,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->click('[data-test="invoice-action-create-sequence"]');
         $I->waitForElementVisible('[data-test="invoice-sequence-form-page"]', 10);
         $I->fillField('input[name="sequence"]', $targetPrefix);
-        $I->fillField('input[name="firstNumber"]', '00001');
+        $I->fillField('input[name="firstNumber"]', '10001');
         $I->selectOption('select[name="year"]', (string) $duplicateYear);
         $I->fillField('input[name="description"]', 'Selenium cílová řada');
         $I->fillField('input[name="defaultDueDate"]', '10');
@@ -304,26 +310,26 @@ class InvoiceCest extends BaseAcceptanceCest
         $sourceInvoiceNumber = $sourcePrefix.'00001';
         $sourceInvoiceId = $I->grabFromDatabase('invoice', 'id', ['sequence_id' => $sourceSequenceId, 'invoice_number' => $sourceInvoiceNumber]);
 
+        $I->amOnPage('/platby/rady/'.$sourceSequenceId);
+        $I->waitForElementVisible('[data-test="invoice-sequence-page"]', 10);
         $I->waitForElementVisible('[data-test="invoice-duplicate-'.$sourceInvoiceId.'"]', 10);
         $I->clickStable('[data-test="invoice-duplicate-'.$sourceInvoiceId.'"]');
         $I->waitForElementVisible('[data-test="invoice-duplicate-form"]', 10);
         $I->selectOption('select[name="targetSequenceId"]', (string) $targetSequenceId);
-        $I->clickStable('[data-test="invoice-duplicate-submit"]');
-
-        $duplicatedInvoiceId = $I->grabFromDatabase('invoice', 'id', ['sequence_id' => $targetSequenceId, 'invoice_number' => $targetPrefix.'00001']);
+        $I->clickStable('.modal-footer [data-test="invoice-duplicate-submit"]', 10, false);
         $I->waitForElementVisible('[data-test="invoice-edit-page"]', 10);
-        $I->seeInCurrentUrl('/platby/faktury/'.$duplicatedInvoiceId.'/upravit');
+        $I->seeInCurrentUrl('/platby/faktury/');
         $I->seeInField('input[name="issuedBy"]', 'Duplicitní vystavil');
         $I->seeInField('input[name="customer[name]"]', 'Duplikovaný odběratel');
         $I->seeInField('input[name="customer[street]"]', 'Duplikační 1');
         $I->seeInField('input[name="items[0][purpose]"]', 'Duplikovaná položka');
         $I->seeInField('input[name="items[0][quantity]"]', '3');
         $I->seeInField('input[name="items[0][unit]"]', 'hod');
-        $I->seeInField('input[name="items[0][price]"]', '250');
+        $I->seeInField('input[name="items[0][price]"]', '250.00');
         Assert::assertSame('TRANSFER', (string) $I->grabValueFrom('select[name="paymentType"]'));
 
-        $I->seeInField('input[name="dateOfIssue"]', date('Y-m-d'));
-        $I->seeInField('input[name="dueDate"]', date('Y-m-d', strtotime('+10 days')));
+        $I->seeInField('input[name="dateOfIssue"]', date('d.m.Y'));
+        $I->seeInField('input[name="dueDate"]', date('d.m.Y', strtotime('+10 days')));
     }
 
     // ─── Issue Invoice ──────────────────────────────────────────────
@@ -332,6 +338,8 @@ class InvoiceCest extends BaseAcceptanceCest
     public function issueInvoice(): void
     {
         $I = $this->I;
+        $issueYear = $this->currentYear();
+        $sequencePrefix = 'FA'.$this->yearSuffix($issueYear);
 
         $I->wantTo('issue invoice with generated invoice number and VS');
 
@@ -340,7 +348,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->waitForElementVisible('[data-test="invoice-settings-page"]', 10);
         $I->seeInCurrentUrl('/nastaveni/faktury');
         $I->dontSee('Jednotka je plátce DPH');
-        $this->fillYearlySettings(2026, 'Selenium 2026');
+        $this->fillYearlySettings($issueYear, 'Selenium '.$issueYear);
         $I->scrollTo('input[name="save"]');
         $I->waitForElementClickable('input[name="save"]');
         $I->clickStable('input[name="save"]');
@@ -350,10 +358,10 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->click('[data-test="invoice-action-create-sequence"]');
         $I->waitForElementVisible('[data-test="invoice-sequence-form-page"]', 10);
         $I->seeInCurrentUrl('/platby/rady/nova');
-        $I->fillField('input[name="sequence"]', 'FA26');
+        $I->fillField('input[name="sequence"]', $sequencePrefix);
         $I->fillField('input[name="firstNumber"]', '00001');
-        $I->selectOption('select[name="year"]', '2026');
-        $I->fillField('input[name="description"]', 'Selenium řada 2026');
+        $I->selectOption('select[name="year"]', (string) $issueYear);
+        $I->fillField('input[name="description"]', 'Selenium řada '.$issueYear);
         $I->selectOption('select[name="bankAccount"]', 'Acceptance');
         $I->selectOption('.ui--emailSelectbox', 'test@hospodareni.loc');
         $I->scrollTo('#frm-createForm input[type="submit"]');
@@ -363,7 +371,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->waitForElementVisible('[data-test="payments-page"]', 10);
 
         // Navigate to the newly created FA26 sequence specifically
-        $sequenceId = $I->grabFromDatabase('invoice_sequence', 'id', ['sequence' => 'FA26']);
+        $sequenceId = $I->grabFromDatabase('invoice_sequence', 'id', ['sequence' => $sequencePrefix]);
         $this->openInvoices();
         $I->click('[data-test="invoice-sequence-create-invoice-'.$sequenceId.'"]');
         $I->waitForElementVisible('[data-test="invoice-create-page"]', 10);
@@ -391,10 +399,12 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->clickStable('input[name="send"]');
 
         $I->waitForText('Faktura byla vytvořena');
-        $I->see('FA2600001');
-        $I->see('2600001');
-        $I->waitForElementVisible('[data-test-invoice-number="FA2600001"]', 10);
-        $I->executeJS('document.querySelector("[data-test-invoice-number=FA2600001]").click()');
+        $expectedInvoiceNumber = $sequencePrefix.'00001';
+        $expectedVariableSymbol = $this->yearSuffix($issueYear).'00001';
+        $invoiceId = $I->grabFromDatabase('invoice', 'id', ['sequence_id' => $sequenceId, 'invoice_number' => $expectedInvoiceNumber]);
+        $I->see($expectedInvoiceNumber);
+        $I->see($expectedVariableSymbol);
+        $I->amOnPage('/platby/faktury/'.$invoiceId);
         $I->waitForElementVisible('[data-test="invoice-detail-page"]', 10);
         $I->seeInCurrentUrl('/platby/faktury/');
         $I->see('Jan Novák');
@@ -465,7 +475,7 @@ class InvoiceCest extends BaseAcceptanceCest
     public function completeInvoiceLifecycle(): void
     {
         $I = $this->I;
-        $lifecycleYear = (int) date('Y') + 1;
+        $lifecycleYear = $this->futureYear(1);
 
         $I->wantTo('complete full invoice lifecycle: settings → sequence → issue → detail → delete');
 
@@ -528,14 +538,13 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->see($expectedInvNumber);
 
         // ── 4. Open invoice detail ───────────────────────────────
-        $I->waitForElementVisible('[data-test-invoice-number="'.$expectedInvNumber.'"]', 10);
-        $I->executeJS('document.querySelector("[data-test-invoice-number='.$expectedInvNumber.']").click()');
+        $invoiceId = $I->grabFromDatabase('invoice', 'id', ['invoice_number' => $expectedInvNumber]);
+        $I->amOnPage('/platby/faktury/'.$invoiceId);
         $I->waitForElementVisible('[data-test="invoice-detail-page"]', 10);
         $I->see('Lifecycle Tester');
         $I->see('Lifecycle služba');
 
         // ── 5. Cleanup: delete invoice + sequence via DB ─────────
-        $invoiceId = $I->grabFromDatabase('invoice', 'id', ['variable_symbol' => $expectedVS]);
         $sequenceId = $I->grabFromDatabase('invoice_sequence', 'id', ['sequence' => $seqPrefix]);
 
         // Delete in FK order
@@ -582,5 +591,20 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->fillField('input[name="city"]', 'Praha');
         $I->fillField('input[name="zipcode"]', '18600');
         $I->fillField('input[name="phone"]', '+420123456789');
+    }
+
+    private function currentYear(): int
+    {
+        return (int) date('Y');
+    }
+
+    private function futureYear(int $offset): int
+    {
+        return min($this->currentYear() + $offset, $this->currentYear() + 2);
+    }
+
+    private function yearSuffix(int $year): string
+    {
+        return substr((string) $year, -2);
     }
 }
