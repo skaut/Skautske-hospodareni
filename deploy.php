@@ -64,7 +64,9 @@ function requiredEnv(string $name): string
     if ($value === false ) {
         throw new \RuntimeException(sprintf('Missing required deploy variable "%s".', $name));
     }
-
+    if ($value === '') {
+        throw new \RuntimeException(sprintf('Empty required deploy variable "%s".', $name));
+    }
     return $value;
 }
 
@@ -91,6 +93,15 @@ function buildDotenvContent(array $values): string
     return implode(PHP_EOL, $lines).PHP_EOL;
 }
 
+function previewEnvValue(string|false $value): string
+{
+    if ($value === false || $value === '') {
+        return '<missing>';
+    }
+
+    return substr($value, 0, 3).'...';
+}
+
 task('debug:runtime_env', function () {
     writeln('<comment>=== Deploy runtime environment ===</comment>');
 
@@ -102,11 +113,8 @@ task('debug:runtime_env', function () {
         'DB_HOST',
         'DB_NAME',
         'DB_USER',
-        'GOOGLE_CREDENTIALS',
-    ];
-
-    $maskedRequiredVariables = [
         'DB_PASSWORD',
+        'GOOGLE_CREDENTIALS',
         'DB_FIX_TOKEN_SHA256',
     ];
 
@@ -121,17 +129,12 @@ task('debug:runtime_env', function () {
 
     foreach ($requiredVariables as $name) {
         $value = getenv($name);
-        writeln(sprintf('%s=%s', $name, $value === false ? '<missing>' : $value));
-    }
-
-    foreach ($maskedRequiredVariables as $name) {
-        $value = getenv($name);
-        writeln(sprintf('%s=%s', $name, $value === false || $value === '' ? '<missing>' : '<set>'));
+        writeln(sprintf('%s=%s', $name, previewEnvValue($value)));
     }
 
     foreach ($optionalVariables as $name) {
         $value = getenv($name);
-        writeln(sprintf('%s=%s', $name, $value === false ? '<missing>' : $value));
+        writeln(sprintf('%s=%s', $name, previewEnvValue($value)));
     }
 })->desc('Print deploy runtime environment');
 
