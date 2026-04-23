@@ -26,7 +26,7 @@
                 {if trim($event->getLocation()) === ''}<i class="text-body-secondary">Nevyplněno</i>{else}{$event->getLocation()}{/if}
             </div>
             <div class="d-flex flex-wrap gap-2 align-items-center">
-                <a n:href="Detail:report 'aid'=>$aid" target="_blank" class="btn btn-sm btn-outline-secondary">
+                <a n:href="Detail:report 'aid'=>$aid" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary">
                     <i class="fi fi-rr-print" aria-hidden="true"></i>
                     Záverečná zpráva
                 </a>

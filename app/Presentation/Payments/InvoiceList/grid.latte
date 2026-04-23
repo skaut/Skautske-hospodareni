@@ -112,6 +112,8 @@
        title="Upravit fakturu"><i class="fi fi-rr-edit" aria-hidden="true"></i></a>
     <a href="{$control->getPresenter()->link('downloadPdf!', ['id' => $item->getId()])}"
        class="btn btn-sm btn-secondary"
+       target="_blank"
+       rel="noopener noreferrer"
        title="Stáhnout PDF"><i class="fi fi-rr-file-pdf" aria-hidden="true"></i></a>
 
     {if ($enableInvoiceDuplicateDialog ?? false)}

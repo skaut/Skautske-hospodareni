@@ -22,14 +22,14 @@
 
         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="exportButton">
             <a n:class="dropdown-item, ! $hasExportScans ? disabled"
-                    href="{plink :Unit:CashbookExport:exportScans $cashbookId, $paymentMethod->toString ()}" target="_blank">
+                    href="{plink :Unit:CashbookExport:exportScans $cashbookId, $paymentMethod->toString ()}" target="_blank" rel="noopener noreferrer">
                 <i class="far fa-file-archive"></i>
                 Skeny dokladů.zip
             </a>
             <div class="dropdown-divider"></div>
             {if ! $cashbookType->isUnit()}
             <a n:class="dropdown-item, count($chits) === 0 ? disabled"
-                    href="{plink :Unit:CashbookExport:printCashbook $cashbookId, $paymentMethod->toString ()}" target="_blank">
+                    href="{plink :Unit:CashbookExport:printCashbook $cashbookId, $paymentMethod->toString ()}" target="_blank" rel="noopener noreferrer">
                 <i class="far fa-file-pdf"></i>
                 {if $paymentMethod->equalsValue('cash')}
                     Pokladní kniha.pdf
