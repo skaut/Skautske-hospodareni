@@ -317,13 +317,18 @@ class InvoiceCest extends BaseAcceptanceCest
                     'sequence_id' => $sourceSequenceId,
                     'invoice_number' => $sourceInvoiceNumber,
                 ]);
-                break;
+
+                if ($sourceInvoiceId !== null && $sourceInvoiceId !== false && $sourceInvoiceId !== '') {
+                    break;
+                }
             } catch (Throwable) {
-                sleep(1);
             }
+
+            sleep(1);
         }
 
-        Assert::assertNotNull($sourceInvoiceId, 'Source invoice was not created in time.');
+        Assert::assertNotFalse($sourceInvoiceId, 'Source invoice was not created in time.');
+        Assert::assertNotSame('', $sourceInvoiceId, 'Source invoice was not created in time.');
 
         $I->amOnPage('/platby/rady/'.$sourceSequenceId);
         $I->waitForElementVisible('[data-test="invoice-sequence-page"]', 10);
