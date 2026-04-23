@@ -537,7 +537,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $this->fillYearlySettings($lifecycleYear, 'Selenium Lifecycle '.$lifecycleYear);
         $I->scrollTo('input[name="save"]');
         $I->waitForElementClickable('input[name="save"]');
-        $I->click('input[name="save"]');
+        $I->clickStable('input[name="save"]');
         $I->waitForText('Roční nastavení fakturace bylo uloženo.');
 
         // ── 2. Create invoice sequence ───────────────────────────
