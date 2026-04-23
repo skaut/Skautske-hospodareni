@@ -6,9 +6,11 @@ namespace acceptance;
 
 use AcceptanceTester;
 use PHPUnit\Framework\Assert;
+use Throwable;
 
 use function date;
 use function min;
+use function sleep;
 use function str_contains;
 use function substr;
 
@@ -305,10 +307,23 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->scrollTo('input[name="send"]');
         $I->waitForElementClickable('input[name="send"]');
         $I->clickStable('input[name="send"]');
-        $I->waitForText('Faktura byla vytvořena', 10);
 
         $sourceInvoiceNumber = $sourcePrefix.'00001';
-        $sourceInvoiceId = $I->grabFromDatabase('invoice', 'id', ['sequence_id' => $sourceSequenceId, 'invoice_number' => $sourceInvoiceNumber]);
+        $sourceInvoiceId = null;
+
+        for ($attempt = 0; $attempt < 10; ++$attempt) {
+            try {
+                $sourceInvoiceId = $I->grabFromDatabase('invoice', 'id', [
+                    'sequence_id' => $sourceSequenceId,
+                    'invoice_number' => $sourceInvoiceNumber,
+                ]);
+                break;
+            } catch (Throwable) {
+                sleep(1);
+            }
+        }
+
+        Assert::assertNotNull($sourceInvoiceId, 'Source invoice was not created in time.');
 
         $I->amOnPage('/platby/rady/'.$sourceSequenceId);
         $I->waitForElementVisible('[data-test="invoice-sequence-page"]', 10);
