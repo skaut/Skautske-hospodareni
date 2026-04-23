@@ -79,6 +79,11 @@ services:
 
     # Console commands
     - Console\MigrationsDropCommand
+    app.cachePurge:
+        factory: App\Console\CachePurgeCommand([
+            %tempDir%/cache
+        ])
+        tags: [contributte.console.command]
     console.doctrineCacheClear:
         factory: App\Console\DoctrineCacheClearCommand(
             @Contributte\Psr6\ICachePoolFactory,

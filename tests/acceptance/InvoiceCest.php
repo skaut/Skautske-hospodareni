@@ -9,6 +9,7 @@ use PHPUnit\Framework\Assert;
 use Throwable;
 
 use function date;
+use function max;
 use function min;
 use function sleep;
 use function str_contains;
@@ -241,6 +242,8 @@ class InvoiceCest extends BaseAcceptanceCest
         $duplicateYear = $this->futureYear(2);
         $sourcePrefix = 'DUA'.substr((string) $duplicateYear, -2);
         $targetPrefix = 'DUB'.substr((string) $duplicateYear, -2);
+        $sourceFirstNumber = '80001';
+        $targetFirstNumber = '90001';
 
         $I->wantTo('duplicate invoice to another invoice sequence and continue in edit');
 
@@ -257,7 +260,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->click('[data-test="invoice-action-create-sequence"]');
         $I->waitForElementVisible('[data-test="invoice-sequence-form-page"]', 10);
         $I->fillField('input[name="sequence"]', $sourcePrefix);
-        $I->fillField('input[name="firstNumber"]', '00001');
+        $I->fillField('input[name="firstNumber"]', $sourceFirstNumber);
         $I->selectOption('select[name="year"]', (string) $duplicateYear);
         $I->fillField('input[name="description"]', 'Selenium zdrojová řada');
         $I->fillField('input[name="defaultDueDate"]', '14');
@@ -272,7 +275,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->click('[data-test="invoice-action-create-sequence"]');
         $I->waitForElementVisible('[data-test="invoice-sequence-form-page"]', 10);
         $I->fillField('input[name="sequence"]', $targetPrefix);
-        $I->fillField('input[name="firstNumber"]', '10001');
+        $I->fillField('input[name="firstNumber"]', $targetFirstNumber);
         $I->selectOption('select[name="year"]', (string) $duplicateYear);
         $I->fillField('input[name="description"]', 'Selenium cílová řada');
         $I->fillField('input[name="defaultDueDate"]', '10');
@@ -283,8 +286,20 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->executeJS('document.querySelector("#frm-createForm input[type=submit]").click()');
         $I->waitForText('Fakturační řada byla založena.');
 
-        $sourceSequenceId = $I->grabFromDatabase('invoice_sequence', 'id', ['sequence' => $sourcePrefix]);
-        $targetSequenceId = $I->grabFromDatabase('invoice_sequence', 'id', ['sequence' => $targetPrefix]);
+        $sourceSequenceIds = $I->grabColumnFromDatabase('invoice_sequence', 'id', [
+            'sequence' => $sourcePrefix,
+            'year' => $duplicateYear,
+            'first_number' => $sourceFirstNumber,
+        ]);
+        $targetSequenceIds = $I->grabColumnFromDatabase('invoice_sequence', 'id', [
+            'sequence' => $targetPrefix,
+            'year' => $duplicateYear,
+            'first_number' => $targetFirstNumber,
+        ]);
+        Assert::assertNotEmpty($sourceSequenceIds, 'Source invoice sequence was not created.');
+        Assert::assertNotEmpty($targetSequenceIds, 'Target invoice sequence was not created.');
+        $sourceSequenceId = (int) max($sourceSequenceIds);
+        $targetSequenceId = (int) max($targetSequenceIds);
 
         $this->openInvoices();
         $I->click('[data-test="invoice-sequence-create-invoice-'.$sourceSequenceId.'"]');
@@ -308,7 +323,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->waitForElementClickable('input[name="send"]');
         $I->clickStable('input[name="send"]');
 
-        $sourceInvoiceNumber = $sourcePrefix.'00001';
+        $sourceInvoiceNumber = $sourcePrefix.$sourceFirstNumber;
         $sourceInvoiceId = null;
 
         for ($attempt = 0; $attempt < 10; ++$attempt) {
