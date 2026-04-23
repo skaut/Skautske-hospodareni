@@ -8,11 +8,8 @@ use App\Model\Payment\Mailing\Payment;
 use Doctrine\ORM\Mapping as ORM;
 use Nette\Utils\Strings;
 
-use function array_key_exists;
 use function array_keys;
 use function array_values;
-use function http_build_query;
-use function preg_match;
 use function str_replace;
 
 /** @ORM\Embeddable() */
@@ -30,7 +27,7 @@ class EmailTemplate
         $this->body = $body;
     }
 
-    public function evaluate(Group $group, Payment $payment, ?string $bankAccount, string $user): EmailTemplate
+    public function evaluate(Group $group, Payment $payment, ?string $bankAccount, string $user, ?string $qrCodeCid = null): EmailTemplate
     {
         $accountRequired = Strings::contains($this->body, '%qrcode') || Strings::contains($this->body, '%account');
         if ($bankAccount === null && $accountRequired) {
@@ -53,7 +50,7 @@ class EmailTemplate
         $subject = $this->replace($parameters, $this->subject);
 
         if (Strings::contains($this->body, '%qrcode')) {
-            $parameters['%qrcode%'] = $this->getQrHtml($payment, $bankAccount);
+            $parameters['%qrcode%'] = $this->getQrHtml($payment, $bankAccount, $qrCodeCid);
         }
 
         $body = $this->replace($parameters, $this->body);
@@ -71,44 +68,30 @@ class EmailTemplate
         return $this->body;
     }
 
+    public function containsQrCode(): bool
+    {
+        return Strings::contains($this->body, '%qrcode');
+    }
+
     /** @param mixed[] $parameters */
     private function replace(array $parameters, string $template): string
     {
         return str_replace(array_keys($parameters), array_values($parameters), $template);
     }
 
-    private function getQrHtml(Payment $payment, string $bankAccount): string
+    private function getQrHtml(Payment $payment, string $bankAccount, ?string $qrCodeCid): string
     {
-        $pattern = '#((?P<prefix>[0-9]+)-)?(?P<number>[0-9]+)/(?P<code>[0-9]{4})#';
-
-        if (preg_match($pattern, $bankAccount, $account) !== 1) {
-            throw new InvalidBankAccount();
+        if ($qrCodeCid !== null) {
+            return '<img alt="QR platbu se nepodařilo zobrazit" src="cid:'.$qrCodeCid.'">';
         }
 
-        $params = [
-            'accountNumber' => $account['number'],
-            'bankCode' => $account['code'],
-            'amount' => $payment->getAmount(),
-            'currency' => 'CZK',
-            'size' => '200',
-        ];
-        if (array_key_exists('prefix', $account) && $account['prefix'] !== '') {
-            $params['accountPrefix'] = $account['prefix'];
-        }
-
-        if ($payment->getVariableSymbol() !== null) {
-            $params['vs'] = $payment->getVariableSymbol();
-        }
-
-        if ($payment->getConstantSymbol() !== null) {
-            $params['ks'] = $payment->getConstantSymbol();
-        }
-
-        if ($payment->getName() !== '') {
-            $params['message'] = $payment->getName();
-        }
-
-        $file = 'http://api.paylibo.com/paylibo/generator/czech/image?'.http_build_query($params);
+        $file = QrPaymentCode::buildImageUrl(
+            $bankAccount,
+            $payment->getAmount(),
+            $payment->getVariableSymbol(),
+            $payment->getConstantSymbol(),
+            $payment->getName(),
+        );
 
         return '<img alt="QR platbu se nepodařilo zobrazit" src="'.$file.'">';
     }

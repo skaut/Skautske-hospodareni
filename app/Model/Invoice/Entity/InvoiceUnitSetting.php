@@ -43,6 +43,12 @@ class InvoiceUnitSetting extends AbstractIdEntity
     #[Column(type: Types::STRING, length: 64, nullable: true)]
     private ?string $phone = null;
 
+    #[Column(type: Types::STRING, length: 255, nullable: true)]
+    private ?string $stampImagePath = null;
+
+    #[Column(type: Types::STRING, length: 255, nullable: true)]
+    private ?string $logoImagePath = null;
+
     public function __construct(
         int $unit,
         int $year,
@@ -52,6 +58,8 @@ class InvoiceUnitSetting extends AbstractIdEntity
         string $zipcode,
         string $companyNumber,
         ?string $phone = null,
+        ?string $stampImagePath = null,
+        ?string $logoImagePath = null,
     ) {
         $this->unit = $unit;
         $this->year = $year;
@@ -61,6 +69,8 @@ class InvoiceUnitSetting extends AbstractIdEntity
         $this->zipcode = $zipcode;
         $this->companyNumber = $companyNumber;
         $this->phone = $phone;
+        $this->stampImagePath = $stampImagePath;
+        $this->logoImagePath = $logoImagePath;
     }
 
     public static function fromOfficialUnit(Unit $unit, int $year): self
@@ -87,6 +97,7 @@ class InvoiceUnitSetting extends AbstractIdEntity
             $values->zipcode,
             $values->companyNumber,
             $values->phone ?: null,
+            null,
         );
     }
 
@@ -158,5 +169,25 @@ class InvoiceUnitSetting extends AbstractIdEntity
     public function getPhone(): ?string
     {
         return $this->phone;
+    }
+
+    public function getStampImagePath(): ?string
+    {
+        return $this->stampImagePath;
+    }
+
+    public function setStampImagePath(?string $stampImagePath): void
+    {
+        $this->stampImagePath = $stampImagePath;
+    }
+
+    public function getLogoImagePath(): ?string
+    {
+        return $this->logoImagePath;
+    }
+
+    public function setLogoImagePath(?string $logoImagePath): void
+    {
+        $this->logoImagePath = $logoImagePath;
     }
 }

@@ -20,7 +20,6 @@ enum InvoicePaymentType: string
     public static function toSelect(): array
     {
         return [
-            self::CARD->name => self::CARD->value,
             self::TRANSFER->name => self::TRANSFER->value,
             self::CASH->name => self::CASH->value,
         ];

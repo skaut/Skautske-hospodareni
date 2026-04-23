@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Model\Invoice;
 
 use App\Model\Invoice\Entity\Invoice;
+use Nette\Utils\Strings;
 
 use function array_keys;
 use function array_values;
@@ -22,7 +23,7 @@ class EmailTemplate
         $this->body = $body;
     }
 
-    public function evaluate(Invoice $invoice, string $user): self
+    public function evaluate(Invoice $invoice, string $user, ?string $qrCodeCid = null): self
     {
         $parameters = [
             '%number%' => $invoice->getInvoiceNumber(),
@@ -32,6 +33,7 @@ class EmailTemplate
             '%maturityus%' => $invoice->getDueDate()->format('Y-m-d'),
             '%vs%' => (string) $invoice->getVariableSymbol(),
             '%user%' => $user,
+            '%qrcode%' => $qrCodeCid !== null ? $this->getQrHtml($qrCodeCid) : '',
         ];
 
         return new self(
@@ -50,9 +52,19 @@ class EmailTemplate
         return $this->body;
     }
 
+    public function containsQrCode(): bool
+    {
+        return Strings::contains($this->body, '%qrcode');
+    }
+
     /** @param array<string, string> $parameters */
     private function replace(array $parameters, string $template): string
     {
         return str_replace(array_keys($parameters), array_values($parameters), $template);
+    }
+
+    private function getQrHtml(string $qrCodeCid): string
+    {
+        return '<img alt="QR platbu se nepodařilo zobrazit" src="cid:'.$qrCodeCid.'">';
     }
 }

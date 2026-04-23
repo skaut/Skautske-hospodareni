@@ -47,21 +47,26 @@ use App\Model\Event\SkautisCampId;
 use App\Model\Event\SkautisEducationId;
 use App\Model\Event\SkautisEventId;
 use App\Model\Invoice\Entity\Invoice;
+use App\Model\Invoice\Enum\InvoicePaymentType;
+use App\Model\Invoice\Repository\InvoiceUnitSettingRepository;
 use App\Model\Mail\Repositories\IGoogleRepository;
 use App\Model\Participant\Payment\EventType;
+use App\Model\Payment\InvalidBankAccount;
+use App\Model\Payment\QrPaymentCode;
 use App\Model\Services\TemplateFactory;
 use App\Model\Unit\UnitService;
 use App\Model\Utils\MoneyFactory;
 use Nette\Utils\ArrayHash;
 use Throwable;
+use UnexpectedValueException;
 
 use function array_column;
 use function array_filter;
 use function array_map;
 use function array_sum;
 use function array_values;
-use function assert;
 use function in_array;
+use function is_file;
 use function is_float;
 use function sprintf;
 
@@ -75,6 +80,7 @@ class ExportService
         private TemplateFactory $templateFactory,
         private IEventRepository $events,
         private QueryBus $queryBus,
+        private InvoiceUnitSettingRepository $invoiceUnitSettings,
         private ?IGoogleRepository $googleRepository = null,
     ) {
     }
@@ -89,21 +95,27 @@ class ExportService
         if ($type === EventType::CAMP) {
             $templateFile = __DIR__.'/templates/participantCamp.latte';
             $camp = $this->queryBus->handle(new CampQuery(new SkautisCampId($aid)));
-            assert($camp instanceof Camp);
+            if (! $camp instanceof Camp) {
+                throw new UnexpectedValueException('Expected camp query to return camp.');
+            }
             $displayName = $camp->getDisplayName();
             $unitId = $camp->getUnitId();
             $list = $this->queryBus->handle(new CampParticipantListQuery($camp->getId()));
         } elseif ($type === EventType::EDUCATION) {
             $templateFile = __DIR__.'/templates/participantEducation.latte';
             $education = $this->queryBus->handle(new EducationQuery(new SkautisEducationId($aid)));
-            assert($education instanceof Education);
+            if (! $education instanceof Education) {
+                throw new UnexpectedValueException('Expected education query to return education.');
+            }
             $displayName = $education->getDisplayName();
             $unitId = $education->getUnitId();
             $list = $this->queryBus->handle(new EducationParticipantListQuery($education->getId()));
         } else {
             $templateFile = __DIR__.'/templates/participant.latte';
             $event = $this->queryBus->handle(new EventQuery(new SkautisEventId($aid)));
-            assert($event instanceof Event);
+            if (! $event instanceof Event) {
+                throw new UnexpectedValueException('Expected event query to return event.');
+            }
             $displayName = $event->getDisplayName();
             $unitId = $event->getUnitId();
             $list = $this->queryBus->handle(new EventParticipantListQuery($event->getId()));
@@ -122,7 +134,9 @@ class ExportService
     public function getCashbook(CashbookId $cashbookId, PaymentMethod $paymentMethod): string
     {
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
-        assert($cashbook instanceof Cashbook);
+        if (! $cashbook instanceof Cashbook) {
+            throw new UnexpectedValueException('Expected cashbook query to return cashbook.');
+        }
 
         $header = sprintf(
             '%s - %s',
@@ -200,7 +214,9 @@ class ExportService
         );
 
         $stats = $this->queryBus->handle(new EventParticipantStatisticsQuery(new SkautisEventId($skautisEventId)));
-        assert($stats instanceof Statistics);
+        if (! $stats instanceof Statistics) {
+            throw new UnexpectedValueException('Expected event participant statistics query to return statistics.');
+        }
         $events = $this->events->find(new SkautisEventId($skautisEventId));
         $functions = $this->queryBus->handle(new EventFunctions(new SkautisEventId($skautisEventId)));
 
@@ -237,7 +253,9 @@ class ExportService
         $expenseCategories = [self::CATEGORY_REAL => [], self::CATEGORY_VIRTUAL => []];
 
         foreach ($categories as $category) {
-            assert($category instanceof CategorySummary);
+            if (! $category instanceof CategorySummary) {
+                throw new UnexpectedValueException('Expected categories summary query to return category summaries.');
+            }
 
             $virtualCategory = $category->isVirtual() ? self::CATEGORY_VIRTUAL : self::CATEGORY_REAL;
 
@@ -253,10 +271,14 @@ class ExportService
         }
 
         $stats = $this->queryBus->handle(new CampParticipantStatisticsQuery(new SkautisCampId($skautisCampId)));
-        assert($stats instanceof Statistics);
+        if (! $stats instanceof Statistics) {
+            throw new UnexpectedValueException('Expected camp participant statistics query to return statistics.');
+        }
 
         $finalRealBalance = MoneyFactory::toFloat($this->queryBus->handle(new FinalRealBalanceQuery($cashbookId)));
-        assert(is_float($finalRealBalance));
+        if (! is_float($finalRealBalance)) {
+            throw new UnexpectedValueException('Expected final real balance to be float.');
+        }
 
         return $this->templateFactory->create(__DIR__.'/templates/campReport.latte', [
             'participantsCnt' => $stats->getPersonsCount(),
@@ -292,7 +314,9 @@ class ExportService
         $expenseCategories = [self::CATEGORY_REAL => [], self::CATEGORY_VIRTUAL => []];
 
         foreach ($categories as $category) {
-            assert($category instanceof CategorySummary);
+            if (! $category instanceof CategorySummary) {
+                throw new UnexpectedValueException('Expected categories summary query to return category summaries.');
+            }
 
             $virtualCategory = $category->isVirtual() ? self::CATEGORY_VIRTUAL : self::CATEGORY_REAL;
 
@@ -308,7 +332,9 @@ class ExportService
         }
 
         $finalRealBalance = MoneyFactory::toFloat($this->queryBus->handle(new FinalRealBalanceQuery($cashbookId)));
-        assert(is_float($finalRealBalance));
+        if (! is_float($finalRealBalance)) {
+            throw new UnexpectedValueException('Expected final real balance to be float.');
+        }
 
         $education = $this->queryBus->handle(new EducationQuery($educationId));
         $terms = $this->queryBus->handle(new EducationTermsQuery($educationId->toInt()));
@@ -347,8 +373,10 @@ class ExportService
         ]);
     }
 
-    public function getInvoice(Invoice $invoice): string
+    public function getInvoice(Invoice $invoice, ?string $stampImageSrc = null, ?string $logoImageSrc = null): string
     {
+        $qrPaymentSvg = $this->buildQrPaymentSvg($invoice);
+
         $data = [
             // Data dodavatele (proměnná {$supplier->...})
             'supplier' => [
@@ -397,12 +425,69 @@ class ExportService
                 'deposits' => 0.00, // [cite: 38]
                 'amountDue' => $invoice->getTotalAmount(),
             ],
+            'qrPaymentSvg' => $qrPaymentSvg,
+            'stampImagePath' => $stampImageSrc ?? $this->getInvoiceStampImagePath($invoice),
+            'logoImagePath' => $logoImageSrc ?? $this->getInvoiceLogoImagePath($invoice),
             'user' => [
                 'name' => $invoice->getIssuedBy(),
             ],
         ];
 
         return $this->templateFactory->create(__DIR__.'/templates/invoice.latte', (array) ArrayHash::from($data));
+    }
+
+    private function buildQrPaymentSvg(Invoice $invoice): ?string
+    {
+        if ($invoice->getPaymentType()->value !== InvoicePaymentType::TRANSFER->value) {
+            return null;
+        }
+
+        $bankAccount = $invoice->getAccountNumber()?->getNumberWithPrefixAndBankCode();
+        if ($bankAccount === null) {
+            return null;
+        }
+
+        try {
+            return QrPaymentCode::buildSvgWithCaption(
+                $bankAccount,
+                (string) $invoice->getTotalAmount(),
+                $invoice->getVariableSymbol()->toInt(),
+                8,
+                $invoice->getInvoiceNumber(),
+                'QR platba',
+                86,
+            );
+        } catch (InvalidBankAccount) {
+            return null;
+        }
+    }
+
+    public function getInvoiceStampImagePath(Invoice $invoice): ?string
+    {
+        return $this->getInvoiceSettingImagePath($invoice, 'stamp');
+    }
+
+    public function getInvoiceLogoImagePath(Invoice $invoice): ?string
+    {
+        return $this->getInvoiceSettingImagePath($invoice, 'logo');
+    }
+
+    private function getInvoiceSettingImagePath(Invoice $invoice, string $type): ?string
+    {
+        $unitSetting = $this->invoiceUnitSettings->findByUnitAndYear(
+            $invoice->getSequence()->getUnit(),
+            (int) $invoice->getDateOfIssue()->format('Y'),
+        );
+
+        $imagePath = $type === 'logo'
+            ? $unitSetting?->getLogoImagePath()
+            : $unitSetting?->getStampImagePath();
+
+        if ($imagePath === null || ! is_file($imagePath)) {
+            return null;
+        }
+
+        return $imagePath;
     }
 
     private function resolveSenderEmail(Invoice $invoice): ?string

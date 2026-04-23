@@ -20,7 +20,7 @@ final class EmailTemplateTest extends Unit
     {
         $template = new EmailTemplate(
             'Faktura %number% pro %customer_name%',
-            'VS %vs%, odběratel %customer_name%, částka %amount%',
+            'VS %vs%, odběratel %customer_name%, částka %amount%, QR %qrcode%',
         );
 
         $invoice = new Invoice(
@@ -37,11 +37,11 @@ final class EmailTemplateTest extends Unit
             new VariableSymbol('1'),
         );
 
-        $evaluated = $template->evaluate($invoice, 'Tester');
+        $evaluated = $template->evaluate($invoice, 'Tester', 'qr-code@example.test');
 
         self::assertSame('Faktura INV00001 pro Bez identifikace odběratele', $evaluated->getSubject());
         self::assertSame(
-            'VS 1, odběratel Bez identifikace odběratele, částka 0',
+            'VS 1, odběratel Bez identifikace odběratele, částka 0, QR <img alt="QR platbu se nepodařilo zobrazit" src="cid:qr-code@example.test">',
             $evaluated->getBody(),
         );
     }

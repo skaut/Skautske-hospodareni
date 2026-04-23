@@ -16,6 +16,7 @@ use App\Model\DTO\Participant\Statistics;
 use App\Model\Event\Event;
 use App\Model\Event\Functions;
 use App\Model\Event\Repositories\IEventRepository;
+use App\Model\Invoice\Repository\InvoiceUnitSettingRepository;
 use App\Model\Services\TemplateFactory;
 use App\Model\Unit\UnitService;
 use App\Model\Utils\MoneyFactory;
@@ -32,6 +33,7 @@ class ExportServiceTest extends Unit
         $events = m::mock(IEventRepository::class);
         $events->expects('find')->andReturn(m::mock(Event::class));
         $queryBus = m::mock(QueryBus::class);
+        $invoiceUnitSettings = m::mock(InvoiceUnitSettingRepository::class);
 
         $cashbookId = CashbookId::fromString('11bf5b37-e0b8-42e0-8dcf-dc8c4aefc000');
 
@@ -60,7 +62,7 @@ class ExportServiceTest extends Unit
         // handle EventFunctions
         $queryBus->expects('handle')->once()->andReturn(m::mock(Functions::class));
 
-        $exportService = new ExportService($unitService, $templateFactory, $events, $queryBus);
+        $exportService = new ExportService($unitService, $templateFactory, $events, $queryBus, $invoiceUnitSettings);
 
         $templateFactory->expects('create')->withArgs(static function (string $templatePath, array $parameters): bool {
             if ($parameters['participantsCnt'] !== 0) {

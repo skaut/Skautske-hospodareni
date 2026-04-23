@@ -21,6 +21,7 @@ use Nette\Mail\Message;
 
 use function nl2br;
 use function rand;
+use function substr;
 
 class MailingService
 {
@@ -136,7 +137,12 @@ class MailingService
             : null;
         $bankAccountNumber = $bankAccount !== null ? (string) $bankAccount->getNumber() : null;
 
-        $emailTemplate = $emailTemplate->evaluate($group, $payment, $bankAccountNumber, $userName);
+        $oAuth = $this->googleRepository->find($group->getOauthId());
+        $mail = (new Message())
+            ->setFrom($oAuth->getEmail());
+
+        $qrCodeCid = $this->addQrCodeInlineImage($mail, $emailTemplate, $payment, $bankAccountNumber);
+        $emailTemplate = $emailTemplate->evaluate($group, $payment, $bankAccountNumber, $userName, $qrCodeCid);
 
         $template = $this->templateFactory->create(
             TemplateFactory::PAYMENT_DETAILS,
@@ -145,10 +151,7 @@ class MailingService
             ],
         );
 
-        $oAuth = $this->googleRepository->find($group->getOauthId());
-        $mail = (new Message())
-            ->setFrom($oAuth->getEmail())
-            ->setSubject($emailTemplate->getSubject())
+        $mail->setSubject($emailTemplate->getSubject())
             ->setHtmlBody($template, __DIR__);
 
         foreach ($payment->getRecipients() as $emailRecipient) {
@@ -156,6 +159,31 @@ class MailingService
         }
 
         $this->mailerFactory->create($oAuth)->send($mail);
+    }
+
+    private function addQrCodeInlineImage(Message $mail, EmailTemplate $emailTemplate, MailPayment $payment, ?string $bankAccountNumber): ?string
+    {
+        if (! $emailTemplate->containsQrCode()) {
+            return null;
+        }
+
+        if ($bankAccountNumber === null) {
+            throw new InvalidBankAccount('Bank account required for QR code.');
+        }
+
+        $part = $mail->addEmbeddedFile(
+            'qr-platba.png',
+            QrPaymentCode::buildPng(
+                $bankAccountNumber,
+                $payment->getAmount(),
+                $payment->getVariableSymbol(),
+                $payment->getConstantSymbol(),
+                $payment->getName(),
+            ),
+            'image/png',
+        );
+
+        return substr((string) $part->getHeader('Content-ID'), 1, -1);
     }
 
     private function createPayment(Payment $payment): MailPayment

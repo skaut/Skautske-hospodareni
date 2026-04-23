@@ -31,12 +31,15 @@ use App\Model\Mail\Repositories\IGoogleRepository;
 use App\Model\Services\PdfRenderer;
 use App\Presentation\Payments\PaymentsBasePresenter;
 use InvalidArgumentException;
-use Nette\Utils\ArrayHash;
+use Nette\Application\BadRequestException;
+use Nette\Application\Responses\FileResponse;
 use Throwable;
 
 use function array_keys;
 use function array_map;
 use function in_array;
+use function pathinfo;
+use function strtolower;
 
 final class InvoiceListPresenter extends PaymentsBasePresenter
 {
@@ -164,51 +167,17 @@ final class InvoiceListPresenter extends PaymentsBasePresenter
             $this->redirect('default');
         }
 
-        $data = [
-            'supplier' => [
-                'name' => $invoice->getSupplier()->getName(),
-                'street' => $invoice->getSupplier()->getAddress()->getStreet(),
-                'city' => $invoice->getSupplier()->getAddress()->getCity(),
-                'zip' => $invoice->getSupplier()->getAddress()->getZipCode(),
-                'country' => 'Česká republika',
-                'ic' => $invoice->getSupplier()->getCompanyNumber(),
-                'mobil' => $invoice->getSupplier()->getPhone() ?? $invoice->getSequence()->getPhone(),
-                'email' => $this->resolveSenderEmail($invoice),
-                'bankName' => $invoice->getBankName(),
-                'bankAccount' => $invoice->getAccountNumber()?->getNumberWithPrefixAndBankCode(),
-                'iban' => $invoice->getIban(),
-                'bic' => $invoice->getBic(),
-            ],
-            'customer' => [
-                'name' => $invoice->getCustomer()->getName(),
-                'address' => $invoice->getCustomer()->getDisplayAddress(),
-                'ic' => $invoice->getCustomer()->getCompanyNumber(),
-                'dic' => $invoice->getCustomer()->getVatNumber(),
-                'hasCompanyNumber' => $invoice->getCustomer()->hasCompanyNumber(),
-                'hasVatNumber' => $invoice->getCustomer()->hasVatNumber(),
-                'isAnonymous' => $invoice->getCustomer()->isAnonymous(),
-            ],
-            'invoice' => [
-                'number' => $invoice->getInvoiceNumber(),
-                'variableSymbol' => $invoice->getVariableSymbol(),
-                'constantSymbol' => '0008',
-                'specificSymbol' => '',
-                'paymentMethod' => $invoice->getPaymentType(),
-                'dateIssued' => $invoice->getDateOfIssue(),
-                'dateDue' => $invoice->getDueDate(),
-                'items' => $invoice->getItems(),
-                'totalAmount' => $invoice->getTotalAmount(),
-                'deposits' => 0.00,
-                'amountDue' => $invoice->getTotalAmount(),
-            ],
-            'user' => [
-                'name' => $invoice->getIssuedBy(),
-            ],
-        ];
+        $stampImageSrc = $this->exportService->getInvoiceStampImagePath($invoice) === null
+            ? null
+            : $this->link('stampImage!', ['id' => $invoice->getId()]);
+        $logoImageSrc = $this->exportService->getInvoiceLogoImagePath($invoice) === null
+            ? null
+            : $this->link('logoImage!', ['id' => $invoice->getId()]);
 
-        $param = ArrayHash::from($data);
-
-        $this->template->setParameters((array) $param);
+        $this->template->setParameters([
+            'invoice' => $invoice,
+            'invoicePreviewHtml' => $this->exportService->getInvoice($invoice, $stampImageSrc, $logoImageSrc),
+        ]);
     }
 
     protected function createComponentCreateForm(): Payment\InvoiceForm
@@ -334,6 +303,41 @@ final class InvoiceListPresenter extends PaymentsBasePresenter
         $this->terminate();
     }
 
+    public function handleStampImage(int $id): void
+    {
+        $this->sendInvoiceImage($id, 'stamp');
+    }
+
+    public function handleLogoImage(int $id): void
+    {
+        $this->sendInvoiceImage($id, 'logo');
+    }
+
+    private function sendInvoiceImage(int $id, string $type): void
+    {
+        $invoice = $this->invoiceRepository->findAccessibleByUnits($id, $this->getReadableUnitIds());
+
+        if (! $invoice instanceof Invoice) {
+            throw new BadRequestException('Faktura nebyla nalezena.', 404);
+        }
+
+        $imagePath = $type === 'logo'
+            ? $this->exportService->getInvoiceLogoImagePath($invoice)
+            : $this->exportService->getInvoiceStampImagePath($invoice);
+
+        if ($imagePath === null) {
+            throw new BadRequestException($type === 'logo' ? 'Logo nebylo nalezeno.' : 'Razítko nebylo nalezeno.', 404);
+        }
+
+        $mimeType = match (strtolower((string) pathinfo($imagePath, PATHINFO_EXTENSION))) {
+            'jpg', 'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            default => 'application/octet-stream',
+        };
+
+        $this->sendResponse(new FileResponse($imagePath, $type === 'logo' ? 'logo' : 'razitko-podpis', $mimeType, false));
+    }
+
     public function handleRemove(int $id): void
     {
     }
@@ -445,20 +449,6 @@ final class InvoiceListPresenter extends PaymentsBasePresenter
         }
 
         $this->redirect('default');
-    }
-
-    private function resolveSenderEmail(Invoice $invoice): ?string
-    {
-        $oauthId = $invoice->getSequence()->getOauthId();
-        if ($oauthId === null) {
-            return null;
-        }
-
-        try {
-            return $this->googleRepository->find($oauthId)->getEmail();
-        } catch (Throwable) {
-            return null;
-        }
     }
 
     private function getSequenceEmailDisabledReason(InvoiceSequence $sequence): ?string
