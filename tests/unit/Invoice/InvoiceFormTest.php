@@ -182,7 +182,10 @@ final class InvoiceFormTest extends Unit
         self::assertInstanceOf(SelectBox::class, $paymentType);
         self::assertSame(InvoicePaymentType::TRANSFER->name, $paymentType->getValue());
         self::assertSame(
-            InvoicePaymentType::toSelect(),
+            [
+                InvoicePaymentType::TRANSFER->name => InvoicePaymentType::TRANSFER->value,
+                InvoicePaymentType::CASH->name => InvoicePaymentType::CASH->value,
+            ],
             $paymentType->getItems(),
         );
     }

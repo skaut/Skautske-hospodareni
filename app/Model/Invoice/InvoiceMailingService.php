@@ -8,9 +8,12 @@ use App\Model\Common\Repositories\IUserRepository;
 use App\Model\Google\Exception\OAuthNotSet;
 use App\Model\Google\InvalidOAuth;
 use App\Model\Invoice\Entity\Invoice;
+use App\Model\Invoice\Enum\InvoicePaymentType;
 use App\Model\Invoice\Repository\InvoiceRepository;
 use App\Model\Mail\IMailerFactory;
 use App\Model\Mail\Repositories\IGoogleRepository;
+use App\Model\Payment\InvalidBankAccount;
+use App\Model\Payment\QrPaymentCode;
 use App\Model\Services\PdfRenderer;
 use App\Model\Services\TemplateFactory;
 use DateTimeImmutable;
@@ -20,6 +23,7 @@ use Nette\Mail\Message;
 use Throwable;
 
 use function nl2br;
+use function substr;
 
 final class InvoiceMailingService
 {
@@ -79,7 +83,13 @@ final class InvoiceMailingService
                 throw InvoiceHasNoEmails::withNumber($invoice->getInvoiceNumber());
             }
 
-            $resolvedTemplate = $template->evaluate($invoice, $userName);
+            $oAuth = $this->googleRepository->find($sequence->getOauthId());
+
+            $mail = (new Message())
+                ->setFrom($oAuth->getEmail());
+
+            $qrCodeCid = $this->addQrCodeInlineImage($mail, $template, $invoice);
+            $resolvedTemplate = $template->evaluate($invoice, $userName, $qrCodeCid);
             $mailBody = $this->templateFactory->create(
                 TemplateFactory::PAYMENT_DETAILS,
                 [
@@ -87,11 +97,7 @@ final class InvoiceMailingService
                 ],
             );
 
-            $oAuth = $this->googleRepository->find($sequence->getOauthId());
-
-            $mail = (new Message())
-                ->setFrom($oAuth->getEmail())
-                ->setSubject($resolvedTemplate->getSubject())
+            $mail->setSubject($resolvedTemplate->getSubject())
                 ->setHtmlBody($mailBody, __DIR__);
 
             foreach ($invoice->getEmailRecipients() as $recipient) {
@@ -116,5 +122,39 @@ final class InvoiceMailingService
         $invoice->recordEmailAttempt($emailType, $attemptTime, $userName);
         $this->entityManager->persist($invoice);
         $this->entityManager->flush();
+    }
+
+    private function addQrCodeInlineImage(Message $mail, EmailTemplate $template, Invoice $invoice): ?string
+    {
+        if (! $template->containsQrCode()) {
+            return null;
+        }
+
+        if ($invoice->getPaymentType()->value !== InvoicePaymentType::TRANSFER->value) {
+            return null;
+        }
+
+        $bankAccount = $invoice->getAccountNumber()?->getNumberWithPrefixAndBankCode();
+        if ($bankAccount === null) {
+            return null;
+        }
+
+        try {
+            $part = $mail->addEmbeddedFile(
+                'qr-platba.png',
+                QrPaymentCode::buildPng(
+                    $bankAccount,
+                    (string) $invoice->getTotalAmount(),
+                    $invoice->getVariableSymbol()->toInt(),
+                    8,
+                    $invoice->getInvoiceNumber(),
+                ),
+                'image/png',
+            );
+        } catch (InvalidBankAccount) {
+            return null;
+        }
+
+        return substr((string) $part->getHeader('Content-ID'), 1, -1);
     }
 }

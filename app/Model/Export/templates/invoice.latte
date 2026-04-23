@@ -7,90 +7,252 @@
         body {
             font-family: sans-serif;
             font-size: 10px;
-            color: #333;
+            color: #111;
         }
         .invoice-box {
             width: 100%;
             max-width: 800px;
             margin: auto;
-            padding: 20px;
+            padding: 18px;
         }
-        .header {
+        .top-title {
             width: 100%;
-            margin-bottom: 20px;
+            border-collapse: collapse;
+            margin-bottom: 0;
         }
-        .header td {
+        .top-title td {
             vertical-align: top;
         }
-        .header .title {
-            font-size: 24px;
-            font-weight: bold;
-        }
-        .header .invoice-number {
+        .document-title {
             font-size: 18px;
             font-weight: bold;
         }
-        .header .contact-info {
+        .invoice-number {
+            font-size: 18px;
+            font-weight: bold;
             text-align: right;
         }
-        .parties {
+        .main-frame {
             width: 100%;
-            margin-bottom: 20px;
+            border-collapse: collapse;
+            margin-bottom: 0;
         }
-        .parties td {
-            width: 50%;
+        .main-frame td {
             vertical-align: top;
-            padding: 5px;
-            border: 1px solid #eee;
         }
-        .parties .party-title {
-            font-weight: bold;
+        .supplier-panel {
+            width: 52%;
+            border-top: 2px solid #000;
+            border-left: 1px solid #000;
+            border-right: 1px solid #000;
+            border-bottom: 1px solid #000;
+            padding: 6px 8px;
+        }
+        .right-panel {
+            width: 48%;
+            border-top: 2px solid #000;
+            border-right: 1px solid #000;
+            border-bottom: 1px solid #000;
+            padding: 0;
+        }
+        .recipient-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .recipient-cell {
+            padding: 6px 8px;
+            vertical-align: top;
+            border-bottom: 1px solid #000;
+        }
+        .recipient-table .billing-address {
+            height: 64px;
+        }
+        .recipient-table .postal-address {
+            border: 1px solid #000;
+            padding: 8px;
+            height: 88px;
+        }
+        .recipient-table .order-meta {
+            padding-top: 5px;
+            padding-bottom: 5px;
+            height: 44px;
+        }
+        .section-label {
+            font-size: 9px;
             margin-bottom: 5px;
         }
-        .payment-details {
-            width: 100%;
-            margin-bottom: 20px;
+        .supplier-logo {
+            text-align: center;
+            margin: 4px 0 6px;
         }
-        .payment-details td {
-            width: 50%;
+        .supplier-logo img {
+            width: 155px;
+            height: 42px;
+            object-fit: contain;
+        }
+        .supplier-name {
+            font-size: 14px;
+            font-weight: bold;
+            margin: 10px 0 4px;
+        }
+        .contact-table,
+        .bank-table,
+        .payment-info-table,
+        .meta-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .contact-table td,
+        .bank-table td,
+        .payment-info-table td,
+        .meta-table td {
+            padding: 1px 0;
             vertical-align: top;
         }
-        .payment-details table {
-            width: 100%;
+        .bank-table {
+            margin-top: 42px;
+            border-top: 1px solid #000;
         }
-        .payment-details td td {
-            padding: 2px 5px;
+        .bank-table td {
+            padding-top: 3px;
         }
-        .payment-details .label {
+        .customer-block {
+            font-size: 12px;
             font-weight: bold;
-            width: 120px;
+            line-height: 1.35;
+            text-align: center;
+        }
+        .details-frame {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 8px;
+        }
+        .details-frame td {
+            vertical-align: top;
+            padding: 0;
+        }
+        .payment-cell {
+            width: 52%;
+            border-left: 1px solid #000;
+            border-right: 1px solid #000;
+            border-bottom: 1px solid #000;
+        }
+        .dates-cell {
+            width: 48%;
+            border-right: 1px solid #000;
+            border-bottom: 1px solid #000;
+        }
+        .payment-box {
+            min-height: 90px;
+            padding: 0;
+        }
+        .payment-layout-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .payment-layout-table td {
+            vertical-align: top;
+            padding: 0;
+        }
+        .bank-box {
+            padding: 5px 8px;
+        }
+        .payment-info-table {
+            margin-left: 18px;
+        }
+        .qr-payment-cell {
+            width: 100px;
+            min-width: 100px;
+            max-width: 100px;
+            padding: 9px 6px 4px 0;
+            text-align: center;
+        }
+        .qr-payment-cell img,
+        .qr-payment-cell svg {
+            width: 86px;
+            height: 98px;
+        }
+        .qr-payment-wrap {
+            text-align: center;
+            line-height: 0;
+        }
+        .payment-info-table td:first-child {
+            width: 95px;
+        }
+        .dates-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .dates-table td {
+            padding: 2px 8px;
+            vertical-align: top;
+        }
+        .dates-table .date-highlight td {
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+            font-weight: bold;
+        }
+        .meta-table td:first-child,
+        .bank-table td:first-child,
+        .contact-table td:first-child,
+        .dates-table td:first-child {
+            width: 95px;
+        }
+        .label {
+            font-weight: bold;
         }
         .items-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        .items-table th, .items-table td {
-            border: 1px solid #ddd;
-            padding: 6px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #000;
         }
         .items-table th {
-            background-color: #f9f9f9;
+            border-bottom: 1px solid #000;
+            padding: 5px 3px;
             text-align: left;
+            font-weight: bold;
         }
-        .items-table .text-right {
-            text-align: right;
+        .items-table td {
+            border-bottom: 1px solid #000;
+            padding: 5px 3px;
+            vertical-align: top;
         }
-        .items-table .text-center {
-            text-align: center;
+        .items-table .item-total-row td {
+            border-top: 1px solid #000;
+            border-bottom: 0;
+            font-weight: bold;
+        }
+        .recap-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+        .recap-table td {
+            padding: 2px 3px;
+            border-bottom: 1px solid #999;
+        }
+        .summary-table {
+            width: 78%;
+            border-collapse: collapse;
+            margin-left: auto;
+            border: 1px solid #000;
+        }
+        .summary-table td {
+            padding: 5px 7px;
+            border: 1px solid #000;
+        }
+        .total-due {
+            font-weight: bold;
+            font-size: 18px;
         }
         .totals {
             width: 100%;
+            margin-bottom: 24px;
         }
         .totals .vat-note {
             font-weight: bold;
-            padding-top: 10px;
-            margin-bottom: 10px;
+            padding: 8px 0;
         }
         .totals-table {
             width: 100%;
@@ -100,37 +262,14 @@
             vertical-align: top;
             width: 50%;
         }
-        .summary-table-vat {
-            width: 80%;
-            border-collapse: collapse;
-        }
-        .summary-table-vat td {
-            padding: 5px;
-            border: 1px solid #ddd;
-        }
-        .summary-table {
-            width: 80%;
-            border-collapse: collapse;
-            margin-left: auto;
-        }
-        .summary-table td {
-            padding: 5px;
-            border: 1px solid #ddd;
-        }
-        .label {
-            font-weight: bold;
-        }
-        .total-due {
-            font-weight: bold;
-            font-size: 14px;
-            background-color: #f0f0f0;
-        }
         .text-right {
             text-align: right;
         }
+        .text-center {
+            text-align: center;
+        }
         .footer {
             width: 100%;
-            margin-top: 50px;
             font-size: 9px;
             color: #777;
         }
@@ -145,6 +284,12 @@
             padding-top: 5px;
             text-align: center;
         }
+        .footer .signature-stamp {
+            width: 130px;
+            height: 55px;
+            margin-top: 4px;
+            object-fit: contain;
+        }
         .footer .print-info {
             padding-top: 30px;
         }
@@ -156,95 +301,156 @@
 <body>
 <div class="invoice-box">
 
-    {* --- Hlavička: Název, Číslo faktury, Kontakty dodavatele --- *}
-        <table class="header">
+        <table class="top-title">
             <tr>
-                <td>
-                    <div class="title">Faktura</div>
-                    <div class="invoice-number">{$invoice->number}</div>
-                </td>
-                <td class="contact-info">
-                    {if $supplier->mobil}<strong>Mobil:</strong> {$supplier->mobil}<br>{/if}
-                    {if $supplier->email}<strong>E-mail:</strong> {$supplier->email}<br>{/if}
-                </td>
+                <td class="document-title">Faktura</td>
+                <td class="invoice-number">{$invoice->number}</td>
             </tr>
         </table>
 
-        {* --- Dodavatel a Odběratel --- *}
-        <table class="parties">
+        <table class="main-frame">
             <tr>
-                <td>
-                    <div class="party-title">Dodavatel:</div>
-                    <strong>{$supplier->name}</strong><br>
+                <td class="supplier-panel">
+                    <div class="section-label">Dodavatel:</div>
+                    <div n:if="$logoImagePath !== null" class="supplier-logo">
+                        <img src="{$logoImagePath}" width="155" height="42" alt="">
+                    </div>
+                    <div class="supplier-name">{$supplier->name}</div>
                     {$supplier->street}<br>
                     {$supplier->city} {$supplier->zip}<br>
                     {$supplier->country}<br><br>
-                    IČ: {$supplier->ic}
+                    IČ: {$supplier->ic}<br><br>
+                    <table class="contact-table">
+                        <tr n:if="$supplier->mobil">
+                            <td>Mobil:</td>
+                            <td>{$supplier->mobil}</td>
+                        </tr>
+                        <tr n:if="$supplier->email">
+                            <td>E-mail:</td>
+                            <td>{$supplier->email}</td>
+                        </tr>
+                    </table>
                 </td>
-                <td>
-                    <div class="party-title">Odběratel:</div>
-                    <strong n:if="$customer->name !== ''">{$customer->name}</strong><br n:if="$customer->name !== ''">
-                    <span n:if="$customer->address !== ''">{$customer->address}<br><br></span>
-                    <div n:if="$customer->hasCompanyNumber">IČ: {$customer->ic}</div>
-                    <div n:if="$customer->hasVatNumber">DIČ: {$customer->dic}</div>
+                <td class="right-panel">
+                    <table class="recipient-table">
+                        <tr>
+                            <td class="recipient-cell billing-address">
+                                <div class="section-label">Odběratel - sídlo:</div>
+                                <div class="customer-block">
+                                    <strong n:if="$customer->name !== ''">{$customer->name}</strong><br n:if="$customer->name !== ''">
+                                    <span n:if="$customer->address !== ''">{$customer->address}<br></span>
+                                </div>
+                                <div class="text-center">
+                                    <span n:if="$customer->hasCompanyNumber">IČ: {$customer->ic}</span>
+                                    <span n:if="$customer->hasVatNumber"> DIČ: {$customer->dic}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="recipient-cell postal-address">
+                                <div class="section-label">Poštovní adresa:</div>
+                                <div class="customer-block">
+                                    <strong n:if="$customer->name !== ''">{$customer->name}</strong><br n:if="$customer->name !== ''">
+                                    <span n:if="$customer->address !== ''">{$customer->address}<br></span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="recipient-cell order-meta">
+                                <table class="meta-table">
+                            <tr>
+                                <td>Číslo smlouvy:</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>Zakázka:</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>Objednávka:</td>
+                                <td></td>
+                            </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
                 </td>
             </tr>
         </table>
 
-        {* --- Platební údaje a Datumy --- *}
-        <table class="payment-details">
+        <table class="details-frame">
             <tr>
-                <td>
-                    {* Bankovní spojení *}
-                    <table>
-                        <tr n:if="$invoice->paymentMethod->value !== 'V hotovosti' && $supplier->bankAccount !== null">
-                            <td class="label">Banka:</td>
-                            <td>{$supplier->bankName}</td>
-                        </tr>
-                        <tr n:if="$invoice->paymentMethod->value !== 'V hotovosti' && $supplier->bankAccount !== null">
-                            <td class="label">Bankovní účet:</td>
-                            <td>{$supplier->bankAccount}</td>
-                        </tr>
-                        <tr n:if="$invoice->paymentMethod->value !== 'V hotovosti' && $supplier->iban !== null">
-                            <td class="label">IBAN:</td>
-                            <td>{$supplier->iban}</td>
-                        </tr>
-                        <tr n:if="$invoice->paymentMethod->value !== 'V hotovosti' && $supplier->bic !== null">
-                            <td class="label">BIC:</td>
-                            <td>{$supplier->bic}</td>
-                        </tr>
-                        <tr n:if="$invoice->paymentMethod->value !== 'V hotovosti' && $supplier->bankAccount === null">
-                            <td class="label">Úhrada:</td>
-                            <td>Bez bankovního účtu</td>
-                        </tr>
-                    </table>
+                <td class="payment-cell">
+                    <div class="payment-box">
+                        <table class="payment-layout-table">
+                            <tr>
+                                <td>
+                                    <div class="bank-box">
+                                        <table class="payment-info-table">
+                                            <tr>
+                                                <td class="label">Banka:</td>
+                                                <td>{if $invoice->paymentMethod->value !== 'V hotovosti' && $supplier->bankAccount !== null}{$supplier->bankName}{/if}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">Bankovní účet:</td>
+                                                <td>
+                                                    {if $invoice->paymentMethod->value !== 'V hotovosti' && $supplier->bankAccount !== null}<strong>{$supplier->bankAccount}</strong>{/if}
+                                                    {if $invoice->paymentMethod->value !== 'V hotovosti' && $supplier->bankAccount === null}Bez bankovního účtu{/if}
+                                                </td>
+                                            </tr>
+                                            <tr n:if="$invoice->paymentMethod->value !== 'V hotovosti' && $supplier->iban !== null">
+                                                <td class="label">IBAN:</td>
+                                                <td>{$supplier->iban}</td>
+                                            </tr>
+                                            <tr n:if="$invoice->paymentMethod->value !== 'V hotovosti' && $supplier->bic !== null">
+                                                <td class="label">BIC:</td>
+                                                <td>{$supplier->bic}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">Var. sym.:</td>
+                                                <td>{$invoice->variableSymbol}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">Konst. sym.:</td>
+                                                <td>{$invoice->constantSymbol}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="label">Spec. sym.:</td>
+                                                <td>{$invoice->specificSymbol}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </td>
+                                <td class="qr-payment-cell" n:if="$qrPaymentSvg !== null">
+                                    <div class="qr-payment-wrap">
+                                        {$qrPaymentSvg|noescape}
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
                 </td>
-                <td>
-                    {* Symboly a datumy *}
-                    <table>
+                <td class="dates-cell">
+                    <table class="dates-table">
                         <tr>
-                            <td class="label">Var. sym.:</td>
-                            <td>{$invoice->variableSymbol}</td>
+                            <td>Vystaveno:</td>
+                            <td class="text-right">{$invoice->dateIssued|date:'d.m.Y'}</td>
+                        </tr>
+                        <tr class="date-highlight">
+                            <td>Datum splatnosti:</td>
+                            <td class="text-right">{$invoice->dateDue|date:'d.m.Y'}</td>
                         </tr>
                         <tr>
-                            <td class="label">Konst. sym.:</td>
-                            <td>{$invoice->constantSymbol}</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Spec. sym.:</td>
-                            <td>{$invoice->specificSymbol}</td>
+                            <td>Datum vystavení:</td>
+                            <td class="text-right">{$invoice->dateIssued|date:'d.m.Y'}</td>
                         </tr>
                         <tr>
                             <td class="label">Forma úhrady:</td>
-                            <td>{$invoice->paymentMethod->value}</td>
+                            <td class="text-right">{$invoice->paymentMethod->value}</td>
                         </tr>
                         <tr>
-                            <td class="label">Vystaveno:</td>
-                            <td>{$invoice->dateIssued|date:'d.m.Y'}</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Datum splatnosti:</td>
-                            <td>{$invoice->dateDue|date:'d.m.Y'}</td>
+                            <td>Způsob dopravy:</td>
+                            <td></td>
                         </tr>
                     </table>
                 </td>
@@ -273,6 +479,10 @@
                     <td class="text-right">{$item->getTotalPrice()}</td>
                 </tr>
             {/foreach}
+                <tr class="item-total-row">
+                    <td colspan="4" class="text-right">Celkem:</td>
+                    <td class="text-right">{$invoice->totalAmount}</td>
+                </tr>
             </tbody>
         </table>
 
@@ -285,6 +495,19 @@
             <table class="totals-table">
                 <tr>
                     <td>
+                        <table class="recap-table">
+                            <tr>
+                                <td colspan="2" class="label">Rekapitulace v Kč</td>
+                            </tr>
+                            <tr>
+                                <td>Základ</td>
+                                <td class="text-right">{$invoice->totalAmount}</td>
+                            </tr>
+                            <tr>
+                                <td>Celkem základ</td>
+                                <td class="text-right">{$invoice->totalAmount}</td>
+                            </tr>
+                        </table>
                     </td>
                     <td>
                         <table class="summary-table">
@@ -314,6 +537,7 @@
                 <div class="signature-line">
                     Razítko a podpis
                 </div>
+                <img n:if="$stampImagePath !== null" src="{$stampImagePath}" class="signature-stamp" width="130" height="55" alt="">
             </td>
         </tr>
         <tr>
