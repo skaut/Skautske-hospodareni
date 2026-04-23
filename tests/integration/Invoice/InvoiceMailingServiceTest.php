@@ -18,6 +18,7 @@ use App\Model\Invoice\Embeddable\InvoiceSupplier;
 use App\Model\Invoice\Entity\Invoice;
 use App\Model\Invoice\Entity\InvoiceItem;
 use App\Model\Invoice\Entity\InvoiceSequence;
+use App\Model\Invoice\Repository\InvoiceUnitSettingRepository;
 use App\Model\Invoice\InvoiceMailingService;
 use App\Model\Invoice\Repository\InvoiceRepository;
 use App\Model\Mail\Repositories\IGoogleRepository;
@@ -201,11 +202,15 @@ final class InvoiceMailingServiceTest extends IntegrationTest
 
     private function createExportService(TemplateFactory $templateFactory): ExportService
     {
+        $invoiceUnitSettings = Mockery::mock(InvoiceUnitSettingRepository::class);
+        $invoiceUnitSettings->shouldReceive('findByUnitAndYear')->andReturn(null);
+
         return new ExportService(
             Mockery::mock(UnitService::class),
             $templateFactory,
             Mockery::mock(IEventRepository::class),
             Mockery::mock(QueryBus::class),
+            $invoiceUnitSettings,
             $this->tester->grabService(IGoogleRepository::class),
         );
     }
