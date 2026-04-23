@@ -112,14 +112,14 @@
 
 
         "tests:init": [
-            "bin/console nette:cache:purge || true",
+            "bin/console app:cache:purge || true",
             "bin/console migrations:drop-all-tables-views --no-interaction",
             "bin/console migrations:migrate --no-interaction"
         ],
         "tests:unit": "vendor/bin/codecept run unit",
         "tests:integration": "vendor/bin/codecept run integration",
         "tests:acceptance:init": [
-            "bin/console nette:cache:purge || true",
+            "bin/console app:cache:purge || true",
             "bin/console migrations:drop-all-tables-views --no-interaction",
             "bin/console migrations:migrate --no-interaction",
             "bin/console orm:generate-proxies --no-interaction"
@@ -142,7 +142,7 @@
 
 
         "static-analysis": [
-            "bin/console nette:cache:purge || true",
+            "bin/console app:cache:purge || true",
             "php -d memory_limit=2G vendor/bin/phpstan analyse -l 6 -c phpstan.neon app tests"
         ],
         "coding-standard": [
