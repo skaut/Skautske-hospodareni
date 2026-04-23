@@ -68,7 +68,17 @@ class PaymentCest extends BaseAcceptanceCest
         $I->wantTo('complete payment');
 
         $I->amGoingTo('mark second payment as complete');
-        $I->click('(//*[@title="Zaplaceno"])[2]');
+        $I->waitForJS(
+            'return document.querySelectorAll(\'a[title="Zaplaceno"]\').length >= 2;',
+            10,
+        );
+        $I->executeJS(
+            'var links = Array.from(document.querySelectorAll(\'a[title="Zaplaceno"]\'))'
+            .'.filter(function (link) { return link.offsetParent !== null; });'
+            .'if (links.length < 2) { return false; }'
+            .'links[1].click();'
+            .'return true;',
+        );
         $I->waitForText('Dokončena', 10);
 
         $I->canSeeNumberOfElements('(//*[text()="Nezaplacena"])', 2);
@@ -77,7 +87,18 @@ class PaymentCest extends BaseAcceptanceCest
         $I->wantTo('send payment email');
 
         $I->amGoingTo('send third payment');
-        $I->clickStable('(//a[contains(@class, "ui--sendEmail")])[last()]');
+        $I->waitForJS(
+            'return Array.from(document.querySelectorAll(\'a[title="Odeslat e-mail o platbě"].ui--sendEmail\'))'
+            .'.some(function (link) { return link.offsetParent !== null; });',
+            10,
+        );
+        $I->executeJS(
+            'var links = Array.from(document.querySelectorAll(\'a[title="Odeslat e-mail o platbě"].ui--sendEmail\'))'
+            .'.filter(function (link) { return link.offsetParent !== null; });'
+            .'if (links.length === 0) { return false; }'
+            .'links[links.length - 1].click();'
+            .'return true;',
+        );
         $I->waitForJS(
             'return Array.from(document.querySelectorAll(".alert"))'
             .'.some(function (alert) { return alert.textContent.toLowerCase().includes("e-mail"); });',

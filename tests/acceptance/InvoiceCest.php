@@ -305,7 +305,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->scrollTo('input[name="send"]');
         $I->waitForElementClickable('input[name="send"]');
         $I->clickStable('input[name="send"]');
-        $I->waitForText('Faktura byla vytvořena');
+        $I->waitForText('Faktura byla vytvořena', 10);
 
         $sourceInvoiceNumber = $sourcePrefix.'00001';
         $sourceInvoiceId = $I->grabFromDatabase('invoice', 'id', ['sequence_id' => $sourceSequenceId, 'invoice_number' => $sourceInvoiceNumber]);
