@@ -7,7 +7,8 @@
   min-width: 0;
 }
 
-.navbar-brand-wrap .navbar-brand {
+.navbar-brand-wrap .navbar-brand,
+.site-header .navbar-brand {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
@@ -15,8 +16,10 @@
 }
 
 .navbar-brand-icon {
-  font-size: 0.95rem;
+  width: 1.5rem;
+  height: 1.5rem;
   flex-shrink: 0;
+  object-fit: contain;
 }
 
 .navbar-brand-label {

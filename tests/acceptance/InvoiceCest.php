@@ -215,6 +215,8 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->waitForElementClickable('input[name="send"]');
         $I->clickStable('input[name="send"]');
         $I->waitForText('Faktura byla vytvořena');
+        $I->waitForElementVisible('[data-test="invoice-sequence-page"]', 10);
+        $I->seeCurrentUrlMatches('~^/platby/rady/'.$sequenceId.'\?jednotka=\d+(?:&.*)?$~');
 
         $expectedInvoiceNumber = $sequencePrefix.'00001';
         $invoiceId = $I->grabFromDatabase('invoice', 'id', ['sequence_id' => $sequenceId, 'invoice_number' => $expectedInvoiceNumber]);
@@ -242,8 +244,9 @@ class InvoiceCest extends BaseAcceptanceCest
         $duplicateYear = $this->futureYear(2);
         $sourcePrefix = 'DUA'.substr((string) $duplicateYear, -2);
         $targetPrefix = 'DUB'.substr((string) $duplicateYear, -2);
-        $sourceFirstNumber = '80001';
-        $targetFirstNumber = '90001';
+        $invoiceCount = (int) $I->grabFromDatabase('invoice', 'COUNT(*)');
+        $sourceFirstNumber = (string) (80001 + $invoiceCount);
+        $targetFirstNumber = (string) (90001 + $invoiceCount);
 
         $I->wantTo('duplicate invoice to another invoice sequence and continue in edit');
 
@@ -302,7 +305,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $targetSequenceId = (int) max($targetSequenceIds);
 
         $this->openInvoices();
-        $I->click('[data-test="invoice-sequence-create-invoice-'.$sourceSequenceId.'"]');
+        $I->clickStable('[data-test="invoice-sequence-create-invoice-'.$sourceSequenceId.'"]');
         $I->waitForElementVisible('[data-test="invoice-create-page"]', 10);
         $I->seeInCurrentUrl('/platby/rady/'.$sourceSequenceId.'/nova');
 
@@ -322,6 +325,9 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->scrollTo('input[name="send"]');
         $I->waitForElementClickable('input[name="send"]');
         $I->clickStable('input[name="send"]');
+        $I->waitForText('Faktura byla vytvořena');
+        $I->waitForElementVisible('[data-test="invoice-sequence-page"]', 10);
+        $I->seeCurrentUrlMatches('~^/platby/rady/'.$sourceSequenceId.'\?jednotka=\d+(?:&.*)?$~');
 
         $sourceInvoiceNumber = $sourcePrefix.$sourceFirstNumber;
         $sourceInvoiceId = null;
@@ -434,6 +440,8 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->clickStable('input[name="send"]');
 
         $I->waitForText('Faktura byla vytvořena');
+        $I->waitForElementVisible('[data-test="invoice-sequence-page"]', 10);
+        $I->seeCurrentUrlMatches('~^/platby/rady/'.$sequenceId.'\?jednotka=\d+(?:&.*)?$~');
         $expectedInvoiceNumber = $sequencePrefix.'00001';
         $expectedVariableSymbol = $this->yearSuffix($issueYear).'00001';
         $invoiceId = $I->grabFromDatabase('invoice', 'id', ['sequence_id' => $sequenceId, 'invoice_number' => $expectedInvoiceNumber]);
@@ -570,6 +578,8 @@ class InvoiceCest extends BaseAcceptanceCest
         $expectedVS = substr((string) $lifecycleYear, -2).'00001';
 
         $I->waitForText('Faktura byla vytvořena');
+        $I->waitForElementVisible('[data-test="invoice-sequence-page"]', 10);
+        $I->seeCurrentUrlMatches('~^/platby/rady/'.$sequenceId.'\?jednotka=\d+(?:&.*)?$~');
         $I->see($expectedInvNumber);
 
         // ── 4. Open invoice detail ───────────────────────────────

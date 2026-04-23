@@ -364,7 +364,10 @@ class InvoiceForm extends BaseControl
             $formComponent->setValues([], true);
             $this->presenter->redrawControl('form');
         } else {
-            $this->presenter->redirect('this');
+            $this->presenter->redirect(':Payments:InvoiceList:default', [
+                'invoiceSequenceId' => $this->invoiceSequence->getId(),
+                'unitId' => $this->invoiceSequence->getUnit(),
+            ]);
         }
     }
 

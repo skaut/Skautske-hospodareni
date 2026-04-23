@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="/favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="/images/skaut-logo.svg">
 
     <script n:syntax="off">
         if ("theme" in localStorage) {
@@ -40,19 +40,27 @@
             {* ── Brand ── *}
             {if $user->isLoggedIn()}
                 <a class="navbar-brand" n:href=":Dashboard:default">
-                    <i class="fas fa-fleur-de-lis navbar-brand-icon" aria-hidden="true"></i>
+                    {if $testBackground}
+                        <span class="navbar-test-badge" title="Testovací server" data-test="test-server-badge">
+                            <i class="fas fa-flask" aria-hidden="true"></i>
+                        </span>
+                    {else}
+                        <img src="/images/skaut-logo.svg" class="navbar-brand-icon" alt="" aria-hidden="true">
+                    {/if}
                     <span class="navbar-brand-label">Hospodaření</span>
                 </a>
             {else}
                 <a class="navbar-brand" n:href=":Default:">
-                    <i class="fas fa-fleur-de-lis navbar-brand-icon" aria-hidden="true"></i>
+                    {if $testBackground}
+                        <span class="navbar-test-badge" title="Testovací server" data-test="test-server-badge">
+                            <i class="fas fa-flask" aria-hidden="true"></i>
+                        </span>
+                    {else}
+                        <img src="/images/skaut-logo.svg" class="navbar-brand-icon" alt="" aria-hidden="true">
+                    {/if}
                     <span class="navbar-brand-label">Hospodaření</span>
                 </a>
             {/if}
-
-            <span n:if="$testBackground" class="navbar-test-badge" title="Testovací server" data-test="test-server-badge">
-                <i class="fas fa-flask" aria-hidden="true"></i>
-            </span>
 
             {* ── Hamburger toggler (mobile only) ── *}
             <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"

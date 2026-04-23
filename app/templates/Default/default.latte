@@ -16,10 +16,16 @@
                 </p>
 
                 <div class="d-flex flex-wrap gap-2 mb-4">
-                    <a href="{plink :Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL}"
-                       class="btn btn-primary btn-lg" data-test="homepage-login">
-                        Přihlásit se přes skautIS
-                    </a>
+                    {if $user->isLoggedIn()}
+                        <a n:href=":Dashboard:default" class="btn btn-primary btn-lg" data-test="homepage-login">
+                            Otevřít aplikaci
+                        </a>
+                    {else}
+                        <a href="{plink :Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL}"
+                           class="btn btn-primary btn-lg" data-test="homepage-login">
+                            Přihlásit se přes skautIS
+                        </a>
+                    {/if}
                     <a n:href=":Default:about" class="btn btn-outline-secondary btn-lg" data-test="homepage-about">
                         Zjistit více
                     </a>

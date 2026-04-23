@@ -55,6 +55,7 @@
                                 <a n:if="$isCash"
                                         href="{plink :Unit:CashbookExport:printChits $cashbookId, [$chit->id]}"
                                         target="_blank"
+                                        rel="noopener noreferrer"
                                         class="btn btn-sm btn-info d-none d-lg-inline"><i
                                             class="fas fa-print"></i></a>
                                 {control "chitScan-$chit->id"}
