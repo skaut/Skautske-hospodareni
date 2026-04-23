@@ -9,6 +9,7 @@ use PHPUnit\Framework\Assert;
 use Throwable;
 
 use function date;
+use function html_entity_decode;
 use function max;
 use function min;
 use function sleep;
@@ -157,6 +158,10 @@ class InvoiceCest extends BaseAcceptanceCest
         Assert::assertMatchesRegularExpression('~^/platby/faktury/\d+$~', $href);
         $I->amOnPage($href);
         $I->waitForElementVisible('[data-test="invoice-detail-page"]', 10);
+        Assert::assertStringContainsString(
+            'data-test=&quot;invoice-detail-page&quot;',
+            (string) $I->grabAttributeFrom('.invoice-preview-frame', 'srcdoc'),
+        );
         $I->seeInCurrentUrl('/platby/faktury/');
     }
 
@@ -450,7 +455,10 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->amOnPage('/platby/faktury/'.$invoiceId);
         $I->waitForElementVisible('[data-test="invoice-detail-page"]', 10);
         $I->seeInCurrentUrl('/platby/faktury/');
-        $I->see('Jan Novák');
+        Assert::assertStringContainsString(
+            'Jan Novák',
+            html_entity_decode((string) $I->grabAttributeFrom('.invoice-preview-frame', 'srcdoc')),
+        );
     }
 
     // ─── Help Panel Toggle ──────────────────────────────────────
@@ -586,8 +594,9 @@ class InvoiceCest extends BaseAcceptanceCest
         $invoiceId = $I->grabFromDatabase('invoice', 'id', ['invoice_number' => $expectedInvNumber]);
         $I->amOnPage('/platby/faktury/'.$invoiceId);
         $I->waitForElementVisible('[data-test="invoice-detail-page"]', 10);
-        $I->see('Lifecycle Tester');
-        $I->see('Lifecycle služba');
+        $invoicePreview = html_entity_decode((string) $I->grabAttributeFrom('.invoice-preview-frame', 'srcdoc'));
+        Assert::assertStringContainsString('Lifecycle Tester', $invoicePreview);
+        Assert::assertStringContainsString('Lifecycle služba', $invoicePreview);
 
         // ── 5. Cleanup: delete invoice + sequence via DB ─────────
         $sequenceId = $I->grabFromDatabase('invoice_sequence', 'id', ['sequence' => $seqPrefix]);
