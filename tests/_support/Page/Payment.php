@@ -6,7 +6,6 @@ namespace Page;
 
 use AcceptanceTester;
 use DateTime;
-use Facebook\WebDriver\WebDriverKeys;
 
 use function date;
 use function sprintf;
@@ -40,6 +39,7 @@ class Payment
         $I->fillFieldStable('#frm-paymentDialog-form-amount', (string) $amount, 10, false);
         $this->selectNextWorkdayForDueDate();
         $this->submitPayment();
+        $I->waitForText($name, 10);
     }
 
     public function seeNumberOfPaymentsWithState(string $state, int $count): void
@@ -50,15 +50,20 @@ class Payment
     public function selectNextWorkdayForDueDate(): void
     {
         $I = $this->tester;
-
         $dayOfWeek = date('N');
 
         $daysToNextWorkday = $dayOfWeek < 5 ? 1 : 8 - $dayOfWeek;
 
-        $date = (new DateTime())->modify(sprintf('+ %d days', $daysToNextWorkday))->format('d.m. Y');
+        $date = (new DateTime())->modify(sprintf('+ %d days', $daysToNextWorkday))->format('d.m.Y');
 
         $I->fillFieldStable('#frm-paymentDialog-form-dueDate', $date, 10, false);
-        $I->pressKey('body', [WebDriverKeys::ESCAPE]); // Close date picker
+        $I->executeJS(
+            'var input = document.querySelector("#frm-paymentDialog-form-dueDate");'
+            .'if (!input) { return false; }'
+            .'input.dispatchEvent(new Event("change", { bubbles: true }));'
+            .'input.blur();'
+            .'return true;',
+        );
     }
 
     private function openPaymentDialog(): void
@@ -77,9 +82,9 @@ class Payment
     {
         $I = $this->tester;
 
-        $I->executeJS('document.querySelector("#frm-paymentDialog-form input[name=send]").click()');
+        $I->executeJS('document.querySelector("#frm-paymentDialog-form input[name=\'send\']").click()');
 
-        // Wait for AJAX to complete: modal closes, flash appears
+        // Wait for AJAX to complete: modal closes and page becomes interactive again.
         $I->waitForJS(
             'var input = document.querySelector("#frm-paymentDialog-form-name");'
             .'return !input || input.offsetParent === null || input.getClientRects().length === 0;',

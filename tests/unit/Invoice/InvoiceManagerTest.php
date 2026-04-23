@@ -32,11 +32,6 @@ final class InvoiceManagerTest extends TestCase
     {
         /** @var EntityManagerInterface&MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $entityManager->expects(self::once())
-            ->method('wrapInTransaction')
-            ->willReturnCallback(static fn (callable $callback): mixed => $callback());
-        $entityManager->expects(self::once())
-            ->method('lock');
         $entityManager->expects(self::exactly(2))
             ->method('persist');
         $entityManager->expects(self::once())
@@ -50,11 +45,11 @@ final class InvoiceManagerTest extends TestCase
 
         /** @var IPaymentRepository&MockObject $paymentRepository */
         $paymentRepository = $this->createMock(IPaymentRepository::class);
-        $paymentRepository->expects(self::once())
+        $paymentRepository->expects(self::never())
             ->method('existsOpenPaymentWithVariableSymbolForBankAccount')
             ->willReturn(false);
 
-        $invoiceRepository->expects(self::once())
+        $invoiceRepository->expects(self::never())
             ->method('existsOpenTransferInvoiceWithVariableSymbolForBankAccount')
             ->willReturn(false);
 
@@ -86,15 +81,25 @@ final class InvoiceManagerTest extends TestCase
         /** @var LoggerService&MockObject $loggerService */
         $loggerService = $this->createMock(LoggerService::class);
 
-        $manager = new InvoiceManager(
-            $entityManager,
-            $userService,
-            $loggerService,
-            $invoiceRepository,
-            $collisionChecker,
-            $unitService,
-            $invoiceUnitSettingRepository,
-        );
+        /** @var InvoiceManager&MockObject $manager */
+        $manager = $this->getMockBuilder(InvoiceManager::class)
+            ->setConstructorArgs([
+                $entityManager,
+                $userService,
+                $loggerService,
+                $invoiceRepository,
+                $collisionChecker,
+                $unitService,
+                $invoiceUnitSettingRepository,
+            ])
+            ->onlyMethods(['wrapInTransaction', 'lock'])
+            ->getMock();
+
+        $manager->expects(self::once())
+            ->method('wrapInTransaction')
+            ->willReturnCallback(static fn (callable $callback): mixed => $callback());
+        $manager->expects(self::once())
+            ->method('lock');
 
         $sourceSequence = new InvoiceSequence(123, 'SRC29', 2029, 'Zdrojová řada', null, null, 14);
         $targetSequence = new InvoiceSequence(456, 'TGT29', 2029, 'Cílová řada', null, null, 10);

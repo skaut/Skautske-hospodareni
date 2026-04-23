@@ -105,7 +105,7 @@ final class RouterFactoryTest extends Unit
             [['presenter' => 'Payments:InvoiceSequenceList', 'unitId' => 5], '/platby/rady?jednotka=5'],
             [['presenter' => 'Payments:InvoiceSequence', 'unitId' => 5], '/platby/rady/nova?jednotka=5'],
             [['presenter' => 'Payments:InvoiceSequence', 'action' => 'edit', 'id' => 9, 'unitId' => 5], '/platby/rady/9/upravit?jednotka=5'],
-            [['presenter' => 'Payments:InvoiceList', 'invoiceSequenceId' => 9, 'unitId' => 5], '/platby/rady/9?jednotka=5'],
+            [['presenter' => 'Payments:InvoiceList', 'action' => 'default', 'invoiceSequenceId' => 9, 'unitId' => 5], '/platby/rady/9?jednotka=5'],
             [['presenter' => 'Settings:BankAccounts', 'unitId' => 5], '/nastaveni/bankovni-ucty?jednotka=5'],
             [['presenter' => 'Settings:BankAccounts', 'action' => 'new', 'unitId' => 5], '/nastaveni/bankovni-ucty/novy?jednotka=5'],
             [['presenter' => 'Settings:BankAccounts', 'action' => 'detail', 'id' => 77, 'unitId' => 5], '/nastaveni/bankovni-ucty/77?jednotka=5'],
