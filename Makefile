@@ -44,6 +44,16 @@ define wait_for_application
 	done
 endef
 
+define wait_for_mysql_test
+	@for i in $$(seq 1 30); do \
+		if $(COMPOSE) exec -T mysql-test sh -lc 'mysqladmin ping -h 127.0.0.1 -uroot -p"$$MYSQL_ROOT_PASSWORD" --silent' >/dev/null 2>&1; then \
+			break; \
+		fi; \
+		echo "Waiting for mysql-test... ($$i/30)"; \
+		sleep 2; \
+	done
+endef
+
 help: ## Zobrazí tuto nápovědu
 	@grep -E '^[a-zA-Z0-9_-]+:.*## ' Makefile | awk -F ':[^#]*## ' '{printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
@@ -90,6 +100,7 @@ test-enter: ## Shell do test PHP kontejneru
 
 test-init: ## Inicializace testovací aplikace
 	$(MAKE) test-services
+	$(call wait_for_mysql_test)
 	$(RUN_PHP_TEST) composer app-init
 
 test-services: ## Start test DB a test PHP kontejneru
@@ -100,14 +111,17 @@ test-unit: ## Unit testy (volitelně TEST=tests/unit/FooTest.php)
 
 test-integration: ## Integrační testy (volitelně TEST=tests/integration/FooTest.php)
 	$(MAKE) test-services
+	$(call wait_for_mysql_test)
 	$(RUN_PHP_TEST) vendor/bin/codecept run integration $(TEST_ARGS)
 
 test-coverage: ## Unit + integration testy s coverage XML
 	$(MAKE) test-services
+	$(call wait_for_mysql_test)
 	$(RUN_PHP_TEST) composer tests-with-coverage
 
 test-acceptance: ## Akceptační testy lokálně s viditelným Selenium preview
 	$(COMPOSE) up -d $(ACCEPTANCE_SERVICES)
+	$(call wait_for_mysql_test)
 	$(call wait_for_selenium)
 	$(RUN_PHP_TEST) composer tests:acceptance:init
 	$(RUN_PHP_TEST) vendor/bin/codecept run acceptance -vv $(TEST_ARGS); \
@@ -117,10 +131,12 @@ test-acceptance: ## Akceptační testy lokálně s viditelným Selenium preview
 
 test-mapping: ## Validace DB schématu vs migrace
 	$(MAKE) test-services
+	$(call wait_for_mysql_test)
 	$(RUN_PHP_TEST) composer validate-mapping
 
 ci-acceptance: ## Akceptační testy v CI režimu
 	$(COMPOSE) up -d $(ACCEPTANCE_SERVICES)
+	$(call wait_for_mysql_test)
 	$(call wait_for_selenium)
 	$(call wait_for_application)
 	$(RUN_PHP_TEST) composer tests:acceptance:init

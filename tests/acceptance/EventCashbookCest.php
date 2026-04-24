@@ -77,7 +77,8 @@ class EventCashbookCest extends BaseAcceptanceCest
 
         $this->I->click('.ui--createEvent');
         $this->eventCreated = true;
-        $this->I->see('Základní údaje');
+        $this->I->waitForElement('[data-test="event-detail-page"]', 10);
+        $this->I->waitForText('Základní údaje', 10, 'nav[aria-label="Navigace akce"]');
 
         // Go through datagrid
         $this->I->click('Akce');
@@ -208,7 +209,15 @@ class EventCashbookCest extends BaseAcceptanceCest
             }
 
             $I->disablePopups();
-            $I->clickStable($cancelButton);
+            $I->executeJS(
+                sprintf(
+                    'var button = document.evaluate(%s, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;'
+                    .' if (!button) { return false; }'
+                    .' button.click();'
+                    .' return true;',
+                    json_encode($cancelButton),
+                ),
+            );
             $I->waitForJS(
                 sprintf(
                     'return document.evaluate(%s, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue === null;',
