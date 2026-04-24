@@ -33,20 +33,20 @@ yarn build --watch
 Pro testování používáme [Codeception](http://codeception.com/).
 
 
-Testy lze spustit příkazem v kontejneru:
+Testy lze spustit pomocí `make`:
 ```bash
-phing tests # Jednotkové + Integrační testy + Akceptační testy
-phing tests-unit # Pouze jednotkové testy
-phing tests-integration # Pouze integrační testy
-phing tests-acceptance # Akceptační testy
+make test-unit
+make test-integration
+make test-acceptance
+make ci-acceptance
+make ci
 ```
 
-nebo pomocí make přímo na hostujícím stroji:
+Případně přímo v testovacím kontejneru:
 ```bash
-make tests-all # Jednotkové + Integrační testy + Akceptační testy 
-make tests-unit # Pouze jednotkové testy
-make tests-integration # Pouze integrační testy
-make tests-acceptance # Akceptační testy
+docker exec hskauting.app-test vendor/bin/codecept run unit --no-colors
+docker exec hskauting.app-test vendor/bin/codecept run integration --no-colors
+docker exec hskauting.app-test vendor/bin/codecept run acceptance --no-colors
 ```
 
 
@@ -55,17 +55,18 @@ Coding standard vychází z [Doctrine Coding Standardu](https://github.com/doctr
 Zda je projekt v souladu s CS lze ověřit pomocí příkazu v kontejneru:
 
 ```bash
-phing coding-standard-ci
+make check-cs-check
 ```
 
 Automaticky lze nechat opravit pomocí:
 
 ```bash
-./vendor/bin/phpcbf app
+make check-cs
 ```
 
-Nebo opět přímo z hostujícího stroje pomocí make:
+Další užitečné kontroly:
 
 ```bash
-make coding-standard 
+make check-phpstan
+make check-latte
 ```

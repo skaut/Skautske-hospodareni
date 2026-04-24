@@ -126,8 +126,7 @@ jobs:
       - uses: actions/download-artifact@v7
         with: { name: workdir, path: . }
       - run: tar -xzpf workdir.tar.gz
-      - run: docker compose -f docker/docker-compose.yml up -d mysql-test
-      - run: docker compose -f docker/docker-compose.yml run -T php-test composer tests-with-coverage
+      - run: make test-coverage
       - uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
