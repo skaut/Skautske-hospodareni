@@ -12,10 +12,11 @@ Na hostujícím stroji musí být ve výchozím stavu volné porty 80 a 3306. Po
 
 ## Docker
 Pro lokální vývoj je připraven Docker container a konfigurace pro **docker compose**.
-Všechny potřebné příkazy jsou definované v Make file
+Všechny potřebné příkazy jsou definované v `Makefile`.
 
 ```bash
-make up # Spustí container v detached modu
+make build # Sestaví image
+make up    # Spustí dev stack v detached módu
 ```
 
 V kontejneru je možné spustit bash pomocným skriptem:
@@ -34,7 +35,7 @@ Stačí přidat tento řádek do souboru `/etc/hosts`:
 
 ## Příprava projektu
 Stačí spustit příkaz `make init`.
-Ten udělá čistou lokální inicializaci: pročistí cache, smaže lokální data v DB, znovu aplikuje migrace a vytvoří čistý frontend build.
+Ten sestaví image, spustí dev stack a uvnitř PHP kontejneru zavolá `composer app-init`, který provede lokální inicializaci projektu včetně závislostí, migrací a frontend buildu.
 
 ## Rozběhnutí na macOS
 Je potřeba si založit v domovské složce `.env` soubor s obsahem 
