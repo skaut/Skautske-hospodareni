@@ -147,11 +147,14 @@ desc('Symlink root-level shared folders (log, uploads) into the release and upda
 task('custom:shared_symlinks', function () {
     // zajisti existenci kořenových složek
     run('mkdir -p {{deploy_path}}/log {{deploy_path}}/uploads');
+    run('chmod 0775 {{deploy_path}}/log {{deploy_path}}/uploads');
 
     // ukliď v release, ať ln nepadá, a vytvoř symlinky jako ve skriptu
     run('rm -rf {{release_path}}/log {{release_path}}/uploads');
-    run('ln -s {{deploy_path}}/log {{release_path}}/log || true');
-    run('ln -s {{deploy_path}}/uploads {{release_path}}/uploads || true');
+    run('ln -sfn {{deploy_path}}/log {{release_path}}/log');
+    run('ln -sfn {{deploy_path}}/uploads {{release_path}}/uploads');
+    run('test -L {{release_path}}/log');
+    run('test -L {{release_path}}/uploads');
 
     // symlink web rootu mimo releases (idempotentně, přepíše existující)
     run('ln -sfn {{release_path}}/www {{web_root_symlink}}');
