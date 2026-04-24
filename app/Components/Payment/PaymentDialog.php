@@ -60,13 +60,8 @@ final class PaymentDialog extends Dialog
     {
         $form = new BaseForm();
 
-        $form->addText('name', 'Název')
-            ->addRule(Form::FILLED, 'Musíte zadat název platby');
-
-        $form->addText('amount', 'Částka')
-            ->addRule(Form::FILLED, 'Musíte vyplnit částku')
-            ->addRule(Form::FLOAT, 'Částka musí být zadaná jako číslo')
-            ->addRule(Form::MIN, 'Částka musí být větší než 0', 0.01);
+        PaymentFormFields::addName($form);
+        PaymentFormFields::addAmount($form);
 
         $form->addText('email', 'E-mail')
             ->setRequired(false)
@@ -75,21 +70,10 @@ final class PaymentDialog extends Dialog
             ->addCondition(Form::FILLED)
             ->addRule([MyValidators::class, 'isValidEmailList'], 'Zadaný e-mail nemá platný formát. Více adres oddělte pouze čárkou.');
 
-        $form->addDate('dueDate', 'Splatnost')
-            ->disableWeekends()
-            ->setRequired('Musíte vyplnit splatnost');
-
-        $form->addVariableSymbol('variableSymbol', 'VS')
-            ->setRequired(false);
-
-        $form->addText('constantSymbol', 'KS')
-            ->setNullable()
-            ->setMaxLength(4)
-            ->setHtmlType('text')
-            ->setRequired(false)
-            ->addRule(Form::INTEGER, 'KS musí být číslo');
-
-        $form->addText('note', 'Poznámka');
+        PaymentFormFields::addDueDate($form);
+        PaymentFormFields::addVariableSymbol($form);
+        PaymentFormFields::addConstantSymbol($form);
+        PaymentFormFields::addNote($form);
 
         $payment = $this->payment();
 

@@ -192,7 +192,7 @@ class PaymentCest extends BaseAcceptanceCest
                 (string) $I->grabAttributeFrom('[data-test^="payment-camp-create-"]', 'href'),
             );
             $I->click('[data-test^="payment-camp-create-"]');
-            $I->waitForText('Nová skupina plateb', 10);
+            $I->waitForElementVisible('[data-test="payment-camp-create-group-page"]', 10);
             $I->seeCurrentUrlMatches('~^/platby/tabory/\d+/nova(?:\?.*)?$~');
         }
 
@@ -206,7 +206,7 @@ class PaymentCest extends BaseAcceptanceCest
                     $eventHref,
                 );
                 $I->clickStable('[data-test^="payment-event-create-"]');
-                $I->waitForText('Nová skupina plateb', 10);
+                $I->waitForElementVisible('[data-test="payment-event-create-group-page"]', 10);
                 $I->seeCurrentUrlMatches('~^/platby/akce/\d+/nova(?:\?.*)?$~');
             } else {
                 $I->comment('Event create link has no valid href — skipping');
@@ -222,7 +222,7 @@ class PaymentCest extends BaseAcceptanceCest
                 (string) $I->grabAttributeFrom('[data-test^="payment-education-create-"]', 'href'),
             );
             $I->click('[data-test^="payment-education-create-"]');
-            $I->waitForText('Nová skupina plateb', 10);
+            $I->waitForElementVisible('[data-test="payment-education-create-group-page"]', 10);
             $I->seeCurrentUrlMatches('~^/platby/vzdelavacky/\d+/nova(?:\?.*)?$~');
         }
     }
