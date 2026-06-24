@@ -62,6 +62,9 @@ search:
                 - App\Model\Chit\ChitService
                 - App\Model\Participant\ParticipantService
                 - App\Model\Admin\Services\AdminAccessChecker
+                - App\Model\BugReport\BugReportNotificationService
+                - App\Model\BugReport\BugReportService
+                - App\Model\Invoice\InvoiceAccessChecker
                 - App\Model\Bank\Services\BankAccountPairingRunResult
                 - App\Model\Bank\Services\ParsedGpcFile
 
@@ -73,7 +76,8 @@ services:
 
     # Auth
     - factory: App\Model\Admin\Services\AdminAccessChecker(@Nette\Security\User, @App\Model\User\Repository\AdminUserRepository, %adminAllowedUserIds%)
-    - App\Model\Auth\CompositeAuthorizator(@skautisAuthorizator, @App\Model\Admin\Services\AdminAccessChecker)
+    - factory: App\Model\Invoice\InvoiceAccessChecker(@Nette\Security\User, @App\Model\User\Repository\InvoiceAccessUserRepository, %invoiceAccessAllowedUserIds%)
+    - App\Model\Auth\CompositeAuthorizator(@skautisAuthorizator, @App\Model\Admin\Services\AdminAccessChecker, @App\Model\Invoice\InvoiceAccessChecker)
     - App\Presentation\Accessory\Navigation\NavigationAuthorizator
     - App\Presentation\Accessory\Navigation\PreservingLinkGenerator
 
@@ -144,6 +148,13 @@ services:
 
     # Mail
     - App\Model\Mail\MailerFactory(@nette.mailer, %sendEmail%)
+    - App\Model\BugReport\BugReportNotificationService(
+          sendEmail: %sendEmail%
+          productionMode: %productionMode%
+          recipients: %errorEmails%
+          appBaseUrl: %appBaseUrl%
+      )
+    - App\Model\BugReport\BugReportService(appRelease: %sentry.releaseHash%)
 
     # Latte
     nette.latteFactory:

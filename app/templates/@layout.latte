@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="cs">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -33,10 +33,11 @@
     <link rel="stylesheet" href="/css/app.css?{md5_file($wwwDir . '/css/app.css')}">
 </head>
 
-<body class="pb-5">
+<body class="app-shell" data-page-help-expanded="{$showPageHelp ? 'true' : 'false'}">
+<div class="page">
 
-    <nav n:class="navbar, navbar-expand-lg, site-header, $testBackground ? 'bg-test navbar-light navbar--test' : 'bg-dark navbar-dark'">
-        <div class="container container-lg">
+    <nav n:class="navbar, navbar-expand-lg, navbar-light, site-header, sticky-top, $testBackground ? 'navbar--test'">
+        <div class="container-xl">
             {* ── Brand ── *}
             {if $user->isLoggedIn()}
                 <a class="navbar-brand" n:href=":Dashboard:default">
@@ -75,11 +76,11 @@
                         {control mainMenu}
                     {else}
                         <li n:class="nav-item, $presenter->isLinkCurrent(':Default:about') ? active">
-                            <a class="nav-link" n:href=":Default:about">O projektu</a>
+                            <a class="nav-link public-nav-link" n:href=":Default:about">O projektu</a>
                         </li>
                     {/if}
                 </ul>
-                <div class="d-flex align-items-center gap-2 my-2 my-lg-0">
+                <div class="site-header-actions d-flex align-items-center gap-2 my-2 my-lg-0">
                     {control darkModeToggle}
                     {if $user->isLoggedIn()}
                         <span id="timer" class="w-auto small p-1 rounded text-nowrap">
@@ -93,8 +94,8 @@
         </div>
     </nav>
 
-    <nav n:class="navbar, navbar-expand-sm, navbar-light, bg-body-tertiary, mb-4, submenu, site-submenu" n:ifcontent>
-        <div class="container" n:ifcontent>
+    <nav n:class="navbar, navbar-expand-sm, navbar-light, submenu, site-submenu" n:ifcontent>
+        <div class="container-xl" n:ifcontent>
             {block #subMenu}
                 {if $module === 'Admin'}{control adminMenu}
                 {elseif $module === 'Travel'}{control travelMenu}
@@ -104,25 +105,42 @@
         </div>
     </nav>
 
-    <main role="main" class="container shell-main">
+    <div class="page-wrapper">
+    <main role="main" class="container-xl shell-main page-body">
         {snippet flash}
             {foreach $flashes as $flash}
-                <div class="alert alert-{$flash->type} alert-dismissible fade show" role="alert">
+                {var $flashType = $flash->type === 'error' ? 'danger' : $flash->type}
+                <div class="alert alert-{$flashType} flash-message alert-dismissible fade show" role="alert">
+                    <span class="flash-message__icon" aria-hidden="true">
+                        {if $flashType === 'success'}
+                            <i class="fi fi-rr-check-circle"></i>
+                        {elseif $flashType === 'danger'}
+                            <i class="fi fi-rr-cross-circle"></i>
+                        {elseif $flashType === 'warning'}
+                            <i class="fi fi-rr-triangle-warning"></i>
+                        {elseif $flashType === 'info'}
+                            <i class="fi fi-rr-info"></i>
+                        {else}
+                            <i class="fi fi-rr-bell"></i>
+                        {/if}
+                    </span>
+                    <div class="flash-message__content">
+                        {if strpos($flash->message, 'html: ') === 0}
+                            {$flash->message|substr:6|noescape}
+                        {else}
+                            {$flash->message}
+                        {/if}
+                    </div>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zavřít"></button>
-                    {if strpos($flash->message, 'html: ') === 0}
-                        {$flash->message|substr:6|noescape}
-                    {else}
-                        {$flash->message}
-                    {/if}
                 </div>
             {/foreach}
         {/snippet}
 
         {include #content}
-    </main><!-- /.container -->
+    </main>
 
     <footer class="site-footer" id="footer" data-test="site-footer">
-        <div class="container container-lg site-footer__inner">
+        <div class="container-xl site-footer__inner">
             <div class="site-footer__brand">
                 <strong class="site-footer__title">Skautské hospodaření</strong>
                 <p class="site-footer__text">
@@ -131,6 +149,10 @@
             </div>
 
             <nav class="site-footer__nav" aria-label="Patička webu">
+                <a n:href=":BugReport:default, url => $currentUrl" class="site-footer__link" data-test="footer-bug-report-link">
+                    <i class="fi fi-rr-bug" aria-hidden="true"></i>
+                    <span>Nahlásit problém</span>
+                </a>
                 <a n:href=":Default:about" class="site-footer__link">O projektu</a>
                 <a n:href=":Default:reinforcement" class="site-footer__link">Posily</a>
                 <a href="https://github.com/skaut/Skautske-hospodareni/graphs/contributors" class="site-footer__link">Autoři</a>
@@ -144,7 +166,9 @@
             </nav>
         </div>
     </footer>
+    </div>
     {var $jsBundle = '/js/app.min.js'}
     <script type="text/javascript" src="{$jsBundle}?{md5_file($wwwDir . '/' . $jsBundle)}"></script>
+</div>
 </body>
 </html>

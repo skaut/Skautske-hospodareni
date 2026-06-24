@@ -1,8 +1,12 @@
 {block #content}
 <div data-test="payment-group-detail-page">
-    <div class="card shadow-sm mb-4">
+    <div class="card page-heading">
         <div class="card-body">
             <h1 n:inner-block="title" class="h3 mb-2">{$group->name}</h1>
+            <div class="page-lead">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Přehled plateb ve skupině, jejich stavu, párování, rozesílání údajů a dostupných hromadných akcí.</span>
+            </div>
             <div class="d-flex flex-wrap gap-2 align-items-center text-body-secondary small mb-3">
                 {$group->state|groupState|noescape}
                 <span>·</span>
@@ -22,7 +26,7 @@
                         <i class="fi fi-rr-edit" aria-hidden="true"></i> Upravit skupinu
                     </a>
                 {else}
-                    <a n:href="openGroup!" class="btn btn-dark btn-sm">
+                    <a n:href="openGroup!" class="btn btn-outline-warning btn-sm">
                         <i class="fi fi-rr-unlock" aria-hidden="true"></i> Znovu otevřít
                     </a>
                     <a n:href="openRemoveDialog!" class="ajax btn btn-outline-danger btn-sm">
@@ -33,7 +37,7 @@
         </div>
     </div>
 
-    <section class="card shadow-sm mb-4" data-test="payment-group-progress">
+    <section class="card mb-4" data-test="payment-group-progress">
         <div class="card-body">
             {control progress}
         </div>
@@ -48,7 +52,7 @@
         platební údaje
     </div>
 
-    <section class="card shadow-sm mb-4" n:inner-if="$isEditable && $group->state === 'open'" data-test="payment-group-actions">
+    <section class="card mb-4" n:inner-if="$isEditable && $group->state === 'open'" data-test="payment-group-actions">
         <div class="card-body">
             <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
                 <div class="d-flex flex-wrap gap-2 align-items-center">
@@ -79,7 +83,7 @@
                     <a n:href="export! $group->id" class="btn btn-light btn-sm">Exportovat</a>
                 </div>
                 <div class="dropdown d-inline-block">
-                    <button class="btn btn-success dropdown-toggle" type="button" id="addPayments"
+                    <button class="btn btn-primary dropdown-toggle" type="button" id="addPayments"
                             data-test="payment-add-button-toggle"
                             data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fi fi-rr-plus-small" aria-hidden="true"></i> Přidat platbu
@@ -113,13 +117,14 @@
         {if $group->state === 'open'}
             {control paymentDialog}
             {control importDialog}
+            {control splitPaymentDialog}
         {/if}
 
         {control paymentNoteDialog}
 
     {/if}
 
-    <section class="card shadow-sm" data-test="payment-group-grid">
+    <section class="card" data-test="payment-group-grid">
         <div class="card-body">
             {snippet grid}
                 {control paymentList}

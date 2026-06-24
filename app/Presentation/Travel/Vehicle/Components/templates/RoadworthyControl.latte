@@ -1,7 +1,7 @@
 {var $count = count($files)}
 
 {if ! $isEditable && $files === []}
-    <span class="btn btn-outline-primary disabled" title="Nemáte oprávnění upravovat vozidlo" data-bs-toggle="tooltip">
+    <span class="btn btn-light disabled" title="Nemáte oprávnění upravovat vozidlo" data-bs-toggle="tooltip">
         Technický průkaz: žádné soubory
     </span>
 {else}
@@ -14,12 +14,12 @@
                     Nahrát technický průkaz
                 </button>
             {else}
-                <button type="button" class="btn btn-outline-primary dropdown-toggle">
+                <button type="button" class="btn btn-light dropdown-toggle">
                     Technický průkaz: {$count} soubor{if $count >= 5}ů{elseif $count > 1}y{/if}
                 </button>
             {/if}
         </span>
-        <div class="dropdown-menu dropdown-menu-start" style="width: 150%" n:snippet="">
+        <div class="dropdown-menu dropdown-menu-start roadworthy-menu" n:snippet="">
             {foreach $files as $file}
             <div class="px-4 py-1">
                 {$file->getOriginalFilename()|truncate:26}
@@ -37,7 +37,7 @@
             {/foreach}
             <form n:name="uploadForm" class="px-4 py-1 text-center ajax" n:if="$isEditable">
                 <input n:name="scan" class="d-none" id="scan-upload-control">
-                <label for="scan-upload-control" class="btn btn-outline-primary">
+                <label for="scan-upload-control" class="btn btn-light">
                     <i class="fi fi-rr-cloud-upload-alt" aria-hidden="true"></i>
                     {if $files === []}Vybrat soubor{else}Nahrát další soubor{/if}
                 </label>

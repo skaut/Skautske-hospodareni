@@ -92,7 +92,7 @@ class Bootstrap5FormRenderer extends DefaultFormRenderer
     /** @param BaseControl[] $controls */
     public function renderPairMulti(array $controls): string
     {
-        $primary = false;
+        $hasPrimaryButton = false;
 
         foreach ($controls as $control) {
             if (! $control instanceof Button) {
@@ -103,10 +103,10 @@ class Bootstrap5FormRenderer extends DefaultFormRenderer
             $class = $prototype->getAttribute('class') ?? [];
 
             if (is_array($class) && ! Strings::contains(implode(' ', array_keys($class)), 'btn btn-')) {
-                $prototype->appendAttribute('class', $primary ? 'btn btn-outline-primary' : 'btn btn-outline-secondary');
+                $prototype->appendAttribute('class', $hasPrimaryButton ? 'btn btn-outline-secondary' : 'btn btn-primary');
             }
 
-            $primary = true;
+            $hasPrimaryButton = true;
         }
 
         return parent::renderPairMulti($controls);
@@ -114,10 +114,18 @@ class Bootstrap5FormRenderer extends DefaultFormRenderer
 
     public function renderLabel(Nette\Forms\Control $control): Nette\Utils\Html
     {
+        if (! $control instanceof BaseControl) {
+            return parent::renderLabel($control);
+        }
+
+        $labelPrototype = $control->getLabelPrototype();
+
         if ($control instanceof Nette\Forms\Controls\Checkbox || $control instanceof Nette\Forms\Controls\CheckboxList) {
-            $control->labelPrototype->appendAttribute('class', 'form-check-label');
+            $labelPrototype->appendAttribute('class', 'form-check-label');
         } elseif ($control instanceof Nette\Forms\Controls\RadioList) {
-            $control->labelPrototype->appendAttribute('class', 'form-check-label');
+            $labelPrototype->appendAttribute('class', 'form-check-label');
+        } else {
+            $labelPrototype->appendAttribute('class', 'form-label');
         }
 
         return parent::renderLabel($control);

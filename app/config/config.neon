@@ -14,9 +14,11 @@ parameters:
     appBaseUrl: %envConfig.appBaseUrl%
     uploadDirectory: %appDir%/../uploads
     sendEmail: %envConfig.sendEmail%
+    errorEmails: %envConfig.errorEmails%
     testBackground: %envConfig.testBackground%
     tracyShowBar: %envConfig.tracyShowBar%
     adminAllowedUserIds: []
+    invoiceAccessAllowedUserIds: []
     database: %envConfig.database%
     google:
         credentials: %envConfig.google.credentialsPath%

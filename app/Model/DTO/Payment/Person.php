@@ -6,7 +6,7 @@ namespace App\Model\DTO\Payment;
 
 class Person
 {
-    /** @param string[] $emails */
+    /** @param MemberEmail[] $emails */
     public function __construct(private int $id, private string $name, private array $emails)
     {
     }
@@ -21,7 +21,7 @@ class Person
         return $this->name;
     }
 
-    /** @return string[] */
+    /** @return MemberEmail[] */
     public function getEmails(): array
     {
         return $this->emails;

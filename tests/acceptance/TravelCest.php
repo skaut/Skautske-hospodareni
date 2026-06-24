@@ -100,7 +100,7 @@ class TravelCest extends BaseAcceptanceCest
         // 6) Odeslání
         $I->scrollTo('footer');
         $I->waitForElementVisible('[name=send]', 5);
-        $I->click('[name=send]');
+        $I->clickStable('[name=send]');
 
         // 7) Ověření (uprav dle app – flash zpráva / redirect / nadpis)
         $I->waitForText('Cestovní příkaz byl založen', 10);
@@ -143,7 +143,8 @@ class TravelCest extends BaseAcceptanceCest
 
     protected function newVehicle(AcceptanceTester $I, string $licensePlate): void
     {
-        $I->click('Založit nové vozidlo');
+        $I->waitForElementVisible('[data-test="travel-vehicle-create-link"]', 10);
+        $I->clickStable('[data-test="travel-vehicle-create-link"]');
         $I->see('Nové vozidlo');
         $I->seeInCurrentUrl('/cestaky/vozidla/new');
 
@@ -152,7 +153,8 @@ class TravelCest extends BaseAcceptanceCest
         $I->fillField(['id' => 'frm-formCreateVehicle-consumption'], $this->harmonizedConsumption);
         $I->selectOption(['id' => 'frm-formCreateVehicle-subunitId'], $this->division);
         $I->click('Založit');
-        $I->click('Založit nové vozidlo');
+        $I->waitForElementVisible('[data-test="travel-vehicle-create-link"]', 10);
+        $I->clickStable('[data-test="travel-vehicle-create-link"]');
         $I->see('Nové vozidlo');
 
         $I->fillField(['id' => 'frm-formCreateVehicle-type'], $this->vehicleType);

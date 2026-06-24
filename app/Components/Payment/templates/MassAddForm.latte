@@ -2,11 +2,25 @@
     <ul class="errors" n:if="$form->hasErrors()">
         <li n:foreach="$form->errors as $error">{$error}</li>
     </ul>
-    <table class="table table-bordered table-striped table-sm">
+    <table class="table table-hover table-striped table-sm">
         <tr>
             <th><input type="checkbox" data-dependent-checkboxes=".dependent-checkbox"/></th>
             <th>Jméno</th>
-            <th>Email</th>
+            <th>
+                <div>E-mail</div>
+                <div class="d-flex flex-wrap gap-2 mt-1 fw-normal small"
+                     data-mass-email-selection
+                     data-test="mass-email-type-selection">
+                    <label n:foreach="$emailTypes as $emailType" class="d-inline-flex align-items-center gap-1 text-nowrap">
+                        <input type="checkbox"
+                               class="form-check-input m-0"
+                               data-mass-email-type-toggle="{$emailType->value}"
+                               data-test="mass-email-type-{$emailType->value}"
+                               n:attr="checked => $emailType->value === 'main'">
+                        {$emailType->getLabel()}
+                    </label>
+                </div>
+            </th>
             <th>Částka</th>
             <th>Splatnost</th>
             <th>VS</th>
@@ -15,21 +29,21 @@
         </tr>
         <tr>
             <td colspan="3"><b>Výchozí hodnoty</b> se uloží u záznamů, kde nebude hodnota vyplněna.</td>
-            <td>{input amount, class=>"input-sm form-control"}</td>
-            <td>{input dueDate, class=>"input-sm form-control date"}</td>
+            <td>{input amount, class=>"form-control form-control-sm"}</td>
+            <td>{input dueDate, class=>"form-control form-control-sm date"}</td>
             <td></td>
-            <td>{input constantSymbol, class=>"input-sm form-control"}</td>
-            <td>{input note, class=>"input-sm form-control"}</td>
+            <td>{input constantSymbol, class=>"form-control form-control-sm"}</td>
+            <td>{input note, class=>"form-control form-control-sm"}</td>
         </tr>
         <tr n:foreach="$form['persons']->getComponents() as $container">
             <td class="dependent-checkbox"><input n:name="$container['selected']"></td>
-            <td>{input $container["name"], class=>"input-sm form-control"}</td>
-            <td>{input $container["email"], class=>"input-sm form-control",  size=>2}</td>
-            <td>{input $container["amount"], class=>"input-sm form-control"}</td>
-            <td>{input $container["dueDate"], class=>"input-sm form-control date"}</td>
-            <td>{input $container["variableSymbol"], class=>"input-sm form-control"}</td>
-            <td>{input $container["constantSymbol"], class=>"input-sm form-control"}</td>
-            <td>{input $container["note"], class=>"input-sm form-control"}</td>
+            <td>{input $container["name"], class=>"form-control form-control-sm"}</td>
+            <td>{input $container["email"], class=>"form-control form-control-sm", size=>4}</td>
+            <td>{input $container["amount"], class=>"form-control form-control-sm"}</td>
+            <td>{input $container["dueDate"], class=>"form-control form-control-sm date"}</td>
+            <td>{input $container["variableSymbol"], class=>"form-control form-control-sm"}</td>
+            <td>{input $container["constantSymbol"], class=>"form-control form-control-sm"}</td>
+            <td>{input $container["note"], class=>"form-control form-control-sm"}</td>
         </tr>
     </table>
 

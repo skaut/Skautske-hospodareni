@@ -7,6 +7,8 @@ namespace App\Components\Payment;
 use App\Components\BaseControl;
 use App\Model\Common\EmailAddress;
 use App\Model\Common\Services\CommandBus;
+use App\Model\DTO\Payment\MemberEmail;
+use App\Model\DTO\Payment\MemberEmailType;
 use App\Model\Payment\Commands\Payment\CreatePayment;
 use App\Model\Payment\PaymentService;
 use Cake\Chronos\ChronosDate;
@@ -15,9 +17,8 @@ use Component\Forms\BaseForm;
 use Nette\Forms\Controls\TextBase;
 
 use function array_filter;
-use function array_keys;
 use function array_map;
-use function array_slice;
+use function array_values;
 use function assert;
 
 class MassAddForm extends BaseControl
@@ -54,7 +55,7 @@ class MassAddForm extends BaseControl
         $form->addContainer('persons');
 
         $form->addSubmit('send', 'Přidat vybrané')
-            ->setHtmlAttribute('class', 'btn btn-primary btn-large');
+            ->setHtmlAttribute('class', 'btn btn-primary btn-lg');
 
         $form->onSuccess[] = function (BaseForm $form): void {
             $this->formSubmitted($form);
@@ -71,7 +72,7 @@ class MassAddForm extends BaseControl
         return $form;
     }
 
-    /** @param string[] $emails */
+    /** @param MemberEmail[] $emails */
     public function addPerson(int $id, array $emails, string $name, ?float $amount = null, string $note = '', string $variableSymbol = '', ?ChronosDate $dueDate = null): void
     {
         $form = $this['form'];
@@ -84,8 +85,22 @@ class MassAddForm extends BaseControl
 
         $selected = $container->addCheckbox('selected');
 
-        $container->addMultiSelect('email', null, $emails)
-            ->setDefaultValue(array_slice(array_keys($emails), 0, 1))
+        $emailItems = [];
+        $emailTypes = [];
+        $defaultEmails = [];
+        foreach ($emails as $email) {
+            $address = $email->getAddress();
+            $emailItems[$address] = $email->getLabel();
+            $emailTypes[$address] = $email->getType()->value;
+            if ($email->getType()->isSelectedByDefault()) {
+                $defaultEmails[] = $address;
+            }
+        }
+
+        $container->addMultiSelect('email', null, $emailItems)
+            ->setOptionAttribute('data-email-type:', $emailTypes)
+            ->setHtmlAttribute('data-mass-email-select', '1')
+            ->setDefaultValue($defaultEmails)
             ->setRequired(false);
 
         $container->addText('name')
@@ -131,6 +146,12 @@ class MassAddForm extends BaseControl
 
     public function render(): void
     {
+        $this->template->setParameters([
+            'emailTypes' => array_values(array_filter(
+                MemberEmailType::cases(),
+                static fn (MemberEmailType $type): bool => $type->isBulkSelectable(),
+            )),
+        ]);
         $this->template->setFile(__DIR__.'/templates/MassAddForm.latte');
         $this->template->render();
     }

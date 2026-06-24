@@ -70,7 +70,7 @@ final class NewEventPresenter extends BasePresenter
         $form->addSelect('type', 'Typ (+)', $types)
             ->setDefaultValue('2');
         $form->addSubmit('send', 'Založit novou akci')
-            ->setHtmlAttribute('class', 'btn btn-primary btn-large, ui--createEvent');
+            ->setHtmlAttribute('class', 'btn btn-primary btn-lg ui--createEvent');
 
         $form->onSuccess[] = function (Form $form): void {
             $this->formCreateSubmitted($form);

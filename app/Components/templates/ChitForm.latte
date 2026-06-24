@@ -48,7 +48,9 @@
                         </div>
                     {/foreach}
                     {input items-addItem class=>"btn btn-light ajax"}<br /><br />
-                    {input send} {input sendStay}
+                    {if $itemsCount > 0}
+                        {input send} {input sendStay}
+                    {/if}
                     {ifset $edit}{input cancle}{/ifset}
                 </form>
             </div>

@@ -54,6 +54,13 @@ define wait_for_mysql_test
 	done
 endef
 
+define reset_writable_dirs
+	$(COMPOSE) run --rm -T --no-deps --user root $(1) sh -c \
+		'find log temp www/webtemp -type d -exec chmod a+rwx {} + && \
+		find temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf www/webtemp -mindepth 1 -maxdepth 1 -exec rm -rf {} + && \
+		find log temp www/webtemp -type d -exec chmod a+rwx {} +'
+endef
+
 help: ## Zobrazí tuto nápovědu
 	@grep -E '^[a-zA-Z0-9_-]+:.*## ' Makefile | awk -F ':[^#]*## ' '{printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
@@ -90,6 +97,7 @@ init: ## Inicializace aplikace (composer app-init)
 	$(MAKE) build
 	$(MAKE) up
 	$(RUN_PHP_DEV) composer app-init
+	$(call reset_writable_dirs,php)
 	@echo ""
 	@echo "Aplikace:  http://moje-hospodareni.cz"
 	@echo "Adminer:   http://adminer.localhost"
@@ -102,6 +110,7 @@ test-init: ## Inicializace testovací aplikace
 	$(MAKE) test-services
 	$(call wait_for_mysql_test)
 	$(RUN_PHP_TEST) composer app-init
+	$(call reset_writable_dirs,php-test)
 
 test-services: ## Start test DB a test PHP kontejneru
 	$(COMPOSE) up -d $(TEST_SERVICES)
@@ -124,9 +133,10 @@ test-acceptance: ## Akceptační testy lokálně s viditelným Selenium preview
 	$(call wait_for_mysql_test)
 	$(call wait_for_selenium)
 	$(RUN_PHP_TEST) composer tests:acceptance:init
+	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) vendor/bin/codecept run acceptance -vv $(TEST_ARGS); \
 	status=$$?; \
-	$(COMPOSE) stop selenium nginx; \
+	$(COMPOSE) stop selenium; \
 	exit $$status
 
 test-mapping: ## Validace DB schématu vs migrace
@@ -140,6 +150,7 @@ ci-acceptance: ## Akceptační testy v CI režimu
 	$(call wait_for_selenium)
 	$(call wait_for_application)
 	$(RUN_PHP_TEST) composer tests:acceptance:init
+	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) vendor/bin/codecept run acceptance --env ci -vv $(TEST_ARGS); \
 	status=$$?; \
 	$(COMPOSE) stop selenium nginx; \

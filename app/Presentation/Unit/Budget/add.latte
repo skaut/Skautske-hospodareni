@@ -1,13 +1,13 @@
-{block #content}
-{include ../header.latte}
+{block #subMenu}{include ../header.latte}{/block}
 
+{block #content}
 <div data-test="unit-budget-add-page">
-    <div class="card shadow-sm mb-4">
+    <div class="card page-heading">
         <div class="card-body">
             <h1 n:inner-block="title" class="h3 mb-2">Založení rozpočtové kategorie</h1>
-            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3">
-                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
-                <span class="text-body-secondary">
+            <div class="page-lead">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>
                     <strong>Kategorie bez nadřazené kategorie</strong> pouze sdružují kategorie pod sebou.
                     <strong>Podřízené kategorie</strong> pak obsahují částku a lze do nich přidávat paragony.
                 </span>
@@ -15,7 +15,7 @@
         </div>
     </div>
 
-    <div class="card shadow-sm">
+    <div class="card">
         <div class="card-body" n:snippet>
             {control addCategoryForm}
         </div>

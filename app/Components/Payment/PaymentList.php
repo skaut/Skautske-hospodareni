@@ -58,6 +58,7 @@ final class PaymentList extends BaseControl
             [
                 'isEditable' => $this->isEditable,
                 'isReminderSendActive' => $email !== null && $email->isEnabled(),
+                'hasEmailSender' => $group?->getOAuthId() !== null,
                 'bankAccountId' => $group?->getBankAccountId(),
             ],
         );

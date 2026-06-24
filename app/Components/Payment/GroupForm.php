@@ -34,6 +34,7 @@ use Nette\Utils\ArrayHash;
 use Nette\Utils\FileSystem;
 
 use function array_filter;
+use function array_key_exists;
 use function array_map;
 use function array_unique;
 use function assert;
@@ -44,6 +45,7 @@ final class GroupForm extends BaseControl
         private UnitId $unitId,
         private ?SkautisEntity $skautisEntity,
         private ?int $groupId,
+        private ?int $cloneSourceGroupId,
         private PaymentService $model,
         private QueryBus $queryBus,
     ) {
@@ -82,7 +84,9 @@ final class GroupForm extends BaseControl
     protected function createComponentForm(): BaseForm
     {
         $form = new BaseForm();
-        $defaults = $this->buildDefaultsFromGroup();
+        $bankAccountItems = $this->bankAccountItems();
+        $oAuthItems = $this->oAuthItems();
+        $defaults = $this->buildDefaultsFromGroup($bankAccountItems, $oAuthItems);
 
         $form->addGroup('Základní údaje');
         $form->addText('name', 'Název')
@@ -118,7 +122,7 @@ final class GroupForm extends BaseControl
             ->setDisabled($this->groupId !== null && $this->model->getMaxVariableSymbol($this->groupId) !== null)
             ->setNullable();
 
-        $bankAccount = $form->addSelect('bankAccount', 'Bankovní účet', $this->bankAccountItems())
+        $bankAccount = $form->addSelect('bankAccount', 'Bankovní účet', $bankAccountItems)
             ->setRequired(false)
             ->setPrompt('Vyberte bankovní účet');
 
@@ -147,7 +151,7 @@ final class GroupForm extends BaseControl
 
         $emailGroup = $form->addGroup('E-mailová komunikace', false);
         $form->setCurrentGroup($emailGroup);
-        $form->addSelect('oAuthId', 'E-mail odesílatele', $this->oAuthItems())
+        $form->addSelect('oAuthId', 'E-mail odesílatele', $oAuthItems)
             ->setPrompt('Vyberte e-mail')
             ->setHtmlAttribute('class', 'ui--emailSelectbox'); // For acceptance testing
         $form->setCurrentGroup();
@@ -181,7 +185,7 @@ final class GroupForm extends BaseControl
     {
         $v = $form->getValues();
 
-        $originalGroupData = $this->buildDefaultsFromGroup();
+        $originalGroupData = $this->buildDefaultsFromGroup($this->bankAccountItems(), $this->oAuthItems());
 
         $paymentDefaults = new PaymentDefaults(
             $v->amount,
@@ -198,6 +202,14 @@ final class GroupForm extends BaseControl
 
         $emails = array_filter($emails);
         $oAuthId = OAuthId::fromStringOrNull($v->oAuthId);
+        $remindersEnabled = $v->emails[EmailType::PAYMENT_REMINDER]?->remindersEnabled ?? false;
+
+        if ($this->cloneSourceGroupId !== null && $oAuthId === null) {
+            $emails = $this->buildEmailTemplatesFromDefaults($originalGroupData['emails'] ?? []);
+            $remindersEnabled = (bool) (
+                $originalGroupData['emails'][EmailType::PAYMENT_REMINDER]['remindersEnabled'] ?? false
+            );
+        }
 
         if ($this->groupId !== null) {// EDIT
             $this->model->updateGroup(
@@ -207,7 +219,7 @@ final class GroupForm extends BaseControl
                 $emails,
                 $oAuthId,
                 $v->bankAccount,
-                $v->emails[EmailType::PAYMENT_REMINDER]?->remindersEnabled ?? false,
+                $remindersEnabled,
                 (bool) $v->automaticPairingEnabled,
                 $v->pairingDaysBack !== null && $v->pairingDaysBack !== '' ? (int) $v->pairingDaysBack : null,
             );
@@ -222,7 +234,7 @@ final class GroupForm extends BaseControl
                 $emails,
                 $oAuthId,
                 $v->bankAccount,
-                $v->emails[EmailType::PAYMENT_REMINDER]?->remindersEnabled ?? false,
+                $remindersEnabled,
                 (bool) $v->automaticPairingEnabled,
                 $v->pairingDaysBack !== null && $v->pairingDaysBack !== '' ? (int) $v->pairingDaysBack : null,
             );
@@ -238,21 +250,28 @@ final class GroupForm extends BaseControl
         return FileSystem::read(__DIR__.'/../../Presentation/Payments/InvoiceSequenceList/defaultEmails/'.$name.'.html');
     }
 
-    /** @return mixed[] */
-    private function buildDefaultsFromGroup(): array
+    /**
+     * @param array<int, string>                   $bankAccountItems
+     * @param array<string, array<string, string>> $oAuthItems
+     *
+     * @return mixed[]
+     */
+    private function buildDefaultsFromGroup(array $bankAccountItems, array $oAuthItems): array
     {
-        if ($this->groupId === null) {
+        $sourceGroupId = $this->groupId ?? $this->cloneSourceGroupId;
+
+        if ($sourceGroupId === null) {
             return [];
         }
 
-        $group = $this->model->getGroup($this->groupId);
+        $group = $this->model->getGroup($sourceGroupId);
 
         Assertion::notNull($group);
 
         $emails = [];
 
         foreach (EmailType::getAvailableEnums() as $emailType) {
-            $emails[$emailType->toString()] = $this->getEmailDefaults($this->groupId, $emailType);
+            $emails[$emailType->toString()] = $this->getEmailDefaults($sourceGroupId, $emailType);
             if ($emailType->toString() !== EmailType::PAYMENT_REMINDER) {
                 continue;
             }
@@ -260,19 +279,29 @@ final class GroupForm extends BaseControl
             $emails[$emailType->toString()]['remindersEnabled'] = $group->isRemindersEnabled();
         }
 
-        return [
+        $defaults = [
             'name' => $group->getName(),
             'amount' => $group->getDefaultAmount(),
             'dueDate' => $group->getDueDate(),
             'constantSymbol' => $group->getConstantSymbol(),
-            'nextVs' => $group->getNextVariableSymbol(),
-            'oAuthId' => $group->getOAuthId()?->toString(),
+            'oAuthId' => $this->isOAuthAvailable($group->getOAuthId()?->toString(), $oAuthItems)
+                ? $group->getOAuthId()?->toString()
+                : null,
             'emails' => $emails,
-            'groupId' => $this->groupId,
-            'bankAccount' => $group->getBankAccountId(),
+            'bankAccount' => $group->getBankAccountId() !== null
+                && array_key_exists($group->getBankAccountId(), $bankAccountItems)
+                    ? $group->getBankAccountId()
+                    : null,
             'automaticPairingEnabled' => $group->isAutomaticPairingEnabled(),
             'pairingDaysBack' => $group->getPairingDaysBack() ?? BankService::DAYS_BACK_DEFAULT,
         ];
+
+        if ($this->groupId !== null) {
+            $defaults['nextVs'] = $group->getNextVariableSymbol();
+            $defaults['groupId'] = $this->groupId;
+        }
+
+        return $defaults;
     }
 
     private function addEmailsToForm(BaseForm $form): void
@@ -341,6 +370,34 @@ final class GroupForm extends BaseControl
         }
 
         return new EmailTemplate($emailValues->subject, $emailValues->body);
+    }
+
+    /**
+     * @param array<string, mixed[]> $emailDefaults
+     *
+     * @return array<string, EmailTemplate>
+     */
+    private function buildEmailTemplatesFromDefaults(array $emailDefaults): array
+    {
+        $emails = [];
+
+        foreach (EmailType::getAvailableValues() as $emailType) {
+            $defaults = $emailDefaults[$emailType] ?? [];
+
+            if (
+                ! isset($defaults['subject'], $defaults['body'])
+                || ($emailType !== EmailType::PAYMENT_INFO && ! ($defaults['enabled'] ?? false))
+            ) {
+                continue;
+            }
+
+            $emails[$emailType] = new EmailTemplate(
+                (string) $defaults['subject'],
+                (string) $defaults['body'],
+            );
+        }
+
+        return $emails;
     }
 
     /** @return mixed[] */
@@ -416,5 +473,21 @@ final class GroupForm extends BaseControl
         assert($group !== null);
 
         return $group->getUnitIds();
+    }
+
+    /** @param array<string, array<string, string>> $oAuthItems */
+    private function isOAuthAvailable(?string $oAuthId, array $oAuthItems): bool
+    {
+        if ($oAuthId === null) {
+            return false;
+        }
+
+        foreach ($oAuthItems as $items) {
+            if (array_key_exists($oAuthId, $items)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

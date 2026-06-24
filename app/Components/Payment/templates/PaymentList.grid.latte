@@ -1,5 +1,12 @@
 {extends $baseTemplate}
 
+{block col-name}
+    <div>{$item->getName()}</div>
+    <small n:if="$item->getSplitFromPaymentId() !== null" class="text-body-secondary">
+        Rozděleno z platby #{$item->getSplitFromPaymentId()}
+    </small>
+{/block}
+
 {block col-state}
     <div class="text-center">
         {$item->getState()|paymentStateLabel|noescape}
@@ -50,17 +57,29 @@
 
 {block col-actions}
     {if !$item->isClosed() && $isEditable}
+        {var $hasEmailRecipient = !empty($item->getEmailRecipients())}
+        {var $canSendEmail = $hasEmailSender && $hasEmailRecipient}
+        {var $emailActionTitle = !$hasEmailSender
+            ? 'Skupina nemá nastavený e-mail odesílatele'
+            : (!$hasEmailRecipient ? 'Není uveden email' : 'Odeslat e-mail o platbě')
+        }
         <a href="{plink paymentDialog:open! $item->getId()}"
-           class="btn btn-sm btn-secondary ajax"
+           class="btn btn-sm btn-light ajax"
            title="Upravit platbu"><i class="far fa-edit"></i></a>
+        <a href="{plink splitPaymentDialog:open! $item->getId()}"
+           n:if="$item->getAmount() > 0"
+           class="btn btn-sm btn-light ajax"
+           data-test="payment-split-action-{$item->getId()}"
+           title="Rozdělit platbu"><i class="fas fa-right-left"></i></a>
         <a href="{$control->getParent()->link(send, $item->getId())}"
-                n:class="btn, btn-sm, btn-primary, !empty($item->getEmailRecipients()) ? 'ui--sendEmail', empty($item->getEmailRecipients()) ? disabled"
-           title="{empty($item->getEmailRecipients()) ? 'Není uveden email' : 'Odeslat e-mail o platbě'}"><i
+           n:class="btn, btn-sm, $canSendEmail ? btn-primary : btn-light, $canSendEmail ? 'ui--sendEmail' : disabled"
+           data-test="payment-email-action-{$item->getId()}"
+           title="{$emailActionTitle}"><i
                     class="far fa-envelope-open"></i></a>
         {if $isReminderSendActive}
         <a href="{$control->getParent()->link(sendReminder, $item->id)}"
-                n:class="btn, btn-sm, btn-warning, !empty($item->getEmailRecipients()) ? 'ui--sendEmail', empty($item->getEmailRecipients()) ? disabled"
-           title="{empty($item->getEmailRecipients()) ? 'Není uveden email' : 'Odeslat e-mail o platbě'}"><i
+           n:class="btn, btn-sm, $canSendEmail ? btn-warning : btn-light, $canSendEmail ? 'ui--sendEmail' : disabled"
+           title="{$emailActionTitle}"><i
                     class="far fa-bell"></i></a>
         {/if}
         <a
@@ -73,7 +92,7 @@
                     class="fas fa-check"></i></a>
     {elseif $item->isClosed()}
         <a href="{plink paymentNoteDialog:open! $item->getId()}"
-           class="btn btn-sm btn-secondary ajax"
+           class="btn btn-sm btn-light ajax"
            title="Upravit poznámku"><i class="fa fa-comment"></i></a>
     {var $transaction = $item->getTransaction()}
             <div class="dropdown d-inline-block">

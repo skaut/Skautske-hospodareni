@@ -2,77 +2,64 @@
 
 {block #content}
 <div data-test="payments-page" class="d-grid gap-4">
-    <div class="card shadow-sm">
+    <div class="card page-heading">
         <div class="card-body">
             <h1 class="h3 mb-2">Platby</h1>
-            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3">
-                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
-                <span class="text-body-secondary">Platební skupiny, faktury a systémové nastavení platebního provozu jsou nově soustředěné v jedné sekci. Tohle je vstupní rozcestník pro běžnou práci s platbami.</span>
+            <div class="page-lead">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Platební skupiny a faktury jsou soustředěné v jedné pracovní sekci. Nastavení bankovních účtů, e-mailů a faktur najdete v samostatném Nastavení.</span>
             </div>
         </div>
     </div>
 
     <div class="row g-4">
-        <div class="col-12 col-md-4">
-            <article class="card h-100 shadow-sm" data-test="payments-card-groups">
+        <div class="col-12 col-md-6">
+            <article class="card h-100 navigation-card" data-test="payments-card-groups">
                 <div class="card-body">
                     <div class="d-flex align-items-start gap-3 mb-3">
-                        <a n:href=":Payments:GroupList:" class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary text-decoration-none tile-icon" data-test="payments-link-groups">
+                        <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary tile-icon">
                             <i class="fi fi-rr-list" aria-hidden="true"></i>
-                        </a>
+                        </span>
                         <div>
-                            <h2 class="h5 mb-1"><a n:href=":Payments:GroupList:" class="text-body text-decoration-none">Platební skupiny</a></h2>
+                            <h2 class="h5 mb-1"><a n:href=":Payments:GroupList:" class="stretched-link text-body text-decoration-none" data-test="payments-link-groups">Platební skupiny</a></h2>
                             <p class="text-body-secondary small mb-0">Seznam skupin, párování úhrad, rozesílání e-mailů a provozní práce s platbami.</p>
                         </div>
                     </div>
-                    <div n:if="$isEditable">
+                    <div n:if="$isEditable" class="navigation-card-actions">
                         {control createButton}
                     </div>
                 </div>
             </article>
         </div>
 
-        <div class="col-12 col-md-4">
-            <article class="card h-100 shadow-sm" data-test="payments-card-invoices">
+        <div class="col-12 col-md-6">
+            <article class="card h-100 navigation-card" data-test="payments-card-invoices">
                 <div class="card-body">
                     <div class="d-flex align-items-start gap-3 mb-3">
-                        <a n:href=":Payments:InvoiceList:default, unitId => $unitId" class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary text-decoration-none tile-icon" data-test="payments-link-invoices">
-                            <i class="fi fi-rr-file-invoice" aria-hidden="true"></i>
-                        </a>
+                        <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary tile-icon">
+                            <i n:class="$canAccessInvoices ? 'fi fi-rr-file-invoice' : 'fi fi-rr-lock'" aria-hidden="true"></i>
+                        </span>
                         <div>
-                            <h2 class="h5 mb-1"><a n:href=":Payments:InvoiceList:default, unitId => $unitId" class="text-body text-decoration-none">Faktury</a></h2>
-                            <p class="text-body-secondary small mb-0">Vystavování faktur, přehled řad, PDF a navazující odesílání přímo v provozní platební části.</p>
+                            <h2 class="h5 mb-1"><a n:href=":Payments:InvoiceList:default, unitId => $unitId" class="stretched-link text-body text-decoration-none" data-test="payments-link-invoices">Faktury</a></h2>
+                            <p n:if="$canAccessInvoices" class="text-body-secondary small mb-0">Vystavování faktur, přehled řad, PDF a navazující odesílání přímo v provozní platební části.</p>
+                            <p n:if="! $canAccessInvoices" class="text-body-secondary small mb-0">Fakturace je v předběžném přístupu. Požádejte o zařazení do testovacího programu.</p>
                         </div>
                     </div>
-                    <a n:if="$isEditable"
-                       n:href=":Payments:InvoiceSequence:default, unitId => $unitId"
-                       class="btn btn-success btn-sm"
-                       data-test="payments-create-sequence">
-                        <i class="fi fi-rr-plus-small" aria-hidden="true"></i>
-                        Založit řadu
-                    </a>
+                    <div n:if="$isEditable && $canAccessInvoices" class="navigation-card-actions">
+                        <a n:href=":Payments:InvoiceSequence:default, unitId => $unitId"
+                           class="btn btn-primary btn-sm"
+                           data-test="payments-create-sequence">
+                            <i class="fi fi-rr-plus-small" aria-hidden="true"></i>
+                            Založit řadu
+                        </a>
+                    </div>
                 </div>
             </article>
         </div>
 
-        <div class="col-12 col-md-4">
-            <article class="card h-100 shadow-sm" data-test="payments-card-settings">
-                <div class="card-body">
-                    <div class="d-flex align-items-start gap-3">
-                        <a n:href=":Settings:Default:default" class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary text-decoration-none tile-icon" data-test="payments-link-settings">
-                            <i class="fi fi-rr-settings-sliders" aria-hidden="true"></i>
-                        </a>
-                        <div>
-                            <h2 class="h5 mb-1"><a n:href=":Settings:Default:default" class="text-body text-decoration-none">Nastavení</a></h2>
-                            <p class="text-body-secondary small mb-0">Bankovní účty, e-maily a roční fakturační údaje jednotky už žijí v samostatné systémové sekci.</p>
-                        </div>
-                    </div>
-                </div>
-            </article>
-        </div>
     </div>
 
-    <section class="card shadow-sm" data-test="dashboard-payment-groups">
+    <section class="card" data-test="dashboard-payment-groups">
         <div class="card-body">
             <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
                 <h2 class="h5 mb-0">Platební skupiny</h2>
@@ -93,16 +80,30 @@
 
             <div n:if="$groups !== []" class="invoice-sequence-grid">
                 <article n:foreach="$groups as $group"
-                         class="card border"
+                         class="card border navigation-card"
                          data-test="dashboard-group-card-{$group->getId()}">
-                    <div class="card-body d-grid gap-2">
-                        <div class="d-flex justify-content-between text-body-secondary small fw-semibold">
-                            <span>{$group->getState()|groupState|noescape}</span>
+                    <div class="card-body d-grid gap-3">
+                        <div class="d-flex flex-wrap align-items-center gap-2"
+                             data-test="dashboard-group-heading-{$group->getId()}">
+                            {$group->getState()|groupState|noescape}
+                            <h3 class="h6 fw-bold mb-0">
+                                <a n:href=":Payments:Payment:default, id => $group->getId()"
+                                   class="stretched-link text-body text-decoration-none"
+                                   data-test="dashboard-group-link-{$group->getId()}">{$group->getName()}</a>
+                            </h3>
                         </div>
-                        <h3 class="h6 fw-bold mb-0">
-                            <a n:href=":Payments:Payment:default, id => $group->getId()" class="text-body text-decoration-none">{$group->getName()}</a>
-                        </h3>
-                        <div class="d-flex flex-wrap gap-2">
+                        <div class="d-flex flex-wrap gap-3 text-body-secondary small"
+                             data-test="dashboard-group-stats-{$group->getId()}">
+                            <span>
+                                <strong class="text-body">{$groupPaymentCounts[$group->getId()]['total']}</strong>
+                                celkem
+                            </span>
+                            <span>
+                                <strong class="text-body">{$groupPaymentCounts[$group->getId()]['completed']}</strong>
+                                zaplaceno
+                            </span>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2 navigation-card-actions">
                             <a n:if="$isEditable"
                                n:href=":Payments:Group:edit, id => $group->getId(), unitId => $unitId"
                                class="btn btn-outline-secondary btn-sm"
@@ -121,7 +122,7 @@
         </div>
     </section>
 
-    <section class="card shadow-sm" data-test="dashboard-invoice-sequences">
+    <section n:if="$canAccessInvoices" class="card" data-test="dashboard-invoice-sequences">
         <div class="card-body">
             <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
                 <h2 class="h5 mb-0">Fakturační řady ({$currentYear})</h2>
@@ -142,7 +143,7 @@
 
             <div n:if="$invoiceSequences !== []" class="invoice-sequence-grid">
                 <article n:foreach="$invoiceSequences as $sequence"
-                         class="card border"
+                         class="card border navigation-card"
                          data-test="dashboard-sequence-card-{$sequence['id']}">
                     <div class="card-body d-grid gap-2">
                         <div class="d-flex justify-content-between text-body-secondary small fw-semibold">
@@ -150,15 +151,17 @@
                             <span>{$sequence['invoiceCount']} faktur</span>
                         </div>
                         <h3 class="h6 fw-bold mb-0">
-                            <a n:href=":Payments:InvoiceList:default, invoiceSequenceId => $sequence['id'], unitId => $unitId" class="text-body text-decoration-none">{$sequence['sequence']}/{$sequence['year']}</a>
+                            <a n:href=":Payments:InvoiceList:default, invoiceSequenceId => $sequence['id'], unitId => $unitId"
+                               class="stretched-link text-body text-decoration-none"
+                               data-test="dashboard-sequence-link-{$sequence['id']}">{$sequence['sequence']}/{$sequence['year']}</a>
                         </h3>
                         <p class="text-body-secondary small mb-0">
                             {if $sequence['description'] !== ''}{$sequence['description']}{/if}
                         </p>
-                        <div class="d-flex flex-wrap gap-2">
+                        <div class="d-flex flex-wrap gap-2 navigation-card-actions">
                             <a n:if="in_array((int) $sequence['id'], $editableSequenceIds, true)"
                                n:href=":Payments:InvoiceList:default, invoiceSequenceId => $sequence['id'], unitId => $unitId"
-                               class="btn btn-outline-primary btn-sm"
+                               class="btn btn-primary btn-sm"
                                data-test="dashboard-sequence-create-invoice-{$sequence['id']}">
                                 <i class="fi fi-rr-plus-small" aria-hidden="true"></i>
                                 Založit fakturu

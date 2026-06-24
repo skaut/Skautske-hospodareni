@@ -1,6 +1,6 @@
 {if $user->isLoggedIn()}
     <span class="dropdown">
-        <button class="btn btn-light btn-sm dropdown-toggle border-0 me-sm-3 ui--current-role" type="button"
+        <button class="btn btn-light btn-sm dropdown-toggle border-0 ui--current-role" type="button"
                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             {$roles[$currentRoleId]}
         </button>
@@ -9,7 +9,17 @@
         </span>
     </span>
 
-    <a href="{plink :Auth:logoutSis}" class="btn btn-sm btn-secondary my-2 my-sm-0 text-nowrap">Odhlásit se</a>
+    <a
+        href="{plink :Auth:logoutSis}"
+        class="btn btn-sm navbar-logout text-nowrap"
+        title="Odhlásit se"
+        aria-label="Odhlásit se"
+        data-bs-toggle="tooltip"
+        data-bs-placement="bottom"
+    >
+        <i class="fi fi-rr-arrow-right-to-bracket" aria-hidden="true"></i>
+        <span class="navbar-logout-label">Odhlásit se</span>
+    </a>
 {else}
     <a href="{plink :Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL}" class="btn btn-sm btn-primary my-2 my-sm-0 text-nowrap" data-test="login-link">Přihlásit se</a>
 {/if}

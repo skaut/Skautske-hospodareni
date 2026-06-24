@@ -1,8 +1,12 @@
 {block #content}
 <div class="d-grid gap-4" data-test="invoice-detail-page">
-    <div class="card shadow-sm">
+    <div class="card page-heading">
         <div class="card-body">
             <h1 n:inner-block="title" class="h3 mb-2">Faktura {$invoice->getInvoiceNumber()}</h1>
+            <div class="page-lead mb-3">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Detail vystavené faktury, její aktuální stav, náhled PDF a dostupné navazující akce.</span>
+            </div>
             <div class="d-flex flex-wrap gap-2 align-items-center">
                 <a n:href=":Payments:InvoiceList:default, invoiceSequenceId => $invoice->getSequence()->getId(), unitId => $unitId"
                    class="btn btn-outline-secondary btn-sm">
@@ -33,13 +37,4 @@
     </div>
 </div>
 
-<style n:syntax="off">
-    .invoice-preview-frame {
-        width: 100%;
-        min-height: 1180px;
-        border: 0;
-        background: #fff;
-        box-shadow: 0 0.5rem 1.5rem rgba(15, 23, 42, 0.12);
-    }
-</style>
 {/block}

@@ -75,8 +75,8 @@ class DashboardPresenter extends BasePresenter
         $control->addCss([
             'wrap' => 'd-inline-block',
             'group' => 'btn-group',
-            'main' => 'btn btn-sm btn-success',
-            'toggle' => 'btn btn-sm btn-success dropdown-toggle dropdown-toggle-split',
+            'main' => 'btn btn-sm btn-primary',
+            'toggle' => 'btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split',
             'menu' => 'dropdown-menu dropdown-menu-end',
         ]);
 

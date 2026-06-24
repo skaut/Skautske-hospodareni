@@ -1,0 +1,72 @@
+{block title}Nahlásit technickou chybu{/block}
+
+{block content}
+<div data-test="bug-report-page">
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 class="h3 mb-2">Nahlásit technickou chybu</h1>
+            <div class="page-lead">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>
+                    Tento formulář slouží výhradně k hlášení technických chyb aplikace. Není to helpdesk a neslouží
+                    k dotazům na používání aplikace, účetnictví, oprávnění ani nastavení.
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="design-help-layout" data-help-layout>
+        <article class="card" data-help-form>
+            <div class="card-body">
+                <h2 class="h5 mb-3">Popis chyby</h2>
+
+                <div class="alert alert-warning" role="alert" data-test="bug-report-helpdesk-warning">
+                    Pokud potřebujete poradit s postupem v aplikaci, obraťte se na svého hospodáře nebo běžnou
+                    uživatelskou podporu. Zde hlaste pouze nefunkční nebo chybné chování aplikace.
+                </div>
+
+                <div data-test="bug-report-form">
+                    {control bugReportForm}
+                </div>
+            </div>
+        </article>
+
+        <aside class="design-help-sidebar" data-help-card data-test="bug-report-help">
+            <button
+                type="button"
+                class="btn btn-link p-0 pb-2 border-bottom w-100 text-start text-decoration-none d-inline-flex align-items-center gap-2"
+                data-help-toggle
+                aria-expanded="true"
+                title="Skrýt nápovědu"
+            >
+                <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary bg-opacity-10 p-2">
+                    <i class="fi fi-rr-lightbulb-on text-primary" aria-hidden="true"></i>
+                </span>
+                <span class="fw-semibold text-primary-emphasis" data-help-content>Nápověda</span>
+            </button>
+            <div data-help-content>
+                <div class="mb-3">
+                    <strong>Co uvést</strong>
+                    <p class="text-body-secondary small mb-0">
+                        Popište kroky před chybou, očekávaný výsledek, skutečný výsledek a přibližný čas, kdy se chyba stala.
+                    </p>
+                </div>
+                <div class="mb-3">
+                    <strong>URL stránky</strong>
+                    <p class="text-body-secondary small mb-0">
+                        Adresa není povinná. Pokud jste formulář otevřeli z patičky chybné stránky, vyplní se automaticky.
+                    </p>
+                </div>
+                <div>
+                    <strong>Automatická diagnostika</strong>
+                    <p class="text-body-secondary small mb-0">
+                        K hlášení se připojí identifikace přihlášeného uživatele, aktivní role a jednotka, IP adresa,
+                        release aplikace, prohlížeč, rozlišení, časové pásmo a další technické údaje potřebné k dohledání
+                        související události v logu nebo Sentry.
+                    </p>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+{/block}

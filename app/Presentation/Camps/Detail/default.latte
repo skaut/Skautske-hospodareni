@@ -4,12 +4,12 @@
 
 {block #content}
 <div data-test="camp-detail-page">
-    <div class="card shadow-sm mb-4">
+    <div class="card page-heading">
         <div class="card-body">
             <h1 class="h3 mb-2">{$event->getDisplayName()}</h1>
-            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3 mb-3">
-                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
-                <span class="text-body-secondary">Základní údaje tábora, stav, termíny a přehled návazných finančních podkladů.</span>
+            <div class="page-lead mb-3">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Základní údaje tábora, stav, termíny a přehled návazných finančních podkladů.</span>
             </div>
             <div class="d-flex flex-wrap gap-2 align-items-center text-body-secondary small mb-3">
                 {var $state = $event->getState()}
@@ -44,7 +44,7 @@
 
     <div class="row g-4">
         <div class="col-md-4 mb-4" n:if="$accessDetail">
-            <div class="card shadow-sm h-100">
+            <div class="card h-100">
                 <div class="card-body">
                     <strong>Základní údaje</strong>
                     <ul class="list-group list-group-flush mt-3">
@@ -68,7 +68,7 @@
         </div>
 
         <div class="col-md-4 mb-4" n:if="$accessDetail">
-            <div class="card shadow-sm h-100">
+            <div class="card h-100">
                 <div class="card-body">
                     <strong>Statistiky</strong>
                     <table class="table table-sm mb-0 mt-3">
@@ -103,7 +103,7 @@
                 </div>
             </div>
 
-            <div class="card shadow-sm mt-4" n:if="$pragueParticipants !== NULL">
+            <div class="card mt-4" n:if="$pragueParticipants !== NULL">
                 <div class="card-body">
                     <strong>Pražští účastníci</strong>
                     <table class="table table-sm mb-0 mt-3">
@@ -136,7 +136,7 @@
                 'medic' => 'Zdravotník',
             ]}
 
-            <div class="card shadow-sm h-100">
+            <div class="card h-100">
                 <div class="card-body">
                     <strong>Vedení tábora</strong>
                     <ul class="list-group list-group-flush mt-3">

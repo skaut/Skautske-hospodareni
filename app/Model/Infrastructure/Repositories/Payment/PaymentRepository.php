@@ -193,6 +193,27 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
         return (int) $qb->getQuery()->getSingleScalarResult() > 0;
     }
 
+    public function existsPaymentWithVariableSymbolInGroup(
+        int $groupId,
+        VariableSymbol $variableSymbol,
+        ?int $excludePaymentId = null,
+    ): bool {
+        $qb = $this->getEntityManager()->createQueryBuilder()
+            ->select('COUNT(p.id)')
+            ->from(Payment::class, 'p')
+            ->where('p.groupId = :groupId')
+            ->andWhere('p.variableSymbol = :variableSymbol')
+            ->setParameter('groupId', $groupId)
+            ->setParameter('variableSymbol', $variableSymbol);
+
+        if ($excludePaymentId !== null) {
+            $qb->andWhere('p.id != :excludePaymentId')
+                ->setParameter('excludePaymentId', $excludePaymentId);
+        }
+
+        return (int) $qb->getQuery()->getSingleScalarResult() > 0;
+    }
+
     public function findOpenByBankAccount(int $bankAccountId): array
     {
         return $this->getEntityManager()->createQueryBuilder()

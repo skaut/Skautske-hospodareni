@@ -10,10 +10,12 @@ use App\Components\Factories\ILoginPanelFactory;
 use App\Components\LoginPanel;
 use App\Model\Auth\IAuthorizator;
 use App\Model\Auth\Resources\Admin;
+use App\Model\Auth\Resources\InvoiceAccess;
 use App\Model\Common\Services\CommandBus;
 use App\Model\Common\Services\NotificationsCollector;
 use App\Model\Common\Services\QueryBus;
 use App\Model\Unit\UnitService;
+use App\Model\User\UserPreferencesService;
 use App\Model\User\UserService;
 use Contributte\MenuControl\IMenuItem;
 use Contributte\MenuControl\MenuContainer;
@@ -71,6 +73,8 @@ abstract class BasePresenter extends Presenter
 
     private MenuContainer $menuContainer;
 
+    private UserPreferencesService $userPreferences;
+
     public function injectAll(
         UserService $userService,
         UnitService $unitService,
@@ -85,6 +89,7 @@ abstract class BasePresenter extends Presenter
         Context $appContext,
         IMenuComponentFactory $menuComponentFactory,
         MenuContainer $menuContainer,
+        UserPreferencesService $userPreferences,
     ): void {
         $this->userService = $userService;
         $this->unitService = $unitService;
@@ -99,6 +104,7 @@ abstract class BasePresenter extends Presenter
         $this->appContext = $appContext;
         $this->menuComponentFactory = $menuComponentFactory;
         $this->menuContainer = $menuContainer;
+        $this->userPreferences = $userPreferences;
     }
 
     protected function startup(): void
@@ -142,7 +148,10 @@ abstract class BasePresenter extends Presenter
             'navigationBreadcrumbs' => $this->resolveNavigationBreadcrumbs($module),
             'productionMode' => $this->appContext->isProduction(),
             'wwwDir' => $this->appContext->getWwwDir(),
+            'currentUrl' => (string) $this->getHttpRequest()->getUrl(),
             'canAccessAdmin' => $this->authorizator->isAllowed(Admin::ACCESS, null),
+            'canAccessInvoiceAccess' => $this->authorizator->isAllowed(InvoiceAccess::ACCESS, null),
+            'showPageHelp' => $this->userPreferences->shouldShowHelp(),
         ]);
 
         if (! $this->getUser()->isLoggedIn()) {

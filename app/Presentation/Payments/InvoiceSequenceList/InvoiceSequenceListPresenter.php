@@ -28,6 +28,7 @@ use App\Model\Unit\Unit;
 use App\Model\Unit\UnitService;
 use App\Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use App\Model\User\SkautisRole;
+use App\Presentation\InvoiceAccess\InvoiceAccessGuard;
 use App\Presentation\Payments\PaymentsBasePresenter;
 use Component\Forms\BaseForm;
 use Illuminate\Support\Collection;
@@ -50,6 +51,8 @@ use function strlen;
 
 class InvoiceSequenceListPresenter extends PaymentsBasePresenter
 {
+    use InvoiceAccessGuard;
+
     protected ?int $groupId = null;
     private ?InvoiceSequence $editedSequence = null;
 
@@ -92,17 +95,17 @@ class InvoiceSequenceListPresenter extends PaymentsBasePresenter
         $grid->addAction('edit', '', ':Payments:InvoiceList:default', ['invoiceSequenceId' => 'id'])
             ->setIcon('far fa-file-lines')
             ->setTitle('Faktury')
-            ->setClass('btn btn-sm btn-secondary');
+            ->setClass('btn btn-sm btn-light');
 
         $grid->addAction('settings', '', ':Payments:InvoiceSequence:edit', ['id' => 'id'])
             ->setIcon('far fa-pen-to-square')
             ->setTitle('Nastavení řady')
-            ->setClass('btn btn-sm btn-secondary');
+            ->setClass('btn btn-sm btn-light');
 
         $grid->addAction('close', '', 'close!', ['id' => 'id'])
             ->setIcon('far fa-circle-xmark')
             ->setTitle('Uzavřít řadu')
-            ->setClass('btn btn-sm btn-warning')
+            ->setClass('btn btn-sm btn-outline-warning')
             ->setConfirmation(
                 new StringConfirmation('Opravdu chceš uzavřít řadu %s?', 'sequence'),
             );
@@ -110,12 +113,12 @@ class InvoiceSequenceListPresenter extends PaymentsBasePresenter
         $grid->addAction('reopen', '', 'reopen!', ['id' => 'id'])
             ->setIcon('far fa-circle-check')
             ->setTitle('Znovu otevřít řadu')
-            ->setClass('btn btn-sm btn-success');
+            ->setClass('btn btn-sm btn-outline-warning');
 
         $grid->addAction('delete', '', 'remove!', ['id' => 'id'])
             ->setIcon('far fa-trash-can')
             ->setTitle('Smazat fakturační řadu')
-            ->setClass('btn btn-sm btn-danger')
+            ->setClass('btn btn-sm btn-outline-danger')
             ->setConfirmation(
                 new StringConfirmation('Opravdu chceš smazat řádek %s?', 'sequence'),
             );

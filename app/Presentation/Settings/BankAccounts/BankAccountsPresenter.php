@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Presentation\Settings\BankAccounts;
 
+use App\Components\DataGrid;
 use App\Components\Factories\Payment\IBankAccountFormFactory;
+use App\Components\Grids\GridFactory;
 use App\Components\Payment\BankAccountDetail\BankAccountDetailViewFactory;
 use App\Components\Payment\BankAccountDetail\BankAccountManualPairingOutcome;
 use App\Components\Payment\BankAccountDetail\BankAccountManualPairingService;
 use App\Components\Payment\BankAccountForm;
 use App\Components\Payment\GpcImportDialog;
+use App\Model\Auth\Resources\InvoiceAccess;
 use App\Model\Auth\Resources\Unit as UnitResource;
 use App\Model\Bank\BankTransactionAmountMismatch;
 use App\Model\Bank\BankTransactionPairingNotAllowed;
@@ -28,6 +31,7 @@ use App\Model\User\SkautisRole;
 use App\Presentation\Settings\SettingsBasePresenter;
 use InvalidArgumentException;
 use Nette\Application\BadRequestException;
+use Nette\Utils\Html;
 
 use function array_keys;
 use function array_map;
@@ -39,6 +43,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
 
     public function __construct(
         private readonly IBankAccountFormFactory $formFactory,
+        private readonly GridFactory $gridFactory,
         private readonly BankAccountService $accounts,
         private readonly BankAccountDetailViewFactory $detailViewFactory,
         private readonly BankAccountManualPairingService $manualPairingService,
@@ -129,6 +134,10 @@ final class BankAccountsPresenter extends SettingsBasePresenter
     public function actionPairTransactionToInvoice(int $accountId, string $transactionKey, int $invoiceId): void
     {
         $this->assertCanViewBankAccount($accountId);
+        if (! $this->canAccessInvoices()) {
+            $this->flashMessage('Fakturace je zatím dostupná jen uživatelům v testovacím programu.', 'warning');
+            $this->redirect('detail', ['id' => $accountId, 'unitId' => $this->getUnitId()]);
+        }
 
         try {
             $outcome = $this->manualPairingService->pairTransactionToInvoice(
@@ -161,29 +170,58 @@ final class BankAccountsPresenter extends SettingsBasePresenter
 
     public function renderEdit(int $id): void
     {
+        $canAccessInvoices = $this->canAccessInvoices();
+        $groupsCount = $this->queryBus->handle(new CountGroupsWithBankAccountQuery(new BankAccountId($id)));
+        $invoiceSequencesCount = $canAccessInvoices ? $this->accounts->countInvoiceSequencesUsingBankAccount($id) : 0;
+        $subunitGroupsCount = $this->accounts->countGroupsDetachedByDisallowForSubunits($id);
+        $subunitInvoiceSequencesCount = $canAccessInvoices
+            ? $this->accounts->countInvoiceSequencesDetachedByDisallowForSubunits($id)
+            : 0;
+
         $this->template->setParameters([
             'account' => $this->findBankAccount($id),
-            'groupsCount' => $this->queryBus->handle(new CountGroupsWithBankAccountQuery(new BankAccountId($id))),
-            'invoiceSequencesCount' => $this->accounts->countInvoiceSequencesUsingBankAccount($id),
-            'subunitGroupsCount' => $this->accounts->countGroupsDetachedByDisallowForSubunits($id),
-            'subunitInvoiceSequencesCount' => $this->accounts->countInvoiceSequencesDetachedByDisallowForSubunits($id),
+            'canAccessInvoices' => $canAccessInvoices,
+            'groupsCount' => $groupsCount,
+            'invoiceSequencesCount' => $invoiceSequencesCount,
+            'subunitGroupsCount' => $subunitGroupsCount,
+            'subunitInvoiceSequencesCount' => $subunitInvoiceSequencesCount,
+            'disallowSubunitsConfirm' => $canAccessInvoices
+                ? sprintf(
+                    'Opravdu chceš odebrat přístup oddílům? Účet se odpojí z %d platebních skupin a %d fakturačních řad podřízených jednotek. Historie spárování zůstane zachována.',
+                    $subunitGroupsCount,
+                    $subunitInvoiceSequencesCount,
+                )
+                : sprintf(
+                    'Opravdu chceš odebrat přístup oddílům? Účet se odpojí z %d platebních skupin podřízených jednotek. Historie spárování zůstane zachována.',
+                    $subunitGroupsCount,
+                ),
+            'removeConfirm' => $canAccessInvoices
+                ? sprintf(
+                    'Opravdu chceš odstranit tento bankovní účet? Účet se odpojí z %d platebních skupin a %d fakturačních řad, jeho importy a transakce se smažou, ale historické informace u plateb, faktur a auditních záznamů párování zůstanou zachovány.',
+                    $groupsCount,
+                    $invoiceSequencesCount,
+                )
+                : sprintf(
+                    'Opravdu chceš odstranit tento bankovní účet? Účet se odpojí z %d platebních skupin, jeho importy a transakce se smažou, ale historické informace u plateb a auditních záznamů párování zůstanou zachovány.',
+                    $groupsCount,
+                ),
         ]);
     }
 
     public function actionDefault(): void
     {
-        $accounts = $this->accounts->findByUnit($this->getCurrentUnitId());
-
         $this->template->setParameters([
-            'accounts' => $accounts,
             'canEdit' => $this->canEdit(),
-            'gpcImportableAccountIds' => $this->resolveGpcImportableAccountIds($accounts),
         ]);
     }
 
     public function actionDetail(int $id, ?int $paymentId = null, ?int $invoiceId = null): void
     {
         $this->assertCanViewBankAccount($id);
+        if ($invoiceId !== null && ! $this->canAccessInvoices()) {
+            $this->flashMessage('Fakturace je zatím dostupná jen uživatelům v testovacím programu.', 'warning');
+            $this->redirect('detail', ['id' => $id, 'unitId' => $this->getUnitId()]);
+        }
     }
 
     public function renderDetail(int $id, ?int $paymentId = null, ?int $invoiceId = null): void
@@ -197,10 +235,12 @@ final class BankAccountsPresenter extends SettingsBasePresenter
             $groupNames[$group->getId()] = $group->getName();
         }
 
-        $detail = $this->detailViewFactory->create($id, $groupNames, $readableUnitIds, $paymentId, $invoiceId);
+        $canAccessInvoices = $this->canAccessInvoices();
+        $detail = $this->detailViewFactory->create($id, $groupNames, $readableUnitIds, $paymentId, $invoiceId, $canAccessInvoices);
 
         $this->template->setParameters([
             'account' => $account,
+            'canAccessInvoices' => $canAccessInvoices,
             'groupNames' => $groupNames,
             'transactionRows' => $detail->transactionRows,
             'importBatches' => $detail->importBatches,
@@ -214,6 +254,82 @@ final class BankAccountsPresenter extends SettingsBasePresenter
     protected function createComponentForm(): BankAccountForm
     {
         return $this->formFactory->create($this->id);
+    }
+
+    protected function createComponentGrid(): DataGrid
+    {
+        $grid = $this->gridFactory->createSimpleGrid();
+        $accounts = $this->accounts->findByUnit($this->getCurrentUnitId());
+        $gpcImportableAccountIds = $this->resolveGpcImportableAccountIds($accounts);
+
+        $grid->addColumnLink('name', 'Název', 'detail', null, ['id' => 'id'])
+            ->setSortable();
+
+        $grid->addColumnText('number', 'Číslo účtu')
+            ->setSortable();
+
+        $grid->addColumnText('source', 'Zdroj transakcí')
+            ->setRenderer(static function (array $account): Html|string {
+                if ($account['source'] === '') {
+                    return '';
+                }
+
+                $isFio = $account['sourceType'] === BankTransactionSource::FIO->value;
+                $badge = Html::el('span')
+                    ->setAttribute('class', $isFio ? 'badge bg-success' : 'badge bg-secondary');
+                $badge->addHtml(
+                    Html::el('i')->setAttribute(
+                        'class',
+                        $isFio ? 'fi fi-rr-check' : 'fi fi-rr-file-upload',
+                    ),
+                );
+                $badge->addText(' '.$account['source']);
+
+                return $badge;
+            });
+
+        $grid->addColumnDateTime('createdAt', 'Přidáno')
+            ->setFormat('j.n. Y')
+            ->setSortable();
+
+        $grid->addFilterText('search', '', ['name', 'number'])
+            ->setPlaceholder('Hledat účet...');
+
+        $grid->addAction('detail', '', 'detail', ['id' => 'id'])
+            ->setIcon('fi fi-rr-search')
+            ->setTitle('Detail')
+            ->setClass('btn btn-sm btn-light');
+
+        $grid->addAction('gpcImport', '', 'gpcImportDialog:open!', ['bankAccountId' => 'id'])
+            ->setIcon('fi fi-rr-file-import')
+            ->setTitle('Importovat GPC soubor')
+            ->setClass('btn btn-sm btn-light ajax')
+            ->setRenderCondition(
+                static fn (array $account): bool => isset($gpcImportableAccountIds[$account['id']]),
+            );
+
+        $grid->addAction('settings', '', 'edit', ['id' => 'id'])
+            ->setIcon('fi fi-rr-settings')
+            ->setTitle('Nastavení')
+            ->setClass('btn btn-sm btn-light');
+
+        $grid->setDefaultSort(['name' => DataGrid::SORT_ASC]);
+        $grid->setDataSource(array_map(
+            static fn (BankAccount $account): array => [
+                'id' => $account->getId(),
+                'name' => $account->getName(),
+                'number' => (string) $account->getNumber(),
+                'source' => (
+                    $account->getTransactionSource()->value === BankTransactionSource::FIO->value
+                    && $account->getToken() === null
+                ) ? '' : $account->getTransactionSource()->label(),
+                'sourceType' => $account->getTransactionSource()->value,
+                'createdAt' => $account->getCreatedAt(),
+            ],
+            $accounts,
+        ));
+
+        return $grid;
     }
 
     protected function createComponentGpcImportDialog(): GpcImportDialog
@@ -246,6 +362,11 @@ final class BankAccountsPresenter extends SettingsBasePresenter
     private function canEdit(?int $unitId = null): bool
     {
         return $this->authorizator->isAllowed(UnitResource::EDIT, $unitId ?? $this->getUnitId());
+    }
+
+    private function canAccessInvoices(): bool
+    {
+        return $this->authorizator->isAllowed(InvoiceAccess::ACCESS, null);
     }
 
     private function assertCanViewBankAccount(int $id): void

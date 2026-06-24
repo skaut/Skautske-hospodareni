@@ -3,12 +3,12 @@
 {block content}
 <div data-test="admin-users-page">
     {* Hero *}
-    <div class="card shadow-sm mb-4">
+    <div class="card page-heading">
         <div class="card-body">
             <h1 class="h3 mb-2">Uživatelé</h1>
-            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3">
-                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
-                <span class="text-body-secondary">Správa administrátorů s přístupem do systémové sekce. Přidávejte nebo odebírejte uživatele podle potřeby.</span>
+            <div class="page-lead">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Správa administrátorů s přístupem do systémové sekce. Přidávejte nebo odebírejte uživatele podle potřeby.</span>
             </div>
         </div>
     </div>
@@ -26,7 +26,7 @@
     {* Toggle button for add form *}
     <div n:if="$storageAvailable && $editedAdminUser === null" class="d-flex justify-content-end mb-3">
         <button
-            class="btn btn-success"
+            class="btn btn-primary"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#adminUserFormCollapse"
@@ -44,9 +44,9 @@
         id="adminUserFormCollapse"
         data-test="admin-users-form-collapse"
     >
-        <article class="card shadow-sm mb-4" data-test="admin-users-form-card">
+        <article class="card mb-4" data-test="admin-users-form-card">
             <div class="card-body">
-                <strong>{if $editedAdminUser !== null}Upravit admina{else}Přidat admina{/if}</strong>
+                <h2 class="h5 mb-0">{if $editedAdminUser !== null}Upravit admina{else}Přidat admina{/if}</h2>
                 <p class="mt-2">
                     Spravuje se jen persistentní allowlist administrátorů. Žádná další uživatelská metadata se sem zatím
                     neukládají.
@@ -73,12 +73,12 @@
     </div>
 
     {* Users table *}
-    <article class="card shadow-sm" data-test="admin-users-list-card">
+    <article class="card" data-test="admin-users-list-card">
         <div class="card-body">
-            <strong>Persistentní administrátoři</strong>
+            <h2 class="h5 mb-0">Persistentní administrátoři</h2>
 
             <div n:if="$storageAvailable && $adminUsers !== []" class="table-responsive mt-3" data-test="admin-users-list">
-                <table class="table table-bordered table-striped mb-0">
+                <table class="table table-hover table-striped mb-0">
                     <thead>
                     <tr>
                         <th>User ID</th>
@@ -96,7 +96,7 @@
                         <td class="text-end">
                             <a
                                 n:href="default, edit => $adminUser->getId()"
-                                class="btn btn-sm btn-outline-primary"
+                                class="btn btn-sm btn-light"
                                 title="Upravit"
                                 n:attr="data-test => 'admin-user-edit-' . $adminUser->getId()"
                             >

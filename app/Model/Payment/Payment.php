@@ -72,6 +72,12 @@ class Payment extends Aggregate
     private string $note = '';
 
     /**
+     * @ORM\ManyToOne(targetEntity=Payment::class)
+     * @ORM\JoinColumn(name="split_from_payment_id", referencedColumnName="id", nullable=true, onDelete="SET NULL")
+     */
+    private ?Payment $splitFromPayment = null;
+
+    /**
      * @ORM\Embedded(class=Transaction::class, columnPrefix=false)
      *
      * @Nullable()
@@ -111,6 +117,7 @@ class Payment extends Aggregate
         ?int $constantSymbol,
         ?int $personId,
         string $note,
+        ?Payment $splitFromPayment = null,
     ) {
         if ($amount <= 0) {
             throw new InvalidArgumentException('Payment amount must be larger than 0');
@@ -122,6 +129,7 @@ class Payment extends Aggregate
         $this->amount = $amount;
         $this->updateDetails($name, $recipients, $dueDate, $constantSymbol, $note);
         $this->variableSymbol = $variableSymbol;
+        $this->splitFromPayment = $splitFromPayment;
         $this->sentEmails = new ArrayCollection();
 
         $this->raise(new PaymentWasCreated($group->getId(), $variableSymbol));
@@ -160,6 +168,27 @@ class Payment extends Aggregate
         }
 
         $this->amount = $amount;
+    }
+
+    public function reduceAmountBySplit(float $amount): void
+    {
+        $this->checkNotClosed();
+
+        if ($amount <= 0) {
+            throw new InvalidArgumentException('Split amount must be larger than 0');
+        }
+
+        $remainingAmount = round($this->amount - $amount, 2);
+
+        if ($remainingAmount < 0) {
+            throw new InvalidArgumentException('Split amount must not exceed payment amount');
+        }
+
+        if ($remainingAmount !== $this->amount) {
+            $this->raise(new PaymentAmountWasChanged($this->groupId, $this->variableSymbol));
+        }
+
+        $this->amount = $remainingAmount;
     }
 
     private function complete(DateTimeImmutable $time): void
@@ -278,6 +307,16 @@ class Payment extends Aggregate
     public function getNote(): string
     {
         return $this->note;
+    }
+
+    public function getSplitFromPayment(): ?Payment
+    {
+        return $this->splitFromPayment;
+    }
+
+    public function getSplitFromPaymentId(): ?int
+    {
+        return $this->splitFromPayment?->getId();
     }
 
     public function getTransaction(): ?Transaction

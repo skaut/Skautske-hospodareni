@@ -47,7 +47,7 @@ final class RemoveGroupDialog extends Dialog
         $form = new BaseForm();
 
         $form->addSubmit('delete', 'Smazat')
-            ->setHtmlAttribute('class', 'btn-danger');
+            ->setHtmlAttribute('class', 'btn btn-danger');
 
         $form->onSuccess[] = function (): void {
             if (! $this->isAllowed) {

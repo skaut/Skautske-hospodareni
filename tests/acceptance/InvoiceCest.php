@@ -18,6 +18,8 @@ use function substr;
 
 class InvoiceCest extends BaseAcceptanceCest
 {
+    private const ACCEPTANCE_USER_ID = 2465;
+
     protected AcceptanceTester $I;
 
     public function _before(AcceptanceTester $I): void
@@ -26,9 +28,27 @@ class InvoiceCest extends BaseAcceptanceCest
 
         $this->I = $I;
         $I->login(AcceptanceTester::UNIT_LEADER_ROLE);
+        $this->grantInvoiceAccess($I);
     }
 
     // ─── Setup tests (must run first — later tests depend on data) ──
+
+    /** @group invoice */
+    public function invoiceRequiresPreliminaryAccess(): void
+    {
+        $I = $this->I;
+
+        $I->wantTo('see preliminary access page before invoice access is granted');
+        $I->deleteFromDatabase('invoice_access_user', ['user_id' => self::ACCEPTANCE_USER_ID]);
+
+        $I->amOnPage('/platby/faktury');
+        $I->waitForElementVisible('[data-test="invoice-early-access-page"]', 10);
+        $I->see('Předběžný přístup k fakturaci');
+        $I->seeElement('[data-test="invoice-early-access-request-card"]');
+        $I->seeElement('[data-test="invoice-early-access-request-form"]');
+
+        $this->grantInvoiceAccess($I);
+    }
 
     /** @group invoice */
     public function saveInvoiceYearlySettings(): void
@@ -632,6 +652,15 @@ class InvoiceCest extends BaseAcceptanceCest
 
         $this->I->waitForElementVisible('[data-test="invoice-home"]', 10);
         $this->I->seeInCurrentUrl('/platby/faktury');
+    }
+
+    private function grantInvoiceAccess(AcceptanceTester $I): void
+    {
+        $I->deleteFromDatabase('invoice_access_user', ['user_id' => self::ACCEPTANCE_USER_ID]);
+        $I->haveInDatabase('invoice_access_user', [
+            'user_id' => self::ACCEPTANCE_USER_ID,
+            'created_at' => '2026-06-18 12:00:00',
+        ]);
     }
 
     private function fillYearlySettings(int $year, string $name): void

@@ -29,6 +29,7 @@ class PaymentFactory
             $payment->getPersonId(),
             $payment->getGroupId(),
             $payment->getSentEmails(),
+            $payment->getSplitFromPaymentId(),
         );
     }
 }

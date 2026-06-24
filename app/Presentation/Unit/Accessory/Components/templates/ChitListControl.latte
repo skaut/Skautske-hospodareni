@@ -18,7 +18,7 @@
         </td>
         <td class="text-end">
             {if ! $chit->locked}
-                <a n:href="lockChit! $chit->id" class="btn btn-sm btn-dark ajax">
+                <a n:href="lockChit! $chit->id" class="btn btn-sm btn-outline-warning ajax">
                     <i class="fi fi-rr-lock" aria-hidden="true"></i> Uzamknout</a>
             {else}
                 <a n:href="unlockChit! $chit->id" class="btn btn-sm btn-light ajax">

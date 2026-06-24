@@ -31,7 +31,7 @@ final class AdminCest extends BaseAcceptanceCest
 
         $I->wantTo('verify that non-admin user cannot see or open admin section');
 
-        $I->dontSeeElement('[data-test="global-nav-admin"]');
+        $I->dontSeeElement('[data-test="utility-nav-admin"]');
 
         $I->amOnPage('/admin');
         $I->waitForElement('.alert-danger', 10);
@@ -47,6 +47,11 @@ final class AdminCest extends BaseAcceptanceCest
         $I->waitForElement('.alert-danger', 10);
         $I->seeInCurrentUrl('/');
         $I->dontSeeElement('[data-test="admin-statistics-page"]');
+
+        $I->amOnPage('/admin/hlaseni-chyb');
+        $I->waitForElement('.alert-danger', 10);
+        $I->seeInCurrentUrl('/');
+        $I->dontSeeElement('[data-test="admin-bug-reports-page"]');
     }
 
     // ─── Overview Page ───────────────────────────────────────────
@@ -62,26 +67,32 @@ final class AdminCest extends BaseAcceptanceCest
         $I->amOnPage('/admin');
         $I->waitForElementVisible('[data-test="admin-page"]', 10);
 
-        // Main nav active state
-        $I->seeElement('.active [data-test="global-nav-admin"]');
+        // Utility navigation active state
+        $I->seeElement('.active [data-test="utility-nav-admin"]');
 
         // Submenu pills — Přehled active
         $I->seeElement('[data-test="admin-nav-overview"].btn-primary');
         $I->seeElement('[data-test="admin-nav-users"].btn-light');
         $I->seeElement('[data-test="admin-nav-statistics"].btn-light');
+        $I->seeElement('[data-test="admin-nav-bug-reports"].btn-light');
 
         // Cards present
-        $I->seeElement('[data-test="admin-card-users"]');
-        $I->seeElement('[data-test="admin-card-stats"]');
+        $I->seeElement('[data-test="admin-card-users"].navigation-card');
+        $I->seeElement('[data-test="admin-card-stats"].navigation-card');
+        $I->seeElement('[data-test="admin-card-invoice-access"].navigation-card');
+        $I->seeElement('[data-test="admin-card-bug-reports"].navigation-card');
 
         // Card links work
-        $I->seeElement('[data-test="admin-link-users"]');
+        $I->seeElement('[data-test="admin-link-users"].stretched-link');
         $usersHref = $I->grabAttributeFrom('[data-test="admin-link-users"]', 'href');
         Assert::assertStringContainsString('/admin/uzivatele', $usersHref);
 
-        $I->seeElement('[data-test="admin-link-statistics"]');
+        $I->seeElement('[data-test="admin-link-statistics"].stretched-link');
         $statsHref = $I->grabAttributeFrom('[data-test="admin-link-statistics"]', 'href');
         Assert::assertStringContainsString('/admin/statistiky', $statsHref);
+
+        $I->seeElement('[data-test="admin-link-invoice-access"].stretched-link');
+        $I->seeElement('[data-test="admin-link-bug-reports"].stretched-link');
     }
 
     // ─── Submenu Navigation ──────────────────────────────────────
@@ -100,6 +111,7 @@ final class AdminCest extends BaseAcceptanceCest
         $I->seeElement('[data-test="admin-nav-overview"].btn-primary');
         $I->seeElement('[data-test="admin-nav-users"].btn-light');
         $I->seeElement('[data-test="admin-nav-statistics"].btn-light');
+        $I->seeElement('[data-test="admin-nav-bug-reports"].btn-light');
 
         // Users active
         $I->amOnPage('/admin/uzivatele');
@@ -107,11 +119,19 @@ final class AdminCest extends BaseAcceptanceCest
         $I->seeElement('[data-test="admin-nav-users"].btn-primary');
         $I->seeElement('[data-test="admin-nav-overview"].btn-light');
         $I->seeElement('[data-test="admin-nav-statistics"].btn-light');
+        $I->seeElement('[data-test="admin-nav-bug-reports"].btn-light');
 
         // Statistics active
         $I->amOnPage('/admin/statistiky');
         $I->waitForElementVisible('[data-test="admin-statistics-page"]', 10);
         $I->seeElement('[data-test="admin-nav-statistics"].btn-primary');
+        $I->seeElement('[data-test="admin-nav-overview"].btn-light');
+        $I->seeElement('[data-test="admin-nav-users"].btn-light');
+
+        // Bug reports active
+        $I->amOnPage('/admin/hlaseni-chyb');
+        $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', 10);
+        $I->seeElement('[data-test="admin-nav-bug-reports"].btn-primary');
         $I->seeElement('[data-test="admin-nav-overview"].btn-light');
         $I->seeElement('[data-test="admin-nav-users"].btn-light');
     }
@@ -136,6 +156,11 @@ final class AdminCest extends BaseAcceptanceCest
         $I->click('[data-test="admin-nav-statistics"]');
         $I->waitForElementVisible('[data-test="admin-statistics-page"]', 10);
         $I->seeInCurrentUrl('/admin/statistiky');
+
+        // Click Bug reports pill
+        $I->click('[data-test="admin-nav-bug-reports"]');
+        $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', 10);
+        $I->seeInCurrentUrl('/admin/hlaseni-chyb');
 
         // Click Overview pill (back)
         $I->click('[data-test="admin-nav-overview"]');
@@ -255,12 +280,12 @@ final class AdminCest extends BaseAcceptanceCest
         $I->waitForElementVisible('[data-test="admin-users-page"]', 10);
 
         // Open form and try adding existing user_id
-        $I->click('[data-test="admin-users-form-toggle"]');
+        $I->clickStable('[data-test="admin-users-form-toggle"]');
         $I->waitForElementVisible('[data-test="admin-users-form"] input[name="userId"]', 10);
 
-        $I->fillField('[data-test="admin-users-form"] input[name="userId"]', (string) self::ACCEPTANCE_ADMIN_USER_ID);
-        $I->click('[data-test="admin-users-form"] input[type="submit"]');
-        $I->waitForElementVisible('[data-test="admin-users-page"]', 10);
+        $I->fillFieldStable('[data-test="admin-users-form"] input[name="userId"]', (string) self::ACCEPTANCE_ADMIN_USER_ID);
+        $I->clickStable('[data-test="admin-users-form"] input[type="submit"]');
+        $I->waitForJS('return document.querySelector(".alert-warning") !== null;', 10);
 
         // Should show warning
         $I->seeElement('.alert-warning');
@@ -337,6 +362,13 @@ final class AdminCest extends BaseAcceptanceCest
         $I->click('[data-test="admin-link-statistics"]');
         $I->waitForElementVisible('[data-test="admin-statistics-page"]', 10);
         $I->seeInCurrentUrl('/admin/statistiky');
+
+        // Go back and click Bug reports card link
+        $I->amOnPage('/admin');
+        $I->waitForElementVisible('[data-test="admin-page"]', 10);
+        $I->click('[data-test="admin-link-bug-reports"]');
+        $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', 10);
+        $I->seeInCurrentUrl('/admin/hlaseni-chyb');
     }
 
     // ─── Helpers ─────────────────────────────────────────────────

@@ -14,12 +14,6 @@
  * @param InlineEdit|null $inlineAdd   Inline add data
  *}
 
-<style>
-    .dropdown-fix {
-	inset: auto 100% auto auto !important;
-    }
-</style>
-
 <div class="{block datagrid-class}datagrid datagrid-{$control->getFullName()}{/block}" data-refresh-state="{link refreshState!}">
 	<div n:snippet="grid">
 	{snippetArea gridSnippets}
@@ -74,7 +68,7 @@
 			{/if}
 
             <div class="table-responsive pb-5">
-                <table class="{block table-class}table table-hover table-striped table-bordered table-sm{/block}" n:snippet="table" n:block="data">
+                <table class="{block table-class}table table-vcenter table-hover table-striped table-sm{/block}" n:snippet="table" n:block="data">
                     <thead n:block="header">
                         <tr class="row-group-actions" n:if="$hasGroupActions || $exports || $toolbarButtons || $control->canHideColumns() || $inlineAdd" n:block="group-actions">
                             <th colspan="{$control->getColumnsCount()}" class="ublaboo-datagrid-th-form-inline">
@@ -89,7 +83,7 @@
                                             {elseif $form_control instanceof \Nette\Forms\Controls\SubmitButton}
                                                 {input $form_control, disabled => TRUE}
                                             {elseif $form_control->getName() == 'group_action'}
-                                                {input $form_control, class => 'form-control input-sm form-control-sm', disabled => TRUE}
+                                                {input $form_control, class => 'form-control form-control-sm', disabled => TRUE}
                                             {else}
                                                 {input $form_control}
                                             {/if}
@@ -299,7 +293,7 @@
                                                         {/if}
                                                     {/if}
                                                 {/foreach}
-                                                <span class="handle-sort btn btn-sm btn-secondary" n:if="$control->isSortable()">
+                                                <span class="handle-sort btn btn-sm btn-light" n:if="$control->isSortable()">
                                                     <i n:block="icon-arrows-v" class="{$iconPrefix}arrows-v {$iconPrefix}arrows-alt-v"></i>
                                                 </span>
                                                 {if $inlineEdit && $row->hasInlineEdit()}
@@ -393,7 +387,7 @@
                                         <div class="col-per-page text-end">
                                             <a n:if="$filter_active" n:href="resetFilter!" class="ajax btn btn-danger btn-sm reset-filter">{='ublaboo_datagrid.reset_filter'|translate}</a>
                                             {if $control->isPaginated()}
-                                                {input $filter['perPage'], data-autosubmit-per-page => TRUE, class => 'form-control input-sm form-control-sm'}
+                                                {input $filter['perPage'], data-autosubmit-per-page => TRUE, class => 'form-control form-control-sm'}
                                                 {input $filter['perPage_submit'], class => 'datagrid-per-page-submit'}
                                             {/if}
                                         </div>

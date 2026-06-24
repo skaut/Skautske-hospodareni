@@ -102,6 +102,65 @@ class PaymentTest extends Unit
         );
     }
 
+    public function testReduceAmountBySplit(): void
+    {
+        $payment = $this->createPayment();
+        $payment->extractEventsToDispatch();
+
+        $payment->reduceAmountBySplit(150);
+
+        $this->assertSame(350.0, $payment->getAmount());
+        $events = $payment->extractEventsToDispatch();
+        $this->assertCount(1, $events);
+        $this->assertInstanceOf(PaymentAmountWasChanged::class, $events[0]);
+    }
+
+    public function testSplitCanReduceOriginalPaymentToZero(): void
+    {
+        $payment = $this->createPayment();
+
+        $payment->reduceAmountBySplit(self::AMOUNT);
+
+        $this->assertSame(0.0, $payment->getAmount());
+    }
+
+    public function testSplitCannotExceedOriginalAmount(): void
+    {
+        $payment = $this->createPayment();
+
+        $this->expectException(InvalidArgumentException::class);
+        $payment->reduceAmountBySplit(self::AMOUNT + 0.01);
+    }
+
+    public function testClosedPaymentCannotBeSplit(): void
+    {
+        $payment = $this->createPayment();
+        $payment->completeManually(new DateTimeImmutable(), 'John Doe');
+
+        $this->expectException(PaymentClosed::class);
+        $payment->reduceAmountBySplit(100);
+    }
+
+    public function testPaymentCanReferenceSourcePayment(): void
+    {
+        $source = $this->createPayment();
+        $split = new Payment(
+            $this->mockGroup(29),
+            'Jan novák',
+            [],
+            100,
+            ChronosDate::now(),
+            new VariableSymbol('123456'),
+            null,
+            null,
+            '',
+            $source,
+        );
+
+        $this->assertSame($source, $split->getSplitFromPayment());
+        $this->assertSame($source->getId(), $split->getSplitFromPaymentId());
+    }
+
     public function testCancel(): void
     {
         $time = new DateTimeImmutable();

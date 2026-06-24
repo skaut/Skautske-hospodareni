@@ -6,10 +6,13 @@
 <div data-test="event-cashbook-page">
 
     {* Hero *}
-    <div class="card shadow-sm mb-4">
+    <div class="card page-heading">
         <div class="card-body">
             <h1 class="h3 mb-2">{$event->getDisplayName()}</h1>
-            <p class="text-body-secondary mb-3">Evidence plateb akce, kontrola zůstatku a návaznost na příjmy od účastníků.</p>
+            <div class="page-lead mb-3">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Evidence plateb akce, kontrola zůstatku a návaznost na příjmy od účastníků.</span>
+            </div>
             <div n:if="$isEditable" class="d-flex flex-wrap gap-2">
                 <a n:href="importHpd! aid => $aid" class="btn btn-sm btn-primary">
                     <i class="fi fi-rr-user" aria-hidden="true"></i>&nbsp;Načíst příjmy od účastníků

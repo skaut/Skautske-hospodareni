@@ -116,7 +116,7 @@ class InvoiceForm extends BaseControl
         $loadAres = $form->addSubmit('loadAres', 'Získat z Aresu');
         $loadAres
             ->setValidationScope([])
-            ->setHtmlAttribute('class', 'btn btn-sm btn-outline-primary ajax')
+            ->setHtmlAttribute('class', 'btn btn-sm btn-light ajax')
             ->setHtmlAttribute('formnovalidate', 'formnovalidate');
         $loadAres->onClick[] = function (SubmitButton $button): void {
             $form = $button->getForm();

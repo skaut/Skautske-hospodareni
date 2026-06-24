@@ -16,10 +16,6 @@ table.table a:hover {
   width: 15%;
 }
 
-.bg-test {
-  background: linear-gradient(135deg, #f8d778 0%, #f5c94e 100%);
-}
-
 .visually-disabled {
   opacity: 0.65;
   cursor: not-allowed;
@@ -37,9 +33,9 @@ table.table a:hover {
   display: inline-flex;
   align-items: center;
   padding: 0.28rem 0.7rem;
-  border-radius: 999px;
-  background: rgba(var(--bs-primary-rgb), 0.1);
-  color: var(--bs-primary);
+  border-radius: var(--tblr-border-radius);
+  background: var(--app-green-soft);
+  color: var(--app-green);
   font-size: 0.8rem;
   font-weight: 700;
 }
@@ -57,6 +53,14 @@ table.table a:hover {
   height: 2.5rem;
   font-size: 1rem;
   flex-shrink: 0;
+}
+
+.tile-icon + div > .h5,
+.tile-icon-sm + div > .h5 {
+  color: var(--tblr-body-color);
+  font-size: 1rem;
+  font-weight: var(--tblr-font-weight-black);
+  line-height: 1.35;
 }
 
 // Dashboard payment action buttons — keep compact
@@ -77,16 +81,26 @@ table.table a:hover {
 }
 
 .design-help-sidebar {
-  border: 1px solid var(--bs-border-color);
-  border-radius: var(--bs-border-radius-lg);
+  border: 1px solid var(--tblr-border-color);
+  border-radius: var(--tblr-border-radius-lg);
   padding: 1rem 1.25rem;
-  background: var(--bs-body-bg);
+  background: var(--tblr-bg-surface);
   align-self: start;
   position: sticky;
   top: 5rem;
   font-size: 0.92rem;
   line-height: 1.6;
   transition: opacity 0.2s ease;
+}
+
+.design-help-sidebar [data-help-toggle] {
+  justify-content: flex-start;
+}
+
+.design-help-sidebar [data-help-toggle] > [data-help-content] {
+  font-size: 1rem;
+  font-weight: var(--tblr-font-weight-black);
+  line-height: 1.35;
 }
 
 // Collapsed state — hide content, keep toggle visible

@@ -360,7 +360,7 @@ abstract class AccountancyHelpers
     {
         switch ($s) {
             case 'open':
-                return '<span class=\'badge bg-success\'>Otevřená</span>';
+                return '<span class=\'badge text-bg-success\'>Otevřená</span>';
 
             case 'closed':
                 return '<span class=\'badge bg-warning text-dark\'>Uzavřená</span>';

@@ -1,13 +1,13 @@
-{block #content}
-{include ../header.latte}
+{block #subMenu}{include ../header.latte}{/block}
 
+{block #content}
 <div data-test="unit-chits-page">
-    <div class="card shadow-sm mb-4">
+    <div class="card page-heading">
         <div class="card-body">
             <h1 n:inner-block="title" class="h3 mb-2">Přehled dokladů jednotky</h1>
-            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3 mb-3">
-                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
-                <span class="text-body-secondary">Centrální přehled paragonů a rychlý přístup do návazných pokladních knih.</span>
+            <div class="page-lead mb-3">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Centrální přehled paragonů a rychlý přístup do návazných pokladních knih.</span>
             </div>
             <div class="d-flex flex-wrap gap-2 align-items-center">
                 <div class="dropdown" data-test="unit-chits-filter">
@@ -43,7 +43,7 @@
             <h2 class="h5 mb-3">{$label}</h2>
 
             {foreach $info[$type] as $cashbookId => $object}
-                <div class="card shadow-sm mb-4" n:if=" ! $isCashbookEmpty($cashbookId)">
+                <div class="card mb-4" n:if=" ! $isCashbookEmpty($cashbookId)">
                     <div class="card-header d-flex align-items-center justify-content-between">
                         {var $id = $object['ID']}
                         <h5 class="mb-0">
@@ -54,7 +54,7 @@
                                 <small class="text-body-secondary">({$object['StartDate']|date:'j.n'} – {$object['EndDate']|date:'j.n.Y'})</small>
                             {/ifset}
                         </h5>
-                        <a n:href="lockCashbook! $cashbookId" class="btn btn-sm btn-dark ajax flex-shrink-0">
+                        <a n:href="lockCashbook! $cashbookId" class="btn btn-sm btn-outline-warning ajax flex-shrink-0">
                             <i class="fi fi-rr-lock" aria-hidden="true"></i> Zamknout vše
                         </a>
                     </div>

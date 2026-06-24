@@ -202,7 +202,7 @@ final class ParticipantList extends BaseControl
         $editCon->addRadioList('isAccount', 'Na účet?', ['N' => 'Ne', 'Y' => 'Ano', self::NO_ACTION => 'Ponechat původní hodnotu'])
             ->setDefaultValue('');
         $editCon->addSubmit('send', 'Upravit')
-            ->setHtmlAttribute('class', 'btn btn-info btn-small')
+            ->setHtmlAttribute('class', 'btn btn-primary btn-sm')
             ->onClick[] = function (SubmitButton $button): void {
                 $this->massEditSubmitted($button);
             };

@@ -265,7 +265,7 @@ final class ChitForm extends BaseControl
             ->setHtmlAttribute('class', 'btn btn-primary');
 
         $form->addSubmit('sendStay', 'Uložit a pokračuj')
-            ->setHtmlAttribute('class', 'btn btn-secondary');
+            ->setHtmlAttribute('class', 'btn btn-primary');
 
         $form->onSuccess[] = function (BaseForm $form, ArrayHash $values): void {
             if ($form->isSubmitted() !== $form['send'] && $form->isSubmitted() !== $form['sendStay']) {
@@ -281,7 +281,7 @@ final class ChitForm extends BaseControl
         };
 
         $form->addSubmit('cancle', 'Zpět')
-            ->setHtmlAttribute('class', 'btn btn-secondary')
+            ->setHtmlAttribute('class', 'btn btn-outline-secondary')
             ->setValidationScope([])
             ->onClick[] = function (): void {
                 $this->flashMessage('Úprava paragonu byla zrušena. Paragon nebyl upraven.');

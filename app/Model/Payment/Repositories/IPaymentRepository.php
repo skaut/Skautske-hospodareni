@@ -47,6 +47,12 @@ interface IPaymentRepository
 
     public function getMaxVariableSymbol(int $groupId): ?VariableSymbol;
 
+    public function existsPaymentWithVariableSymbolInGroup(
+        int $groupId,
+        VariableSymbol $variableSymbol,
+        ?int $excludePaymentId = null,
+    ): bool;
+
     public function existsOpenPaymentWithVariableSymbolForBankAccount(
         int $bankAccountId,
         VariableSymbol $variableSymbol,

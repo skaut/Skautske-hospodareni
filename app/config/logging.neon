@@ -1,7 +1,5 @@
 tracy:
-    email:
-        - sinacek@gmail.com
-        - frantisekmasa1@gmail.com
+    email: %errorEmails%
     strictMode: TRUE
     maxDepth: 6
     maxLength: 500

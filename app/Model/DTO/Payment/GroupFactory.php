@@ -29,6 +29,7 @@ class GroupFactory
             $group->isRemindersEnabled(),
             $group->isAutomaticPairingEnabled(),
             $group->getPairingDaysBack(),
+            $group->getCreatedAt(),
         );
     }
 }

@@ -52,12 +52,12 @@ class VehicleGrid extends BaseGridControl
         $grid->addAction('edit', '', ':Travel:Vehicle:detail', ['id' => 'id'])
             ->setIcon('far fa-edit')
             ->setTitle('Detail vozidla')
-            ->setClass('btn btn-sm btn-secondary');
+            ->setClass('btn btn-sm btn-light');
 
         $grid->addAction('delete', '', 'remove!', ['id' => 'id'])
             ->setIcon('far fa-trash-can')
             ->setTitle('Smazat vozidlo')
-            ->setClass('btn btn-sm btn-danger')
+            ->setClass('btn btn-sm btn-outline-danger')
             ->setConfirmation(
                 new StringConfirmation('Opravdu chceš smazat řádek %s?', 'registration'),
             );

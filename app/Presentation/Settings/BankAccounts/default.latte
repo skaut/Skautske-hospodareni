@@ -3,12 +3,12 @@
 {block content}
 {var $disabledReason = 'Nemáš dostatečné oprávnění pro správu bankovních účtů.'}
 <div data-test="settings-bank-accounts-page">
-    <div class="card shadow-sm mb-4">
+    <div class="card page-heading">
         <div class="card-body">
             <h1 class="h3 mb-2" n:inner-block="title">Bankovní účty</h1>
-            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3 mb-3">
-                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
-                <span class="text-body-secondary">Seznam účtů jednotky, jejich zdrojů transakcí, importů a vstupů do detailu i správy párování.</span>
+            <div class="page-lead mb-3">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Seznam účtů jednotky, jejich zdrojů transakcí, importů a vstupů do detailu i správy párování.</span>
             </div>
 
             <div class="d-flex flex-wrap gap-2">
@@ -18,7 +18,7 @@
                 >
                     <a
                         n:href="new"
-                        n:class="btn, btn-success, !$canEdit ? disabled"
+                        n:class="btn, btn-primary, !$canEdit ? disabled"
                         n:attr="!$canEdit ? [tabindex => -1, aria-disabled => 'true', onclick => 'return false;']"
                         data-test="settings-bank-accounts-add"
                     ><i class="fi fi-rr-plus-small" aria-hidden="true"></i> Přidat účet</a>
@@ -38,54 +38,8 @@
         </div>
     </div>
 
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <h2 class="h5 mb-2">Přehled účtů</h2>
-            <p class="text-body-secondary" n:if="count($accounts) > 0">Každý účet má přímý vstup do detailu, importů a nastavení přístupů pro podřízené jednotky.</p>
-            <p class="text-body-secondary" n:if="count($accounts) === 0">Zatím tu není založený žádný účet. Začni ručním přidáním nebo načtením účtů ze Skautisu.</p>
-        </div>
-
-        <div n:if="count($accounts) > 0" class="list-group list-group-flush" data-test="settings-bank-accounts-list">
-            <div
-                n:foreach="$accounts as $account"
-                class="list-group-item"
-                data-test="settings-bank-account-item-{$account->getId()}"
-            >
-                <div class="d-flex align-items-start">
-                    <div class="me-auto">
-                        <h3 class="h6 mb-1">
-                            <a n:href="detail $account->getId()">{$account->getName()}</a>
-                        </h3>
-                        <p class="text-body-secondary small mb-1">{$account->getNumber()}</p>
-                        <div class="d-flex gap-1 mb-1">
-                            <span class="badge bg-success" n:if="$account->getTransactionSource()->value === 'fio' && $account->getToken() !== NULL"><i class="fi fi-rr-check" aria-hidden="true"></i> FIO API</span>
-                            <span class="badge bg-secondary" n:if="$account->getTransactionSource()->value === 'gpc'"><i class="fi fi-rr-file-upload" aria-hidden="true"></i> GPC soubor</span>
-                        </div>
-                        <p class="text-body-secondary small mb-0">Přidáno {$account->getCreatedAt()|date:'j.n. Y'}</p>
-                    </div>
-
-                    <div class="d-flex gap-1">
-                        <a n:href="detail $account->getId()" class="btn btn-sm btn-light" title="Detail">
-                            <i class="fi fi-rr-search" aria-hidden="true"></i>
-                            <span>Detail</span>
-                        </a>
-                        <a
-                            n:if="isset($gpcImportableAccountIds[$account->getId()])"
-                            n:href="gpcImportDialog:open! $account->getId()"
-                            class="btn btn-sm btn-light ajax"
-                            title="Importovat GPC soubor"
-                        >
-                            <i class="fi fi-rr-file-import" aria-hidden="true"></i>
-                            <span>Import GPC</span>
-                        </a>
-                        <a n:href="edit $account->getId()" class="btn btn-sm btn-light" title="Nastavení">
-                            <i class="fi fi-rr-settings" aria-hidden="true"></i>
-                            <span>Nastavení</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div data-test="settings-bank-accounts-list">
+        {control grid}
     </div>
 
     {control gpcImportDialog}

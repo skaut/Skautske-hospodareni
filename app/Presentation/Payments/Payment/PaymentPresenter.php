@@ -13,6 +13,7 @@ use App\Components\Factories\Payment\IPaymentDialogFactory;
 use App\Components\Factories\Payment\IPaymentListFactory;
 use App\Components\Factories\Payment\IPaymentNoteDialogFactory;
 use App\Components\Factories\Payment\IRemoveGroupDialogFactory;
+use App\Components\Factories\Payment\ISplitPaymentDialogFactory;
 use App\Components\Payment\EmailButton;
 use App\Components\Payment\GroupProgress;
 use App\Components\Payment\GroupUnitControl;
@@ -23,6 +24,7 @@ use App\Components\Payment\PaymentDialog;
 use App\Components\Payment\PaymentList;
 use App\Components\Payment\PaymentNoteDialog;
 use App\Components\Payment\RemoveGroupDialog;
+use App\Components\Payment\SplitPaymentDialog;
 use App\Http\ExcelResponse;
 use App\Model\DTO\Payment\Payment;
 use App\Model\DTO\Payment\Person;
@@ -75,6 +77,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
         private IImportDialogFactory $importDialogFactory,
         private IPaymentNoteDialogFactory $paymentNoteDialogFactory,
         private IPaymentListFactory $paymentListFactory,
+        private ISplitPaymentDialogFactory $splitPaymentDialogFactory,
     ) {
         parent::__construct();
     }
@@ -277,6 +280,18 @@ final class PaymentPresenter extends PaymentsBasePresenter
     protected function createComponentPaymentList(): PaymentList
     {
         return $this->paymentListFactory->create($this->id, $this->isEditable);
+    }
+
+    protected function createComponentSplitPaymentDialog(): SplitPaymentDialog
+    {
+        $this->assertCanEditGroup();
+
+        $dialog = $this->splitPaymentDialogFactory->create($this->id);
+        $dialog->onSuccess[] = function (): void {
+            $this->redrawControl('grid');
+        };
+
+        return $dialog;
     }
 
     protected function createComponentPairButton(): PairButton

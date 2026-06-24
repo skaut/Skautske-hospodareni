@@ -1,11 +1,11 @@
 {block #content}
 <div data-test="payments-groups-page">
-    <div class="card shadow-sm mb-4">
+    <div class="card page-heading">
         <div class="card-body">
             <h1 n:inner-block="title" class="h3 mb-2">Platební skupiny</h1>
-            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3 mb-3">
-                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
-                <span class="text-body-secondary">Seznam všech platebních skupin. Filtrujte podle stavu, párujte úhrady a spravujte platby.</span>
+            <div class="page-lead mb-3">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Seznam všech platebních skupin. Filtrujte podle stavu, párujte úhrady a spravujte platby.</span>
             </div>
             <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
                 <div class="d-flex flex-wrap gap-2 align-items-center">
@@ -30,38 +30,10 @@
         </div>
     </div>
 
-    <section class="card shadow-sm" data-test="payments-groups-table">
+    <section class="card" data-test="payments-groups-table">
         <div class="card-body">
-            <div class="table-responsive" n:if="!empty($groups)">
-                <table class="table table-bordered table-hover mb-0">
-                    <thead>
-                    <tr>
-                        <th>Název</th>
-                        <th>Jednotky</th>
-                        <th>Zaplaceno</th>
-                        <th class="text-center">Stav</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr n:foreach="$groups as $g">
-                        <td class="align-middle">
-                            <a n:href=":Payments:Payment:default $g->id">{$g->name}</a>
-                        </td>
-                        <td class="align-middle">
-                            {$groupUnits[$g->id]|implode:', '}</td>
-                        <td>{control "progress-$g->id"}</td>
-                        <td class="align-middle text-center">
-                            {$g->state|groupState|noescape}
-                            <span class="text-success" title="Lze párovat s bankou" n:if="$groupsPairingSupport[$g->id] === TRUE">
-                                <i class="fi fi-rr-bank" aria-hidden="true"></i>
-                            </span>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div n:if="empty($groups)" class="border border-dashed rounded-3 p-3 text-body-secondary">
-                Žádné platební skupiny k zobrazení.
+            <div data-test="payments-groups-grid">
+                {control grid}
             </div>
         </div>
     </section>

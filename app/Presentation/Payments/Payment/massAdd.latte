@@ -1,11 +1,11 @@
 {block #content}
 <div data-test="payment-mass-add-page">
-    <div class="card shadow-sm mb-4">
+    <div class="card page-heading">
         <div class="card-body">
             <h1 n:inner-block="title" class="h3 mb-2">Přidat osoby z jednotky</h1>
-            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3 mb-3">
-                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
-                <span class="text-body-secondary">Členové, kteří už mají v této skupině platbu, nejsou zobrazeni.</span>
+            <div class="page-lead mb-3">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Členové, kteří už mají v této skupině platbu, nejsou zobrazeni.</span>
             </div>
             <a n:href="default $group->id" class="btn btn-outline-secondary btn-sm">
                 <i class="fi fi-rr-arrow-left" aria-hidden="true"></i> {$group->name}
@@ -13,7 +13,7 @@
         </div>
     </div>
 
-    <section class="card shadow-sm">
+    <section class="card">
         <div class="card-body">
             <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
                 <div class="dropdown">

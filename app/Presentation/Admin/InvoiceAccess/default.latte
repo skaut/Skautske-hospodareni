@@ -1,0 +1,139 @@
+{block title}Předběžný přístup k fakturaci{/block}
+
+{block content}
+<div data-test="admin-invoice-access-page">
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 class="h3 mb-2">Předběžný přístup k fakturaci</h1>
+            <div class="page-lead">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Správa uživatelů, kteří mohou používat fakturaci v testovacím programu.</span>
+            </div>
+        </div>
+    </div>
+
+    <div n:if="! $storageAvailable" class="alert alert-warning" data-test="admin-invoice-access-storage-warning">
+        Tabulky <code>invoice_access_user</code> a <code>invoice_access_request</code> ještě nejsou v databázi dostupné.
+        Spusťte migraci a potom bude možné přístup spravovat odsud.
+    </div>
+
+    <div n:if="$configuredAllowedUserIds !== []" class="alert alert-info" data-test="admin-invoice-access-config-fallback">
+        Config fallback je aktivní pro user_id:
+        <strong>{implode(', ', $configuredAllowedUserIds)}</strong>
+    </div>
+
+    <article class="card mb-4" data-test="admin-invoice-access-requests-card">
+        <div class="card-body">
+            <h2 class="h5 mb-0">Žádosti o zařazení</h2>
+
+            <div n:if="$storageAvailable && $openRequests !== []" class="table-responsive mt-3" data-test="admin-invoice-access-requests">
+                <table class="table table-hover table-striped mb-0">
+                    <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Uživatel</th>
+                        <th>Jednotka</th>
+                        <th>Role</th>
+                        <th>Poznámka</th>
+                        <th>Odesláno</th>
+                        <th class="text-end">Akce</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr
+                        n:foreach="$openRequests as $request"
+                        n:attr="data-test => 'invoice-access-request-row-' . $request->getId()"
+                    >
+                        <td><code>{$request->getUserId()}</code></td>
+                        <td>{$request->getDisplayName()}</td>
+                        <td>{$request->getUnitId() ?? '-'}</td>
+                        <td>{$request->getRoleId() ?? '-'}</td>
+                        <td>{$request->getNote() === '' ? '-' : $request->getNote()}</td>
+                        <td>{$request->getCreatedAt()|date:'j. n. Y H:i'}</td>
+                        <td class="text-end">
+                            <a
+                                n:href="approveRequest!, id => $request->getId()"
+                                class="btn btn-sm btn-outline-success"
+                                title="Schválit"
+                                n:attr="data-test => 'invoice-access-request-approve-' . $request->getId()"
+                            >
+                                <i class="fi fi-rr-check" aria-hidden="true"></i>
+                            </a>
+                            <a
+                                n:href="rejectRequest!, id => $request->getId()"
+                                class="btn btn-sm btn-outline-danger"
+                                title="Zamítnout"
+                                n:attr="data-test => 'invoice-access-request-reject-' . $request->getId()"
+                                onclick='return confirm("Opravdu chcete zamítnout tuto žádost?");'
+                            >
+                                <i class="fi fi-rr-cross-small" aria-hidden="true"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div n:if="$storageAvailable && $openRequests === []" class="alert alert-light mt-3 mb-0" data-test="admin-invoice-access-requests-empty">
+                Nečeká žádná žádost o zařazení do testovacího programu.
+            </div>
+        </div>
+    </article>
+
+    <article class="card mb-4" data-test="admin-invoice-access-form-card">
+        <div class="card-body">
+            <h2 class="h5 mb-0">Povolit uživatele ručně</h2>
+
+            <div n:if="$storageAvailable" class="mt-3" data-test="admin-invoice-access-form">
+                {control invoiceAccessUserForm}
+            </div>
+
+            <div n:if="! $storageAvailable" class="text-body-secondary mt-3">
+                Formulář se zobrazí po aplikaci databázové migrace.
+            </div>
+        </div>
+    </article>
+
+    <article class="card" data-test="admin-invoice-access-users-card">
+        <div class="card-body">
+            <h2 class="h5 mb-0">Povolení uživatelé</h2>
+
+            <div n:if="$storageAvailable && $accessUsers !== []" class="table-responsive mt-3" data-test="admin-invoice-access-users">
+                <table class="table table-hover table-striped mb-0">
+                    <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Povoleno</th>
+                        <th class="text-end">Akce</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr
+                        n:foreach="$accessUsers as $accessUser"
+                        n:attr="data-test => 'invoice-access-user-row-' . $accessUser->getId()"
+                    >
+                        <td><code>{$accessUser->getUserId()}</code></td>
+                        <td>{$accessUser->getCreatedAt()|date:'j. n. Y H:i'}</td>
+                        <td class="text-end">
+                            <a
+                                n:href="deleteAccessUser!, id => $accessUser->getId()"
+                                class="btn btn-sm btn-outline-danger"
+                                title="Odebrat"
+                                n:attr="data-test => 'invoice-access-user-delete-' . $accessUser->getId()"
+                                onclick='return confirm("Opravdu chcete odebrat přístup k fakturaci?");'
+                            >
+                                <i class="fi fi-rr-trash" aria-hidden="true"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div n:if="$storageAvailable && $accessUsers === []" class="alert alert-light mt-3 mb-0" data-test="admin-invoice-access-users-empty">
+                Zatím není povolen žádný uživatel.
+            </div>
+        </div>
+    </article>
+</div>
+{/block}

@@ -9,23 +9,27 @@
     {var $approvedLeaderCamps = $campsCount[\App\Model\Event\Enum\CampState::APPROVED_LEADER->value] ?? 0}
     {var $realCamps = $campsCount[\App\Model\Event\Enum\CampState::REAL->value] ?? 0}
 
-    <div class="py-4" data-test="dashboard" aria-label="Přehled sekcí">
-        <div class="card shadow-sm mb-4">
+    <div class="pb-4" data-test="dashboard" aria-label="Přehled sekcí">
+        <div class="card page-heading">
             <div class="card-body">
-                <h1 class="h3 mb-0">Nástěnka</h1>
+                <h1 class="h3 mb-2">Nástěnka</h1>
+                <div class="page-lead">
+                    <i class="fi fi-rr-info" aria-hidden="true"></i>
+                    <span>Rychlý přehled hlavních agend, jejich aktuálního stavu a odkazů na nejčastěji používané části aplikace.</span>
+                </div>
             </div>
         </div>
 
         <div class="row g-4">
             <div class="col-12 col-md-6 col-xl-4">
-                <article class="card h-100 shadow-sm" data-test="dashboard-card-events" aria-labelledby="tile-events-title">
+                <article class="card h-100 navigation-card" data-test="dashboard-card-events" aria-labelledby="tile-events-title">
                     <div class="card-body">
                         <div class="d-flex align-items-start gap-3 mb-3">
-                            <a n:href=":Events:Default:" class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary text-decoration-none tile-icon" data-test="dashboard-link-events">
+                            <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary tile-icon">
                                 <i class="fi fi-rr-circle-calendar" aria-hidden="true"></i>
-                            </a>
+                            </span>
                             <div>
-                                <h2 class="h5 mb-1" id="tile-events-title"><a n:href=":Events:Default:" class="text-body text-decoration-none">Akce</a></h2>
+                                <h2 class="h5 mb-1" id="tile-events-title"><a n:href=":Events:Default:" class="stretched-link text-body text-decoration-none" data-test="dashboard-link-events">Akce</a></h2>
                                 <p class="text-body-secondary small mb-0">Evidence akcí od přípravy přes rozpočet a doklady až po uzavření.</p>
                             </div>
                         </div>
@@ -49,14 +53,14 @@
             </div>
 
             <div class="col-12 col-md-6 col-xl-4">
-                <article class="card h-100 shadow-sm" data-test="dashboard-card-camps" aria-labelledby="tile-camps-title">
+                <article class="card h-100 navigation-card" data-test="dashboard-card-camps" aria-labelledby="tile-camps-title">
                     <div class="card-body">
                         <div class="d-flex align-items-start gap-3 mb-3">
-                            <a n:href=":Camps:Default:" class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary text-decoration-none tile-icon" data-test="dashboard-link-camps">
+                            <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary tile-icon">
                                 <i class="fi fi-rs-tents" aria-hidden="true"></i>
-                            </a>
+                            </span>
                             <div>
-                                <h2 class="h5 mb-1" id="tile-camps-title"><a n:href=":Camps:Default:" class="text-body text-decoration-none">Tábory</a></h2>
+                                <h2 class="h5 mb-1" id="tile-camps-title"><a n:href=":Camps:Default:" class="stretched-link text-body text-decoration-none" data-test="dashboard-link-camps">Tábory</a></h2>
                                 <p class="text-body-secondary small mb-0">Přehled táborových agend od návrhu po skutečnost a závěrečné odevzdání.</p>
                             </div>
                         </div>
@@ -84,14 +88,14 @@
             </div>
 
             <div class="col-12 col-md-6 col-xl-4">
-                <article class="card h-100 shadow-sm" data-test="dashboard-card-education" aria-labelledby="tile-edu-title">
+                <article class="card h-100 navigation-card" data-test="dashboard-card-education" aria-labelledby="tile-edu-title">
                     <div class="card-body">
                         <div class="d-flex align-items-start gap-3 mb-3">
-                            <a n:href=":Education:Default:" class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary text-decoration-none tile-icon" data-test="dashboard-link-education">
+                            <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary tile-icon">
                                 <i class="fi fi-rs-user-graduate" aria-hidden="true"></i>
-                            </a>
+                            </span>
                             <div>
-                                <h2 class="h5 mb-1" id="tile-edu-title"><a n:href=":Education:Default:" class="text-body text-decoration-none">Vzdělávačky</a></h2>
+                                <h2 class="h5 mb-1" id="tile-edu-title"><a n:href=":Education:Default:" class="stretched-link text-body text-decoration-none" data-test="dashboard-link-education">Vzdělávačky</a></h2>
                                 <p class="text-body-secondary small mb-0">Rozpočty, účastníci a finanční agenda vzdělávacích akcí.</p>
                             </div>
                         </div>
@@ -106,14 +110,14 @@
             </div>
 
             <div class="col-12 col-md-6 col-xl-4">
-                <article class="card h-100 shadow-sm" data-test="dashboard-card-travel" aria-labelledby="tile-travel-title">
+                <article class="card h-100 navigation-card" data-test="dashboard-card-travel" aria-labelledby="tile-travel-title">
                     <div class="card-body">
                         <div class="d-flex align-items-start gap-3 mb-3">
-                            <a n:href=":Travel:Default:" class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary text-decoration-none tile-icon" data-test="dashboard-link-travel">
+                            <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary tile-icon">
                                 <i class="fi fi-rr-road" aria-hidden="true"></i>
-                            </a>
+                            </span>
                             <div>
-                                <h2 class="h5 mb-1" id="tile-travel-title"><a n:href=":Travel:Default:" class="text-body text-decoration-none">Cesťáky</a></h2>
+                                <h2 class="h5 mb-1" id="tile-travel-title"><a n:href=":Travel:Default:" class="stretched-link text-body text-decoration-none" data-test="dashboard-link-travel">Cesťáky</a></h2>
                                 <p class="text-body-secondary small mb-0">Cestovní příkazy, kontakty i vozidla připravené pro rychlé vyúčtování.</p>
                             </div>
                         </div>
@@ -128,14 +132,14 @@
             </div>
 
             <div class="col-12 col-md-6 col-xl-4">
-                <article class="card h-100 shadow-sm" data-test="dashboard-card-unit" aria-labelledby="tile-unit-title">
+                <article class="card h-100 navigation-card" data-test="dashboard-card-unit" aria-labelledby="tile-unit-title">
                     <div class="card-body">
                         <div class="d-flex align-items-start gap-3 mb-3">
-                            <a n:href=":Unit:Cashbook:" class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary text-decoration-none tile-icon" data-test="dashboard-link-unit">
+                            <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary tile-icon">
                                 <i class="fi fi-rs-users" aria-hidden="true"></i>
-                            </a>
+                            </span>
                             <div>
-                                <h2 class="h5 mb-1" id="tile-unit-title"><a n:href=":Unit:Cashbook:" class="text-body text-decoration-none">Jednotka</a></h2>
+                                <h2 class="h5 mb-1" id="tile-unit-title"><a n:href=":Unit:Cashbook:" class="stretched-link text-body text-decoration-none" data-test="dashboard-link-unit">Jednotka</a></h2>
                                 <p class="text-body-secondary small mb-0">Jednotková pokladna, rozpočet a doklady v každodenním provozu.</p>
                             </div>
                         </div>
@@ -150,14 +154,14 @@
             </div>
 
             <div class="col-12 col-md-6 col-xl-4">
-                <article class="card h-100 shadow-sm" data-test="dashboard-card-payments" aria-labelledby="tile-payments-title">
+                <article class="card h-100 navigation-card" data-test="dashboard-card-payments" aria-labelledby="tile-payments-title">
                     <div class="card-body">
                         <div class="d-flex align-items-start gap-3 mb-3">
-                            <a n:href=":Payments:Dashboard:" class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary text-decoration-none tile-icon" data-test="dashboard-link-payments">
+                            <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary tile-icon">
                                 <i class="fi fi-rr-coins" aria-hidden="true"></i>
-                            </a>
+                            </span>
                             <div>
-                                <h2 class="h5 mb-1" id="tile-payments-title"><a n:href=":Payments:Dashboard:" class="text-body text-decoration-none">Platby</a></h2>
+                                <h2 class="h5 mb-1" id="tile-payments-title"><a n:href=":Payments:Dashboard:" class="stretched-link text-body text-decoration-none" data-test="dashboard-link-payments">Platby</a></h2>
                                 <p class="text-body-secondary small mb-0">Skupiny plateb, párování úhrad a rychlý vstup do platebních workflow.</p>
                             </div>
                         </div>
@@ -168,7 +172,7 @@
                                 <dd class="mb-0 fw-bold">{$groupCount}</dd>
                             </div>
                         </dl>
-                        <div class="d-flex flex-wrap gap-2" data-test="dashboard-payment-actions">
+                        <div class="d-flex flex-wrap gap-2 navigation-card-actions" data-test="dashboard-payment-actions">
                             {control createButton}
                             {control pairButton}
                         </div>

@@ -4,7 +4,7 @@
         <a
             n:foreach="$items as $item"
             href="{$item->getRealLink()}"
-            n:class="btn, btn-sm, rounded-pill, $item->isActive() ? btn-primary : btn-light"
+            n:class="btn, btn-sm, $item->isActive() ? btn-primary : btn-light"
             n:attr="data-test => $item->getData('test')"
         >
             <i n:if="$item->hasData('icon')" class="{$item->getData('icon')}" aria-hidden="true"></i>

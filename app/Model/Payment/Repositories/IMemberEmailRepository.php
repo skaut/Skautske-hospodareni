@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Model\Payment\Repositories;
 
+use App\Model\DTO\Payment\MemberEmail;
+
 interface IMemberEmailRepository
 {
-    /** @return array<string, string> email address => email label */
+    /** @return MemberEmail[] */
     public function findByMember(int $memberId): array;
 }

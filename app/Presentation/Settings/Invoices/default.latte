@@ -2,12 +2,12 @@
 
 {block #content}
 <div data-test="invoice-settings-page">
-    <div class="card shadow-sm mb-4">
+    <div class="card page-heading">
         <div class="card-body">
             <h1 class="h3 mb-2" n:inner-block="title">Nastavení faktur</h1>
-            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3 mb-3">
-                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
-                <span class="text-body-secondary">Roční dodavatelské údaje jednotky pro rok {$selectedYear} na jednom místě.</span>
+            <div class="page-lead mb-3">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Roční dodavatelské údaje jednotky pro rok {$selectedYear} na jednom místě.</span>
             </div>
 
             <div class="d-flex flex-wrap gap-2 align-items-center">
@@ -20,7 +20,7 @@
     </div>
 
     <div class="design-help-layout" data-help-layout>
-        <div class="card shadow-sm" data-help-form>
+        <div class="card" data-help-form>
             <div class="card-body">
                 <h2 class="h5 mb-3">Roční údaje jednotky</h2>
                 <div n:if="$hasLogoImage" class="border rounded-3 p-3 mb-3 bg-body-tertiary" data-test="invoice-logo-preview">
@@ -121,54 +121,5 @@
     </div>
 </div>
 
-<script>
-    document.querySelectorAll('[data-help-layout]').forEach((layout) => {
-        const toggle = layout.querySelector('[data-help-toggle]');
-        if (!toggle) return;
-        toggle.addEventListener('click', () => {
-            const isCollapsed = layout.dataset.helpCollapsed === 'true';
-            layout.dataset.helpCollapsed = (!isCollapsed).toString();
-            toggle.setAttribute('aria-expanded', isCollapsed ? 'true' : 'false');
-            toggle.setAttribute('title', isCollapsed ? 'Skrýt nápovědu' : 'Zobrazit nápovědu');
-        });
-    });
-</script>
 
-<style n:syntax="off">
-    .invoice-image-preview {
-        width: 180px;
-        min-height: 72px;
-        padding: 8px;
-        border: 1px solid var(--bs-border-color);
-        border-radius: 8px;
-        background: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .invoice-logo-preview {
-        min-height: 58px;
-    }
-
-    .invoice-image-preview img {
-        max-width: 100%;
-        max-height: 72px;
-        object-fit: contain;
-    }
-
-    [data-test="invoice-settings-page"] input[type="file"].form-control-file {
-        display: block;
-        width: 100%;
-        padding: .375rem .75rem;
-        font-size: 1rem;
-        font-weight: 400;
-        line-height: 1.5;
-        color: var(--bs-body-color);
-        background-color: var(--bs-body-bg);
-        background-clip: padding-box;
-        border: var(--bs-border-width) solid var(--bs-border-color);
-        border-radius: var(--bs-border-radius);
-    }
-</style>
 {/block}

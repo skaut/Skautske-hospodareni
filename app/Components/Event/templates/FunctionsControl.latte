@@ -9,7 +9,7 @@
             <div class="card-header d-flex align-items-center">
                 <h5 class="m-0 me-auto">Vedení akce</h5>
                 {if $editation}
-                    <a n:href="closeEditation!" class="ajax lead close">&times;</a>
+                    <a n:href="closeEditation!" class="ajax btn-close" aria-label="Zavřít úpravu"></a>
                 {elseif $canEdit}
                     <a n:href="edit!" class="btn btn-light btn-sm ajax"><i
                                 class="far fa-edit"></i></a>

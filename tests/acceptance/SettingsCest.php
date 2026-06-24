@@ -8,6 +8,8 @@ use AcceptanceTester;
 
 class SettingsCest extends BaseAcceptanceCest
 {
+    private const ACCEPTANCE_USER_ID = 2465;
+
     protected AcceptanceTester $I;
 
     public function _before(AcceptanceTester $I): void
@@ -16,6 +18,17 @@ class SettingsCest extends BaseAcceptanceCest
 
         $this->I = $I;
         $I->login(AcceptanceTester::UNIT_LEADER_ROLE);
+        $I->deleteFromDatabase('invoice_access_user', ['user_id' => self::ACCEPTANCE_USER_ID]);
+        $I->haveInDatabase('invoice_access_user', [
+            'user_id' => self::ACCEPTANCE_USER_ID,
+            'created_at' => '2026-06-18 12:00:00',
+        ]);
+        $I->deleteFromDatabase('user_preference', ['user_id' => self::ACCEPTANCE_USER_ID]);
+        $I->haveInDatabase('user_preference', [
+            'user_id' => self::ACCEPTANCE_USER_ID,
+            'show_help' => 1,
+            'updated_at' => '2026-06-18 12:00:00',
+        ]);
     }
 
     // ─── Overview Page ───────────────────────────────────────────
@@ -27,30 +40,33 @@ class SettingsCest extends BaseAcceptanceCest
 
         $I->wantTo('verify settings overview page shows cards with correct links');
 
-        $I->click('[data-test="global-nav-settings"]');
+        $I->click('[data-test="utility-nav-settings"]');
         $I->waitForElementVisible('[data-test="settings-page"]', 10);
 
-        // Main nav active state
-        $I->seeElement('.active [data-test="global-nav-settings"]');
+        // Utility navigation active state
+        $I->seeElement('.active [data-test="utility-nav-settings"]');
 
         // Submenu — Přehled active
         $I->seeElement('[data-test="settings-subnav-overview"].btn-primary');
+        $I->seeElement('[data-test="settings-subnav-user"].btn-light');
         $I->seeElement('[data-test="settings-subnav-bank-accounts"].btn-light');
         $I->seeElement('[data-test="settings-subnav-mails"].btn-light');
         $I->seeElement('[data-test="settings-subnav-invoices"].btn-light');
         $I->seeElement('[data-test="settings-subnav-automation"].btn-light');
 
         // Cards present
-        $I->seeElement('[data-test="settings-card-bank-accounts"]');
-        $I->seeElement('[data-test="settings-card-mails"]');
-        $I->seeElement('[data-test="settings-card-invoices"]');
-        $I->seeElement('[data-test="settings-card-automation"]');
+        $I->seeElement('[data-test="settings-card-bank-accounts"].navigation-card');
+        $I->seeElement('[data-test="settings-card-mails"].navigation-card');
+        $I->seeElement('[data-test="settings-card-invoices"].navigation-card');
+        $I->seeElement('[data-test="settings-card-user"].navigation-card');
+        $I->seeElement('[data-test="settings-card-automation"].navigation-card');
 
         // Card links present
-        $I->seeElement('[data-test="settings-link-bank-accounts"]');
-        $I->seeElement('[data-test="settings-link-mails"]');
-        $I->seeElement('[data-test="settings-link-invoices"]');
-        $I->seeElement('[data-test="settings-link-automation"]');
+        $I->seeElement('[data-test="settings-link-bank-accounts"].stretched-link');
+        $I->seeElement('[data-test="settings-link-mails"].stretched-link');
+        $I->seeElement('[data-test="settings-link-invoices"].stretched-link');
+        $I->seeElement('[data-test="settings-link-user"].stretched-link');
+        $I->seeElement('[data-test="settings-link-automation"].stretched-link');
     }
 
     // ─── Submenu Navigation ──────────────────────────────────────
@@ -63,9 +79,15 @@ class SettingsCest extends BaseAcceptanceCest
         $I->wantTo('verify settings submenu highlights the correct active section');
 
         // Overview active
-        $I->click('[data-test="global-nav-settings"]');
+        $I->click('[data-test="utility-nav-settings"]');
         $I->waitForElementVisible('[data-test="settings-page"]', 10);
         $I->seeElement('[data-test="settings-subnav-overview"].btn-primary');
+
+        // User active
+        $I->click('[data-test="settings-subnav-user"]');
+        $I->waitForElementVisible('[data-test="settings-user-page"]', 10);
+        $I->seeElement('[data-test="settings-subnav-user"].btn-primary');
+        $I->seeElement('[data-test="settings-subnav-overview"].btn-light');
 
         // Bank accounts active
         $I->click('[data-test="settings-subnav-bank-accounts"]');
@@ -99,8 +121,12 @@ class SettingsCest extends BaseAcceptanceCest
 
         $I->wantTo('verify settings submenu pill buttons navigate to correct pages');
 
-        $I->click('[data-test="global-nav-settings"]');
+        $I->click('[data-test="utility-nav-settings"]');
         $I->waitForElementVisible('[data-test="settings-page"]', 10);
+
+        $I->click('[data-test="settings-subnav-user"]');
+        $I->waitForElementVisible('[data-test="settings-user-page"]', 10);
+        $I->seeInCurrentUrl('/nastaveni/uzivatel');
 
         $I->click('[data-test="settings-subnav-bank-accounts"]');
         $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', 10);
@@ -132,12 +158,23 @@ class SettingsCest extends BaseAcceptanceCest
 
         $I->wantTo('verify clicking cards on settings overview navigates to the correct section');
 
-        $I->click('[data-test="global-nav-settings"]');
+        $I->click('[data-test="utility-nav-settings"]');
         $I->waitForElementVisible('[data-test="settings-page"]', 10);
 
-        $I->click('[data-test="settings-link-bank-accounts"]');
+        $I->executeJS(<<<'JS'
+            const card = document.querySelector('[data-test="settings-card-bank-accounts"]');
+            const rect = card.getBoundingClientRect();
+            document.elementFromPoint(rect.right - 20, rect.bottom - 20).click();
+            JS);
         $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', 10);
         $I->seeInCurrentUrl('/nastaveni/bankovni-ucty');
+
+        $I->click('[data-test="settings-subnav-overview"]');
+        $I->waitForElementVisible('[data-test="settings-page"]', 10);
+
+        $I->click('[data-test="settings-link-user"]');
+        $I->waitForElementVisible('[data-test="settings-user-page"]', 10);
+        $I->seeInCurrentUrl('/nastaveni/uzivatel');
 
         $I->click('[data-test="settings-subnav-overview"]');
         $I->waitForElementVisible('[data-test="settings-page"]', 10);
@@ -161,6 +198,48 @@ class SettingsCest extends BaseAcceptanceCest
         $I->seeInCurrentUrl('/nastaveni/automatizace');
     }
 
+    /** @group settings */
+    public function userCanDisableAutomaticHelpDisplay(): void
+    {
+        $I = $this->I;
+
+        $I->wantTo('hide page help by default and open it with the title icon');
+
+        $I->click('[data-test="utility-nav-settings"]');
+        $I->waitForElementVisible('[data-test="settings-page"]', 10);
+        $I->click('[data-test="settings-subnav-user"]');
+        $I->waitForElementVisible('[data-test="settings-user-page"]', 10);
+
+        $I->seeElement('.page-heading .page-lead > [data-page-help-toggle]');
+        $I->seeElement('[data-page-help-content]:not([hidden])');
+        $I->uncheckOption('input[name="showHelp"]');
+        $I->click('input[type="submit"]');
+        $I->waitForElementVisible('[data-test="settings-user-page"]', 10);
+
+        $I->seeInDatabase('user_preference', [
+            'user_id' => self::ACCEPTANCE_USER_ID,
+            'show_help' => 0,
+        ]);
+        $I->seeElement('[data-page-help-toggle][aria-expanded="false"]');
+        $I->seeElement('.page-heading .page-lead[data-page-help-expanded="false"]');
+        $I->dontSeeElement('[data-page-help-content]:not([hidden])');
+
+        $I->click('[data-page-help-toggle]');
+        $I->waitForJS('return document.querySelector(".page-heading")?.dataset.pageHelpExpanded === "true"', 5);
+        $I->seeElement('.page-heading .page-lead[data-page-help-expanded="true"]');
+        $I->seeElement('[data-page-help-content]:not([hidden])');
+
+        $I->click('[data-test="settings-subnav-invoices"]');
+        $I->waitForElementVisible('[data-test="invoice-settings-page"]', 10);
+        $I->seeElement('[data-page-help-toggle][aria-expanded="false"]');
+        $I->seeElement('[data-help-layout][data-help-collapsed="true"]');
+        $I->seeElement('[data-help-toggle][aria-expanded="false"]');
+
+        $I->click('[data-help-toggle]');
+        $I->waitForJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed === "false"', 5);
+        $I->seeElement('[data-help-toggle][aria-expanded="true"]');
+    }
+
     // ─── Bank Accounts — Layout & Empty State ────────────────────
 
     /** @group settings */
@@ -170,7 +249,7 @@ class SettingsCest extends BaseAcceptanceCest
 
         $I->wantTo('verify bank accounts page displays hero, add/import buttons, and account list');
 
-        $I->click('[data-test="global-nav-settings"]');
+        $I->click('[data-test="utility-nav-settings"]');
         $I->waitForElementVisible('[data-test="settings-page"]', 10);
 
         $I->click('[data-test="settings-subnav-bank-accounts"]');
@@ -179,6 +258,7 @@ class SettingsCest extends BaseAcceptanceCest
         // Action buttons visible
         $I->seeElement('[data-test="settings-bank-accounts-add"]');
         $I->seeElement('[data-test="settings-bank-accounts-import"]');
+        $I->seeElement('[data-test="settings-bank-accounts-list"] .datagrid');
     }
 
     // ─── CRUD: Create, Read, Edit, Delete Bank Account ───────────
@@ -191,7 +271,7 @@ class SettingsCest extends BaseAcceptanceCest
 
         $I->wantTo('create, read, edit, and delete a bank account');
 
-        $I->click('[data-test="global-nav-settings"]');
+        $I->click('[data-test="utility-nav-settings"]');
         $I->waitForElementVisible('[data-test="settings-page"]', 10);
 
         $I->click('[data-test="settings-subnav-bank-accounts"]');
@@ -200,6 +280,25 @@ class SettingsCest extends BaseAcceptanceCest
         // ── CREATE ───────────────────────────────────────────────
         $I->click('[data-test="settings-bank-accounts-add"]');
         $I->waitForElementVisible('[data-test="settings-bank-account-new-page"]', 10);
+
+        $labelColorsMatchBodyInBothThemes = $I->executeJS(<<<'JS'
+            const label = document.querySelector('[data-test="settings-bank-account-new-page"] form label');
+            const originalTheme = document.documentElement.getAttribute('data-bs-theme');
+            const matchesBody = () => getComputedStyle(label).color === getComputedStyle(document.body).color;
+            document.documentElement.setAttribute('data-bs-theme', 'light');
+            const lightMatches = matchesBody();
+            document.documentElement.setAttribute('data-bs-theme', 'dark');
+            const darkMatches = matchesBody();
+            if (originalTheme === null) {
+                document.documentElement.removeAttribute('data-bs-theme');
+            } else {
+                document.documentElement.setAttribute('data-bs-theme', originalTheme);
+            }
+            return lightMatches
+                && darkMatches
+                && document.querySelector('[data-test="settings-bank-account-new-page"] form label.form-label') !== null;
+            JS);
+        \PHPUnit\Framework\Assert::assertTrue($labelColorsMatchBodyInBothThemes);
 
         // Fill form
         $I->fillField('input[name="name"]', 'Testovací účet Selenium');
@@ -266,7 +365,7 @@ class SettingsCest extends BaseAcceptanceCest
 
         $I->wantTo('verify mails settings page displays hero and connect button');
 
-        $I->click('[data-test="global-nav-settings"]');
+        $I->click('[data-test="utility-nav-settings"]');
         $I->waitForElementVisible('[data-test="settings-page"]', 10);
 
         $I->click('[data-test="settings-subnav-mails"]');
@@ -284,7 +383,7 @@ class SettingsCest extends BaseAcceptanceCest
 
         $I->wantTo('verify invoice settings page displays hero and back link');
 
-        $I->click('[data-test="global-nav-settings"]');
+        $I->click('[data-test="utility-nav-settings"]');
         $I->waitForElementVisible('[data-test="settings-page"]', 10);
 
         $I->click('[data-test="settings-subnav-invoices"]');
@@ -302,7 +401,7 @@ class SettingsCest extends BaseAcceptanceCest
 
         $I->wantTo('verify automation page displays CRON and history cards');
 
-        $I->click('[data-test="global-nav-settings"]');
+        $I->click('[data-test="utility-nav-settings"]');
         $I->waitForElementVisible('[data-test="settings-page"]', 10);
 
         $I->click('[data-test="settings-subnav-automation"]');

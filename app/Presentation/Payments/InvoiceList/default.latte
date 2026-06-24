@@ -1,6 +1,6 @@
 {block #content}
 <div class="d-grid gap-4" n:attr="data-test => $isSequenceContext ? 'invoice-sequence-page' : 'invoice-home'">
-    <div class="card shadow-sm">
+    <div class="card page-heading">
         <div class="card-body">
             <h1 n:inner-block="title" class="h3 mb-2">
                 {if $isSequenceContext}
@@ -9,9 +9,9 @@
                     Faktury
                 {/if}
             </h1>
-            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3 mb-3">
-                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
-                <span class="text-body-secondary">
+            <div class="page-lead mb-3">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>
                     {if $isSequenceContext}
                         {if $invoiceSequence->getDescription() !== ''}{$invoiceSequence->getDescription()}. {/if}
                         Vystavení nové faktury, párování úhrad a správa otevřených dokladů v jedné řadě.
@@ -74,7 +74,7 @@
         </div>
     </div>
 
-    <section n:if="! $isSequenceContext" class="card shadow-sm" data-test="invoice-sequences">
+    <section n:if="! $isSequenceContext" class="card" data-test="invoice-sequences">
         <div class="card-body">
             <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
                 <h2 class="h5 mb-0">Rychlý vstup do řad</h2>
@@ -85,18 +85,22 @@
 
             <div n:if="$invoiceSequences !== []" class="invoice-sequence-grid">
                 <article n:foreach="$invoiceSequences as $sequence"
-                         class="card border"
+                         class="card border navigation-card"
                          data-test="invoice-sequence-card-{$sequence['id']}">
                     <div class="card-body d-grid gap-2">
                         <div class="d-flex justify-content-between text-body-secondary small fw-semibold">
                             <span>{$sequence['year']}</span>
                             <span>{$sequence['invoiceCount']} faktur</span>
                         </div>
-                        <h3 class="h6 fw-bold mb-0">{$sequence['sequence']}/{$sequence['year']}</h3>
+                        <h3 class="h6 fw-bold mb-0">
+                            <a n:href=":Payments:InvoiceList:default, invoiceSequenceId => $sequence['id'], unitId => $unitId"
+                               class="stretched-link text-body text-decoration-none"
+                               data-test="invoice-sequence-link-{$sequence['id']}">{$sequence['sequence']}/{$sequence['year']}</a>
+                        </h3>
                         <p class="text-body-secondary small mb-0">
                             {if $sequence['description'] !== ''}{$sequence['description']}{/if}
                         </p>
-                        <div class="d-flex flex-wrap gap-2">
+                        <div class="d-flex flex-wrap gap-2 navigation-card-actions">
                             <a n:href=":Payments:InvoiceList:default, invoiceSequenceId => $sequence['id'], unitId => $unitId"
                                class="btn btn-primary btn-sm"
                                data-test="invoice-sequence-open-{$sequence['id']}">
@@ -104,7 +108,7 @@
                             </a>
                             <a n:if="in_array((int) $sequence['id'], $editableSequenceIds, true)"
                                n:href=":Payments:InvoiceList:create, invoiceSequenceId => $sequence['id'], unitId => $unitId"
-                               class="btn btn-outline-primary btn-sm"
+                               class="btn btn-primary btn-sm"
                                data-test="invoice-sequence-create-invoice-{$sequence['id']}">
                                 <i class="fi fi-rr-plus-small" aria-hidden="true"></i>
                                 Založit fakturu
@@ -127,7 +131,7 @@
         </div>
     </section>
 
-    <section class="card shadow-sm" data-test="invoice-issued-list">
+    <section class="card" data-test="invoice-issued-list">
         <div class="card-body">
             <h2 class="h5 mb-3">
                 {if $isSequenceContext}Vystavené faktury v této řadě{else}Vystavené faktury{/if}

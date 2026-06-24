@@ -26,7 +26,7 @@
             <span class="visually-hidden">Další možnosti párování</span>
         </button>
 
-        <div n:class="$css['menu']" aria-labelledby="pairPayments" n:snippet="form" data-test="pair-button-menu" style="min-width:20rem">
+        <div n:class="$css['menu'], pair-button-menu" aria-labelledby="pairPayments" n:snippet="form" data-test="pair-button-menu">
             <form n:name="form" class="d-flex align-items-center gap-2" data-test="pair-button-form">
                 <span n:class="$css['inputGroup']">
                     <input n:name="days" class="form-control">

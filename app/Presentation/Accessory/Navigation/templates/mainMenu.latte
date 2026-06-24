@@ -1,8 +1,19 @@
 {var $items = array_filter($menu->getVisibleItemsOnMenu(), fn ($item) => $item->isAllowed())}
 {foreach $items as $item}
     <li n:class="nav-item, $item->isActive() ? active">
-        <a href="{$item->getRealLink()}" n:class="nav-link, $item->isActive() ? active" n:attr="data-test => $item->getData('test')">
-            {$item->getRealTitle()}
+        <a
+            href="{$item->getRealLink()}"
+            n:class="nav-link, main-nav-link, $item->isActive() ? active"
+            n:attr="data-test => $item->getData('test')"
+            title="{$item->getRealTitle()}"
+            aria-label="{$item->getRealTitle()}"
+            data-bs-toggle="tooltip"
+            data-bs-placement="bottom"
+        >
+            <span n:if="$item->hasData('icon')" class="nav-link-icon">
+                <i class="{$item->getData('icon')}" aria-hidden="true"></i>
+            </span>
+            <span class="nav-link-title">{$item->getRealTitle()}</span>
         </a>
     </li>
 {/foreach}

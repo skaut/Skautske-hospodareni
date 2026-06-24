@@ -1,6 +1,6 @@
 {extends DataGrid.layout.latte}
 
-{block table-class}table table-bordered table-striped mt-2{/block}
+{block table-class}table table-vcenter table-hover table-striped{/block}
 
 {block outer-filters}
     <div class="d-md-flex justify-content-between">
@@ -11,7 +11,7 @@
                     {/ifset}
                 </div>
         </div>
-        <div class="text-md-right">
+        <div class="text-md-end">
             {ifset #global-actions}
                 {include #global-actions}
             {/ifset}
@@ -67,7 +67,7 @@
                 {/if}
             {/if}
         {/foreach}
-        <span class="handle-sort btn btn-sm btn-secondary" n:if="$control->isSortable()">
+        <span class="handle-sort btn btn-sm btn-light" n:if="$control->isSortable()">
 												<i n:block = "icon-arrows-v" class="{$iconPrefix}arrows-v"></i>
 											</span>
         {if $inlineEdit && $row->hasInlineEdit()}
@@ -111,4 +111,3 @@
         </td>
     </tr>
 {/define}
-

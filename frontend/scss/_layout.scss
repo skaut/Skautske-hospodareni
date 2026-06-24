@@ -1,23 +1,31 @@
-// Layout — body, shell, main structural rules
+// Application shell and global Tabler adjustments.
+
+html {
+  font-size: 112.5%;
+}
+
+:root {
+  --app-green: #4d8746;
+  --app-green-soft: #edf6eb;
+  --app-ink: #302821;
+}
 
 body {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  background: var(--tblr-body-bg);
 }
 
-body.dashboard-shell {
-  background:
-    radial-gradient(circle at top left, rgba(56, 118, 255, 0.12) 0%, rgba(56, 118, 255, 0) 24rem),
-    radial-gradient(circle at top right, rgba(148, 163, 184, 0.16) 0%, rgba(148, 163, 184, 0) 22rem),
-    radial-gradient(circle at bottom center, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0) 26rem),
-    linear-gradient(180deg, #fbfcfe 0%, #f3f7fb 24%, #edf2f8 62%, #f7f9fc 100%);
-  background-attachment: fixed;
+.app-shell > .page {
+  min-height: 100vh;
+}
+
+.page-wrapper {
+  min-height: calc(100vh - 3.5rem);
 }
 
 main[role="main"] {
-  flex: 1 0 auto;
   width: 100%;
+  flex: 1 0 auto;
 }
 
 .shell-main {
@@ -25,16 +33,34 @@ main[role="main"] {
 }
 
 .shell-main--dashboard {
-  padding-right: 0.75rem;
-  padding-left: 0.75rem;
-
-  @media (min-width: 992px) {
-    padding-right: 1rem;
-    padding-left: 1rem;
-  }
+  padding-right: var(--tblr-gutter-x, 1rem);
+  padding-left: var(--tblr-gutter-x, 1rem);
 }
 
-body > footer {
+.card {
+  box-shadow: var(--tblr-shadow-card);
+}
+
+.card > .card-body > h1:first-child,
+.card > .card-body > .h3:first-child {
+  letter-spacing: 0;
+}
+
+.bg-body-tertiary {
+  background-color: var(--tblr-bg-surface-tertiary) !important;
+}
+
+.alert {
+  box-shadow: none;
+}
+
+.form-control,
+.form-select {
+  background-color: var(--tblr-bg-forms);
+}
+
+body > footer,
+.page-wrapper > footer {
   width: 100%;
   margin-top: auto;
 }

@@ -57,13 +57,28 @@ final class BankAccountDetailViewFactory
         array $readableUnitIds,
         ?int $paymentId = null,
         ?int $invoiceId = null,
+        bool $includeInvoices = true,
     ): BankAccountDetail {
         $accessibleGroupIds = array_keys($groupNames);
-        $focusTarget = $this->resolveFocusTarget($accountId, $paymentId, $invoiceId, $readableUnitIds, $accessibleGroupIds);
+        $invoiceUnitIds = $includeInvoices ? $readableUnitIds : [];
+        $focusTarget = $this->resolveFocusTarget(
+            $accountId,
+            $paymentId,
+            $includeInvoices ? $invoiceId : null,
+            $invoiceUnitIds,
+            $accessibleGroupIds,
+        );
 
         try {
             $transactions = $this->accounts->getPersistentTransactions($accountId, self::DAYS_BACK);
             $domainCandidates = $this->pairingCandidates->getDomainCandidatesForBankAccount($accountId);
+            if (! $includeInvoices) {
+                $domainCandidates = array_values(array_filter(
+                    $domainCandidates,
+                    static fn (PairingCandidate $candidate): bool => $candidate->getInvoice() === null,
+                ));
+            }
+
             $activePairings = $this->pairings->findActiveByTransactionKeys(
                 array_map(static fn (BankTransaction $transaction): string => $transaction->getTransactionKey(), $transactions),
             );
@@ -74,8 +89,9 @@ final class BankAccountDetailViewFactory
                     $domainCandidates,
                     $activePairings,
                     $groupNames,
-                    $readableUnitIds,
+                    $invoiceUnitIds,
                     $focusTarget?->targetKey,
+                    $includeInvoices,
                 ),
                 $this->accounts->getImportBatches($accountId),
                 $focusTarget?->label,
@@ -106,6 +122,7 @@ final class BankAccountDetailViewFactory
         array $groupNames,
         array $readableUnitIds,
         ?string $focusTargetKey,
+        bool $includeInvoices,
     ): array {
         $pairingsByTransactionKey = [];
         foreach ($activePairings as $pairing) {
@@ -135,7 +152,7 @@ final class BankAccountDetailViewFactory
             $this->payments->findByMultipleGroups($accessibleGroupIds),
             static fn (Payment $payment): bool => $payment->canBePaired(),
         );
-        $accessibleInvoices = $this->invoices->findOpenTransferInvoicesByUnits($readableUnitIds);
+        $accessibleInvoices = $includeInvoices ? $this->invoices->findOpenTransferInvoicesByUnits($readableUnitIds) : [];
         $rows = [];
 
         foreach ($transactions as $transaction) {
@@ -148,7 +165,9 @@ final class BankAccountDetailViewFactory
 
             $visibleExactCandidates = $this->describeVisibleCandidates($allExactCandidates, $accessibleGroupIds, $groupNames, $readableUnitIds);
             $visibleVariableSymbolCandidates = $this->describeVisibleCandidates($allVariableSymbolCandidates, $accessibleGroupIds, $groupNames, $readableUnitIds);
-            $pairingLabel = $pairing !== null ? $this->describePairing($pairing, $accessibleGroupIds, $groupNames, $readableUnitIds) : null;
+            $pairingLabel = $pairing !== null
+                ? $this->describePairing($pairing, $accessibleGroupIds, $groupNames, $readableUnitIds, $includeInvoices)
+                : null;
             $manualCandidates = $this->buildManualCandidates(
                 $transaction,
                 $accessiblePayments,
@@ -332,6 +351,7 @@ final class BankAccountDetailViewFactory
         array $accessibleGroupIds,
         array $groupNames,
         array $readableUnitIds,
+        bool $includeInvoices,
     ): BankAccountTransactionLink {
         $payment = $pairing->getPayment();
         if ($payment instanceof Payment) {
@@ -353,6 +373,10 @@ final class BankAccountDetailViewFactory
 
         $invoice = $pairing->getInvoice();
         if ($invoice instanceof Invoice) {
+            if (! $includeInvoices) {
+                return new BankAccountTransactionLink('unknown', 'Spárováno s položkou v předběžném přístupu', null, 'history');
+            }
+
             if (! in_array($invoice->getSequence()->getUnit(), $readableUnitIds, true)) {
                 return new BankAccountTransactionLink('invoice', 'Spárováno s nepřístupnou fakturou', null, 'invoice:'.$invoice->getId());
             }

@@ -8,6 +8,7 @@ use App\Context;
 use App\Model\Invoice\Entity\InvoiceUnitSetting;
 use App\Model\Invoice\Manager\InvoiceUnitSettingManager;
 use App\Model\Invoice\Repository\InvoiceUnitSettingRepository;
+use App\Presentation\InvoiceAccess\InvoiceAccessGuard;
 use Component\Forms\BaseForm;
 use InvalidArgumentException;
 use Nette\Application\BadRequestException;
@@ -32,6 +33,8 @@ use function unlink;
 
 final class InvoicesPresenter extends \App\Presentation\Settings\SettingsBasePresenter
 {
+    use InvoiceAccessGuard;
+
     private const IMAGE_STAMP = 'stamp';
     private const IMAGE_LOGO = 'logo';
 

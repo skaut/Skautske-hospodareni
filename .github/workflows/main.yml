@@ -241,13 +241,21 @@ jobs:
     runs-on: ubuntu-22.04
     environment: beta
     container:
-      image: webwingscz/lebeda-deployer-php82
+      image: skaut/lebeda:8.3-ci
     steps:
       - uses: actions/download-artifact@v7
         with:
           name: workdir
           path: .
       - run: tar -xzpf workdir.tar.gz
+      - name: Install deploy tools
+        run: |
+          rm -f /etc/apt/sources.list.d/google-chrome.list
+          apt-get update
+          apt-get install -y --no-install-recommends rsync
+          rm -rf /var/lib/apt/lists/*
+          curl -fsSL https://deployer.org/releases/v7.5.12/deployer.phar -o /usr/local/bin/dep
+          chmod +x /usr/local/bin/dep
       - name: Run deploy
         run: |
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
@@ -286,13 +294,21 @@ jobs:
     runs-on: ubuntu-22.04
     environment: test
     container:
-      image: webwingscz/lebeda-deployer-php82
+      image: skaut/lebeda:8.3-ci
     steps:
       - uses: actions/download-artifact@v7
         with:
           name: workdir
           path: .
       - run: tar -xzpf workdir.tar.gz
+      - name: Install deploy tools
+        run: |
+          rm -f /etc/apt/sources.list.d/google-chrome.list
+          apt-get update
+          apt-get install -y --no-install-recommends rsync
+          rm -rf /var/lib/apt/lists/*
+          curl -fsSL https://deployer.org/releases/v7.5.12/deployer.phar -o /usr/local/bin/dep
+          chmod +x /usr/local/bin/dep
       - name: Run deploy
         run: |
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
@@ -331,13 +347,21 @@ jobs:
     runs-on: ubuntu-22.04
     environment: production
     container:
-      image: webwingscz/lebeda-deployer-php82
+      image: skaut/lebeda:8.3-ci
     steps:
       - uses: actions/download-artifact@v7
         with:
           name: workdir
           path: .
       - run: tar -xzpf workdir.tar.gz
+      - name: Install deploy tools
+        run: |
+          rm -f /etc/apt/sources.list.d/google-chrome.list
+          apt-get update
+          apt-get install -y --no-install-recommends rsync
+          rm -rf /var/lib/apt/lists/*
+          curl -fsSL https://deployer.org/releases/v7.5.12/deployer.phar -o /usr/local/bin/dep
+          chmod +x /usr/local/bin/dep
       - name: Run deploy
         run: |
           mkdir -p ~/.ssh && chmod 700 ~/.ssh

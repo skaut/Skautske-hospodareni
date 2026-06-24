@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Model\Skautis\Payment;
 
+use App\Model\DTO\Payment\MemberEmail;
+use App\Model\DTO\Payment\MemberEmailType;
 use App\Model\Payment\Repositories\IMemberEmailRepository;
 use Nette\Utils\Strings;
 use Skautis\Skautis;
 use Skautis\Wsdl\PermissionException;
 use stdClass;
 
+use function array_values;
 use function assert;
 use function is_string;
 
@@ -19,7 +22,7 @@ final class MemberEmailRepository implements IMemberEmailRepository
     {
     }
 
-    /** @return array<string, string> */
+    /** @return MemberEmail[] */
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     public function findByMember(int $memberId): array
     {
@@ -37,7 +40,15 @@ final class MemberEmailRepository implements IMemberEmailRepository
 
             $email = $c->Value;
             assert(is_string($email));
-            $emails[$email] = ($c->ParentType ?? $c->ContactType).' – '.$email;
+            $emails[$email] = new MemberEmail(
+                $email,
+                ($c->ParentType ?? $c->ContactType).' – '.$email,
+                MemberEmailType::fromSkautis(
+                    $c->ID_ContactType,
+                    $c->ID_ParentType ?? null,
+                    $c->ContactType ?? null,
+                ),
+            );
         }
 
         try {
@@ -50,12 +61,20 @@ final class MemberEmailRepository implements IMemberEmailRepository
                 $email = $parent->Email;
                 assert(is_string($email));
 
-                $emails[$email] = $parent->ParentType.' - '.$email;
+                $emails[$email] = new MemberEmail(
+                    $email,
+                    $parent->ParentType.' – '.$email,
+                    MemberEmailType::fromSkautis(
+                        $parent->ID_ContactType ?? null,
+                        $parent->ID_ParentType ?? null,
+                        $parent->ContactType ?? null,
+                    ),
+                );
             }
         } catch (PermissionException) {
         }
 
-        return $emails;
+        return array_values($emails);
     }
 
     /**

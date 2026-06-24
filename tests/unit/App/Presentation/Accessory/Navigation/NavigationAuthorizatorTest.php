@@ -6,6 +6,7 @@ namespace App\Presentation\Accessory\Navigation;
 
 use App\Model\Auth\IAuthorizator as ApplicationAuthorizator;
 use App\Model\Auth\Resources\Admin;
+use App\Model\Auth\Resources\InvoiceAccess;
 use Codeception\Test\Unit;
 use Contributte\MenuControl\IMenuItem;
 use Mockery;
@@ -20,6 +21,10 @@ final class NavigationAuthorizatorTest extends Unit
         $item = Mockery::mock(IMenuItem::class);
         $item->shouldReceive('getData')
             ->with('requiresAdmin', false)
+            ->once()
+            ->andReturn(false);
+        $item->shouldReceive('getData')
+            ->with('requiresInvoiceAccess', false)
             ->once()
             ->andReturn(false);
 
@@ -39,6 +44,10 @@ final class NavigationAuthorizatorTest extends Unit
             ->with('requiresAdmin', false)
             ->once()
             ->andReturn(true);
+        $item->shouldReceive('getData')
+            ->with('requiresInvoiceAccess', false)
+            ->once()
+            ->andReturn(false);
 
         self::assertTrue((new NavigationAuthorizator($authorizator))->isMenuItemAllowed($item));
     }
@@ -56,7 +65,32 @@ final class NavigationAuthorizatorTest extends Unit
             ->with('requiresAdmin', false)
             ->once()
             ->andReturn(1);
+        $item->shouldReceive('getData')
+            ->with('requiresInvoiceAccess', false)
+            ->once()
+            ->andReturn(false);
 
         self::assertFalse((new NavigationAuthorizator($authorizator))->isMenuItemAllowed($item));
+    }
+
+    public function testDelegatesInvoiceMenuItemsToApplicationAuthorizator(): void
+    {
+        $authorizator = Mockery::mock(ApplicationAuthorizator::class);
+        $authorizator->shouldReceive('isAllowed')
+            ->with(InvoiceAccess::ACCESS, null)
+            ->once()
+            ->andReturn(true);
+
+        $item = Mockery::mock(IMenuItem::class);
+        $item->shouldReceive('getData')
+            ->with('requiresAdmin', false)
+            ->once()
+            ->andReturn(false);
+        $item->shouldReceive('getData')
+            ->with('requiresInvoiceAccess', false)
+            ->once()
+            ->andReturn(true);
+
+        self::assertTrue((new NavigationAuthorizator($authorizator))->isMenuItemAllowed($item));
     }
 }

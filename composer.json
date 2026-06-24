@@ -2,7 +2,7 @@
     "name": "skaut/skautske_hospodareni",
     "type": "project",
     "require": {
-        "php": ">= 8.2",
+        "php": "~8.3.0",
         "ext-iconv": "*",
         "ext-simplexml": "*",
         "beberlei/assert": "^3.3",
@@ -92,6 +92,9 @@
     "config": {
         "process-timeout": 1200,
         "sort-packages": true,
+        "platform": {
+            "php": "8.3.0"
+        },
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
             "phpstan/extension-installer": true,
@@ -174,7 +177,7 @@
             "composer install --no-interaction",
             "[ -f .env.local ] || cp .env.local.example .env.local",
             "yarn install",
-            "bash -lc 'mkdir -p temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf www/webtemp && rm -rf temp/cache/* temp/sessions/* temp/mail-panel-latte/* temp/mail-panel-mails/* temp/mpdf/* www/webtemp/* frontend/.cache node_modules/.cache && rm -f temp/.phpcs-cache temp/vite-dev-server.log www/js/app.min.js www/css/app.css'",
+            "bash -lc 'mkdir -p log temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf www/webtemp && rm -rf temp/cache/* temp/sessions/* temp/mail-panel-latte/* temp/mail-panel-mails/* temp/mpdf/* www/webtemp/* frontend/.cache node_modules/.cache && rm -f temp/.phpcs-cache temp/vite-dev-server.log www/js/app.min.js www/css/app.css'",
             "bin/console migrations:drop-all-tables-views --force --no-interaction",
             "bin/console migrations:migrate --no-interaction",
             "yarn build"

@@ -14,6 +14,7 @@ use Assert\Assertion;
 final class GroupPresenter extends PaymentsBasePresenter
 {
     private ?Group $group = null;
+    private ?int $cloneSourceGroupId = null;
 
     public function __construct(private PaymentService $model, private IGroupFormFactory $groupFormFactory)
     {
@@ -43,6 +44,19 @@ final class GroupPresenter extends PaymentsBasePresenter
         $this->template->setParameters(['group' => $group]);
     }
 
+    public function actionClone(int $id): void
+    {
+        $group = $this->model->getGroup($id);
+
+        if (! $this->isEditable || $group === null || ! $this->canEditGroup($group)) {
+            $this->flashMessage('Skupinu nelze klonovat.', 'warning');
+            $this->redirect('GroupList:');
+        }
+
+        $this->cloneSourceGroupId = $id;
+        $this->template->setParameters(['sourceGroup' => $group]);
+    }
+
     protected function createComponentEditGroupForm(): GroupForm
     {
         $group = $this->group;
@@ -58,5 +72,17 @@ final class GroupPresenter extends PaymentsBasePresenter
         $unitId = $this->getCurrentUnitId();
 
         return $this->groupFormFactory->create($unitId, null);
+    }
+
+    protected function createComponentCloneGroupForm(): GroupForm
+    {
+        Assertion::notNull($this->cloneSourceGroupId);
+
+        return $this->groupFormFactory->create(
+            $this->getCurrentUnitId(),
+            null,
+            null,
+            $this->cloneSourceGroupId,
+        );
     }
 }

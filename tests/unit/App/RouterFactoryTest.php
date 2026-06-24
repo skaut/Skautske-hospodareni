@@ -50,6 +50,10 @@ final class RouterFactoryTest extends Unit
     public function provideCanonicalPaymentRoutesForConstruction(): array
     {
         return [
+            [['presenter' => 'BugReport'], '/nahlasit-problem'],
+            [['presenter' => 'BugReport', 'url' => 'https://example.test/platby'], '/nahlasit-problem?url=https%3A%2F%2Fexample.test%2Fplatby'],
+            [['presenter' => 'Admin:BugReports'], '/admin/hlaseni-chyb'],
+            [['presenter' => 'Admin:BugReports', 'action' => 'detail', 'id' => 42], '/admin/hlaseni-chyb/42'],
             [['presenter' => 'Unit:Cashbook'], '/jednotka'],
             [['presenter' => 'Unit:Cashbook', 'unitId' => 5], '/jednotka/5/kniha'],
             [['presenter' => 'Unit:Cashbook', 'unitId' => 5, 'year' => 2028], '/jednotka/5/kniha?rok=2028'],
@@ -92,6 +96,7 @@ final class RouterFactoryTest extends Unit
             [['presenter' => 'Payments:Dashboard'], '/platby'],
             [['presenter' => 'Payments:GroupList'], '/platby/skupiny'],
             [['presenter' => 'Payments:Group', 'action' => 'newGroup'], '/platby/skupiny/nova'],
+            [['presenter' => 'Payments:Group', 'action' => 'clone', 'id' => 321], '/platby/skupiny/321/klonovat'],
             [['presenter' => 'Payments:Group', 'action' => 'edit', 'id' => 321], '/platby/skupiny/321/upravit'],
             [['presenter' => 'Payments:Participants', 'id' => 321], '/platby/skupiny/321/ucastnici'],
             [['presenter' => 'Payments:People', 'id' => 321], '/platby/skupiny/321/osoby'],
@@ -130,6 +135,10 @@ final class RouterFactoryTest extends Unit
     public function provideCanonicalPaymentRoutesForMatching(): array
     {
         return [
+            ['/nahlasit-problem', ['presenter' => 'BugReport', 'action' => 'default']],
+            ['/nahlasit-problem?url=https%3A%2F%2Fexample.test%2Fplatby', ['presenter' => 'BugReport', 'action' => 'default', 'url' => 'https://example.test/platby']],
+            ['/admin/hlaseni-chyb', ['presenter' => 'Admin:BugReports', 'action' => 'default']],
+            ['/admin/hlaseni-chyb/42', ['presenter' => 'Admin:BugReports', 'action' => 'detail', 'id' => 42]],
             ['/jednotka', ['presenter' => 'Unit:Cashbook', 'action' => 'default']],
             ['/jednotka/5/kniha', ['presenter' => 'Unit:Cashbook', 'action' => 'default', 'unitId' => 5]],
             ['/jednotka/5/kniha?rok=2028', ['presenter' => 'Unit:Cashbook', 'action' => 'default', 'unitId' => 5, 'year' => 2028]],
@@ -173,6 +182,7 @@ final class RouterFactoryTest extends Unit
             ['/platby', ['presenter' => 'Payments:Dashboard', 'action' => 'default']],
             ['/platby/skupiny', ['presenter' => 'Payments:GroupList', 'action' => 'default']],
             ['/platby/skupiny/nova', ['presenter' => 'Payments:Group', 'action' => 'newGroup']],
+            ['/platby/skupiny/321/klonovat', ['presenter' => 'Payments:Group', 'action' => 'clone', 'id' => 321]],
             ['/platby/skupiny/321/upravit', ['presenter' => 'Payments:Group', 'action' => 'edit', 'id' => 321]],
             ['/platby/skupiny/321/ucastnici', ['presenter' => 'Payments:Participants', 'action' => 'default', 'id' => 321]],
             ['/platby/skupiny/321/osoby', ['presenter' => 'Payments:People', 'action' => 'default', 'id' => 321]],

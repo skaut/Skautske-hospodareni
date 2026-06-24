@@ -11,19 +11,20 @@ use DateTimeImmutable;
 use Nette\SmartObject;
 
 /**
- * @property int                 $id
- * @property string|null         $type
- * @property int                 $unitId
- * @property int|null            $skautisId
- * @property string              $name
- * @property float|null          $defaultAmount
- * @property ChronosDate|null    $dueDate
- * @property int|null            $constantSymbol
- * @property VariableSymbol|null $nextVariableSymbol
- * @property string              $state
- * @property bool                $isRemindersEnabled
- * @property OAuthId|null        $oAuthId
- * @property string              $note
+ * @property int                    $id
+ * @property string|null            $type
+ * @property int                    $unitId
+ * @property int|null               $skautisId
+ * @property string                 $name
+ * @property float|null             $defaultAmount
+ * @property ChronosDate|null       $dueDate
+ * @property int|null               $constantSymbol
+ * @property VariableSymbol|null    $nextVariableSymbol
+ * @property string                 $state
+ * @property DateTimeImmutable|null $createdAt
+ * @property bool                   $isRemindersEnabled
+ * @property OAuthId|null           $oAuthId
+ * @property string                 $note
  */
 class Group
 {
@@ -47,6 +48,7 @@ class Group
         private bool $isRemindersEnabled = false,
         private bool $automaticPairingEnabled = false,
         private ?int $pairingDaysBack = null,
+        private ?DateTimeImmutable $createdAt = null,
     ) {
     }
 
@@ -104,6 +106,11 @@ class Group
     public function getState(): string
     {
         return $this->state;
+    }
+
+    public function getCreatedAt(): ?DateTimeImmutable
+    {
+        return $this->createdAt;
     }
 
     public function getOAuthId(): ?OAuthId

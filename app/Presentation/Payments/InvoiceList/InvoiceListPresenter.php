@@ -29,6 +29,7 @@ use App\Model\Invoice\Repository\InvoiceRepository;
 use App\Model\Invoice\Repository\InvoiceSequenceRepository;
 use App\Model\Mail\Repositories\IGoogleRepository;
 use App\Model\Services\PdfRenderer;
+use App\Presentation\InvoiceAccess\InvoiceAccessGuard;
 use App\Presentation\Payments\PaymentsBasePresenter;
 use InvalidArgumentException;
 use Nette\Application\BadRequestException;
@@ -43,6 +44,8 @@ use function strtolower;
 
 final class InvoiceListPresenter extends PaymentsBasePresenter
 {
+    use InvoiceAccessGuard;
+
     protected ?int $groupId = null;
     protected ?InvoiceSequence $invoiceSequence = null;
     private bool $createMode = false;

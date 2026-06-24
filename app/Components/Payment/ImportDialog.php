@@ -45,7 +45,7 @@ final class ImportDialog extends Dialog
     protected function beforeRender(): void
     {
         $this->template->setFile(__DIR__.'/templates/ImportDialog.latte');
-        $this->template->customClasses = 'modal-import';
+        $this->template->customClasses = 'modal-lg';
     }
 
     protected function createComponentForm(): BaseForm

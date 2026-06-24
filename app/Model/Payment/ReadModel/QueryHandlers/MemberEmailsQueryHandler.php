@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Model\Payment\ReadModel\QueryHandlers;
 
+use App\Model\DTO\Payment\MemberEmail;
 use App\Model\Payment\ReadModel\Queries\MemberEmailsQuery;
 use App\Model\Payment\Repositories\IMemberEmailRepository;
 
@@ -13,7 +14,7 @@ final class MemberEmailsQueryHandler
     {
     }
 
-    /** @return array<string, string> email address => email label */
+    /** @return MemberEmail[] */
     public function __invoke(MemberEmailsQuery $query): array
     {
         return $this->emails->findByMember($query->getMemberId());

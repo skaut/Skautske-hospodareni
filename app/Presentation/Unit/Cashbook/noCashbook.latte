@@ -1,23 +1,23 @@
-{block #content}
-{include ../header.latte}
+{block #subMenu}{include ../header.latte}{/block}
 
+{block #content}
 <div data-test="unit-cashbook-page">
-    <div class="card shadow-sm mb-4">
+    <div class="card page-heading">
         <div class="card-body">
             <h1 n:inner-block="title" class="h3 mb-2">{$unitPairs[$unitId]}</h1>
-            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3 mb-3">
-                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
-                <span class="text-body-secondary">Evidence plateb, přehled dokladů a rozpočet pro vybranou jednotku na jednom místě.</span>
+            <div class="page-lead mb-3">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Evidence plateb, přehled dokladů a rozpočet pro vybranou jednotku na jednom místě.</span>
             </div>
             <div class="d-flex flex-wrap gap-2">
-                <a n:href="createCashbook!" class="ajax btn btn-success" data-test="unit-cashbook-create">
+                <a n:href="createCashbook!" class="ajax btn btn-primary" data-test="unit-cashbook-create">
                     <i class="fi fi-rr-plus-small" aria-hidden="true"></i> Založit novou pokladní knihu
                 </a>
             </div>
         </div>
     </div>
 
-    <div class="card shadow-sm">
+    <div class="card">
         <div class="card-body text-center py-5">
             <p class="text-body-secondary mb-0">Jednotka <strong>{$unitPairs[$unitId]}</strong> zatím nemá žádnou pokladní knihu.</p>
         </div>

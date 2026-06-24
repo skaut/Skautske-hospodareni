@@ -1,11 +1,11 @@
 {block #content}
 <div data-test="invoice-sequence-edit-page">
-    <div class="card shadow-sm mb-4">
+    <div class="card page-heading">
         <div class="card-body">
             <h1 n:inner-block="title" class="h3 mb-2">Úprava fakturační řady {$invoiceSequence->getDisplayLabel()}</h1>
-            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3 mb-3">
-                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
-                <span class="text-body-secondary">Správa číselné řady, bankovního párování a e-mailových šablon pro vybranou fakturační řadu.</span>
+            <div class="page-lead mb-3">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Správa číselné řady, bankovního párování a e-mailových šablon pro vybranou fakturační řadu.</span>
             </div>
             <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
                 <div class="d-flex flex-wrap gap-2 align-items-center">
@@ -23,7 +23,7 @@
     </div>
 
     <div class="design-help-layout" data-help-layout>
-        <div class="card shadow-sm" data-help-form>
+        <div class="card" data-help-form>
             <div class="card-body">
                 <div id="bankAccountUnavailableAlert" class="alert alert-secondary small d-none">
                     <strong>Bankovní párování je zatím nedostupné.</strong>
@@ -73,117 +73,3 @@
         </aside>
     </div>
 </div>
-
-<script>
-    document.querySelectorAll('[data-help-layout]').forEach((layout) => {
-        const toggle = layout.querySelector('[data-help-toggle]');
-        if (!toggle) return;
-        toggle.addEventListener('click', () => {
-            const isCollapsed = layout.dataset.helpCollapsed === 'true';
-            layout.dataset.helpCollapsed = (!isCollapsed).toString();
-            toggle.setAttribute('aria-expanded', isCollapsed ? 'true' : 'false');
-            toggle.setAttribute('title', isCollapsed ? 'Skrýt nápovědu' : 'Zobrazit nápovědu');
-        });
-    });
-
-    (() => {
-        const form = document.querySelector('[data-help-form] form');
-        const bankAccountSelect = form?.querySelector('select[name$="bankAccount"]');
-        if (!form || !bankAccountSelect) return;
-        const originalValue = bankAccountSelect.dataset.originalValue ?? null;
-        const message = bankAccountSelect.dataset.bankAccountChangeMessage;
-        if (originalValue !== null && message) {
-            form.addEventListener('submit', (event) => {
-                if (bankAccountSelect.value !== originalValue && !window.confirm(message)) {
-                    event.preventDefault();
-                }
-            });
-        }
-
-        // Bank account alert + pairing fields toggle
-        const bankAlert = document.getElementById('bankAccountUnavailableAlert');
-        const pairingFields = form.querySelectorAll('[data-bank-pairing-field]');
-        const pairingLabels = [];
-        pairingFields.forEach(field => {
-            const wrapper = field.closest('.mb-3, .form-group, .form-check, div[id]');
-            if (wrapper) pairingLabels.push(wrapper);
-        });
-
-        if (bankAlert) {
-            const bankWrapper = bankAccountSelect.closest('.mb-3, .form-group, div[id]');
-            if (bankWrapper) {
-                bankWrapper.parentNode.insertBefore(bankAlert, bankWrapper);
-            }
-            function toggleBankFields() {
-                const hasBankAccount = bankAccountSelect.value !== '';
-                bankAlert.classList.toggle('d-none', hasBankAccount);
-
-                pairingFields.forEach(field => {
-                    field.disabled = !hasBankAccount;
-                    if (!hasBankAccount) {
-                        field.style.opacity = '0.5';
-                        field.style.pointerEvents = 'none';
-                    } else {
-                        field.style.opacity = '';
-                        field.style.pointerEvents = '';
-                    }
-                });
-                pairingLabels.forEach(wrapper => {
-                    wrapper.style.opacity = hasBankAccount ? '' : '0.5';
-                });
-            }
-            toggleBankFields();
-            bankAccountSelect.addEventListener('change', toggleBankFields);
-        }
-    })();
-
-    (() => {
-        const form = document.querySelector('[data-help-form] form');
-        if (!form) return;
-
-        const emailSelect = form.querySelector('.ui--emailSelectbox');
-        if (!emailSelect) return;
-
-        const emailAlert = document.getElementById('emailUnavailableAlert');
-        if (emailAlert) {
-            const emailWrapper = emailSelect.closest('.mb-3, .form-group, div[id]');
-            if (emailWrapper) {
-                emailWrapper.parentNode.insertBefore(emailAlert, emailWrapper);
-            }
-        }
-
-        const emailFields = form.querySelectorAll('[data-email-field]');
-        const emailLabels = [];
-
-        emailFields.forEach(field => {
-            const wrapper = field.closest('.mb-3, .form-group, .form-check, div[id]');
-            if (wrapper) emailLabels.push(wrapper);
-        });
-
-        function toggleEmailFields() {
-            const hasEmail = emailSelect.value !== '';
-
-            if (emailAlert) {
-                emailAlert.classList.toggle('d-none', hasEmail);
-            }
-
-            emailFields.forEach(field => {
-                field.disabled = !hasEmail;
-                if (!hasEmail) {
-                    field.style.opacity = '0.5';
-                    field.style.pointerEvents = 'none';
-                } else {
-                    field.style.opacity = '';
-                    field.style.pointerEvents = '';
-                }
-            });
-
-            emailLabels.forEach(wrapper => {
-                wrapper.style.opacity = hasEmail ? '' : '0.5';
-            });
-        }
-
-        toggleEmailFields();
-        emailSelect.addEventListener('change', toggleEmailFields);
-    })();
-</script>

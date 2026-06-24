@@ -2,12 +2,12 @@
 
 {block content}
 <div data-test="settings-bank-account-detail-page">
-    <div class="card shadow-sm mb-4">
+    <div class="card page-heading">
         <div class="card-body">
             <h1 class="h3 mb-2" n:inner-block="title">{$account->getName()}</h1>
-            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3 mb-3">
-                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
-                <span class="text-body-secondary">Účet {$account->getNumber()} vytvořený {$account->getCreatedAt()|date:'j. n. Y'}. Přehled posledních transakcí, importních dávek a vstup do nastavení účtu.</span>
+            <div class="page-lead mb-3">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Účet {$account->getNumber()} vytvořený {$account->getCreatedAt()|date:'j. n. Y'}. Přehled posledních transakcí, importních dávek a vstup do nastavení účtu.</span>
             </div>
 
             <div class="d-flex flex-wrap gap-2 mb-3">
@@ -38,7 +38,7 @@
     </div>
 
 
-    <div class="card shadow-sm mb-4" data-test="settings-bank-account-transactions">
+    <div class="card mb-4" data-test="settings-bank-account-transactions">
         <div class="card-body">
             <h2 class="h5 mb-3">Transakce</h2>
         </div>
@@ -48,7 +48,8 @@
                 <div class="alert alert-danger" n:ifset="$errorMessage">{$errorMessage}</div>
                 <div class="alert alert-warning" n:ifset="$warningMessage">{$warningMessage}</div>
             {elseif count($transactionRows) > 0}
-                <table class="table table-bordered table-hover table-striped table-responsive">
+                <div class="table-responsive">
+                <table class="table table-hover table-striped">
                     <tr>
                         <th>Datum</th>
                         <th>Částka</th>
@@ -65,13 +66,13 @@
                     >
                         {var $transaction = $row->transaction}
                         <td>{$transaction->getDate()|date:'j.n.Y'}</td>
-                        <td class="r">
+                        <td class="text-end">
                             <strong n:class="$transaction->getAmount() < 0 ? text-danger">{$transaction->getAmount()|price}</strong>
                         </td>
-                        <td class="r">{include #noEmpty $transaction->getCounterAccount()}</td>
+                        <td class="text-end">{include #noEmpty $transaction->getCounterAccount()}</td>
                         <td>{include #noEmpty $transaction->getCounterName()}</td>
-                        <td class="r">{include #noEmpty $transaction->getConstantSymbol()}</td>
-                        <td class="r">{include #noEmpty $transaction->getVariableSymbol()}</td>
+                        <td class="text-end">{include #noEmpty $transaction->getConstantSymbol()}</td>
+                        <td class="text-end">{include #noEmpty $transaction->getVariableSymbol()}</td>
                         <td>{include #noEmpty $transaction->getNote()}</td>
                         <td>
                             <div class="d-flex flex-column gap-1">
@@ -124,6 +125,7 @@
                         </td>
                     </tr>
                 </table>
+                </div>
             {else}
                 <p class="alert alert-info text-center">Nebyly nalezeny žádné transakce</p>
             {/if}
@@ -132,13 +134,14 @@
 
     {control gpcImportDialog}
 
-    <div class="card shadow-sm mb-4" data-test="settings-bank-account-import-batches">
+    <div class="card mb-4" data-test="settings-bank-account-import-batches">
         <div class="card-body">
             <h2 class="h5 mb-3">Historie importů</h2>
         </div>
         <div n:snippet="importBatches">
             {if count($importBatches) > 0}
-                <table class="table table-bordered table-striped table-responsive">
+                <div class="table-responsive">
+                <table class="table table-striped">
                     <tr>
                         <th>Importováno</th>
                         <th>Zdroj</th>
@@ -155,10 +158,11 @@
                             <div class="small text-body-secondary">hash {$batch->getFileHash()|truncate:16,''}</div>
                         </td>
                         <td>{$batch->getImportedBy()}</td>
-                        <td class="r">{$batch->getTransactionCount()}</td>
-                        <td class="r">{$batch->getNewTransactionCount()}</td>
+                        <td class="text-end">{$batch->getTransactionCount()}</td>
+                        <td class="text-end">{$batch->getNewTransactionCount()}</td>
                     </tr>
                 </table>
+                </div>
             {else}
                 <p class="alert alert-info text-center mb-0">K tomuto účtu zatím není evidovaný žádný import.</p>
             {/if}

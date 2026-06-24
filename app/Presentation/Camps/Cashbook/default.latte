@@ -4,12 +4,12 @@
 
 {block #content}
 <div data-test="camp-cashbook-page">
-    <div class="card shadow-sm mb-4">
+    <div class="card page-heading">
         <div class="card-body">
             <h1 class="h3 mb-2">{$event->getDisplayName()}</h1>
-            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3 mb-3">
-                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
-                <span class="text-body-secondary">Evidence plateb tábora, import příjmů od účastníků a kontrola výsledku hospodaření.</span>
+            <div class="page-lead mb-3">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Evidence plateb tábora, import příjmů od účastníků a kontrola výsledku hospodaření.</span>
             </div>
         </div>
     </div>
@@ -18,7 +18,7 @@
         {control categoryAutocomputedControl}
     {else}
         <div n:if="$isEditable" class="d-flex flex-wrap gap-2 mb-3">
-            <a href="#importHpd" role="button" data-bs-toggle="modal" class="btn btn-sm btn-success">
+            <a href="#importHpd" role="button" data-bs-toggle="modal" class="btn btn-sm btn-primary">
                 <i class="fi fi-rr-user" aria-hidden="true"></i>&nbsp;Načíst příjmy od účastníků
             </a>
         </div>
@@ -40,7 +40,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3 class="modal-title">Import příjmů od účastníků</h3>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zavřít"></button>
                     </div>
                     <div class="modal-body">
                         {control formImportHpd}

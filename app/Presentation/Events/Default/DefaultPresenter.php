@@ -108,7 +108,10 @@ final class DefaultPresenter extends \App\BasePresenter
             ->setClass('btn btn-danger btn-sm')
             ->setTitle('Zrušit akci')
             ->setIcon('far fa-trash-alt')
-            ->addAttributes(['data-confirm' => 'Opravdu chcete zrušit tuto akci?'])
+            ->addAttributes([
+                'data-confirm' => 'Opravdu chcete zrušit tuto akci?',
+                'data-test' => 'event-cancel-action',
+            ])
             ->setRenderCondition(function (EventListItem $event): bool {
                 return $this->authorizator->isAllowed(EventResource::CANCEL, $event->getId());
             });

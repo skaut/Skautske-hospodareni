@@ -4,17 +4,17 @@
 
 {block #content}
 <div data-test="settings-automation-page">
-    <div class="card shadow-sm mb-4">
+    <div class="card page-heading">
         <div class="card-body">
             <h1 class="h3 mb-2">Automatizace</h1>
-            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3">
-                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
-                <span class="text-body-secondary">Přehled pravidelných úloh, které systém spouští automaticky na pozadí. Konfigurace intervalů je v&nbsp;<code>scheduler.neon</code>.</span>
+            <div class="page-lead">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Přehled pravidelných úloh, které systém spouští automaticky na pozadí. Konfigurace intervalů je v&nbsp;<code>scheduler.neon</code>.</span>
             </div>
         </div>
     </div>
 
-    <article class="card shadow-sm mb-4" data-test="settings-automation-card-cron">
+    <article class="card mb-4" data-test="settings-automation-card-cron">
         <div class="card-body">
             <strong>Pravidelné úlohy</strong>
         </div>
@@ -34,7 +34,7 @@
         </div>
     </article>
 
-    <article class="card shadow-sm" data-test="settings-automation-card-history">
+    <article class="card" data-test="settings-automation-card-history">
         <div class="card-body">
             <strong>Historie běhů</strong>
             <div class="alert alert-light mt-3 mb-0">

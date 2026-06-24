@@ -29,7 +29,8 @@ class DashboardCest extends BaseAcceptanceCest
         $I->amOnPage('/nastenka');
         $I->waitForElementVisible('[data-test="dashboard"]', 10);
         $I->seeNumberOfElements('[data-test^="dashboard-card-"]', 6);
-        $I->seeElement('[data-test="dashboard-card-events"]');
+        $I->seeNumberOfElements('[data-test^="dashboard-card-"].navigation-card', 6);
+        $I->seeElement('[data-test="dashboard-card-events"] [data-test="dashboard-link-events"].stretched-link');
         Assert::assertSame(
             '/akce',
             $I->grabAttributeFrom('[data-test="dashboard-link-events"]', 'href'),
@@ -88,7 +89,11 @@ class DashboardCest extends BaseAcceptanceCest
 
         $I->amOnPage('/nastenka');
         $I->waitForElementVisible('[data-test="dashboard"]', 10);
-        $I->click('[data-test="dashboard-link-events"]');
+        $I->executeJS(<<<'JS'
+            const card = document.querySelector('[data-test="dashboard-card-events"]');
+            const rect = card.getBoundingClientRect();
+            document.elementFromPoint(rect.right - 20, rect.bottom - 20).click();
+            JS);
         $I->waitForElementVisible('[data-test="events-default-page"]', 10);
         $I->seeInCurrentUrl('/akce');
         $I->seeElement('.active [data-test="global-nav-events"]');

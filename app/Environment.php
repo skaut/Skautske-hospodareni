@@ -7,8 +7,11 @@ namespace App;
 use RuntimeException;
 
 use function array_fill_keys;
+use function array_filter;
 use function array_key_exists;
 use function array_keys;
+use function array_map;
+use function array_values;
 use function explode;
 use function file_get_contents;
 use function getenv;
@@ -166,6 +169,7 @@ final class Environment
             'appEnv' => $appEnv,
             'appBaseUrl' => $baseUrl,
             'sendEmail' => self::getBool('SEND_EMAIL', $appEnv !== 'dev'),
+            'errorEmails' => self::getList('ERROR_EMAILS'),
             'testBackground' => self::getBool('TEST_BACKGROUND', $appEnv !== 'prod'),
             'tracyShowBar' => self::getBool('TRACY_SHOW_BAR', $appEnv === 'dev'),
             'database' => [
@@ -244,6 +248,17 @@ final class Environment
         }
 
         return $default;
+    }
+
+    /** @return string[] */
+    private static function getList(string $name): array
+    {
+        $value = self::getNullableString($name);
+        if ($value === null) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map('trim', explode(',', $value))));
     }
 
     private static function setVariable(string $name, string $value): void

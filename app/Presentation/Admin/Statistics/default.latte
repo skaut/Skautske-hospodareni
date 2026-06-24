@@ -18,30 +18,30 @@
 {block content}
 <div data-test="admin-statistics-page">
     {* Hero *}
-    <div class="card shadow-sm mb-4">
+    <div class="card page-heading">
         <div class="card-body">
             <h1 class="h3 mb-2">Statistiky</h1>
-            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3">
-                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
-                <span class="text-body-secondary">Souhrnné statistiky výprav, táborů a plateb podle jednotlivých jednotek a jejich podřízených.</span>
+            <div class="page-lead">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Souhrnné statistiky výprav, táborů a plateb podle jednotlivých jednotek a jejich podřízených.</span>
             </div>
         </div>
     </div>
 
     {* Year filter *}
-    <div class="card shadow-sm mb-4">
+    <div class="card mb-4">
         <div class="card-body">
             {control selectYearForm}
         </div>
     </div>
 
     {* Statistics table *}
-    <article class="card shadow-sm" data-test="admin-statistics-table-card">
+    <article class="card" data-test="admin-statistics-table-card">
         <div class="card-body">
-            <strong>Přehled podle jednotek</strong>
+            <h2 class="h5 mb-0">Přehled podle jednotek</h2>
 
             <div class="table-responsive mt-3">
-                <table class="table table-bordered table-striped mb-0">
+                <table class="table table-hover table-striped mb-0">
                     <thead>
                     <tr>
                         <th>Jednotka</th>

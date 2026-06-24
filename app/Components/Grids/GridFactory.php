@@ -39,6 +39,7 @@ class GridFactory
     {
         $grid = new DataGrid();
         $grid->setDefaultPerPage(20);
+        DataGrid::$iconPrefix = '';
 
         // $grid->setTranslator(new SimpleTranslator(self::TRANSLATIONS));
 

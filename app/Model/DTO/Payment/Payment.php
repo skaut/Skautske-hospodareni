@@ -33,6 +33,7 @@ use function implode;
  * @property string|null            $closedBy
  * @property int|null               $personId
  * @property int                    $groupId
+ * @property int|null               $splitFromPaymentId
  */
 class Payment
 {
@@ -59,6 +60,7 @@ class Payment
         private ?int $personId,
         private int $groupId,
         private array $sentEmails,
+        private ?int $splitFromPaymentId = null,
     ) {
     }
 
@@ -151,6 +153,11 @@ class Payment
     public function getGroupId(): int
     {
         return $this->groupId;
+    }
+
+    public function getSplitFromPaymentId(): ?int
+    {
+        return $this->splitFromPaymentId;
     }
 
     /** @return SentEmail[] */

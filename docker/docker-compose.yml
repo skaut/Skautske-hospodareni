@@ -12,12 +12,14 @@ x-php-base:
     build:
         context: ./containers/php
     working_dir: /app
+    shm_size: 1g
     env_file:
         - ./containers/php/ini/image.ini
     networks:
         - traefik
     volumes:
         - ../:/app
+        - ./containers/php/docker.conf:/etc/php/8.3/fpm/pool.d/www.conf
         - ./containers/php/ini/php.ini:/etc/php/8.3/fpm/conf.d/php.ini
         - ./containers/php/ini/php.ini:/etc/php/8.3/cli/conf.d/php.ini
 
@@ -43,7 +45,7 @@ services:
         ports:
             - "80:80"
         volumes:
-            - /var/run/docker.sock:/var/run/docker.sock:ro
+            - /run/user/1000/docker.sock:/var/run/docker.sock:ro
             - ./containers/traefik/traefik.yml:/traefik.yml:ro
         labels:
             traefik.enable: true

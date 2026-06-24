@@ -69,6 +69,7 @@ final class EntityManagerFactory
         $driverChain->addDriver($attributeDriver, 'Entity');
         $driverChain->addDriver($attributeDriver, 'App\Model\Infrastructure\Entity');
         $driverChain->addDriver($attributeDriver, 'App\Model\User\Entity');
+        $driverChain->addDriver($attributeDriver, 'App\Model\BugReport\Entity');
         $driverChain->addDriver($attributeDriver, 'App\Model\Invoice\Entity');
         $driverChain->addDriver($attributeDriver, 'App\Model\Invoice\Embeddable');
         $driverChain->addDriver($attributeDriver, 'App\Model\Bank\Entity');

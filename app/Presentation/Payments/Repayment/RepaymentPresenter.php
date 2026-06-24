@@ -54,7 +54,7 @@ final class RepaymentPresenter extends BasePresenter
             ->setDefaultValue(ChronosDate::now()->addWeekdays(1));
 
         $form->addSubmit('send', 'Založit příkazy k úhradě')
-            ->setHtmlAttribute('class', 'btn btn-primary btn-large');
+            ->setHtmlAttribute('class', 'btn btn-primary btn-lg');
 
         $paymentsContainer = $form->addContainer('payments');
 

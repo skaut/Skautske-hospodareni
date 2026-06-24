@@ -1,11 +1,11 @@
 {block #content}
 <div>
-    <div class="card shadow-sm mb-4">
+    <div class="card page-heading">
         <div class="card-body">
             <h1 n:inner-block="title" class="h3 mb-2">Přidat osoby z registrace</h1>
-            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3 mb-3">
-                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
-                <span class="text-body-secondary">Členové, kteří už mají v této skupině platbu, nejsou zobrazeni. U každé osoby lze vybrat libovolný e-mail pomocí stisknuté klávesy CTRL.</span>
+            <div class="page-lead mb-3">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Členové, kteří už mají v této skupině platbu, nejsou zobrazeni. U každé osoby lze vybrat libovolný e-mail pomocí stisknuté klávesy CTRL.</span>
             </div>
             <a n:href="default $group->id" class="btn btn-outline-secondary btn-sm">
                 <i class="fi fi-rr-arrow-left" aria-hidden="true"></i> {$group->name}
@@ -13,15 +13,15 @@
         </div>
     </div>
 
-    <section class="card shadow-sm">
+    <section class="card">
         <div class="card-body">
             <h3 class="h5 mb-3">{$unitName}</h3>
             {if $showForm}
                 <p class="text-body-secondary small">Z výkonostních důvodů je zobrazeno pouze prvních 50 osob.</p>
                 {control form}
             {else}
-                <div class="text-body-secondary text-center py-4">
-                    <i class="fi fi-rr-clipboard-check d-block mb-2" aria-hidden="true" style="font-size: 3rem;"></i>
+                <div class="empty-state">
+                    <i class="fi fi-rr-clipboard-check" aria-hidden="true"></i>
                     <p class="mb-0">Nejsou dostupné žádné registrované osoby, které by neměly založenou platbu.</p>
                 </div>
             {/if}

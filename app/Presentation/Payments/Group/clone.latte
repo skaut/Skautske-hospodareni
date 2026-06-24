@@ -1,0 +1,9 @@
+{block #content}
+{include '../Accessory/groupCreatePage.latte',
+    pageTest: 'payment-group-clone-page',
+    heading: 'Klonovat platební skupinu',
+    description: 'Zkontrolujte převzaté nastavení skupiny „' . $sourceGroup->getName() . '“. Nová skupina vznikne až po úspěšném odeslání formuláře.',
+    backLink: $presenter->link(':Payments:GroupList:default'),
+    backLabel: 'Zpět na skupiny',
+    formControl: 'cloneGroupForm'
+}

@@ -95,6 +95,14 @@ class AccountancyHelpersTest extends Unit
         $this->assertSame('moje psc', AccountancyHelpers::postCode('moje psc'));
     }
 
+    public function testOpenGroupStateUsesContrastingBadge(): void
+    {
+        $this->assertSame(
+            '<span class=\'badge text-bg-success\'>Otevřená</span>',
+            AccountancyHelpers::groupState('open'),
+        );
+    }
+
     public function testPriceToString(): void
     {
         $this->assertSame('Jedna', AccountancyHelpers::priceToString(1.0));

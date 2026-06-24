@@ -11,6 +11,7 @@ menu:
                     - '^Dashboard:.*$'
                 data:
                     test: global-nav-dashboard
+                    icon: fi fi-rr-apps
             events:
                 title: Akce
                 action: 'Events:Default:default'
@@ -18,6 +19,7 @@ menu:
                     - '^Events:.*$'
                 data:
                     test: global-nav-events
+                    icon: fi fi-rr-circle-calendar
             camps:
                 title: Tábory
                 action: 'Camps:Default:default'
@@ -25,6 +27,7 @@ menu:
                     - '^Camps:.*$'
                 data:
                     test: global-nav-camps
+                    icon: fi fi-rs-tents
             education:
                 title: Vzdělávačky
                 action: 'Education:Default:default'
@@ -32,6 +35,7 @@ menu:
                     - '^Education:.*$'
                 data:
                     test: global-nav-education
+                    icon: fi fi-rs-user-graduate
             travel:
                 title: Cesťáky
                 action: 'Travel:Default:default'
@@ -39,6 +43,7 @@ menu:
                     - '^Travel:.*$'
                 data:
                     test: global-nav-travel
+                    icon: fi fi-rr-road
             unit:
                 title: Jednotka
                 action: 'Unit:Cashbook:default'
@@ -46,6 +51,7 @@ menu:
                     - '^Unit:.*$'
                 data:
                     test: global-nav-unit
+                    icon: fi fi-rs-users
             payments:
                 title: Platby
                 action: 'Payments:Dashboard:default'
@@ -53,21 +59,24 @@ menu:
                     - '^Payments:.*$'
                 data:
                     test: global-nav-payments
-            admin:
-                title: Admin
-                action: 'Admin:Default:default'
-                include:
-                    - '^Admin:.*$'
-                data:
-                    test: global-nav-admin
-                    requiresAdmin: true
+                    icon: fi fi-rr-coins
             settings:
                 title: Nastavení
                 action: 'Settings:Default:default'
                 include:
                     - '^Settings:.*$'
                 data:
-                    test: global-nav-settings
+                    test: utility-nav-settings
+                    icon: fi fi-rr-settings
+            admin:
+                title: Administrace
+                action: 'Admin:Default:default'
+                include:
+                    - '^Admin:.*$'
+                data:
+                    test: utility-nav-admin
+                    icon: fi fi-rr-shield-check
+                    requiresAdmin: true
 
     payments:
         authorizator: @App\Presentation\Accessory\Navigation\NavigationAuthorizator
@@ -105,21 +114,10 @@ menu:
                 data:
                     test: payment-nav-invoices
                     icon: fas fa-file-invoice-dollar
+                    requiresInvoiceAccess: true
                     preserveParameters:
                         jednotka: unitId
                         rok: year
-            settings:
-                title: Nastavení
-                action: 'Settings:Default:default'
-                include:
-                    - '^Settings:.*$'
-                data:
-                    test: payment-nav-settings
-                    icon: fas fa-sliders-h
-                    preserveParameters:
-                        jednotka: unitId
-                        rok: year
-
     settings:
         authorizator: @App\Presentation\Accessory\Navigation\NavigationAuthorizator
         linkGenerator: @App\Presentation\Accessory\Navigation\PreservingLinkGenerator
@@ -137,6 +135,16 @@ menu:
                     preserveParameters:
                         jednotka: unitId
                         rok: year
+            user:
+                title: Uživatel
+                action: 'Settings:User:default'
+                include:
+                    - '^Settings:User:.*$'
+                data:
+                    test: settings-subnav-user
+                    icon: fi fi-rr-user
+                    preserveParameters:
+                        jednotka: unitId
             bankAccounts:
                 title: Bankovní účty
                 action: 'Settings:BankAccounts:default'
@@ -167,6 +175,7 @@ menu:
                 data:
                     test: settings-subnav-invoices
                     icon: fi fi-rr-file-invoice
+                    requiresInvoiceAccess: true
                     preserveParameters:
                         jednotka: unitId
                         rok: year
@@ -211,6 +220,22 @@ menu:
                 data:
                     test: admin-nav-statistics
                     icon: fi fi-rr-chart-pie
+            bugReports:
+                title: Hlášení chyb
+                action: 'Admin:BugReports:default'
+                include:
+                    - '^Admin:BugReports:.*$'
+                data:
+                    test: admin-nav-bug-reports
+                    icon: fi fi-rr-bug
+            invoiceAccess:
+                title: Fakturace
+                action: 'Admin:InvoiceAccess:default'
+                include:
+                    - '^Admin:InvoiceAccess:.*$'
+                data:
+                    test: admin-nav-invoice-access
+                    icon: fi fi-rr-lock
 
     travel:
         authorizator: @App\Presentation\Accessory\Navigation\NavigationAuthorizator

@@ -1,5 +1,5 @@
 {block #table}
-<table class="table table-bordered table-sm mb-0">
+<table class="table table-hover table-sm mb-0">
     <tr>
         <th colspan="2">Kategorie</th>
         <th>Předpoklad</th>
@@ -30,19 +30,19 @@
 {/block}
 
 
-{block #content}
-{include ../header.latte}
+{block #subMenu}{include ../header.latte}{/block}
 
+{block #content}
 <div data-test="unit-budget-page">
-    <div class="card shadow-sm mb-4">
+    <div class="card page-heading">
         <div class="card-body">
             <h1 n:inner-block="title" class="h3 mb-2">{$unitPairs[$unitId]}</h1>
-            <div class="d-flex align-items-start gap-2 bg-body-tertiary rounded-3 p-3 mb-3">
-                <i class="fi fi-rr-info text-primary mt-1 flex-shrink-0" aria-hidden="true"></i>
-                <span class="text-body-secondary">Přehled kategorií, plánovaných částek a správa rozpočtu pro vybraný rok.</span>
+            <div class="page-lead mb-3">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Přehled kategorií, plánovaných částek a správa rozpočtu pro vybraný rok.</span>
             </div>
             <div class="d-flex flex-wrap gap-2">
-                <a n:href="add unitId: $unitId, year: $year" class="btn btn-success" data-test="unit-budget-add-link">
+                <a n:href="add unitId: $unitId, year: $year" class="btn btn-primary" data-test="unit-budget-add-link">
                     <i class="fi fi-rr-plus-small" aria-hidden="true"></i> Založit kategorii
                 </a>
             </div>
@@ -51,7 +51,7 @@
 
     <div class="row g-4" n:ifset="$categories">
         <div class="col-md-6" n:if="!empty($categories['in'])">
-            <div class="card shadow-sm">
+            <div class="card">
                 <div class="card-body">
                     {include #table rootCategories => $categories['in']}
                 </div>
@@ -59,7 +59,7 @@
         </div>
         {do $presenter->template->sum = $presenter->template->sumReality = 0}
         <div class="col-md-6" n:if="!empty($categories['out'])">
-            <div class="card shadow-sm">
+            <div class="card">
                 <div class="card-body">
                     {include #table rootCategories=>$categories['out']}
                 </div>

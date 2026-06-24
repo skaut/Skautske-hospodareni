@@ -24,6 +24,7 @@ class RouterFactory
         $router[] = new Route('posily', 'Default:reinforcement');
         $router[] = new Route('changelog', 'Default:changelog');
         $router[] = new Route('design', 'Design:default');
+        $router[] = new Route('nahlasit-problem', 'BugReport:default');
 
         // Sections
         $this->addTravelRoutes($router);
@@ -180,6 +181,7 @@ class RouterFactory
             // Groups
             ->addRoute('platby/skupiny ? onlyOpen=<onlyOpen>', 'GroupList:default')
             ->addRoute('platby/skupiny/nova', 'Group:newGroup')
+            ->addRoute('platby/skupiny/<id [0-9]+>/klonovat', 'Group:clone')
             ->addRoute('platby/skupiny/<id [0-9]+>/upravit', 'Group:edit')
             ->addRoute('platby/skupiny/<id [0-9]+>/platby', 'Payment:default')
             ->addRoute('platby/skupiny/<id [0-9]+>/ucastnici', 'Participants:default')
@@ -213,6 +215,8 @@ class RouterFactory
         $admin
             ->addRoute('admin', 'Default:default')
             ->withPath('admin')
+            ->addRoute('hlaseni-chyb/<id [0-9]+>', 'BugReports:detail')
+            ->addRoute('hlaseni-chyb', 'BugReports:default')
             ->addRoute('uzivatele', 'Users:default')
             ->addRoute('statistiky ? jednotka=<unitId>', 'Statistics:default')
             ->addRoute('<presenter>[/<action>]', ['action' => 'default']);
@@ -242,6 +246,7 @@ class RouterFactory
                     ],
                 ],
             )
+            ->addRoute('nastaveni/uzivatel ? jednotka=<unitId>', 'User:default')
             ->addRoute('nastaveni/emaily ? jednotka=<unitId>', 'Mails:default')
             ->addRoute('nastaveni/faktury ? jednotka=<unitId> & rok=<year>', 'Invoices:default')
             ->addRoute('nastaveni/automatizace ? jednotka=<unitId>', 'Automation:default')

@@ -91,7 +91,7 @@
                             {inputError $customer['companyNumber']}
                         </div>
                         <div class="col-12 col-lg-auto">
-                            {input loadAres class => 'btn btn-sm btn-outline-primary ajax'}
+                            {input loadAres class => 'btn btn-sm btn-light ajax'}
                         </div>
                         <div class="col-12 col-lg-4">
                             {label $customer['vat'] /}
@@ -190,38 +190,3 @@
         {/form}
     </div>
 </div>
-
-<script>
-    (() => {
-        const section = document.querySelector('[data-customer-section]');
-        if (!section) return;
-
-        const radios = section.querySelectorAll('[data-customer-type-radio]');
-        const scopedBlocks = section.querySelectorAll('[data-customer-scope]');
-
-        function syncCustomerType() {
-            const selectedRadio = Array.from(radios).find((radio) => radio.checked);
-            const selectedType = selectedRadio ? selectedRadio.value : 'company';
-
-            scopedBlocks.forEach((block) => {
-                const scope = block.getAttribute('data-customer-scope');
-                const shouldShow =
-                    scope === 'company'
-                        ? selectedType === 'company'
-                        : selectedType === 'company' || selectedType === 'person';
-
-                block.hidden = !shouldShow;
-                block.querySelectorAll('input, select, textarea, button').forEach((field) => {
-                    if (field.type === 'radio' || field.name === '') {
-                        return;
-                    }
-
-                    field.disabled = !shouldShow;
-                });
-            });
-        }
-
-        syncCustomerType();
-        radios.forEach((radio) => radio.addEventListener('change', syncCustomerType));
-    })();
-</script>
