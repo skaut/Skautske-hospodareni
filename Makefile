@@ -56,7 +56,8 @@ endef
 
 define reset_writable_dirs
 	$(COMPOSE) run --rm -T --no-deps --user root $(1) sh -c \
-		'find log temp www/webtemp -type d -exec chmod a+rwx {} + && \
+		'mkdir -p log temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf www/webtemp && \
+		find log temp www/webtemp -type d -exec chmod a+rwx {} + && \
 		find temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf www/webtemp -mindepth 1 -maxdepth 1 -exec rm -rf {} + && \
 		find log temp www/webtemp -type d -exec chmod a+rwx {} +'
 endef
