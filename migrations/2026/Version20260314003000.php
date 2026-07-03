@@ -8,8 +8,6 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 use RuntimeException;
 
-use function trim;
-
 final class Version20260314003000 extends AbstractMigration
 {
     public function getDescription(): string
@@ -33,240 +31,219 @@ final class Version20260314003000 extends AbstractMigration
 
     private function migrateLegacyPaymentPairings(): void
     {
-        $rows = $this->connection->fetchAllAssociative(<<<'SQL'
+        $this->addSql(<<<'SQL'
+INSERT INTO bank_transaction (
+    bank_account_id,
+    import_batch_id,
+    source,
+    transaction_key,
+    source_transaction_id,
+    date,
+    amount,
+    counter_account,
+    counter_name,
+    variable_symbol,
+    constant_symbol,
+    note,
+    imported_at
+)
 SELECT
-    p.id AS payment_id,
-    p.transactionId AS transaction_id,
-    p.bank_account AS counter_account,
-    p.transaction_payer AS transaction_payer,
-    p.transaction_note AS transaction_note,
-    p.date AS transaction_date,
-    p.closed_at,
-    p.closed_by_username,
+    g.bank_account_id,
+    NULL,
+    'fio',
+    first_payment.transaction_key,
+    first_payment.transaction_key,
+    COALESCE(
+        CONCAT(p.date, ' 00:00:00'),
+        NULLIF(TRIM(CAST(p.closed_at AS CHAR)), ''),
+        '2026-03-14 00:30:00'
+    ),
     p.amount,
-    p.variable_symbol,
-    p.constant_symbol,
-    g.bank_account_id AS source_bank_account_id,
-    ba.name AS source_bank_account_name,
-    ba.number_prefix AS source_account_prefix,
-    ba.number_number AS source_account_number,
-    ba.number_bank_code AS source_bank_code
+    NULLIF(TRIM(p.bank_account), ''),
+    COALESCE(NULLIF(TRIM(p.transaction_payer), ''), ''),
+    CAST(NULLIF(TRIM(p.variable_symbol), '') AS SIGNED),
+    CAST(NULLIF(TRIM(CAST(p.constant_symbol AS CHAR)), '') AS SIGNED),
+    NULLIF(TRIM(p.transaction_note), ''),
+    COALESCE(
+        NULLIF(TRIM(CAST(p.closed_at AS CHAR)), ''),
+        CONCAT(p.date, ' 00:00:00'),
+        '2026-03-14 00:30:00'
+    )
+FROM pa_payment p
+INNER JOIN pa_group g ON g.id = p.group_id
+INNER JOIN (
+    SELECT TRIM(p2.transactionId) AS transaction_key, MIN(p2.id) AS payment_id
+    FROM pa_payment p2
+    INNER JOIN pa_group g2 ON g2.id = p2.group_id
+    WHERE p2.transactionId IS NOT NULL
+      AND TRIM(p2.transactionId) != ''
+      AND g2.bank_account_id IS NOT NULL
+    GROUP BY TRIM(p2.transactionId)
+) first_payment ON first_payment.payment_id = p.id
+LEFT JOIN bank_transaction existing_transaction ON existing_transaction.transaction_key = first_payment.transaction_key
+WHERE existing_transaction.id IS NULL
+SQL);
+
+        $this->addSql(<<<'SQL'
+INSERT INTO bank_transaction_pairing (
+    bank_transaction_id,
+    payment_id,
+    invoice_id,
+    transaction_key,
+    pairing_mode,
+    paired_at,
+    paired_by,
+    cancelled_at,
+    cancelled_by,
+    cancellation_reason,
+    historical_bank_account_id,
+    historical_bank_account_name,
+    historical_account_number,
+    historical_bank_code
+)
+SELECT
+    bt.id,
+    p.id,
+    NULL,
+    TRIM(p.transactionId),
+    'automatic',
+    COALESCE(
+        NULLIF(TRIM(CAST(p.closed_at AS CHAR)), ''),
+        CONCAT(p.date, ' 00:00:00'),
+        '2026-03-14 00:30:00'
+    ),
+    NULLIF(TRIM(p.closed_by_username), ''),
+    NULL,
+    NULL,
+    NULL,
+    g.bank_account_id,
+    NULLIF(TRIM(ba.name), ''),
+    CASE
+        WHEN NULLIF(TRIM(ba.number_number), '') IS NULL THEN NULL
+        WHEN NULLIF(TRIM(ba.number_prefix), '') IS NOT NULL THEN CONCAT(TRIM(ba.number_prefix), '-', TRIM(ba.number_number))
+        ELSE TRIM(ba.number_number)
+    END,
+    NULLIF(TRIM(ba.number_bank_code), '')
 FROM pa_payment p
 INNER JOIN pa_group g ON g.id = p.group_id
 LEFT JOIN pa_bank_account ba ON ba.id = g.bank_account_id
-WHERE p.transactionId IS NOT NULL AND p.transactionId != ''
+LEFT JOIN bank_transaction bt ON bt.transaction_key = TRIM(p.transactionId)
+LEFT JOIN bank_transaction_pairing existing_pairing
+    ON existing_pairing.payment_id = p.id
+    AND existing_pairing.transaction_key = TRIM(p.transactionId)
+WHERE p.transactionId IS NOT NULL
+  AND TRIM(p.transactionId) != ''
+  AND existing_pairing.id IS NULL
 SQL);
-
-        foreach ($rows as $row) {
-            $transactionKey = trim((string) $row['transaction_id']);
-            $pairedAt = $this->resolveDateTime($row['closed_at'], $row['transaction_date']);
-            $historicalAccountNumber = $this->buildAccountNumber($row['source_account_prefix'], $row['source_account_number']);
-            $bankTransactionId = $this->findOrCreateBankTransaction(
-                $row['source_bank_account_id'] !== null ? (int) $row['source_bank_account_id'] : null,
-                $transactionKey,
-                $transactionKey,
-                $row['transaction_date'],
-                (float) $row['amount'],
-                $this->normalizeString($row['counter_account']),
-                $this->normalizeString($row['transaction_payer']) ?? '',
-                $this->normalizeInt($row['variable_symbol']),
-                $this->normalizeInt($row['constant_symbol']),
-                $this->normalizeString($row['transaction_note']),
-                $pairedAt,
-            );
-
-            $this->connection->insert('bank_transaction_pairing', [
-                'bank_transaction_id' => $bankTransactionId,
-                'payment_id' => (int) $row['payment_id'],
-                'invoice_id' => null,
-                'transaction_key' => $transactionKey,
-                'pairing_mode' => 'automatic',
-                'paired_at' => $pairedAt,
-                'paired_by' => $this->normalizeString($row['closed_by_username']),
-                'cancelled_at' => null,
-                'cancelled_by' => null,
-                'cancellation_reason' => null,
-                'historical_bank_account_id' => $row['source_bank_account_id'] !== null ? (int) $row['source_bank_account_id'] : null,
-                'historical_bank_account_name' => $this->normalizeString($row['source_bank_account_name']),
-                'historical_account_number' => $historicalAccountNumber,
-                'historical_bank_code' => $this->normalizeString($row['source_bank_code']),
-            ]);
-        }
     }
 
     private function migrateLegacyInvoicePairings(): void
     {
-        $rows = $this->connection->fetchAllAssociative(<<<'SQL'
+        $this->addSql(<<<'SQL'
+INSERT INTO bank_transaction (
+    bank_account_id,
+    import_batch_id,
+    source,
+    transaction_key,
+    source_transaction_id,
+    date,
+    amount,
+    counter_account,
+    counter_name,
+    variable_symbol,
+    constant_symbol,
+    note,
+    imported_at
+)
 SELECT
-    i.id AS invoice_id,
-    i.transactionId AS transaction_id,
-    i.bank_account AS counter_account,
-    i.transaction_payer AS transaction_payer,
-    i.transaction_note AS transaction_note,
-    i.date AS transaction_date,
-    i.closed_at,
-    i.closed_by_username,
-    i.variable_symbol,
-    i.bank_account_id AS source_bank_account_id,
-    ba.name AS source_bank_account_name,
-    ba.number_prefix AS source_account_prefix,
-    ba.number_number AS source_account_number,
-    ba.number_bank_code AS source_bank_code,
-    i.bank_name AS snapshot_bank_name,
-    i.account_number_prefix AS snapshot_account_prefix,
-    i.account_number_number AS snapshot_account_number,
-    i.account_number_bank_code AS snapshot_bank_code,
-    totals.total_amount
+    i.bank_account_id,
+    NULL,
+    'fio',
+    first_invoice.transaction_key,
+    first_invoice.transaction_key,
+    COALESCE(
+        CONCAT(i.date, ' 00:00:00'),
+        NULLIF(TRIM(CAST(i.closed_at AS CHAR)), ''),
+        '2026-03-14 00:30:00'
+    ),
+    COALESCE(totals.total_amount, 0.0),
+    NULLIF(TRIM(i.bank_account), ''),
+    COALESCE(NULLIF(TRIM(i.transaction_payer), ''), ''),
+    CAST(NULLIF(TRIM(i.variable_symbol), '') AS SIGNED),
+    NULL,
+    NULLIF(TRIM(i.transaction_note), ''),
+    COALESCE(
+        NULLIF(TRIM(CAST(i.closed_at AS CHAR)), ''),
+        CONCAT(i.date, ' 00:00:00'),
+        '2026-03-14 00:30:00'
+    )
 FROM invoice i
-LEFT JOIN pa_bank_account ba ON ba.id = i.bank_account_id
+INNER JOIN (
+    SELECT TRIM(i2.transactionId) AS transaction_key, MIN(i2.id) AS invoice_id
+    FROM invoice i2
+    WHERE i2.transactionId IS NOT NULL
+      AND TRIM(i2.transactionId) != ''
+      AND i2.bank_account_id IS NOT NULL
+    GROUP BY TRIM(i2.transactionId)
+) first_invoice ON first_invoice.invoice_id = i.id
 LEFT JOIN (
     SELECT invoice_id, SUM(CAST(price AS DECIMAL(15,2)) * quantity) AS total_amount
     FROM invoice_item
     GROUP BY invoice_id
 ) totals ON totals.invoice_id = i.id
-WHERE i.transactionId IS NOT NULL AND i.transactionId != ''
+LEFT JOIN bank_transaction existing_transaction ON existing_transaction.transaction_key = first_invoice.transaction_key
+WHERE existing_transaction.id IS NULL
 SQL);
 
-        foreach ($rows as $row) {
-            $transactionKey = trim((string) $row['transaction_id']);
-            $pairedAt = $this->resolveDateTime($row['closed_at'], $row['transaction_date']);
-            $historicalBankAccountId = $row['source_bank_account_id'] !== null ? (int) $row['source_bank_account_id'] : null;
-            $historicalBankAccountName = $this->normalizeString($row['source_bank_account_name'])
-                ?? $this->normalizeString($row['snapshot_bank_name']);
-            $historicalAccountNumber = $this->buildAccountNumber(
-                $row['source_account_prefix'] ?? $row['snapshot_account_prefix'],
-                $row['source_account_number'] ?? $row['snapshot_account_number'],
-            );
-            $historicalBankCode = $this->normalizeString($row['source_bank_code'])
-                ?? $this->normalizeString($row['snapshot_bank_code']);
-
-            $bankTransactionId = $this->findOrCreateBankTransaction(
-                $historicalBankAccountId,
-                $transactionKey,
-                $transactionKey,
-                $row['transaction_date'],
-                (float) ($row['total_amount'] ?? 0.0),
-                $this->normalizeString($row['counter_account']),
-                $this->normalizeString($row['transaction_payer']) ?? '',
-                $this->normalizeInt($row['variable_symbol']),
-                null,
-                $this->normalizeString($row['transaction_note']),
-                $pairedAt,
-            );
-
-            $this->connection->insert('bank_transaction_pairing', [
-                'bank_transaction_id' => $bankTransactionId,
-                'payment_id' => null,
-                'invoice_id' => (int) $row['invoice_id'],
-                'transaction_key' => $transactionKey,
-                'pairing_mode' => 'automatic',
-                'paired_at' => $pairedAt,
-                'paired_by' => $this->normalizeString($row['closed_by_username']),
-                'cancelled_at' => null,
-                'cancelled_by' => null,
-                'cancellation_reason' => null,
-                'historical_bank_account_id' => $historicalBankAccountId,
-                'historical_bank_account_name' => $historicalBankAccountName,
-                'historical_account_number' => $historicalAccountNumber,
-                'historical_bank_code' => $historicalBankCode,
-            ]);
-        }
-    }
-
-    private function findOrCreateBankTransaction(
-        ?int $bankAccountId,
-        string $transactionKey,
-        string $sourceTransactionId,
-        ?string $transactionDate,
-        float $amount,
-        ?string $counterAccount,
-        string $counterName,
-        ?int $variableSymbol,
-        ?int $constantSymbol,
-        ?string $note,
-        string $importedAt,
-    ): ?int {
-        $existingId = $this->connection->fetchOne(
-            'SELECT id FROM bank_transaction WHERE transaction_key = ?',
-            [$transactionKey],
-        );
-
-        if ($existingId !== false) {
-            return (int) $existingId;
-        }
-
-        if ($bankAccountId === null) {
-            return null;
-        }
-
-        $date = $this->resolveDateTime(null, $transactionDate, $importedAt);
-
-        $this->connection->insert('bank_transaction', [
-            'bank_account_id' => $bankAccountId,
-            'import_batch_id' => null,
-            'source' => 'fio',
-            'transaction_key' => $transactionKey,
-            'source_transaction_id' => $sourceTransactionId,
-            'date' => $date,
-            'amount' => $amount,
-            'counter_account' => $counterAccount,
-            'counter_name' => $counterName,
-            'variable_symbol' => $variableSymbol,
-            'constant_symbol' => $constantSymbol,
-            'note' => $note,
-            'imported_at' => $importedAt,
-        ]);
-
-        return (int) $this->connection->lastInsertId();
-    }
-
-    private function resolveDateTime(?string $closedAt, ?string $transactionDate, ?string $fallback = null): string
-    {
-        $closedAt = $this->normalizeString($closedAt);
-
-        if ($closedAt !== null) {
-            return $closedAt;
-        }
-
-        $transactionDate = $this->normalizeString($transactionDate);
-
-        if ($transactionDate !== null) {
-            return $transactionDate . ' 00:00:00';
-        }
-
-        if ($fallback !== null) {
-            return $fallback;
-        }
-
-        return '2026-03-14 00:30:00';
-    }
-
-    private function buildAccountNumber(?string $prefix, ?string $number): ?string
-    {
-        $number = $this->normalizeString($number);
-
-        if ($number === null) {
-            return null;
-        }
-
-        $prefix = $this->normalizeString($prefix);
-
-        return $prefix !== null
-            ? $prefix . '-' . $number
-            : $number;
-    }
-
-    private function normalizeString(?string $value): ?string
-    {
-        $value = trim((string) $value);
-
-        return $value === '' ? null : $value;
-    }
-
-    private function normalizeInt(int|string|null $value): ?int
-    {
-        $value = trim((string) $value);
-
-        return $value === '' ? null : (int) $value;
+        $this->addSql(<<<'SQL'
+INSERT INTO bank_transaction_pairing (
+    bank_transaction_id,
+    payment_id,
+    invoice_id,
+    transaction_key,
+    pairing_mode,
+    paired_at,
+    paired_by,
+    cancelled_at,
+    cancelled_by,
+    cancellation_reason,
+    historical_bank_account_id,
+    historical_bank_account_name,
+    historical_account_number,
+    historical_bank_code
+)
+SELECT
+    bt.id,
+    NULL,
+    i.id,
+    TRIM(i.transactionId),
+    'automatic',
+    COALESCE(
+        NULLIF(TRIM(CAST(i.closed_at AS CHAR)), ''),
+        CONCAT(i.date, ' 00:00:00'),
+        '2026-03-14 00:30:00'
+    ),
+    NULLIF(TRIM(i.closed_by_username), ''),
+    NULL,
+    NULL,
+    NULL,
+    i.bank_account_id,
+    COALESCE(NULLIF(TRIM(ba.name), ''), NULLIF(TRIM(i.bank_name), '')),
+    CASE
+        WHEN NULLIF(TRIM(COALESCE(ba.number_number, i.account_number_number)), '') IS NULL THEN NULL
+        WHEN NULLIF(TRIM(COALESCE(ba.number_prefix, i.account_number_prefix)), '') IS NOT NULL THEN CONCAT(TRIM(COALESCE(ba.number_prefix, i.account_number_prefix)), '-', TRIM(COALESCE(ba.number_number, i.account_number_number)))
+        ELSE TRIM(COALESCE(ba.number_number, i.account_number_number))
+    END,
+    COALESCE(NULLIF(TRIM(ba.number_bank_code), ''), NULLIF(TRIM(i.account_number_bank_code), ''))
+FROM invoice i
+LEFT JOIN pa_bank_account ba ON ba.id = i.bank_account_id
+LEFT JOIN bank_transaction bt ON bt.transaction_key = TRIM(i.transactionId)
+LEFT JOIN bank_transaction_pairing existing_pairing
+    ON existing_pairing.invoice_id = i.id
+    AND existing_pairing.transaction_key = TRIM(i.transactionId)
+WHERE i.transactionId IS NOT NULL
+  AND TRIM(i.transactionId) != ''
+  AND existing_pairing.id IS NULL
+SQL);
     }
 }

@@ -1,11 +1,11 @@
 SHELL := /bin/bash
 
 COMPOSE         = docker compose -f docker/docker-compose.yml
-RUN_PHP_DEV     = $(COMPOSE) run --rm -T php
-RUN_PHP_TEST    = $(COMPOSE) run --rm -T php-test
-RUN_PHP_XDEBUG  = $(COMPOSE) run --rm php-xdebug
-EXEC_PHP        = docker exec -it hskauting.app
-EXEC_PHP_TEST   = docker exec -it hskauting.app-test
+RUN_PHP_DEV     = $(COMPOSE) run --rm -T --user root php
+RUN_PHP_TEST    = $(COMPOSE) run --rm -T --user root php-test
+RUN_PHP_XDEBUG  = $(COMPOSE) run --rm --user root php-xdebug
+EXEC_PHP        = docker exec -u root -it hskauting.app
+EXEC_PHP_TEST   = docker exec -u root -it hskauting.app-test
 
 APP_SERVICES        = traefik php php-xdebug nginx mysql adminer
 TEST_SERVICES       = mysql-test php-test

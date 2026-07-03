@@ -34,8 +34,11 @@ dbal:
         typesMapping:
             enum: string_enum
             set: string
+            bigint: int64
 
         types:
+            int64:
+                class: App\Model\Infrastructure\Types\Int64Type
             string_enum:
                 class: Consistence\Doctrine\Enum\Type\StringEnumType
                 commented: true

@@ -8,6 +8,7 @@ use App\Model\Bank\Enum\BankTransactionSource;
 use App\Model\Bank\Repository\BankTransactionRepository;
 use App\Model\Bank\Transaction as BankTransactionModel;
 use App\Model\Infrastructure\Entity\AbstractIdEntity;
+use App\Model\Infrastructure\Types\Int64Type;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Column;
@@ -47,7 +48,7 @@ class BankTransaction extends AbstractIdEntity
     #[Column(name: 'counter_name', type: Types::STRING, length: 255)]
     private string $counterName;
 
-    #[Column(type: Types::INTEGER, nullable: true)]
+    #[Column(type: Int64Type::NAME, nullable: true)]
     private ?int $variableSymbol;
 
     #[Column(type: Types::INTEGER, nullable: true)]

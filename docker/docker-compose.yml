@@ -13,6 +13,8 @@ x-php-base:
         context: ./containers/php
     working_dir: /app
     shm_size: 1g
+    user: root
+    command: ["php-fpm", "-R"]
     env_file:
         - ./containers/php/ini/image.ini
     networks:

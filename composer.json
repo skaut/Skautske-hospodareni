@@ -163,8 +163,7 @@
         "proxies:generate": "bin/console orm:generate-proxies --no-interaction",
 
         "validate-mapping": [
-            "bin/console migrations:migrate --no-interaction",
-            "! bin/console migrations:diff && bin/console migrations:diff --allow-empty-diff"
+            "sh code-quality/validate-mapping.sh"
         ],
 
 
