@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="en">
+<html lang="cs">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="/favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="/images/skaut-logo.svg">
 
     <script n:syntax="off">
         if ("theme" in localStorage) {
@@ -30,92 +30,145 @@
 
     <title>{block #title|stripHtml|trim}Skautské hospodaření{/block}</title>
 
-    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/app.css?{md5_file($wwwDir . '/css/app.css')}">
 </head>
 
-<body class="pb-5 position-relative">
+<body class="app-shell" data-page-help-expanded="{$showPageHelp ? 'true' : 'false'}">
+<div class="page">
 
-    <nav class="navbar navbar-expand-lg {if $testBackground}bg-test navbar-light{else}bg-dark navbar-dark{/if}">
-        <div class="container container-lg">
-            <a class="navbar-brand" n:href=":Default:">Hospodaření</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+    <nav n:class="navbar, navbar-expand-lg, navbar-light, site-header, sticky-top, $testBackground ? 'navbar--test'">
+        <div class="container-xl">
+            {* ── Brand ── *}
+            {if $user->isLoggedIn()}
+                <a class="navbar-brand" n:href=":Dashboard:default">
+                    {if $testBackground}
+                        <span class="navbar-test-badge" title="Testovací server" data-test="test-server-badge">
+                            <i class="fas fa-flask" aria-hidden="true"></i>
+                        </span>
+                    {else}
+                        <img src="/images/skaut-logo.svg" class="navbar-brand-icon" alt="" aria-hidden="true">
+                    {/if}
+                    <span class="navbar-brand-label">Hospodaření</span>
+                </a>
+            {else}
+                <a class="navbar-brand" n:href=":Default:">
+                    {if $testBackground}
+                        <span class="navbar-test-badge" title="Testovací server" data-test="test-server-badge">
+                            <i class="fas fa-flask" aria-hidden="true"></i>
+                        </span>
+                    {else}
+                        <img src="/images/skaut-logo.svg" class="navbar-brand-icon" alt="" aria-hidden="true">
+                    {/if}
+                    <span class="navbar-brand-label">Hospodaření</span>
+                </a>
+            {/if}
+
+            {* ── Hamburger toggler (mobile only) ── *}
+            <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
                     aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
+            {* ── Collapsible area ── *}
             <div class="collapse navbar-collapse" id="navbarMain">
                 <ul class="navbar-nav me-auto">
-                    <li n:class="nav-item">
-                        <a class="nav-link" n:href=":Default:reinforcement">Posily</a>
-                    </li>
                     {if $user->isLoggedIn()}
-                        <li n:class="nav-item, $module === 'Event' ? active">
-                            <a class="nav-link" href="{$linkGenerator->link('Accountancy:Event:Default:')}">Akce</a>
-                        </li>
-                        <li n:class="nav-item, $module === 'Camp' ? active">
-                            <a class="nav-link" n:href=":Accountancy:Camp:Default:">Tábory</a>
-                        </li>
-                        <li n:class="nav-item, $module === 'Education' ? active">
-                            <a class="nav-link text-nowrap" n:href=":Accountancy:Education:Default:">Vzdělávačky<sup> <span class="badge bg-warning text-dark">Beta</span></sup></a>
-                        </li>
-                        <li n:class="nav-item, $module === 'Travel' ? active">
-                            <a class="nav-link" n:href=":Accountancy:Travel:Default:">Cesťáky</a>
-                        </li>
-                        <li n:class="nav-item, $module === 'UnitAccount' ? active">
-                            <a class="nav-link" n:href=":Accountancy:UnitAccount:Cashbook:">Jednotka</a>
-                        </li>
-                        <li n:class="nav-item, $module === 'Payment' ? active">
-                            <a class="nav-link" n:href=":Accountancy:Payment:GroupList:">Platby</a>
-                        </li>
+                        {control mainMenu}
                     {else}
                         <li n:class="nav-item, $presenter->isLinkCurrent(':Default:about') ? active">
-                            <a class="nav-link" n:href=":Default:about">O projektu</a>
+                            <a class="nav-link public-nav-link" n:href=":Default:about">O projektu</a>
                         </li>
                     {/if}
                 </ul>
-                <div style="margin-top: -0.15rem">
+                <div class="site-header-actions d-flex align-items-center gap-2 my-2 my-lg-0">
                     {control darkModeToggle}
-                </div>
-                <div class="my-2 my-lg-0 d-flex flex-row">
+                    {if $user->isLoggedIn()}
+                        <span id="timer" class="w-auto small p-1 rounded text-nowrap">
+                            <i class="far fa-clock"></i>
+                            <span id="timer-minutes"></span>
+                        </span>
+                    {/if}
                     {control loginPanel}
                 </div>
             </div>
         </div>
     </nav>
 
-    <nav class="navbar navbar-expand-sm navbar-light bg-body-tertiary mb-4 submenu" n:ifcontent>
-        <div class="container" n:ifcontent>
-            {block #subMenu}{/block}
+    <nav n:class="navbar, navbar-expand-sm, navbar-light, submenu, site-submenu" n:ifcontent>
+        <div class="container-xl" n:ifcontent>
+            {block #subMenu}
+                {if $module === 'Admin'}{control adminMenu}
+                {elseif $module === 'Travel'}{control travelMenu}
+                {elseif $module === 'Payments'}{control paymentsMenu}
+                {elseif $module === 'Settings'}{control settingsMenu}{/if}
+            {/block}
         </div>
     </nav>
 
-    <main role="main" class="container">
+    <div class="page-wrapper">
+    <main role="main" class="container-xl shell-main page-body">
         {snippet flash}
             {foreach $flashes as $flash}
-                <div class="alert alert-{$flash->type} alert-dismissible fade show" role="alert">
+                {var $flashType = $flash->type === 'error' ? 'danger' : $flash->type}
+                <div class="alert alert-{$flashType} flash-message alert-dismissible fade show" role="alert">
+                    <span class="flash-message__icon" aria-hidden="true">
+                        {if $flashType === 'success'}
+                            <i class="fi fi-rr-check-circle"></i>
+                        {elseif $flashType === 'danger'}
+                            <i class="fi fi-rr-cross-circle"></i>
+                        {elseif $flashType === 'warning'}
+                            <i class="fi fi-rr-triangle-warning"></i>
+                        {elseif $flashType === 'info'}
+                            <i class="fi fi-rr-info"></i>
+                        {else}
+                            <i class="fi fi-rr-bell"></i>
+                        {/if}
+                    </span>
+                    <div class="flash-message__content">
+                        {if strpos($flash->message, 'html: ') === 0}
+                            {$flash->message|substr:6|noescape}
+                        {else}
+                            {$flash->message}
+                        {/if}
+                    </div>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zavřít"></button>
-                    {if strpos($flash->message, 'html: ') === 0}
-                        {$flash->message|substr:6|noescape}
-                    {else}
-                        {$flash->message}
-                    {/if}
                 </div>
             {/foreach}
         {/snippet}
 
         {include #content}
-    </main><!-- /.container -->
+    </main>
 
-    <footer class="mt-5 py-2 text-center bg-body-tertiary">
-        <small class="text-muted">
-            <span class="d-block text-center d-md-inline">Skautské hospodaření</span>
-            <a n:href=":Default:about" class="ms-3">O projektu</a>
-            <a href="https://github.com/skaut/Skautske-hospodareni/graphs/contributors" class="ms-3">Autoři</a>
-            <a href="https://github.com/skaut/Skautske-hospodareni" class="ms-3"><i class="fab fa-github"></i> Pošli PR</a>
-            <a href="https://headwayapp.co/skautske-hospodareni-changelog" target="_blank" class="ms-3">Changelog</a>
-        </small>
+    <footer class="site-footer" id="footer" data-test="site-footer">
+        <div class="container-xl site-footer__inner">
+            <div class="site-footer__brand">
+                <strong class="site-footer__title">Skautské hospodaření</strong>
+                <p class="site-footer__text">
+                    Jedno místo pro finance jednotky, akce, tábory, cesťáky i platby napojené na reálný provoz jednotky.
+                </p>
+            </div>
+
+            <nav class="site-footer__nav" aria-label="Patička webu">
+                <a n:href=":BugReport:default, url => $currentUrl" class="site-footer__link" data-test="footer-bug-report-link">
+                    <i class="fi fi-rr-bug" aria-hidden="true"></i>
+                    <span>Nahlásit problém</span>
+                </a>
+                <a n:href=":Default:about" class="site-footer__link">O projektu</a>
+                <a n:href=":Default:reinforcement" class="site-footer__link">Posily</a>
+                <a href="https://github.com/skaut/Skautske-hospodareni/graphs/contributors" class="site-footer__link">Autoři</a>
+                <a href="https://github.com/skaut/Skautske-hospodareni" class="site-footer__link">
+                    <i class="fab fa-github" aria-hidden="true"></i>
+                    <span>Pošli PR</span>
+                </a>
+                <a href="https://headwayapp.co/skautske-hospodareni-changelog" target="_blank" rel="noopener noreferrer" class="site-footer__link">
+                    Changelog
+                </a>
+            </nav>
+        </div>
     </footer>
+    </div>
     {var $jsBundle = '/js/app.min.js'}
     <script type="text/javascript" src="{$jsBundle}?{md5_file($wwwDir . '/' . $jsBundle)}"></script>
+</div>
 </body>
 </html>

@@ -1,0 +1,67 @@
+{layout $layout}
+
+{block dialog-title}Rozdělit platbu{/block}
+
+{block dialog-body}
+    {if $payment === null}
+        <div class="alert alert-danger" data-test="payment-split-not-found">Zadaná platba neexistuje.</div>
+    {else}
+        <div class="alert alert-info mb-3" data-test="payment-split-infobar">
+            <i class="fas fa-info-circle" aria-hidden="true"></i>
+            Zadané částky se odečtou od původní platby. Pro každý variabilní symbol vznikne nová platba se stejným názvem,
+            příjemci, splatností, konstantním symbolem a osobou. Pokud poznámku nevyplníte, převezme se z původní platby.
+        </div>
+
+        <div class="d-flex flex-wrap justify-content-between gap-2 mb-3 small">
+            <span><strong>Původní platba:</strong> {$payment->getName()}</span>
+            <span><strong>Částka:</strong> {$payment->getAmount()|number:2, ',', ' '} Kč</span>
+        </div>
+
+        <form n:name="form" class="inline-errors" data-test="payment-split-form">
+            <div class="alert alert-danger" n:if="$form->hasErrors()" data-test="payment-split-errors">
+                <ul class="mb-0 ps-3">
+                    <li n:foreach="$form->errors as $error">{$error}</li>
+                </ul>
+            </div>
+
+            {var $splits = array_filter(iterator_to_array($form['splits']->getComponents()), fn ($component) => $component instanceof Nette\Forms\Container)}
+            <div class="d-grid gap-3 mb-3">
+                <div n:foreach="$splits as $split" class="border rounded-3 bg-body-tertiary p-3" data-test="payment-split-row">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-12 col-md-6">
+                            <label n:name="$split['variableSymbol']"/>
+                            <input n:name="$split['variableSymbol']" class="form-control" data-test="payment-split-variable-symbol">
+                            <div class="invalid-feedback d-block" n:foreach="$split['variableSymbol']->getErrors() as $error">{$error}</div>
+                        </div>
+                        <div class="col-10 col-md-5">
+                            <label n:name="$split['amount']"/>
+                            <div class="input-group">
+                                <input n:name="$split['amount']" class="form-control" data-test="payment-split-amount">
+                                <span class="input-group-text">Kč</span>
+                            </div>
+                            <div class="invalid-feedback d-block" n:foreach="$split['amount']->getErrors() as $error">{$error}</div>
+                        </div>
+                        <div class="col-12">
+                            <label n:name="$split['note']"/>
+                            <small class="text-body-secondary">volitelná</small>
+                            <input n:name="$split['note']" class="form-control" data-test="payment-split-note">
+                            <div class="invalid-feedback d-block" n:foreach="$split['note']->getErrors() as $error">{$error}</div>
+                        </div>
+                        <div class="col-12 text-end" n:if="count($splits) > 1">
+                            <button n:name="$split['remove']" class="btn btn-outline-danger btn-sm ajax" data-test="payment-split-remove">
+                                Odebrat
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between gap-2">
+                <input n:name="$form['splits']['addSplit']" class="btn btn-outline-secondary ajax" data-test="payment-split-add">
+                <input n:name="send" class="btn btn-primary ajax" data-test="payment-split-submit">
+            </div>
+        </form>
+    {/if}
+{/block}
+
+{block dialog-footer}{/block}

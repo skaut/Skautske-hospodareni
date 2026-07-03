@@ -1,21 +1,23 @@
 # Instalace pro lokální vývoj
 
 Aplikace vyžaduje:
-- PHP 8.1
+- PHP 8.3
 - MySQL 8
-- Apache
+- Nginx
 - Composer
-- Yarn
+- Node.js 20 a Yarn
+- Docker Compose
 
 Všechny potřebné nástroje jsou instalovány v příslušných kontejnerech
 Na hostujícím stroji musí být ve výchozím stavu volné porty 80 a 3306. Port 3306 je možné použít pro propojená s IDE
 
 ## Docker
 Pro lokální vývoj je připraven Docker container a konfigurace pro **docker compose**.
-Všechny potřebné příkazy jsou definované v Make file
+Všechny potřebné příkazy jsou definované v `Makefile`.
 
 ```bash
-make up # Spustí container v detached modu
+make build # Sestaví image
+make up    # Spustí dev stack v detached módu
 ```
 
 V kontejneru je možné spustit bash pomocným skriptem:
@@ -34,9 +36,10 @@ Stačí přidat tento řádek do souboru `/etc/hosts`:
 
 ## Příprava projektu
 Stačí spustit příkaz `make init`.
+Ten sestaví image, spustí dev stack a uvnitř PHP kontejneru zavolá `composer app-init`, který provede lokální inicializaci projektu včetně závislostí, migrací a frontend buildu.
 
 ## Rozběhnutí na macOS
-Je potřeba si založit v domovské složce `.env` soubor s obsahem 
+Je potřeba si založit v domovské složce `.env` soubor s obsahem
 ```bash
 COMPOSE_FILE=-f docker/docker-compose.yml -f docker/docker-compose.macos.yml
 ```

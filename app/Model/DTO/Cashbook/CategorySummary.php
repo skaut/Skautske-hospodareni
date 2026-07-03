@@ -1,0 +1,54 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Model\DTO\Cashbook;
+
+use App\Model\Cashbook\Operation;
+use Money\Money;
+use Nette\SmartObject;
+
+/**
+ * @property int       $id
+ * @property string    $name
+ * @property Money     $total
+ * @property Operation $operationType
+ */
+class CategorySummary
+{
+    use SmartObject;
+
+    public function __construct(private int $id, private string $name, private Money $total, private Operation $operationType, private bool $virtual)
+    {
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getTotal(): Money
+    {
+        return $this->total;
+    }
+
+    public function getOperationType(): Operation
+    {
+        return $this->operationType;
+    }
+
+    public function isIncome(): bool
+    {
+        return $this->operationType->equals(Operation::INCOME());
+    }
+
+    public function isVirtual(): bool
+    {
+        return $this->virtual;
+    }
+}

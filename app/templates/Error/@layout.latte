@@ -1,38 +1,21 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="cs">
-    <head>
-        <meta charset=utf-8 />
-        <title>{block #title|stripHtml|trim}Chyba - Skautské hospodaření{/block}</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="keywords" content="404" />
-        <meta name="author" content="www.sinacek.cz" />
-        <meta name="robots" content="{$robots}" n:ifset="$robots">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-              integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-              crossorigin="anonymous">
-        <script type="text/javascript">
-          var _gaq = _gaq || [];
-          _gaq.push(['_setAccount', 'UA-2900685-25']);
-          _gaq.push(['_trackPageview']);
-
-          (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-          })();
-        </script>
-    </head>
-
-    <body>
-        <div class="jumbotron jumbotron-fluid">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-md-6 offset-md-3 text-center">
-                        {include #content}
-                    </div>
-                </div>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="{$robots}" n:ifset="$robots">
+    <meta name="theme-color" content="#4d8746">
+    <link rel="icon" type="image/svg+xml" href="/images/skaut-logo.svg">
+    <link rel="stylesheet" href="/css/app.css">
+    <title>{block #title|stripHtml|trim}Chyba – Skautské hospodaření{/block}</title>
+</head>
+<body class="app-shell">
+    <main class="container-xl shell-main d-flex align-items-center justify-content-center min-vh-100">
+        <div class="card error-card text-center w-100">
+            <div class="card-body p-4 p-md-5">
+                {include #content}
             </div>
         </div>
-        <footer class="text-center">Skautské hospodaření</footer>
-    </body>
+    </main>
+</body>
 </html>

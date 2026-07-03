@@ -1,0 +1,41 @@
+{block #content}
+<div data-test="payments-groups-page">
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 n:inner-block="title" class="h3 mb-2">Platební skupiny</h1>
+            <div class="page-lead mb-3">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Seznam všech platebních skupin. Filtrujte podle stavu, párujte úhrady a spravujte platby.</span>
+            </div>
+            <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                    <div class="dropdown">
+                        <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropdownMenuButton"
+                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fi fi-rr-eye" aria-hidden="true"></i>
+                            {if $onlyOpen}Pouze otevřené{else}Vše{/if}
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" n:href="this true" n:attr="$onlyOpen ? 'disabled'">Pouze otevřené</a>
+                            <a class="dropdown-item" n:href="this false" n:attr="!$onlyOpen ? 'disabled'">Vše</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2 align-items-center" n:if="$isEditable">
+                    {control pairButton}
+                    {control createButton}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="card" data-test="payments-groups-table">
+        <div class="card-body">
+            <div data-test="payments-groups-grid">
+                {control grid}
+            </div>
+        </div>
+    </section>
+</div>
+{/block}

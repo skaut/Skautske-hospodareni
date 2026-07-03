@@ -1,0 +1,35 @@
+{block #content}
+<div data-test="invoice-sequence-list">
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 n:inner-block="title" class="h3 mb-2">Fakturační řady</h1>
+            <div class="page-lead mb-3">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Přehled všech řad, jejich počtu vystavených faktur a přímý vstup do nastavení nebo práce s konkrétní řadou.</span>
+            </div>
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <a n:href=":Payments:InvoiceList:default, unitId => $unitId" class="btn btn-outline-secondary btn-sm" data-test="invoice-sequence-back">
+                    <i class="fi fi-rr-arrow-left" aria-hidden="true"></i>
+                    Zpět na faktury
+                </a>
+                <a n:if="$isEditable" n:href=":Payments:InvoiceSequence:default, unitId => $unitId" class="btn btn-primary btn-sm" data-test="invoice-sequence-create">
+                    <i class="fi fi-rr-plus-small" aria-hidden="true"></i>
+                    Založit fakturační řadu
+                </a>
+                <a n:if="$isEditable" n:href=":Settings:Invoices:default, unitId => $unitId" class="btn btn-outline-secondary btn-sm" data-test="invoice-sequence-action-settings">
+                    <i class="fi fi-rr-settings-sliders" aria-hidden="true"></i>
+                    Nastavení faktur
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <section class="card">
+        <div class="card-body">
+            <h2 class="h5 mb-3">Seznam řad</h2>
+            <div class="table-responsive">
+                {control grid}
+            </div>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,99 @@
+{block #content}
+<div data-test="travel-contract-detail-page">
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 class="h3 mb-2" n:inner-block="title">Smlouva o proplácení cestovních náhrad</h1>
+            <div class="page-lead mb-3">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Detail smlouvy, údaje o řidiči a přehled přidružených cestovních příkazů.</span>
+            </div>
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <a data-test="contract-delete" n:if="empty($commands)" n:href="delete! $contract->id" class="btn btn-sm btn-outline-danger"
+                        onclick='return confirm("Opravdu chcete smazat smlouvu?");'>
+                    <i class="fi fi-rr-trash" aria-hidden="true"></i> Smazat
+                </a>
+                {var $justDriver = $contract->unitRepresentative === '' || $contract->since === NULL || $contract->until === NULL}
+                <a data-test="contract-print" n:href="print $contract->id" n:class="$justDriver ? disabled, btn, btn-sm, btn-outline-secondary">
+                    <i class="fi fi-rr-print" aria-hidden="true"></i> Vytisknout
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div n:if="!empty($commands)" class="alert alert-info d-none d-md-block">
+        Smazat smlouvu lze jen pokud nemá přidružené cestovní příkazy.
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <strong>Údaje smlouvy</strong>
+                    <ul class="list-group list-group-flush mt-3">
+                        <li class="list-group-item d-flex">
+                            <div class="fw-bold me-auto">Vykonavatel/Řidič</div>
+                            <div>{$contract->passenger->name}</div>
+                        </li>
+                        <li class="list-group-item d-flex" n:if="$contract->unitRepresentative !== ''">
+                            <div class="fw-bold me-auto">Zástupce jednotky</div>
+                            <div>{$contract->unitRepresentative}</div>
+                        </li>
+                        <li class="list-group-item d-flex" n:if="$contract->since !== NULL">
+                            <div class="fw-bold me-auto">Začátek platnosti</div>
+                            <div>{$contract->since?->toNative()|date:"j. n. Y"}</div>
+                        </li>
+                        <li class="list-group-item d-flex" n:if="$contract->until !== NULL">
+                            <div class="fw-bold me-auto">Konec platnosti</div>
+                            <div>{$contract->until?->toNative()|date:"j. n. Y"}</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <strong>Přidružené cestovní příkazy</strong>
+                    {if !empty($commands)}
+                        <div class="table-responsive mt-3">
+                            <table class="table table-striped mb-0">
+                                <thead>
+                                <tr>
+                                    <th>Řidič</th>
+                                    <th>Účel cesty</th>
+                                    <th>Vozidlo</th>
+                                    <th>Stav příkazu</th>
+                                    <th class="text-end">Akce</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr n:foreach="$commands as $c">
+                                    <td>{$c->passenger->name}</td>
+                                    <td>{$c->purpose}</td>
+                                    <td>
+                                        {if $c->vehicleId !== NULL}
+                                            {var $vehicle = $vehicles[$c->vehicleId] ?? NULL}
+                                            <a n:if="$vehicle !== NULL" href="{plink :Travel:Vehicle:detail $c->vehicleId}">{$vehicle->label}</a>
+                                            <span n:if="$vehicle === NULL">-</span>
+                                        {/if}
+                                    </td>
+                                    <td>{$c->closedAt|commandState|noescape}</td>
+                                    <td class="text-end">
+                                        <a n:href=":Travel:Command:detail $c->id" class="btn btn-sm btn-light" title="Detail"><i class="fi fi-rr-search" aria-hidden="true"></i></a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    {else}
+                        <div class="text-body-secondary mt-3">
+                            Nejsou navázány žádné cestovní příkazy.
+                        </div>
+                    {/if}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}

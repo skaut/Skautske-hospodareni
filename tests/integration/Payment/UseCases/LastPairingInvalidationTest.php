@@ -2,23 +2,29 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment;
+namespace App\Model\Payment;
 
+use App\Model\Bank\BankService;
+use App\Model\Bank\Entity\BankAccount;
+use App\Model\Bank\Entity\BankTransaction;
+use App\Model\Bank\Entity\BankTransactionPairing;
+use App\Model\Common\Services\CommandBus;
+use App\Model\Invoice\Entity\Invoice;
+use App\Model\Invoice\Entity\InvoiceItem;
+use App\Model\Invoice\Entity\InvoiceSequence;
+use App\Model\Payment\Commands\BankAccount\CreateBankAccount;
+use App\Model\Payment\Commands\Payment\CreatePayment;
+use App\Model\Payment\Commands\Payment\UpdatePayment;
+use App\Model\Payment\Repositories\IGroupRepository;
+use App\Model\Payment\Services\BankAccountAccessChecker;
+use App\Model\Payment\Services\IOAuthAccessChecker;
 use DateTimeImmutable;
 use Helpers;
 use IntegrationTest;
-use Model\BankService;
-use Model\Common\Services\CommandBus;
-use Model\Payment\Commands\BankAccount\CreateBankAccount;
-use Model\Payment\Commands\Payment\CreatePayment;
-use Model\Payment\Commands\Payment\UpdatePayment;
-use Model\Payment\Repositories\IGroupRepository;
-use Model\Payment\Services\BankAccountAccessChecker;
-use Model\Payment\Services\IOAuthAccessChecker;
 
 final class LastPairingInvalidationTest extends IntegrationTest
 {
-    private const UNIT_ID         = 101;
+    private const UNIT_ID = 101;
     private const ORIGINAL_AMOUNT = 200;
 
     private CommandBus $commandBus;
@@ -30,21 +36,26 @@ final class LastPairingInvalidationTest extends IntegrationTest
     {
         return [
             BankAccount::class,
+            BankTransaction::class,
+            BankTransactionPairing::class,
             Group::class,
             Payment::class,
+            InvoiceSequence::class,
+            Invoice::class,
+            InvoiceItem::class,
         ];
     }
 
     protected function _before(): void
     {
-        $this->tester->useConfigFiles([__DIR__ . '/LastPairingInvalidationTest.neon']);
+        $this->tester->useConfigFiles([__DIR__.'/LastPairingInvalidationTest.neon']);
 
         parent::_before();
 
         $this->tester->grabService(UnitResolverStub::class)
             ->setOfficialUnits([self::UNIT_ID => self::UNIT_ID]);
 
-        $this->commandBus      = $this->tester->grabService(CommandBus::class);
+        $this->commandBus = $this->tester->grabService(CommandBus::class);
         $this->groupRepository = $this->tester->grabService(IGroupRepository::class);
     }
 
@@ -55,7 +66,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
         $this->pairPayments();
 
         $this->commandBus->handle(
-            new CreatePayment(1, 'a', [], 2, Helpers::getValidDueDate(), null, new VariableSymbol('1'), null, ''),
+            new CreatePayment(1, 'a', [], 2, Helpers::getValidDueDate(), null, new VariableSymbol('2'), null, ''),
         );
 
         $this->assertGroupHasEmptyLastPairing();
@@ -172,7 +183,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
         );
     }
 
-    private function createGroupWithInitialPayment(VariableSymbol|null $variableSymbol): void
+    private function createGroupWithInitialPayment(?VariableSymbol $variableSymbol): void
     {
         $this->groupRepository->save(
             new Group(

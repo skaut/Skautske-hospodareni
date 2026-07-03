@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook\Cashbook;
+namespace App\Model\Cashbook\Cashbook;
 
 use Codeception\Test\Unit;
 use InvalidArgumentException;
@@ -18,7 +18,7 @@ class ChitNumberTest extends Unit
 
         new ChitNumber($value);
 
-        $this->fail('Exception for \'' . $reason . '\' not thrown');
+        $this->fail('Exception for \''.$reason.'\' not thrown');
     }
 
     /** @dataProvider getValidNumbers */

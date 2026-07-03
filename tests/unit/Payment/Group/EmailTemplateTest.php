@@ -2,17 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\Group;
+namespace App\Model\Payment\Group;
 
+use App\Model\Common\EmailAddress;
+use App\Model\Payment\EmailTemplate;
+use App\Model\Payment\Group;
+use App\Model\Payment\Mailing\Payment;
 use Codeception\Test\Unit;
 use DateTimeImmutable;
 use Mockery as m;
-use Model\Common\EmailAddress;
-use Model\Payment\EmailTemplate;
-use Model\Payment\Group;
-use Model\Payment\Mailing\Payment;
-
-use function urlencode;
 
 class EmailTemplateTest extends Unit
 {
@@ -26,7 +24,7 @@ class EmailTemplateTest extends Unit
     public function testEvaluate(): void
     {
         $subject = '%groupname% | %name% | %account% | %amount% | %maturity% | %maturityus% | %vs% | %ks% | %note% | %user%';
-        $body    = 'Body: ' . $subject . ' | %qrcode%';
+        $body = 'Body: '.$subject.' | %qrcode%';
 
         $template = new EmailTemplate($subject, $body);
 
@@ -34,12 +32,11 @@ class EmailTemplateTest extends Unit
         $group->shouldReceive('getName')->andReturn('Skupina');
         $payment = new Payment('František Maša', 200, [new EmailAddress('frantisekmasa1@gmail.com')], new DateTimeImmutable('2017-04-27'), 4554, 303, 'Poznámka');
 
-        $evaluatedTemplate = $template->evaluate($group, $payment, '123456789/2100', 'Sináček');
+        $evaluatedTemplate = $template->evaluate($group, $payment, '19-2000145399/0800', 'Sináček', 'qr-code@example.test');
 
-        $expectedSubject = 'Skupina | František Maša | 123456789/2100 | 200 | 27.4.2017 | 2017-04-27 | 4554 | 303 | Poznámka | Sináček';
+        $expectedSubject = 'Skupina | František Maša | 19-2000145399/0800 | 200 | 27.4.2017 | 2017-04-27 | 4554 | 303 | Poznámka | Sináček';
 
-        $qrCode       = '<img alt="QR platbu se nepodařilo zobrazit" src="http://api.paylibo.com/paylibo/generator/czech/image?accountNumber=123456789&bankCode=2100&amount=200&currency=CZK&size=200&vs=4554&ks=303&message=' . urlencode('František Maša') . '">';
-        $expectedBody = 'Body: ' . $expectedSubject . ' | ' . $qrCode;
+        $expectedBody = 'Body: '.$expectedSubject.' | <img alt="QR platbu se nepodařilo zobrazit" src="cid:qr-code@example.test">';
 
         $this->assertSame($expectedSubject, $evaluatedTemplate->getSubject());
 

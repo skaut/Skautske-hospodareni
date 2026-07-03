@@ -1,0 +1,192 @@
+<div class="row">
+    <div class="col-12" n:snippet="form">
+        <div class="alert alert-info mb-3">
+            {if $isEditMode}
+                <strong>Upravujete již vystavenou fakturu.</strong>
+                Číslo faktury a variabilní symbol zůstanou beze změny.
+                Částky zadáváte jako konečné částky bez rozlišení DPH.
+            {else}
+                <strong>Číslo faktury a VS se generují automaticky.</strong>
+                Faktura bude zařazena do {$invoiceSequence->getDisplayContextLabel()}.
+                První číslo bude <strong>{$invoiceNumberPattern}</strong>, VS <strong>{$variableSymbolPattern}</strong>.
+                Částky zadáváte jako konečné částky bez rozlišení DPH.
+            {/if}
+            {if ! $hasBankAccount}
+                Úhradu lze u této řady nastavit pouze <strong>v hotovosti</strong>, protože řada nemá bankovní účet.
+            {/if}
+        </div>
+
+        {form form}
+            {var $items = array_filter(iterator_to_array($form['items']->getComponents()), fn ($component) => $component instanceof Nette\Forms\Container)}
+            <div class="alert alert-danger" n:if="$form->hasErrors()">
+                <ul class="mb-0 ps-3">
+                    <li n:foreach="$form->errors as $error">{$error}</li>
+                </ul>
+            </div>
+
+            <section class="border rounded-3 p-3 p-lg-4 mb-4">
+                <div class="d-flex align-items-start gap-2 mb-3">
+                    <i class="fi fi-rr-file-invoice text-primary mt-1" aria-hidden="true"></i>
+                    <div>
+                        <h3 class="h5 mb-1">Hlavička faktury</h3>
+                        <p class="text-body-secondary mb-0">Zadejte základní údaje faktury a informace o odběrateli.</p>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-12 col-md-6">
+                        {label dueDate /}
+                        {input dueDate class => 'form-control'}
+                        {inputError dueDate}
+                    </div>
+                    <div class="col-12 col-md-6">
+                        {label dateOfIssue /}
+                        {input dateOfIssue class => 'form-control'}
+                        {inputError dateOfIssue}
+                    </div>
+                    <div class="col-12 col-md-6">
+                        {label issuedBy /}
+                        {input issuedBy class => 'form-control'}
+                        {inputError issuedBy}
+                    </div>
+                    <div class="col-12 col-md-6">
+                        {label paymentType /}
+                        {input paymentType class => 'form-select'}
+                        <div n:ifcontent class="form-text text-body-secondary">{$form['paymentType']->getOption(description)}</div>
+                        {inputError paymentType}
+                    </div>
+                    <div class="col-12">
+                        {label email /}
+                        {input email class => 'form-control'}
+                        <div n:ifcontent class="form-text text-body-secondary">{$form['email']->getOption(description)}</div>
+                        {inputError email}
+                    </div>
+                </div>
+
+                <div class="border rounded-3 bg-body-tertiary p-3" data-customer-section>
+                    <h4 class="h6 mb-3">Odběratel</h4>
+
+                    {var $customer = $form['customer']}
+                    <fieldset class="mb-3">
+                        <legend class="fs-6 fw-semibold mb-2">Typ odběratele</legend>
+                        <div class="d-grid gap-2">
+                            <div n:foreach="$customer['type']->getItems() as $key => $label" class="form-check">
+                                <input
+                                    n:name="$customer['type']:$key"
+                                    class="form-check-input"
+                                    data-customer-type-radio
+                                >
+                                <label n:name="$customer['type']:$key" class="form-check-label">{$label}</label>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div class="mb-3">
+                        {inputError $customer['type']}
+                    </div>
+
+                    <div class="row g-3 align-items-end mb-3" data-customer-scope="company">
+                        <div class="col-12 col-lg-4">
+                            {label $customer['companyNumber'] /}
+                            {input $customer['companyNumber'] class => 'form-control'}
+                            {inputError $customer['companyNumber']}
+                        </div>
+                        <div class="col-12 col-lg-auto">
+                            {input loadAres class => 'btn btn-sm btn-light ajax'}
+                        </div>
+                        <div class="col-12 col-lg-4">
+                            {label $customer['vat'] /}
+                            {input $customer['vat'] class => 'form-control'}
+                            {inputError $customer['vat']}
+                        </div>
+                    </div>
+
+                    <div class="row g-3" data-customer-scope="identified">
+                        <div class="col-12">
+                            {label $customer['name'] /}
+                            {input $customer['name'] class => 'form-control'}
+                            {inputError $customer['name']}
+                        </div>
+                        <div class="col-12 col-lg-5">
+                            {label $customer['street'] /}
+                            {input $customer['street'] class => 'form-control'}
+                            {inputError $customer['street']}
+                        </div>
+                        <div class="col-12 col-sm-6 col-lg-3">
+                            {label $customer['streetNumber'] /}
+                            {input $customer['streetNumber'] class => 'form-control'}
+                            {inputError $customer['streetNumber']}
+                        </div>
+                        <div class="col-12 col-sm-6 col-lg-4">
+                            {label $customer['streetNumberSuffix'] /}
+                            {input $customer['streetNumberSuffix'] class => 'form-control'}
+                            {inputError $customer['streetNumberSuffix']}
+                        </div>
+                        <div class="col-12 col-md-8">
+                            {label $customer['city'] /}
+                            {input $customer['city'] class => 'form-control'}
+                            {inputError $customer['city']}
+                        </div>
+                        <div class="col-12 col-md-4">
+                            {label $customer['zipCode'] /}
+                            {input $customer['zipCode'] class => 'form-control'}
+                            {inputError $customer['zipCode']}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="border rounded-3 p-3 p-lg-4 mb-4">
+                <div class="d-flex flex-wrap gap-2 align-items-start justify-content-between mb-3">
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="fi fi-rr-receipt text-primary mt-1" aria-hidden="true"></i>
+                        <div>
+                            <h3 class="h5 mb-1">Položky faktury</h3>
+                            <p class="text-body-secondary mb-0">Každá položka má vlastní název, množství, jednotku a cenu za jednotku.</p>
+                        </div>
+                    </div>
+                    <div>
+                        {input $form['items']['addItem'] class => 'btn btn-outline-secondary ajax'}
+                    </div>
+                </div>
+
+                <div class="d-grid gap-3">
+                    <article n:foreach="$items as $item" class="border rounded-3 bg-body-tertiary p-3">
+                        <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
+                            <h4 class="h6 mb-0">Položka</h4>
+                            <div n:if="count($items) > 1">
+                                {input $item['remove'] class => 'btn btn-outline-danger btn-sm ajax'}
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-12">
+                                {label $item['purpose'] /}
+                                {input $item['purpose'] class => 'form-control'}
+                                {inputError $item['purpose']}
+                            </div>
+                            <div class="col-12 col-sm-4">
+                                {label $item['quantity'] /}
+                                {input $item['quantity'] class => 'form-control'}
+                                {inputError $item['quantity']}
+                            </div>
+                            <div class="col-12 col-sm-4">
+                                {label $item['unit'] /}
+                                {input $item['unit'] class => 'form-control'}
+                                {inputError $item['unit']}
+                            </div>
+                            <div class="col-12 col-sm-4">
+                                {label $item['price'] /}
+                                {input $item['price'] class => 'form-control'}
+                                {inputError $item['price']}
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <div class="d-flex flex-wrap gap-2 justify-content-end">
+                {input send class => 'btn btn-primary'}
+            </div>
+        {/form}
+    </div>
+</div>

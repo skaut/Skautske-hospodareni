@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook\Handlers;
+namespace App\Model\Cashbook\Handlers;
 
+use App\Model\Cashbook\Cashbook;
+use App\Model\Cashbook\Cashbook\Amount;
+use App\Model\Cashbook\Cashbook\CashbookId;
+use App\Model\Cashbook\Cashbook\CashbookType;
+use App\Model\Cashbook\Commands\Cashbook\AddChitScan;
+use App\Model\Cashbook\Commands\Cashbook\MoveChitsToDifferentCashbook;
+use App\Model\Cashbook\Repositories\ICashbookRepository;
 use Cake\Chronos\ChronosDate;
 use CommandHandlerTest;
 use Helpers;
-use Model\Cashbook\Cashbook;
-use Model\Cashbook\Cashbook\Amount;
-use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\Cashbook\CashbookType;
-use Model\Cashbook\Commands\Cashbook\AddChitScan;
-use Model\Cashbook\Commands\Cashbook\MoveChitsToDifferentCashbook;
-use Model\Cashbook\Repositories\ICashbookRepository;
 use Nette\Utils\Image;
 
 final class MoveChitsToDifferentCashbookHandlerTest extends CommandHandlerTest
@@ -31,10 +31,10 @@ final class MoveChitsToDifferentCashbookHandlerTest extends CommandHandlerTest
         $type = CashbookType::get(CashbookType::EVENT);
         $this->cashbooks->save(new Cashbook($targetCashbookId, $type));
         $sourceCashbook = new Cashbook($sourceCashbookId, $type);
-        $categoryId     = 123;
-        $category       = Helpers::mockChitItemCategory($categoryId);
+        $categoryId = 123;
+        $category = Helpers::mockChitItemCategory($categoryId);
 
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < 3; ++$i) {
             $sourceCashbook->addChit(
                 new Cashbook\ChitBody(null, new ChronosDate(), null),
                 Cashbook\PaymentMethod::get(Cashbook\PaymentMethod::CASH),
@@ -76,7 +76,7 @@ final class MoveChitsToDifferentCashbookHandlerTest extends CommandHandlerTest
 
     protected function _before(): void
     {
-        $this->tester->useConfigFiles([__DIR__ . '/MoveChitsToDifferentCashbookHandlerTest.neon']);
+        $this->tester->useConfigFiles([__DIR__.'/MoveChitsToDifferentCashbookHandlerTest.neon']);
 
         parent::_before();
 

@@ -1,0 +1,70 @@
+{block #table}
+<table class="table table-hover table-sm mb-0">
+    <tr>
+        <th colspan="2">Kategorie</th>
+        <th>Předpoklad</th>
+    </tr>
+    {var $sum = 0}
+    {foreach $rootCategories as $rootCategory}
+        {var $subcategoryCount = count($rootCategory->children)}
+        {if $subcategoryCount === 0}
+            <tr>
+                <td colspan="2">{$rootCategory->label}</td>
+                <td>&nbsp;</td>
+            </tr>
+        {else}
+            <tr>
+                <td rowspan="{$subcategoryCount}">{$rootCategory->label}</td>
+                <td>{$rootCategory->children[0]->label}</td>
+                <td class="text-end">{do $sum += $rootCategory->children[0]->value} {$rootCategory->children[0]->value|number:2, ',', ' '} Kč</td>
+            </tr>
+            <tr n:for="$i = 1; $i < $subcategoryCount; $i++">
+                {var $subcategory = $rootCategory->children[$i]}
+                <td>{$subcategory->label}</td>
+                <td class="text-end">{do $sum += $subcategory->value} {$subcategory->value|number:2, ',', ' '} Kč</td>
+            </tr>
+        {/if}
+    {/foreach}
+    <tr><th colspan="2">Celkem</th><th class="text-end">{$sum|number:2, ',', ' '} Kč</th></tr>
+</table>
+{/block}
+
+
+{block #subMenu}{include ../header.latte}{/block}
+
+{block #content}
+<div data-test="unit-budget-page">
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 n:inner-block="title" class="h3 mb-2">{$unitPairs[$unitId]}</h1>
+            <div class="page-lead mb-3">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Přehled kategorií, plánovaných částek a správa rozpočtu pro vybraný rok.</span>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <a n:href="add unitId: $unitId, year: $year" class="btn btn-primary" data-test="unit-budget-add-link">
+                    <i class="fi fi-rr-plus-small" aria-hidden="true"></i> Založit kategorii
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4" n:ifset="$categories">
+        <div class="col-md-6" n:if="!empty($categories['in'])">
+            <div class="card">
+                <div class="card-body">
+                    {include #table rootCategories => $categories['in']}
+                </div>
+            </div>
+        </div>
+        {do $presenter->template->sum = $presenter->template->sumReality = 0}
+        <div class="col-md-6" n:if="!empty($categories['out'])">
+            <div class="card">
+                <div class="card-body">
+                    {include #table rootCategories=>$categories['out']}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}

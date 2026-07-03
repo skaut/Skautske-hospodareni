@@ -1,0 +1,147 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Model\Event\ReadModel\QueryHandlers\Excel;
+
+use App\Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
+use App\Model\Cashbook\ReadModel\QueryHandlers\Pdf\SheetChitsGenerator;
+use App\Model\Cashbook\ReadModel\SpreadsheetFactory;
+use App\Model\Common\Services\QueryBus;
+use App\Model\DTO\Event\ExportedCashbook;
+use App\Model\Event\Camp;
+use App\Model\Event\Functions;
+use App\Model\Event\ReadModel\Queries\CampFunctions;
+use App\Model\Event\ReadModel\Queries\CampQuery;
+use App\Model\Event\ReadModel\Queries\Excel\ExportCamps;
+use App\Model\Event\SkautisCampId;
+use App\Model\Excel\Range;
+use App\Model\Unit\Repositories\IUnitRepository;
+use App\Model\Unit\UnitNotFound;
+use Assert\Assertion;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+
+use function array_map;
+use function assert;
+use function implode;
+
+final class ExportCampsHandler
+{
+    private IUnitRepository $unitRepository;
+
+    public function __construct(
+        private QueryBus $queryBus,
+        private SpreadsheetFactory $spreadsheetFactory,
+        IUnitRepository $units,
+        private SheetChitsGenerator $sheetChitsGenerator,
+    ) {
+        $this->unitRepository = $units;
+    }
+
+    public function __invoke(ExportCamps $query): Spreadsheet
+    {
+        $spreadsheet = $this->spreadsheetFactory->create();
+
+        $camps = array_map(
+            function (int $campId): Camp {
+                return $this->queryBus->handle(new CampQuery(new SkautisCampId($campId)));
+            },
+            $query->getCampIds(),
+        );
+
+        $sheetCamps = $spreadsheet->setActiveSheetIndex(0);
+        $this->setSheetCamps($sheetCamps, $camps);
+        $spreadsheet->createSheet(1);
+
+        ($this->sheetChitsGenerator)(
+            $spreadsheet->createSheet(1),
+            array_map(
+                function (Camp $camp): ExportedCashbook {
+                    return new ExportedCashbook(
+                        $this->queryBus->handle(new CampCashbookIdQuery($camp->getId())),
+                        $camp->getDisplayName(),
+                    );
+                },
+                $camps,
+            ),
+        );
+
+        return $spreadsheet;
+    }
+
+    /** @param Camp[] $camps */
+    private function setSheetCamps(Worksheet $sheet, array $camps): void
+    {
+        $sheet->setCellValue('A1', 'Pořadatel')
+            ->setCellValue('B1', 'Název akce')
+            ->setCellValue('C1', 'Oddíly')
+            ->setCellValue('D1', 'Místo konání')
+            ->setCellValue('E1', 'Vedoucí akce')
+            ->setCellValue('F1', 'Hospodář akce')
+            ->setCellValue('G1', 'Od')
+            ->setCellValue('H1', 'Do')
+            ->setCellValue('I1', 'Počet dnů')
+            ->setCellValue('J1', 'Počet účastníků')
+            ->setCellValue('K1', 'Počet dospělých')
+            ->setCellValue('L1', 'Počet dětí')
+            ->setCellValue('M1', 'Osobodnů')
+            ->setCellValue('N1', 'Dětodnů');
+
+        $rowCnt = 2;
+        foreach ($camps as $camp) {
+            $functions = $this->queryBus->handle(new CampFunctions($camp->getId()));
+            assert($functions instanceof Functions);
+
+            $leader = $functions->getLeader()?->getName();
+            $accountant = $functions->getAccountant()?->getName();
+
+            $statistics = $camp->getParticipantStatistics();
+
+            Assertion::notNull($statistics);
+
+            $sheet->setCellValue('A'.$rowCnt, $camp->getUnitName())
+                ->setCellValue('B'.$rowCnt, $camp->getDisplayName())
+                ->setCellValue('C'.$rowCnt, implode(', ', $this->getCampTroopNames($camp)))
+                ->setCellValue('D'.$rowCnt, $camp->getLocation())
+                ->setCellValue('E'.$rowCnt, $leader)
+                ->setCellValue('F'.$rowCnt, $accountant)
+                ->setCellValue('G'.$rowCnt, $camp->getStartDate()->format('d.m.Y'))
+                ->setCellValue('H'.$rowCnt, $camp->getEndDate()->format('d.m.Y'))
+                ->setCellValue('I'.$rowCnt, $camp->getTotalDays())
+                ->setCellValue('J'.$rowCnt, $statistics->getRealCount())
+                ->setCellValue('K'.$rowCnt, $statistics->getRealAdult())
+                ->setCellValue('L'.$rowCnt, $statistics->getRealChild())
+                ->setCellValue('M'.$rowCnt, $statistics->getRealPersonDays())
+                ->setCellValue('N'.$rowCnt, $statistics->getRealChildDays());
+            ++$rowCnt;
+        }
+
+        // format
+        foreach (Range::letters('A', 'N') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        $sheet->getStyle('A1:N1')->getFont()->setBold(true);
+        $sheet->setAutoFilter('A1:N'.($rowCnt - 1));
+        $sheet->setTitle('Přehled táborů');
+    }
+
+    /** @return string[] */
+    private function getCampTroopNames(Camp $camp): array
+    {
+        $troopNames = [];
+        foreach ($camp->getParticipatingUnits() as $troopId) {
+            try {
+                $unit = $this->unitRepository->find($troopId->toInt());
+            } catch (UnitNotFound) {
+                // Removed troops are returned as well https://github.com/skaut/Skautske-hospodareni/issues/483
+                continue;
+            }
+
+            $troopNames[] = $unit->getDisplayName();
+        }
+
+        return $troopNames;
+    }
+}

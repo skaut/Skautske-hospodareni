@@ -1,0 +1,94 @@
+// Application-specific dark mode on top of Tabler's data-bs-theme support.
+
+:root[data-bs-theme="dark"] {
+  --app-green: #76b86f;
+  --app-green-soft: #213729;
+  --app-ink: #edf3ef;
+
+  --tblr-body-bg: #121a17;
+  --tblr-bg-surface: #1b2520;
+  --tblr-bg-surface-primary: #1b2520;
+  --tblr-bg-surface-secondary: #121a17;
+  --tblr-bg-surface-tertiary: #202c26;
+  --tblr-bg-forms: #17211c;
+  --tblr-border-color: #34463d;
+  --tblr-border-color-translucent: rgba(210, 229, 217, 0.12);
+
+  .site-header {
+    --tblr-navbar-bg: #315b35;
+    --site-header-color: #f0f7f1;
+    --site-header-muted: #bdd2bf;
+    --site-header-hover-bg: rgba(255, 255, 255, 0.1);
+    --site-header-active-bg: rgba(255, 255, 255, 0.18);
+    --site-header-border: #27482a;
+    --site-header-control-border: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.22);
+  }
+
+  .site-submenu {
+    border-bottom-color: #34463d;
+    background: rgba(18, 26, 23, 0.98);
+  }
+
+  .site-submenu .btn-light {
+    color: #b8c9bf;
+  }
+
+  .navbar--test {
+    --tblr-navbar-bg: #3a311d;
+    --site-header-color: #f8e7b5;
+    --site-header-muted: #d8bd72;
+    --site-header-hover-bg: #493c21;
+    --site-header-active-bg: #594923;
+    --site-header-border: #66542b;
+    --site-header-control-border: rgba(248, 231, 181, 0.28);
+  }
+
+  .navbar--test .nav-link:hover,
+  .navbar--test .nav-link:focus,
+  .navbar--test .nav-item.active .nav-link,
+  .navbar--test .nav-link.active,
+  .navbar--test .active > .btn,
+  .navbar--test .nav-item.active .nav-link-icon,
+  .navbar--test .btn-light:hover,
+  .navbar--test .btn-light:focus,
+  .navbar--test .dark-mode-toggle:hover,
+  .navbar--test .dark-mode-toggle:focus {
+    color: #fff4d2;
+  }
+
+  .navbar-test-badge {
+    border-color: #76602f;
+    background: #493c21;
+    color: #f6d98a;
+  }
+
+  .btn-light {
+    border-color: var(--tblr-border-color);
+    background-color: var(--tblr-bg-surface-tertiary) !important;
+    color: var(--tblr-body-color);
+  }
+
+  .site-header .btn-light {
+    background-color: transparent !important;
+  }
+
+  .site-header .btn-light:hover,
+  .site-header .btn-light:focus {
+    background-color: var(--site-header-hover-bg) !important;
+  }
+
+  .site-footer {
+    border-top-color: #34463d;
+    background: #121a17;
+  }
+
+  .site-footer__title,
+  .site-footer__link {
+    color: #e4eee8;
+  }
+
+  .site-footer__text {
+    color: #9fb2a7;
+  }
+}

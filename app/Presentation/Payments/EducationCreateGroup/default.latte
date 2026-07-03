@@ -1,0 +1,9 @@
+{block content}
+{include '../Accessory/groupCreatePage.latte',
+    pageTest: 'payment-education-create-group-page',
+    heading: 'Nová platební skupina <span class="text-body-secondary fw-normal">' . $education->getDisplayName() . '</span>',
+    description: 'Vyplňte název, bankovní účet a případné e-mailové šablony pro novou platební skupinu vzdělávací akce.',
+    backLink: $presenter->link(':Payments:EducationSelectForGroup:default'),
+    backLabel: 'Zpět na výběr vzdělávačky',
+    formControl: 'form'
+}

@@ -1,0 +1,11 @@
+{varType Model\Event\Event $event}
+
+{block content}
+{include '../Accessory/groupCreatePage.latte',
+    pageTest: 'payment-event-create-group-page',
+    heading: 'Nová platební skupina <span class="text-body-secondary fw-normal">' . $event->getDisplayName() . '</span>',
+    description: 'Vyplňte název, bankovní účet a případné e-mailové šablony pro novou platební skupinu akce.',
+    backLink: $presenter->link(':Payments:EventSelectForGroup:default'),
+    backLabel: 'Zpět na výběr akce',
+    formControl: 'form'
+}

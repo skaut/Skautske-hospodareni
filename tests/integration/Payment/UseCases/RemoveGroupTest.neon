@@ -1,11 +1,11 @@
 
 services:
-    - Model\Infrastructure\Repositories\Payment\BankAccountRepository
-    - Model\Infrastructure\Repositories\Payment\PaymentRepository
-    - Model\Infrastructure\Repositories\Payment\GroupRepository
-    - Model\Payment\Handlers\Group\RemoveGroupHandler
+    - App\Model\Infrastructure\Repositories\Payment\BankAccountRepository
+    - App\Model\Infrastructure\Repositories\Payment\PaymentRepository
+    - App\Model\Infrastructure\Repositories\Payment\GroupRepository
+    - App\Model\Payment\Handlers\Group\RemoveGroupHandler
 
-    - class: Model\Payment\Subscribers\GroupRemovedSubscriber
+    - class: App\Model\Payment\Subscribers\GroupRemovedSubscriber
       tags:
           messenger.messageHandler:
               bus: eventBus

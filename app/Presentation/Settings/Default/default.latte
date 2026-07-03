@@ -1,0 +1,102 @@
+
+
+{block title}Nastavení{/block}
+
+{block #content}
+<div data-test="settings-page">
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 class="h3 mb-2">Nastavení</h1>
+            <div class="page-lead">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Systémové agendy soustředěné na jednom místě. Bankovní účty, e-maily i fakturační nastavení najdete přímo odsud.</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-md-4">
+            <article class="card h-100 navigation-card" data-test="settings-card-bank-accounts">
+                <div class="card-body">
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary tile-icon">
+                            <i class="fi fi-rr-bank" aria-hidden="true"></i>
+                        </span>
+                        <div>
+                            <h2 class="h5 mb-1"><a n:href=":Settings:BankAccounts:default, unitId => $unitId" class="stretched-link text-body text-decoration-none" data-test="settings-link-bank-accounts">Bankovní účty</a></h2>
+                            <p class="text-body-secondary small mb-0">Seznam účtů, detail účtu, importy, historie transakcí a ruční párování.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <article class="card h-100 navigation-card" data-test="settings-card-mails">
+                <div class="card-body">
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary tile-icon">
+                            <i class="fi fi-rr-envelope" aria-hidden="true"></i>
+                        </span>
+                        <div>
+                            <h2 class="h5 mb-1"><a n:href=":Settings:Mails:default, unitId => $unitId" class="stretched-link text-body text-decoration-none" data-test="settings-link-mails">E-maily</a></h2>
+                            <p class="text-body-secondary small mb-0">Propojené Google účty, správa a zdroj odesílatelů pro platební i fakturační provoz.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <article class="card h-100 navigation-card" data-test="settings-card-invoices">
+                <div class="card-body">
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary tile-icon">
+                            <i n:class="$canAccessInvoiceAccess ? 'fi fi-rr-file-invoice' : 'fi fi-rr-lock'" aria-hidden="true"></i>
+                        </span>
+                        <div>
+                            <h2 class="h5 mb-1"><a n:href=":Settings:Invoices:default, unitId => $unitId" class="stretched-link text-body text-decoration-none" data-test="settings-link-invoices">Faktury</a></h2>
+                            <p n:if="$canAccessInvoiceAccess" class="text-body-secondary small mb-0">Roční údaje jednotky pro fakturaci a vstup do fakturačního nastavení.</p>
+                            <p n:if="! $canAccessInvoiceAccess" class="text-body-secondary small mb-0">Fakturační nastavení je součást předběžného přístupu k fakturaci.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12 col-md-6">
+            <article class="card h-100 navigation-card" data-test="settings-card-user">
+                <div class="card-body">
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary tile-icon">
+                            <i class="fi fi-rr-user" aria-hidden="true"></i>
+                        </span>
+                        <div>
+                            <h2 class="h5 mb-1"><a n:href=":Settings:User:default, unitId => $unitId" class="stretched-link text-body text-decoration-none" data-test="settings-link-user">Uživatel</a></h2>
+                            <p class="text-body-secondary small mb-0">Osobní nastavení zobrazení nápovědy a další uživatelské volby.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <article class="card h-100 navigation-card" data-test="settings-card-automation">
+                <div class="card-body">
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary tile-icon">
+                            <i class="fi fi-rr-settings-sliders" aria-hidden="true"></i>
+                        </span>
+                        <div>
+                            <h2 class="h5 mb-1"><a n:href=":Settings:Automation:default, unitId => $unitId" class="stretched-link text-body text-decoration-none" data-test="settings-link-automation">Automatizace</a></h2>
+                            <p class="text-body-secondary small mb-0">Přehled pravidelných úloh řízených cronem — upomínky plateb, auto-párování faktur.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+</div>
+{/block}

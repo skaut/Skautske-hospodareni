@@ -1,0 +1,33 @@
+{block title}Předběžný přístup k fakturaci{/block}
+
+{block content}
+<div data-test="invoice-early-access-page" class="d-grid gap-4">
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 class="h3 mb-2">Předběžný přístup k fakturaci</h1>
+            <div class="page-lead">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Fakturace je zatím dostupná jen uživatelům zařazeným do testovacího programu.</span>
+            </div>
+        </div>
+    </div>
+
+    <article class="card" data-test="invoice-early-access-request-card">
+        <div class="card-body">
+            <h2 class="h5 mb-3">Žádost o zařazení</h2>
+
+            <div n:if="! $invoiceAccessRequestStorageAvailable" class="alert alert-warning mb-0" data-test="invoice-early-access-storage-warning">
+                Žádost zatím nelze odeslat, protože databázová migrace pro testovací program ještě není aplikovaná.
+            </div>
+
+            <div n:if="$invoiceAccessRequestStorageAvailable && $hasOpenInvoiceAccessRequest" class="alert alert-info mb-0" data-test="invoice-early-access-request-sent">
+                Vaši žádost už evidujeme. Po schválení se vám fakturace automaticky zpřístupní.
+            </div>
+
+            <div n:if="$invoiceAccessRequestStorageAvailable && ! $hasOpenInvoiceAccessRequest" data-test="invoice-early-access-request-form">
+                {control invoiceAccessRequestForm}
+            </div>
+        </div>
+    </article>
+</div>
+{/block}

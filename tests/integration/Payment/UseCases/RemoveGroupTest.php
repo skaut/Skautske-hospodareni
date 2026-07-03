@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\IntegrationTests;
+namespace App\Model\Payment\IntegrationTests;
 
+use App\Model\Payment\Commands\Group\RemoveGroup;
+use App\Model\Payment\Group;
+use App\Model\Payment\GroupNotFound;
+use App\Model\Payment\Handlers\Group\RemoveGroupHandler;
+use App\Model\Payment\Payment;
+use App\Model\Payment\Repositories\IGroupRepository;
+use App\Model\Payment\Repositories\IPaymentRepository;
 use DateTimeImmutable;
 use Helpers;
 use IntegrationTest;
-use Model\Payment\Commands\Group\RemoveGroup;
-use Model\Payment\Group;
-use Model\Payment\GroupNotFound;
-use Model\Payment\Handlers\Group\RemoveGroupHandler;
-use Model\Payment\Payment;
-use Model\Payment\Repositories\IGroupRepository;
-use Model\Payment\Repositories\IPaymentRepository;
 use Stubs\BankAccountAccessCheckerStub;
 use Stubs\OAuthsAccessCheckerStub;
 
@@ -36,13 +36,13 @@ final class RemoveGroupTest extends IntegrationTest
 
     protected function _before(): void
     {
-        $this->tester->useConfigFiles([__DIR__ . '/RemoveGroupTest.neon']);
+        $this->tester->useConfigFiles([__DIR__.'/RemoveGroupTest.neon']);
 
         parent::_before();
 
-        $this->groups   = $this->tester->grabService(IGroupRepository::class);
+        $this->groups = $this->tester->grabService(IGroupRepository::class);
         $this->payments = $this->tester->grabService(IPaymentRepository::class);
-        $this->handler  = $this->tester->grabService(RemoveGroupHandler::class);
+        $this->handler = $this->tester->grabService(RemoveGroupHandler::class);
     }
 
     public function test(): void
@@ -67,9 +67,9 @@ final class RemoveGroupTest extends IntegrationTest
         // just to make sure it got the right ID
         $this->assertSame(1, $group->getId());
 
-        for ($i = 1; $i <= 3; $i++) {
+        for ($i = 1; $i <= 3; ++$i) {
             $this->payments->save(
-                new Payment($group, 'test' . $i, [], 120, Helpers::getValidDueDate(), null, null, null, ''),
+                new Payment($group, 'test'.$i, [], 120, Helpers::getValidDueDate(), null, null, null, ''),
             );
         }
 

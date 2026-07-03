@@ -1,0 +1,68 @@
+{extends $baseTemplate}
+
+{block filters}
+    {include #filter-type-search}
+{/block}
+
+{define col-name}
+    <a href="{$control->getPresenter()->link(':Payments:Payment:default', ['id' => $item['id']])}"
+       data-test="payment-group-name-{$item['id']}">
+        {$item['name']}
+    </a>
+{/define}
+
+{define col-units}
+    {if $item['units'] !== ''}
+        {$item['units']}
+    {else}
+        <span class="text-body-secondary">—</span>
+    {/if}
+{/define}
+
+{define col-progress}
+    <div class="small">
+        Zaplaceno <strong>{$item['completedCount']} / {$item['totalCount']} plateb</strong>
+        ({$item['completedAmount']|num} / {$item['totalAmount']|num} Kč)
+    </div>
+    <div class="progress mt-1">
+        <div class="progress-bar" style="width: {$item['progress']}%"></div>
+    </div>
+{/define}
+
+{define col-state}
+    <div class="text-center">
+        {$item['state']|groupState|noescape}
+    </div>
+{/define}
+
+{define col-actions}
+    <div class="d-flex justify-content-end gap-1">
+        <a href="{$control->getPresenter()->link(':Payments:Payment:default', ['id' => $item['id']])}"
+           class="btn btn-sm btn-light"
+           data-test="payment-group-detail-{$item['id']}"
+           title="Detail skupiny">
+            <i class="fi fi-rr-eye" aria-hidden="true"></i>
+        </a>
+        <a n:if="$item['canEdit']"
+           href="{$control->getPresenter()->link(':Payments:Group:edit', ['id' => $item['id']])}"
+           class="btn btn-sm btn-light"
+           data-test="payment-group-settings-{$item['id']}"
+           title="Nastavení skupiny">
+            <i class="fi fi-rr-settings-sliders" aria-hidden="true"></i>
+        </a>
+        <a n:if="$item['canClone']"
+           href="{$control->getPresenter()->link(':Payments:Group:clone', ['id' => $item['id']])}"
+           class="btn btn-sm btn-light"
+           data-test="payment-group-clone-{$item['id']}"
+           title="Klonovat skupinu">
+            <i class="fi fi-rr-copy" aria-hidden="true"></i>
+        </a>
+        <a n:if="$item['canPair'] && $item['pairLink'] !== null"
+           href="{$item['pairLink']}"
+           class="btn btn-sm btn-light"
+           data-test="payment-group-pair-{$item['id']}"
+           title="Párovat úhrady">
+            <i class="fi fi-rr-bank" aria-hidden="true"></i>
+        </a>
+    </div>
+{/define}

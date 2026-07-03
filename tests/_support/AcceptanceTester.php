@@ -5,16 +5,16 @@ declare(strict_types=1);
 use Codeception\Actor;
 
 /**
- * Inherited Methods
- * @method void wantToTest($text)
- * @method void wantTo($text)
- * @method void execute($callable)
- * @method void expectTo($prediction)
- * @method void expect($prediction)
- * @method void amGoingTo($argumentation)
- * @method void am($role)
- * @method void lookForwardTo($achieveValue)
- * @method void comment($description)
+ * Inherited Methods.
+ * @method void                    wantToTest($text)
+ * @method void                    wantTo($text)
+ * @method void                    execute($callable)
+ * @method void                    expectTo($prediction)
+ * @method void                    expect($prediction)
+ * @method void                    amGoingTo($argumentation)
+ * @method void                    am($role)
+ * @method void                    lookForwardTo($achieveValue)
+ * @method void                    comment($description)
  * @method \Codeception\Lib\Friend haveFriend($name, $actorClass = NULL)
  *
  * @SuppressWarnings(PHPMD)
@@ -33,23 +33,23 @@ class AcceptanceTester extends Actor
     /**
      * @throws Exception
      */
-    public function login(string $role) : void
+    public function login(string $role): void
     {
         $I = $this;
 
         if ($I->loadSessionSnapshot('login')) {
             $I->amOnPage('/');
-            $I->click('Akce');
-             return;
+
+            return;
         }
 
         $I->amOnPage('/');
-        $I->click('Přihlásit se');
+        $I->click('[data-test="login-link"]');
         $I->waitForText('přihlášení');
         $I->fillField('(//input)[9]', self::LOGIN);
         $I->fillField('(//input)[10]', self::PASSWORD);
         $I->click('//button');
-        $I->waitForText('Seznam akcí');
+        $I->waitForText('Nástěnka');
 
         $roleButtonSelector = "//button[contains(@class, 'ui--current-role')]";
 
@@ -63,10 +63,90 @@ class AcceptanceTester extends Actor
     }
 
     /**
-     * Chrome can't work with popups ¯\_(ツ)_/¯
+     * Chrome can't work with popups ¯\_(ツ)_/¯.
      */
-    public function disablePopups() : void
+    public function disablePopups(): void
     {
         $this->executeJS('window.confirm = function(msg){return true;};');
+    }
+
+    public function clickStable(string $locator, int $timeout = 10, bool $waitForOverlays = true): void
+    {
+        $this->waitForStableLocatorVisible($locator, $timeout);
+        if ($waitForOverlays) {
+            $this->waitForUiOverlaysToDisappear($timeout);
+        }
+        $this->scrollElementToCenter($locator);
+        $this->executeJS($this->buildLocatorScript($locator, 'el.click(); return true;'));
+    }
+
+    public function fillFieldStable(string $locator, string $value, int $timeout = 10, bool $waitForOverlays = true): void
+    {
+        $this->waitForStableLocatorVisible($locator, $timeout);
+        if ($waitForOverlays) {
+            $this->waitForUiOverlaysToDisappear($timeout);
+        }
+        $this->scrollElementToCenter($locator);
+        $this->executeJS($this->buildLocatorScript(
+            $locator,
+            'el.focus(); el.value = ""; el.dispatchEvent(new Event("input", { bubbles: true }));'
+            .' el.value = '.json_encode($value).';'
+            .' el.dispatchEvent(new Event("input", { bubbles: true }));'
+            .' el.dispatchEvent(new Event("change", { bubbles: true }));'
+            .' return true;',
+        ));
+    }
+
+    public function waitForUiOverlaysToDisappear(int $timeout = 10): void
+    {
+        $this->waitForJS(
+            'return document.querySelector(".modal-backdrop.show, .offcanvas-backdrop.show") === null;',
+            $timeout,
+        );
+    }
+
+    public function waitForStableLocatorVisible(string $locator, int $timeout = 10): void
+    {
+        if (! $this->isXPathLocator($locator)) {
+            $this->waitForElementVisible($locator, $timeout);
+
+            return;
+        }
+
+        $this->waitForJS($this->buildLocatorScript(
+            $locator,
+            'var style = window.getComputedStyle(el);'
+            .' return style.display !== "none" && style.visibility !== "hidden" && el.getClientRects().length > 0;',
+        ), $timeout);
+    }
+
+    private function isXPathLocator(string $locator): bool
+    {
+        return str_starts_with($locator, '//') || str_starts_with($locator, '(') || str_starts_with($locator, './/');
+    }
+
+    private function scrollElementToCenter(string $locator): void
+    {
+        $this->executeJS($this->buildLocatorScript(
+            $locator,
+            'el.scrollIntoView({block: "center", inline: "center"}); return true;',
+        ));
+    }
+
+    private function buildLocatorScript(string $locator, string $action): string
+    {
+        $quotedLocator = json_encode($locator);
+
+        return '(function(){'
+            .'var locator = '.$quotedLocator.';'
+            .'var el = null;'
+            .'if (locator.startsWith("//") || locator.startsWith("(") || locator.startsWith(".//")) {'
+                .'el = document.evaluate(locator, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;'
+            .'} else {'
+                .'el = document.querySelector(locator);'
+            .'}'
+            .'if (!el) { return false; }'
+            .$action
+            .'})()';
     }
 }

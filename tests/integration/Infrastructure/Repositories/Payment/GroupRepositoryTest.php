@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Model\Infrastructure\Repositories\Payment;
+namespace App\Model\Infrastructure\Repositories\Payment;
 
+use App\Model\Common\Services\EventBus;
+use App\Model\Payment\DomainEvents\GroupWasRemoved;
+use App\Model\Payment\EmailTemplate;
+use App\Model\Payment\EmailType;
+use App\Model\Payment\Group;
+use App\Model\Payment\GroupNotFound;
+use App\Model\Payment\VariableSymbol;
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use IntegrationTest;
 use Mockery;
 use Mockery\MockInterface;
-use Model\Common\Services\EventBus;
-use Model\Payment\DomainEvents\GroupWasRemoved;
-use Model\Payment\EmailTemplate;
-use Model\Payment\EmailType;
-use Model\Payment\Group;
-use Model\Payment\GroupNotFound;
-use Model\Payment\VariableSymbol;
 
 use function array_map;
 use function sort;
@@ -53,7 +53,7 @@ class GroupRepositoryTest extends IntegrationTest
 
         parent::_before();
 
-        $this->eventBus   = Mockery::mock(EventBus::class);
+        $this->eventBus = Mockery::mock(EventBus::class);
         $this->repository = new GroupRepository($this->entityManager, $this->eventBus);
     }
 
@@ -66,8 +66,8 @@ class GroupRepositoryTest extends IntegrationTest
 
     public function testFind(): void
     {
-        $createdAt       = new DateTimeImmutable(self::ROW['created_at']);
-        $lastPairing     = new DateTimeImmutable(self::ROW['last_pairing']);
+        $createdAt = new DateTimeImmutable(self::ROW['created_at']);
+        $lastPairing = new DateTimeImmutable(self::ROW['last_pairing']);
         $paymentDefaults = new Group\PaymentDefaults(
             self::ROW['amount'],
             new ChronosDate('2018-01-29'),

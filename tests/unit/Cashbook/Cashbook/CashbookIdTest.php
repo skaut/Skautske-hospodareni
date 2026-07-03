@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook\Cashbook;
+namespace App\Model\Cashbook\Cashbook;
 
 use Codeception\Test\Unit;
 
 final class CashbookIdTest extends Unit
 {
-    private const UUID                 = '340139ce-8059-429c-ad1a-349909679619';
+    private const UUID = '340139ce-8059-429c-ad1a-349909679619';
     private const UUID_WITHOUT_HYPHENS = '340139ce8059429cad1a349909679619';
 
     public function testFromStringWithUuid(): void

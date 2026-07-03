@@ -6,7 +6,7 @@ use VCR\VCR;
 
 VCR::configure()
     ->enableLibraryHooks(['soap'])
-    ->setCassettePath(__DIR__ . '/fixtures')
+    ->setCassettePath(__DIR__.'/fixtures')
     ->setMode(VCR::MODE_NONE)
     ->setStorage('json');
 

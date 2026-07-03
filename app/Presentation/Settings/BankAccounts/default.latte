@@ -1,0 +1,47 @@
+
+
+{block content}
+{var $disabledReason = 'Nemáš dostatečné oprávnění pro správu bankovních účtů.'}
+<div data-test="settings-bank-accounts-page">
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 class="h3 mb-2" n:inner-block="title">Bankovní účty</h1>
+            <div class="page-lead mb-3">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Seznam účtů jednotky, jejich zdrojů transakcí, importů a vstupů do detailu i správy párování.</span>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+                <span
+                    class="d-inline-block"
+                    n:attr="!$canEdit ? [title => $disabledReason, data-bs-toggle => 'tooltip']"
+                >
+                    <a
+                        n:href="new"
+                        n:class="btn, btn-primary, !$canEdit ? disabled"
+                        n:attr="!$canEdit ? [tabindex => -1, aria-disabled => 'true', onclick => 'return false;']"
+                        data-test="settings-bank-accounts-add"
+                    ><i class="fi fi-rr-plus-small" aria-hidden="true"></i> Přidat účet</a>
+                </span>
+                <span
+                    class="d-inline-block"
+                    n:attr="!$canEdit ? [title => $disabledReason, data-bs-toggle => 'tooltip']"
+                >
+                    <a
+                        n:href="import!"
+                        n:class="btn, btn-light, !$canEdit ? disabled"
+                        n:attr="!$canEdit ? [tabindex => -1, aria-disabled => 'true', onclick => 'return false;']"
+                        data-test="settings-bank-accounts-import"
+                    >Načíst ze Skautisu</a>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div data-test="settings-bank-accounts-list">
+        {control grid}
+    </div>
+
+    {control gpcImportDialog}
+</div>
+{/block}

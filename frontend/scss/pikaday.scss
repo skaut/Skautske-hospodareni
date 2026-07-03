@@ -1,7 +1,7 @@
-@import "variables";
+// Bootstrap variables ($primary, $font-family-base) are available from app.scss
 
 $pd-day-hover-bg: $primary;
 $pd-font-family: $font-family-base;
 $pd-day-today-color: $primary;
 
-@import "~pikaday/scss/pikaday";
+@import "pikaday/scss/pikaday";

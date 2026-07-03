@@ -1,0 +1,167 @@
+search:
+    command handlers:
+        in: %appDir%
+        classes:
+            - App\Model\**\Handlers\**Handler
+        tags:
+            messenger.messageHandler:
+                bus: commandBus
+
+    query handlers:
+        in: %appDir%
+        classes:
+            - App\Model\Infrastructure\**\ReadModel\**Handler
+            - App\Model\**\ReadModel\**Handler
+        tags:
+            messenger.messageHandler:
+                bus: queryBus
+
+    event subscribers:
+        in: %appDir%
+        classes:
+            - App\Model\*\Subscribers\*Subscriber
+        tags:
+            messenger.messageHandler:
+                bus: eventBus
+
+    UI control factories:
+        in: %appDir%
+        classes:
+            - App\Components\**\I*Factory
+            - App\Presentation\**\I*Factory
+
+    services:
+        in: %appDir%
+        classes:
+            # Infrastructure repositories (still at old namespace)
+            - App\Model\Infrastructure\Repositories\**Repository
+            - App\Model\Infrastructure\Services\**
+
+            # Refactored infrastructure
+            - App\Model\Infrastructure\Repository\**
+            - App\Model\Infrastructure\Manager\**
+
+            # Refactored domains (generic)
+            - App\Model\**Service
+            - App\Model\*\Services\**
+            - App\Model\*\Repository\**
+            - App\Model\*\Manager\**
+            - App\Model\*\Repositories\*Repository
+
+            # Skautis communication
+            - App\Model\Skautis\**
+
+            # Top-level services
+            - App\Model\Services\**
+
+        exclude:
+            classes:
+                - App\Model\Skautis\WebserviceFactory
+                - App\Model\Skautis\ReadModel\Queries\**
+                - App\Model\Event\EventService
+                - App\Model\Chit\ChitService
+                - App\Model\Participant\ParticipantService
+                - App\Model\Admin\Services\AdminAccessChecker
+                - App\Model\BugReport\BugReportNotificationService
+                - App\Model\BugReport\BugReportService
+                - App\Model\Invoice\InvoiceAccessChecker
+                - App\Model\Bank\Services\BankAccountPairingRunResult
+                - App\Model\Bank\Services\ParsedGpcFile
+
+services:
+    # Messenger buses
+    - App\Model\Common\Services\MessengerCommandBus(@messenger.commandBus.bus)
+    - App\Model\Common\Services\MessengerQueryBus(@messenger.queryBus.bus)
+    - App\Model\Common\Services\MessengerEventBus(@messenger.eventBus.bus)
+
+    # Auth
+    - factory: App\Model\Admin\Services\AdminAccessChecker(@Nette\Security\User, @App\Model\User\Repository\AdminUserRepository, %adminAllowedUserIds%)
+    - factory: App\Model\Invoice\InvoiceAccessChecker(@Nette\Security\User, @App\Model\User\Repository\InvoiceAccessUserRepository, %invoiceAccessAllowedUserIds%)
+    - App\Model\Auth\CompositeAuthorizator(@skautisAuthorizator, @App\Model\Admin\Services\AdminAccessChecker, @App\Model\Invoice\InvoiceAccessChecker)
+    - App\Presentation\Accessory\Navigation\NavigationAuthorizator
+    - App\Presentation\Accessory\Navigation\PreservingLinkGenerator
+
+    # Console commands
+    - Console\MigrationsDropCommand
+    app.cachePurge:
+        factory: App\Console\CachePurgeCommand([
+            %tempDir%/cache
+        ])
+        tags: [contributte.console.command]
+    console.doctrineCacheClear:
+        factory: App\Console\DoctrineCacheClearCommand(
+            @Contributte\Psr6\ICachePoolFactory,
+            @cache.storage,
+            %tempDir%
+        )
+        tags: [contributte.console.command]
+
+    # App
+    - App\Context(
+          appDir: %appDir%
+          wwwDir: %wwwDir%
+          productionMode: %productionMode%
+          showTestBackground: %testBackground%
+      )
+    - App\RouterFactory
+    router: @App\RouterFactory::createRouter
+
+    # Grids
+    - App\Components\Grids\GridFactory
+
+    # Payment
+    group:
+        factory: App\Model\Payment\GroupService
+    - App\Model\Payment\PaymentService
+    - App\Model\Payment\BankAccountService(fioCache: @fio.cache)
+    - App\Components\Payment\PairButtonBankAccountSupport
+    - App\Components\Payment\BankAccountDetail\BankAccountDetailViewFactory
+    - App\Components\Payment\BankAccountDetail\BankAccountManualPairingService
+
+    # PDF & Excel
+    - App\Model\Services\PdfRenderer(%tempDir%)
+    - App\Model\Cashbook\ReadModel\SpreadsheetFactory
+    - App\Model\Cashbook\ReadModel\QueryHandlers\Pdf\SheetChitsGenerator
+
+    # Google
+    - App\Model\Google\GoogleService(%google.credentials%, %google.redirectUri%)
+
+    # FIO bank
+    - GuzzleHttp\Client({ timeout: 3 })
+    fio.client:
+        factory: App\Model\Bank\Fio\FioClient
+        autowired: false
+    fio.cache: Nette\Caching\Cache
+    - App\Model\Payment\Fio\CachingClientDecorator(@fio.client, @fio.cache)
+    - App\Model\Bank\Fio\DownloaderFactory
+    - App\Model\Bank\Fio\UploaderFactory
+
+    # Other services
+    - App\Model\Participant\ParticipantService
+    - App\Model\Skautis\Factory\EventFactory
+    - App\Model\Stat\StatisticsService
+    - App\Model\Bank\Services\BankAccountPairingRunner
+
+    # Flysystem
+    - League\Flysystem\Filesystem(League\Flysystem\Local\LocalFilesystemAdapter(%uploadDirectory%))
+    - App\Model\Infrastructure\Services\Common\FlysystemScanStorage
+
+    # Mail
+    - App\Model\Mail\MailerFactory(@nette.mailer, %sendEmail%)
+    - App\Model\BugReport\BugReportNotificationService(
+          sendEmail: %sendEmail%
+          productionMode: %productionMode%
+          recipients: %errorEmails%
+          appBaseUrl: %appBaseUrl%
+      )
+    - App\Model\BugReport\BugReportService(appRelease: %sentry.releaseHash%)
+
+    # Latte
+    nette.latteFactory:
+        setup:
+            - addFilterLoader([App\Helpers\AccountancyHelpers, loader])
+
+decorator:
+    Doctrine\DBAL\Configuration:
+        setup:
+            - setMiddlewares([Doctrine\DBAL\Logging\Middleware(@Monolog\Logger)])

@@ -1,0 +1,83 @@
+{block title}Detail hlášení #{$report->getId()}{/block}
+
+{block content}
+<div data-test="admin-bug-report-detail">
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 class="h3 mb-2">Hlášení #{$report->getId()}</h1>
+            <div class="page-lead">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Detail hlášení a diagnostické údaje určené ke korelaci s logy a existujícími událostmi v Sentry.</span>
+            </div>
+            <div class="d-flex flex-wrap gap-2 mt-3">
+                <a n:href="default" class="btn btn-outline-secondary btn-sm">
+                    <i class="fi fi-rr-arrow-left" aria-hidden="true"></i>
+                    Zpět na seznam
+                </a>
+                <a
+                    n:href="resolve!, id => $report->getId()"
+                    class="btn btn-success btn-sm"
+                    data-test="admin-bug-report-resolve"
+                    onclick='return confirm("Opravdu chcete označit toto hlášení jako vyřízené?");'
+                >
+                    <i class="fi fi-rr-check-circle" aria-hidden="true"></i>
+                    Označit jako vyřízené
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12 col-xl-7">
+            <article class="card h-100">
+                <div class="card-body">
+                    <h2 class="h5">Popis chyby</h2>
+                    <p class="text-pre-wrap mb-4">{$report->getDescription()}</p>
+
+                    <h2 class="h5">Kontext</h2>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Nahlášeno</dt>
+                        <dd class="col-sm-8">{$report->getCreatedAt()|date:'j. n. Y H:i:s'}</dd>
+                        <dt class="col-sm-4">URL chyby</dt>
+                        <dd class="col-sm-8">
+                            <a n:if="$report->getReportedUrl() !== null" href="{$report->getReportedUrl()}" target="_blank" rel="noopener noreferrer">
+                                {$report->getReportedUrl()}
+                            </a>
+                            <span n:if="$report->getReportedUrl() === null">-</span>
+                        </dd>
+                        <dt class="col-sm-4">Uživatel</dt>
+                        <dd class="col-sm-8">{$report->getReporterDisplayName()} (ID {$report->getReporterUserId()})</dd>
+                        <dt class="col-sm-4">Role</dt>
+                        <dd class="col-sm-8">{$report->getRoleName() ?? '-'}{if $report->getRoleId() !== null} (ID {$report->getRoleId()}){/if}</dd>
+                        <dt class="col-sm-4">Jednotka</dt>
+                        <dd class="col-sm-8">{$report->getUnitName() ?? '-'}{if $report->getUnitId() !== null} (ID {$report->getUnitId()}){/if}</dd>
+                        <dt class="col-sm-4">IP adresa</dt>
+                        <dd class="col-sm-8"><code>{$report->getIpAddress() ?? '-'}</code></dd>
+                        <dt class="col-sm-4">Release</dt>
+                        <dd class="col-sm-8"><code>{$report->getAppRelease()}</code></dd>
+                        <dt class="col-sm-4">E-mail</dt>
+                        <dd class="col-sm-8">
+                            {if $report->wasNotificationSent()}
+                                Odesláno {$report->getNotificationSentAt()|date:'j. n. Y H:i:s'}
+                            {else}
+                                Chyba: {$report->getNotificationError() ?? 'neuvedena'}
+                            {/if}
+                        </dd>
+                        <dt class="col-sm-4">User-Agent</dt>
+                        <dd class="col-sm-8 text-break"><code>{$report->getUserAgent() ?? '-'}</code></dd>
+                    </dl>
+                </div>
+            </article>
+        </div>
+
+        <div class="col-12 col-xl-5">
+            <article class="card h-100">
+                <div class="card-body">
+                    <h2 class="h5">Kompletní diagnostika</h2>
+                    <pre class="bug-report-diagnostics small bg-body-tertiary border rounded p-3 overflow-auto mb-0" data-test="admin-bug-report-diagnostics">{$diagnosticsJson}</pre>
+                </div>
+            </article>
+        </div>
+    </div>
+</div>
+{/block}

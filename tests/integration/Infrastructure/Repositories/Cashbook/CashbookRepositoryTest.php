@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Model\Infrastructure\Repositories\Cashbook;
+namespace App\Model\Infrastructure\Repositories\Cashbook;
 
+use App\Model\Cashbook\Cashbook;
+use App\Model\Cashbook\Cashbook\CashbookId;
+use App\Model\Cashbook\Cashbook\ChitBody;
+use App\Model\Cashbook\CashbookNotFound;
+use App\Model\Cashbook\Operation;
+use App\Model\Common\Services\EventBus;
 use Cake\Chronos\ChronosDate;
 use Doctrine\ORM\EntityManager;
 use Helpers;
 use IntegrationTest;
-use Model\Cashbook\Cashbook;
-use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\Cashbook\ChitBody;
-use Model\Cashbook\CashbookNotFound;
-use Model\Cashbook\Operation;
-use Model\Common\Services\EventBus;
 
 class CashbookRepositoryTest extends IntegrationTest
 {
-    private const TABLE           = 'ac_cashbook';
-    private const CHIT_TABLE      = 'ac_chits';
+    private const TABLE = 'ac_cashbook';
+    private const CHIT_TABLE = 'ac_chits';
     private const CHIT_ITEM_TABLE = 'ac_chits_item';
 
     private CashbookRepository $repository;
@@ -60,7 +60,7 @@ class CashbookRepositoryTest extends IntegrationTest
     public function testSaveCashbookWithChits(): void
     {
         $cashbookId = CashbookId::generate();
-        $chit       = [
+        $chit = [
             'eventId' => $cashbookId->toString(),
             'date' => '1989-11-17',
             'num' => '123',
@@ -106,11 +106,11 @@ class CashbookRepositoryTest extends IntegrationTest
     /** @see https://github.com/skaut/Skautske-hospodareni/issues/914 */
     public function testOrphanedChitItemsAreRemoved(): void
     {
-        $cashbook      = new Cashbook(CashbookId::generate(), Cashbook\CashbookType::get(Cashbook\CashbookType::CAMP));
-        $body          = new ChitBody(null, ChronosDate::today(), null);
+        $cashbook = new Cashbook(CashbookId::generate(), Cashbook\CashbookType::get(Cashbook\CashbookType::CAMP));
+        $body = new ChitBody(null, ChronosDate::today(), null);
         $paymentMethod = Cashbook\PaymentMethod::BANK();
-        $category      = Helpers::mockChitItemCategory(1);
-        $categoryList  = Helpers::mockCashbookCategories(1, Operation::INCOME());
+        $category = Helpers::mockChitItemCategory(1);
+        $categoryList = Helpers::mockCashbookCategories(1, Operation::INCOME());
 
         $cashbook->addChit(
             $body,

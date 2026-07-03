@@ -1,0 +1,9 @@
+{block #content}
+{include '../Accessory/groupCreatePage.latte',
+    pageTest: 'payment-group-form-page',
+    heading: 'Nová platební skupina - Obecná',
+    description: 'Vyplňte název, bankovní účet a případné e-mailové šablony pro novou platební skupinu.',
+    backLink: $presenter->link(':Payments:GroupList:default'),
+    backLabel: 'Zpět na skupiny',
+    formControl: 'newGroupForm'
+}

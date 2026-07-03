@@ -1,0 +1,18 @@
+{extends '../../../templates/@layout.latte'}
+
+{block #content}
+<div class="d-grid gap-3 mt-4" data-test="camps-default-page">
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 n:inner-block="title" class="h3 mb-2">Tábory</h1>
+            <div class="page-lead">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Přehled táborů, jejich termínů a rychlý vstup do rozpočtu i evidence plateb.</span>
+            </div>
+        </div>
+    </div>
+
+    {control grid}
+    {control exportDialog}
+</div>
+{/block}

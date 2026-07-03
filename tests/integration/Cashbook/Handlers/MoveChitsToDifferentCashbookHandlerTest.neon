@@ -1,14 +1,14 @@
 services:
-    - Model\Infrastructure\Repositories\Cashbook\CashbookRepository
-    - class: Model\Cashbook\Handlers\Cashbook\MoveChitsToDifferentCashbookHandler
+    - App\Model\Infrastructure\Repositories\Cashbook\CashbookRepository
+    - class: App\Model\Cashbook\Handlers\Cashbook\MoveChitsToDifferentCashbookHandler
       tags:
           messenger.messageHandler:
               bus: commandBus
-    - class: Model\Cashbook\Handlers\Cashbook\AddChitScanHandler
+    - class: App\Model\Cashbook\Handlers\Cashbook\AddChitScanHandler
       tags:
           messenger.messageHandler:
               bus: commandBus
-    - Model\Infrastructure\Services\Common\FlysystemScanStorage
+    - App\Model\Infrastructure\Services\Common\FlysystemScanStorage
     - League\Flysystem\Filesystem(League\Flysystem\InMemory\InMemoryFilesystemAdapter())
 
 includes:

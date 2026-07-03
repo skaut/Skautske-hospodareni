@@ -1,0 +1,11 @@
+{varType Model\Event\Camp $camp}
+
+{block content}
+{include '../Accessory/groupCreatePage.latte',
+    pageTest: 'payment-camp-create-group-page',
+    heading: 'Nová platební skupina <span class="text-body-secondary fw-normal">' . $camp->getDisplayName() . '</span>',
+    description: 'Vyplňte název, bankovní účet a případné e-mailové šablony pro novou platební skupinu tábora.',
+    backLink: $presenter->link(':Payments:CampSelectForGroup:default'),
+    backLabel: 'Zpět na výběr tábora',
+    formControl: 'form'
+}

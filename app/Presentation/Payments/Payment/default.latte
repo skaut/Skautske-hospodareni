@@ -1,0 +1,135 @@
+{block #content}
+<div data-test="payment-group-detail-page">
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 n:inner-block="title" class="h3 mb-2">{$group->name}</h1>
+            <div class="page-lead">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Přehled plateb ve skupině, jejich stavu, párování, rozesílání údajů a dostupných hromadných akcí.</span>
+            </div>
+            <div class="d-flex flex-wrap gap-2 align-items-center text-body-secondary small mb-3">
+                {$group->state|groupState|noescape}
+                <span>·</span>
+                {control unit}
+                <span>·</span>
+                {if $group->type === NULL}Obecná
+                {elseif $group->type === "camp"}Tábor
+                {elseif $group->type === "event"}Akce
+                {elseif $group->type === "registration"}Registrace{/if}
+            </div>
+            <div class="d-flex flex-wrap gap-2 align-items-center" n:if="$isEditable">
+                {if $group->state === 'open'}
+                    <a n:href="closeGroup!" class="btn btn-light btn-sm">
+                        <i class="fi fi-rr-lock" aria-hidden="true"></i> Uzavřít
+                    </a>
+                    <a n:href=":Payments:Group:edit $group->id" data-test="payment-group-edit-link" class="btn btn-light btn-sm">
+                        <i class="fi fi-rr-edit" aria-hidden="true"></i> Upravit skupinu
+                    </a>
+                {else}
+                    <a n:href="openGroup!" class="btn btn-outline-warning btn-sm">
+                        <i class="fi fi-rr-unlock" aria-hidden="true"></i> Znovu otevřít
+                    </a>
+                    <a n:href="openRemoveDialog!" class="ajax btn btn-outline-danger btn-sm">
+                        <i class="fi fi-rr-trash" aria-hidden="true"></i> Smazat skupinu
+                    </a>
+                {/if}
+            </div>
+        </div>
+    </div>
+
+    <section class="card mb-4" data-test="payment-group-progress">
+        <div class="card-body">
+            {control progress}
+        </div>
+    </section>
+
+    <div class="alert alert-warning text-center" n:if="$notSentPaymentsCount !== 0">
+        <i class="fi fi-rr-triangle-warning" aria-hidden="true"></i>
+        {$notSentPaymentsCount}
+        {if notSentPaymentsCount === 1}nezaplacená platba nemá odeslány
+        {elseif $notSentPaymentsCount < 4}nezaplacené platby nemají odeslány
+        {else}nezaplacených plateb nemá odesláno{/if}
+        platební údaje
+    </div>
+
+    <section class="card mb-4" n:inner-if="$isEditable && $group->state === 'open'" data-test="payment-group-actions">
+        <div class="card-body">
+            <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                    {if $group->type === 'registration'}
+                        <a n:href=":Payments:Journal: groupId => $group->id" class="btn btn-light btn-sm" data-test="payment-group-journal-link">
+                            <i class="fi fi-rr-book-open-reader" aria-hidden="true"></i>
+                            Časopisy
+                        </a>
+                    {/if}
+
+                    {control emailButton:light}
+                    {control pairButton:light}
+                    <a n:href=":Payments:Repayment: $group->id" class="btn btn-light btn-sm" data-test="payment-group-repayments-link">
+                        <i class="fi fi-rr-arrow-left" aria-hidden="true"></i>
+                        Vratky
+                    </a>
+                    {var $attrs = $nextVS === null
+                                ? [
+                                    'data-bs-toggle' => 'tooltip',
+                                    'title' => 'Pro dogenerování VS je třeba nejdříve vyplnit VS k alespoň k jedné platbě (1-10 číslic).<br>'
+                                                . ' Další budou podle něj dogenerovány jako +1.'
+                                ]
+                                : []
+                    }
+                    <span n:attr="$attrs">
+                        <a n:href="generateVS!" n:class="$nextVS === null ? disabled, btn, btn-light, btn-sm">Dogenerovat VS</a>
+                    </span>
+                    <a n:href="export! $group->id" class="btn btn-light btn-sm">Exportovat</a>
+                </div>
+                <div class="dropdown d-inline-block">
+                    <button class="btn btn-primary dropdown-toggle" type="button" id="addPayments"
+                            data-test="payment-add-button-toggle"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fi fi-rr-plus-small" aria-hidden="true"></i> Přidat platbu
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="addPayments" data-test="payment-add-button-menu">
+                        <a n:if="$group->type === 'camp'"
+                                n:href=":Payments:Participants: $group->id" class="dropdown-item" data-test="payment-add-button-item-participant">… za účastníka</a>
+
+                        <a n:if="$group->type === 'event'"
+                                n:href=":Payments:Participants: $group->id" class="dropdown-item" data-test="payment-add-button-item-participant">… za účastníka</a>
+
+                        <a n:if="$group->type === 'registration'"
+                                n:href=":Payments:People: $group->id" class="dropdown-item" data-test="payment-add-button-item-registration">… za registraci</a>
+
+                        <a n:if="$group->type === 'education'"
+                                n:href=":Payments:Participants: $group->id" class="dropdown-item" data-test="payment-add-button-item-participant">… za účastníka</a>
+
+                        <a n:if="$group->type !== 'education'"
+                                n:href=":Payments:People: $group->id" class="dropdown-item" data-test="payment-add-button-item-member">… za člena</a>
+
+                        <a n:href="paymentDialog:open!" class="dropdown-item ajax" data-test="payment-add-button-item-general">… obecnou</a>
+                        <a n:href="importDialog:open!" class="dropdown-item ajax" data-test="payment-add-button-item-import">… import</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {if $isEditable}
+        {control removeGroupDialog}
+        {if $group->state === 'open'}
+            {control paymentDialog}
+            {control importDialog}
+            {control splitPaymentDialog}
+        {/if}
+
+        {control paymentNoteDialog}
+
+    {/if}
+
+    <section class="card" data-test="payment-group-grid">
+        <div class="card-body">
+            {snippet grid}
+                {control paymentList}
+            {/snippet}
+        </div>
+    </section>
+</div>
+{/block}

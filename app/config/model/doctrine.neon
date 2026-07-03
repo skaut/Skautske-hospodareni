@@ -6,7 +6,6 @@ parameters:
 extensions:
     migrations: Nettrine\Migrations\DI\MigrationsExtension
     dbal: Nettrine\DBAL\DI\DbalExtension
-    doctrineCache: Nettrine\Cache\DI\CacheExtension
     psr6: Contributte\Psr6\DI\Psr6CachingExtension
 
 migrations:
@@ -17,6 +16,9 @@ dbal:
     debug:
         panel: %debugMode%
 
+    configuration:
+        resultCache: Doctrine\Common\Cache\Psr6\DoctrineProvider::wrap(Symfony\Component\Cache\Adapter\ArrayAdapter())
+
     connection:
         host: %database.host%
         user: %database.user%
@@ -24,65 +26,140 @@ dbal:
         dbname: %database.name%
         serverVersion: 8.0
         driver: pdo_mysql
+        charset: utf8mb4
+        default_table_options:
+          charset: utf8mb4
+          collate: utf8mb4_czech_ci
+
+        typesMapping:
+            enum: string_enum
+            set: string
+            bigint: int64
 
         types:
+            int64:
+                class: App\Model\Infrastructure\Types\Int64Type
             string_enum:
                 class: Consistence\Doctrine\Enum\Type\StringEnumType
                 commented: true
             money:
-                class: Model\Infrastructure\Types\MoneyType
+                class: App\Model\Infrastructure\Types\MoneyType
                 commented: true
             variable_symbol:
-                class: Model\Infrastructure\Types\VariableSymbolType
+                class: App\Model\Infrastructure\Types\VariableSymbolType
                 commented: true
             chit_number:
-                class: Model\Infrastructure\Types\ChitNumberType
+                class: App\Model\Infrastructure\Types\ChitNumberType
                 commented: true
             recipient:
-                class: Model\Infrastructure\Types\RecipientType
+                class: App\Model\Infrastructure\Types\RecipientType
                 commented: true
             chronos_date:
                 class: Warhuhn\Doctrine\DBAL\Types\ChronosDateType
                 commented: true
             cashbook_id:
-                class: Model\Infrastructure\Types\CashbookIdType
+                class: App\Model\Infrastructure\Types\CashbookIdType
                 commented: true
             unit_id:
-                class: Model\Infrastructure\Types\UnitIdType
+                class: App\Model\Infrastructure\Types\UnitIdType
                 commented: true
             payment_id:
-                class: Model\Infrastructure\Types\PaymentIdType
+                class: App\Model\Infrastructure\Types\PaymentIdType
                 commented: true
             file_path:
-                class: Model\Infrastructure\Types\FilePathType
+                class: App\Model\Infrastructure\Types\FilePathType
                 commented: true
             oauth_id:
-                class: Model\Infrastructure\Types\OAuthIdType
+                class: App\Model\Infrastructure\Types\OAuthIdType
                 commented: true
             transport_types:
-                class: Model\Infrastructure\Types\TransportTypeListType
+                class: App\Model\Infrastructure\Types\TransportTypeListType
                 commented: true
             email_address:
-                class: Model\Infrastructure\Types\EmailAddressType
+                class: App\Model\Infrastructure\Types\EmailAddressType
                 commented: true
             skautis_event_id:
-                class: Model\Infrastructure\Types\SkautisEventIdType
+                class: App\Model\Infrastructure\Types\SkautisEventIdType
                 commented: true
             skautis_education_id:
-                class: Model\Infrastructure\Types\SkautisEducationIdType
+                class: App\Model\Infrastructure\Types\SkautisEducationIdType
                 commented: true
             skautis_camp_id:
-                class: Model\Infrastructure\Types\SkautisCampIdType
+                class: App\Model\Infrastructure\Types\SkautisCampIdType
                 commented: true
+            big_decimal:
+                class: App\Model\Infrastructure\Types\BigDecimalType
+                commented: true
+            carbon_timestamp_immutable_ms:
+                class: Extension\Doctrine\Types\CarbonTimestampImmutableMsType
+                commented: true
+            uuid_binary: Ramsey\Uuid\Doctrine\UuidBinaryType
 
 services:
-    - Model\Infrastructure\EntityManagerFactory(%debugMode%, %cacheDir%)
-    - @Model\Infrastructure\EntityManagerFactory::create()
+  # ── EntityManager z vaší továrny ──────────────────────────────────────────────
+  doctrine.entityManagerFactory:
+    factory: App\Model\Infrastructure\EntityManagerFactory(%debugMode%, %cacheDir%)
 
-    - factory: Doctrine\ORM\Tools\Console\Command\GenerateProxiesCommand
-      tags: { console.command: orm:generate-proxies }
-    - factory: Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand
-      tags: { console.command: orm:validate-schema }
+  doctrine.entityManager:
+    factory: [@doctrine.entityManagerFactory, create]
+    type: Doctrine\ORM\EntityManager
+
+  # ── ManagerRegistry (autowiring přes type) ───────────────────────────────────
+  doctrine.managerRegistry:
+    factory: Infrastructure\Doctrine\NetteManagerRegistry(
+      @doctrine.entityManager,
+      @dbal.connection
+    )
+    type: Doctrine\Persistence\ManagerRegistry
+
+  # ── CLI providers (ORM/DBAL) ─────────────────────────────────────────────────
+  doctrine.entityManagerProvider:
+    factory: Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider(
+      @doctrine.entityManager
+    )
+
+  doctrine.connectionProvider:
+    factory: Doctrine\DBAL\Tools\Console\ConnectionProvider\SingleConnectionProvider(
+      @dbal.connection
+    )
+
+  # ── Doctrine ORM/DBAL příkazy registrované s providers ───────────────────────
+  doctrine.orm.command.validate_schema:
+    factory: Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand(
+      @doctrine.entityManagerProvider
+    )
+    tags: { console.command: orm:validate-schema }
+
+  doctrine.orm.command.generate_proxies:
+    factory: Doctrine\ORM\Tools\Console\Command\GenerateProxiesCommand(
+      @doctrine.entityManagerProvider
+    )
+    tags: { console.command: orm:generate-proxies }
+    # Pozn.: v ORM 3 deprecated – až přejdete, klidně odstranit.
+
+  doctrine.orm.command.schema_update:
+    factory: Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand(
+      @doctrine.entityManagerProvider
+    )
+    tags: { console.command: orm:schema-tool:update }
+
+  doctrine.orm.command.schema_create:
+    factory: Doctrine\ORM\Tools\Console\Command\SchemaTool\CreateCommand(
+      @doctrine.entityManagerProvider
+    )
+    tags: { console.command: orm:schema-tool:create }
+
+  doctrine.orm.command.schema_drop:
+    factory: Doctrine\ORM\Tools\Console\Command\SchemaTool\DropCommand(
+      @doctrine.entityManagerProvider
+    )
+    tags: { console.command: orm:schema-tool:drop }
+
+  doctrine.dbal.command.run_sql:
+    factory: Doctrine\DBAL\Tools\Console\Command\RunSqlCommand(
+      @doctrine.connectionProvider
+    )
+    tags: { console.command: dbal:run-sql }
 
 decorator:
     Doctrine\Migrations\Configuration\Configuration:

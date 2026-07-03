@@ -1,0 +1,47 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Model\Infrastructure\Services\Unit;
+
+use App\Model\Unit\Repositories\IUnitRepository;
+use App\Model\Unit\Unit;
+use Nette\Caching\Cache;
+use Nette\Caching\Storage;
+
+final class CachedUnitRepository implements IUnitRepository
+{
+    private const EXPIRATION = '1 day';
+
+    private Cache $cache;
+
+    public function __construct(private IUnitRepository $inner, Storage $storage)
+    {
+        $this->cache = new Cache($storage, 'units');
+    }
+
+    /** @return Unit[] */
+    public function findByParent(int $parentId): array
+    {
+        return $this->cache->load(
+            'byParent-'.$parentId,
+            function (?array &$options) use ($parentId): array {
+                $options[Cache::Expire] = self::EXPIRATION;
+
+                return $this->inner->findByParent($parentId);
+            },
+        );
+    }
+
+    public function find(int $id): Unit
+    {
+        return $this->cache->load(
+            'byId-'.$id,
+            function (?array &$options) use ($id): Unit {
+                $options[Cache::Expire] = self::EXPIRATION;
+
+                return $this->inner->find($id);
+            },
+        );
+    }
+}

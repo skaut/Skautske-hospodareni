@@ -1,98 +1,248 @@
 {block title}Skautské hospodaření online{/block}
 
 {block #content}
-<div class="row">
 
-    <div class="col d-lg-none">
-        <h1 class="display-3">Skautské<br />hospodaření online</h1>
-        <p class="lead">Systém pro vyúčtování skautských akcí, online plateb i cestovních příkazů</p>
-    </div>
-    <div class="col d-none d-lg-block bg-posily" style="margin-top: 20px;">
-        <h1>Hledáme posily!</h1>
-        <p>
-            22. 10. 2022
-        </p>
-        <p>
-            Po 13 letech už mi dochází síly a hledám další posily. Celý kód je pod MIT licencí veřejný.
-        </p>
-        <p>
-            <a n:href="reinforcement" class="btn btn-success">Koho hledáme?</a>
-        </p>
-        <p>
-            Líbí se ti projekt, ale žádná pozice není pro Tebe? Zeptej se vaší radě jestli někdo nemá zájem!
-        </p>
+{php $imgPath = 'images/front'}
 
-    </div>
+<div data-test="homepage">
+    <section class="py-5" aria-labelledby="landing-title">
+        <div class="row g-4 align-items-center">
+            <div class="col-12 col-lg-7">
+                <h1 id="landing-title" class="display-5 fw-bold mb-3">Skautské hospodaření online</h1>
+                <p class="h5 fw-bold text-body mb-3">Jedno pracovní místo pro finance akcí, táborů, cesťáků, jednotky i plateb</p>
+                <p class="text-body-secondary mb-4 measure-text">
+                    Aplikace propojuje skautský provoz s finanční agendou tak, aby rozpočty, doklady, banka, faktury
+                    a komunikace nezůstávaly roztroušené mezi tabulkami, e-maily a lokálními soubory.
+                </p>
 
-    <div class="row d-none mt-3 mb-3 d-lg-block">
-        <div id="homepageCarousel" class="carousel slide ps-0 pe-0" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <img src="{$baseUrl}/images/front/prehled-akci.png" class="d-block w-100" alt="Seznamu skautských výprav" />
-                    <div class="carousel-caption">
-                        <h4>Seznam výprav</h4>
-                        <p>Přehled akcí zobrazený podle aktuální role. Výpravy můžete fitrovat podle stavu zpracování a roku konání.</p>
-                    </div>
+                <div class="d-flex flex-wrap gap-2 mb-4">
+                    {if $user->isLoggedIn()}
+                        <a n:href=":Dashboard:default" class="btn btn-primary btn-lg" data-test="homepage-login">
+                            Otevřít aplikaci
+                        </a>
+                    {else}
+                        <a href="{plink :Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL}"
+                           class="btn btn-primary btn-lg" data-test="homepage-login">
+                            Přihlásit se přes skautIS
+                        </a>
+                    {/if}
+                    <a n:href=":Default:about" class="btn btn-outline-secondary btn-lg" data-test="homepage-about">
+                        Zjistit více
+                    </a>
                 </div>
-                <div class="carousel-item">
-                    <img src="{$baseUrl}/images/front/zakladni-udaje-akce.png" class="d-block w-100" a lt="Základní údaje účtované skautské výpravy" />
-                    <div class="carousel-caption">
-                        <h4>Základní údaje o akci</h4>
-                        <p>Základní informace o akci a jejím vedení. Akci zde můžete upravit nebo ji uzavřít a získat výstupy pro tisk.</p>
+
+                <div class="row g-3" aria-label="Hlavní přínosy" role="list">
+                    <div class="col-12 col-sm-4" role="listitem">
+                        <div class="card h-100 bg-body-tertiary">
+                            <div class="card-body py-3 px-3">
+                                <strong class="d-block mb-1">Denní provoz</strong>
+                                <p class="text-body-secondary small mb-0">Akce, tábory, vzdělávačky, cesťáky i jednotková agenda v jednom systému.</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="carousel-item">
-                    <img src="{$baseUrl}/images/front/seznam-ucastniku-akce.png" class="d-block w-100" alt="Seznam účastníků skautské akce" />
-                    <div class="carousel-caption">
-                        <h4>Seznam účastníků</h4>
-                        <p>Kliknutím přidáte účastníka, pak nastavíte poplatek a máte seznam účastníků se všemi údaji hotový.</p>
+                    <div class="col-12 col-sm-4" role="listitem">
+                        <div class="card h-100 bg-body-tertiary">
+                            <div class="card-body py-3 px-3">
+                                <strong class="d-block mb-1">Platby a faktury</strong>
+                                <p class="text-body-secondary small mb-0">Skupiny plateb, párování banky, vystavené faktury, PDF a odesílání e-mailů.</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="carousel-item">
-                    <img src="{$baseUrl}/images/front/pokladni-kniha.png" class="d-block w-100" alt="Evidence plateb pro hospodaření výpravy" />
-                    <div class="carousel-caption">
-                        <h4>Evidence plateb</h4>
-                        <p>Příjmy a výdaje s kontrolou nezáporného stavu. Částky lze zadávat i jako výraz (např.: 7*52 + 5).</p>
+                    <div class="col-12 col-sm-4" role="listitem">
+                        <div class="card h-100 bg-body-tertiary">
+                            <div class="card-body py-3 px-3">
+                                <strong class="d-block mb-1">Napojení</strong>
+                                <p class="text-body-secondary small mb-0">skautIS, Fio, GPC importy, napojení Google účtu a dohledání subjektů přes ARES/VIARES.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <button type="button" class="carousel-control-prev" data-bs-target="#homepageCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Předchozí</span>
-            </button>
-            <button type="button" class="carousel-control-next" data-bs-target="#homepageCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Další</span>
-            </button>
-        </div>
-    </div>
-</div>
 
-
-<div class="row">
-    <div class="col-lg-3 col-md-6 mb-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <h4 class="card-title">O projektu</h4>
-                <p class="card-text">Chceš se dozvědět více o projektu Skautské hospodaření online? Poznat jeho historii nebo vytvářet jeho budoucnoust?</p>
-            </div>
-            <div class="card-footer">
-                <a n:href=":Default:about" class="btn btn-secondary">Chci vědět víc</a>
+            <div class="col-12 col-lg-5">
+                <div class="rounded-4 overflow-hidden landing-hero-media">
+                    <img src="./{$imgPath}/hskauting.jpg" alt="h.skauting.cz" loading="lazy"
+                         class="w-100 h-100 object-fit-cover landing-hero-image">
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <div class="col-lg-6 col-md-6 mb-4 d-none d-md-block">
-        <div id="fb-root"></div>
-        <div class="fb-page"
-             data-href="https://www.facebook.com/SkautskeOnlineUcetnictvi"
-             data-width="500"
-             data-height="350"
-             data-tabs="timeline"
-             data-show-facepile="true"
-             data-small-header="true"
-             data-adapt-container-width="true"></div>
-    </div>
+    <section class="py-5 border-top" aria-labelledby="landing-features-title">
+        <h2 id="landing-features-title" class="h3 fw-bold mb-2">Klíčové vlastnosti</h2>
+        <p class="text-body-secondary mb-4 measure-text">Systém je postavený tak, aby se v něm dalo rychle zorientovat i při běžném provozu jednotky a průběžné práci více lidí.</p>
+
+        <div class="row g-4">
+            <div class="col-12 col-md-4">
+                <div class="d-flex gap-3 align-items-start">
+                    <span class="feature-icon feature-icon--lg">
+                        <img src="./{$imgPath}/calculate.png" alt="" loading="lazy">
+                    </span>
+                    <div>
+                        <h3 class="h6 fw-bold mb-1">Skautský kontext bez přepisování</h3>
+                        <p class="text-body-secondary small mb-0">Přihlášení je přes skautIS a systém už při startu pracuje s jednotkou, lidmi i agendami, které ve skautském provozu opravdu řešíte.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="d-flex gap-3 align-items-start">
+                    <span class="feature-icon feature-icon--lg">
+                        <img src="./{$imgPath}/house.png" alt="" loading="lazy">
+                    </span>
+                    <div>
+                        <h3 class="h6 fw-bold mb-1">Finance navázané na konkrétní agendu</h3>
+                        <p class="text-body-secondary small mb-0">Rozpočet, pokladní kniha, účastníci, doklady, cesťáky i běžná agenda jednotky drží pohromadě podle toho, jak jednotka pracuje v praxi.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="d-flex gap-3 align-items-start">
+                    <span class="feature-icon feature-icon--lg">
+                        <img src="./{$imgPath}/file.png" alt="" loading="lazy">
+                    </span>
+                    <div>
+                        <h3 class="h6 fw-bold mb-1">Banka, e-maily a faktury v jednom postupu</h3>
+                        <p class="text-body-secondary small mb-0">Platební skupiny, párování úhrad, bankovní účty, vystavené faktury, PDF a odesílání e-mailů nejsou oddělené moduly bez souvislostí.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 border-top" aria-labelledby="landing-capabilities-title">
+        <h2 id="landing-capabilities-title" class="h3 fw-bold mb-2">Co dnes v systému skutečně vyřešíte</h2>
+        <p class="text-body-secondary mb-4 measure-text">
+            Obsah níže odpovídá tomu, co je v aplikaci dnes integrované. Ne marketingovým slibům, ale
+            reálným modulům a pracovním tokům, které jsou v systému dostupné.
+        </p>
+
+        <div class="row g-4">
+            {foreach [
+                ['database.png', 'Akce, tábory a vzdělávačky', 'Společný finanční tok pro přípravu, rozpočet, pokladní knihu, účastníky, doklady a navazující uzavření agendy.', ['Akce a výpravy', 'Tábory včetně schvalovacích stavů', 'Vzdělávací akce s účastníky a rozpočtem']],
+                ['badge.png', 'Cesťáky, smlouvy a vozidla', 'Cestovní příkazy nejsou bokem. Jsou součástí systému s kontakty, smlouvami a přehledem vozidel pro opakované použití.', ['Cestovní příkazy a jejich vyúčtování', 'Správa smluv', 'Evidence vozidel a návazných údajů']],
+                ['integration.png', 'Jednotka a běžný provoz', 'Pro běžné hospodaření jednotky je v systému vlastní agenda s pokladnou, paragony a rozpočty mimo akce a tábory.', ['Jednotková pokladní kniha', 'Paragony a běžné doklady', 'Rozpočty jednotky po letech']],
+                ['support.png', 'Platby, banka a párování', 'Platební postup je v systému samostatná doména se skupinami plateb, bankovními účty, importy a párováním úhrad.', ['Platební skupiny pro více typů agend', 'Bankovní účty a importy výpisů', 'Párování nad platbami i fakturami']],
+                ['file.png', 'Vystavené faktury a e-mailové postupy', 'Faktury už dnes mají číselné řady, PDF, provozní nastavení a ruční odesílání přes napojený e-mail.', ['Číselné řady a roční nastavení', 'PDF faktur, odeslání a upomínky', 'Napojení na banku a kontrolu úhrad']],
+                ['calculate.png', 'Integrace, importy a dohledatelnost', 'Data nevznikají izolovaně. Systém pracuje se skautISem, bankou, e-maily i identifikací subjektů a drží historii na jednom místě.', ['skautIS bez další registrace', 'Fio a GPC importy', 'Napojení Google účtu a ARES/VIARES']]
+            ] as [$img, $title, $desc, $items]}
+            <div class="col-12 col-md-6 col-xl-4">
+                <article class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start gap-3 mb-3">
+                            <span class="feature-icon">
+                                <img src="./{$imgPath}/{$img}" alt="" loading="lazy">
+                            </span>
+                            <div>
+                                <h3 class="h6 fw-bold mb-1">{$title}</h3>
+                                <p class="text-body-secondary small mb-0">{$desc}</p>
+                            </div>
+                        </div>
+                        <ul class="list-unstyled text-body-secondary small mb-0">
+                            {foreach $items as $item}
+                            <li class="mb-1"><i class="fi fi-rr-check text-success me-1" aria-hidden="true"></i> {$item}</li>
+                            {/foreach}
+                        </ul>
+                    </div>
+                </article>
+            </div>
+            {/foreach}
+        </div>
+    </section>
+
+    <section class="py-5 border-top" aria-labelledby="landing-roadmap-title">
+        <h2 id="landing-roadmap-title" class="h3 fw-bold mb-2">Na čem se pracuje dál</h2>
+        <p class="text-body-secondary mb-4 measure-text">
+            Nejbližší kroky už mají konkrétní zadání. Priorita není přidávat náhodné novinky, ale zpřehlednit
+            systémové části a otevřít prostor pro další růst bez chaosu v navigaci a oprávněních.
+        </p>
+
+        <div class="row g-4">
+            {foreach [
+                ['house.png', 'Samostatné Nastavení', 'Bankovní účty, e-maily, fakturační nastavení a automatizace mají dostat vlastní systémovou sekci.', ['Přehlednější vstup do systémových agend', 'Méně závislosti na modulu Plateb', 'Stabilní navigace pro další rozšíření']],
+                ['integration.png', 'Nápověda a instruktážní videa', 'Vedle samotné aplikace má přibývat i srozumitelná nápověda a krátká videa pro běžné postupy v hospodaření.', ['Rychlejší zaučení pro nové hospodáře', 'Praktické návody k častým úkonům', 'Menší závislost na předávání know-how ústně']],
+                ['file.png', 'Stabilnější systémové postupy', 'Další kroky mají zjednodušit průchody mezi platbami, fakturací, nastavením a navazujícími návraty po formulářích.', ['Čitelnější přechody mezi agendami', 'Méně historických oklik v navigaci', 'Jistější návaznost po běžných akcích']]
+            ] as [$img, $title, $desc, $items]}
+            <div class="col-12 col-md-4">
+                <article class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start gap-3 mb-3">
+                            <span class="feature-icon">
+                                <img src="./{$imgPath}/{$img}" alt="" loading="lazy">
+                            </span>
+                            <div>
+                                <h3 class="h6 fw-bold mb-1">{$title}</h3>
+                                <p class="text-body-secondary small mb-0">{$desc}</p>
+                            </div>
+                        </div>
+                        <ul class="list-unstyled text-body-secondary small mb-0">
+                            {foreach $items as $item}
+                            <li class="mb-1"><i class="fi fi-rr-check text-success me-1" aria-hidden="true"></i> {$item}</li>
+                            {/foreach}
+                        </ul>
+                    </div>
+                </article>
+            </div>
+            {/foreach}
+        </div>
+    </section>
+
+    <section class="py-5 border-top" aria-labelledby="landing-story-title">
+        <h2 id="landing-story-title" class="h3 fw-bold mb-2">Systém pro lidi, kteří ve skautské jednotce opravdu nesou odpovědnost za finance</h2>
+        <p class="text-body-secondary mb-4 measure-text">Je určený pro provoz, kde se střídá každodenní agenda, spolupráce více rolí a potřeba dohledat finance i po delší době.</p>
+
+        <div class="row g-4">
+            <div class="col-12 col-lg-8">
+                <div class="card bg-body-tertiary h-100">
+                    <div class="card-body">
+                        <p class="text-body-secondary">
+                            Není to obecný účetní nástroj převlečený do skautských barev. V centru stojí konkrétní situace:
+                            vedoucí akce potřebuje rozpočet a účastníky, hospodář páruje úhrady a hlídá doklady, správce jednotky
+                            řeší běžný provoz a někdo další vystavuje faktury nebo připravuje výstupy pro účetnictví.
+                        </p>
+                        <p class="text-body-secondary mb-0">
+                            Proto je důležité, že všechny tyto role pracují nad jedním zdrojem pravdy. Když se agenda předává
+                            nebo na ní spolupracuje více lidí, data i historie zůstávají pohromadě a dávají smysl i po čase.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4">
+                <aside class="card bg-body-tertiary h-100">
+                    <div class="card-body">
+                        <h3 class="h6 fw-bold mb-3">V praxi pomáhá když</h3>
+                        <ul class="list-unstyled text-body-secondary small mb-0">
+                            <li class="mb-2"><i class="fi fi-rr-check text-success me-1" aria-hidden="true"></i> Jedna jednotka řeší současně akce, tábor, cesťáky i běžné finance.</li>
+                            <li class="mb-2"><i class="fi fi-rr-check text-success me-1" aria-hidden="true"></i> Na stejné agendě spolupracují vedoucí, hospodář i další role.</li>
+                            <li class="mb-2"><i class="fi fi-rr-check text-success me-1" aria-hidden="true"></i> Je potřeba dohledat doklad, platbu nebo export i po delší době.</li>
+                            <li class="mb-2"><i class="fi fi-rr-check text-success me-1" aria-hidden="true"></i> Banka, e-mail a fakturace mají navazovat na konkrétní pracovní postup.</li>
+                            <li class="mb-2"><i class="fi fi-rr-check text-success me-1" aria-hidden="true"></i> Agenda se má dát předat bez sdílených excelů a lokálních šanonů.</li>
+                            <li class="mb-0"><i class="fi fi-rr-check text-success me-1" aria-hidden="true"></i> Systém má respektovat skautský kontext místo ručního přepisování dat.</li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 border-top" aria-labelledby="landing-cta-title">
+        <div class="row align-items-end g-4">
+            <div class="col-12 col-lg-8">
+                <h2 id="landing-cta-title" class="h3 fw-bold mb-2">Chcete otevřít vlastní jednotku místo obecného popisu?</h2>
+                <p class="text-body-secondary mb-0">
+                    Přihlášení probíhá přes skautIS. Pokud potřebujete širší kontext k projektu, fungování nebo nasazení,
+                    navazuje na to stránka O projektu.
+                </p>
+            </div>
+            <div class="col-12 col-lg-4">
+                <div class="d-flex flex-wrap gap-2 justify-content-lg-end">
+                    <a href="{plink :Auth:logOnSkautIs (isset($backlink)) ? $backlink : NULL}" class="btn btn-primary btn-lg">
+                        Otevřít aplikaci
+                    </a>
+                    <a n:href=":Default:about" class="btn btn-outline-secondary btn-lg">
+                        O projektu
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
-
-<script async defer crossorigin="anonymous" src="https://connect.facebook.net/cs_CZ/sdk.js#xfbml=1&version=v6.0"></script>

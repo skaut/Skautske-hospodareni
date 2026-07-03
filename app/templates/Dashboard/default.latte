@@ -1,0 +1,184 @@
+{block title}Přehled{/block}
+
+{block #content}
+    {var $draftEvents = $eventsCount[\App\Model\Event\Enum\EventState::DRAFT->value] ?? 0}
+    {var $closedEvents = $eventsCount[\App\Model\Event\Enum\EventState::CLOSED->value] ?? 0}
+    {var $cancelledEvents = $eventsCount[\App\Model\Event\Enum\EventState::CANCELLED->value] ?? 0}
+    {var $draftCamps = $campsCount[\App\Model\Event\Enum\CampState::DRAFT->value] ?? 0}
+    {var $approvedParentCamps = $campsCount[\App\Model\Event\Enum\CampState::APPROVED_PARENT->value] ?? 0}
+    {var $approvedLeaderCamps = $campsCount[\App\Model\Event\Enum\CampState::APPROVED_LEADER->value] ?? 0}
+    {var $realCamps = $campsCount[\App\Model\Event\Enum\CampState::REAL->value] ?? 0}
+
+    <div class="pb-4" data-test="dashboard" aria-label="Přehled sekcí">
+        <div class="card page-heading">
+            <div class="card-body">
+                <h1 class="h3 mb-2">Nástěnka</h1>
+                <div class="page-lead">
+                    <i class="fi fi-rr-info" aria-hidden="true"></i>
+                    <span>Rychlý přehled hlavních agend, jejich aktuálního stavu a odkazů na nejčastěji používané části aplikace.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-12 col-md-6 col-xl-4">
+                <article class="card h-100 navigation-card" data-test="dashboard-card-events" aria-labelledby="tile-events-title">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start gap-3 mb-3">
+                            <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary tile-icon">
+                                <i class="fi fi-rr-circle-calendar" aria-hidden="true"></i>
+                            </span>
+                            <div>
+                                <h2 class="h5 mb-1" id="tile-events-title"><a n:href=":Events:Default:" class="stretched-link text-body text-decoration-none" data-test="dashboard-link-events">Akce</a></h2>
+                                <p class="text-body-secondary small mb-0">Evidence akcí od přípravy přes rozpočet a doklady až po uzavření.</p>
+                            </div>
+                        </div>
+
+                        <dl class="mb-0">
+                            <div class="d-flex justify-content-between border-bottom py-2">
+                                <dt class="fw-normal text-body-secondary">Rozpracováno</dt>
+                                <dd class="mb-0 fw-bold">{$draftEvents}</dd>
+                            </div>
+                            <div class="d-flex justify-content-between border-bottom py-2">
+                                <dt class="fw-normal text-body-secondary">Uzavřené</dt>
+                                <dd class="mb-0 fw-bold">{$closedEvents}</dd>
+                            </div>
+                            <div class="d-flex justify-content-between py-2">
+                                <dt class="fw-normal text-body-secondary">Zrušené</dt>
+                                <dd class="mb-0 fw-bold">{$cancelledEvents}</dd>
+                            </div>
+                        </dl>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-12 col-md-6 col-xl-4">
+                <article class="card h-100 navigation-card" data-test="dashboard-card-camps" aria-labelledby="tile-camps-title">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start gap-3 mb-3">
+                            <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary tile-icon">
+                                <i class="fi fi-rs-tents" aria-hidden="true"></i>
+                            </span>
+                            <div>
+                                <h2 class="h5 mb-1" id="tile-camps-title"><a n:href=":Camps:Default:" class="stretched-link text-body text-decoration-none" data-test="dashboard-link-camps">Tábory</a></h2>
+                                <p class="text-body-secondary small mb-0">Přehled táborových agend od návrhu po skutečnost a závěrečné odevzdání.</p>
+                            </div>
+                        </div>
+
+                        <dl class="mb-0">
+                            <div class="d-flex justify-content-between border-bottom py-2">
+                                <dt class="fw-normal text-body-secondary">Rozpracováno</dt>
+                                <dd class="mb-0 fw-bold">{$draftCamps}</dd>
+                            </div>
+                            <div class="d-flex justify-content-between border-bottom py-2">
+                                <dt class="fw-normal text-body-secondary">Schválené střediskem</dt>
+                                <dd class="mb-0 fw-bold">{$approvedParentCamps}</dd>
+                            </div>
+                            <div class="d-flex justify-content-between border-bottom py-2">
+                                <dt class="fw-normal text-body-secondary">Schválené vedoucím</dt>
+                                <dd class="mb-0 fw-bold">{$approvedLeaderCamps}</dd>
+                            </div>
+                            <div class="d-flex justify-content-between py-2">
+                                <dt class="fw-normal text-body-secondary">Skutečnost odevzdána</dt>
+                                <dd class="mb-0 fw-bold">{$realCamps}</dd>
+                            </div>
+                        </dl>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-12 col-md-6 col-xl-4">
+                <article class="card h-100 navigation-card" data-test="dashboard-card-education" aria-labelledby="tile-edu-title">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start gap-3 mb-3">
+                            <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary tile-icon">
+                                <i class="fi fi-rs-user-graduate" aria-hidden="true"></i>
+                            </span>
+                            <div>
+                                <h2 class="h5 mb-1" id="tile-edu-title"><a n:href=":Education:Default:" class="stretched-link text-body text-decoration-none" data-test="dashboard-link-education">Vzdělávačky</a></h2>
+                                <p class="text-body-secondary small mb-0">Rozpočty, účastníci a finanční agenda vzdělávacích akcí.</p>
+                            </div>
+                        </div>
+
+                        <ul class="list-unstyled text-body-secondary small mb-0">
+                            <li class="mb-1"><i class="fi fi-rr-check text-success me-1" aria-hidden="true"></i> Správa rozpočtu a čerpání</li>
+                            <li class="mb-1"><i class="fi fi-rr-check text-success me-1" aria-hidden="true"></i> Evidence účastníků a jejich plateb</li>
+                            <li><i class="fi fi-rr-check text-success me-1" aria-hidden="true"></i> Jedno pracovní místo pro organizátory i hospodáře</li>
+                        </ul>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-12 col-md-6 col-xl-4">
+                <article class="card h-100 navigation-card" data-test="dashboard-card-travel" aria-labelledby="tile-travel-title">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start gap-3 mb-3">
+                            <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary tile-icon">
+                                <i class="fi fi-rr-road" aria-hidden="true"></i>
+                            </span>
+                            <div>
+                                <h2 class="h5 mb-1" id="tile-travel-title"><a n:href=":Travel:Default:" class="stretched-link text-body text-decoration-none" data-test="dashboard-link-travel">Cesťáky</a></h2>
+                                <p class="text-body-secondary small mb-0">Cestovní příkazy, kontakty i vozidla připravené pro rychlé vyúčtování.</p>
+                            </div>
+                        </div>
+
+                        <ul class="list-unstyled text-body-secondary small mb-0">
+                            <li class="mb-1"><i class="fi fi-rr-check text-success me-1" aria-hidden="true"></i> Evidence cest a náhrad na jednom místě</li>
+                            <li class="mb-1"><i class="fi fi-rr-check text-success me-1" aria-hidden="true"></i> Napojení na kontakty a vozidla</li>
+                            <li><i class="fi fi-rr-check text-success me-1" aria-hidden="true"></i> Rychlý přístup pro opakované vyúčtování</li>
+                        </ul>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-12 col-md-6 col-xl-4">
+                <article class="card h-100 navigation-card" data-test="dashboard-card-unit" aria-labelledby="tile-unit-title">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start gap-3 mb-3">
+                            <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary tile-icon">
+                                <i class="fi fi-rs-users" aria-hidden="true"></i>
+                            </span>
+                            <div>
+                                <h2 class="h5 mb-1" id="tile-unit-title"><a n:href=":Unit:Cashbook:" class="stretched-link text-body text-decoration-none" data-test="dashboard-link-unit">Jednotka</a></h2>
+                                <p class="text-body-secondary small mb-0">Jednotková pokladna, rozpočet a doklady v každodenním provozu.</p>
+                            </div>
+                        </div>
+
+                        <ul class="list-unstyled text-body-secondary small mb-0">
+                            <li class="mb-1"><i class="fi fi-rr-check text-success me-1" aria-hidden="true"></i> Pokladna a rozpočty v návaznosti na jednotku</li>
+                            <li class="mb-1"><i class="fi fi-rr-check text-success me-1" aria-hidden="true"></i> Práce s doklady a podklady na jednom místě</li>
+                            <li><i class="fi fi-rr-check text-success me-1" aria-hidden="true"></i> Stálý přehled pro průběžnou kontrolu hospodaření</li>
+                        </ul>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-12 col-md-6 col-xl-4">
+                <article class="card h-100 navigation-card" data-test="dashboard-card-payments" aria-labelledby="tile-payments-title">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start gap-3 mb-3">
+                            <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary tile-icon">
+                                <i class="fi fi-rr-coins" aria-hidden="true"></i>
+                            </span>
+                            <div>
+                                <h2 class="h5 mb-1" id="tile-payments-title"><a n:href=":Payments:Dashboard:" class="stretched-link text-body text-decoration-none" data-test="dashboard-link-payments">Platby</a></h2>
+                                <p class="text-body-secondary small mb-0">Skupiny plateb, párování úhrad a rychlý vstup do platebních workflow.</p>
+                            </div>
+                        </div>
+
+                        <dl class="mb-3">
+                            <div class="d-flex justify-content-between py-2">
+                                <dt class="fw-normal text-body-secondary">Otevřené skupiny</dt>
+                                <dd class="mb-0 fw-bold">{$groupCount}</dd>
+                            </div>
+                        </dl>
+                        <div class="d-flex flex-wrap gap-2 navigation-card-actions" data-test="dashboard-payment-actions">
+                            {control createButton}
+                            {control pairButton}
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+{/block}

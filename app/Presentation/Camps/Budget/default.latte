@@ -1,0 +1,126 @@
+{block #title}{$event->getDisplayName()} - rozpočet{/block}
+
+{define #budgetTable $entries, $income}
+    <table n:ifset="$entries" class="table table-hover table-sm">
+        <thead>
+        <tr>
+            <th>Položka</th>
+            <th>Částka</th>
+        </tr>
+        </thead>
+        <tr n:foreach="$entries as $entry" n:if="$entry->isIncome() === $income">
+            <td>{$entry->name}</td>
+            <td class="text-end">
+                {$entry->total|price}
+            </td>
+        </tr>
+    </table>
+{/define}
+
+{define #categoriesTable $categoriesSummary, $income}
+    <table n:ifset="$categoriesSummary" class="table table-hover table-sm">
+        <thead>
+        <tr>
+            <th>Položka</th>
+            <th>Částka</th>
+        </tr>
+        </thead>
+        {var $balance = 0}
+        <tr n:foreach="$categoriesSummary as $categorySummary" n:if="$categorySummary->isIncome() === $income && ! $categorySummary->isVirtual()">
+            {do $balance += (float)$categorySummary->total->getAmount()/100}
+            <td>{$categorySummary->name}</td>
+            <td n:class="text-end,text-nowrap, array_key_exists($categorySummary->id, $toRepair) ? bg-danger-subtle"
+                n:attr="[title => array_key_exists($categorySummary->id, $toRepair) ? 'Částka ve SkautISu je ' . $toRepair[$categorySummary->id]]">
+                {$categorySummary->total|price}
+            </td>
+        </tr>
+        <tr>
+            <td><b>Celkem</b></td>
+            <td class="text-end text-nowrap"><b>{$balance|price}</b></td>
+        </tr>
+    </table>
+{/define}
+
+{block #subMenu}{include ../header.latte}{/block}
+
+{block #content}
+<div data-test="camp-budget-page">
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 class="h3 mb-2">{$event->getDisplayName()}</h1>
+            <div class="page-lead">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Rozpočet tábora, skutečné náklady a výnosy i kontrola souladu se SkautISem.</span>
+            </div>
+        </div>
+    </div>
+
+    {ifset $missingCategories}
+        {control categoryAutocomputedControl}
+    {else}
+        <div class="alert alert-warning mb-5" n:if="!$isConsistent">
+            <h4 class="alert-heading">Nekonzistentní data!</h4>
+            <p class="mb-0">Součet paragonů v kategoriích neodpovídá částkám uvedeným ve SkautISu.</p>
+            {if $isEditable}
+                <p>Hospodaření může aktualizovat data ve SkautISu tak, aby byla shodná s evidencí plateb.</p>
+                <hr>
+                {if $isUpdateStatementAllowed}
+                    <a n:href="convert! $aid" class="alert-link">
+                        <i class="fi fi-rr-settings" aria-hidden="true"></i>
+                        Aktualizovat data ve SkautISu
+                    </a>
+                {else}
+                    <p class="text-body-secondary mb-0">
+                        <i class="fi fi-rr-cross-circle" aria-hidden="true"></i>
+                        Nemáte oprávnění pro úpravu částek v rozpočtu uvedených ve skautisu.
+                    </p>
+                {/if}
+            {/if}
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <strong>Skutečné náklady</strong>
+                        <div class="mt-3">
+                            {include #categoriesTable $categoriesSummary, FALSE}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <strong>Skutečné výnosy</strong>
+                        <div class="mt-3">
+                            {include #categoriesTable $categoriesSummary, TRUE}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <strong>Předpokl. náklady</strong>
+                        <div class="mt-3">
+                            {include #budgetTable $budgetEntries, FALSE}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <strong>Předpokládané výnosy</strong>
+                        <div class="mt-3">
+                            {include #budgetTable $budgetEntries, TRUE}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {/ifset}
+
+    {control privilegesDialog}
+</div>

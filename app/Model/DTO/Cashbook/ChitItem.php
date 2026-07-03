@@ -1,0 +1,49 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Model\DTO\Cashbook;
+
+use App\Model\Cashbook\Cashbook\Amount;
+use App\Model\Cashbook\Operation;
+use Nette\SmartObject;
+
+/**
+ * @property Amount   $amount
+ * @property Category $category
+ * @property string   $purpose
+ */
+class ChitItem
+{
+    use SmartObject;
+
+    public function __construct(private Amount $amount, private Category $category, private string $purpose)
+    {
+    }
+
+    public function getAmount(): Amount
+    {
+        return $this->amount;
+    }
+
+    public function getCategory(): Category
+    {
+        return $this->category;
+    }
+
+    public function getPurpose(): string
+    {
+        return $this->purpose;
+    }
+
+    public function getSignedAmount(): float
+    {
+        $amount = $this->amount->toFloat();
+
+        if ($this->category->getOperationType()->equalsValue(Operation::EXPENSE)) {
+            return -1 * $amount;
+        }
+
+        return $amount;
+    }
+}

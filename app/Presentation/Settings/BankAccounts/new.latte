@@ -1,0 +1,44 @@
+
+
+{block content}
+<div data-test="settings-bank-account-new-page">
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 class="h3 mb-2" n:inner-block="title">Přidat účet</h1>
+            <div class="page-lead">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Vyplň základní údaje účtu a zvol způsob, jak budou do systému chodit bankovní transakce.</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Základní údaje</h2>
+                    {control form}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Co si pohlídat</h2>
+                    <div class="mb-3">
+                        <strong>Zdroj transakcí</strong>
+                        <p class="text-body-secondary small">Pro účty u Fio banky je možné použít FIO API, jinak zůstává import přes GPC soubory.</p>
+                    </div>
+                    <div>
+                        <strong>Použití v agendách</strong>
+                        <p class="text-body-secondary small mb-0">
+                            Po založení se účet může napojit na platební skupiny{if $canAccessInvoiceAccess} i fakturační řady{/if} podle přístupů a nastavení jednotky.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}

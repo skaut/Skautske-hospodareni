@@ -1,0 +1,46 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Model\Payment\Group;
+
+use App\Model\Payment\Group;
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="pa_group_unit")
+ */
+class Unit
+{
+    /**
+     * @internal for mapping only
+     *
+     * @ORM\Id()
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     */
+    private int $id;
+
+    /**
+     * @internal for mapping only
+     *
+     * @ORM\ManyToOne(targetEntity=Group::class, inversedBy="units")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private Group $group;
+
+    /** @ORM\Column(type="integer") */
+    private int $unitId;
+
+    public function __construct(Group $group, int $unitId)
+    {
+        $this->group = $group;
+        $this->unitId = $unitId;
+    }
+
+    public function getUnitId(): int
+    {
+        return $this->unitId;
+    }
+}

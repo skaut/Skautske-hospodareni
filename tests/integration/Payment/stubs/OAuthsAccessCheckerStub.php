@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Stubs;
 
-use Model\Google\OAuthId;
-use Model\Payment\Services\IOAuthAccessChecker;
+use App\Model\Google\OAuthId;
+use App\Model\Payment\Services\IOAuthAccessChecker;
 
 final class OAuthsAccessCheckerStub implements IOAuthAccessChecker
 {

@@ -4,36 +4,35 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Pairing;
 
+use App\Model\Bank\BankService;
+use App\Model\Bank\Entity\BankAccount;
+use App\Model\Bank\Entity\BankTransaction;
+use App\Model\Bank\Entity\BankTransactionPairing;
+use App\Model\Bank\Transaction;
+use App\Model\DTO\Payment\PairingResult;
+use App\Model\Payment\FioClientStub;
+use App\Model\Payment\Group;
+use App\Model\Payment\Payment;
+use App\Model\Payment\Repositories\IBankAccountRepository;
+use App\Model\Payment\Repositories\IGroupRepository;
+use App\Model\Payment\Repositories\IPaymentRepository;
+use App\Model\Payment\VariableSymbol;
+use BankingFixtures;
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
-use Helpers;
 use IntegrationTest;
 use IntegrationTester;
-use Mockery as m;
-use Model\Bank\Fio\Transaction;
-use Model\BankService;
-use Model\DTO\Payment\PairingResult;
-use Model\Payment\BankAccount;
-use Model\Payment\FioClientStub;
-use Model\Payment\Group;
-use Model\Payment\IUnitResolver;
-use Model\Payment\Payment;
-use Model\Payment\Repositories\IBankAccountRepository;
-use Model\Payment\Repositories\IGroupRepository;
-use Model\Payment\Repositories\IPaymentRepository;
-use Model\Payment\VariableSymbol;
 use Nette\Utils\Random;
-use Stubs\BankAccountAccessCheckerStub;
-use Stubs\OAuthsAccessCheckerStub;
 
 use function assert;
 use function date;
-use function mt_rand;
 use function reset;
 use function sprintf;
 
 class BankServiceTest extends IntegrationTest
 {
+    use BankingFixtures;
+
     /**
      * @var IntegrationTester
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
@@ -48,15 +47,17 @@ class BankServiceTest extends IntegrationTest
 
     private IBankAccountRepository $bankAccounts;
 
+    private int $nextTransactionId = 1;
+
     protected function _before(): void
     {
         $this->tester->useConfigFiles(['Payment/BankServiceTest.neon']);
 
         parent::_before();
 
-        $this->bankService  = $this->tester->grabService(BankService::class);
-        $this->payments     = $this->tester->grabService(IPaymentRepository::class);
-        $this->groups       = $this->tester->grabService(IGroupRepository::class);
+        $this->bankService = $this->tester->grabService(BankService::class);
+        $this->payments = $this->tester->grabService(IPaymentRepository::class);
+        $this->groups = $this->tester->grabService(IGroupRepository::class);
         $this->bankAccounts = $this->tester->grabService(IBankAccountRepository::class);
     }
 
@@ -65,6 +66,8 @@ class BankServiceTest extends IntegrationTest
     {
         return [
             BankAccount::class,
+            BankTransaction::class,
+            BankTransactionPairing::class,
             Group::class,
             Payment::class,
         ];
@@ -74,14 +77,7 @@ class BankServiceTest extends IntegrationTest
     {
         $I = $this->tester;
 
-        $bankAccount = new BankAccount(
-            1,
-            'Hlavní',
-            new BankAccount\AccountNumber(null, '2000942144', '2010'),
-            'test-token',
-            new DateTimeImmutable(),
-            m::mock(IUnitResolver::class, ['getOfficialUnitId' => 1]),
-        );
+        $bankAccount = $this->createBankAccountFixture('Hlavní');
 
         $this->bankAccounts->save($bankAccount);
 
@@ -108,19 +104,44 @@ class BankServiceTest extends IntegrationTest
 
         $dateSince = (new DateTimeImmutable(sprintf('- %d days', $daysBack)))->format('j.n.Y');
         $dateUntil = date('j.n.Y');
-        $this->assertSame(2, $pairingResult->getCount());
+        $this->assertSame(1, $pairingResult->getCount());
         $this->assertSame($dateSince, $pairingResult->getSince()->format('j.n.Y'));
         $this->assertSame($dateUntil, $pairingResult->getUntil()->format('j.n.Y'));
         $this->assertSame(sprintf(
             'Platby na účtu "%s" byly spárovány (%d) za období %s - %s',
             $bankAccount->getName(),
-            2,
+            1,
             $dateSince,
             $dateUntil,
         ), $pairingResult->getMessage());
+        self::assertSame([1], $this->activePairedPaymentIds());
     }
 
-    private function addPayment(Group $group, float $amount, string|null $variableSymbol): void
+    public function testPairingOverMultipleGroupsUsesSameDomainCollisionRules(): void
+    {
+        $bankAccount = $this->createBankAccountFixture('Hlavní');
+        $this->bankAccounts->save($bankAccount);
+
+        $group1 = $this->addGroup($bankAccount);
+        $group2 = $this->addGroup($bankAccount);
+
+        $this->addPayment($group1, 200, '123');
+        $this->addPayment($group1, 400, '345');
+        $this->addPayment($group2, 400, '345');
+
+        $this->tester->grabService(FioClientStub::class)
+            ->setTransactions([
+                $this->createTransaction(200, '123'),
+                $this->createTransaction(400, '345'),
+            ]);
+
+        $pairingResults = $this->bankService->pairAllGroups([$group1->getId(), $group2->getId()], 7);
+
+        self::assertCount(1, $pairingResults);
+        self::assertSame([1], $this->activePairedPaymentIds());
+    }
+
+    private function addPayment(Group $group, float $amount, ?string $variableSymbol): void
     {
         $payment = new Payment(
             $group,
@@ -136,40 +157,27 @@ class BankServiceTest extends IntegrationTest
         $this->payments->save($payment);
     }
 
-    private function addGroup(BankAccount|null $bankAccount): Group
+    private function addGroup(?BankAccount $bankAccount): Group
     {
-        $paymentDefaults = new Group\PaymentDefaults(null, null, null, null);
-        $emails          = Helpers::createEmails();
-
-        $group = new Group(
-            [1],
-            null,
-            'Test',
-            $paymentDefaults,
-            new DateTimeImmutable(),
-            $emails,
-            null,
-            $bankAccount,
-            new BankAccountAccessCheckerStub(),
-            new OAuthsAccessCheckerStub(),
-        );
-
+        $group = $this->createPaymentGroupFixture($bankAccount);
         $this->groups->save($group);
 
         return $group;
     }
 
-    private function createTransaction(float $amount, string|null $variableSymbol): Transaction
+    private function createTransaction(float $amount, ?string $variableSymbol): Transaction
     {
-        return new Transaction(
-            (string) mt_rand(1, 1000),
-            new DateTimeImmutable(),
-            $amount,
-            '',
-            '',
-            (int) $variableSymbol,
-            0,
-            '',
+        return $this->createFioTransactionFixture($this->nextTransactionId++, $amount, $variableSymbol, '');
+    }
+
+    /** @return int[] */
+    private function activePairedPaymentIds(): array
+    {
+        $pairings = $this->entityManager->getRepository(BankTransactionPairing::class)->findBy(['cancelledAt' => null]);
+
+        return array_map(
+            static fn (BankTransactionPairing $pairing): int => $pairing->getPayment()?->getId(),
+            $pairings,
         );
     }
 }

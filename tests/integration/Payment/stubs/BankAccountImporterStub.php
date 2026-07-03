@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment;
+namespace App\Model\Payment;
 
-use Model\Payment\BankAccount\AccountNumber;
-use Model\Payment\BankAccount\IBankAccountImporter;
+use App\Model\Common\Embeddable\AccountNumber;
+use App\Model\Payment\BankAccount\IBankAccountImporter;
 
 class BankAccountImporterStub implements IBankAccountImporter
 {

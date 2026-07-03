@@ -1,0 +1,38 @@
+{varType Model\Event\Event[] $events}
+
+{block content}
+<div data-test="payment-event-select-page">
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 n:inner-block="title" class="h3 mb-2">Nová skupina plateb pro akci</h1>
+            <div class="page-lead">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Vyberte akci, pro kterou chcete skupinu založit. Akce, pro které již skupina existuje, nejsou zobrazeny.</span>
+            </div>
+        </div>
+    </div>
+
+    {if count($events) === 0}
+        <div class="card">
+            <div class="card-body text-body-secondary">
+                Momentálně nemáte žádnou akci, pro kterou lze založit skupinu plateb.
+            </div>
+        </div>
+    {else}
+        <div class="card">
+            <ul class="list-group list-group-flush" n:inner-foreach="$events as $event">
+                <li class="list-group-item">
+                    <div class="d-flex w-100 justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-1">{$event->displayName}</h5>
+                            <small class="text-body-secondary">{$event->unitName}</small>
+                        </div>
+                        <a n:href=":Payments:EventCreateGroup: $event->id->toInt()"
+                                class="btn btn-primary btn-sm"
+                                data-test="payment-event-create-{$event->id->toInt()}">Vytvořit skupinu</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    {/if}
+</div>

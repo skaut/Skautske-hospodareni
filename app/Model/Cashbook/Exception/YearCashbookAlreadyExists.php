@@ -1,0 +1,18 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Model\Cashbook\Exception;
+
+use App\Model\Common\UnitId;
+use Exception;
+
+use function sprintf;
+
+final class YearCashbookAlreadyExists extends Exception
+{
+    public static function forYear(int $year, UnitId $unitId): self
+    {
+        return new self(sprintf('Unit #%d already has cashbook for %d', $unitId->toInt(), $year));
+    }
+}

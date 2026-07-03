@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook\Handlers\Unit;
+namespace App\Model\Cashbook\Handlers\Unit;
 
+use App\Model\Cashbook\Cashbook;
+use App\Model\Cashbook\Cashbook\CashbookType;
+use App\Model\Cashbook\Commands\Unit\CreateCashbook;
+use App\Model\Cashbook\Unit;
+use App\Model\Common\UnitId;
+use App\Model\Payment\UnitResolverStub;
 use CommandHandlerTest;
-use Model\Cashbook\Cashbook;
-use Model\Cashbook\Cashbook\CashbookType;
-use Model\Cashbook\Commands\Unit\CreateCashbook;
-use Model\Cashbook\Unit;
-use Model\Common\UnitId;
-use Model\Payment\UnitResolverStub;
 
 use function assert;
 
 final class CreateCashbookHandlerTest extends CommandHandlerTest
 {
-    private const YEAR           = 2019;
+    private const YEAR = 2019;
     private const OFFICIAL_UNITS = [
         1 => 1,
         2 => 1,
@@ -24,7 +24,7 @@ final class CreateCashbookHandlerTest extends CommandHandlerTest
 
     protected function _before(): void
     {
-        $this->tester->useConfigFiles([__DIR__ . '/CreateCashbookHandlerTest.neon']);
+        $this->tester->useConfigFiles([__DIR__.'/CreateCashbookHandlerTest.neon']);
 
         parent::_before();
 

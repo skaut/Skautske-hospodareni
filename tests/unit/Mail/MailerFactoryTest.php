@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Model\Mail;
+namespace App\Model\Mail;
 
+use App\Model\Google\Entity\GoogleOAuth;
+use App\Model\Google\GoogleService;
+use App\Model\Google\OAuthMailer;
 use Codeception\Test\Unit;
 use Google_Client;
 use Mockery as m;
-use Model\Google\GoogleService;
-use Model\Google\OAuth;
-use Model\Google\OAuthMailer;
 use Nette\Mail\Mailer;
 
 class MailerFactoryTest extends Unit
@@ -17,8 +17,8 @@ class MailerFactoryTest extends Unit
     public function testInDisabledModeReturnsDebugMailer(): void
     {
         $googleService = m::mock(GoogleService::class);
-        $mailer        = m::mock(Mailer::class);
-        $factory       = new MailerFactory($mailer, false, $googleService);
+        $mailer = m::mock(Mailer::class);
+        $factory = new MailerFactory($mailer, false, $googleService);
 
         $this->assertSame($mailer, $factory->create($this->getConfig()));
     }
@@ -31,15 +31,15 @@ class MailerFactoryTest extends Unit
                 'setAccessToken' => null,
             ]),
         ]);
-        $mailer        = m::mock(Mailer::class);
-        $factory       = new MailerFactory($mailer, true, $googleService);
+        $mailer = m::mock(Mailer::class);
+        $factory = new MailerFactory($mailer, true, $googleService);
 
         $this->assertInstanceOf(OAuthMailer::class, $factory->create($this->getConfig()));
     }
 
-    private function getConfig(): OAuth
+    private function getConfig(): GoogleOAuth
     {
-        $mock = m::mock(OAuth::class);
+        $mock = m::mock(GoogleOAuth::class);
         $mock->shouldReceive(['getToken' => 'XXX']);
 
         return $mock;

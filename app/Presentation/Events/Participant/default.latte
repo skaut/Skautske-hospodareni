@@ -1,0 +1,30 @@
+{block #title}{$event->getDisplayName()} - seznam účastníků{/block}
+
+{block #subMenu}{include ../header.latte}{/block}
+
+{block #content}
+<div data-test="event-participant-page">
+
+    {* Hero *}
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 class="h3 mb-2">{$event->getDisplayName()}</h1>
+            <div class="page-lead">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Seznam účastníků akce a práce s jejich přidáváním i evidencí.</span>
+            </div>
+        </div>
+    </div>
+
+    {* Content *}
+    <div class="row g-4 mt-1">
+        <div class="col-lg-5" n:inner-if="$canAddParticipants">
+            {control personPicker}
+        </div>
+        <div class="col-lg-{if $canAddParticipants}7{else}12{/if}">
+            {control participantList}
+        </div>
+    </div>
+
+    {control privilegesDialog}
+</div>

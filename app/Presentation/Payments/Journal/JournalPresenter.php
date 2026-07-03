@@ -1,0 +1,52 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Presentation\Payments\Journal;
+
+use App\Model\Payment\PaymentService;
+use App\Presentation\Payments\PaymentsBasePresenter as BasePresenter;
+
+use function array_keys;
+
+final class JournalPresenter extends BasePresenter
+{
+    public function __construct(private PaymentService $model)
+    {
+        parent::__construct();
+    }
+
+    public function renderDefault(int $groupId): void
+    {
+        if (! $this->isEditable) {
+            $this->setView('accessDenied');
+
+            return;
+        }
+
+        $group = $this->model->getGroup($groupId);
+        $year = $this->model->getRegistrationYear($group->getSkautisId());
+        if ($year === null) {
+            $this->flashMessage('Registrace nebyla nalezena', 'danger');
+            $this->redirect(':Payments:GroupList:');
+        }
+
+        $units = $this->unitService->getAllUnder($this->unitId->toInt());
+
+        $changes = [];
+        $changeExists = false;
+        foreach (array_keys($units) as $unitId) {
+            $unitChanges = $this->model->getJournalChangesAfterRegistration($unitId, $year);
+            $changeExists = $changeExists || (empty($unitChanges['add']) && $unitChanges['remove']);
+            $changes[$unitId] = $unitChanges;
+        }
+
+        $this->template->setParameters([
+            'group' => $group,
+            'year' => $year,
+            'units' => $units,
+            'changes' => $changes,
+            'changeExists' => $changeExists,
+        ]);
+    }
+}

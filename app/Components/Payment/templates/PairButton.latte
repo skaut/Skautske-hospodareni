@@ -1,0 +1,39 @@
+{var $attrs = ! $canPair && $itemsCount === 1
+? ['data-bs-toggle' => 'tooltip', 'data-bs-placement' => 'bottom', 'title' => $disabledReason]
+: []
+}
+
+<div n:class="$css['wrap']">
+    <div class="btn-group"
+            n:attr="$attrs"
+         {if !$canPair}
+        title="{$disabledReason}"
+        data-bs-toggle="tooltip"
+            {/if}>
+        <a n:href="pair!" n:class="$css['btn'], !$canPair ? disabled" data-test="pair-button-main">
+            <i class="{$css['icon']}" aria-hidden="true"></i>
+            Párovat <span class="d-none d-md-inline">{$scopeLabel}</span>
+        </a>
+
+        <button n:attr="!$canPair ? ([disabled => true])"
+                n:class="$css['toggle']"
+                type="button"
+                id="pairPayments"
+                data-test="pair-button-toggle"
+                data-bs-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false">
+            <span class="visually-hidden">Další možnosti párování</span>
+        </button>
+
+        <div n:class="$css['menu'], pair-button-menu" aria-labelledby="pairPayments" n:snippet="form" data-test="pair-button-menu">
+            <form n:name="form" class="d-flex align-items-center gap-2" data-test="pair-button-form">
+                <span n:class="$css['inputGroup']">
+                    <input n:name="days" class="form-control">
+                    <span class="input-group-text">dní</span>
+                </span>
+                <input n:name="pair" n:class="$css['submit']" data-test="pair-button-submit">
+            </form>
+        </div>
+    </div>
+</div>

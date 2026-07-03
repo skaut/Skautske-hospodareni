@@ -1,116 +1,36 @@
-@import "~bootstrap/scss/bootstrap";
+// Tabler theme tokens derived from the application artwork.
+$font-family-sans-serif: "themix", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+$primary: #4d8746;
+$green: #4d8746;
+$success: #4d8746;
+$info: #78b9df;
+$azure: #78b9df;
+$warning: #efb64b;
+$yellow: #efb64b;
+$orange: #c87835;
+$body-bg: #eef7fc;
+$body-color: #302821;
+$border-color: #d7e5ec;
+$border-radius-sm: 4px;
+$border-radius: 6px;
+$border-radius-lg: 8px;
+$box-shadow-card: 0 1px 2px rgba(48, 40, 33, 0.04);
+$card-border-color: rgba(74, 101, 112, 0.14);
+$navbar-active-border-color: $primary;
+
+// Vendor
+@import "@tabler/core/scss/tabler";
+@import "@flaticon/flaticon-uicons/css/regular/all.css";
+@import "nprogress/nprogress";
 @import "scss/pikaday";
-@import  "~nprogress/nprogress";
-@import "scss/modals";
 
-.btn-light {
-  @include button-variant($light, darken($light, 30%));
-}
+// Layout & structure
+@import "scss/fonts";
+@import "scss/layout";
+@import "scss/components";
+@import "scss/navbar";
+@import "scss/footer";
+@import "scss/utilities";
 
-@each $color, $value in $theme-colors {
-  .bg-#{$color}-lighter {
-    background-color: lighten($value, 30%) !important;
-  }
-}
-
-body {
-  min-height: 100vh;
-}
-
-body > footer {
-  bottom: 0;
-  position: absolute;
-  width: 100%;
-}
-
-table.table a {
-  text-decoration: none;
-}
-
-table.table a:hover {
-  text-decoration: underline;
-}
-
-.pairForm {
-    width: 280px;
-}
-
-.col-action {
-  text-align: right;
-}
-
-.w-15 {
-  width: 15%;
-}
-
-.w-18 {
-  width: 18%;
-}
-
-#submenu .navbar-light {
-  padding-bottom: 0;
-  .nav-item {
-    padding-bottom: $navbar-padding-y;
-
-    &.active {
-      box-sizing: border-box;
-      padding-bottom: $navbar-brand-padding-y;
-      border-bottom: 2px solid $primary;
-    }
-  }
-}
-
-.bg-posily {
-  --bs-bg-opacity: 1;
-  background-color: rgba(var(--bs-warning-rgb), var(--bs-bg-opacity)) !important;
-}
-
-.bg-test {
-  background-color: #ffff00;
-}
-.bg-dark #darkModeToggle,
-.bg-dark #timer {
-  color: #fff;
-}
-
-.carousel {
-  background-color: #ccc;
-}
-.carousel-item{
-  height: 400px;
-}
-.carousel-caption {
-  bottom: 10px;
-  padding-top: 5px;
-  padding-bottom: 0px;
-}
-.carousel-control-prev-icon, .carousel-control-next-icon {
-  background-color: #000000;
-}
-
-:root[data-bs-theme="dark"] {
-  .bg-posily {
-    --bs-bg-opacity: 0.2;
-  }
-
-  .bg-test {
-    background-color: #404000;
-  }
-
-  .btn-light {
-    background-color: var(--bs-light-bg-subtle) !important;
-    color: var(--bs-body-color);
-  }
-
-  .carousel-caption {
-    color: var(--bs-body-color);
-  }
-
-  .carousel-item {
-    background-color: var(--bs-light-bg-subtle) !important;
-  }
-
-  .navbar-dark {
-    background-color: var(--bs-light-bg-subtle) !important;
-  }
-}
+// Dark mode overrides
+@import "scss/dark-mode";

@@ -1,0 +1,43 @@
+application:
+    errorPresenter: Error
+    mapping:
+        Admin:
+            - App\Presentation\Admin
+            - *
+            - '*\*Presenter'
+        Camps:
+            - App\Presentation\Camps
+            - *
+            - '*\*Presenter'
+        Education:
+            - App\Presentation\Education
+            - *
+            - '*\*Presenter'
+        Events:
+            - App\Presentation\Events
+            - *
+            - '*\*Presenter'
+        Travel:
+            - App\Presentation\Travel
+            - *
+            - '*\*Presenter'
+        Unit:
+            - App\Presentation\Unit
+            - *
+            - '*\*Presenter'
+        Payments:
+            - App\Presentation\Payments
+            - *
+            - '*\*Presenter'
+        Settings:
+            - App\Presentation\Settings
+            - *
+            - '*\*Presenter'
+        '*': App\*Module\*Presenter
+
+console:
+    url: %appBaseUrl%
+
+fixtures:
+    paths:
+        - %appDir%/Fixtures/Doctrine

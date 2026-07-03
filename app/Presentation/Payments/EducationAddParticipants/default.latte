@@ -1,0 +1,28 @@
+{block #content}
+<div>
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 n:inner-block="title" class="h3 mb-2">Přidat osoby z účastníků</h1>
+            <div class="page-lead mb-3">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Účastníci, kteří už mají v této skupině platbu, nejsou zobrazeni.</span>
+            </div>
+            <a n:href="default $group->id" class="btn btn-outline-secondary btn-sm">
+                <i class="fi fi-rr-arrow-left" aria-hidden="true"></i> {$group->name}
+            </a>
+        </div>
+    </div>
+
+    <section class="card">
+        <div class="card-body">
+            <h3 class="h5 mb-3">{$unit->getDisplayName()}</h3>
+            {if $showForm}
+                {control massAddForm}
+            {else}
+                <div class="border border-dashed rounded-3 p-3 text-body-secondary">
+                    Nejsou dostupní žádní účastníci, kteří by neměli založenou platbu.
+                </div>
+            {/if}
+        </div>
+    </section>
+</div>

@@ -1,0 +1,6 @@
+application:
+    catchExceptions: false
+    debugger: false
+
+session:
+    savePath: "%tempDir%/sessions"

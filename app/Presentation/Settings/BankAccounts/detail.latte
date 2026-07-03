@@ -1,0 +1,176 @@
+
+
+{block content}
+<div data-test="settings-bank-account-detail-page">
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 class="h3 mb-2" n:inner-block="title">{$account->getName()}</h1>
+            <div class="page-lead mb-3">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Účet {$account->getNumber()} vytvořený {$account->getCreatedAt()|date:'j. n. Y'}. Přehled posledních transakcí, importních dávek a vstup do nastavení účtu.</span>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                <a n:href="default" class="btn btn-outline-secondary">
+                    <i class="fi fi-rr-arrow-left" aria-hidden="true"></i>
+                    <span>Zpět na seznam</span>
+                </a>
+                <a
+                    n:if="$canImportGpc"
+                    n:href="gpcImportDialog:open! $account->getId()"
+                    class="btn btn-light ajax"
+                    data-test="settings-bank-account-import-gpc"
+                ><i class="fi fi-rr-file-import me-1" aria-hidden="true"></i> Importovat GPC</a>
+                <a n:href="edit $account->getId()" class="btn btn-light" data-test="settings-bank-account-open-settings"><i class="fi fi-rr-settings me-1" aria-hidden="true"></i> Nastavení</a>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-auto">
+                    <strong>Číslo účtu</strong>
+                    <p class="text-body-secondary small mb-0">{$account->getNumber()}</p>
+                </div>
+                <div class="col-auto">
+                    <strong>Transakce</strong>
+                    <p class="text-body-secondary small mb-0">Posledních 60 dní včetně kandidátů ručního párování.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card mb-4" data-test="settings-bank-account-transactions">
+        <div class="card-body">
+            <h2 class="h5 mb-3">Transakce</h2>
+        </div>
+        <div n:snippet="transactions">
+            <div class="alert alert-info" n:if="$focusTargetLabel !== null">{$focusTargetLabel}</div>
+            {if $transactionRows === NULL}
+                <div class="alert alert-danger" n:ifset="$errorMessage">{$errorMessage}</div>
+                <div class="alert alert-warning" n:ifset="$warningMessage">{$warningMessage}</div>
+            {elseif count($transactionRows) > 0}
+                <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <tr>
+                        <th>Datum</th>
+                        <th>Částka</th>
+                        <th>Účet</th>
+                        <th>Jméno</th>
+                        <th>KS</th>
+                        <th>VS</th>
+                        <th>Poznámka</th>
+                        <th>Stav / kandidáti</th>
+                    </tr>
+                    <tr
+                        n:foreach="$transactionRows as $row"
+                        n:class="$row->pairing !== null ? table-info, $row->pairing === null && $row->conflictReason !== null ? table-warning"
+                    >
+                        {var $transaction = $row->transaction}
+                        <td>{$transaction->getDate()|date:'j.n.Y'}</td>
+                        <td class="text-end">
+                            <strong n:class="$transaction->getAmount() < 0 ? text-danger">{$transaction->getAmount()|price}</strong>
+                        </td>
+                        <td class="text-end">{include #noEmpty $transaction->getCounterAccount()}</td>
+                        <td>{include #noEmpty $transaction->getCounterName()}</td>
+                        <td class="text-end">{include #noEmpty $transaction->getConstantSymbol()}</td>
+                        <td class="text-end">{include #noEmpty $transaction->getVariableSymbol()}</td>
+                        <td>{include #noEmpty $transaction->getNote()}</td>
+                        <td>
+                            <div class="d-flex flex-column gap-1">
+                                <div n:if="$row->pairingLabel !== null">
+                                    <span class="badge bg-info text-dark">Spárováno</span>
+                                    <a n:if="$row->pairingLabel->url !== null" href="{$row->pairingLabel->url}">{$row->pairingLabel->label}</a>
+                                    <span n:if="$row->pairingLabel->url === null">{$row->pairingLabel->label}</span>
+                                </div>
+
+                                <div n:if="$row->manualCandidates !== []">
+                                    <div class="small text-body-secondary">Ruční párování podle částky:</div>
+                                    <div n:foreach="$row->manualCandidates as $candidate" class="mb-1">
+                                        <span n:class="$candidate->type === 'invoice' ? 'badge bg-secondary' : 'badge bg-primary'">
+                                            {$candidate->type === 'invoice' ? 'Faktura' : 'Platba'}
+                                        </span>
+                                        <a href="{$candidate->url}">{$candidate->label}</a>
+                                        <a
+                                            href="{$candidate->actionUrl}"
+                                            class="btn btn-sm btn-outline-success ms-1"
+                                            onclick="return confirm('Opravdu chceš ručně spárovat tuto bankovní transakci?');"
+                                        >Spárovat</a>
+                                        <span class="small text-warning ms-1" n:if="$candidate->warnings !== []">{implode(', ', $candidate->warnings)}</span>
+                                    </div>
+                                </div>
+
+                                <div n:if="$row->exactCandidates !== []">
+                                    <div class="small text-body-secondary">Jednoznačné automatické shody:</div>
+                                    <div n:foreach="$row->exactCandidates as $candidate">
+                                        <span n:class="$candidate->type === 'invoice' ? 'badge bg-secondary' : 'badge bg-primary'">
+                                            {$candidate->type === 'invoice' ? 'Faktura' : 'Platba'}
+                                        </span>
+                                        <a href="{$candidate->url}">{$candidate->label}</a>
+                                    </div>
+                                </div>
+
+                                <div class="small text-danger" n:if="$row->conflictReason !== null">
+                                    {$row->conflictReason}
+                                </div>
+
+                                <div n:if="$row->variableSymbolCandidates !== [] && $row->exactCandidates === []">
+                                    <div class="small text-body-secondary">Položky se shodným VS:</div>
+                                    <div n:foreach="$row->variableSymbolCandidates as $candidate">
+                                        <span n:class="$candidate->type === 'invoice' ? 'badge bg-secondary' : 'badge bg-primary'">
+                                            {$candidate->type === 'invoice' ? 'Faktura' : 'Platba'}
+                                        </span>
+                                        <a href="{$candidate->url}">{$candidate->label}</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                </div>
+            {else}
+                <p class="alert alert-info text-center">Nebyly nalezeny žádné transakce</p>
+            {/if}
+        </div>
+    </div>
+
+    {control gpcImportDialog}
+
+    <div class="card mb-4" data-test="settings-bank-account-import-batches">
+        <div class="card-body">
+            <h2 class="h5 mb-3">Historie importů</h2>
+        </div>
+        <div n:snippet="importBatches">
+            {if count($importBatches) > 0}
+                <div class="table-responsive">
+                <table class="table table-striped">
+                    <tr>
+                        <th>Importováno</th>
+                        <th>Zdroj</th>
+                        <th>Soubor</th>
+                        <th>Uživatel</th>
+                        <th>Transakce</th>
+                        <th>Nové</th>
+                    </tr>
+                    <tr n:foreach="$importBatches as $batch">
+                        <td>{$batch->getImportedAt()|date:'j.n.Y H:i'}</td>
+                        <td>{$batch->getSource()->value|upper}</td>
+                        <td>
+                            <div>{$batch->getFileName()}</div>
+                            <div class="small text-body-secondary">hash {$batch->getFileHash()|truncate:16,''}</div>
+                        </td>
+                        <td>{$batch->getImportedBy()}</td>
+                        <td class="text-end">{$batch->getTransactionCount()}</td>
+                        <td class="text-end">{$batch->getNewTransactionCount()}</td>
+                    </tr>
+                </table>
+                </div>
+            {else}
+                <p class="alert alert-info text-center mb-0">K tomuto účtu zatím není evidovaný žádný import.</p>
+            {/if}
+        </div>
+    </div>
+</div>
+
+{define #noEmpty $val}
+    {if $val === "" || $val === NULL}&nbsp;{else}{$val}{/if}
+{/define}
+{/block}

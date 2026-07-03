@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook\ReadModel\QueryHandlers;
+namespace App\Model\Cashbook\ReadModel\QueryHandlers;
 
+use App\Model\Cashbook\Cashbook;
+use App\Model\Cashbook\Cashbook\CashbookId;
+use App\Model\Cashbook\Cashbook\CashbookType;
+use App\Model\Cashbook\ICategory;
+use App\Model\Cashbook\Operation;
+use App\Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
+use App\Model\Cashbook\Repositories\CategoryRepository;
+use App\Model\Cashbook\Repositories\ICashbookRepository;
 use Codeception\Test\Unit;
 use Mockery as m;
-use Model\Cashbook\Cashbook;
-use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\Cashbook\CashbookType;
-use Model\Cashbook\ICategory;
-use Model\Cashbook\Operation;
-use Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
-use Model\Cashbook\Repositories\CategoryRepository;
-use Model\Cashbook\Repositories\ICashbookRepository;
 
 use function array_map;
 
@@ -25,7 +25,7 @@ final class CategoryPairsQueryHandlerTest extends Unit
     ];
 
     private const CASHBOOK_TYPE = CashbookType::EVENT;
-    private const CASHBOOK_ID   = '49d7d54b-6a14-47be-b809-a16a5dfbe572';
+    private const CASHBOOK_ID = '49d7d54b-6a14-47be-b809-a16a5dfbe572';
 
     public function testReturnAllCategoriesIfOperationIsNotPassed(): void
     {

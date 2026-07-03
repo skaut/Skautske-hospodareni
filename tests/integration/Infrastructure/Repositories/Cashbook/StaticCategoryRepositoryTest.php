@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Model\Infrastructure\Repositories\Cashbook;
+namespace App\Model\Infrastructure\Repositories\Cashbook;
 
+use App\Model\Cashbook\Category;
+use App\Model\Cashbook\ObjectType;
 use Doctrine\ORM\EntityManager;
 use Hskauting\Tests\NullEventBus;
 use IntegrationTest;
-use Model\Cashbook\Category;
-use Model\Cashbook\ObjectType;
 
 use function array_map;
 
 class StaticCategoryRepositoryTest extends IntegrationTest
 {
-    private const TABLE_NAME   = 'ac_chitsCategory';
+    private const TABLE_NAME = 'ac_chitsCategory';
     private const OBJECT_TABLE = 'ac_chitsCategory_object';
 
     private StaticCategoryRepository $repository;

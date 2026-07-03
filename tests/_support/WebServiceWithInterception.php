@@ -18,7 +18,7 @@ class WebServiceWithInterception extends WebService
         $this->init = $soapOpts;
 
         if (empty($wsdl)) {
-            throw new InvalidArgumentException("WSDL address cannot be empty.");
+            throw new InvalidArgumentException('WSDL address cannot be empty.');
         }
 
         $this->soapClient = new SoapClient($wsdl, $soapOpts);

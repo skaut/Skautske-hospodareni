@@ -1,0 +1,66 @@
+// Application shell and global Tabler adjustments.
+
+html {
+  font-size: 112.5%;
+}
+
+:root {
+  --app-green: #4d8746;
+  --app-green-soft: #edf6eb;
+  --app-ink: #302821;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--tblr-body-bg);
+}
+
+.app-shell > .page {
+  min-height: 100vh;
+}
+
+.page-wrapper {
+  min-height: calc(100vh - 3.5rem);
+}
+
+main[role="main"] {
+  width: 100%;
+  flex: 1 0 auto;
+}
+
+.shell-main {
+  position: relative;
+}
+
+.shell-main--dashboard {
+  padding-right: var(--tblr-gutter-x, 1rem);
+  padding-left: var(--tblr-gutter-x, 1rem);
+}
+
+.card {
+  box-shadow: var(--tblr-shadow-card);
+}
+
+.card > .card-body > h1:first-child,
+.card > .card-body > .h3:first-child {
+  letter-spacing: 0;
+}
+
+.bg-body-tertiary {
+  background-color: var(--tblr-bg-surface-tertiary) !important;
+}
+
+.alert {
+  box-shadow: none;
+}
+
+.form-control,
+.form-select {
+  background-color: var(--tblr-bg-forms);
+}
+
+body > footer,
+.page-wrapper > footer {
+  width: 100%;
+  margin-top: auto;
+}

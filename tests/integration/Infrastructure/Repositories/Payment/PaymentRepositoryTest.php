@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Model\Infrastructure\Repositories\Payment;
+namespace App\Model\Infrastructure\Repositories\Payment;
 
+use App\Model\Payment\EmailType;
+use App\Model\Payment\Group;
+use App\Model\Payment\Payment;
+use App\Model\Payment\PaymentNotFound;
+use App\Model\Payment\Summary;
+use App\Model\Payment\VariableSymbol;
 use Cake\Chronos\ChronosDate;
 use Helpers;
 use Hskauting\Tests\NullEventBus;
 use IntegrationTest;
-use Model\Payment\EmailType;
-use Model\Payment\Group;
-use Model\Payment\Payment;
-use Model\Payment\PaymentNotFound;
-use Model\Payment\Summary;
-use Model\Payment\VariableSymbol;
 
 use function array_fill;
 use function array_map;
@@ -93,7 +93,7 @@ class PaymentRepositoryTest extends IntegrationTest
 
         $payment = $this->repository->find(1);
 
-        $expectedTransaction = new Payment\Transaction(
+        $expectedTransaction = new \App\Model\Common\Embeddable\Transaction(
             $data['transactionId'],
             $data['bank_account'],
             $data['transaction_payer'],
@@ -124,6 +124,22 @@ class PaymentRepositoryTest extends IntegrationTest
         $this->assertSame($sentEmail['sender_name'], $emailRow[0]->getSenderName());
     }
 
+    public function testFindSplitPaymentSource(): void
+    {
+        $this->addGroupWithId(1);
+        $this->addPayments([
+            self::PAYMENT_ROW,
+            array_merge(self::PAYMENT_ROW, [
+                'variable_symbol' => '101',
+                'split_from_payment_id' => 1,
+            ]),
+        ]);
+
+        $payment = $this->repository->find(2);
+
+        $this->assertSame(1, $payment->getSplitFromPaymentId());
+    }
+
     public function testGetMaxVariableSymbolForNoPaymentIsNull(): void
     {
         $this->assertNull($this->repository->getMaxVariableSymbol(10));
@@ -141,6 +157,23 @@ class PaymentRepositoryTest extends IntegrationTest
         $this->addPayments($payments);
 
         $this->assertEquals(new VariableSymbol('1000'), $this->repository->getMaxVariableSymbol(1));
+    }
+
+    public function testExistsPaymentWithVariableSymbolInGroup(): void
+    {
+        $this->addGroupWithId(1);
+        $this->addGroupWithId(2);
+        $this->addPayments([
+            self::PAYMENT_ROW,
+            array_merge(self::PAYMENT_ROW, [
+                'group_id' => 2,
+                'variable_symbol' => '200',
+            ]),
+        ]);
+
+        $this->assertTrue($this->repository->existsPaymentWithVariableSymbolInGroup(1, new VariableSymbol('100')));
+        $this->assertFalse($this->repository->existsPaymentWithVariableSymbolInGroup(1, new VariableSymbol('200')));
+        $this->assertFalse($this->repository->existsPaymentWithVariableSymbolInGroup(1, new VariableSymbol('100'), 1));
     }
 
     public function testSummarizeByGroupReturnsCorrectStats(): void

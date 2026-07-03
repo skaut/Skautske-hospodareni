@@ -12,14 +12,18 @@ x-php-base:
     build:
         context: ./containers/php
     working_dir: /app
+    shm_size: 1g
+    user: root
+    command: ["php-fpm", "-R"]
     env_file:
         - ./containers/php/ini/image.ini
     networks:
         - traefik
     volumes:
         - ../:/app
-        - ./containers/php/ini/php.ini:/etc/php/8.1/fpm/conf.d/php.ini
-        - ./containers/php/ini/php.ini:/etc/php/8.1/cli/conf.d/php.ini
+        - ./containers/php/docker.conf:/etc/php/8.3/fpm/pool.d/www.conf
+        - ./containers/php/ini/php.ini:/etc/php/8.3/fpm/conf.d/php.ini
+        - ./containers/php/ini/php.ini:/etc/php/8.3/cli/conf.d/php.ini
 
 x-mysql-base:
     &mysql-base
@@ -27,10 +31,10 @@ x-mysql-base:
     networks:
         - traefik
     environment:
-        MYSQL_DATABASE: hskauting
-        MYSQL_USER: hskauting
-        MYSQL_PASSWORD: hskauting
-        MYSQL_ROOT_PASSWORD: root
+        MYSQL_DATABASE: ${DB_NAME:-hskauting}
+        MYSQL_USER: ${DB_USER:-hskauting}
+        MYSQL_PASSWORD: ${DB_PASSWORD:-hskauting}
+        MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
         MYSQL_COLLATION: utf8mb4_czech_ci
         MYSQL_CHARACTER_SET: utf8
 
@@ -43,7 +47,7 @@ services:
         ports:
             - "80:80"
         volumes:
-            - /var/run/docker.sock:/var/run/docker.sock:ro
+            - /run/user/1000/docker.sock:/var/run/docker.sock:ro
             - ./containers/traefik/traefik.yml:/traefik.yml:ro
         labels:
             traefik.enable: true
@@ -53,10 +57,9 @@ services:
 
     php:
         <<: *php-base
-        container_name: hskauting.app #Backward Compatibility
+        container_name: ${COMPOSE_PROJECT_NAME:-hskauting}.app #Backward Compatibility
         env_file:
             - containers/php/ini/image.ini
-            - ./../.env.local
         depends_on:
             - mysql
         labels:
@@ -71,18 +74,19 @@ services:
         env_file:
             - containers/php/ini/image.ini
             - containers/php/ini/xdebug.ini
-            - ./../.env.local
 
     php-test:
         <<: *php-base
         hostname: php-test.localhost
-        container_name: hskauting.app-test
+        container_name: ${COMPOSE_PROJECT_NAME:-hskauting}.app-test
         depends_on:
             - mysql-test
         env_file:
             - containers/php/ini/image.ini
             - containers/php/ini/xdebug.ini
-            - ./../.env.test
+        environment:
+            APP_ENV: ci
+            HEADLESS: ${HEADLESS:-}
 
     nginx:
         image: nginx:latest
@@ -105,7 +109,7 @@ services:
 
     mysql:
         <<: *mysql-base
-        container_name: hskauting.mysql #Backward Compatibility
+        container_name: ${COMPOSE_PROJECT_NAME:-hskauting}.mysql #Backward Compatibility
         ports:
             - "3306:3306"
         hostname: mysql.localhost
@@ -114,7 +118,7 @@ services:
             - ./containers/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
 
     mysql-test:
-        container_name: hskauting.mysql-test #Backward Compatibility
+        container_name: ${COMPOSE_PROJECT_NAME:-hskauting}.mysql-test #Backward Compatibility
         <<: *mysql-base
         hostname: mysql-test.localhost
         volumes:
@@ -122,7 +126,7 @@ services:
             - ./containers/mysql-test/my.cnf:/etc/mysql/conf.d/my.cnf
 
     selenium:
-        container_name: hskauting.chrome
+        container_name: ${COMPOSE_PROJECT_NAME:-hskauting}.chrome
         hostname: selenium.localhost
         image: selenium/standalone-chrome
         shm_size: 2g
@@ -148,8 +152,8 @@ services:
         environment:
             ADMINER_PLUGINS: import-directory readable-dates
             ADMINER_IMPORT_SERVER_PATH: import/adminer.sql
-            ADMINER_USERNAME: hskauting
-            ADMINER_PASSWORD: hskauting
+            ADMINER_USERNAME: ${DB_USER:-hskauting}
+            ADMINER_PASSWORD: ${DB_PASSWORD:-hskauting}
             ADMINER_DEFAULT_SERVER: mysql
         networks:
             - traefik

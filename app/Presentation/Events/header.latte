@@ -1,0 +1,31 @@
+{* Events submenu *}
+<nav class="d-flex flex-wrap gap-2 align-items-center justify-content-between w-100" aria-label="Navigace akce">
+    <div class="d-flex flex-wrap gap-2 align-items-center">
+        <a n:href=":Events:Default:" n:class="btn, btn-sm, btn-outline-secondary">
+            <i class="fi fi-rr-arrow-left" aria-hidden="true"></i>
+            <span>Přehled akcí</span>
+        </a>
+        <a n:href="Event: $event->getId()->toInt()" n:class="btn, btn-sm, $presenter->isLinkCurrent('Event:default') ? btn-primary : btn-light">
+            <i class="fi fi-rr-home" aria-hidden="true"></i>
+            <span>Základní údaje</span>
+        </a>
+        <a n:href="Participant: $event->getId()->toInt()" n:class="btn, btn-sm, $presenterName === 'Participant' ? btn-primary : btn-light">
+            <i class="fi fi-rr-users" aria-hidden="true"></i>
+            <span>Seznam účastníků</span>
+        </a>
+        <a n:href="Cashbook: $event->getId()->toInt()" n:class="btn, btn-sm, $presenterName === 'Cashbook' ? btn-primary : btn-light">
+            <i class="fi fi-rr-clipboard-list" aria-hidden="true"></i>
+            <span>Evidence plateb</span>
+        </a>
+    </div>
+    <div class="d-flex flex-wrap gap-2 align-items-center ms-auto">
+        <a n:href="privilegesDialog:open!" class="btn btn-sm btn-light ajax">
+            <i class="fi fi-rr-shield-check" aria-hidden="true"></i>
+            <span>Oprávnění</span>
+        </a>
+        <a n:href="Event:logs $event->getId()->toInt()" n:class="btn, btn-sm, $presenter->isLinkCurrent('Event:logs') ? btn-primary : btn-light">
+            <i class="fi fi-rr-time-past" aria-hidden="true"></i>
+            <span>Poslední změny</span>
+        </a>
+    </div>
+</nav>

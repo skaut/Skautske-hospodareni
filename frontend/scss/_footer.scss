@@ -1,0 +1,81 @@
+// Footer — site footer and dashboard variant
+
+.site-footer {
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--tblr-border-color);
+  background: var(--tblr-bg-surface);
+}
+
+.site-footer__inner {
+  display: grid;
+  gap: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+
+  @media (min-width: 992px) {
+    grid-template-columns: minmax(0, 1.1fr) auto;
+    align-items: center;
+    gap: 1.5rem;
+  }
+}
+
+.site-footer__brand {
+  display: grid;
+  gap: 0.25rem;
+  max-width: 34rem;
+  justify-items: center;
+  text-align: center;
+
+  @media (min-width: 992px) {
+    justify-items: start;
+    text-align: left;
+  }
+}
+
+.site-footer__title {
+  color: var(--app-ink);
+  font-family: skautbold, sans-serif;
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.site-footer__text {
+  margin: 0;
+  color: var(--tblr-secondary);
+  font-size: $font-size-sm;
+  line-height: 1.5;
+}
+
+.site-footer__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+
+  @media (min-width: 992px) {
+    justify-content: flex-end;
+  }
+}
+
+.site-footer__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--tblr-border-color);
+  border-radius: var(--tblr-border-radius);
+  background: var(--tblr-bg-surface);
+  color: var(--tblr-body-color);
+  font-size: $font-size-sm;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+
+  &:hover,
+  &:focus {
+    color: var(--app-green);
+    text-decoration: none;
+    background: var(--app-green-soft);
+    border-color: rgba(77, 135, 70, 0.28);
+  }
+}

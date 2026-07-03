@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\ReadModel\QueryHandlers;
+namespace App\Model\Payment\ReadModel\QueryHandlers;
 
+use App\Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
+use App\Model\Common\Services\QueryBus;
+use App\Model\DTO\Participant\Participant;
+use App\Model\Payment\Group;
+use App\Model\Payment\Group\SkautisEntity;
+use App\Model\Payment\PaymentService;
+use App\Model\Payment\ReadModel\Queries\EventParticipantsWithoutPaymentQuery;
+use App\Model\Payment\Repositories\IGroupRepository;
 use Assert\InvalidArgumentException;
 use Codeception\Test\Unit;
 use Mockery;
-use Model\Cashbook\ReadModel\Queries\EventParticipantListQuery;
-use Model\Common\Services\QueryBus;
-use Model\DTO\Participant\Participant;
-use Model\Payment\Group;
-use Model\Payment\Group\SkautisEntity;
-use Model\Payment\ReadModel\Queries\EventParticipantsWithoutPaymentQuery;
-use Model\Payment\Repositories\IGroupRepository;
-use Model\PaymentService;
 
 final class EventParticipantsWithoutPaymentQueryHandlerTest extends Unit
 {
@@ -30,7 +30,7 @@ final class EventParticipantsWithoutPaymentQueryHandlerTest extends Unit
             ->andReturn([1, 3]);
 
         $groupRepository = $this->mockGroupRepository(
-            new Group\SkautisEntity(self::EVENT_ID, Group\Type::get(Group\Type::EVENT)),
+            new SkautisEntity(self::EVENT_ID, Group\Type::get(Group\Type::EVENT)),
         );
 
         $queryBus = Mockery::mock(QueryBus::class);
@@ -55,7 +55,7 @@ final class EventParticipantsWithoutPaymentQueryHandlerTest extends Unit
     }
 
     /** @dataProvider dataInvalidSkautisEntities */
-    public function testThrowsExceptionIfGroupIsNotEventGroup(Group\SkautisEntity|null $skautisEntity): void
+    public function testThrowsExceptionIfGroupIsNotEventGroup(?SkautisEntity $skautisEntity): void
     {
         $handler = new EventParticipantsWithoutPaymentQueryHandler(
             $this->mockGroupRepository($skautisEntity),
@@ -72,12 +72,12 @@ final class EventParticipantsWithoutPaymentQueryHandlerTest extends Unit
     public static function dataInvalidSkautisEntities(): array
     {
         return [
-            [new Group\SkautisEntity(10, Group\Type::get(Group\Type::CAMP))],
+            [new SkautisEntity(10, Group\Type::get(Group\Type::CAMP))],
             [null],
         ];
     }
 
-    private function mockGroupRepository(Group\SkautisEntity|null $skautisEntity): IGroupRepository
+    private function mockGroupRepository(?SkautisEntity $skautisEntity): IGroupRepository
     {
         $groups = Mockery::mock(IGroupRepository::class);
         $groups->shouldReceive('find')

@@ -10,8 +10,8 @@ modules:
     - WebDriver:
         url: 'http://moje-hospodareni.cz' # Base URL for tests
         browser: 'chrome' # Browser used for testing
-        host: 'selenium.localhost' # Selenium server host
-        wait: 10 # Max wait time in seconds for elements
+        host: 'selenium' # Selenium server host (Docker compose service name)
+        wait: 5 # Max wait time in seconds for elements
         capabilities:
           acceptInsecureCerts: true # Accept self-signed SSL certificates
           chromeOptions:
@@ -19,7 +19,6 @@ modules:
               - 'allow-insecure-localhost' # Allow insecure connections to localhost
               - '--ignore-ssl-errors=yes' # Ignore SSL errors
               - '--ignore-certificate-errors' # Ignore certificate errors
-              - '%HEADLESS%' # Turn off UI
               - '--disable-infobars'
               - '--disable-gpu' # Disable GPU acceleration
               - '--no-sandbox' # Disable Chrome's sandboxing
@@ -37,3 +36,21 @@ modules:
         populate: true
         dump: 'tests/_data/acceptance_init.sql'
         wait: 2
+
+env:
+  ci:
+    modules:
+      config:
+        WebDriver:
+          capabilities:
+            chromeOptions:
+              args:
+                - 'allow-insecure-localhost'
+                - '--ignore-ssl-errors=yes'
+                - '--ignore-certificate-errors'
+                - '--headless'
+                - '--disable-infobars'
+                - '--disable-gpu'
+                - '--no-sandbox'
+                - '--window-size=1920,1080'
+                - "--unsafely-treat-insecure-origin-as-secure=http://moje-hospodareni.cz"

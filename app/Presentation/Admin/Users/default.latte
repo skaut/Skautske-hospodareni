@@ -1,0 +1,126 @@
+{block title}Admin Uživatelé{/block}
+
+{block content}
+<div data-test="admin-users-page">
+    {* Hero *}
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 class="h3 mb-2">Uživatelé</h1>
+            <div class="page-lead">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Správa administrátorů s přístupem do systémové sekce. Přidávejte nebo odebírejte uživatele podle potřeby.</span>
+            </div>
+        </div>
+    </div>
+
+    <div n:if="! $storageAvailable" class="alert alert-warning" data-test="admin-users-storage-warning">
+        Tabulka <code>admin_user</code> ještě není v databázi dostupná. Spusťte migraci a potom bude možné adminy
+        spravovat přímo odsud.
+    </div>
+
+    <div n:if="$configuredAdminUserIds !== []" class="alert alert-info" data-test="admin-users-config-fallback">
+        Dočasný config fallback je stále aktivní pro user_id:
+        <strong>{implode(', ', $configuredAdminUserIds)}</strong>
+    </div>
+
+    {* Toggle button for add form *}
+    <div n:if="$storageAvailable && $editedAdminUser === null" class="d-flex justify-content-end mb-3">
+        <button
+            class="btn btn-primary"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#adminUserFormCollapse"
+            aria-expanded="false"
+            aria-controls="adminUserFormCollapse"
+            data-test="admin-users-form-toggle"
+        >
+            <i class="fi fi-rr-plus-small" aria-hidden="true"></i> Přidat admina
+        </button>
+    </div>
+
+    {* Collapsible form card *}
+    <div
+        class="collapse {if $editedAdminUser !== null}show{/if}"
+        id="adminUserFormCollapse"
+        data-test="admin-users-form-collapse"
+    >
+        <article class="card mb-4" data-test="admin-users-form-card">
+            <div class="card-body">
+                <h2 class="h5 mb-0">{if $editedAdminUser !== null}Upravit admina{else}Přidat admina{/if}</h2>
+                <p class="mt-2">
+                    Spravuje se jen persistentní allowlist administrátorů. Žádná další uživatelská metadata se sem zatím
+                    neukládají.
+                </p>
+
+                <div n:if="$storageAvailable" class="mt-3" data-test="admin-users-form">
+                    {control adminUserForm}
+                </div>
+
+                <div n:if="! $storageAvailable" class="text-body-secondary mt-3">
+                    Formulář se zobrazí po aplikaci databázové migrace.
+                </div>
+
+                <a
+                    n:if="$editedAdminUser !== null"
+                    n:href="default"
+                    class="btn btn-outline-secondary mt-3"
+                    data-test="admin-users-form-cancel"
+                >
+                    <i class="fi fi-rr-cross-small" aria-hidden="true"></i> Zrušit úpravu
+                </a>
+            </div>
+        </article>
+    </div>
+
+    {* Users table *}
+    <article class="card" data-test="admin-users-list-card">
+        <div class="card-body">
+            <h2 class="h5 mb-0">Persistentní administrátoři</h2>
+
+            <div n:if="$storageAvailable && $adminUsers !== []" class="table-responsive mt-3" data-test="admin-users-list">
+                <table class="table table-hover table-striped mb-0">
+                    <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Přidáno</th>
+                        <th class="text-end">Akce</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr
+                        n:foreach="$adminUsers as $adminUser"
+                        n:attr="data-test => 'admin-user-row-' . $adminUser->getId()"
+                    >
+                        <td><code>{$adminUser->getUserId()}</code></td>
+                        <td>{$adminUser->getCreatedAt()|date:'j. n. Y H:i'}</td>
+                        <td class="text-end">
+                            <a
+                                n:href="default, edit => $adminUser->getId()"
+                                class="btn btn-sm btn-light"
+                                title="Upravit"
+                                n:attr="data-test => 'admin-user-edit-' . $adminUser->getId()"
+                            >
+                                <i class="fi fi-rr-pencil" aria-hidden="true"></i>
+                            </a>
+                            <a
+                                n:href="deleteAdminUser!, id => $adminUser->getId()"
+                                class="btn btn-sm btn-outline-danger"
+                                title="Odebrat"
+                                n:attr="data-test => 'admin-user-delete-' . $adminUser->getId()"
+                                onclick='return confirm("Opravdu chcete odebrat tohoto administrátora?");'
+                            >
+                                <i class="fi fi-rr-trash" aria-hidden="true"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div n:if="$storageAvailable && $adminUsers === []" class="alert alert-light mt-3 mb-0" data-test="admin-users-empty">
+                V databázi zatím není uložen žádný administrátor.
+            </div>
+        </div>
+    </article>
+</div>
+{/block}

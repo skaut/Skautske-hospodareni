@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\ReadModel\QueryHandlers;
+namespace App\Model\Payment\ReadModel\QueryHandlers;
 
+use App\Model\Payment\BankAccount\BankAccountId;
+use App\Model\Payment\Group;
+use App\Model\Payment\ReadModel\Queries\CountGroupsWithBankAccountQuery;
 use IntegrationTest;
-use Model\Payment\BankAccount\BankAccountId;
-use Model\Payment\Group;
-use Model\Payment\ReadModel\Queries\CountGroupsWithBankAccountQuery;
 
 final class CountGroupsWithBankAccountQueryHandlerTest extends IntegrationTest
 {
@@ -19,7 +19,7 @@ final class CountGroupsWithBankAccountQueryHandlerTest extends IntegrationTest
 
     public function test(): void
     {
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < 3; ++$i) {
             $this->tester->haveInDatabase('pa_group', [
                 'name' => 'Test',
                 'bank_account_id' => 10,

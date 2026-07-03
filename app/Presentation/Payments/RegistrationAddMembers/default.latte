@@ -1,0 +1,30 @@
+{block #content}
+<div>
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 n:inner-block="title" class="h3 mb-2">Přidat osoby z registrace</h1>
+            <div class="page-lead mb-3">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Členové, kteří už mají v této skupině platbu, nejsou zobrazeni. U každé osoby lze vybrat libovolný e-mail pomocí stisknuté klávesy CTRL.</span>
+            </div>
+            <a n:href="default $group->id" class="btn btn-outline-secondary btn-sm">
+                <i class="fi fi-rr-arrow-left" aria-hidden="true"></i> {$group->name}
+            </a>
+        </div>
+    </div>
+
+    <section class="card">
+        <div class="card-body">
+            <h3 class="h5 mb-3">{$unitName}</h3>
+            {if $showForm}
+                <p class="text-body-secondary small">Z výkonostních důvodů je zobrazeno pouze prvních 50 osob.</p>
+                {control form}
+            {else}
+                <div class="empty-state">
+                    <i class="fi fi-rr-clipboard-check" aria-hidden="true"></i>
+                    <p class="mb-0">Nejsou dostupné žádné registrované osoby, které by neměly založenou platbu.</p>
+                </div>
+            {/if}
+        </div>
+    </section>
+</div>

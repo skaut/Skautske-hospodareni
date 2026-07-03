@@ -1,0 +1,17 @@
+{extends $baseTemplate}
+
+{block filters}
+    {include #filter-type-search}
+    {include #filter-type-select name => 'subunit', label => 'Oddíl'}
+
+{/block}
+
+{block global-actions}
+    <a href="{plink :Travel:Vehicle:new}" class="btn btn-primary" data-test="travel-vehicle-create-link">
+        <i class="fi fi-rr-plus-small" aria-hidden="true"></i> Založit nové vozidlo
+    </a>
+{/block}
+
+{define col-subunit}
+    {$units[$item->subunitId] ?? '-'}
+{/define}

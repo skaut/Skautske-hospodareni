@@ -1,0 +1,68 @@
+{block #content}
+<div data-test="travel-vehicle-form-page">
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 class="h3 mb-2" n:inner-block="title">Nové vozidlo</h1>
+            <div class="page-lead">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Zadejte údaje o novém vozidle pro cestovní příkazy.</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        <div class="col-8">
+            <div class="card">
+                <div class="card-body">
+                    <strong>Údaje vozidla</strong>
+                    <div class="mt-3">
+                        <form n:name="formCreateVehicle">
+                            <div class="mb-3">
+                                {label type /}
+                                {input type}
+                            </div>
+                            <div class="mb-3">
+                                {label registration /}
+                                {input registration}
+                            </div>
+                            <div class="mb-3">
+                                {label consumption /}
+                                <div class="input-group mb-2">
+                                    {input consumption}
+                                    <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#consumptionModal"><i class="fi fi-rr-interrogation" aria-hidden="true"></i></button>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                {label subunitId /}
+                                {input subunitId}
+                            </div>
+                            <div class="mb-3">
+                                {input send class => [btn, btn-primary]}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="consumptionModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Harmonizovaná spotřeba</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zavřít"></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Při určení spotřeby pohonných hmot se použije údaj o spotřebě pro kombinovaný provoz podle norem EU. U automobilů vyrobených od r. 1999 se jedná
+                    o třetí údaj spotřeby. V ostatních případech se spotřeba vypočte jako aritmetický průměr z údajů uvedených v technickém průkazu.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <div class="text-end small">Zdroj: <a href="https://krizovatka.skaut.cz/hospodareni/cestovni-nahrady">Metodický list - Cestovní náhrady a vše kolem</a></div>
+            </div>
+        </div>
+    </div>
+</div>

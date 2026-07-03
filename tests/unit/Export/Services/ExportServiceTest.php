@@ -2,37 +2,38 @@
 
 declare(strict_types=1);
 
-namespace Model\Export;
+namespace App\Model\Export;
 
+use App\Model\Cashbook\Cashbook\CashbookId;
+use App\Model\Cashbook\ICategory;
+use App\Model\Cashbook\Operation;
+use App\Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
+use App\Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
+use App\Model\Cashbook\ReadModel\Queries\EventParticipantStatisticsQuery;
+use App\Model\Common\Services\QueryBus;
+use App\Model\DTO\Cashbook\CategorySummary;
+use App\Model\DTO\Participant\Statistics;
+use App\Model\Event\Event;
+use App\Model\Event\Functions;
+use App\Model\Event\Repositories\IEventRepository;
+use App\Model\Invoice\Repository\InvoiceUnitSettingRepository;
+use App\Model\Services\TemplateFactory;
+use App\Model\Unit\UnitService;
+use App\Model\Utils\MoneyFactory;
 use Codeception\Test\Unit;
 use Mockery as m;
-use Model\Cashbook\Cashbook\CashbookId;
-use Model\Cashbook\ICategory;
-use Model\Cashbook\Operation;
-use Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
-use Model\Cashbook\ReadModel\Queries\EventCashbookIdQuery;
-use Model\Cashbook\ReadModel\Queries\EventParticipantStatisticsQuery;
-use Model\Common\Services\QueryBus;
-use Model\DTO\Cashbook\CategorySummary;
-use Model\DTO\Participant\Statistics;
-use Model\Event\Event;
-use Model\Event\Functions;
-use Model\Event\Repositories\IEventRepository;
-use Model\ExportService;
-use Model\Services\TemplateFactory;
-use Model\UnitService;
-use Model\Utils\MoneyFactory;
 
 class ExportServiceTest extends Unit
 {
     public function testGetEventReport(): void
     {
-        $skautisEventId  = 42;
-        $unitService     = m::mock(UnitService::class);
+        $skautisEventId = 42;
+        $unitService = m::mock(UnitService::class);
         $templateFactory = m::mock(TemplateFactory::class);
-        $events          = m::mock(IEventRepository::class);
+        $events = m::mock(IEventRepository::class);
         $events->expects('find')->andReturn(m::mock(Event::class));
         $queryBus = m::mock(QueryBus::class);
+        $invoiceUnitSettings = m::mock(InvoiceUnitSettingRepository::class);
 
         $cashbookId = CashbookId::fromString('11bf5b37-e0b8-42e0-8dcf-dc8c4aefc000');
 
@@ -61,7 +62,7 @@ class ExportServiceTest extends Unit
         // handle EventFunctions
         $queryBus->expects('handle')->once()->andReturn(m::mock(Functions::class));
 
-        $exportService = new ExportService($unitService, $templateFactory, $events, $queryBus);
+        $exportService = new ExportService($unitService, $templateFactory, $events, $queryBus, $invoiceUnitSettings);
 
         $templateFactory->expects('create')->withArgs(static function (string $templatePath, array $parameters): bool {
             if ($parameters['participantsCnt'] !== 0) {

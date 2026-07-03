@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Model\Skautis\Cashbook\Repositories;
+namespace App\Model\Skautis\Cashbook\Repositories;
 
+use App\Model\Cashbook\ICategory;
+use App\Model\Cashbook\Operation;
+use App\Model\Utils\MoneyFactory;
 use Codeception\Test\Unit;
 use Mockery as m;
-use Model\Cashbook\ICategory;
-use Model\Cashbook\Operation;
-use Model\Utils\MoneyFactory;
 use Skautis\Wsdl\WebServiceInterface;
 use stdClass;
 

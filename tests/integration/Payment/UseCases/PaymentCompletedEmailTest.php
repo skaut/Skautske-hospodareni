@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\IntegrationTests;
+namespace App\Model\Payment\IntegrationTests;
 
+use App\Model\Common\EmailAddress;
+use App\Model\Common\Services\CommandBus;
+use App\Model\Common\User;
+use App\Model\Google\Entity\GoogleOAuth;
+use App\Model\Google\OAuthId;
+use App\Model\Payment\Commands\Payment\CreatePayment;
+use App\Model\Payment\EmailTemplate;
+use App\Model\Payment\EmailType;
+use App\Model\Payment\Group;
+use App\Model\Payment\Payment;
+use App\Model\Payment\PaymentService;
+use App\Model\Payment\UserRepositoryStub;
 use Helpers;
 use IntegrationTest;
-use Model\Common\EmailAddress;
-use Model\Common\Services\CommandBus;
-use Model\Common\User;
-use Model\Google\OAuth;
-use Model\Google\OAuthId;
-use Model\Payment\Commands\Payment\CreatePayment;
-use Model\Payment\EmailTemplate;
-use Model\Payment\EmailType;
-use Model\Payment\Group;
-use Model\Payment\Payment;
-use Model\Payment\UserRepositoryStub;
-use Model\PaymentService;
 
 class PaymentCompletedEmailTest extends IntegrationTest
 {
@@ -35,7 +35,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
         return [
             Group::class,
             Payment::class,
-            OAuth::class,
+            GoogleOAuth::class,
         ];
     }
 
@@ -46,8 +46,8 @@ class PaymentCompletedEmailTest extends IntegrationTest
         parent::_before();
 
         $this->paymentService = $this->tester->grabService(PaymentService::class);
-        $this->users          = $this->tester->grabService(UserRepositoryStub::class);
-        $this->commandBus     = $this->tester->grabService(CommandBus::class);
+        $this->users = $this->tester->grabService(UserRepositoryStub::class);
+        $this->commandBus = $this->tester->grabService(CommandBus::class);
     }
 
     /** @see bug https://github.com/skaut/Skautske-hospodareni/pull/511 */
@@ -85,7 +85,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
 
     public function testEmailIsSentWhenPaymentIsCompleted(): void
     {
-        $email   = new EmailTemplate('subject', 'body');
+        $email = new EmailTemplate('subject', 'body');
         $oAuthId = $this->createOAuth();
         $this->initEntities(
             [
@@ -102,14 +102,14 @@ class PaymentCompletedEmailTest extends IntegrationTest
     }
 
     /** @param EmailTemplate[]|null $emails */
-    private function initEntities(array|null $emails = null, string|null $paymentEmail = self::EMAIL, OAuthId|null $oAuthId = null): void
+    private function initEntities(?array $emails = null, ?string $paymentEmail = self::EMAIL, ?OAuthId $oAuthId = null): void
     {
         if ($oAuthId === null) {
             $oAuthId = OAuthId::generate();
         }
 
         $paymentDefaults = Helpers::createEmptyPaymentDefaults();
-        $emails        ??= [
+        $emails ??= [
             EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
         ];
 

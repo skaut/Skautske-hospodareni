@@ -1,0 +1,64 @@
+{block title}Admin Statistiky{/block}
+
+{block #unit}
+    {var $space = "&nbsp;"}
+    {if array_key_exists($unit->getId(), $data)}
+        <tr>
+            <th>{$space|repeat:5 * $level|noescape}{$unit->getDisplayName()}</th>
+            <td>{$data[$unit->getId()]->events}</td>
+            <td>{$data[$unit->getId()]->camps}</td>
+            <td>{$data[$unit->getId()]->paymentGroups}</td>
+        </tr>
+        {foreach $unit->getChildren() as $child}
+            {include #unit, unit => $child, level => $level + 1}
+        {/foreach}
+    {/if}
+{/block}
+
+{block content}
+<div data-test="admin-statistics-page">
+    {* Hero *}
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 class="h3 mb-2">Statistiky</h1>
+            <div class="page-lead">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Souhrnné statistiky výprav, táborů a plateb podle jednotlivých jednotek a jejich podřízených.</span>
+            </div>
+        </div>
+    </div>
+
+    {* Year filter *}
+    <div class="card mb-4">
+        <div class="card-body">
+            {control selectYearForm}
+        </div>
+    </div>
+
+    {* Statistics table *}
+    <article class="card" data-test="admin-statistics-table-card">
+        <div class="card-body">
+            <h2 class="h5 mb-0">Přehled podle jednotek</h2>
+
+            <div class="table-responsive mt-3">
+                <table class="table table-hover table-striped mb-0">
+                    <thead>
+                    <tr>
+                        <th>Jednotka</th>
+                        <th>
+                            Výpravy
+                            <i class="fi fi-rr-interrogation" aria-hidden="true" data-bs-toggle="tooltip" title="Počet výprav s výdajovým dokladem."></i>
+                        </th>
+                        <th>Tábory</th>
+                        <th>Platby</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {include #unit, unit => $unitTree, level => 0}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </article>
+</div>
+{/block}

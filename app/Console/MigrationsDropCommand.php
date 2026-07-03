@@ -8,6 +8,7 @@ use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use function getenv;
@@ -16,7 +17,7 @@ use function sprintf;
 class MigrationsDropCommand extends Command
 {
     // phpcs:disable SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
-    /** @var string|null $defaultName The default command name */
+    /** @var string|null The default command name */
     protected static $defaultName = 'migrations:drop-all-tables-views';
 
     public function __construct(private EntityManagerInterface $em)
@@ -27,20 +28,23 @@ class MigrationsDropCommand extends Command
     protected function configure(): void
     {
         $this->setName(self::$defaultName)
-            ->setDescription('Drops all tables from the database');
+            ->setDescription('Drops all tables from the database')
+            ->addOption('force', null, InputOption::VALUE_NONE, 'Allow execution outside the testing environment');
     }
 
     /** @throws Exception */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if (getenv('DB_TEST') !== 'true') {
-            $output->writeln('Cannot run on non testing environment');
+        $isTestingEnvironment = getenv('APP_ENV') === 'ci' || getenv('DB_TEST') === 'true';
+
+        if (! $isTestingEnvironment && ! $input->getOption('force')) {
+            $output->writeln('Cannot run on non testing environment without --force.');
 
             return Command::FAILURE;
         }
 
-        $conn          = $this->em->getConnection();
-        $schemaManager = $conn->getSchemaManager();
+        $conn = $this->em->getConnection();
+        $schemaManager = $conn->createSchemaManager();
 
         // Drop tables
         $tables = $schemaManager->listTables();

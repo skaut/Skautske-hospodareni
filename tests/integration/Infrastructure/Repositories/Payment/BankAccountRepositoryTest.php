@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Model\Infrastructure\Repositories\Payment;
+namespace App\Model\Infrastructure\Repositories\Payment;
 
+use App\Model\Bank\Entity\BankAccount;
+use App\Model\Common\Embeddable\AccountNumber;
+use App\Model\Payment\BankAccountNotFound;
+use App\Model\Payment\IUnitResolver;
 use DateTimeImmutable;
 use IntegrationTest;
 use Mockery as m;
-use Model\Payment\BankAccount;
-use Model\Payment\BankAccountNotFound;
-use Model\Payment\IUnitResolver;
 
 use function array_keys;
 
@@ -44,7 +45,7 @@ class BankAccountRepositoryTest extends IntegrationTest
     public function testSavedAccountIsInDatabase(): void
     {
         $createdAt = new DateTimeImmutable();
-        $account   = $this->createAccount(5, $createdAt);
+        $account = $this->createAccount(5, $createdAt);
 
         $this->repository->save($account);
 
@@ -91,7 +92,7 @@ class BankAccountRepositoryTest extends IntegrationTest
     public function testRemove(): void
     {
         $notDeletedRow = $this->getRow(1, 5);
-        $row           = $this->getRow(2, 5);
+        $row = $this->getRow(2, 5);
         $this->tester->haveInDatabase('pa_bank_account', $notDeletedRow);
         $this->tester->haveInDatabase('pa_bank_account', $row);
 
@@ -149,12 +150,12 @@ class BankAccountRepositoryTest extends IntegrationTest
         $this->assertSame([], $accounts);
     }
 
-    private function createAccount(int $unitId = 1, DateTimeImmutable|null $createdAt = null): BankAccount
+    private function createAccount(int $unitId = 1, ?DateTimeImmutable $createdAt = null): BankAccount
     {
         return new BankAccount(
             1,
             'Hlavní',
-            new BankAccount\AccountNumber(null, '2000942144', '2010'),
+            new AccountNumber(null, '2000942144', '2010'),
             'test-token',
             $createdAt ?? new DateTimeImmutable(),
             m::mock(IUnitResolver::class, ['getOfficialUnitId' => $unitId]),
@@ -162,7 +163,7 @@ class BankAccountRepositoryTest extends IntegrationTest
     }
 
     /** @return mixed[] */
-    private function getRow(int $id, int $unitId, DateTimeImmutable|null $createdAt = null): array
+    private function getRow(int $id, int $unitId, ?DateTimeImmutable $createdAt = null): array
     {
         return [
             'id' => $id,

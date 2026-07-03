@@ -2,22 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\ReadModel\QueryHandlers;
+namespace App\Model\Payment\ReadModel\QueryHandlers;
 
+use App\Model\Common\Member;
+use App\Model\Common\Repositories\IMemberRepository;
+use App\Model\Common\UnitId;
+use App\Model\DTO\Payment\MemberEmail;
+use App\Model\DTO\Payment\MemberEmailType;
+use App\Model\Payment\PaymentService;
+use App\Model\Payment\ReadModel\Queries\MembersWithoutPaymentInGroupQuery;
+use App\Model\Payment\Repositories\IMemberEmailRepository;
 use Codeception\Test\Unit;
 use Mockery;
-use Model\Common\Member;
-use Model\Common\Repositories\IMemberRepository;
-use Model\Common\UnitId;
-use Model\Payment\ReadModel\Queries\MembersWithoutPaymentInGroupQuery;
-use Model\Payment\Repositories\IMemberEmailRepository;
-use Model\PaymentService;
 
 final class MembersWithoutPaymentInGroupQueryHandlerTest extends Unit
 {
     public function testMembersWithPaymentAreNotReturned(): void
     {
-        $unitId  = new UnitId(1);
+        $unitId = new UnitId(1);
         $groupId = 5;
 
         $members = Mockery::mock(IMemberRepository::class);
@@ -31,8 +33,8 @@ final class MembersWithoutPaymentInGroupQueryHandlerTest extends Unit
             ]);
 
         $emailsByMember = [
-            1 => ['cenda@email.cz' => 'email'],
-            2 => ['cibule@email.cz' => 'email'],
+            1 => [new MemberEmail('cenda@email.cz', 'email', MemberEmailType::MAIN)],
+            2 => [new MemberEmail('cibule@email.cz', 'email', MemberEmailType::MAIN)],
         ];
 
         $emails = Mockery::mock(IMemberEmailRepository::class);

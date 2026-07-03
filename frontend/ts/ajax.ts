@@ -1,4 +1,6 @@
 import naja from 'naja';
+import Dropdown from 'bootstrap/js/dist/dropdown';
+import Tooltip from 'bootstrap/js/dist/tooltip';
 // @ts-ignore
 import {ProgressBar} from './ProgressBar';
 import {ModalExtension} from './ModalExtension';
@@ -9,9 +11,23 @@ import {initializeLinksThatRequireConfirmation} from "./confirmDialogs";
 import {initializeCheckAllCheckboxes, initializeCheckboxToggle} from "./checkboxes";
 import {DataGridExtension} from "./DataGridExtension";
 import {initializeDatePicker} from "./datePicker";
+import {initializeMassEmailSelection} from "./massEmailSelection";
 import netteForms from "./netteForms";
 import {initializeSendMassForm} from "./ChitListExtension"
 import {initializeEditForm} from "./ChitListExtension"
+import {initializePageEnhancements} from "./pageEnhancements";
+
+function initializeDropdowns(root: ParentNode): void {
+    root.querySelectorAll<HTMLElement>('[data-bs-toggle="dropdown"]').forEach((element) => {
+        Dropdown.getOrCreateInstance(element);
+    });
+}
+
+function initializeTooltips(root: ParentNode): void {
+    root.querySelectorAll<HTMLElement>('[data-bs-toggle="tooltip"]').forEach((element) => {
+        Tooltip.getOrCreateInstance(element);
+    });
+}
 
 export default function (): void {
     naja.registerExtension(ProgressBar);
@@ -26,6 +42,10 @@ export default function (): void {
         initializeSendMassForm(snippet, 'chits-');
         initializeEditForm(snippet,'chits-');
         snippet.querySelectorAll<HTMLElement>('.date').forEach(initializeDatePicker);
+        initializeDropdowns(snippet);
+        initializeTooltips(snippet);
+        initializeMassEmailSelection(snippet);
+        initializePageEnhancements(snippet);
     });
 
     naja.registerExtension(DataGridExtension);

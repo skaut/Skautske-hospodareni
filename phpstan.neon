@@ -16,6 +16,8 @@ parameters:
     scanDirectories:
         - tests/_support
 
+    bootstrapFiles:
+        - tests/Http/NoOpResponse.php   # místo autoload_files
 
 services:
 	- class: CodeQuality\ObjectIdentityComparisonRule

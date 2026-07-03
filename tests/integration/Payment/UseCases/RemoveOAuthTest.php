@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Model\Payment\IntegrationTests;
+namespace App\Model\Payment\IntegrationTests;
 
+use App\Model\Common\UnitId;
+use App\Model\Google\Commands\RemoveOAuth;
+use App\Model\Google\Entity\GoogleOAuth;
+use App\Model\Google\Exception\OAuthNotFound;
+use App\Model\Google\Handlers\RemoveOAuthHandler;
+use App\Model\Mail\Repositories\IGoogleRepository;
+use App\Model\Payment\Group;
+use App\Model\Payment\Repositories\IGroupRepository;
 use DateTimeImmutable;
 use Helpers;
 use IntegrationTest;
-use Model\Common\UnitId;
-use Model\Google\Commands\RemoveOAuth;
-use Model\Google\Exception\OAuthNotFound;
-use Model\Google\Handlers\RemoveOAuthHandler;
-use Model\Google\OAuth;
-use Model\Mail\Repositories\IGoogleRepository;
-use Model\Payment\Group;
-use Model\Payment\Repositories\IGroupRepository;
 use Stubs\BankAccountAccessCheckerStub;
 use Stubs\OAuthsAccessCheckerStub;
 
@@ -30,25 +30,25 @@ final class RemoveOAuthTest extends IntegrationTest
     protected function getTestedAggregateRoots(): array
     {
         return [
-            OAuth::class,
+            GoogleOAuth::class,
             Group::class,
         ];
     }
 
     protected function _before(): void
     {
-        $this->tester->useConfigFiles([__DIR__ . '/RemoveOAuthTest.neon']);
+        $this->tester->useConfigFiles([__DIR__.'/RemoveOAuthTest.neon']);
 
         parent::_before();
 
         $this->repository = $this->tester->grabService(IGoogleRepository::class);
-        $this->groups     = $this->tester->grabService(IGroupRepository::class);
-        $this->handler    = $this->tester->grabService(RemoveOAuthHandler::class);
+        $this->groups = $this->tester->grabService(IGroupRepository::class);
+        $this->handler = $this->tester->grabService(RemoveOAuthHandler::class);
     }
 
     public function test(): void
     {
-        $oAuth = OAuth::create(new UnitId(123), 'code-xxx', 'test@hospodareni.loc');
+        $oAuth = GoogleOAuth::create(new UnitId(123), 'code-xxx', 'test@hospodareni.loc');
         $this->repository->save($oAuth);
         $oAuthId = $oAuth->getId();
 

@@ -1,11 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
 /** This plugin replaces UNIX timestamps with human-readable dates in your local format.
  * Mouse click on the date field reveals timestamp back.
  *
  * @see https://www.adminer.org/plugins/#use
+ * @author Anonymous
+ * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
+ * @license http://www.gnu.org/licenses/gpl-2.0.html GNU General Public License, version 2 (one or other)
  */
 class AdminerReadableDates
 {
@@ -20,8 +21,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
 	var tds = document.querySelectorAll('td[id^="val"]');
 	for (var i = 0; i < tds.length; i++) {
 		var text = tds[i].innerHTML.trim();
-		if (text.match(/^\d{10}$/) || text.match(/^\d{13}$/)) {
-			date.setTime(parseInt(text) * (text.length === 10 ? 1000 : 1));
+		if (text.match(/^\d{10}$/)) {
+			date.setTime(parseInt(text) * 1000);
 			tds[i].oldDate = text;
 
 			// tds[i].newDate = date.toUTCString().substr(5); // UTC format
@@ -43,8 +44,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
 EOT;
     }
 
-    public function head(): void
+    public function head()
     {
-        echo script($this->prepend);
+        echo '<script>'.$this->prepend.'</script>';
     }
 }

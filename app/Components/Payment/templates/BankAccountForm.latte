@@ -1,0 +1,154 @@
+{snippet form}
+<form n:name="form" class="form-horizontal">
+    {if !empty($form->errors)}
+        <div n:foreach="$form->errors as $error" class="alert alert-danger">{$error}</div>
+    {/if}
+    <div class="mb-3 required">
+        <div class="col-sm-3 control-label">
+            {label name /}
+        </div>
+        <div class="col-sm-9">
+            {input name class => form-control}
+        </div>
+    </div>
+    <div class="mb-3 required">
+        <div class="col-sm-3 control-label">
+            <label class="form-label">Číslo účtu</label>
+        </div>
+        <div class="col-sm-9">
+            <div class="input-group">
+                {input prefix class => form-control}
+                <span class="input-group-text">-</span>
+                {input number class => form-control}
+                <span class="input-group-text">/</span>
+                {input bankCode class => form-control}
+            </div>
+        </div>
+    </div>
+    <p>Informace pro fakturaci:</p>
+    <div class="mb-3">
+        <div class="col-sm-3 control-label">
+            {label iban /}
+        </div>
+        <div class="col-sm-9">
+            {input iban class => form-control}
+        </div>
+    </div>
+
+    <div class="mb-3 required">
+        <div class="col-sm-3 control-label">
+            {label bankName /}
+        </div>
+        <div class="col-sm-9">
+            {input bankName class => form-control}
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <div class="col-sm-3 control-label">
+            {label bic /}
+        </div>
+        <div class="col-sm-9">
+            {input bic class => form-control}
+        </div>
+    </div>
+
+    <div class="mb-3 required">
+        <div class="col-sm-3 control-label">
+            {label transactionSource /}
+        </div>
+        <div class="col-sm-9">
+            {input transactionSource class => form-control}
+            <div id="transactionSourceHelp" class="form-text text-body-secondary mt-1"></div>
+        </div>
+    </div>
+
+    <div class="mb-3" id="api">
+        <p>FIO API:</p>
+        <div class="col-sm-3 control-label">
+            {label token /}
+        </div>
+        <div class="col-sm-9">
+            {input token class => form-control}
+        </div>
+    </div>
+    <div class="mb-3">
+        <div class="col-sm-offset-3 col-sm-9">
+            {input send class => 'btn btn-primary', id => submitButton}
+        </div>
+    </div>
+</form>
+{/snippet}
+
+<div id="itemInfo"></div>
+
+<script>
+    const fioBankCode = {$fioBankCode};
+    const fioSourceValue = {$fioSourceValue};
+    const gpcSourceValue = {$gpcSourceValue};
+    const bankData = {
+        {foreach $bankCodes as $id => $item}
+        {(string) $id}: {
+            name: {$item},
+            bic: {isset($bankBic[$id]) ? $bankBic[$id] : ''}
+        },
+        {/foreach}
+    };
+
+    function updateInfo(select) {
+        const bankCode = String(select.value);
+        const bankNameInput = document.getElementById('bankName');
+        const bankBicInput = document.getElementById('bankBic');
+
+        if (bankData[bankCode]) {
+            bankNameInput.value = bankData[bankCode].name;
+            bankBicInput.value = bankData[bankCode].bic;
+        } else {
+            bankNameInput.value = '';
+            bankBicInput.value = '';
+        }
+
+        updateTransactionSource(document.getElementById('transactionSource'));
+    }
+
+    function updateTransactionSource(select) {
+        const bankCode = String(document.getElementById('bankCode').value);
+        const sourceSelect = select ?? document.getElementById('transactionSource');
+        const apiSection = document.getElementById('api');
+        const tokenInput = document.getElementById('token');
+        const sourceHelp = document.getElementById('transactionSourceHelp');
+        const fioOption = Array.from(sourceSelect.options).find((option) => option.value === fioSourceValue);
+        const isFioBank = bankCode === fioBankCode;
+
+        if (fioOption) {
+            fioOption.disabled = !isFioBank;
+        }
+
+        if (!isFioBank || String(sourceSelect.value) === '') {
+            sourceSelect.value = gpcSourceValue;
+        }
+
+        const isFio = isFioBank && String(sourceSelect.value) === fioSourceValue;
+
+        apiSection.style.display = isFio ? '' : 'none';
+        tokenInput.disabled = !isFio;
+
+        if (!isFio) {
+            tokenInput.value = '';
+        }
+
+        if (sourceHelp) {
+            sourceHelp.textContent = isFioBank
+                ? 'U účtů vedených u FIO můžeš vybrat FIO API nebo GPC soubor.'
+                : 'Pro banky mimo FIO je zdroj transakcí uzamčený na GPC soubor.';
+        }
+
+        if (String(sourceSelect.value) === fioSourceValue && !isFioBank) {
+            sourceSelect.setCustomValidity('Zdroj FIO API lze použít pouze pro účty vedené u FIO banky.');
+        } else {
+            sourceSelect.setCustomValidity('');
+        }
+    }
+
+    updateInfo(document.getElementById('bankCode'));
+</script>

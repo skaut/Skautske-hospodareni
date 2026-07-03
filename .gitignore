@@ -1,8 +1,4 @@
-/app/config/config.*.neon
-!/app/config/config.sample.local.neon
-!/app/config/config.ci.local.neon
-!/app/config/config.production.local.neon
-!/app/config/config.test.local.neon
+/app/config/config.*.local.neon
 /vendor
 node_modules
 /source
@@ -21,4 +17,7 @@ www/js/app.min.js
 app/config/google-credentials*
 adminer.php
 *.sh
-.env
+!/code-quality/validate-mapping.sh
+/.env.local
+/.env.*.local
+/.php-cs-fixer.cache

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook\Cashbook;
+namespace App\Model\Cashbook\Cashbook;
 
 use Codeception\Test\Unit;
 use InvalidArgumentException;
@@ -11,7 +11,7 @@ class RecipientTest extends Unit
 {
     public function testToString(): void
     {
-        $name      = 'František Maša';
+        $name = 'František Maša';
         $recipient = new Recipient($name);
 
         $this->assertSame($name, (string) $recipient);

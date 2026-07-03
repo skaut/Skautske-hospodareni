@@ -10,13 +10,17 @@ declare(strict_types=1);
 use Doctrine\Persistence\ObjectManager;
 use Nette\Bootstrap\Configurator;
 use Nette\DI\Extensions\ExtensionsExtension;
+use Tracy\Bridges\Nette\TracyExtension;
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
+require_once __DIR__.'/env-bootstrap.php';
 
-$tempDir = dirname(__DIR__) . '/temp';
-$logDir  = __DIR__ . '/../log';
+$tempDir = dirname(__DIR__).'/temp';
+$logDir = __DIR__.'/../log';
 
-putenv('TMPDIR=' . $tempDir);
+putenv('TMPDIR='.$tempDir);
+
+$environment = loadTestEnvironmentConfiguration();
 
 $configurator = new Configurator();
 $configurator->setDebugMode(true);
@@ -24,16 +28,16 @@ $configurator->enableTracy($logDir);
 $configurator->setTempDirectory($tempDir);
 
 $configurator->createRobotLoader()
-    ->addDirectory(__DIR__ . '/../app')
+    ->addDirectory(__DIR__.'/../app')
     ->register(true);
 
 $configurator->defaultExtensions = [
     'extensions' => ExtensionsExtension::class,
-    'tracy' => [Tracy\Bridges\Nette\TracyExtension::class, ['%debugMode%', '%consoleMode%']],
+    'tracy' => [TracyExtension::class, ['%debugMode%', '%consoleMode%']],
 ];
 
-$configurator->addStaticParameters(['env' => getenv()]);
-$configurator->addConfig(__DIR__ . '/integration/config/doctrine.neon');
+$configurator->addStaticParameters(['envConfig' => $environment]);
+$configurator->addConfig(__DIR__.'/integration/config/doctrine.neon');
 
 $configurator->addStaticParameters(['logDir' => $logDir]);
 

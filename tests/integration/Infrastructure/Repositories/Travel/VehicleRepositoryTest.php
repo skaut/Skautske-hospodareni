@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Model\Infrastructure\Repositories\Travel;
+namespace App\Model\Infrastructure\Repositories\Travel;
 
+use App\Model\Travel\Vehicle;
+use App\Model\Travel\VehicleNotFound;
+use App\Model\Unit\Unit;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManager;
 use IntegrationTest;
 use Mockery as m;
-use Model\Travel\Vehicle;
-use Model\Travel\VehicleNotFound;
-use Model\Unit\Unit;
 
 class VehicleRepositoryTest extends IntegrationTest
 {
-    private const TABLE                 = 'tc_vehicle';
+    private const TABLE = 'tc_vehicle';
     private const TABLE_ROADWORTHY_SCAN = 'tc_vehicle_roadworthy_scan';
 
     private VehicleRepository $repository;
@@ -153,7 +153,7 @@ class VehicleRepositoryTest extends IntegrationTest
     {
         $row = $this->getVehicleRow();
 
-        $unit    = m::mock(Unit::class, ['getId' => $row['unit_id']]);
+        $unit = m::mock(Unit::class, ['getId' => $row['unit_id']]);
         $subunit = m::mock(Unit::class, ['getId' => $row['subunit_id']]);
 
         $vehicle = new Vehicle(

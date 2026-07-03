@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Model\Cashbook\ReadModel\QueryHandlers;
+namespace App\Model\Cashbook\ReadModel\QueryHandlers;
 
+use App\Model\Cashbook\Cashbook;
+use App\Model\Cashbook\Operation;
+use App\Model\Cashbook\ReadModel\Queries\ChitListQuery;
+use App\Model\Cashbook\ReadModel\Queries\FinalCashBalanceQuery;
+use App\Model\Common\Services\QueryBus;
+use App\Model\DTO\Cashbook\Category;
+use App\Model\DTO\Cashbook\Chit;
+use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use Mockery as m;
-use Model\Cashbook\Cashbook;
-use Model\Cashbook\Operation;
-use Model\Cashbook\ReadModel\Queries\ChitListQuery;
-use Model\Cashbook\ReadModel\Queries\FinalCashBalanceQuery;
-use Model\Common\Services\QueryBus;
-use Model\DTO\Cashbook\Category;
-use Model\DTO\Cashbook\Chit;
-use Model\Utils\MoneyFactory;
 use Money\Money;
 
 final class FinalBalanceQueryHandlerTest extends Unit
@@ -40,8 +40,8 @@ final class FinalBalanceQueryHandlerTest extends Unit
         $op = Operation::get($operation);
 
         return m::mock(Chit::class, [
-            'getBody'       => new Cashbook\ChitBody(null, new ChronosDate('2017-11-17'), null),
-            'getCategory'   => new Category(1, 'catName', 'a', $op, false),
+            'getBody' => new Cashbook\ChitBody(null, new ChronosDate('2017-11-17'), null),
+            'getCategory' => new Category(1, 'catName', 'a', $op, false),
             'getSignedAmount' => $amount * ($op->equalsValue(Operation::INCOME) ? 1 : -1),
         ]);
     }
