@@ -17,6 +17,7 @@ www/js/app.min.js
 app/config/google-credentials*
 adminer.php
 *.sh
+!/code-quality/validate-mapping.sh
 /.env.local
 /.env.*.local
 /.php-cs-fixer.cache
