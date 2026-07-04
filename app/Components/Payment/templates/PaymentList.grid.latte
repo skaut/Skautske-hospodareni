@@ -63,10 +63,10 @@
             ? 'Skupina nemá nastavený e-mail odesílatele'
             : (!$hasEmailRecipient ? 'Není uveden email' : 'Odeslat e-mail o platbě')
         }
-        <a href="{plink paymentDialog:open! $item->getId()}"
+        <a href="{$control->getPresenter()->link('paymentDialog:open!', $item->getId())}"
            class="btn btn-sm btn-light ajax"
            title="Upravit platbu"><i class="far fa-edit"></i></a>
-        <a href="{plink splitPaymentDialog:open! $item->getId()}"
+        <a href="{$control->getPresenter()->link('splitPaymentDialog:open!', $item->getId())}"
            n:if="$item->getAmount() > 0"
            class="btn btn-sm btn-light ajax"
            data-test="payment-split-action-{$item->getId()}"
@@ -77,7 +77,7 @@
            title="{$emailActionTitle}"><i
                     class="far fa-envelope-open"></i></a>
         {if $isReminderSendActive}
-        <a href="{$control->getParent()->link(sendReminder, $item->id)}"
+        <a href="{$control->getParent()->link(sendReminder, $item->getId())}"
            n:class="btn, btn-sm, $canSendEmail ? btn-warning : btn-light, $canSendEmail ? 'ui--sendEmail' : disabled"
            title="{$emailActionTitle}"><i
                     class="far fa-bell"></i></a>
@@ -91,7 +91,7 @@
         <a href="{$control->getParent()->link(complete, $item->getId())}" class="btn btn-sm btn-success" title="Zaplaceno"><i
                     class="fas fa-check"></i></a>
     {elseif $item->isClosed()}
-        <a href="{plink paymentNoteDialog:open! $item->getId()}"
+        <a href="{$control->getPresenter()->link('paymentNoteDialog:open!', $item->getId())}"
            class="btn btn-sm btn-light ajax"
            title="Upravit poznámku"><i class="fa fa-comment"></i></a>
     {var $transaction = $item->getTransaction()}

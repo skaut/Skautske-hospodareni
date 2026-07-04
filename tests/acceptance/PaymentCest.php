@@ -722,6 +722,33 @@ class PaymentCest extends BaseAcceptanceCest
     }
 
     /** @group payment */
+    public function paymentGridShowsHiddenTextNoteColumn(): void
+    {
+        $I = $this->I;
+        $groupId = $this->createSubtypePaymentGroup('event');
+        $I->haveInDatabase('pa_payment', [
+            'group_id' => $groupId,
+            'name' => 'Platba s textovou poznámkou',
+            'amount' => 500,
+            'due_date' => ChronosDate::today()->addWeekdays(1)->format('Y-m-d'),
+            'variable_symbol' => '900002',
+            'constant_symbol' => null,
+            'note' => 'Textová poznámka v gridu',
+            'state' => 'preparing',
+        ]);
+
+        $I->amOnPage('/platby/skupiny/'.$groupId.'/platby');
+        $I->waitForElementVisible('[data-test="payment-group-grid"] .datagrid', 10);
+        $I->click('[data-test="payment-group-grid"] .datagrid-settings button');
+        $I->waitForElementVisible('[data-test="payment-group-grid"] .dropdown-menu.show', 10);
+        $I->click('Zobrazit všechny sloupce');
+
+        $I->waitForText('Poznámka', 10, '[data-test="payment-group-grid"] thead');
+        $I->see('Textová poznámka v gridu', '[data-test="payment-group-grid"]');
+        $I->see('Akce', '[data-test="payment-group-grid"] thead');
+    }
+
+    /** @group payment */
     public function splitPaymentIntoMultiplePayments(): void
     {
         $I = $this->I;

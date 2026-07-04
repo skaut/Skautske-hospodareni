@@ -105,7 +105,7 @@ final class PaymentList extends BaseControl
         $grid->addColumnDateTime('closedAt', 'Zaplaceno')
             ->setSortable();
 
-        $grid->addColumnDateTime('Note', 'Poznámka')
+        $grid->addColumnText('note', 'Poznámka')
             ->setSortable()
             ->setDefaultHide();
 
