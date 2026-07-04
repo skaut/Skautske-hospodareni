@@ -71,9 +71,9 @@
                                 <div class="flex-grow-1">
                                     <i n:class="$email->wasSuccessful() ? 'fi fi-rr-envelope text-success' : 'fi fi-rr-triangle-warning text-danger'" aria-hidden="true"></i>
                                     {switch $email->getType()->toString()}
-                                        {case \Model\Invoice\EmailType::INVOICE_INFO}
+                                        {case \App\Model\Invoice\EmailType::INVOICE_INFO}
                                         Faktura
-                                        {case \Model\Invoice\EmailType::INVOICE_REMINDER}
+                                        {case \App\Model\Invoice\EmailType::INVOICE_REMINDER}
                                         Upomínka
                                     {/switch}
                                 </div>

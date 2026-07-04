@@ -28,11 +28,11 @@
                                 <i class="far fa-envelope-open"></i>
                                 {var $emailType = $email->getType()->toString()}
                                 {switch $emailType}
-                                    {case \Model\Payment\EmailType::PAYMENT_INFO}
+                                    {case \App\Model\Payment\EmailType::PAYMENT_INFO}
                                     Platební údaje
-                                    {case \Model\Payment\EmailType::PAYMENT_COMPLETED}
+                                    {case \App\Model\Payment\EmailType::PAYMENT_COMPLETED}
                                     Potvrzení o dokončení platby
-                                    {case \Model\Payment\EmailType::PAYMENT_REMINDER}
+                                    {case \App\Model\Payment\EmailType::PAYMENT_REMINDER}
                                     Upomínka platby
                                 {/switch}
 
