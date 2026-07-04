@@ -36,14 +36,15 @@
 <body class="app-shell" data-page-help-expanded="{$showPageHelp ? 'true' : 'false'}">
 <div class="page">
 
-    <nav n:class="navbar, navbar-expand-lg, navbar-light, site-header, sticky-top, $testBackground ? 'navbar--test'">
+    <nav n:class="navbar, navbar-expand-lg, navbar-light, site-header, sticky-top, $testBackground ? 'navbar--' . $environmentColor">
         <div class="container-xl">
             {* ── Brand ── *}
             {if $user->isLoggedIn()}
                 <a class="navbar-brand" n:href=":Dashboard:default">
                     {if $testBackground}
-                        <span class="navbar-test-badge" title="Testovací server" data-test="test-server-badge">
+                        <span class="navbar-test-badge" title="{$environmentLabel}" data-test="test-server-badge">
                             <i class="fas fa-flask" aria-hidden="true"></i>
+                            <span class="visually-hidden">{$environmentLabel}</span>
                         </span>
                     {else}
                         <img src="/images/skaut-logo.svg" class="navbar-brand-icon" alt="" aria-hidden="true">
@@ -53,8 +54,9 @@
             {else}
                 <a class="navbar-brand" n:href=":Default:">
                     {if $testBackground}
-                        <span class="navbar-test-badge" title="Testovací server" data-test="test-server-badge">
+                        <span class="navbar-test-badge" title="{$environmentLabel}" data-test="test-server-badge">
                             <i class="fas fa-flask" aria-hidden="true"></i>
+                            <span class="visually-hidden">{$environmentLabel}</span>
                         </span>
                     {else}
                         <img src="/images/skaut-logo.svg" class="navbar-brand-icon" alt="" aria-hidden="true">

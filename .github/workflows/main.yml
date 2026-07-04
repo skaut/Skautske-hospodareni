@@ -277,6 +277,9 @@ jobs:
           DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
           SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
           SEND_EMAIL: ${{ vars.SEND_EMAIL }}
+          ERROR_EMAILS: ${{ vars.ERROR_EMAILS }}
+          ENVIRONMENT_LABEL: ${{ vars.ENVIRONMENT_LABEL }}
+          ENVIRONMENT_COLOR: ${{ vars.ENVIRONMENT_COLOR }}
           TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
           TRACY_SHOW_BAR: ${{ vars.TRACY_SHOW_BAR }}
           DB_HOST: ${{ vars.DB_HOST }}
@@ -284,6 +287,13 @@ jobs:
           DB_USER: ${{ vars.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           GOOGLE_CREDENTIALS_FILE: ${{ vars.GOOGLE_CREDENTIALS_FILE }}
+          GOOGLE_REDIRECT_URI: ${{ vars.GOOGLE_REDIRECT_URI }}
+          MAINTENANCE_MODE: ${{ vars.MAINTENANCE_MODE }}
+          MAINTENANCE_ALLOWED_IPS: ${{ vars.MAINTENANCE_ALLOWED_IPS }}
+          MAINTENANCE_STARTED_AT_LABEL: ${{ vars.MAINTENANCE_STARTED_AT_LABEL }}
+          MAINTENANCE_STARTED_AT_DATETIME: ${{ vars.MAINTENANCE_STARTED_AT_DATETIME }}
+          MAINTENANCE_ENDS_AT_LABEL: ${{ vars.MAINTENANCE_ENDS_AT_LABEL }}
+          MAINTENANCE_ENDS_AT_DATETIME: ${{ vars.MAINTENANCE_ENDS_AT_DATETIME }}
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           GITHUB_SHA: ${{ github.sha }}
@@ -330,6 +340,9 @@ jobs:
           DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
           SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
           SEND_EMAIL: ${{ vars.SEND_EMAIL }}
+          ERROR_EMAILS: ${{ vars.ERROR_EMAILS }}
+          ENVIRONMENT_LABEL: ${{ vars.ENVIRONMENT_LABEL }}
+          ENVIRONMENT_COLOR: ${{ vars.ENVIRONMENT_COLOR }}
           TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
           TRACY_SHOW_BAR: ${{ vars.TRACY_SHOW_BAR }}
           DB_HOST: ${{ vars.DB_HOST }}
@@ -337,6 +350,13 @@ jobs:
           DB_USER: ${{ vars.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           GOOGLE_CREDENTIALS_FILE: ${{ vars.GOOGLE_CREDENTIALS_FILE }}
+          GOOGLE_REDIRECT_URI: ${{ vars.GOOGLE_REDIRECT_URI }}
+          MAINTENANCE_MODE: ${{ vars.MAINTENANCE_MODE }}
+          MAINTENANCE_ALLOWED_IPS: ${{ vars.MAINTENANCE_ALLOWED_IPS }}
+          MAINTENANCE_STARTED_AT_LABEL: ${{ vars.MAINTENANCE_STARTED_AT_LABEL }}
+          MAINTENANCE_STARTED_AT_DATETIME: ${{ vars.MAINTENANCE_STARTED_AT_DATETIME }}
+          MAINTENANCE_ENDS_AT_LABEL: ${{ vars.MAINTENANCE_ENDS_AT_LABEL }}
+          MAINTENANCE_ENDS_AT_DATETIME: ${{ vars.MAINTENANCE_ENDS_AT_DATETIME }}
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           GITHUB_SHA: ${{ github.sha }}
@@ -377,19 +397,27 @@ jobs:
           SSH_USERNAME: vu008930
           HOST: www.skauting.cz
           PORT: "8930"
-          APP_ENV: ${{ vars.APP_ENV }}
-          APP_BASE_URL: ${{ vars.APP_BASE_URL }}
+          APP_ENV: prod
+          APP_BASE_URL: https://h.skauting.cz
           APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
           DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
-          SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
-          SEND_EMAIL: ${{ vars.SEND_EMAIL }}
-          TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
-          TRACY_SHOW_BAR: ${{ vars.TRACY_SHOW_BAR }}
-          DB_HOST: ${{ vars.DB_HOST }}
-          DB_NAME: ${{ vars.DB_NAME }}
-          DB_USER: ${{ vars.DB_USER }}
+          SKAUTIS_TEST_MODE: "false"
+          SEND_EMAIL: "true"
+          ERROR_EMAILS: sinacek@gmail.com,frantisekmasa1@gmail.com
+          TEST_BACKGROUND: "false"
+          TRACY_SHOW_BAR: "false"
+          DB_HOST: localhost
+          DB_NAME: h
+          DB_USER: h
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          GOOGLE_CREDENTIALS_FILE: ${{ vars.GOOGLE_CREDENTIALS_FILE }}
+          GOOGLE_CREDENTIALS_FILE: google-credentials.json
+          GOOGLE_REDIRECT_URI: https://h.skauting.cz/google/token
+          MAINTENANCE_MODE: ${{ vars.MAINTENANCE_MODE }}
+          MAINTENANCE_ALLOWED_IPS: ${{ vars.MAINTENANCE_ALLOWED_IPS }}
+          MAINTENANCE_STARTED_AT_LABEL: ${{ vars.MAINTENANCE_STARTED_AT_LABEL }}
+          MAINTENANCE_STARTED_AT_DATETIME: ${{ vars.MAINTENANCE_STARTED_AT_DATETIME }}
+          MAINTENANCE_ENDS_AT_LABEL: ${{ vars.MAINTENANCE_ENDS_AT_LABEL }}
+          MAINTENANCE_ENDS_AT_DATETIME: ${{ vars.MAINTENANCE_ENDS_AT_DATETIME }}
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           GITHUB_SHA: ${{ github.sha }}

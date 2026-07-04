@@ -64,6 +64,14 @@ final class Environment
         self::$loaded = true;
     }
 
+    public static function reload(string $projectDir): void
+    {
+        self::$loaded = false;
+        self::$configuration = null;
+
+        self::load($projectDir);
+    }
+
     /** @return array<string, mixed> */
     public static function getConfiguration(): array
     {
@@ -171,7 +179,18 @@ final class Environment
             'sendEmail' => self::getBool('SEND_EMAIL', $appEnv !== 'dev'),
             'errorEmails' => self::getList('ERROR_EMAILS'),
             'testBackground' => self::getBool('TEST_BACKGROUND', $appEnv !== 'prod'),
-            'tracyShowBar' => self::getBool('TRACY_SHOW_BAR', $appEnv === 'dev'),
+            'environmentLabel' => self::getString('ENVIRONMENT_LABEL', 'Testovací server'),
+            'environmentColor' => self::getEnvironmentColor(),
+            'maintenance' => [
+                'enabled' => self::getBool('MAINTENANCE_MODE', false),
+                'allowedIps' => self::getList('MAINTENANCE_ALLOWED_IPS'),
+                'startedAtLabel' => self::getString('MAINTENANCE_STARTED_AT_LABEL', 'čtvrtek 2. 7. 2026 od 20:00'),
+                'startedAtDatetime' => self::getString('MAINTENANCE_STARTED_AT_DATETIME', '2026-07-02T20:00:00+02:00'),
+                'endsAtLabel' => self::getString('MAINTENANCE_ENDS_AT_LABEL', 'nejpozději do 7. 7. 2026'),
+                'endsAtDatetime' => self::getString('MAINTENANCE_ENDS_AT_DATETIME', '2026-07-07T23:59:59+02:00'),
+                'debugBypass' => self::getBool('APP_MAINTENANCE_BYPASS', false),
+            ],
+            'tracyShowBar' => self::getBool('TRACY_SHOW_BAR', $appEnv === 'dev') || self::getBool('APP_MAINTENANCE_BYPASS', false),
             'database' => [
                 'host' => self::requireString('DB_HOST'),
                 'user' => self::requireString('DB_USER'),
@@ -248,6 +267,17 @@ final class Environment
         }
 
         return $default;
+    }
+
+    private static function getEnvironmentColor(): string
+    {
+        $value = strtolower(self::getString('ENVIRONMENT_COLOR', 'test'));
+
+        if (in_array($value, ['test', 'beta'], true)) {
+            return $value;
+        }
+
+        return 'test';
     }
 
     /** @return string[] */

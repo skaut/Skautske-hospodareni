@@ -44,6 +44,16 @@
     --site-header-control-border: rgba(248, 231, 181, 0.28);
   }
 
+  .navbar--beta {
+    --tblr-navbar-bg: #17283c;
+    --site-header-color: #d8ebff;
+    --site-header-muted: #9eb9d4;
+    --site-header-hover-bg: #203652;
+    --site-header-active-bg: #284262;
+    --site-header-border: #365477;
+    --site-header-control-border: rgba(216, 235, 255, 0.28);
+  }
+
   .navbar--test .nav-link:hover,
   .navbar--test .nav-link:focus,
   .navbar--test .nav-item.active .nav-link,
@@ -53,14 +63,43 @@
   .navbar--test .btn-light:hover,
   .navbar--test .btn-light:focus,
   .navbar--test .dark-mode-toggle:hover,
-  .navbar--test .dark-mode-toggle:focus {
+  .navbar--test .dark-mode-toggle:focus,
+  .navbar--beta .nav-link:hover,
+  .navbar--beta .nav-link:focus,
+  .navbar--beta .nav-item.active .nav-link,
+  .navbar--beta .nav-link.active,
+  .navbar--beta .active > .btn,
+  .navbar--beta .nav-item.active .nav-link-icon,
+  .navbar--beta .btn-light:hover,
+  .navbar--beta .btn-light:focus,
+  .navbar--beta .dark-mode-toggle:hover,
+  .navbar--beta .dark-mode-toggle:focus {
     color: #fff4d2;
+  }
+
+  .navbar--beta .nav-link:hover,
+  .navbar--beta .nav-link:focus,
+  .navbar--beta .nav-item.active .nav-link,
+  .navbar--beta .nav-link.active,
+  .navbar--beta .active > .btn,
+  .navbar--beta .nav-item.active .nav-link-icon,
+  .navbar--beta .btn-light:hover,
+  .navbar--beta .btn-light:focus,
+  .navbar--beta .dark-mode-toggle:hover,
+  .navbar--beta .dark-mode-toggle:focus {
+    color: #e9f5ff;
   }
 
   .navbar-test-badge {
     border-color: #76602f;
     background: #493c21;
     color: #f6d98a;
+  }
+
+  .navbar--beta .navbar-test-badge {
+    border-color: #46688f;
+    background: #203652;
+    color: #b8dbff;
   }
 
   .btn-light {

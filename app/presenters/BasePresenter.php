@@ -118,6 +118,8 @@ abstract class BasePresenter extends Presenter
             'templateBlockDir' => $this->appDir.'/templateBlocks/',
             'backlink' => $backlink = $this->getParameter('backlink'),
             'testBackground' => $this->appContext->shouldShowTestBackground(),
+            'environmentLabel' => $this->appContext->getEnvironmentLabel(),
+            'environmentColor' => $this->appContext->getEnvironmentColor(),
         ]);
 
         if ($this->getUser()->isLoggedIn() && $backlink !== null) {

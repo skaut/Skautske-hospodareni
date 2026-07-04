@@ -16,6 +16,8 @@ parameters:
     sendEmail: %envConfig.sendEmail%
     errorEmails: %envConfig.errorEmails%
     testBackground: %envConfig.testBackground%
+    environmentLabel: %envConfig.environmentLabel%
+    environmentColor: %envConfig.environmentColor%
     tracyShowBar: %envConfig.tracyShowBar%
     adminAllowedUserIds: []
     invoiceAccessAllowedUserIds: []
@@ -30,7 +32,10 @@ parameters:
 
 php:
     date.timezone: Europe/Prague
+    session.save_handler: files
+    session.save_path: "%tempDir%/sessions"
 
 session:
     autoStart: smart
     expiration: "+ 3 days"
+    savePath: "%tempDir%/sessions"

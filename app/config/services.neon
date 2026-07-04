@@ -102,6 +102,8 @@ services:
           wwwDir: %wwwDir%
           productionMode: %productionMode%
           showTestBackground: %testBackground%
+          environmentLabel: %environmentLabel%
+          environmentColor: %environmentColor%
       )
     - App\RouterFactory
     router: @App\RouterFactory::createRouter

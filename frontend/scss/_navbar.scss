@@ -192,7 +192,19 @@
   box-shadow: 0 1px 3px rgba(77, 64, 29, 0.08);
 }
 
-.navbar--test .navbar-brand-icon {
+.navbar--beta {
+  --tblr-navbar-bg: #e9f2ff;
+  --site-header-color: #173b65;
+  --site-header-muted: #456a95;
+  --site-header-hover-bg: #d8e9ff;
+  --site-header-active-bg: #c7ddf8;
+  --site-header-border: #a9c8ec;
+  --site-header-control-border: rgba(23, 59, 101, 0.26);
+  box-shadow: 0 1px 3px rgba(23, 59, 101, 0.08);
+}
+
+.navbar--test .navbar-brand-icon,
+.navbar--beta .navbar-brand-icon {
   filter: none;
 }
 
@@ -205,21 +217,50 @@
 .navbar--test .btn-light:hover,
 .navbar--test .btn-light:focus,
 .navbar--test .dark-mode-toggle:hover,
-.navbar--test .dark-mode-toggle:focus {
+.navbar--test .dark-mode-toggle:focus,
+.navbar--beta .nav-link:hover,
+.navbar--beta .nav-link:focus,
+.navbar--beta .nav-item.active .nav-link,
+.navbar--beta .nav-link.active,
+.navbar--beta .active > .btn,
+.navbar--beta .nav-item.active .nav-link-icon,
+.navbar--beta .btn-light:hover,
+.navbar--beta .btn-light:focus,
+.navbar--beta .dark-mode-toggle:hover,
+.navbar--beta .dark-mode-toggle:focus {
   color: #4d401d;
 }
 
 .navbar--test .navbar-logout:hover,
-.navbar--test .navbar-logout:focus {
+.navbar--test .navbar-logout:focus,
+.navbar--beta .navbar-logout:hover,
+.navbar--beta .navbar-logout:focus {
   color: #4d401d;
 }
 
-.navbar--test .navbar-toggler {
+.navbar--test .navbar-toggler,
+.navbar--beta .navbar-toggler {
   border-color: rgba(77, 64, 29, 0.25);
 }
 
-.navbar--test .navbar-toggler-icon {
+.navbar--test .navbar-toggler-icon,
+.navbar--beta .navbar-toggler-icon {
   filter: none;
+}
+
+.navbar--beta .nav-link:hover,
+.navbar--beta .nav-link:focus,
+.navbar--beta .nav-item.active .nav-link,
+.navbar--beta .nav-link.active,
+.navbar--beta .active > .btn,
+.navbar--beta .nav-item.active .nav-link-icon,
+.navbar--beta .btn-light:hover,
+.navbar--beta .btn-light:focus,
+.navbar--beta .dark-mode-toggle:hover,
+.navbar--beta .dark-mode-toggle:focus,
+.navbar--beta .navbar-logout:hover,
+.navbar--beta .navbar-logout:focus {
+  color: #173b65;
 }
 
 .navbar-test-badge {
@@ -233,6 +274,12 @@
   background: #fff2bd;
   color: #6c5017;
   flex-shrink: 0;
+}
+
+.navbar--beta .navbar-test-badge {
+  border-color: #9bbde5;
+  background: #d8e9ff;
+  color: #1f5488;
 }
 
 @media (min-width: 992px) {

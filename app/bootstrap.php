@@ -20,9 +20,10 @@ putenv('TMPDIR='.$tempDir);
 Environment::load($projectDir);
 $environment = Environment::getConfiguration();
 $appEnv = $environment['appEnv'];
+$maintenance = $environment['maintenance'];
 
 $configurator = new Configurator();
-$configurator->setDebugMode($appEnv === 'dev' || $appEnv === 'ci');
+$configurator->setDebugMode($appEnv === 'dev' || $appEnv === 'ci' || $maintenance['debugBypass']);
 $configurator->enableTracy($logDir);
 $configurator->setTempDirectory($tempDir);
 

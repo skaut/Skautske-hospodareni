@@ -107,16 +107,27 @@ task('build:runtime_files', function () {
         'APP_BASE_URL' => requiredEnv('APP_BASE_URL'),
         'APPLICATION_ID' => requiredEnv('APPLICATION_ID'),
         'SEND_EMAIL' => requiredEnv('SEND_EMAIL'),
+        'ERROR_EMAILS' => optionalEnv('ERROR_EMAILS') ?? '',
+        'ENVIRONMENT_LABEL' => optionalEnv('ENVIRONMENT_LABEL') ?? 'Testovací server',
+        'ENVIRONMENT_COLOR' => optionalEnv('ENVIRONMENT_COLOR') ?? 'test',
+        'MAINTENANCE_MODE' => optionalEnv('MAINTENANCE_MODE') ?? 'false',
+        'MAINTENANCE_ALLOWED_IPS' => optionalEnv('MAINTENANCE_ALLOWED_IPS') ?? '',
+        'MAINTENANCE_STARTED_AT_LABEL' => optionalEnv('MAINTENANCE_STARTED_AT_LABEL') ?? 'čtvrtek 2. 7. 2026 od 20:00',
+        'MAINTENANCE_STARTED_AT_DATETIME' => optionalEnv('MAINTENANCE_STARTED_AT_DATETIME') ?? '2026-07-02T20:00:00+02:00',
+        'MAINTENANCE_ENDS_AT_LABEL' => optionalEnv('MAINTENANCE_ENDS_AT_LABEL') ?? 'nejpozději do 7. 7. 2026',
+        'MAINTENANCE_ENDS_AT_DATETIME' => optionalEnv('MAINTENANCE_ENDS_AT_DATETIME') ?? '2026-07-07T23:59:59+02:00',
         'TRACY_SHOW_BAR' => optionalEnv('TRACY_SHOW_BAR') ?? ($appEnv === 'dev' ? 'true' : 'false'),
         'DB_HOST' => requiredEnv('DB_HOST'),
         'DB_NAME' => requiredEnv('DB_NAME'),
         'DB_USER' => requiredEnv('DB_USER'),
         'DB_PASSWORD' => requiredEnv('DB_PASSWORD'),
         'GOOGLE_CREDENTIALS_FILE' => optionalEnv('GOOGLE_CREDENTIALS_FILE') ?? 'google-credentials.json',
+        'GOOGLE_REDIRECT_URI' => optionalEnv('GOOGLE_REDIRECT_URI') ?? rtrim(requiredEnv('APP_BASE_URL'), '/').'/google/token',
         'APP_RELEASE_HASH' => optionalEnv('APP_RELEASE_HASH') ?? get('build_hash'),
+        'SKAUTIS_TEST_MODE' => optionalEnv('SKAUTIS_TEST_MODE') ?? ($appEnv === 'prod' ? 'false' : 'true'),
     ];
 
-    foreach (['SKAUTIS_TEST_MODE', 'TEST_BACKGROUND', 'SENTRY_DSN'] as $name) {
+    foreach (['TEST_BACKGROUND', 'SENTRY_DSN'] as $name) {
         $value = optionalEnv($name);
         if ($value !== null) {
             $values[$name] = $value;

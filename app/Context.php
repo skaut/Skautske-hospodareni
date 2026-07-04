@@ -11,6 +11,8 @@ final class Context
         private string $wwwDir,
         private bool $productionMode,
         private bool $showTestBackground,
+        private string $environmentLabel,
+        private string $environmentColor,
     ) {
     }
 
@@ -32,5 +34,15 @@ final class Context
     public function shouldShowTestBackground(): bool
     {
         return $this->showTestBackground;
+    }
+
+    public function getEnvironmentLabel(): string
+    {
+        return $this->environmentLabel;
+    }
+
+    public function getEnvironmentColor(): string
+    {
+        return $this->environmentColor;
     }
 }
