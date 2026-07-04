@@ -25,4 +25,6 @@ services:
 decorator:
     Monolog\Logger:
         setup:
-            - pushHandler(Monolog\Handler\RotatingFileHandler(%logDir%/log.log, 90, Monolog\Logger::INFO, true, 0664))
+            # NEON parses 0664 as decimal 664, which chmod interprets as octal 01230.
+            # Decimal 436 is the chmod value for octal 0664.
+            - pushHandler(Monolog\Handler\RotatingFileHandler(%logDir%/log.log, 90, Monolog\Logger::INFO, true, 436))

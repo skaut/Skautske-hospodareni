@@ -20,6 +20,7 @@ if ($maintenance['enabled']) {
 
     if (! MaintenanceMode::isClientAllowed($clientIp, $maintenance['allowedIps'])) {
         require __DIR__.'/maintenance.php';
+        exit;
     }
 
     MaintenanceMode::enableDebugBypass();
