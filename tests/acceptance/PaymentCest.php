@@ -737,11 +737,8 @@ class PaymentCest extends BaseAcceptanceCest
             'state' => 'preparing',
         ]);
 
-        $I->amOnPage('/platby/skupiny/'.$groupId.'/platby');
+        $I->amOnPage('/platby/skupiny/'.$groupId.'/platby?do=paymentList-grid-showAllColumns');
         $I->waitForElementVisible('[data-test="payment-group-grid"] .datagrid', 10);
-        $I->click('[data-test="payment-group-grid"] .datagrid-settings button');
-        $I->waitForElementVisible('[data-test="payment-group-grid"] .dropdown-menu.show', 10);
-        $I->click('Zobrazit všechny sloupce');
 
         $I->waitForText('Poznámka', 10, '[data-test="payment-group-grid"] thead');
         $I->see('Textová poznámka v gridu', '[data-test="payment-group-grid"]');
