@@ -320,6 +320,9 @@ class PaymentCest extends BaseAcceptanceCest
             ]);
         }
 
+        $I->amOnPage('/platby/skupiny/'.$groupId.'/platby');
+        $I->waitForElementVisible('[data-test="payment-group-detail-page"]', 10);
+
         $I->amOnPage('/platby');
         $I->waitForElementVisible('[data-test="dashboard-group-card-'.$groupId.'"]', 10);
 
