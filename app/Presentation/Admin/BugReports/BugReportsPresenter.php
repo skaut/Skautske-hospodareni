@@ -6,11 +6,15 @@ namespace App\Presentation\Admin\BugReports;
 
 use App\Components\DataGrid;
 use App\Components\Grids\GridFactory;
+use App\Model\BugReport\BugReportNotificationService;
 use App\Model\BugReport\Entity\TechnicalErrorReport;
 use App\Model\BugReport\Manager\TechnicalErrorReportManager;
 use App\Model\BugReport\Repository\TechnicalErrorReportRepository;
+use Component\Forms\BaseForm;
+use Nette\Application\UI\Form;
 use Nette\Utils\Json;
 use Nette\Utils\Strings;
+use Throwable;
 use Ublaboo\DataGrid\Column\Action\Confirmation\StringConfirmation;
 
 final class BugReportsPresenter extends \App\Presentation\Admin\AdminBasePresenter
@@ -20,6 +24,7 @@ final class BugReportsPresenter extends \App\Presentation\Admin\AdminBasePresent
     public function __construct(
         private TechnicalErrorReportRepository $repository,
         private TechnicalErrorReportManager $manager,
+        private BugReportNotificationService $notificationService,
         private GridFactory $gridFactory,
     ) {
     }
@@ -66,9 +71,48 @@ final class BugReportsPresenter extends \App\Presentation\Admin\AdminBasePresent
             $this->redirect('default');
         }
 
-        $this->manager->resolve($report);
-        $this->flashMessage('Hlášení technické chyby bylo označeno jako vyřízené.', 'success');
+        $this->resolveReport($report, 'Problém byl vyřešen a je upraven v nové verzi aplikace.');
         $this->redirect('default');
+    }
+
+    protected function createComponentResolveWithMessageForm(): BaseForm
+    {
+        $form = new BaseForm();
+        $form->addHidden('id');
+        $form->addTextArea('message', 'Zpráva autorovi')
+            ->setRequired('Napište prosím zprávu autorovi hlášení.')
+            ->addRule(Form::MAX_LENGTH, 'Zpráva může mít nejvýše %d znaků.', 10000)
+            ->setHtmlAttribute('rows', 7);
+        $form->addSubmit('send', 'Odeslat a označit jako vyřízené')
+            ->setHtmlAttribute('class', 'btn btn-success');
+
+        $form->onSuccess[] = function (Form $form): void {
+            $values = $form->getValues();
+            $report = $this->repository->findUnresolved((int) $values->id);
+            if (! $report instanceof TechnicalErrorReport) {
+                $this->flashMessage('Hlášení technické chyby nebylo nalezeno nebo už je vyřízené.', 'warning');
+                $this->redirect('default');
+            }
+
+            $this->resolveReport($report, trim((string) $values->message));
+            $this->redirect('default');
+        };
+
+        return $form;
+    }
+
+    private function resolveReport(TechnicalErrorReport $report, string $message): void
+    {
+        try {
+            $this->notificationService->notifyResolution($report, $message);
+            $report->markResolutionNotificationSent();
+            $this->flashMessage('Hlášení technické chyby bylo označeno jako vyřízené a autor byl informován e-mailem.', 'success');
+        } catch (Throwable $e) {
+            $report->markResolutionNotificationFailed($e->getMessage());
+            $this->flashMessage('Hlášení technické chyby bylo označeno jako vyřízené, ale e-mail autorovi se nepodařilo odeslat.', 'warning');
+        }
+
+        $this->manager->resolve($report, $message);
     }
 
     protected function createComponentGrid(): DataGrid

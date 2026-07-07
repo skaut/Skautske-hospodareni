@@ -71,6 +71,15 @@ class TechnicalErrorReport extends AbstractIdEntity
     #[Column(name: 'resolved_at', type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?DateTimeImmutable $resolvedAt = null;
 
+    #[Column(name: 'resolution_message', type: Types::TEXT, nullable: true)]
+    private ?string $resolutionMessage = null;
+
+    #[Column(name: 'resolution_notification_sent_at', type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $resolutionNotificationSentAt = null;
+
+    #[Column(name: 'resolution_notification_error', type: Types::TEXT, nullable: true)]
+    private ?string $resolutionNotificationError = null;
+
     /** @param array<string, mixed> $diagnostics */
     public function __construct(
         string $description,
@@ -116,12 +125,25 @@ class TechnicalErrorReport extends AbstractIdEntity
         $this->notificationError = $error;
     }
 
-    public function resolve(?DateTimeImmutable $resolvedAt = null): void
+    public function markResolutionNotificationSent(?DateTimeImmutable $sentAt = null): void
+    {
+        $this->resolutionNotificationSentAt = $sentAt ?? new DateTimeImmutable();
+        $this->resolutionNotificationError = null;
+    }
+
+    public function markResolutionNotificationFailed(string $error): void
+    {
+        $this->resolutionNotificationSentAt = null;
+        $this->resolutionNotificationError = $error;
+    }
+
+    public function resolve(?string $message = null, ?DateTimeImmutable $resolvedAt = null): void
     {
         if ($this->resolvedAt !== null) {
             return;
         }
 
+        $this->resolutionMessage = $message;
         $this->resolvedAt = $resolvedAt ?? new DateTimeImmutable();
     }
 
@@ -214,6 +236,26 @@ class TechnicalErrorReport extends AbstractIdEntity
     public function getResolvedAt(): ?DateTimeImmutable
     {
         return $this->resolvedAt;
+    }
+
+    public function getResolutionMessage(): ?string
+    {
+        return $this->resolutionMessage;
+    }
+
+    public function getResolutionNotificationSentAt(): ?DateTimeImmutable
+    {
+        return $this->resolutionNotificationSentAt;
+    }
+
+    public function getResolutionNotificationError(): ?string
+    {
+        return $this->resolutionNotificationError;
+    }
+
+    public function wasResolutionNotificationSent(): bool
+    {
+        return $this->resolutionNotificationSentAt !== null;
     }
 
     public function isResolved(): bool

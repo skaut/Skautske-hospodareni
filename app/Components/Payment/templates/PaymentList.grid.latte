@@ -79,7 +79,7 @@
         {if $isReminderSendActive}
         <a href="{$control->getParent()->link(sendReminder, $item->getId())}"
            n:class="btn, btn-sm, $canSendEmail ? btn-warning : btn-light, $canSendEmail ? 'ui--sendEmail' : disabled"
-           title="{$emailActionTitle}"><i
+           title="{$canSendEmail ? 'Odeslat upomínku' : $emailActionTitle}"><i
                     class="far fa-bell"></i></a>
         {/if}
         <a

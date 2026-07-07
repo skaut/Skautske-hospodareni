@@ -105,14 +105,22 @@ final class BugReportCest extends BaseAcceptanceCest
         Assert::assertSame('pre-wrap', $diagnosticsStyles['whiteSpace']);
         Assert::assertNotSame($diagnosticsStyles['backgroundColor'], $diagnosticsStyles['color']);
         $I->seeElement('[data-test="admin-bug-report-resolve"]');
+        $I->seeElement('[data-test="admin-bug-report-resolve-with-message"]');
 
-        $I->executeJS('window.confirm = () => true;');
-        $I->click('[data-test="admin-bug-report-resolve"]');
+        $resolutionMessage = 'Opraveno v nové verzi aplikace.';
+        $I->click('[data-test="admin-bug-report-resolve-with-message"]');
+        $I->waitForElementVisible('#resolveWithMessage textarea[name="message"]', 10);
+        $I->fillField('#resolveWithMessage textarea[name="message"]', $resolutionMessage);
+        $I->click('#resolveWithMessage input[type="submit"]');
         $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', 10);
-        $I->see('Hlášení technické chyby bylo označeno jako vyřízené.');
+        $I->see('Hlášení technické chyby bylo označeno jako vyřízené');
         $I->dontSee($description, '[data-test="admin-bug-reports-grid"]');
         Assert::assertNotNull(
             $I->grabFromDatabase('technical_error_report', 'resolved_at', ['id' => $reportId]),
+        );
+        Assert::assertSame(
+            $resolutionMessage,
+            $I->grabFromDatabase('technical_error_report', 'resolution_message', ['id' => $reportId]),
         );
 
         $I->amOnPage('/admin/hlaseni-chyb/'.$reportId);
