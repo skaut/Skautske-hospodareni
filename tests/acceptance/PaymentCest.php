@@ -347,6 +347,10 @@ class PaymentCest extends BaseAcceptanceCest
         );
         $I->waitForElementVisible('[data-test="payment-group-detail-page"]', 10);
         $I->seeInCurrentUrl('/platby/skupiny/'.$groupId.'/platby');
+        $I->seeInDatabase('payment_group_visit', [
+            'user_id' => self::ACCEPTANCE_USER_ID,
+            'group_id' => $groupId,
+        ]);
     }
 
     /** @group payment */

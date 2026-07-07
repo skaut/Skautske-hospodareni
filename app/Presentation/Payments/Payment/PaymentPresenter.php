@@ -36,6 +36,7 @@ use App\Model\Payment\PaymentService;
 use App\Model\Payment\ReadModel\Queries\MembersWithoutPaymentInGroupQuery;
 use App\Model\Payment\ReadModel\Queries\PaymentListQuery;
 use App\Model\Unit\UnitService;
+use App\Model\User\Manager\PaymentGroupVisitManager;
 use App\Presentation\Payments\PaymentsBasePresenter;
 use DateTimeImmutable;
 use Nette\Utils\Strings;
@@ -78,6 +79,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
         private IPaymentNoteDialogFactory $paymentNoteDialogFactory,
         private IPaymentListFactory $paymentListFactory,
         private ISplitPaymentDialogFactory $splitPaymentDialogFactory,
+        private PaymentGroupVisitManager $paymentGroupVisitManager,
     ) {
         parent::__construct();
     }
@@ -104,6 +106,8 @@ final class PaymentPresenter extends PaymentsBasePresenter
         if ($this->canEditGroup($group)) {
             $this['pairButton']->setGroups([$id]);
         }
+
+        $this->paymentGroupVisitManager->markVisited((int) $this->getUser()->getId(), $id);
 
         try {
             $nextVS = $this->model->getNextVS($group->getId());

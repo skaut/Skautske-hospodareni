@@ -62,7 +62,7 @@
     <section class="card" data-test="dashboard-payment-groups">
         <div class="card-body">
             <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
-                <h2 class="h5 mb-0">Platební skupiny</h2>
+                <h2 class="h5 mb-0">Naposledy navštívené platební skupiny</h2>
                 <div class="d-flex flex-wrap gap-2">
                     <a n:if="$isEditable"
                        n:href=":Payments:Group:newGroup, unitId => $unitId"
@@ -73,7 +73,7 @@
                     </a>
                     <a n:href=":Payments:GroupList:default, unitId => $unitId"
                        class="btn btn-outline-secondary btn-sm">
-                        {if $totalGroupCount > 2}Zobrazit vše ({$totalGroupCount}){else}Zobrazit skupiny{/if}
+                        {if $totalGroupCount > 3}Zobrazit vše ({$totalGroupCount}){else}Zobrazit skupiny{/if}
                     </a>
                 </div>
             </div>
@@ -117,7 +117,7 @@
             </div>
 
             <div n:if="$groups === []" class="border border-dashed rounded-3 p-3 text-body-secondary">
-                Zatím nejsou vytvořeny žádné otevřené platební skupiny.
+                Zatím jste nenavštívili žádnou platební skupinu.
             </div>
         </div>
     </section>

@@ -12,6 +12,7 @@ use App\Model\Invoice\Repository\InvoiceSequenceRepository;
 use App\Model\Payment\Payment\State;
 use App\Model\Payment\PaymentService;
 use App\Model\Payment\ReadModel\Queries\GetGroupList;
+use App\Model\Payment\ReadModel\Queries\RecentlyVisitedGroupsQuery;
 use App\Presentation\Payments\PaymentsBasePresenter;
 
 use function array_keys;
@@ -34,14 +35,17 @@ final class DashboardPresenter extends PaymentsBasePresenter
         $readableUnitIds = array_keys($this->unitService->getReadUnits($this->user));
         $currentYear = (int) date('Y');
 
-        // Payment groups — last 2 open
         /** @var Group[] $allGroups */
-        $allGroups = $this->queryBus->handle(new GetGroupList($readableUnitIds, true));
-        usort(
-            $allGroups,
-            static fn (Group $first, Group $second): int => $second->getId() <=> $first->getId(),
-        );
-        $groups = array_slice($allGroups, 0, 2);
+        $allGroups = $this->queryBus->handle(new GetGroupList($readableUnitIds, false));
+        /** @var Group[] $groups */
+        $groups = $this->queryBus->handle(new RecentlyVisitedGroupsQuery((int) $this->getUser()->getId(), $readableUnitIds, 3));
+        if ($groups === []) {
+            usort(
+                $allGroups,
+                static fn (Group $first, Group $second): int => $second->getId() <=> $first->getId(),
+            );
+            $groups = array_slice($allGroups, 0, 3);
+        }
         $groupIds = array_map(static fn (Group $group): int => $group->getId(), $groups);
         $groupSummaries = $groupIds === [] ? [] : $this->paymentService->getGroupSummaries($groupIds);
         $groupPaymentCounts = [];
