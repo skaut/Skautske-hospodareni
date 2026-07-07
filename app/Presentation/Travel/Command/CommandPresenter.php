@@ -28,6 +28,7 @@ use function array_key_exists;
 use function array_map;
 use function array_slice;
 use function assert;
+use function is_array;
 use function round;
 use function sprintf;
 use function str_replace;
@@ -301,25 +302,46 @@ final class CommandPresenter extends \App\BasePresenter
         }
 
         $identity = $this->getUser()->getIdentity();
-        assert($identity instanceof SimpleIdentity);
+        if (! $identity instanceof SimpleIdentity) {
+            return false;
+        }
 
         return $command->getOwnerId() === $this->getUser()->getId()
-            || array_key_exists($command->getUnitId(), $identity->access[UserService::ACCESS_READ]);
+            || $this->hasUnitAccess($identity, UserService::ACCESS_READ, $command->getUnitId());
     }
 
     private function isCommandEditable(int $commandId): bool
     {
         $command = $this->travelService->getCommandDetail($commandId);
-        assert($command !== null);
+        if ($command === null) {
+            return false;
+        }
 
         $identity = $this->getUser()->getIdentity();
-        assert($identity instanceof SimpleIdentity);
+        if (! $identity instanceof SimpleIdentity) {
+            return false;
+        }
 
         $unitOrOwner = $command->getOwnerId() === $this->getUser()->getId()
-            || array_key_exists($command->getUnitId(), $identity->access[UserService::ACCESS_EDIT]);
+            || $this->hasUnitAccess($identity, UserService::ACCESS_EDIT, $command->getUnitId());
 
         return $this->isCommandAccessible($commandId)
             && $command->getClosedAt() === null
             && $unitOrOwner;
+    }
+
+    private function hasUnitAccess(SimpleIdentity $identity, string $accessType, int $unitId): bool
+    {
+        $access = $identity->getData()['access'] ?? [];
+        if (! is_array($access)) {
+            return false;
+        }
+
+        $units = $access[$accessType] ?? [];
+        if (! is_array($units)) {
+            return false;
+        }
+
+        return array_key_exists($unitId, $units);
     }
 }
