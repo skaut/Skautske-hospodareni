@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace App\Components\Grids;
 
+use App\Utils\CzechStringComparator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Expr\ClosureExpressionVisitor;
 use Nette\NotImplementedException;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 use Ublaboo\DataGrid\Utils\Sorting;
+
+use function usort;
 
 /** @template T */
 final class DtoListDataSource implements IDataSource
@@ -83,7 +87,25 @@ final class DtoListDataSource implements IDataSource
             return $sortCallback($this, $sorting->getSort());
         }
 
-        $this->criteria->orderBy($sorting->getSort());
+        $sort = $sorting->getSort();
+        $data = $this->collection->toArray();
+
+        usort($data, static function (object $left, object $right) use ($sort): int {
+            foreach ($sort as $field => $direction) {
+                $result = CzechStringComparator::compareValues(
+                    ClosureExpressionVisitor::getObjectFieldValue($left, $field),
+                    ClosureExpressionVisitor::getObjectFieldValue($right, $field),
+                );
+
+                if ($result !== 0) {
+                    return CzechStringComparator::applyDirection($result, $direction);
+                }
+            }
+
+            return 0;
+        });
+
+        $this->collection = new ArrayCollection($data);
 
         return $this;
     }

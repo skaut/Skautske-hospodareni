@@ -7,10 +7,10 @@ namespace App\Model\Skautis;
 use App\Model\Common\Member;
 use App\Model\Common\Repositories\IMemberRepository;
 use App\Model\Common\UnitId;
+use App\Utils\CzechStringComparator;
 use Cake\Chronos\ChronosDate;
 use Skautis\Skautis;
 
-use function strcoll;
 use function usort;
 
 final class MemberRepository implements IMemberRepository
@@ -38,7 +38,7 @@ final class MemberRepository implements IMemberRepository
             );
         }
 
-        usort($members, fn (Member $first, Member $second) => strcoll($first->getName(), $second->getName()));
+        usort($members, fn (Member $first, Member $second) => CzechStringComparator::compare($first->getName(), $second->getName()));
 
         return $members;
     }

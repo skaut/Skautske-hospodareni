@@ -19,6 +19,7 @@ use App\Model\Participant\Payment\EventType;
 use App\Model\Participant\PaymentFactory;
 use App\Model\Participant\Repositories\IPaymentRepository;
 use App\Model\Skautis\Factory\ParticipantFactory;
+use App\Utils\CzechStringComparator;
 use Skautis\Skautis;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WsdlException;
@@ -29,7 +30,6 @@ use function array_key_exists;
 use function array_map;
 use function is_array;
 use function preg_match;
-use function strcoll;
 use function usort;
 
 final class ParticipantRepository implements IParticipantRepository
@@ -226,7 +226,7 @@ final class ParticipantRepository implements IParticipantRepository
 
         usort(
             $participants,
-            fn (Participant $one, Participant $two) => strcoll($one->getDisplayName(), $two->getDisplayName()),
+            fn (Participant $one, Participant $two) => CzechStringComparator::compare($one->getDisplayName(), $two->getDisplayName()),
         );
 
         return array_map([ParticipantDTOFactory::class, 'create'], $participants);

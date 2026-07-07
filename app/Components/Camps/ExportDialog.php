@@ -9,6 +9,7 @@ use App\Http\ExcelResponse;
 use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Camp\CampListItem;
 use App\Model\Event\ReadModel\Queries\Excel\ExportCamps;
+use App\Utils\CzechStringComparator;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
 use Nette\Utils\ArrayHash;
@@ -40,7 +41,7 @@ final class ExportDialog extends Dialog
             $items[$camp->getId()] = $camp->getName();
         }
 
-        uasort($items, 'strcoll');
+        uasort($items, [CzechStringComparator::class, 'compare']);
 
         $form->addCheckboxList('campIds', 'Tábory', $items)
             ->setRequired('Musíte vybrat alespoň jednen tábor');

@@ -9,6 +9,7 @@ use App\Http\ExcelResponse;
 use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Event\EventListItem;
 use App\Model\Event\ReadModel\Queries\Excel\ExportEvents;
+use App\Utils\CzechStringComparator;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
 use Nette\Utils\ArrayHash;
@@ -40,7 +41,7 @@ final class ExportDialog extends Dialog
             $events[$event->getId()] = $event->getName();
         }
 
-        uasort($events, 'strcoll');
+        uasort($events, [CzechStringComparator::class, 'compare']);
 
         $form->addCheckboxList('eventIds', 'Akce', $events)
             ->setRequired('Musíte vybrat alespoň jednu akci');
