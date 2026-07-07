@@ -8,6 +8,13 @@
 
 .badge,
 .label {
+  &.bg-primary,
+  &.text-bg-primary,
+  &.label-primary,
+  &.bg-secondary,
+  &.text-bg-secondary,
+  &.label-secondary,
+  &.label-default,
   &.bg-success,
   &.text-bg-success,
   &.label-success,
@@ -41,6 +48,15 @@
 
 .label-success {
   background-color: var(--tblr-success);
+}
+
+.label-primary {
+  background-color: var(--tblr-primary);
+}
+
+.label-secondary,
+.label-default {
+  background-color: var(--tblr-secondary);
 }
 
 .label-info {
