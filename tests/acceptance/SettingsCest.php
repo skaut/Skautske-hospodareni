@@ -240,6 +240,31 @@ class SettingsCest extends BaseAcceptanceCest
         $I->seeElement('[data-help-toggle][aria-expanded="true"]');
     }
 
+    /** @group settings */
+    public function userCanEnableBackgroundSkautisLoginExtension(): void
+    {
+        $I = $this->I;
+
+        $I->wantTo('enable background SkautIS login extension in user settings');
+
+        $I->click('[data-test="utility-nav-settings"]');
+        $I->waitForElementVisible('[data-test="settings-page"]', 10);
+        $I->click('[data-test="settings-subnav-user"]');
+        $I->waitForElementVisible('[data-test="settings-user-page"]', 10);
+
+        $I->dontSeeElement('body[data-session-keep-alive-url]');
+        $I->checkOption('input[name="extendSkautisLogin"]');
+        $I->click('input[type="submit"]');
+        $I->waitForElementVisible('[data-test="settings-user-page"]', 10);
+
+        $I->seeInDatabase('user_preference', [
+            'user_id' => self::ACCEPTANCE_USER_ID,
+            'extend_skautis_login' => 1,
+        ]);
+        $I->seeElement('input[name="extendSkautisLogin"]:checked');
+        $I->seeElement('body[data-session-keep-alive-url][data-session-keep-alive-interval]');
+    }
+
     // ─── Bank Accounts — Layout & Empty State ────────────────────
 
     /** @group settings */

@@ -36,6 +36,7 @@ class RouterFactory
 
         // Utility & auth
         $router[] = new Route('debugging', 'Admin:Debugging:default');
+        $router[] = new Route('prodlouzit-prihlaseni', 'SessionKeepAlive:default');
         $router[] = new Route('google/<action>', 'Settings:Google:default');
         $router[] = new Route(
             'sign/<action>[/back-<backlink>]',
