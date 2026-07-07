@@ -298,8 +298,12 @@ label {
   margin-bottom: 0.5rem;
 }
 
+.form-check .form-check-input {
+  margin-right: 0.65rem;
+}
+
 .form-check-input + .form-check-label {
-  margin-left: 0.45rem;
+  margin-left: 0.65rem;
 }
 
 .form-check-input:disabled ~ .form-check-label,
