@@ -22,6 +22,7 @@ use App\Model\Payment\Repositories\IPaymentRepository;
 use App\Model\Payment\Services\IBankAccountAccessChecker;
 use App\Model\Payment\Services\IOAuthAccessChecker;
 use App\Model\Payment\Services\VariableSymbolCollisionChecker;
+use App\Utils\CzechStringComparator;
 use Assert\Assert;
 use DateTimeImmutable;
 use InvalidArgumentException;
@@ -36,8 +37,6 @@ use function count;
 use function in_array;
 use function is_array;
 use function reset;
-use function strcmp;
-use function strcoll;
 use function usort;
 
 class PaymentService
@@ -264,7 +263,7 @@ class PaymentService
             usort(
                 $persons,
                 function (stdClass $a, stdClass $b) {
-                    return strcmp($a->Person, $b->Person);
+                    return CzechStringComparator::compare($a->Person, $b->Person);
                 },
             );
 
@@ -297,7 +296,7 @@ class PaymentService
             return [];
         }
 
-        usort($persons, fn ($one, $two) => strcoll($one->Person, $two->Person));
+        usort($persons, fn ($one, $two) => CzechStringComparator::compare($one->Person, $two->Person));
 
         return $persons;
     }

@@ -25,10 +25,10 @@ use App\Model\Payment\PaymentNotFound;
 use App\Model\Payment\PaymentService;
 use App\Model\Payment\ReadModel\Queries\GroupEmailQuery;
 use App\Model\Payment\ReadModel\Queries\PaymentListQuery;
+use App\Utils\CzechStringComparator;
 
 use function array_flip;
 use function array_reverse;
-use function strcoll;
 use function usort;
 
 final class PaymentList extends BaseControl
@@ -78,7 +78,7 @@ final class PaymentList extends BaseControl
             ->setSortableCallback(function (DtoListDataSource $dataSource, array $sort): DtoListDataSource {
                 $data = $dataSource->getData();
 
-                usort($data, fn (Payment $a, Payment $b) => strcoll($a->getName(), $b->getName()));
+                usort($data, fn (Payment $a, Payment $b) => CzechStringComparator::compare($a->getName(), $b->getName()));
 
                 return new DtoListDataSource($sort['name'] === DataGrid::SORT_ASC ? $data : array_reverse($data));
             })

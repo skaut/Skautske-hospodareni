@@ -8,6 +8,7 @@ use App\Components\BaseControl;
 use App\Model\DTO\Participant\Participant;
 use App\Model\DTO\Participant\UpdateParticipant;
 use App\Model\Participant\ParticipantNotFound;
+use App\Utils\CzechStringComparator;
 use Component\Forms\BaseForm;
 use Nette\Application\BadRequestException;
 use Nette\Forms\Controls\SubmitButton;
@@ -18,7 +19,6 @@ use function array_map;
 use function implode;
 use function in_array;
 use function sprintf;
-use function strcoll;
 use function usort;
 
 /**
@@ -107,7 +107,7 @@ final class ParticipantList extends BaseControl
         }
 
         if ($sort === 'displayName') {
-            $sortFunction = fn (Participant $a, Participant $b) => strcoll($a->{$sort}, $b->{$sort});
+            $sortFunction = fn (Participant $a, Participant $b) => CzechStringComparator::compare($a->{$sort}, $b->{$sort});
         } else {
             $sortFunction = fn (Participant $a, Participant $b) => $a->{$sort} <=> $b->{$sort};
         }
