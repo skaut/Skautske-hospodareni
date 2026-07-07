@@ -172,12 +172,12 @@ final class BugReportsPresenter extends \App\Presentation\Admin\AdminBasePresent
         $grid->addAction('detail', '', 'detail', ['id' => 'id'])
             ->setIcon('far fa-eye')
             ->setTitle('Zobrazit detail')
-            ->setClass('btn btn-sm btn-light')
+            ->setClass('btn btn-sm btn-light m-1')
             ->setDataAttribute('test', 'admin-bug-report-detail-grid');
         $grid->addAction('resolve', '', 'resolve!', ['id' => 'id'])
             ->setIcon('far fa-circle-check')
             ->setTitle('Potvrdit opravu')
-            ->setClass('btn btn-sm btn-outline-success')
+            ->setClass('btn btn-sm btn-outline-success m-1')
             ->setDataAttribute('test', 'admin-bug-report-resolve-grid')
             ->setConfirmation(
                 new StringConfirmation('Opravdu chcete potvrdit opravu hlášení #%s?', 'id'),
