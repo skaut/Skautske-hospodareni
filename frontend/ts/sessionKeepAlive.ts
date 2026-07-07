@@ -1,5 +1,6 @@
 const storageKey = 'hskauting.sessionKeepAlive.lastPingAt';
 const lockStorageKey = 'hskauting.sessionKeepAlive.lockedUntil';
+export const sessionKeepAliveSucceededEvent = 'hskauting:session-keep-alive-succeeded';
 const minimumInterval = 60_000;
 const tabCoordinationTolerance = 60_000;
 const lockTimeout = 30_000;
@@ -40,6 +41,8 @@ function markPingSucceeded(): void {
     } catch {
         // Ignore unavailable localStorage; the current tab still refreshed the session.
     }
+
+    window.dispatchEvent(new CustomEvent(sessionKeepAliveSucceededEvent));
 }
 
 function releasePingLock(): void {
