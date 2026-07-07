@@ -135,7 +135,10 @@ class RouterFactory
             [
                 'presenter' => 'Events:Event',
                 'action' => [
-                    Route::PATTERN => 'report|printAll|logs',
+                    Route::PATTERN => 'report|print-all|logs',
+                    Route::FILTER_TABLE => [
+                        'print-all' => 'printAll',
+                    ],
                 ],
             ],
         );
