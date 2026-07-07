@@ -1,5 +1,6 @@
 const initializedAttribute = 'data-ui-initialized';
 let pageHelpId = 0;
+const flashViewportPadding = 16;
 
 function markInitialized(element: HTMLElement): boolean {
     if (element.hasAttribute(initializedAttribute)) {
@@ -26,6 +27,32 @@ function moveAlertBeforeField(alert: HTMLElement|null, field: Element): void {
     if (alert !== null && wrapper !== null && wrapper.parentNode !== null) {
         wrapper.parentNode.insertBefore(alert, wrapper);
     }
+}
+
+function isElementFullyVisible(element: HTMLElement): boolean {
+    const rect = element.getBoundingClientRect();
+    const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+
+    return rect.top >= flashViewportPadding && rect.bottom <= viewportHeight - flashViewportPadding;
+}
+
+export function initializeFlashMessages(root: ParentNode = document): void {
+    root.querySelectorAll<HTMLElement>('.flash-message').forEach((flashMessage) => {
+        if (!markInitialized(flashMessage)) {
+            return;
+        }
+
+        window.requestAnimationFrame(() => {
+            if (isElementFullyVisible(flashMessage)) {
+                return;
+            }
+
+            flashMessage.scrollIntoView({
+                block: 'start',
+                behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+            });
+        });
+    });
 }
 
 export function initializePageHelp(root: ParentNode = document): void {
@@ -248,6 +275,7 @@ export function initializeBugReportDiagnostics(root: ParentNode = document): voi
 }
 
 export function initializePageEnhancements(root: ParentNode = document): void {
+    initializeFlashMessages(root);
     initializePageHelp(root);
     initializeHelpLayouts(root);
     initializePaymentForms(root);
