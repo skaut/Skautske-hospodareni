@@ -236,7 +236,7 @@ final class BankAccountDetailViewFactory
                         $payment->getName(),
                         isset($groupNames[$payment->getGroupId()]) ? ' ve skupině '.$groupNames[$payment->getGroupId()] : '',
                     ),
-                    $this->linkGenerator->link(':Payments:Payment:default', ['id' => $payment->getGroupId()]).'#payment-'.$payment->getId(),
+                    $this->linkGenerator->link('Payments:Payment:default', ['id' => $payment->getGroupId()]).'#payment-'.$payment->getId(),
                     'payment:'.$payment->getId(),
                 );
                 continue;
@@ -250,7 +250,7 @@ final class BankAccountDetailViewFactory
             $descriptions[] = new BankAccountTransactionLink(
                 'invoice',
                 sprintf('Faktura %s', $invoice->getInvoiceNumber()),
-                $this->linkGenerator->link(':Payments:InvoiceList:detail', ['id' => $invoice->getId()]),
+                $this->linkGenerator->link('Payments:InvoiceList:detail', ['id' => $invoice->getId()]),
                 'invoice:'.$invoice->getId(),
             );
         }
@@ -298,8 +298,8 @@ final class BankAccountDetailViewFactory
                     $payment->getName(),
                     isset($groupNames[$payment->getGroupId()]) ? ' ve skupině '.$groupNames[$payment->getGroupId()] : '',
                 ),
-                $this->linkGenerator->link(':Payments:Payment:default', ['id' => $payment->getGroupId()]).'#payment-'.$payment->getId(),
-                $this->linkGenerator->link(':Settings:BankAccounts:pairTransactionToPayment', [
+                $this->linkGenerator->link('Payments:Payment:default', ['id' => $payment->getGroupId()]).'#payment-'.$payment->getId(),
+                $this->linkGenerator->link('Settings:BankAccounts:pairTransactionToPayment', [
                     'accountId' => $transaction->getBankAccount()->getId(),
                     'transactionKey' => $transaction->getTransactionKey(),
                     'paymentId' => $payment->getId(),
@@ -327,8 +327,8 @@ final class BankAccountDetailViewFactory
             $descriptions[] = new BankAccountManualCandidate(
                 'invoice',
                 sprintf('Faktura %s', $invoice->getInvoiceNumber()),
-                $this->linkGenerator->link(':Payments:InvoiceList:detail', ['id' => $invoice->getId()]),
-                $this->linkGenerator->link(':Settings:BankAccounts:pairTransactionToInvoice', [
+                $this->linkGenerator->link('Payments:InvoiceList:detail', ['id' => $invoice->getId()]),
+                $this->linkGenerator->link('Settings:BankAccounts:pairTransactionToInvoice', [
                     'accountId' => $transaction->getBankAccount()->getId(),
                     'transactionKey' => $transaction->getTransactionKey(),
                     'invoiceId' => $invoice->getId(),
@@ -366,7 +366,7 @@ final class BankAccountDetailViewFactory
                     $payment->getName(),
                     isset($groupNames[$payment->getGroupId()]) ? ' ve skupině '.$groupNames[$payment->getGroupId()] : '',
                 ),
-                $this->linkGenerator->link(':Payments:Payment:default', ['id' => $payment->getGroupId()]).'#payment-'.$payment->getId(),
+                $this->linkGenerator->link('Payments:Payment:default', ['id' => $payment->getGroupId()]).'#payment-'.$payment->getId(),
                 'payment:'.$payment->getId(),
             );
         }
@@ -384,7 +384,7 @@ final class BankAccountDetailViewFactory
             return new BankAccountTransactionLink(
                 'invoice',
                 sprintf('Spárováno s fakturou %s', $invoice->getInvoiceNumber()),
-                $this->linkGenerator->link(':Payments:InvoiceList:detail', ['id' => $invoice->getId()]),
+                $this->linkGenerator->link('Payments:InvoiceList:detail', ['id' => $invoice->getId()]),
                 'invoice:'.$invoice->getId(),
             );
         }
