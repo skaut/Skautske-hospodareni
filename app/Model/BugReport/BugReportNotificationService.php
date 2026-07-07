@@ -41,6 +41,10 @@ final class BugReportNotificationService
             ->setSubject(sprintf('[Skautské hospodaření] Hlášení technické chyby #%d', $report->getId()))
             ->setBody($this->createBody($report));
 
+        if ($report->getReporterEmail() !== null) {
+            $message->addReplyTo($report->getReporterEmail(), $report->getReporterDisplayName());
+        }
+
         foreach ($recipients as $recipient) {
             $message->addTo($recipient);
         }
@@ -70,6 +74,7 @@ final class BugReportNotificationService
             'Administrace: '.$this->appBaseUrl.'/admin/hlaseni-chyb/'.$report->getId(),
             'Nahlášeno: '.$report->getCreatedAt()->format('Y-m-d H:i:s P'),
             'Uživatel: '.$report->getReporterDisplayName().' (ID '.$report->getReporterUserId().')',
+            'E-mail uživatele: '.($report->getReporterEmail() ?? '-'),
             'Role: '.($role !== [] ? implode(', ', $role) : '-'),
             'Jednotka: '.($unit !== [] ? implode(', ', $unit) : '-'),
             'URL chyby: '.($report->getReportedUrl() ?? '-'),

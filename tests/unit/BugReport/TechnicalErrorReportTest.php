@@ -17,6 +17,7 @@ final class TechnicalErrorReportTest extends Unit
 
         self::assertFalse($report->isResolved());
         self::assertNull($report->getResolvedAt());
+        self::assertSame('reporter@example.test', $report->getReporterEmail());
 
         $report->resolve($resolvedAt);
 
@@ -35,6 +36,7 @@ final class TechnicalErrorReportTest extends Unit
             'https://example.test/chyba',
             123,
             'Testovací uživatel',
+            'reporter@example.test',
             456,
             'Vedoucí',
             789,

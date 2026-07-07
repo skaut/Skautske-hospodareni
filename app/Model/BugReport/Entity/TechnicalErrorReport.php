@@ -31,6 +31,9 @@ class TechnicalErrorReport extends AbstractIdEntity
     #[Column(name: 'reporter_display_name', type: Types::STRING, length: 255)]
     private string $reporterDisplayName;
 
+    #[Column(name: 'reporter_email', type: Types::STRING, length: 255, nullable: true)]
+    private ?string $reporterEmail;
+
     #[Column(name: 'role_id', type: Types::INTEGER, nullable: true, options: ['unsigned' => true])]
     private ?int $roleId;
 
@@ -74,6 +77,7 @@ class TechnicalErrorReport extends AbstractIdEntity
         ?string $reportedUrl,
         int $reporterUserId,
         string $reporterDisplayName,
+        ?string $reporterEmail,
         ?int $roleId,
         ?string $roleName,
         ?int $unitId,
@@ -88,6 +92,7 @@ class TechnicalErrorReport extends AbstractIdEntity
         $this->reportedUrl = $reportedUrl;
         $this->reporterUserId = $reporterUserId;
         $this->reporterDisplayName = $reporterDisplayName;
+        $this->reporterEmail = $reporterEmail;
         $this->roleId = $roleId;
         $this->roleName = $roleName;
         $this->unitId = $unitId;
@@ -138,6 +143,11 @@ class TechnicalErrorReport extends AbstractIdEntity
     public function getReporterDisplayName(): string
     {
         return $this->reporterDisplayName;
+    }
+
+    public function getReporterEmail(): ?string
+    {
+        return $this->reporterEmail;
     }
 
     public function getRoleId(): ?int
