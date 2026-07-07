@@ -149,8 +149,12 @@ task('deploy:runtime_files', function () {
     $runtimeDir = __DIR__.'/.deployment';
 
     run('mkdir -p {{deploy_path}}/shared/app/config');
+    run('if [ -d {{deploy_path}}/shared/.env.local ] && [ ! -L {{deploy_path}}/shared/.env.local ]; then mv {{deploy_path}}/shared/.env.local {{deploy_path}}/shared/.env.local.directory-backup-$(date +%Y%m%d%H%M%S); fi');
+    run('if [ -d {{deploy_path}}/shared/app/config/google-credentials.json ] && [ ! -L {{deploy_path}}/shared/app/config/google-credentials.json ]; then mv {{deploy_path}}/shared/app/config/google-credentials.json {{deploy_path}}/shared/app/config/google-credentials.json.directory-backup-$(date +%Y%m%d%H%M%S); fi');
     upload($runtimeDir.'/.env.local', '{{deploy_path}}/shared/.env.local');
     upload($runtimeDir.'/google-credentials.json', '{{deploy_path}}/shared/app/config/google-credentials.json');
+    run('test -f {{deploy_path}}/shared/.env.local');
+    run('test -f {{deploy_path}}/shared/app/config/google-credentials.json');
 })->desc('Upload shared runtime files');
 
 // --- úkol: vytvoř kořenové sdílené složky a symlinky v release ---
@@ -169,6 +173,52 @@ task('custom:shared_symlinks', function () {
 
     // symlink web rootu mimo releases (idempotentně, přepíše existující)
     run('ln -sfn {{release_path}}/www {{web_root_symlink}}');
+});
+
+desc('Verify that published web root serves the new release');
+task('deploy:verify_release', function () {
+    $buildHash = get('build_hash');
+    $checkFile = '.deploy-check-'.$buildHash.'.php';
+    $expectedResponse = 'deploy-ok:'.$buildHash;
+    $appBaseUrl = rtrim(requiredEnv('APP_BASE_URL'), '/');
+    $checkUrl = $appBaseUrl.'/'.$checkFile;
+    $remoteCheckFile = '{{release_path}}/www/'.escapeshellarg($checkFile);
+    $phpCheck = sprintf(
+        "<?php if (function_exists('opcache_reset')) { @opcache_reset(); } header('Content-Type: text/plain'); echo %s;\n",
+        var_export($expectedResponse, true),
+    );
+
+    $webRootTarget = test('test "$(readlink -f {{web_root_symlink}})" = "$(readlink -f {{release_path}}/www)"');
+    if (! $webRootTarget) {
+        warning('Published web root does not point to the new release path.');
+    }
+
+    try {
+        run(sprintf('printf %s > %s', escapeshellarg($phpCheck), $remoteCheckFile));
+    } catch (\Throwable $e) {
+        warning('Unable to create deploy verification file: '.$e->getMessage());
+
+        return;
+    }
+
+    try {
+        $actualResponse = runLocally(sprintf(
+            'curl --fail --silent --show-error --max-time 20 %s',
+            escapeshellarg($checkUrl),
+        ));
+
+        if ($actualResponse !== $expectedResponse) {
+            warning(sprintf(
+                'Deploy verification returned "%s", expected "%s". The web server may still serve an older release.',
+                $actualResponse,
+                $expectedResponse,
+            ));
+        }
+    } catch (\Throwable $e) {
+        warning('Deploy verification request failed: '.$e->getMessage());
+    } finally {
+        run('rm -f '.$remoteCheckFile);
+    }
 });
 
 
@@ -252,6 +302,7 @@ task('deploy', [
     'app:proxies',
     //'app:migrate', -- nelze na lebedě
     'deploy:publish',
+    'deploy:verify_release',
     'app:db_fix', //lebeda...
     'app:disable_db_fix',
 ]);
