@@ -31,7 +31,7 @@ class CampStatisticsQueryHandler
             Operation::EXPENSE,
             $query->getYear(),
         ];
-        $types = [Connection::PARAM_INT_ARRAY, ParameterType::INTEGER];
+        $types = [Connection::PARAM_INT_ARRAY, ParameterType::INTEGER, ParameterType::INTEGER];
         $sql = <<<'SQL'
             SELECT o.id, COUNT(ci.price) as sum
             FROM `ac_chits` c

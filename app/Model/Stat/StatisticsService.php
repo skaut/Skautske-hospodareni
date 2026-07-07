@@ -6,12 +6,14 @@ namespace App\Model\Stat;
 
 use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Stat\Counter;
+use App\Model\Event\Camp;
+use App\Model\Event\Event;
 use App\Model\Event\ReadModel\Queries\CampListQuery;
 use App\Model\Event\ReadModel\Queries\CampStatisticsQuery;
 use App\Model\Event\ReadModel\Queries\EventListQuery;
 use App\Model\Event\ReadModel\Queries\EventStatisticsQuery;
-use App\Model\Event\ReadModel\Queries\PaymentGroupStatisticsQuery;
 use App\Model\Skautis\ISkautisEvent;
+use App\Model\Stat\ReadModel\Queries\LocalUnitStatisticsQuery;
 use App\Model\Unit\Unit;
 
 use function array_filter;
@@ -30,24 +32,41 @@ class StatisticsService
     /** @return array<int, Counter> */
     public function getEventStatistics(Unit $unitTree, int $year): array
     {
+        /** @var array<int, Event> $events */
         $events = $this->queryBus->handle(new EventListQuery($year, null));
+        /** @var array<int, Camp> $camps */
         $camps = $this->queryBus->handle(new CampListQuery($year));
+        /** @var array<int, mixed> $eventStats */
         $eventStats = $this->queryBus->handle(new EventStatisticsQuery(array_keys($events), $year));
+        /** @var array<int, mixed> $campStats */
         $campStats = $this->queryBus->handle(new CampStatisticsQuery(array_keys($camps), $year));
 
         $eventCount = $this->sumUpByEventId($events, array_keys($eventStats));
         $campCount = $this->sumUpByEventId($camps, array_keys($campStats));
-        $paymentCount = $this->queryBus->handle(new PaymentGroupStatisticsQuery($unitTree->getIdWithChildren(), $year));
+        /** @var array<int, Counter> $localStatistics */
+        $localStatistics = $this->queryBus->handle(new LocalUnitStatisticsQuery($unitTree->getIdWithChildren(), $year));
 
-        $keys = array_unique(array_merge(array_keys($eventCount), array_keys($campCount), array_keys($paymentCount)));
+        $keys = array_unique(array_merge(array_keys($eventCount), array_keys($campCount), array_keys($localStatistics)));
 
         $merged = [];
         foreach ($keys as $k) {
-            $merged[$k] = new Counter(
-                ($eventCount[$k] ?? 0) + ($eventStats[$k] ?? 0),
-                ($campCount[$k] ?? 0) + ($campStats[$k] ?? 0),
-                $paymentCount[$k] ?? 0,
-            );
+            $counter = $localStatistics[$k] ?? new Counter();
+            $counter->takeIn(new Counter(
+                $eventCount[$k] ?? 0,
+                $campCount[$k] ?? 0,
+                0,
+            ));
+            $merged[$k] = $counter;
+        }
+
+        foreach ($events as $eventId => $event) {
+            $merged[$event->getUnitId()->toInt()] ??= new Counter();
+            $merged[$event->getUnitId()->toInt()]->addEvent($event->getState(), array_key_exists($eventId, $eventStats));
+        }
+
+        foreach ($camps as $campId => $camp) {
+            $merged[$camp->getUnitId()->toInt()] ??= new Counter();
+            $merged[$camp->getUnitId()->toInt()]->addCamp($camp->getState(), array_key_exists($campId, $campStats), $camp->getParticipantStatistics() !== null);
         }
 
         return array_filter(

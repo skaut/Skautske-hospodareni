@@ -6,6 +6,7 @@ namespace App\Presentation\Admin\Statistics;
 
 use App\Model\Stat\StatisticsService;
 use App\Model\Unit\ReadModel\Queries\UnitQuery;
+use App\Model\Unit\Services\UnitTreeSelectOptions;
 use Component\Forms\BaseForm;
 use Nette\Forms\Form;
 
@@ -15,7 +16,7 @@ final class StatisticsPresenter extends \App\Presentation\Admin\AdminBasePresent
 {
     protected ?int $year = null;
 
-    public function __construct(private StatisticsService $statService)
+    public function __construct(private StatisticsService $statService, private UnitTreeSelectOptions $unitTreeSelectOptions)
     {
     }
 
@@ -42,11 +43,17 @@ final class StatisticsPresenter extends \App\Presentation\Admin\AdminBasePresent
     public function createComponentSelectYearForm(): Form
     {
         $form = new BaseForm();
+        $form->addSelect('unitId', 'Jednotka', $this->unitTreeSelectOptions->getOptions())
+            ->setDefaultValue($this->unitId->toInt());
         $form->addSelect('year', 'Rok', $this->getYearRange())
             ->setDefaultValue($this->year);
         $form->addSubmit('submit', 'Zobrazit');
         $form->onSuccess[] = function (Form $form): void {
-            $this->redirect('this', ['year' => $form->getValues()->year]);
+            $values = $form->getValues();
+            $this->redirect('this', [
+                'unitId' => (int) $values->unitId,
+                'year' => (int) $values->year,
+            ]);
         };
 
         return $form;

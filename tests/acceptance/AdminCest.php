@@ -327,8 +327,17 @@ final class AdminCest extends BaseAcceptanceCest
         // Hero card
         $I->seeElement('[data-test="admin-statistics-page"] .card');
 
+        // Unit and year filters
+        $I->seeElement('[data-test="admin-statistics-page"] select[name="unitId"]');
+        $I->seeElement('[data-test="admin-statistics-page"] select[name="year"]');
+
         // Table card
         $I->seeElement('[data-test="admin-statistics-table-card"]');
+        $I->seeElement('[data-test="admin-statistics-events-card"]');
+        $I->seeElement('[data-test="admin-statistics-payments-card"]');
+        $I->seeElement('[data-test="admin-statistics-invoices-card"]');
+        $I->seeElement('[data-test="admin-statistics-bank-card"]');
+        $I->seeElement('[data-test="admin-statistics-bug-reports-card"]');
 
         // Table has thead and tbody
         $I->seeElement('[data-test="admin-statistics-table-card"] table thead');

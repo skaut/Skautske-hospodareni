@@ -15,6 +15,74 @@
     {/if}
 {/block}
 
+{define statRows, string $section}
+    {foreach $unitTree->getChildren() === null ? [$unitTree] : [$unitTree] as $rootUnit}
+        {include statUnitRows, unit => $rootUnit, level => 0, section => $section}
+    {/foreach}
+{/define}
+
+{define statUnitRows, $unit, int $level, string $section}
+    {var $space = "&nbsp;"}
+    {if array_key_exists($unit->getId(), $data)}
+        {var $counter = $data[$unit->getId()]}
+        <tr>
+            <th>{$space|repeat:5 * $level|noescape}{$unit->getDisplayName()}</th>
+            {if $section === 'events'}
+                <td>{$counter->eventTotal}</td>
+                <td>{$counter->eventDraft}</td>
+                <td>{$counter->eventClosed}</td>
+                <td>{$counter->eventCancelled}</td>
+                <td>{$counter->eventWithExpense}</td>
+                <td>{$counter->eventWithoutExpense}</td>
+                <td>{$counter->campTotal}</td>
+                <td>{$counter->campDraft}</td>
+                <td>{$counter->campApprovedParent}</td>
+                <td>{$counter->campApprovedLeader}</td>
+                <td>{$counter->campReal}</td>
+                <td>{$counter->campWithExpense}</td>
+                <td>{$counter->campWithoutExpense}</td>
+                <td>{$counter->campWithParticipantStats}</td>
+            {elseif $section === 'payments'}
+                <td>{$counter->paymentGroups}</td>
+                <td>{$counter->paymentGroupsOpen}</td>
+                <td>{$counter->paymentGroupsClosed}</td>
+                <td>{$counter->paymentsTotal}</td>
+                <td>{$counter->paymentsPreparing}</td>
+                <td>{$counter->paymentsCompleted}</td>
+                <td>{$counter->paymentsCanceled}</td>
+                <td>{$counter->paymentsAmountTotal|number:0, ',', '&nbsp;'|noescape}</td>
+                <td>{$counter->paymentsAmountCompleted|number:0, ',', '&nbsp;'|noescape}</td>
+                <td>{$counter->paymentsAutomaticPairings}</td>
+            {elseif $section === 'invoices'}
+                <td>{$counter->invoicesTotal}</td>
+                <td>{$counter->invoicesIssued}</td>
+                <td>{$counter->invoicesDelivered}</td>
+                <td>{$counter->invoicesPaid}</td>
+                <td>{$counter->invoicesCancelled}</td>
+                <td>{$counter->invoicesSent}</td>
+                <td>{$counter->invoicesAmountTotal|number:0, ',', '&nbsp;'|noescape}</td>
+                <td>{$counter->invoicesAmountPaid|number:0, ',', '&nbsp;'|noescape}</td>
+            {elseif $section === 'bank'}
+                <td>{$counter->bankAccountsTotal}</td>
+                <td>{$counter->bankAccountsFio}</td>
+                <td>{$counter->bankAccountsGpc}</td>
+                <td>{$counter->bankTransactionsTotal}</td>
+                <td>{$counter->bankTransactionsUnpaired}</td>
+                <td>{if $counter->bankLastImportAt !== null}{$counter->bankLastImportAt|date:'j. n. Y H:i'}{else}-{/if}</td>
+            {elseif $section === 'bugReports'}
+                <td>{$counter->bugReportsTotal}</td>
+                <td>{$counter->bugReportsOpen}</td>
+                <td>{$counter->bugReportsFixed}</td>
+                <td>{$counter->bugReportsRejected}</td>
+                <td>{if $counter->bugReportAverageResolutionHours !== null}{$counter->bugReportAverageResolutionHours|number:1, ',', '&nbsp;'|noescape}{else}-{/if}</td>
+            {/if}
+        </tr>
+        {foreach $unit->getChildren() as $child}
+            {include statUnitRows, unit => $child, level => $level + 1, section => $section}
+        {/foreach}
+    {/if}
+{/define}
+
 {block content}
 <div data-test="admin-statistics-page">
     {* Hero *}
@@ -56,6 +124,129 @@
                     <tbody>
                     {include #unit, unit => $unitTree, level => 0}
                     </tbody>
+                </table>
+            </div>
+        </div>
+    </article>
+
+    <article class="card mt-4" data-test="admin-statistics-events-card">
+        <div class="card-body">
+            <h2 class="h5 mb-0">Výpravy a tábory</h2>
+            <div class="table-responsive mt-3">
+                <table class="table table-hover table-striped mb-0">
+                    <thead>
+                    <tr>
+                        <th>Jednotka</th>
+                        <th>Výpravy</th>
+                        <th>Rozprac.</th>
+                        <th>Uzavřené</th>
+                        <th>Zrušené</th>
+                        <th>S dokl.</th>
+                        <th>Bez dokl.</th>
+                        <th>Tábory</th>
+                        <th>Návrh</th>
+                        <th>Schv. stř.</th>
+                        <th>Schv. vůdce</th>
+                        <th>Skutečnost</th>
+                        <th>S dokl.</th>
+                        <th>Bez dokl.</th>
+                        <th>Statistiky</th>
+                    </tr>
+                    </thead>
+                    <tbody>{include statRows, section => 'events'}</tbody>
+                </table>
+            </div>
+        </div>
+    </article>
+
+    <article class="card mt-4" data-test="admin-statistics-payments-card">
+        <div class="card-body">
+            <h2 class="h5 mb-0">Platby</h2>
+            <div class="table-responsive mt-3">
+                <table class="table table-hover table-striped mb-0">
+                    <thead>
+                    <tr>
+                        <th>Jednotka</th>
+                        <th>Skupiny</th>
+                        <th>Otevřené</th>
+                        <th>Uzavřené</th>
+                        <th>Platby</th>
+                        <th>Neuhrazené</th>
+                        <th>Uhrazené</th>
+                        <th>Zrušené</th>
+                        <th>Předepsáno</th>
+                        <th>Uhrazeno</th>
+                        <th>Auto párování</th>
+                    </tr>
+                    </thead>
+                    <tbody>{include statRows, section => 'payments'}</tbody>
+                </table>
+            </div>
+        </div>
+    </article>
+
+    <article class="card mt-4" data-test="admin-statistics-invoices-card">
+        <div class="card-body">
+            <h2 class="h5 mb-0">Fakturace</h2>
+            <div class="table-responsive mt-3">
+                <table class="table table-hover table-striped mb-0">
+                    <thead>
+                    <tr>
+                        <th>Jednotka</th>
+                        <th>Faktury</th>
+                        <th>Vystavené</th>
+                        <th>Odeslané</th>
+                        <th>Uhrazené</th>
+                        <th>Zrušené</th>
+                        <th>E-mail odeslán</th>
+                        <th>Fakturováno</th>
+                        <th>Uhrazeno</th>
+                    </tr>
+                    </thead>
+                    <tbody>{include statRows, section => 'invoices'}</tbody>
+                </table>
+            </div>
+        </div>
+    </article>
+
+    <article class="card mt-4" data-test="admin-statistics-bank-card">
+        <div class="card-body">
+            <h2 class="h5 mb-0">Bankovní účty</h2>
+            <div class="table-responsive mt-3">
+                <table class="table table-hover table-striped mb-0">
+                    <thead>
+                    <tr>
+                        <th>Jednotka</th>
+                        <th>Účty</th>
+                        <th>FIO</th>
+                        <th>GPC</th>
+                        <th>Transakce</th>
+                        <th>Nespárované</th>
+                        <th>Poslední import</th>
+                    </tr>
+                    </thead>
+                    <tbody>{include statRows, section => 'bank'}</tbody>
+                </table>
+            </div>
+        </div>
+    </article>
+
+    <article class="card mt-4" data-test="admin-statistics-bug-reports-card">
+        <div class="card-body">
+            <h2 class="h5 mb-0">Technická hlášení</h2>
+            <div class="table-responsive mt-3">
+                <table class="table table-hover table-striped mb-0">
+                    <thead>
+                    <tr>
+                        <th>Jednotka</th>
+                        <th>Hlášení</th>
+                        <th>Otevřená</th>
+                        <th>Vyřešená</th>
+                        <th>Zamítnutá</th>
+                        <th>Průměr vyřešení (h)</th>
+                    </tr>
+                    </thead>
+                    <tbody>{include statRows, section => 'bugReports'}</tbody>
                 </table>
             </div>
         </div>
