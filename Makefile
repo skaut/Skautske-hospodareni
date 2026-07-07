@@ -1,5 +1,10 @@
 SHELL := /bin/bash
 
+# Docker daemon socket mounted into Traefik for service discovery. Auto-detected
+# from the active Docker context (works for both rootful and rootless Docker);
+# falls back to the standard rootful socket. Override by exporting DOCKER_SOCKET.
+export DOCKER_SOCKET ?= $(shell docker context inspect --format '{{.Endpoints.docker.Host}}' 2>/dev/null | sed -n 's|^unix://||p')
+
 COMPOSE         = docker compose -f docker/docker-compose.yml
 RUN_PHP_DEV     = $(COMPOSE) run --rm -T --user root php
 RUN_PHP_TEST    = $(COMPOSE) run --rm -T --user root php-test
