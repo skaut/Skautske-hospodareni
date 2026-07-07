@@ -19,14 +19,16 @@ final class TechnicalErrorReportTest extends Unit
         self::assertNull($report->getResolvedAt());
         self::assertSame('reporter@example.test', $report->getReporterEmail());
 
-        $report->resolve($resolvedAt);
+        $report->resolve('Vyřešeno v nové verzi.', $resolvedAt);
 
         self::assertTrue($report->isResolved());
         self::assertSame($resolvedAt, $report->getResolvedAt());
+        self::assertSame('Vyřešeno v nové verzi.', $report->getResolutionMessage());
 
-        $report->resolve(new DateTimeImmutable('2026-06-19 12:00:00'));
+        $report->resolve('Pozdější zpráva', new DateTimeImmutable('2026-06-19 12:00:00'));
 
         self::assertSame($resolvedAt, $report->getResolvedAt());
+        self::assertSame('Vyřešeno v nové verzi.', $report->getResolutionMessage());
     }
 
     private function createReport(): TechnicalErrorReport

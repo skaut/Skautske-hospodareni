@@ -70,6 +70,37 @@ final class BugReportNotificationServiceTest extends Unit
         self::assertStringContainsString('E-mail uživatele: -', (string) $mailer->message->getBody());
     }
 
+    public function testResolutionNotificationIsSentToReporter(): void
+    {
+        $mailer = new class implements Mailer {
+            public ?Message $message = null;
+
+            public function send(Message $mail): void
+            {
+                $this->message = $mail;
+            }
+        };
+
+        $service = new BugReportNotificationService(
+            $mailer,
+            false,
+            false,
+            ['admin@example.test'],
+            'https://h.skauting.cz',
+        );
+
+        $service->notifyResolution(
+            $this->createReport('jana.kvapilova@example.test'),
+            'Chyba je opravena v nové produkční verzi.',
+        );
+
+        self::assertInstanceOf(Message::class, $mailer->message);
+        self::assertSame(['jana.kvapilova@example.test' => 'Jana Kvapilová'], $mailer->message->getHeader('To'));
+        self::assertStringContainsString('Hlášení #123 bylo vyřešeno', (string) $mailer->message->getSubject());
+        self::assertStringContainsString('Chyba je opravena v nové produkční verzi.', (string) $mailer->message->getBody());
+        self::assertStringContainsString('Problém byl vyřešen a je upraven v nové verzi aplikace.', (string) $mailer->message->getBody());
+    }
+
     private function createReport(?string $reporterEmail): TechnicalErrorReport
     {
         $report = new TechnicalErrorReport(

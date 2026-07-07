@@ -38,10 +38,10 @@ class TechnicalErrorReportManager extends AbstractManager
         });
     }
 
-    public function resolve(TechnicalErrorReport $report): void
+    public function resolve(TechnicalErrorReport $report, ?string $message = null): void
     {
-        $this->em->wrapInTransaction(function () use ($report): void {
-            $report->resolve();
+        $this->em->wrapInTransaction(function () use ($report, $message): void {
+            $report->resolve($message);
             $this->em->persist($report);
             $this->em->flush();
         });
