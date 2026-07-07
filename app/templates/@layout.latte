@@ -33,7 +33,8 @@
     <link rel="stylesheet" href="/css/app.css?{md5_file($wwwDir . '/css/app.css')}">
 </head>
 
-<body class="app-shell" data-page-help-expanded="{$showPageHelp ? 'true' : 'false'}">
+<body class="app-shell" data-page-help-expanded="{$showPageHelp ? 'true' : 'false'}"
+      {if $sessionKeepAliveEnabled}data-session-keep-alive-url="{$sessionKeepAliveUrl}" data-session-keep-alive-interval="{$sessionKeepAliveInterval}"{/if}>
 <div class="page">
 
     <nav n:class="navbar, navbar-expand-lg, navbar-light, site-header, sticky-top, $testBackground ? 'navbar--' . $environmentColor">

@@ -48,6 +48,36 @@ final class UserPreferencesServiceTest extends Unit
         self::assertFalse($service->shouldShowHelp());
     }
 
+    public function testSkautisLoginExtensionIsDisabledByDefault(): void
+    {
+        $repository = Mockery::mock(UserPreferenceRepository::class);
+        $repository->shouldReceive('findOneByUserId')
+            ->with(1942)
+            ->once()
+            ->andReturn(null);
+
+        $manager = Mockery::mock(UserPreferenceManager::class);
+
+        $service = new UserPreferencesService($this->mockUser(1942), $repository, $manager);
+
+        self::assertFalse($service->shouldExtendSkautisLogin());
+    }
+
+    public function testStoredPreferenceCanEnableSkautisLoginExtension(): void
+    {
+        $repository = Mockery::mock(UserPreferenceRepository::class);
+        $repository->shouldReceive('findOneByUserId')
+            ->with(1942)
+            ->once()
+            ->andReturn(new UserPreference(1942, true, true));
+
+        $manager = Mockery::mock(UserPreferenceManager::class);
+
+        $service = new UserPreferencesService($this->mockUser(1942), $repository, $manager);
+
+        self::assertTrue($service->shouldExtendSkautisLogin());
+    }
+
     public function testHelpRemainsVisibleBeforePreferenceMigrationIsAvailable(): void
     {
         $repository = Mockery::mock(UserPreferenceRepository::class);
@@ -77,6 +107,21 @@ final class UserPreferencesServiceTest extends Unit
 
         $service = new UserPreferencesService($this->mockUser(1942), $repository, $manager);
         $service->setShowHelp(false);
+    }
+
+    public function testPreferencesAreSavedForCurrentUser(): void
+    {
+        $repository = Mockery::mock(UserPreferenceRepository::class);
+        $repository->shouldNotReceive('findOneByUserId');
+
+        $manager = Mockery::mock(UserPreferenceManager::class);
+        $manager->shouldReceive('savePreferences')
+            ->with(1942, false, true)
+            ->once()
+            ->andReturn(new UserPreference(1942, false, true));
+
+        $service = new UserPreferencesService($this->mockUser(1942), $repository, $manager);
+        $service->setPreferences(false, true);
     }
 
     private function mockUser(?int $userId): User

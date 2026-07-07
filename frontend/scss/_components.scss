@@ -294,6 +294,14 @@ label {
   font-weight: var(--tblr-font-weight-medium);
 }
 
+.form-check {
+  margin-bottom: 0.5rem;
+}
+
+.form-check-input + .form-check-label {
+  margin-left: 0.45rem;
+}
+
 .form-check-input:disabled ~ .form-check-label,
 .form-check-input[disabled] ~ .form-check-label,
 fieldset:disabled label {

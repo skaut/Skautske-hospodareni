@@ -24,23 +24,44 @@ class UserPreference extends AbstractIdEntity
     #[Column(name: 'show_help', type: Types::BOOLEAN, options: ['default' => true])]
     private bool $showHelp;
 
+    #[Column(name: 'extend_skautis_login', type: Types::BOOLEAN, options: ['default' => false])]
+    private bool $extendSkautisLogin;
+
     #[Column(name: 'updated_at', type: Types::DATETIME_IMMUTABLE)]
     private DateTimeImmutable $updatedAt;
 
-    public function __construct(int $userId, bool $showHelp = true, ?DateTimeImmutable $updatedAt = null)
-    {
+    public function __construct(
+        int $userId,
+        bool $showHelp = true,
+        bool $extendSkautisLogin = false,
+        ?DateTimeImmutable $updatedAt = null,
+    ) {
         if ($userId < 1) {
             throw new InvalidArgumentException('User preference user_id must be a positive integer.');
         }
 
         $this->userId = $userId;
         $this->showHelp = $showHelp;
+        $this->extendSkautisLogin = $extendSkautisLogin;
         $this->updatedAt = $updatedAt ?? new DateTimeImmutable();
     }
 
     public function setShowHelp(bool $showHelp): void
     {
         $this->showHelp = $showHelp;
+        $this->updatedAt = new DateTimeImmutable();
+    }
+
+    public function setExtendSkautisLogin(bool $extendSkautisLogin): void
+    {
+        $this->extendSkautisLogin = $extendSkautisLogin;
+        $this->updatedAt = new DateTimeImmutable();
+    }
+
+    public function updatePreferences(bool $showHelp, bool $extendSkautisLogin): void
+    {
+        $this->showHelp = $showHelp;
+        $this->extendSkautisLogin = $extendSkautisLogin;
         $this->updatedAt = new DateTimeImmutable();
     }
 
@@ -52,6 +73,11 @@ class UserPreference extends AbstractIdEntity
     public function shouldShowHelp(): bool
     {
         return $this->showHelp;
+    }
+
+    public function shouldExtendSkautisLogin(): bool
+    {
+        return $this->extendSkautisLogin;
     }
 
     public function getUpdatedAt(): DateTimeImmutable

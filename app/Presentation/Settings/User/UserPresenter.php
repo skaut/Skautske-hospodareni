@@ -26,10 +26,12 @@ final class UserPresenter extends \App\Presentation\Settings\SettingsBasePresent
         $form = new BaseForm();
         $form->addCheckbox('showHelp', 'Automaticky zobrazovat nápovědu u jednotlivých sekcí')
             ->setDefaultValue($this->preferences->shouldShowHelp());
+        $form->addCheckbox('extendSkautisLogin', 'Na pozadí prodlužovat přihlášení ke skautISu')
+            ->setDefaultValue($this->preferences->shouldExtendSkautisLogin());
         $form->addSubmit('save', 'Uložit nastavení');
         $form->onSuccess[] = function (Form $form): void {
             $values = $form->getValues();
-            $this->preferences->setShowHelp((bool) $values->showHelp);
+            $this->preferences->setPreferences((bool) $values->showHelp, (bool) $values->extendSkautisLogin);
             $this->flashMessage('Uživatelské nastavení bylo uloženo.', 'success');
             $this->redirect('this');
         };

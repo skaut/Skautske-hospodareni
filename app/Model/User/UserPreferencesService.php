@@ -35,6 +35,20 @@ final class UserPreferencesService
         }
     }
 
+    public function shouldExtendSkautisLogin(): bool
+    {
+        $userId = $this->getCurrentUserId();
+        if ($userId === null) {
+            return false;
+        }
+
+        try {
+            return $this->repository->findOneByUserId($userId)?->shouldExtendSkautisLogin() ?? false;
+        } catch (Throwable) {
+            return false;
+        }
+    }
+
     public function setShowHelp(bool $showHelp): void
     {
         $userId = $this->getCurrentUserId();
@@ -43,6 +57,16 @@ final class UserPreferencesService
         }
 
         $this->manager->saveHelpVisibility($userId, $showHelp);
+    }
+
+    public function setPreferences(bool $showHelp, bool $extendSkautisLogin): void
+    {
+        $userId = $this->getCurrentUserId();
+        if ($userId === null) {
+            return;
+        }
+
+        $this->manager->savePreferences($userId, $showHelp, $extendSkautisLogin);
     }
 
     public function getCurrentUserId(): ?int
