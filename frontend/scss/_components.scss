@@ -6,6 +6,66 @@
   box-shadow: var(--tblr-shadow-card);
 }
 
+.badge,
+.label {
+  &.bg-success,
+  &.text-bg-success,
+  &.label-success,
+  &.bg-danger,
+  &.text-bg-danger,
+  &.label-danger {
+    color: #fff !important;
+  }
+
+  &.bg-info,
+  &.text-bg-info,
+  &.label-info,
+  &.bg-warning,
+  &.text-bg-warning,
+  &.label-warning {
+    color: #302821 !important;
+  }
+}
+
+.label {
+  display: inline-block;
+  padding: 0.35em 0.65em;
+  border-radius: var(--tblr-border-radius);
+  font-size: 0.75em;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+
+.label-success {
+  background-color: var(--tblr-success);
+}
+
+.label-info {
+  background-color: var(--tblr-info);
+}
+
+.label-warning {
+  background-color: var(--tblr-warning);
+}
+
+.label-danger {
+  background-color: var(--tblr-danger);
+}
+
+.btn-warning {
+  --tblr-btn-color: #302821;
+  --tblr-btn-hover-color: #302821;
+  --tblr-btn-active-color: #302821;
+  --tblr-btn-disabled-color: #302821;
+  --bs-btn-color: #302821;
+  --bs-btn-hover-color: #302821;
+  --bs-btn-active-color: #302821;
+  --bs-btn-disabled-color: #302821;
+}
+
 .page-heading {
   margin-bottom: 1.5rem;
 }
