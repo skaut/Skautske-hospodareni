@@ -19,7 +19,7 @@ use Nette\Security\SimpleIdentity;
 use function array_column;
 use function array_filter;
 use function array_key_exists;
-use function assert;
+use function is_array;
 
 class ContractPresenter extends \App\Presentation\Travel\TravelBasePresenter
 {
@@ -31,19 +31,21 @@ class ContractPresenter extends \App\Presentation\Travel\TravelBasePresenter
     private function isContractAccessible(?Contract $contract): bool
     {
         $identity = $this->getUser()->getIdentity();
+        if (! $identity instanceof SimpleIdentity) {
+            return false;
+        }
 
-        assert($identity instanceof SimpleIdentity);
-
-        return $contract !== null && array_key_exists($contract->getUnitId(), $identity->access[UserService::ACCESS_READ]);
+        return $contract !== null && $this->hasUnitAccess($identity, UserService::ACCESS_READ, $contract->getUnitId());
     }
 
     private function isContractEditable(?Contract $contract): bool
     {
         $identity = $this->getUser()->getIdentity();
+        if (! $identity instanceof SimpleIdentity) {
+            return false;
+        }
 
-        assert($identity instanceof SimpleIdentity);
-
-        return $contract !== null && array_key_exists($contract->getUnitId(), $identity->access[UserService::ACCESS_EDIT]);
+        return $contract !== null && $this->hasUnitAccess($identity, UserService::ACCESS_EDIT, $contract->getUnitId());
     }
 
     public function renderDefault(): void
@@ -51,16 +53,14 @@ class ContractPresenter extends \App\Presentation\Travel\TravelBasePresenter
         $identity = $this->getUser()->getIdentity();
         $unitId = $this->officialUnit->getId();
 
-        assert($identity instanceof SimpleIdentity);
-
-        if (! array_key_exists($unitId, $identity->access[UserService::ACCESS_READ])) {
+        if (! $identity instanceof SimpleIdentity || ! $this->hasUnitAccess($identity, UserService::ACCESS_READ, $unitId)) {
             $this->flashMessage('Nemáš přístup ke smlouvám cestovních příkazů.', 'danger');
             $this->redirect(':Travel:Default:default');
         }
 
         $this->template->setParameters([
             'list' => $this->travelService->getAllContracts($unitId),
-            'canCreate' => array_key_exists($unitId, $identity->access[UserService::ACCESS_EDIT]),
+            'canCreate' => $this->hasUnitAccess($identity, UserService::ACCESS_EDIT, $unitId),
         ]);
     }
 
@@ -189,5 +189,20 @@ class ContractPresenter extends \App\Presentation\Travel\TravelBasePresenter
         $this->flashMessage('Smlouva byla založena.');
 
         $this->redirect('default');
+    }
+
+    private function hasUnitAccess(SimpleIdentity $identity, string $accessType, int $unitId): bool
+    {
+        $access = $identity->getData()['access'] ?? [];
+        if (! is_array($access)) {
+            return false;
+        }
+
+        $units = $access[$accessType] ?? [];
+        if (! is_array($units)) {
+            return false;
+        }
+
+        return array_key_exists($unitId, $units);
     }
 }
