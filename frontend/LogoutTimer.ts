@@ -1,8 +1,11 @@
+import {sessionKeepAliveSucceededEvent} from './ts/sessionKeepAlive';
+
 export class LogoutTimer {
-    private minutesLeft: number = 30;
+    private readonly sessionLengthMinutes = 30;
+    private minutesLeft: number = this.sessionLengthMinutes;
     private readonly timer: HTMLElement;
     private readonly minutesElement: HTMLElement;
-    private readonly intervalId: number;
+    private intervalId: number|null = null;
 
     constructor(timerId: string, minutesElementId: string) {
         this.timer = document.getElementById(timerId) as HTMLElement;
@@ -11,8 +14,13 @@ export class LogoutTimer {
         }
         this.minutesElement = document.getElementById(minutesElementId) as HTMLElement;
 
-        this.decrementMinutes();
-        this.intervalId = setInterval(this.decrementMinutes.bind(this), 60 * 1000);
+        this.resetTimer();
+        window.addEventListener(sessionKeepAliveSucceededEvent, () => this.resetTimer());
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'hskauting.sessionKeepAlive.lastPingAt') {
+                this.resetTimer();
+            }
+        });
     }
 
     private decrementMinutes(): void {
@@ -20,7 +28,7 @@ export class LogoutTimer {
 
         if (this.minutesLeft < 0) {
             this.updateTimer('Byl jsi odhlášen!');
-            clearInterval(this.intervalId);
+            this.stopTimer();
             return;
         }
 
@@ -30,6 +38,30 @@ export class LogoutTimer {
 
         this.updateTimer(this.minutesLeft + ' min', 'Do odhlášení zbývá ' + this.minutesLeft + ' min');
     };
+
+    private resetTimer(): void {
+        this.minutesLeft = this.sessionLengthMinutes;
+        this.timer.classList.remove('bg-danger');
+        this.updateTimer(
+            this.minutesLeft + ' min',
+            'Do odhlášení zbývá ' + this.minutesLeft + ' min',
+        );
+        this.restartTimer();
+    }
+
+    private restartTimer(): void {
+        this.stopTimer();
+        this.intervalId = window.setInterval(this.decrementMinutes.bind(this), 60 * 1000);
+    }
+
+    private stopTimer(): void {
+        if (this.intervalId === null) {
+            return;
+        }
+
+        window.clearInterval(this.intervalId);
+        this.intervalId = null;
+    }
 
     private updateTimer(text: string, title : string|null = null): void {
         this.minutesElement.title = title || text;
