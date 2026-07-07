@@ -43,6 +43,8 @@ use function str_replace;
 /** @property DefaultTemplate $template */
 abstract class BasePresenter extends Presenter
 {
+    private const SESSION_KEEP_ALIVE_INTERVAL_MS = 1_200_000;
+
     protected UserService $userService;
 
     protected UnitService $unitService;
@@ -142,6 +144,8 @@ abstract class BasePresenter extends Presenter
         parent::beforeRender();
 
         [$module, $presenterName] = $this->resolveTemplateSection();
+        $sessionKeepAliveEnabled = $this->getUser()->isLoggedIn()
+            && $this->userPreferences->shouldExtendSkautisLogin();
 
         $this->template->setParameters([
             'module' => $module,
@@ -154,6 +158,11 @@ abstract class BasePresenter extends Presenter
             'canAccessAdmin' => $this->authorizator->isAllowed(Admin::ACCESS, null),
             'canAccessInvoiceAccess' => $this->authorizator->isAllowed(InvoiceAccess::ACCESS, null),
             'showPageHelp' => $this->userPreferences->shouldShowHelp(),
+            'sessionKeepAliveEnabled' => $sessionKeepAliveEnabled,
+            'sessionKeepAliveInterval' => self::SESSION_KEEP_ALIVE_INTERVAL_MS,
+            'sessionKeepAliveUrl' => $sessionKeepAliveEnabled
+                ? $this->linkGenerator->link('SessionKeepAlive:default')
+                : null,
         ]);
 
         if (! $this->getUser()->isLoggedIn()) {

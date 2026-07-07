@@ -11,6 +11,7 @@ import './ts/checkAll';
 import initializeAjax from './ts/ajax';
 import {initializeMassEmailSelection} from './ts/massEmailSelection';
 import {initializePageEnhancements} from './ts/pageEnhancements';
+import {initializeSessionKeepAlive} from './ts/sessionKeepAlive';
 import './app.scss';
 
 // Use czech language for dates
@@ -37,4 +38,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeTooltips();
     initializeMassEmailSelection();
     initializePageEnhancements();
+    initializeSessionKeepAlive();
 });

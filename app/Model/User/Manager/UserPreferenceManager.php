@@ -34,4 +34,16 @@ class UserPreferenceManager extends AbstractManager
             return $preference;
         });
     }
+
+    public function savePreferences(int $userId, bool $showHelp, bool $extendSkautisLogin): UserPreference
+    {
+        return $this->em->wrapInTransaction(function () use ($userId, $showHelp, $extendSkautisLogin): UserPreference {
+            $preference = $this->repository->findOneByUserId($userId) ?? new UserPreference($userId);
+            $preference->updatePreferences($showHelp, $extendSkautisLogin);
+            $this->em->persist($preference);
+            $this->em->flush();
+
+            return $preference;
+        });
+    }
 }
