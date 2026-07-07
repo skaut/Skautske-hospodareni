@@ -19,16 +19,37 @@ final class TechnicalErrorReportTest extends Unit
         self::assertNull($report->getResolvedAt());
         self::assertSame('reporter@example.test', $report->getReporterEmail());
 
-        $report->resolve('Vyřešeno v nové verzi.', $resolvedAt);
+        $report->resolveAsFixed('Vyřešeno v nové verzi.', $resolvedAt);
 
         self::assertTrue($report->isResolved());
         self::assertSame($resolvedAt, $report->getResolvedAt());
+        self::assertSame(TechnicalErrorReport::RESOLUTION_FIXED, $report->getResolutionState());
         self::assertSame('Vyřešeno v nové verzi.', $report->getResolutionMessage());
 
-        $report->resolve('Pozdější zpráva', new DateTimeImmutable('2026-06-19 12:00:00'));
+        $report->resolveAsFixed('Pozdější zpráva', new DateTimeImmutable('2026-06-19 12:00:00'));
 
         self::assertSame($resolvedAt, $report->getResolvedAt());
+        self::assertSame(TechnicalErrorReport::RESOLUTION_FIXED, $report->getResolutionState());
         self::assertSame('Vyřešeno v nové verzi.', $report->getResolutionMessage());
+    }
+
+    public function testReportCanBeRejectedOnlyOnce(): void
+    {
+        $report = $this->createReport();
+        $resolvedAt = new DateTimeImmutable('2026-06-19 11:00:00');
+
+        $report->reject('Nejde o technickou chybu.', $resolvedAt);
+
+        self::assertTrue($report->isResolved());
+        self::assertSame($resolvedAt, $report->getResolvedAt());
+        self::assertSame(TechnicalErrorReport::RESOLUTION_REJECTED, $report->getResolutionState());
+        self::assertSame('Nejde o technickou chybu.', $report->getResolutionMessage());
+
+        $report->resolveAsFixed('Pozdější zpráva', new DateTimeImmutable('2026-06-19 12:00:00'));
+
+        self::assertSame($resolvedAt, $report->getResolvedAt());
+        self::assertSame(TechnicalErrorReport::RESOLUTION_REJECTED, $report->getResolutionState());
+        self::assertSame('Nejde o technickou chybu.', $report->getResolutionMessage());
     }
 
     private function createReport(): TechnicalErrorReport

@@ -96,9 +96,40 @@ final class BugReportNotificationServiceTest extends Unit
 
         self::assertInstanceOf(Message::class, $mailer->message);
         self::assertSame(['jana.kvapilova@example.test' => 'Jana Kvapilová'], $mailer->message->getHeader('To'));
-        self::assertStringContainsString('Hlášení #123 bylo vyřešeno', (string) $mailer->message->getSubject());
+        self::assertStringContainsString('Hlášení #123 bylo zpracováno', (string) $mailer->message->getSubject());
         self::assertStringContainsString('Chyba je opravena v nové produkční verzi.', (string) $mailer->message->getBody());
-        self::assertStringContainsString('Problém byl vyřešen a je upraven v nové verzi aplikace.', (string) $mailer->message->getBody());
+        self::assertStringContainsString('Požadavek byl zpracován a oprava je upravena v nové verzi aplikace.', (string) $mailer->message->getBody());
+    }
+
+    public function testRejectionNotificationIsSentToReporter(): void
+    {
+        $mailer = new class implements Mailer {
+            public ?Message $message = null;
+
+            public function send(Message $mail): void
+            {
+                $this->message = $mail;
+            }
+        };
+
+        $service = new BugReportNotificationService(
+            $mailer,
+            false,
+            false,
+            ['admin@example.test'],
+            'https://h.skauting.cz',
+        );
+
+        $service->notifyRejection(
+            $this->createReport('jana.kvapilova@example.test'),
+            'Nejde o technickou chybu aplikace.',
+        );
+
+        self::assertInstanceOf(Message::class, $mailer->message);
+        self::assertSame(['jana.kvapilova@example.test' => 'Jana Kvapilová'], $mailer->message->getHeader('To'));
+        self::assertStringContainsString('Hlášení #123 bylo zamítnuto', (string) $mailer->message->getSubject());
+        self::assertStringContainsString('Nejde o technickou chybu aplikace.', (string) $mailer->message->getBody());
+        self::assertStringContainsString('byl uzavřen bez opravy', (string) $mailer->message->getBody());
     }
 
     private function createReport(?string $reporterEmail): TechnicalErrorReport

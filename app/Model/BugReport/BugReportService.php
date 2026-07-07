@@ -39,7 +39,7 @@ final class BugReportService
     }
 
     /** @param array<string, mixed> $clientDiagnostics */
-    public function submit(string $description, ?string $reportedUrl, array $clientDiagnostics): TechnicalErrorReport
+    public function submit(string $description, ?string $reportedUrl, array $clientDiagnostics, ?string $reporterEmail = null): TechnicalErrorReport
     {
         $identity = $this->user->getIdentity();
         if (! $identity instanceof SimpleIdentity || ! is_numeric($identity->getId())) {
@@ -69,7 +69,7 @@ final class BugReportService
         }
 
         $displayName = $this->resolveDisplayName($userDetail, $userId);
-        $email = $this->resolveEmail($userDetail);
+        $email = $this->resolveEmail($userDetail) ?? $this->resolvePersonalEmail() ?? $this->normalizeEmail($reporterEmail);
         $userAgent = $this->httpRequest->getHeader('User-Agent');
         $access = $identity->access ?? [];
         if (! is_array($access)) {
@@ -137,6 +137,20 @@ final class BugReportService
         return $report;
     }
 
+    public function getCurrentReporterEmail(): ?string
+    {
+        try {
+            $email = $this->resolveEmail(get_object_vars($this->userService->getUserDetail()));
+            if ($email !== null) {
+                return $email;
+            }
+        } catch (Throwable) {
+            // Fall through to personal detail.
+        }
+
+        return $this->resolvePersonalEmail();
+    }
+
     /** @param array<string, mixed> $userDetail */
     private function resolveDisplayName(array $userDetail, int $userId): string
     {
@@ -165,6 +179,26 @@ final class BugReportService
         }
 
         return null;
+    }
+
+    private function resolvePersonalEmail(): ?string
+    {
+        try {
+            return $this->resolveEmail(get_object_vars($this->userService->getPersonalDetail()));
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
+    private function normalizeEmail(?string $email): ?string
+    {
+        if ($email === null) {
+            return null;
+        }
+
+        $email = trim($email);
+
+        return $email !== '' && Validators::isEmail($email) ? $email : null;
     }
 
     /** @return array<string, string> */

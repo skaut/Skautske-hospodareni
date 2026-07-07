@@ -18,36 +18,36 @@
                     n:href="resolve!, id => $report->getId()"
                     class="btn btn-success btn-sm"
                     data-test="admin-bug-report-resolve"
-                    onclick='return confirm("Opravdu chcete označit toto hlášení jako vyřízené?");'
+                    onclick='return confirm("Opravdu chcete potvrdit opravu tohoto hlášení?");'
                 >
                     <i class="fi fi-rr-check-circle" aria-hidden="true"></i>
-                    Označit jako vyřízené
+                    Potvrdit opravu
                 </a>
                 <a
-                    href="#resolveWithMessage"
-                    class="btn btn-outline-success btn-sm"
+                    href="#rejectReport"
+                    class="btn btn-outline-danger btn-sm"
                     data-bs-toggle="modal"
-                    data-test="admin-bug-report-resolve-with-message"
+                    data-test="admin-bug-report-reject"
                 >
-                    <i class="fi fi-rr-envelope" aria-hidden="true"></i>
-                    Vyřešit se zprávou
+                    <i class="fi fi-rr-cross-circle" aria-hidden="true"></i>
+                    Zamítnout
                 </a>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="resolveWithMessage" aria-labelledby="resolveWithMessageLabel">
+    <div class="modal fade" id="rejectReport" aria-labelledby="rejectReportLabel">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2 class="modal-title h5" id="resolveWithMessageLabel">Zpráva autorovi hlášení</h2>
+                    <h2 class="modal-title h5" id="rejectReportLabel">Důvod zamítnutí</h2>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zavřít"></button>
                 </div>
                 <div class="modal-body">
                     <p class="text-body-secondary small">
-                        Text se odešle autorovi hlášení a hlášení se potom označí jako vyřízené.
+                        Důvod se odešle autorovi hlášení a hlášení se potom uzavře jako zamítnuté.
                     </p>
-                    {form resolveWithMessageForm}
+                    {form rejectForm}
                         {input id, value => $report->getId()}
                         <div class="mb-3">
                             {label message, class => 'form-label' /}

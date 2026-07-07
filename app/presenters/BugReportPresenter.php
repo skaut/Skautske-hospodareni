@@ -16,6 +16,7 @@ use function strlen;
 final class BugReportPresenter extends BasePresenter
 {
     private ?string $defaultReportedUrl = null;
+    private ?string $reporterEmail = null;
 
     public function __construct(private BugReportService $bugReportService)
     {
@@ -41,6 +42,7 @@ final class BugReportPresenter extends BasePresenter
     public function actionDefault(?string $url = null): void
     {
         $this->defaultReportedUrl = $url;
+        $this->reporterEmail = $this->bugReportService->getCurrentReporterEmail();
     }
 
     public function createComponentBugReportForm(): BaseForm
@@ -60,16 +62,29 @@ final class BugReportPresenter extends BasePresenter
             ->addRule(Form::URL, 'Zadejte platnou URL adresu.')
             ->addRule(Form::MAX_LENGTH, 'URL může mít nejvýše %d znaků.', 2048);
 
+        if ($this->reporterEmail === null) {
+            $form->addEmail('reporterEmail', 'Váš e-mail')
+                ->setRequired('Zadejte prosím e-mail, na který vám můžeme odpovědět.')
+                ->addRule(Form::MAX_LENGTH, 'E-mail může mít nejvýše %d znaků.', 255)
+                ->setOption('description', 'E-mail se použije pro odpověď správců a jako Reply-To v hlášení.');
+        }
+
         $form->addHidden('clientDiagnostics', '{}')
             ->setHtmlAttribute('data-bug-report-diagnostics', 'true');
         $form->addSubmit('send', 'Odeslat hlášení');
 
         $form->onSuccess[] = function (Form $form): void {
             $values = $form->getValues();
+            $reporterEmail = $this->reporterEmail;
+            if (isset($values->reporterEmail)) {
+                $reporterEmail = (string) $values->reporterEmail;
+            }
+
             $report = $this->bugReportService->submit(
                 (string) $values->description,
                 $values->url !== null ? (string) $values->url : null,
                 $this->decodeClientDiagnostics((string) $values->clientDiagnostics),
+                $reporterEmail,
             );
 
             $message = $report->wasNotificationSent()

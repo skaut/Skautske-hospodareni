@@ -19,6 +19,9 @@ use Doctrine\ORM\Mapping\Table;
 #[Index(name: 'technical_error_report_user_id_idx', columns: ['reporter_user_id'])]
 class TechnicalErrorReport extends AbstractIdEntity
 {
+    public const RESOLUTION_FIXED = 'fixed';
+    public const RESOLUTION_REJECTED = 'rejected';
+
     #[Column(type: Types::TEXT)]
     private string $description;
 
@@ -70,6 +73,9 @@ class TechnicalErrorReport extends AbstractIdEntity
 
     #[Column(name: 'resolved_at', type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?DateTimeImmutable $resolvedAt = null;
+
+    #[Column(name: 'resolution_state', type: Types::STRING, length: 20, nullable: true)]
+    private ?string $resolutionState = null;
 
     #[Column(name: 'resolution_message', type: Types::TEXT, nullable: true)]
     private ?string $resolutionMessage = null;
@@ -137,12 +143,23 @@ class TechnicalErrorReport extends AbstractIdEntity
         $this->resolutionNotificationError = $error;
     }
 
-    public function resolve(?string $message = null, ?DateTimeImmutable $resolvedAt = null): void
+    public function resolveAsFixed(?string $message = null, ?DateTimeImmutable $resolvedAt = null): void
+    {
+        $this->resolve(self::RESOLUTION_FIXED, $message, $resolvedAt);
+    }
+
+    public function reject(string $message, ?DateTimeImmutable $resolvedAt = null): void
+    {
+        $this->resolve(self::RESOLUTION_REJECTED, $message, $resolvedAt);
+    }
+
+    private function resolve(string $state, ?string $message = null, ?DateTimeImmutable $resolvedAt = null): void
     {
         if ($this->resolvedAt !== null) {
             return;
         }
 
+        $this->resolutionState = $state;
         $this->resolutionMessage = $message;
         $this->resolvedAt = $resolvedAt ?? new DateTimeImmutable();
     }
@@ -236,6 +253,11 @@ class TechnicalErrorReport extends AbstractIdEntity
     public function getResolvedAt(): ?DateTimeImmutable
     {
         return $this->resolvedAt;
+    }
+
+    public function getResolutionState(): ?string
+    {
+        return $this->resolutionState;
     }
 
     public function getResolutionMessage(): ?string

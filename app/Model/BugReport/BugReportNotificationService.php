@@ -58,6 +58,24 @@ final class BugReportNotificationService
 
     public function notifyResolution(TechnicalErrorReport $report, string $messageText): void
     {
+        $this->notifyClosure(
+            $report,
+            sprintf('[Skautské hospodaření] Hlášení #%d bylo zpracováno', $report->getId()),
+            $this->createResolutionBody($report, $messageText),
+        );
+    }
+
+    public function notifyRejection(TechnicalErrorReport $report, string $messageText): void
+    {
+        $this->notifyClosure(
+            $report,
+            sprintf('[Skautské hospodaření] Hlášení #%d bylo zamítnuto', $report->getId()),
+            $this->createRejectionBody($report, $messageText),
+        );
+    }
+
+    private function notifyClosure(TechnicalErrorReport $report, string $subject, string $body): void
+    {
         $recipient = $report->getReporterEmail();
         if ($recipient === null) {
             throw new RuntimeException('Technical error report has no reporter email.');
@@ -67,8 +85,8 @@ final class BugReportNotificationService
         $message = (new Message())
             ->setFrom('noreply@'.$host, 'Skautské hospodaření')
             ->addTo($recipient, $report->getReporterDisplayName())
-            ->setSubject(sprintf('[Skautské hospodaření] Hlášení #%d bylo vyřešeno', $report->getId()))
-            ->setBody($this->createResolutionBody($report, $messageText));
+            ->setSubject($subject)
+            ->setBody($body);
 
         $mailer = $this->sendEmail && $this->productionMode
             ? new SendmailMailer()
@@ -116,10 +134,30 @@ final class BugReportNotificationService
         return implode("\n", [
             'Dobrý den,',
             '',
-            sprintf('vámi nahlášený problém #%d ve Skautském hospodaření byl označen jako vyřešený.', $report->getId()),
-            'Problém byl vyřešen a je upraven v nové verzi aplikace.',
+            sprintf('vámi nahlášený problém #%d ve Skautském hospodaření byl zpracován.', $report->getId()),
+            'Požadavek byl zpracován a oprava je upravena v nové verzi aplikace.',
             '',
             'Zpráva administrátora:',
+            $messageText,
+            '',
+            'Původní hlášení:',
+            $report->getDescription(),
+            '',
+            'URL chyby: '.($report->getReportedUrl() ?? '-'),
+            '',
+            'Děkujeme za nahlášení.',
+            'Skautské hospodaření',
+        ]);
+    }
+
+    private function createRejectionBody(TechnicalErrorReport $report, string $messageText): string
+    {
+        return implode("\n", [
+            'Dobrý den,',
+            '',
+            sprintf('vámi nahlášený problém #%d ve Skautském hospodaření byl uzavřen bez opravy.', $report->getId()),
+            '',
+            'Důvod uzavření:',
             $messageText,
             '',
             'Původní hlášení:',

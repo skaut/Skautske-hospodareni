@@ -71,20 +71,20 @@ final class BugReportsPresenter extends \App\Presentation\Admin\AdminBasePresent
             $this->redirect('default');
         }
 
-        $this->resolveReport($report, 'Problém byl vyřešen a je upraven v nové verzi aplikace.');
+        $this->resolveReport($report, 'Požadavek byl zpracován a oprava je upravena v nové verzi aplikace.');
         $this->redirect('default');
     }
 
-    protected function createComponentResolveWithMessageForm(): BaseForm
+    protected function createComponentRejectForm(): BaseForm
     {
         $form = new BaseForm();
         $form->addHidden('id');
-        $form->addTextArea('message', 'Zpráva autorovi')
-            ->setRequired('Napište prosím zprávu autorovi hlášení.')
-            ->addRule(Form::MAX_LENGTH, 'Zpráva může mít nejvýše %d znaků.', 10000)
+        $form->addTextArea('message', 'Důvod zamítnutí')
+            ->setRequired('Napište prosím důvod zamítnutí hlášení.')
+            ->addRule(Form::MAX_LENGTH, 'Důvod může mít nejvýše %d znaků.', 10000)
             ->setHtmlAttribute('rows', 7);
-        $form->addSubmit('send', 'Odeslat a označit jako vyřízené')
-            ->setHtmlAttribute('class', 'btn btn-success');
+        $form->addSubmit('send', 'Odeslat a zamítnout')
+            ->setHtmlAttribute('class', 'btn btn-danger');
 
         $form->onSuccess[] = function (Form $form): void {
             $values = $form->getValues();
@@ -94,7 +94,14 @@ final class BugReportsPresenter extends \App\Presentation\Admin\AdminBasePresent
                 $this->redirect('default');
             }
 
-            $this->resolveReport($report, trim((string) $values->message));
+            $message = trim((string) $values->message);
+            if ($message === '') {
+                $form->addError('Napište prosím důvod zamítnutí hlášení.');
+
+                return;
+            }
+
+            $this->rejectReport($report, $message);
             $this->redirect('default');
         };
 
@@ -106,13 +113,27 @@ final class BugReportsPresenter extends \App\Presentation\Admin\AdminBasePresent
         try {
             $this->notificationService->notifyResolution($report, $message);
             $report->markResolutionNotificationSent();
-            $this->flashMessage('Hlášení technické chyby bylo označeno jako vyřízené a autor byl informován e-mailem.', 'success');
+            $this->flashMessage('Hlášení technické chyby bylo označeno jako opravené a autor byl informován e-mailem.', 'success');
         } catch (Throwable $e) {
             $report->markResolutionNotificationFailed($e->getMessage());
-            $this->flashMessage('Hlášení technické chyby bylo označeno jako vyřízené, ale e-mail autorovi se nepodařilo odeslat.', 'warning');
+            $this->flashMessage('Hlášení technické chyby bylo označeno jako opravené, ale e-mail autorovi se nepodařilo odeslat.', 'warning');
         }
 
-        $this->manager->resolve($report, $message);
+        $this->manager->resolveAsFixed($report, $message);
+    }
+
+    private function rejectReport(TechnicalErrorReport $report, string $message): void
+    {
+        try {
+            $this->notificationService->notifyRejection($report, $message);
+            $report->markResolutionNotificationSent();
+            $this->flashMessage('Hlášení technické chyby bylo zamítnuto a autor byl informován e-mailem.', 'success');
+        } catch (Throwable $e) {
+            $report->markResolutionNotificationFailed($e->getMessage());
+            $this->flashMessage('Hlášení technické chyby bylo zamítnuto, ale e-mail autorovi se nepodařilo odeslat.', 'warning');
+        }
+
+        $this->manager->reject($report, $message);
     }
 
     protected function createComponentGrid(): DataGrid
@@ -155,11 +176,11 @@ final class BugReportsPresenter extends \App\Presentation\Admin\AdminBasePresent
             ->setDataAttribute('test', 'admin-bug-report-detail-grid');
         $grid->addAction('resolve', '', 'resolve!', ['id' => 'id'])
             ->setIcon('far fa-circle-check')
-            ->setTitle('Označit jako vyřízené')
+            ->setTitle('Potvrdit opravu')
             ->setClass('btn btn-sm btn-outline-success')
             ->setDataAttribute('test', 'admin-bug-report-resolve-grid')
             ->setConfirmation(
-                new StringConfirmation('Opravdu chcete označit hlášení #%s jako vyřízené?', 'id'),
+                new StringConfirmation('Opravdu chcete potvrdit opravu hlášení #%s?', 'id'),
             );
 
         return $grid;
