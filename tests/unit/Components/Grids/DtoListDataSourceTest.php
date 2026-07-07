@@ -11,6 +11,12 @@ use function array_map;
 
 final class DtoListDataSourceTest extends Unit
 {
+    /** @return list<string> */
+    public function getCzechAlphabetSortOrder(): array
+    {
+        return ['a', 'b', 'c', 'č', 'd', 'ď', 'e', 'ě', 'f', 'g', 'h', 'ch', 'i', 'j', 'k', 'l', 'm', 'n', 'ň', 'o', 'p', 'q', 'r', 'ř', 's', 'š', 't', 'ť', 'u', 'ů', 'v', 'w', 'x', 'y', 'z', 'ž'];
+    }
+
     public function testSortsTextColumnsByCzechAlphabet(): void
     {
         $dataSource = new DtoListDataSource([
@@ -25,6 +31,25 @@ final class DtoListDataSourceTest extends Unit
 
         $this->assertSame(
             ['Adam', 'Bořek', 'Ciryl', 'Čeněk', 'David'],
+            array_map(static fn (SortableItem $item): string => $item->getName(), $dataSource->getData()),
+        );
+    }
+
+    public function testSortsTextColumnsByCzechAlphabetLetters(): void
+    {
+        $expectedOrder = $this->getCzechAlphabetSortOrder();
+        $dataSource = new DtoListDataSource(
+            array_map(
+                static fn (string $letter): SortableItem => new SortableItem($letter),
+                [...$expectedOrder],
+            ),
+        );
+
+        $dataSource->sort(new Sorting(['name' => 'DESC']));
+        $dataSource->sort(new Sorting(['name' => 'ASC']));
+
+        $this->assertSame(
+            $expectedOrder,
             array_map(static fn (SortableItem $item): string => $item->getName(), $dataSource->getData()),
         );
     }
