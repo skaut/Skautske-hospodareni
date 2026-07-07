@@ -47,6 +47,13 @@
                         </dd>
                         <dt class="col-sm-4">Uživatel</dt>
                         <dd class="col-sm-8">{$report->getReporterDisplayName()} (ID {$report->getReporterUserId()})</dd>
+                        <dt class="col-sm-4">E-mail uživatele</dt>
+                        <dd class="col-sm-8">
+                            <a n:if="$report->getReporterEmail() !== null" href="mailto:{$report->getReporterEmail()}">
+                                {$report->getReporterEmail()}
+                            </a>
+                            <span n:if="$report->getReporterEmail() === null">-</span>
+                        </dd>
                         <dt class="col-sm-4">Role</dt>
                         <dd class="col-sm-8">{$report->getRoleName() ?? '-'}{if $report->getRoleId() !== null} (ID {$report->getRoleId()}){/if}</dd>
                         <dt class="col-sm-4">Jednotka</dt>
@@ -55,7 +62,7 @@
                         <dd class="col-sm-8"><code>{$report->getIpAddress() ?? '-'}</code></dd>
                         <dt class="col-sm-4">Release</dt>
                         <dd class="col-sm-8"><code>{$report->getAppRelease()}</code></dd>
-                        <dt class="col-sm-4">E-mail</dt>
+                        <dt class="col-sm-4">Notifikace</dt>
                         <dd class="col-sm-8">
                             {if $report->wasNotificationSent()}
                                 Odesláno {$report->getNotificationSentAt()|date:'j. n. Y H:i:s'}

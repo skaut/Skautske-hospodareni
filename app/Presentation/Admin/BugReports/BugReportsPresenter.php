@@ -86,6 +86,10 @@ final class BugReportsPresenter extends \App\Presentation\Admin\AdminBasePresent
         $grid->addColumnText('reporterDisplayName', 'Uživatel')
             ->setSortable()
             ->setFilterText();
+        $grid->addColumnText('reporterEmail', 'E-mail')
+            ->setRenderer(static fn (TechnicalErrorReport $report): string => $report->getReporterEmail() ?? '-')
+            ->setSortable()
+            ->setFilterText();
         $grid->addColumnText('reporterUserId', 'User ID')
             ->setSortable()
             ->setFilterText();

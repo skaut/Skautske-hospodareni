@@ -11,6 +11,7 @@ use App\Model\User\UserService;
 use Nette\Http\IRequest;
 use Nette\Security\SimpleIdentity;
 use Nette\Security\User;
+use Nette\Utils\Validators;
 use RuntimeException;
 use stdClass;
 use Throwable;
@@ -68,6 +69,7 @@ final class BugReportService
         }
 
         $displayName = $this->resolveDisplayName($userDetail, $userId);
+        $email = $this->resolveEmail($userDetail);
         $userAgent = $this->httpRequest->getHeader('User-Agent');
         $access = $identity->access ?? [];
         if (! is_array($access)) {
@@ -112,6 +114,7 @@ final class BugReportService
             $reportedUrl !== null && trim($reportedUrl) !== '' ? trim($reportedUrl) : null,
             $userId,
             $displayName,
+            $email,
             $roleId,
             $currentRole?->getName(),
             $currentRole?->getUnitId(),
@@ -144,6 +147,24 @@ final class BugReportService
         }
 
         return 'Uživatel '.$userId;
+    }
+
+    /** @param array<string, mixed> $userDetail */
+    private function resolveEmail(array $userDetail): ?string
+    {
+        foreach (['Email', 'PersonEmail', 'UserEmail', 'Mail'] as $key) {
+            $email = $userDetail[$key] ?? null;
+            if (! is_string($email)) {
+                continue;
+            }
+
+            $email = trim($email);
+            if ($email !== '' && Validators::isEmail($email)) {
+                return $email;
+            }
+        }
+
+        return null;
     }
 
     /** @return array<string, string> */
