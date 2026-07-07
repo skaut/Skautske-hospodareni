@@ -47,7 +47,7 @@ services:
         ports:
             - "80:80"
         volumes:
-            - /run/user/1000/docker.sock:/var/run/docker.sock:ro
+            - ${DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock:ro
             - ./containers/traefik/traefik.yml:/traefik.yml:ro
         labels:
             traefik.enable: true
