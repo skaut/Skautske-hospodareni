@@ -56,6 +56,27 @@ final class BugReportNotificationService
         $mailer->send($message);
     }
 
+    public function notifyResolution(TechnicalErrorReport $report, string $messageText): void
+    {
+        $recipient = $report->getReporterEmail();
+        if ($recipient === null) {
+            throw new RuntimeException('Technical error report has no reporter email.');
+        }
+
+        $host = parse_url($this->appBaseUrl, PHP_URL_HOST) ?: 'localhost';
+        $message = (new Message())
+            ->setFrom('noreply@'.$host, 'Skautské hospodaření')
+            ->addTo($recipient, $report->getReporterDisplayName())
+            ->setSubject(sprintf('[Skautské hospodaření] Hlášení #%d bylo vyřešeno', $report->getId()))
+            ->setBody($this->createResolutionBody($report, $messageText));
+
+        $mailer = $this->sendEmail && $this->productionMode
+            ? new SendmailMailer()
+            : $this->debugMailer;
+
+        $mailer->send($message);
+    }
+
     private function createBody(TechnicalErrorReport $report): string
     {
         $role = array_filter([
@@ -87,6 +108,27 @@ final class BugReportNotificationService
             '',
             'Diagnostika:',
             Json::encode($report->getDiagnostics(), JSON_PRETTY_PRINT),
+        ]);
+    }
+
+    private function createResolutionBody(TechnicalErrorReport $report, string $messageText): string
+    {
+        return implode("\n", [
+            'Dobrý den,',
+            '',
+            sprintf('vámi nahlášený problém #%d ve Skautském hospodaření byl označen jako vyřešený.', $report->getId()),
+            'Problém byl vyřešen a je upraven v nové verzi aplikace.',
+            '',
+            'Zpráva administrátora:',
+            $messageText,
+            '',
+            'Původní hlášení:',
+            $report->getDescription(),
+            '',
+            'URL chyby: '.($report->getReportedUrl() ?? '-'),
+            '',
+            'Děkujeme za nahlášení.',
+            'Skautské hospodaření',
         ]);
     }
 }

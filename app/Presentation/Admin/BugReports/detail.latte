@@ -23,6 +23,42 @@
                     <i class="fi fi-rr-check-circle" aria-hidden="true"></i>
                     Označit jako vyřízené
                 </a>
+                <a
+                    href="#resolveWithMessage"
+                    class="btn btn-outline-success btn-sm"
+                    data-bs-toggle="modal"
+                    data-test="admin-bug-report-resolve-with-message"
+                >
+                    <i class="fi fi-rr-envelope" aria-hidden="true"></i>
+                    Vyřešit se zprávou
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="resolveWithMessage" aria-labelledby="resolveWithMessageLabel">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title h5" id="resolveWithMessageLabel">Zpráva autorovi hlášení</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zavřít"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-body-secondary small">
+                        Text se odešle autorovi hlášení a hlášení se potom označí jako vyřízené.
+                    </p>
+                    {form resolveWithMessageForm}
+                        {input id, value => $report->getId()}
+                        <div class="mb-3">
+                            {label message, class => 'form-label' /}
+                            {input message, class => 'form-control'}
+                        </div>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Storno</button>
+                            {input send}
+                        </div>
+                    {/form}
+                </div>
             </div>
         </div>
     </div>
@@ -68,6 +104,16 @@
                                 Odesláno {$report->getNotificationSentAt()|date:'j. n. Y H:i:s'}
                             {else}
                                 Chyba: {$report->getNotificationError() ?? 'neuvedena'}
+                            {/if}
+                        </dd>
+                        <dt class="col-sm-4">Notifikace vyřešení</dt>
+                        <dd class="col-sm-8">
+                            {if $report->wasResolutionNotificationSent()}
+                                Odesláno {$report->getResolutionNotificationSentAt()|date:'j. n. Y H:i:s'}
+                            {elseif $report->getResolutionNotificationError() !== null}
+                                Chyba: {$report->getResolutionNotificationError()}
+                            {else}
+                                -
                             {/if}
                         </dd>
                         <dt class="col-sm-4">User-Agent</dt>

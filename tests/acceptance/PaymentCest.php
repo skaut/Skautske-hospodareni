@@ -90,12 +90,12 @@ class PaymentCest extends BaseAcceptanceCest
 
         $I->amGoingTo('send third payment');
         $I->waitForJS(
-            'return Array.from(document.querySelectorAll(\'a[title="Odeslat e-mail o platbě"].ui--sendEmail\'))'
+            'return Array.from(document.querySelectorAll(\'a[title="Odeslat e-mail o platbě"].ui--sendEmail, a[title="Odeslat upomínku"].ui--sendEmail\'))'
             .'.some(function (link) { return link.offsetParent !== null; });',
             10,
         );
         $I->executeJS(
-            'var links = Array.from(document.querySelectorAll(\'a[title="Odeslat e-mail o platbě"].ui--sendEmail\'))'
+            'var links = Array.from(document.querySelectorAll(\'a[title="Odeslat e-mail o platbě"].ui--sendEmail, a[title="Odeslat upomínku"].ui--sendEmail\'))'
             .'.filter(function (link) { return link.offsetParent !== null; });'
             .'if (links.length === 0) { return false; }'
             .'links[links.length - 1].click();'
