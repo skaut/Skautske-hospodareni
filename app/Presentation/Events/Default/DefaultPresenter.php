@@ -20,7 +20,7 @@ use Skautis\Exception;
 use function array_merge;
 use function sprintf;
 
-final class DefaultPresenter extends \App\BasePresenter
+final class DefaultPresenter extends \App\Presentation\Events\BasePresenter
 {
     public const DEFAULT_STATE = 'draft';
 

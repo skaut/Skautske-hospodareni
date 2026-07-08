@@ -5,7 +5,7 @@ skautis:
 services:
     # Skautis authorizator
     skautisAuthorizator:
-        factory: App\Model\Skautis\Auth\SkautisAuthorizator(@skautis.webservice.user)
+        factory: App\Model\Skautis\Auth\SkautisAuthorizator(@skautis.webservice.user, @skautis.user)
         autowired: false
 
     # Skautis cache
