@@ -163,9 +163,17 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Payment
-            shard: payment
-            test_args: --group payment
+          - name: Payment groups
+            shard: payment-groups
+            test_args: --group payment tests/acceptance/PaymentCest.php
+
+          - name: Payment detail
+            shard: payment-detail
+            test_args: --group payment tests/acceptance/PaymentDetailCest.php
+
+          - name: Payment dashboard
+            shard: payment-dashboard
+            test_args: --group payment tests/acceptance/PaymentDashboardCest.php
 
           - name: Invoice
             shard: invoice
