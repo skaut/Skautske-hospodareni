@@ -72,16 +72,15 @@ final class SplitPaymentHandler
                     throw new InvalidPaymentSplit('Stejný variabilní symbol lze při rozdělení použít jen u rozdílných částek.');
                 }
 
-                $variableSymbolAmountKey = sprintf('%s:%d', $variableSymbolValue, $partAmountInCents);
-                if (isset($usedVariableSymbols[$variableSymbolAmountKey])) {
-                    throw new InvalidPaymentSplit('Stejný variabilní symbol lze při rozdělení použít jen u rozdílných částek.');
+                if (isset($usedVariableSymbols[$variableSymbolValue])) {
+                    throw new InvalidPaymentSplit('Každá nová platba musí mít jiný variabilní symbol.');
                 }
 
                 if ($this->payments->existsPaymentWithVariableSymbolInGroup($source->getGroupId(), $variableSymbol, $source->getId())) {
                     throw new InvalidPaymentSplit(sprintf('Variabilní symbol %s je už použitý v této platební skupině.', $variableSymbolValue));
                 }
 
-                $usedVariableSymbols[$variableSymbolAmountKey] = true;
+                $usedVariableSymbols[$variableSymbolValue] = true;
                 $this->variableSymbolCollisionChecker->assertUniqueForPayment($group, $source->getId(), $variableSymbol);
             }
 
