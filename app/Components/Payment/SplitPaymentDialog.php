@@ -30,7 +30,6 @@ use function array_values;
 use function count;
 use function iterator_to_array;
 use function round;
-use function sprintf;
 
 /** @method void onSuccess() */
 final class SplitPaymentDialog extends Dialog
@@ -198,12 +197,11 @@ final class SplitPaymentDialog extends Dialog
             }
 
             $variableSymbolValue = (string) $variableSymbol;
-            $variableSymbolAmountKey = sprintf('%s:%d', $variableSymbolValue, $partAmountInCents);
-            if (isset($variableSymbols[$variableSymbolAmountKey])) {
-                $form->addError('Stejný variabilní symbol lze při rozdělení použít jen u rozdílných částek.');
+            if (isset($variableSymbols[$variableSymbolValue])) {
+                $form->addError('Každá nová platba musí mít jiný variabilní symbol.');
             }
 
-            $variableSymbols[$variableSymbolAmountKey] = true;
+            $variableSymbols[$variableSymbolValue] = true;
         }
     }
 

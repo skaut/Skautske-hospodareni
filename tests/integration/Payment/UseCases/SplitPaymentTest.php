@@ -120,9 +120,10 @@ final class SplitPaymentTest extends IntegrationTest
         $source = $this->createSourcePayment();
 
         $this->expectException(InvalidPaymentSplit::class);
+        $this->expectExceptionMessage('Každá nová platba musí mít jiný variabilní symbol.');
         ($this->handler)(new SplitPayment($source->getId(), [
             new SplitPaymentPart(new VariableSymbol('101'), 100),
-            new SplitPaymentPart(new VariableSymbol('101'), 100),
+            new SplitPaymentPart(new VariableSymbol('101'), 200),
         ]));
     }
 
@@ -151,23 +152,6 @@ final class SplitPaymentTest extends IntegrationTest
         ($this->handler)(new SplitPayment($source->getId(), [
             new SplitPaymentPart(new VariableSymbol('100'), 500),
         ]));
-    }
-
-    public function testSplitAllowsDuplicateVariableSymbolsWithDifferentAmounts(): void
-    {
-        $source = $this->createSourcePayment();
-
-        ($this->handler)(new SplitPayment($source->getId(), [
-            new SplitPaymentPart(new VariableSymbol('101'), 100),
-            new SplitPaymentPart(new VariableSymbol('101'), 200),
-        ]));
-
-        $payments = $this->payments->findByGroup(1);
-        $this->assertCount(3, $payments);
-        $this->assertSame('101', (string) $payments[1]->getVariableSymbol());
-        $this->assertSame(100.0, $payments[1]->getAmount());
-        $this->assertSame('101', (string) $payments[2]->getVariableSymbol());
-        $this->assertSame(200.0, $payments[2]->getAmount());
     }
 
     public function testSplitRejectsVariableSymbolAlreadyUsedInGroup(): void

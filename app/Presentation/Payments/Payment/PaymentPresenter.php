@@ -251,7 +251,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
         $dialog = $this->paymentDialogFactory->create($this->id);
 
         $dialog->onSuccess[] = function (): void {
-            $this->redrawControl('grid');
+            $this->redrawPaymentGrid();
         };
 
         return $dialog;
@@ -262,7 +262,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
         $this->assertCanEditGroup();
         $dialog = $this->importDialogFactory->create($this->id);
         $dialog->onSuccess[] = function (): void {
-            $this->redrawControl('grid');
+            $this->redrawPaymentGrid();
         };
 
         return $dialog;
@@ -275,7 +275,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
         $dialog = $this->paymentNoteDialogFactory->create($this->id);
 
         $dialog->onSuccess[] = function (): void {
-            $this->redrawControl('grid');
+            $this->redrawPaymentGrid();
         };
 
         return $dialog;
@@ -295,7 +295,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
         $dialog = $this->splitPaymentDialogFactory->create($this->id);
         $dialog->onSuccess[] = function (): void {
-            $this->redrawControl('grid');
+            $this->redrawPaymentGrid();
         };
 
         return $dialog;
@@ -348,6 +348,15 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
             return [];
         }
+    }
+
+    private function redrawPaymentGrid(): void
+    {
+        $this->payments = $this->getPaymentsForGroup($this->id);
+        $paymentList = $this['paymentList'];
+        assert($paymentList instanceof PaymentList);
+        $paymentList->setPayments($this->payments);
+        $this->redrawControl('grid');
     }
 
     /** @param Payment[] $payments */
