@@ -82,7 +82,6 @@ services:
             - mysql-test
         env_file:
             - containers/php/ini/image.ini
-            - containers/php/ini/xdebug.ini
         environment:
             APP_ENV: ci
             HEADLESS: ${HEADLESS:-}

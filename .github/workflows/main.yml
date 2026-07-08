@@ -154,14 +154,33 @@ jobs:
 
   # ── Acceptance testy (self-hosted) ──────────────────────────
   tests-acceptance:
-    name: Acceptance tests
+    name: Acceptance tests (${{ matrix.name }})
     runs-on: self-hosted
     needs: workdir
     timeout-minutes: 45
     environment: test
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Payment
+            shard: payment
+            test_args: --group payment
+
+          - name: Invoice
+            shard: invoice
+            test_args: --group invoice
+
+          - name: Settings and admin
+            shard: settings-admin
+            test_args: --group settings --group admin
+
+          - name: Rest
+            shard: rest
+            test_args: --skip-group payment --skip-group invoice --skip-group settings --skip-group admin
     env:
       COMPOSE_FILE: docker/docker-compose.yml
-      COMPOSE_PROJECT_NAME: "acc-${{ github.run_id }}-${{ github.run_attempt }}"
+      COMPOSE_PROJECT_NAME: "acc-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.shard }}"
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
     steps:
       - name: Pre-clean compose project
@@ -192,7 +211,7 @@ jobs:
         run: sudo chown -R docker:docker .
 
       - run: docker compose build php-test
-      - run: make ci-acceptance
+      - run: make ci-acceptance TEST='${{ matrix.test_args }}'
 
       # --- sběr výstupů a logů (i při failu)
       - name: Pack Codeception output
@@ -215,14 +234,14 @@ jobs:
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: tests-output
+          name: tests-output-${{ matrix.shard }}
           path: tests-output.tar.gz
           if-no-files-found: ignore
 
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: compose-logs
+          name: compose-logs-${{ matrix.shard }}
           path: compose-logs.tar.gz
           if-no-files-found: ignore
 
