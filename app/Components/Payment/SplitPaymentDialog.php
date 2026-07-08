@@ -30,6 +30,7 @@ use function array_values;
 use function count;
 use function iterator_to_array;
 use function round;
+use function sprintf;
 
 /** @method void onSuccess() */
 final class SplitPaymentDialog extends Dialog
@@ -67,10 +68,15 @@ final class SplitPaymentDialog extends Dialog
     protected function createComponentForm(): BaseForm
     {
         $form = new BaseForm();
+        $sourcePayment = $this->payment();
 
-        $splits = $form->addDynamic('splits', function (Container $container): void {
+        $splits = $form->addDynamic('splits', function (Container $container) use ($sourcePayment): void {
             $variableSymbol = new VariableSymbolControl('Variabilní symbol');
             $variableSymbol->setRequired('Musíte vyplnit variabilní symbol');
+            if ($sourcePayment?->getVariableSymbol() !== null) {
+                $variableSymbol->setDefaultValue((string) $sourcePayment->getVariableSymbol());
+            }
+
             $container['variableSymbol'] = $variableSymbol;
 
             $container->addText('amount', 'Částka')
@@ -172,6 +178,7 @@ final class SplitPaymentDialog extends Dialog
         }
 
         $sourceVariableSymbol = $payment->getVariableSymbol();
+        $remainingSourceAmountInCents = $this->toCents($payment->getAmount()) - $splitAmountInCents;
         $variableSymbols = [];
 
         foreach ($parts as $part) {
@@ -180,16 +187,23 @@ final class SplitPaymentDialog extends Dialog
                 continue;
             }
 
-            if ($sourceVariableSymbol !== null && $sourceVariableSymbol->toInt() === $variableSymbol->toInt()) {
-                $form->addError('Nová platba musí mít jiný variabilní symbol než původní platba.');
+            $partAmountInCents = $this->toCents((float) $part->amount);
+
+            if (
+                $sourceVariableSymbol !== null
+                && $sourceVariableSymbol->toInt() === $variableSymbol->toInt()
+                && $remainingSourceAmountInCents === $partAmountInCents
+            ) {
+                $form->addError('Stejný variabilní symbol lze při rozdělení použít jen u rozdílných částek.');
             }
 
             $variableSymbolValue = (string) $variableSymbol;
-            if (isset($variableSymbols[$variableSymbolValue])) {
-                $form->addError('Každá nová platba musí mít jiný variabilní symbol.');
+            $variableSymbolAmountKey = sprintf('%s:%d', $variableSymbolValue, $partAmountInCents);
+            if (isset($variableSymbols[$variableSymbolAmountKey])) {
+                $form->addError('Stejný variabilní symbol lze při rozdělení použít jen u rozdílných částek.');
             }
 
-            $variableSymbols[$variableSymbolValue] = true;
+            $variableSymbols[$variableSymbolAmountKey] = true;
         }
     }
 

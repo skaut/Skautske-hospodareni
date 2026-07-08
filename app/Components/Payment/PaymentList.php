@@ -43,6 +43,15 @@ final class PaymentList extends BaseControl
     {
     }
 
+    /** @var Payment[]|null */
+    private ?array $payments = null;
+
+    /** @param Payment[] $payments */
+    public function setPayments(array $payments): void
+    {
+        $this->payments = $payments;
+    }
+
     public function render(): void
     {
         $this->template->setFile(__DIR__.'/templates/PaymentList.latte');
@@ -124,7 +133,9 @@ final class PaymentList extends BaseControl
 
         $grid->addColumnText('actions', 'Akce');
 
-        $grid->setDataSource(new DtoListDataSource($this->queryBus->handle(new PaymentListQuery($this->groupId))));
+        $grid->setDataSource(new DtoListDataSource(
+            $this->payments ?? $this->queryBus->handle(new PaymentListQuery($this->groupId)),
+        ));
 
         $grid->setDefaultSort(['state' => DataGrid::SORT_ASC]);
 

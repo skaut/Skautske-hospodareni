@@ -63,7 +63,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
     protected array $readUnits;
 
     /** @var Payment[] */
-    protected array $payments;
+    protected array $payments = [];
 
     public function __construct(
         private PaymentService $model,
@@ -283,7 +283,10 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
     protected function createComponentPaymentList(): PaymentList
     {
-        return $this->paymentListFactory->create($this->id, $this->isEditable);
+        $paymentList = $this->paymentListFactory->create($this->id, $this->isEditable);
+        $paymentList->setPayments($this->payments);
+
+        return $paymentList;
     }
 
     protected function createComponentSplitPaymentDialog(): SplitPaymentDialog
@@ -335,7 +338,16 @@ final class PaymentPresenter extends PaymentsBasePresenter
     /** @return Payment[] */
     private function getPaymentsForGroup(int $groupId): array
     {
-        return $this->queryBus->handle(new PaymentListQuery($groupId));
+        try {
+            return $this->queryBus->handle(new PaymentListQuery($groupId));
+        } catch (InvalidVariableSymbol $exception) {
+            $this->flashMessage(
+                'Některá platba má neplatný variabilní symbol: '.$exception->getInvalidValue().'. Platby nelze zobrazit.',
+                'warning',
+            );
+
+            return [];
+        }
     }
 
     /** @param Payment[] $payments */
