@@ -52,6 +52,7 @@ final class SplitPaymentHandler
 
             $group = $this->groups->find($source->getGroupId());
             $sourceVariableSymbol = $source->getVariableSymbol();
+            $remainingSourceAmountInCents = $sourceAmountInCents - $splitAmountInCents;
             $usedVariableSymbols = [];
 
             foreach ($parts as $part) {
@@ -61,21 +62,27 @@ final class SplitPaymentHandler
 
                 $variableSymbol = $part->getVariableSymbol();
                 $variableSymbolValue = (string) $variableSymbol;
+                $partAmountInCents = $this->toCents($part->getAmount());
 
-                if ($sourceVariableSymbol !== null && $sourceVariableSymbol->toInt() === $variableSymbol->toInt()) {
-                    throw new InvalidPaymentSplit('Nová platba musí mít jiný variabilní symbol než původní platba.');
+                if (
+                    $sourceVariableSymbol !== null
+                    && $sourceVariableSymbol->toInt() === $variableSymbol->toInt()
+                    && $remainingSourceAmountInCents === $partAmountInCents
+                ) {
+                    throw new InvalidPaymentSplit('Stejný variabilní symbol lze při rozdělení použít jen u rozdílných částek.');
                 }
 
-                if (isset($usedVariableSymbols[$variableSymbolValue])) {
-                    throw new InvalidPaymentSplit('Každá nová platba musí mít jiný variabilní symbol.');
+                $variableSymbolAmountKey = sprintf('%s:%d', $variableSymbolValue, $partAmountInCents);
+                if (isset($usedVariableSymbols[$variableSymbolAmountKey])) {
+                    throw new InvalidPaymentSplit('Stejný variabilní symbol lze při rozdělení použít jen u rozdílných částek.');
                 }
 
-                if ($this->payments->existsPaymentWithVariableSymbolInGroup($source->getGroupId(), $variableSymbol)) {
+                if ($this->payments->existsPaymentWithVariableSymbolInGroup($source->getGroupId(), $variableSymbol, $source->getId())) {
                     throw new InvalidPaymentSplit(sprintf('Variabilní symbol %s je už použitý v této platební skupině.', $variableSymbolValue));
                 }
 
-                $usedVariableSymbols[$variableSymbolValue] = true;
-                $this->variableSymbolCollisionChecker->assertUniqueForPayment($group, null, $variableSymbol);
+                $usedVariableSymbols[$variableSymbolAmountKey] = true;
+                $this->variableSymbolCollisionChecker->assertUniqueForPayment($group, $source->getId(), $variableSymbol);
             }
 
             $source->reduceAmountBySplit($splitAmountInCents / 100);

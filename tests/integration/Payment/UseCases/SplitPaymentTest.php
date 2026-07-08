@@ -126,14 +126,48 @@ final class SplitPaymentTest extends IntegrationTest
         ]));
     }
 
-    public function testSplitRejectsSourceVariableSymbol(): void
+    public function testSplitAllowsSourceVariableSymbolWhenAmountsDiffer(): void
+    {
+        $source = $this->createSourcePayment();
+
+        ($this->handler)(new SplitPayment($source->getId(), [
+            new SplitPaymentPart(new VariableSymbol('100'), 400),
+        ]));
+
+        $payments = $this->payments->findByGroup(1);
+        $this->assertCount(2, $payments);
+        $this->assertSame(600.0, $payments[0]->getAmount());
+        $this->assertSame('100', (string) $payments[0]->getVariableSymbol());
+        $this->assertSame(400.0, $payments[1]->getAmount());
+        $this->assertSame('100', (string) $payments[1]->getVariableSymbol());
+    }
+
+    public function testSplitRejectsSourceVariableSymbolWhenRemainingAmountMatchesSplitAmount(): void
     {
         $source = $this->createSourcePayment();
 
         $this->expectException(InvalidPaymentSplit::class);
+        $this->expectExceptionMessage('Stejný variabilní symbol lze při rozdělení použít jen u rozdílných částek.');
         ($this->handler)(new SplitPayment($source->getId(), [
-            new SplitPaymentPart(new VariableSymbol('100'), 100),
+            new SplitPaymentPart(new VariableSymbol('100'), 500),
         ]));
+    }
+
+    public function testSplitAllowsDuplicateVariableSymbolsWithDifferentAmounts(): void
+    {
+        $source = $this->createSourcePayment();
+
+        ($this->handler)(new SplitPayment($source->getId(), [
+            new SplitPaymentPart(new VariableSymbol('101'), 100),
+            new SplitPaymentPart(new VariableSymbol('101'), 200),
+        ]));
+
+        $payments = $this->payments->findByGroup(1);
+        $this->assertCount(3, $payments);
+        $this->assertSame('101', (string) $payments[1]->getVariableSymbol());
+        $this->assertSame(100.0, $payments[1]->getAmount());
+        $this->assertSame('101', (string) $payments[2]->getVariableSymbol());
+        $this->assertSame(200.0, $payments[2]->getAmount());
     }
 
     public function testSplitRejectsVariableSymbolAlreadyUsedInGroup(): void
