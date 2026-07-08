@@ -800,7 +800,8 @@ class PaymentCest extends BaseAcceptanceCest
         $I->fillFieldStable('#frm-splitPaymentDialog-form-splits-1-amount', '200', 10, false);
         $I->clickStable('.modal-footer [data-test="payment-split-submit"]', 10, false);
 
-        $I->waitForText('Každá nová platba musí mít jiný variabilní symbol.', 10);
+        $I->waitForElementVisible('[data-test="payment-split-errors"]', 20);
+        $I->waitForText('Každá nová platba musí mít jiný variabilní symbol.', 10, '[data-test="payment-split-errors"]');
         $I->seeInDatabase('pa_payment', ['id' => $sourcePaymentId, 'amount' => 1000]);
         $I->dontSeeInDatabase('pa_payment', ['split_from_payment_id' => $sourcePaymentId]);
 
@@ -808,7 +809,8 @@ class PaymentCest extends BaseAcceptanceCest
         $I->fillFieldStable('#frm-splitPaymentDialog-form-splits-1-variableSymbol', '100102', 10, false);
         $I->clickStable('.modal-footer [data-test="payment-split-submit"]', 10, false);
 
-        $I->waitForText('Variabilní symbol 100103 je už použitý v této platební skupině.', 10);
+        $I->waitForElementVisible('[data-test="payment-split-errors"]', 20);
+        $I->waitForText('Variabilní symbol 100103 je už použitý v této platební skupině.', 10, '[data-test="payment-split-errors"]');
         $I->seeInDatabase('pa_payment', ['id' => $sourcePaymentId, 'amount' => 1000]);
         $I->dontSeeInDatabase('pa_payment', ['split_from_payment_id' => $sourcePaymentId]);
 

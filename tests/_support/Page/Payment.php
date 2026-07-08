@@ -39,7 +39,7 @@ class Payment
         $I->fillFieldStable('#frm-paymentDialog-form-amount', (string) $amount, 10, false);
         $this->selectNextWorkdayForDueDate();
         $this->submitPayment();
-        $I->waitForText($name, 10);
+        $I->waitForText($name, 20, '[data-test="payment-group-grid"]');
     }
 
     public function seeNumberOfPaymentsWithState(string $state, int $count): void
