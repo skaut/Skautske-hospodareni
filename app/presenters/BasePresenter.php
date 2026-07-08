@@ -34,16 +34,24 @@ use function array_key_last;
 use function assert;
 use function dirname;
 use function explode;
+use function in_array;
 use function is_file;
 use function preg_match;
 use function sprintf;
 use function str_contains;
 use function str_replace;
+use function strtolower;
 
 /** @property DefaultTemplate $template */
 abstract class BasePresenter extends Presenter
 {
     private const SESSION_KEEP_ALIVE_INTERVAL_MS = 1_200_000;
+
+    private const PUBLIC_ACTIONS = [
+        'Default' => ['default', 'about', 'reinforcement'],
+    ];
+
+    private const AUTH_ACTIONS = ['ajax', 'default', 'logonskautis', 'logoutsis', 'skautis', 'skautislogout'];
 
     protected UserService $userService;
 
@@ -126,6 +134,15 @@ abstract class BasePresenter extends Presenter
 
         if ($this->getUser()->isLoggedIn() && $backlink !== null) {
             $this->restoreRequest($backlink);
+        }
+
+        if (! $this->getUser()->isLoggedIn() && ! $this->isPublicRequest()) {
+            $backlink = $this->storeRequest('+ 3 days');
+            if ($this->isAjax()) {
+                $this->forward(':Auth:ajax', ['backlink' => $backlink]);
+            }
+
+            $this->redirect(':Default:', ['backlink' => $backlink]);
         }
 
         try {
@@ -231,6 +248,15 @@ abstract class BasePresenter extends Presenter
         assert($identity instanceof SimpleIdentity);
 
         $identity->access = $this->userService->getAccessArrays($this->unitService);
+    }
+
+    private function isPublicRequest(): bool
+    {
+        if ($this->getName() === 'Auth') {
+            return in_array(strtolower($this->getAction()), self::AUTH_ACTIONS, true);
+        }
+
+        return in_array($this->getAction(), self::PUBLIC_ACTIONS[$this->getName()] ?? [], true);
     }
 
     /**

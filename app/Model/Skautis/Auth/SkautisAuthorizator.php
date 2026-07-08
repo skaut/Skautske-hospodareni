@@ -11,6 +11,7 @@ use App\Model\Auth\Resources\Event;
 use App\Model\Auth\Resources\Grant;
 use App\Model\Auth\Resources\Unit;
 use InvalidArgumentException;
+use Skautis\User;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WebServiceInterface;
 use stdClass;
@@ -28,7 +29,7 @@ final class SkautisAuthorizator implements IAuthorizator
         Unit::class => Unit::TABLE,
     ];
 
-    public function __construct(private WebServiceInterface $userWebservice)
+    public function __construct(private WebServiceInterface $userWebservice, private User $user)
     {
     }
 
@@ -53,12 +54,17 @@ final class SkautisAuthorizator implements IAuthorizator
     /** @return stdClass[] */
     private function getAvailableActions(string $skautisTable, ?int $id): array
     {
+        if ($this->user->getLoginId() === null) {
+            return [];
+        }
+
+        $arguments = ['ID_Table' => $skautisTable];
+        if ($id !== null) {
+            $arguments['ID'] = $id;
+        }
+
         try {
-            $result = $this->userWebservice->ActionVerify([
-                'ID' => $id,
-                'ID_Table' => $skautisTable,
-                'ID_Action' => null,
-            ]);
+            $result = $this->userWebservice->ActionVerify($arguments);
 
             return is_array($result)
                 ? $result

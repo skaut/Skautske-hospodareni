@@ -6,6 +6,7 @@ namespace App\Model\Auth;
 
 use App\Model\Admin\Services\AdminAccessChecker;
 use App\Model\Auth\Resources\Admin;
+use App\Model\Auth\Resources\Event as EventResource;
 use App\Model\Auth\Resources\InvoiceAccess;
 use App\Model\Auth\Resources\Unit as UnitResource;
 use App\Model\Invoice\InvoiceAccessChecker;
@@ -17,7 +18,9 @@ use Mockery;
 use Nette\Security\IUserStorage;
 use Nette\Security\SimpleIdentity;
 use Nette\Security\User;
+use Skautis\User as SkautisUser;
 use Skautis\Wsdl\WebServiceInterface;
+use Skautis\Wsdl\WsdlManager;
 use stdClass;
 
 final class CompositeAuthorizatorTest extends Unit
@@ -35,7 +38,7 @@ final class CompositeAuthorizatorTest extends Unit
 
         $adminAccessChecker = new AdminAccessChecker($this->mockUser(1942), $repository, []);
         $authorizator = new CompositeAuthorizator(
-            new SkautisAuthorizator($webservice),
+            new SkautisAuthorizator($webservice, $this->skautisUser(null)),
             $adminAccessChecker,
             $this->invoiceAccessChecker(),
         );
@@ -58,7 +61,7 @@ final class CompositeAuthorizatorTest extends Unit
             ->andReturn(true);
 
         $authorizator = new CompositeAuthorizator(
-            new SkautisAuthorizator($webservice),
+            new SkautisAuthorizator($webservice, $this->skautisUser(null)),
             new AdminAccessChecker($this->mockUser(null), $adminRepository, []),
             new InvoiceAccessChecker($this->mockUser(1942), $invoiceRepository, []),
         );
@@ -77,7 +80,6 @@ final class CompositeAuthorizatorTest extends Unit
             ->with([
                 'ID' => 123,
                 'ID_Table' => 'OU_Unit',
-                'ID_Action' => null,
             ])
             ->andReturn([$allowedAction]);
 
@@ -86,12 +88,43 @@ final class CompositeAuthorizatorTest extends Unit
 
         $adminAccessChecker = new AdminAccessChecker($this->mockUser(null), $repository, []);
         $authorizator = new CompositeAuthorizator(
-            new SkautisAuthorizator($webservice),
+            new SkautisAuthorizator($webservice, $this->skautisUser('00000000-0000-0000-0000-000000000000')),
             $adminAccessChecker,
             $this->invoiceAccessChecker(),
         );
 
         self::assertTrue($authorizator->isAllowed(UnitResource::EDIT, 123));
+    }
+
+    public function testSkautisAuthorizatorReturnsFalseWithoutSkautisLogin(): void
+    {
+        $webservice = Mockery::mock(WebServiceInterface::class);
+        $webservice->shouldNotReceive('ActionVerify');
+
+        $authorizator = new SkautisAuthorizator($webservice, $this->skautisUser(null));
+
+        self::assertFalse($authorizator->isAllowed(UnitResource::EDIT, 123));
+    }
+
+    public function testSkautisAuthorizatorOmitsOptionalNullSoapArguments(): void
+    {
+        $allowedAction = new stdClass();
+        $allowedAction->ID = EventResource::CREATE[1];
+
+        $webservice = Mockery::mock(WebServiceInterface::class);
+        $webservice->shouldReceive('ActionVerify')
+            ->once()
+            ->with([
+                'ID_Table' => 'EV_EventGeneral',
+            ])
+            ->andReturn([$allowedAction]);
+
+        $authorizator = new SkautisAuthorizator(
+            $webservice,
+            $this->skautisUser('00000000-0000-0000-0000-000000000000'),
+        );
+
+        self::assertTrue($authorizator->isAllowed(EventResource::CREATE, null));
     }
 
     private function invoiceAccessChecker(): InvoiceAccessChecker
@@ -113,5 +146,13 @@ final class CompositeAuthorizatorTest extends Unit
             ->andReturn(null);
 
         return new User($storage);
+    }
+
+    private function skautisUser(?string $loginId): SkautisUser
+    {
+        $user = new SkautisUser(Mockery::mock(WsdlManager::class));
+        $user->setLoginData($loginId);
+
+        return $user;
     }
 }
