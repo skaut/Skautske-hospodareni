@@ -177,7 +177,7 @@ jobs:
 
       - uses: actions/download-artifact@v7
         with: { name: workdir, path: . }
-      - run: tar -xzpf workdir.tar.gz
+      - run: tar --no-overwrite-dir -xzf workdir.tar.gz
       - name: Fix workspace ownership
         run: sudo chown -R docker:docker .
 
