@@ -5,10 +5,9 @@ networks:
 
 volumes:
     mysql:
-    mysql-test:
 
 x-php-base:
-    &php-base
+  &php-base
     build:
         context: ./containers/php
     working_dir: /app
@@ -26,7 +25,7 @@ x-php-base:
         - ./containers/php/ini/php.ini:/etc/php/8.3/cli/conf.d/php.ini
 
 x-mysql-base:
-    &mysql-base
+  &mysql-base
     image: mysql:8.0
     networks:
         - traefik
@@ -35,8 +34,8 @@ x-mysql-base:
         MYSQL_USER: ${DB_USER:-hskauting}
         MYSQL_PASSWORD: ${DB_PASSWORD:-hskauting}
         MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
-        MYSQL_COLLATION: utf8mb4_czech_ci
-        MYSQL_CHARACTER_SET: utf8
+        MYSQL_COLLATION: utf8mb3_czech_ci
+        MYSQL_CHARACTER_SET: utf8mb3
 
 services:
     traefik:
@@ -47,7 +46,7 @@ services:
         ports:
             - "80:80"
         volumes:
-            - ${DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock:ro
+            - ${DOCKER_SOCKET:-${XDG_RUNTIME_DIR:-/var/run}/docker.sock}:/var/run/docker.sock:ro
             - ./containers/traefik/traefik.yml:/traefik.yml:ro
         labels:
             traefik.enable: true
@@ -118,12 +117,19 @@ services:
             - ./containers/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
 
     mysql-test:
-        container_name: ${COMPOSE_PROJECT_NAME:-hskauting}.mysql-test #Backward Compatibility
+        container_name: ${COMPOSE_PROJECT_NAME:-hskauting}.mysql-test
         <<: *mysql-base
         hostname: mysql-test.localhost
         volumes:
-            - mysql-test:/var/lib/mysql
             - ./containers/mysql-test/my.cnf:/etc/mysql/conf.d/my.cnf
+        tmpfs:
+            - /var/lib/mysql
+        command: [
+            "mysqld",
+            "--innodb-flush-log-at-trx-commit=0",
+            "--sync-binlog=0",
+            "--innodb-use-native-aio=0"
+        ]
 
     selenium:
         container_name: ${COMPOSE_PROJECT_NAME:-hskauting}.chrome
