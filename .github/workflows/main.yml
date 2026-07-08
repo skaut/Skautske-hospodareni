@@ -177,7 +177,17 @@ jobs:
 
       - uses: actions/download-artifact@v7
         with: { name: workdir, path: . }
-      - run: tar --no-overwrite-dir -xzf workdir.tar.gz
+
+      # --- BEZPEČNÉ ROZBALENÍ PRO LXC ---
+      - name: Extract workdir safely
+        shell: bash
+        run: |
+          mkdir _tmp_unpack
+          tar -xzf workdir.tar.gz -C _tmp_unpack
+          shopt -s dotglob
+          mv _tmp_unpack/* .
+          rm -rf _tmp_unpack
+
       - name: Fix workspace ownership
         run: sudo chown -R docker:docker .
 
