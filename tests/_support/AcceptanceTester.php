@@ -27,6 +27,9 @@ class AcceptanceTester extends Actor
 
     private const PASSWORD = 'chtelbysprachy1';
 
+    private const LOGIN_TRIGGER_SELECTOR = '[data-test="login-link"], [data-test="homepage-login"]';
+    private const LOGGED_IN_SELECTOR = '.ui--current-role, [data-test="global-nav-payments"], [data-test="homepage-login"][href*="dashboard"]';
+
     public const UNIT_LEADER_ROLE = 'Středisko: vedoucí/admin - 621.66';
     public const UNIT_ID = 27266;
 
@@ -40,15 +43,19 @@ class AcceptanceTester extends Actor
         if ($I->loadSessionSnapshot('login')) {
             $I->amOnPage('/');
 
-            $isStillLoggedIn = $I->executeJS('return document.querySelector(\'[data-test="login-link"]\') === null;');
+            $I->waitForDocumentReady();
+            $isStillLoggedIn = $I->executeJS(
+                'return document.querySelector('.json_encode(self::LOGGED_IN_SELECTOR).') !== null;',
+            );
             if ($isStillLoggedIn) {
                 return;
             }
         }
 
         $I->amOnPage('/');
-        $I->waitForElementVisible('[data-test="login-link"]', 10);
-        $I->click('[data-test="login-link"]');
+        $I->waitForDocumentReady();
+        $I->waitForLoginTrigger();
+        $I->clickFirstLoginTrigger();
         $I->waitForText('přihlášení');
         $I->fillField('(//input)[9]', self::LOGIN);
         $I->fillField('(//input)[10]', self::PASSWORD);
@@ -64,6 +71,36 @@ class AcceptanceTester extends Actor
         }
 
         $I->saveSessionSnapshot('login');
+    }
+
+    public function waitForDocumentReady(int $timeout = 10): void
+    {
+        $this->waitForJS(
+            'return document.readyState === "interactive" || document.readyState === "complete";',
+            $timeout,
+        );
+    }
+
+    public function waitForLoginTrigger(int $timeout = 10): void
+    {
+        $selector = json_encode(self::LOGIN_TRIGGER_SELECTOR);
+
+        $this->waitForJS(
+            'const el = document.querySelector('.$selector.');'
+            .'return el !== null && el.offsetParent !== null;',
+            $timeout,
+        );
+    }
+
+    public function clickFirstLoginTrigger(): void
+    {
+        $selector = json_encode(self::LOGIN_TRIGGER_SELECTOR);
+
+        $this->executeJS(
+            'const el = document.querySelector('.$selector.');'
+            .'if (el === null) { throw new Error("Login trigger was not found."); }'
+            .'el.click();',
+        );
     }
 
     /**
