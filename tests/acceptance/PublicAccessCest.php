@@ -9,6 +9,19 @@ use PHPUnit\Framework\Assert;
 
 final class PublicAccessCest extends BaseAcceptanceCest
 {
+    public function homepageUsesTestServerSettings(AcceptanceTester $I): void
+    {
+        $I->amOnPage('/');
+        $I->waitForElementVisible('[data-test="homepage"]', 10);
+        $I->waitForElementVisible('[data-test="test-server-badge"]', 10);
+
+        Assert::assertSame(
+            'Testovací server',
+            $I->grabAttributeFrom('[data-test="test-server-badge"]', 'title'),
+        );
+        $I->seeElement('.site-header.navbar--test');
+    }
+
     /** @dataProvider publicPages */
     public function publicPagesRemainAccessible(AcceptanceTester $I, \Codeception\Example $example): void
     {
