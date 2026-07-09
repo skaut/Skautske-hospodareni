@@ -57,20 +57,26 @@ jobs:
       # menší artefakt (bez .git)
       - name: Create tarball
         run: |
-          tar -C $GITHUB_WORKSPACE \
+          find "$GITHUB_WORKSPACE" -mindepth 1 -maxdepth 1 \
+              ! -name '.git' \
+              ! -name '.github' \
+              ! -name 'node_modules' \
+              ! -name 'log' \
+              ! -name 'temp' \
+              ! -name '_temp' \
+              ! -name 'workdir.tar.gz' \
+              -printf '%P\0' \
+            | tar -C "$GITHUB_WORKSPACE" \
               --exclude-vcs \
-              --exclude='.github' \
-              --exclude='node_modules' \
-              --exclude='log' \
-              --exclude='temp' \
               --exclude='tests/_output' \
               --exclude='www/webtemp' \
-              --exclude='workdir.tar.gz' \
+              --null \
+              --files-from=- \
               --warning=no-file-changed \
               --ignore-failed-read \
-              -czpf /tmp/workdir.tar.gz .
-          mv /tmp/workdir.tar.gz $GITHUB_WORKSPACE/
-          ls -lh $GITHUB_WORKSPACE/workdir.tar.gz
+              -czf /tmp/workdir.tar.gz
+          mv /tmp/workdir.tar.gz "$GITHUB_WORKSPACE/"
+          ls -lh "$GITHUB_WORKSPACE/workdir.tar.gz"
 
       - name: Upload workdir
         uses: actions/upload-artifact@v7
