@@ -28,10 +28,17 @@ final class UserPresenter extends \App\Presentation\Settings\SettingsBasePresent
             ->setDefaultValue($this->preferences->shouldShowHelp());
         $form->addCheckbox('extendSkautisLogin', 'Na pozadí prodlužovat přihlášení ke skautISu')
             ->setDefaultValue($this->preferences->shouldExtendSkautisLogin());
+        $form->addCheckbox('rememberSkautisRole', 'Pamatovat si zvolenou roli ze skautISu')
+            ->setDefaultValue($this->preferences->shouldRememberSkautisRole());
         $form->addSubmit('save', 'Uložit nastavení');
         $form->onSuccess[] = function (Form $form): void {
             $values = $form->getValues();
-            $this->preferences->setPreferences((bool) $values->showHelp, (bool) $values->extendSkautisLogin);
+            $this->preferences->setPreferences(
+                (bool) $values->showHelp,
+                (bool) $values->extendSkautisLogin,
+                (bool) $values->rememberSkautisRole,
+                $this->userService->getRoleId(),
+            );
             $this->flashMessage('Uživatelské nastavení bylo uloženo.', 'success');
             $this->redirect('this');
         };
