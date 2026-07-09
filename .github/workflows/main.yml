@@ -14,7 +14,7 @@ concurrency:
 jobs:
   workdir:
     name: Prepare working directory
-    runs-on: ubuntu-22.04
+    runs-on: [self-hosted, debian-13, docker, x64]
     container:
       image: skaut/lebeda:8.3-ci
     env:
@@ -77,22 +77,26 @@ jobs:
   # ── Rychlé kontroly v test runtime ─────────────────────────
   quick-checks:
     name: ${{ matrix.name }}
-    runs-on: ubuntu-22.04
+    runs-on: [self-hosted, debian-13, docker, x64]
     needs: workdir
     environment: test
     env:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+      COMPOSE_PROJECT_NAME: "quick-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.id }}"
     strategy:
       fail-fast: false
       matrix:
         include:
           - name: Coding standard
+            id: cs
             command: make check-cs-check
 
           - name: PHPStan
+            id: phpstan
             command: make check-phpstan
 
           - name: Latte lint
+            id: latte
             command: make check-latte
     steps:
       - uses: actions/download-artifact@v7
@@ -104,13 +108,14 @@ jobs:
   # ── Testy po rychlých kontrolách ────────────────────────────
   tests-unit:
     name: Unit tests
-    runs-on: ubuntu-22.04
+    runs-on: [self-hosted, debian-13, docker, x64]
     needs:
       - workdir
       - quick-checks
     environment: test
     env:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+      COMPOSE_PROJECT_NAME: "unit-${{ github.run_id }}-${{ github.run_attempt }}"
     steps:
       - uses: actions/download-artifact@v7
         with: { name: workdir, path: . }
@@ -119,13 +124,14 @@ jobs:
 
   tests-integration:
     name: Integration tests
-    runs-on: ubuntu-22.04
+    runs-on: [self-hosted, debian-13, docker, x64]
     needs:
       - workdir
       - quick-checks
     environment: test
     env:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+      COMPOSE_PROJECT_NAME: "integration-${{ github.run_id }}-${{ github.run_attempt }}"
     steps:
       - uses: actions/download-artifact@v7
         with: { name: workdir, path: . }
@@ -134,12 +140,13 @@ jobs:
 
   collect-code-coverage:
     name: Collect code coverage
-    runs-on: ubuntu-22.04
+    runs-on: [self-hosted, debian-13, docker, x64]
     continue-on-error: true
     needs: workdir
     environment: test
     env:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+      COMPOSE_PROJECT_NAME: "coverage-${{ github.run_id }}-${{ github.run_attempt }}"
     steps:
       - name: Skip outside master
         if: github.ref != 'refs/heads/master'
@@ -165,13 +172,14 @@ jobs:
   # ── Validate mapping (potřebuje MySQL service) ─────────────
   validate-mapping:
     name: Validate mapping
-    runs-on: ubuntu-22.04
+    runs-on: [self-hosted, debian-13, docker, x64]
     needs:
       - workdir
       - quick-checks
     environment: test
     env:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+      COMPOSE_PROJECT_NAME: "mapping-${{ github.run_id }}-${{ github.run_attempt }}"
     steps:
       - uses: actions/download-artifact@v7
         with: { name: workdir, path: . }
@@ -185,8 +193,8 @@ jobs:
 
   # ── Acceptance testy (self-hosted) ──────────────────────────
   tests-acceptance:
-    name: Acceptance tests (${{ matrix.name }})
-    runs-on: self-hosted
+    name: Acceptance - ${{ matrix.label }}
+    runs-on: [self-hosted, debian-13, docker, x64]
     needs:
       - workdir
       - quick-checks
@@ -199,32 +207,32 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Payment groups
+          - label: Payment groups
             shard: payment-groups
             port: 8081
             test_args: --group payment tests/acceptance/PaymentCest.php
 
-          - name: Payment detail
+          - label: Payment detail
             shard: payment-detail
             port: 8082
             test_args: --group payment tests/acceptance/PaymentDetailCest.php
 
-          - name: Payment dashboard
+          - label: Payment dashboard
             shard: payment-dashboard
             port: 8083
             test_args: --group payment tests/acceptance/PaymentDashboardCest.php
 
-          - name: Invoice
+          - label: Invoice
             shard: invoice
             port: 8084
             test_args: --group invoice
 
-          - name: Settings and admin
+          - label: Settings and admin
             shard: settings-admin
             port: 8085
             test_args: --group settings --group admin
 
-          - name: Rest
+          - label: Rest
             shard: rest
             port: 8086
             test_args: --skip-group payment --skip-group invoice --skip-group settings --skip-group admin
@@ -310,7 +318,7 @@ jobs:
       - tests-integration
       - tests-acceptance
       - validate-mapping
-    runs-on: ubuntu-22.04
+    runs-on: [self-hosted, debian-13, docker, x64]
     container:
       image: skaut/lebeda:8.3-ci
     steps:
@@ -320,7 +328,7 @@ jobs:
   deploy-beta:
     if: ${{ startsWith(github.ref_name, 'beta') }}
     needs: [checks-passed, workdir]
-    runs-on: ubuntu-22.04
+    runs-on: [self-hosted, debian-13, docker, x64]
     environment: beta
     container:
       image: skaut/lebeda:8.3-ci
@@ -383,7 +391,7 @@ jobs:
   deploy-test:
     if: github.ref == 'refs/heads/master'
     needs: [checks-passed]
-    runs-on: ubuntu-22.04
+    runs-on: [self-hosted, debian-13, docker, x64]
     environment: test
     container:
       image: skaut/lebeda:8.3-ci
@@ -446,7 +454,7 @@ jobs:
   deploy-production:
     if: github.ref == 'refs/heads/master'
     needs: [checks-passed]
-    runs-on: ubuntu-22.04
+    runs-on: [self-hosted, debian-13, docker, x64]
     environment: production
     container:
       image: skaut/lebeda:8.3-ci
