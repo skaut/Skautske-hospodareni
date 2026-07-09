@@ -130,18 +130,29 @@ jobs:
 
   collect-code-coverage:
     name: Collect code coverage
-    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-22.04
+    continue-on-error: true
     needs: workdir
     environment: test
     env:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
     steps:
+      - name: Skip outside master
+        if: github.ref != 'refs/heads/master'
+        run: echo "Code coverage is collected only on master."
+
       - uses: actions/download-artifact@v7
+        if: github.ref == 'refs/heads/master'
         with: { name: workdir, path: . }
+
       - run: tar -xzpf workdir.tar.gz
+        if: github.ref == 'refs/heads/master'
+
       - run: make test-coverage
+        if: github.ref == 'refs/heads/master'
+
       - uses: codecov/codecov-action@v4
+        if: github.ref == 'refs/heads/master'
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: tests/_output/coverage.xml
