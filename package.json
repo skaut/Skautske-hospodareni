@@ -43,7 +43,7 @@
         "uglify-js": "^3.19.3",
         "webpack": "^5.104.1",
         "webpack-bundle-analyzer": "^4.10.2",
-        "webpack-cli": "^5.1.4"
+        "webpack-cli": "^7.2.1"
     },
     "resolutions": {
         "bootstrap": "5.3.8"
