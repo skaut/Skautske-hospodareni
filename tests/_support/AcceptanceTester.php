@@ -40,10 +40,14 @@ class AcceptanceTester extends Actor
         if ($I->loadSessionSnapshot('login')) {
             $I->amOnPage('/');
 
-            return;
+            $isStillLoggedIn = $I->executeJS('return document.querySelector(\'[data-test="login-link"]\') === null;');
+            if ($isStillLoggedIn) {
+                return;
+            }
         }
 
         $I->amOnPage('/');
+        $I->waitForElementVisible('[data-test="login-link"]', 10);
         $I->click('[data-test="login-link"]');
         $I->waitForText('přihlášení');
         $I->fillField('(//input)[9]', self::LOGIN);
