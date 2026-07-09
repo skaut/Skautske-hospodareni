@@ -23,7 +23,7 @@ TEST_ARGS = $(if $(strip $(TEST)),$(TEST),)
         composer-install composer-update init test-enter test-init \
         test-services test-unit test-integration test-coverage test-acceptance \
         test-mapping ci-acceptance check-phpstan check-cs \
-        check-cs-check check-latte fix ci
+        check-cs-check check-latte fix ci ci-visible
 
 define print_section
 	@printf "\n\033[1;35m══════ %s ══════\033[0m\n" "$(1)"
@@ -186,6 +186,23 @@ ci: ## Kompletní pipeline (jako GitHub Actions)
 	$(MAKE) test-integration
 	$(call print_section,Acceptance tests)
 	$(MAKE) ci-acceptance
+	$(call print_section,PHPStan)
+	$(MAKE) check-phpstan
+	$(call print_section,Coding standard)
+	$(MAKE) check-cs-check
+	$(call print_section,Latte lint)
+	$(MAKE) check-latte
+	$(call print_section,Mapping validation)
+	$(MAKE) test-mapping
+	@printf "\n\033[1;32m══════ ALL PASSED ✓ ══════\033[0m\n"
+
+ci-visible: ## Kompletní lokální pipeline s viditelným Selenium preview
+	$(call print_section,Unit tests)
+	$(MAKE) test-unit
+	$(call print_section,Integration tests)
+	$(MAKE) test-integration
+	$(call print_section,Acceptance tests)
+	$(MAKE) test-acceptance
 	$(call print_section,PHPStan)
 	$(MAKE) check-phpstan
 	$(call print_section,Coding standard)
