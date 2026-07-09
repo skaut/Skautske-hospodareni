@@ -198,6 +198,7 @@ jobs:
       - name: Clean workspace
         shell: bash
         run: |
+          sudo chown -R docker:docker . || true
           shopt -s dotglob
           rm -rf -- * || true
           shopt -u dotglob
