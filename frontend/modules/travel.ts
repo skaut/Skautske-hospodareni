@@ -1,7 +1,7 @@
 export class TravelModule {
     private readonly naja: any;
 
-    private autoSubmitListener: EventListener;
+    private autoSubmitListener: EventListener | undefined;
 
     constructor(naja: any) {
         this.naja = naja;
