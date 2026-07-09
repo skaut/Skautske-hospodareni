@@ -105,6 +105,22 @@ jobs:
             id: latte
             command: make check-latte
     steps:
+      - &clean-workspace
+        name: Clean workspace
+        shell: bash
+        run: |
+          if [ -z "${GITHUB_WORKSPACE:-}" ] || [ ! -d "$GITHUB_WORKSPACE" ]; then
+            echo "GITHUB_WORKSPACE is not set to an existing directory."
+            exit 1
+          fi
+          workspace="$(realpath "$GITHUB_WORKSPACE")"
+          current="$(pwd -P)"
+          if [ "$current" != "$workspace" ]; then
+            echo "Refusing to clean outside GITHUB_WORKSPACE: PWD=$current GITHUB_WORKSPACE=$workspace"
+            exit 1
+          fi
+          sudo chown -R docker:docker "$workspace" || true
+          find "$workspace" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
       - uses: actions/download-artifact@v7
         with: { name: workdir, path: . }
       - run: tar -xzpf workdir.tar.gz
@@ -123,6 +139,7 @@ jobs:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
       COMPOSE_PROJECT_NAME: "unit-${{ github.run_id }}-${{ github.run_attempt }}"
     steps:
+      - *clean-workspace
       - uses: actions/download-artifact@v7
         with: { name: workdir, path: . }
       - run: tar -xzpf workdir.tar.gz
@@ -139,6 +156,7 @@ jobs:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
       COMPOSE_PROJECT_NAME: "integration-${{ github.run_id }}-${{ github.run_attempt }}"
     steps:
+      - *clean-workspace
       - uses: actions/download-artifact@v7
         with: { name: workdir, path: . }
       - run: tar -xzpf workdir.tar.gz
@@ -154,6 +172,8 @@ jobs:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
       COMPOSE_PROJECT_NAME: "coverage-${{ github.run_id }}-${{ github.run_attempt }}"
     steps:
+      - *clean-workspace
+
       - name: Skip outside master
         if: github.ref != 'refs/heads/master'
         run: echo "Code coverage is collected only on master."
@@ -187,6 +207,7 @@ jobs:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
       COMPOSE_PROJECT_NAME: "mapping-${{ github.run_id }}-${{ github.run_attempt }}"
     steps:
+      - *clean-workspace
       - uses: actions/download-artifact@v7
         with: { name: workdir, path: . }
       - run: tar -xzpf workdir.tar.gz
@@ -252,13 +273,7 @@ jobs:
         shell: bash
         run: docker compose down --remove-orphans -v || true
 
-      - name: Clean workspace
-        shell: bash
-        run: |
-          sudo chown -R docker:docker . || true
-          shopt -s dotglob
-          rm -rf -- * || true
-          shopt -u dotglob
+      - *clean-workspace
 
       - uses: actions/download-artifact@v7
         with: { name: workdir, path: . }
@@ -269,8 +284,7 @@ jobs:
         run: |
           mkdir _tmp_unpack
           tar -xzf workdir.tar.gz -C _tmp_unpack
-          shopt -s dotglob
-          mv _tmp_unpack/* .
+          find _tmp_unpack -mindepth 1 -maxdepth 1 -exec mv -t . -- {} +
           rm -rf _tmp_unpack
 
       - name: Fix workspace ownership
@@ -339,6 +353,7 @@ jobs:
     container:
       image: skaut/lebeda:8.3-ci
     steps:
+      - *clean-workspace
       - uses: actions/download-artifact@v7
         with:
           name: workdir
@@ -402,6 +417,7 @@ jobs:
     container:
       image: skaut/lebeda:8.3-ci
     steps:
+      - *clean-workspace
       - uses: actions/download-artifact@v7
         with:
           name: workdir
@@ -465,6 +481,7 @@ jobs:
     container:
       image: skaut/lebeda:8.3-ci
     steps:
+      - *clean-workspace
       - uses: actions/download-artifact@v7
         with:
           name: workdir
