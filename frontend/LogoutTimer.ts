@@ -9,10 +9,10 @@ export class LogoutTimer {
 
     constructor(timerId: string, minutesElementId: string) {
         this.timer = document.getElementById(timerId) as HTMLElement;
+        this.minutesElement = document.getElementById(minutesElementId) as HTMLElement;
         if (this.timer === null) {
             return;
         }
-        this.minutesElement = document.getElementById(minutesElementId) as HTMLElement;
 
         this.resetTimer();
         window.addEventListener(sessionKeepAliveSucceededEvent, () => this.resetTimer());
