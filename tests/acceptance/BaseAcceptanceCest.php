@@ -17,7 +17,7 @@ abstract class BaseAcceptanceCest
 
         for ($attempt = 1; $attempt <= 3; ++$attempt) {
             try {
-                $I->amOnPage('/');
+                $I->amOnPage('/robots.txt');
                 $lastException = null;
 
                 break;
@@ -36,5 +36,6 @@ abstract class BaseAcceptanceCest
             'secure' => false,
             'httpOnly' => false,
         ], true);
+        $I->amOnPage('/');
     }
 }
