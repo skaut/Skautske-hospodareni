@@ -123,7 +123,7 @@ jobs:
           find "$workspace" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
       - uses: actions/download-artifact@v7
         with: { name: workdir, path: . }
-      - run: tar -xzpf workdir.tar.gz
+      - run: tar -xzf workdir.tar.gz
       - name: Run
         run: ${{ matrix.command }}
 
@@ -142,7 +142,7 @@ jobs:
       - *clean-workspace
       - uses: actions/download-artifact@v7
         with: { name: workdir, path: . }
-      - run: tar -xzpf workdir.tar.gz
+      - run: tar -xzf workdir.tar.gz
       - run: make test-unit
 
   tests-integration:
@@ -159,7 +159,7 @@ jobs:
       - *clean-workspace
       - uses: actions/download-artifact@v7
         with: { name: workdir, path: . }
-      - run: tar -xzpf workdir.tar.gz
+      - run: tar -xzf workdir.tar.gz
       - run: make test-integration
 
   collect-code-coverage:
@@ -182,7 +182,7 @@ jobs:
         if: github.ref == 'refs/heads/master'
         with: { name: workdir, path: . }
 
-      - run: tar -xzpf workdir.tar.gz
+      - run: tar -xzf workdir.tar.gz
         if: github.ref == 'refs/heads/master'
 
       - run: make test-coverage
@@ -210,7 +210,7 @@ jobs:
       - *clean-workspace
       - uses: actions/download-artifact@v7
         with: { name: workdir, path: . }
-      - run: tar -xzpf workdir.tar.gz
+      - run: tar -xzf workdir.tar.gz
       - run: make test-mapping
       - uses: actions/upload-artifact@v7
         if: failure()
@@ -358,7 +358,7 @@ jobs:
         with:
           name: workdir
           path: .
-      - run: tar -xzpf workdir.tar.gz
+      - run: tar -xzf workdir.tar.gz
       - name: Install deploy tools
         run: |
           rm -f /etc/apt/sources.list.d/google-chrome.list
@@ -422,7 +422,7 @@ jobs:
         with:
           name: workdir
           path: .
-      - run: tar -xzpf workdir.tar.gz
+      - run: tar -xzf workdir.tar.gz
       - name: Install deploy tools
         run: |
           rm -f /etc/apt/sources.list.d/google-chrome.list
@@ -486,7 +486,7 @@ jobs:
         with:
           name: workdir
           path: .
-      - run: tar -xzpf workdir.tar.gz
+      - run: tar -xzf workdir.tar.gz
       - name: Install deploy tools
         run: |
           rm -f /etc/apt/sources.list.d/google-chrome.list
