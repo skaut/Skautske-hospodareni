@@ -14,7 +14,7 @@ concurrency:
 jobs:
   workdir:
     name: Prepare working directory
-    runs-on: [self-hosted, debian-13, docker, x64]
+    runs-on: [self-hosted, docker, x64]
     container:
       image: skaut/lebeda:8.3-ci
     env:
@@ -90,7 +90,7 @@ jobs:
   # ── Rychlé kontroly v test runtime ─────────────────────────
   quick-checks:
     name: ${{ matrix.name }}
-    runs-on: [self-hosted, debian-13, docker, x64]
+    runs-on: [self-hosted, docker, x64]
     needs: workdir
     environment: test
     env:
@@ -144,7 +144,7 @@ jobs:
   # ── Testy po rychlých kontrolách ────────────────────────────
   tests-unit:
     name: Unit tests
-    runs-on: [self-hosted, debian-13, docker, x64]
+    runs-on: [self-hosted, docker, x64]
     needs:
       - workdir
       - quick-checks
@@ -161,7 +161,7 @@ jobs:
 
   tests-integration:
     name: Integration tests
-    runs-on: [self-hosted, debian-13, docker, x64]
+    runs-on: [self-hosted, docker, x64]
     needs:
       - workdir
       - quick-checks
@@ -178,7 +178,7 @@ jobs:
 
   collect-code-coverage:
     name: Collect code coverage
-    runs-on: [self-hosted, debian-13, docker, x64]
+    runs-on: [self-hosted, docker, x64]
     continue-on-error: true
     needs: workdir
     environment: test
@@ -220,7 +220,7 @@ jobs:
   # ── Validate mapping (potřebuje MySQL service) ─────────────
   validate-mapping:
     name: Validate mapping
-    runs-on: [self-hosted, debian-13, docker, x64]
+    runs-on: [self-hosted, docker, x64]
     needs:
       - workdir
       - quick-checks
@@ -243,7 +243,7 @@ jobs:
   # ── Acceptance testy (self-hosted) ──────────────────────────
   tests-acceptance:
     name: Acceptance - ${{ matrix.label }}
-    runs-on: [self-hosted, debian-13, docker, x64]
+    runs-on: [self-hosted, docker, x64]
     needs:
       - workdir
       - quick-checks
@@ -364,7 +364,7 @@ jobs:
       - tests-integration
       - tests-acceptance
       - validate-mapping
-    runs-on: [self-hosted, debian-13, docker, x64]
+    runs-on: [self-hosted, docker, x64]
     container:
       image: skaut/lebeda:8.3-ci
     steps:
@@ -374,7 +374,7 @@ jobs:
   deploy-beta:
     if: ${{ startsWith(github.ref_name, 'beta') }}
     needs: [checks-passed, workdir]
-    runs-on: [self-hosted, debian-13, docker, x64]
+    runs-on: [self-hosted, docker, x64]
     environment: beta
     container:
       image: skaut/lebeda:8.3-ci
@@ -438,7 +438,7 @@ jobs:
   deploy-test:
     if: github.ref == 'refs/heads/master'
     needs: [checks-passed]
-    runs-on: [self-hosted, debian-13, docker, x64]
+    runs-on: [self-hosted, docker, x64]
     environment: test
     container:
       image: skaut/lebeda:8.3-ci
@@ -502,7 +502,7 @@ jobs:
   deploy-production:
     if: github.ref == 'refs/heads/master'
     needs: [checks-passed]
-    runs-on: [self-hosted, debian-13, docker, x64]
+    runs-on: [self-hosted, docker, x64]
     environment: production
     container:
       image: skaut/lebeda:8.3-ci
