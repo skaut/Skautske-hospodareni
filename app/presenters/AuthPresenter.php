@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App;
 
 use App\Model\Auth\AuthService;
+use App\Model\User\UserPreferencesService;
 use Nette\Security\SimpleIdentity;
 use Skautis\Wsdl\AuthenticationException;
 
+use function array_map;
 use function strlen;
 use function substr;
 
@@ -15,8 +17,10 @@ class AuthPresenter extends BasePresenter
 {
     protected AuthService $authService;
 
-    public function __construct(AuthService $as)
-    {
+    public function __construct(
+        AuthService $as,
+        private UserPreferencesService $preferences,
+    ) {
         parent::__construct();
 
         $this->authService = $as;
@@ -65,11 +69,20 @@ class AuthPresenter extends BasePresenter
             }
 
             $user = $this->getUser();
+            $userId = (int) $this->userService->getUserDetail()->ID;
+            $roles = $this->userService->getAllSkautisRoles();
+            $rememberedRoleId = $this->preferences->getRememberedSkautisRoleIdForLogin(
+                $userId,
+                array_map(static fn (object $role): int => (int) $role->ID, $roles),
+            );
+            if ($rememberedRoleId !== null && $rememberedRoleId !== $this->userService->getRoleId()) {
+                $this->userService->updateSkautISRole($rememberedRoleId);
+            }
 
             $user->setExpiration('+ 29 minutes'); // nastavíme expiraci
             $user->login(new SimpleIdentity(
-                $this->userService->getUserDetail()->ID,
-                $this->userService->getAllSkautisRoles(),
+                $userId,
+                $roles,
                 ['currentRole' => $this->userService->getActualRole()],
             ));
 

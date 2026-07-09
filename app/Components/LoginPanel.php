@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Components;
 
 use App\Model\Unit\UnitService;
+use App\Model\User\UserPreferencesService;
 use App\Model\User\UserService;
 use Nette\Security\SimpleIdentity;
 use Nette\Security\User;
@@ -16,6 +17,7 @@ final class LoginPanel extends BaseControl
     public function __construct(
         private UserService $userService,
         private UnitService $unitService,
+        private UserPreferencesService $preferences,
         private User $user,
     ) {
     }
@@ -23,6 +25,10 @@ final class LoginPanel extends BaseControl
     public function handleChangeRole(int $roleId): void
     {
         $this->userService->updateSkautISRole($roleId);
+        $currentRoleId = $this->userService->getRoleId();
+        if ($currentRoleId !== null) {
+            $this->preferences->rememberCurrentSkautisRole($currentRoleId);
+        }
 
         $identity = $this->user->getIdentity();
 

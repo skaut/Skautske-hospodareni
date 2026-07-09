@@ -116,12 +116,84 @@ final class UserPreferencesServiceTest extends Unit
 
         $manager = Mockery::mock(UserPreferenceManager::class);
         $manager->shouldReceive('savePreferences')
-            ->with(1942, false, true)
+            ->with(1942, false, true, true)
             ->once()
-            ->andReturn(new UserPreference(1942, false, true));
+            ->andReturn(new UserPreference(1942, false, true, true));
+        $manager->shouldReceive('saveRememberedSkautisRole')
+            ->with(1942, 456)
+            ->once()
+            ->andReturn(new UserPreference(1942, false, true, true, 456));
 
         $service = new UserPreferencesService($this->mockUser(1942), $repository, $manager);
-        $service->setPreferences(false, true);
+        $service->setPreferences(false, true, true, 456);
+    }
+
+    public function testSkautisRoleRememberingIsDisabledByDefault(): void
+    {
+        $repository = Mockery::mock(UserPreferenceRepository::class);
+        $repository->shouldReceive('findOneByUserId')
+            ->with(1942)
+            ->once()
+            ->andReturn(null);
+
+        $manager = Mockery::mock(UserPreferenceManager::class);
+
+        $service = new UserPreferencesService($this->mockUser(1942), $repository, $manager);
+
+        self::assertFalse($service->shouldRememberSkautisRole());
+    }
+
+    public function testRememberedSkautisRoleIsReturnedWhenAvailable(): void
+    {
+        $repository = Mockery::mock(UserPreferenceRepository::class);
+        $repository->shouldReceive('findOneByUserId')
+            ->with(1942)
+            ->once()
+            ->andReturn(new UserPreference(1942, true, false, true, 456));
+
+        $manager = Mockery::mock(UserPreferenceManager::class);
+        $manager->shouldNotReceive('clearRememberedSkautisRole');
+
+        $service = new UserPreferencesService($this->mockUser(null), $repository, $manager);
+
+        self::assertSame(456, $service->getRememberedSkautisRoleIdForLogin(1942, [123, 456]));
+    }
+
+    public function testUnavailableRememberedSkautisRoleIsCleared(): void
+    {
+        $repository = Mockery::mock(UserPreferenceRepository::class);
+        $repository->shouldReceive('findOneByUserId')
+            ->with(1942)
+            ->once()
+            ->andReturn(new UserPreference(1942, true, false, true, 456));
+
+        $manager = Mockery::mock(UserPreferenceManager::class);
+        $manager->shouldReceive('clearRememberedSkautisRole')
+            ->with(1942)
+            ->once()
+            ->andReturn(new UserPreference(1942, true, false, true));
+
+        $service = new UserPreferencesService($this->mockUser(null), $repository, $manager);
+
+        self::assertNull($service->getRememberedSkautisRoleIdForLogin(1942, [123]));
+    }
+
+    public function testChangedSkautisRoleIsRememberedOnlyWhenEnabled(): void
+    {
+        $repository = Mockery::mock(UserPreferenceRepository::class);
+        $repository->shouldReceive('findOneByUserId')
+            ->with(1942)
+            ->once()
+            ->andReturn(new UserPreference(1942, true, false, true));
+
+        $manager = Mockery::mock(UserPreferenceManager::class);
+        $manager->shouldReceive('saveRememberedSkautisRole')
+            ->with(1942, 456)
+            ->once()
+            ->andReturn(new UserPreference(1942, true, false, true, 456));
+
+        $service = new UserPreferencesService($this->mockUser(1942), $repository, $manager);
+        $service->rememberCurrentSkautisRole(456);
     }
 
     private function mockUser(?int $userId): User

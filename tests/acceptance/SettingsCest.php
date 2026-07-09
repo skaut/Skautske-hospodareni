@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace acceptance;
 
 use AcceptanceTester;
+use PHPUnit\Framework\Assert;
 
 class SettingsCest extends BaseAcceptanceCest
 {
@@ -254,14 +255,23 @@ class SettingsCest extends BaseAcceptanceCest
 
         $I->dontSeeElement('body[data-session-keep-alive-url]');
         $I->checkOption('input[name="extendSkautisLogin"]');
+        $I->checkOption('input[name="rememberSkautisRole"]');
         $I->click('input[type="submit"]');
         $I->waitForElementVisible('[data-test="settings-user-page"]', 10);
 
         $I->seeInDatabase('user_preference', [
             'user_id' => self::ACCEPTANCE_USER_ID,
             'extend_skautis_login' => 1,
+            'remember_skautis_role' => 1,
         ]);
+        Assert::assertGreaterThan(
+            0,
+            (int) $I->grabFromDatabase('user_preference', 'remembered_skautis_role_id', [
+                'user_id' => self::ACCEPTANCE_USER_ID,
+            ]),
+        );
         $I->seeElement('input[name="extendSkautisLogin"]:checked');
+        $I->seeElement('input[name="rememberSkautisRole"]:checked');
         $I->seeElement('body[data-session-keep-alive-url][data-session-keep-alive-interval]');
     }
 
@@ -323,7 +333,7 @@ class SettingsCest extends BaseAcceptanceCest
                 && darkMatches
                 && document.querySelector('[data-test="settings-bank-account-new-page"] form label.form-label') !== null;
             JS);
-        \PHPUnit\Framework\Assert::assertTrue($labelColorsMatchBodyInBothThemes);
+        Assert::assertTrue($labelColorsMatchBodyInBothThemes);
 
         // Fill form
         $I->fillField('input[name="name"]', 'Testovací účet Selenium');

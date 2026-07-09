@@ -35,11 +35,44 @@ class UserPreferenceManager extends AbstractManager
         });
     }
 
-    public function savePreferences(int $userId, bool $showHelp, bool $extendSkautisLogin): UserPreference
-    {
-        return $this->em->wrapInTransaction(function () use ($userId, $showHelp, $extendSkautisLogin): UserPreference {
+    public function savePreferences(
+        int $userId,
+        bool $showHelp,
+        bool $extendSkautisLogin,
+        bool $rememberSkautisRole,
+    ): UserPreference {
+        return $this->em->wrapInTransaction(function () use (
+            $userId,
+            $showHelp,
+            $extendSkautisLogin,
+            $rememberSkautisRole,
+        ): UserPreference {
             $preference = $this->repository->findOneByUserId($userId) ?? new UserPreference($userId);
-            $preference->updatePreferences($showHelp, $extendSkautisLogin);
+            $preference->updatePreferences($showHelp, $extendSkautisLogin, $rememberSkautisRole);
+            $this->em->persist($preference);
+            $this->em->flush();
+
+            return $preference;
+        });
+    }
+
+    public function saveRememberedSkautisRole(int $userId, int $roleId): UserPreference
+    {
+        return $this->em->wrapInTransaction(function () use ($userId, $roleId): UserPreference {
+            $preference = $this->repository->findOneByUserId($userId) ?? new UserPreference($userId);
+            $preference->rememberSkautisRole($roleId);
+            $this->em->persist($preference);
+            $this->em->flush();
+
+            return $preference;
+        });
+    }
+
+    public function clearRememberedSkautisRole(int $userId): UserPreference
+    {
+        return $this->em->wrapInTransaction(function () use ($userId): UserPreference {
+            $preference = $this->repository->findOneByUserId($userId) ?? new UserPreference($userId);
+            $preference->clearRememberedSkautisRole();
             $this->em->persist($preference);
             $this->em->flush();
 
