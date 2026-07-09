@@ -165,31 +165,38 @@ jobs:
         include:
           - name: Payment groups
             shard: payment-groups
+            port: 8081
             test_args: --group payment tests/acceptance/PaymentCest.php
 
           - name: Payment detail
             shard: payment-detail
+            port: 8082
             test_args: --group payment tests/acceptance/PaymentDetailCest.php
 
           - name: Payment dashboard
             shard: payment-dashboard
+            port: 8083
             test_args: --group payment tests/acceptance/PaymentDashboardCest.php
 
           - name: Invoice
             shard: invoice
+            port: 8084
             test_args: --group invoice
 
           - name: Settings and admin
             shard: settings-admin
+            port: 8085
             test_args: --group settings --group admin
 
           - name: Rest
             shard: rest
+            port: 8086
             test_args: --skip-group payment --skip-group invoice --skip-group settings --skip-group admin
     env:
       COMPOSE_FILE: docker/docker-compose.yml
       COMPOSE_PROJECT_NAME: "acc-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.shard }}"
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+      TRAEFIK_HOST_PORT: ${{ matrix.port }}
     steps:
       - name: Pre-clean compose project
         shell: bash
