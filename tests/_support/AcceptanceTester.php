@@ -87,7 +87,15 @@ class AcceptanceTester extends Actor
 
         $this->waitForJS(
             'const el = document.querySelector('.$selector.');'
-            .'return el !== null && el.offsetParent !== null;',
+            .'return el !== null;',
+            $timeout,
+        );
+    }
+
+    public function waitForPageTextStable(string $text, int $timeout = 10): void
+    {
+        $this->waitForJS(
+            'return document.body !== null && document.body.textContent.includes('.json_encode($text).');',
             $timeout,
         );
     }

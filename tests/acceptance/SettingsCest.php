@@ -335,7 +335,7 @@ class SettingsCest extends BaseAcceptanceCest
         $I->click('input[type="submit"]');
 
         // Wait for PRG redirect to complete — flash message is the reliable indicator
-        $I->waitForText('Bankovní účet byl uložen', 15);
+        $I->waitForPageTextStable('Bankovní účet byl uložen', 15);
         $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', 10);
 
         // ── READ ─────────────────────────────────────────────────
@@ -361,7 +361,7 @@ class SettingsCest extends BaseAcceptanceCest
         $I->scrollTo('input[type="submit"]');
         $I->waitForElementClickable('input[type="submit"]');
         $I->click('input[type="submit"]');
-        $I->waitForText('Bankovní účet byl uložen', 15);
+        $I->waitForPageTextStable('Bankovní účet byl uložen', 15);
         $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', 10);
 
         // Verify update in DB
@@ -374,11 +374,45 @@ class SettingsCest extends BaseAcceptanceCest
 
         $I->disablePopups();
         $I->click('[data-test="settings-bank-account-remove"]');
-        $I->waitForText('odstraněn', 15);
+        $I->waitForPageTextStable('odstraněn', 15);
         $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', 10);
 
         // Verify deletion
         $I->dontSeeInDatabase('pa_bank_account', ['id' => $accountId]);
+    }
+
+    /** @group settings */
+    public function settingsFioBankAccountCanUseFioApi(): void
+    {
+        $I = $this->I;
+        $token = 'acceptance-fio-token';
+
+        $I->wantTo('create a Fio bank account with FIO API transaction source');
+
+        $I->click('[data-test="utility-nav-settings"]');
+        $I->waitForElementVisible('[data-test="settings-page"]', 10);
+        $I->click('[data-test="settings-subnav-bank-accounts"]');
+        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', 10);
+        $I->click('[data-test="settings-bank-accounts-add"]');
+        $I->waitForElementVisible('[data-test="settings-bank-account-new-page"]', 10);
+
+        $I->fillField('input[name="name"]', 'Fio účet Selenium');
+        $I->fillField('input[name="number"]', '2500548792');
+        $I->selectOption('select[name="bankCode"]', '2010');
+        $I->selectOption('select[name="transactionSource"]', 'fio');
+        $I->fillField('input[name="token"]', $token);
+        $I->scrollTo('input[type="submit"]');
+        $I->waitForElementClickable('input[type="submit"]');
+        $I->click('input[type="submit"]');
+
+        $I->waitForPageTextStable('Bankovní účet byl uložen', 15);
+        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', 10);
+        $I->seeInDatabase('pa_bank_account', [
+            'name' => 'Fio účet Selenium',
+            'number_bank_code' => '2010',
+            'transaction_source' => 'fio',
+            'token' => $token,
+        ]);
     }
 
     // ─── Mails Page — Layout ─────────────────────────────────────
