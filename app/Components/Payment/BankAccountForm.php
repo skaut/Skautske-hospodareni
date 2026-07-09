@@ -98,7 +98,10 @@ class BankAccountForm extends BaseControl
                 $form->addError('Neplatné číslo účtu');
             }
 
-            if ($values->transactionSource === BankTransactionSource::FIO->value && $values->bankCode !== BankAccount::FIO_BANK_CODE) {
+            $bankCode = (string) $values->bankCode;
+            $transactionSource = (string) $values->transactionSource;
+
+            if ($transactionSource === BankTransactionSource::FIO->value && $bankCode !== BankAccount::FIO_BANK_CODE) {
                 $form->addError('Zdroj FIO API lze použít pouze pro účty vedené u FIO banky.');
             }
         };

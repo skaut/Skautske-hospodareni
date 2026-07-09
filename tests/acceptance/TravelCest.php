@@ -229,10 +229,7 @@ class TravelCest extends BaseAcceptanceCest
         $I->pressKey('#frm-formCreateContract-passengerBirthday', [WebDriverKeys::TAB]);
         $I->scrollTo('footer');
         $I->clickStable('#frm-formCreateContract [name=send]');
-        $I->waitForJS(
-            'return document.body.textContent.includes("Smlouva byla založena.");',
-            10,
-        );
+        $I->waitForPageTextStable('Smlouva byla založena.', 10);
         $I->see($unitRepresentative);
     }
 
