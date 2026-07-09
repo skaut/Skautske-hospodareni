@@ -32,31 +32,37 @@ endef
 define wait_for_selenium
 	@for i in $$(seq 1 30); do \
 		if $(COMPOSE) exec -T selenium wget -q -O - http://localhost:4444/wd/hub/status 2>/dev/null | grep -q '"ready":[[:space:]]*true'; then \
-			break; \
+			exit 0; \
 		fi; \
 		echo "Waiting for Selenium... ($$i/30)"; \
 		sleep 2; \
-	done
+	done; \
+	echo "Selenium did not become ready in time."; \
+	exit 1
 endef
 
 define wait_for_application
 	@for i in $$(seq 1 30); do \
-		if $(COMPOSE) exec -T php-test sh -lc "wget -S -O /dev/null http://moje-hospodareni.cz/ 2>&1 | grep -q 'HTTP/[0-9.][0-9.]* 200'"; then \
-			break; \
+		if $(COMPOSE) exec -T selenium sh -lc "wget -q -O - http://moje-hospodareni.cz/ 2>/dev/null | grep -q 'data-test=\"login-link\"'"; then \
+			exit 0; \
 		fi; \
 		echo "Waiting for application... ($$i/30)"; \
 		sleep 2; \
-	done
+	done; \
+	echo "Application did not become ready in time."; \
+	exit 1
 endef
 
 define wait_for_mysql_test
 	@for i in $$(seq 1 30); do \
 		if $(COMPOSE) exec -T mysql-test sh -lc 'mysqladmin ping -h 127.0.0.1 -uroot -p"$$MYSQL_ROOT_PASSWORD" --silent' >/dev/null 2>&1; then \
-			break; \
+			exit 0; \
 		fi; \
 		echo "Waiting for mysql-test... ($$i/30)"; \
 		sleep 2; \
-	done
+	done; \
+	echo "mysql-test did not become ready in time."; \
+	exit 1
 endef
 
 define reset_writable_dirs
