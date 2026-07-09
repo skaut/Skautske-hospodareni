@@ -210,12 +210,21 @@ jobs:
       - run: make test-coverage
         if: github.ref == 'refs/heads/master'
 
-      - uses: codecov/codecov-action@v4
+      - name: Prepare Codecov environment
         if: github.ref == 'refs/heads/master'
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/home"
+          echo "HOME=$RUNNER_TEMP/home" >> "$GITHUB_ENV"
+
+      - uses: codecov/codecov-action@v7
+        if: github.ref == 'refs/heads/master'
+        continue-on-error: true
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: tests/_output/coverage.xml
-          fail_ci_if_error: true
+          files: tests/_output/coverage.xml
+          disable_safe_directory: true
+          fail_ci_if_error: false
 
   # ── Validate mapping (potřebuje MySQL service) ─────────────
   validate-mapping:
