@@ -19,6 +19,9 @@ parameters:
     bootstrapFiles:
         - tests/Http/NoOpResponse.php   # místo autoload_files
 
+    parallel:
+        maximumNumberOfProcesses: 2
+
 services:
 	- class: CodeQuality\ObjectIdentityComparisonRule
 	  tags: [ phpstan.rules.rule ]
