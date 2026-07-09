@@ -180,35 +180,35 @@ fix: ## Opravitelné kontroly bez testů
 	$(MAKE) check-phpstan
 
 ci: ## Kompletní pipeline (jako GitHub Actions)
+	$(call print_section,Coding standard)
+	$(MAKE) check-cs-check
+	$(call print_section,PHPStan)
+	$(MAKE) check-phpstan
+	$(call print_section,Latte lint)
+	$(MAKE) check-latte
 	$(call print_section,Unit tests)
 	$(MAKE) test-unit
 	$(call print_section,Integration tests)
 	$(MAKE) test-integration
-	$(call print_section,Acceptance tests)
-	$(MAKE) ci-acceptance
-	$(call print_section,PHPStan)
-	$(MAKE) check-phpstan
-	$(call print_section,Coding standard)
-	$(MAKE) check-cs-check
-	$(call print_section,Latte lint)
-	$(MAKE) check-latte
 	$(call print_section,Mapping validation)
 	$(MAKE) test-mapping
+	$(call print_section,Acceptance tests)
+	$(MAKE) ci-acceptance
 	@printf "\n\033[1;32m══════ ALL PASSED ✓ ══════\033[0m\n"
 
 ci-visible: ## Kompletní lokální pipeline s viditelným Selenium preview
+	$(call print_section,Coding standard)
+	$(MAKE) check-cs-check
+	$(call print_section,PHPStan)
+	$(MAKE) check-phpstan
+	$(call print_section,Latte lint)
+	$(MAKE) check-latte
 	$(call print_section,Unit tests)
 	$(MAKE) test-unit
 	$(call print_section,Integration tests)
 	$(MAKE) test-integration
-	$(call print_section,Acceptance tests)
-	$(MAKE) test-acceptance
-	$(call print_section,PHPStan)
-	$(MAKE) check-phpstan
-	$(call print_section,Coding standard)
-	$(MAKE) check-cs-check
-	$(call print_section,Latte lint)
-	$(MAKE) check-latte
 	$(call print_section,Mapping validation)
 	$(MAKE) test-mapping
+	$(call print_section,Acceptance tests)
+	$(MAKE) test-acceptance
 	@printf "\n\033[1;32m══════ ALL PASSED ✓ ══════\033[0m\n"
