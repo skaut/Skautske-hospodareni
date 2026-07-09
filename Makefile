@@ -6,11 +6,11 @@ SHELL := /bin/bash
 export DOCKER_SOCKET ?= $(shell docker context inspect --format '{{.Endpoints.docker.Host}}' 2>/dev/null | sed -n 's|^unix://||p')
 
 COMPOSE         = docker compose -f docker/docker-compose.yml
-RUN_PHP_DEV     = $(COMPOSE) run --rm -T --user root php
-RUN_PHP_TEST    = $(COMPOSE) run --rm -T --user root php-test
-RUN_PHP_XDEBUG  = $(COMPOSE) run --rm --user root php-xdebug
-EXEC_PHP        = docker exec -u root -it hskauting.app
-EXEC_PHP_TEST   = docker exec -u root -it hskauting.app-test
+RUN_PHP_DEV     = $(COMPOSE) run --rm -T php
+RUN_PHP_TEST    = $(COMPOSE) run --rm -T php-test
+RUN_PHP_XDEBUG  = $(COMPOSE) run --rm php-xdebug
+EXEC_PHP        = docker exec -u docker -it hskauting.app
+EXEC_PHP_TEST   = docker exec -u docker -it hskauting.app-test
 
 APP_SERVICES        = traefik php php-xdebug nginx mysql adminer
 TEST_SERVICES       = mysql-test php-test
@@ -67,10 +67,10 @@ endef
 
 define reset_writable_dirs
 	$(COMPOSE) run --rm -T --no-deps --user root $(1) sh -c \
-		'mkdir -p log temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf www/webtemp && \
-		find log temp www/webtemp -exec chmod a+rwX {} + && \
+		'mkdir -p log temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf tests/_support/_generated www/webtemp && \
+		find log temp tests/_support/_generated www/webtemp -exec chmod a+rwX {} + && \
 		find temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf www/webtemp -mindepth 1 -maxdepth 1 -exec rm -rf {} + && \
-		find log temp www/webtemp -exec chmod a+rwX {} +'
+		find log temp tests/_support/_generated www/webtemp -exec chmod a+rwX {} +'
 endef
 
 help: ## Zobrazí tuto nápovědu
@@ -128,6 +128,7 @@ test-services: ## Start test DB a test PHP kontejneru
 	$(COMPOSE) up -d $(TEST_SERVICES)
 
 test-unit: ## Unit testy (volitelně TEST=tests/unit/FooTest.php)
+	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) vendor/bin/codecept run unit $(TEST_ARGS)
 
 test-integration: ## Integrační testy (volitelně TEST=tests/integration/FooTest.php)
@@ -169,6 +170,7 @@ ci-acceptance: ## Akceptační testy v CI režimu
 	exit $$status
 
 check-phpstan: ## PHPStan analýza
+	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) sh -c "vendor/bin/codecept build && composer static-analysis"
 
 check-cs: ## Coding standard (opraví)
