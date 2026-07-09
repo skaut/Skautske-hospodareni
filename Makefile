@@ -43,7 +43,7 @@ endef
 
 define wait_for_application
 	@for i in $$(seq 1 30); do \
-		if $(COMPOSE) exec -T selenium sh -lc "wget -q -O - http://moje-hospodareni.cz/ 2>/dev/null | grep -q 'data-test=\"login-link\"'"; then \
+		if $(COMPOSE) exec -T selenium sh -lc "wget -S --header='Cookie: SELENIUM=SELENIUM' -O /dev/null http://moje-hospodareni.cz/ 2>&1 | grep -q 'HTTP/[0-9.][0-9.]* 200'"; then \
 			exit 0; \
 		fi; \
 		echo "Waiting for application... ($$i/30)"; \
@@ -160,9 +160,9 @@ ci-acceptance: ## Akceptační testy v CI režimu
 	$(COMPOSE) up -d $(ACCEPTANCE_SERVICES)
 	$(call wait_for_mysql_test)
 	$(call wait_for_selenium)
-	$(call wait_for_application)
 	$(RUN_PHP_TEST) composer tests:acceptance:init
 	$(call reset_writable_dirs,php-test)
+	$(call wait_for_application)
 	$(RUN_PHP_TEST) vendor/bin/codecept run acceptance --env ci -vv $(TEST_ARGS); \
 	status=$$?; \
 	$(COMPOSE) stop selenium nginx; \
