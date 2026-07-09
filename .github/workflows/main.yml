@@ -60,11 +60,17 @@ jobs:
           tar -C $GITHUB_WORKSPACE \
               --exclude-vcs \
               --exclude='.github' \
+              --exclude='node_modules' \
+              --exclude='log' \
+              --exclude='temp' \
+              --exclude='tests/_output' \
+              --exclude='www/webtemp' \
               --exclude='workdir.tar.gz' \
               --warning=no-file-changed \
               --ignore-failed-read \
               -czpf /tmp/workdir.tar.gz .
           mv /tmp/workdir.tar.gz $GITHUB_WORKSPACE/
+          ls -lh $GITHUB_WORKSPACE/workdir.tar.gz
 
       - name: Upload workdir
         uses: actions/upload-artifact@v7
