@@ -122,9 +122,9 @@ jobs:
         shell: bash
         run: |
           tar --no-overwrite-dir --no-same-owner --no-same-permissions -xzf workdir.tar.gz
-          mkdir -p log temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf tests/_output tests/_support/_generated tests/integration/fixtures www/webtemp
+          mkdir -p log uploads temp tests/_output tests/_support/_generated www/webtemp
           sudo chown -R docker:docker "$GITHUB_WORKSPACE" || true
-          chmod a+rwX log temp temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf tests/_output tests/_support/_generated tests/integration/fixtures www/webtemp
+          chmod a+rwX log uploads temp tests/_output tests/_support/_generated www/webtemp
 
       - name: Coding standard
         run: make check-cs-check
@@ -191,9 +191,9 @@ jobs:
       - name: Fix workspace ownership
         shell: bash
         run: |
-          mkdir -p log temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf tests/_output tests/_support/_generated tests/integration/fixtures www/webtemp
+          mkdir -p log uploads temp tests/_output tests/_support/_generated www/webtemp
           sudo chown -R docker:docker "$GITHUB_WORKSPACE" || true
-          chmod a+rwX log temp temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf tests/_output tests/_support/_generated tests/integration/fixtures www/webtemp
+          chmod a+rwX log uploads temp tests/_output tests/_support/_generated www/webtemp
       - run: make test-coverage
       - name: Prepare Codecov environment
         shell: bash
@@ -287,9 +287,9 @@ jobs:
       - name: Fix workspace ownership
         shell: bash
         run: |
-          mkdir -p log temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf tests/_output tests/_support/_generated tests/integration/fixtures www/webtemp
+          mkdir -p log uploads temp tests/_output tests/_support/_generated www/webtemp
           sudo chown -R docker:docker "$GITHUB_WORKSPACE" || true
-          chmod a+rwX log temp temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf tests/_output tests/_support/_generated tests/integration/fixtures www/webtemp
+          chmod a+rwX log uploads temp tests/_output tests/_support/_generated www/webtemp
       - run: docker compose build php-test
       - run: make ci-acceptance TEST='${{ matrix.test_args }}'
       - name: Pack Codeception output

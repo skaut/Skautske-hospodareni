@@ -20,10 +20,7 @@ ACCEPTANCE_SERVICES = traefik mysql-test selenium nginx php-test
 TEST ?=
 TEST_ARGS = $(if $(strip $(TEST)),$(TEST),)
 
-WRITABLE_DIRS   = log uploads temp tests/_output tests/_support/_generated tests/integration/fixtures www/webtemp
-RUNTIME_DIRS    = log uploads temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf tests/_output tests/_support/_generated tests/integration/fixtures www/webtemp
-CACHE_DIRS      = temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf www/webtemp
-CLEAN_DIRS      = log tests/_output $(CACHE_DIRS)
+WRITABLE_DIRS   = log uploads temp tests/_output tests/_support/_generated www/webtemp
 DEPENDENCY_DIRS = vendor node_modules
 
 .PHONY: help build up down restart ps logs enter enter-xdebug \
@@ -74,11 +71,7 @@ endef
 
 define reset_writable_dirs
 	$(RUN_ROOT) $(1) sh -c \
-		'mkdir -p $(RUNTIME_DIRS) && \
-		for path in $(CLEAN_DIRS); do \
-			find "$$path" -mindepth 1 -maxdepth 1 ! -name .gitignore -exec rm -rf {} + 2>/dev/null || true; \
-		done && \
-		chmod a+rwX $(WRITABLE_DIRS) $(RUNTIME_DIRS)'
+		'mkdir -p $(WRITABLE_DIRS) && chmod a+rwX $(WRITABLE_DIRS)'
 endef
 
 define reset_dependency_dirs
