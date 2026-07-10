@@ -6,7 +6,6 @@ SHELL := /bin/bash
 export DOCKER_SOCKET ?= $(shell docker context inspect --format '{{.Endpoints.docker.Host}}' 2>/dev/null | sed -n 's|^unix://||p')
 
 COMPOSE         = docker compose -f docker/docker-compose.yml
-RUN_ROOT        = $(COMPOSE) run --rm -T --no-deps --user root
 RUN_PHP_DEV     = $(COMPOSE) run --rm -T --entrypoint '' --user docker php
 RUN_PHP_TEST    = $(COMPOSE) run --rm -T --entrypoint '' --user docker php-test
 RUN_PHP_XDEBUG  = $(COMPOSE) run --rm --entrypoint '' --user docker php-xdebug
@@ -19,9 +18,6 @@ ACCEPTANCE_SERVICES = traefik mysql-test selenium nginx php-test
 
 TEST ?=
 TEST_ARGS = $(if $(strip $(TEST)),$(TEST),)
-
-WRITABLE_DIRS   = log uploads temp tests/_output tests/_support/_generated www/webtemp
-DEPENDENCY_DIRS = vendor node_modules
 
 .PHONY: help build up down restart ps logs enter enter-xdebug \
         composer-install composer-update init test-enter test-init \
@@ -54,9 +50,6 @@ define wait_for_application
 		sleep 2; \
 	done; \
 	echo "Application did not become ready in time."; \
-	echo "Last application response:"; \
-	$(COMPOSE) exec -T selenium sh -lc "wget -S --header='Cookie: SELENIUM=SELENIUM' -O - http://moje-hospodareni.cz/ 2>&1 || true"; \
-	$(COMPOSE) logs --tail=100 nginx php-test || true; \
 	exit 1
 endef
 
@@ -73,59 +66,11 @@ define wait_for_mysql_test
 endef
 
 define reset_writable_dirs
-	$(RUN_ROOT) $(1) sh -c \
-		'mkdir -p $(WRITABLE_DIRS) && chmod a+rwX $(WRITABLE_DIRS)'
-endef
-
-define clear_temp_dir
-	$(RUN_ROOT) $(1) sh -c \
-		'mkdir -p temp && find temp -mindepth 1 -maxdepth 1 ! -name .gitignore -exec rm -rf {} +'
-endef
-
-define reset_dependency_dirs
-	$(RUN_ROOT) $(1) sh -c \
-		'for path in $(DEPENDENCY_DIRS); do \
-			if [ -e "$$path" ]; then \
-				chmod -R a+rwX "$$path" 2>/dev/null || chown -R docker:docker "$$path" 2>/dev/null || true; \
-			fi; \
-		done'
-endef
-
-define prepare_test_services
-	$(MAKE) test-services
-	$(call wait_for_mysql_test)
-endef
-
-define run_acceptance
-	$(COMPOSE) up -d $(ACCEPTANCE_SERVICES)
-	$(call wait_for_mysql_test)
-	$(call wait_for_selenium)
-	$(RUN_PHP_TEST) composer tests:acceptance:init
-	$(call clear_temp_dir,php-test)
-	$(call reset_writable_dirs,php-test)
-	$(if $(filter true,$(3)),$(call wait_for_application))
-	$(RUN_PHP_TEST) vendor/bin/codecept run acceptance $(strip $(1) -vv $(TEST_ARGS)); \
-	status=$$?; \
-	$(COMPOSE) stop $(2); \
-	exit $$status
-endef
-
-define run_ci
-	$(call print_section,Coding standard)
-	$(MAKE) check-cs-check
-	$(call print_section,PHPStan)
-	$(MAKE) check-phpstan
-	$(call print_section,Latte lint)
-	$(MAKE) check-latte
-	$(call print_section,Unit tests)
-	$(MAKE) test-unit
-	$(call print_section,Integration tests)
-	$(MAKE) test-integration
-	$(call print_section,Mapping validation)
-	$(MAKE) test-mapping
-	$(call print_section,Acceptance tests)
-	$(MAKE) $(1)
-	@printf "\n\033[1;32m══════ ALL PASSED ✓ ══════\033[0m\n"
+	$(COMPOSE) run --rm -T --no-deps --user root $(1) sh -c \
+		'mkdir -p log uploads temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf tests/_support/_generated www/webtemp && \
+		find log uploads temp tests/_support/_generated tests/integration/fixtures www/webtemp -exec chmod a+rwX {} + && \
+		find temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf www/webtemp -mindepth 1 -maxdepth 1 -exec rm -rf {} + && \
+		find log uploads temp tests/_support/_generated tests/integration/fixtures www/webtemp -exec chmod a+rwX {} +'
 endef
 
 help: ## Zobrazí tuto nápovědu
@@ -156,17 +101,14 @@ enter-xdebug: ## Shell do xdebug PHP kontejneru
 	$(RUN_PHP_XDEBUG) bash
 
 composer-install: ## composer install uvnitř PHP kontejneru
-	$(call reset_dependency_dirs,php)
 	$(RUN_PHP_DEV) composer install --no-interaction
 
 composer-update: ## composer update uvnitř PHP kontejneru
-	$(call reset_dependency_dirs,php)
 	$(RUN_PHP_DEV) composer update
 
 init: ## Inicializace aplikace (composer app-init)
 	$(MAKE) build
 	$(MAKE) up
-	$(call reset_dependency_dirs,php)
 	$(RUN_PHP_DEV) composer app-init
 	$(call reset_writable_dirs,php)
 	@echo ""
@@ -178,8 +120,8 @@ test-enter: ## Shell do test PHP kontejneru
 	$(EXEC_PHP_TEST) bash
 
 test-init: ## Inicializace testovací aplikace
-	$(call prepare_test_services)
-	$(call reset_dependency_dirs,php-test)
+	$(MAKE) test-services
+	$(call wait_for_mysql_test)
 	$(RUN_PHP_TEST) composer app-init
 	$(call reset_writable_dirs,php-test)
 
@@ -191,35 +133,52 @@ test-unit: ## Unit testy (volitelně TEST=tests/unit/FooTest.php)
 	$(RUN_PHP_TEST) vendor/bin/codecept run unit $(TEST_ARGS)
 
 test-integration: ## Integrační testy (volitelně TEST=tests/integration/FooTest.php)
-	$(call prepare_test_services)
+	$(MAKE) test-services
+	$(call wait_for_mysql_test)
 	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) vendor/bin/codecept run integration $(TEST_ARGS)
 
 test-coverage: ## Unit + integration testy s coverage XML
-	$(call prepare_test_services)
-	$(call reset_writable_dirs,php-test)
+	$(MAKE) test-services
+	$(call wait_for_mysql_test)
 	$(RUN_PHP_TEST) composer tests-with-coverage
 
 test-acceptance: ## Akceptační testy lokálně s viditelným Selenium preview
-	$(call run_acceptance,,selenium,false)
+	$(COMPOSE) up -d $(ACCEPTANCE_SERVICES)
+	$(call wait_for_mysql_test)
+	$(call wait_for_selenium)
+	$(RUN_PHP_TEST) composer tests:acceptance:init
+	$(call reset_writable_dirs,php-test)
+	$(RUN_PHP_TEST) vendor/bin/codecept run acceptance -vv $(TEST_ARGS); \
+	status=$$?; \
+	$(COMPOSE) stop selenium; \
+	exit $$status
 
 test-mapping: ## Validace DB schématu vs migrace
-	$(call prepare_test_services)
+	$(MAKE) test-services
+	$(call wait_for_mysql_test)
 	$(RUN_PHP_TEST) composer validate-mapping
 
 ci-acceptance: ## Akceptační testy v CI režimu
-	$(call run_acceptance,--env ci,selenium nginx,true)
+	$(COMPOSE) up -d $(ACCEPTANCE_SERVICES)
+	$(call wait_for_mysql_test)
+	$(call wait_for_selenium)
+	$(RUN_PHP_TEST) composer tests:acceptance:init
+	$(call reset_writable_dirs,php-test)
+	$(call wait_for_application)
+	$(RUN_PHP_TEST) vendor/bin/codecept run acceptance --env ci -vv $(TEST_ARGS); \
+	status=$$?; \
+	$(COMPOSE) stop selenium nginx; \
+	exit $$status
 
 check-phpstan: ## PHPStan analýza
 	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) sh -c "vendor/bin/codecept build && composer static-analysis"
 
 check-cs: ## Coding standard (opraví)
-	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) composer coding-standard
 
 check-cs-check: ## Coding standard (dry-run pro CI)
-	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) composer coding-standard-ci
 
 check-latte: ## Latte lint
@@ -231,7 +190,35 @@ fix: ## Opravitelné kontroly bez testů
 	$(MAKE) check-phpstan
 
 ci: ## Kompletní pipeline (jako GitHub Actions)
-	$(call run_ci,ci-acceptance)
+	$(call print_section,Coding standard)
+	$(MAKE) check-cs-check
+	$(call print_section,PHPStan)
+	$(MAKE) check-phpstan
+	$(call print_section,Latte lint)
+	$(MAKE) check-latte
+	$(call print_section,Unit tests)
+	$(MAKE) test-unit
+	$(call print_section,Integration tests)
+	$(MAKE) test-integration
+	$(call print_section,Mapping validation)
+	$(MAKE) test-mapping
+	$(call print_section,Acceptance tests)
+	$(MAKE) ci-acceptance
+	@printf "\n\033[1;32m══════ ALL PASSED ✓ ══════\033[0m\n"
 
 ci-visible: ## Kompletní lokální pipeline s viditelným Selenium preview
-	$(call run_ci,test-acceptance)
+	$(call print_section,Coding standard)
+	$(MAKE) check-cs-check
+	$(call print_section,PHPStan)
+	$(MAKE) check-phpstan
+	$(call print_section,Latte lint)
+	$(MAKE) check-latte
+	$(call print_section,Unit tests)
+	$(MAKE) test-unit
+	$(call print_section,Integration tests)
+	$(MAKE) test-integration
+	$(call print_section,Mapping validation)
+	$(MAKE) test-mapping
+	$(call print_section,Acceptance tests)
+	$(MAKE) test-acceptance
+	@printf "\n\033[1;32m══════ ALL PASSED ✓ ══════\033[0m\n"
