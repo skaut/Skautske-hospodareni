@@ -23,6 +23,7 @@ TEST_ARGS = $(if $(strip $(TEST)),$(TEST),)
 WRITABLE_DIRS   = log uploads temp tests/_output tests/_support/_generated tests/integration/fixtures www/webtemp
 RUNTIME_DIRS    = log uploads temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf tests/_output tests/_support/_generated tests/integration/fixtures www/webtemp
 CACHE_DIRS      = temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf www/webtemp
+CLEAN_DIRS      = log tests/_output $(CACHE_DIRS)
 DEPENDENCY_DIRS = vendor node_modules
 
 .PHONY: help build up down restart ps logs enter enter-xdebug \
@@ -74,8 +75,10 @@ endef
 define reset_writable_dirs
 	$(RUN_ROOT) $(1) sh -c \
 		'mkdir -p $(RUNTIME_DIRS) && \
-		find $(WRITABLE_DIRS) ! -path temp/.php-cs-fixer.cache -exec chmod a+rwX {} + && \
-		find $(CACHE_DIRS) -mindepth 1 -maxdepth 1 -exec rm -rf {} +'
+		for path in $(CLEAN_DIRS); do \
+			find "$$path" -mindepth 1 -maxdepth 1 ! -name .gitignore -exec rm -rf {} + 2>/dev/null || true; \
+		done && \
+		chmod a+rwX $(WRITABLE_DIRS) $(RUNTIME_DIRS)'
 endef
 
 define reset_dependency_dirs
@@ -192,6 +195,7 @@ test-integration: ## Integrační testy (volitelně TEST=tests/integration/FooTe
 
 test-coverage: ## Unit + integration testy s coverage XML
 	$(call prepare_test_services)
+	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) composer tests-with-coverage
 
 test-acceptance: ## Akceptační testy lokálně s viditelným Selenium preview
