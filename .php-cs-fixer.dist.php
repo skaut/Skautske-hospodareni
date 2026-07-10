@@ -9,7 +9,6 @@ $finder = (new PhpCsFixer\Finder())
     ->exclude('_generated');
 
 return (new PhpCsFixer\Config())
-    ->setCacheFile(__DIR__ . '/temp/.php-cs-fixer.cache')
     ->setRules([
         '@Symfony' => true,
         'yoda_style' => false,

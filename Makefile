@@ -74,7 +74,7 @@ endef
 define reset_writable_dirs
 	$(RUN_ROOT) $(1) sh -c \
 		'mkdir -p $(RUNTIME_DIRS) && \
-		find $(WRITABLE_DIRS) -exec chmod a+rwX {} + && \
+		find $(WRITABLE_DIRS) ! -path temp/.php-cs-fixer.cache -exec chmod a+rwX {} + && \
 		find $(CACHE_DIRS) -mindepth 1 -maxdepth 1 -exec rm -rf {} +'
 endef
 
