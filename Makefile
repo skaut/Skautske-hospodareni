@@ -209,9 +209,11 @@ check-phpstan: ## PHPStan analýza
 	$(RUN_PHP_TEST) sh -c "vendor/bin/codecept build && composer static-analysis"
 
 check-cs: ## Coding standard (opraví)
+	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) composer coding-standard
 
 check-cs-check: ## Coding standard (dry-run pro CI)
+	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) composer coding-standard-ci
 
 check-latte: ## Latte lint
