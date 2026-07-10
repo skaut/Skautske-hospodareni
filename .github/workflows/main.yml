@@ -62,6 +62,7 @@ jobs:
               ! -name '.github' \
               ! -name 'node_modules' \
               ! -name 'log' \
+              ! -name 'uploads' \
               ! -name 'temp' \
               ! -name '_temp' \
               ! -name 'workdir.tar.gz' \
@@ -100,7 +101,7 @@ jobs:
         name: Clean workspace
         shell: bash
         run: |
-          docker compose down -v || true
+          docker compose -f docker/docker-compose.yml down -v || true
           if [ -z "${GITHUB_WORKSPACE:-}" ] || [ ! -d "$GITHUB_WORKSPACE" ]; then
             echo "GITHUB_WORKSPACE is not set to an existing directory."
             exit 1
@@ -111,7 +112,7 @@ jobs:
             echo "Refusing to clean outside GITHUB_WORKSPACE: PWD=$current GITHUB_WORKSPACE=$workspace"
             exit 1
           fi
-          sudo chown -R docker:docker "$workspace" || true
+          sudo chown -R "$(id -u):$(id -g)" "$workspace" || true
           find "$workspace" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
 
       - uses: actions/download-artifact@v4
@@ -121,10 +122,18 @@ jobs:
         name: Extract workdir
         shell: bash
         run: |
-          tar --no-overwrite-dir --no-same-owner --no-same-permissions -xzf workdir.tar.gz
-          mkdir -p log temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf tests/_support/_generated www/webtemp
-          chmod -R a+rwX log temp tests/_support/_generated www/webtemp
-          sudo chown -R docker:docker "$GITHUB_WORKSPACE" || true
+          rm -rf _tmp_unpack
+          mkdir _tmp_unpack
+          tar --no-overwrite-dir --no-same-owner --no-same-permissions -xzf workdir.tar.gz -C _tmp_unpack
+          find _tmp_unpack -mindepth 1 -maxdepth 1 -exec mv -t . -- {} +
+          rm -rf _tmp_unpack
+          mkdir -p log uploads temp tests/_output tests/_support/_generated www/webtemp
+          chmod -R a+rwX log uploads temp tests/_output tests/_support/_generated www/webtemp
+          sudo chown -R docker:docker log uploads temp tests/_output tests/_support/_generated www/webtemp || true
+          if [ -d tests/integration/fixtures ]; then
+            chmod -R a+rwX tests/integration/fixtures
+            sudo chown -R docker:docker tests/integration/fixtures || true
+          fi
 
       - name: Coding standard
         run: make check-cs-check
@@ -138,7 +147,7 @@ jobs:
       - &docker-down
         name: Stop and remove containers
         if: always()
-        run: docker compose down --remove-orphans -v || true
+        run: docker compose -f docker/docker-compose.yml down --remove-orphans -v || true
 
   # ── Testy po rychlých kontrolách ────────────────────────────
   tests-unit:
@@ -187,13 +196,7 @@ jobs:
       - *clean-workspace
       - uses: actions/download-artifact@v4
         with: { name: workdir, path: . }
-      - run: tar --no-overwrite-dir --no-same-owner --no-same-permissions -xzf workdir.tar.gz
-      - name: Fix workspace ownership
-        shell: bash
-        run: |
-          mkdir -p log temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf tests/_support/_generated www/webtemp
-          chmod -R a+rwX log temp tests/_support/_generated www/webtemp
-          sudo chown -R docker:docker "$GITHUB_WORKSPACE" || true
+      - *extract-workdir
       - run: make test-coverage
       - name: Prepare Codecov environment
         shell: bash
@@ -273,23 +276,11 @@ jobs:
     steps:
       - name: Pre-clean compose project
         shell: bash
-        run: docker compose down --remove-orphans -v || true
+        run: docker compose -f docker/docker-compose.yml down --remove-orphans -v || true
       - *clean-workspace
       - uses: actions/download-artifact@v4
         with: { name: workdir, path: . }
-      - name: Extract workdir safely
-        shell: bash
-        run: |
-          mkdir _tmp_unpack
-          tar --no-overwrite-dir --no-same-owner --no-same-permissions -xzf workdir.tar.gz -C _tmp_unpack
-          find _tmp_unpack -mindepth 1 -maxdepth 1 -exec mv -t . -- {} +
-          rm -rf _tmp_unpack
-      - name: Fix workspace ownership
-        shell: bash
-        run: |
-          mkdir -p log temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf tests/_support/_generated www/webtemp
-          chmod -R a+rwX log temp tests/_support/_generated www/webtemp
-          sudo chown -R docker:docker "$GITHUB_WORKSPACE" || true
+      - *extract-workdir
       - run: docker compose build php-test
       - run: make ci-acceptance TEST='${{ matrix.test_args }}'
       - name: Pack Codeception output

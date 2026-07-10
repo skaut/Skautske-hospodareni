@@ -66,11 +66,10 @@ define wait_for_mysql_test
 endef
 
 define reset_writable_dirs
-	$(COMPOSE) run --rm -T --no-deps --user root $(1) sh -c \
-		'mkdir -p log uploads temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf tests/_support/_generated www/webtemp && \
-		find log uploads temp tests/_support/_generated tests/integration/fixtures www/webtemp -exec chmod a+rwX {} + && \
-		find temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf www/webtemp -mindepth 1 -maxdepth 1 -exec rm -rf {} + && \
-		find log uploads temp tests/_support/_generated tests/integration/fixtures www/webtemp -exec chmod a+rwX {} +'
+	$(COMPOSE) run --rm -T --no-deps --user docker $(1) sh -c \
+		'mkdir -p log uploads temp tests/_output tests/_support/_generated www/webtemp && \
+		chmod -R a+rwX log uploads temp tests/_output tests/_support/_generated www/webtemp && \
+		if [ -d tests/integration/fixtures ]; then chmod -R a+rwX tests/integration/fixtures; fi'
 endef
 
 help: ## Zobrazí tuto nápovědu
@@ -141,6 +140,7 @@ test-integration: ## Integrační testy (volitelně TEST=tests/integration/FooTe
 test-coverage: ## Unit + integration testy s coverage XML
 	$(MAKE) test-services
 	$(call wait_for_mysql_test)
+	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) composer tests-with-coverage
 
 test-acceptance: ## Akceptační testy lokálně s viditelným Selenium preview
