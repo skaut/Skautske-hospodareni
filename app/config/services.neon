@@ -130,13 +130,25 @@ services:
 
     # FIO bank
     - GuzzleHttp\Client({ timeout: 3 })
+    fio.apiClient:
+        type: GuzzleHttp\Client
+        factory: GuzzleHttp\Client
+        arguments:
+            -
+                timeout: 120
+                version: 1.1
+                curl:
+                    # CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2 | CURL_SSLVERSION_MAX_TLSv1_2
+                    32: 393222
+                    10083: 'DEFAULT:!ECDHE:!TLSv1.3'
+        autowired: false
     fio.client:
         factory: App\Model\Bank\Fio\FioClient
         autowired: false
     fio.cache: Nette\Caching\Cache
     - App\Model\Payment\Fio\CachingClientDecorator(@fio.client, @fio.cache)
-    - App\Model\Bank\Fio\DownloaderFactory
-    - App\Model\Bank\Fio\UploaderFactory
+    - App\Model\Bank\Fio\DownloaderFactory(@fio.apiClient)
+    - App\Model\Bank\Fio\UploaderFactory(@fio.apiClient)
 
     # Other services
     - App\Model\Participant\ParticipantService
