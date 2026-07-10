@@ -458,7 +458,7 @@ jobs:
       DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
       SKAUTIS_TEST_MODE: "false"
       SEND_EMAIL: "true"
-      ERROR_EMAILS: sinacek@gmail.com,frantisekmasa1@gmail.com
+      ERROR_EMAILS: alex@skaut.cz
       TEST_BACKGROUND: "false"
       TRACY_SHOW_BAR: "false"
       DB_HOST: localhost
