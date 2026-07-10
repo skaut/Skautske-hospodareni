@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Components\Travel;
 
+use App\BasePresenter;
 use App\Model\Common\Services\QueryBus;
 use App\Model\Travel\Passenger;
 use App\Model\Travel\Travel\TransportType;
@@ -217,6 +218,9 @@ class CommandForm extends Control
 
     private function createCommand(ArrayHash $values): void
     {
+        $presenter = $this->getPresenter();
+        assert($presenter instanceof BasePresenter);
+
         $this->model->addCommand(
             $this->unitId,
             isset($values['contract_id']) ? (int) $values['contract_id'] : null,
@@ -229,7 +233,7 @@ class CommandForm extends Control
             MoneyFactory::fromFloat((float) $values['amortization']),
             $values['note'],
             array_map(fn (string $type) => TransportType::get($type), $values['type']),
-            $this->getPresenter()->getUser()->getId(),
+            $presenter->getLoggedInUserId(),
             $values['unit'],
         );
 

@@ -26,6 +26,8 @@ use Nette\Application\LinkGenerator;
 use Nette\Application\Response;
 use Nette\Application\UI\Presenter;
 use Nette\Bridges\ApplicationLatte\DefaultTemplate;
+use Nette\Http\IResponse;
+use Nette\Security\IIdentity;
 use Nette\Security\SimpleIdentity;
 use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\AuthenticationException;
@@ -36,6 +38,7 @@ use function dirname;
 use function explode;
 use function in_array;
 use function is_file;
+use function is_numeric;
 use function preg_match;
 use function sprintf;
 use function str_contains;
@@ -132,8 +135,8 @@ abstract class BasePresenter extends Presenter
             'environmentColor' => $this->appContext->getEnvironmentColor(),
         ]);
 
-        if ($this->getUser()->isLoggedIn() && $backlink !== null) {
-            $this->restoreRequest($backlink);
+        if ($this->getUser()->isLoggedIn()) {
+            $this->validateCurrentLogin();
         }
 
         if (! $this->getUser()->isLoggedIn() && ! $this->isPublicRequest()) {
@@ -145,14 +148,8 @@ abstract class BasePresenter extends Presenter
             $this->redirect(':Default:', ['backlink' => $backlink]);
         }
 
-        try {
-            if ($this->getUser()->isLoggedIn()) { // prodluzuje přihlášení při každém požadavku
-                $this->userService->isLoggedIn();
-            }
-        } catch (AuthenticationException $e) {
-            if ($this->getName() !== 'Auth' || $this->params['action'] !== 'skautisLogout') { // pokud jde o odhlaseni, tak to nevadi
-                throw $e;
-            }
+        if ($this->getUser()->isLoggedIn() && $backlink !== null) {
+            $this->restoreRequest($backlink);
         }
     }
 
@@ -248,6 +245,62 @@ abstract class BasePresenter extends Presenter
         assert($identity instanceof SimpleIdentity);
 
         $identity->access = $this->userService->getAccessArrays($this->unitService);
+    }
+
+    public function getLoggedInUserId(): int
+    {
+        $identity = $this->getUser()->getIdentity();
+        if (! $this->isValidUserIdentity($identity)) {
+            throw new BadRequestException('User identity is not valid', IResponse::S403_Forbidden);
+        }
+
+        return (int) $identity->getId();
+    }
+
+    private function validateCurrentLogin(): void
+    {
+        if (! $this->isValidUserIdentity($this->getUser()->getIdentity())) {
+            $this->logoutInvalidUser();
+
+            return;
+        }
+
+        try {
+            if ($this->userService->isLoggedIn()) { // prodluzuje přihlášení při každém požadavku
+                return;
+            }
+        } catch (AuthenticationException $e) {
+            if (! $this->isSkautisLogoutRequest()) { // pokud jde o odhlaseni, tak to nevadi
+                throw $e;
+            }
+        }
+
+        $this->logoutInvalidUser();
+    }
+
+    private function logoutInvalidUser(): void
+    {
+        $this->getUser()->logout(true);
+        if ($this->isPublicRequest()) {
+            return;
+        }
+
+        $backlink = $this->storeRequest('+ 3 days');
+        if ($this->isAjax()) {
+            $this->forward(':Auth:ajax', ['backlink' => $backlink]);
+        }
+
+        $this->redirect(':Default:', ['backlink' => $backlink]);
+    }
+
+    private function isValidUserIdentity(?IIdentity $identity): bool
+    {
+        return $identity !== null && is_numeric($identity->getId());
+    }
+
+    private function isSkautisLogoutRequest(): bool
+    {
+        return $this->getName() === 'Auth' && strtolower($this->getAction()) === 'skautislogout';
     }
 
     private function isPublicRequest(): bool

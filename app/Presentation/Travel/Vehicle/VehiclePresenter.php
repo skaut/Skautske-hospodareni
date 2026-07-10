@@ -183,7 +183,7 @@ class VehiclePresenter extends TravelBasePresenter
                 $values->subunitId,
                 $values->registration,
                 $values->consumption,
-                $this->getUser()->getId(),
+                $this->getLoggedInUserId(),
             ),
         );
 

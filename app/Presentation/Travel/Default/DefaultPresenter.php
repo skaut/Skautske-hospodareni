@@ -35,7 +35,7 @@ final class DefaultPresenter extends \App\BasePresenter
 
     protected function createComponentGrid(): DataGrid
     {
-        $commands = $this->travelService->getAllUserCommands($this->getUnitId(), $this->getUser()->getId());
+        $commands = $this->travelService->getAllUserCommands($this->getUnitId(), $this->getLoggedInUserId());
         $vehicleIds = array_unique(array_filter(array_column($commands, 'vehicleId')));
 
         $grid = $this->gridFactory->createSimpleGrid(

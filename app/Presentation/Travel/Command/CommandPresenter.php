@@ -53,7 +53,7 @@ final class CommandPresenter extends \App\BasePresenter
             throw new BadRequestException('Cestovní příkaz #'.$id.' neexistuje');
         }
 
-        if ($command->getUnitId() !== $this->getUnitId() && $this->getUser()->getId() !== $command->getOwnerId()) {
+        if ($command->getUnitId() !== $this->getUnitId() && $this->getLoggedInUserId() !== $command->getOwnerId()) {
             throw new BadRequestException('Nemáte oprávnění upravovat zvolený doklad', IResponse::S403_Forbidden);
         }
 
@@ -306,7 +306,7 @@ final class CommandPresenter extends \App\BasePresenter
             return false;
         }
 
-        return $command->getOwnerId() === $this->getUser()->getId()
+        return $command->getOwnerId() === $this->getLoggedInUserId()
             || $this->hasUnitAccess($identity, UserService::ACCESS_READ, $command->getUnitId());
     }
 
@@ -322,7 +322,7 @@ final class CommandPresenter extends \App\BasePresenter
             return false;
         }
 
-        $unitOrOwner = $command->getOwnerId() === $this->getUser()->getId()
+        $unitOrOwner = $command->getOwnerId() === $this->getLoggedInUserId()
             || $this->hasUnitAccess($identity, UserService::ACCESS_EDIT, $command->getUnitId());
 
         return $this->isCommandAccessible($commandId)
