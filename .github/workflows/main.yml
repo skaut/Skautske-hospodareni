@@ -18,7 +18,7 @@ jobs:
     container:
       image: skaut/lebeda:8.3-ci
     env:
-      COMPOSER_ALLOW_SUPERUSER: "1"   # composer jako root bez varování
+      COMPOSER_ALLOW_SUPERUSER: "1"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -41,7 +41,7 @@ jobs:
       - name: Install Composer deps
         run: composer install --no-interaction --prefer-dist --no-progress --ignore-platform-reqs
 
-      # Node/Yarn + cache (vestavěné v setup-node)
+      # Node/Yarn + cache
       - name: Setup Node.js (+ Yarn cache)
         uses: actions/setup-node@v4
         with:
@@ -54,7 +54,7 @@ jobs:
       - name: Build production assets
         run: yarn build-production
 
-      # menší artefakt (bez .git)
+      # Výroba tarballu bez zbytečností
       - name: Create tarball
         run: |
           find "$GITHUB_WORKSPACE" -mindepth 1 -maxdepth 1 \
@@ -76,10 +76,9 @@ jobs:
               --ignore-failed-read \
               -czf /tmp/workdir.tar.gz
           mv /tmp/workdir.tar.gz "$GITHUB_WORKSPACE/"
-          ls -lh "$GITHUB_WORKSPACE/workdir.tar.gz"
 
       - name: Upload workdir
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: workdir
           path: workdir.tar.gz
@@ -87,30 +86,15 @@ jobs:
           compression-level: 0
           retention-days: 7
 
-  # ── Rychlé kontroly v test runtime ─────────────────────────
+  # ── Rychlé kontroly sloučené do jednoho jobu (šetří I/O a čas) ──
   quick-checks:
-    name: ${{ matrix.name }}
+    name: Quick Checks (CS, PHPStan, Latte)
     runs-on: [self-hosted, docker, x64]
     needs: workdir
     environment: test
     env:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
-      COMPOSE_PROJECT_NAME: "quick-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.id }}"
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: Coding standard
-            id: cs
-            command: make check-cs-check
-
-          - name: PHPStan
-            id: phpstan
-            command: make check-phpstan
-
-          - name: Latte lint
-            id: latte
-            command: make check-latte
+      COMPOSE_PROJECT_NAME: "quick-${{ github.run_id }}-${{ github.run_attempt }}"
     steps:
       - &clean-workspace
         name: Clean workspace
@@ -129,8 +113,10 @@ jobs:
           fi
           sudo chown -R docker:docker "$workspace" || true
           find "$workspace" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
-      - uses: actions/download-artifact@v7
+
+      - uses: actions/download-artifact@v4
         with: { name: workdir, path: . }
+
       - &extract-workdir
         name: Extract workdir
         shell: bash
@@ -139,23 +125,28 @@ jobs:
           mkdir -p log temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf tests/_support/_generated www/webtemp
           chmod -R a+rwX log temp tests/_support/_generated www/webtemp
           sudo chown -R docker:docker "$GITHUB_WORKSPACE" || true
-      - name: Run
-        run: ${{ matrix.command }}
+
+      - name: Coding standard
+        run: make check-cs-check
+
+      - name: PHPStan
+        run: make check-phpstan
+
+      - name: Latte lint
+        run: make check-latte
 
   # ── Testy po rychlých kontrolách ────────────────────────────
   tests-unit:
     name: Unit tests
     runs-on: [self-hosted, docker, x64]
-    needs:
-      - workdir
-      - quick-checks
+    needs: [workdir, quick-checks]
     environment: test
     env:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
       COMPOSE_PROJECT_NAME: "unit-${{ github.run_id }}-${{ github.run_attempt }}"
     steps:
       - *clean-workspace
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v4
         with: { name: workdir, path: . }
       - *extract-workdir
       - run: make test-unit
@@ -163,16 +154,14 @@ jobs:
   tests-integration:
     name: Integration tests
     runs-on: [self-hosted, docker, x64]
-    needs:
-      - workdir
-      - quick-checks
+    needs: [workdir, quick-checks]
     environment: test
     env:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
       COMPOSE_PROJECT_NAME: "integration-${{ github.run_id }}-${{ github.run_attempt }}"
     steps:
       - *clean-workspace
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v4
         with: { name: workdir, path: . }
       - *extract-workdir
       - run: make test-integration
@@ -183,43 +172,28 @@ jobs:
     continue-on-error: true
     needs: workdir
     environment: test
+    if: github.ref == 'refs/heads/master'
     env:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
       COMPOSE_PROJECT_NAME: "coverage-${{ github.run_id }}-${{ github.run_attempt }}"
     steps:
       - *clean-workspace
-
-      - name: Skip outside master
-        if: github.ref != 'refs/heads/master'
-        run: echo "Code coverage is collected only on master."
-
-      - uses: actions/download-artifact@v7
-        if: github.ref == 'refs/heads/master'
+      - uses: actions/download-artifact@v4
         with: { name: workdir, path: . }
-
       - run: tar --no-overwrite-dir --no-same-owner --no-same-permissions -xzf workdir.tar.gz
-        if: github.ref == 'refs/heads/master'
-
       - name: Fix workspace ownership
-        if: github.ref == 'refs/heads/master'
         shell: bash
         run: |
           mkdir -p log temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf tests/_support/_generated www/webtemp
           chmod -R a+rwX log temp tests/_support/_generated www/webtemp
           sudo chown -R docker:docker "$GITHUB_WORKSPACE" || true
-
       - run: make test-coverage
-        if: github.ref == 'refs/heads/master'
-
       - name: Prepare Codecov environment
-        if: github.ref == 'refs/heads/master'
         shell: bash
         run: |
           mkdir -p "$RUNNER_TEMP/home"
           echo "HOME=$RUNNER_TEMP/home" >> "$GITHUB_ENV"
-
-      - uses: codecov/codecov-action@v7
-        if: github.ref == 'refs/heads/master'
+      - uses: codecov/codecov-action@v4
         continue-on-error: true
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -227,39 +201,31 @@ jobs:
           disable_safe_directory: true
           fail_ci_if_error: false
 
-  # ── Validate mapping (potřebuje MySQL service) ─────────────
   validate-mapping:
     name: Validate mapping
     runs-on: [self-hosted, docker, x64]
-    needs:
-      - workdir
-      - quick-checks
+    needs: [workdir, quick-checks]
     environment: test
     env:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
       COMPOSE_PROJECT_NAME: "mapping-${{ github.run_id }}-${{ github.run_attempt }}"
     steps:
       - *clean-workspace
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v4
         with: { name: workdir, path: . }
       - *extract-workdir
       - run: make test-mapping
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: migrations
           path: migrations
 
-  # ── Acceptance testy (self-hosted) ──────────────────────────
+  # ── Acceptance testy ────────────────────────────────────────
   tests-acceptance:
     name: Acceptance - ${{ matrix.label }}
     runs-on: [self-hosted, docker, x64]
-    needs:
-      - workdir
-      - quick-checks
-      - tests-unit
-      - tests-integration
-      - validate-mapping
+    needs: [workdir, quick-checks, tests-unit, tests-integration, validate-mapping]
     timeout-minutes: 45
     environment: test
     strategy:
@@ -270,27 +236,22 @@ jobs:
             shard: payment-groups
             port: 8081
             test_args: --group payment tests/acceptance/PaymentCest.php
-
           - label: Payment detail
             shard: payment-detail
             port: 8082
             test_args: --group payment tests/acceptance/PaymentDetailCest.php
-
           - label: Payment dashboard
             shard: payment-dashboard
             port: 8083
             test_args: --group payment tests/acceptance/PaymentDashboardCest.php
-
           - label: Invoice
             shard: invoice
             port: 8084
             test_args: --group invoice
-
           - label: Settings and admin
             shard: settings-admin
             port: 8085
             test_args: --group settings --group admin
-
           - label: Rest
             shard: rest
             port: 8086
@@ -304,13 +265,9 @@ jobs:
       - name: Pre-clean compose project
         shell: bash
         run: docker compose down --remove-orphans -v || true
-
       - *clean-workspace
-
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v4
         with: { name: workdir, path: . }
-
-      # --- BEZPEČNÉ ROZBALENÍ PRO LXC ---
       - name: Extract workdir safely
         shell: bash
         run: |
@@ -318,18 +275,14 @@ jobs:
           tar --no-overwrite-dir --no-same-owner --no-same-permissions -xzf workdir.tar.gz -C _tmp_unpack
           find _tmp_unpack -mindepth 1 -maxdepth 1 -exec mv -t . -- {} +
           rm -rf _tmp_unpack
-
       - name: Fix workspace ownership
         shell: bash
         run: |
           mkdir -p log temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf tests/_support/_generated www/webtemp
           chmod -R a+rwX log temp tests/_support/_generated www/webtemp
           sudo chown -R docker:docker "$GITHUB_WORKSPACE" || true
-
       - run: docker compose build php-test
       - run: make ci-acceptance TEST='${{ matrix.test_args }}'
-
-      # --- sběr výstupů a logů (i při failu)
       - name: Pack Codeception output
         if: always()
         shell: bash
@@ -337,7 +290,6 @@ jobs:
           if [ -d tests/_output ]; then
             tar -czf tests-output.tar.gz -C tests _output
           fi
-
       - name: Collect compose logs
         if: always()
         shell: bash
@@ -346,21 +298,18 @@ jobs:
           docker compose ps --all > artifacts/logs/compose-ps.txt || true
           docker compose logs --no-color > artifacts/logs/compose-logs.txt || true
           tar -czf compose-logs.tar.gz -C artifacts logs || true
-
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: tests-output-${{ matrix.shard }}
           path: tests-output.tar.gz
           if-no-files-found: ignore
-
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: compose-logs-${{ matrix.shard }}
           path: compose-logs.tar.gz
           if-no-files-found: ignore
-
       - name: Stop & remove compose project
         if: always()
         run: docker compose down --remove-orphans -v
@@ -368,19 +317,14 @@ jobs:
   # ── Gate ────────────────────────────────────────────────────
   checks-passed:
     name: Wait for all checks
-    needs:
-      - quick-checks
-      - tests-unit
-      - tests-integration
-      - tests-acceptance
-      - validate-mapping
+    needs: [quick-checks, tests-unit, tests-integration, tests-acceptance, validate-mapping]
     runs-on: [self-hosted, docker, x64]
     container:
       image: skaut/lebeda:8.3-ci
     steps:
       - run: true
 
-  # ── Deploys ─────────────────────────────────────────────────
+  # ── Deploys (Zjednodušené přes YAML reference a DEPLOY_TARGET) ──
   deploy-beta:
     if: ${{ startsWith(github.ref_name, 'beta') }}
     needs: [checks-passed, workdir]
@@ -388,9 +332,42 @@ jobs:
     environment: beta
     container:
       image: skaut/lebeda:8.3-ci
-    steps:
+    env:
+      DEPLOY_TARGET: beta
+      PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+      ROOT_DIR: /home/vu011961
+      SSH_USERNAME: vu011961
+      HOST: www.skauting.cz
+      PORT: "11961"
+      APP_ENV: ${{ vars.APP_ENV }}
+      APP_BASE_URL: ${{ vars.APP_BASE_URL }}
+      APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+      DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
+      SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
+      SEND_EMAIL: ${{ vars.SEND_EMAIL }}
+      ERROR_EMAILS: ${{ vars.ERROR_EMAILS }}
+      ENVIRONMENT_LABEL: ${{ vars.ENVIRONMENT_LABEL }}
+      ENVIRONMENT_COLOR: ${{ vars.ENVIRONMENT_COLOR }}
+      TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
+      TRACY_SHOW_BAR: ${{ vars.TRACY_SHOW_BAR }}
+      DB_HOST: ${{ vars.DB_HOST }}
+      DB_NAME: ${{ vars.DB_NAME }}
+      DB_USER: ${{ vars.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      GOOGLE_CREDENTIALS_FILE: ${{ vars.GOOGLE_CREDENTIALS_FILE }}
+      GOOGLE_REDIRECT_URI: ${{ vars.GOOGLE_REDIRECT_URI }}
+      MAINTENANCE_MODE: ${{ vars.MAINTENANCE_MODE }}
+      MAINTENANCE_ALLOWED_IPS: ${{ vars.MAINTENANCE_ALLOWED_IPS }}
+      MAINTENANCE_STARTED_AT_LABEL: ${{ vars.MAINTENANCE_STARTED_AT_LABEL }}
+      MAINTENANCE_STARTED_AT_DATETIME: ${{ vars.MAINTENANCE_STARTED_AT_DATETIME }}
+      MAINTENANCE_ENDS_AT_LABEL: ${{ vars.MAINTENANCE_ENDS_AT_LABEL }}
+      MAINTENANCE_ENDS_AT_DATETIME: ${{ vars.MAINTENANCE_ENDS_AT_DATETIME }}
+      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      GITHUB_SHA: ${{ github.sha }}
+    steps: &deploy-steps
       - *clean-workspace
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v4
         with:
           name: workdir
           path: .
@@ -398,8 +375,7 @@ jobs:
       - name: Install deploy tools
         run: |
           rm -f /etc/apt/sources.list.d/google-chrome.list
-          apt-get update
-          apt-get install -y --no-install-recommends rsync
+          apt-get update && apt-get install -y --no-install-recommends rsync
           rm -rf /var/lib/apt/lists/*
           curl -fsSL https://deployer.org/releases/v7.5.12/deployer.phar -o /usr/local/bin/dep
           chmod +x /usr/local/bin/dep
@@ -408,42 +384,10 @@ jobs:
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
           eval $(ssh-agent -s)
           echo "$PRIVATE_KEY" | tr -d '\r' | ssh-add -
-          dep deploy:ssh_warmup beta -f /app/deploy.php -vvv
+          dep deploy:ssh_warmup ${{ env.DEPLOY_TARGET }} -f /app/deploy.php -vvv
           echo "Waiting for container to initialize..."
           sleep 10
-          dep deploy beta -f /app/deploy.php -vvv
-        env:
-          PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          ROOT_DIR: /home/vu011961
-          SSH_USERNAME: vu011961
-          HOST: www.skauting.cz
-          PORT: "11961"
-          APP_ENV: ${{ vars.APP_ENV }}
-          APP_BASE_URL: ${{ vars.APP_BASE_URL }}
-          APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
-          DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
-          SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
-          SEND_EMAIL: ${{ vars.SEND_EMAIL }}
-          ERROR_EMAILS: ${{ vars.ERROR_EMAILS }}
-          ENVIRONMENT_LABEL: ${{ vars.ENVIRONMENT_LABEL }}
-          ENVIRONMENT_COLOR: ${{ vars.ENVIRONMENT_COLOR }}
-          TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
-          TRACY_SHOW_BAR: ${{ vars.TRACY_SHOW_BAR }}
-          DB_HOST: ${{ vars.DB_HOST }}
-          DB_NAME: ${{ vars.DB_NAME }}
-          DB_USER: ${{ vars.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          GOOGLE_CREDENTIALS_FILE: ${{ vars.GOOGLE_CREDENTIALS_FILE }}
-          GOOGLE_REDIRECT_URI: ${{ vars.GOOGLE_REDIRECT_URI }}
-          MAINTENANCE_MODE: ${{ vars.MAINTENANCE_MODE }}
-          MAINTENANCE_ALLOWED_IPS: ${{ vars.MAINTENANCE_ALLOWED_IPS }}
-          MAINTENANCE_STARTED_AT_LABEL: ${{ vars.MAINTENANCE_STARTED_AT_LABEL }}
-          MAINTENANCE_STARTED_AT_DATETIME: ${{ vars.MAINTENANCE_STARTED_AT_DATETIME }}
-          MAINTENANCE_ENDS_AT_LABEL: ${{ vars.MAINTENANCE_ENDS_AT_LABEL }}
-          MAINTENANCE_ENDS_AT_DATETIME: ${{ vars.MAINTENANCE_ENDS_AT_DATETIME }}
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          GITHUB_SHA: ${{ github.sha }}
+          dep deploy ${{ env.DEPLOY_TARGET }} -f /app/deploy.php -vvv
 
   deploy-test:
     if: github.ref == 'refs/heads/master'
@@ -452,62 +396,40 @@ jobs:
     environment: test
     container:
       image: skaut/lebeda:8.3-ci
-    steps:
-      - *clean-workspace
-      - uses: actions/download-artifact@v7
-        with:
-          name: workdir
-          path: .
-      - run: tar --no-overwrite-dir --no-same-owner --no-same-permissions -xzf workdir.tar.gz
-      - name: Install deploy tools
-        run: |
-          rm -f /etc/apt/sources.list.d/google-chrome.list
-          apt-get update
-          apt-get install -y --no-install-recommends rsync
-          rm -rf /var/lib/apt/lists/*
-          curl -fsSL https://deployer.org/releases/v7.5.12/deployer.phar -o /usr/local/bin/dep
-          chmod +x /usr/local/bin/dep
-      - name: Run deploy
-        run: |
-          mkdir -p ~/.ssh && chmod 700 ~/.ssh
-          eval $(ssh-agent -s)
-          echo "$PRIVATE_KEY" | tr -d '\r' | ssh-add -
-          dep deploy:ssh_warmup test -f /app/deploy.php -vvv
-          echo "Waiting for container to initialize..."
-          sleep 10
-          dep deploy test -f /app/deploy.php -vvv
-        env:
-          PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          ROOT_DIR: /home/vu009010
-          SSH_USERNAME: vu009010
-          HOST: www.skauting.cz
-          PORT: "9010"
-          APP_ENV: ${{ vars.APP_ENV }}
-          APP_BASE_URL: ${{ vars.APP_BASE_URL }}
-          APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
-          DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
-          SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
-          SEND_EMAIL: ${{ vars.SEND_EMAIL }}
-          ERROR_EMAILS: ${{ vars.ERROR_EMAILS }}
-          ENVIRONMENT_LABEL: ${{ vars.ENVIRONMENT_LABEL }}
-          ENVIRONMENT_COLOR: ${{ vars.ENVIRONMENT_COLOR }}
-          TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
-          TRACY_SHOW_BAR: ${{ vars.TRACY_SHOW_BAR }}
-          DB_HOST: ${{ vars.DB_HOST }}
-          DB_NAME: ${{ vars.DB_NAME }}
-          DB_USER: ${{ vars.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          GOOGLE_CREDENTIALS_FILE: ${{ vars.GOOGLE_CREDENTIALS_FILE }}
-          GOOGLE_REDIRECT_URI: ${{ vars.GOOGLE_REDIRECT_URI }}
-          MAINTENANCE_MODE: ${{ vars.MAINTENANCE_MODE }}
-          MAINTENANCE_ALLOWED_IPS: ${{ vars.MAINTENANCE_ALLOWED_IPS }}
-          MAINTENANCE_STARTED_AT_LABEL: ${{ vars.MAINTENANCE_STARTED_AT_LABEL }}
-          MAINTENANCE_STARTED_AT_DATETIME: ${{ vars.MAINTENANCE_STARTED_AT_DATETIME }}
-          MAINTENANCE_ENDS_AT_LABEL: ${{ vars.MAINTENANCE_ENDS_AT_LABEL }}
-          MAINTENANCE_ENDS_AT_DATETIME: ${{ vars.MAINTENANCE_ENDS_AT_DATETIME }}
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          GITHUB_SHA: ${{ github.sha }}
+    env:
+      DEPLOY_TARGET: test
+      PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+      ROOT_DIR: /home/vu009010
+      SSH_USERNAME: vu009010
+      HOST: www.skauting.cz
+      PORT: "9010"
+      APP_ENV: ${{ vars.APP_ENV }}
+      APP_BASE_URL: ${{ vars.APP_BASE_URL }}
+      APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+      DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
+      SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
+      SEND_EMAIL: ${{ vars.SEND_EMAIL }}
+      ERROR_EMAILS: ${{ vars.ERROR_EMAILS }}
+      ENVIRONMENT_LABEL: ${{ vars.ENVIRONMENT_LABEL }}
+      ENVIRONMENT_COLOR: ${{ vars.ENVIRONMENT_COLOR }}
+      TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
+      TRACY_SHOW_BAR: ${{ vars.TRACY_SHOW_BAR }}
+      DB_HOST: ${{ vars.DB_HOST }}
+      DB_NAME: ${{ vars.DB_NAME }}
+      DB_USER: ${{ vars.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      GOOGLE_CREDENTIALS_FILE: ${{ vars.GOOGLE_CREDENTIALS_FILE }}
+      GOOGLE_REDIRECT_URI: ${{ vars.GOOGLE_REDIRECT_URI }}
+      MAINTENANCE_MODE: ${{ vars.MAINTENANCE_MODE }}
+      MAINTENANCE_ALLOWED_IPS: ${{ vars.MAINTENANCE_ALLOWED_IPS }}
+      MAINTENANCE_STARTED_AT_LABEL: ${{ vars.MAINTENANCE_STARTED_AT_LABEL }}
+      MAINTENANCE_STARTED_AT_DATETIME: ${{ vars.MAINTENANCE_STARTED_AT_DATETIME }}
+      MAINTENANCE_ENDS_AT_LABEL: ${{ vars.MAINTENANCE_ENDS_AT_LABEL }}
+      MAINTENANCE_ENDS_AT_DATETIME: ${{ vars.MAINTENANCE_ENDS_AT_DATETIME }}
+      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      GITHUB_SHA: ${{ github.sha }}
+    steps: *deploy-steps
 
   deploy-production:
     if: github.ref == 'refs/heads/master'
@@ -516,57 +438,35 @@ jobs:
     environment: production
     container:
       image: skaut/lebeda:8.3-ci
-    steps:
-      - *clean-workspace
-      - uses: actions/download-artifact@v7
-        with:
-          name: workdir
-          path: .
-      - run: tar --no-overwrite-dir --no-same-owner --no-same-permissions -xzf workdir.tar.gz
-      - name: Install deploy tools
-        run: |
-          rm -f /etc/apt/sources.list.d/google-chrome.list
-          apt-get update
-          apt-get install -y --no-install-recommends rsync
-          rm -rf /var/lib/apt/lists/*
-          curl -fsSL https://deployer.org/releases/v7.5.12/deployer.phar -o /usr/local/bin/dep
-          chmod +x /usr/local/bin/dep
-      - name: Run deploy
-        run: |
-          mkdir -p ~/.ssh && chmod 700 ~/.ssh
-          eval $(ssh-agent -s)
-          echo "$PRIVATE_KEY" | tr -d '\r' | ssh-add -
-          dep deploy:ssh_warmup production -f /app/deploy.php -vvv
-          echo "Waiting for container to initialize..."
-          sleep 10
-          dep deploy production -f /app/deploy.php -vvv
-        env:
-          PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          ROOT_DIR: /home/vu008930
-          SSH_USERNAME: vu008930
-          HOST: www.skauting.cz
-          PORT: "8930"
-          APP_ENV: prod
-          APP_BASE_URL: https://h.skauting.cz
-          APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
-          DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
-          SKAUTIS_TEST_MODE: "false"
-          SEND_EMAIL: "true"
-          ERROR_EMAILS: sinacek@gmail.com,frantisekmasa1@gmail.com
-          TEST_BACKGROUND: "false"
-          TRACY_SHOW_BAR: "false"
-          DB_HOST: localhost
-          DB_NAME: h
-          DB_USER: h
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          GOOGLE_CREDENTIALS_FILE: google-credentials.json
-          GOOGLE_REDIRECT_URI: https://h.skauting.cz/google/token
-          MAINTENANCE_MODE: ${{ vars.MAINTENANCE_MODE }}
-          MAINTENANCE_ALLOWED_IPS: ${{ vars.MAINTENANCE_ALLOWED_IPS }}
-          MAINTENANCE_STARTED_AT_LABEL: ${{ vars.MAINTENANCE_STARTED_AT_LABEL }}
-          MAINTENANCE_STARTED_AT_DATETIME: ${{ vars.MAINTENANCE_STARTED_AT_DATETIME }}
-          MAINTENANCE_ENDS_AT_LABEL: ${{ vars.MAINTENANCE_ENDS_AT_LABEL }}
-          MAINTENANCE_ENDS_AT_DATETIME: ${{ vars.MAINTENANCE_ENDS_AT_DATETIME }}
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          GITHUB_SHA: ${{ github.sha }}
+    env:
+      DEPLOY_TARGET: production
+      PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+      ROOT_DIR: /home/vu008930
+      SSH_USERNAME: vu008930
+      HOST: www.skauting.cz
+      PORT: "8930"
+      APP_ENV: prod
+      APP_BASE_URL: https://h.skauting.cz
+      APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+      DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
+      SKAUTIS_TEST_MODE: "false"
+      SEND_EMAIL: "true"
+      ERROR_EMAILS: sinacek@gmail.com,frantisekmasa1@gmail.com
+      TEST_BACKGROUND: "false"
+      TRACY_SHOW_BAR: "false"
+      DB_HOST: localhost
+      DB_NAME: h
+      DB_USER: h
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      GOOGLE_CREDENTIALS_FILE: google-credentials.json
+      GOOGLE_REDIRECT_URI: https://h.skauting.cz/google/token
+      MAINTENANCE_MODE: ${{ vars.MAINTENANCE_MODE }}
+      MAINTENANCE_ALLOWED_IPS: ${{ vars.MAINTENANCE_ALLOWED_IPS }}
+      MAINTENANCE_STARTED_AT_LABEL: ${{ vars.MAINTENANCE_STARTED_AT_LABEL }}
+      MAINTENANCE_STARTED_AT_DATETIME: ${{ vars.MAINTENANCE_STARTED_AT_DATETIME }}
+      MAINTENANCE_ENDS_AT_LABEL: ${{ vars.MAINTENANCE_ENDS_AT_LABEL }}
+      MAINTENANCE_ENDS_AT_DATETIME: ${{ vars.MAINTENANCE_ENDS_AT_DATETIME }}
+      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      GITHUB_SHA: ${{ github.sha }}
+    steps: *deploy-steps
