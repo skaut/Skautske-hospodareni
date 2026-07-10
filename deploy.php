@@ -55,7 +55,7 @@ set('rsync', static function () {
         'filter-perdir' => false,
         'flags'         => 'rz',
         'options'       => ['delete'],
-        'timeout'       => 180,
+        'timeout'       => 1800,
     ];
 });
 
