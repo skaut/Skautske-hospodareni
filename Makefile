@@ -20,8 +20,8 @@ ACCEPTANCE_SERVICES = traefik mysql-test selenium nginx php-test
 TEST ?=
 TEST_ARGS = $(if $(strip $(TEST)),$(TEST),)
 
-WRITABLE_DIRS   = log uploads temp tests/_support/_generated tests/integration/fixtures www/webtemp
-RUNTIME_DIRS    = log uploads temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf tests/_support/_generated tests/integration/fixtures www/webtemp
+WRITABLE_DIRS   = log uploads temp tests/_output tests/_support/_generated tests/integration/fixtures www/webtemp
+RUNTIME_DIRS    = log uploads temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf tests/_output tests/_support/_generated tests/integration/fixtures www/webtemp
 CACHE_DIRS      = temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf www/webtemp
 DEPENDENCY_DIRS = vendor node_modules
 
