@@ -125,6 +125,9 @@ jobs:
           mkdir -p log uploads temp tests/_output tests/_support/_generated www/webtemp
           sudo chown -R docker:docker "$GITHUB_WORKSPACE" || true
           chmod a+rwX log uploads temp tests/_output tests/_support/_generated www/webtemp
+          if [ -d tests/integration/fixtures ]; then
+            find tests/integration/fixtures -type f -exec chmod a+rw {} +
+          fi
 
       - name: Coding standard
         run: make check-cs-check
@@ -187,13 +190,7 @@ jobs:
       - *clean-workspace
       - uses: actions/download-artifact@v4
         with: { name: workdir, path: . }
-      - run: tar --no-overwrite-dir --no-same-owner --no-same-permissions -xzf workdir.tar.gz
-      - name: Fix workspace ownership
-        shell: bash
-        run: |
-          mkdir -p log uploads temp tests/_output tests/_support/_generated www/webtemp
-          sudo chown -R docker:docker "$GITHUB_WORKSPACE" || true
-          chmod a+rwX log uploads temp tests/_output tests/_support/_generated www/webtemp
+      - *extract-workdir
       - run: make test-coverage
       - name: Prepare Codecov environment
         shell: bash
