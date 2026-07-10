@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Model\BugReport\BugReportScreenshotStorage;
 use App\Model\BugReport\BugReportService;
 use Component\Forms\BaseForm;
 use Nette\Application\UI\Form;
+use Nette\Http\FileUpload;
 use Nette\Utils\Json;
 use Nette\Utils\JsonException;
 
+use function assert;
 use function is_array;
 use function strlen;
 
@@ -69,9 +72,27 @@ final class BugReportPresenter extends BasePresenter
                 ->setOption('description', 'E-mail se použije pro odpověď správců a jako Reply-To v hlášení.');
         }
 
+        $form->addUpload('screenshot', 'Screenshot')
+            ->setOption('description', 'Volitelně přiložte screenshot chyby. Soubor musí být obrázek a může mít nejvýše 5 MB.')
+            ->setHtmlAttribute('accept', 'image/*')
+            ->addRule(Form::MAX_FILE_SIZE, 'Screenshot může mít nejvýše 5 MB.', BugReportScreenshotStorage::MAX_FILE_SIZE);
+
         $form->addHidden('clientDiagnostics', '{}')
             ->setHtmlAttribute('data-bug-report-diagnostics', 'true');
         $form->addSubmit('send', 'Odeslat hlášení');
+
+        $form->onValidate[] = function (Form $form): void {
+            $upload = $form->getValues()->screenshot;
+            assert($upload instanceof FileUpload);
+
+            if (! $upload->hasFile() || ! $upload->isOk()) {
+                return;
+            }
+
+            if ($upload->getImageSize() === null) {
+                $form->addError('Screenshot musí být platný obrázek.');
+            }
+        };
 
         $form->onSuccess[] = function (Form $form): void {
             $values = $form->getValues();
@@ -80,11 +101,15 @@ final class BugReportPresenter extends BasePresenter
                 $reporterEmail = (string) $values->reporterEmail;
             }
 
+            $screenshot = $values->screenshot;
+            assert($screenshot instanceof FileUpload);
+
             $report = $this->bugReportService->submit(
                 (string) $values->description,
                 $values->url !== null ? (string) $values->url : null,
                 $this->decodeClientDiagnostics((string) $values->clientDiagnostics),
                 $reporterEmail,
+                $screenshot->hasFile() ? $screenshot : null,
             );
 
             $message = $report->wasNotificationSent()

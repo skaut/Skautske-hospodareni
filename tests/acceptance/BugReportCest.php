@@ -120,6 +120,48 @@ final class BugReportCest extends BaseAcceptanceCest
         $I->seeElement('[data-test="admin-bug-report-resolve"]');
         $I->seeElement('[data-test="admin-bug-report-reject"]');
 
+        $replyMessage = 'Děkujeme za hlášení, doplňující odpověď ze systému.';
+        $secondReplyMessage = 'Ještě doplňujeme další informace k hlášení.';
+        $I->seeElement('[data-test="admin-bug-report-reply"]');
+        $I->clickStable('[data-test="admin-bug-report-reply"]');
+        $I->waitForElementVisible('#replyReport textarea[name="message"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->fillField('#replyReport textarea[name="message"]', $replyMessage);
+        $I->click('#replyReport input[type="submit"]');
+        $I->waitForElementVisible('[data-test="admin-bug-report-detail"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->see('Odpověď autorovi hlášení byla odeslána.');
+        $I->seeElement('[data-test="admin-bug-report-sent-reply"]');
+        $I->see($replyMessage, '[data-test="admin-bug-report-sent-reply"]');
+
+        $I->clickStable('[data-test="admin-bug-report-reply"]');
+        $I->waitForElementVisible('#replyReport textarea[name="message"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->fillField('#replyReport textarea[name="message"]', $secondReplyMessage);
+        $I->click('#replyReport input[type="submit"]');
+        $I->waitForElementVisible('[data-test="admin-bug-report-detail"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->see('Odpověď autorovi hlášení byla odeslána.');
+        $I->see($replyMessage, '[data-test="admin-bug-report-sent-replies"]');
+        $I->see($secondReplyMessage, '[data-test="admin-bug-report-sent-replies"]');
+        $shownReplies = $I->executeJS(<<<'JS'
+            return [...document.querySelectorAll('[data-test="admin-bug-report-sent-reply"]')]
+                .map((reply) => reply.textContent.trim());
+            JS);
+        Assert::assertCount(2, $shownReplies);
+        Assert::assertStringContainsString($secondReplyMessage, $shownReplies[0]);
+        Assert::assertStringContainsString($replyMessage, $shownReplies[1]);
+        Assert::assertNotNull(
+            $I->grabFromDatabase('technical_error_report_reply', 'sent_at', [
+                'report_id' => $reportId,
+                'message' => $replyMessage,
+            ]),
+        );
+        $I->seeInDatabase('technical_error_report_reply', [
+            'report_id' => $reportId,
+            'message' => $secondReplyMessage,
+        ]);
+        Assert::assertSame(
+            2,
+            (int) $I->grabNumRecords('technical_error_report_reply', ['report_id' => $reportId]),
+        );
+
         $resolutionMessage = 'Nejde o technickou chybu aplikace.';
         $I->clickStable('[data-test="admin-bug-report-reject"]');
         $I->waitForElementVisible('#rejectReport textarea[name="message"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);

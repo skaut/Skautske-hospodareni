@@ -32,6 +32,52 @@
                     <i class="fi fi-rr-cross-circle" aria-hidden="true"></i>
                     Zamítnout
                 </a>
+                <a
+                    n:if="$report->getReporterEmail() !== null"
+                    href="#replyReport"
+                    class="btn btn-outline-primary btn-sm"
+                    data-bs-toggle="modal"
+                    data-test="admin-bug-report-reply"
+                >
+                    <i class="fi fi-rr-envelope" aria-hidden="true"></i>
+                    Odepsat
+                </a>
+                <a
+                    n:if="$report->hasScreenshot()"
+                    n:href="downloadScreenshot!, id => $report->getId()"
+                    class="btn btn-outline-secondary btn-sm"
+                    data-test="admin-bug-report-screenshot-download"
+                >
+                    <i class="fi fi-rr-download" aria-hidden="true"></i>
+                    Stáhnout screenshot
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="replyReport" aria-labelledby="replyReportLabel">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title h5" id="replyReportLabel">Odpověď autorovi hlášení</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zavřít"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-body-secondary small">
+                        Odpověď se odešle na e-mail {$report->getReporterEmail()} a hlášení zůstane otevřené.
+                    </p>
+                    {form replyForm}
+                        {input id, value => $report->getId()}
+                        <div class="mb-3">
+                            {label message, class => 'form-label' /}
+                            {input message, class => 'form-control'}
+                        </div>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Storno</button>
+                            {input send}
+                        </div>
+                    {/form}
+                </div>
             </div>
         </div>
     </div>
@@ -69,6 +115,22 @@
                 <div class="card-body">
                     <h2 class="h5">Popis chyby</h2>
                     <p class="text-pre-wrap mb-4">{$report->getDescription()}</p>
+
+                    {if $report->wasReplySent()}
+                        <div class="mb-4" data-test="admin-bug-report-sent-replies">
+                            <h2 class="h5 mb-3">Odeslané odpovědi</h2>
+                            <div n:foreach="$report->getReplies() as $reply" class="border rounded bg-body-tertiary p-3 mb-3" data-test="admin-bug-report-sent-reply">
+                                <p class="text-body-secondary small mb-2">
+                                    Odesláno {$reply->getSentAt()|date:'j. n. Y H:i:s'}
+                                </p>
+                                <p class="text-pre-wrap mb-0">{$reply->getMessage()}</p>
+                            </div>
+                        </div>
+                    {elseif $report->getReplyError() !== null}
+                        <div class="alert alert-warning mb-4" data-test="admin-bug-report-reply-error">
+                            Odpověď se nepodařilo odeslat: {$report->getReplyError()}
+                        </div>
+                    {/if}
 
                     <h2 class="h5">Kontext</h2>
                     <dl class="row mb-0">
@@ -118,6 +180,19 @@
                         </dd>
                         <dt class="col-sm-4">User-Agent</dt>
                         <dd class="col-sm-8 text-break"><code>{$report->getUserAgent() ?? '-'}</code></dd>
+                        <dt class="col-sm-4">Screenshot</dt>
+                        <dd class="col-sm-8">
+                            {if $report->hasScreenshot()}
+                                <a n:href="downloadScreenshot!, id => $report->getId()" data-test="admin-bug-report-screenshot-download-context">
+                                    {$report->getScreenshotOriginalName() ?? 'screenshot'}
+                                </a>
+                                {if $report->getScreenshotSize() !== null}
+                                    <span class="text-body-secondary small">({$report->getScreenshotSize()} B)</span>
+                                {/if}
+                            {else}
+                                -
+                            {/if}
+                        </dd>
                     </dl>
                 </div>
             </article>

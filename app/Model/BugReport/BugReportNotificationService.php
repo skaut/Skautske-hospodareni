@@ -12,6 +12,7 @@ use Nette\Utils\Json;
 use RuntimeException;
 
 use function array_filter;
+use function array_values;
 use function implode;
 use function parse_url;
 use function sprintf;
@@ -25,6 +26,7 @@ final class BugReportNotificationService
         private bool $productionMode,
         private array $recipients,
         private string $appBaseUrl,
+        private ?BugReportScreenshotStorage $screenshotStorage = null,
     ) {
     }
 
@@ -44,6 +46,8 @@ final class BugReportNotificationService
         if ($report->getReporterEmail() !== null) {
             $message->addReplyTo($report->getReporterEmail(), $report->getReporterDisplayName());
         }
+
+        $this->attachScreenshot($message, $report);
 
         foreach ($recipients as $recipient) {
             $message->addTo($recipient);
@@ -74,6 +78,23 @@ final class BugReportNotificationService
         );
     }
 
+    public function notifyReply(TechnicalErrorReport $report, string $messageText): void
+    {
+        $recipient = $report->getReporterEmail();
+        if ($recipient === null) {
+            throw new RuntimeException('Technical error report has no reporter email.');
+        }
+
+        $sender = $this->getReplySender();
+        $message = (new Message())
+            ->setFrom($sender, 'Skautské hospodaření')
+            ->addTo($recipient, $report->getReporterDisplayName())
+            ->setSubject(sprintf('[Skautské hospodaření] Odpověď k hlášení #%d', $report->getId()))
+            ->setBody($this->createReplyBody($report, $messageText));
+
+        $this->send($message);
+    }
+
     private function notifyClosure(TechnicalErrorReport $report, string $subject, string $body): void
     {
         $recipient = $report->getReporterEmail();
@@ -88,6 +109,11 @@ final class BugReportNotificationService
             ->setSubject($subject)
             ->setBody($body);
 
+        $this->send($message);
+    }
+
+    private function send(Message $message): void
+    {
         $mailer = $this->sendEmail && $this->productionMode
             ? new SendmailMailer()
             : $this->debugMailer;
@@ -120,6 +146,7 @@ final class BugReportNotificationService
             'IP: '.($report->getIpAddress() ?? '-'),
             'Release: '.$report->getAppRelease(),
             'User-Agent: '.($report->getUserAgent() ?? '-'),
+            'Screenshot: '.($report->hasScreenshot() ? ($report->getScreenshotOriginalName() ?? 'přiložen') : '-'),
             '',
             'Popis:',
             $report->getDescription(),
@@ -168,5 +195,52 @@ final class BugReportNotificationService
             'Děkujeme za nahlášení.',
             'Skautské hospodaření',
         ]);
+    }
+
+    private function createReplyBody(TechnicalErrorReport $report, string $messageText): string
+    {
+        return implode("\n", [
+            'Dobrý den,',
+            '',
+            sprintf('posíláme odpověď k vámi nahlášenému problému #%d ve Skautském hospodaření.', $report->getId()),
+            '',
+            'Zpráva administrátora:',
+            $messageText,
+            '',
+            'Původní hlášení:',
+            $report->getDescription(),
+            '',
+            'URL chyby: '.($report->getReportedUrl() ?? '-'),
+            '',
+            'Skautské hospodaření',
+        ]);
+    }
+
+    private function attachScreenshot(Message $message, TechnicalErrorReport $report): void
+    {
+        if (! $report->hasScreenshot() || $this->screenshotStorage === null) {
+            return;
+        }
+
+        $contents = $this->screenshotStorage->getContents($report);
+        if ($contents === null) {
+            return;
+        }
+
+        $message->addAttachment(
+            $report->getScreenshotOriginalName() ?? 'screenshot',
+            $contents,
+            $report->getScreenshotContentType() ?? BugReportScreenshotStorage::DEFAULT_CONTENT_TYPE,
+        );
+    }
+
+    private function getReplySender(): string
+    {
+        $recipients = array_values(array_filter($this->recipients));
+        if ($recipients === []) {
+            throw new RuntimeException('No technical error report sender is configured.');
+        }
+
+        return $recipients[0];
     }
 }

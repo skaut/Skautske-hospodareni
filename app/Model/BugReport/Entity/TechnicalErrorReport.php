@@ -6,10 +6,14 @@ namespace App\Model\BugReport\Entity;
 
 use App\Model\Infrastructure\Entity\AbstractIdEntity;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Index;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\ORM\Mapping\Table;
 
 #[Entity(repositoryClass: \App\Model\BugReport\Repository\TechnicalErrorReportRepository::class)]
@@ -55,6 +59,18 @@ class TechnicalErrorReport extends AbstractIdEntity
     #[Column(name: 'user_agent', type: Types::TEXT, nullable: true)]
     private ?string $userAgent;
 
+    #[Column(name: 'screenshot_path', type: Types::STRING, length: 255, nullable: true)]
+    private ?string $screenshotPath;
+
+    #[Column(name: 'screenshot_original_name', type: Types::STRING, length: 255, nullable: true)]
+    private ?string $screenshotOriginalName;
+
+    #[Column(name: 'screenshot_content_type', type: Types::STRING, length: 100, nullable: true)]
+    private ?string $screenshotContentType;
+
+    #[Column(name: 'screenshot_size', type: Types::INTEGER, nullable: true, options: ['unsigned' => true])]
+    private ?int $screenshotSize;
+
     #[Column(name: 'app_release', type: Types::STRING, length: 255)]
     private string $appRelease;
 
@@ -86,6 +102,14 @@ class TechnicalErrorReport extends AbstractIdEntity
     #[Column(name: 'resolution_notification_error', type: Types::TEXT, nullable: true)]
     private ?string $resolutionNotificationError = null;
 
+    #[Column(name: 'reply_error', type: Types::TEXT, nullable: true)]
+    private ?string $replyError = null;
+
+    /** @var Collection&iterable<TechnicalErrorReportReply> */
+    #[OneToMany(mappedBy: 'report', targetEntity: TechnicalErrorReportReply::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[OrderBy(['sentAt' => 'DESC', 'id' => 'DESC'])]
+    private Collection $replies;
+
     /** @param array<string, mixed> $diagnostics */
     public function __construct(
         string $description,
@@ -102,6 +126,10 @@ class TechnicalErrorReport extends AbstractIdEntity
         string $appRelease,
         array $diagnostics,
         ?DateTimeImmutable $createdAt = null,
+        ?string $screenshotPath = null,
+        ?string $screenshotOriginalName = null,
+        ?string $screenshotContentType = null,
+        ?int $screenshotSize = null,
     ) {
         $this->description = $description;
         $this->reportedUrl = $reportedUrl;
@@ -114,9 +142,14 @@ class TechnicalErrorReport extends AbstractIdEntity
         $this->unitName = $unitName;
         $this->ipAddress = $ipAddress;
         $this->userAgent = $userAgent;
+        $this->screenshotPath = $screenshotPath;
+        $this->screenshotOriginalName = $screenshotOriginalName;
+        $this->screenshotContentType = $screenshotContentType;
+        $this->screenshotSize = $screenshotSize;
         $this->appRelease = $appRelease;
         $this->diagnostics = $diagnostics;
         $this->createdAt = $createdAt ?? new DateTimeImmutable();
+        $this->replies = new ArrayCollection();
     }
 
     public function markNotificationSent(?DateTimeImmutable $sentAt = null): void
@@ -141,6 +174,17 @@ class TechnicalErrorReport extends AbstractIdEntity
     {
         $this->resolutionNotificationSentAt = null;
         $this->resolutionNotificationError = $error;
+    }
+
+    public function markReplySent(string $message, ?DateTimeImmutable $sentAt = null): void
+    {
+        $this->replies->add(new TechnicalErrorReportReply($this, $message, $sentAt));
+        $this->replyError = null;
+    }
+
+    public function markReplyFailed(string $error): void
+    {
+        $this->replyError = $error;
     }
 
     public function resolveAsFixed(?string $message = null, ?DateTimeImmutable $resolvedAt = null): void
@@ -219,6 +263,31 @@ class TechnicalErrorReport extends AbstractIdEntity
         return $this->userAgent;
     }
 
+    public function hasScreenshot(): bool
+    {
+        return $this->screenshotPath !== null;
+    }
+
+    public function getScreenshotPath(): ?string
+    {
+        return $this->screenshotPath;
+    }
+
+    public function getScreenshotOriginalName(): ?string
+    {
+        return $this->screenshotOriginalName;
+    }
+
+    public function getScreenshotContentType(): ?string
+    {
+        return $this->screenshotContentType;
+    }
+
+    public function getScreenshotSize(): ?int
+    {
+        return $this->screenshotSize;
+    }
+
     public function getAppRelease(): string
     {
         return $this->appRelease;
@@ -283,5 +352,21 @@ class TechnicalErrorReport extends AbstractIdEntity
     public function isResolved(): bool
     {
         return $this->resolvedAt !== null;
+    }
+
+    public function getReplyError(): ?string
+    {
+        return $this->replyError;
+    }
+
+    /** @return list<TechnicalErrorReportReply> */
+    public function getReplies(): array
+    {
+        return array_values($this->replies->toArray());
+    }
+
+    public function wasReplySent(): bool
+    {
+        return ! $this->replies->isEmpty();
     }
 }

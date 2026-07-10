@@ -159,14 +159,18 @@ services:
     # Flysystem
     - League\Flysystem\Filesystem(League\Flysystem\Local\LocalFilesystemAdapter(%uploadDirectory%))
     - App\Model\Infrastructure\Services\Common\FlysystemScanStorage
-
     # Mail
     - App\Model\Mail\MailerFactory(@nette.mailer, %sendEmail%)
+    - App\Model\BugReport\BugReportScreenshotStorage(
+          filesystem: @League\Flysystem\Filesystem
+          uploadDirectory: %uploadDirectory%
+      )
     - App\Model\BugReport\BugReportNotificationService(
           sendEmail: %sendEmail%
           productionMode: %productionMode%
           recipients: %errorEmails%
           appBaseUrl: %appBaseUrl%
+          screenshotStorage: @App\Model\BugReport\BugReportScreenshotStorage
       )
     - App\Model\BugReport\BugReportService(appRelease: %sentry.releaseHash%)
 

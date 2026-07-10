@@ -8,6 +8,7 @@ use App\Model\BugReport\Entity\TechnicalErrorReport;
 use App\Model\BugReport\Manager\TechnicalErrorReportManager;
 use App\Model\User\SkautisRole;
 use App\Model\User\UserService;
+use Nette\Http\FileUpload;
 use Nette\Http\IRequest;
 use Nette\Security\SimpleIdentity;
 use Nette\Security\User;
@@ -34,13 +35,19 @@ final class BugReportService
         private User $user,
         private UserService $userService,
         private IRequest $httpRequest,
+        private BugReportScreenshotStorage $screenshotStorage,
         private string $appRelease,
     ) {
     }
 
     /** @param array<string, mixed> $clientDiagnostics */
-    public function submit(string $description, ?string $reportedUrl, array $clientDiagnostics, ?string $reporterEmail = null): TechnicalErrorReport
-    {
+    public function submit(
+        string $description,
+        ?string $reportedUrl,
+        array $clientDiagnostics,
+        ?string $reporterEmail = null,
+        ?FileUpload $screenshotUpload = null,
+    ): TechnicalErrorReport {
         $identity = $this->user->getIdentity();
         if (! $identity instanceof SimpleIdentity || ! is_numeric($identity->getId())) {
             throw new RuntimeException('A technical error report requires an authenticated user.');
@@ -109,6 +116,10 @@ final class BugReportService
             'collectionErrors' => $diagnosticErrors,
         ];
 
+        $screenshot = $screenshotUpload !== null
+            ? $this->screenshotStorage->save($screenshotUpload)
+            : null;
+
         $report = $this->manager->create(new TechnicalErrorReport(
             trim($description),
             $reportedUrl !== null && trim($reportedUrl) !== '' ? trim($reportedUrl) : null,
@@ -123,6 +134,10 @@ final class BugReportService
             $userAgent,
             $this->appRelease,
             $diagnostics,
+            screenshotPath: $screenshot?->getPath(),
+            screenshotOriginalName: $screenshot?->getOriginalName(),
+            screenshotContentType: $screenshot?->getContentType(),
+            screenshotSize: $screenshot?->getSize(),
         ));
 
         try {

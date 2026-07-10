@@ -6,9 +6,9 @@ SHELL := /bin/bash
 export DOCKER_SOCKET ?= $(shell docker context inspect --format '{{.Endpoints.docker.Host}}' 2>/dev/null | sed -n 's|^unix://||p')
 
 COMPOSE         = docker compose -f docker/docker-compose.yml
-RUN_PHP_DEV     = $(COMPOSE) run --rm -T php
-RUN_PHP_TEST    = $(COMPOSE) run --rm -T php-test
-RUN_PHP_XDEBUG  = $(COMPOSE) run --rm php-xdebug
+RUN_PHP_DEV     = $(COMPOSE) run --rm -T --entrypoint '' --user docker php
+RUN_PHP_TEST    = $(COMPOSE) run --rm -T --entrypoint '' --user docker php-test
+RUN_PHP_XDEBUG  = $(COMPOSE) run --rm --entrypoint '' --user docker php-xdebug
 EXEC_PHP        = docker exec -u docker -it hskauting.app
 EXEC_PHP_TEST   = docker exec -u docker -it hskauting.app-test
 
@@ -67,10 +67,10 @@ endef
 
 define reset_writable_dirs
 	$(COMPOSE) run --rm -T --no-deps --user root $(1) sh -c \
-		'mkdir -p log temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf tests/_support/_generated www/webtemp && \
-		find log temp tests/_support/_generated www/webtemp -exec chmod a+rwX {} + && \
+		'mkdir -p log uploads temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf tests/_support/_generated www/webtemp && \
+		find log uploads temp tests/_support/_generated tests/integration/fixtures www/webtemp -exec chmod a+rwX {} + && \
 		find temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf www/webtemp -mindepth 1 -maxdepth 1 -exec rm -rf {} + && \
-		find log temp tests/_support/_generated www/webtemp -exec chmod a+rwX {} +'
+		find log uploads temp tests/_support/_generated tests/integration/fixtures www/webtemp -exec chmod a+rwX {} +'
 endef
 
 help: ## Zobrazí tuto nápovědu
@@ -81,6 +81,7 @@ build: ## Sestaví Docker image pro lokální vývoj
 
 up: ## Spustí dev stack
 	$(COMPOSE) up -d $(APP_SERVICES)
+	$(call reset_writable_dirs,php)
 
 down: ## Zastaví dev stack
 	$(COMPOSE) down --remove-orphans
@@ -134,6 +135,7 @@ test-unit: ## Unit testy (volitelně TEST=tests/unit/FooTest.php)
 test-integration: ## Integrační testy (volitelně TEST=tests/integration/FooTest.php)
 	$(MAKE) test-services
 	$(call wait_for_mysql_test)
+	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) vendor/bin/codecept run integration $(TEST_ARGS)
 
 test-coverage: ## Unit + integration testy s coverage XML
