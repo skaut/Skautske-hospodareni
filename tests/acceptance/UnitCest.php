@@ -27,7 +27,7 @@ final class UnitCest extends BaseAcceptanceCest
         $I->wantTo('open the unit cashbook via the canonical unit section route');
 
         $I->amOnPage('/jednotka');
-        $I->waitForElementVisible('[data-test="unit-cashbook-page"]', 10);
+        $I->waitForElementVisible('[data-test="unit-cashbook-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/jednotka/'.AcceptanceTester::UNIT_ID.'/kniha');
 
         $href = $I->grabAttributeFrom('[data-test="unit-subnav-cashbook"]', 'href');
@@ -45,13 +45,13 @@ final class UnitCest extends BaseAcceptanceCest
         $I->wantTo('open the unit budget via the new canonical unit section route');
 
         $I->amOnPage('/jednotka');
-        $I->waitForElementVisible('[data-test="unit-cashbook-page"]', 10);
+        $I->waitForElementVisible('[data-test="unit-cashbook-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $href = $I->grabAttributeFrom('[data-test="unit-subnav-budget"]', 'href');
         Assert::assertMatchesRegularExpression('~^/jednotka/\d+/rozpocet(?:\?rok=\d+)?$~', $href);
 
         $I->click('[data-test="unit-subnav-budget"]');
-        $I->waitForElementVisible('[data-test="unit-budget-page"]', 10);
+        $I->waitForElementVisible('[data-test="unit-budget-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/jednotka/'.AcceptanceTester::UNIT_ID.'/rozpocet');
         $I->seeElement('.active [data-test="unit-subnav-budget"]');
         $I->seeElement('.active [data-test="global-nav-unit"]');
@@ -65,13 +65,13 @@ final class UnitCest extends BaseAcceptanceCest
         $I->wantTo('open the unit chits overview via the new canonical unit section route');
 
         $I->amOnPage('/jednotka');
-        $I->waitForElementVisible('[data-test="unit-cashbook-page"]', 10);
+        $I->waitForElementVisible('[data-test="unit-cashbook-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $href = $I->grabAttributeFrom('[data-test="unit-subnav-chits"]', 'href');
         Assert::assertMatchesRegularExpression('~^/jednotka/\d+/paragony(?:\?rok=\d+)?$~', $href);
 
         $I->click('[data-test="unit-subnav-chits"]');
-        $I->waitForElementVisible('[data-test="unit-chits-page"]', 10);
+        $I->waitForElementVisible('[data-test="unit-chits-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/jednotka/'.AcceptanceTester::UNIT_ID.'/paragony');
         $I->seeElement('.active [data-test="unit-subnav-chits"]');
         $I->seeElement('.active [data-test="global-nav-unit"]');
@@ -85,12 +85,12 @@ final class UnitCest extends BaseAcceptanceCest
         $I->wantTo('switch the unit chit filter without leaving the canonical unit route');
 
         $I->amOnPage('/jednotka/'.AcceptanceTester::UNIT_ID.'/paragony');
-        $I->waitForElementVisible('[data-test="unit-chits-page"]', 10);
+        $I->waitForElementVisible('[data-test="unit-chits-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->click('[data-test="unit-chits-filter-toggle"]');
         $I->click('[data-test="unit-chits-filter-all"]');
 
-        $I->waitForText('Všechny paragony', 10, '[data-test="unit-chits-filter-toggle"]');
+        $I->waitForText('Všechny paragony', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '[data-test="unit-chits-filter-toggle"]');
         $I->seeInCurrentUrl('/jednotka/'.AcceptanceTester::UNIT_ID.'/paragony');
         $I->seeInCurrentUrl('onlyUnlocked=0');
         $I->seeElement('.active [data-test="unit-subnav-chits"]');
@@ -109,9 +109,9 @@ final class UnitCest extends BaseAcceptanceCest
 
         // Navigate to budget add page
         $I->amOnPage('/jednotka/'.AcceptanceTester::UNIT_ID.'/rozpocet');
-        $I->waitForElementVisible('[data-test="unit-budget-page"]', 10);
+        $I->waitForElementVisible('[data-test="unit-budget-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->click('[data-test="unit-budget-add-link"]');
-        $I->waitForElementVisible('[data-test="unit-budget-add-page"]', 10);
+        $I->waitForElementVisible('[data-test="unit-budget-add-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Fill and submit form
         $I->fillField('#frm-addCategoryForm-label', $categoryLabel);
@@ -120,7 +120,7 @@ final class UnitCest extends BaseAcceptanceCest
         $I->click('Založit kategorii');
 
         // Verify redirect to budget list and category is visible
-        $I->waitForElementVisible('[data-test="unit-budget-page"]', 10);
+        $I->waitForElementVisible('[data-test="unit-budget-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->see($categoryLabel);
 
         // Cleanup — delete via direct DB
@@ -136,7 +136,7 @@ final class UnitCest extends BaseAcceptanceCest
         $I->wantTo('switch cashbook year via the year dropdown in submenu');
 
         $I->amOnPage('/jednotka/'.AcceptanceTester::UNIT_ID.'/kniha');
-        $I->waitForElementVisible('[data-test="unit-cashbook-page"]', 10);
+        $I->waitForElementVisible('[data-test="unit-cashbook-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Click the year dropdown in submenu
         $I->click('#unit-cashbook-list');
@@ -154,7 +154,7 @@ final class UnitCest extends BaseAcceptanceCest
         $I->wantTo('switch chit view to a different year via year buttons');
 
         $I->amOnPage('/jednotka/'.AcceptanceTester::UNIT_ID.'/paragony');
-        $I->waitForElementVisible('[data-test="unit-chits-page"]', 10);
+        $I->waitForElementVisible('[data-test="unit-chits-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // The current year button should be active
         $currentYear = date('Y');
@@ -163,7 +163,7 @@ final class UnitCest extends BaseAcceptanceCest
         // Click previous year
         $prevYear = (string) ((int) $currentYear - 1);
         $I->clickWithLeftButton('//a[contains(@class,"btn") and normalize-space()="'.$prevYear.'"]');
-        $I->waitForElementVisible('[data-test="unit-chits-page"]', 10);
+        $I->waitForElementVisible('[data-test="unit-chits-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('rok='.$prevYear);
     }
 
@@ -175,7 +175,7 @@ final class UnitCest extends BaseAcceptanceCest
         $I->wantTo('verify the unit switch dropdown shows available units');
 
         $I->amOnPage('/jednotka/'.AcceptanceTester::UNIT_ID.'/kniha');
-        $I->waitForElementVisible('[data-test="unit-cashbook-page"]', 10);
+        $I->waitForElementVisible('[data-test="unit-cashbook-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // The unit switcher dropdown should be visible in the submenu
         $I->seeElement('[data-test="unit-submenu"] .dropdown');

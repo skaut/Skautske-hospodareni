@@ -34,22 +34,22 @@ final class AdminCest extends BaseAcceptanceCest
         $I->dontSeeElement('[data-test="utility-nav-admin"]');
 
         $I->amOnPage('/admin');
-        $I->waitForElement('.alert-danger', 10);
+        $I->waitForElement('.alert-danger', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/');
         $I->dontSeeElement('[data-test="admin-page"]');
 
         $I->amOnPage('/admin/uzivatele');
-        $I->waitForElement('.alert-danger', 10);
+        $I->waitForElement('.alert-danger', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/');
         $I->dontSeeElement('[data-test="admin-users-page"]');
 
         $I->amOnPage('/admin/statistiky');
-        $I->waitForElement('.alert-danger', 10);
+        $I->waitForElement('.alert-danger', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/');
         $I->dontSeeElement('[data-test="admin-statistics-page"]');
 
         $I->amOnPage('/admin/hlaseni-chyb');
-        $I->waitForElement('.alert-danger', 10);
+        $I->waitForElement('.alert-danger', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/');
         $I->dontSeeElement('[data-test="admin-bug-reports-page"]');
     }
@@ -65,7 +65,7 @@ final class AdminCest extends BaseAcceptanceCest
         $I->wantTo('verify admin overview page shows cards with correct links');
 
         $I->amOnPage('/admin');
-        $I->waitForElementVisible('[data-test="admin-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Utility navigation active state
         $I->seeElement('.active [data-test="utility-nav-admin"]');
@@ -107,7 +107,7 @@ final class AdminCest extends BaseAcceptanceCest
 
         // Overview active
         $I->amOnPage('/admin');
-        $I->waitForElementVisible('[data-test="admin-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-test="admin-nav-overview"].btn-primary');
         $I->seeElement('[data-test="admin-nav-users"].btn-light');
         $I->seeElement('[data-test="admin-nav-statistics"].btn-light');
@@ -115,7 +115,7 @@ final class AdminCest extends BaseAcceptanceCest
 
         // Users active
         $I->amOnPage('/admin/uzivatele');
-        $I->waitForElementVisible('[data-test="admin-users-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-test="admin-nav-users"].btn-primary');
         $I->seeElement('[data-test="admin-nav-overview"].btn-light');
         $I->seeElement('[data-test="admin-nav-statistics"].btn-light');
@@ -123,14 +123,14 @@ final class AdminCest extends BaseAcceptanceCest
 
         // Statistics active
         $I->amOnPage('/admin/statistiky');
-        $I->waitForElementVisible('[data-test="admin-statistics-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-statistics-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-test="admin-nav-statistics"].btn-primary');
         $I->seeElement('[data-test="admin-nav-overview"].btn-light');
         $I->seeElement('[data-test="admin-nav-users"].btn-light');
 
         // Bug reports active
         $I->amOnPage('/admin/hlaseni-chyb');
-        $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-test="admin-nav-bug-reports"].btn-primary');
         $I->seeElement('[data-test="admin-nav-overview"].btn-light');
         $I->seeElement('[data-test="admin-nav-users"].btn-light');
@@ -145,26 +145,26 @@ final class AdminCest extends BaseAcceptanceCest
         $I->wantTo('verify admin submenu pill buttons navigate to correct pages');
 
         $I->amOnPage('/admin');
-        $I->waitForElementVisible('[data-test="admin-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Click Users pill
         $I->click('[data-test="admin-nav-users"]');
-        $I->waitForElementVisible('[data-test="admin-users-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/admin/uzivatele');
 
         // Click Statistics pill
         $I->click('[data-test="admin-nav-statistics"]');
-        $I->waitForElementVisible('[data-test="admin-statistics-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-statistics-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/admin/statistiky');
 
         // Click Bug reports pill
         $I->click('[data-test="admin-nav-bug-reports"]');
-        $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/admin/hlaseni-chyb');
 
         // Click Overview pill (back)
         $I->click('[data-test="admin-nav-overview"]');
-        $I->waitForElementVisible('[data-test="admin-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/admin');
     }
 
@@ -179,7 +179,7 @@ final class AdminCest extends BaseAcceptanceCest
         $I->wantTo('verify admin users page displays hero, form toggle, and list card');
 
         $I->amOnPage('/admin/uzivatele');
-        $I->waitForElementVisible('[data-test="admin-users-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Hero card visible
         $I->seeElement('[data-test="admin-users-page"] .card');
@@ -210,17 +210,17 @@ final class AdminCest extends BaseAcceptanceCest
         $I->wantTo('create, read, update, and delete an admin user');
 
         $I->amOnPage('/admin/uzivatele');
-        $I->waitForElementVisible('[data-test="admin-users-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // ── CREATE ───────────────────────────────────────────────
         // Open form
         $I->click('[data-test="admin-users-form-toggle"]');
-        $I->waitForElementVisible('[data-test="admin-users-form"] input[name="userId"]', 10);
+        $I->waitForElementVisible('[data-test="admin-users-form"] input[name="userId"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Fill and submit
         $I->fillField('[data-test="admin-users-form"] input[name="userId"]', (string) self::NEW_ADMIN_USER_ID);
         $I->click('[data-test="admin-users-form"] input[type="submit"]');
-        $I->waitForElementVisible('[data-test="admin-users-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Verify flash message
         $I->seeElement('.alert-success');
@@ -240,7 +240,7 @@ final class AdminCest extends BaseAcceptanceCest
         $I->click('[data-test="admin-user-edit-'.$newUser.'"]');
 
         // Form should be visible with edit mode
-        $I->waitForElementVisible('[data-test="admin-users-form-collapse"]', 10);
+        $I->waitForElementVisible('[data-test="admin-users-form-collapse"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-test="admin-users-form"]');
         $I->seeElement('[data-test="admin-users-form-cancel"]');
         $I->seeInCurrentUrl('edit='.$newUser);
@@ -249,7 +249,7 @@ final class AdminCest extends BaseAcceptanceCest
         $updatedUserId = self::NEW_ADMIN_USER_ID + 1;
         $I->fillField('[data-test="admin-users-form"] input[name="userId"]', (string) $updatedUserId);
         $I->click('[data-test="admin-users-form"] input[type="submit"]');
-        $I->waitForElementVisible('[data-test="admin-users-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Verify update in DB
         $I->seeElement('.alert-success');
@@ -257,11 +257,11 @@ final class AdminCest extends BaseAcceptanceCest
         $I->dontSeeInDatabase('admin_user', ['user_id' => self::NEW_ADMIN_USER_ID]);
 
         // ── DELETE ───────────────────────────────────────────────
-        $I->waitForElementVisible('[data-test="admin-user-delete-'.$newUser.'"]', 10);
+        $I->waitForElementVisible('[data-test="admin-user-delete-'.$newUser.'"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->disablePopups();
         $I->click('[data-test="admin-user-delete-'.$newUser.'"]');
         $I->waitForText('odebrán', 15);
-        $I->waitForElementVisible('[data-test="admin-users-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Verify deletion
         $I->seeElement('.alert-success');
@@ -277,15 +277,15 @@ final class AdminCest extends BaseAcceptanceCest
         $I->wantTo('verify that creating admin with duplicate user_id is rejected');
 
         $I->amOnPage('/admin/uzivatele');
-        $I->waitForElementVisible('[data-test="admin-users-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Open form and try adding existing user_id
         $I->clickStable('[data-test="admin-users-form-toggle"]');
-        $I->waitForElementVisible('[data-test="admin-users-form"] input[name="userId"]', 10);
+        $I->waitForElementVisible('[data-test="admin-users-form"] input[name="userId"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->fillFieldStable('[data-test="admin-users-form"] input[name="userId"]', (string) self::ACCEPTANCE_ADMIN_USER_ID);
         $I->clickStable('[data-test="admin-users-form"] input[type="submit"]');
-        $I->waitForJS('return document.querySelector(".alert-warning") !== null;', 10);
+        $I->waitForJS('return document.querySelector(".alert-warning") !== null;', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Should show warning
         $I->seeElement('.alert-warning');
@@ -303,11 +303,11 @@ final class AdminCest extends BaseAcceptanceCest
         $adminId = $I->grabFromDatabase('admin_user', 'id', ['user_id' => self::ACCEPTANCE_ADMIN_USER_ID]);
 
         $I->amOnPage('/admin/uzivatele?edit='.$adminId);
-        $I->waitForElementVisible('[data-test="admin-users-form-collapse"]', 10);
+        $I->waitForElementVisible('[data-test="admin-users-form-collapse"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-test="admin-users-form-cancel"]');
 
         $I->click('[data-test="admin-users-form-cancel"]');
-        $I->waitForElementVisible('[data-test="admin-users-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->dontSeeInCurrentUrl('edit=');
     }
 
@@ -322,7 +322,7 @@ final class AdminCest extends BaseAcceptanceCest
         $I->wantTo('verify admin statistics page displays hero, year filter, and data table');
 
         $I->amOnPage('/admin/statistiky');
-        $I->waitForElementVisible('[data-test="admin-statistics-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-statistics-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Hero card
         $I->seeElement('[data-test="admin-statistics-page"] .card');
@@ -358,25 +358,25 @@ final class AdminCest extends BaseAcceptanceCest
         $I->wantTo('verify clicking cards on admin overview navigates to the correct section');
 
         $I->amOnPage('/admin');
-        $I->waitForElementVisible('[data-test="admin-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Click Users card link
         $I->click('[data-test="admin-link-users"]');
-        $I->waitForElementVisible('[data-test="admin-users-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/admin/uzivatele');
 
         // Go back and click Statistics card link
         $I->amOnPage('/admin');
-        $I->waitForElementVisible('[data-test="admin-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->click('[data-test="admin-link-statistics"]');
-        $I->waitForElementVisible('[data-test="admin-statistics-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-statistics-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/admin/statistiky');
 
         // Go back and click Bug reports card link
         $I->amOnPage('/admin');
-        $I->waitForElementVisible('[data-test="admin-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->click('[data-test="admin-link-bug-reports"]');
-        $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/admin/hlaseni-chyb');
     }
 

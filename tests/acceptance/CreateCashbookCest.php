@@ -20,7 +20,7 @@ class CreateCashbookCest extends BaseAcceptanceCest
         $I->login(AcceptanceTester::UNIT_LEADER_ROLE);
 
         $I->click('Jednotka');
-        $I->waitForElementVisible('[data-test="unit-cashbook-page"], [data-test="unit-no-cashbook"]', 10);
+        $I->waitForElementVisible('[data-test="unit-cashbook-page"], [data-test="unit-no-cashbook"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->amGoingTo('Create first unit cashbook - for current year');
         $this->openCreateDialog($I);

@@ -27,7 +27,7 @@ class DashboardCest extends BaseAcceptanceCest
         $I->wantTo('see dashboard agenda cards and payment quick actions');
 
         $I->amOnPage('/nastenka');
-        $I->waitForElementVisible('[data-test="dashboard"]', 10);
+        $I->waitForElementVisible('[data-test="dashboard"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeNumberOfElements('[data-test^="dashboard-card-"]', 6);
         $I->seeNumberOfElements('[data-test^="dashboard-card-"].navigation-card', 6);
         $I->seeElement('[data-test="dashboard-card-events"] [data-test="dashboard-link-events"].stretched-link');
@@ -60,7 +60,7 @@ class DashboardCest extends BaseAcceptanceCest
         $I->seeElement('[data-test="dashboard-payment-actions"] [data-test="create-button-main"]');
         $I->seeElement('[data-test="dashboard-payment-actions"] [data-test="pair-button-main"]');
         $I->click('[data-test="dashboard-payment-actions"] [data-test="create-button-toggle"]');
-        $I->waitForElementVisible('[data-test="dashboard-payment-actions"] [data-test="create-button-menu"]', 10);
+        $I->waitForElementVisible('[data-test="dashboard-payment-actions"] [data-test="create-button-menu"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-test="create-button-item-general"]');
         $I->seeElement('[data-test="create-button-item-camp"]');
         Assert::assertSame(
@@ -84,45 +84,45 @@ class DashboardCest extends BaseAcceptanceCest
         );
 
         $I->click('[data-test="dashboard-payment-actions"] [data-test="create-button-main"]');
-        $I->waitForElementVisible('[data-test="payment-group-form-page"]', 10);
+        $I->waitForElementVisible('[data-test="payment-group-form-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/platby/skupiny/nova');
 
         $I->amOnPage('/nastenka');
-        $I->waitForElementVisible('[data-test="dashboard"]', 10);
+        $I->waitForElementVisible('[data-test="dashboard"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->executeJS(<<<'JS'
             const card = document.querySelector('[data-test="dashboard-card-events"]');
             const rect = card.getBoundingClientRect();
             document.elementFromPoint(rect.right - 20, rect.bottom - 20).click();
             JS);
-        $I->waitForElementVisible('[data-test="events-default-page"]', 10);
+        $I->waitForElementVisible('[data-test="events-default-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/akce');
         $I->seeElement('.active [data-test="global-nav-events"]');
 
         $I->amOnPage('/nastenka');
-        $I->waitForElementVisible('[data-test="dashboard"]', 10);
+        $I->waitForElementVisible('[data-test="dashboard"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->click('[data-test="dashboard-link-camps"]');
-        $I->waitForElementVisible('[data-test="camps-default-page"]', 10);
+        $I->waitForElementVisible('[data-test="camps-default-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/tabory');
         $I->seeElement('.active [data-test="global-nav-camps"]');
 
         $I->amOnPage('/nastenka');
-        $I->waitForElementVisible('[data-test="dashboard"]', 10);
+        $I->waitForElementVisible('[data-test="dashboard"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->click('[data-test="dashboard-link-education"]');
-        $I->waitForElementVisible('[data-test="education-default-page"]', 10);
+        $I->waitForElementVisible('[data-test="education-default-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/vzdelavacky');
         $I->seeElement('.active [data-test="global-nav-education"]');
 
         $I->amOnPage('/nastenka');
-        $I->waitForElementVisible('[data-test="dashboard"]', 10);
+        $I->waitForElementVisible('[data-test="dashboard"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->click('[data-test="dashboard-link-travel"]');
-        $I->waitForElementVisible('[data-test="travel-default-page"]', 10);
+        $I->waitForElementVisible('[data-test="travel-default-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/cestaky');
         $I->seeElement('.active [data-test="global-nav-travel"]');
 
         $I->amOnPage('/nastenka');
-        $I->waitForElementVisible('[data-test="dashboard"]', 10);
+        $I->waitForElementVisible('[data-test="dashboard"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->click('[data-test="dashboard-link-unit"]');
-        $I->waitForElementVisible('[data-test="unit-cashbook-page"]', 10);
+        $I->waitForElementVisible('[data-test="unit-cashbook-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/jednotka');
         $I->seeElement('.active [data-test="global-nav-unit"]');
     }

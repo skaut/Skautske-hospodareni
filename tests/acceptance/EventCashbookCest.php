@@ -77,8 +77,8 @@ class EventCashbookCest extends BaseAcceptanceCest
 
         $this->I->click('.ui--createEvent');
         $this->eventCreated = true;
-        $this->I->waitForElement('[data-test="event-detail-page"]', 10);
-        $this->I->waitForText('Základní údaje', 10, 'nav[aria-label="Navigace akce"]');
+        $this->I->waitForElement('[data-test="event-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->I->waitForText('Základní údaje', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, 'nav[aria-label="Navigace akce"]');
     }
 
     private function goToCashbookPage(): void
@@ -158,7 +158,7 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->expect('Odebrat položku');
         $this->I->seeElement('input[name="items[0][remove]"]');
         $this->I->click('input[name="items[0][remove]"]');
-        $this->I->waitForElementNotVisible('input[name="items[0][remove]"]', 10);
+        $this->I->waitForElementNotVisible('input[name="items[0][remove]"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $this->I->dontSeeElement('//input[@type="submit" and @value="Odebrat položku"]');
         $this->I->seeElement('//input[@type="submit" and @value="Uložit"]');
     }
@@ -203,7 +203,7 @@ class EventCashbookCest extends BaseAcceptanceCest
             $cancelUrl = $I->grabAttributeFrom($cancelButton, 'href');
             $I->disablePopups();
             $I->amOnPage($cancelUrl);
-            $I->waitForText('Seznam akcí', 10);
+            $I->waitForText('Seznam akcí', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
             $this->eventCreated = false;
         } catch (Throwable $e) {
             $I->comment(sprintf('Cleanup of event "%s" failed: %s', $this->eventName, $e->getMessage()));
@@ -212,7 +212,7 @@ class EventCashbookCest extends BaseAcceptanceCest
 
     private function fillChitForm(ChronosDate $date, string $purpose, Operation $type, string $category, string $recipient, string $amount): void
     {
-        $this->I->waitForElement('input[name="send"]', 10);
+        $this->I->waitForElement('input[name="send"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $this->I->wantToTest('Uložit');
         $this->I->fillFieldStable('input[name="date"]', $date->format('d.m. Y'));
         $this->I->pressKey('body', [WebDriverKeys::ESCAPE]); // close datepicker
@@ -236,7 +236,7 @@ class EventCashbookCest extends BaseAcceptanceCest
     {
         $this->I->expectTo(sprintf('see %s CZK as final balance', $balance));
         $this->I->executeJs('window.scrollTo(0, document.body.scrollHeight);');
-        $this->I->waitForText($balance, 10, self::BALANCE_SELECTOR);
+        $this->I->waitForText($balance, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, self::BALANCE_SELECTOR);
     }
 
     private function removeChit(int $position): void

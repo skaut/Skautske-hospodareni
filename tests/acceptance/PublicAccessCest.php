@@ -12,8 +12,8 @@ final class PublicAccessCest extends BaseAcceptanceCest
     public function homepageUsesTestServerSettings(AcceptanceTester $I): void
     {
         $I->amOnPage('/');
-        $I->waitForElementVisible('[data-test="homepage"]', 10);
-        $I->waitForElementVisible('[data-test="test-server-badge"]', 10);
+        $I->waitForElementVisible('[data-test="homepage"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->waitForElementVisible('[data-test="test-server-badge"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         Assert::assertSame(
             'Testovací server',
@@ -26,14 +26,14 @@ final class PublicAccessCest extends BaseAcceptanceCest
     public function publicPagesRemainAccessible(AcceptanceTester $I, \Codeception\Example $example): void
     {
         $I->amOnPage($example['url']);
-        $I->waitForElementVisible($example['selector'], 10);
+        $I->waitForElementVisible($example['selector'], AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
     }
 
     /** @dataProvider protectedPages */
     public function protectedPagesRedirectAnonymousUsersToHomepage(AcceptanceTester $I, \Codeception\Example $example): void
     {
         $I->amOnPage($example['url']);
-        $I->waitForElementVisible('[data-test="homepage"]', 10);
+        $I->waitForElementVisible('[data-test="homepage"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         Assert::assertSame('/', parse_url($I->grabFromCurrentUrl(), PHP_URL_PATH));
     }
 

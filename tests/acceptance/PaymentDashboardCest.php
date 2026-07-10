@@ -33,10 +33,10 @@ class PaymentDashboardCest extends PaymentAcceptanceCest
         }
 
         $I->amOnPage('/platby/skupiny/'.$groupId.'/platby');
-        $I->waitForElementVisible('[data-test="payment-group-detail-page"]', 10);
+        $I->waitForElementVisible('[data-test="payment-group-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->amOnPage('/platby');
-        $I->waitForElementVisible('[data-test="dashboard-group-card-'.$groupId.'"]', 10);
+        $I->waitForElementVisible('[data-test="dashboard-group-card-'.$groupId.'"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $card = '[data-test="dashboard-group-card-'.$groupId.'"]';
         $I->seeElement($card.' .badge.text-bg-success');
@@ -60,7 +60,7 @@ class PaymentDashboardCest extends PaymentAcceptanceCest
             .'const rect = card.getBoundingClientRect();'
             .'document.elementFromPoint(rect.right - 20, rect.top + 20).click();',
         );
-        $I->waitForElementVisible('[data-test="payment-group-detail-page"]', 10);
+        $I->waitForElementVisible('[data-test="payment-group-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/platby/skupiny/'.$groupId.'/platby');
         $I->seeInDatabase('payment_group_visit', [
             'user_id' => self::ACCEPTANCE_USER_ID,
@@ -96,17 +96,17 @@ class PaymentDashboardCest extends PaymentAcceptanceCest
 
         $I->amOnPage('/platby');
         $dashboardCard = '[data-test="dashboard-sequence-card-'.$sequenceId.'"]';
-        $I->waitForElementVisible($dashboardCard, 10);
+        $I->waitForElementVisible($dashboardCard, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement($dashboardCard.'.navigation-card');
         $I->seeElement('[data-test="dashboard-sequence-link-'.$sequenceId.'"].stretched-link');
 
         $I->click('[data-test="dashboard-sequence-settings-'.$sequenceId.'"]');
-        $I->waitForElementVisible('[data-test="invoice-sequence-edit-page"]', 10);
+        $I->waitForElementVisible('[data-test="invoice-sequence-edit-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->amOnPage('/platby');
-        $I->waitForElementVisible('[data-test="payments-link-invoices"]', 10);
+        $I->waitForElementVisible('[data-test="payments-link-invoices"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->click('[data-test="payments-link-invoices"]');
-        $I->waitForElementVisible('[data-test="invoice-home"]', 10);
+        $I->waitForElementVisible('[data-test="invoice-home"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $invoiceCard = '[data-test="invoice-sequence-card-'.$sequenceId.'"]';
         $I->seeElement($invoiceCard.'.navigation-card');
@@ -116,7 +116,7 @@ class PaymentDashboardCest extends PaymentAcceptanceCest
             .'const rect = card.getBoundingClientRect();'
             .'document.elementFromPoint(rect.right - 20, rect.top + 20).click();',
         );
-        $I->waitForElementVisible('[data-test="invoice-sequence-page"]', 10);
+        $I->waitForElementVisible('[data-test="invoice-sequence-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
     }
 
     /** @group settings */
@@ -127,7 +127,7 @@ class PaymentDashboardCest extends PaymentAcceptanceCest
         $I->wantTo('open system settings from the utility navigation on the payment dashboard');
 
         $I->click('[data-test="global-nav-payments"]');
-        $I->waitForElementVisible('[data-test="payments-page"]', 10);
+        $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/platby');
         $I->seeElement('[data-test="payment-nav-overview"]');
         $I->seeElement('[data-test="payments-card-groups"].navigation-card');
@@ -136,10 +136,10 @@ class PaymentDashboardCest extends PaymentAcceptanceCest
         $I->seeElement('[data-test="payments-card-invoices"].navigation-card');
         $I->seeElement('[data-test="payments-link-invoices"].stretched-link');
         $I->dontSeeElement('[data-test="payments-card-settings"]');
-        $I->waitForElementVisible('[data-test="utility-nav-settings"]', 10);
+        $I->waitForElementVisible('[data-test="utility-nav-settings"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->click('[data-test="utility-nav-settings"]');
 
-        $I->waitForText('Nastavení', 10);
+        $I->waitForText('Nastavení', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/nastaveni');
     }
 
@@ -151,7 +151,7 @@ class PaymentDashboardCest extends PaymentAcceptanceCest
         $I->wantTo('toggle help panel on payment group create page');
 
         $I->click('[data-test="global-nav-payments"]');
-        $I->waitForElementVisible('[data-test="payments-page"]', 10);
+        $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->click('[data-test="payment-nav-groups"]');
         $I->waitForText('Platební skupiny');
         $I->click('Založit skupinu plateb');

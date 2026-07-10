@@ -42,7 +42,7 @@ class SettingsCest extends BaseAcceptanceCest
         $I->wantTo('verify settings overview page shows cards with correct links');
 
         $I->click('[data-test="utility-nav-settings"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Utility navigation active state
         $I->seeElement('.active [data-test="utility-nav-settings"]');
@@ -81,36 +81,36 @@ class SettingsCest extends BaseAcceptanceCest
 
         // Overview active
         $I->click('[data-test="utility-nav-settings"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-test="settings-subnav-overview"].btn-primary');
 
         // User active
         $I->click('[data-test="settings-subnav-user"]');
-        $I->waitForElementVisible('[data-test="settings-user-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-user-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-test="settings-subnav-user"].btn-primary');
         $I->seeElement('[data-test="settings-subnav-overview"].btn-light');
 
         // Bank accounts active
         $I->click('[data-test="settings-subnav-bank-accounts"]');
-        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-test="settings-subnav-bank-accounts"].btn-primary');
         $I->seeElement('[data-test="settings-subnav-overview"].btn-light');
 
         // Mails active
         $I->click('[data-test="settings-subnav-mails"]');
-        $I->waitForElementVisible('[data-test="settings-mails-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-mails-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-test="settings-subnav-mails"].btn-primary');
         $I->seeElement('[data-test="settings-subnav-bank-accounts"].btn-light');
 
         // Invoices active
         $I->click('[data-test="settings-subnav-invoices"]');
-        $I->waitForElementVisible('[data-test="invoice-settings-page"]', 10);
+        $I->waitForElementVisible('[data-test="invoice-settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-test="settings-subnav-invoices"].btn-primary');
         $I->seeElement('[data-test="settings-subnav-mails"].btn-light');
 
         // Automation active
         $I->click('[data-test="settings-subnav-automation"]');
-        $I->waitForElementVisible('[data-test="settings-automation-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-automation-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-test="settings-subnav-automation"].btn-primary');
         $I->seeElement('[data-test="settings-subnav-invoices"].btn-light');
     }
@@ -123,30 +123,30 @@ class SettingsCest extends BaseAcceptanceCest
         $I->wantTo('verify settings submenu pill buttons navigate to correct pages');
 
         $I->click('[data-test="utility-nav-settings"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->click('[data-test="settings-subnav-user"]');
-        $I->waitForElementVisible('[data-test="settings-user-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-user-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/nastaveni/uzivatel');
 
         $I->click('[data-test="settings-subnav-bank-accounts"]');
-        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/nastaveni/bankovni-ucty');
 
         $I->click('[data-test="settings-subnav-mails"]');
-        $I->waitForElementVisible('[data-test="settings-mails-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-mails-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/nastaveni/emaily');
 
         $I->click('[data-test="settings-subnav-invoices"]');
-        $I->waitForElementVisible('[data-test="invoice-settings-page"]', 10);
+        $I->waitForElementVisible('[data-test="invoice-settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/nastaveni/faktury');
 
         $I->click('[data-test="settings-subnav-automation"]');
-        $I->waitForElementVisible('[data-test="settings-automation-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-automation-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/nastaveni/automatizace');
 
         $I->click('[data-test="settings-subnav-overview"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/nastaveni');
     }
 
@@ -160,42 +160,42 @@ class SettingsCest extends BaseAcceptanceCest
         $I->wantTo('verify clicking cards on settings overview navigates to the correct section');
 
         $I->click('[data-test="utility-nav-settings"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->executeJS(<<<'JS'
             const card = document.querySelector('[data-test="settings-card-bank-accounts"]');
             const rect = card.getBoundingClientRect();
             document.elementFromPoint(rect.right - 20, rect.bottom - 20).click();
             JS);
-        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/nastaveni/bankovni-ucty');
 
         $I->click('[data-test="settings-subnav-overview"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->click('[data-test="settings-link-user"]');
-        $I->waitForElementVisible('[data-test="settings-user-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-user-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/nastaveni/uzivatel');
 
         $I->click('[data-test="settings-subnav-overview"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->click('[data-test="settings-link-mails"]');
-        $I->waitForElementVisible('[data-test="settings-mails-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-mails-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/nastaveni/emaily');
 
         $I->click('[data-test="settings-subnav-overview"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->click('[data-test="settings-link-invoices"]');
-        $I->waitForElementVisible('[data-test="invoice-settings-page"]', 10);
+        $I->waitForElementVisible('[data-test="invoice-settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/nastaveni/faktury');
 
         $I->click('[data-test="settings-subnav-overview"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->click('[data-test="settings-link-automation"]');
-        $I->waitForElementVisible('[data-test="settings-automation-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-automation-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/nastaveni/automatizace');
     }
 
@@ -207,15 +207,15 @@ class SettingsCest extends BaseAcceptanceCest
         $I->wantTo('hide page help by default and open it with the title icon');
 
         $I->click('[data-test="utility-nav-settings"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->click('[data-test="settings-subnav-user"]');
-        $I->waitForElementVisible('[data-test="settings-user-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-user-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->seeElement('.page-heading .page-lead > [data-page-help-toggle]');
         $I->seeElement('[data-page-help-content]:not([hidden])');
         $I->uncheckOption('input[name="showHelp"]');
         $I->click('input[type="submit"]');
-        $I->waitForElementVisible('[data-test="settings-user-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-user-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->seeInDatabase('user_preference', [
             'user_id' => self::ACCEPTANCE_USER_ID,
@@ -231,7 +231,7 @@ class SettingsCest extends BaseAcceptanceCest
         $I->seeElement('[data-page-help-content]:not([hidden])');
 
         $I->click('[data-test="settings-subnav-invoices"]');
-        $I->waitForElementVisible('[data-test="invoice-settings-page"]', 10);
+        $I->waitForElementVisible('[data-test="invoice-settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-page-help-toggle][aria-expanded="false"]');
         $I->seeElement('[data-help-layout][data-help-collapsed="true"]');
         $I->seeElement('[data-help-toggle][aria-expanded="false"]');
@@ -249,15 +249,15 @@ class SettingsCest extends BaseAcceptanceCest
         $I->wantTo('enable background SkautIS login extension in user settings');
 
         $I->click('[data-test="utility-nav-settings"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->click('[data-test="settings-subnav-user"]');
-        $I->waitForElementVisible('[data-test="settings-user-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-user-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->dontSeeElement('body[data-session-keep-alive-url]');
         $I->checkOption('input[name="extendSkautisLogin"]');
         $I->checkOption('input[name="rememberSkautisRole"]');
         $I->click('input[type="submit"]');
-        $I->waitForElementVisible('[data-test="settings-user-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-user-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->seeInDatabase('user_preference', [
             'user_id' => self::ACCEPTANCE_USER_ID,
@@ -285,10 +285,10 @@ class SettingsCest extends BaseAcceptanceCest
         $I->wantTo('verify bank accounts page displays hero, add/import buttons, and account list');
 
         $I->click('[data-test="utility-nav-settings"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->click('[data-test="settings-subnav-bank-accounts"]');
-        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Action buttons visible
         $I->seeElement('[data-test="settings-bank-accounts-add"]');
@@ -307,14 +307,14 @@ class SettingsCest extends BaseAcceptanceCest
         $I->wantTo('create, read, edit, and delete a bank account');
 
         $I->click('[data-test="utility-nav-settings"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->click('[data-test="settings-subnav-bank-accounts"]');
-        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // ── CREATE ───────────────────────────────────────────────
         $I->click('[data-test="settings-bank-accounts-add"]');
-        $I->waitForElementVisible('[data-test="settings-bank-account-new-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-bank-account-new-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $labelColorsMatchBodyInBothThemes = $I->executeJS(<<<'JS'
             const label = document.querySelector('[data-test="settings-bank-account-new-page"] form label');
@@ -346,7 +346,7 @@ class SettingsCest extends BaseAcceptanceCest
 
         // Wait for PRG redirect to complete — flash message is the reliable indicator
         $I->waitForPageTextStable('Bankovní účet byl uložen', 15);
-        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // ── READ ─────────────────────────────────────────────────
         // Verify the new account appears in DB
@@ -359,20 +359,20 @@ class SettingsCest extends BaseAcceptanceCest
         // ── DETAIL ───────────────────────────────────────────────
         // Navigate to detail page
         $I->amOnPage('/nastaveni/bankovni-ucty/'.$accountId);
-        $I->waitForElementVisible('[data-test="settings-bank-account-detail-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-bank-account-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->see('Testovací účet Selenium');
         $I->seeElement('[data-test="settings-bank-account-open-settings"]');
 
         // ── EDIT ─────────────────────────────────────────────────
         $I->click('[data-test="settings-bank-account-open-settings"]');
-        $I->waitForElementVisible('[data-test="settings-bank-account-edit-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-bank-account-edit-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->fillField('input[name="name"]', 'Upravený účet Selenium');
         $I->scrollTo('input[type="submit"]');
         $I->waitForElementClickable('input[type="submit"]');
         $I->click('input[type="submit"]');
         $I->waitForPageTextStable('Bankovní účet byl uložen', 15);
-        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Verify update in DB
         $I->seeInDatabase('pa_bank_account', ['id' => $accountId, 'name' => 'Upravený účet Selenium']);
@@ -380,12 +380,12 @@ class SettingsCest extends BaseAcceptanceCest
 
         // ── DELETE ───────────────────────────────────────────────
         $I->amOnPage('/nastaveni/bankovni-ucty/'.$accountId.'/upravit');
-        $I->waitForElementVisible('[data-test="settings-bank-account-edit-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-bank-account-edit-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->disablePopups();
         $I->click('[data-test="settings-bank-account-remove"]');
         $I->waitForPageTextStable('odstraněn', 15);
-        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Verify deletion
         $I->dontSeeInDatabase('pa_bank_account', ['id' => $accountId]);
@@ -400,11 +400,11 @@ class SettingsCest extends BaseAcceptanceCest
         $I->wantTo('create a Fio bank account with FIO API transaction source');
 
         $I->click('[data-test="utility-nav-settings"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->click('[data-test="settings-subnav-bank-accounts"]');
-        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->click('[data-test="settings-bank-accounts-add"]');
-        $I->waitForElementVisible('[data-test="settings-bank-account-new-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-bank-account-new-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->fillField('input[name="name"]', 'Fio účet Selenium');
         $I->fillField('input[name="number"]', '2500548792');
@@ -416,7 +416,7 @@ class SettingsCest extends BaseAcceptanceCest
         $I->click('input[type="submit"]');
 
         $I->waitForPageTextStable('Bankovní účet byl uložen', 15);
-        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInDatabase('pa_bank_account', [
             'name' => 'Fio účet Selenium',
             'number_bank_code' => '2010',
@@ -435,10 +435,10 @@ class SettingsCest extends BaseAcceptanceCest
         $I->wantTo('verify mails settings page displays hero and connect button');
 
         $I->click('[data-test="utility-nav-settings"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->click('[data-test="settings-subnav-mails"]');
-        $I->waitForElementVisible('[data-test="settings-mails-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-mails-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/nastaveni/emaily');
         $I->seeElement('[data-test="settings-mail-connect"]');
     }
@@ -453,10 +453,10 @@ class SettingsCest extends BaseAcceptanceCest
         $I->wantTo('verify invoice settings page displays hero and back link');
 
         $I->click('[data-test="utility-nav-settings"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->click('[data-test="settings-subnav-invoices"]');
-        $I->waitForElementVisible('[data-test="invoice-settings-page"]', 10);
+        $I->waitForElementVisible('[data-test="invoice-settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/nastaveni/faktury');
         $I->seeElement('[data-test="invoice-settings-back"]');
     }
@@ -471,10 +471,10 @@ class SettingsCest extends BaseAcceptanceCest
         $I->wantTo('verify automation page displays CRON and history cards');
 
         $I->click('[data-test="utility-nav-settings"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->click('[data-test="settings-subnav-automation"]');
-        $I->waitForElementVisible('[data-test="settings-automation-page"]', 10);
+        $I->waitForElementVisible('[data-test="settings-automation-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/nastaveni/automatizace');
         $I->seeElement('[data-test="settings-automation-card-cron"]');
         $I->seeElement('[data-test="settings-automation-card-history"]');

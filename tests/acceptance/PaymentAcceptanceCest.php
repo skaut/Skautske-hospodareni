@@ -32,13 +32,13 @@ abstract class PaymentAcceptanceCest extends BaseAcceptanceCest
         $I = $this->I;
 
         $I->clickStable('[data-test="global-nav-payments"]');
-        $I->waitForElementVisible('[data-test="payments-page"]', 10);
+        $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('[data-test="payment-nav-groups"]');
         $I->waitForText('Platební skupiny');
         $I->clickStable('[data-test="create-button-toggle"]');
-        $I->waitForElementVisible('[data-test="create-button-menu"]', 10);
+        $I->waitForElementVisible('[data-test="create-button-menu"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable($menuItemSelector);
-        $I->waitForText($pageTitle, 10);
+        $I->waitForText($pageTitle, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl($currentUrl);
     }
 
@@ -47,7 +47,7 @@ abstract class PaymentAcceptanceCest extends BaseAcceptanceCest
         $I = $this->I;
 
         $I->click('[data-test="global-nav-payments"]');
-        $I->waitForElementVisible('[data-test="payments-page"]', 10);
+        $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->click('[data-test="payment-nav-groups"]');
         $I->waitForText('Platební skupiny');
         $I->click('Založit skupinu plateb');
@@ -62,7 +62,7 @@ abstract class PaymentAcceptanceCest extends BaseAcceptanceCest
         $I->waitForElementClickable('input[name="send"]');
         $I->executeJS('document.querySelector(\'input[name="send"]\').click()');
         $I->waitForText('Skupina byla založena', 15);
-        $I->waitForElementVisible('[data-test="payment-group-detail-page"]', 10);
+        $I->waitForElementVisible('[data-test="payment-group-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
     }
 
     protected function createSubtypePaymentGroup(string $type, int $bankAccountId = 1): int

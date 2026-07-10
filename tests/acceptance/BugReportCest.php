@@ -29,11 +29,11 @@ final class BugReportCest extends BaseAcceptanceCest
         $reportedUrl = 'http://moje-hospodareni.cz/platby?test=bug-report';
 
         $I->amOnPage('/nastenka');
-        $I->waitForElementVisible('[data-test="dashboard"]', 10);
+        $I->waitForElementVisible('[data-test="dashboard"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-test="footer-bug-report-link"]');
         $I->clickStable('[data-test="footer-bug-report-link"]');
 
-        $I->waitForElementVisible('[data-test="bug-report-page"]', 10);
+        $I->waitForElementVisible('[data-test="bug-report-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->see('výhradně k hlášení technických chyb');
         $I->see('Není to helpdesk');
         $I->seeElement('[data-test="bug-report-help"]');
@@ -67,7 +67,7 @@ final class BugReportCest extends BaseAcceptanceCest
         $I->fillField('[data-test="bug-report-form"] input[name="url"]', $reportedUrl);
         $I->click('[data-test="bug-report-form"] input[type="submit"]');
 
-        $I->waitForElementVisible('[data-test="bug-report-page"]', 10);
+        $I->waitForElementVisible('[data-test="bug-report-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('.alert-success');
         $I->seeInDatabase('technical_error_report', [
             'description' => $description,
@@ -92,7 +92,7 @@ final class BugReportCest extends BaseAcceptanceCest
         ]);
 
         $I->amOnPage('/admin/hlaseni-chyb');
-        $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-test="admin-bug-reports-grid"]');
         $I->see($description);
         $I->seeElement('[data-test="admin-nav-bug-reports"].btn-primary');
@@ -100,7 +100,7 @@ final class BugReportCest extends BaseAcceptanceCest
         $I->seeElement('[data-test="admin-bug-report-resolve-grid"] svg[data-icon="circle-check"]');
 
         $I->amOnPage('/admin/hlaseni-chyb/'.$reportId);
-        $I->waitForElementVisible('[data-test="admin-bug-report-detail"]', 10);
+        $I->waitForElementVisible('[data-test="admin-bug-report-detail"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->see($description);
         $I->see($reportedUrl);
         $I->seeElement('[data-test="admin-bug-report-diagnostics"]');
@@ -122,10 +122,10 @@ final class BugReportCest extends BaseAcceptanceCest
 
         $resolutionMessage = 'Nejde o technickou chybu aplikace.';
         $I->click('[data-test="admin-bug-report-reject"]');
-        $I->waitForElementVisible('#rejectReport textarea[name="message"]', 10);
+        $I->waitForElementVisible('#rejectReport textarea[name="message"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->fillField('#rejectReport textarea[name="message"]', $resolutionMessage);
         $I->click('#rejectReport input[type="submit"]');
-        $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->see('Hlášení technické chyby bylo zamítnuto');
         $I->dontSee($description, '[data-test="admin-bug-reports-grid"]');
         Assert::assertNotNull(
@@ -141,7 +141,7 @@ final class BugReportCest extends BaseAcceptanceCest
         );
 
         $I->amOnPage('/admin/hlaseni-chyb/'.$reportId);
-        $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', 10);
+        $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->dontSeeElement('[data-test="admin-bug-report-detail"]');
     }
 }

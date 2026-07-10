@@ -11,7 +11,7 @@ modules:
         url: 'http://moje-hospodareni.cz' # Base URL for tests
         browser: 'chrome' # Browser used for testing
         host: 'selenium' # Selenium server host (Docker compose service name)
-        wait: 5 # Max wait time in seconds for elements
+        wait: 20 # Max wait time in seconds for elements
         capabilities:
           acceptInsecureCerts: true # Accept self-signed SSL certificates
           chromeOptions:

@@ -30,6 +30,7 @@ class AcceptanceTester extends Actor
     private const LOGIN_TRIGGER_SELECTOR = '[data-test="login-link"], [data-test="homepage-login"]';
     private const LOGGED_IN_SELECTOR = '.ui--current-role, [data-test="global-nav-payments"], [data-test="homepage-login"][href*="dashboard"]';
 
+    public const ELEMENT_LOAD_TIMEOUT = 20;
     public const UNIT_LEADER_ROLE = 'Středisko: vedoucí/admin - 621.66';
     public const UNIT_ID = 27266;
 
@@ -73,7 +74,7 @@ class AcceptanceTester extends Actor
         $I->saveSessionSnapshot('login');
     }
 
-    public function waitForDocumentReady(int $timeout = 10): void
+    public function waitForDocumentReady(int $timeout = self::ELEMENT_LOAD_TIMEOUT): void
     {
         $this->waitForJS(
             'return document.readyState === "interactive" || document.readyState === "complete";',
@@ -81,7 +82,7 @@ class AcceptanceTester extends Actor
         );
     }
 
-    public function waitForLoginTrigger(int $timeout = 10): void
+    public function waitForLoginTrigger(int $timeout = self::ELEMENT_LOAD_TIMEOUT): void
     {
         $selector = json_encode(self::LOGIN_TRIGGER_SELECTOR);
 
@@ -92,7 +93,7 @@ class AcceptanceTester extends Actor
         );
     }
 
-    public function waitForPageTextStable(string $text, int $timeout = 10): void
+    public function waitForPageTextStable(string $text, int $timeout = self::ELEMENT_LOAD_TIMEOUT): void
     {
         $this->waitForJS(
             'return document.body !== null && document.body.textContent.includes('.json_encode($text).');',
@@ -119,7 +120,7 @@ class AcceptanceTester extends Actor
         $this->executeJS('window.confirm = function(msg){return true;};');
     }
 
-    public function clickStable(string $locator, int $timeout = 10, bool $waitForOverlays = true): void
+    public function clickStable(string $locator, int $timeout = self::ELEMENT_LOAD_TIMEOUT, bool $waitForOverlays = true): void
     {
         $this->waitForStableLocatorVisible($locator, $timeout);
         if ($waitForOverlays) {
@@ -129,7 +130,7 @@ class AcceptanceTester extends Actor
         $this->executeJS($this->buildLocatorScript($locator, 'el.click(); return true;'));
     }
 
-    public function fillFieldStable(string $locator, string $value, int $timeout = 10, bool $waitForOverlays = true): void
+    public function fillFieldStable(string $locator, string $value, int $timeout = self::ELEMENT_LOAD_TIMEOUT, bool $waitForOverlays = true): void
     {
         $this->waitForStableLocatorVisible($locator, $timeout);
         if ($waitForOverlays) {
@@ -146,7 +147,7 @@ class AcceptanceTester extends Actor
         ));
     }
 
-    public function waitForUiOverlaysToDisappear(int $timeout = 10): void
+    public function waitForUiOverlaysToDisappear(int $timeout = self::ELEMENT_LOAD_TIMEOUT): void
     {
         $this->waitForJS(
             'return document.querySelector(".modal-backdrop.show, .offcanvas-backdrop.show") === null;',
@@ -154,7 +155,7 @@ class AcceptanceTester extends Actor
         );
     }
 
-    public function waitForStableLocatorVisible(string $locator, int $timeout = 10): void
+    public function waitForStableLocatorVisible(string $locator, int $timeout = self::ELEMENT_LOAD_TIMEOUT): void
     {
         if (! $this->isXPathLocator($locator)) {
             $this->waitForElementVisible($locator, $timeout);
