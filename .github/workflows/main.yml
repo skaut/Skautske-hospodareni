@@ -116,6 +116,7 @@ jobs:
         name: Clean workspace
         shell: bash
         run: |
+          docker compose down -v || true
           if [ -z "${GITHUB_WORKSPACE:-}" ] || [ ! -d "$GITHUB_WORKSPACE" ]; then
             echo "GITHUB_WORKSPACE is not set to an existing directory."
             exit 1
