@@ -22,12 +22,16 @@ abstract class SettingsBasePresenter extends BaseSectionPresenter
     {
         parent::startup();
 
-        $readableUnits = $this->unitService->getReadUnits($this->getUser());
         $role = $this->queryBus->handle(new ActiveSkautisRoleQuery());
         $this->editableUnits = array_keys($this->queryBus->handle(new EditableUnitsQuery($role)));
 
         $this->isEditable = in_array($this->unitId->toInt(), $this->editableUnits, true);
 
+        if (! $this->requiresReadableUnit()) {
+            return;
+        }
+
+        $readableUnits = $this->unitService->getReadUnits($this->getUser());
         if (isset($readableUnits[$this->unitId->toInt()])) {
             return;
         }
@@ -47,5 +51,10 @@ abstract class SettingsBasePresenter extends BaseSectionPresenter
             'unitId' => $this->unitId->toInt(),
             'isEditable' => $this->isEditable,
         ]);
+    }
+
+    protected function requiresReadableUnit(): bool
+    {
+        return true;
     }
 }

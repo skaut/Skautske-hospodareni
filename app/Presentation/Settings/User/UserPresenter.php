@@ -45,4 +45,9 @@ final class UserPresenter extends \App\Presentation\Settings\SettingsBasePresent
 
         return $form;
     }
+
+    protected function requiresReadableUnit(): bool
+    {
+        return false;
+    }
 }
