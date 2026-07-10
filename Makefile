@@ -67,9 +67,7 @@ endef
 
 define reset_writable_dirs
 	$(COMPOSE) run --rm -T --no-deps --user docker $(1) sh -c \
-		'mkdir -p log uploads temp tests/_output tests/_support/_generated www/webtemp && \
-		chmod -R a+rwX log uploads temp tests/_output tests/_support/_generated www/webtemp && \
-		if [ -d tests/integration/fixtures ]; then chmod -R a+rwX tests/integration/fixtures; fi'
+		'mkdir -p log uploads temp tests/_output tests/_support/_generated www/webtemp'
 endef
 
 help: ## Zobrazí tuto nápovědu
@@ -144,11 +142,11 @@ test-coverage: ## Unit + integration testy s coverage XML
 	$(RUN_PHP_TEST) composer tests-with-coverage
 
 test-acceptance: ## Akceptační testy lokálně s viditelným Selenium preview
+	$(call reset_writable_dirs,php-test)
 	$(COMPOSE) up -d $(ACCEPTANCE_SERVICES)
 	$(call wait_for_mysql_test)
 	$(call wait_for_selenium)
 	$(RUN_PHP_TEST) composer tests:acceptance:init
-	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) vendor/bin/codecept run acceptance -vv $(TEST_ARGS); \
 	status=$$?; \
 	$(COMPOSE) stop selenium; \
@@ -160,11 +158,11 @@ test-mapping: ## Validace DB schématu vs migrace
 	$(RUN_PHP_TEST) composer validate-mapping
 
 ci-acceptance: ## Akceptační testy v CI režimu
+	$(call reset_writable_dirs,php-test)
 	$(COMPOSE) up -d $(ACCEPTANCE_SERVICES)
 	$(call wait_for_mysql_test)
 	$(call wait_for_selenium)
 	$(RUN_PHP_TEST) composer tests:acceptance:init
-	$(call reset_writable_dirs,php-test)
 	$(call wait_for_application)
 	$(RUN_PHP_TEST) vendor/bin/codecept run acceptance --env ci -vv $(TEST_ARGS); \
 	status=$$?; \
