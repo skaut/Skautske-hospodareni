@@ -46,9 +46,9 @@ abstract class PaymentAcceptanceCest extends BaseAcceptanceCest
     {
         $I = $this->I;
 
-        $I->click('[data-test="global-nav-payments"]');
+        $I->clickStable('[data-test="global-nav-payments"]');
         $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->click('[data-test="payment-nav-groups"]');
+        $I->clickStable('[data-test="payment-nav-groups"]');
         $I->waitForText('Platební skupiny');
         $I->click('Založit skupinu plateb');
         $I->waitForText('Nová platební skupina - Obecná');

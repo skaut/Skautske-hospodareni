@@ -148,22 +148,22 @@ final class AdminCest extends BaseAcceptanceCest
         $I->waitForElementVisible('[data-test="admin-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Click Users pill
-        $I->click('[data-test="admin-nav-users"]');
+        $I->clickStable('[data-test="admin-nav-users"]');
         $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/admin/uzivatele');
 
         // Click Statistics pill
-        $I->click('[data-test="admin-nav-statistics"]');
+        $I->clickStable('[data-test="admin-nav-statistics"]');
         $I->waitForElementVisible('[data-test="admin-statistics-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/admin/statistiky');
 
         // Click Bug reports pill
-        $I->click('[data-test="admin-nav-bug-reports"]');
+        $I->clickStable('[data-test="admin-nav-bug-reports"]');
         $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/admin/hlaseni-chyb');
 
         // Click Overview pill (back)
-        $I->click('[data-test="admin-nav-overview"]');
+        $I->clickStable('[data-test="admin-nav-overview"]');
         $I->waitForElementVisible('[data-test="admin-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/admin');
     }
@@ -214,12 +214,12 @@ final class AdminCest extends BaseAcceptanceCest
 
         // ── CREATE ───────────────────────────────────────────────
         // Open form
-        $I->click('[data-test="admin-users-form-toggle"]');
+        $I->clickStable('[data-test="admin-users-form-toggle"]');
         $I->waitForElementVisible('[data-test="admin-users-form"] input[name="userId"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Fill and submit
         $I->fillField('[data-test="admin-users-form"] input[name="userId"]', (string) self::NEW_ADMIN_USER_ID);
-        $I->click('[data-test="admin-users-form"] input[type="submit"]');
+        $I->clickStable('[data-test="admin-users-form"] input[type="submit"]');
         $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Verify flash message
@@ -237,7 +237,7 @@ final class AdminCest extends BaseAcceptanceCest
         // Find the new user's row and click edit
         $newUser = $I->grabFromDatabase('admin_user', 'id', ['user_id' => self::NEW_ADMIN_USER_ID]);
         $I->seeElement('[data-test="admin-user-edit-'.$newUser.'"]');
-        $I->click('[data-test="admin-user-edit-'.$newUser.'"]');
+        $I->clickStable('[data-test="admin-user-edit-'.$newUser.'"]');
 
         // Form should be visible with edit mode
         $I->waitForElementVisible('[data-test="admin-users-form-collapse"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
@@ -248,7 +248,7 @@ final class AdminCest extends BaseAcceptanceCest
         // Change user_id
         $updatedUserId = self::NEW_ADMIN_USER_ID + 1;
         $I->fillField('[data-test="admin-users-form"] input[name="userId"]', (string) $updatedUserId);
-        $I->click('[data-test="admin-users-form"] input[type="submit"]');
+        $I->clickStable('[data-test="admin-users-form"] input[type="submit"]');
         $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Verify update in DB
@@ -259,7 +259,7 @@ final class AdminCest extends BaseAcceptanceCest
         // ── DELETE ───────────────────────────────────────────────
         $I->waitForElementVisible('[data-test="admin-user-delete-'.$newUser.'"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->disablePopups();
-        $I->click('[data-test="admin-user-delete-'.$newUser.'"]');
+        $I->clickStable('[data-test="admin-user-delete-'.$newUser.'"]');
         $I->waitForText('odebrán', 15);
         $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
@@ -306,7 +306,7 @@ final class AdminCest extends BaseAcceptanceCest
         $I->waitForElementVisible('[data-test="admin-users-form-collapse"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-test="admin-users-form-cancel"]');
 
-        $I->click('[data-test="admin-users-form-cancel"]');
+        $I->clickStable('[data-test="admin-users-form-cancel"]');
         $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->dontSeeInCurrentUrl('edit=');
     }
@@ -361,21 +361,21 @@ final class AdminCest extends BaseAcceptanceCest
         $I->waitForElementVisible('[data-test="admin-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Click Users card link
-        $I->click('[data-test="admin-link-users"]');
+        $I->clickStable('[data-test="admin-link-users"]');
         $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/admin/uzivatele');
 
         // Go back and click Statistics card link
         $I->amOnPage('/admin');
         $I->waitForElementVisible('[data-test="admin-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->click('[data-test="admin-link-statistics"]');
+        $I->clickStable('[data-test="admin-link-statistics"]');
         $I->waitForElementVisible('[data-test="admin-statistics-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/admin/statistiky');
 
         // Go back and click Bug reports card link
         $I->amOnPage('/admin');
         $I->waitForElementVisible('[data-test="admin-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->click('[data-test="admin-link-bug-reports"]');
+        $I->clickStable('[data-test="admin-link-bug-reports"]');
         $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/admin/hlaseni-chyb');
     }

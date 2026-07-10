@@ -59,7 +59,7 @@ class DashboardCest extends BaseAcceptanceCest
         $I->seeElement('[data-test="dashboard-link-payments"]');
         $I->seeElement('[data-test="dashboard-payment-actions"] [data-test="create-button-main"]');
         $I->seeElement('[data-test="dashboard-payment-actions"] [data-test="pair-button-main"]');
-        $I->click('[data-test="dashboard-payment-actions"] [data-test="create-button-toggle"]');
+        $I->clickStable('[data-test="dashboard-payment-actions"] [data-test="create-button-toggle"]');
         $I->waitForElementVisible('[data-test="dashboard-payment-actions"] [data-test="create-button-menu"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-test="create-button-item-general"]');
         $I->seeElement('[data-test="create-button-item-camp"]');
@@ -83,7 +83,7 @@ class DashboardCest extends BaseAcceptanceCest
             $I->grabAttributeFrom('[data-test="dashboard-payment-actions"] [data-test="create-button-item-education"]', 'href'),
         );
 
-        $I->click('[data-test="dashboard-payment-actions"] [data-test="create-button-main"]');
+        $I->clickStable('[data-test="dashboard-payment-actions"] [data-test="create-button-main"]');
         $I->waitForElementVisible('[data-test="payment-group-form-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/platby/skupiny/nova');
 
@@ -100,28 +100,28 @@ class DashboardCest extends BaseAcceptanceCest
 
         $I->amOnPage('/nastenka');
         $I->waitForElementVisible('[data-test="dashboard"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->click('[data-test="dashboard-link-camps"]');
+        $I->clickStable('[data-test="dashboard-link-camps"]');
         $I->waitForElementVisible('[data-test="camps-default-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/tabory');
         $I->seeElement('.active [data-test="global-nav-camps"]');
 
         $I->amOnPage('/nastenka');
         $I->waitForElementVisible('[data-test="dashboard"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->click('[data-test="dashboard-link-education"]');
+        $I->clickStable('[data-test="dashboard-link-education"]');
         $I->waitForElementVisible('[data-test="education-default-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/vzdelavacky');
         $I->seeElement('.active [data-test="global-nav-education"]');
 
         $I->amOnPage('/nastenka');
         $I->waitForElementVisible('[data-test="dashboard"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->click('[data-test="dashboard-link-travel"]');
+        $I->clickStable('[data-test="dashboard-link-travel"]');
         $I->waitForElementVisible('[data-test="travel-default-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/cestaky');
         $I->seeElement('.active [data-test="global-nav-travel"]');
 
         $I->amOnPage('/nastenka');
         $I->waitForElementVisible('[data-test="dashboard"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->click('[data-test="dashboard-link-unit"]');
+        $I->clickStable('[data-test="dashboard-link-unit"]');
         $I->waitForElementVisible('[data-test="unit-cashbook-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/jednotka');
         $I->seeElement('.active [data-test="global-nav-unit"]');

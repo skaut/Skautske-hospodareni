@@ -27,7 +27,7 @@ class PaymentDetailCest extends PaymentAcceptanceCest
         $I->seeCurrentUrlMatches('~^/platby/skupiny/\d+/platby(?:\?.*)?$~');
         $I->waitForElementVisible('[data-test="payment-group-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
-        $I->click('[data-test="payment-nav-groups"]');
+        $I->clickStable('[data-test="payment-nav-groups"]');
         $I->waitForText('Platební skupiny');
         $I->executeJS(
             "document.evaluate(\"//a[normalize-space(text())='$groupName']\", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click();",
@@ -49,7 +49,7 @@ class PaymentDetailCest extends PaymentAcceptanceCest
         $this->createGeneralPaymentGroup($groupName);
 
         $I->seeCurrentUrlMatches('~^/platby/skupiny/\d+/platby(?:\?.*)?$~');
-        $I->click('[data-test="payment-group-edit-link"]');
+        $I->clickStable('[data-test="payment-group-edit-link"]');
         $I->waitForElementVisible('[data-test="payment-group-form-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeCurrentUrlMatches('~^/platby/skupiny/\d+/upravit(?:\?.*)?$~');
         $I->waitForText('Editace skupiny: '.$groupName);
@@ -67,7 +67,7 @@ class PaymentDetailCest extends PaymentAcceptanceCest
         $this->createGeneralPaymentGroup($groupName);
 
         $I->seeCurrentUrlMatches('~^/platby/skupiny/\d+/platby(?:\?.*)?$~');
-        $I->click('[data-test="payment-group-repayments-link"]');
+        $I->clickStable('[data-test="payment-group-repayments-link"]');
         $I->waitForElementVisible('[data-test="payment-repayments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForText('Vratky');
         $I->seeCurrentUrlMatches('~^/platby/skupiny/\d+/vratky(?:\?.*)?$~');

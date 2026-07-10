@@ -22,7 +22,7 @@ class PaymentCest extends PaymentAcceptanceCest
 
         $I->wantTo('create payment group');
 
-        $I->click('[data-test="global-nav-payments"]');
+        $I->clickStable('[data-test="global-nav-payments"]');
         $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('[data-test="payment-nav-groups"]');
         $I->waitForText('Platební skupiny');
@@ -112,9 +112,9 @@ class PaymentCest extends PaymentAcceptanceCest
 
         $I->wantTo('see canonical registration create link in payment group list');
 
-        $I->click('[data-test="global-nav-payments"]');
+        $I->clickStable('[data-test="global-nav-payments"]');
         $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->click('[data-test="payment-nav-groups"]');
+        $I->clickStable('[data-test="payment-nav-groups"]');
         $I->waitForElementVisible('[data-test="payments-groups-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/platby/skupiny');
         $I->clickStable('[data-test="create-button-toggle"]');
@@ -231,7 +231,7 @@ class PaymentCest extends PaymentAcceptanceCest
         $groupsBefore = $I->grabNumRecords('pa_group');
         $I->amOnPage('/platby/skupiny');
         $I->waitForElementVisible('[data-test="payment-group-clone-'.$sourceGroupId.'"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->click('[data-test="payment-group-clone-'.$sourceGroupId.'"]');
+        $I->clickStable('[data-test="payment-group-clone-'.$sourceGroupId.'"]');
         $I->waitForElementVisible('[data-test="payment-group-clone-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/platby/skupiny/'.$sourceGroupId.'/klonovat');
 
@@ -294,11 +294,11 @@ class PaymentCest extends PaymentAcceptanceCest
 
         $I->wantTo('open payment subtype selectors on canonical urls');
 
-        $I->click('[data-test="global-nav-payments"]');
+        $I->clickStable('[data-test="global-nav-payments"]');
         $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->click('[data-test="payment-nav-groups"]');
+        $I->clickStable('[data-test="payment-nav-groups"]');
         $I->waitForText('Platební skupiny');
-        $I->click('[data-test="create-button-toggle"]');
+        $I->clickStable('[data-test="create-button-toggle"]');
         $I->waitForElementVisible('[data-test="create-button-menu"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         Assert::assertSame('/platby/tabory', $I->grabAttributeFrom('[data-test="create-button-item-camp"]', 'href'));
@@ -339,7 +339,7 @@ class PaymentCest extends PaymentAcceptanceCest
                 '~^/platby/tabory/\d+/nova(?:\?.*)?$~',
                 (string) $I->grabAttributeFrom('[data-test^="payment-camp-create-"]', 'href'),
             );
-            $I->click('[data-test^="payment-camp-create-"]');
+            $I->clickStable('[data-test^="payment-camp-create-"]');
             $I->waitForElementVisible('[data-test="payment-camp-create-group-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
             $I->seeCurrentUrlMatches('~^/platby/tabory/\d+/nova(?:\?.*)?$~');
         }
@@ -369,7 +369,7 @@ class PaymentCest extends PaymentAcceptanceCest
                 '~^/platby/vzdelavacky/\d+/nova(?:\?.*)?$~',
                 (string) $I->grabAttributeFrom('[data-test^="payment-education-create-"]', 'href'),
             );
-            $I->click('[data-test^="payment-education-create-"]');
+            $I->clickStable('[data-test^="payment-education-create-"]');
             $I->waitForElementVisible('[data-test="payment-education-create-group-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
             $I->seeCurrentUrlMatches('~^/platby/vzdelavacky/\d+/nova(?:\?.*)?$~');
         }

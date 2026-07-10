@@ -57,13 +57,13 @@ class TravelCest extends BaseAcceptanceCest
     protected function navigateToTravelOrder(AcceptanceTester $I): void
     {
         $I->amOnPage('/');
-        $I->click('[data-test="global-nav-travel"]');
+        $I->clickStable('[data-test="global-nav-travel"]');
         $I->seeInCurrentUrl('/cestaky');
     }
 
     protected function newTravelOrder(AcceptanceTester $I, string $name, string $licensePlate): void
     {
-        $I->click('[data-test="travel-command-create-link"]');
+        $I->clickStable('[data-test="travel-command-create-link"]');
         $I->waitForText('Založit cestovní příkaz');
         $I->seeInCurrentUrl('/cestaky/prikazy/new');
 
@@ -135,9 +135,9 @@ class TravelCest extends BaseAcceptanceCest
     protected function navigateToVehicle(AcceptanceTester $I): void
     {
         $I->amOnPage('/');
-        $I->click('[data-test="global-nav-travel"]');
+        $I->clickStable('[data-test="global-nav-travel"]');
         $I->seeInCurrentUrl('/cestaky');
-        $I->click('[data-test="travel-subnav-vehicles"]');
+        $I->clickStable('[data-test="travel-subnav-vehicles"]');
         $I->seeInCurrentUrl('/cestaky/vozidla');
     }
 
@@ -207,9 +207,9 @@ class TravelCest extends BaseAcceptanceCest
     protected function navigationToContract(AcceptanceTester $I): void
     {
         $I->amOnPage('/');
-        $I->click('[data-test="global-nav-travel"]');
+        $I->clickStable('[data-test="global-nav-travel"]');
         $I->seeInCurrentUrl('/cestaky');
-        $I->click('[data-test="travel-subnav-contracts"]');
+        $I->clickStable('[data-test="travel-subnav-contracts"]');
         $I->seeInCurrentUrl('/cestaky/smlouvy');
         $I->waitForText('Smlouvy');
     }
@@ -235,14 +235,14 @@ class TravelCest extends BaseAcceptanceCest
 
     protected function detailContract(AcceptanceTester $I, string $unitRepresentative): void
     {
-        $I->click(sprintf('[data-test="%s"]', $unitRepresentative));
+        $I->clickStable(sprintf('[data-test="%s"]', $unitRepresentative));
         $I->waitForElementVisible('body', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->see('Smlouva o proplácení cestovních náhrad');
 
         // --- Vytisknout -> PDF ve stejném tabu ---
         $I->waitForElementVisible('[data-test="contract-print"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $urlBefore = $I->grabFromCurrentUrl();
-        $I->click('[data-test="contract-print"]');
+        $I->clickStable('[data-test="contract-print"]');
 
         $I->waitForJS('return window.location.href !== '.json_encode($urlBefore).';', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/print');
@@ -254,12 +254,12 @@ class TravelCest extends BaseAcceptanceCest
 
     protected function deleteContract(AcceptanceTester $I, string $unitRepresentative): void
     {
-        $I->click(sprintf('[data-test="%s"]', $unitRepresentative));
+        $I->clickStable(sprintf('[data-test="%s"]', $unitRepresentative));
         $I->waitForElementVisible('body', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->see('Smlouva o proplácení cestovních náhrad');
         $I->waitForElementVisible('[data-test="contract-delete"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         // --- Smazat ---
-        $I->click('[data-test="contract-delete"]');
+        $I->clickStable('[data-test="contract-delete"]');
         try {
             $I->acceptPopup();
         } catch (Throwable) {

@@ -65,7 +65,7 @@ final class BugReportCest extends BaseAcceptanceCest
 
         $I->fillField('[data-test="bug-report-form"] textarea[name="description"]', $description);
         $I->fillField('[data-test="bug-report-form"] input[name="url"]', $reportedUrl);
-        $I->click('[data-test="bug-report-form"] input[type="submit"]');
+        $I->clickStable('[data-test="bug-report-form"] input[type="submit"]');
 
         $I->waitForElementVisible('[data-test="bug-report-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('.alert-success');
@@ -121,7 +121,7 @@ final class BugReportCest extends BaseAcceptanceCest
         $I->seeElement('[data-test="admin-bug-report-reject"]');
 
         $resolutionMessage = 'Nejde o technickou chybu aplikace.';
-        $I->click('[data-test="admin-bug-report-reject"]');
+        $I->clickStable('[data-test="admin-bug-report-reject"]');
         $I->waitForElementVisible('#rejectReport textarea[name="message"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->fillField('#rejectReport textarea[name="message"]', $resolutionMessage);
         $I->click('#rejectReport input[type="submit"]');

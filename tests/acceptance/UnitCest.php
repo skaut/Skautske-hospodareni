@@ -50,7 +50,7 @@ final class UnitCest extends BaseAcceptanceCest
         $href = $I->grabAttributeFrom('[data-test="unit-subnav-budget"]', 'href');
         Assert::assertMatchesRegularExpression('~^/jednotka/\d+/rozpocet(?:\?rok=\d+)?$~', $href);
 
-        $I->click('[data-test="unit-subnav-budget"]');
+        $I->clickStable('[data-test="unit-subnav-budget"]');
         $I->waitForElementVisible('[data-test="unit-budget-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/jednotka/'.AcceptanceTester::UNIT_ID.'/rozpocet');
         $I->seeElement('.active [data-test="unit-subnav-budget"]');
@@ -70,7 +70,7 @@ final class UnitCest extends BaseAcceptanceCest
         $href = $I->grabAttributeFrom('[data-test="unit-subnav-chits"]', 'href');
         Assert::assertMatchesRegularExpression('~^/jednotka/\d+/paragony(?:\?rok=\d+)?$~', $href);
 
-        $I->click('[data-test="unit-subnav-chits"]');
+        $I->clickStable('[data-test="unit-subnav-chits"]');
         $I->waitForElementVisible('[data-test="unit-chits-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/jednotka/'.AcceptanceTester::UNIT_ID.'/paragony');
         $I->seeElement('.active [data-test="unit-subnav-chits"]');
@@ -87,8 +87,8 @@ final class UnitCest extends BaseAcceptanceCest
         $I->amOnPage('/jednotka/'.AcceptanceTester::UNIT_ID.'/paragony');
         $I->waitForElementVisible('[data-test="unit-chits-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
-        $I->click('[data-test="unit-chits-filter-toggle"]');
-        $I->click('[data-test="unit-chits-filter-all"]');
+        $I->clickStable('[data-test="unit-chits-filter-toggle"]');
+        $I->clickStable('[data-test="unit-chits-filter-all"]');
 
         $I->waitForText('Všechny paragony', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '[data-test="unit-chits-filter-toggle"]');
         $I->seeInCurrentUrl('/jednotka/'.AcceptanceTester::UNIT_ID.'/paragony');
@@ -110,7 +110,7 @@ final class UnitCest extends BaseAcceptanceCest
         // Navigate to budget add page
         $I->amOnPage('/jednotka/'.AcceptanceTester::UNIT_ID.'/rozpocet');
         $I->waitForElementVisible('[data-test="unit-budget-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->click('[data-test="unit-budget-add-link"]');
+        $I->clickStable('[data-test="unit-budget-add-link"]');
         $I->waitForElementVisible('[data-test="unit-budget-add-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Fill and submit form
@@ -181,7 +181,7 @@ final class UnitCest extends BaseAcceptanceCest
         $I->seeElement('[data-test="unit-submenu"] .dropdown');
 
         // Click the unit dropdown toggle
-        $I->click('[data-test="unit-submenu"] .dropdown .dropdown-toggle');
+        $I->clickStable('[data-test="unit-submenu"] .dropdown .dropdown-toggle');
         $I->waitForElementVisible('[data-test="unit-submenu"] .dropdown .dropdown-menu', 5);
 
         // Should see at least one unit item

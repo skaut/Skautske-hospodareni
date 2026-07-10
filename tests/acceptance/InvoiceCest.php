@@ -59,7 +59,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->wantTo('save yearly invoice settings');
 
         $this->openInvoices();
-        $I->click('[data-test="invoice-action-settings"]');
+        $I->clickStable('[data-test="invoice-action-settings"]');
         $I->waitForElementVisible('[data-test="invoice-settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/nastaveni/faktury');
         $I->dontSee('Jednotka je plátce DPH');
@@ -82,7 +82,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->wantTo('create invoice sequence');
 
         $this->openInvoices();
-        $I->click('[data-test="invoice-action-create-sequence"]');
+        $I->clickStable('[data-test="invoice-action-create-sequence"]');
         $I->waitForElementVisible('[data-test="invoice-sequence-form-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/platby/rady/nova');
         $I->fillField('input[name="sequence"]', $sequencePrefix);
@@ -110,7 +110,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->wantTo('create invoice sequence without sender email configuration');
 
         $this->openInvoices();
-        $I->click('[data-test="invoice-action-create-sequence"]');
+        $I->clickStable('[data-test="invoice-action-create-sequence"]');
         $I->waitForElementVisible('[data-test="invoice-sequence-form-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/platby/rady/nova');
         $I->fillField('input[name="sequence"]', $sequencePrefix);
@@ -195,7 +195,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->wantTo('edit invoice while it is still in issued state');
 
         $this->openInvoices();
-        $I->click('[data-test="invoice-action-settings"]');
+        $I->clickStable('[data-test="invoice-action-settings"]');
         $I->waitForElementVisible('[data-test="invoice-settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $this->fillYearlySettings($editYear, 'Selenium Edit '.$editYear);
         $I->scrollTo('input[name="save"]');
@@ -204,7 +204,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->waitForText('Roční nastavení fakturace bylo uloženo.');
 
         $this->openInvoices();
-        $I->click('[data-test="invoice-action-create-sequence"]');
+        $I->clickStable('[data-test="invoice-action-create-sequence"]');
         $I->waitForElementVisible('[data-test="invoice-sequence-form-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->fillField('input[name="sequence"]', $sequencePrefix);
         $I->fillField('input[name="firstNumber"]', '00001');
@@ -219,7 +219,7 @@ class InvoiceCest extends BaseAcceptanceCest
 
         $sequenceId = $I->grabFromDatabase('invoice_sequence', 'id', ['sequence' => $sequencePrefix]);
         $this->openInvoices();
-        $I->click('[data-test="invoice-sequence-create-invoice-'.$sequenceId.'"]');
+        $I->clickStable('[data-test="invoice-sequence-create-invoice-'.$sequenceId.'"]');
         $I->waitForElementVisible('[data-test="invoice-create-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/platby/rady/'.$sequenceId.'/nova');
 
@@ -276,7 +276,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->wantTo('duplicate invoice to another invoice sequence and continue in edit');
 
         $this->openInvoices();
-        $I->click('[data-test="invoice-action-settings"]');
+        $I->clickStable('[data-test="invoice-action-settings"]');
         $I->waitForElementVisible('[data-test="invoice-settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $this->fillYearlySettings($duplicateYear, 'Selenium Duplicate '.$duplicateYear);
         $I->scrollTo('input[name="save"]');
@@ -285,7 +285,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->waitForText('Roční nastavení fakturace bylo uloženo.');
 
         $this->openInvoices();
-        $I->click('[data-test="invoice-action-create-sequence"]');
+        $I->clickStable('[data-test="invoice-action-create-sequence"]');
         $I->waitForElementVisible('[data-test="invoice-sequence-form-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->fillField('input[name="sequence"]', $sourcePrefix);
         $I->fillField('input[name="firstNumber"]', $sourceFirstNumber);
@@ -300,7 +300,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->waitForText('Fakturační řada byla založena.');
 
         $this->openInvoices();
-        $I->click('[data-test="invoice-action-create-sequence"]');
+        $I->clickStable('[data-test="invoice-action-create-sequence"]');
         $I->waitForElementVisible('[data-test="invoice-sequence-form-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->fillField('input[name="sequence"]', $targetPrefix);
         $I->fillField('input[name="firstNumber"]', $targetFirstNumber);
@@ -410,7 +410,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->wantTo('issue invoice with generated invoice number and VS');
 
         $this->openInvoices();
-        $I->click('[data-test="invoice-action-settings"]');
+        $I->clickStable('[data-test="invoice-action-settings"]');
         $I->waitForElementVisible('[data-test="invoice-settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/nastaveni/faktury');
         $I->dontSee('Jednotka je plátce DPH');
@@ -421,7 +421,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->waitForText('Roční nastavení fakturace bylo uloženo.');
 
         $this->openInvoices();
-        $I->click('[data-test="invoice-action-create-sequence"]');
+        $I->clickStable('[data-test="invoice-action-create-sequence"]');
         $I->waitForElementVisible('[data-test="invoice-sequence-form-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/platby/rady/nova');
         $I->fillField('input[name="sequence"]', $sequencePrefix);
@@ -439,7 +439,7 @@ class InvoiceCest extends BaseAcceptanceCest
         // Navigate to the newly created FA26 sequence specifically
         $sequenceId = $I->grabFromDatabase('invoice_sequence', 'id', ['sequence' => $sequencePrefix]);
         $this->openInvoices();
-        $I->click('[data-test="invoice-sequence-create-invoice-'.$sequenceId.'"]');
+        $I->clickStable('[data-test="invoice-sequence-create-invoice-'.$sequenceId.'"]');
         $I->waitForElementVisible('[data-test="invoice-create-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/platby/rady/'.$sequenceId.'/nova');
 
@@ -491,7 +491,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->wantTo('toggle help panel on invoice sequence create page');
 
         $this->openInvoices();
-        $I->click('[data-test="invoice-action-create-sequence"]');
+        $I->clickStable('[data-test="invoice-action-create-sequence"]');
         $I->waitForElementVisible('[data-test="invoice-sequence-form-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Sidebar and content visible initially
@@ -500,12 +500,12 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->seeElement('[data-test="help-toggle"]');
 
         // Collapse
-        $I->click('[data-test="help-toggle"]');
+        $I->clickStable('[data-test="help-toggle"]');
         $I->waitForJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed === "true"', 5);
         $I->dontSeeElement('[data-test="help-content"]:not([style*="display: none"])');
 
         // Expand
-        $I->click('[data-test="help-toggle"]');
+        $I->clickStable('[data-test="help-toggle"]');
         $I->waitForJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed === "false"', 5);
         $I->seeElement('[data-test="help-content"]');
     }
@@ -518,7 +518,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->wantTo('toggle help panel on invoice settings page');
 
         $this->openInvoices();
-        $I->click('[data-test="invoice-action-settings"]');
+        $I->clickStable('[data-test="invoice-action-settings"]');
         $I->waitForElementVisible('[data-test="invoice-settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Sidebar visible
@@ -526,14 +526,14 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->seeElement('[data-test="help-toggle"]');
 
         // Collapse
-        $I->click('[data-test="help-toggle"]');
+        $I->clickStable('[data-test="help-toggle"]');
         $I->waitForJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed === "true"', 5);
 
         $collapsed = $I->executeJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed');
         Assert::assertSame('true', $collapsed);
 
         // Expand
-        $I->click('[data-test="help-toggle"]');
+        $I->clickStable('[data-test="help-toggle"]');
         $I->waitForJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed === "false"', 5);
 
         $expanded = $I->executeJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed');
@@ -552,7 +552,7 @@ class InvoiceCest extends BaseAcceptanceCest
 
         // ── 1. Setup yearly settings ─────────────────────────────
         $this->openInvoices();
-        $I->click('[data-test="invoice-action-settings"]');
+        $I->clickStable('[data-test="invoice-action-settings"]');
         $I->waitForElementVisible('[data-test="invoice-settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $this->fillYearlySettings($lifecycleYear, 'Selenium Lifecycle '.$lifecycleYear);
         $I->scrollTo('input[name="save"]');
@@ -562,7 +562,7 @@ class InvoiceCest extends BaseAcceptanceCest
 
         // ── 2. Create invoice sequence ───────────────────────────
         $this->openInvoices();
-        $I->click('[data-test="invoice-action-create-sequence"]');
+        $I->clickStable('[data-test="invoice-action-create-sequence"]');
         $I->waitForElementVisible('[data-test="invoice-sequence-form-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $seqPrefix = 'LC'.substr((string) $lifecycleYear, -2);
         $I->fillField('input[name="sequence"]', $seqPrefix);
@@ -580,7 +580,7 @@ class InvoiceCest extends BaseAcceptanceCest
         // Navigate to the newly created sequence specifically by DB id
         $sequenceId = $I->grabFromDatabase('invoice_sequence', 'id', ['sequence' => $seqPrefix]);
         $this->openInvoices();
-        $I->click('[data-test="invoice-sequence-create-invoice-'.$sequenceId.'"]');
+        $I->clickStable('[data-test="invoice-sequence-create-invoice-'.$sequenceId.'"]');
         $I->waitForElementVisible('[data-test="invoice-create-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/platby/rady/'.$sequenceId.'/nova');
 
@@ -635,19 +635,19 @@ class InvoiceCest extends BaseAcceptanceCest
     private function openInvoices(): void
     {
         if (! str_contains($this->I->grabPageSource(), 'data-test="payment-nav-invoices"')) {
-            $this->I->click('[data-test="global-nav-payments"]');
+            $this->I->clickStable('[data-test="global-nav-payments"]');
             $this->I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
             Assert::assertMatchesRegularExpression(
                 '~(/platby/faktury(?:\?jednotka=\d+)?)$~',
                 (string) $this->I->grabAttributeFrom('[data-test="payments-link-invoices"]', 'href'),
             );
-            $this->I->click('[data-test="payments-link-invoices"]');
+            $this->I->clickStable('[data-test="payments-link-invoices"]');
         } else {
             Assert::assertMatchesRegularExpression(
                 '~(/platby/faktury(?:\?jednotka=\d+)?)$~',
                 (string) $this->I->grabAttributeFrom('[data-test="payment-nav-invoices"]', 'href'),
             );
-            $this->I->click('[data-test="payment-nav-invoices"]');
+            $this->I->clickStable('[data-test="payment-nav-invoices"]');
         }
 
         $this->I->waitForElementVisible('[data-test="invoice-home"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
