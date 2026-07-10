@@ -4,6 +4,11 @@ services:
     - Stubs\GoogleRepositoryStub
     - App\Model\Services\TemplateFactory
     - App\Model\Services\PdfRenderer(%tempDir%)
+    - League\Flysystem\Filesystem(League\Flysystem\Local\LocalFilesystemAdapter(%tempDir%/uploads))
+    - App\Model\Invoice\InvoiceImageStorage(
+          filesystem: @League\Flysystem\Filesystem
+          uploadDirectory: %tempDir%/uploads
+      )
 
 includes:
     - ../config/doctrine.neon

@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Presentation\Settings\Invoices;
 
-use App\Context;
 use App\Model\Invoice\Entity\InvoiceUnitSetting;
+use App\Model\Invoice\InvoiceImageStorage;
 use App\Model\Invoice\Manager\InvoiceUnitSettingManager;
 use App\Model\Invoice\Repository\InvoiceUnitSettingRepository;
 use App\Presentation\InvoiceAccess\InvoiceAccessGuard;
 use Component\Forms\BaseForm;
+use Contributte\Application\Response\PSR7StreamResponse;
 use InvalidArgumentException;
 use Nette\Application\BadRequestException;
-use Nette\Application\Responses\FileResponse;
 use Nette\Forms\Controls\SelectBox;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Http\FileUpload;
@@ -20,16 +20,8 @@ use Nette\Utils\ArrayHash;
 use Throwable;
 use Utility\Ares\ViAresParser;
 
-use function dirname;
-use function file_exists;
-use function is_dir;
-use function mkdir;
-use function pathinfo;
 use function preg_replace;
-use function sprintf;
-use function strtolower;
 use function trim;
-use function unlink;
 
 final class InvoicesPresenter extends \App\Presentation\Settings\SettingsBasePresenter
 {
@@ -45,7 +37,7 @@ final class InvoicesPresenter extends \App\Presentation\Settings\SettingsBasePre
     public function __construct(
         private readonly InvoiceUnitSettingRepository $invoiceUnitSettings,
         private readonly InvoiceUnitSettingManager $invoiceUnitSettingManager,
-        private readonly Context $context,
+        private readonly InvoiceImageStorage $invoiceImageStorage,
     ) {
         parent::__construct();
     }
@@ -254,17 +246,15 @@ final class InvoicesPresenter extends \App\Presentation\Settings\SettingsBasePre
         $setting = $this->invoiceUnitSettings->findByUnitAndYear($this->getUnitId(), $year);
         $imagePath = $setting instanceof InvoiceUnitSetting ? $this->getImagePath($setting, $type) : null;
 
-        if ($imagePath === null || ! file_exists($imagePath)) {
+        if ($imagePath === null || ! $this->invoiceImageStorage->exists($imagePath)) {
             throw new BadRequestException($notFoundMessage, 404);
         }
 
-        $mimeType = match (strtolower((string) pathinfo($imagePath, PATHINFO_EXTENSION))) {
-            'jpg', 'jpeg' => 'image/jpeg',
-            'png' => 'image/png',
-            default => 'application/octet-stream',
-        };
-
-        $this->sendResponse(new FileResponse($imagePath, $type === self::IMAGE_LOGO ? 'logo' : 'razitko-podpis', $mimeType, false));
+        $this->sendResponse(new PSR7StreamResponse(
+            $this->invoiceImageStorage->getStream($imagePath),
+            $this->invoiceImageStorage->getDownloadName($type),
+            $this->invoiceImageStorage->getContentType($imagePath),
+        ));
     }
 
     /** @return array<string, mixed> */
@@ -297,38 +287,12 @@ final class InvoicesPresenter extends \App\Presentation\Settings\SettingsBasePre
 
     private function replaceImage(InvoiceUnitSetting $setting, FileUpload $upload, string $type): void
     {
-        $this->deleteImage($setting, $type);
-        $targetPath = $this->buildImagePath($setting, $upload, $type);
-        $targetDirectory = dirname($targetPath);
-        if (! is_dir($targetDirectory)) {
-            mkdir($targetDirectory, 0775, true);
-        }
-
-        $upload->move($targetPath);
-        $this->setImagePath($setting, $type, $targetPath);
-    }
-
-    private function buildImagePath(InvoiceUnitSetting $setting, FileUpload $upload, string $type): string
-    {
-        $extension = $upload->getContentType() === 'image/png' ? 'png' : 'jpg';
-
-        return sprintf(
-            '%s/../uploads/invoice-%s/unit-%d-year-%d.%s',
-            $this->context->getAppDir(),
-            $type === self::IMAGE_LOGO ? 'logos' : 'stamps',
-            $setting->getUnit(),
-            $setting->getYear(),
-            $extension,
-        );
+        $this->setImagePath($setting, $type, $this->invoiceImageStorage->replace($setting, $upload, $type));
     }
 
     private function deleteImage(InvoiceUnitSetting $setting, string $type): void
     {
-        $imagePath = $this->getImagePath($setting, $type);
-        if ($imagePath !== null && file_exists($imagePath)) {
-            unlink($imagePath);
-        }
-
+        $this->invoiceImageStorage->delete($this->getImagePath($setting, $type));
         $this->setImagePath($setting, $type, null);
     }
 
@@ -340,7 +304,7 @@ final class InvoicesPresenter extends \App\Presentation\Settings\SettingsBasePre
 
         $imagePath = $this->getImagePath($this->invoiceUnitSetting, $type);
 
-        return $imagePath !== null && file_exists($imagePath);
+        return $this->invoiceImageStorage->exists($imagePath);
     }
 
     private function getImagePath(InvoiceUnitSetting $setting, string $type): ?string

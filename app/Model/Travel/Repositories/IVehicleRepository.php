@@ -20,7 +20,7 @@ interface IVehicleRepository
      */
     public function findByIds(array $ids): array;
 
-    public function findByFilter(): QueryBuilder;
+    public function findByFilter(int $unitId): QueryBuilder;
 
     /** @return Vehicle[] */
     public function findByUnit(int $unitId): array;

@@ -65,12 +65,14 @@ final class VehicleRepository implements IVehicleRepository
         return array_values($vehicles);
     }
 
-    public function findByFilter(): QueryBuilder
+    public function findByFilter(int $unitId): QueryBuilder
     {
         return $this->em->createQueryBuilder()
             ->select('v')
             ->from(Vehicle::class, 'v', 'v.id')
-            ->where('v.archived = FALSE');
+            ->where('v.unitId = :unitId')
+            ->andWhere('v.archived = FALSE')
+            ->setParameter('unitId', $unitId);
     }
 
     public function save(Vehicle $vehicle): void

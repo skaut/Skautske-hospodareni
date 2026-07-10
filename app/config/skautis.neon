@@ -30,6 +30,7 @@ services:
     - App\Model\Skautis\CampRepository(@skautis.cached.event)
     - App\Model\Skautis\EducationRepository(@skautis.cached.event)
     - App\Model\Skautis\Cashbook\Repositories\CampCategoryRepository(@skautis.cached.event)
+    - App\Model\Skautis\Cashbook\CampCategoryUpdater(@skautis.event)
     - App\Model\Skautis\Cashbook\Repositories\EducationCategoryRepository(@skautis.cached.grants)
     - App\Model\Infrastructure\Repositories\Mail\GoogleRepository
 

@@ -18,6 +18,7 @@ use App\Model\Invoice\Embeddable\InvoiceSupplier;
 use App\Model\Invoice\Entity\Invoice;
 use App\Model\Invoice\Entity\InvoiceItem;
 use App\Model\Invoice\Entity\InvoiceSequence;
+use App\Model\Invoice\InvoiceImageStorage;
 use App\Model\Invoice\InvoiceMailingService;
 use App\Model\Invoice\Repository\InvoiceRepository;
 use App\Model\Invoice\Repository\InvoiceUnitSettingRepository;
@@ -211,6 +212,7 @@ final class InvoiceMailingServiceTest extends IntegrationTest
             Mockery::mock(IEventRepository::class),
             Mockery::mock(QueryBus::class),
             $invoiceUnitSettings,
+            $this->tester->grabService(InvoiceImageStorage::class),
             $this->tester->grabService(IGoogleRepository::class),
         );
     }

@@ -12,6 +12,8 @@ use Doctrine\ORM\EntityManager;
 use IntegrationTest;
 use Mockery as m;
 
+use function array_values;
+
 class VehicleRepositoryTest extends IntegrationTest
 {
     private const TABLE = 'tc_vehicle';
@@ -83,6 +85,18 @@ class VehicleRepositoryTest extends IntegrationTest
 
         $this->assertSame(1, $vehicles[0]->getId());
         $this->assertSame(2, $vehicles[1]->getId());
+    }
+
+    public function testFindByFilterReturnsOnlyActiveVehiclesFromSelectedUnit(): void
+    {
+        $this->tester->haveInDatabase(self::TABLE, ['id' => 1, 'unit_id' => 5] + $this->getVehicleRow());
+        $this->tester->haveInDatabase(self::TABLE, ['id' => 2, 'unit_id' => 4] + $this->getVehicleRow());
+        $this->tester->haveInDatabase(self::TABLE, ['id' => 3, 'unit_id' => 5, 'archived' => 1] + $this->getVehicleRow());
+
+        $vehicles = array_values($this->repository->findByFilter(5)->getQuery()->getResult());
+
+        $this->assertCount(1, $vehicles);
+        $this->assertSame(1, $vehicles[0]->getId());
     }
 
     public function testFindNonExistentVehicleThrowsException(): void

@@ -41,6 +41,19 @@ class CommandRepositoryTest extends IntegrationTest
         'unit' => '',
     ];
 
+    private const VEHICLE = [
+        'id' => 8,
+        'unit_id' => 1,
+        'type' => 'Škoda Octavia',
+        'registration' => '1A2 3456',
+        'consumption' => 6.5,
+        'note' => '',
+        'archived' => 0,
+        'subunit_id' => null,
+        'metadata_author_name' => 'František Maša',
+        'metadata_created_at' => '2018-01-01 00:00:00',
+    ];
+
     private const VEHICLE_TRAVEL = [
         'id' => 0,
         'command_id' => self::COMMAND_ID,
@@ -222,26 +235,63 @@ class CommandRepositoryTest extends IntegrationTest
     }
 
     /** @return mixed[] */
-    public function getExpectedReturnedCommandIds(): array
+    public function getExpectedVisibleCommandIds(): array
     {
         return [
-            [2, 3, []],
-            [1, 3, [5]],
-            [2, 4, [6]],
-            [1, 4, [5, 6]],
+            [[], 4, [6]],
+            [[1], 3, [5]],
+            [[1], 4, [5, 6]],
+            [[2], 4, [6]],
+            [[1, 999], 3, [5, 6]],
         ];
     }
 
     /**
+     * @param int[] $readableUnitIds
      * @param int[] $expectedCommandIds
      *
-     * @dataProvider getExpectedReturnedCommandIds
+     * @dataProvider getExpectedVisibleCommandIds
      */
-    public function testFindCommandsByUnitOrUser(int $unitId, int $userId, array $expectedCommandIds): void
+    public function testFindVisibleCommandsByReadableUnitsOrOwner(array $readableUnitIds, int $userId, array $expectedCommandIds): void
     {
         $this->tester->haveInDatabase('tc_commands', ['unit_id' => 1, 'owner_id' => 999, 'id' => 5] + self::COMMAND);
         $this->tester->haveInDatabase('tc_commands', ['unit_id' => 999, 'owner_id' => 4, 'id' => 6] + self::COMMAND);
-        $commands = $this->repository->findByUnitAndUser($unitId, $userId);
+        $commands = $this->repository->findVisibleByUser($readableUnitIds, $userId);
+        $this->assertSame(
+            $expectedCommandIds,
+            array_map(static function (Command $command): int {
+                return $command->getId();
+            }, $commands),
+        );
+    }
+
+    /** @return mixed[] */
+    public function getExpectedVisibleCommandIdsByVehicle(): array
+    {
+        return [
+            [[], 4, [7]],
+            [[1], 3, [5]],
+            [[1], 4, [5, 7]],
+            [[2], 3, [6]],
+        ];
+    }
+
+    /**
+     * @param int[] $readableUnitIds
+     * @param int[] $expectedCommandIds
+     *
+     * @dataProvider getExpectedVisibleCommandIdsByVehicle
+     */
+    public function testFindVisibleCommandsByVehicleAndReadableUnitsOrOwner(array $readableUnitIds, int $userId, array $expectedCommandIds): void
+    {
+        $this->tester->haveInDatabase('tc_vehicle', self::VEHICLE);
+        $this->tester->haveInDatabase('tc_commands', ['unit_id' => 1, 'owner_id' => 999, 'id' => 5, 'vehicle_id' => self::VEHICLE['id']] + self::COMMAND);
+        $this->tester->haveInDatabase('tc_commands', ['unit_id' => 2, 'owner_id' => 999, 'id' => 6, 'vehicle_id' => self::VEHICLE['id']] + self::COMMAND);
+        $this->tester->haveInDatabase('tc_commands', ['unit_id' => 999, 'owner_id' => 4, 'id' => 7, 'vehicle_id' => self::VEHICLE['id']] + self::COMMAND);
+        $this->tester->haveInDatabase('tc_commands', ['unit_id' => 1, 'owner_id' => 999, 'id' => 9, 'vehicle_id' => null] + self::COMMAND);
+
+        $commands = $this->repository->findVisibleByVehicleAndUser(self::VEHICLE['id'], $readableUnitIds, $userId);
+
         $this->assertSame(
             $expectedCommandIds,
             array_map(static function (Command $command): int {

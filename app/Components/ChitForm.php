@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Components;
 
+use App\Model\Auth\IAuthorizator;
+use App\Model\Auth\Resources\Camp;
+use App\Model\Cashbook\CampBudgetUpdateNotAllowed;
 use App\Model\Cashbook\Cashbook\Amount;
 use App\Model\Cashbook\Cashbook\CashbookId;
+use App\Model\Cashbook\Cashbook\CashbookType;
 use App\Model\Cashbook\Cashbook\Chit\DuplicitCategory;
 use App\Model\Cashbook\Cashbook\Chit\SingleItemRestriction;
 use App\Model\Cashbook\Cashbook\ChitBody;
@@ -21,6 +25,7 @@ use App\Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use App\Model\Cashbook\ReadModel\Queries\CategoryListQuery;
 use App\Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use App\Model\Cashbook\ReadModel\Queries\ChitQuery;
+use App\Model\Cashbook\ReadModel\Queries\SkautisIdQuery;
 use App\Model\Common\ReadModel\Queries\MemberNamesQuery;
 use App\Model\Common\Services\CommandBus;
 use App\Model\Common\Services\QueryBus;
@@ -71,6 +76,7 @@ final class ChitForm extends BaseControl
         private UnitId $unitId,
         private CommandBus $commandBus,
         private QueryBus $queryBus,
+        private IAuthorizator $authorizator,
         private LoggerInterface $logger,
     ) {
         $this->isEditable = $isEditable;
@@ -325,6 +331,8 @@ final class ChitForm extends BaseControl
         }
 
         try {
+            $this->assertCanUpdateCampBudget();
+
             if ($chitId !== null) {
                 $this->commandBus->handle(new UpdateChit($cashbookId, $chitId, $chitBody, $method, $items));
                 $this->flashMessage('Paragon byl upraven.');
@@ -337,11 +345,17 @@ final class ChitForm extends BaseControl
         } catch (InvalidArgumentException|CashbookNotFound $exc) {
             $this->flashMessage('Paragon se nepodařilo přidat do seznamu.', 'danger');
             $this->logger->error(sprintf('Can\'t add chit to cashbook (%s: %s)', $exc::class, $exc->getMessage()));
+        } catch (CampBudgetUpdateNotAllowed) {
+            $this->flashMessage('Nemáte oprávnění upravovat rozpočtové kategorie tábora ve skautISu. Doklad nebyl uložen.', 'danger');
         } catch (ChitLocked) {
             $this->flashMessage('Nelze upravit zamčený paragon', 'error');
         } catch (AmountMustBeGreaterThanZero) {
             $form->addError('Nelze uložit doklad, protože kategorie ve skautisu nemůže být záporná!');
-        } catch (WsdlException) {
+        } catch (WsdlException $exc) {
+            $this->logger->error(
+                sprintf('Unable to save chit changes to SkautIS (%s: %s)', $exc::class, $exc->getMessage()),
+                ['exception' => $exc],
+            );
             $this->flashMessage('Nepodařilo se upravit záznamy ve skautisu.', 'danger');
         } catch (DuplicitCategory) {
             $form->addError('Není dovoleno přidávat více položek se stejou kategorií!');
@@ -350,12 +364,34 @@ final class ChitForm extends BaseControl
         }
     }
 
+    private function assertCanUpdateCampBudget(): void
+    {
+        $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
+        assert($cashbook instanceof Cashbook);
+
+        if (! $cashbook->getType()->equalsValue(CashbookType::CAMP)) {
+            return;
+        }
+
+        $campId = $this->queryBus->handle(new SkautisIdQuery($this->cashbookId));
+        if ($this->authorizator->isAllowed(Camp::UPDATE_BUDGET, $campId)) {
+            return;
+        }
+
+        throw new CampBudgetUpdateNotAllowed();
+    }
+
     /** @return string[] */
     private function getAdultMemberNames(): array
     {
         try {
             return array_values($this->queryBus->handle(new MemberNamesQuery($this->unitId, 15)));
-        } catch (WsdlException) {
+        } catch (WsdlException $exc) {
+            $this->logger->error(
+                sprintf('Unable to load adult member names from SkautIS (%s: %s)', $exc::class, $exc->getMessage()),
+                ['exception' => $exc],
+            );
+
             return [];
         }
     }

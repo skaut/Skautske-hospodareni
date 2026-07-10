@@ -47,7 +47,7 @@ class VehicleGrid extends BaseGridControl
         $grid->addFilterText('search', '', ['type', 'v.metadata.authorName', 'registration'])
             ->setPlaceholder('Typ vozdila, uživatel...');
 
-        $grid->setDataSource($this->travel->getVehiclesByFilter());
+        $grid->setDataSource($this->travel->getVehiclesByFilter($this->unitId));
 
         $grid->addAction('edit', '', ':Travel:Vehicle:detail', ['id' => 'id'])
             ->setIcon('far fa-edit')
@@ -67,6 +67,12 @@ class VehicleGrid extends BaseGridControl
 
     public function handleRemove(int $id): void
     {
+        $vehicle = $this->travel->getVehicleDTO($id);
+        if ($vehicle === null || $vehicle->getUnitId() !== $this->unitId) {
+            $this->flashMessage('Nemáte oprávnění k vozidlu', 'danger');
+            $this->redirect(':Travel:VehicleList:default');
+        }
+
         try {
             $this->travel->removeVehicle($id);
             $this->flashMessage('Vozidlo bylo odebráno.');

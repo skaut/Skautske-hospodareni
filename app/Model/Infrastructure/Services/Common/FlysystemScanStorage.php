@@ -6,37 +6,26 @@ namespace App\Model\Infrastructure\Services\Common;
 
 use App\Model\Common\Exception\InvalidScanFile;
 use App\Model\Common\File;
-use App\Model\Common\FileNotFound;
 use App\Model\Common\FilePath;
 use App\Model\Common\IScanStorage;
-use Assert\Assertion;
+use App\Model\Common\Storage\AbstractStorage;
 use finfo;
-use GuzzleHttp\Psr7\Utils;
 use League\Flysystem\FilesystemOperator;
-use League\Flysystem\UnableToDeleteFile;
-use League\Flysystem\UnableToReadFile;
 
 use function in_array;
 
 use const FILEINFO_MIME_TYPE;
 
-final class FlysystemScanStorage implements IScanStorage
+final class FlysystemScanStorage extends AbstractStorage implements IScanStorage
 {
-    public function __construct(private FilesystemOperator $filesystem)
+    public function __construct(FilesystemOperator $filesystem)
     {
+        parent::__construct($filesystem);
     }
 
     public function get(FilePath $path): File
     {
-        try {
-            $contents = $this->filesystem->readStream($path->getPath());
-
-            Assertion::isResource($contents);
-
-            return new File(Utils::streamFor($contents), $path);
-        } catch (UnableToReadFile $e) {
-            throw new FileNotFound($e->getMessage(), $e->getCode(), $e);
-        }
+        return new File($this->readStreamPath($path->getPath()), $path);
     }
 
     public function save(FilePath $path, string $contents): void
@@ -47,16 +36,12 @@ final class FlysystemScanStorage implements IScanStorage
             throw InvalidScanFile::invalidType($mimeType);
         }
 
-        $this->filesystem->write($path->getPath(), $contents);
+        $this->writePath($path->getPath(), $contents);
     }
 
     public function delete(FilePath $path): void
     {
-        try {
-            $this->filesystem->delete($path->getPath());
-        } catch (UnableToDeleteFile) {
-            // File was probably deleted before
-        }
+        $this->deletePath($path->getPath());
     }
 
     private function detectMimeType(string $contents): ?string

@@ -29,8 +29,23 @@ class MissingAutocomputedCategoryControl extends BaseControl
 
     public function handleActivate(): void
     {
+        $camp = $this->queryBus->handle(new CampQuery($this->campId));
+        assert($camp instanceof \App\Model\Event\Camp);
+
+        if (! $this->isApproved($camp->getState())) {
+            $this->reload('Dopočítávání rozpočtových kategorií lze aktivovat až po schválení tábora střediskovou radou.', 'danger');
+        }
+
+        if (! $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $this->campId->toInt())) {
+            $this->reload('Nemáte oprávnění aktivovat automatické dopočítávání rozpočtu tábora.', 'danger');
+        }
+
+        if (! $this->authorizator->isAllowed(Camp::UPDATE_BUDGET, $this->campId->toInt())) {
+            $this->reload('Nemáte oprávnění upravovat rozpočtové kategorie tábora ve skautISu.', 'danger');
+        }
+
         $this->commandBus->handle(new ActivateAutocomputedCashbook($this->campId));
-        $this->reload();
+        $this->reload('Bylo aktivováno automatické dopočítávání rozpočtových kategorií.');
     }
 
     public function render(): void
@@ -39,11 +54,20 @@ class MissingAutocomputedCategoryControl extends BaseControl
         assert($camp instanceof \App\Model\Event\Camp);
 
         $this->template->setFile(__DIR__.'/templates/MissingAutocomputedCategoryControl.latte');
+        $isApproved = $this->isApproved($camp->getState());
+        $canUpdateBudget = $this->authorizator->isAllowed(Camp::UPDATE_BUDGET, $this->campId->toInt());
+        $canActivateAutocomputedBudget = $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $this->campId->toInt());
         $this->template->setParameters([
-            'isApproved' => in_array($camp->getState(), [CampState::APPROVED_PARENT, CampState::REAL->value]),
-            'isEditable' => $this->authorizator->isAllowed(Camp::UPDATE_REAL, $this->campId->toInt()),
-            'canActivate' => $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $this->campId->toInt()),
+            'isApproved' => $isApproved,
+            'canUpdateBudget' => $canUpdateBudget,
+            'canActivateAutocomputedBudget' => $canActivateAutocomputedBudget,
+            'canActivate' => $isApproved && $canUpdateBudget && $canActivateAutocomputedBudget,
         ]);
         $this->template->render();
+    }
+
+    private function isApproved(string $campState): bool
+    {
+        return in_array($campState, [CampState::APPROVED_PARENT->value, CampState::REAL->value], true);
     }
 }

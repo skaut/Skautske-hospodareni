@@ -32,24 +32,58 @@ final class CommandRepository implements ICommandRepository
         return $this->em->getRepository(Command::class)->findBy(['unitId' => $unitId]);
     }
 
-    /** @return Command[] */
-    public function findByUnitAndUser(int $unitId, int $userId): array
+    /**
+     * @param int[] $readableUnitIds
+     *
+     * @return Command[]
+     */
+    public function findVisibleByUser(array $readableUnitIds, int $userId): array
     {
-        return $this->em->createQueryBuilder()
+        $qb = $this->em->createQueryBuilder()
             ->select('c')
             ->from(Command::class, 'c')
-            ->where('c.unitId = :unitId')
-            ->orWhere('c.ownerId = :userId')
-            ->setParameter('unitId', $unitId)
+            ->where('c.ownerId = :userId')
             ->setParameter('userId', $userId)
-            ->getQuery()
-            ->getResult();
+            ->orderBy('c.id', 'ASC');
+
+        if ($readableUnitIds !== []) {
+            $qb->orWhere('c.unitId IN (:readableUnitIds)')
+                ->setParameter('readableUnitIds', $readableUnitIds);
+        }
+
+        return $qb->getQuery()->getResult();
     }
 
     /** @return Command[] */
     public function findByVehicle(int $vehicleId): array
     {
         return $this->em->getRepository(Command::class)->findBy(['vehicle' => $vehicleId]);
+    }
+
+    /**
+     * @param int[] $readableUnitIds
+     *
+     * @return Command[]
+     */
+    public function findVisibleByVehicleAndUser(int $vehicleId, array $readableUnitIds, int $userId): array
+    {
+        $qb = $this->em->createQueryBuilder()
+            ->select('c')
+            ->from(Command::class, 'c')
+            ->where('IDENTITY(c.vehicle) = :vehicleId')
+            ->setParameter('vehicleId', $vehicleId)
+            ->setParameter('userId', $userId)
+            ->orderBy('c.id', 'ASC');
+
+        $visibility = $qb->expr()->orX('c.ownerId = :userId');
+        if ($readableUnitIds !== []) {
+            $visibility->add('c.unitId IN (:readableUnitIds)');
+            $qb->setParameter('readableUnitIds', $readableUnitIds);
+        }
+
+        $qb->andWhere($visibility);
+
+        return $qb->getQuery()->getResult();
     }
 
     /** @return Command[] */

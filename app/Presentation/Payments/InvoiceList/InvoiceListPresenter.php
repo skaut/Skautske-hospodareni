@@ -22,6 +22,7 @@ use App\Model\Invoice\Entity\Invoice;
 use App\Model\Invoice\Entity\InvoiceSequence;
 use App\Model\Invoice\InvoiceAlreadySent;
 use App\Model\Invoice\InvoiceHasNoEmails;
+use App\Model\Invoice\InvoiceImageStorage;
 use App\Model\Invoice\InvoiceMailingService;
 use App\Model\Invoice\InvoiceReminderNotAllowed;
 use App\Model\Invoice\Manager\InvoiceManager;
@@ -31,16 +32,14 @@ use App\Model\Mail\Repositories\IGoogleRepository;
 use App\Model\Services\PdfRenderer;
 use App\Presentation\InvoiceAccess\InvoiceAccessGuard;
 use App\Presentation\Payments\PaymentsBasePresenter;
+use Contributte\Application\Response\PSR7StreamResponse;
 use InvalidArgumentException;
 use Nette\Application\BadRequestException;
-use Nette\Application\Responses\FileResponse;
 use Throwable;
 
 use function array_keys;
 use function array_map;
 use function in_array;
-use function pathinfo;
-use function strtolower;
 
 final class InvoiceListPresenter extends PaymentsBasePresenter
 {
@@ -66,6 +65,7 @@ final class InvoiceListPresenter extends PaymentsBasePresenter
         protected PdfRenderer $pdf,
         protected InvoiceMailingService $invoiceMailingService,
         protected IGoogleRepository $googleRepository,
+        private readonly InvoiceImageStorage $invoiceImageStorage,
     ) {
         parent::__construct();
     }
@@ -328,17 +328,15 @@ final class InvoiceListPresenter extends PaymentsBasePresenter
             ? $this->exportService->getInvoiceLogoImagePath($invoice)
             : $this->exportService->getInvoiceStampImagePath($invoice);
 
-        if ($imagePath === null) {
+        if ($imagePath === null || ! $this->invoiceImageStorage->exists($imagePath)) {
             throw new BadRequestException($type === 'logo' ? 'Logo nebylo nalezeno.' : 'Razítko nebylo nalezeno.', 404);
         }
 
-        $mimeType = match (strtolower((string) pathinfo($imagePath, PATHINFO_EXTENSION))) {
-            'jpg', 'jpeg' => 'image/jpeg',
-            'png' => 'image/png',
-            default => 'application/octet-stream',
-        };
-
-        $this->sendResponse(new FileResponse($imagePath, $type === 'logo' ? 'logo' : 'razitko-podpis', $mimeType, false));
+        $this->sendResponse(new PSR7StreamResponse(
+            $this->invoiceImageStorage->getStream($imagePath),
+            $this->invoiceImageStorage->getDownloadName($type),
+            $this->invoiceImageStorage->getContentType($imagePath),
+        ));
     }
 
     public function handleRemove(int $id): void

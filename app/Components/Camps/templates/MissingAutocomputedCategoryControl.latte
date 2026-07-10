@@ -3,7 +3,8 @@
     <p>
         Nepodařilo se načíst všechny rozpočtové kategorie.<br />
         {if $isApproved} <i class="far fa-check-circle"></i> {else} <i class="far fa-times-circle"></i> {/if} Je tábor schválen střediskovou radou?<br />
-        {if $isEditable} <i class="far fa-check-circle"></i> {else} <i class="far fa-times-circle"></i> {/if} Máte oprávnění upravovat tábor?<br /><br />
+        {if $canActivateAutocomputedBudget} <i class="far fa-check-circle"></i> {else} <i class="far fa-times-circle"></i> {/if} Máte oprávnění aktivovat automatické dopočítávání rozpočtu?<br />
+        {if $canUpdateBudget} <i class="far fa-check-circle"></i> {else} <i class="far fa-times-circle"></i> {/if} Máte oprávnění upravovat rozpočtové kategorie tábora?<br /><br />
         <a n:href="activate!" class="btn btn-primary{if !$canActivate} disabled{/if}">Aktivovat dopočítávání</a>
     </p>
 </div>

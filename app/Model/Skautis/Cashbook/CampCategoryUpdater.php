@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Model\Skautis\Cashbook;
 
+use App\Model\Auth\IAuthorizator;
+use App\Model\Auth\Resources\Camp;
+use App\Model\Cashbook\CampBudgetUpdateNotAllowed;
 use App\Model\Cashbook\Cashbook\CashbookId;
 use App\Model\Cashbook\Repositories\ICampCategoryRepository;
 use App\Model\Cashbook\Repositories\ICampRepository;
@@ -11,7 +14,7 @@ use App\Model\Cashbook\Services\ICampCategoryUpdater;
 use App\Model\Event\SkautisCampId;
 use App\Model\Skautis\Exception\AmountMustBeGreaterThanZero;
 use App\Model\Utils\MoneyFactory;
-use Skautis\Skautis;
+use Skautis\Wsdl\WebServiceInterface;
 use Skautis\Wsdl\WsdlException;
 
 use function array_diff;
@@ -26,7 +29,8 @@ use const ARRAY_FILTER_USE_BOTH;
 final class CampCategoryUpdater implements ICampCategoryUpdater
 {
     public function __construct(
-        private Skautis $skautis,
+        private WebServiceInterface $eventWebService,
+        private IAuthorizator $authorizator,
         private ICampRepository $campRepository,
         private ICampCategoryRepository $campCategories,
     ) {
@@ -36,6 +40,10 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
     public function updateCategories(CashbookId $cashbookId, array $cashbookTotals): void
     {
         $campSkautisId = $this->campRepository->findByCashbookId($cashbookId)->getSkautisId();
+        if (! $this->authorizator->isAllowed(Camp::UPDATE_BUDGET, $campSkautisId->toInt())) {
+            throw new CampBudgetUpdateNotAllowed();
+        }
+
         $skautisTotals = $this->getSkautisTotals($campSkautisId);
 
         // Update categories that are not in cashbook, has total > 0 in Skautis
@@ -57,7 +65,7 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
 
         try {
             foreach ($cashbookTotals as $categoryId => $total) {
-                $this->skautis->event->EventCampStatementUpdate([
+                $this->eventWebService->EventCampStatementUpdate([
                     'ID' => $categoryId,
                     'ID_EventCamp' => $campSkautisId->toInt(),
                     'Ammount' => $total,

@@ -8,5 +8,6 @@ use App\Components\Travel\CommandGrid;
 
 interface ICommandGridFactory
 {
-    public function create(int $unitId, int $userId): CommandGrid;
+    /** @param int[] $readableUnitIds */
+    public function create(array $readableUnitIds, int $userId): CommandGrid;
 }

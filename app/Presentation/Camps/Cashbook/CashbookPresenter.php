@@ -9,6 +9,7 @@ use App\Components\CashbookControl;
 use App\Components\Factories\Camps\IMissingAutocomputedCategoryControlFactory;
 use App\Components\Factories\ICashbookControlFactory;
 use App\Model\Auth\Resources\Camp;
+use App\Model\Cashbook\CampBudgetUpdateNotAllowed;
 use App\Model\Cashbook\Cashbook\Amount;
 use App\Model\Cashbook\Cashbook\CashbookId;
 use App\Model\Cashbook\Cashbook\ChitBody;
@@ -80,6 +81,16 @@ final class CashbookPresenter extends BasePresenter
 
     public function handleActivateAutocomputedCashbook(int $aid): void
     {
+        if (! $this->authorizator->isAllowed(Camp::UPDATE_REAL_COST, $this->getCampId())) {
+            $this->flashMessage('Nemáte oprávnění aktivovat automatické dopočítávání rozpočtu tábora.', 'danger');
+            $this->redirect('this');
+        }
+
+        if (! $this->authorizator->isAllowed(Camp::UPDATE_BUDGET, $this->getCampId())) {
+            $this->flashMessage('Nemáte oprávnění upravovat rozpočtové kategorie tábora ve skautISu.', 'danger');
+            $this->redirect('this');
+        }
+
         try {
             $this->commandBus->handle(new ActivateAutocomputedCashbook(new SkautisCampId($this->getCampId())));
             $this->flashMessage('Byl aktivován automatický výpočet příjmů a výdajů v rozpočtu.');
@@ -124,6 +135,11 @@ final class CashbookPresenter extends BasePresenter
     private function formImportHpdSubmitted(BaseForm $form): void
     {
         $this->editableOnly();
+        if (! $this->authorizator->isAllowed(Camp::UPDATE_BUDGET, $this->getCampId())) {
+            $this->flashMessage('Nemáte oprávnění upravovat rozpočtové kategorie tábora ve skautISu. Účastnické příjmy nebyly importovány.', 'danger');
+            $this->redirect('default', ['aid' => $this->getCampId()]);
+        }
+
         $values = $form->getValues();
 
         try {
@@ -147,7 +163,12 @@ final class CashbookPresenter extends BasePresenter
         $categoriesDto = $this->queryBus->handle(new CategoryListQuery($this->getCashbookId()));
 
         $items = [new ChitItem($amount, $categoriesDto[$categoryId], $purpose)];
-        $this->commandBus->handle(new AddChitToCashbook($this->getCashbookId(), $body, $values->isAccount === 'Y' ? PaymentMethod::BANK() : PaymentMethod::CASH(), $items));
+        try {
+            $this->commandBus->handle(new AddChitToCashbook($this->getCashbookId(), $body, $values->isAccount === 'Y' ? PaymentMethod::BANK() : PaymentMethod::CASH(), $items));
+        } catch (CampBudgetUpdateNotAllowed) {
+            $this->flashMessage('Nemáte oprávnění upravovat rozpočtové kategorie tábora ve skautISu. Účastnické příjmy nebyly importovány.', 'danger');
+            $this->redirect('default', ['aid' => $this->getCampId()]);
+        }
 
         $this->flashMessage('HPD byl importován');
 

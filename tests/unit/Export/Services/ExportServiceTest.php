@@ -16,11 +16,14 @@ use App\Model\DTO\Participant\Statistics;
 use App\Model\Event\Event;
 use App\Model\Event\Functions;
 use App\Model\Event\Repositories\IEventRepository;
+use App\Model\Invoice\InvoiceImageStorage;
 use App\Model\Invoice\Repository\InvoiceUnitSettingRepository;
 use App\Model\Services\TemplateFactory;
 use App\Model\Unit\UnitService;
 use App\Model\Utils\MoneyFactory;
 use Codeception\Test\Unit;
+use League\Flysystem\Filesystem;
+use League\Flysystem\InMemory\InMemoryFilesystemAdapter;
 use Mockery as m;
 
 class ExportServiceTest extends Unit
@@ -62,7 +65,14 @@ class ExportServiceTest extends Unit
         // handle EventFunctions
         $queryBus->expects('handle')->once()->andReturn(m::mock(Functions::class));
 
-        $exportService = new ExportService($unitService, $templateFactory, $events, $queryBus, $invoiceUnitSettings);
+        $exportService = new ExportService(
+            $unitService,
+            $templateFactory,
+            $events,
+            $queryBus,
+            $invoiceUnitSettings,
+            new InvoiceImageStorage(new Filesystem(new InMemoryFilesystemAdapter()), '/tmp'),
+        );
 
         $templateFactory->expects('create')->withArgs(static function (string $templatePath, array $parameters): bool {
             if ($parameters['participantsCnt'] !== 0) {

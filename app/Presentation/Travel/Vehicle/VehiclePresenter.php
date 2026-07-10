@@ -93,7 +93,7 @@ class VehiclePresenter extends TravelBasePresenter
                 'vehicle' => $vehicle,
                 'subunitName' => $subunitName,
                 'canDelete' => $this->travelService->getCommandsCount($id) === 0,
-                'commands' => $this->travelService->getAllCommandsByVehicle($id),
+                'commands' => $this->travelService->getVisibleUserCommandsByVehicle($id, $this->getReadableUnitIds(), $this->getLoggedInUserId()),
                 'isEditable' => $this->isVehicleEditable($vehicle),
             ]);
         } catch (BadRequestException $exc) {

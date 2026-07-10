@@ -48,6 +48,7 @@ use App\Model\Event\SkautisEducationId;
 use App\Model\Event\SkautisEventId;
 use App\Model\Invoice\Entity\Invoice;
 use App\Model\Invoice\Enum\InvoicePaymentType;
+use App\Model\Invoice\InvoiceImageStorage;
 use App\Model\Invoice\Repository\InvoiceUnitSettingRepository;
 use App\Model\Mail\Repositories\IGoogleRepository;
 use App\Model\Participant\Payment\EventType;
@@ -66,7 +67,6 @@ use function array_map;
 use function array_sum;
 use function array_values;
 use function in_array;
-use function is_file;
 use function is_float;
 use function sprintf;
 
@@ -81,6 +81,7 @@ class ExportService
         private IEventRepository $events,
         private QueryBus $queryBus,
         private InvoiceUnitSettingRepository $invoiceUnitSettings,
+        private InvoiceImageStorage $invoiceImageStorage,
         private ?IGoogleRepository $googleRepository = null,
     ) {
     }
@@ -483,11 +484,7 @@ class ExportService
             ? $unitSetting?->getLogoImagePath()
             : $unitSetting?->getStampImagePath();
 
-        if ($imagePath === null || ! is_file($imagePath)) {
-            return null;
-        }
-
-        return $imagePath;
+        return $imagePath !== null ? $this->invoiceImageStorage->getReadableLocalPath($imagePath) : null;
     }
 
     private function resolveSenderEmail(Invoice $invoice): ?string

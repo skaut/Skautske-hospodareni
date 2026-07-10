@@ -15,11 +15,22 @@ interface ICommandRepository
     /** @return Command[] */
     public function findByUnit(int $unitId): array;
 
-    /** @return Command[] */
-    public function findByUnitAndUser(int $unitId, int $userId): array;
+    /**
+     * @param int[] $readableUnitIds
+     *
+     * @return Command[]
+     */
+    public function findVisibleByUser(array $readableUnitIds, int $userId): array;
 
     /** @return Command[] */
     public function findByVehicle(int $vehicleId): array;
+
+    /**
+     * @param int[] $readableUnitIds
+     *
+     * @return Command[]
+     */
+    public function findVisibleByVehicleAndUser(int $vehicleId, array $readableUnitIds, int $userId): array;
 
     /** @return Command[] */
     public function findByContract(int $contractId): array;

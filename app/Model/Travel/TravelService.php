@@ -76,9 +76,9 @@ class TravelService
         );
     }
 
-    public function getVehiclesByFilter(): QueryBuilder
+    public function getVehiclesByFilter(int $unitId): QueryBuilder
     {
-        return $this->vehicles->findByFilter();
+        return $this->vehicles->findByFilter($unitId);
     }
 
     /** @throws VehicleLinkedRecord|VehicleNotFound */
@@ -351,12 +351,16 @@ class TravelService
         }, $this->commands->findByUnit($unitId));
     }
 
-    /** @return DTO\Command[] */
-    public function getAllUserCommands(int $unitId, int $userId): array
+    /**
+     * @param int[] $readableUnitIds
+     *
+     * @return DTO\Command[]
+     */
+    public function getVisibleUserCommands(array $readableUnitIds, int $userId): array
     {
         return array_map(function (Command $command) {
             return DTO\CommandFactory::create($command);
-        }, $this->commands->findByUnitAndUser($unitId, $userId));
+        }, $this->commands->findVisibleByUser($readableUnitIds, $userId));
     }
 
     public function getCommandsCount(int $vehicleId): int
@@ -387,6 +391,18 @@ class TravelService
         return array_map(function (Command $command) {
             return DTO\CommandFactory::create($command);
         }, $this->commands->findByVehicle($vehicleId));
+    }
+
+    /**
+     * @param int[] $readableUnitIds
+     *
+     * @return DTO\Command[]
+     */
+    public function getVisibleUserCommandsByVehicle(int $vehicleId, array $readableUnitIds, int $userId): array
+    {
+        return array_map(function (Command $command) {
+            return DTO\CommandFactory::create($command);
+        }, $this->commands->findVisibleByVehicleAndUser($vehicleId, $readableUnitIds, $userId));
     }
 
     /**

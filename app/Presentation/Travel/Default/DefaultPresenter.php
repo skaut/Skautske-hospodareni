@@ -7,6 +7,7 @@ namespace App\Presentation\Travel\Default;
 use App\Components\Grids\GridFactory;
 use App\Model\DTO\Travel\Command;
 use App\Model\Travel\TravelService;
+use App\Presentation\Travel\TravelBasePresenter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Ublaboo\DataGrid\DataGrid;
 use Ublaboo\DataGrid\DataSource\DoctrineCollectionDataSource;
@@ -15,7 +16,7 @@ use function array_column;
 use function array_filter;
 use function array_unique;
 
-final class DefaultPresenter extends \App\BasePresenter
+final class DefaultPresenter extends TravelBasePresenter
 {
     public function __construct(
         private readonly TravelService $travelService,
@@ -35,7 +36,7 @@ final class DefaultPresenter extends \App\BasePresenter
 
     protected function createComponentGrid(): DataGrid
     {
-        $commands = $this->travelService->getAllUserCommands($this->getUnitId(), $this->getLoggedInUserId());
+        $commands = $this->travelService->getVisibleUserCommands($this->getReadableUnitIds(), $this->getLoggedInUserId());
         $vehicleIds = array_unique(array_filter(array_column($commands, 'vehicleId')));
 
         $grid = $this->gridFactory->createSimpleGrid(

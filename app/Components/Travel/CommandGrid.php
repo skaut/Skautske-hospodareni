@@ -18,8 +18,9 @@ use function array_unique;
 
 class CommandGrid extends BaseGridControl
 {
+    /** @param int[] $readableUnitIds */
     public function __construct(
-        private int $unitId,
+        private array $readableUnitIds,
         private int $userId,
         private TravelService $travel,
         private GridFactory $gridFactory,
@@ -28,7 +29,7 @@ class CommandGrid extends BaseGridControl
 
     protected function createComponentGrid(): DataGrid
     {
-        $commands = $this->travel->getAllUserCommands($this->unitId, $this->userId);
+        $commands = $this->travel->getVisibleUserCommands($this->readableUnitIds, $this->userId);
 
         $vehicleIds = array_column($commands, 'vehicleId');
         $vehicleIds = array_unique(array_filter($vehicleIds));
@@ -61,8 +62,6 @@ class CommandGrid extends BaseGridControl
             ->setPlaceholder('Účel cesty, cestující...');
 
         $grid->setDefaultFilter(['state' => Command::STATE_IN_PROGRESS], false);
-
-        $commands = $this->travel->getAllUserCommands($this->unitId, $this->userId);
 
         $grid->setDataSource(new DoctrineCollectionDataSource(new ArrayCollection($commands), 'id'));
 
