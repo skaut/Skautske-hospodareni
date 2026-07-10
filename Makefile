@@ -54,6 +54,9 @@ define wait_for_application
 		sleep 2; \
 	done; \
 	echo "Application did not become ready in time."; \
+	echo "Last application response:"; \
+	$(COMPOSE) exec -T selenium sh -lc "wget -S --header='Cookie: SELENIUM=SELENIUM' -O - http://moje-hospodareni.cz/ 2>&1 || true"; \
+	$(COMPOSE) logs --tail=100 nginx php-test || true; \
 	exit 1
 endef
 
@@ -72,6 +75,11 @@ endef
 define reset_writable_dirs
 	$(RUN_ROOT) $(1) sh -c \
 		'mkdir -p $(WRITABLE_DIRS) && chmod a+rwX $(WRITABLE_DIRS)'
+endef
+
+define clear_temp_dir
+	$(RUN_ROOT) $(1) sh -c \
+		'mkdir -p temp && find temp -mindepth 1 -maxdepth 1 ! -name .gitignore -exec rm -rf {} +'
 endef
 
 define reset_dependency_dirs
@@ -93,6 +101,7 @@ define run_acceptance
 	$(call wait_for_mysql_test)
 	$(call wait_for_selenium)
 	$(RUN_PHP_TEST) composer tests:acceptance:init
+	$(call clear_temp_dir,php-test)
 	$(call reset_writable_dirs,php-test)
 	$(if $(filter true,$(3)),$(call wait_for_application))
 	$(RUN_PHP_TEST) vendor/bin/codecept run acceptance $(strip $(1) -vv $(TEST_ARGS)); \
