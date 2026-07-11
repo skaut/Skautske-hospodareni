@@ -5,14 +5,13 @@ SHELL := /bin/bash
 # falls back to the standard rootful socket. Override by exporting DOCKER_SOCKET.
 export DOCKER_SOCKET ?= $(shell docker context inspect --format '{{.Endpoints.docker.Host}}' 2>/dev/null | sed -n 's|^unix://||p')
 
-COMPOSE         = docker compose -f docker/docker-compose.yml
+COMPOSE_FILE   ?= docker/docker-compose.yml
+COMPOSE         = docker compose $(foreach file,$(subst :, ,$(COMPOSE_FILE)),-f $(file))
 RUN_PHP_DEV     = $(COMPOSE) run --rm -T --entrypoint '' --user docker php
 RUN_PHP_TEST    = $(COMPOSE) run --rm -T --entrypoint '' --user docker php-test
 RUN_PHP_XDEBUG  = $(COMPOSE) run --rm --entrypoint '' --user docker php-xdebug
 EXEC_PHP        = docker exec -u docker -it hskauting.app
 EXEC_PHP_TEST   = docker exec -u docker -it hskauting.app-test
-DOCKER_UID      = 1000
-DOCKER_GID      = 1000
 
 APP_SERVICES        = traefik php php-xdebug nginx mysql adminer
 TEST_SERVICES       = mysql-test php-test
@@ -68,10 +67,8 @@ define wait_for_mysql_test
 endef
 
 define reset_writable_dirs
-	$(COMPOSE) run --rm -T --no-deps --user root $(1) sh -c \
-		'mkdir -p log uploads temp tests/_output tests/_support/_generated www/webtemp && \
-		chown -R $(DOCKER_UID):$(DOCKER_GID) log uploads temp tests/_output tests/_support/_generated www/webtemp && \
-		if [ -d tests/integration/fixtures ]; then chown -R $(DOCKER_UID):$(DOCKER_GID) tests/integration/fixtures; fi'
+	$(COMPOSE) run --rm -T --no-deps --user docker $(1) sh -c \
+		'mkdir -p log uploads temp tests/_output tests/_support/_generated www/webtemp'
 endef
 
 help: ## Zobrazí tuto nápovědu

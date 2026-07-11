@@ -1,0 +1,11 @@
+FROM thecodingmachine/php:8.3-v4-fpm-node20
+
+COPY --chown=docker:docker . /app/
+
+USER docker
+WORKDIR /app
+
+RUN mkdir -p log uploads temp tests/_output tests/_support/_generated www/webtemp \
+    && git config --global --add safe.directory /app
+
+ENV PATH="/app/vendor/bin:/app/bin:${PATH}"

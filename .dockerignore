@@ -1,0 +1,13 @@
+.git
+.github
+node_modules
+log
+uploads
+temp
+_temp
+tests/_output
+tests/_support/_generated
+www/webtemp
+artifacts
+workdir.tar.gz
+*.tar.gz

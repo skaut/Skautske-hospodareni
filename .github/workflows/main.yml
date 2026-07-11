@@ -89,19 +89,20 @@ jobs:
 
   # ── Rychlé kontroly sloučené do jednoho jobu (šetří I/O a čas) ──
   quick-checks:
-    name: Quick Checks (CS, PHPStan, Latte)
+    name: Quick Checks (CS, PHPStan, Latte, Mapping)
     runs-on: [self-hosted, docker, x64]
     needs: workdir
     environment: test
     env:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+      COMPOSE_FILE: docker/docker-compose.yml:docker/docker-compose.ci.yml
       COMPOSE_PROJECT_NAME: "quick-${{ github.run_id }}-${{ github.run_attempt }}"
     steps:
       - &clean-workspace
         name: Clean workspace
         shell: bash
         run: |
-          docker compose -f docker/docker-compose.yml down -v || true
+          docker compose down -v || true
           if [ -z "${GITHUB_WORKSPACE:-}" ] || [ ! -d "$GITHUB_WORKSPACE" ]; then
             echo "GITHUB_WORKSPACE is not set to an existing directory."
             exit 1
@@ -112,7 +113,6 @@ jobs:
             echo "Refusing to clean outside GITHUB_WORKSPACE: PWD=$current GITHUB_WORKSPACE=$workspace"
             exit 1
           fi
-          sudo chown -R "$(id -u):$(id -g)" "$workspace" || true
           find "$workspace" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
 
       - uses: actions/download-artifact@v4
@@ -127,8 +127,9 @@ jobs:
           tar --no-overwrite-dir --no-same-owner --no-same-permissions -xzf workdir.tar.gz -C _tmp_unpack
           find _tmp_unpack -mindepth 1 -maxdepth 1 -exec mv -t . -- {} +
           rm -rf _tmp_unpack
-          mkdir -p log uploads temp tests/_output tests/_support/_generated www/webtemp
-          sudo find "$GITHUB_WORKSPACE" -mindepth 1 -exec chown -h 1000:1000 {} +
+
+      - name: Build CI PHP image
+        run: docker compose build php-test
 
       - name: Coding standard
         run: make check-cs-check
@@ -139,43 +140,30 @@ jobs:
       - name: Latte lint
         run: make check-latte
 
+      - name: Validate mapping
+        run: make test-mapping
+
+      - name: Pack migrations
+        if: failure()
+        shell: bash
+        run: |
+          docker compose run --rm -T --no-deps --entrypoint '' --user docker php-test \
+            sh -lc 'tar -czf - migrations' > migrations.tar.gz || true
+          if [ ! -s migrations.tar.gz ]; then
+            rm -f migrations.tar.gz
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: migrations
+          path: migrations.tar.gz
+          if-no-files-found: ignore
+
       - &docker-down
         name: Stop and remove containers
         if: always()
-        run: docker compose -f docker/docker-compose.yml down --remove-orphans -v || true
-
-  # ── Testy po rychlých kontrolách ────────────────────────────
-  tests-unit:
-    name: Unit tests
-    runs-on: [self-hosted, docker, x64]
-    needs: [workdir, quick-checks]
-    environment: test
-    env:
-      APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
-      COMPOSE_PROJECT_NAME: "unit-${{ github.run_id }}-${{ github.run_attempt }}"
-    steps:
-      - *clean-workspace
-      - uses: actions/download-artifact@v4
-        with: { name: workdir, path: . }
-      - *extract-workdir
-      - run: make test-unit
-      - *docker-down
-
-  tests-integration:
-    name: Integration tests
-    runs-on: [self-hosted, docker, x64]
-    needs: [workdir, quick-checks]
-    environment: test
-    env:
-      APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
-      COMPOSE_PROJECT_NAME: "integration-${{ github.run_id }}-${{ github.run_attempt }}"
-    steps:
-      - *clean-workspace
-      - uses: actions/download-artifact@v4
-        with: { name: workdir, path: . }
-      - *extract-workdir
-      - run: make test-integration
-      - *docker-down
+        run: docker compose down --remove-orphans -v || true
 
   collect-code-coverage:
     name: Collect code coverage
@@ -186,13 +174,20 @@ jobs:
     if: github.ref == 'refs/heads/master'
     env:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
+      COMPOSE_FILE: docker/docker-compose.yml:docker/docker-compose.ci.yml
       COMPOSE_PROJECT_NAME: "coverage-${{ github.run_id }}-${{ github.run_attempt }}"
     steps:
       - *clean-workspace
       - uses: actions/download-artifact@v4
         with: { name: workdir, path: . }
       - *extract-workdir
+      - run: docker compose build php-test
       - run: make test-coverage
+      - name: Export coverage XML
+        shell: bash
+        run: |
+          docker compose run --rm -T --no-deps --entrypoint '' --user docker php-test \
+            sh -lc 'cat tests/_output/coverage.xml' > coverage.xml
       - name: Prepare Codecov environment
         shell: bash
         run: |
@@ -202,88 +197,85 @@ jobs:
         continue-on-error: true
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: tests/_output/coverage.xml
+          files: coverage.xml
           disable_safe_directory: true
           fail_ci_if_error: false
       - *docker-down
 
-  validate-mapping:
-    name: Validate mapping
+  # ── Testy ───────────────────────────────────────────────────
+  tests:
+    name: Tests - ${{ matrix.label }}
     runs-on: [self-hosted, docker, x64]
     needs: [workdir, quick-checks]
-    environment: test
-    env:
-      APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
-      COMPOSE_PROJECT_NAME: "mapping-${{ github.run_id }}-${{ github.run_attempt }}"
-    steps:
-      - *clean-workspace
-      - uses: actions/download-artifact@v4
-        with: { name: workdir, path: . }
-      - *extract-workdir
-      - run: make test-mapping
-      - uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: migrations
-          path: migrations
-      - *docker-down
-
-  # ── Acceptance testy ────────────────────────────────────────
-  tests-acceptance:
-    name: Acceptance - ${{ matrix.label }}
-    runs-on: [self-hosted, docker, x64]
-    needs: [workdir, quick-checks, tests-unit, tests-integration, validate-mapping]
     timeout-minutes: 45
     environment: test
     strategy:
       fail-fast: false
       matrix:
         include:
+          - label: Unit
+            shard: unit
+            port: 8091
+            build_services: php-test
+            command: make test-unit
+          - label: Integration
+            shard: integration
+            port: 8092
+            build_services: php-test
+            command: make test-integration
           - label: Payment groups
             shard: payment-groups
             port: 8081
-            test_args: --group payment tests/acceptance/PaymentCest.php
+            build_services: php-test nginx
+            command: make ci-acceptance TEST='--group payment tests/acceptance/PaymentCest.php'
           - label: Payment detail
             shard: payment-detail
             port: 8082
-            test_args: --group payment tests/acceptance/PaymentDetailCest.php
+            build_services: php-test nginx
+            command: make ci-acceptance TEST='--group payment tests/acceptance/PaymentDetailCest.php'
           - label: Payment dashboard
             shard: payment-dashboard
             port: 8083
-            test_args: --group payment tests/acceptance/PaymentDashboardCest.php
+            build_services: php-test nginx
+            command: make ci-acceptance TEST='--group payment tests/acceptance/PaymentDashboardCest.php'
           - label: Invoice
             shard: invoice
             port: 8084
-            test_args: --group invoice
+            build_services: php-test nginx
+            command: make ci-acceptance TEST='--group invoice'
           - label: Settings and admin
             shard: settings-admin
             port: 8085
-            test_args: --group settings --group admin
+            build_services: php-test nginx
+            command: make ci-acceptance TEST='--group settings --group admin'
           - label: Rest
             shard: rest
             port: 8086
-            test_args: --skip-group payment --skip-group invoice --skip-group settings --skip-group admin
+            build_services: php-test nginx
+            command: make ci-acceptance TEST='--skip-group payment --skip-group invoice --skip-group settings --skip-group admin'
     env:
-      COMPOSE_FILE: docker/docker-compose.yml
-      COMPOSE_PROJECT_NAME: "acc-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.shard }}"
+      COMPOSE_FILE: docker/docker-compose.yml:docker/docker-compose.ci.yml
+      COMPOSE_PROJECT_NAME: "test-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.shard }}"
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
       TRAEFIK_HOST_PORT: ${{ matrix.port }}
     steps:
       - name: Pre-clean compose project
         shell: bash
-        run: docker compose -f docker/docker-compose.yml down --remove-orphans -v || true
+        run: docker compose down --remove-orphans -v || true
       - *clean-workspace
       - uses: actions/download-artifact@v4
         with: { name: workdir, path: . }
       - *extract-workdir
-      - run: docker compose build php-test
-      - run: make ci-acceptance TEST='${{ matrix.test_args }}'
+      - run: docker compose build ${{ matrix.build_services }}
+      - run: ${{ matrix.command }}
       - name: Pack Codeception output
         if: always()
         shell: bash
         run: |
-          if [ -d tests/_output ]; then
-            tar -czf tests-output.tar.gz -C tests _output
+          docker compose run --rm -T --no-deps --entrypoint '' --user docker php-test \
+            sh -lc 'tar -czf - -C tests _output' > tests-output.tar.gz || true
+          if [ ! -s tests-output.tar.gz ]; then
+            rm -f tests-output.tar.gz
           fi
       - name: Collect compose logs
         if: always()
@@ -310,7 +302,7 @@ jobs:
   # ── Gate ────────────────────────────────────────────────────
   checks-passed:
     name: Wait for all checks
-    needs: [quick-checks, tests-unit, tests-integration, tests-acceptance, validate-mapping]
+    needs: [quick-checks, tests]
     runs-on: [self-hosted, docker, x64]
     container:
       image: skaut/lebeda:8.3-ci

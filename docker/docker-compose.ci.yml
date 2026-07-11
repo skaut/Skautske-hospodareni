@@ -1,0 +1,74 @@
+volumes:
+    ci-log:
+    ci-uploads:
+    ci-temp:
+    ci-codeception-output:
+    ci-codeception-generated:
+    ci-webtemp:
+    ci-migrations:
+
+services:
+    php:
+        build:
+            context: ..
+            dockerfile: docker/containers/php/Dockerfile.ci
+        volumes: !override
+            - ci-log:/app/log
+            - ci-uploads:/app/uploads
+            - ci-temp:/app/temp
+            - ci-codeception-output:/app/tests/_output
+            - ci-codeception-generated:/app/tests/_support/_generated
+            - ci-webtemp:/app/www/webtemp
+            - ci-migrations:/app/migrations
+            - ./containers/php/docker.conf:/etc/php/8.3/fpm/pool.d/www.conf
+            - ./containers/php/ini/php.ini:/etc/php/8.3/fpm/conf.d/php.ini
+            - ./containers/php/ini/php.ini:/etc/php/8.3/cli/conf.d/php.ini
+
+    php-xdebug:
+        build:
+            context: ..
+            dockerfile: docker/containers/php/Dockerfile.ci
+        volumes: !override
+            - ci-log:/app/log
+            - ci-uploads:/app/uploads
+            - ci-temp:/app/temp
+            - ci-codeception-output:/app/tests/_output
+            - ci-codeception-generated:/app/tests/_support/_generated
+            - ci-webtemp:/app/www/webtemp
+            - ci-migrations:/app/migrations
+            - ./containers/php/docker.conf:/etc/php/8.3/fpm/pool.d/www.conf
+            - ./containers/php/ini/php.ini:/etc/php/8.3/fpm/conf.d/php.ini
+            - ./containers/php/ini/php.ini:/etc/php/8.3/cli/conf.d/php.ini
+
+    php-test:
+        build:
+            context: ..
+            dockerfile: docker/containers/php/Dockerfile.ci
+        networks:
+            traefik:
+                aliases:
+                    - php
+                    - php-xdebug
+                    - php-test
+        volumes: !override
+            - ci-log:/app/log
+            - ci-uploads:/app/uploads
+            - ci-temp:/app/temp
+            - ci-codeception-output:/app/tests/_output
+            - ci-codeception-generated:/app/tests/_support/_generated
+            - ci-webtemp:/app/www/webtemp
+            - ci-migrations:/app/migrations
+            - ./containers/php/docker.conf:/etc/php/8.3/fpm/pool.d/www.conf
+            - ./containers/php/ini/php.ini:/etc/php/8.3/fpm/conf.d/php.ini
+            - ./containers/php/ini/php.ini:/etc/php/8.3/cli/conf.d/php.ini
+
+    nginx:
+        image: ${COMPOSE_PROJECT_NAME:-hskauting}-nginx-ci
+        build:
+            context: ..
+            dockerfile: docker/containers/nginx/Dockerfile.ci
+        volumes: !override
+            - ci-webtemp:/app/www/webtemp:ro
+            - ./containers/nginx/conf.d:/etc/nginx/conf.d
+        depends_on: !override
+            - php-test
