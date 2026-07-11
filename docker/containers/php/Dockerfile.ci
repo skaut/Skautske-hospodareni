@@ -5,7 +5,6 @@ COPY --chown=docker:docker . /app/
 USER docker
 WORKDIR /app
 
-RUN mkdir -p log uploads temp tests/_output tests/_support/_generated www/webtemp \
-    && git config --global --add safe.directory /app
+RUN mkdir -p log uploads temp tests/_output tests/_support/_generated www/webtemp
 
 ENV PATH="/app/vendor/bin:/app/bin:${PATH}"
