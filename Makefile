@@ -11,6 +11,8 @@ RUN_PHP_TEST    = $(COMPOSE) run --rm -T --entrypoint '' --user docker php-test
 RUN_PHP_XDEBUG  = $(COMPOSE) run --rm --entrypoint '' --user docker php-xdebug
 EXEC_PHP        = docker exec -u docker -it hskauting.app
 EXEC_PHP_TEST   = docker exec -u docker -it hskauting.app-test
+DOCKER_UID      = 1000
+DOCKER_GID      = 1000
 
 APP_SERVICES        = traefik php php-xdebug nginx mysql adminer
 TEST_SERVICES       = mysql-test php-test
@@ -66,8 +68,10 @@ define wait_for_mysql_test
 endef
 
 define reset_writable_dirs
-	$(COMPOSE) run --rm -T --no-deps --user docker $(1) sh -c \
-		'mkdir -p log uploads temp tests/_output tests/_support/_generated www/webtemp'
+	$(COMPOSE) run --rm -T --no-deps --user root $(1) sh -c \
+		'mkdir -p log uploads temp tests/_output tests/_support/_generated www/webtemp && \
+		chown -R $(DOCKER_UID):$(DOCKER_GID) log uploads temp tests/_output tests/_support/_generated www/webtemp && \
+		if [ -d tests/integration/fixtures ]; then chown -R $(DOCKER_UID):$(DOCKER_GID) tests/integration/fixtures; fi'
 endef
 
 help: ## Zobrazí tuto nápovědu
@@ -119,8 +123,8 @@ test-enter: ## Shell do test PHP kontejneru
 test-init: ## Inicializace testovací aplikace
 	$(MAKE) test-services
 	$(call wait_for_mysql_test)
-	$(RUN_PHP_TEST) composer app-init
 	$(call reset_writable_dirs,php-test)
+	$(RUN_PHP_TEST) composer app-init
 
 test-services: ## Start test DB a test PHP kontejneru
 	$(COMPOSE) up -d $(TEST_SERVICES)
@@ -155,6 +159,7 @@ test-acceptance: ## Akceptační testy lokálně s viditelným Selenium preview
 test-mapping: ## Validace DB schématu vs migrace
 	$(MAKE) test-services
 	$(call wait_for_mysql_test)
+	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) composer validate-mapping
 
 ci-acceptance: ## Akceptační testy v CI režimu
@@ -174,12 +179,15 @@ check-phpstan: ## PHPStan analýza
 	$(RUN_PHP_TEST) sh -c "vendor/bin/codecept build && composer static-analysis"
 
 check-cs: ## Coding standard (opraví)
+	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) composer coding-standard
 
 check-cs-check: ## Coding standard (dry-run pro CI)
+	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) composer coding-standard-ci
 
 check-latte: ## Latte lint
+	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) composer lint
 
 fix: ## Opravitelné kontroly bez testů

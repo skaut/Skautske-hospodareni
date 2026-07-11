@@ -128,7 +128,7 @@ jobs:
           find _tmp_unpack -mindepth 1 -maxdepth 1 -exec mv -t . -- {} +
           rm -rf _tmp_unpack
           mkdir -p log uploads temp tests/_output tests/_support/_generated www/webtemp
-          sudo chown -R docker:docker "$GITHUB_WORKSPACE" || true
+          sudo find "$GITHUB_WORKSPACE" -mindepth 1 -exec chown -h 1000:1000 {} +
 
       - name: Coding standard
         run: make check-cs-check
