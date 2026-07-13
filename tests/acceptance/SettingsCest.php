@@ -396,8 +396,48 @@ class SettingsCest extends BaseAcceptanceCest
     {
         $I = $this->I;
         $token = 'acceptance-fio-token';
+        $accountName = 'Fio účet Selenium';
 
         $I->wantTo('create a Fio bank account with FIO API transaction source');
+
+        $I->deleteFromDatabase('pa_bank_account', ['name' => $accountName]);
+        $this->openNewBankAccountForm();
+
+        $this->fillAndSubmitFioBankAccountForm($accountName, $token);
+
+        $I->waitForPageTextStable('Bankovní účet byl uložen', 15);
+        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeInDatabase('pa_bank_account', [
+            'name' => $accountName,
+            'number_bank_code' => '2010',
+            'transaction_source' => 'fio',
+            'token' => $token,
+        ]);
+    }
+
+    /** @group settings */
+    public function settingsFioBankAccountRejectsInvalidFioApiToken(): void
+    {
+        $I = $this->I;
+        $accountName = 'Fio účet Selenium neplatný token';
+
+        $I->wantTo('reject invalid Fio API token when creating a bank account');
+
+        $I->deleteFromDatabase('pa_bank_account', ['name' => $accountName]);
+        $this->openNewBankAccountForm();
+
+        $this->fillAndSubmitFioBankAccountForm($accountName, 'acceptance-invalid-fio-token');
+
+        $I->waitForPageTextStable('Fio token není platný nebo ještě není aktivní.', 15);
+        $I->waitForElementVisible('[data-test="settings-bank-account-new-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->dontSeeInDatabase('pa_bank_account', [
+            'name' => $accountName,
+        ]);
+    }
+
+    private function openNewBankAccountForm(): void
+    {
+        $I = $this->I;
 
         $I->clickStable('[data-test="utility-nav-settings"]');
         $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
@@ -405,24 +445,20 @@ class SettingsCest extends BaseAcceptanceCest
         $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('[data-test="settings-bank-accounts-add"]');
         $I->waitForElementVisible('[data-test="settings-bank-account-new-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+    }
 
-        $I->fillField('input[name="name"]', 'Fio účet Selenium');
-        $I->fillField('input[name="number"]', '2500548792');
+    private function fillAndSubmitFioBankAccountForm(string $accountName, string $token): void
+    {
+        $I = $this->I;
+
+        $I->fillField('input[name="name"]', $accountName);
+        $I->fillField('input[name="number"]', '1231231230');
         $I->selectOption('select[name="bankCode"]', '2010');
         $I->selectOption('select[name="transactionSource"]', 'fio');
         $I->fillField('input[name="token"]', $token);
         $I->scrollTo('input[type="submit"]');
         $I->waitForElementClickable('input[type="submit"]');
         $I->click('input[type="submit"]');
-
-        $I->waitForPageTextStable('Bankovní účet byl uložen', 15);
-        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->seeInDatabase('pa_bank_account', [
-            'name' => 'Fio účet Selenium',
-            'number_bank_code' => '2010',
-            'transaction_source' => 'fio',
-            'token' => $token,
-        ]);
     }
 
     // ─── Mails Page — Layout ─────────────────────────────────────

@@ -66,6 +66,8 @@ search:
                 - App\Model\BugReport\BugReportService
                 - App\Model\Invoice\InvoiceAccessChecker
                 - App\Model\Bank\Services\BankAccountPairingRunResult
+                - App\Model\Bank\Services\CiFioTokenValidator
+                - App\Model\Bank\Services\FioTokenValidator
                 - App\Model\Bank\Services\ParsedGpcFile
 
 services:
@@ -88,6 +90,11 @@ services:
             %tempDir%/cache
         ])
         tags: [contributte.console.command]
+    fioTokenValidator:
+        factory: App\Model\Bank\Services\FioTokenValidator
+    fioTokenValidatorInterface:
+        type: App\Model\Bank\Services\FioTokenValidatorInterface
+        factory: @fioTokenValidator
     console.doctrineCacheClear:
         factory: App\Console\DoctrineCacheClearCommand(
             @Contributte\Psr6\ICachePoolFactory,
@@ -135,7 +142,7 @@ services:
         factory: GuzzleHttp\Client
         arguments:
             -
-                timeout: 120
+                timeout: 300
                 version: 1.1
                 curl:
                     # CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2 | CURL_SSLVERSION_MAX_TLSv1_2

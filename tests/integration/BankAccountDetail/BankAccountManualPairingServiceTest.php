@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace Tests\Integration\BankAccountDetail;
 
+use App\Components\Payment\BankAccountDetail\BankAccountDetailViewFactory;
 use App\Components\Payment\BankAccountDetail\BankAccountManualPairingService;
 use App\Model\Bank\Entity\BankAccount;
 use App\Model\Bank\Entity\BankTransaction;
 use App\Model\Bank\Entity\BankTransactionPairing;
+use App\Model\Bank\Enum\BankTransactionPairingMode;
 use App\Model\Bank\Enum\BankTransactionSource;
 use App\Model\Bank\Manager\BankTransactionPairingManager;
 use App\Model\Bank\Repository\BankTransactionPairingRepository;
 use App\Model\Bank\Repository\BankTransactionRepository;
 use App\Model\Bank\Services\AutomaticBankPairingService;
+use App\Model\Bank\Services\BankPairingCandidateProvider;
 use App\Model\Bank\Services\BankTransactionPairingService;
 use App\Model\Bank\Transaction;
 use App\Model\Infrastructure\Repositories\Payment\GroupRepository;
@@ -24,6 +27,7 @@ use App\Model\Invoice\Entity\InvoiceItem;
 use App\Model\Invoice\Entity\InvoiceSequence;
 use App\Model\Invoice\Enum\InvoicePaymentType;
 use App\Model\Invoice\Repository\InvoiceRepository;
+use App\Model\Payment\BankAccountService;
 use App\Model\Payment\EmailTemplate;
 use App\Model\Payment\EmailType;
 use App\Model\Payment\Group;
@@ -38,6 +42,9 @@ use Hskauting\Tests\NullEventBus;
 use IntegrationTest;
 use InvalidArgumentException;
 use Mockery as m;
+use Nette\Application\LinkGenerator;
+use Nette\Application\Routers\SimpleRouter;
+use Nette\Http\UrlScript;
 
 final class BankAccountManualPairingServiceTest extends IntegrationTest
 {
@@ -163,6 +170,68 @@ final class BankAccountManualPairingServiceTest extends IntegrationTest
         self::assertNotNull($invoice->getTransaction());
     }
 
+    public function testDetailDoesNotOfferManualCandidatesForPairedTransactionAndAllowsNoVariableSymbolByAmount(): void
+    {
+        $bankAccount = $this->createBankAccount();
+        $group = $this->createGroup(11, $bankAccount, 'Oddil');
+        $amountCandidate = $this->createPayment($group, 150.00, '150001');
+        $pairedPayment = $this->createPayment($group, 200.00, '200001');
+        $withoutVariableSymbol = $this->createTransaction($bankAccount, 150.00, null);
+        $pairedTransaction = $this->createTransaction($bankAccount, 200.00, 200001);
+        $activePairing = BankTransactionPairing::forPayment(
+            $pairedTransaction,
+            $pairedTransaction->getTransactionKey(),
+            $pairedPayment,
+            BankTransactionPairingMode::MANUAL,
+            new DateTimeImmutable('2026-03-14 12:00:00'),
+            'Tester',
+            $bankAccount->getId(),
+            $bankAccount->getName(),
+            (string) $bankAccount->getNumber(),
+            $bankAccount->getNumber()->getBankCode(),
+        );
+
+        $accounts = m::mock(BankAccountService::class);
+        $accounts->shouldReceive('getPersistentTransactions')
+            ->once()
+            ->with($bankAccount->getId(), 60)
+            ->andReturn([$withoutVariableSymbol, $pairedTransaction]);
+        $accounts->shouldReceive('getImportBatches')
+            ->once()
+            ->with($bankAccount->getId())
+            ->andReturn([]);
+
+        $pairingCandidates = m::mock(BankPairingCandidateProvider::class);
+        $pairingCandidates->shouldReceive('getDomainCandidatesForBankAccount')
+            ->once()
+            ->with($bankAccount->getId())
+            ->andReturn([]);
+
+        $pairings = m::mock(BankTransactionPairingRepository::class);
+        $pairings->shouldReceive('findActiveByTransactionKeys')
+            ->once()
+            ->with([$withoutVariableSymbol->getTransactionKey(), $pairedTransaction->getTransactionKey()])
+            ->andReturn([$activePairing]);
+
+        $factory = new BankAccountDetailViewFactory(
+            $accounts,
+            $pairingCandidates,
+            $pairings,
+            new PaymentRepository($this->entityManager, new NullEventBus()),
+            new InvoiceRepository($this->entityManager),
+            new GroupRepository($this->entityManager, new NullEventBus()),
+            new LinkGenerator(new SimpleRouter(), new UrlScript('https://example.test/')),
+        );
+
+        $detail = $factory->create($bankAccount->getId(), [$group->getId() => $group->getName()], [11], includeInvoices: false);
+
+        self::assertNotNull($detail->transactionRows);
+        self::assertSame('payment:'.$amountCandidate->getId(), $detail->transactionRows[0]->manualCandidates[0]->targetKey);
+        self::assertNull($detail->transactionRows[0]->conflictReason);
+        self::assertSame([], $detail->transactionRows[1]->manualCandidates);
+        self::assertNotNull($detail->transactionRows[1]->pairing);
+    }
+
     private function createBankAccount(): BankAccount
     {
         $account = new BankAccount(
@@ -258,7 +327,7 @@ final class BankAccountManualPairingServiceTest extends IntegrationTest
         return $invoice;
     }
 
-    private function createTransaction(BankAccount $bankAccount, float $amount, int $variableSymbol): BankTransaction
+    private function createTransaction(BankAccount $bankAccount, float $amount, ?int $variableSymbol): BankTransaction
     {
         $transaction = new BankTransaction(
             $bankAccount,

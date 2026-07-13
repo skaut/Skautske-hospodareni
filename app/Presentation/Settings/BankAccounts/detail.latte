@@ -40,7 +40,21 @@
 
     <div class="card mb-4" data-test="settings-bank-account-transactions">
         <div class="card-body">
-            <h2 class="h5 mb-3">Transakce</h2>
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <h2 class="h5 mb-0">Transakce</h2>
+                <div class="btn-group" role="group" aria-label="Zobrazení transakcí">
+                    <a
+                        n:href="detail id: $account->getId(), paymentId: $paymentId, invoiceId: $invoiceId, transactionView: $transactionViewIncoming"
+                        n:class="btn, btn-sm, $transactionView === $transactionViewIncoming ? btn-primary : btn-outline-secondary"
+                        data-test="settings-bank-account-transactions-incoming"
+                    >Příchozí</a>
+                    <a
+                        n:href="detail id: $account->getId(), paymentId: $paymentId, invoiceId: $invoiceId, transactionView: $transactionViewAll"
+                        n:class="btn, btn-sm, $transactionView === $transactionViewAll ? btn-primary : btn-outline-secondary"
+                        data-test="settings-bank-account-transactions-all"
+                    >Všechny transakce</a>
+                </div>
+            </div>
         </div>
         <div n:snippet="transactions">
             <div class="alert alert-info" n:if="$focusTargetLabel !== null">{$focusTargetLabel}</div>
@@ -48,84 +62,7 @@
                 <div class="alert alert-danger" n:ifset="$errorMessage">{$errorMessage}</div>
                 <div class="alert alert-warning" n:ifset="$warningMessage">{$warningMessage}</div>
             {elseif count($transactionRows) > 0}
-                <div class="table-responsive">
-                <table class="table table-hover table-striped">
-                    <tr>
-                        <th>Datum</th>
-                        <th>Částka</th>
-                        <th>Účet</th>
-                        <th>Jméno</th>
-                        <th>KS</th>
-                        <th>VS</th>
-                        <th>Poznámka</th>
-                        <th>Stav / kandidáti</th>
-                    </tr>
-                    <tr
-                        n:foreach="$transactionRows as $row"
-                        n:class="$row->pairing !== null ? table-info, $row->pairing === null && $row->conflictReason !== null ? table-warning"
-                    >
-                        {var $transaction = $row->transaction}
-                        <td>{$transaction->getDate()|date:'j.n.Y'}</td>
-                        <td class="text-end">
-                            <strong n:class="$transaction->getAmount() < 0 ? text-danger">{$transaction->getAmount()|price}</strong>
-                        </td>
-                        <td class="text-end">{include #noEmpty $transaction->getCounterAccount()}</td>
-                        <td>{include #noEmpty $transaction->getCounterName()}</td>
-                        <td class="text-end">{include #noEmpty $transaction->getConstantSymbol()}</td>
-                        <td class="text-end">{include #noEmpty $transaction->getVariableSymbol()}</td>
-                        <td>{include #noEmpty $transaction->getNote()}</td>
-                        <td>
-                            <div class="d-flex flex-column gap-1">
-                                <div n:if="$row->pairingLabel !== null">
-                                    <span class="badge bg-info text-dark">Spárováno</span>
-                                    <a n:if="$row->pairingLabel->url !== null" href="{$row->pairingLabel->url}">{$row->pairingLabel->label}</a>
-                                    <span n:if="$row->pairingLabel->url === null">{$row->pairingLabel->label}</span>
-                                </div>
-
-                                <div n:if="$row->manualCandidates !== []">
-                                    <div class="small text-body-secondary">Ruční párování podle částky:</div>
-                                    <div n:foreach="$row->manualCandidates as $candidate" class="mb-1">
-                                        <span n:class="$candidate->type === 'invoice' ? 'badge bg-secondary' : 'badge bg-primary'">
-                                            {$candidate->type === 'invoice' ? 'Faktura' : 'Platba'}
-                                        </span>
-                                        <a href="{$candidate->url}">{$candidate->label}</a>
-                                        <a
-                                            href="{$candidate->actionUrl}"
-                                            class="btn btn-sm btn-outline-success ms-1"
-                                            onclick="return confirm('Opravdu chceš ručně spárovat tuto bankovní transakci?');"
-                                        >Spárovat</a>
-                                        <span class="small text-warning ms-1" n:if="$candidate->warnings !== []">{implode(', ', $candidate->warnings)}</span>
-                                    </div>
-                                </div>
-
-                                <div n:if="$row->exactCandidates !== []">
-                                    <div class="small text-body-secondary">Jednoznačné automatické shody:</div>
-                                    <div n:foreach="$row->exactCandidates as $candidate">
-                                        <span n:class="$candidate->type === 'invoice' ? 'badge bg-secondary' : 'badge bg-primary'">
-                                            {$candidate->type === 'invoice' ? 'Faktura' : 'Platba'}
-                                        </span>
-                                        <a href="{$candidate->url}">{$candidate->label}</a>
-                                    </div>
-                                </div>
-
-                                <div class="small text-danger" n:if="$row->conflictReason !== null">
-                                    {$row->conflictReason}
-                                </div>
-
-                                <div n:if="$row->variableSymbolCandidates !== [] && $row->exactCandidates === []">
-                                    <div class="small text-body-secondary">Položky se shodným VS:</div>
-                                    <div n:foreach="$row->variableSymbolCandidates as $candidate">
-                                        <span n:class="$candidate->type === 'invoice' ? 'badge bg-secondary' : 'badge bg-primary'">
-                                            {$candidate->type === 'invoice' ? 'Faktura' : 'Platba'}
-                                        </span>
-                                        <a href="{$candidate->url}">{$candidate->label}</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-                </div>
+                {control transactionsGrid}
             {else}
                 <p class="alert alert-info text-center">Nebyly nalezeny žádné transakce</p>
             {/if}
@@ -170,7 +107,4 @@
     </div>
 </div>
 
-{define #noEmpty $val}
-    {if $val === "" || $val === NULL}&nbsp;{else}{$val}{/if}
-{/define}
 {/block}

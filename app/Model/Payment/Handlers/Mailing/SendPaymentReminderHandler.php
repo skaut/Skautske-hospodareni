@@ -9,6 +9,7 @@ use App\Model\Payment\Commands\Mailing\SendPaymentReminder;
 use App\Model\Payment\EmailType;
 use App\Model\Payment\MailingService;
 use App\Model\Payment\PaymentClosed;
+use App\Model\Payment\PaymentReminderNotAllowed;
 use App\Model\Payment\Repositories\IPaymentRepository;
 
 final class SendPaymentReminderHandler
@@ -24,6 +25,10 @@ final class SendPaymentReminderHandler
 
         if ($payment->isClosed()) {
             throw PaymentClosed::withName($payment->getName());
+        }
+
+        if (! $payment->canSendReminder()) {
+            throw PaymentReminderNotAllowed::withName($payment->getName());
         }
 
         $this->mailingService->sendEmail($payment->getId(), EmailType::get(EmailType::PAYMENT_REMINDER), $command->isCli());

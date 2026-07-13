@@ -4,11 +4,22 @@ declare(strict_types=1);
 
 namespace App\Fixtures\Doctrine;
 
+use App\Model\Bank\Entity\BankAccount;
+use App\Model\Bank\Entity\BankTransaction;
+use App\Model\Bank\Entity\BankTransactionImportBatch;
+use App\Model\Bank\Entity\BankTransactionPairing;
+use App\Model\Bank\Enum\BankTransactionPairingMode;
+use App\Model\Bank\Enum\BankTransactionSource;
+use App\Model\Bank\Transaction;
 use App\Model\Common\EmailAddress;
+use App\Model\Common\Embeddable\Transaction as PaymentTransaction;
+use App\Model\Common\UnitId;
+use App\Model\Google\Entity\GoogleOAuth;
 use App\Model\Payment\EmailTemplate;
 use App\Model\Payment\EmailType;
 use App\Model\Payment\Group;
 use App\Model\Payment\Group\PaymentDefaults;
+use App\Model\Payment\IUnitResolver;
 use App\Model\Payment\Payment;
 use App\Model\Payment\Services\IBankAccountAccessChecker;
 use App\Model\Payment\Services\IOAuthAccessChecker;
@@ -22,6 +33,7 @@ use Nette\DI\Container;
 use Nettrine\Fixtures\ContainerAwareInterface;
 
 use function assert;
+use function sprintf;
 
 /**
  * Creates sample payment groups and payments for unit 25893.
@@ -31,6 +43,11 @@ use function assert;
 final class Unit25893PaymentGroupFixture extends AbstractFixture implements ContainerAwareInterface, DependentFixtureInterface
 {
     private const UNIT_ID = 25893;
+    private const BANK_ACCOUNT_PREFIX = '19';
+    private const BANK_ACCOUNT_NUMBER = '17608231';
+    private const BANK_ACCOUNT_BANK_CODE = '0100';
+    private const GOOGLE_EMAIL = 'fixtures-25893@hskauting.local';
+    private const SCENARIO_GROUP_NAME = 'Fixture scénáře plateb a párování';
 
     private Container $container;
 
@@ -49,14 +66,15 @@ final class Unit25893PaymentGroupFixture extends AbstractFixture implements Cont
     {
         $bankAccountChecker = $this->container->getByType(IBankAccountAccessChecker::class);
         $oauthChecker = $this->container->getByType(IOAuthAccessChecker::class);
+        $bankAccount = $this->findFixtureBankAccount($manager);
+        $googleOAuth = $this->findFixtureGoogleOAuth($manager);
 
-        // Skip if groups already exist for this unit
-        $existing = $manager->getRepository(Group::class)->findAll();
-        foreach ($existing as $group) {
-            assert($group instanceof Group);
-            if (\in_array(self::UNIT_ID, $group->getUnitIds(), true)) {
-                return; // idempotent
-            }
+        $scenarioGroup = $manager->getRepository(Group::class)->findOneBy(['name' => self::SCENARIO_GROUP_NAME]);
+        if ($scenarioGroup instanceof Group) {
+            $this->normalizeScenarioGroupPairing($scenarioGroup);
+            $manager->flush();
+
+            return;
         }
 
         // ── Group 1: Open, with payments in mixed states ──
@@ -69,6 +87,8 @@ final class Unit25893PaymentGroupFixture extends AbstractFixture implements Cont
             new VariableSymbol('2026001'),
             $bankAccountChecker,
             $oauthChecker,
+            $bankAccount,
+            $googleOAuth,
         );
         $manager->persist($groupOpen);
         $manager->flush(); // flush to get group ID for payments
@@ -100,6 +120,8 @@ final class Unit25893PaymentGroupFixture extends AbstractFixture implements Cont
             new VariableSymbol('2026100'),
             $bankAccountChecker,
             $oauthChecker,
+            $bankAccount,
+            $googleOAuth,
         );
         $manager->persist($groupEmpty);
 
@@ -113,6 +135,8 @@ final class Unit25893PaymentGroupFixture extends AbstractFixture implements Cont
             new VariableSymbol('2025001'),
             $bankAccountChecker,
             $oauthChecker,
+            $bankAccount,
+            $googleOAuth,
         );
         $manager->persist($groupClosed);
         $manager->flush();
@@ -128,6 +152,10 @@ final class Unit25893PaymentGroupFixture extends AbstractFixture implements Cont
         }
         $groupClosed->close('Tábor proběhl, vše zaplaceno.');
 
+        if ($bankAccount instanceof BankAccount) {
+            $this->createScenarioGroup($manager, $bankAccount, $googleOAuth, $bankAccountChecker, $oauthChecker);
+        }
+
         $manager->flush();
     }
 
@@ -140,6 +168,9 @@ final class Unit25893PaymentGroupFixture extends AbstractFixture implements Cont
         ?VariableSymbol $nextVs,
         IBankAccountAccessChecker $bankAccountChecker,
         IOAuthAccessChecker $oauthChecker,
+        ?BankAccount $bankAccount = null,
+        ?GoogleOAuth $googleOAuth = null,
+        bool $remindersEnabled = false,
     ): Group {
         $paymentDefaults = new PaymentDefaults($amount, $dueDate, $constantSymbol, $nextVs);
 
@@ -152,6 +183,10 @@ final class Unit25893PaymentGroupFixture extends AbstractFixture implements Cont
                 'Platba přijata – %groupname%',
                 "Ahoj %name%,\n\npotvrzujeme přijetí platby ve skupině %groupname%.\n\nDěkujeme,\n%user%",
             ),
+            EmailType::PAYMENT_REMINDER => new EmailTemplate(
+                'Upomínka platby – %groupname%',
+                "Ahoj %name%,\n\nevidujeme neuhrazenou platbu ve skupině %groupname%.\n\nČástka: %amount% Kč\nSplatnost: %maturity%\nVS: %vs%\n\nDěkujeme,\n%user%",
+            ),
         ];
 
         return new Group(
@@ -161,10 +196,11 @@ final class Unit25893PaymentGroupFixture extends AbstractFixture implements Cont
             $paymentDefaults,
             new DateTimeImmutable(),
             $emails,
-            null, // no OAuth for now (avoid access check complications)
-            null, // no bank account binding in fixture
+            $googleOAuth?->getId(),
+            $bankAccount,
             $bankAccountChecker,
             $oauthChecker,
+            $remindersEnabled,
         );
     }
 
@@ -176,7 +212,7 @@ final class Unit25893PaymentGroupFixture extends AbstractFixture implements Cont
         float $amount,
         int $dueDaysFromNow,
         string $vs,
-    ): void {
+    ): Payment {
         $payment = new Payment(
             $group,
             $name,
@@ -190,6 +226,8 @@ final class Unit25893PaymentGroupFixture extends AbstractFixture implements Cont
         );
 
         $manager->persist($payment);
+
+        return $payment;
     }
 
     private function nextWorkday(int $daysFromNow): ChronosDate
@@ -202,5 +240,156 @@ final class Unit25893PaymentGroupFixture extends AbstractFixture implements Cont
         }
 
         return $date;
+    }
+
+    private function createScenarioGroup(
+        ObjectManager $manager,
+        BankAccount $bankAccount,
+        ?GoogleOAuth $googleOAuth,
+        IBankAccountAccessChecker $bankAccountChecker,
+        IOAuthAccessChecker $oauthChecker,
+    ): void {
+        $group = $this->createGroup(
+            $manager,
+            self::SCENARIO_GROUP_NAME,
+            750.0,
+            $this->nextWorkday(-10),
+            308,
+            new VariableSymbol('2026901'),
+            $bankAccountChecker,
+            $oauthChecker,
+            $bankAccount,
+            $googleOAuth,
+            true,
+        );
+        $this->normalizeScenarioGroupPairing($group);
+        $manager->persist($group);
+        $manager->flush();
+
+        $importedAt = new DateTimeImmutable('today 08:30:00');
+        $batch = new BankTransactionImportBatch(
+            $bankAccount,
+            BankTransactionSource::GPC,
+            'fixture-scenare-plateb.gpc',
+            'fixture-scenare-plateb',
+            $importedAt,
+            'Fixture Loader',
+            6,
+        );
+        $batch->markCompleted(6);
+        $manager->persist($batch);
+
+        $pairedPayment = $this->addPayment($manager, $group, 'Fixture zaplacená a spárovaná', 'sparovana@example.com', 750.0, -20, '2026901');
+        $pairedTransaction = $this->addTransaction($manager, $bankAccount, $batch, 'paired', -2, 750.0, '2026901', 'Fixture spárovaná platba');
+        $manager->flush();
+
+        $pairedPayment->pairWithTransaction(new DateTimeImmutable('-2 days'), PaymentTransaction::fromBankTransaction($pairedTransaction));
+        $manager->persist(BankTransactionPairing::forPayment(
+            $pairedTransaction,
+            $pairedTransaction->getTransactionKey(),
+            $pairedPayment,
+            BankTransactionPairingMode::MANUAL,
+            new DateTimeImmutable('-2 days'),
+            'Fixture Loader',
+            $bankAccount->getId(),
+            $bankAccount->getName(),
+            (string) $bankAccount->getNumber(),
+            self::BANK_ACCOUNT_BANK_CODE,
+        ));
+
+        $this->addPayment($manager, $group, 'Fixture po splatnosti bez upomínky', 'bez-upominky@example.com', 750.0, -14, '2026902');
+
+        $remindedPayment = $this->addPayment($manager, $group, 'Fixture dnes upomenutá', 'dnes-upomenuta@example.com', 750.0, -12, '2026903');
+        $remindedPayment->recordSentEmail(
+            EmailType::get(EmailType::PAYMENT_REMINDER),
+            new DateTimeImmutable('today 09:00:00'),
+            'Fixture Loader',
+        );
+
+        $this->addPayment($manager, $group, 'Fixture budoucí splatnost', 'budouci@example.com', 750.0, 14, '2026904');
+
+        $amountCandidate = $this->addPayment($manager, $group, 'Fixture ruční párování podle částky', 'castka@example.com', 640.0, -8, '2026905');
+        assert($amountCandidate instanceof Payment);
+        $this->addTransaction($manager, $bankAccount, $batch, 'amount-only', -1, 640.0, null, 'Platba bez VS, shoda podle částky');
+
+        $this->addPayment($manager, $group, 'Fixture automatická shoda VS a částka', 'automat@example.com', 880.0, -6, '2026906');
+        $this->addTransaction($manager, $bankAccount, $batch, 'exact-match', -1, 880.0, '2026906', 'Shoda podle VS i částky');
+
+        $this->addPayment($manager, $group, 'Fixture duplicitní shoda A', 'duplicita-a@example.com', 990.0, -6, '2026907');
+        $this->addPayment($manager, $group, 'Fixture duplicitní shoda B', 'duplicita-b@example.com', 990.0, -6, '2026907');
+        $this->addTransaction($manager, $bankAccount, $batch, 'duplicate-match', -1, 990.0, '2026907', 'Více plateb se stejným VS a částkou');
+
+        $this->addTransaction($manager, $bankAccount, $batch, 'outgoing', -3, -250.0, null, 'Odchozí bankovní poplatek');
+        $this->addTransaction($manager, $bankAccount, $batch, 'no-candidate', -4, 123.45, null, 'Bez VS a bez kandidáta');
+    }
+
+    private function normalizeScenarioGroupPairing(Group $group): void
+    {
+        $group->setAutomaticPairingEnabled(true);
+        $group->setPairingDaysBack(7);
+        $group->invalidateLastPairing();
+        $group->disableEmail(EmailType::get(EmailType::PAYMENT_COMPLETED));
+    }
+
+    private function addTransaction(
+        ObjectManager $manager,
+        BankAccount $bankAccount,
+        BankTransactionImportBatch $batch,
+        string $key,
+        int $daysFromNow,
+        float $amount,
+        ?string $variableSymbol,
+        string $note,
+    ): BankTransaction {
+        $transaction = new BankTransaction(
+            $bankAccount,
+            new Transaction(
+                'fixture-25893-'.$key,
+                BankTransactionSource::GPC,
+                (new DateTimeImmutable('today'))->modify(sprintf('%+d days', $daysFromNow)),
+                $amount,
+                '123456789/0800',
+                'Fixture protistrana',
+                $variableSymbol !== null ? (int) $variableSymbol : null,
+                308,
+                $note,
+                'fixture-src-25893-'.$key,
+            ),
+            new DateTimeImmutable('today 08:30:00'),
+            $batch,
+        );
+
+        $manager->persist($transaction);
+
+        return $transaction;
+    }
+
+    private function findFixtureBankAccount(ObjectManager $manager): ?BankAccount
+    {
+        $unitResolver = $this->container->getByType(IUnitResolver::class);
+        assert($unitResolver instanceof IUnitResolver);
+
+        $officialUnitId = $unitResolver->getOfficialUnitId(self::UNIT_ID);
+        $expectedNumber = sprintf('%s-%s/%s', self::BANK_ACCOUNT_PREFIX, self::BANK_ACCOUNT_NUMBER, self::BANK_ACCOUNT_BANK_CODE);
+
+        foreach ($manager->getRepository(BankAccount::class)->findBy(['unitId' => $officialUnitId]) as $account) {
+            assert($account instanceof BankAccount);
+
+            if ((string) $account->getNumber() === $expectedNumber) {
+                return $account;
+            }
+        }
+
+        return null;
+    }
+
+    private function findFixtureGoogleOAuth(ObjectManager $manager): ?GoogleOAuth
+    {
+        $oauth = $manager->getRepository(GoogleOAuth::class)->findOneBy([
+            'unitId' => new UnitId(self::UNIT_ID),
+            'email' => self::GOOGLE_EMAIL,
+        ]);
+
+        return $oauth instanceof GoogleOAuth ? $oauth : null;
     }
 }

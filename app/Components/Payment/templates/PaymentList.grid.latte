@@ -77,10 +77,20 @@
            title="{$emailActionTitle}"><i
                     class="far fa-envelope-open"></i></a>
         {if $isReminderSendActive}
-        <a href="{$control->getParent()->link(sendReminder, $item->getId())}"
-           n:class="btn, btn-sm, $canSendEmail ? btn-warning : btn-light, $canSendEmail ? 'ui--sendEmail' : disabled"
-           title="{$canSendEmail ? 'Odeslat upomínku' : $emailActionTitle}"><i
+        {var $reminderSentToday = $item->hasSentReminderToday()}
+        {var $isOverdueForReminder = $item->getDueDate()->format('Y-m-d') < (new \DateTimeImmutable())->format('Y-m-d')}
+        {var $canSendReminder = $canSendEmail && $item->canSendReminder()}
+        {var $reminderActionTitle = $reminderSentToday
+            ? 'Dnes již byla upomínka odeslaná.'
+            : ($canSendEmail ? 'Odeslat upomínku' : $emailActionTitle)
+        }
+        {if $isOverdueForReminder || $reminderSentToday}
+        <a href="{$canSendReminder ? $control->getParent()->link(sendReminder, $item->getId()) : '#'}"
+           n:class="btn, btn-sm, $canSendReminder ? btn-warning : btn-light, $canSendReminder ? 'ui--sendEmail' : disabled"
+           n:attr="onclick => $canSendReminder ? null : 'return false;'"
+           title="{$reminderActionTitle}"><i
                     class="far fa-bell"></i></a>
+        {/if}
         {/if}
         <a
             n:if="$bankAccountId !== null && $item->canBePaired()"
