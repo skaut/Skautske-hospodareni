@@ -106,21 +106,26 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
             return [];
         }
 
+        $today = new DateTimeImmutable('today');
+        $tomorrow = new DateTimeImmutable('tomorrow');
+
         return $this->getEntityManager()->createQueryBuilder()
             ->select('p, e')
             ->from(Payment::class, 'p')
             ->leftJoin('p.sentEmails', 'e')
             ->where('p.groupId IN (:groupIds)')
             ->andWhere('p.state = :state')
-            ->andWhere('p.dueDate <= :dueDate')
+            ->andWhere('p.dueDate < :dueDate')
             ->andWhere(
                 'NOT EXISTS (
             SELECT 1 FROM '.Payment\SentEmail::class.' se
-            WHERE se.payment = p AND se.type = :reminderType)',
+            WHERE se.payment = p AND se.type = :reminderType AND se.time >= :today AND se.time < :tomorrow)',
             )
             ->setParameter('groupIds', $groupIds)
             ->setParameter('state', State::PREPARING)
-            ->setParameter('dueDate', (new DateTimeImmutable())->format('Y-m-d'))
+            ->setParameter('dueDate', $today->format('Y-m-d'))
+            ->setParameter('today', $today)
+            ->setParameter('tomorrow', $tomorrow)
             ->setParameter('reminderType', EmailType::PAYMENT_REMINDER)
 
             ->getQuery()->getResult();

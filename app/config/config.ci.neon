@@ -4,3 +4,9 @@ application:
 
 session:
     savePath: "%tempDir%/sessions"
+
+services:
+    fioTokenValidator:
+        factory: App\Model\Bank\Services\CiFioTokenValidator([
+            '1231231230/2010': 'acceptance-fio-token'
+        ])

@@ -58,6 +58,7 @@ final class BankAccountDetailViewFactory
         ?int $paymentId = null,
         ?int $invoiceId = null,
         bool $includeInvoices = true,
+        ?string $transactionView = null,
     ): BankAccountDetail {
         $accessibleGroupIds = array_keys($groupNames);
         $invoiceUnitIds = $includeInvoices ? $readableUnitIds : [];
@@ -92,6 +93,7 @@ final class BankAccountDetailViewFactory
                     $invoiceUnitIds,
                     $focusTarget?->targetKey,
                     $includeInvoices,
+                    $transactionView,
                 ),
                 $this->accounts->getImportBatches($accountId),
                 $focusTarget?->label,
@@ -123,6 +125,7 @@ final class BankAccountDetailViewFactory
         array $readableUnitIds,
         ?string $focusTargetKey,
         bool $includeInvoices,
+        ?string $transactionView,
     ): array {
         $pairingsByTransactionKey = [];
         foreach ($activePairings as $pairing) {
@@ -168,13 +171,16 @@ final class BankAccountDetailViewFactory
             $pairingLabel = $pairing !== null
                 ? $this->describePairing($pairing, $accessibleGroupIds, $groupNames, $readableUnitIds, $includeInvoices)
                 : null;
-            $manualCandidates = $this->buildManualCandidates(
-                $transaction,
-                $accessiblePayments,
-                $accessibleInvoices,
-                $accessibleGroups,
-                $groupNames,
-            );
+            $manualCandidates = $pairing === null
+                ? $this->buildManualCandidates(
+                    $transaction,
+                    $accessiblePayments,
+                    $accessibleInvoices,
+                    $accessibleGroups,
+                    $groupNames,
+                    $transactionView,
+                )
+                : [];
 
             $rows[] = new BankAccountTransactionRow(
                 $transaction,
@@ -183,7 +189,7 @@ final class BankAccountDetailViewFactory
                 $manualCandidates,
                 $visibleExactCandidates,
                 $visibleVariableSymbolCandidates,
-                $this->resolveConflictReason($transaction, $pairing, $allExactCandidates, $allVariableSymbolCandidates, $visibleExactCandidates),
+                $this->resolveConflictReason($transaction, $pairing, $allExactCandidates, $allVariableSymbolCandidates, $visibleExactCandidates, $manualCandidates),
                 $focusTargetKey !== null && (
                     ($pairingLabel?->targetKey === $focusTargetKey)
                     || $this->containsTargetKey($manualCandidates, $focusTargetKey)
@@ -271,6 +277,7 @@ final class BankAccountDetailViewFactory
         array $invoices,
         array $groups,
         array $groupNames,
+        ?string $transactionView,
     ): array {
         $transactionAmount = number_format($transaction->getAmount(), 2, '.', '');
         $descriptions = [];
@@ -303,6 +310,7 @@ final class BankAccountDetailViewFactory
                     'accountId' => $transaction->getBankAccount()->getId(),
                     'transactionKey' => $transaction->getTransactionKey(),
                     'paymentId' => $payment->getId(),
+                    'transactionView' => $transactionView,
                 ]),
                 $warnings,
                 'payment:'.$payment->getId(),
@@ -332,6 +340,7 @@ final class BankAccountDetailViewFactory
                     'accountId' => $transaction->getBankAccount()->getId(),
                     'transactionKey' => $transaction->getTransactionKey(),
                     'invoiceId' => $invoice->getId(),
+                    'transactionView' => $transactionView,
                 ]),
                 $warnings,
                 'invoice:'.$invoice->getId(),
@@ -396,6 +405,7 @@ final class BankAccountDetailViewFactory
      * @param list<PairingCandidate>           $allExactCandidates
      * @param list<PairingCandidate>           $allVariableSymbolCandidates
      * @param list<BankAccountTransactionLink> $visibleExactCandidates
+     * @param list<BankAccountManualCandidate> $manualCandidates
      */
     private function resolveConflictReason(
         BankTransaction $transaction,
@@ -403,13 +413,16 @@ final class BankAccountDetailViewFactory
         array $allExactCandidates,
         array $allVariableSymbolCandidates,
         array $visibleExactCandidates,
+        array $manualCandidates,
     ): ?string {
         if ($pairing !== null) {
             return null;
         }
 
         if ($transaction->getVariableSymbol() === null) {
-            return 'Transakce nemá variabilní symbol.';
+            return $manualCandidates === []
+                ? 'Transakce nemá variabilní symbol a podle částky nebyla nalezena žádná dostupná nespárovaná položka.'
+                : null;
         }
 
         if (count($allExactCandidates) > 1) {
@@ -417,7 +430,7 @@ final class BankAccountDetailViewFactory
         }
 
         if (count($allExactCandidates) === 1 && $visibleExactCandidates === []) {
-            return 'Odpovídající položka existuje mimo aktuálně přístupný scope.';
+            return 'Odpovídající položka existuje mimo aktuálně dostupnou část účtu.';
         }
 
         if (count($allExactCandidates) === 0 && count($allVariableSymbolCandidates) > 1) {

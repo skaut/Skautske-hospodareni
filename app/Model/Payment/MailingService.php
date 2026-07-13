@@ -44,11 +44,16 @@ class MailingService
      * @throws InvalidOAuth
      * @throws EmailTemplateNotSet
      * @throws OAuthNotSet
+     * @throws PaymentReminderNotAllowed
      */
     public function sendEmail(int $paymentId, EmailType $emailType, bool $cli = false): void
     {
         $payment = $this->payments->find($paymentId);
         $group = $this->groups->find($payment->getGroupId());
+
+        if ($emailType->equalsValue(EmailType::PAYMENT_REMINDER) && ! $payment->canSendReminder()) {
+            throw PaymentReminderNotAllowed::withName($payment->getName());
+        }
 
         $template = $group->getEmailTemplate($emailType);
 

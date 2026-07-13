@@ -6,6 +6,7 @@ namespace App\Model\DTO\Payment;
 
 use App\Model\Common\EmailAddress;
 use App\Model\Common\Embeddable\Transaction;
+use App\Model\Payment\EmailType;
 use App\Model\Payment\Payment\SentEmail;
 use App\Model\Payment\Payment\State;
 use App\Model\Payment\VariableSymbol;
@@ -164,5 +165,30 @@ class Payment
     public function getSentEmails(): array
     {
         return $this->sentEmails;
+    }
+
+    public function hasSentReminderToday(?DateTimeImmutable $today = null): bool
+    {
+        $today ??= new DateTimeImmutable();
+
+        foreach ($this->sentEmails as $sentEmail) {
+            if (
+                $sentEmail->getType()->equalsValue(EmailType::PAYMENT_REMINDER)
+                && $sentEmail->getTime()->format('Y-m-d') === $today->format('Y-m-d')
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function canSendReminder(?DateTimeImmutable $today = null): bool
+    {
+        $today ??= new DateTimeImmutable();
+
+        return ! $this->isClosed()
+            && $this->dueDate->toNative()->format('Y-m-d') < $today->format('Y-m-d')
+            && ! $this->hasSentReminderToday($today);
     }
 }

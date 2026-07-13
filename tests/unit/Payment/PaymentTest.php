@@ -433,6 +433,65 @@ class PaymentTest extends Unit
         $this->assertSame($sender, $sentEmails[0]->getSenderName());
     }
 
+    public function testHasSentReminderToday(): void
+    {
+        $payment = $this->createPayment();
+        $payment->recordSentEmail(
+            EmailType::get(EmailType::PAYMENT_REMINDER),
+            new DateTimeImmutable('2026-07-13 08:15:00'),
+            'František Maša',
+        );
+
+        $this->assertTrue($payment->hasSentReminderToday(new DateTimeImmutable('2026-07-13 20:00:00')));
+    }
+
+    public function testHasSentReminderTodayIgnoresOtherEmailTypesAndDays(): void
+    {
+        $payment = $this->createPayment();
+        $payment->recordSentEmail(
+            EmailType::get(EmailType::PAYMENT_INFO),
+            new DateTimeImmutable('2026-07-13 08:15:00'),
+            'František Maša',
+        );
+        $payment->recordSentEmail(
+            EmailType::get(EmailType::PAYMENT_REMINDER),
+            new DateTimeImmutable('2026-07-12 08:15:00'),
+            'František Maša',
+        );
+
+        $this->assertFalse($payment->hasSentReminderToday(new DateTimeImmutable('2026-07-13 20:00:00')));
+    }
+
+    public function testCanSendReminderOnlyAfterDueDate(): void
+    {
+        $today = new DateTimeImmutable('2026-07-13 12:00:00');
+
+        $this->assertTrue($this->createPaymentWithDueDate(new ChronosDate('2026-07-12'))->canSendReminder($today));
+        $this->assertFalse($this->createPaymentWithDueDate(new ChronosDate('2026-07-13'))->canSendReminder($today));
+        $this->assertFalse($this->createPaymentWithDueDate(new ChronosDate('2026-07-14'))->canSendReminder($today));
+    }
+
+    public function testCanSendReminderRejectsClosedPayment(): void
+    {
+        $payment = $this->createPaymentWithDueDate(new ChronosDate('2026-07-12'));
+        $payment->completeManually(new DateTimeImmutable('2026-07-12 18:00:00'), 'John Doe');
+
+        $this->assertFalse($payment->canSendReminder(new DateTimeImmutable('2026-07-13 12:00:00')));
+    }
+
+    public function testCanSendReminderRejectsPaymentRemindedToday(): void
+    {
+        $payment = $this->createPaymentWithDueDate(new ChronosDate('2026-07-12'));
+        $payment->recordSentEmail(
+            EmailType::get(EmailType::PAYMENT_REMINDER),
+            new DateTimeImmutable('2026-07-13 08:15:00'),
+            'František Maša',
+        );
+
+        $this->assertFalse($payment->canSendReminder(new DateTimeImmutable('2026-07-13 20:00:00')));
+        $this->assertTrue($payment->canSendReminder(new DateTimeImmutable('2026-07-14 08:00:00')));
+    }
+
     public function testDuplicityEmailAddress(): void
     {
         $email1 = new EmailAddress('test@gmail.com');
@@ -448,8 +507,17 @@ class PaymentTest extends Unit
 
     private function createPaymentWithVariableSymbol(?VariableSymbol $symbol): Payment
     {
+        return $this->createPaymentWithDueDateAndVariableSymbol(ChronosDate::now(), $symbol);
+    }
+
+    private function createPaymentWithDueDate(ChronosDate $dueDate): Payment
+    {
+        return $this->createPaymentWithDueDateAndVariableSymbol($dueDate, new VariableSymbol('454545'));
+    }
+
+    private function createPaymentWithDueDateAndVariableSymbol(ChronosDate $dueDate, ?VariableSymbol $symbol): Payment
+    {
         $group = $this->mockGroup(29);
-        $dueDate = ChronosDate::now();
 
         $payment = new Payment($group, 'Jan novák', [new EmailAddress('test@gmail.com')], self::AMOUNT, $dueDate, $symbol, 666, 454, 'Some note');
         Helpers::assignIdentity($payment, 1);

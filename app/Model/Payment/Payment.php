@@ -357,6 +357,31 @@ class Payment extends Aggregate
         return $this->sentEmails->toArray();
     }
 
+    public function hasSentReminderToday(?DateTimeImmutable $today = null): bool
+    {
+        $today ??= new DateTimeImmutable();
+
+        foreach ($this->sentEmails as $sentEmail) {
+            if (
+                $sentEmail->getType()->equalsValue(EmailType::PAYMENT_REMINDER)
+                && $sentEmail->getTime()->format('Y-m-d') === $today->format('Y-m-d')
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function canSendReminder(?DateTimeImmutable $today = null): bool
+    {
+        $today ??= new DateTimeImmutable();
+
+        return ! $this->isClosed()
+            && $this->dueDate->toNative()->format('Y-m-d') < $today->format('Y-m-d')
+            && ! $this->hasSentReminderToday($today);
+    }
+
     /** @throws PaymentClosed */
     private function checkNotClosed(): void
     {

@@ -7,9 +7,13 @@ namespace App\Presentation\Settings\BankAccounts;
 use App\Components\DataGrid;
 use App\Components\Factories\Payment\IBankAccountFormFactory;
 use App\Components\Grids\GridFactory;
+use App\Components\Payment\BankAccountDetail\BankAccountDetail;
 use App\Components\Payment\BankAccountDetail\BankAccountDetailViewFactory;
+use App\Components\Payment\BankAccountDetail\BankAccountManualCandidate;
 use App\Components\Payment\BankAccountDetail\BankAccountManualPairingOutcome;
 use App\Components\Payment\BankAccountDetail\BankAccountManualPairingService;
+use App\Components\Payment\BankAccountDetail\BankAccountTransactionLink;
+use App\Components\Payment\BankAccountDetail\BankAccountTransactionRow;
 use App\Components\Payment\BankAccountForm;
 use App\Components\Payment\GpcImportDialog;
 use App\Model\Auth\Resources\InvoiceAccess;
@@ -36,10 +40,20 @@ use Nette\Utils\Html;
 use function array_keys;
 use function array_map;
 use function array_reduce;
+use function array_values;
+use function implode;
+use function number_format;
 
 final class BankAccountsPresenter extends SettingsBasePresenter
 {
+    private const TRANSACTION_VIEW_INCOMING = 'incoming';
+    private const TRANSACTION_VIEW_ALL = 'all';
+
     private ?int $id = null;
+
+    private ?BankAccountDetail $detail = null;
+
+    private string $transactionView = self::TRANSACTION_VIEW_INCOMING;
 
     public function __construct(
         private readonly IBankAccountFormFactory $formFactory,
@@ -111,9 +125,10 @@ final class BankAccountsPresenter extends SettingsBasePresenter
         $this->redirect('this');
     }
 
-    public function actionPairTransactionToPayment(int $accountId, string $transactionKey, int $paymentId): void
+    public function actionPairTransactionToPayment(int $accountId, string $transactionKey, int $paymentId, ?string $transactionView = null): void
     {
         $this->assertCanViewBankAccount($accountId);
+        $transactionView = $this->normalizeTransactionView($transactionView);
 
         try {
             $outcome = $this->manualPairingService->pairTransactionToPayment(
@@ -128,15 +143,17 @@ final class BankAccountsPresenter extends SettingsBasePresenter
             $this->flashMessage($e->getMessage(), 'danger');
         }
 
-        $this->redirect('detail', ['id' => $accountId, 'unitId' => $this->getUnitId()]);
+        $this->redirect('detail', ['id' => $accountId, 'unitId' => $this->getUnitId(), 'transactionView' => $transactionView]);
     }
 
-    public function actionPairTransactionToInvoice(int $accountId, string $transactionKey, int $invoiceId): void
+    public function actionPairTransactionToInvoice(int $accountId, string $transactionKey, int $invoiceId, ?string $transactionView = null): void
     {
         $this->assertCanViewBankAccount($accountId);
+        $transactionView = $this->normalizeTransactionView($transactionView);
+
         if (! $this->canAccessInvoices()) {
             $this->flashMessage('Fakturace je zatím dostupná jen uživatelům v testovacím programu.', 'warning');
-            $this->redirect('detail', ['id' => $accountId, 'unitId' => $this->getUnitId()]);
+            $this->redirect('detail', ['id' => $accountId, 'unitId' => $this->getUnitId(), 'transactionView' => $transactionView]);
         }
 
         try {
@@ -152,7 +169,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
             $this->flashMessage($e->getMessage(), 'danger');
         }
 
-        $this->redirect('detail', ['id' => $accountId, 'unitId' => $this->getUnitId()]);
+        $this->redirect('detail', ['id' => $accountId, 'unitId' => $this->getUnitId(), 'transactionView' => $transactionView]);
     }
 
     public function actionEdit(int $id): void
@@ -215,39 +232,41 @@ final class BankAccountsPresenter extends SettingsBasePresenter
         ]);
     }
 
-    public function actionDetail(int $id, ?int $paymentId = null, ?int $invoiceId = null): void
+    public function actionDetail(int $id, ?int $paymentId = null, ?int $invoiceId = null, ?string $transactionView = null): void
     {
         $this->assertCanViewBankAccount($id);
+        $this->transactionView = $this->normalizeTransactionView($transactionView);
+
         if ($invoiceId !== null && ! $this->canAccessInvoices()) {
             $this->flashMessage('Fakturace je zatím dostupná jen uživatelům v testovacím programu.', 'warning');
             $this->redirect('detail', ['id' => $id, 'unitId' => $this->getUnitId()]);
         }
     }
 
-    public function renderDetail(int $id, ?int $paymentId = null, ?int $invoiceId = null): void
+    public function renderDetail(int $id, ?int $paymentId = null, ?int $invoiceId = null, ?string $transactionView = null): void
     {
+        $this->transactionView = $this->normalizeTransactionView($transactionView);
         $account = $this->accounts->find($id);
         $readableUnitIds = array_keys($this->unitService->getReadUnits($this->user));
-        $groups = $this->queryBus->handle(new GetGroupList($readableUnitIds, false));
-        $groupNames = [];
-
-        foreach ($groups as $group) {
-            $groupNames[$group->getId()] = $group->getName();
-        }
-
+        $groupNames = $this->resolveGroupNames($readableUnitIds);
         $canAccessInvoices = $this->canAccessInvoices();
-        $detail = $this->detailViewFactory->create($id, $groupNames, $readableUnitIds, $paymentId, $invoiceId, $canAccessInvoices);
+        $this->detail = $this->detailViewFactory->create($id, $groupNames, $readableUnitIds, $paymentId, $invoiceId, $canAccessInvoices, $this->transactionView);
 
         $this->template->setParameters([
             'account' => $account,
             'canAccessInvoices' => $canAccessInvoices,
             'groupNames' => $groupNames,
-            'transactionRows' => $detail->transactionRows,
-            'importBatches' => $detail->importBatches,
-            'focusTargetLabel' => $detail->focusTargetLabel,
-            'warningMessage' => $detail->warningMessage,
-            'errorMessage' => $detail->errorMessage,
+            'transactionRows' => $this->detail->transactionRows,
+            'importBatches' => $this->detail->importBatches,
+            'focusTargetLabel' => $this->detail->focusTargetLabel,
+            'warningMessage' => $this->detail->warningMessage,
+            'errorMessage' => $this->detail->errorMessage,
             'canImportGpc' => $this->canImportGpcForAccount($account),
+            'transactionView' => $this->transactionView,
+            'transactionViewIncoming' => self::TRANSACTION_VIEW_INCOMING,
+            'transactionViewAll' => self::TRANSACTION_VIEW_ALL,
+            'paymentId' => $paymentId,
+            'invoiceId' => $invoiceId,
         ]);
     }
 
@@ -332,6 +351,45 @@ final class BankAccountsPresenter extends SettingsBasePresenter
         return $grid;
     }
 
+    protected function createComponentTransactionsGrid(): DataGrid
+    {
+        $grid = $this->gridFactory->createSimpleGrid();
+        $grid->setPrimaryKey('transactionKey');
+
+        $grid->addColumnDateTime('date', 'Datum')
+            ->setFormat('j.n. Y')
+            ->setSortable();
+
+        $grid->addColumnText('amount', 'Částka')
+            ->setRenderer(fn (array $row): Html => $this->renderTransactionAmount((float) $row['amount']))
+            ->setSortable('amountSort');
+
+        $grid->addColumnText('counterAccount', 'Účet')
+            ->setSortable();
+
+        $grid->addColumnText('counterName', 'Jméno')
+            ->setSortable();
+
+        $grid->addColumnText('constantSymbol', 'KS')
+            ->setSortable();
+
+        $grid->addColumnText('variableSymbol', 'VS')
+            ->setSortable();
+
+        $grid->addColumnText('note', 'Poznámka');
+
+        $grid->addColumnText('status', 'Stav / kandidáti')
+            ->setRenderer(fn (array $row): Html => $this->renderTransactionStatus($row['row']));
+
+        $grid->addFilterText('search', '', ['counterAccount', 'counterName', 'constantSymbol', 'variableSymbol', 'note', 'statusSearch'])
+            ->setPlaceholder('Hledat transakci...');
+
+        $grid->setDefaultSort(['date' => DataGrid::SORT_DESC]);
+        $grid->setDataSource($this->buildTransactionGridRows());
+
+        return $grid;
+    }
+
     protected function createComponentGpcImportDialog(): GpcImportDialog
     {
         $dialog = new GpcImportDialog(
@@ -362,6 +420,216 @@ final class BankAccountsPresenter extends SettingsBasePresenter
     private function canEdit(?int $unitId = null): bool
     {
         return $this->authorizator->isAllowed(UnitResource::EDIT, $unitId ?? $this->getUnitId());
+    }
+
+    /**
+     * @param  int[]              $readableUnitIds
+     * @return array<int, string>
+     */
+    private function resolveGroupNames(array $readableUnitIds): array
+    {
+        $groupNames = [];
+
+        foreach ($this->queryBus->handle(new GetGroupList($readableUnitIds, false)) as $group) {
+            $groupNames[$group->getId()] = $group->getName();
+        }
+
+        return $groupNames;
+    }
+
+    /** @return list<array<string, mixed>> */
+    private function buildTransactionGridRows(): array
+    {
+        $detail = $this->detail ?? $this->resolveDetailForCurrentRequest();
+        if ($detail->transactionRows === null) {
+            return [];
+        }
+
+        $rows = array_map(
+            static function (BankAccountTransactionRow $row): array {
+                $transaction = $row->transaction;
+
+                return [
+                    'transactionKey' => $transaction->getTransactionKey(),
+                    'date' => $transaction->getDate(),
+                    'amount' => $transaction->getAmount(),
+                    'amountSort' => sprintf('%020.2f', $transaction->getAmount() + 1000000000),
+                    'counterAccount' => $transaction->getCounterAccount() ?? '',
+                    'counterName' => $transaction->getCounterName(),
+                    'constantSymbol' => $transaction->getConstantSymbol() !== null ? (string) $transaction->getConstantSymbol() : '',
+                    'variableSymbol' => $transaction->getVariableSymbol() !== null ? (string) $transaction->getVariableSymbol() : '',
+                    'note' => $transaction->getNote() ?? '',
+                    'statusSearch' => self::buildStatusSearchText($row),
+                    'row' => $row,
+                ];
+            },
+            $detail->transactionRows,
+        );
+
+        if ($this->transactionView === self::TRANSACTION_VIEW_ALL) {
+            return $rows;
+        }
+
+        return array_values(array_filter(
+            $rows,
+            static fn (array $row): bool => (float) $row['amount'] > 0,
+        ));
+    }
+
+    private function resolveDetailForCurrentRequest(): BankAccountDetail
+    {
+        $id = (int) $this->getParameter('id');
+        $paymentId = $this->getParameter('paymentId');
+        $invoiceId = $this->getParameter('invoiceId');
+        $readableUnitIds = array_keys($this->unitService->getReadUnits($this->user));
+
+        return $this->detailViewFactory->create(
+            $id,
+            $this->resolveGroupNames($readableUnitIds),
+            $readableUnitIds,
+            $paymentId !== null ? (int) $paymentId : null,
+            $invoiceId !== null ? (int) $invoiceId : null,
+            $this->canAccessInvoices(),
+            $this->transactionView,
+        );
+    }
+
+    private function normalizeTransactionView(?string $transactionView): string
+    {
+        return $transactionView === self::TRANSACTION_VIEW_ALL
+            ? self::TRANSACTION_VIEW_ALL
+            : self::TRANSACTION_VIEW_INCOMING;
+    }
+
+    private function renderTransactionAmount(float $amount): Html
+    {
+        $strong = Html::el('strong')
+            ->setText(number_format($amount, 2, ',', ' ').' Kč');
+
+        if ($amount < 0) {
+            $strong->setAttribute('class', 'text-danger');
+        }
+
+        return Html::el('div')
+            ->setAttribute('class', 'text-end')
+            ->addHtml($strong);
+    }
+
+    private function renderTransactionStatus(BankAccountTransactionRow $row): Html
+    {
+        $container = Html::el('div')
+            ->setAttribute('class', 'd-flex flex-column gap-1');
+
+        if ($row->pairingLabel !== null) {
+            $pairing = Html::el('div');
+            $pairing->addHtml(Html::el('span')->setAttribute('class', 'badge bg-info text-dark')->setText('Spárováno'));
+            $pairing->addText(' ');
+            $pairing->addHtml($this->renderTransactionLink($row->pairingLabel));
+            $container->addHtml($pairing);
+        }
+
+        if ($row->manualCandidates !== []) {
+            $container->addHtml(Html::el('div')->setAttribute('class', 'small text-body-secondary')->setText('Ruční párování podle částky:'));
+
+            foreach ($row->manualCandidates as $candidate) {
+                $container->addHtml($this->renderManualCandidate($candidate));
+            }
+        }
+
+        if ($row->exactCandidates !== []) {
+            $container->addHtml(Html::el('div')->setAttribute('class', 'small text-body-secondary')->setText('Jednoznačné automatické shody:'));
+
+            foreach ($row->exactCandidates as $candidate) {
+                $container->addHtml($this->renderCandidateLink($candidate));
+            }
+        }
+
+        if ($row->conflictReason !== null) {
+            $container->addHtml(Html::el('div')->setAttribute('class', 'small text-danger')->setText($row->conflictReason));
+        }
+
+        if ($row->variableSymbolCandidates !== [] && $row->exactCandidates === []) {
+            $container->addHtml(Html::el('div')->setAttribute('class', 'small text-body-secondary')->setText('Položky se shodným VS:'));
+
+            foreach ($row->variableSymbolCandidates as $candidate) {
+                $container->addHtml($this->renderCandidateLink($candidate));
+            }
+        }
+
+        return $container;
+    }
+
+    private function renderManualCandidate(BankAccountManualCandidate $candidate): Html
+    {
+        $container = Html::el('div')->setAttribute('class', 'mb-1');
+        $container->addHtml($this->renderTypeBadge($candidate->type));
+        $container->addText(' ');
+        $container->addHtml(Html::el('a')->href($candidate->url)->setText($candidate->label));
+        $container->addText(' ');
+        $container->addHtml(
+            Html::el('a')
+                ->href($candidate->actionUrl)
+                ->setAttribute('class', 'btn btn-sm btn-outline-success ms-1')
+                ->setAttribute('data-confirm', 'Opravdu chceš ručně spárovat tuto bankovní transakci?')
+                ->setText('Spárovat'),
+        );
+
+        if ($candidate->warnings !== []) {
+            $container->addText(' ');
+            $container->addHtml(Html::el('span')->setAttribute('class', 'small text-warning ms-1')->setText(implode(', ', $candidate->warnings)));
+        }
+
+        return $container;
+    }
+
+    private function renderCandidateLink(BankAccountTransactionLink $candidate): Html
+    {
+        $container = Html::el('div');
+        $container->addHtml($this->renderTypeBadge($candidate->type));
+        $container->addText(' ');
+        $container->addHtml($this->renderTransactionLink($candidate));
+
+        return $container;
+    }
+
+    private function renderTransactionLink(BankAccountTransactionLink $link): Html
+    {
+        if ($link->url === null) {
+            return Html::el('span')->setText($link->label);
+        }
+
+        return Html::el('a')
+            ->href($link->url)
+            ->setText($link->label);
+    }
+
+    private function renderTypeBadge(string $type): Html
+    {
+        return Html::el('span')
+            ->setAttribute('class', $type === 'invoice' ? 'badge bg-secondary' : 'badge bg-primary')
+            ->setText($type === 'invoice' ? 'Faktura' : 'Platba');
+    }
+
+    private static function buildStatusSearchText(BankAccountTransactionRow $row): string
+    {
+        $parts = [];
+
+        foreach ([$row->pairingLabel, ...$row->exactCandidates, ...$row->variableSymbolCandidates] as $link) {
+            if ($link instanceof BankAccountTransactionLink) {
+                $parts[] = $link->label;
+            }
+        }
+
+        foreach ($row->manualCandidates as $candidate) {
+            $parts[] = $candidate->label;
+            $parts[] = implode(' ', $candidate->warnings);
+        }
+
+        if ($row->conflictReason !== null) {
+            $parts[] = $row->conflictReason;
+        }
+
+        return implode(' ', $parts);
     }
 
     private function canAccessInvoices(): bool

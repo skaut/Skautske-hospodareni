@@ -47,6 +47,8 @@ class GroupService
                 $this->logger->error(EmailButton::NO_TEMPLATE_ASSIGNED);
             } catch (PaymentHasNoEmails) {
                 $this->logger->error('Payment has no emails');
+            } catch (PaymentReminderNotAllowed $e) {
+                $this->logger->error($e->getMessage());
             }
         }
 

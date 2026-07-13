@@ -22,6 +22,7 @@ use App\Model\Payment\Payment\State;
 use App\Model\Payment\PaymentClosed;
 use App\Model\Payment\PaymentHasNoEmails;
 use App\Model\Payment\PaymentNotFound;
+use App\Model\Payment\PaymentReminderNotAllowed;
 use App\Model\Payment\PaymentService;
 use App\Model\Payment\ReadModel\Queries\GroupEmailQuery;
 use App\Model\Payment\ReadModel\Queries\PaymentListQuery;
@@ -173,6 +174,11 @@ final class PaymentList extends BaseControl
             $this->presenter->redirect('this');
         }
 
+        if (! $payment->canSendReminder()) {
+            $this->presenter->flashMessage(PaymentReminderNotAllowed::withName($payment->getName())->getMessage(), 'warning');
+            $this->presenter->redirect('this');
+        }
+
         $this->sendReminder([$pid]);
     }
 
@@ -223,6 +229,11 @@ final class PaymentList extends BaseControl
         try {
             foreach ($ids as $id) {
                 try {
+                    $payment = $this->model->findPayment($id);
+                    if ($payment === null || ! $payment->canSendReminder()) {
+                        continue;
+                    }
+
                     $this->commandBus->handle(new SendPaymentReminder($id));
                     ++$count;
                 } catch (OAuthNotSet) {
@@ -234,6 +245,8 @@ final class PaymentList extends BaseControl
                 } catch (PaymentClosed $e) {
                     $this->flashMessage($e->getMessage(), 'warning');
                 } catch (PaymentHasNoEmails $e) {
+                    $this->flashMessage($e->getMessage(), 'warning');
+                } catch (PaymentReminderNotAllowed $e) {
                     $this->flashMessage($e->getMessage(), 'warning');
                 }
             }

@@ -7,6 +7,7 @@ namespace App\Components\Payment;
 use App\Components\BaseControl;
 use App\Model\Bank\Entity\BankAccount;
 use App\Model\Bank\Enum\BankTransactionSource;
+use App\Model\Bank\Services\FioTokenValidatorInterface;
 use App\Model\Common\Embeddable\AccountNumber;
 use App\Model\Common\Services\CommandBus;
 use App\Model\Payment\BankAccountNotFound;
@@ -25,6 +26,7 @@ class BankAccountForm extends BaseControl
         private readonly ?int $id,
         private readonly BankAccountService $model,
         private readonly CommandBus $commandBus,
+        private readonly FioTokenValidatorInterface $fioTokenValidator,
     ) {
     }
 
@@ -142,6 +144,7 @@ class BankAccountForm extends BaseControl
             $accountNumber = new AccountNumber($prefix, $number, $bankCode, $bankInfo->getName(), $values->iban, $bankInfo->getBic());
             $transactionSource = $this->resolveTransactionSource($bankCode, (string) $values->transactionSource);
             $token = $this->resolveToken($transactionSource, $values->token);
+            $this->validateFioTokenIfNeeded($accountNumber, $transactionSource, $token);
 
             if ($this->id !== null) {
                 $this->model->updateBankAccount(
@@ -194,5 +197,25 @@ class BankAccountForm extends BaseControl
         $token = trim((string) $submittedToken);
 
         return $token === '' ? null : $token;
+    }
+
+    private function validateFioTokenIfNeeded(AccountNumber $accountNumber, BankTransactionSource $transactionSource, ?string $token): void
+    {
+        if ($transactionSource->value !== BankTransactionSource::FIO->value || $token === null) {
+            return;
+        }
+
+        if ($this->id !== null) {
+            $account = $this->model->find($this->id);
+            if (
+                $account !== null
+                && $account->getTransactionSource()->value === BankTransactionSource::FIO->value
+                && $account->getToken() === $token
+            ) {
+                return;
+            }
+        }
+
+        $this->fioTokenValidator->validate($accountNumber, $token);
     }
 }

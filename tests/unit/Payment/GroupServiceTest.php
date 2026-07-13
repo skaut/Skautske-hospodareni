@@ -60,6 +60,7 @@ final class GroupServiceTest extends Unit
             [new InvalidOAuth(), 'Invalid OAuth'],
             [new EmailTemplateNotSet(), EmailButton::NO_TEMPLATE_ASSIGNED],
             [PaymentHasNoEmails::withName('Test'), 'Payment has no emails'],
+            [PaymentReminderNotAllowed::withName('Test'), 'Platbě "Test" nelze odeslat upomínku. Upomínky lze posílat jen po splatnosti a nejvýše jednou denně.'],
         ];
 
         foreach ($cases as [$exception, $message]) {
