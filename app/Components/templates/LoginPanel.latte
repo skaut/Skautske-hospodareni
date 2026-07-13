@@ -1,10 +1,10 @@
 {if $user->isLoggedIn()}
-    <span class="dropdown">
+    <span class="dropdown role-switcher">
         <button class="btn btn-light btn-sm dropdown-toggle border-0 ui--current-role" type="button"
                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             {$roles[$currentRoleId]}
         </button>
-        <span class="dropdown-menu" n:inner-foreach="$roles as $roleId => $roleName">
+        <span class="dropdown-menu dropdown-menu-end role-switcher-menu" n:inner-foreach="$roles as $roleId => $roleName">
             <a n:class="dropdown-item, $roleId === $currentRoleId ? disabled" n:href="changeRole! $roleId">{$roleName}</a>
         </span>
     </span>

@@ -142,11 +142,53 @@
   padding-left: 0;
 }
 
+.role-switcher {
+  max-width: min(16rem, 100%);
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
 .ui--current-role {
-  max-width: 12rem;
+  display: block;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.site-header.navbar-expand-lg .navbar-collapse .role-switcher-menu {
+  width: max-content;
+  max-width: min(22rem, calc(100vw - 2rem));
+  max-height: min(70vh, 28rem);
+  padding: 0.25rem 0;
+  overflow-y: auto;
+  border: 1px solid var(--tblr-border-color);
+  background: #fff;
+  background-color: #fff;
+  box-shadow: var(--tblr-box-shadow-lg);
+}
+
+.site-header.navbar-expand-lg .navbar-collapse .role-switcher-menu .dropdown-item {
+  display: block;
+  max-width: 100%;
+  min-width: 0;
+  width: auto;
+  padding: 0.5rem 0.75rem;
+  color: #302821;
+  line-height: 1.25;
+  white-space: normal;
+}
+
+.site-header.navbar-expand-lg .navbar-collapse .role-switcher-menu .dropdown-item:hover,
+.site-header.navbar-expand-lg .navbar-collapse .role-switcher-menu .dropdown-item:focus {
+  background: var(--app-green-soft);
+  color: #245322;
+}
+
+.site-header.navbar-expand-lg .navbar-collapse .role-switcher-menu .dropdown-item.disabled,
+.site-header.navbar-expand-lg .navbar-collapse .role-switcher-menu .dropdown-item:disabled {
+  color: #59666f;
+  opacity: 1;
 }
 
 .site-submenu {
@@ -311,6 +353,10 @@
     width: auto;
     min-width: max-content;
   }
+
+  .role-switcher {
+    max-width: clamp(10rem, 18vw, 16rem);
+  }
 }
 
 @media (min-width: 992px) and (max-width: 1399.98px) {
@@ -351,8 +397,13 @@
     margin-left: 0;
   }
 
+  .role-switcher {
+    width: min(100%, 20rem);
+    max-width: 100%;
+  }
+
   .ui--current-role {
-    max-width: min(100%, 20rem);
+    width: 100%;
   }
 
   .navbar-logout {
