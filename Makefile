@@ -168,7 +168,7 @@ ci-acceptance: ## Akceptační testy v CI režimu
 	$(call wait_for_application)
 	$(RUN_PHP_TEST) vendor/bin/codecept run acceptance --env ci -vv $(TEST_ARGS); \
 	status=$$?; \
-	$(COMPOSE) stop selenium nginx; \
+	$(COMPOSE) stop selenium; \
 	exit $$status
 
 check-phpstan: ## PHPStan analýza
