@@ -31,7 +31,6 @@ function initializeTooltips(root: ParentNode): void {
 
 export default function (): void {
     naja.registerExtension(ProgressBar);
-    naja.registerExtension(ModalExtension);
 
     naja.registerExtension(TravelModule);
     naja.registerExtension(SnippetProcessor, snippet => {
@@ -48,6 +47,7 @@ export default function (): void {
         initializePageEnhancements(snippet);
     });
 
+    naja.registerExtension(ModalExtension);
     naja.registerExtension(DataGridExtension);
 
     naja.formsHandler.netteForms = netteForms;

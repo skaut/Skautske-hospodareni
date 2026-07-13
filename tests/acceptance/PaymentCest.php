@@ -192,6 +192,19 @@ class PaymentCest extends PaymentAcceptanceCest
     }
 
     /** @group payment */
+    public function paymentDueDateCalendarIconOpensDatePicker(): void
+    {
+        $I = $this->I;
+
+        $this->createGeneralPaymentGroup('Skupina pro datum '.uniqid('', true));
+        $this->page->openPaymentDialog();
+
+        $I->waitForElementVisible('[aria-label="Vybrat datum"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->click('[aria-label="Vybrat datum"]');
+        $I->waitForElementVisible('.pika-single:not(.is-hidden)', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+    }
+
+    /** @group payment */
     public function clonePaymentGroupCopiesOnlyValidatedSettings(): void
     {
         $I = $this->I;
