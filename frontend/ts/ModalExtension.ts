@@ -1,4 +1,5 @@
 import Modal from 'bootstrap/js/dist/modal';
+import {initializeDatePicker} from './datePicker';
 
 export class ModalExtension {
     private modalInstance: Modal | null = null;
@@ -56,6 +57,7 @@ export class ModalExtension {
             document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
 
             const bootstrapModalInstance = Modal.getOrCreateInstance(modalElement);
+            this.initializeDatePickers(modalElement);
             this.initializeButtons(modalElement);
             this.modalElement = modalElement;
             this.modalInstance = bootstrapModalInstance;
@@ -125,6 +127,11 @@ export class ModalExtension {
         // Hide original buttons
         buttons.forEach(button => button.classList.add('d-none'));
         this.naja.uiHandler.bindUI(footer);
+    }
+
+    private initializeDatePickers(modal: Element): void
+    {
+        modal.querySelectorAll<HTMLElement>('.date').forEach(initializeDatePicker);
     }
 
     private ensureFormId(form: HTMLFormElement): string

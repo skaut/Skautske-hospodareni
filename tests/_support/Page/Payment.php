@@ -66,7 +66,7 @@ class Payment
         );
     }
 
-    private function openPaymentDialog(): void
+    public function openPaymentDialog(): void
     {
         $I = $this->tester;
 
