@@ -153,9 +153,9 @@ class PaymentDashboardCest extends PaymentAcceptanceCest
         $I->clickStable('[data-test="global-nav-payments"]');
         $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('[data-test="payment-nav-groups"]');
-        $I->waitForText('Platební skupiny');
+        $I->waitForText('Platební skupiny', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->click('Založit skupinu plateb');
-        $I->waitForText('Nová platební skupina - Obecná');
+        $I->waitForText('Nová platební skupina - Obecná', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Sidebar and content visible initially
         $I->seeElement('[data-test="help-sidebar"]');
@@ -164,14 +164,14 @@ class PaymentDashboardCest extends PaymentAcceptanceCest
 
         // Collapse
         $I->clickStable('[data-test="help-toggle"]');
-        $I->waitForJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed === "true"', 5);
+        $I->waitForJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed === "true"', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $collapsed = $I->executeJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed');
         Assert::assertSame('true', $collapsed);
 
         // Expand
         $I->clickStable('[data-test="help-toggle"]');
-        $I->waitForJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed === "false"', 5);
+        $I->waitForJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed === "false"', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $expanded = $I->executeJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed');
         Assert::assertSame('false', $expanded);

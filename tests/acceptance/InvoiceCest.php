@@ -66,10 +66,10 @@ class InvoiceCest extends BaseAcceptanceCest
 
         $this->fillYearlySettings($settingsYear, 'Selenium '.$settingsYear);
         $I->scrollTo('input[name="save"]');
-        $I->waitForElementClickable('input[name="save"]');
+        $I->waitForElementClickable('input[name="save"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('input[name="save"]');
 
-        $I->waitForText('Roční nastavení fakturace bylo uloženo.');
+        $I->waitForText('Roční nastavení fakturace bylo uloženo.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
     }
 
     /** @group invoice */
@@ -92,10 +92,10 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->selectOption('select[name="bankAccount"]', 'Acceptance');
         $I->selectOption('.ui--emailSelectbox', 'test@hospodareni.loc');
         $I->scrollTo('#frm-createForm input[type="submit"]');
-        $I->waitForElementClickable('#frm-createForm input[type="submit"]');
+        $I->waitForElementClickable('#frm-createForm input[type="submit"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->executeJS('document.querySelector("#frm-createForm input[type=submit]").click()');
 
-        $I->waitForText('Fakturační řada byla založena.');
+        $I->waitForText('Fakturační řada byla založena.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/platby');
     }
@@ -119,10 +119,10 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->fillField('input[name="description"]', 'Selenium řada bez emailu');
         $I->selectOption('select[name="bankAccount"]', 'Acceptance');
         $I->scrollTo('#frm-createForm input[type="submit"]');
-        $I->waitForElementClickable('#frm-createForm input[type="submit"]');
+        $I->waitForElementClickable('#frm-createForm input[type="submit"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->executeJS('document.querySelector("#frm-createForm input[type=submit]").click()');
 
-        $I->waitForText('Fakturační řada byla založena.');
+        $I->waitForText('Fakturační řada byla založena.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/platby');
     }
@@ -199,9 +199,9 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->waitForElementVisible('[data-test="invoice-settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $this->fillYearlySettings($editYear, 'Selenium Edit '.$editYear);
         $I->scrollTo('input[name="save"]');
-        $I->waitForElementClickable('input[name="save"]');
+        $I->waitForElementClickable('input[name="save"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('input[name="save"]');
-        $I->waitForText('Roční nastavení fakturace bylo uloženo.');
+        $I->waitForText('Roční nastavení fakturace bylo uloženo.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $this->openInvoices();
         $I->clickStable('[data-test="invoice-action-create-sequence"]');
@@ -213,9 +213,9 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->selectOption('select[name="bankAccount"]', 'Acceptance');
         $I->selectOption('.ui--emailSelectbox', 'test@hospodareni.loc');
         $I->scrollTo('#frm-createForm input[type="submit"]');
-        $I->waitForElementClickable('#frm-createForm input[type="submit"]');
+        $I->waitForElementClickable('#frm-createForm input[type="submit"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->executeJS('document.querySelector("#frm-createForm input[type=submit]").click()');
-        $I->waitForText('Fakturační řada byla založena.');
+        $I->waitForText('Fakturační řada byla založena.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $sequenceId = $I->grabFromDatabase('invoice_sequence', 'id', ['sequence' => $sequencePrefix]);
         $this->openInvoices();
@@ -237,9 +237,9 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->fillField('input[name="items[0][unit]"]', 'ks');
         $I->fillField('input[name="items[0][price]"]', '500');
         $I->scrollTo('input[name="send"]');
-        $I->waitForElementClickable('input[name="send"]');
+        $I->waitForElementClickable('input[name="send"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('input[name="send"]');
-        $I->waitForText('Faktura byla vytvořena');
+        $I->waitForText('Faktura byla vytvořena', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="invoice-sequence-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeCurrentUrlMatches('~^/platby/rady/'.$sequenceId.'\?jednotka=\d+(?:&.*)?$~');
 
@@ -255,7 +255,7 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->fillField('input[name="issuedBy"]', 'Upravený vystavil');
         $I->fillField('input[name="items[0][purpose]"]', 'Upravená položka');
         $I->scrollTo('input[name="send"]');
-        $I->waitForElementClickable('input[name="send"]');
+        $I->waitForElementClickable('input[name="send"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('input[name="send"]');
 
         $I->waitForText($expectedInvoiceNumber, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
@@ -280,9 +280,9 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->waitForElementVisible('[data-test="invoice-settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $this->fillYearlySettings($duplicateYear, 'Selenium Duplicate '.$duplicateYear);
         $I->scrollTo('input[name="save"]');
-        $I->waitForElementClickable('input[name="save"]');
+        $I->waitForElementClickable('input[name="save"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('input[name="save"]');
-        $I->waitForText('Roční nastavení fakturace bylo uloženo.');
+        $I->waitForText('Roční nastavení fakturace bylo uloženo.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $this->openInvoices();
         $I->clickStable('[data-test="invoice-action-create-sequence"]');
@@ -295,9 +295,9 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->selectOption('select[name="bankAccount"]', 'Acceptance');
         $I->selectOption('.ui--emailSelectbox', 'test@hospodareni.loc');
         $I->scrollTo('#frm-createForm input[type="submit"]');
-        $I->waitForElementClickable('#frm-createForm input[type="submit"]');
+        $I->waitForElementClickable('#frm-createForm input[type="submit"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->executeJS('document.querySelector("#frm-createForm input[type=submit]").click()');
-        $I->waitForText('Fakturační řada byla založena.');
+        $I->waitForText('Fakturační řada byla založena.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $this->openInvoices();
         $I->clickStable('[data-test="invoice-action-create-sequence"]');
@@ -310,9 +310,9 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->selectOption('select[name="bankAccount"]', 'Acceptance');
         $I->selectOption('.ui--emailSelectbox', 'test@hospodareni.loc');
         $I->scrollTo('#frm-createForm input[type="submit"]');
-        $I->waitForElementClickable('#frm-createForm input[type="submit"]');
+        $I->waitForElementClickable('#frm-createForm input[type="submit"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->executeJS('document.querySelector("#frm-createForm input[type=submit]").click()');
-        $I->waitForText('Fakturační řada byla založena.');
+        $I->waitForText('Fakturační řada byla založena.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $sourceSequenceIds = $I->grabColumnFromDatabase('invoice_sequence', 'id', [
             'sequence' => $sourcePrefix,
@@ -348,9 +348,9 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->fillField('input[name="items[0][unit]"]', 'hod');
         $I->fillField('input[name="items[0][price]"]', '250');
         $I->scrollTo('input[name="send"]');
-        $I->waitForElementClickable('input[name="send"]');
+        $I->waitForElementClickable('input[name="send"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('input[name="send"]');
-        $I->waitForText('Faktura byla vytvořena');
+        $I->waitForText('Faktura byla vytvořena', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="invoice-sequence-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeCurrentUrlMatches('~^/platby/rady/'.$sourceSequenceId.'\?jednotka=\d+(?:&.*)?$~');
 
@@ -416,9 +416,9 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->dontSee('Jednotka je plátce DPH');
         $this->fillYearlySettings($issueYear, 'Selenium '.$issueYear);
         $I->scrollTo('input[name="save"]');
-        $I->waitForElementClickable('input[name="save"]');
+        $I->waitForElementClickable('input[name="save"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('input[name="save"]');
-        $I->waitForText('Roční nastavení fakturace bylo uloženo.');
+        $I->waitForText('Roční nastavení fakturace bylo uloženo.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $this->openInvoices();
         $I->clickStable('[data-test="invoice-action-create-sequence"]');
@@ -431,9 +431,9 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->selectOption('select[name="bankAccount"]', 'Acceptance');
         $I->selectOption('.ui--emailSelectbox', 'test@hospodareni.loc');
         $I->scrollTo('#frm-createForm input[type="submit"]');
-        $I->waitForElementClickable('#frm-createForm input[type="submit"]');
+        $I->waitForElementClickable('#frm-createForm input[type="submit"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->executeJS('document.querySelector("#frm-createForm input[type=submit]").click()');
-        $I->waitForText('Fakturační řada byla založena.');
+        $I->waitForText('Fakturační řada byla založena.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Navigate to the newly created FA26 sequence specifically
@@ -461,10 +461,10 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->fillField('input[name="items[0][unit]"]', 'ks');
         $I->fillField('input[name="items[0][price]"]', '1500');
         $I->scrollTo('input[name="send"]');
-        $I->waitForElementClickable('input[name="send"]');
+        $I->waitForElementClickable('input[name="send"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('input[name="send"]');
 
-        $I->waitForText('Faktura byla vytvořena');
+        $I->waitForText('Faktura byla vytvořena', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="invoice-sequence-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeCurrentUrlMatches('~^/platby/rady/'.$sequenceId.'\?jednotka=\d+(?:&.*)?$~');
         $expectedInvoiceNumber = $sequencePrefix.'00001';
@@ -501,12 +501,12 @@ class InvoiceCest extends BaseAcceptanceCest
 
         // Collapse
         $I->clickStable('[data-test="help-toggle"]');
-        $I->waitForJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed === "true"', 5);
+        $I->waitForJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed === "true"', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->dontSeeElement('[data-test="help-content"]:not([style*="display: none"])');
 
         // Expand
         $I->clickStable('[data-test="help-toggle"]');
-        $I->waitForJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed === "false"', 5);
+        $I->waitForJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed === "false"', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-test="help-content"]');
     }
 
@@ -527,14 +527,14 @@ class InvoiceCest extends BaseAcceptanceCest
 
         // Collapse
         $I->clickStable('[data-test="help-toggle"]');
-        $I->waitForJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed === "true"', 5);
+        $I->waitForJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed === "true"', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $collapsed = $I->executeJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed');
         Assert::assertSame('true', $collapsed);
 
         // Expand
         $I->clickStable('[data-test="help-toggle"]');
-        $I->waitForJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed === "false"', 5);
+        $I->waitForJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed === "false"', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $expanded = $I->executeJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed');
         Assert::assertSame('false', $expanded);
@@ -556,9 +556,9 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->waitForElementVisible('[data-test="invoice-settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $this->fillYearlySettings($lifecycleYear, 'Selenium Lifecycle '.$lifecycleYear);
         $I->scrollTo('input[name="save"]');
-        $I->waitForElementClickable('input[name="save"]');
+        $I->waitForElementClickable('input[name="save"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('input[name="save"]');
-        $I->waitForText('Roční nastavení fakturace bylo uloženo.');
+        $I->waitForText('Roční nastavení fakturace bylo uloženo.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // ── 2. Create invoice sequence ───────────────────────────
         $this->openInvoices();
@@ -572,9 +572,9 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->selectOption('select[name="bankAccount"]', 'Acceptance');
         $I->selectOption('.ui--emailSelectbox', 'test@hospodareni.loc');
         $I->scrollTo('#frm-createForm input[type="submit"]');
-        $I->waitForElementClickable('#frm-createForm input[type="submit"]');
+        $I->waitForElementClickable('#frm-createForm input[type="submit"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->executeJS('document.querySelector("#frm-createForm input[type=submit]").click()');
-        $I->waitForText('Fakturační řada byla založena.');
+        $I->waitForText('Fakturační řada byla založena.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Navigate to the newly created sequence specifically by DB id
@@ -599,13 +599,13 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->fillField('input[name="items[0][unit]"]', 'ks');
         $I->fillField('input[name="items[0][price]"]', '750');
         $I->scrollTo('input[name="send"]');
-        $I->waitForElementClickable('input[name="send"]');
+        $I->waitForElementClickable('input[name="send"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('input[name="send"]');
 
         $expectedInvNumber = $seqPrefix.'00001';
         $expectedVS = substr((string) $lifecycleYear, -2).'00001';
 
-        $I->waitForText('Faktura byla vytvořena');
+        $I->waitForText('Faktura byla vytvořena', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="invoice-sequence-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeCurrentUrlMatches('~^/platby/rady/'.$sequenceId.'\?jednotka=\d+(?:&.*)?$~');
         $I->see($expectedInvNumber);

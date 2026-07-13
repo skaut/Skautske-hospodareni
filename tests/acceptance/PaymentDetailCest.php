@@ -28,12 +28,12 @@ class PaymentDetailCest extends PaymentAcceptanceCest
         $I->waitForElementVisible('[data-test="payment-group-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->clickStable('[data-test="payment-nav-groups"]');
-        $I->waitForText('Platební skupiny');
+        $I->waitForText('Platební skupiny', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->executeJS(
             "document.evaluate(\"//a[normalize-space(text())='$groupName']\", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click();",
         );
         $I->waitForElementVisible('[data-test="payment-group-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->waitForText($groupName);
+        $I->waitForText($groupName, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeCurrentUrlMatches('~^/platby/skupiny/\d+/platby(?:\?.*)?$~');
     }
 
@@ -52,7 +52,7 @@ class PaymentDetailCest extends PaymentAcceptanceCest
         $I->clickStable('[data-test="payment-group-edit-link"]');
         $I->waitForElementVisible('[data-test="payment-group-form-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeCurrentUrlMatches('~^/platby/skupiny/\d+/upravit(?:\?.*)?$~');
-        $I->waitForText('Editace skupiny: '.$groupName);
+        $I->waitForText('Editace skupiny: '.$groupName, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
     }
 
     /** @group payment */
@@ -69,7 +69,7 @@ class PaymentDetailCest extends PaymentAcceptanceCest
         $I->seeCurrentUrlMatches('~^/platby/skupiny/\d+/platby(?:\?.*)?$~');
         $I->clickStable('[data-test="payment-group-repayments-link"]');
         $I->waitForElementVisible('[data-test="payment-repayments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->waitForText('Vratky');
+        $I->waitForText('Vratky', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeCurrentUrlMatches('~^/platby/skupiny/\d+/vratky(?:\?.*)?$~');
     }
 
@@ -89,7 +89,7 @@ class PaymentDetailCest extends PaymentAcceptanceCest
         $I->waitForElementVisible('[data-test="payment-add-button-menu"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('[data-test="payment-add-button-item-member"]');
         $I->waitForElementVisible('[data-test="payment-mass-add-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->waitForText('Přidat osoby z jednotky');
+        $I->waitForText('Přidat osoby z jednotky', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeCurrentUrlMatches('~^/platby/skupiny/\d+/osoby(?:\?.*)?$~');
     }
 
@@ -136,14 +136,14 @@ class PaymentDetailCest extends PaymentAcceptanceCest
         $I->waitForJS(
             'return Array.from(document.querySelectorAll(\'[data-mass-email-select] option[data-email-type="'.$emailType.'"]\'))'
             .'.every(option => option.selected);',
-            10,
+            AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
         );
 
         $I->click($toggle);
         $I->waitForJS(
             'return Array.from(document.querySelectorAll(\'[data-mass-email-select] option[data-email-type="'.$emailType.'"]\'))'
             .'.every(option => !option.selected);',
-            10,
+            AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
         );
 
         $manuallySelected = $I->executeJS(
@@ -169,7 +169,7 @@ class PaymentDetailCest extends PaymentAcceptanceCest
             $groupId = $this->createSubtypePaymentGroup($type);
 
             $I->amOnPage('/platby/skupiny/'.$groupId.'/platby');
-            $I->waitForText('Přidat platbu');
+            $I->waitForText('Přidat platbu', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
             $I->clickStable('[data-test="payment-add-button-toggle"]');
             $I->waitForElementVisible('[data-test="payment-add-button-menu"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
@@ -190,7 +190,7 @@ class PaymentDetailCest extends PaymentAcceptanceCest
         $groupId = $this->createSubtypePaymentGroup('registration');
 
         $I->amOnPage('/platby/skupiny/'.$groupId.'/platby');
-        $I->waitForText('Přidat platbu');
+        $I->waitForText('Přidat platbu', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('[data-test="payment-add-button-toggle"]');
         $I->waitForElementVisible('[data-test="payment-add-button-menu"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
@@ -210,7 +210,7 @@ class PaymentDetailCest extends PaymentAcceptanceCest
         $groupId = $this->createSubtypePaymentGroup('registration');
 
         $I->amOnPage('/platby/skupiny/'.$groupId.'/platby');
-        $I->waitForText('Přidat platbu');
+        $I->waitForText('Přidat platbu', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         Assert::assertSame(
             '/platby/skupiny/'.$groupId.'/casopisy',
@@ -319,7 +319,7 @@ class PaymentDetailCest extends PaymentAcceptanceCest
         $I->fillFieldStable('#frm-splitPaymentDialog-form-splits-1-amount', '200', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
         $I->clickStable('.modal-footer [data-test="payment-split-submit"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
 
-        $I->waitForElementVisible('[data-test="payment-split-errors"]', 20);
+        $I->waitForElementVisible('[data-test="payment-split-errors"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForText('Každá nová platba musí mít jiný variabilní symbol.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '[data-test="payment-split-errors"]');
         $I->seeInDatabase('pa_payment', ['id' => $sourcePaymentId, 'amount' => 1000]);
         $I->dontSeeInDatabase('pa_payment', ['split_from_payment_id' => $sourcePaymentId]);
@@ -328,7 +328,7 @@ class PaymentDetailCest extends PaymentAcceptanceCest
         $I->fillFieldStable('#frm-splitPaymentDialog-form-splits-1-variableSymbol', '100102', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
         $I->clickStable('.modal-footer [data-test="payment-split-submit"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
 
-        $I->waitForElementVisible('[data-test="payment-split-errors"]', 20);
+        $I->waitForElementVisible('[data-test="payment-split-errors"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForText('Variabilní symbol 100103 je už použitý v této platební skupině.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '[data-test="payment-split-errors"]');
         $I->seeInDatabase('pa_payment', ['id' => $sourcePaymentId, 'amount' => 1000]);
         $I->dontSeeInDatabase('pa_payment', ['split_from_payment_id' => $sourcePaymentId]);

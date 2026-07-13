@@ -260,7 +260,7 @@ final class AdminCest extends BaseAcceptanceCest
         $I->waitForElementVisible('[data-test="admin-user-delete-'.$newUser.'"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->disablePopups();
         $I->clickStable('[data-test="admin-user-delete-'.$newUser.'"]');
-        $I->waitForText('odebrán', 15);
+        $I->waitForText('odebrán', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Verify deletion

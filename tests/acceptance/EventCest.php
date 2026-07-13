@@ -27,9 +27,9 @@ class EventCest extends BaseAcceptanceCest
         $I->wantTo('Create event');
 
         $I->click('Akce');
-        $I->waitForText('Seznam akcí');
+        $I->waitForText('Seznam akcí', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->click('Založit novou akci');
-        $I->waitForText('Nová akce');
+        $I->waitForText('Nová akce', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->fillField('Název akce', 'Jaráky');
         $I->fillField('Od', (new DateTime())->format('d.m. Y'));
         $I->fillField('Do', (new DateTime())->format('d.m. Y'));

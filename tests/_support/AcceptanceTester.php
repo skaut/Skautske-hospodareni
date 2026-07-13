@@ -57,18 +57,18 @@ class AcceptanceTester extends Actor
         $I->waitForDocumentReady();
         $I->waitForLoginTrigger();
         $I->clickFirstLoginTrigger();
-        $I->waitForText('přihlášení');
+        $I->waitForText('přihlášení', self::ELEMENT_LOAD_TIMEOUT);
         $I->fillField('(//input)[9]', self::LOGIN);
         $I->fillField('(//input)[10]', self::PASSWORD);
         $I->click('//button');
-        $I->waitForText('Nástěnka');
+        $I->waitForText('Nástěnka', self::ELEMENT_LOAD_TIMEOUT);
 
         $roleButtonSelector = "//button[contains(@class, 'ui--current-role')]";
 
         if ($I->grabTextFrom($roleButtonSelector) !== $role) {
             $I->click($roleButtonSelector);
             $I->click("//a[text()='$role']");
-            $I->waitForText($role);
+            $I->waitForText($role, self::ELEMENT_LOAD_TIMEOUT);
         }
 
         $I->saveSessionSnapshot('login');

@@ -226,7 +226,7 @@ class SettingsCest extends BaseAcceptanceCest
         $I->dontSeeElement('[data-page-help-content]:not([hidden])');
 
         $I->click('[data-page-help-toggle]');
-        $I->waitForJS('return document.querySelector(".page-heading")?.dataset.pageHelpExpanded === "true"', 5);
+        $I->waitForJS('return document.querySelector(".page-heading")?.dataset.pageHelpExpanded === "true"', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('.page-heading .page-lead[data-page-help-expanded="true"]');
         $I->seeElement('[data-page-help-content]:not([hidden])');
 
@@ -237,7 +237,7 @@ class SettingsCest extends BaseAcceptanceCest
         $I->seeElement('[data-help-toggle][aria-expanded="false"]');
 
         $I->click('[data-help-toggle]');
-        $I->waitForJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed === "false"', 5);
+        $I->waitForJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed === "false"', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-help-toggle][aria-expanded="true"]');
     }
 
@@ -341,11 +341,11 @@ class SettingsCest extends BaseAcceptanceCest
         $I->selectOption('select[name="bankCode"]', '0100');
         $I->selectOption('select[name="transactionSource"]', 'gpc');
         $I->scrollTo('input[type="submit"]');
-        $I->waitForElementClickable('input[type="submit"]');
+        $I->waitForElementClickable('input[type="submit"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->click('input[type="submit"]');
 
         // Wait for PRG redirect to complete — flash message is the reliable indicator
-        $I->waitForPageTextStable('Bankovní účet byl uložen', 15);
+        $I->waitForPageTextStable('Bankovní účet byl uložen', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // ── READ ─────────────────────────────────────────────────
@@ -369,9 +369,9 @@ class SettingsCest extends BaseAcceptanceCest
 
         $I->fillField('input[name="name"]', 'Upravený účet Selenium');
         $I->scrollTo('input[type="submit"]');
-        $I->waitForElementClickable('input[type="submit"]');
+        $I->waitForElementClickable('input[type="submit"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->click('input[type="submit"]');
-        $I->waitForPageTextStable('Bankovní účet byl uložen', 15);
+        $I->waitForPageTextStable('Bankovní účet byl uložen', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Verify update in DB
@@ -384,7 +384,7 @@ class SettingsCest extends BaseAcceptanceCest
 
         $I->disablePopups();
         $I->clickStable('[data-test="settings-bank-account-remove"]');
-        $I->waitForPageTextStable('odstraněn', 15);
+        $I->waitForPageTextStable('odstraněn', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Verify deletion
@@ -405,7 +405,7 @@ class SettingsCest extends BaseAcceptanceCest
 
         $this->fillAndSubmitFioBankAccountForm($accountName, $token);
 
-        $I->waitForPageTextStable('Bankovní účet byl uložen', 15);
+        $I->waitForPageTextStable('Bankovní účet byl uložen', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInDatabase('pa_bank_account', [
             'name' => $accountName,
@@ -428,7 +428,7 @@ class SettingsCest extends BaseAcceptanceCest
 
         $this->fillAndSubmitFioBankAccountForm($accountName, 'acceptance-invalid-fio-token');
 
-        $I->waitForPageTextStable('Fio token není platný nebo ještě není aktivní.', 15);
+        $I->waitForPageTextStable('Fio token není platný nebo ještě není aktivní.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="settings-bank-account-new-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->dontSeeInDatabase('pa_bank_account', [
             'name' => $accountName,
@@ -457,7 +457,7 @@ class SettingsCest extends BaseAcceptanceCest
         $I->selectOption('select[name="transactionSource"]', 'fio');
         $I->fillField('input[name="token"]', $token);
         $I->scrollTo('input[type="submit"]');
-        $I->waitForElementClickable('input[type="submit"]');
+        $I->waitForElementClickable('input[type="submit"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->click('input[type="submit"]');
     }
 

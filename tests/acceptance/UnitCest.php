@@ -140,7 +140,7 @@ final class UnitCest extends BaseAcceptanceCest
 
         // Click the year dropdown in submenu
         $I->click('#unit-cashbook-list');
-        $I->waitForElementVisible('.dropdown-menu[aria-labelledby="unit-cashbook-list"]', 5);
+        $I->waitForElementVisible('.dropdown-menu[aria-labelledby="unit-cashbook-list"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // The dropdown should show at least one year item
         $I->seeElement('.dropdown-menu[aria-labelledby="unit-cashbook-list"] .dropdown-item');
@@ -182,7 +182,7 @@ final class UnitCest extends BaseAcceptanceCest
 
         // Click the unit dropdown toggle
         $I->clickStable('[data-test="unit-submenu"] .dropdown .dropdown-toggle');
-        $I->waitForElementVisible('[data-test="unit-submenu"] .dropdown .dropdown-menu', 5);
+        $I->waitForElementVisible('[data-test="unit-submenu"] .dropdown .dropdown-menu', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Should see at least one unit item
         $I->seeElement('[data-test="unit-submenu"] .dropdown .dropdown-item');

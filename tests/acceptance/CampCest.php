@@ -24,7 +24,7 @@ class CampCest extends BaseAcceptanceCest
         $I = $this->I;
         $I->wantTo('List camps');
         $I->click('Tábory');
-        $I->waitForText('Tábory');
+        $I->waitForText('Tábory', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->selectOption('Rok', 2024);
     }
 }

@@ -34,7 +34,7 @@ abstract class PaymentAcceptanceCest extends BaseAcceptanceCest
         $I->clickStable('[data-test="global-nav-payments"]');
         $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('[data-test="payment-nav-groups"]');
-        $I->waitForText('Platební skupiny');
+        $I->waitForText('Platební skupiny', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('[data-test="create-button-toggle"]');
         $I->waitForElementVisible('[data-test="create-button-menu"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable($menuItemSelector);
@@ -49,9 +49,9 @@ abstract class PaymentAcceptanceCest extends BaseAcceptanceCest
         $I->clickStable('[data-test="global-nav-payments"]');
         $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('[data-test="payment-nav-groups"]');
-        $I->waitForText('Platební skupiny');
+        $I->waitForText('Platební skupiny', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->click('Založit skupinu plateb');
-        $I->waitForText('Nová platební skupina - Obecná');
+        $I->waitForText('Nová platební skupina - Obecná', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/platby/skupiny/nova');
         $I->fillField('Název', $groupName);
         $I->click('//option[text()="Vyberte e-mail"]');
@@ -59,9 +59,9 @@ abstract class PaymentAcceptanceCest extends BaseAcceptanceCest
         $I->click('//option[text()="Vyberte bankovní účet"]');
         $I->click('//option[text()="Acceptance"]');
         $I->scrollTo('input[name="send"]');
-        $I->waitForElementClickable('input[name="send"]');
+        $I->waitForElementClickable('input[name="send"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->executeJS('document.querySelector(\'input[name="send"]\').click()');
-        $I->waitForText('Skupina byla založena', 15);
+        $I->waitForText('Skupina byla založena', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="payment-group-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
     }
 

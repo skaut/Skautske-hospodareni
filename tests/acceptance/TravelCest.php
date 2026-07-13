@@ -64,7 +64,7 @@ class TravelCest extends BaseAcceptanceCest
     protected function newTravelOrder(AcceptanceTester $I, string $name, string $licensePlate): void
     {
         $I->clickStable('[data-test="travel-command-create-link"]');
-        $I->waitForText('Založit cestovní příkaz');
+        $I->waitForText('Založit cestovní příkaz', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/cestaky/prikazy/new');
 
         $I->waitForElementVisible('#frm-form-form-purpose', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
@@ -77,29 +77,29 @@ class TravelCest extends BaseAcceptanceCest
         $I->selectOption('#frm-form-form-type', ['car']);
         $I->click(['xpath' => '//*[@id="frm-form-form-contract_id"]/option[@value!=""][1]']);
 
-        $I->waitForElementNotVisible('#passengerName', 5);
-        $I->waitForElementNotVisible('#passengerContact', 5);
-        $I->waitForElementNotVisible('#passengerAddress', 5);
+        $I->waitForElementNotVisible('#passengerName', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->waitForElementNotVisible('#passengerContact', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->waitForElementNotVisible('#passengerAddress', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // (Alternativa bez smlouvy – odkomentuj a vyplň)
         /*
         $I->selectOption('#frm-form-form-contract_id', '');
         $I->executeJS('document.getElementById("frm-form-form-contract_id").dispatchEvent(new Event("change",{bubbles:true}));');
-        $I->waitForElementVisible('#passengerName', 5);
+        $I->waitForElementVisible('#passengerName', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->fillField('#frm-form-form-passenger-name',     'Jan Novák');
         $I->fillField('#frm-form-form-passenger-contact',  '777123456');
         $I->fillField('#frm-form-form-passenger-address',  'Ulice 1, Praha');
         */
 
         // 5) Vozidlo – po výběru "car" jsou pole povinná
-        $I->waitForElementVisible('#frm-form-form-vehicle_id', 5);
+        $I->waitForElementVisible('#frm-form-form-vehicle_id', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->selectOption('#frm-form-form-vehicle_id', ['text' => 'Osobní ('.$licensePlate.')']);
         $I->fillField('#frm-form-form-fuel_price', '38.50');
         $I->fillField('#frm-form-form-amortization', '1.20');
 
         // 6) Odeslání
         $I->scrollTo('footer');
-        $I->waitForElementVisible('[name=send]', 5);
+        $I->waitForElementVisible('[name=send]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('[name=send]');
 
         // 7) Ověření (uprav dle app – flash zpráva / redirect / nadpis)
@@ -110,7 +110,7 @@ class TravelCest extends BaseAcceptanceCest
     protected function deleteTravelOrder(AcceptanceTester $I, string $name): void
     {
         $I->click($name);
-        $I->waitForText('Cestovní příkaz');
+        $I->waitForText('Cestovní příkaz', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/cestaky/prikazy/');
         $I->click('Smazat');
         try {
@@ -118,7 +118,7 @@ class TravelCest extends BaseAcceptanceCest
         } catch (Throwable) {
         }
 
-        $I->waitForText('Cestovní příkaz byl smazán.');
+        $I->waitForText('Cestovní příkaz byl smazán.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
     }
 
     public function createVehicle(AcceptanceTester $I): void
@@ -176,21 +176,21 @@ class TravelCest extends BaseAcceptanceCest
         $I->amOnPage('/cestaky/vozidla?grid-grid-filter%5Bsearch%5D='.rawurlencode($licensePlate));
         $I->waitForText($licensePlate, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '#snippet-grid-grid-table');
         $I->click($licensePlate, '#snippet-grid-grid-table');
-        $I->waitForText('Údaje o vozidle');
+        $I->waitForText('Údaje o vozidle', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/cestaky/vozidla/detail/');
     }
 
     protected function deleteVehicle(AcceptanceTester $I, string $licensePlate): void
     {
         $I->click($licensePlate, '#snippet-grid-grid-table');
-        $I->waitForText('Údaje o vozidle');
+        $I->waitForText('Údaje o vozidle', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->click('Smazat vozidlo');
         try {
             $I->acceptPopup();
         } catch (Throwable) {
         }
 
-        $I->waitForText('Vozidlo bylo odebráno.');
+        $I->waitForText('Vozidlo bylo odebráno.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
     }
 
     public function createContact(AcceptanceTester $I): void
@@ -211,13 +211,13 @@ class TravelCest extends BaseAcceptanceCest
         $I->seeInCurrentUrl('/cestaky');
         $I->clickStable('[data-test="travel-subnav-contracts"]');
         $I->seeInCurrentUrl('/cestaky/smlouvy');
-        $I->waitForText('Smlouvy');
+        $I->waitForText('Smlouvy', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
     }
 
     protected function newContract(AcceptanceTester $I, string $unitRepresentative): void
     {
         $I->click('Založit smlouvu');
-        $I->waitForText('Nová smlouva o proplácení cestovních náhrad');
+        $I->waitForText('Nová smlouva o proplácení cestovních náhrad', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('#frm-formCreateContract', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->fillField('#frm-formCreateContract-passengerName', 'Jan Novák');
         $I->fillField('#frm-formCreateContract-passengerAddress', 'Ulice 1, 100 00 Praha');

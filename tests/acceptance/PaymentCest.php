@@ -25,9 +25,9 @@ class PaymentCest extends PaymentAcceptanceCest
         $I->clickStable('[data-test="global-nav-payments"]');
         $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('[data-test="payment-nav-groups"]');
-        $I->waitForText('Platební skupiny');
+        $I->waitForText('Platební skupiny', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->click('Založit skupinu plateb');
-        $I->waitForText('Nová platební skupina - Obecná');
+        $I->waitForText('Nová platební skupina - Obecná', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/platby/skupiny/nova');
         $I->fillField('Název', 'Jaráky');
         $I->click('//option[text()="Vyberte e-mail"]');
@@ -36,10 +36,10 @@ class PaymentCest extends PaymentAcceptanceCest
         $I->click('//option[text()="Vyberte bankovní účet"]');
         $I->click('//option[text()="Acceptance"]');
         $I->scrollTo('input[name="send"]');
-        $I->waitForElementClickable('input[name="send"]');
+        $I->waitForElementClickable('input[name="send"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->executeJS('document.querySelector(\'input[name="send"]\').click()');
 
-        $I->waitForText('Skupina byla založena', 15);
+        $I->waitForText('Skupina byla založena', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->wantTo('create payments');
 
@@ -57,7 +57,7 @@ class PaymentCest extends PaymentAcceptanceCest
         $I->amGoingTo('mark second payment as complete');
         $I->waitForJS(
             'return document.querySelectorAll(\'a[title="Zaplaceno"]\').length >= 2;',
-            10,
+            AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
         );
         $I->executeJS(
             'var links = Array.from(document.querySelectorAll(\'a[title="Zaplaceno"]\'))'
@@ -77,7 +77,7 @@ class PaymentCest extends PaymentAcceptanceCest
         $I->waitForJS(
             'return Array.from(document.querySelectorAll(\'a[title="Odeslat e-mail o platbě"].ui--sendEmail, a[title="Odeslat upomínku"].ui--sendEmail\'))'
             .'.some(function (link) { return link.offsetParent !== null; });',
-            10,
+            AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
         );
         $I->executeJS(
             'var links = Array.from(document.querySelectorAll(\'a[title="Odeslat e-mail o platbě"].ui--sendEmail, a[title="Odeslat upomínku"].ui--sendEmail\'))'
@@ -89,7 +89,7 @@ class PaymentCest extends PaymentAcceptanceCest
         $I->waitForJS(
             'return Array.from(document.querySelectorAll(".alert"))'
             .'.some(function (alert) { return alert.textContent.toLowerCase().includes("e-mail"); });',
-            10,
+            AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
         );
 
         $page->seeNumberOfPaymentsWithState('Nezaplacena', 2);
@@ -97,9 +97,9 @@ class PaymentCest extends PaymentAcceptanceCest
 
         $I->wantTo('close and reopen group');
         $I->click('Uzavřít');
-        $I->waitForText('Znovu otevřít');
+        $I->waitForText('Znovu otevřít', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->click('Znovu otevřít');
-        $I->waitForText('Uzavřít');
+        $I->waitForText('Uzavřít', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->amGoingTo('close group');
         $I->click('Uzavřít');
@@ -161,7 +161,7 @@ class PaymentCest extends PaymentAcceptanceCest
             'const newer = document.querySelector(\'[data-test="payment-group-name-'.$groupId.'"]\');'
             .'const older = document.querySelector(\'[data-test="payment-group-name-'.$olderGroupId.'"]\');'
             .'return Boolean(older.compareDocumentPosition(newer) & Node.DOCUMENT_POSITION_FOLLOWING);',
-            10,
+            AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
         );
 
         $detailSelector = '[data-test="payment-group-detail-'.$groupId.'"]';
@@ -265,7 +265,7 @@ class PaymentCest extends PaymentAcceptanceCest
 
         $I->fillFieldStable('input[name="name"]', $cloneName);
         $I->clickStable('input[name="send"]');
-        $I->waitForText('Skupina byla založena', 15);
+        $I->waitForText('Skupina byla založena', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="payment-group-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         Assert::assertSame($groupsBefore + 1, $I->grabNumRecords('pa_group'));
@@ -310,7 +310,7 @@ class PaymentCest extends PaymentAcceptanceCest
         $I->clickStable('[data-test="global-nav-payments"]');
         $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('[data-test="payment-nav-groups"]');
-        $I->waitForText('Platební skupiny');
+        $I->waitForText('Platební skupiny', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('[data-test="create-button-toggle"]');
         $I->waitForElementVisible('[data-test="create-button-menu"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
@@ -323,7 +323,7 @@ class PaymentCest extends PaymentAcceptanceCest
         $I->seeInCurrentUrl('/platby/tabory');
 
         $I->clickStable('[data-test="payment-nav-groups"]');
-        $I->waitForText('Platební skupiny');
+        $I->waitForText('Platební skupiny', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('[data-test="create-button-toggle"]');
         $I->waitForElementVisible('[data-test="create-button-menu"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('[data-test="create-button-item-event"]');
@@ -331,7 +331,7 @@ class PaymentCest extends PaymentAcceptanceCest
         $I->seeInCurrentUrl('/platby/akce');
 
         $I->clickStable('[data-test="payment-nav-groups"]');
-        $I->waitForText('Platební skupiny');
+        $I->waitForText('Platební skupiny', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('[data-test="create-button-toggle"]');
         $I->waitForElementVisible('[data-test="create-button-menu"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('[data-test="create-button-item-education"]');
