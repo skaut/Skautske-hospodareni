@@ -21,6 +21,7 @@ TEST ?=
 TEST_ARGS = $(if $(strip $(TEST)),$(TEST),)
 
 .PHONY: help build up down restart ps logs enter enter-xdebug \
+        clean-cache \
         composer-install composer-update init test-enter test-init \
         test-services test-unit test-integration test-coverage test-acceptance \
         test-mapping ci-acceptance check-phpstan check-cs \
@@ -97,6 +98,10 @@ enter: ## Shell do PHP kontejneru
 
 enter-xdebug: ## Shell do xdebug PHP kontejneru
 	$(RUN_PHP_XDEBUG) bash
+
+clean-cache: ## Vyčistí aplikační cache
+	$(call reset_writable_dirs,php)
+	$(RUN_PHP_DEV) bin/console app:cache:purge
 
 composer-install: ## composer install uvnitř PHP kontejneru
 	$(RUN_PHP_DEV) composer install --no-interaction
