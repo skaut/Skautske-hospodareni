@@ -369,6 +369,48 @@ fieldset:disabled label {
   padding: 0.45rem 0.6rem;
 }
 
+.cashbook-table {
+  min-width: 56rem;
+
+  > thead > tr > th {
+    background: rgba(var(--tblr-primary-rgb), 0.1);
+    color: var(--tblr-body-color);
+    border-bottom: 2px solid rgba(var(--tblr-primary-rgb), 0.32);
+  }
+
+  > thead > tr > th:first-child {
+    border-top-left-radius: var(--tblr-border-radius);
+  }
+
+  > thead > tr > th:last-child {
+    border-top-right-radius: var(--tblr-border-radius);
+  }
+}
+
+.cashbook-table__actions {
+  width: 6.75rem;
+  min-width: 6.75rem;
+}
+
+.cashbook-table__bulk-actions,
+.cashbook-table__row-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+}
+
+.cashbook-table__checkbox {
+  flex: 0 0 auto;
+  margin: 0 0.25rem 0 0;
+}
+
+.cashbook-table__icon-button {
+  width: 2rem;
+  min-width: 2rem;
+  padding-inline: 0;
+}
+
 .dropdown-fix {
   inset: auto 100% auto auto !important;
 }
