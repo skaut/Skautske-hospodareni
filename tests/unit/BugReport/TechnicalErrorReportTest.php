@@ -52,6 +52,42 @@ final class TechnicalErrorReportTest extends Unit
         self::assertSame('Nejde o technickou chybu.', $report->getResolutionMessage());
     }
 
+    public function testGitHubIssueStateCanBeStored(): void
+    {
+        $report = $this->createReport();
+        $createdAt = new DateTimeImmutable('2026-07-14 12:00:00');
+
+        self::assertFalse($report->hasGitHubIssue());
+
+        $report->markGitHubIssueCreated(42, 'https://github.com/skaut/issues/42', $createdAt);
+
+        self::assertTrue($report->hasGitHubIssue());
+        self::assertSame(42, $report->getGitHubIssueNumber());
+        self::assertSame('https://github.com/skaut/issues/42', $report->getGitHubIssueUrl());
+        self::assertSame($createdAt, $report->getGitHubIssueCreatedAt());
+        self::assertNull($report->getGitHubSyncError());
+
+        $report->markGitHubSyncFailed('API error');
+
+        self::assertSame('API error', $report->getGitHubSyncError());
+    }
+
+    public function testReplyCanStoreGitHubCommentState(): void
+    {
+        $report = $this->createReport();
+
+        $reply = $report->markReplySent('Prosíme o doplnění.');
+        $reply->markGitHubCommentCreated('https://github.com/skaut/issues/42#issuecomment-1');
+
+        self::assertSame('https://github.com/skaut/issues/42#issuecomment-1', $reply->getGitHubCommentUrl());
+        self::assertNull($reply->getGitHubCommentError());
+
+        $reply->markGitHubCommentFailed('API error');
+
+        self::assertNull($reply->getGitHubCommentUrl());
+        self::assertSame('API error', $reply->getGitHubCommentError());
+    }
+
     private function createReport(): TechnicalErrorReport
     {
         return new TechnicalErrorReport(

@@ -9,6 +9,7 @@ use App\Components\Grids\GridFactory;
 use App\Model\BugReport\BugReportNotificationService;
 use App\Model\BugReport\BugReportScreenshotStorage;
 use App\Model\BugReport\Entity\TechnicalErrorReport;
+use App\Model\BugReport\GitHubIssueService;
 use App\Model\BugReport\Manager\TechnicalErrorReportManager;
 use App\Model\BugReport\Repository\TechnicalErrorReportRepository;
 use Component\Forms\BaseForm;
@@ -29,6 +30,7 @@ final class BugReportsPresenter extends \App\Presentation\Admin\AdminBasePresent
         private TechnicalErrorReportManager $manager,
         private BugReportNotificationService $notificationService,
         private BugReportScreenshotStorage $screenshotStorage,
+        private GitHubIssueService $gitHubIssueService,
         private GridFactory $gridFactory,
     ) {
     }
@@ -137,13 +139,61 @@ final class BugReportsPresenter extends \App\Presentation\Admin\AdminBasePresent
 
             try {
                 $this->notificationService->notifyReply($report, $message);
-                $report->markReplySent($message);
+                $reply = $report->markReplySent($message);
+                if ($report->hasGitHubIssue()) {
+                    try {
+                        $comment = $this->gitHubIssueService->addReplyComment($report, $message);
+                        $reply->markGitHubCommentCreated($comment->getUrl());
+                    } catch (Throwable $e) {
+                        $reply->markGitHubCommentFailed($e->getMessage());
+                        $this->flashMessage('Odpověď autorovi hlášení byla odeslána, ale komentář na GitHub se nepodařilo přidat: '.$e->getMessage(), 'warning');
+                    }
+                }
                 $this->manager->saveNotificationState($report);
-                $this->flashMessage('Odpověď autorovi hlášení byla odeslána.', 'success');
+                if ($reply->getGitHubCommentError() === null) {
+                    $this->flashMessage('Odpověď autorovi hlášení byla odeslána.', 'success');
+                }
             } catch (Throwable $e) {
                 $report->markReplyFailed($e->getMessage());
                 $this->manager->saveNotificationState($report);
                 $this->flashMessage('Odpověď autorovi hlášení se nepodařilo odeslat: '.$e->getMessage(), 'warning');
+            }
+
+            $this->redirect('detail', ['id' => $report->getId()]);
+        };
+
+        return $form;
+    }
+
+    protected function createComponentGitHubIssueForm(): BaseForm
+    {
+        $form = new BaseForm();
+        $form->addHidden('id');
+        $form->addSubmit('send', 'Vytvořit GitHub issue')
+            ->setHtmlAttribute('class', 'btn btn-outline-dark btn-sm');
+
+        $form->onSuccess[] = function (Form $form): void {
+            $values = $form->getValues();
+            $report = $this->repository->findUnresolved((int) $values->id);
+            if (! $report instanceof TechnicalErrorReport) {
+                $this->flashMessage('Hlášení technické chyby nebylo nalezeno nebo už je vyřízené.', 'warning');
+                $this->redirect('default');
+            }
+
+            if ($report->hasGitHubIssue()) {
+                $this->flashMessage('GitHub issue už je u hlášení uložené.', 'info');
+                $this->redirect('detail', ['id' => $report->getId()]);
+            }
+
+            try {
+                $issue = $this->gitHubIssueService->createIssue($report);
+                $report->markGitHubIssueCreated($issue->getNumber(), $issue->getUrl());
+                $this->manager->saveNotificationState($report);
+                $this->flashMessage('GitHub issue bylo vytvořeno.', 'success');
+            } catch (Throwable $e) {
+                $report->markGitHubSyncFailed($e->getMessage());
+                $this->manager->saveNotificationState($report);
+                $this->flashMessage('GitHub issue se nepodařilo vytvořit: '.$e->getMessage(), 'warning');
             }
 
             $this->redirect('detail', ['id' => $report->getId()]);

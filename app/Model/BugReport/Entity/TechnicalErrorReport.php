@@ -105,6 +105,18 @@ class TechnicalErrorReport extends AbstractIdEntity
     #[Column(name: 'reply_error', type: Types::TEXT, nullable: true)]
     private ?string $replyError = null;
 
+    #[Column(name: 'github_issue_number', type: Types::INTEGER, nullable: true, options: ['unsigned' => true])]
+    private ?int $githubIssueNumber = null;
+
+    #[Column(name: 'github_issue_url', type: Types::STRING, length: 2048, nullable: true)]
+    private ?string $githubIssueUrl = null;
+
+    #[Column(name: 'github_issue_created_at', type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $githubIssueCreatedAt = null;
+
+    #[Column(name: 'github_sync_error', type: Types::TEXT, nullable: true)]
+    private ?string $githubSyncError = null;
+
     /** @var Collection&iterable<TechnicalErrorReportReply> */
     #[OneToMany(mappedBy: 'report', targetEntity: TechnicalErrorReportReply::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[OrderBy(['sentAt' => 'DESC', 'id' => 'DESC'])]
@@ -176,15 +188,31 @@ class TechnicalErrorReport extends AbstractIdEntity
         $this->resolutionNotificationError = $error;
     }
 
-    public function markReplySent(string $message, ?DateTimeImmutable $sentAt = null): void
+    public function markReplySent(string $message, ?DateTimeImmutable $sentAt = null): TechnicalErrorReportReply
     {
-        $this->replies->add(new TechnicalErrorReportReply($this, $message, $sentAt));
+        $reply = new TechnicalErrorReportReply($this, $message, $sentAt);
+        $this->replies->add($reply);
         $this->replyError = null;
+
+        return $reply;
     }
 
     public function markReplyFailed(string $error): void
     {
         $this->replyError = $error;
+    }
+
+    public function markGitHubIssueCreated(int $issueNumber, string $issueUrl, ?DateTimeImmutable $createdAt = null): void
+    {
+        $this->githubIssueNumber = $issueNumber;
+        $this->githubIssueUrl = $issueUrl;
+        $this->githubIssueCreatedAt = $createdAt ?? new DateTimeImmutable();
+        $this->githubSyncError = null;
+    }
+
+    public function markGitHubSyncFailed(string $error): void
+    {
+        $this->githubSyncError = $error;
     }
 
     public function resolveAsFixed(?string $message = null, ?DateTimeImmutable $resolvedAt = null): void
@@ -368,5 +396,30 @@ class TechnicalErrorReport extends AbstractIdEntity
     public function wasReplySent(): bool
     {
         return ! $this->replies->isEmpty();
+    }
+
+    public function hasGitHubIssue(): bool
+    {
+        return $this->githubIssueNumber !== null && $this->githubIssueUrl !== null;
+    }
+
+    public function getGitHubIssueNumber(): ?int
+    {
+        return $this->githubIssueNumber;
+    }
+
+    public function getGitHubIssueUrl(): ?string
+    {
+        return $this->githubIssueUrl;
+    }
+
+    public function getGitHubIssueCreatedAt(): ?DateTimeImmutable
+    {
+        return $this->githubIssueCreatedAt;
+    }
+
+    public function getGitHubSyncError(): ?string
+    {
+        return $this->githubSyncError;
     }
 }
