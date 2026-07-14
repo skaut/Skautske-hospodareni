@@ -12,8 +12,6 @@
         </div>
     </div>
     <div class="card-body chit-list" n:if="!empty($chits)" n:attr="id => $control->getUniqueId()">
-        <div class="overflow-auto">
-            <table class="table table-hover table-sm cashbook-table" id="cashbookTable">
         <div class="table-responsive">
             <table class="table table-hover table-sm cashbook-table" id="cashbookTable">
                 <thead>
@@ -52,10 +50,6 @@
                     {var $itemsCount = count($chit->items)}
                     {var $rowTone = $iterator->odd ? 'cashbook-table__row--light' : 'cashbook-table__row--dark'}
                     <tr class="{$rowTone}">
-                        <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} class="dependent-checkbox text-nowrap">
-                            <input type="checkbox" class="d-none d-lg-inline" name="chits-{$paymentMethod}[]" value={$chit->id}/>
-                            <div class="btn-group">
-                    <tr>
                         <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} class="dependent-checkbox text-nowrap cashbook-table__actions">
                             <input type="checkbox" class="form-check-input cashbook-table__checkbox" name="chits-{$paymentMethod}[]" value={$chit->id}/>
                             <div class="btn-group cashbook-table__row-actions">
@@ -73,36 +67,37 @@
                                         onclick="return confirm('Opravdu chcete smazat paragon?')"
                                         class="btn btn-sm btn-danger ui--removeChit"><i class="far fa-trash-alt"></i></a>
 
-                            <a n:if="$isEditable && $chit->locked" n:href="showLocked" title="Paragon je uzamčen."
-                                    class="btn btn-warning btn-sm"><i class="fas fa-lock"></i></a>
+                                <a n:if="$isEditable && $chit->locked" n:href="showLocked" title="Paragon je uzamčen."
+                                        class="btn btn-warning btn-sm"><i class="fas fa-lock"></i></a>
 
-                            <a n:if="$isEditable && count(array_intersect($validInverseCashbookTypes, $chit->inverseCashbookTypes))"
-                                    class="ajax btn btn-sm btn-light d-none d-md-inline" n:href="invertChitDialog:open! $chit->id"
-                                    title="Vytvořit protidoklad">
-                                <i class="fas fa-exchange-alt"></i>
-                            </a>
+                                <a n:if="$isEditable && count(array_intersect($validInverseCashbookTypes, $chit->inverseCashbookTypes))"
+                                        class="ajax btn btn-sm btn-light d-none d-md-inline" n:href="invertChitDialog:open! $chit->id"
+                                        title="Vytvořit protidoklad">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </a>
+                            </div>
                         </td>
-                        <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} class="text-end">
+                        <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} class="text-end text-nowrap">
                             {$chit->date|date:'d.m'}<span class="d-none d-lg-inline">.{$chit->date|date:'Y'}</span>
                         </td>
                         <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} title="{$prefix}{$chit->number}" n:class="array_key_exists((string)$chit->number, $duplicatesNumbers) ? 'alert alert-danger'">{$chit->number}</td>
                         <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} title="{$chit->purpose}">{$chit->purpose|truncate:"120"}</td>
-                        <td class="d-none d-md-table-cell" title="{$chit->categories}">{$chit->categoriesShortcut}</td>
+                        <td class="d-none d-md-table-cell text-nowrap" title="{$chit->categories}">{$chit->categoriesShortcut}</td>
                         <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} class="d-none d-md-table-cell">{$chit->recipient}</td>
                         {if $isIncome}
-                            <td class="text-end" title="{$chit->amount->expression}">{$chit->amount->value|price}</td>
+                            <td class="text-end text-nowrap" title="{$chit->amount->expression}">{$chit->amount->value|price}</td>
                             <td class="text-end">&nbsp;</td>
                         {else}
                             <td class="text-end">&nbsp;</td>
-                            <td class="text-end" title="{$chit->amount->expression}">{$chit->amount->value|price}</td>
+                            <td class="text-end text-nowrap" title="{$chit->amount->expression}">{$chit->amount->value|price}</td>
                         {/if}
-                        <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} n:class="text-end, $balance < 0 && $isCash ? 'bg-danger'">{$balance|price}</td>
+                        <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} n:class="text-end, text-nowrap, $balance < 0 && $isCash ? 'bg-danger'">{$balance|price}</td>
                     </tr>
                     {if $itemsCount > 1}
                         {foreach $chit->items as $item}
                             <tr class="{$rowTone} cashbook-table__item-row">
-                                <td class="text-body-secondary">{$item->category->shortcut}</td>
-                                <td class="text-end text-body-secondary" colspan="2" title="{$item->amount->expression}">{$item->amount->value|price}</td>
+                                <td class="text-body-secondary text-nowrap">{$item->category->shortcut}</td>
+                                <td class="text-end text-body-secondary text-nowrap" colspan="2" title="{$item->amount->expression}">{$item->amount->value|price}</td>
                             </tr>
                         {/foreach}
                     {/if}
@@ -113,13 +108,13 @@
                     <td class="d-none d-md-table-cell">&nbsp;</td>
                     <td class="d-none d-md-table-cell">&nbsp;</td>
                     <td><b>Konečný stav</b></td>
-                    <td class="text-end">{$totalIncome|price}</td>
-                    <td class="text-end">{$totalExpense|price}</td>
-                    <td n:class="text-end, ui--balance, $balance < 0 && $isCash ? 'bg-danger'"><b>{$balance|price}</b></td>
+                    <td class="text-end text-nowrap">{$totalIncome|price}</td>
+                    <td class="text-end text-nowrap">{$totalExpense|price}</td>
+                    <td n:class="text-end, text-nowrap, ui--balance, $balance < 0 && $isCash ? 'bg-danger'"><b>{$balance|price}</b></td>
                 </tr>
-                <tbody>
+                </tbody>
             </table>
-    </div>
+        </div>
 
         {if $canMoveChits}
             {control moveChitsDialog}

@@ -19,6 +19,7 @@ use function time;
 class EventCashbookCest extends BaseAcceptanceCest
 {
     private const BALANCE_SELECTOR = '.ui--balance';
+    private const EVENTS_LIST_SELECTOR = '[data-test="events-default-page"]';
     private const NO_CHITS_MESSAGE = 'žádné doklady';
 
     protected AcceptanceTester $I;
@@ -199,9 +200,7 @@ class EventCashbookCest extends BaseAcceptanceCest
         $cancelButton = sprintf("//a[text()='%s']/ancestor::tr//a[@data-test='event-cancel-action'][1]", $this->eventName);
 
         try {
-            $I->amOnPage('/');
-            $I->click('Akce');
-            $I->waitForText('Seznam akcí', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+            $this->openEventList($I);
             $I->executeJs('window.scrollTo(0, document.body.scrollHeight);');
             $I->waitForText($this->eventName, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
@@ -214,11 +213,19 @@ class EventCashbookCest extends BaseAcceptanceCest
             $cancelUrl = $I->grabAttributeFrom($cancelButton, 'href');
             $I->disablePopups();
             $I->amOnPage($cancelUrl);
-            $I->waitForText('Seznam akcí', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+            $this->openEventList($I);
+            $I->dontSee($this->eventName, self::EVENTS_LIST_SELECTOR);
             $this->eventCreated = false;
         } catch (Throwable $e) {
             $I->comment(sprintf('Cleanup of event "%s" failed: %s', $this->eventName, $e->getMessage()));
         }
+    }
+
+    private function openEventList(AcceptanceTester $I): void
+    {
+        $I->amOnPage('/akce');
+        $I->waitForDocumentReady();
+        $I->waitForElement(self::EVENTS_LIST_SELECTOR, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
     }
 
     private function fillChitForm(ChronosDate $date, string $purpose, Operation $type, string $category, string $recipient, string $amount): void
