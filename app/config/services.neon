@@ -64,6 +64,7 @@ search:
                 - App\Model\Admin\Services\AdminAccessChecker
                 - App\Model\BugReport\BugReportNotificationService
                 - App\Model\BugReport\BugReportService
+                - App\Model\BugReport\GitHubIssueService
                 - App\Model\Invoice\InvoiceAccessChecker
                 - App\Model\Bank\Services\BankAccountPairingRunResult
                 - App\Model\Bank\Services\CiFioTokenValidator
@@ -183,6 +184,10 @@ services:
           recipients: %errorEmails%
           appBaseUrl: %appBaseUrl%
           screenshotStorage: @App\Model\BugReport\BugReportScreenshotStorage
+      )
+    - App\Model\BugReport\GitHubIssueService(
+          config: %githubIssues%
+          appBaseUrl: %appBaseUrl%
       )
     - App\Model\BugReport\BugReportService(appRelease: %sentry.releaseHash%)
 

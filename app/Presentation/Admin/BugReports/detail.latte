@@ -51,6 +51,23 @@
                     <i class="fi fi-rr-download" aria-hidden="true"></i>
                     Stáhnout screenshot
                 </a>
+                <a
+                    n:if="$report->hasGitHubIssue()"
+                    href="{$report->getGitHubIssueUrl()}"
+                    class="btn btn-outline-dark btn-sm"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-test="admin-bug-report-github-link"
+                >
+                    <i class="fab fa-github" aria-hidden="true"></i>
+                    GitHub #{$report->getGitHubIssueNumber()}
+                </a>
+                {if ! $report->hasGitHubIssue()}
+                    {form gitHubIssueForm, class => 'd-inline'}
+                        {input id, value => $report->getId()}
+                        {input send, data-test => 'admin-bug-report-github-create'}
+                    {/form}
+                {/if}
             </div>
         </div>
     </div>
@@ -122,6 +139,11 @@
                             <div n:foreach="$report->getReplies() as $reply" class="border rounded bg-body-tertiary p-3 mb-3" data-test="admin-bug-report-sent-reply">
                                 <p class="text-body-secondary small mb-2">
                                     Odesláno {$reply->getSentAt()|date:'j. n. Y H:i:s'}
+                                    {if $reply->getGitHubCommentUrl() !== null}
+                                        · <a href="{$reply->getGitHubCommentUrl()}" target="_blank" rel="noopener noreferrer">Komentář na GitHubu</a>
+                                    {elseif $reply->getGitHubCommentError() !== null}
+                                        · GitHub komentář se nepodařilo přidat: {$reply->getGitHubCommentError()}
+                                    {/if}
                                 </p>
                                 <p class="text-pre-wrap mb-0">{$reply->getMessage()}</p>
                             </div>
@@ -189,6 +211,21 @@
                                 {if $report->getScreenshotSize() !== null}
                                     <span class="text-body-secondary small">({$report->getScreenshotSize()} B)</span>
                                 {/if}
+                            {else}
+                                -
+                            {/if}
+                        </dd>
+                        <dt class="col-sm-4">GitHub issue</dt>
+                        <dd class="col-sm-8">
+                            {if $report->hasGitHubIssue()}
+                                <a href="{$report->getGitHubIssueUrl()}" target="_blank" rel="noopener noreferrer" data-test="admin-bug-report-github-link-context">
+                                    #{$report->getGitHubIssueNumber()}
+                                </a>
+                                {if $report->getGitHubIssueCreatedAt() !== null}
+                                    <span class="text-body-secondary small">({$report->getGitHubIssueCreatedAt()|date:'j. n. Y H:i:s'})</span>
+                                {/if}
+                            {elseif $report->getGitHubSyncError() !== null}
+                                <span data-test="admin-bug-report-github-error">Chyba: {$report->getGitHubSyncError()}</span>
                             {else}
                                 -
                             {/if}

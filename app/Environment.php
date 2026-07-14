@@ -201,6 +201,12 @@ final class Environment
                 'credentialsPath' => self::resolvePath($projectDir, $googleCredentialsFile),
                 'redirectUri' => self::getString('GOOGLE_REDIRECT_URI', $baseUrl.'/google/token'),
             ],
+            'github' => [
+                'token' => self::getNullableString('GITHUB_ISSUES_TOKEN'),
+                'owner' => self::getNullableString('GITHUB_ISSUES_OWNER'),
+                'repository' => self::getNullableString('GITHUB_ISSUES_REPOSITORY'),
+                'labels' => self::getList('GITHUB_ISSUES_LABELS'),
+            ],
             'skautis' => [
                 'applicationId' => self::requireString('APPLICATION_ID'),
                 'testMode' => self::getBool('SKAUTIS_TEST_MODE', $appEnv !== 'prod'),

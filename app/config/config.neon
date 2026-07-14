@@ -25,6 +25,7 @@ parameters:
     google:
         credentials: %envConfig.google.credentialsPath%
         redirectUri: %envConfig.google.redirectUri%
+    githubIssues: %envConfig.github%
     sentry:
         dsn: %envConfig.sentry.dsn%
         releaseHash: %envConfig.sentry.releaseHash%
