@@ -16,6 +16,9 @@ class Payment
     private const ADD_BUTTON_TOGGLE = '[data-test="payment-add-button-toggle"]';
     private const ADD_BUTTON_MENU = '[data-test="payment-add-button-menu"]';
     private const ADD_BUTTON_ITEM_GENERAL = '[data-test="payment-add-button-item-general"]';
+    private const GROUP_CREATE_BUTTON = '[data-test="create-button-main"]';
+    private const GROUP_FORM = '[data-test="payment-group-form-page"]';
+    private const GROUP_FORM_SUBMIT = 'input[name="send"]';
 
     /** @var AcceptanceTester */
     private $tester;
@@ -40,6 +43,48 @@ class Payment
         $this->selectNextWorkdayForDueDate();
         $this->submitPayment();
         $I->waitForText($name, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '[data-test="payment-group-grid"]');
+    }
+
+    public function createGeneralPaymentGroup(string $name): void
+    {
+        $this->openGeneralPaymentGroupForm();
+        $this->fillGeneralPaymentGroupForm($name);
+        $this->submitPaymentGroupForm();
+    }
+
+    public function openGeneralPaymentGroupForm(): void
+    {
+        $I = $this->tester;
+
+        $I->clickStable('[data-test="global-nav-payments"]');
+        $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->clickStable('[data-test="payment-nav-groups"]');
+        $I->waitForElementVisible('[data-test="payments-groups-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->clickStable(self::GROUP_CREATE_BUTTON);
+        $I->waitForElementVisible(self::GROUP_FORM, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->waitForText('Nová platební skupina - Obecná', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeInCurrentUrl('/platby/skupiny/nova');
+    }
+
+    public function fillGeneralPaymentGroupForm(string $name): void
+    {
+        $I = $this->tester;
+
+        $I->fillFieldStable('input[name="name"]', $name);
+        $I->waitForElementVisible('select[name="oAuthId"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->selectOption('select[name="oAuthId"]', 'test@hospodareni.loc');
+        $I->waitForElementVisible('select[name="bankAccount"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->selectOption('select[name="bankAccount"]', 'Acceptance');
+    }
+
+    public function submitPaymentGroupForm(): void
+    {
+        $I = $this->tester;
+
+        $I->scrollTo(self::GROUP_FORM_SUBMIT);
+        $I->clickStable(self::GROUP_FORM_SUBMIT);
+        $I->waitForText('Skupina byla založena', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->waitForElementVisible('[data-test="payment-group-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
     }
 
     public function seeNumberOfPaymentsWithState(string $state, int $count): void
@@ -82,7 +127,7 @@ class Payment
     {
         $I = $this->tester;
 
-        $I->executeJS('document.querySelector("#frm-paymentDialog-form input[name=\'send\']").click()');
+        $I->clickStable('.modal.show .modal-footer input[name="send"][form="frm-paymentDialog-form"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
 
         // Wait for AJAX to complete: modal closes and page becomes interactive again.
         $I->waitForJS(

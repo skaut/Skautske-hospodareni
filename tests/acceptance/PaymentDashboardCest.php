@@ -55,11 +55,7 @@ class PaymentDashboardCest extends PaymentAcceptanceCest
         );
         Assert::assertTrue($headingOrderIsCorrect);
 
-        $I->executeJS(
-            'const card = document.querySelector(\'[data-test="dashboard-group-card-'.$groupId.'"]\');'
-            .'const rect = card.getBoundingClientRect();'
-            .'document.elementFromPoint(rect.right - 20, rect.top + 20).click();',
-        );
+        $I->clickStable('[data-test="dashboard-group-link-'.$groupId.'"]');
         $I->waitForElementVisible('[data-test="payment-group-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/platby/skupiny/'.$groupId.'/platby');
         $I->seeInDatabase('payment_group_visit', [
@@ -111,11 +107,7 @@ class PaymentDashboardCest extends PaymentAcceptanceCest
         $invoiceCard = '[data-test="invoice-sequence-card-'.$sequenceId.'"]';
         $I->seeElement($invoiceCard.'.navigation-card');
         $I->seeElement('[data-test="invoice-sequence-link-'.$sequenceId.'"].stretched-link');
-        $I->executeJS(
-            'const card = document.querySelector(\''.$invoiceCard.'\');'
-            .'const rect = card.getBoundingClientRect();'
-            .'document.elementFromPoint(rect.right - 20, rect.top + 20).click();',
-        );
+        $I->clickStable('[data-test="invoice-sequence-link-'.$sequenceId.'"]');
         $I->waitForElementVisible('[data-test="invoice-sequence-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
     }
 
@@ -154,7 +146,8 @@ class PaymentDashboardCest extends PaymentAcceptanceCest
         $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('[data-test="payment-nav-groups"]');
         $I->waitForText('Platební skupiny', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->click('Založit skupinu plateb');
+        $I->clickStable('[data-test="create-button-main"]');
+        $I->waitForElementVisible('[data-test="payment-group-form-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForText('Nová platební skupina - Obecná', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Sidebar and content visible initially

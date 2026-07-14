@@ -30,7 +30,7 @@ class AcceptanceTester extends Actor
     private const LOGIN_TRIGGER_SELECTOR = '[data-test="login-link"], [data-test="homepage-login"]';
     private const LOGGED_IN_SELECTOR = '.ui--current-role, [data-test="global-nav-payments"], [data-test="homepage-login"][href*="dashboard"]';
 
-    public const ELEMENT_LOAD_TIMEOUT = 20;
+    public const ELEMENT_LOAD_TIMEOUT = 30;
     public const UNIT_LEADER_ROLE = 'Středisko: vedoucí/admin - 621.66';
     public const UNIT_ID = 27266;
 

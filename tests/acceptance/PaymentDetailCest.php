@@ -23,15 +23,14 @@ class PaymentDetailCest extends PaymentAcceptanceCest
         $I->wantTo('open a payment group on canonical url');
 
         $this->createGeneralPaymentGroup($groupName);
+        $groupId = $I->grabFromDatabase('pa_group', 'id', ['name' => $groupName]);
 
         $I->seeCurrentUrlMatches('~^/platby/skupiny/\d+/platby(?:\?.*)?$~');
         $I->waitForElementVisible('[data-test="payment-group-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->clickStable('[data-test="payment-nav-groups"]');
         $I->waitForText('Platební skupiny', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->executeJS(
-            "document.evaluate(\"//a[normalize-space(text())='$groupName']\", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click();",
-        );
+        $I->clickStable('[data-test="payment-group-detail-'.$groupId.'"]');
         $I->waitForElementVisible('[data-test="payment-group-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForText($groupName, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeCurrentUrlMatches('~^/platby/skupiny/\d+/platby(?:\?.*)?$~');
@@ -132,14 +131,14 @@ class PaymentDetailCest extends PaymentAcceptanceCest
 
         $emailType = $summary['availableBulkTypes'][0];
         $toggle = '[data-test="mass-email-type-'.$emailType.'"]';
-        $I->click($toggle);
+        $I->clickStable($toggle);
         $I->waitForJS(
             'return Array.from(document.querySelectorAll(\'[data-mass-email-select] option[data-email-type="'.$emailType.'"]\'))'
             .'.every(option => option.selected);',
             AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
         );
 
-        $I->click($toggle);
+        $I->clickStable($toggle);
         $I->waitForJS(
             'return Array.from(document.querySelectorAll(\'[data-mass-email-select] option[data-email-type="'.$emailType.'"]\'))'
             .'.every(option => !option.selected);',

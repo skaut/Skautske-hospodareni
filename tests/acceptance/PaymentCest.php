@@ -22,24 +22,7 @@ class PaymentCest extends PaymentAcceptanceCest
 
         $I->wantTo('create payment group');
 
-        $I->clickStable('[data-test="global-nav-payments"]');
-        $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->clickStable('[data-test="payment-nav-groups"]');
-        $I->waitForText('Platební skupiny', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->click('Založit skupinu plateb');
-        $I->waitForText('Nová platební skupina - Obecná', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->seeInCurrentUrl('/platby/skupiny/nova');
-        $I->fillField('Název', 'Jaráky');
-        $I->click('//option[text()="Vyberte e-mail"]');
-        $I->click('//option[text()="test@hospodareni.loc"]');
-
-        $I->click('//option[text()="Vyberte bankovní účet"]');
-        $I->click('//option[text()="Acceptance"]');
-        $I->scrollTo('input[name="send"]');
-        $I->waitForElementClickable('input[name="send"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->executeJS('document.querySelector(\'input[name="send"]\').click()');
-
-        $I->waitForText('Skupina byla založena', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $page->createGeneralPaymentGroup('Jaráky');
 
         $I->wantTo('create payments');
 
@@ -51,21 +34,13 @@ class PaymentCest extends PaymentAcceptanceCest
 
         $I->amGoingTo('add third payment');
         $page->addPayment('Testovací platba 3', 'frantisekmasa1@gmail.com', 300);
+        $secondPaymentId = $I->grabFromDatabase('pa_payment', 'id', ['name' => 'Testovací platba 2']);
+        $thirdPaymentId = $I->grabFromDatabase('pa_payment', 'id', ['name' => 'Testovací platba 3']);
 
         $I->wantTo('complete payment');
 
         $I->amGoingTo('mark second payment as complete');
-        $I->waitForJS(
-            'return document.querySelectorAll(\'a[title="Zaplaceno"]\').length >= 2;',
-            AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
-        );
-        $I->executeJS(
-            'var links = Array.from(document.querySelectorAll(\'a[title="Zaplaceno"]\'))'
-            .'.filter(function (link) { return link.offsetParent !== null; });'
-            .'if (links.length < 2) { return false; }'
-            .'links[1].click();'
-            .'return true;',
-        );
+        $I->clickStable('[data-test="payment-complete-action-'.$secondPaymentId.'"]');
         $I->waitForText('Dokončena', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->canSeeNumberOfElements('(//*[text()="Nezaplacena"])', 2);
@@ -74,18 +49,7 @@ class PaymentCest extends PaymentAcceptanceCest
         $I->wantTo('send payment email');
 
         $I->amGoingTo('send third payment');
-        $I->waitForJS(
-            'return Array.from(document.querySelectorAll(\'a[title="Odeslat e-mail o platbě"].ui--sendEmail, a[title="Odeslat upomínku"].ui--sendEmail\'))'
-            .'.some(function (link) { return link.offsetParent !== null; });',
-            AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
-        );
-        $I->executeJS(
-            'var links = Array.from(document.querySelectorAll(\'a[title="Odeslat e-mail o platbě"].ui--sendEmail, a[title="Odeslat upomínku"].ui--sendEmail\'))'
-            .'.filter(function (link) { return link.offsetParent !== null; });'
-            .'if (links.length === 0) { return false; }'
-            .'links[links.length - 1].click();'
-            .'return true;',
-        );
+        $I->clickStable('[data-test="payment-email-action-'.$thirdPaymentId.'"].ui--sendEmail');
         $I->waitForJS(
             'return Array.from(document.querySelectorAll(".alert"))'
             .'.some(function (alert) { return alert.textContent.toLowerCase().includes("e-mail"); });',
@@ -96,13 +60,13 @@ class PaymentCest extends PaymentAcceptanceCest
         $I->see('1 / 3 plateb'); // Progress bar: 1 paid out of 3 total
 
         $I->wantTo('close and reopen group');
-        $I->click('Uzavřít');
+        $I->clickStable('[data-test="payment-group-close"]');
         $I->waitForText('Znovu otevřít', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->click('Znovu otevřít');
+        $I->clickStable('[data-test="payment-group-open"]');
         $I->waitForText('Uzavřít', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->amGoingTo('close group');
-        $I->click('Uzavřít');
+        $I->clickStable('[data-test="payment-group-close"]');
     }
 
     /** @group payment */
@@ -156,7 +120,7 @@ class PaymentCest extends PaymentAcceptanceCest
             .'return Boolean(newer.compareDocumentPosition(older) & Node.DOCUMENT_POSITION_FOLLOWING);',
         ));
 
-        $I->click('#datagrid-sort-createdAt');
+        $I->clickStable('#datagrid-sort-createdAt');
         $I->waitForJS(
             'const newer = document.querySelector(\'[data-test="payment-group-name-'.$groupId.'"]\');'
             .'const older = document.querySelector(\'[data-test="payment-group-name-'.$olderGroupId.'"]\');'
@@ -187,7 +151,7 @@ class PaymentCest extends PaymentAcceptanceCest
         );
         Assert::assertNotSame('', $I->grabAttributeFrom($pairSelector, 'href'));
 
-        $I->click($detailSelector);
+        $I->clickStable($detailSelector);
         $I->waitForElementVisible('[data-test="payment-group-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
     }
 
@@ -200,7 +164,7 @@ class PaymentCest extends PaymentAcceptanceCest
         $this->page->openPaymentDialog();
 
         $I->waitForElementVisible('[aria-label="Vybrat datum"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->click('[aria-label="Vybrat datum"]');
+        $I->clickStable('[aria-label="Vybrat datum"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
         $I->waitForElementVisible('.pika-single:not(.is-hidden)', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
     }
 

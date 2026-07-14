@@ -19,14 +19,14 @@
             </div>
             <div class="d-flex flex-wrap gap-2 align-items-center" n:if="$isEditable">
                 {if $group->state === 'open'}
-                    <a n:href="closeGroup!" class="btn btn-light btn-sm">
+                    <a n:href="closeGroup!" class="btn btn-light btn-sm" data-test="payment-group-close">
                         <i class="fi fi-rr-lock" aria-hidden="true"></i> Uzavřít
                     </a>
                     <a n:href=":Payments:Group:edit $group->id" data-test="payment-group-edit-link" class="btn btn-light btn-sm">
                         <i class="fi fi-rr-edit" aria-hidden="true"></i> Upravit skupinu
                     </a>
                 {else}
-                    <a n:href="openGroup!" class="btn btn-outline-warning btn-sm">
+                    <a n:href="openGroup!" class="btn btn-outline-warning btn-sm" data-test="payment-group-open">
                         <i class="fi fi-rr-unlock" aria-hidden="true"></i> Znovu otevřít
                     </a>
                     <a n:href="openRemoveDialog!" class="ajax btn btn-outline-danger btn-sm">

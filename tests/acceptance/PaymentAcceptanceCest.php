@@ -44,25 +44,7 @@ abstract class PaymentAcceptanceCest extends BaseAcceptanceCest
 
     protected function createGeneralPaymentGroup(string $groupName): void
     {
-        $I = $this->I;
-
-        $I->clickStable('[data-test="global-nav-payments"]');
-        $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->clickStable('[data-test="payment-nav-groups"]');
-        $I->waitForText('Platební skupiny', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->click('Založit skupinu plateb');
-        $I->waitForText('Nová platební skupina - Obecná', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->seeInCurrentUrl('/platby/skupiny/nova');
-        $I->fillField('Název', $groupName);
-        $I->click('//option[text()="Vyberte e-mail"]');
-        $I->click('//option[text()="test@hospodareni.loc"]');
-        $I->click('//option[text()="Vyberte bankovní účet"]');
-        $I->click('//option[text()="Acceptance"]');
-        $I->scrollTo('input[name="send"]');
-        $I->waitForElementClickable('input[name="send"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->executeJS('document.querySelector(\'input[name="send"]\').click()');
-        $I->waitForText('Skupina byla založena', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->waitForElementVisible('[data-test="payment-group-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->page->createGeneralPaymentGroup($groupName);
     }
 
     protected function createSubtypePaymentGroup(string $type, int $bankAccountId = 1): int

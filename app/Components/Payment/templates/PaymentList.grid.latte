@@ -88,6 +88,7 @@
         <a href="{$canSendReminder ? $control->getParent()->link(sendReminder, $item->getId()) : '#'}"
            n:class="btn, btn-sm, $canSendReminder ? btn-warning : btn-light, $canSendReminder ? 'ui--sendEmail' : disabled"
            n:attr="onclick => $canSendReminder ? null : 'return false;'"
+           data-test="payment-reminder-action-{$item->getId()}"
            title="{$reminderActionTitle}"><i
                     class="far fa-bell"></i></a>
         {/if}
@@ -98,7 +99,7 @@
             class="btn btn-sm btn-light"
             title="Ruční párování s bankovní transakcí"
         ><i class="fas fa-university"></i></a>
-        <a href="{$control->getParent()->link(complete, $item->getId())}" class="btn btn-sm btn-success" title="Zaplaceno"><i
+        <a href="{$control->getParent()->link(complete, $item->getId())}" class="btn btn-sm btn-success" data-test="payment-complete-action-{$item->getId()}" title="Zaplaceno"><i
                     class="fas fa-check"></i></a>
     {elseif $item->isClosed()}
         <a href="{$control->getPresenter()->link('paymentNoteDialog:open!', $item->getId())}"
