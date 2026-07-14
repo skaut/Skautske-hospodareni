@@ -1,52 +1,54 @@
-<a n:href="prefix:open!" class="btn btn-sm btn-light mb-2 ajax">
-    Prefix: {if $prefix !== null}{$prefix}{else}žádný{/if}
-</a>
-{control prefix}
+<div class="cashbook-toolbar d-flex flex-nowrap align-items-center justify-content-end gap-2">
+    <a n:href="prefix:open!" class="btn btn-sm btn-light ajax">
+        Prefix: {if $prefix !== null}{$prefix}{else}žádný{/if}
+    </a>
 
-<a n:href="generateNumbers! $paymentMethod->toString ()" n:class="btn, btn-sm, btn-warning, mb-2, ! $hasOnlyNumericChitNumbers ? disabled"
-        data-bs-toggle="tooltip" data-placement="top" title="Generovat čísla dokladů lze když stávající obsahují pouze číslice.">
-    Dogenerovat čísla dokladů
-</a>
+    <a n:href="generateNumbers! $paymentMethod->toString ()" n:class="btn, btn-sm, btn-warning, ! $hasOnlyNumericChitNumbers ? disabled"
+            data-bs-toggle="tooltip" data-placement="top" title="Generovat čísla dokladů lze když stávající obsahují pouze číslice.">
+        Dogenerovat čísla dokladů
+    </a>
 
+    <div class="btn-group">
+        <div class="dropdown">
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                    type="button"
+                    id="exportButton"
+                    data-bs-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false">
+                Exporty<span class="caret"></span>
+            </button>
 
-<div class="btn-group mb-2">
-    <div class="dropdown">
-        <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                type="button"
-                id="exportButton"
-                data-bs-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false">
-            Exporty<span class="caret"></span>
-        </button>
-
-        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="exportButton">
-            <a n:class="dropdown-item, ! $hasExportScans ? disabled"
-                    href="{plink :Unit:CashbookExport:exportScans $cashbookId, $paymentMethod->toString ()}" target="_blank" rel="noopener noreferrer">
-                <i class="far fa-file-archive"></i>
-                Skeny dokladů.zip
-            </a>
-            <div class="dropdown-divider"></div>
-            {if ! $cashbookType->isUnit()}
-            <a n:class="dropdown-item, count($chits) === 0 ? disabled"
-                    href="{plink :Unit:CashbookExport:printCashbook $cashbookId, $paymentMethod->toString ()}" target="_blank" rel="noopener noreferrer">
-                <i class="far fa-file-pdf"></i>
-                {if $paymentMethod->equalsValue('cash')}
-                    Pokladní kniha.pdf
-                {else}
-                    Bankovní transakce.pdf
+            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="exportButton">
+                <a n:class="dropdown-item, ! $hasExportScans ? disabled"
+                        href="{plink :Unit:CashbookExport:exportScans $cashbookId, $paymentMethod->toString ()}" target="_blank" rel="noopener noreferrer">
+                    <i class="far fa-file-archive"></i>
+                    Skeny dokladů.zip
+                </a>
+                <div class="dropdown-divider"></div>
+                {if ! $cashbookType->isUnit()}
+                <a n:class="dropdown-item, count($chits) === 0 ? disabled"
+                        href="{plink :Unit:CashbookExport:printCashbook $cashbookId, $paymentMethod->toString ()}" target="_blank" rel="noopener noreferrer">
+                    <i class="far fa-file-pdf"></i>
+                    {if $paymentMethod->equalsValue('cash')}
+                        Pokladní kniha.pdf
+                    {else}
+                        Bankovní transakce.pdf
+                    {/if}
+                </a>
+                <div class="dropdown-divider"></div>
                 {/if}
-            </a>
-            <div class="dropdown-divider"></div>
-            {/if}
-            <a n:class="dropdown-item, count($chits) === 0 ? disabled"
-               href="{plink :Unit:CashbookExport:exportCashbook $cashbookId, $paymentMethod->toString()}">
-                <i class="far fa-file-excel"></i> Pokladní kniha.xlsx
-            </a>
-            <a n:class="dropdown-item, count($chits) === 0 ? disabled"
-               href="{plink :Unit:CashbookExport:exportCashbookWithCategories $cashbookId, $paymentMethod->toString()}">
-                <i class="far fa-file-excel"></i> Pokladní kniha rozšířená.xlsx
-            </a>
+                <a n:class="dropdown-item, count($chits) === 0 ? disabled"
+                   href="{plink :Unit:CashbookExport:exportCashbook $cashbookId, $paymentMethod->toString()}">
+                    <i class="far fa-file-excel"></i> Pokladní kniha.xlsx
+                </a>
+                <a n:class="dropdown-item, count($chits) === 0 ? disabled"
+                   href="{plink :Unit:CashbookExport:exportCashbookWithCategories $cashbookId, $paymentMethod->toString()}">
+                    <i class="far fa-file-excel"></i> Pokladní kniha rozšířená.xlsx
+                </a>
+            </div>
         </div>
     </div>
 </div>
+
+{control prefix}

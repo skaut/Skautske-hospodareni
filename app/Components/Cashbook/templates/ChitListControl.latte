@@ -12,6 +12,8 @@
         </div>
     </div>
     <div class="card-body chit-list" n:if="!empty($chits)" n:attr="id => $control->getUniqueId()">
+        <div class="overflow-auto">
+            <table class="table table-hover table-sm cashbook-table" id="cashbookTable">
         <div class="table-responsive">
             <table class="table table-hover table-sm cashbook-table" id="cashbookTable">
                 <thead>
@@ -48,6 +50,11 @@
                     {var $isIncome = $chit->isIncome()}
                     {do $balance += $isIncome ? $chit->amount->toFloat() : -$chit->amount->toFloat()}
                     {var $itemsCount = count($chit->items)}
+                    {var $rowTone = $iterator->odd ? 'cashbook-table__row--light' : 'cashbook-table__row--dark'}
+                    <tr class="{$rowTone}">
+                        <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} class="dependent-checkbox text-nowrap">
+                            <input type="checkbox" class="d-none d-lg-inline" name="chits-{$paymentMethod}[]" value={$chit->id}/>
+                            <div class="btn-group">
                     <tr>
                         <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} class="dependent-checkbox text-nowrap cashbook-table__actions">
                             <input type="checkbox" class="form-check-input cashbook-table__checkbox" name="chits-{$paymentMethod}[]" value={$chit->id}/>
@@ -93,7 +100,7 @@
                     </tr>
                     {if $itemsCount > 1}
                         {foreach $chit->items as $item}
-                            <tr>
+                            <tr class="{$rowTone} cashbook-table__item-row">
                                 <td class="text-body-secondary">{$item->category->shortcut}</td>
                                 <td class="text-end text-body-secondary" colspan="2" title="{$item->amount->expression}">{$item->amount->value|price}</td>
                             </tr>

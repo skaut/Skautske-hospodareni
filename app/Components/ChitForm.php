@@ -278,12 +278,17 @@ final class ChitForm extends BaseControl
                 return;
             }
 
-            $this->setDisplayChitParent(false);
-            if ($form->isSubmitted() === $form['sendStay']) {
-                $this->setDisplayChitParent(true);
-            }
+            $displayAfterSubmit = $form->isSubmitted() === $form['sendStay'];
+            $this->setDisplayChitParent($displayAfterSubmit);
+            $this->setDisplayChitForm($displayAfterSubmit);
 
-            $this->formSubmitted($form, $values);
+            if (! $this->formSubmitted($form, $values)) {
+                $this->keepFailedSubmissionVisible();
+            }
+        };
+
+        $form->onError[] = function (): void {
+            $this->keepFailedSubmissionVisible();
         };
 
         $form->addSubmit('cancle', 'Zpět')
@@ -307,10 +312,12 @@ final class ChitForm extends BaseControl
         $this->reload();
     }
 
-    private function formSubmitted(BaseForm $form, ArrayHash $values): void
+    private function formSubmitted(BaseForm $form, ArrayHash $values): bool
     {
         if (! $this->isEditable) {
             $this->reload('Nemáte oprávnění upravovat pokladní knihu', 'danger');
+
+            return false;
         }
 
         $chitId = $values['pid'] !== '' ? (int) $values['pid'] : null;
@@ -342,6 +349,8 @@ final class ChitForm extends BaseControl
             }
 
             $this->reload();
+
+            return true;
         } catch (InvalidArgumentException|CashbookNotFound $exc) {
             $this->flashMessage('Paragon se nepodařilo přidat do seznamu.', 'danger');
             $this->logger->error(sprintf('Can\'t add chit to cashbook (%s: %s)', $exc::class, $exc->getMessage()));
@@ -361,6 +370,20 @@ final class ChitForm extends BaseControl
             $form->addError('Není dovoleno přidávat více položek se stejou kategorií!');
         } catch (SingleItemRestriction) {
             $form->addError('Převody a hromadný příjmový doklad mohou mít pouze 1 položku!');
+        }
+
+        $this->keepFailedSubmissionVisible();
+
+        return false;
+    }
+
+    private function keepFailedSubmissionVisible(): void
+    {
+        $this->setDisplayChitParent(true);
+        $this->setDisplayChitForm(true);
+
+        if ($this->getPresenter()->isAjax()) {
+            $this->redrawControl();
         }
     }
 
