@@ -141,7 +141,18 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->waitForElement('input[name="items[1][remove]"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $this->I->expect('Odebrat položku');
         $this->I->seeElement('input[name="items[1][remove]"]');
-        $this->fillSecondChitForm('Hřebíky', Operation::EXPENSE(), 'Materiál', 'Testovací skaut', '50');
+        $this->fillSecondChitForm('', Operation::EXPENSE(), 'Materiál', 'Testovací skaut', '50');
+        $this->I->scrollTo('input[name="send"]');
+        $this->I->waitForElementClickable('input[name="send"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->I->clickStable('input[name="send"]');
+        $this->I->waitForText('Zadejte účel výplaty', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->I->seeElement('input[name="send"]');
+        $this->I->seeInField('input[name="items[0][purpose]"]', 'Rohlíky');
+        $this->I->seeInField('input[name="recipient"]', 'Testovací skaut');
+        $this->I->seeInField('input[name="items[0][price]"]', '50');
+        $this->I->seeInField('input[name="items[1][price]"]', '50');
+
+        $this->I->fillFieldStable('input[name="items[1][purpose]"]', 'Hřebíky');
         $this->I->scrollTo('input[name="send"]');
         $this->I->waitForElementClickable('input[name="send"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $this->I->clickStable('input[name="send"]');
