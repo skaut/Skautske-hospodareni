@@ -225,9 +225,7 @@ class InvoiceCest extends BaseAcceptanceCest
 
         $I->fillField('input[name="issuedBy"]', 'Původní vystavil');
         $I->fillField('input[name="email"]', 'edit@example.test');
-        $I->scrollTo('input[name="customer[type]"][value="person"]');
-        $I->waitForElementClickable('input[name="customer[type]"][value="person"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->checkOption('input[name="customer[type]"][value="person"]');
+        $I->clickStable('input[name="customer[type]"][value="person"]');
         $I->fillField('input[name="customer[name]"]', 'Editovaný odběratel');
         $I->fillField('input[name="customer[street]"]', 'Editační 1');
         $I->fillField('input[name="customer[city]"]', 'Praha');
@@ -336,9 +334,7 @@ class InvoiceCest extends BaseAcceptanceCest
 
         $I->fillField('input[name="issuedBy"]', 'Duplicitní vystavil');
         $I->fillField('input[name="email"]', 'duplicate@example.test');
-        $I->scrollTo('input[name="customer[type]"][value="person"]');
-        $I->waitForElementClickable('input[name="customer[type]"][value="person"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->checkOption('input[name="customer[type]"][value="person"]');
+        $I->clickStable('input[name="customer[type]"][value="person"]');
         $I->fillField('input[name="customer[name]"]', 'Duplikovaný odběratel');
         $I->fillField('input[name="customer[street]"]', 'Duplikační 1');
         $I->fillField('input[name="customer[city]"]', 'Praha');
@@ -449,9 +445,7 @@ class InvoiceCest extends BaseAcceptanceCest
 
         $I->fillField('input[name="issuedBy"]', 'Selenium tester');
         $I->fillField('input[name="email"]', 'odberatel@example.test');
-        $I->scrollTo('input[name="customer[type]"][value="person"]');
-        $I->waitForElementClickable('input[name="customer[type]"][value="person"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->checkOption('input[name="customer[type]"][value="person"]');
+        $I->clickStable('input[name="customer[type]"][value="person"]');
         $I->fillField('input[name="customer[name]"]', 'Jan Novák');
         $I->fillField('input[name="customer[street]"]', 'Masarykova');
         $I->fillField('input[name="customer[city]"]', 'Brno');
@@ -587,9 +581,7 @@ class InvoiceCest extends BaseAcceptanceCest
         // ── 3. Issue invoice ─────────────────────────────────────
         $I->fillField('input[name="issuedBy"]', 'Selenium lifecycle');
         $I->fillField('input[name="email"]', 'lifecycle@example.test');
-        $I->scrollTo('input[name="customer[type]"][value="person"]');
-        $I->waitForElementClickable('input[name="customer[type]"][value="person"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->checkOption('input[name="customer[type]"][value="person"]');
+        $I->clickStable('input[name="customer[type]"][value="person"]');
         $I->fillField('input[name="customer[name]"]', 'Lifecycle Tester');
         $I->fillField('input[name="customer[street]"]', 'Testovací 1');
         $I->fillField('input[name="customer[city]"]', 'Praha');
