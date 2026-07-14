@@ -112,6 +112,15 @@ class RouterFactory
 
         // Camps
         $router[] = new Route(
+            'tabory/<aid [0-9]+>/<action>',
+            [
+                'presenter' => 'Camps:Detail',
+                'action' => [
+                    Route::PATTERN => 'report',
+                ],
+            ],
+        );
+        $router[] = new Route(
             'tabory/<aid [0-9]+>[/<presenter>[/<action>]]',
             [
                 'presenter' => [

@@ -159,7 +159,8 @@ final class GroupForm extends BaseControl
         $this->addEmailsToForm($form);
 
         $form->addSubmit('send', $this->groupId !== null ? 'Uložit skupinu' : 'Založit skupinu')
-            ->setHtmlAttribute('class', 'btn btn-primary');
+            ->setHtmlAttribute('class', 'btn btn-primary')
+            ->setHtmlAttribute('data-test', 'payment-group-submit');
 
         $form->setDefaults($defaults);
 

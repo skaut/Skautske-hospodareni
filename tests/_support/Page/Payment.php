@@ -18,7 +18,7 @@ class Payment
     private const ADD_BUTTON_ITEM_GENERAL = '[data-test="payment-add-button-item-general"]';
     private const GROUP_CREATE_BUTTON = '[data-test="create-button-main"]';
     private const GROUP_FORM = '[data-test="payment-group-form-page"]';
-    private const GROUP_FORM_SUBMIT = 'input[name="send"]';
+    private const GROUP_FORM_SUBMIT = '[data-test="payment-group-form-page"] [data-test="payment-group-submit"]';
 
     /** @var AcceptanceTester */
     private $tester;
@@ -81,7 +81,6 @@ class Payment
     {
         $I = $this->tester;
 
-        $I->scrollTo(self::GROUP_FORM_SUBMIT);
         $I->clickStable(self::GROUP_FORM_SUBMIT);
         $I->waitForText('Skupina byla založena', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="payment-group-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);

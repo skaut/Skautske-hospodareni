@@ -7,6 +7,7 @@ namespace App\Model\Skautis;
 use Nette\Caching\Cache;
 use Nette\Caching\Storage;
 use Skautis\Skautis;
+use Throwable;
 
 class SkautisMaintenanceChecker
 {
@@ -41,6 +42,8 @@ class SkautisMaintenanceChecker
 
         try {
             $result = $this->skautis->isMaintenance();
+        } catch (Throwable) {
+            $result = false;
         } finally {
             ini_set('default_socket_timeout', (string) $previousTimeout);
         }
