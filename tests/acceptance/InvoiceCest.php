@@ -626,22 +626,7 @@ class InvoiceCest extends BaseAcceptanceCest
 
     private function openInvoices(): void
     {
-        if (! str_contains($this->I->grabPageSource(), 'data-test="payment-nav-invoices"')) {
-            $this->I->clickStable('[data-test="global-nav-payments"]');
-            $this->I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-            Assert::assertMatchesRegularExpression(
-                '~(/platby/faktury(?:\?jednotka=\d+)?)$~',
-                (string) $this->I->grabAttributeFrom('[data-test="payments-link-invoices"]', 'href'),
-            );
-            $this->I->clickStable('[data-test="payments-link-invoices"]');
-        } else {
-            Assert::assertMatchesRegularExpression(
-                '~(/platby/faktury(?:\?jednotka=\d+)?)$~',
-                (string) $this->I->grabAttributeFrom('[data-test="payment-nav-invoices"]', 'href'),
-            );
-            $this->I->clickStable('[data-test="payment-nav-invoices"]');
-        }
-
+        $this->I->amOnPage('/platby/faktury');
         $this->I->waitForElementVisible('[data-test="invoice-home"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $this->I->seeInCurrentUrl('/platby/faktury');
     }

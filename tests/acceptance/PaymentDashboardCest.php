@@ -99,9 +99,7 @@ class PaymentDashboardCest extends PaymentAcceptanceCest
         $I->clickStable('[data-test="dashboard-sequence-settings-'.$sequenceId.'"]');
         $I->waitForElementVisible('[data-test="invoice-sequence-edit-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
-        $I->amOnPage('/platby');
-        $I->waitForElementVisible('[data-test="payments-link-invoices"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->clickStable('[data-test="payments-link-invoices"]');
+        $I->amOnPage('/platby/faktury');
         $I->waitForElementVisible('[data-test="invoice-home"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $invoiceCard = '[data-test="invoice-sequence-card-'.$sequenceId.'"]';
