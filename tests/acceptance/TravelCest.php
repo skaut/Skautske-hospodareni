@@ -153,15 +153,9 @@ class TravelCest extends BaseAcceptanceCest
         $I->fillField(['id' => 'frm-formCreateVehicle-consumption'], $this->harmonizedConsumption);
         $I->selectOption(['id' => 'frm-formCreateVehicle-subunitId'], $this->division);
         $I->click('Založit');
-        $I->waitForElementVisible('[data-test="travel-vehicle-create-link"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->clickStable('[data-test="travel-vehicle-create-link"]');
-        $I->see('Nové vozidlo');
-
-        $I->fillField(['id' => 'frm-formCreateVehicle-type'], $this->vehicleType);
-        $I->fillField(['id' => 'frm-formCreateVehicle-registration'], $licensePlate);
-        $I->fillField(['id' => 'frm-formCreateVehicle-consumption'], $this->harmonizedConsumption);
-        $I->selectOption(['id' => 'frm-formCreateVehicle-subunitId'], $this->division);
-        $I->click('Založit');
+        $I->waitForText('Vozidlo bylo vytvořeno', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->waitForElementVisible('[data-test="travel-vehicles-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeInCurrentUrl('/cestaky/vozidla');
     }
 
     protected function checkVehicle(AcceptanceTester $I, string $licensePlate): void
