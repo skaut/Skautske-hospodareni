@@ -60,7 +60,7 @@ final class GitHubIssueService
         $this->assertConfigured();
 
         $payload = [
-            'title' => sprintf('Hlášení technické chyby #%d', $report->getId()),
+            'title' => 'Hlášení technické chyby ze Skautského hospodaření',
             'body' => $this->createIssueBody($report),
         ];
         if ($this->labels !== []) {
@@ -144,11 +144,9 @@ final class GitHubIssueService
         ]);
 
         return implode("\n", [
-            'Byla nahlášena technická chyba ve Skautském hospodaření.',
+            'Automatické issue ze Skautského hospodaření.',
             '',
             '## Hlášení',
-            '- Interní ID: #'.$report->getId(),
-            '- Administrace: '.$this->getAdminReportUrl($report),
             '- Nahlášeno: '.$report->getCreatedAt()->format('Y-m-d H:i:s P'),
             '- Uživatel: '.$report->getReporterDisplayName().' (ID '.$report->getReporterUserId().')',
             '- E-mail uživatele: '.($report->getReporterEmail() ?? '-'),
@@ -160,11 +158,6 @@ final class GitHubIssueService
             '',
             '## Popis',
             $report->getDescription(),
-            '',
-            '## Diagnostika',
-            '```json',
-            Json::encode($report->getDiagnostics(), JSON_PRETTY_PRINT),
-            '```',
         ]);
     }
 
@@ -187,12 +180,7 @@ final class GitHubIssueService
             return '-';
         }
 
-        return sprintf(
-            '%s (%s/admin/hlaseni-chyb/%d?do=downloadScreenshot)',
-            $report->getScreenshotOriginalName() ?? 'screenshot',
-            $this->appBaseUrl,
-            $report->getId(),
-        );
+        return $report->getScreenshotOriginalName() ?? 'screenshot';
     }
 
     private function getAdminReportUrl(TechnicalErrorReport $report): string

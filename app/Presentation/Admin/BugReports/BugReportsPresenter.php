@@ -15,6 +15,7 @@ use App\Model\BugReport\Repository\TechnicalErrorReportRepository;
 use Component\Forms\BaseForm;
 use Contributte\Application\Response\PSR7StreamResponse;
 use Nette\Application\UI\Form;
+use Nette\Utils\Html;
 use Nette\Utils\Json;
 use Nette\Utils\Strings;
 use RuntimeException;
@@ -301,6 +302,18 @@ final class BugReportsPresenter extends \App\Presentation\Admin\AdminBasePresent
             ->setTitle('Zobrazit detail')
             ->setClass('btn btn-sm btn-light m-1')
             ->setDataAttribute('test', 'admin-bug-report-detail-grid');
+        $grid->addAction('github', '', 'detail', ['id' => 'id'])
+            ->setRenderer(static function (TechnicalErrorReport $report): Html {
+                return Html::el('a')
+                    ->href($report->getGitHubIssueUrl())
+                    ->class('btn btn-sm btn-light m-1')
+                    ->title('Otevřít GitHub issue')
+                    ->target('_blank')
+                    ->rel('noopener noreferrer')
+                    ->data('test', 'admin-bug-report-github-grid')
+                    ->addHtml(Html::el('i')->class('fab fa-github')->setAttribute('aria-hidden', 'true'));
+            })
+            ->setRenderCondition(static fn (TechnicalErrorReport $report): bool => $report->hasGitHubIssue());
         $grid->addAction('resolve', '', 'resolve!', ['id' => 'id'])
             ->setIcon('far fa-circle-check')
             ->setTitle('Potvrdit opravu')
