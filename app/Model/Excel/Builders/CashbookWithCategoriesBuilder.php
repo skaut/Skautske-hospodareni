@@ -211,13 +211,9 @@ class CashbookWithCategoriesBuilder
             ->getAlignment()
             ->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-        $sheet->getColumnDimensionByColumn(0)->setAutoSize(true);
-        $sheet->getColumnDimensionByColumn(1)->setAutoSize(true);
-        $sheet->getColumnDimensionByColumn(2)->setAutoSize(true);
-        $sheet->getColumnDimensionByColumn(3)->setAutoSize(true);
-        $sheet->getColumnDimensionByColumn(4)->setAutoSize(true);
-        $sheet->getColumnDimensionByColumn(5)->setAutoSize(true);
-        $sheet->getColumnDimensionByColumn(6)->setAutoSize(true);
+        for ($column = 1; $column <= 7; ++$column) {
+            $sheet->getColumnDimensionByColumn($column)->setAutoSize(true);
+        }
 
         $header = $sheet->getStyle([1, self::HEADER_ROW, $lastColumn, self::HEADER_ROW]);
 
