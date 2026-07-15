@@ -39,11 +39,17 @@ final class GitHubIssueServiceTest extends Unit
         self::assertSame('Bearer test-token', $request->getHeaderLine('Authorization'));
 
         $payload = json_decode((string) $request->getBody(), true);
-        self::assertSame('Hlášení technické chyby #123', $payload['title']);
+        self::assertSame('Hlášení technické chyby ze Skautského hospodaření', $payload['title']);
         self::assertSame(['bug', 'user-report'], $payload['labels']);
+        self::assertStringContainsString('Automatické issue ze Skautského hospodaření.', $payload['body']);
         self::assertStringContainsString('Nefunguje export.', $payload['body']);
-        self::assertStringContainsString('https://h.skauting.cz/admin/hlaseni-chyb/123', $payload['body']);
-        self::assertStringContainsString('```json', $payload['body']);
+        self::assertStringContainsString('- Screenshot: screenshot.jpg', $payload['body']);
+        self::assertStringNotContainsString('Interní ID', $payload['body']);
+        self::assertStringNotContainsString('Administrace', $payload['body']);
+        self::assertStringNotContainsString('https://h.skauting.cz/admin/hlaseni-chyb/123', $payload['body']);
+        self::assertStringNotContainsString('downloadScreenshot', $payload['body']);
+        self::assertStringNotContainsString('Diagnostika', $payload['body']);
+        self::assertStringNotContainsString('```json', $payload['body']);
     }
 
     public function testAddReplyCommentSendsCommentToExistingIssue(): void

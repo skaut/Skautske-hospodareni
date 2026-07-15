@@ -22,6 +22,87 @@ final class BugReportCest extends BaseAcceptanceCest
     }
 
     /** @group bug-report */
+    public function adminBugReportGridShowsGitHubLinksAndCompactPaginator(): void
+    {
+        $I = $this->I;
+        $prefix = 'Acceptance GitHub grid '.uniqid('', true);
+
+        $I->deleteFromDatabase('admin_user', ['user_id' => self::ACCEPTANCE_ADMIN_USER_ID]);
+        $I->haveInDatabase('admin_user', [
+            'user_id' => self::ACCEPTANCE_ADMIN_USER_ID,
+            'created_at' => '2026-07-15 09:00:00',
+        ]);
+
+        for ($index = 0; $index < 25; ++$index) {
+            $I->haveInDatabase('technical_error_report', [
+                'description' => $prefix.' '.$index,
+                'reported_url' => 'https://h.skauting.cz/test/'.$index,
+                'reporter_user_id' => self::ACCEPTANCE_ADMIN_USER_ID,
+                'reporter_display_name' => 'Acceptance Admin',
+                'reporter_email' => 'acceptance.admin@example.test',
+                'role_id' => 117123,
+                'role_name' => 'Oddíl: vedoucí/admin',
+                'unit_id' => 23209,
+                'unit_name' => '93. oddíl Tuřany',
+                'ip_address' => '127.0.0.1',
+                'user_agent' => 'Acceptance browser',
+                'app_release' => 'acceptance-release',
+                'diagnostics' => '{}',
+                'created_at' => sprintf('2026-07-15 09:%02d:00', $index),
+                'notification_sent_at' => '2026-07-15 09:30:00',
+                'github_issue_number' => $index === 24 ? 987 : null,
+                'github_issue_url' => $index === 24 ? 'https://github.com/skaut/Skautske-hospodareni/issues/987' : null,
+                'github_issue_created_at' => $index === 24 ? '2026-07-15 09:31:00' : null,
+            ]);
+        }
+
+        $I->amOnPage('/admin/hlaseni-chyb');
+        $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->see($prefix.' 24', '[data-test="admin-bug-reports-grid"]');
+        $I->waitForElementVisible('[data-test="admin-bug-report-github-grid"] svg[data-icon="github"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeElement('[data-test="admin-bug-report-github-grid"][href="https://github.com/skaut/Skautske-hospodareni/issues/987"][target="_blank"]');
+
+        $paginatorLayout = $I->executeJS(<<<'JS'
+            const footer = document.querySelector('[data-test="admin-bug-reports-grid"] .datagrid .row-grid-bottom');
+            const pagination = footer.querySelector('.col-pagination');
+            const perPage = footer.querySelector('.col-per-page');
+            const select = footer.querySelector('select[name="perPage"]');
+            const submit = footer.querySelector('.datagrid-per-page-submit');
+            const selectRect = select.getBoundingClientRect();
+            const submitRect = submit.getBoundingClientRect();
+            const footerRect = footer.getBoundingClientRect();
+            const tableRect = footer.closest('table').getBoundingClientRect();
+            const submitStyle = getComputedStyle(submit);
+
+            return {
+                footerDisplay: getComputedStyle(footer).display,
+                paginationJustify: getComputedStyle(pagination).justifyContent,
+                perPageJustify: getComputedStyle(perPage).justifyContent,
+                submitBackgroundColor: submitStyle.backgroundColor,
+                submitColor: submitStyle.color,
+                submitVisibility: submitStyle.visibility,
+                controlsOnSameLine: Math.abs(selectRect.top - submitRect.top) < 4,
+                footerSpansTable: Math.abs(footerRect.width - tableRect.width) < 4,
+                selectHasUsableWidth: selectRect.width >= 80,
+                controlsOnRightSide: Math.abs(footerRect.right - submitRect.right) < 20,
+                hasPageLinks: pagination.querySelectorAll('a').length > 0,
+            };
+            JS);
+
+        Assert::assertSame('table-cell', $paginatorLayout['footerDisplay']);
+        Assert::assertSame('center', $paginatorLayout['paginationJustify']);
+        Assert::assertSame('flex-end', $paginatorLayout['perPageJustify']);
+        Assert::assertSame('rgb(77, 135, 70)', $paginatorLayout['submitBackgroundColor']);
+        Assert::assertSame('rgb(255, 255, 255)', $paginatorLayout['submitColor']);
+        Assert::assertSame('visible', $paginatorLayout['submitVisibility']);
+        Assert::assertTrue($paginatorLayout['controlsOnSameLine']);
+        Assert::assertTrue($paginatorLayout['footerSpansTable']);
+        Assert::assertTrue($paginatorLayout['selectHasUsableWidth']);
+        Assert::assertTrue($paginatorLayout['controlsOnRightSide']);
+        Assert::assertTrue($paginatorLayout['hasPageLinks']);
+    }
+
+    /** @group bug-report */
     public function userCanSubmitTechnicalErrorReportAndAdminCanInspectIt(): void
     {
         $I = $this->I;
