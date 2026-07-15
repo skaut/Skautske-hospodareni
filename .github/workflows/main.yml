@@ -34,7 +34,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-php-${{ hashFiles('composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-php-
 
@@ -47,10 +47,10 @@ jobs:
         with:
           node-version: '20'
           cache: 'yarn'
-          cache-dependency-path: '**/yarn.lock'
+          cache-dependency-path: yarn.lock
 
       - name: Install JS deps
-        run: yarn install --frozen-lockfile
+        run: yarn install --frozen-lockfile --non-interactive --prefer-offline
       - name: Build production assets
         run: yarn build-production
 
@@ -70,12 +70,14 @@ jobs:
             | tar -C "$GITHUB_WORKSPACE" \
               --exclude-vcs \
               --exclude='tests/_output' \
+              --exclude='tests/_support/_generated' \
               --exclude='www/webtemp' \
               --null \
               --files-from=- \
               --warning=no-file-changed \
               --ignore-failed-read \
-              -czf /tmp/workdir.tar.gz
+              --use-compress-program='gzip -9' \
+              -cf /tmp/workdir.tar.gz
           mv /tmp/workdir.tar.gz "$GITHUB_WORKSPACE/"
 
       - name: Upload workdir
