@@ -163,7 +163,19 @@ jobs:
       - &docker-down
         name: Clean up Docker resources
         if: always()
-        run: docker compose down --rmi all -v || true
+        shell: bash
+        run: |
+          docker compose down --remove-orphans -v || true
+
+          if [ -z "${COMPOSE_PROJECT_NAME:-}" ]; then
+            echo "COMPOSE_PROJECT_NAME is not set, skipping image cleanup."
+            exit 0
+          fi
+
+          docker image rm \
+            "${COMPOSE_PROJECT_NAME}-php-test" \
+            "${COMPOSE_PROJECT_NAME}-nginx-ci" \
+            2>/dev/null || true
 
   collect-code-coverage:
     name: Collect code coverage
