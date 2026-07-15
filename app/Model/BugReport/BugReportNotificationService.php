@@ -5,25 +5,20 @@ declare(strict_types=1);
 namespace App\Model\BugReport;
 
 use App\Model\BugReport\Entity\TechnicalErrorReport;
-use Nette\Mail\Mailer;
-use Nette\Mail\Message;
-use Nette\Mail\SendmailMailer;
+use App\Model\Mail\SystemEmailTemplate;
+use App\Model\Mail\SystemMailer;
 use Nette\Utils\Json;
 use RuntimeException;
 
 use function array_filter;
 use function array_values;
 use function implode;
-use function parse_url;
-use function sprintf;
 
 final class BugReportNotificationService
 {
     /** @param string[] $recipients */
     public function __construct(
-        private Mailer $debugMailer,
-        private bool $sendEmail,
-        private bool $productionMode,
+        private SystemMailer $systemMailer,
         private array $recipients,
         private string $appBaseUrl,
         private ?BugReportScreenshotStorage $screenshotStorage = null,
@@ -37,35 +32,23 @@ final class BugReportNotificationService
             throw new RuntimeException('No technical error report recipient is configured.');
         }
 
-        $host = parse_url($this->appBaseUrl, PHP_URL_HOST) ?: 'localhost';
-        $message = (new Message())
-            ->setFrom('noreply@'.$host, 'Skautské hospodaření')
-            ->setSubject(sprintf('[Skautské hospodaření] Hlášení technické chyby #%d', $report->getId()))
-            ->setBody($this->createBody($report));
-
-        if ($report->getReporterEmail() !== null) {
-            $message->addReplyTo($report->getReporterEmail(), $report->getReporterDisplayName());
-        }
-
-        $this->attachScreenshot($message, $report);
-
-        foreach ($recipients as $recipient) {
-            $message->addTo($recipient);
-        }
-
-        $mailer = $this->sendEmail && $this->productionMode
-            ? new SendmailMailer()
-            : $this->debugMailer;
-
-        $mailer->send($message);
+        $this->systemMailer->send(
+            SystemEmailTemplate::BUG_REPORT_NOTIFICATION,
+            $this->createNotificationParameters($report),
+            $this->recipientsToMap($recipients),
+            replyTo: $report->getReporterEmail() !== null
+                ? ['email' => $report->getReporterEmail(), 'name' => $report->getReporterDisplayName()]
+                : null,
+            attachments: $this->createAttachments($report),
+        );
     }
 
     public function notifyResolution(TechnicalErrorReport $report, string $messageText): void
     {
         $this->notifyClosure(
             $report,
-            sprintf('[Skautské hospodaření] Hlášení #%d bylo zpracováno', $report->getId()),
-            $this->createResolutionBody($report, $messageText),
+            SystemEmailTemplate::BUG_REPORT_RESOLUTION,
+            ['messageText' => $messageText],
         );
     }
 
@@ -73,8 +56,8 @@ final class BugReportNotificationService
     {
         $this->notifyClosure(
             $report,
-            sprintf('[Skautské hospodaření] Hlášení #%d bylo zamítnuto', $report->getId()),
-            $this->createRejectionBody($report, $messageText),
+            SystemEmailTemplate::BUG_REPORT_REJECTION,
+            ['messageText' => $messageText],
         );
     }
 
@@ -86,42 +69,31 @@ final class BugReportNotificationService
         }
 
         $sender = $this->getReplySender();
-        $message = (new Message())
-            ->setFrom($sender, 'Skautské hospodaření')
-            ->addTo($recipient, $report->getReporterDisplayName())
-            ->setSubject(sprintf('[Skautské hospodaření] Odpověď k hlášení #%d', $report->getId()))
-            ->setBody($this->createReplyBody($report, $messageText));
-
-        $this->send($message);
+        $this->systemMailer->send(
+            SystemEmailTemplate::BUG_REPORT_REPLY,
+            $this->createReporterNotificationParameters($report, ['messageText' => $messageText]),
+            [$recipient => $report->getReporterDisplayName()],
+            fromEmail: $sender,
+        );
     }
 
-    private function notifyClosure(TechnicalErrorReport $report, string $subject, string $body): void
+    /** @param array<string, mixed> $parameters */
+    private function notifyClosure(TechnicalErrorReport $report, SystemEmailTemplate $template, array $parameters): void
     {
         $recipient = $report->getReporterEmail();
         if ($recipient === null) {
             throw new RuntimeException('Technical error report has no reporter email.');
         }
 
-        $host = parse_url($this->appBaseUrl, PHP_URL_HOST) ?: 'localhost';
-        $message = (new Message())
-            ->setFrom('noreply@'.$host, 'Skautské hospodaření')
-            ->addTo($recipient, $report->getReporterDisplayName())
-            ->setSubject($subject)
-            ->setBody($body);
-
-        $this->send($message);
+        $this->systemMailer->send(
+            $template,
+            $this->createReporterNotificationParameters($report, $parameters),
+            [$recipient => $report->getReporterDisplayName()],
+        );
     }
 
-    private function send(Message $message): void
-    {
-        $mailer = $this->sendEmail && $this->productionMode
-            ? new SendmailMailer()
-            : $this->debugMailer;
-
-        $mailer->send($message);
-    }
-
-    private function createBody(TechnicalErrorReport $report): string
+    /** @return array<string, mixed> */
+    private function createNotificationParameters(TechnicalErrorReport $report): array
     {
         $role = array_filter([
             $report->getRoleName(),
@@ -132,106 +104,53 @@ final class BugReportNotificationService
             $report->getUnitId() !== null ? 'ID '.$report->getUnitId() : null,
         ]);
 
-        return implode("\n", [
-            'Byla nahlášena technická chyba ve Skautském hospodaření.',
-            '',
-            'Hlášení: #'.$report->getId(),
-            'Administrace: '.$this->appBaseUrl.'/admin/hlaseni-chyb/'.$report->getId(),
-            'Nahlášeno: '.$report->getCreatedAt()->format('Y-m-d H:i:s P'),
-            'Uživatel: '.$report->getReporterDisplayName().' (ID '.$report->getReporterUserId().')',
-            'E-mail uživatele: '.($report->getReporterEmail() ?? '-'),
-            'Role: '.($role !== [] ? implode(', ', $role) : '-'),
-            'Jednotka: '.($unit !== [] ? implode(', ', $unit) : '-'),
-            'URL chyby: '.($report->getReportedUrl() ?? '-'),
-            'IP: '.($report->getIpAddress() ?? '-'),
-            'Release: '.$report->getAppRelease(),
-            'User-Agent: '.($report->getUserAgent() ?? '-'),
-            'Screenshot: '.($report->hasScreenshot() ? ($report->getScreenshotOriginalName() ?? 'přiložen') : '-'),
-            '',
-            'Popis:',
-            $report->getDescription(),
-            '',
-            'Diagnostika:',
-            Json::encode($report->getDiagnostics(), JSON_PRETTY_PRINT),
+        return $this->createReporterNotificationParameters($report, [
+            'adminUrl' => $this->appBaseUrl.'/admin/hlaseni-chyb/'.$report->getId(),
+            'createdAt' => $report->getCreatedAt()->format('Y-m-d H:i:s P'),
+            'reporterUserId' => $report->getReporterUserId(),
+            'reporterEmail' => $report->getReporterEmail(),
+            'roleLabel' => $role !== [] ? implode(', ', $role) : '-',
+            'unitLabel' => $unit !== [] ? implode(', ', $unit) : '-',
+            'ipAddress' => $report->getIpAddress(),
+            'appRelease' => $report->getAppRelease(),
+            'userAgent' => $report->getUserAgent(),
+            'screenshotLabel' => $report->hasScreenshot() ? ($report->getScreenshotOriginalName() ?? 'přiložen') : '-',
+            'diagnosticsJson' => Json::encode($report->getDiagnostics(), JSON_PRETTY_PRINT),
         ]);
     }
 
-    private function createResolutionBody(TechnicalErrorReport $report, string $messageText): string
+    /**
+     * @param array<string, mixed> $parameters
+     *
+     * @return array<string, mixed>
+     */
+    private function createReporterNotificationParameters(TechnicalErrorReport $report, array $parameters): array
     {
-        return implode("\n", [
-            'Dobrý den,',
-            '',
-            sprintf('vámi nahlášený problém #%d ve Skautském hospodaření byl zpracován.', $report->getId()),
-            'Požadavek byl zpracován a oprava je upravena v nové verzi aplikace.',
-            '',
-            'Zpráva administrátora:',
-            $messageText,
-            '',
-            'Původní hlášení:',
-            $report->getDescription(),
-            '',
-            'URL chyby: '.($report->getReportedUrl() ?? '-'),
-            '',
-            'Děkujeme za nahlášení.',
-            'Skautské hospodaření',
-        ]);
+        return $parameters + [
+            'reportId' => $report->getId(),
+            'reporterDisplayName' => $report->getReporterDisplayName(),
+            'description' => $report->getDescription(),
+            'reportedUrl' => $report->getReportedUrl(),
+        ];
     }
 
-    private function createRejectionBody(TechnicalErrorReport $report, string $messageText): string
-    {
-        return implode("\n", [
-            'Dobrý den,',
-            '',
-            sprintf('vámi nahlášený problém #%d ve Skautském hospodaření byl uzavřen bez opravy.', $report->getId()),
-            '',
-            'Důvod uzavření:',
-            $messageText,
-            '',
-            'Původní hlášení:',
-            $report->getDescription(),
-            '',
-            'URL chyby: '.($report->getReportedUrl() ?? '-'),
-            '',
-            'Děkujeme za nahlášení.',
-            'Skautské hospodaření',
-        ]);
-    }
-
-    private function createReplyBody(TechnicalErrorReport $report, string $messageText): string
-    {
-        return implode("\n", [
-            'Dobrý den,',
-            '',
-            sprintf('posíláme odpověď k vámi nahlášenému problému #%d ve Skautském hospodaření.', $report->getId()),
-            '',
-            'Zpráva administrátora:',
-            $messageText,
-            '',
-            'Původní hlášení:',
-            $report->getDescription(),
-            '',
-            'URL chyby: '.($report->getReportedUrl() ?? '-'),
-            '',
-            'Skautské hospodaření',
-        ]);
-    }
-
-    private function attachScreenshot(Message $message, TechnicalErrorReport $report): void
+    /** @return list<array{name: string, contents: string, contentType: string|null}> */
+    private function createAttachments(TechnicalErrorReport $report): array
     {
         if (! $report->hasScreenshot() || $this->screenshotStorage === null) {
-            return;
+            return [];
         }
 
         $contents = $this->screenshotStorage->getContents($report);
         if ($contents === null) {
-            return;
+            return [];
         }
 
-        $message->addAttachment(
-            $report->getScreenshotOriginalName() ?? 'screenshot',
-            $contents,
-            $report->getScreenshotContentType() ?? BugReportScreenshotStorage::DEFAULT_CONTENT_TYPE,
-        );
+        return [[
+            'name' => $report->getScreenshotOriginalName() ?? 'screenshot',
+            'contents' => $contents,
+            'contentType' => $report->getScreenshotContentType() ?? BugReportScreenshotStorage::DEFAULT_CONTENT_TYPE,
+        ]];
     }
 
     private function getReplySender(): string
@@ -242,5 +161,20 @@ final class BugReportNotificationService
         }
 
         return $recipients[0];
+    }
+
+    /**
+     * @param string[] $recipients
+     *
+     * @return array<string, null>
+     */
+    private function recipientsToMap(array $recipients): array
+    {
+        $mapped = [];
+        foreach ($recipients as $recipient) {
+            $mapped[$recipient] = null;
+        }
+
+        return $mapped;
     }
 }

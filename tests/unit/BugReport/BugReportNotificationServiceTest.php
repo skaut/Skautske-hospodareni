@@ -5,9 +5,13 @@ declare(strict_types=1);
 namespace App\Model\BugReport;
 
 use App\Model\BugReport\Entity\TechnicalErrorReport;
+use App\Model\Mail\SystemMailer;
+use App\Model\Services\TemplateFactory;
 use Codeception\Test\Unit;
+use Latte\Engine;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
+use Nette\Bridges\ApplicationLatte\LatteFactory;
 use Nette\Mail\Mailer;
 use Nette\Mail\Message;
 use Nette\Utils\FileSystem as FileSystemUtil;
@@ -29,13 +33,7 @@ final class BugReportNotificationServiceTest extends Unit
             }
         };
 
-        $service = new BugReportNotificationService(
-            $mailer,
-            false,
-            false,
-            ['admin@example.test'],
-            'https://h.skauting.cz',
-        );
+        $service = $this->createService($mailer);
 
         $service->notify($this->createReport('jana.kvapilova@example.test'));
 
@@ -61,13 +59,7 @@ final class BugReportNotificationServiceTest extends Unit
             }
         };
 
-        $service = new BugReportNotificationService(
-            $mailer,
-            false,
-            false,
-            ['admin@example.test'],
-            'https://h.skauting.cz',
-        );
+        $service = $this->createService($mailer);
 
         $service->notify($this->createReport(null));
 
@@ -91,12 +83,8 @@ final class BugReportNotificationServiceTest extends Unit
         FileSystemUtil::createDir(dirname($directory.'/'.$relativePath));
         file_put_contents($directory.'/'.$relativePath, 'jpeg-content');
 
-        $service = new BugReportNotificationService(
+        $service = $this->createService(
             $mailer,
-            false,
-            false,
-            ['admin@example.test'],
-            'https://h.skauting.cz',
             new BugReportScreenshotStorage(
                 new Filesystem(new LocalFilesystemAdapter($directory)),
                 $directory,
@@ -129,13 +117,7 @@ final class BugReportNotificationServiceTest extends Unit
             }
         };
 
-        $service = new BugReportNotificationService(
-            $mailer,
-            false,
-            false,
-            ['admin@example.test'],
-            'https://h.skauting.cz',
-        );
+        $service = $this->createService($mailer);
 
         $service->notifyResolution(
             $this->createReport('jana.kvapilova@example.test'),
@@ -160,13 +142,7 @@ final class BugReportNotificationServiceTest extends Unit
             }
         };
 
-        $service = new BugReportNotificationService(
-            $mailer,
-            false,
-            false,
-            ['admin@example.test'],
-            'https://h.skauting.cz',
-        );
+        $service = $this->createService($mailer);
 
         $service->notifyRejection(
             $this->createReport('jana.kvapilova@example.test'),
@@ -191,13 +167,7 @@ final class BugReportNotificationServiceTest extends Unit
             }
         };
 
-        $service = new BugReportNotificationService(
-            $mailer,
-            false,
-            false,
-            ['admin@example.test'],
-            'https://h.skauting.cz',
-        );
+        $service = $this->createService($mailer);
 
         $service->notifyReply(
             $this->createReport('jana.kvapilova@example.test'),
@@ -243,5 +213,26 @@ final class BugReportNotificationServiceTest extends Unit
         $id->setValue($report, 123);
 
         return $report;
+    }
+
+    private function createService(Mailer $mailer, ?BugReportScreenshotStorage $screenshotStorage = null): BugReportNotificationService
+    {
+        return new BugReportNotificationService(
+            new SystemMailer(
+                $mailer,
+                false,
+                false,
+                'https://h.skauting.cz',
+                new TemplateFactory(new class implements LatteFactory {
+                    public function create(): Engine
+                    {
+                        return new Engine();
+                    }
+                }),
+            ),
+            ['admin@example.test'],
+            'https://h.skauting.cz',
+            $screenshotStorage,
+        );
     }
 }

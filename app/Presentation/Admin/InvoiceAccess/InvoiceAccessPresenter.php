@@ -7,6 +7,7 @@ namespace App\Presentation\Admin\InvoiceAccess;
 use App\Model\Invoice\InvoiceAccessChecker;
 use App\Model\User\Entity\InvoiceAccessRequest;
 use App\Model\User\Entity\InvoiceAccessUser;
+use App\Model\User\InvoiceAccessNotificationService;
 use App\Model\User\Manager\InvoiceAccessRequestManager;
 use App\Model\User\Manager\InvoiceAccessUserManager;
 use App\Model\User\Repository\InvoiceAccessRequestRepository;
@@ -14,6 +15,7 @@ use App\Model\User\Repository\InvoiceAccessUserRepository;
 use Component\Forms\BaseForm;
 use Nette\Application\AbortException;
 use Nette\Application\UI\Form;
+use Throwable;
 
 final class InvoiceAccessPresenter extends \App\Presentation\Admin\AdminBasePresenter
 {
@@ -23,6 +25,7 @@ final class InvoiceAccessPresenter extends \App\Presentation\Admin\AdminBasePres
         private InvoiceAccessRequestRepository $requestRepository,
         private InvoiceAccessRequestManager $requestManager,
         private InvoiceAccessChecker $invoiceAccessChecker,
+        private InvoiceAccessNotificationService $notificationService,
     ) {
     }
 
@@ -52,7 +55,18 @@ final class InvoiceAccessPresenter extends \App\Presentation\Admin\AdminBasePres
         }
 
         $this->requestManager->approve($request);
-        $this->flashMessage('Přístup k fakturaci byl schválen.', 'success');
+        try {
+            $notificationSent = $this->notificationService->notifyAccessApproved($request);
+            $this->flashMessage(
+                $notificationSent
+                    ? 'Přístup k fakturaci byl schválen a žadatel byl informován e-mailem.'
+                    : 'Přístup k fakturaci byl schválen, ale u žádosti není uložený e-mail žadatele.',
+                $notificationSent ? 'success' : 'warning',
+            );
+        } catch (Throwable) {
+            $this->flashMessage('Přístup k fakturaci byl schválen, ale e-mail žadateli se nepodařilo odeslat.', 'warning');
+        }
+
         $this->redirect('default');
     }
 

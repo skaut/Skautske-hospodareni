@@ -1,0 +1,20 @@
+Byla nahlášena technická chyba ve Skautském hospodaření.
+
+Hlášení: #{$reportId}
+Administrace: {$adminUrl}
+Nahlášeno: {$createdAt}
+Uživatel: {$reporterDisplayName} (ID {$reporterUserId})
+E-mail uživatele: {$reporterEmail ?? '-'}
+Role: {$roleLabel}
+Jednotka: {$unitLabel}
+URL chyby: {$reportedUrl ?? '-'}
+IP: {$ipAddress ?? '-'}
+Release: {$appRelease}
+User-Agent: {$userAgent ?? '-'}
+Screenshot: {$screenshotLabel}
+
+Popis:
+{$description}
+
+Diagnostika:
+{$diagnosticsJson|noescape}

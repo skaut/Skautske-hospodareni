@@ -32,6 +32,7 @@
                     <tr>
                         <th>User ID</th>
                         <th>Uživatel</th>
+                        <th>E-mail</th>
                         <th>Jednotka</th>
                         <th>Role</th>
                         <th>Poznámka</th>
@@ -46,6 +47,7 @@
                     >
                         <td><code>{$request->getUserId()}</code></td>
                         <td>{$request->getDisplayName()}</td>
+                        <td>{$request->getRequesterEmail() ?? '-'}</td>
                         <td>{$request->getUnitId() ?? '-'}</td>
                         <td>{$request->getRoleId() ?? '-'}</td>
                         <td>{$request->getNote() === '' ? '-' : $request->getNote()}</td>
