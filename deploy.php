@@ -134,6 +134,11 @@ task('build:runtime_files', function () {
         }
     }
 
+    $githubIssuesToken = optionalEnv('GITHUB_ISSUES_TOKEN') ?? optionalEnv('GH_ISSUES_TOKEN');
+    if ($githubIssuesToken !== null) {
+        $values['GITHUB_ISSUES_TOKEN'] = $githubIssuesToken;
+    }
+
     $dbFixTokenSha256 = optionalEnv('DB_FIX_TOKEN_SHA256');
     if ($dbFixTokenSha256 !== null) {
         $values['DB_FIX_TOKEN_SHA256'] = $dbFixTokenSha256;
