@@ -349,6 +349,7 @@ jobs:
       MAINTENANCE_ENDS_AT_DATETIME: ${{ vars.MAINTENANCE_ENDS_AT_DATETIME }}
       GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      GH_ISSUES_TOKEN: ${{ secrets.GH_ISSUES_TOKEN }}
       GITHUB_SHA: ${{ github.sha }}
     steps: &deploy-steps
       - *clean-workspace
@@ -413,6 +414,7 @@ jobs:
       MAINTENANCE_ENDS_AT_DATETIME: ${{ vars.MAINTENANCE_ENDS_AT_DATETIME }}
       GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      GH_ISSUES_TOKEN: ${{ secrets.GH_ISSUES_TOKEN }}
       GITHUB_SHA: ${{ github.sha }}
     steps: *deploy-steps
 
@@ -453,5 +455,6 @@ jobs:
       MAINTENANCE_ENDS_AT_DATETIME: ${{ vars.MAINTENANCE_ENDS_AT_DATETIME }}
       GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      GH_ISSUES_TOKEN: ${{ secrets.GH_ISSUES_TOKEN }}
       GITHUB_SHA: ${{ github.sha }}
     steps: *deploy-steps
