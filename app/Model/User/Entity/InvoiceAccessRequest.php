@@ -32,6 +32,9 @@ class InvoiceAccessRequest extends AbstractIdEntity
     #[Column(name: 'display_name', type: Types::STRING, length: 255)]
     private string $displayName;
 
+    #[Column(name: 'requester_email', type: Types::STRING, length: 255, nullable: true)]
+    private ?string $requesterEmail;
+
     #[Column(name: 'note', type: Types::TEXT)]
     private string $note;
 
@@ -49,6 +52,7 @@ class InvoiceAccessRequest extends AbstractIdEntity
         ?int $unitId,
         ?int $roleId,
         string $displayName,
+        ?string $requesterEmail,
         string $note,
         ?DateTimeImmutable $createdAt = null,
     ) {
@@ -60,6 +64,7 @@ class InvoiceAccessRequest extends AbstractIdEntity
         $this->unitId = $unitId;
         $this->roleId = $roleId;
         $this->displayName = $displayName;
+        $this->requesterEmail = $requesterEmail;
         $this->note = $note;
         $this->createdAt = $createdAt ?? new DateTimeImmutable();
     }
@@ -94,6 +99,11 @@ class InvoiceAccessRequest extends AbstractIdEntity
     public function getDisplayName(): string
     {
         return $this->displayName;
+    }
+
+    public function getRequesterEmail(): ?string
+    {
+        return $this->requesterEmail;
     }
 
     public function getNote(): string

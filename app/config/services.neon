@@ -174,13 +174,18 @@ services:
 
     # Mail
     - App\Model\Mail\MailerFactory(@nette.mailer, %sendEmail%)
+    - App\Model\Mail\SystemMailer(
+          debugMailer: @nette.mailer
+          sendEmail: %sendEmail%
+          productionMode: %productionMode%
+          appBaseUrl: %appBaseUrl%
+      )
+    - App\Model\User\InvoiceAccessNotificationService
     - App\Model\BugReport\BugReportScreenshotStorage(
           filesystem: @League\Flysystem\Filesystem
           uploadDirectory: %uploadDirectory%
       )
     - App\Model\BugReport\BugReportNotificationService(
-          sendEmail: %sendEmail%
-          productionMode: %productionMode%
           recipients: %errorEmails%
           appBaseUrl: %appBaseUrl%
           screenshotStorage: @App\Model\BugReport\BugReportScreenshotStorage

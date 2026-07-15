@@ -6,14 +6,19 @@ namespace App\Presentation\InvoiceAccess;
 
 use App\Model\Invoice\InvoiceAccessChecker;
 use App\Model\User\Entity\InvoiceAccessRequest;
+use App\Model\User\InvoiceAccessNotificationService;
 use App\Model\User\Manager\InvoiceAccessRequestManager;
 use App\Model\User\Repository\InvoiceAccessRequestRepository;
 use Component\Forms\BaseForm;
 use Nette\Application\AbortException;
 use Nette\Forms\Form;
+use Nette\Utils\Validators;
 use stdClass;
+use Throwable;
 
+use function get_object_vars;
 use function is_string;
+use function trim;
 
 trait InvoiceAccessGuard
 {
@@ -23,14 +28,18 @@ trait InvoiceAccessGuard
 
     private InvoiceAccessRequestManager $invoiceAccessRequestManager;
 
+    private InvoiceAccessNotificationService $invoiceAccessNotificationService;
+
     public function injectInvoiceAccessGuard(
         InvoiceAccessChecker $invoiceAccessChecker,
         InvoiceAccessRequestRepository $invoiceAccessRequestRepository,
         InvoiceAccessRequestManager $invoiceAccessRequestManager,
+        InvoiceAccessNotificationService $invoiceAccessNotificationService,
     ): void {
         $this->invoiceAccessChecker = $invoiceAccessChecker;
         $this->invoiceAccessRequestRepository = $invoiceAccessRequestRepository;
         $this->invoiceAccessRequestManager = $invoiceAccessRequestManager;
+        $this->invoiceAccessNotificationService = $invoiceAccessNotificationService;
     }
 
     /**
@@ -98,15 +107,27 @@ trait InvoiceAccessGuard
         }
 
         $values = $form->getValues();
-        $this->invoiceAccessRequestManager->createRequest(
+        $request = $this->invoiceAccessRequestManager->createRequest(
             $userId,
             $this->unitId->toInt(),
             $this->userService->getRoleId(),
             $this->resolveInvoiceAccessDisplayName($userId),
+            $this->resolveInvoiceAccessRequesterEmail(),
             (string) $values->note,
         );
 
-        $this->flashMessage('Žádost o zařazení do testovacího programu byla odeslána.', 'success');
+        try {
+            $notificationSent = $this->invoiceAccessNotificationService->notifyRequestReceived($request);
+            $this->flashMessage(
+                $notificationSent
+                    ? 'Žádost o zařazení do testovacího programu byla odeslána.'
+                    : 'Žádost o zařazení do testovacího programu byla odeslána. Ve SkautISu ale nemáte uložený e-mail pro potvrzení.',
+                $notificationSent ? 'success' : 'warning',
+            );
+        } catch (Throwable) {
+            $this->flashMessage('Žádost o zařazení do testovacího programu byla odeslána, ale potvrzovací e-mail se nepodařilo odeslat.', 'warning');
+        }
+
         $this->redirect('default');
     }
 
@@ -125,5 +146,41 @@ trait InvoiceAccessGuard
         }
 
         return 'user_id '.$userId;
+    }
+
+    private function resolveInvoiceAccessRequesterEmail(): ?string
+    {
+        try {
+            $email = $this->resolveEmailFromSkautisDetail(get_object_vars($this->userService->getUserDetail()));
+            if ($email !== null) {
+                return $email;
+            }
+        } catch (Throwable) {
+            // Fall through to personal detail.
+        }
+
+        try {
+            return $this->resolveEmailFromSkautisDetail(get_object_vars($this->userService->getPersonalDetail()));
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
+    /** @param array<string, mixed> $detail */
+    private function resolveEmailFromSkautisDetail(array $detail): ?string
+    {
+        foreach (['Email', 'PersonEmail', 'UserEmail', 'Mail'] as $key) {
+            $email = $detail[$key] ?? null;
+            if (! is_string($email)) {
+                continue;
+            }
+
+            $email = trim($email);
+            if ($email !== '' && Validators::isEmail($email)) {
+                return $email;
+            }
+        }
+
+        return null;
     }
 }

@@ -31,15 +31,16 @@ class InvoiceAccessRequestManager extends AbstractManager
         ?int $unitId,
         ?int $roleId,
         string $displayName,
+        ?string $requesterEmail,
         string $note,
     ): InvoiceAccessRequest {
-        return $this->em->wrapInTransaction(function () use ($userId, $unitId, $roleId, $displayName, $note): InvoiceAccessRequest {
+        return $this->em->wrapInTransaction(function () use ($userId, $unitId, $roleId, $displayName, $requesterEmail, $note): InvoiceAccessRequest {
             $existingRequest = $this->requestRepository->findOpenByUserId($userId);
             if ($existingRequest instanceof InvoiceAccessRequest) {
                 return $existingRequest;
             }
 
-            $request = new InvoiceAccessRequest($userId, $unitId, $roleId, $displayName, $note);
+            $request = new InvoiceAccessRequest($userId, $unitId, $roleId, $displayName, $requesterEmail, $note);
             $this->em->persist($request);
             $this->em->flush();
 
