@@ -37,7 +37,6 @@ final class GitHubIssueService
     public function __construct(
         private Client $client,
         array $config,
-        private string $appBaseUrl,
     ) {
         $this->token = $this->normalizeNullableString($config['token'] ?? null);
         $this->owner = $this->normalizeNullableString($config['owner'] ?? null);
@@ -87,7 +86,7 @@ final class GitHubIssueService
         }
 
         $data = $this->request('POST', sprintf('/issues/%d/comments', $issueNumber), [
-            'body' => $this->createReplyCommentBody($report, $message),
+            'body' => $this->createReplyCommentBody($message),
         ]);
         $url = $data['html_url'] ?? null;
         if (! is_string($url) || $url === '') {
@@ -134,58 +133,29 @@ final class GitHubIssueService
 
     private function createIssueBody(TechnicalErrorReport $report): string
     {
-        $role = array_filter([
-            $report->getRoleName(),
-            $report->getRoleId() !== null ? 'ID '.$report->getRoleId() : null,
-        ]);
-        $unit = array_filter([
-            $report->getUnitName(),
-            $report->getUnitId() !== null ? 'ID '.$report->getUnitId() : null,
-        ]);
-
         return implode("\n", [
             'Automatické issue ze Skautského hospodaření.',
             '',
             '## Hlášení',
             '- Nahlášeno: '.$report->getCreatedAt()->format('Y-m-d H:i:s P'),
             '- Uživatel: '.$report->getReporterDisplayName().' (ID '.$report->getReporterUserId().')',
-            '- E-mail uživatele: '.($report->getReporterEmail() ?? '-'),
-            '- Role: '.($role !== [] ? implode(', ', $role) : '-'),
-            '- Jednotka: '.($unit !== [] ? implode(', ', $unit) : '-'),
             '- URL chyby: '.($report->getReportedUrl() ?? '-'),
             '- Release: '.$report->getAppRelease(),
-            '- Screenshot: '.$this->formatScreenshotReference($report),
             '',
             '## Popis',
             $report->getDescription(),
         ]);
     }
 
-    private function createReplyCommentBody(TechnicalErrorReport $report, string $message): string
+    private function createReplyCommentBody(string $message): string
     {
         return implode("\n", [
             'Admin odeslal uživateli odpověď ze systému.',
-            '',
-            'Interní hlášení: '.$this->getAdminReportUrl($report),
             '',
             '```',
             $message,
             '```',
         ]);
-    }
-
-    private function formatScreenshotReference(TechnicalErrorReport $report): string
-    {
-        if (! $report->hasScreenshot()) {
-            return '-';
-        }
-
-        return $report->getScreenshotOriginalName() ?? 'screenshot';
-    }
-
-    private function getAdminReportUrl(TechnicalErrorReport $report): string
-    {
-        return sprintf('%s/admin/hlaseni-chyb/%d', $this->appBaseUrl, $report->getId());
     }
 
     private function getApiBaseUrl(): string

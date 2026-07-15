@@ -43,13 +43,19 @@ final class GitHubIssueServiceTest extends Unit
         self::assertSame(['bug', 'user-report'], $payload['labels']);
         self::assertStringContainsString('Automatické issue ze Skautského hospodaření.', $payload['body']);
         self::assertStringContainsString('Nefunguje export.', $payload['body']);
-        self::assertStringContainsString('- Screenshot: screenshot.jpg', $payload['body']);
         self::assertStringNotContainsString('Interní ID', $payload['body']);
         self::assertStringNotContainsString('Administrace', $payload['body']);
-        self::assertStringNotContainsString('https://h.skauting.cz/admin/hlaseni-chyb/123', $payload['body']);
-        self::assertStringNotContainsString('downloadScreenshot', $payload['body']);
+        self::assertStringNotContainsString('E-mail uživatele', $payload['body']);
+        self::assertStringNotContainsString('Role', $payload['body']);
+        self::assertStringNotContainsString('Jednotka', $payload['body']);
+        self::assertStringNotContainsString('Screenshot', $payload['body']);
+        self::assertStringNotContainsString('jana.kvapilova@example.test', $payload['body']);
+        self::assertStringNotContainsString('Středisko: správce akcí', $payload['body']);
+        self::assertStringNotContainsString('středisko Pozořice', $payload['body']);
+        self::assertStringNotContainsString('screenshot.jpg', $payload['body']);
         self::assertStringNotContainsString('Diagnostika', $payload['body']);
         self::assertStringNotContainsString('```json', $payload['body']);
+        $this->assertPayloadDoesNotContainAdminLinks($payload);
     }
 
     public function testAddReplyCommentSendsCommentToExistingIssue(): void
@@ -76,6 +82,8 @@ final class GitHubIssueServiceTest extends Unit
         $payload = json_decode((string) $request->getBody(), true);
         self::assertStringContainsString('Admin odeslal uživateli odpověď ze systému.', $payload['body']);
         self::assertStringContainsString('Prosíme o doplnění času chyby.', $payload['body']);
+        self::assertStringNotContainsString('Interní hlášení', $payload['body']);
+        $this->assertPayloadDoesNotContainAdminLinks($payload);
     }
 
     public function testUnconfiguredServiceRefusesToCreateIssue(): void
@@ -83,7 +91,6 @@ final class GitHubIssueServiceTest extends Unit
         $service = new GitHubIssueService(
             new Client(['handler' => HandlerStack::create(new MockHandler())]),
             [],
-            'https://h.skauting.cz',
         );
 
         $this->expectException(RuntimeException::class);
@@ -110,7 +117,6 @@ final class GitHubIssueServiceTest extends Unit
                 'repository' => 'hospodareni',
                 'labels' => ['bug', 'user-report'],
             ],
-            'https://h.skauting.cz',
         );
     }
 
@@ -141,5 +147,16 @@ final class GitHubIssueServiceTest extends Unit
         $id->setValue($report, 123);
 
         return $report;
+    }
+
+    /** @param array<string, mixed> $payload */
+    private function assertPayloadDoesNotContainAdminLinks(array $payload): void
+    {
+        $body = (string) ($payload['body'] ?? '');
+
+        self::assertStringNotContainsString('/admin/', $body);
+        self::assertStringNotContainsString('admin/hlaseni-chyb', $body);
+        self::assertStringNotContainsString('https://h.skauting.cz/admin/hlaseni-chyb/123', $body);
+        self::assertStringNotContainsString('downloadScreenshot', $body);
     }
 }

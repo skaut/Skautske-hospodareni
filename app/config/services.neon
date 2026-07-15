@@ -187,7 +187,6 @@ services:
       )
     - App\Model\BugReport\GitHubIssueService(
           config: %githubIssues%
-          appBaseUrl: %appBaseUrl%
       )
     - App\Model\BugReport\BugReportService(appRelease: %sentry.releaseHash%)
 
