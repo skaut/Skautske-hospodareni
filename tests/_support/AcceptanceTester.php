@@ -28,7 +28,7 @@ class AcceptanceTester extends Actor
     private const PASSWORD = 'chtelbysprachy1';
 
     private const LOGIN_TRIGGER_SELECTOR = '[data-test="login-link"], [data-test="homepage-login"]';
-    private const LOGGED_IN_SELECTOR = '.ui--current-role, [data-test="global-nav-payments"], [data-test="homepage-login"][href*="dashboard"]';
+    private const LOGGED_IN_SELECTOR = '.ui--current-role, [data-test="global-nav-payments"], [data-test="homepage-login"][href*="nastenka"]';
 
     public const ELEMENT_LOAD_TIMEOUT = 30;
     public const UNIT_LEADER_ROLE = 'Středisko: vedoucí/admin - 621.66';

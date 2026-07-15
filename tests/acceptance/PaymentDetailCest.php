@@ -101,7 +101,10 @@ class PaymentDetailCest extends PaymentAcceptanceCest
         $I->seeElement('[data-test="payment-group-detail-page"] .page-heading .badge.text-bg-success');
         $I->clickStable('[data-test="payment-add-button-toggle"]');
         $I->waitForElementVisible('[data-test="payment-add-button-menu"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->clickStable('[data-test="payment-add-button-item-member"]');
+        $I->waitForElementVisible('[data-test="payment-add-button-item-member"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $massAddUrl = (string) $I->grabAttributeFrom('[data-test="payment-add-button-item-member"]', 'href');
+        Assert::assertMatchesRegularExpression('~^/platby/skupiny/\d+/osoby$~', $massAddUrl);
+        $I->amOnPage($massAddUrl);
         $I->waitForElementVisible('[data-test="payment-mass-add-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         foreach (['main', 'other', 'father', 'mother'] as $emailType) {
