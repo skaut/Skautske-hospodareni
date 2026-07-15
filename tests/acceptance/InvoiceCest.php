@@ -627,7 +627,24 @@ class InvoiceCest extends BaseAcceptanceCest
     private function openInvoices(): void
     {
         $this->I->amOnPage('/platby/faktury');
-        $this->I->waitForElementVisible('[data-test="invoice-home"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->I->waitForDocumentReady();
+        $this->I->waitForJS(
+            'return document.querySelector("[data-test=\"invoice-home\"], [data-test=\"invoice-early-access-page\"], [data-test=\"login-link\"], [data-test=\"homepage-login\"]") !== null;',
+            AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
+        );
+
+        $pageState = $this->I->executeJS(
+            'if (document.querySelector("[data-test=\"invoice-home\"]") !== null) { return "home"; }'
+            .'if (document.querySelector("[data-test=\"invoice-early-access-page\"]") !== null) { return "early-access"; }'
+            .'if (document.querySelector("[data-test=\"login-link\"], [data-test=\"homepage-login\"]") !== null) { return "login"; }'
+            .'return "unknown";',
+        );
+
+        Assert::assertSame(
+            'home',
+            $pageState,
+            'Expected invoice overview at /platby/faktury, got '.$pageState.' state at '.$this->I->grabFromCurrentUrl().'.',
+        );
         $this->I->seeInCurrentUrl('/platby/faktury');
     }
 

@@ -28,8 +28,6 @@ class AcceptanceTester extends Actor
     private const PASSWORD = 'chtelbysprachy1';
 
     private const LOGIN_TRIGGER_SELECTOR = '[data-test="login-link"], [data-test="homepage-login"]';
-    private const LOGGED_IN_SELECTOR = '.ui--current-role, [data-test="global-nav-payments"], [data-test="homepage-login"][href*="nastenka"]';
-
     public const ELEMENT_LOAD_TIMEOUT = 30;
     public const UNIT_LEADER_ROLE = 'Středisko: vedoucí/admin - 621.66';
     public const UNIT_ID = 27266;
@@ -42,13 +40,14 @@ class AcceptanceTester extends Actor
         $I = $this;
 
         if ($I->loadSessionSnapshot('login')) {
-            $I->amOnPage('/');
+            $I->amOnPage('/nastenka');
 
             $I->waitForDocumentReady();
-            $isStillLoggedIn = $I->executeJS(
-                'return document.querySelector('.json_encode(self::LOGGED_IN_SELECTOR).') !== null;',
+            $hasExpectedRole = $I->executeJS(
+                'const roleButton = document.querySelector(".ui--current-role");'
+                .'return roleButton !== null && roleButton.textContent.trim() === '.json_encode($role).';',
             );
-            if ($isStillLoggedIn) {
+            if ($hasExpectedRole) {
                 return;
             }
         }
