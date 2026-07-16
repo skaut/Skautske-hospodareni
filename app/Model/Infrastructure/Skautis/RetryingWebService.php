@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Model\Infrastructure\Skautis;
 
+use LogicException;
 use Skautis\Wsdl\AuthenticationException;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WebServiceInterface;
@@ -68,7 +69,7 @@ final class RetryingWebService implements WebServiceInterface
     /** @param callable(): mixed $callback */
     private function runWithRetry(callable $callback): mixed
     {
-        for ($attempt = 1; ; ++$attempt) {
+        for ($attempt = 1;; ++$attempt) {
             try {
                 return $callback();
             } catch (AuthenticationException|PermissionException $exception) {
@@ -81,6 +82,8 @@ final class RetryingWebService implements WebServiceInterface
                 usleep(self::RETRY_DELAY_MICROSECONDS * $attempt);
             }
         }
+
+        throw new LogicException('Retry loop ended unexpectedly.');
     }
 
     private function isRetryable(WsdlException $exception): bool
