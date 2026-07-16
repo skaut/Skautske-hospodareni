@@ -254,12 +254,17 @@ class EventCashbookCest extends BaseAcceptanceCest
     {
         $this->I->expectTo(sprintf('see %s CZK as final balance', $balance));
         $this->I->executeJs('window.scrollTo(0, document.body.scrollHeight);');
-        $this->I->waitForText($balance, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, self::BALANCE_SELECTOR);
+        $this->I->waitForJS(
+            'const balance = document.querySelector('.json_encode(self::BALANCE_SELECTOR).');'
+            .'return balance !== null && balance.textContent.includes('.json_encode($balance).');',
+            AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
+        );
     }
 
     private function removeChit(int $position): void
     {
         $this->I->disablePopups();
         $this->I->clickStable('.ui--removeChit');
+        $this->I->waitForDocumentReady();
     }
 }
