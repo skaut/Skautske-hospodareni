@@ -23,4 +23,20 @@ final class SkautisMaintenanceCheckerTest extends Unit
 
         self::assertFalse($checker->isMaintenance());
     }
+
+    public function testSkautisWarningDoesNotBreakApplicationRequest(): void
+    {
+        $skautis = Mockery::mock(Skautis::class);
+        $skautis->shouldReceive('isMaintenance')
+            ->once()
+            ->andReturnUsing(static function (): bool {
+                trigger_error('DNS lookup failed.', E_USER_WARNING);
+
+                return true;
+            });
+
+        $checker = new SkautisMaintenanceChecker($skautis, new MemoryStorage());
+
+        self::assertFalse($checker->isMaintenance());
+    }
 }

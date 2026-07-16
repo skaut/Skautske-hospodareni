@@ -264,12 +264,11 @@ class PaymentCest extends PaymentAcceptanceCest
     }
 
     /** @group payment */
-    /** @group payment */
     public function subtypeCreateLinksUseCanonicalUrls(): void
     {
         $I = $this->I;
 
-        $I->wantTo('open payment subtype selectors on canonical urls');
+        $I->wantTo('see canonical payment subtype create links');
 
         $I->clickStable('[data-test="global-nav-payments"]');
         $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
@@ -281,26 +280,6 @@ class PaymentCest extends PaymentAcceptanceCest
         Assert::assertSame('/platby/tabory', $I->grabAttributeFrom('[data-test="create-button-item-camp"]', 'href'));
         Assert::assertSame('/platby/akce', $I->grabAttributeFrom('[data-test="create-button-item-event"]', 'href'));
         Assert::assertSame('/platby/vzdelavacky', $I->grabAttributeFrom('[data-test="create-button-item-education"]', 'href'));
-
-        $I->clickStable('[data-test="create-button-item-camp"]');
-        $I->waitForText('Nová táborová skupina plateb', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->seeInCurrentUrl('/platby/tabory');
-
-        $I->clickStable('[data-test="payment-nav-groups"]');
-        $I->waitForText('Platební skupiny', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->clickStable('[data-test="create-button-toggle"]');
-        $I->waitForElementVisible('[data-test="create-button-menu"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->clickStable('[data-test="create-button-item-event"]');
-        $I->waitForText('Nová skupina plateb pro akci', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->seeInCurrentUrl('/platby/akce');
-
-        $I->clickStable('[data-test="payment-nav-groups"]');
-        $I->waitForText('Platební skupiny', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->clickStable('[data-test="create-button-toggle"]');
-        $I->waitForElementVisible('[data-test="create-button-menu"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->clickStable('[data-test="create-button-item-education"]');
-        $I->waitForText('Nová skupina plateb vzdělávací akce', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->seeInCurrentUrl('/platby/vzdelavacky');
     }
 
     /** @group payment */

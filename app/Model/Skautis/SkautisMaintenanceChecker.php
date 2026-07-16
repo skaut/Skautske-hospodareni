@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Model\Skautis;
 
+use ErrorException;
 use Nette\Caching\Cache;
 use Nette\Caching\Storage;
 use Skautis\Skautis;
@@ -40,11 +41,16 @@ class SkautisMaintenanceChecker
         $previousTimeout = (int) ini_get('default_socket_timeout');
         ini_set('default_socket_timeout', (string) self::CHECK_TIMEOUT);
 
+        set_error_handler(static function (int $severity, string $message, string $file, int $line): never {
+            throw new ErrorException($message, 0, $severity, $file, $line);
+        });
+
         try {
             $result = $this->skautis->isMaintenance();
         } catch (Throwable) {
             $result = false;
         } finally {
+            restore_error_handler();
             ini_set('default_socket_timeout', (string) $previousTimeout);
         }
 
