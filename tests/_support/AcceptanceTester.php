@@ -28,6 +28,7 @@ class AcceptanceTester extends Actor
     private const PASSWORD = 'chtelbysprachy1';
 
     private const LOGIN_TRIGGER_SELECTOR = '[data-test="login-link"], [data-test="homepage-login"]';
+    private const CURRENT_ROLE_SELECTOR = '.ui--current-role';
     public const ELEMENT_LOAD_TIMEOUT = 30;
     public const UNIT_LEADER_ROLE = 'Středisko: vedoucí/admin - 621.66';
     public const UNIT_ID = 27266;
@@ -43,11 +44,7 @@ class AcceptanceTester extends Actor
             $I->amOnPage('/nastenka');
 
             $I->waitForDocumentReady();
-            $hasExpectedRole = $I->executeJS(
-                'const roleButton = document.querySelector(".ui--current-role");'
-                .'return roleButton !== null && roleButton.textContent.trim() === '.json_encode($role).';',
-            );
-            if ($hasExpectedRole) {
+            if ($I->hasExpectedRole($role)) {
                 return;
             }
         }
@@ -56,6 +53,13 @@ class AcceptanceTester extends Actor
         $I->waitForDocumentReady();
         $I->waitForLoginTrigger();
         $I->clickFirstLoginTrigger();
+        $I->waitForLoginFormOrExpectedRole($role);
+        if ($I->hasExpectedRole($role)) {
+            $I->saveSessionSnapshot('login');
+
+            return;
+        }
+
         $I->waitForText('přihlášení', self::ELEMENT_LOAD_TIMEOUT);
         $I->fillField('(//input)[9]', self::LOGIN);
         $I->fillField('(//input)[10]', self::PASSWORD);
@@ -71,6 +75,25 @@ class AcceptanceTester extends Actor
         }
 
         $I->saveSessionSnapshot('login');
+    }
+
+    public function hasExpectedRole(string $role): bool
+    {
+        return (bool) $this->executeJS(
+            'const roleButton = document.querySelector('.json_encode(self::CURRENT_ROLE_SELECTOR).');'
+            .'return roleButton !== null && roleButton.textContent.trim() === '.json_encode($role).';',
+        );
+    }
+
+    public function waitForLoginFormOrExpectedRole(string $role, int $timeout = self::ELEMENT_LOAD_TIMEOUT): void
+    {
+        $this->waitForJS(
+            'const roleButton = document.querySelector('.json_encode(self::CURRENT_ROLE_SELECTOR).');'
+            .'const hasExpectedRole = roleButton !== null && roleButton.textContent.trim() === '.json_encode($role).';'
+            .'const hasLoginForm = document.body !== null && document.body.textContent.includes("přihlášení");'
+            .'return hasExpectedRole || hasLoginForm;',
+            $timeout,
+        );
     }
 
     public function waitForDocumentReady(int $timeout = self::ELEMENT_LOAD_TIMEOUT): void
