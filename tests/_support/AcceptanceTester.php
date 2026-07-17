@@ -26,6 +26,7 @@ class AcceptanceTester extends Actor
     private const LOGIN = 'crash01';
 
     private const PASSWORD = 'chtelbysprachy1';
+    private const LOGIN_ATTEMPTS = 3;
 
     private const LOGIN_TRIGGER_SELECTOR = '[data-test="login-link"], [data-test="homepage-login"]';
     private const CURRENT_ROLE_SELECTOR = '.ui--current-role';
@@ -49,22 +50,14 @@ class AcceptanceTester extends Actor
             }
         }
 
-        $I->amOnPage('/');
-        $I->waitForDocumentReady();
-        $I->waitForLoginTrigger();
-        $I->clickFirstLoginTrigger();
-        $I->waitForLoginFormOrExpectedRole($role);
+        $I->openLoginFormOrExpectedRole($role);
         if ($I->hasExpectedRole($role)) {
             $I->saveSessionSnapshot('login');
 
             return;
         }
 
-        $I->waitForText('přihlášení', self::ELEMENT_LOAD_TIMEOUT);
-        $I->fillField('(//input)[9]', self::LOGIN);
-        $I->fillField('(//input)[10]', self::PASSWORD);
-        $I->click('//button');
-        $I->waitForText('Nástěnka', self::ELEMENT_LOAD_TIMEOUT);
+        $I->submitSkautisLoginWithRetry($role);
 
         $roleButtonSelector = "//button[contains(@class, 'ui--current-role')]";
 
@@ -75,6 +68,40 @@ class AcceptanceTester extends Actor
         }
 
         $I->saveSessionSnapshot('login');
+    }
+
+    public function openLoginFormOrExpectedRole(string $role): void
+    {
+        $this->amOnPage('/');
+        $this->waitForDocumentReady();
+        $this->waitForLoginTrigger();
+        $this->clickFirstLoginTrigger();
+        $this->waitForLoginFormOrExpectedRole($role);
+    }
+
+    public function submitSkautisLoginWithRetry(string $role): void
+    {
+        for ($attempt = 1; $attempt <= self::LOGIN_ATTEMPTS; ++$attempt) {
+            $this->waitForText('přihlášení', self::ELEMENT_LOAD_TIMEOUT);
+            $this->fillField('(//input)[9]', self::LOGIN);
+            $this->fillField('(//input)[10]', self::PASSWORD);
+            $this->click('//button');
+            $this->waitForLoginSuccessOrSkautisDnsError();
+
+            if ($this->hasLoginSucceeded()) {
+                return;
+            }
+
+            if (! $this->hasSkautisDnsError()) {
+                break;
+            }
+
+            if ($attempt < self::LOGIN_ATTEMPTS) {
+                $this->openLoginFormOrExpectedRole($role);
+            }
+        }
+
+        $this->waitForText('Nástěnka', self::ELEMENT_LOAD_TIMEOUT);
     }
 
     public function hasExpectedRole(string $role): bool
@@ -93,6 +120,31 @@ class AcceptanceTester extends Actor
             .'const hasLoginForm = document.body !== null && document.body.textContent.includes("přihlášení");'
             .'return hasExpectedRole || hasLoginForm;',
             $timeout,
+        );
+    }
+
+    public function waitForLoginSuccessOrSkautisDnsError(int $timeout = self::ELEMENT_LOAD_TIMEOUT): void
+    {
+        $this->waitForJS(
+            'const text = document.body?.textContent ?? "";'
+            .'return text.includes("Nástěnka") || '
+            .'(text.includes("test-is.skaut.cz") && text.includes("php_network_getaddresses"));',
+            $timeout,
+        );
+    }
+
+    public function hasLoginSucceeded(): bool
+    {
+        return (bool) $this->executeJS(
+            'return document.body !== null && document.body.textContent.includes("Nástěnka");',
+        );
+    }
+
+    public function hasSkautisDnsError(): bool
+    {
+        return (bool) $this->executeJS(
+            'const text = document.body?.textContent ?? "";'
+            .'return text.includes("test-is.skaut.cz") && text.includes("php_network_getaddresses");',
         );
     }
 
