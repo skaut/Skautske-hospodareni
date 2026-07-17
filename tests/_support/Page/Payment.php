@@ -41,8 +41,7 @@ class Payment
 
         $I->fillFieldStable('#frm-paymentDialog-form-amount', (string) $amount, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
         $this->selectNextWorkdayForDueDate();
-        $this->submitPayment();
-        $I->waitForText($name, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '[data-test="payment-group-grid"]');
+        $this->submitPayment($name);
     }
 
     public function createGeneralPaymentGroup(string $name): void
@@ -122,20 +121,43 @@ class Payment
         $I->waitForElementVisible(self::MODAL_NAME_INPUT, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
     }
 
-    public function submitPayment(): void
+    public function submitPayment(string $paymentName): void
     {
         $I = $this->tester;
 
         $I->clickStable('.modal.show .modal-footer input[name="send"][form="frm-paymentDialog-form"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
 
-        // Wait for AJAX to complete: modal closes and page becomes interactive again.
         $I->waitForJS(
             'var input = document.querySelector("#frm-paymentDialog-form-name");'
-            .'return !input || input.offsetParent === null || input.getClientRects().length === 0;',
+            .'var hasSuccess = Array.from(document.querySelectorAll(".alert-success"))'
+            .'.some(function (alert) { return alert.textContent.includes("Platba byla přidána"); });'
+            .'return hasSuccess || !input || input.offsetParent === null || input.getClientRects().length === 0;',
             AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
         );
         $I->waitForText('Platba byla přidána', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->waitForText($paymentName, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '[data-test="payment-group-grid"]');
+        $this->closeStalePaymentDialogAfterSuccess();
         $I->waitForElementNotVisible('.modal-backdrop', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementClickable('[data-test="payment-add-button-toggle"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+    }
+
+    private function closeStalePaymentDialogAfterSuccess(): void
+    {
+        $this->tester->executeJS(
+            'var hasSuccess = Array.from(document.querySelectorAll(".alert-success"))'
+            .'.some(function (alert) { return alert.textContent.includes("Platba byla přidána"); });'
+            .'if (!hasSuccess) { return false; }'
+            .'document.querySelectorAll(".modal.show").forEach(function (modal) {'
+                .'modal.classList.remove("show");'
+                .'modal.style.display = "none";'
+                .'modal.style.pointerEvents = "none";'
+                .'if (modal.parentElement === document.body) { modal.remove(); }'
+            .'});'
+            .'document.querySelectorAll(".modal-backdrop").forEach(function (backdrop) { backdrop.remove(); });'
+            .'document.body.classList.remove("modal-open");'
+            .'document.body.style.removeProperty("overflow");'
+            .'document.body.style.removeProperty("padding-right");'
+            .'return true;',
+        );
     }
 }

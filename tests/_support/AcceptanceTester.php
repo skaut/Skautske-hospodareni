@@ -85,14 +85,21 @@ class AcceptanceTester extends Actor
             $this->waitForText('přihlášení', self::ELEMENT_LOAD_TIMEOUT);
             $this->fillField('(//input)[9]', self::LOGIN);
             $this->fillField('(//input)[10]', self::PASSWORD);
-            $this->click('//button');
-            $this->waitForLoginSuccessOrSkautisDnsError();
+
+            try {
+                $this->submitSkautisLoginForm();
+                $this->waitForLoginSuccessOrSkautisDnsError();
+            } catch (Facebook\WebDriver\Exception\WebDriverException $e) {
+                if (! $this->isRetryableSkautisLoginWebDriverFailure($e) || $attempt === self::LOGIN_ATTEMPTS) {
+                    throw $e;
+                }
+            }
 
             if ($this->hasLoginSucceeded()) {
                 return;
             }
 
-            if (! $this->hasSkautisDnsError()) {
+            if (! $this->hasSkautisDnsError() && ! $this->isOnSkautisLoginForm()) {
                 break;
             }
 
@@ -102,6 +109,21 @@ class AcceptanceTester extends Actor
         }
 
         $this->waitForText('Nástěnka', self::ELEMENT_LOAD_TIMEOUT);
+    }
+
+    public function submitSkautisLoginForm(): void
+    {
+        $this->waitForJS(
+            'const button = document.querySelector("#ctl00_Content_BtnLogin, button[type=submit]");'
+            .'return button !== null && !button.disabled;',
+            self::ELEMENT_LOAD_TIMEOUT,
+        );
+        $this->executeJS(
+            'const button = document.querySelector("#ctl00_Content_BtnLogin, button[type=submit]");'
+            .'if (button === null) { throw new Error("SkautIS login submit was not found."); }'
+            .'button.click();'
+            .'return true;',
+        );
     }
 
     public function hasExpectedRole(string $role): bool
@@ -145,6 +167,14 @@ class AcceptanceTester extends Actor
         return (bool) $this->executeJS(
             'const text = document.body?.textContent ?? "";'
             .'return text.includes("test-is.skaut.cz") && text.includes("php_network_getaddresses");',
+        );
+    }
+
+    public function isOnSkautisLoginForm(): bool
+    {
+        return (bool) $this->executeJS(
+            'return document.querySelector("#ctl00_Content_BtnLogin, button[type=submit]") !== null'
+            .' && (document.body?.textContent ?? "").includes("přihlášení");',
         );
     }
 
@@ -247,6 +277,14 @@ class AcceptanceTester extends Actor
     private function isXPathLocator(string $locator): bool
     {
         return str_starts_with($locator, '//') || str_starts_with($locator, '(') || str_starts_with($locator, './/');
+    }
+
+    private function isRetryableSkautisLoginWebDriverFailure(Facebook\WebDriver\Exception\WebDriverException $e): bool
+    {
+        $message = $e->getMessage();
+
+        return str_contains($message, 'Timed out receiving message from renderer')
+            || str_contains($message, "doesn't evaluate to true");
     }
 
     private function scrollElementToCenter(string $locator): void
