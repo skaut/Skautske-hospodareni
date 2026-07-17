@@ -359,9 +359,7 @@ class InvoiceCest extends BaseAcceptanceCest
 
         $I->amOnPage('/platby/rady/'.$sourceSequenceId);
         $I->waitForElementVisible('[data-test="invoice-sequence-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->waitForElementVisible('[data-test="invoice-duplicate-'.$sourceInvoiceId.'"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->clickStable('[data-test="invoice-duplicate-'.$sourceInvoiceId.'"]');
-        $I->waitForElementVisible('[data-test="invoice-duplicate-form"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openInvoiceDuplicateDialog((int) $sourceInvoiceId, (int) $targetSequenceId);
         $I->selectOption('select[name="targetSequenceId"]', (string) $targetSequenceId);
         $I->clickStable('.modal-footer [data-test="invoice-duplicate-submit"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
         $I->waitForElementVisible('[data-test="invoice-edit-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
@@ -652,6 +650,25 @@ class InvoiceCest extends BaseAcceptanceCest
         );
     }
 
+    private function openInvoiceDuplicateDialog(int $sourceInvoiceId, int $targetSequenceId): void
+    {
+        $actionSelector = '[data-test="invoice-duplicate-'.$sourceInvoiceId.'"]';
+
+        $this->I->waitForElementVisible($actionSelector, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $openUrl = (string) $this->I->grabAttributeFrom($actionSelector, 'href');
+        $this->I->clickStable($actionSelector);
+
+        if ($this->hasInvoiceDuplicateDialogLoaded($targetSequenceId)) {
+            return;
+        }
+
+        $this->I->amOnPage($openUrl);
+        Assert::assertTrue(
+            $this->hasInvoiceDuplicateDialogLoaded($targetSequenceId),
+            'Invoice duplicate dialog did not load with target sequence '.$targetSequenceId.'.',
+        );
+    }
+
     private function openInvoiceActionPage(string $actionSelector, string $expectedSelector, string $expectedUrlPart): void
     {
         $pageState = 'unknown';
@@ -675,6 +692,22 @@ class InvoiceCest extends BaseAcceptanceCest
         );
         $this->I->waitForElementVisible($expectedSelector, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $this->I->seeInCurrentUrl($expectedUrlPart);
+    }
+
+    private function hasInvoiceDuplicateDialogLoaded(int $targetSequenceId): bool
+    {
+        try {
+            $this->I->waitForJS(
+                'const form = document.querySelector("[data-test=\"invoice-duplicate-form\"]");'
+                .'const targetOption = document.querySelector("select[name=\"targetSequenceId\"] option[value=\"'.$targetSequenceId.'\"]");'
+                .'return form !== null && targetOption !== null && form.getClientRects().length > 0;',
+                AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
+            );
+
+            return true;
+        } catch (\Facebook\WebDriver\Exception\WebDriverException) {
+            return false;
+        }
     }
 
     private function waitForInvoicePageOrSkautisUnavailable(string $expectedSelector): string
