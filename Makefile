@@ -57,6 +57,18 @@ define wait_for_application
 	exit 1
 endef
 
+define wait_for_skautis_dns
+	@for i in $$(seq 1 30); do \
+		if $(COMPOSE) exec -T php-test php -r 'exit(gethostbynamel("test-is.skaut.cz") === false ? 1 : 0);' >/dev/null 2>&1; then \
+			exit 0; \
+		fi; \
+		echo "Waiting for SkautIS DNS... ($$i/30)"; \
+		sleep 2; \
+	done; \
+	echo "SkautIS test host DNS did not become available in time."; \
+	exit 1
+endef
+
 define wait_for_mysql_test
 	@for i in $$(seq 1 30); do \
 		if $(COMPOSE) exec -T mysql-test sh -lc 'mysqladmin ping -h 127.0.0.1 -uroot -p"$$MYSQL_ROOT_PASSWORD" --silent' >/dev/null 2>&1; then \
@@ -159,6 +171,7 @@ test-acceptance: ## Akceptační testy lokálně s viditelným Selenium preview
 	$(COMPOSE) up -d $(ACCEPTANCE_SERVICES)
 	$(call wait_for_mysql_test)
 	$(call wait_for_selenium)
+	$(call wait_for_skautis_dns)
 	$(RUN_PHP_TEST) $(COMPOSER_ENV) composer tests:acceptance:init
 	$(RUN_PHP_TEST) vendor/bin/codecept run acceptance -vv $(TEST_ARGS); \
 	status=$$?; \
@@ -178,6 +191,7 @@ ci-acceptance: ## Akceptační testy v CI režimu
 	$(call wait_for_selenium)
 	$(RUN_PHP_TEST) $(COMPOSER_ENV) composer tests:acceptance:init
 	$(call wait_for_application)
+	$(call wait_for_skautis_dns)
 	$(RUN_PHP_TEST) vendor/bin/codecept run acceptance --env ci -vv $(TEST_ARGS); \
 	status=$$?; \
 	$(COMPOSE) stop selenium; \
