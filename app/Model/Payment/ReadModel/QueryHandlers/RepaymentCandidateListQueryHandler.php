@@ -13,12 +13,12 @@ use App\Model\Payment\Payment\State;
 use App\Model\Payment\ReadModel\Queries\PaymentListQuery;
 use App\Model\Payment\ReadModel\Queries\RepaymentCandidateListQuery;
 use App\Model\Payment\Repositories\IGroupRepository;
+use LogicException;
 
 use function array_column;
 use function array_filter;
 use function array_key_exists;
 use function array_map;
-use function assert;
 
 final class RepaymentCandidateListQueryHandler
 {
@@ -57,8 +57,9 @@ final class RepaymentCandidateListQueryHandler
         );
 
         foreach ($repayments as $repayment) {
-            assert($repayment instanceof DTO\RepaymentCandidate);
-
+            if (! $repayment instanceof DTO\RepaymentCandidate) {
+                throw new LogicException('Assertion failed.');
+            }
             $personId = $repayment->getPersonId();
 
             if ($personId === null || ! array_key_exists($personId, $participantsPayments)) {

@@ -22,8 +22,8 @@ use App\Model\Event\SkautisEducationId;
 use App\Model\Event\SkautisEventId;
 use App\Model\Unit\ReadModel\Queries\UnitQuery;
 use App\Model\Unit\Unit;
+use LogicException;
 
-use function assert;
 use function sprintf;
 
 final class CashbookDisplayNameQueryHandler
@@ -36,34 +36,43 @@ final class CashbookDisplayNameQueryHandler
     {
         $cashbook = $this->queryBus->handle(new CashbookQuery($query->getCashbookId()));
         $skautisId = $this->queryBus->handle(new SkautisIdQuery($query->getCashbookId()));
-        assert($cashbook instanceof Cashbook);
-
+        if (! $cashbook instanceof Cashbook) {
+            throw new LogicException('Assertion failed.');
+        }
         $type = $cashbook->getType()->getSkautisObjectType();
 
         if ($type->equalsValue(ObjectType::EVENT)) {
             $event = $this->queryBus->handle(new EventQuery(new SkautisEventId($skautisId)));
-            assert($event instanceof Event);
+            if (! $event instanceof Event) {
+                throw new LogicException('Assertion failed.');
+            }
 
             return $event->getUnitName();
         }
 
         if ($type->equalsValue(ObjectType::CAMP)) {
             $camp = $this->queryBus->handle(new CampQuery(new SkautisCampId($skautisId)));
-            assert($camp instanceof Camp);
+            if (! $camp instanceof Camp) {
+                throw new LogicException('Assertion failed.');
+            }
 
             return $camp->getDisplayName();
         }
 
         if ($type->equalsValue(ObjectType::UNIT)) {
             $unit = $this->queryBus->handle(new UnitQuery($skautisId));
-            assert($unit instanceof Unit);
+            if (! $unit instanceof Unit) {
+                throw new LogicException('Assertion failed.');
+            }
 
             return $unit->getDisplayName();
         }
 
         if ($type->equalsValue(ObjectType::EDUCATION)) {
             $education = $this->queryBus->handle(new EducationQuery(new SkautisEducationId($skautisId)));
-            assert($education instanceof Education);
+            if (! $education instanceof Education) {
+                throw new LogicException('Assertion failed.');
+            }
 
             return $education->getDisplayName();
         }

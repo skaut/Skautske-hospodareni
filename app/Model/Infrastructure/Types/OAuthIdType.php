@@ -7,8 +7,8 @@ namespace App\Model\Infrastructure\Types;
 use App\Model\Google\OAuthId;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\GuidType;
+use LogicException;
 
-use function assert;
 use function is_string;
 
 final class OAuthIdType extends GuidType
@@ -24,7 +24,9 @@ final class OAuthIdType extends GuidType
             return null;
         }
 
-        assert(is_string($value));
+        if (! is_string($value)) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return OAuthId::fromString($value);
     }
@@ -35,7 +37,9 @@ final class OAuthIdType extends GuidType
             return null;
         }
 
-        assert($value instanceof OAuthId);
+        if (! $value instanceof OAuthId) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return $value->toString();
     }

@@ -10,8 +10,8 @@ use App\Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
 use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Participant\Participant;
 use App\Model\Participant\ZeroParticipantIncome;
+use LogicException;
 
-use function assert;
 use function preg_match;
 
 class CampParticipantIncomeQueryHandler
@@ -25,7 +25,9 @@ class CampParticipantIncomeQueryHandler
         $res = 0.0;
         $participants = $this->queryBus->handle(new CampParticipantListQuery($query->getCampId()));
         foreach ($participants as $p) {
-            assert($p instanceof Participant);
+            if (! $p instanceof Participant) {
+                throw new LogicException('Assertion failed.');
+            }
             // pokud se alespon v jednom neshodují, tak pokracujte
             if (
                 ($query->isAdult() !== null && ($query->isAdult() xor preg_match('/^Dospěl/', $p->getCategory())))

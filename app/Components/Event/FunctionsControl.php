@@ -19,12 +19,11 @@ use App\Model\Event\Person;
 use App\Model\Event\ReadModel\Queries\EventFunctions;
 use App\Model\Event\SkautisEventId;
 use Component\Forms\BaseForm;
+use LogicException;
 use Nette\Forms\Controls\SelectBox;
 use Nette\Forms\Form;
 use Nette\Utils\ArrayHash;
 use Skautis\Wsdl\PermissionException;
-
-use function assert;
 
 class FunctionsControl extends BaseControl
 {
@@ -150,8 +149,9 @@ class FunctionsControl extends BaseControl
         foreach ($values as $functionName => $personId) {
             $selectbox = $form[$functionName];
 
-            assert($selectbox instanceof SelectBox);
-
+            if (! $selectbox instanceof SelectBox) {
+                throw new LogicException('Assertion failed.');
+            }
             $selectbox->setDefaultValue(isset($selectbox->getItems()[$personId]) ? $personId : null);
         }
     }

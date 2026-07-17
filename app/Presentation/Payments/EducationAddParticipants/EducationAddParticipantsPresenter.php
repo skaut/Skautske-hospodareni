@@ -13,9 +13,9 @@ use App\Model\Payment\PaymentService;
 use App\Model\Payment\ReadModel\Queries\MemberEmailsQuery;
 use App\Model\Unit\ReadModel\Queries\UnitQuery;
 use App\Presentation\Payments\PaymentsBasePresenter as BasePresenter;
+use LogicException;
 
 use function array_filter;
-use function assert;
 use function in_array;
 
 final class EducationAddParticipantsPresenter extends BasePresenter
@@ -50,8 +50,9 @@ final class EducationAddParticipantsPresenter extends BasePresenter
         );
 
         $form = $this['massAddForm'];
-        assert($form instanceof MassAddForm);
-
+        if (! $form instanceof MassAddForm) {
+            throw new LogicException('Assertion failed.');
+        }
         $personsWithPayment = $this->model->getPersonsWithActivePayment($id);
 
         $participants = array_filter(

@@ -7,9 +7,9 @@ namespace App\Model\Event\ReadModel\QueryHandlers;
 use App\Model\Event\EducationCourse;
 use App\Model\Event\ReadModel\Queries\EducationCoursesQuery;
 use App\Model\Skautis\Factory\EducationCourseFactory;
+use LogicException;
 use Skautis\Skautis;
 
-use function assert;
 use function is_object;
 
 class EducationCoursesQueryHandler
@@ -32,8 +32,9 @@ class EducationCoursesQueryHandler
         $result = [];
         foreach ($courses as $course) {
             $course = $this->courseFactory->create($course);
-            assert($course instanceof EducationCourse);
-
+            if (! $course instanceof EducationCourse) {
+                throw new LogicException('Assertion failed.');
+            }
             $result[$course->getId()->toInt()] = $course;
         }
 

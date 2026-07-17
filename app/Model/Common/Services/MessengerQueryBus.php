@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Model\Common\Services;
 
+use LogicException;
 use Symfony\Component\Messenger\Exception\HandlerFailedException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
-
-use function assert;
 
 final class MessengerQueryBus implements QueryBus
 {
@@ -20,7 +19,9 @@ final class MessengerQueryBus implements QueryBus
     {
         try {
             $stamp = $this->queryBus->dispatch($query)->last(HandledStamp::class);
-            assert($stamp instanceof HandledStamp);
+            if (! $stamp instanceof HandledStamp) {
+                throw new LogicException('Assertion failed.');
+            }
         } catch (HandlerFailedException $e) {
             throw $e->getPrevious();
         }

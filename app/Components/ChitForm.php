@@ -37,6 +37,7 @@ use App\Model\Skautis\Exception\AmountMustBeGreaterThanZero;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
 use InvalidArgumentException;
+use LogicException;
 use NasExt\Forms\DependentData;
 use Nette\Application\BadRequestException;
 use Nette\Forms\Container;
@@ -49,7 +50,6 @@ use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\WsdlException;
 
 use function array_values;
-use function assert;
 use function sprintf;
 
 final class ChitForm extends BaseControl
@@ -97,8 +97,9 @@ final class ChitForm extends BaseControl
     {
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
 
-        assert($cashbook instanceof Cashbook);
-
+        if (! $cashbook instanceof Cashbook) {
+            throw new LogicException('Assertion failed.');
+        }
         $this->template->setParameters([
             'isEditable' => $this->isEditable,
             'dataAutocomplete' => $this->getAdultMemberNames(),
@@ -133,8 +134,9 @@ final class ChitForm extends BaseControl
             throw new BadRequestException(sprintf('Chit %d not found', $chitId), IResponse::S404_NotFound);
         }
 
-        assert($chit instanceof Chit);
-
+        if (! $chit instanceof Chit) {
+            throw new LogicException('Assertion failed.');
+        }
         if ($chit->isLocked()) {
             throw new BadRequestException('Can\'t edit locked chit', IResponse::S403_Forbidden);
         }
@@ -307,7 +309,9 @@ final class ChitForm extends BaseControl
     {
         $container = $button->getParent();
         $replicator = $container->getParent();
-        assert($replicator instanceof \Kdyby\Replicator\Container && $container instanceof Container);
+        if (! ($replicator instanceof \Kdyby\Replicator\Container && $container instanceof Container)) {
+            throw new LogicException('Assertion failed.');
+        }
         $replicator->remove($container, true);
         $this->reload();
     }
@@ -390,8 +394,9 @@ final class ChitForm extends BaseControl
     private function assertCanUpdateCampBudget(): void
     {
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
-        assert($cashbook instanceof Cashbook);
-
+        if (! $cashbook instanceof Cashbook) {
+            throw new LogicException('Assertion failed.');
+        }
         if (! $cashbook->getType()->equalsValue(CashbookType::CAMP)) {
             return;
         }

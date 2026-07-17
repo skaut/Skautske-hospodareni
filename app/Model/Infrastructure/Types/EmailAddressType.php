@@ -7,8 +7,7 @@ namespace App\Model\Infrastructure\Types;
 use App\Model\Common\EmailAddress;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
-
-use function assert;
+use LogicException;
 
 class EmailAddressType extends StringType
 {
@@ -23,7 +22,9 @@ class EmailAddressType extends StringType
             return null;
         }
 
-        assert($value instanceof EmailAddress);
+        if (! $value instanceof EmailAddress) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return $value->getValue();
     }

@@ -28,6 +28,7 @@ use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
 use Component\Forms\DateControl;
 use DateTimeImmutable;
+use LogicException;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\TextBase;
 use Nette\Utils\ArrayHash;
@@ -37,7 +38,6 @@ use function array_filter;
 use function array_key_exists;
 use function array_map;
 use function array_unique;
-use function assert;
 
 final class GroupForm extends BaseControl
 {
@@ -61,8 +61,9 @@ final class GroupForm extends BaseControl
     {
         $nameControl = $this['form']['name'];
 
-        assert($nameControl instanceof TextBase);
-
+        if (! $nameControl instanceof TextBase) {
+            throw new LogicException('Assertion failed.');
+        }
         $nameControl->setDefaultValue($name);
     }
 
@@ -76,8 +77,9 @@ final class GroupForm extends BaseControl
 
         $dueDateControl = $this['form']['dueDate'];
 
-        assert($dueDateControl instanceof DateControl);
-
+        if (! $dueDateControl instanceof DateControl) {
+            throw new LogicException('Assertion failed.');
+        }
         $dueDateControl->setDefaultValue($dueDate);
     }
 
@@ -410,7 +412,9 @@ final class GroupForm extends BaseControl
             return [];
         }
 
-        assert($email instanceof GroupEmail);
+        if (! $email instanceof GroupEmail) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return [
             'enabled' => $email->isEnabled(),
@@ -427,7 +431,9 @@ final class GroupForm extends BaseControl
         $items = [];
 
         foreach ($bankAccounts as $bankAccount) {
-            assert($bankAccount instanceof BankAccount);
+            if (! $bankAccount instanceof BankAccount) {
+                throw new LogicException('Assertion failed.');
+            }
             $items[$bankAccount->getId()] = $bankAccount->getName();
         }
 
@@ -452,11 +458,13 @@ final class GroupForm extends BaseControl
 
         $items = [];
         foreach ($oAuths as $oAuth) {
-            assert($oAuth instanceof OAuth);
-
+            if (! $oAuth instanceof OAuth) {
+                throw new LogicException('Assertion failed.');
+            }
             $unit = $units[$oAuth->getUnitId()];
-            assert($unit instanceof Unit);
-
+            if (! $unit instanceof Unit) {
+                throw new LogicException('Assertion failed.');
+            }
             $items[$unit->getDisplayName()][$oAuth->getId()] = $oAuth->getEmail();
         }
 
@@ -471,7 +479,9 @@ final class GroupForm extends BaseControl
         }
 
         $group = $this->model->getGroup($this->groupId);
-        assert($group !== null);
+        if (! ($group !== null)) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return $group->getUnitIds();
     }

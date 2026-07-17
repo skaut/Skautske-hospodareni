@@ -18,13 +18,13 @@ use App\Model\Unit\ReadModel\Queries\UnitsDetailQuery;
 use App\Model\Unit\Unit;
 use App\Model\Unit\UnitService;
 use Component\Forms\BaseForm;
+use LogicException;
 use Nette\Application\BadRequestException;
 use Nette\Utils\ArrayHash;
 
 use function array_keys;
 use function array_map;
 use function array_replace;
-use function assert;
 use function in_array;
 use function sprintf;
 
@@ -136,7 +136,9 @@ class GroupUnitControl extends BaseControl
             }
 
             $officialUnit = $this->queryBus->handle(new UnitQuery($officialUnitId));
-            assert($officialUnit instanceof Unit);
+            if (! $officialUnit instanceof Unit) {
+                throw new LogicException('Assertion failed.');
+            }
             $subunitPairs = $this->units->getSubunitPairs($officialUnitId, true);
 
             $officialUnitPairs[] = [$officialUnitId => $officialUnit->getDisplayName()] + $subunitPairs;

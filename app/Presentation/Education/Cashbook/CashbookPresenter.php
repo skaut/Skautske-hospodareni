@@ -25,9 +25,9 @@ use App\Model\DTO\Cashbook\ChitItem;
 use App\Model\Event\SkautisEducationId;
 use App\Presentation\Education\BasePresenter;
 use Component\Forms\BaseForm;
+use LogicException;
 use Money\Money;
 
-use function assert;
 use function count;
 
 final class CashbookPresenter extends BasePresenter
@@ -60,13 +60,16 @@ final class CashbookPresenter extends BasePresenter
         $finalBalance = $this->queryBus->handle(new FinalCashBalanceQuery($this->getCashbookId()));
         try {
             $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId()));
-            assert($finalRealBalance instanceof Money);
+            if (! $finalRealBalance instanceof Money) {
+                throw new LogicException('Assertion failed.');
+            }
         } catch (MissingCategory) {
             $finalRealBalance = null;
         }
 
-        assert($finalBalance instanceof Money);
-
+        if (! $finalBalance instanceof Money) {
+            throw new LogicException('Assertion failed.');
+        }
         $this->template->setParameters([
             'isCashbookEmpty' => $this->isCashbookEmpty(),
             'cashbookId' => $this->getCashbookId()->toString(),

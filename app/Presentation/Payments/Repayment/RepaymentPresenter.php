@@ -17,9 +17,9 @@ use App\Model\Utils\MoneyFactory;
 use App\Presentation\Payments\PaymentsBasePresenter as BasePresenter;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
+use LogicException;
 use Nette\Forms\Control;
 
-use function assert;
 use function count;
 use function sprintf;
 
@@ -59,7 +59,9 @@ final class RepaymentPresenter extends BasePresenter
         $paymentsContainer = $form->addContainer('payments');
 
         foreach ($this->queryBus->handle(new RepaymentCandidateListQuery($this->group->getId())) as $repayment) {
-            assert($repayment instanceof RepaymentCandidate);
+            if (! $repayment instanceof RepaymentCandidate) {
+                throw new LogicException('Assertion failed.');
+            }
             $container = $paymentsContainer->addContainer('payment'.$repayment->getPaymentId());
 
             $checkbox = $container->addCheckbox('selected');

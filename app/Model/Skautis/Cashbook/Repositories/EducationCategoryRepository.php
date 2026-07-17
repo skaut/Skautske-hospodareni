@@ -8,10 +8,10 @@ use App\Model\Cashbook\EducationCategory;
 use App\Model\Cashbook\Operation;
 use App\Model\Cashbook\Repositories\IEducationCategoryRepository;
 use App\Model\Utils\MoneyFactory;
+use LogicException;
 use Skautis\Wsdl\WebServiceInterface;
 use stdClass;
 
-use function assert;
 use function is_object;
 
 final class EducationCategoryRepository implements IEducationCategoryRepository
@@ -37,8 +37,9 @@ final class EducationCategoryRepository implements IEducationCategoryRepository
         $categories = [];
 
         foreach ($skautisCategories as $category) {
-            assert($category instanceof stdClass);
-
+            if (! $category instanceof stdClass) {
+                throw new LogicException('Assertion failed.');
+            }
             $categories[] = new EducationCategory(
                 $category->ID,
                 Operation::get($category->IsRevenue ? Operation::INCOME : Operation::EXPENSE),

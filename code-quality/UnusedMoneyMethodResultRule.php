@@ -18,8 +18,9 @@ class UnusedMoneyMethodResultRule implements Rule
 
     public function processNode(Node $node, Scope $scope) : array
     {
-        assert($node instanceof MethodCall);
-
+        if (! ($node instanceof MethodCall)) {
+            throw new \LogicException('Assertion failed.');
+        }
         if (! $scope->isInFirstLevelStatement()) {
             return [];
         }

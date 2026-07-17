@@ -7,10 +7,9 @@ namespace App\Components;
 use App\Model\Unit\UnitService;
 use App\Model\User\UserPreferencesService;
 use App\Model\User\UserService;
+use LogicException;
 use Nette\Security\SimpleIdentity;
 use Nette\Security\User;
-
-use function assert;
 
 final class LoginPanel extends BaseControl
 {
@@ -32,8 +31,9 @@ final class LoginPanel extends BaseControl
 
         $identity = $this->user->getIdentity();
 
-        assert($identity instanceof SimpleIdentity);
-
+        if (! $identity instanceof SimpleIdentity) {
+            throw new LogicException('Assertion failed.');
+        }
         $identity->access = $this->userService->getAccessArrays($this->unitService);
         $identity->currentRole = $this->userService->getActualRole();
 

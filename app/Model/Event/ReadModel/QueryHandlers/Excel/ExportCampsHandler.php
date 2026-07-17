@@ -19,11 +19,11 @@ use App\Model\Excel\Range;
 use App\Model\Unit\Repositories\IUnitRepository;
 use App\Model\Unit\UnitNotFound;
 use Assert\Assertion;
+use LogicException;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 use function array_map;
-use function assert;
 use function implode;
 
 final class ExportCampsHandler
@@ -91,8 +91,9 @@ final class ExportCampsHandler
         $rowCnt = 2;
         foreach ($camps as $camp) {
             $functions = $this->queryBus->handle(new CampFunctions($camp->getId()));
-            assert($functions instanceof Functions);
-
+            if (! $functions instanceof Functions) {
+                throw new LogicException('Assertion failed.');
+            }
             $leader = $functions->getLeader()?->getName();
             $accountant = $functions->getAccountant()?->getName();
 

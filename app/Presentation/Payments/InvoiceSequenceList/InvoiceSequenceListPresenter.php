@@ -44,7 +44,6 @@ use function array_filter;
 use function array_keys;
 use function array_map;
 use function array_unique;
-use function assert;
 use function count;
 use function preg_match;
 use function strlen;
@@ -295,7 +294,9 @@ class InvoiceSequenceListPresenter extends PaymentsBasePresenter
         $values = $form->getValues();
 
         $role = $this->queryBus->handle(new ActiveSkautisRoleQuery());
-        assert($role instanceof SkautisRole);
+        if (! $role instanceof SkautisRole) {
+            throw new LogicException('Assertion failed.');
+        }
         $unit = new \App\Model\Common\UnitId($role->getUnitId());
         $account = $this->repositoryService->castToEntity(BankAccount::class)($values->bankAccount, new Collection()) ?? null;
         $oauthId = OAuthId::fromStringOrNull($values->oAuthId);
@@ -358,7 +359,9 @@ class InvoiceSequenceListPresenter extends PaymentsBasePresenter
         $items = [];
 
         foreach ($bankAccounts as $bankAccount) {
-            assert($bankAccount instanceof AccessibleBankAccount);
+            if (! $bankAccount instanceof AccessibleBankAccount) {
+                throw new LogicException('Assertion failed.');
+            }
             $items[$bankAccount->getId()] = $bankAccount->getName();
         }
 
@@ -383,11 +386,13 @@ class InvoiceSequenceListPresenter extends PaymentsBasePresenter
 
         $items = [];
         foreach ($oAuths as $oAuth) {
-            assert($oAuth instanceof OAuth);
-
+            if (! $oAuth instanceof OAuth) {
+                throw new LogicException('Assertion failed.');
+            }
             $unit = $units[$oAuth->getUnitId()];
-            assert($unit instanceof Unit);
-
+            if (! $unit instanceof Unit) {
+                throw new LogicException('Assertion failed.');
+            }
             $items[$unit->getDisplayName()][$oAuth->getId()] = $oAuth->getEmail();
         }
 
@@ -404,8 +409,9 @@ class InvoiceSequenceListPresenter extends PaymentsBasePresenter
     {
         $emailsContainer = $form->addContainer('emails');
         $oAuthId = $form['oAuthId'];
-        assert($oAuthId instanceof \Nette\Forms\Controls\SelectBox);
-
+        if (! $oAuthId instanceof \Nette\Forms\Controls\SelectBox) {
+            throw new LogicException('Assertion failed.');
+        }
         $emails = [
             EmailType::INVOICE_INFO => 'E-mail s fakturou',
             EmailType::INVOICE_COMPLETED => 'E-mail při dokončení platby',
@@ -554,11 +560,18 @@ class InvoiceSequenceListPresenter extends PaymentsBasePresenter
         $firstNumber = $form['firstNumber'];
         $bankAccount = $form['bankAccount'];
         $pairingDaysBackControl = $form['pairingDaysBack'];
-        assert($sequence instanceof TextInput);
-        assert($firstNumber instanceof TextInput);
-        assert($bankAccount instanceof \Nette\Forms\Controls\SelectBox);
-        assert($pairingDaysBackControl instanceof TextInput);
-
+        if (! $sequence instanceof TextInput) {
+            throw new LogicException('Assertion failed.');
+        }
+        if (! $firstNumber instanceof TextInput) {
+            throw new LogicException('Assertion failed.');
+        }
+        if (! $bankAccount instanceof \Nette\Forms\Controls\SelectBox) {
+            throw new LogicException('Assertion failed.');
+        }
+        if (! $pairingDaysBackControl instanceof TextInput) {
+            throw new LogicException('Assertion failed.');
+        }
         $prefix = (string) $values->sequence;
         $firstNumberValue = (string) $values->firstNumber;
 
@@ -621,7 +634,9 @@ class InvoiceSequenceListPresenter extends PaymentsBasePresenter
     private function getRoleUnitId(): int
     {
         $role = $this->queryBus->handle(new ActiveSkautisRoleQuery());
-        assert($role instanceof SkautisRole);
+        if (! $role instanceof SkautisRole) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return $role->getUnitId();
     }

@@ -10,10 +10,10 @@ use App\Model\Cashbook\Operation;
 use App\Model\Cashbook\ParticipantType;
 use App\Model\Cashbook\Repositories\ICampCategoryRepository;
 use App\Model\Utils\MoneyFactory;
+use LogicException;
 use Skautis\Wsdl\WebServiceInterface;
 use stdClass;
 
-use function assert;
 use function is_object;
 
 final class CampCategoryRepository implements ICampCategoryRepository
@@ -43,7 +43,9 @@ final class CampCategoryRepository implements ICampCategoryRepository
         $categories = [];
 
         foreach ($skautisCategories as $category) {
-            assert($category instanceof stdClass);
+            if (! $category instanceof stdClass) {
+                throw new LogicException('Assertion failed.');
+            }
             if ($category->ID_EventCampStatementType === ICategory::CAMP_RESERVE_ID) {
                 continue;
             }

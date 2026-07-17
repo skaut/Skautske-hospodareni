@@ -14,12 +14,12 @@ use App\Model\Payment\PaymentService;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseContainer;
 use Component\Forms\BaseForm;
+use LogicException;
 use Nette\Forms\Controls\TextBase;
 
 use function array_filter;
 use function array_map;
 use function array_values;
-use function assert;
 
 class MassAddForm extends BaseControl
 {
@@ -79,8 +79,9 @@ class MassAddForm extends BaseControl
         $persons = $form['persons'];
         $defaultAmount = $form['amount'];
 
-        assert($defaultAmount instanceof TextBase && $persons instanceof BaseContainer);
-
+        if (! ($defaultAmount instanceof TextBase && $persons instanceof BaseContainer)) {
+            throw new LogicException('Assertion failed.');
+        }
         $container = $persons->addContainer('person'.$id);
 
         $selected = $container->addCheckbox('selected');

@@ -21,6 +21,7 @@ use Contributte\MenuControl\IMenuItem;
 use Contributte\MenuControl\MenuContainer;
 use Contributte\MenuControl\UI\IMenuComponentFactory;
 use Contributte\MenuControl\UI\MenuComponent;
+use LogicException;
 use Nette\Application\BadRequestException;
 use Nette\Application\LinkGenerator;
 use Nette\Application\Response;
@@ -33,7 +34,6 @@ use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\AuthenticationException;
 
 use function array_key_last;
-use function assert;
 use function dirname;
 use function explode;
 use function in_array;
@@ -242,8 +242,9 @@ abstract class BasePresenter extends Presenter
     {
         $identity = $this->user->getIdentity();
 
-        assert($identity instanceof SimpleIdentity);
-
+        if (! $identity instanceof SimpleIdentity) {
+            throw new LogicException('Assertion failed.');
+        }
         $identity->access = $this->userService->getAccessArrays($this->unitService);
     }
 

@@ -33,10 +33,9 @@ use App\MyValidators;
 use App\Presentation\Events\BasePresenter;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
+use LogicException;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
-
-use function assert;
 
 final class EventPresenter extends BasePresenter
 {
@@ -80,8 +79,9 @@ final class EventPresenter extends BasePresenter
         ));
 
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->getCashbookId($aid)));
-        assert($cashbook instanceof Cashbook);
-
+        if (! $cashbook instanceof Cashbook) {
+            throw new LogicException('Assertion failed.');
+        }
         $this->template->setParameters([
             'statistic' => $this->queryBus->handle(new EventStatisticsQuery(new SkautisEventId($this->aid))),
             'finalRealBalance' => $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId($this->aid))),
@@ -131,8 +131,9 @@ final class EventPresenter extends BasePresenter
 
         $functions = $this->queryBus->handle(new EventFunctions(new SkautisEventId($aid)));
 
-        assert($functions instanceof Functions);
-
+        if (! $functions instanceof Functions) {
+            throw new LogicException('Assertion failed.');
+        }
         if ($functions->getLeader() !== null) {
             $this->commandBus->handle(new CloseEvent(new SkautisEventId($aid)));
             $this->flashMessage('Akce byla uzavřena.');

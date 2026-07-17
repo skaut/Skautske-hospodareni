@@ -15,10 +15,10 @@ use App\MyValidators;
 use App\Presentation\Events\BasePresenter;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
+use LogicException;
 use Nette\Application\UI\Form;
 
 use function array_map;
-use function assert;
 
 final class NewEventPresenter extends BasePresenter
 {
@@ -49,7 +49,9 @@ final class NewEventPresenter extends BasePresenter
         );
 
         $unit = $this->queryBus->handle(new UnitQuery($unitId));
-        assert($unit instanceof Unit);
+        if (! $unit instanceof Unit) {
+            throw new LogicException('Assertion failed.');
+        }
         $units = [$unitId => $unit->getSortName()] + $subunits;
 
         $form = new BaseForm();

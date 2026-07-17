@@ -13,8 +13,7 @@ use App\Model\Common\ShouldNotHappen;
 use App\Model\Common\UnitId;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-
-use function assert;
+use LogicException;
 
 /**
  * @ORM\Entity()
@@ -92,8 +91,9 @@ class Unit extends Aggregate
     public function getActiveCashbook(): Cashbook
     {
         foreach ($this->cashbooks as $cashbook) {
-            assert($cashbook instanceof Cashbook);
-
+            if (! $cashbook instanceof Cashbook) {
+                throw new LogicException('Assertion failed.');
+            }
             if ($cashbook->getId() === $this->activeCashbookId) {
                 return $cashbook;
             }

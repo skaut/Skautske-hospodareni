@@ -13,11 +13,11 @@ use App\Model\User\UserService;
 use Closure;
 use Component\Forms\BaseForm;
 use InvalidArgumentException;
+use LogicException;
 use Nette\Application\UI\Form;
 use Nette\Http\FileUpload;
 use Nette\Utils\ArrayHash;
 
-use function assert;
 use function in_array;
 use function pathinfo;
 use function sprintf;
@@ -118,8 +118,9 @@ final class GpcImportDialog extends Dialog
     {
         $values = $form->getValues();
         $upload = $values->file;
-        assert($upload instanceof FileUpload);
-
+        if (! $upload instanceof FileUpload) {
+            throw new LogicException('Assertion failed.');
+        }
         try {
             $batch = $this->bankAccounts->importGpcTransactions(
                 $this->requireImportableAccount()->getId(),

@@ -23,10 +23,10 @@ use App\Model\Event\Event;
 use App\Model\Event\ReadModel\Queries\CampListQuery;
 use App\Model\Event\ReadModel\Queries\EventListQuery;
 use Component\Forms\BaseForm;
+use LogicException;
 use Nette\Utils\ArrayHash;
 
 use function array_map;
-use function assert;
 use function explode;
 use function implode;
 use function in_array;
@@ -133,16 +133,18 @@ class MoveChitsDialog extends Dialog
         $cashbooks = [];
 
         foreach ($this->queryBus->handle(new CampListQuery(null)) as $camp) {
-            assert($camp instanceof Camp);
-
+            if (! $camp instanceof Camp) {
+                throw new LogicException('Assertion failed.');
+            }
             if (! in_array($camp->getState(), ['draft', 'approvedParent', 'approvedLeader'], true)) {
                 continue;
             }
 
             $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery($camp->getId()));
 
-            assert($cashbookId instanceof CashbookId);
-
+            if (! $cashbookId instanceof CashbookId) {
+                throw new LogicException('Assertion failed.');
+            }
             $cashbooks[$cashbookId->toString()] = $camp->getDisplayName();
         }
 
@@ -155,16 +157,18 @@ class MoveChitsDialog extends Dialog
         $cashbooks = [];
 
         foreach ($this->queryBus->handle(new EventListQuery(null)) as $event) {
-            assert($event instanceof Event);
-
+            if (! $event instanceof Event) {
+                throw new LogicException('Assertion failed.');
+            }
             if ($event->getState() !== 'draft') {
                 continue;
             }
 
             $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery($event->getId()));
 
-            assert($cashbookId instanceof CashbookId);
-
+            if (! $cashbookId instanceof CashbookId) {
+                throw new LogicException('Assertion failed.');
+            }
             $cashbooks[$cashbookId->toString()] = $event->getDisplayName();
         }
 
@@ -189,7 +193,9 @@ class MoveChitsDialog extends Dialog
     {
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
 
-        assert($cashbook instanceof Cashbook);
+        if (! $cashbook instanceof Cashbook) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return $cashbook->getType();
     }

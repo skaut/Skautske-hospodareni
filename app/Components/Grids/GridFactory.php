@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\Components\Grids;
 
 use App\Components\DataGrid;
+use LogicException;
 use Nette\Bridges\ApplicationLatte\DefaultTemplate;
-
-use function assert;
 
 class GridFactory
 {
@@ -61,7 +60,9 @@ class GridFactory
 
         $grid->onAnchor[] = function () use ($grid, $templateFile, $templateParameters): void {
             $template = $grid->getTemplate();
-            assert($template instanceof DefaultTemplate);
+            if (! $template instanceof DefaultTemplate) {
+                throw new LogicException('Assertion failed.');
+            }
             $baseTemplate = __DIR__.'/../../Components/templates/datagrid.latte';
 
             // This is variable with original layout in DataGrid 6.0+ (it replaces $original_template)

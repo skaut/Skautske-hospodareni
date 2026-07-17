@@ -14,9 +14,9 @@ use App\Model\DTO\Camp\CampListItem;
 use App\Model\DTO\Cashbook\Cashbook;
 use App\Model\Event\Camp;
 use App\Model\Event\ReadModel\Queries\CampListQuery;
+use LogicException;
 
 use function array_map;
-use function assert;
 
 final class CampListDataSource extends DataSource
 {
@@ -67,11 +67,14 @@ final class CampListDataSource extends DataSource
     {
         $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery($camp->getId()));
 
-        assert($cashbookId instanceof CashbookId);
-
+        if (! $cashbookId instanceof CashbookId) {
+            throw new LogicException('Assertion failed.');
+        }
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
 
-        assert($cashbook instanceof Cashbook);
+        if (! $cashbook instanceof Cashbook) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return $cashbook->getChitNumberPrefix(PaymentMethod::CASH());
     }

@@ -7,8 +7,7 @@ namespace App\Model\Infrastructure\Types;
 use App\Model\Common\FilePath;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
-
-use function assert;
+use LogicException;
 
 class FilePathType extends StringType
 {
@@ -23,7 +22,9 @@ class FilePathType extends StringType
             return null;
         }
 
-        assert($value instanceof FilePath);
+        if (! $value instanceof FilePath) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return $value->getPath();
     }

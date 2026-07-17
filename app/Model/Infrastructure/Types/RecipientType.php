@@ -7,8 +7,8 @@ namespace App\Model\Infrastructure\Types;
 use App\Model\Cashbook\Cashbook\Recipient;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
+use LogicException;
 
-use function assert;
 use function is_string;
 
 class RecipientType extends StringType
@@ -24,7 +24,9 @@ class RecipientType extends StringType
             return null;
         }
 
-        assert($value instanceof Recipient);
+        if (! $value instanceof Recipient) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return $value->getName();
     }
@@ -35,7 +37,9 @@ class RecipientType extends StringType
             return null;
         }
 
-        assert(is_string($value));
+        if (! is_string($value)) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return new Recipient($value);
     }

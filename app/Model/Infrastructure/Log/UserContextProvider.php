@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Model\Infrastructure\Log;
 
 use App\Model\User\SkautisRole;
+use LogicException;
 use Nette\Security\SimpleIdentity;
 use Nette\Security\User;
 use stdClass;
 
 use function array_map;
-use function assert;
 use function sprintf;
 
 final class UserContextProvider
@@ -29,11 +29,14 @@ final class UserContextProvider
             return null;
         }
 
-        assert($identity instanceof SimpleIdentity);
-
+        if (! $identity instanceof SimpleIdentity) {
+            throw new LogicException('Assertion failed.');
+        }
         $currentRole = $identity->currentRole ?? null;
 
-        assert($currentRole instanceof SkautisRole || $currentRole === null);
+        if (! ($currentRole instanceof SkautisRole || $currentRole === null)) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return [
             'id' => $identity->getId(),

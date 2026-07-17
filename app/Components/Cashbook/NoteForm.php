@@ -11,8 +11,8 @@ use App\Model\Common\Services\CommandBus;
 use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Cashbook\Cashbook;
 use Component\Forms\BaseForm;
+use LogicException;
 
-use function assert;
 use function htmlspecialchars;
 use function nl2br;
 use function preg_replace;
@@ -52,8 +52,9 @@ final class NoteForm extends BaseControl
     {
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
 
-        assert($cashbook instanceof Cashbook);
-
+        if (! $cashbook instanceof Cashbook) {
+            throw new LogicException('Assertion failed.');
+        }
         $this['form']->setDefaults(['note' => $cashbook->getNote()]);
 
         $note = nl2br(htmlspecialchars($cashbook->getNote()));

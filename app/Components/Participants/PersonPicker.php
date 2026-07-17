@@ -15,8 +15,7 @@ use App\Model\Unit\ReadModel\Queries\UnitQuery;
 use App\Model\Unit\Unit;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
-
-use function assert;
+use LogicException;
 
 /**
  * @method void onSelect(int[] $personIds)
@@ -59,8 +58,9 @@ final class PersonPicker extends BaseControl
 
         $unitId = $this->selectedUnitId();
         $unit = $this->queryBus->handle(new UnitQuery($unitId));
-        assert($unit instanceof Unit);
-
+        if (! $unit instanceof Unit) {
+            throw new LogicException('Assertion failed.');
+        }
         $this->template->setFile(__DIR__.'/templates/PersonPicker.latte');
         $this->template->setParameters([
             'directMemberOnly' => $this->directMemberOnly,

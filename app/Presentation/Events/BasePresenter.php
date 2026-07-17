@@ -12,8 +12,7 @@ use App\Model\Event\Event;
 use App\Model\Event\EventNotFound;
 use App\Model\Event\ReadModel\Queries\EventQuery;
 use App\Model\Event\SkautisEventId;
-
-use function assert;
+use LogicException;
 
 class BasePresenter extends \App\BaseSectionPresenter
 {
@@ -42,7 +41,9 @@ class BasePresenter extends \App\BaseSectionPresenter
 
         try {
             $this->event = $this->queryBus->handle(new EventQuery(new SkautisEventId($this->aid)));
-            assert($this->event instanceof Event);
+            if (! $this->event instanceof Event) {
+                throw new LogicException('Assertion failed.');
+            }
         } catch (EventNotFound) {
             $this->template->setParameters(['message' => 'Nemáte oprávnění načíst akci nebo akce neexsituje.']);
             $this->forward('Default:accessDenied');

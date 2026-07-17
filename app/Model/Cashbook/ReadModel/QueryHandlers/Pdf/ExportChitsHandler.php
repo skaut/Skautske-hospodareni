@@ -27,9 +27,9 @@ use App\Model\Event\SkautisEventId;
 use App\Model\Services\TemplateFactory;
 use App\Model\Unit\Unit;
 use Doctrine\Common\Collections\ArrayCollection;
+use LogicException;
 
 use function array_filter;
-use function assert;
 use function count;
 use function in_array;
 
@@ -64,8 +64,9 @@ class ExportChitsHandler
 
         $cashbook = $this->queryBus->handle(new CashbookQuery($query->getCashbookId()));
 
-        assert($cashbook instanceof Cashbook);
-
+        if (! $cashbook instanceof Cashbook) {
+            throw new LogicException('Assertion failed.');
+        }
         $cashbookType = $cashbook->getType();
 
         $template = [];
@@ -77,7 +78,9 @@ class ExportChitsHandler
             : new SkautisEventId($skautisId);
 
         $officialUnit = $this->queryBus->handle(new CashbookOfficialUnitQuery($query->getCashbookId()));
-        assert($officialUnit instanceof Unit);
+        if (! $officialUnit instanceof Unit) {
+            throw new LogicException('Assertion failed.');
+        }
         $template['officialName'] = $officialUnit->getFullDisplayNameWithAddress(true);
         $template['cashbook'] = $cashbook;
 
@@ -93,8 +96,9 @@ class ExportChitsHandler
 
             $functions = $this->queryBus->handle($functionsQuery);
 
-            assert($functions instanceof Functions);
-
+            if (! $functions instanceof Functions) {
+                throw new LogicException('Assertion failed.');
+            }
             $accountant = $functions->getAccountant() ?? $functions->getLeader();
             $template['pokladnik'] = $accountant?->getName() ?? '';
 

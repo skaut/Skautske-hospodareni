@@ -20,11 +20,11 @@ use App\Model\Unit\Unit;
 use App\Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use App\Model\User\ReadModel\Queries\EditableUnitsQuery;
 use Component\Forms\BaseForm;
+use LogicException;
 use Nette\Application\BadRequestException;
 use Nette\Http\IResponse;
 use RuntimeException;
 
-use function assert;
 use function count;
 use function in_array;
 use function sprintf;
@@ -116,8 +116,9 @@ class InvertChitDialog extends Dialog
         $units = $this->queryBus->handle(new EditableUnitsQuery($role));
         $cashbooks = [];
         foreach ($units as $unit) {
-            assert($unit instanceof Unit);
-
+            if (! $unit instanceof Unit) {
+                throw new LogicException('Assertion failed.');
+            }
             $type = CashbookType::get($unit->isOfficial() ? CashbookType::OFFICIAL_UNIT : CashbookType::TROOP);
 
             if (! in_array($type, $chit->getInverseCashbookTypes(), true)) {
@@ -127,8 +128,9 @@ class InvertChitDialog extends Dialog
             $unitCashbooks = $this->queryBus->handle(new UnitCashbookListQuery(new UnitId($unit->getId())));
 
             foreach ($unitCashbooks as $cashbook) {
-                assert($cashbook instanceof UnitCashbook);
-
+                if (! $cashbook instanceof UnitCashbook) {
+                    throw new LogicException('Assertion failed.');
+                }
                 $id = $cashbook->getCashbookId()->toString();
                 $cashbooks[$id] = $unit->getDisplayName().' '.$cashbook->getYear();
             }

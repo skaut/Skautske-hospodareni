@@ -13,10 +13,10 @@ use App\Model\Payment\IUnitResolver;
 use DateTimeImmutable;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Persistence\ObjectManager;
+use LogicException;
 use Nette\DI\Container;
 use Nettrine\Fixtures\ContainerAwareInterface;
 
-use function assert;
 use function sprintf;
 
 final class Unit25893PaymentFixture extends AbstractFixture implements ContainerAwareInterface
@@ -88,8 +88,9 @@ final class Unit25893PaymentFixture extends AbstractFixture implements Container
         );
 
         foreach ($manager->getRepository(BankAccount::class)->findBy(['unitId' => $officialUnitId]) as $account) {
-            assert($account instanceof BankAccount);
-
+            if (! $account instanceof BankAccount) {
+                throw new LogicException('Assertion failed.');
+            }
             if ((string) $account->getNumber() === $expectedNumber) {
                 return $account;
             }
@@ -122,7 +123,9 @@ final class Unit25893PaymentFixture extends AbstractFixture implements Container
 
     private function getUnitResolver(): IUnitResolver
     {
-        assert(isset($this->container));
+        if (! (isset($this->container))) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return $this->container->getByType(IUnitResolver::class);
     }

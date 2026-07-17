@@ -27,13 +27,13 @@ use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Cashbook\Cashbook;
 use App\Model\DTO\Cashbook\Chit;
 use Component\Forms\BaseForm;
+use LogicException;
 use Nette\Application\UI\Multiplier;
 use Nette\InvalidStateException;
 
 use function array_count_values;
 use function array_filter;
 use function array_map;
-use function assert;
 use function count;
 
 /** @method onEditButtonClicked(int $chitId) */
@@ -71,8 +71,9 @@ class ChitListControl extends BaseControl
         $totals = $this->getTotals($chits);
         $duplicatesNumbers = $this->findDuplicates($chits);
 
-        assert($cashbook instanceof Cashbook);
-
+        if (! $cashbook instanceof Cashbook) {
+            throw new LogicException('Assertion failed.');
+        }
         $this->template->setParameters([
             'cashbookId' => $this->cashbookId->toString(),
             'cashbookType' => $cashbook->getType(),
@@ -225,7 +226,9 @@ class ChitListControl extends BaseControl
     {
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
 
-        assert($cashbook instanceof Cashbook);
+        if (! $cashbook instanceof Cashbook) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return $cashbook->getType()->getSkautisObjectType();
     }

@@ -13,9 +13,9 @@ use App\Model\Common\Services\QueryBus;
 use App\Model\Common\UnitId;
 use App\Model\DTO\Cashbook\UnitCashbook;
 use Component\Forms\BaseForm;
+use LogicException;
 use Nette\Utils\ArrayHash;
 
-use function assert;
 use function sprintf;
 
 class ActivateCashbookDialog extends Dialog
@@ -90,8 +90,9 @@ class ActivateCashbookDialog extends Dialog
         $pairs = [];
 
         foreach ($cashbooks as $cashbook) {
-            assert($cashbook instanceof UnitCashbook);
-
+            if (! $cashbook instanceof UnitCashbook) {
+                throw new LogicException('Assertion failed.');
+            }
             $pairs[$cashbook->getId()] = (string) $cashbook->getYear();
         }
 

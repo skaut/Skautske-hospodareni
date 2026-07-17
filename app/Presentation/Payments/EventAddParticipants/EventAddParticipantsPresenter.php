@@ -11,8 +11,7 @@ use App\Model\Payment\PaymentService;
 use App\Model\Payment\ReadModel\Queries\EventParticipantsWithoutPaymentQuery;
 use App\Model\Payment\ReadModel\Queries\MemberEmailsQuery;
 use App\Presentation\Payments\PaymentsBasePresenter as BasePresenter;
-
-use function assert;
+use LogicException;
 
 final class EventAddParticipantsPresenter extends BasePresenter
 {
@@ -50,8 +49,9 @@ final class EventAddParticipantsPresenter extends BasePresenter
         $form = $this->formFactory->create($this->groupId);
 
         foreach ($this->participants as $participant) {
-            assert($participant instanceof Participant);
-
+            if (! $participant instanceof Participant) {
+                throw new LogicException('Assertion failed.');
+            }
             $amount = $participant->getPayment();
             $form->addPerson(
                 $participant->getPersonId(),

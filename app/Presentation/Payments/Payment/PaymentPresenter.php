@@ -39,13 +39,13 @@ use App\Model\Unit\UnitService;
 use App\Model\User\Manager\PaymentGroupVisitManager;
 use App\Presentation\Payments\PaymentsBasePresenter;
 use DateTimeImmutable;
+use LogicException;
 use Nette\Utils\Strings;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Skautis\Wsdl\PermissionException;
 
 use function array_filter;
-use function assert;
 use function count;
 use function date;
 use function sprintf;
@@ -139,8 +139,9 @@ final class PaymentPresenter extends PaymentsBasePresenter
         $list = $this->queryBus->handle(new MembersWithoutPaymentInGroupQuery($this->unitId, $id, $this->directMemberOnly));
 
         foreach ($list as $p) {
-            assert($p instanceof Person);
-
+            if (! $p instanceof Person) {
+                throw new LogicException('Assertion failed.');
+            }
             $form->addPerson($p->getId(), $p->getEmails(), $p->getName());
         }
 
@@ -354,7 +355,9 @@ final class PaymentPresenter extends PaymentsBasePresenter
     {
         $this->payments = $this->getPaymentsForGroup($this->id);
         $paymentList = $this['paymentList'];
-        assert($paymentList instanceof PaymentList);
+        if (! $paymentList instanceof PaymentList) {
+            throw new LogicException('Assertion failed.');
+        }
         $paymentList->setPayments($this->payments);
         $this->redrawControl('grid');
     }

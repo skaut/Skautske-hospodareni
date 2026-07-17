@@ -12,10 +12,10 @@ use App\Model\Payment\VariableSymbol;
 use App\Model\Unit\ReadModel\Queries\UnitQuery;
 use App\Model\Unit\Unit;
 use DateTimeImmutable;
+use LogicException;
 use Nette\Utils\Strings;
 
 use function array_filter;
-use function assert;
 use function count;
 use function ltrim;
 use function str_replace;
@@ -61,8 +61,9 @@ class NextVariableSymbolSequenceQueryHandler
     {
         $unit = $this->queryBus->handle(new UnitQuery($unitId));
 
-        assert($unit instanceof Unit);
-
+        if (! $unit instanceof Unit) {
+            throw new LogicException('Assertion failed.');
+        }
         $number = $unit->getShortRegistrationNumber();
         $number = ltrim($number, '0');
         $number = str_replace('-', '', $number);

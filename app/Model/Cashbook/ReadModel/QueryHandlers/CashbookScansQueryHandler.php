@@ -10,9 +10,9 @@ use App\Model\Common\File;
 use App\Model\Common\IScanStorage;
 use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Cashbook\Chit;
+use LogicException;
 use Nette\Utils\Strings;
 
-use function assert;
 use function sprintf;
 
 final class CashbookScansQueryHandler
@@ -28,7 +28,9 @@ final class CashbookScansQueryHandler
 
         $arr = [];
         foreach ($chits as $chit) {
-            assert($chit instanceof Chit);
+            if (! $chit instanceof Chit) {
+                throw new LogicException('Assertion failed.');
+            }
             foreach ($chit->getScans() as $scan) {
                 $filename = sprintf(
                     '%s_%s',

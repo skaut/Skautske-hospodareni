@@ -7,8 +7,7 @@ namespace App\Model\Infrastructure\Types;
 use App\Model\Cashbook\Cashbook\ChitNumber;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
-
-use function assert;
+use LogicException;
 
 class ChitNumberType extends StringType
 {
@@ -28,7 +27,9 @@ class ChitNumberType extends StringType
             return null;
         }
 
-        assert($value instanceof ChitNumber);
+        if (! $value instanceof ChitNumber) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return $value->toString();
     }

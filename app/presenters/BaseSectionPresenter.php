@@ -7,11 +7,11 @@ namespace App;
 use App\Model\Common\UnitId;
 use App\Model\Skautis\SkautisMaintenanceChecker;
 use App\Model\User\UserService;
+use LogicException;
 use Nette\Security\SimpleIdentity;
 use stdClass;
 
 use function array_keys;
-use function assert;
 
 abstract class BaseSectionPresenter extends BasePresenter
 {
@@ -91,8 +91,9 @@ abstract class BaseSectionPresenter extends BasePresenter
             return [];
         }
 
-        assert($identity instanceof SimpleIdentity);
-
+        if (! $identity instanceof SimpleIdentity) {
+            throw new LogicException('Assertion failed.');
+        }
         /** @var array<int, mixed> $editableUnits */
         $editableUnits = $identity->access[UserService::ACCESS_EDIT];
 

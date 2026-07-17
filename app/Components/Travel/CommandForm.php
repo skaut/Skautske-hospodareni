@@ -14,6 +14,7 @@ use App\Model\Unit\Unit;
 use App\Model\Utils\MoneyFactory;
 use App\MyValidators;
 use Component\Forms\BaseForm;
+use LogicException;
 use Nette\Application\UI\Control;
 use Nette\Forms\Controls\MultiSelectBox;
 use Nette\Forms\Controls\SelectBox;
@@ -24,7 +25,6 @@ use Nette\Utils\Html;
 use function array_filter;
 use function array_keys;
 use function array_map;
-use function assert;
 use function in_array;
 
 class CommandForm extends Control
@@ -138,8 +138,9 @@ class CommandForm extends Control
         } else {
             $unit = $this->queryBus->handle(new UnitQuery($this->unitId));
 
-            assert($unit instanceof Unit);
-
+            if (! $unit instanceof Unit) {
+                throw new LogicException('Assertion failed.');
+            }
             $form->setDefaults([
                 'unit' => $unit->getRegistrationNumber(),
             ]);
@@ -161,8 +162,9 @@ class CommandForm extends Control
         if (! empty($usedTypes)) {
             $typeSelectBox = $form['type'];
 
-            assert($typeSelectBox instanceof MultiSelectBox);
-
+            if (! $typeSelectBox instanceof MultiSelectBox) {
+                throw new LogicException('Assertion failed.');
+            }
             $typeSelectBox->setItems($this->prepareTransportTypeOptions($usedTypes));
             $typeSelectBox->setRequired(false); // Even when nothing is selected, used types persist, so it's ok
         }
@@ -170,8 +172,9 @@ class CommandForm extends Control
         $contractId = $command->getPassenger()->getContractId();
         $contracts = $form['contract_id'];
 
-        assert($contracts instanceof SelectBox);
-
+        if (! $contracts instanceof SelectBox) {
+            throw new LogicException('Assertion failed.');
+        }
         if ($contractId !== null && ! isset($contracts->getItems()[$contractId])) {
             $contracts->setItems($this->prepareContracts($contractId)); // Prepare list with missing contract
         }
@@ -201,8 +204,9 @@ class CommandForm extends Control
 
         $vehicles = $form['vehicle_id'];
 
-        assert($vehicles instanceof SelectBox);
-
+        if (! $vehicles instanceof SelectBox) {
+            throw new LogicException('Assertion failed.');
+        }
         if (in_array($vehicleId, $vehicles->getItems())) {
             return;
         }
@@ -219,8 +223,9 @@ class CommandForm extends Control
     private function createCommand(ArrayHash $values): void
     {
         $presenter = $this->getPresenter();
-        assert($presenter instanceof BasePresenter);
-
+        if (! $presenter instanceof BasePresenter) {
+            throw new LogicException('Assertion failed.');
+        }
         $this->model->addCommand(
             $this->unitId,
             isset($values['contract_id']) ? (int) $values['contract_id'] : null,

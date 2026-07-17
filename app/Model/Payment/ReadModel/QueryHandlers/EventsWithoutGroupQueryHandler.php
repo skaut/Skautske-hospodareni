@@ -11,9 +11,9 @@ use App\Model\Payment\Group;
 use App\Model\Payment\Group\SkautisEntity;
 use App\Model\Payment\ReadModel\Queries\EventsWithoutGroupQuery;
 use App\Model\Payment\Repositories\IGroupRepository;
+use LogicException;
 
 use function array_map;
-use function assert;
 use function in_array;
 
 final class EventsWithoutGroupQueryHandler
@@ -31,8 +31,9 @@ final class EventsWithoutGroupQueryHandler
         $eventsWithoutGroup = [];
 
         foreach ($events as $event) {
-            assert($event instanceof Event);
-
+            if (! $event instanceof Event) {
+                throw new LogicException('Assertion failed.');
+            }
             $eventId = $event->getId()->toInt();
 
             if (in_array($eventId, $eventWithGroupIds, true)) {

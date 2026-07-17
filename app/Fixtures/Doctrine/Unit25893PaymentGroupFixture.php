@@ -29,10 +29,10 @@ use DateTimeImmutable;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use LogicException;
 use Nette\DI\Container;
 use Nettrine\Fixtures\ContainerAwareInterface;
 
-use function assert;
 use function sprintf;
 
 /**
@@ -103,7 +103,9 @@ final class Unit25893PaymentGroupFixture extends AbstractFixture implements Cont
         $payments = $manager->getRepository(Payment::class)->findBy(['groupId' => $groupOpen->getId()]);
         $completed = 0;
         foreach ($payments as $payment) {
-            assert($payment instanceof Payment);
+            if (! $payment instanceof Payment) {
+                throw new LogicException('Assertion failed.');
+            }
             if ($completed < 2) {
                 $payment->completeManually(new DateTimeImmutable('-3 days'), 'Fixture Admin');
                 ++$completed;
@@ -147,7 +149,9 @@ final class Unit25893PaymentGroupFixture extends AbstractFixture implements Cont
 
         $closedPayments = $manager->getRepository(Payment::class)->findBy(['groupId' => $groupClosed->getId()]);
         foreach ($closedPayments as $payment) {
-            assert($payment instanceof Payment);
+            if (! $payment instanceof Payment) {
+                throw new LogicException('Assertion failed.');
+            }
             $payment->completeManually(new DateTimeImmutable('-7 days'), 'Fixture Admin');
         }
         $groupClosed->close('Tábor proběhl, vše zaplaceno.');
@@ -309,7 +313,9 @@ final class Unit25893PaymentGroupFixture extends AbstractFixture implements Cont
         $this->addPayment($manager, $group, 'Fixture budoucí splatnost', 'budouci@example.com', 750.0, 14, '2026904');
 
         $amountCandidate = $this->addPayment($manager, $group, 'Fixture ruční párování podle částky', 'castka@example.com', 640.0, -8, '2026905');
-        assert($amountCandidate instanceof Payment);
+        if (! $amountCandidate instanceof Payment) {
+            throw new LogicException('Assertion failed.');
+        }
         $this->addTransaction($manager, $bankAccount, $batch, 'amount-only', -1, 640.0, null, 'Platba bez VS, shoda podle částky');
 
         $this->addPayment($manager, $group, 'Fixture automatická shoda VS a částka', 'automat@example.com', 880.0, -6, '2026906');
@@ -367,14 +373,16 @@ final class Unit25893PaymentGroupFixture extends AbstractFixture implements Cont
     private function findFixtureBankAccount(ObjectManager $manager): ?BankAccount
     {
         $unitResolver = $this->container->getByType(IUnitResolver::class);
-        assert($unitResolver instanceof IUnitResolver);
-
+        if (! $unitResolver instanceof IUnitResolver) {
+            throw new LogicException('Assertion failed.');
+        }
         $officialUnitId = $unitResolver->getOfficialUnitId(self::UNIT_ID);
         $expectedNumber = sprintf('%s-%s/%s', self::BANK_ACCOUNT_PREFIX, self::BANK_ACCOUNT_NUMBER, self::BANK_ACCOUNT_BANK_CODE);
 
         foreach ($manager->getRepository(BankAccount::class)->findBy(['unitId' => $officialUnitId]) as $account) {
-            assert($account instanceof BankAccount);
-
+            if (! $account instanceof BankAccount) {
+                throw new LogicException('Assertion failed.');
+            }
             if ((string) $account->getNumber() === $expectedNumber) {
                 return $account;
             }
