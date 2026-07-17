@@ -21,8 +21,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
-
-use function assert;
+use LogicException;
 
 /**
  * @ORM\Entity()
@@ -396,8 +395,9 @@ class Group
     private function getEmail(EmailType $type): ?Email
     {
         foreach ($this->emails as $email) {
-            assert($email instanceof Email);
-
+            if (! $email instanceof Email) {
+                throw new LogicException('Assertion failed.');
+            }
             if ($email->getType()->equals($type)) {
                 return $email;
             }

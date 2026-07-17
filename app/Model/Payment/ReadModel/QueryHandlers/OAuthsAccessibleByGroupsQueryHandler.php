@@ -11,11 +11,11 @@ use App\Model\Mail\Repositories\IGoogleRepository;
 use App\Model\Payment\IUnitResolver;
 use App\Model\Payment\ReadModel\Queries\OAuthsAccessibleByGroupsQuery;
 use App\Model\Payment\Services\IOAuthAccessChecker;
+use LogicException;
 
 use function array_map;
 use function array_merge;
 use function array_unique;
-use function assert;
 
 final class OAuthsAccessibleByGroupsQueryHandler
 {
@@ -35,8 +35,9 @@ final class OAuthsAccessibleByGroupsQueryHandler
         $accessibleOAuths = [];
 
         foreach ($allOAuths as $oAuth) {
-            assert($oAuth instanceof GoogleOAuth);
-
+            if (! $oAuth instanceof GoogleOAuth) {
+                throw new LogicException('Assertion failed.');
+            }
             if (! $this->accessChecker->allUnitsHaveAccessToOAuth($unitIds, $oAuth->getId())) {
                 continue;
             }

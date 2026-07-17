@@ -24,10 +24,10 @@ use App\Model\Services\PdfRenderer;
 use App\Model\Unit\ReadModel\Queries\UnitQuery;
 use App\Model\Unit\UnitNotFound;
 use App\Presentation\Camps\BasePresenter;
+use LogicException;
 
 use function array_filter;
 use function array_map;
-use function assert;
 use function count;
 
 final class DetailPresenter extends BasePresenter
@@ -62,8 +62,9 @@ final class DetailPresenter extends BasePresenter
         }
 
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->getCashbookId()));
-        assert($cashbook instanceof Cashbook);
-
+        if (! $cashbook instanceof Cashbook) {
+            throw new LogicException('Assertion failed.');
+        }
         try {
             $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId()));
         } catch (MissingCategory) {

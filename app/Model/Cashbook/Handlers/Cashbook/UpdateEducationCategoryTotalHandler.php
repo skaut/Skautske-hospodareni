@@ -11,8 +11,7 @@ use App\Model\Cashbook\Services\IEducationCategoryUpdater;
 use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Cashbook\CategorySummary;
 use App\Model\Utils\MoneyFactory;
-
-use function assert;
+use LogicException;
 
 class UpdateEducationCategoryTotalHandler
 {
@@ -26,7 +25,9 @@ class UpdateEducationCategoryTotalHandler
 
         $totals = [];
         foreach ($this->queryBus->handle(new CategoriesSummaryQuery($cashbook->getId())) as $category) {
-            assert($category instanceof CategorySummary);
+            if (! $category instanceof CategorySummary) {
+                throw new LogicException('Assertion failed.');
+            }
             $totals[$category->getId()] = MoneyFactory::toFloat($category->getTotal());
         }
 

@@ -26,12 +26,12 @@ use App\Model\Event\SkautisEventId;
 use App\Model\Excel\Range;
 use App\Model\Participant\PragueParticipants;
 use App\Model\Skautis\ReadModel\Queries\EventStatisticsQuery;
+use LogicException;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 use function array_key_exists;
 use function array_map;
-use function assert;
 use function count;
 
 final class ExportEventsHandler
@@ -76,8 +76,9 @@ final class ExportEventsHandler
         $pragueParticipantsPerEvent = $this->getPragueParticipantsForEvents($events);
 
         foreach ($events as $index => $event) {
-            assert($event instanceof Event);
-
+            if (! $event instanceof Event) {
+                throw new LogicException('Assertion failed.');
+            }
             /** @var StatisticsItem[] $statistics */
             $statistics = $this->queryBus->handle(new EventStatisticsQuery($event->getId()));
 
@@ -88,8 +89,9 @@ final class ExportEventsHandler
             $row = $index + 2;
 
             $functions = $this->queryBus->handle(new EventFunctions($event->getId()));
-            assert($functions instanceof Functions);
-
+            if (! $functions instanceof Functions) {
+                throw new LogicException('Assertion failed.');
+            }
             $leader = $functions->getLeader()?->getName();
             $accountant = $functions->getAccountant()?->getName();
 
@@ -215,7 +217,9 @@ final class ExportEventsHandler
     private function getCashbookPrefix(Event $event): ?string
     {
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->getCashbookId($event)));
-        assert($cashbook instanceof Cashbook);
+        if (! $cashbook instanceof Cashbook) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return $cashbook->getChitNumberPrefix(PaymentMethod::CASH());
     }

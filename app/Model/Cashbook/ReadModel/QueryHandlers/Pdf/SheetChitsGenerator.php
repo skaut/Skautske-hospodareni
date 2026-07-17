@@ -12,9 +12,8 @@ use App\Model\DTO\Cashbook\Cashbook;
 use App\Model\DTO\Cashbook\Chit;
 use App\Model\DTO\Event\ExportedCashbook;
 use App\Model\Excel\Range;
+use LogicException;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-
-use function assert;
 
 class SheetChitsGenerator
 {
@@ -40,11 +39,13 @@ class SheetChitsGenerator
             $cashbookId = $item->getCashbookId();
             $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
 
-            assert($cashbook instanceof Cashbook);
-
+            if (! $cashbook instanceof Cashbook) {
+                throw new LogicException('Assertion failed.');
+            }
             foreach ($this->queryBus->handle(ChitListQuery::all($cashbookId)) as $chit) {
-                assert($chit instanceof Chit);
-
+                if (! $chit instanceof Chit) {
+                    throw new LogicException('Assertion failed.');
+                }
                 $isIncome = $chit->isIncome();
                 $amount = $chit->getAmount()->toFloat();
                 $prefix = $cashbook->getChitNumberPrefix($chit->getPaymentMethod());

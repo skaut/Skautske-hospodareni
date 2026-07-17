@@ -7,9 +7,9 @@ namespace App\Model\Event\ReadModel\QueryHandlers;
 use App\Model\Event\EducationTerm;
 use App\Model\Event\ReadModel\Queries\EducationTermsQuery;
 use App\Model\Skautis\Factory\EducationTermFactory;
+use LogicException;
 use Skautis\Skautis;
 
-use function assert;
 use function is_object;
 
 class EducationTermsQueryHandler
@@ -32,8 +32,9 @@ class EducationTermsQueryHandler
         $result = [];
         foreach ($terms as $term) {
             $term = $this->educationTermFactory->create($term);
-            assert($term instanceof EducationTerm);
-
+            if (! $term instanceof EducationTerm) {
+                throw new LogicException('Assertion failed.');
+            }
             $result[$term->getId()->toInt()] = $term;
         }
 

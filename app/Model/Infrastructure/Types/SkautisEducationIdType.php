@@ -7,8 +7,7 @@ namespace App\Model\Infrastructure\Types;
 use App\Model\Event\SkautisEducationId;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\GuidType;
-
-use function assert;
+use LogicException;
 
 final class SkautisEducationIdType extends GuidType
 {
@@ -32,7 +31,9 @@ final class SkautisEducationIdType extends GuidType
             return null;
         }
 
-        assert($value instanceof SkautisEducationId);
+        if (! $value instanceof SkautisEducationId) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return $value->toInt();
     }

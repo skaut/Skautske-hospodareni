@@ -17,10 +17,10 @@ use App\Model\Participant\ParticipantService;
 use App\Model\Participant\Payment\EventType;
 use App\Model\Services\PdfRenderer;
 use App\Presentation\Education\BasePresenter;
+use LogicException;
 use Nette\Utils\Strings;
 use Skautis\Wsdl\PermissionException;
 
-use function assert;
 use function date;
 use function in_array;
 use function sprintf;
@@ -91,7 +91,9 @@ final class ParticipantPresenter extends BasePresenter
 
         $control->onUpdate[] = function (array $updates): void {
             foreach ($updates as $u) {
-                assert($u instanceof UpdateParticipant);
+                if (! $u instanceof UpdateParticipant) {
+                    throw new LogicException('Assertion failed.');
+                }
                 if (! in_array($u->getField(), UpdateParticipant::getEducationFields())) {
                     $this->flashMessage(sprintf('Nelze upravit pole: %s', $u->getField()), 'warning');
                     $this->redirect('this');

@@ -14,13 +14,13 @@ use App\Model\Travel\Commands\Vehicle\AddRoadworthyScan;
 use App\Model\Travel\Commands\Vehicle\RemoveRoadworthyScan;
 use App\Model\Travel\ReadModel\Queries\Vehicle\RoadworthyScansQuery;
 use Component\Forms\BaseForm;
+use LogicException;
 use Nette\Application\BadRequestException;
 use Nette\Http\FileUpload;
 use Nette\Http\IResponse;
 
 use function array_keys;
 use function array_values;
-use function assert;
 use function implode;
 
 final class RoadworthyControl extends BaseControl
@@ -88,8 +88,9 @@ final class RoadworthyControl extends BaseControl
 
         $upload = $form->getValues()->scan;
 
-        assert($upload instanceof FileUpload);
-
+        if (! $upload instanceof FileUpload) {
+            throw new LogicException('Assertion failed.');
+        }
         if (! $upload->isOk()) {
             $form->addError('Vyskytla se chyba při nahrávání souboru');
         }

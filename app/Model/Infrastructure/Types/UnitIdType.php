@@ -7,8 +7,7 @@ namespace App\Model\Infrastructure\Types;
 use App\Model\Common\UnitId;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\GuidType;
-
-use function assert;
+use LogicException;
 
 final class UnitIdType extends GuidType
 {
@@ -32,7 +31,9 @@ final class UnitIdType extends GuidType
             return null;
         }
 
-        assert($value instanceof UnitId);
+        if (! $value instanceof UnitId) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return $value->toInt();
     }

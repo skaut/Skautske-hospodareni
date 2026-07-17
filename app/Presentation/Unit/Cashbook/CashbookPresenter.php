@@ -17,8 +17,8 @@ use App\Presentation\Unit\Accessory\Components\CreateCashbookDialog;
 use App\Presentation\Unit\Accessory\Factories\IActivateCashbookDialogFactory;
 use App\Presentation\Unit\Accessory\Factories\ICreateCashbookDialogFactory;
 use App\Presentation\Unit\UnitBasePresenter;
+use LogicException;
 
-use function assert;
 use function sprintf;
 
 class CashbookPresenter extends UnitBasePresenter
@@ -90,8 +90,9 @@ class CashbookPresenter extends UnitBasePresenter
         ]);
 
         foreach ($cashbooks as $cashbook) {
-            assert($cashbook instanceof UnitCashbook);
-
+            if (! $cashbook instanceof UnitCashbook) {
+                throw new LogicException('Assertion failed.');
+            }
             if ($cashbook->getYear() === $year) {
                 $this->cashbookId = $cashbook->getCashbookId();
 

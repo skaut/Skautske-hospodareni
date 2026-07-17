@@ -19,11 +19,11 @@ use App\Model\Event\ReadModel\Queries\EventListQuery;
 use App\Presentation\Unit\Accessory\Components\ChitListControl;
 use App\Presentation\Unit\Accessory\Factories\IChitListControlFactory;
 use App\Presentation\Unit\UnitBasePresenter;
+use LogicException;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Multiplier;
 use Nette\Http\IResponse;
 
-use function assert;
 use function sprintf;
 
 class ChitPresenter extends UnitBasePresenter
@@ -91,7 +91,9 @@ class ChitPresenter extends UnitBasePresenter
             'isCashbookEmpty' => function (string $cashbookId): bool {
                 $chitList = $this['chitList-'.$cashbookId];
 
-                assert($chitList instanceof ChitListControl);
+                if (! $chitList instanceof ChitListControl) {
+                    throw new LogicException('Assertion failed.');
+                }
 
                 return $chitList->isEmpty();
             },
@@ -130,8 +132,9 @@ class ChitPresenter extends UnitBasePresenter
 
         foreach ($this->unitService->getReadUnits($this->getUser()) as $id => $name) {
             foreach ($this->queryBus->handle(new UnitCashbookListQuery(new UnitId($id))) as $cashbook) {
-                assert($cashbook instanceof UnitCashbook);
-
+                if (! $cashbook instanceof UnitCashbook) {
+                    throw new LogicException('Assertion failed.');
+                }
                 $cashbooks[$cashbook->getCashbookId()->withoutHyphens()] = [
                     'ID' => $id,
                     'DisplayName' => $name.' '.$cashbook->getYear(),
@@ -150,16 +153,18 @@ class ChitPresenter extends UnitBasePresenter
         $cashbooks = [];
 
         foreach ($this->queryBus->handle(new EventListQuery($this->year)) as $event) {
-            assert($event instanceof Event);
-
+            if (! $event instanceof Event) {
+                throw new LogicException('Assertion failed.');
+            }
             if (! isset($readableUnits[$event->getUnitId()->toInt()])) {
                 continue;
             }
 
             $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery($event->getId()));
 
-            assert($cashbookId instanceof CashbookId);
-
+            if (! $cashbookId instanceof CashbookId) {
+                throw new LogicException('Assertion failed.');
+            }
             $cashbooks[$cashbookId->withoutHyphens()] = [
                 'ID' => $event->getId()->toInt(),
                 'DisplayName' => $event->getDisplayName(),
@@ -177,16 +182,18 @@ class ChitPresenter extends UnitBasePresenter
         $cashbooks = [];
 
         foreach ($this->queryBus->handle(new CampListQuery($this->year)) as $event) {
-            assert($event instanceof Camp);
-
+            if (! $event instanceof Camp) {
+                throw new LogicException('Assertion failed.');
+            }
             if (! isset($readableUnits[$event->getUnitId()->toInt()])) {
                 continue;
             }
 
             $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery($event->getId()));
 
-            assert($cashbookId instanceof CashbookId);
-
+            if (! $cashbookId instanceof CashbookId) {
+                throw new LogicException('Assertion failed.');
+            }
             $cashbooks[$cashbookId->withoutHyphens()] = [
                 'ID' => $event->getId()->toInt(),
                 'DisplayName' => $event->getDisplayName(),

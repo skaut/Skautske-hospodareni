@@ -15,12 +15,11 @@ use App\Model\DTO\Cashbook\Chit;
 use App\Model\DTO\Participant\Participant;
 use App\Model\Excel\Builders\CashbookWithCategoriesBuilder;
 use Cake\Chronos\ChronosDate;
+use LogicException;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-
-use function assert;
 
 class ExcelService
 {
@@ -183,7 +182,9 @@ class ExcelService
         $rowCnt = 2;
 
         foreach ($data as $row) {
-            assert($row instanceof Participant);
+            if (! $row instanceof Participant) {
+                throw new LogicException('Assertion failed.');
+            }
             $sheet->setCellValue('A'.$rowCnt, $rowCnt - 1)
                 ->setCellValue('B'.$rowCnt, $row->getFirstName())
                 ->setCellValue('C'.$rowCnt, $row->getLastName())
@@ -267,13 +268,15 @@ class ExcelService
         $chits = $this->queryBus->handle(ChitListQuery::withMethod($paymentMethod, $cashbookId));
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
 
-        assert($cashbook instanceof Cashbook);
-
+        if (! $cashbook instanceof Cashbook) {
+            throw new LogicException('Assertion failed.');
+        }
         $balance = 0;
         $rowCnt = 2;
         foreach ($chits as $chit) {
-            assert($chit instanceof Chit);
-
+            if (! $chit instanceof Chit) {
+                throw new LogicException('Assertion failed.');
+            }
             $isIncome = $chit->isIncome();
             $amount = $chit->getAmount()->toFloat();
             $prefix = $cashbook->getChitNumberPrefix($chit->getPaymentMethod());

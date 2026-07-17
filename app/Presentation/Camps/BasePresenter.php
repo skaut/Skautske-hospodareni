@@ -15,8 +15,7 @@ use App\Model\Event\Camp;
 use App\Model\Event\Exception\CampNotFound;
 use App\Model\Event\ReadModel\Queries\CampQuery;
 use App\Model\Event\SkautisCampId;
-
-use function assert;
+use LogicException;
 
 class BasePresenter extends \App\BaseSectionPresenter
 {
@@ -44,8 +43,9 @@ class BasePresenter extends \App\BaseSectionPresenter
 
         $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($this->aid)));
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
-        assert($cashbook instanceof Cashbook);
-
+        if (! $cashbook instanceof Cashbook) {
+            throw new LogicException('Assertion failed.');
+        }
         $this->isEditable = $this->authorizator->isAllowed(CampResource::UPDATE_REAL, $this->aid);
 
         try {

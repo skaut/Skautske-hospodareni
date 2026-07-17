@@ -10,6 +10,7 @@ use App\Model\Common\Services\CommandBus;
 use App\Model\Payment\Payment\CsvParser;
 use Component\Forms\BaseForm;
 use InvalidArgumentException;
+use LogicException;
 use Nette\Application\UI\Form;
 use Nette\Http\FileUpload;
 use Nette\Schema\ValidationException;
@@ -17,7 +18,6 @@ use ValueError;
 
 use function array_keys;
 use function array_values;
-use function assert;
 use function implode;
 
 /** @method void onSuccess() */
@@ -77,8 +77,9 @@ final class ImportDialog extends Dialog
     private function importSubmitted(Form $form): void
     {
         $upload = $form->getValues()->file;
-        assert($upload instanceof FileUpload);
-
+        if (! $upload instanceof FileUpload) {
+            throw new LogicException('Assertion failed.');
+        }
         if (! $upload->isOk()) {
             $form->addError('Vyskytla se chyba při nahrávání souboru');
         }

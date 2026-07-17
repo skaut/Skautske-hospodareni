@@ -11,10 +11,9 @@ use App\Model\Utils\MoneyFactory;
 use Assert\Assertion;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
+use LogicException;
 use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
-
-use function assert;
 
 final class EditTravelDialog extends Dialog
 {
@@ -45,8 +44,9 @@ final class EditTravelDialog extends Dialog
 
         $command = $this->model->getCommandDetail($this->commandId);
 
-        assert($command !== null);
-
+        if (! ($command !== null)) {
+            throw new LogicException('Assertion failed.');
+        }
         $form->addSelect('type', 'Prostředek', $command->getTransportTypePairs());
 
         $form->addDate('date', 'Datum cesty')

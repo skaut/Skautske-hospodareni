@@ -11,8 +11,7 @@ use App\Model\Cashbook\Repositories\IEducationCategoryRepository;
 use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Cashbook\CategorySummary;
 use App\Model\Utils\MoneyFactory;
-
-use function assert;
+use LogicException;
 
 class InconsistentEducationCategoryTotalsQueryHandler
 {
@@ -33,8 +32,9 @@ class InconsistentEducationCategoryTotalsQueryHandler
             $total = $educationCategory->getTotal();
             $category = $categories[$id];
 
-            assert($category instanceof CategorySummary);
-
+            if (! $category instanceof CategorySummary) {
+                throw new LogicException('Assertion failed.');
+            }
             $isConsistent = $category->getTotal()->equals($total);
 
             if ($isConsistent) {

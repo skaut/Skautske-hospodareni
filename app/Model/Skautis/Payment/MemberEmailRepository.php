@@ -7,13 +7,13 @@ namespace App\Model\Skautis\Payment;
 use App\Model\DTO\Payment\MemberEmail;
 use App\Model\DTO\Payment\MemberEmailType;
 use App\Model\Payment\Repositories\IMemberEmailRepository;
+use LogicException;
 use Nette\Utils\Strings;
 use Skautis\Skautis;
 use Skautis\Wsdl\PermissionException;
 use stdClass;
 
 use function array_values;
-use function assert;
 use function is_string;
 
 final class MemberEmailRepository implements IMemberEmailRepository
@@ -39,7 +39,9 @@ final class MemberEmailRepository implements IMemberEmailRepository
             }
 
             $email = $c->Value;
-            assert(is_string($email));
+            if (! is_string($email)) {
+                throw new LogicException('Assertion failed.');
+            }
             $emails[$email] = new MemberEmail(
                 $email,
                 ($c->ParentType ?? $c->ContactType).' – '.$email,
@@ -59,8 +61,9 @@ final class MemberEmailRepository implements IMemberEmailRepository
                 }
 
                 $email = $parent->Email;
-                assert(is_string($email));
-
+                if (! is_string($email)) {
+                    throw new LogicException('Assertion failed.');
+                }
                 $emails[$email] = new MemberEmail(
                     $email,
                     $parent->ParentType.' – '.$email,

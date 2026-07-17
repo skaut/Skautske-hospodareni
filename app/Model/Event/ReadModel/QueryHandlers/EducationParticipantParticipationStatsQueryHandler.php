@@ -7,9 +7,9 @@ namespace App\Model\Event\ReadModel\QueryHandlers;
 use App\Model\Event\EducationParticipantParticipationStats;
 use App\Model\Event\ReadModel\Queries\EducationParticipantParticipationStatsQuery;
 use App\Model\Skautis\Factory\EducationParticipantParticipationStatsFactory;
+use LogicException;
 use Skautis\Skautis;
 
-use function assert;
 use function is_object;
 
 class EducationParticipantParticipationStatsQueryHandler
@@ -32,8 +32,9 @@ class EducationParticipantParticipationStatsQueryHandler
         $result = [];
         foreach ($participantParticipationStats as $stat) {
             $stat = $this->educationParticipantParticipationStatsFactory->create($stat);
-            assert($stat instanceof EducationParticipantParticipationStats);
-
+            if (! $stat instanceof EducationParticipantParticipationStats) {
+                throw new LogicException('Assertion failed.');
+            }
             $result[$stat->getId()->toInt()] = $stat;
         }
 

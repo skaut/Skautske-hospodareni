@@ -16,11 +16,11 @@ use App\Model\Common\Services\CommandBus;
 use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Cashbook\Chit;
 use Component\Forms\BaseForm;
+use LogicException;
 use Nette\Http\FileUpload;
 
 use function array_keys;
 use function array_values;
-use function assert;
 use function implode;
 
 final class ChitScanControl extends BaseControl
@@ -36,8 +36,9 @@ final class ChitScanControl extends BaseControl
         $this['uploadForm']->setDefaults(['chitId' => $this->chitId]);
 
         $chit = $this->queryBus->handle(new ChitQuery($this->cashbookId, $this->chitId));
-        assert($chit instanceof Chit);
-
+        if (! $chit instanceof Chit) {
+            throw new LogicException('Assertion failed.');
+        }
         $template->setParameters([
             'cashbookId' => $this->cashbookId->toString(),
             'isEditable' => $this->isChitEditable(),
@@ -112,8 +113,9 @@ final class ChitScanControl extends BaseControl
 
         $upload = $form->getValues()->scan;
 
-        assert($upload instanceof FileUpload);
-
+        if (! $upload instanceof FileUpload) {
+            throw new LogicException('Assertion failed.');
+        }
         if (! $upload->isOk()) {
             $form->addError('Vyskytla se chyba při nahrávání souboru');
         }
@@ -129,7 +131,9 @@ final class ChitScanControl extends BaseControl
     private function isChitEditable(): bool
     {
         $chit = $this->queryBus->handle(new ChitQuery($this->cashbookId, $this->chitId));
-        assert($chit instanceof Chit);
+        if (! $chit instanceof Chit) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return $this->isEditable && ! $chit->isLocked();
     }
@@ -137,7 +141,9 @@ final class ChitScanControl extends BaseControl
     private function isChitReadable(): bool
     {
         $chit = $this->queryBus->handle(new ChitQuery($this->cashbookId, $this->chitId));
-        assert($chit instanceof Chit);
+        if (! $chit instanceof Chit) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return true;
     }

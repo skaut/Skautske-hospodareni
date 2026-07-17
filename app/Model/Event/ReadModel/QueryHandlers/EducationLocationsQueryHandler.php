@@ -7,9 +7,9 @@ namespace App\Model\Event\ReadModel\QueryHandlers;
 use App\Model\Event\EducationLocation;
 use App\Model\Event\ReadModel\Queries\EducationLocationsQuery;
 use App\Model\Skautis\Factory\EducationLocationFactory;
+use LogicException;
 use Skautis\Skautis;
 
-use function assert;
 use function is_object;
 
 class EducationLocationsQueryHandler
@@ -32,8 +32,9 @@ class EducationLocationsQueryHandler
         $result = [];
         foreach ($locations as $location) {
             $location = $this->educationLocationFactory->create($location);
-            assert($location instanceof EducationLocation);
-
+            if (! $location instanceof EducationLocation) {
+                throw new LogicException('Assertion failed.');
+            }
             $result[$location->getId()->toInt()] = $location;
         }
 

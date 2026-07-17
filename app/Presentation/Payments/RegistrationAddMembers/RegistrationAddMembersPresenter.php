@@ -9,10 +9,10 @@ use App\Components\Payment\MassAddForm;
 use App\Model\Payment\PaymentService;
 use App\Presentation\Payments\PaymentsBasePresenter as BasePresenter;
 use InvalidArgumentException;
+use LogicException;
 
 use function array_keys;
 use function array_slice;
-use function assert;
 use function intdiv;
 
 final class RegistrationAddMembersPresenter extends BasePresenter
@@ -58,8 +58,9 @@ final class RegistrationAddMembersPresenter extends BasePresenter
         }
 
         $form = $this['form'];
-        assert($form instanceof MassAddForm);
-
+        if (! $form instanceof MassAddForm) {
+            throw new LogicException('Assertion failed.');
+        }
         // performance issue - při větším množství zobrazených osob se nezpracuje formulář
         $list = array_slice($list, 0, 50);
 

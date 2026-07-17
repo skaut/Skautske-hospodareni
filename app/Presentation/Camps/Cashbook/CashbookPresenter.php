@@ -30,10 +30,10 @@ use App\Model\Event\SkautisCampId;
 use App\Model\Participant\ZeroParticipantIncome;
 use App\Presentation\Camps\BasePresenter;
 use Component\Forms\BaseForm;
+use LogicException;
 use Money\Money;
 use Skautis\Wsdl\PermissionException;
 
-use function assert;
 use function count;
 
 final class CashbookPresenter extends BasePresenter
@@ -61,14 +61,17 @@ final class CashbookPresenter extends BasePresenter
         $missingCategories = $this->isRealTotalCostAutoComputed;
         try {
             $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId()));
-            assert($finalRealBalance instanceof Money);
+            if (! $finalRealBalance instanceof Money) {
+                throw new LogicException('Assertion failed.');
+            }
         } catch (MissingCategory) {
             $finalRealBalance = null;
             $missingCategories = true;
         }
 
-        assert($finalBalance instanceof Money);
-
+        if (! $finalBalance instanceof Money) {
+            throw new LogicException('Assertion failed.');
+        }
         $this->template->setParameters([
             'isCashbookEmpty' => $this->isCashbookEmpty(),
             'cashbookId' => $this->getCashbookId()->toString(),
@@ -148,7 +151,9 @@ final class CashbookPresenter extends BasePresenter
                 $values->cat === 'adult',
                 $values->isAccount === 'Y',
             ));
-            assert($amount instanceof Amount);
+            if (! $amount instanceof Amount) {
+                throw new LogicException('Assertion failed.');
+            }
         } catch (ZeroParticipantIncome) {
             $this->flashMessage('Nemáte žádné příjmy od účastníků, které by bylo možné importovat.', 'warning');
             $this->redirect('default', ['aid' => $this->getCampId()]);

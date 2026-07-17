@@ -25,9 +25,9 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\UniqueConstraint;
+use LogicException;
 use Nette\Utils\ArrayHash;
 
-use function assert;
 use function ltrim;
 use function preg_match;
 use function sprintf;
@@ -412,8 +412,9 @@ class InvoiceSequence extends AbstractIdEntity
     private function getEmail(EmailType $type): ?InvoiceSequenceEmail
     {
         foreach ($this->emails as $email) {
-            assert($email instanceof InvoiceSequenceEmail);
-
+            if (! $email instanceof InvoiceSequenceEmail) {
+                throw new LogicException('Assertion failed.');
+            }
             if ($email->getType()->equals($type)) {
                 return $email;
             }

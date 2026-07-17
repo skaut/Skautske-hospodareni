@@ -30,6 +30,7 @@ use App\Model\Services\PdfRenderer;
 use App\SkautisMaintenance;
 use Contributte\Application\Response\PSR7StreamResponse;
 use GuzzleHttp\Psr7\Utils;
+use LogicException;
 use Nette\Application\BadRequestException;
 use Nette\Http\IResponse;
 use Nette\Utils\Image;
@@ -40,7 +41,6 @@ use ZipStream\ZipStream;
 use function array_filter;
 use function array_map;
 use function array_values;
-use function assert;
 use function date;
 use function in_array;
 use function sprintf;
@@ -147,7 +147,9 @@ final class CashbookExportPresenter extends BaseSectionPresenter
         $zip = new ZipStream(outputName: 'Skeny dokladů.zip');
 
         foreach ($files as $name => $file) {
-            assert($file instanceof File);
+            if (! $file instanceof File) {
+                throw new LogicException('Assertion failed.');
+            }
             $zip->addFileFromPsr7Stream($name, $file->getContents());
         }
 
@@ -196,8 +198,9 @@ final class CashbookExportPresenter extends BaseSectionPresenter
     {
         $cashbookId = CashbookId::fromString($cashbookId);
         foreach ($this->queryBus->handle(new ChitScansQuery($cashbookId, $chitId)) as $scan) {
-            assert($scan instanceof File);
-
+            if (! $scan instanceof File) {
+                throw new LogicException('Assertion failed.');
+            }
             if ($scan->getPath() !== $path) {
                 continue;
             }
@@ -240,7 +243,9 @@ final class CashbookExportPresenter extends BaseSectionPresenter
         try {
             $cashbook = $this->queryBus->handle(new CashbookQuery(CashbookId::fromString($this->cashbookId)));
 
-            assert($cashbook instanceof Cashbook);
+            if (! $cashbook instanceof Cashbook) {
+                throw new LogicException('Assertion failed.');
+            }
 
             return $cashbook->getType()->getSkautisObjectType();
         } catch (CashbookNotFound $e) {

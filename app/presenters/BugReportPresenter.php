@@ -7,12 +7,12 @@ namespace App;
 use App\Model\BugReport\BugReportScreenshotStorage;
 use App\Model\BugReport\BugReportService;
 use Component\Forms\BaseForm;
+use LogicException;
 use Nette\Application\UI\Form;
 use Nette\Http\FileUpload;
 use Nette\Utils\Json;
 use Nette\Utils\JsonException;
 
-use function assert;
 use function is_array;
 use function strlen;
 
@@ -83,8 +83,9 @@ final class BugReportPresenter extends BasePresenter
 
         $form->onValidate[] = function (Form $form): void {
             $upload = $form->getValues()->screenshot;
-            assert($upload instanceof FileUpload);
-
+            if (! $upload instanceof FileUpload) {
+                throw new LogicException('Assertion failed.');
+            }
             if (! $upload->hasFile() || ! $upload->isOk()) {
                 return;
             }
@@ -102,8 +103,9 @@ final class BugReportPresenter extends BasePresenter
             }
 
             $screenshot = $values->screenshot;
-            assert($screenshot instanceof FileUpload);
-
+            if (! $screenshot instanceof FileUpload) {
+                throw new LogicException('Assertion failed.');
+            }
             $report = $this->bugReportService->submit(
                 (string) $values->description,
                 $values->url !== null ? (string) $values->url : null,

@@ -19,13 +19,13 @@ use App\Presentation\Travel\Vehicle\Components\RoadworthyControl;
 use App\Presentation\Travel\Vehicle\Factories\IRoadworthyControlFactory;
 use Component\Forms\BaseForm;
 use Contributte\Application\Response\PSR7StreamResponse;
+use LogicException;
 use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Http\IResponse;
 use Nette\Utils\ArrayHash;
 
-use function assert;
 use function in_array;
 
 class VehiclePresenter extends TravelBasePresenter
@@ -62,8 +62,9 @@ class VehiclePresenter extends TravelBasePresenter
         $this->getVehicle($id);
 
         foreach ($this->queryBus->handle(new RoadworthyScansQuery($id)) as $scan) {
-            assert($scan instanceof File);
-
+            if (! $scan instanceof File) {
+                throw new LogicException('Assertion failed.');
+            }
             if ($scan->getPath() !== $path) {
                 continue;
             }
@@ -83,7 +84,9 @@ class VehiclePresenter extends TravelBasePresenter
             try {
                 if ($vehicle->getSubunitId() !== null) {
                     $unit = $this->queryBus->handle(new UnitQuery($vehicle->getSubunitId()));
-                    assert($unit instanceof Unit);
+                    if (! $unit instanceof Unit) {
+                        throw new LogicException('Assertion failed.');
+                    }
                     $subunitName = $unit->getSortName();
                 }
             } catch (UnitNotFound) {

@@ -16,10 +16,10 @@ use DateTimeImmutable;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use LogicException;
 use Nette\DI\Container;
 use Nettrine\Fixtures\ContainerAwareInterface;
 
-use function assert;
 use function sprintf;
 
 final class PaymentGroupFixture extends AbstractFixture implements ContainerAwareInterface, DependentFixtureInterface
@@ -74,14 +74,16 @@ final class PaymentGroupFixture extends AbstractFixture implements ContainerAwar
     private function findFixtureBankAccount(ObjectManager $manager): ?BankAccount
     {
         $unitResolver = $this->container->getByType(IUnitResolver::class);
-        assert($unitResolver instanceof IUnitResolver);
-
+        if (! $unitResolver instanceof IUnitResolver) {
+            throw new LogicException('Assertion failed.');
+        }
         $officialUnitId = $unitResolver->getOfficialUnitId(self::UNIT_ID);
         $expectedNumber = sprintf('%s-%s/%s', self::BANK_ACCOUNT_PREFIX, self::BANK_ACCOUNT_NUMBER, self::BANK_ACCOUNT_BANK_CODE);
 
         foreach ($manager->getRepository(BankAccount::class)->findBy(['unitId' => $officialUnitId]) as $account) {
-            assert($account instanceof BankAccount);
-
+            if (! $account instanceof BankAccount) {
+                throw new LogicException('Assertion failed.');
+            }
             if ((string) $account->getNumber() === $expectedNumber) {
                 return $account;
             }

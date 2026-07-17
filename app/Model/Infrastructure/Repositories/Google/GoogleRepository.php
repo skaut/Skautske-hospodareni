@@ -10,9 +10,9 @@ use App\Model\Google\Exception\OAuthNotFound;
 use App\Model\Google\OAuthId;
 use App\Model\Mail\Repositories\IGoogleRepository;
 use Doctrine\ORM\EntityManager;
+use LogicException;
 
 use function array_fill_keys;
-use function assert;
 use function count;
 
 final class GoogleRepository implements IGoogleRepository
@@ -62,8 +62,9 @@ final class GoogleRepository implements IGoogleRepository
             ->getResult();
 
         foreach ($oAuthList as $oAuth) {
-            assert($oAuth instanceof GoogleOAuth);
-
+            if (! $oAuth instanceof GoogleOAuth) {
+                throw new LogicException('Assertion failed.');
+            }
             $byUnit[$oAuth->getUnitId()->toInt()][] = $oAuth;
         }
 

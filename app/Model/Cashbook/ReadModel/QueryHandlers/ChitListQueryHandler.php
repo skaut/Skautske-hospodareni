@@ -13,10 +13,10 @@ use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Cashbook\Chit as ChitDTO;
 use App\Model\DTO\Cashbook\ChitFactory;
 use Doctrine\ORM\EntityManager;
+use LogicException;
 
 use function array_map;
 use function array_values;
-use function assert;
 
 class ChitListQueryHandler
 {
@@ -37,8 +37,9 @@ class ChitListQueryHandler
             return [];
         }
 
-        assert($cashbook instanceof Cashbook);
-
+        if (! $cashbook instanceof Cashbook) {
+            throw new LogicException('Assertion failed.');
+        }
         $categories = $this->queryBus->handle(new CategoryListQuery($query->getCashbookId()));
 
         return array_map(

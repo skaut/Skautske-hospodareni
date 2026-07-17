@@ -14,9 +14,9 @@ use App\Model\DTO\Cashbook\Cashbook;
 use App\Model\DTO\Event\EventListItem;
 use App\Model\Event\Event;
 use App\Model\Event\ReadModel\Queries\EventListQuery;
+use LogicException;
 
 use function array_map;
-use function assert;
 
 final class EventListDataSource extends DataSource
 {
@@ -66,11 +66,14 @@ final class EventListDataSource extends DataSource
     {
         $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery($event->getId()));
 
-        assert($cashbookId instanceof CashbookId);
-
+        if (! $cashbookId instanceof CashbookId) {
+            throw new LogicException('Assertion failed.');
+        }
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
 
-        assert($cashbook instanceof Cashbook);
+        if (! $cashbook instanceof Cashbook) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return $cashbook->getChitNumberPrefix(PaymentMethod::CASH());
     }

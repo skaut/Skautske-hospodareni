@@ -20,6 +20,7 @@ use App\Model\Unit\ReadModel\Queries\UnitQuery;
 use App\Model\Unit\UnitNotFound;
 use App\Presentation\Payments\PaymentsBasePresenter;
 use DateTimeImmutable;
+use LogicException;
 use Nette\Application\UI\Multiplier;
 
 use function array_filter;
@@ -27,7 +28,6 @@ use function array_keys;
 use function array_reduce;
 use function array_unique;
 use function array_values;
-use function assert;
 use function ceil;
 use function implode;
 use function in_array;
@@ -63,7 +63,9 @@ final class GroupListPresenter extends PaymentsBasePresenter
         $unitNameCache = [];
 
         foreach ($groups as $group) {
-            assert($group instanceof Group);
+            if (! $group instanceof Group) {
+                throw new LogicException('Assertion failed.');
+            }
             $groupIds[] = $group->getId();
             $bankAccountIds[] = $group->getBankAccountId();
 

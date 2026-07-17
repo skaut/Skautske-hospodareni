@@ -7,10 +7,10 @@ namespace App\Presentation\Unit\Budget;
 use App\Model\Budget\BudgetService;
 use App\Presentation\Unit\UnitBasePresenter;
 use Component\Forms\BaseForm;
+use LogicException;
 use NasExt\Forms\DependentData;
 use Nette\Application\UI\Form;
 
-use function assert;
 use function date;
 
 class BudgetPresenter extends UnitBasePresenter
@@ -32,7 +32,9 @@ class BudgetPresenter extends UnitBasePresenter
     public function renderAdd(?int $year = null): void
     {
         $form = $this['addCategoryForm'];
-        assert($form instanceof BaseForm);
+        if (! $form instanceof BaseForm) {
+            throw new LogicException('Assertion failed.');
+        }
         $form->setDefaults([
             'year' => $year ?? date('Y'),
         ]);

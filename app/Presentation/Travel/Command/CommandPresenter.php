@@ -17,6 +17,7 @@ use App\Model\User\UserService;
 use Assert\Assertion;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
+use LogicException;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Bridges\ApplicationLatte\Template;
@@ -27,7 +28,6 @@ use Nette\Security\SimpleIdentity;
 use function array_key_exists;
 use function array_map;
 use function array_slice;
-use function assert;
 use function is_array;
 use function round;
 use function sprintf;
@@ -70,11 +70,13 @@ final class CommandPresenter extends \App\BasePresenter
         }
 
         $command = $this->travelService->getCommandDetail($id);
-        assert($command !== null);
-
+        if (! ($command !== null)) {
+            throw new LogicException('Assertion failed.');
+        }
         $form = $this['formAddTravel'];
-        assert($form instanceof BaseForm);
-
+        if (! $form instanceof BaseForm) {
+            throw new LogicException('Assertion failed.');
+        }
         $this->getTypeSelectBox($form)->setItems($command->getTransportTypePairs());
         $form->setDefaults(['command_id' => $id]);
     }
@@ -82,8 +84,9 @@ final class CommandPresenter extends \App\BasePresenter
     public function renderDetail(int $id): void
     {
         $command = $this->travelService->getCommandDetail($id);
-        assert($command !== null);
-
+        if (! ($command !== null)) {
+            throw new LogicException('Assertion failed.');
+        }
         $vehicle = $command->getVehicleId() !== null
             ? $this->travelService->getVehicleDTO($command->getVehicleId())
             : null;
@@ -105,14 +108,16 @@ final class CommandPresenter extends \App\BasePresenter
         }
 
         $command = $this->travelService->getCommandDetail($id);
-        assert($command !== null);
-
+        if (! ($command !== null)) {
+            throw new LogicException('Assertion failed.');
+        }
         $travels = $this->travelService->getTravels($id);
         $vehicleId = $command->getVehicleId();
 
         $template = $this->getTemplateFactory()->createTemplate();
-        assert($template instanceof Template);
-
+        if (! $template instanceof Template) {
+            throw new LogicException('Assertion failed.');
+        }
         $template->getLatte()->addFilterLoader('\\App\\Helpers\AccountancyHelpers::loader');
 
         $this->pdf->render(
@@ -289,7 +294,9 @@ final class CommandPresenter extends \App\BasePresenter
     private function getTypeSelectBox(BaseForm $form): SelectBox
     {
         $selectBox = $form['type'];
-        assert($selectBox instanceof SelectBox);
+        if (! $selectBox instanceof SelectBox) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return $selectBox;
     }

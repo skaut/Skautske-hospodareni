@@ -12,8 +12,7 @@ use App\Model\Event\Education;
 use App\Model\Event\Exception\EducationNotFound;
 use App\Model\Event\ReadModel\Queries\EducationQuery;
 use App\Model\Event\SkautisEducationId;
-
-use function assert;
+use LogicException;
 
 class BasePresenter extends \App\BaseSectionPresenter
 {
@@ -41,7 +40,9 @@ class BasePresenter extends \App\BaseSectionPresenter
 
         try {
             $this->event = $this->queryBus->handle(new EducationQuery(new SkautisEducationId($this->aid)));
-            assert($this->event instanceof Education);
+            if (! $this->event instanceof Education) {
+                throw new LogicException('Assertion failed.');
+            }
         } catch (EducationNotFound) {
             $this->template->setParameters(['message' => 'Nemáte oprávnění načíst vzdělávací akci nebo neexsituje.']);
             $this->forward('Default:accessDenied');

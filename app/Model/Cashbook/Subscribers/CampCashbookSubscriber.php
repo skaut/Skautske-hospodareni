@@ -13,9 +13,8 @@ use App\Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use App\Model\Common\Services\CommandBus;
 use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Cashbook\Cashbook;
+use LogicException;
 use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
-
-use function assert;
 
 /**
  * Update category total in Skautis for camp cashbook.
@@ -66,7 +65,9 @@ final class CampCashbookSubscriber implements MessageSubscriberInterface
     {
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
 
-        assert($cashbook instanceof Cashbook);
+        if (! $cashbook instanceof Cashbook) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return $cashbook->getType()->equalsValue(CashbookType::CAMP);
     }

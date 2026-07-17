@@ -16,6 +16,7 @@ use App\Model\DTO\Cashbook\Category;
 use App\Model\DTO\Cashbook\Chit;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use LogicException;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -24,7 +25,6 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 use function array_map;
 use function array_merge;
-use function assert;
 use function count;
 use function explode;
 use function mb_strlen;
@@ -52,8 +52,9 @@ class CashbookWithCategoriesBuilder
     {
         $this->sheet = $sheet;
         $cashbook = $this->queryBus->handle(new CashbookQuery($cashbookId));
-        assert($cashbook instanceof Cashbook);
-
+        if (! $cashbook instanceof Cashbook) {
+            throw new LogicException('Assertion failed.');
+        }
         $this->addCashbookHeader();
 
         [$incomeCategories, $expenseCategories] = $this->getCategories($cashbookId);

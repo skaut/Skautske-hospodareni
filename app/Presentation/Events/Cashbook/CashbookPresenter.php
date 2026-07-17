@@ -26,9 +26,9 @@ use App\Model\Event\Functions;
 use App\Model\Event\ReadModel\Queries\EventFunctions;
 use App\Model\Event\SkautisEventId;
 use App\Presentation\Events\BasePresenter;
+use LogicException;
 use Money\Money;
 
-use function assert;
 use function is_float;
 
 final class CashbookPresenter extends BasePresenter
@@ -52,10 +52,15 @@ final class CashbookPresenter extends BasePresenter
         $finalBalance = $this->queryBus->handle(new FinalCashBalanceQuery($this->getCashbookId()));
         $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId()));
 
-        assert(is_float($incomeBalance));
-        assert($finalBalance instanceof Money);
-        assert($finalRealBalance instanceof Money);
-
+        if (! is_float($incomeBalance)) {
+            throw new LogicException('Assertion failed.');
+        }
+        if (! $finalBalance instanceof Money) {
+            throw new LogicException('Assertion failed.');
+        }
+        if (! $finalRealBalance instanceof Money) {
+            throw new LogicException('Assertion failed.');
+        }
         $this->template->setParameters([
             'isCashbookEmpty' => $this->isCashbookEmpty(),
             'cashbookId' => $this->getCashbookId()->toString(),
@@ -86,8 +91,9 @@ final class CashbookPresenter extends BasePresenter
 
         $functions = $this->queryBus->handle(new EventFunctions(new SkautisEventId($this->aid)));
 
-        assert($functions instanceof Functions);
-
+        if (! $functions instanceof Functions) {
+            throw new LogicException('Assertion failed.');
+        }
         $accountant = $functions->getAccountant() !== null
             ? new Recipient($functions->getAccountant()->getName())
             : null;

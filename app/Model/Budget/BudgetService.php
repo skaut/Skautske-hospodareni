@@ -8,9 +8,9 @@ use App\Model\Budget\Repositories\ICategoryRepository;
 use App\Model\Budget\Unit\Category;
 use App\Model\Cashbook\Operation;
 use App\Model\DTO\Budget\CategoryFactory;
+use LogicException;
 
 use function array_map;
-use function assert;
 use function str_replace;
 
 class BudgetService
@@ -49,7 +49,9 @@ class BudgetService
     {
         $res = [];
         foreach ($this->repository->findCategories($unitId, Operation::get($type)) as $category) {
-            assert($category instanceof Category);
+            if (! $category instanceof Category) {
+                throw new LogicException('Assertion failed.');
+            }
             $res[$category->getId()] = $category->getLabel();
         }
 

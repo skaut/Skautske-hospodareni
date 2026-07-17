@@ -8,8 +8,7 @@ use App\Model\Cashbook\ReadModel\Queries\EducationParticipantIncomeQuery;
 use App\Model\Cashbook\ReadModel\Queries\EducationParticipantListQuery;
 use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Participant\Participant;
-
-use function assert;
+use LogicException;
 
 class EducationParticipantIncomeQueryHandler
 {
@@ -23,7 +22,9 @@ class EducationParticipantIncomeQueryHandler
 
         $participantIncome = 0.0;
         foreach ($participants as $p) {
-            assert($p instanceof Participant);
+            if (! $p instanceof Participant) {
+                throw new LogicException('Assertion failed.');
+            }
             $participantIncome += $p->getPayment();
         }
 

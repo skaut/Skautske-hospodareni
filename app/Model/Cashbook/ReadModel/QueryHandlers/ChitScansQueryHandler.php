@@ -11,9 +11,9 @@ use App\Model\Common\File;
 use App\Model\Common\IScanStorage;
 use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Cashbook\Chit;
+use LogicException;
 
 use function array_map;
-use function assert;
 
 final class ChitScansQueryHandler
 {
@@ -25,7 +25,9 @@ final class ChitScansQueryHandler
     public function __invoke(ChitScansQuery $query): array
     {
         $chit = $this->queryBus->handle(new ChitQuery($query->getCashbookId(), $query->getChitId()));
-        assert($chit instanceof Chit);
+        if (! $chit instanceof Chit) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return array_map(
             function (Cashbook\ChitScan $scan): File {

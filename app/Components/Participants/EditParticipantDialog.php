@@ -10,8 +10,7 @@ use App\Model\DTO\Participant\UpdateParticipant;
 use Assert\Assertion;
 use Closure;
 use Component\Forms\BaseForm;
-
-use function assert;
+use LogicException;
 
 final class EditParticipantDialog extends Dialog
 {
@@ -45,8 +44,9 @@ final class EditParticipantDialog extends Dialog
         Assertion::keyExists($this->participants, $this->participantId);
 
         $participant = $this->participants[$this->participantId];
-        assert($participant instanceof Participant);
-
+        if (! $participant instanceof Participant) {
+            throw new LogicException('Assertion failed.');
+        }
         $form = new BaseForm();
 
         if ($this->isAllowedDaysUpdate) {

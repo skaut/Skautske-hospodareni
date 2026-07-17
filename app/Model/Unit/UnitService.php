@@ -9,12 +9,11 @@ use App\Model\Payment\IUnitResolver;
 use App\Model\Unit\ReadModel\Queries\UnitQuery;
 use App\Model\Unit\Repositories\IUnitRepository;
 use App\Model\User\UserService;
+use LogicException;
 use Nette\Application\BadRequestException;
 use Nette\Security\SimpleIdentity;
 use Nette\Security\User;
 use Skautis;
-
-use function assert;
 
 class UnitService
 {
@@ -105,11 +104,14 @@ class UnitService
     {
         $identity = $user->getIdentity();
 
-        assert($identity instanceof SimpleIdentity);
-
+        if (! $identity instanceof SimpleIdentity) {
+            throw new LogicException('Assertion failed.');
+        }
         $res = [];
         foreach ($identity->access[$accessType] as $uId => $u) {
-            assert($u instanceof Unit);
+            if (! $u instanceof Unit) {
+                throw new LogicException('Assertion failed.');
+            }
             $res[$uId] = $u->getDisplayName();
         }
 

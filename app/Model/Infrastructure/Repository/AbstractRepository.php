@@ -17,9 +17,9 @@ use Doctrine\ORM\Query\Expr\Comparison;
 use Doctrine\ORM\Query\Expr\Composite;
 use Doctrine\ORM\Query\Expr\Func;
 use Doctrine\ORM\QueryBuilder;
+use LogicException;
 use RuntimeException;
 
-use function assert;
 use function is_array;
 use function is_callable;
 use function is_int;
@@ -225,7 +225,9 @@ abstract class AbstractRepository extends EntityRepository
                 ->select('COUNT(entity)')
                 ->getQuery()
                 ->getSingleScalarResult();
-            assert(is_int($count) && $count >= 0);
+            if (! (is_int($count) && $count >= 0)) {
+                throw new LogicException('Assertion failed.');
+            }
 
             return $count;
         } catch (NoResultException) {
@@ -263,7 +265,9 @@ abstract class AbstractRepository extends EntityRepository
                 ->select("COUNT({$alias})")
                 ->getQuery()
                 ->getSingleScalarResult();
-            assert(is_int($count) && $count >= 0);
+            if (! (is_int($count) && $count >= 0)) {
+                throw new LogicException('Assertion failed.');
+            }
 
             return $count;
         } catch (NoResultException) {

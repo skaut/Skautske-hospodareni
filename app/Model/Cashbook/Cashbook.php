@@ -21,11 +21,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
+use LogicException;
 use Nette\Utils\Strings;
 
 use function array_filter;
 use function array_map;
-use function assert;
 use function max;
 use function sprintf;
 use function uasort;
@@ -263,8 +263,9 @@ class Cashbook extends Aggregate
         );
 
         foreach ($chits as $chit) {
-            assert($chit instanceof Chit);
-
+            if (! $chit instanceof Chit) {
+                throw new LogicException('Assertion failed.');
+            }
             $newChit = $this->type->equals($sourceCashbook->type) && ! $this->type->equalsValue(CashbookType::CAMP)
                 ? $chit->copyToCashbook($this)
                 : $chit->copyToCashbookWithUndefinedCategory($this);

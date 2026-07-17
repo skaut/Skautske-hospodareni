@@ -13,10 +13,9 @@ use App\Model\Common\Services\CommandBus;
 use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Cashbook\Cashbook;
 use Component\Forms\BaseForm;
+use LogicException;
 use Nette\Application\BadRequestException;
 use Nette\Http\IResponse;
-
-use function assert;
 
 final class PrefixControl extends Dialog
 {
@@ -68,7 +67,9 @@ final class PrefixControl extends Dialog
     {
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
 
-        assert($cashbook instanceof Cashbook);
+        if (! $cashbook instanceof Cashbook) {
+            throw new LogicException('Assertion failed.');
+        }
 
         return $cashbook->getChitNumberPrefix($this->paymentMethod);
     }

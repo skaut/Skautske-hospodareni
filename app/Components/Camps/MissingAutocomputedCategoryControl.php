@@ -13,8 +13,8 @@ use App\Model\Event\Commands\Camp\ActivateAutocomputedCashbook;
 use App\Model\Event\Enum\CampState;
 use App\Model\Event\ReadModel\Queries\CampQuery;
 use App\Model\Event\SkautisCampId;
+use LogicException;
 
-use function assert;
 use function in_array;
 
 class MissingAutocomputedCategoryControl extends BaseControl
@@ -30,8 +30,9 @@ class MissingAutocomputedCategoryControl extends BaseControl
     public function handleActivate(): void
     {
         $camp = $this->queryBus->handle(new CampQuery($this->campId));
-        assert($camp instanceof \App\Model\Event\Camp);
-
+        if (! $camp instanceof \App\Model\Event\Camp) {
+            throw new LogicException('Assertion failed.');
+        }
         if (! $this->isApproved($camp->getState())) {
             $this->reload('Dopočítávání rozpočtových kategorií lze aktivovat až po schválení tábora střediskovou radou.', 'danger');
         }
@@ -51,8 +52,9 @@ class MissingAutocomputedCategoryControl extends BaseControl
     public function render(): void
     {
         $camp = $this->queryBus->handle(new CampQuery($this->campId));
-        assert($camp instanceof \App\Model\Event\Camp);
-
+        if (! $camp instanceof \App\Model\Event\Camp) {
+            throw new LogicException('Assertion failed.');
+        }
         $this->template->setFile(__DIR__.'/templates/MissingAutocomputedCategoryControl.latte');
         $isApproved = $this->isApproved($camp->getState());
         $canUpdateBudget = $this->authorizator->isAllowed(Camp::UPDATE_BUDGET, $this->campId->toInt());

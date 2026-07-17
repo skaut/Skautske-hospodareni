@@ -11,9 +11,9 @@ use App\Model\Payment\Group;
 use App\Model\Payment\Group\SkautisEntity;
 use App\Model\Payment\ReadModel\Queries\CampsWithoutGroupQuery;
 use App\Model\Payment\Repositories\IGroupRepository;
+use LogicException;
 
 use function array_map;
-use function assert;
 use function in_array;
 
 final class CampsWithoutGroupQueryHandler
@@ -31,8 +31,9 @@ final class CampsWithoutGroupQueryHandler
         $campsWithoutGroup = [];
 
         foreach ($camps as $camp) {
-            assert($camp instanceof Camp);
-
+            if (! $camp instanceof Camp) {
+                throw new LogicException('Assertion failed.');
+            }
             $campId = $camp->getId()->toInt();
 
             if (in_array($campId, $campWithGroupIds, true)) {
