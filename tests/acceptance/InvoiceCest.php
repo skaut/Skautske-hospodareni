@@ -19,6 +19,7 @@ use function substr;
 class InvoiceCest extends BaseAcceptanceCest
 {
     private const ACCEPTANCE_USER_ID = 2465;
+    private const INVOICE_OPEN_ATTEMPTS = 3;
 
     protected AcceptanceTester $I;
 
@@ -626,19 +627,32 @@ class InvoiceCest extends BaseAcceptanceCest
 
     private function openInvoices(): void
     {
-        $this->I->amOnPage('/platby/faktury');
-        $this->I->waitForDocumentReady();
-        $this->I->waitForJS(
-            'return document.querySelector("[data-test=\"invoice-home\"], [data-test=\"invoice-early-access-page\"], [data-test=\"login-link\"], [data-test=\"homepage-login\"]") !== null;',
-            AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
-        );
+        $pageState = 'unknown';
 
-        $pageState = $this->I->executeJS(
-            'if (document.querySelector("[data-test=\"invoice-home\"]") !== null) { return "home"; }'
-            .'if (document.querySelector("[data-test=\"invoice-early-access-page\"]") !== null) { return "early-access"; }'
-            .'if (document.querySelector("[data-test=\"login-link\"], [data-test=\"homepage-login\"]") !== null) { return "login"; }'
-            .'return "unknown";',
-        );
+        for ($attempt = 1; $attempt <= self::INVOICE_OPEN_ATTEMPTS; ++$attempt) {
+            $this->I->amOnPage('/platby/faktury');
+            $this->I->waitForDocumentReady();
+            $this->I->waitForJS(
+                'return document.querySelector("[data-test=\"invoice-home\"], [data-test=\"invoice-early-access-page\"], [data-test=\"login-link\"], [data-test=\"homepage-login\"]") !== null'
+                .' || (document.body !== null && document.body.textContent.includes("WsdlException") && document.body.textContent.includes("Could not connect to host"));',
+                AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
+            );
+
+            $pageState = (string) $this->I->executeJS(
+                'const text = document.body?.textContent ?? "";'
+                .'if (document.querySelector("[data-test=\"invoice-home\"]") !== null) { return "home"; }'
+                .'if (document.querySelector("[data-test=\"invoice-early-access-page\"]") !== null) { return "early-access"; }'
+                .'if (document.querySelector("[data-test=\"login-link\"], [data-test=\"homepage-login\"]") !== null) { return "login"; }'
+                .'if (text.includes("WsdlException") && text.includes("Could not connect to host")) { return "skautis-unavailable"; }'
+                .'return "unknown";',
+            );
+
+            if ($pageState !== 'skautis-unavailable' || $attempt === self::INVOICE_OPEN_ATTEMPTS) {
+                break;
+            }
+
+            sleep(2);
+        }
 
         Assert::assertSame(
             'home',
