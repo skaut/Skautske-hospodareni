@@ -162,41 +162,68 @@ class SettingsCest extends BaseAcceptanceCest
         $I->clickStable('[data-test="utility-nav-settings"]');
         $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
-        $I->executeJS(<<<'JS'
-            const card = document.querySelector('[data-test="settings-card-bank-accounts"]');
-            const rect = card.getBoundingClientRect();
-            document.elementFromPoint(rect.right - 20, rect.bottom - 20).click();
-            JS);
-        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->seeInCurrentUrl('/nastaveni/bankovni-ucty');
+        $this->openLinkAndWaitForElementWithSkautisRetry(
+            $I,
+            '[data-test="settings-link-bank-accounts"]',
+            '[data-test="settings-bank-accounts-page"]',
+            '/nastaveni/bankovni-ucty',
+        );
 
-        $I->clickStable('[data-test="settings-subnav-overview"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openLinkAndWaitForElementWithSkautisRetry(
+            $I,
+            '[data-test="settings-subnav-overview"]',
+            '[data-test="settings-page"]',
+            '/nastaveni',
+        );
 
-        $I->clickStable('[data-test="settings-link-user"]');
-        $I->waitForElementVisible('[data-test="settings-user-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->seeInCurrentUrl('/nastaveni/uzivatel');
+        $this->openLinkAndWaitForElementWithSkautisRetry(
+            $I,
+            '[data-test="settings-link-user"]',
+            '[data-test="settings-user-page"]',
+            '/nastaveni/uzivatel',
+        );
 
-        $I->clickStable('[data-test="settings-subnav-overview"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openLinkAndWaitForElementWithSkautisRetry(
+            $I,
+            '[data-test="settings-subnav-overview"]',
+            '[data-test="settings-page"]',
+            '/nastaveni',
+        );
 
-        $I->clickStable('[data-test="settings-link-mails"]');
-        $I->waitForElementVisible('[data-test="settings-mails-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->seeInCurrentUrl('/nastaveni/emaily');
+        $this->openLinkAndWaitForElementWithSkautisRetry(
+            $I,
+            '[data-test="settings-link-mails"]',
+            '[data-test="settings-mails-page"]',
+            '/nastaveni/emaily',
+        );
 
-        $I->clickStable('[data-test="settings-subnav-overview"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openLinkAndWaitForElementWithSkautisRetry(
+            $I,
+            '[data-test="settings-subnav-overview"]',
+            '[data-test="settings-page"]',
+            '/nastaveni',
+        );
 
-        $I->clickStable('[data-test="settings-link-invoices"]');
-        $I->waitForElementVisible('[data-test="invoice-settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->seeInCurrentUrl('/nastaveni/faktury');
+        $this->openLinkAndWaitForElementWithSkautisRetry(
+            $I,
+            '[data-test="settings-link-invoices"]',
+            '[data-test="invoice-settings-page"]',
+            '/nastaveni/faktury',
+        );
 
-        $I->clickStable('[data-test="settings-subnav-overview"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openLinkAndWaitForElementWithSkautisRetry(
+            $I,
+            '[data-test="settings-subnav-overview"]',
+            '[data-test="settings-page"]',
+            '/nastaveni',
+        );
 
-        $I->clickStable('[data-test="settings-link-automation"]');
-        $I->waitForElementVisible('[data-test="settings-automation-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->seeInCurrentUrl('/nastaveni/automatizace');
+        $this->openLinkAndWaitForElementWithSkautisRetry(
+            $I,
+            '[data-test="settings-link-automation"]',
+            '[data-test="settings-automation-page"]',
+            '/nastaveni/automatizace',
+        );
     }
 
     /** @group settings */

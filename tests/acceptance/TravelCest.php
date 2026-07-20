@@ -229,8 +229,11 @@ class TravelCest extends BaseAcceptanceCest
 
     protected function detailContract(AcceptanceTester $I, string $unitRepresentative): void
     {
-        $I->clickStable(sprintf('[data-test="%s"]', $unitRepresentative));
-        $I->waitForElementVisible('body', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openLinkAndWaitForElementWithSkautisRetry(
+            $I,
+            sprintf('[data-test="%s"]', $unitRepresentative),
+            '[data-test="contract-print"]',
+        );
         $I->see('Smlouva o proplácení cestovních náhrad');
 
         // --- Vytisknout -> PDF ve stejném tabu ---
@@ -248,8 +251,11 @@ class TravelCest extends BaseAcceptanceCest
 
     protected function deleteContract(AcceptanceTester $I, string $unitRepresentative): void
     {
-        $I->clickStable(sprintf('[data-test="%s"]', $unitRepresentative));
-        $I->waitForElementVisible('body', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openLinkAndWaitForElementWithSkautisRetry(
+            $I,
+            sprintf('[data-test="%s"]', $unitRepresentative),
+            '[data-test="contract-delete"]',
+        );
         $I->see('Smlouva o proplácení cestovních náhrad');
         $I->waitForElementVisible('[data-test="contract-delete"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         // --- Smazat ---

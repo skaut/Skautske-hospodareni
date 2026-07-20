@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Codeception\Actor;
+use PHPUnit\Framework\Assert;
 
 /**
  * Inherited Methods.
@@ -22,6 +23,8 @@ use Codeception\Actor;
 class AcceptanceTester extends Actor
 {
     use _generated\AcceptanceTesterActions;
+
+    private const SKAUTIS_CONNECTION_ERROR_TEXT = 'Could not connect to host';
 
     private const LOGIN = 'crash01';
 
@@ -168,6 +171,74 @@ class AcceptanceTester extends Actor
             'const text = document.body?.textContent ?? "";'
             .'return text.includes("test-is.skaut.cz") && text.includes("php_network_getaddresses");',
         );
+    }
+
+    private function waitForElementOrSkautisConnectionError(string $expectedSelector, int $timeout = self::ELEMENT_LOAD_TIMEOUT): string
+    {
+        $selector = json_encode($expectedSelector);
+        $errorText = json_encode(self::SKAUTIS_CONNECTION_ERROR_TEXT);
+
+        $this->waitForJS(
+            'const expected = document.querySelector('.$selector.') !== null;'
+            .'const text = document.body?.textContent ?? "";'
+            .'return expected || (text.includes("WsdlException") && text.includes('.$errorText.'));',
+            $timeout,
+        );
+
+        return (string) $this->executeJS(
+            'const text = document.body?.textContent ?? "";'
+            .'if (document.querySelector('.$selector.') !== null) { return "expected"; }'
+            .'if (text.includes("WsdlException") && text.includes('.$errorText.')) { return "skautis-unavailable"; }'
+            .'return "unknown";',
+        );
+    }
+
+    public function clickLinkAndWaitForElementWithSkautisRetry(
+        string $linkSelector,
+        string $expectedSelector,
+        ?string $expectedUrlPart,
+        int $attempts,
+        int $retryDelaySeconds,
+    ): void {
+        $linkUrl = null;
+        $pageState = 'unknown';
+
+        for ($attempt = 1; $attempt <= $attempts; ++$attempt) {
+            if ($linkUrl === null) {
+                $this->waitForElementVisible($linkSelector, self::ELEMENT_LOAD_TIMEOUT);
+                $linkUrl = (string) $this->grabAttributeFrom($linkSelector, 'href');
+                $this->clickStable($linkSelector);
+            } else {
+                $this->amOnPage($linkUrl);
+            }
+
+            $pageState = $this->waitForElementOrSkautisConnectionError($expectedSelector);
+
+            if ($pageState !== 'skautis-unavailable' || $attempt === $attempts) {
+                break;
+            }
+
+            sleep($retryDelaySeconds);
+        }
+
+        if ($pageState === 'skautis-unavailable') {
+            Assert::fail(
+                'SkautIS WSDL communication failed after '.$attempts.' attempts while opening '.$linkUrl
+                .' via '.$linkSelector.'; expected '.$expectedSelector.' at '.$this->grabFromCurrentUrl()
+                .'. Last rendered page contains WsdlException: '.self::SKAUTIS_CONNECTION_ERROR_TEXT.'.',
+            );
+        }
+
+        if ($pageState !== 'expected') {
+            Assert::fail(
+                'Expected '.$expectedSelector.' after opening '.$linkUrl.' via '.$linkSelector
+                .', got '.$pageState.' state at '.$this->grabFromCurrentUrl().'.',
+            );
+        }
+
+        if ($expectedUrlPart !== null) {
+            $this->seeInCurrentUrl($expectedUrlPart);
+        }
     }
 
     public function isOnSkautisLoginForm(): bool
