@@ -55,7 +55,7 @@ class AcceptanceTester extends Actor
     public const UNIT_LEADER_ROLE = 'Středisko: vedoucí/admin - 621.66';
     public const UNIT_ID = 27266;
 
-    public function waitForElement($element, int $timeout = 10): void
+    public function waitForElement(mixed $element, int $timeout = 10): void
     {
         try {
             $this->generatedWaitForElement($element, $timeout);
@@ -64,7 +64,7 @@ class AcceptanceTester extends Actor
         }
     }
 
-    public function waitForElementVisible($element, int $timeout = 10): void
+    public function waitForElementVisible(mixed $element, int $timeout = 10): void
     {
         try {
             $this->generatedWaitForElementVisible($element, $timeout);
@@ -73,7 +73,7 @@ class AcceptanceTester extends Actor
         }
     }
 
-    public function waitForText(string $text, int $timeout = 10, $selector = null): void
+    public function waitForText(string $text, int $timeout = 10, mixed $selector = null): void
     {
         try {
             if ($selector === null) {
