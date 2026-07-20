@@ -18,6 +18,7 @@ use RuntimeException;
 use function chmod;
 use function clearstatcache;
 use function dirname;
+use function explode;
 use function fclose;
 use function fopen;
 use function is_dir;
@@ -26,7 +27,6 @@ use function ltrim;
 use function random_bytes;
 use function rtrim;
 use function sprintf;
-use function str_contains;
 use function str_replace;
 use function trim;
 
@@ -129,11 +129,22 @@ abstract class AbstractStorage
     protected function normalizePath(string $path): string
     {
         $path = ltrim(str_replace('\\', '/', $path), '/');
-        if ($path === '' || str_contains($path, '..')) {
+        if ($path === '' || $this->containsUnsafePathSegment($path)) {
             throw new RuntimeException(sprintf('Invalid storage path "%s".', $path));
         }
 
         return $path;
+    }
+
+    private function containsUnsafePathSegment(string $path): bool
+    {
+        foreach (explode('/', $path) as $segment) {
+            if ($segment === '' || $segment === '.' || $segment === '..') {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function ensureWritableLocalDirectory(string $path): void
