@@ -176,15 +176,15 @@ class TravelCest extends BaseAcceptanceCest
 
     protected function deleteVehicle(AcceptanceTester $I, string $licensePlate): void
     {
-        $I->click($licensePlate, '#snippet-grid-grid-table');
-        $I->waitForText('Údaje o vozidle', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->click('Smazat vozidlo');
+        $I->waitForText($licensePlate, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '#snippet-grid-grid-table');
+        $I->clickStable('#snippet-grid-grid-table [title="Smazat vozidlo"]');
         try {
             $I->acceptPopup();
         } catch (Throwable) {
         }
 
         $I->waitForText('Vozidlo bylo odebráno.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeInCurrentUrl('/cestaky/vozidla');
     }
 
     public function createContact(AcceptanceTester $I): void
