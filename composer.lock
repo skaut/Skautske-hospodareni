@@ -6294,16 +6294,16 @@
         },
         {
             "name": "nextras/mail-panel",
-            "version": "v2.6.2",
+            "version": "v2.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nextras/mail-panel.git",
-                "reference": "8aa23f2646afed715e0ce731ce13e45cce37fd73"
+                "reference": "2ae4d508507b35ffe4edca58a00dc30fb53505d1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nextras/mail-panel/zipball/8aa23f2646afed715e0ce731ce13e45cce37fd73",
-                "reference": "8aa23f2646afed715e0ce731ce13e45cce37fd73",
+                "url": "https://api.github.com/repos/nextras/mail-panel/zipball/2ae4d508507b35ffe4edca58a00dc30fb53505d1",
+                "reference": "2ae4d508507b35ffe4edca58a00dc30fb53505d1",
                 "shasum": ""
             },
             "require": {
@@ -6322,7 +6322,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.6-dev"
+                    "dev-master": "2.7-dev"
                 }
             },
             "autoload": {
@@ -6359,9 +6359,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nextras/mail-panel/issues",
-                "source": "https://github.com/nextras/mail-panel/tree/v2.6.2"
+                "source": "https://github.com/nextras/mail-panel/tree/v2.7.1"
             },
-            "time": "2023-05-06T17:05:52+00:00"
+            "time": "2026-05-03T21:36:35+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",
