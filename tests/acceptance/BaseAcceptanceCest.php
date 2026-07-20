@@ -6,6 +6,7 @@ namespace acceptance;
 
 use AcceptanceTester;
 use Exception;
+use PHPUnit\Framework\Assert;
 
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 abstract class BaseAcceptanceCest
@@ -56,5 +57,42 @@ abstract class BaseAcceptanceCest
             self::SKAUTIS_PAGE_OPEN_ATTEMPTS,
             self::SKAUTIS_PAGE_OPEN_RETRY_DELAY_SECONDS,
         );
+    }
+
+    /**
+     * @param callable(): string $attempt
+     */
+    protected function runWithSkautisRetry(
+        AcceptanceTester $I,
+        callable $attempt,
+        string $actionDescription,
+        string $expectedDescription,
+    ): void {
+        $pageState = AcceptanceTester::PAGE_STATE_UNKNOWN;
+
+        for ($attemptNumber = 1; $attemptNumber <= self::SKAUTIS_PAGE_OPEN_ATTEMPTS; ++$attemptNumber) {
+            $pageState = $attempt();
+
+            if ($pageState !== AcceptanceTester::PAGE_STATE_SKAUTIS_UNAVAILABLE || $attemptNumber === self::SKAUTIS_PAGE_OPEN_ATTEMPTS) {
+                break;
+            }
+
+            sleep(self::SKAUTIS_PAGE_OPEN_RETRY_DELAY_SECONDS);
+        }
+
+        if ($pageState === AcceptanceTester::PAGE_STATE_SKAUTIS_UNAVAILABLE) {
+            $I->failBecauseSkautisConnectionFailedAfterRetries(
+                $actionDescription,
+                $expectedDescription,
+                self::SKAUTIS_PAGE_OPEN_ATTEMPTS,
+            );
+        }
+
+        if ($pageState !== AcceptanceTester::PAGE_STATE_EXPECTED) {
+            Assert::fail(
+                'Expected '.$expectedDescription.' while '.$actionDescription
+                .', got '.$pageState.' state at '.$I->grabFromCurrentUrl().'.',
+            );
+        }
     }
 }

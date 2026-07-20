@@ -24,6 +24,10 @@ class AcceptanceTester extends Actor
 {
     use _generated\AcceptanceTesterActions;
 
+    public const PAGE_STATE_EXPECTED = 'expected';
+    public const PAGE_STATE_SKAUTIS_UNAVAILABLE = 'skautis-unavailable';
+    public const PAGE_STATE_UNKNOWN = 'unknown';
+
     private const SKAUTIS_CONNECTION_ERROR_TEXT = 'Could not connect to host';
 
     private const LOGIN = 'crash01';
@@ -187,9 +191,29 @@ class AcceptanceTester extends Actor
 
         return (string) $this->executeJS(
             'const text = document.body?.textContent ?? "";'
-            .'if (document.querySelector('.$selector.') !== null) { return "expected"; }'
-            .'if (text.includes("WsdlException") && text.includes('.$errorText.')) { return "skautis-unavailable"; }'
-            .'return "unknown";',
+            .'if (document.querySelector('.$selector.') !== null) { return '.json_encode(self::PAGE_STATE_EXPECTED).'; }'
+            .'if (text.includes("WsdlException") && text.includes('.$errorText.')) { return '.json_encode(self::PAGE_STATE_SKAUTIS_UNAVAILABLE).'; }'
+            .'return '.json_encode(self::PAGE_STATE_UNKNOWN).';',
+        );
+    }
+
+    public function waitForPageTextOrSkautisConnectionError(string $expectedText, int $timeout = self::ELEMENT_LOAD_TIMEOUT): string
+    {
+        $text = json_encode($expectedText);
+        $errorText = json_encode(self::SKAUTIS_CONNECTION_ERROR_TEXT);
+
+        $this->waitForJS(
+            'const bodyText = document.body?.textContent ?? "";'
+            .'return bodyText.includes('.$text.') || '
+            .'(bodyText.includes("WsdlException") && bodyText.includes('.$errorText.'));',
+            $timeout,
+        );
+
+        return (string) $this->executeJS(
+            'const bodyText = document.body?.textContent ?? "";'
+            .'if (bodyText.includes('.$text.')) { return '.json_encode(self::PAGE_STATE_EXPECTED).'; }'
+            .'if (bodyText.includes("WsdlException") && bodyText.includes('.$errorText.')) { return '.json_encode(self::PAGE_STATE_SKAUTIS_UNAVAILABLE).'; }'
+            .'return '.json_encode(self::PAGE_STATE_UNKNOWN).';',
         );
     }
 
@@ -214,22 +238,22 @@ class AcceptanceTester extends Actor
 
             $pageState = $this->waitForElementOrSkautisConnectionError($expectedSelector);
 
-            if ($pageState !== 'skautis-unavailable' || $attempt === $attempts) {
+            if ($pageState !== self::PAGE_STATE_SKAUTIS_UNAVAILABLE || $attempt === $attempts) {
                 break;
             }
 
             sleep($retryDelaySeconds);
         }
 
-        if ($pageState === 'skautis-unavailable') {
-            Assert::fail(
-                'SkautIS WSDL communication failed after '.$attempts.' attempts while opening '.$linkUrl
-                .' via '.$linkSelector.'; expected '.$expectedSelector.' at '.$this->grabFromCurrentUrl()
-                .'. Last rendered page contains WsdlException: '.self::SKAUTIS_CONNECTION_ERROR_TEXT.'.',
+        if ($pageState === self::PAGE_STATE_SKAUTIS_UNAVAILABLE) {
+            $this->failBecauseSkautisConnectionFailedAfterRetries(
+                'opening '.$linkUrl.' via '.$linkSelector,
+                $expectedSelector,
+                $attempts,
             );
         }
 
-        if ($pageState !== 'expected') {
+        if ($pageState !== self::PAGE_STATE_EXPECTED) {
             Assert::fail(
                 'Expected '.$expectedSelector.' after opening '.$linkUrl.' via '.$linkSelector
                 .', got '.$pageState.' state at '.$this->grabFromCurrentUrl().'.',
@@ -239,6 +263,18 @@ class AcceptanceTester extends Actor
         if ($expectedUrlPart !== null) {
             $this->seeInCurrentUrl($expectedUrlPart);
         }
+    }
+
+    public function failBecauseSkautisConnectionFailedAfterRetries(
+        string $actionDescription,
+        string $expectedDescription,
+        int $attempts,
+    ): void {
+        Assert::fail(
+            'SkautIS WSDL communication failed after '.$attempts.' attempts while '.$actionDescription
+            .'; expected '.$expectedDescription.' at '.$this->grabFromCurrentUrl()
+            .'. Last rendered page contains WsdlException: '.self::SKAUTIS_CONNECTION_ERROR_TEXT.'.',
+        );
     }
 
     public function isOnSkautisLoginForm(): bool
