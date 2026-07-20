@@ -41,8 +41,7 @@ class SettingsCest extends BaseAcceptanceCest
 
         $I->wantTo('verify settings overview page shows cards with correct links');
 
-        $I->clickStable('[data-test="utility-nav-settings"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openSettingsOverview();
 
         // Utility navigation active state
         $I->seeElement('.active [data-test="utility-nav-settings"]');
@@ -80,37 +79,31 @@ class SettingsCest extends BaseAcceptanceCest
         $I->wantTo('verify settings submenu highlights the correct active section');
 
         // Overview active
-        $I->clickStable('[data-test="utility-nav-settings"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openSettingsOverview();
         $I->seeElement('[data-test="settings-subnav-overview"].btn-primary');
 
         // User active
-        $I->clickStable('[data-test="settings-subnav-user"]');
-        $I->waitForElementVisible('[data-test="settings-user-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openSettingsSubpage('[data-test="settings-subnav-user"]', '[data-test="settings-user-page"]', '/nastaveni/uzivatel');
         $I->seeElement('[data-test="settings-subnav-user"].btn-primary');
         $I->seeElement('[data-test="settings-subnav-overview"].btn-light');
 
         // Bank accounts active
-        $I->clickStable('[data-test="settings-subnav-bank-accounts"]');
-        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openSettingsSubpage('[data-test="settings-subnav-bank-accounts"]', '[data-test="settings-bank-accounts-page"]', '/nastaveni/bankovni-ucty');
         $I->seeElement('[data-test="settings-subnav-bank-accounts"].btn-primary');
         $I->seeElement('[data-test="settings-subnav-overview"].btn-light');
 
         // Mails active
-        $I->clickStable('[data-test="settings-subnav-mails"]');
-        $I->waitForElementVisible('[data-test="settings-mails-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openSettingsSubpage('[data-test="settings-subnav-mails"]', '[data-test="settings-mails-page"]', '/nastaveni/emaily');
         $I->seeElement('[data-test="settings-subnav-mails"].btn-primary');
         $I->seeElement('[data-test="settings-subnav-bank-accounts"].btn-light');
 
         // Invoices active
-        $I->clickStable('[data-test="settings-subnav-invoices"]');
-        $I->waitForElementVisible('[data-test="invoice-settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openSettingsSubpage('[data-test="settings-subnav-invoices"]', '[data-test="invoice-settings-page"]', '/nastaveni/faktury');
         $I->seeElement('[data-test="settings-subnav-invoices"].btn-primary');
         $I->seeElement('[data-test="settings-subnav-mails"].btn-light');
 
         // Automation active
-        $I->clickStable('[data-test="settings-subnav-automation"]');
-        $I->waitForElementVisible('[data-test="settings-automation-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openSettingsSubpage('[data-test="settings-subnav-automation"]', '[data-test="settings-automation-page"]', '/nastaveni/automatizace');
         $I->seeElement('[data-test="settings-subnav-automation"].btn-primary');
         $I->seeElement('[data-test="settings-subnav-invoices"].btn-light');
     }
@@ -122,31 +115,24 @@ class SettingsCest extends BaseAcceptanceCest
 
         $I->wantTo('verify settings submenu pill buttons navigate to correct pages');
 
-        $I->clickStable('[data-test="utility-nav-settings"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openSettingsOverview();
 
-        $I->clickStable('[data-test="settings-subnav-user"]');
-        $I->waitForElementVisible('[data-test="settings-user-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openSettingsSubpage('[data-test="settings-subnav-user"]', '[data-test="settings-user-page"]', '/nastaveni/uzivatel');
         $I->seeInCurrentUrl('/nastaveni/uzivatel');
 
-        $I->clickStable('[data-test="settings-subnav-bank-accounts"]');
-        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openSettingsSubpage('[data-test="settings-subnav-bank-accounts"]', '[data-test="settings-bank-accounts-page"]', '/nastaveni/bankovni-ucty');
         $I->seeInCurrentUrl('/nastaveni/bankovni-ucty');
 
-        $I->clickStable('[data-test="settings-subnav-mails"]');
-        $I->waitForElementVisible('[data-test="settings-mails-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openSettingsSubpage('[data-test="settings-subnav-mails"]', '[data-test="settings-mails-page"]', '/nastaveni/emaily');
         $I->seeInCurrentUrl('/nastaveni/emaily');
 
-        $I->clickStable('[data-test="settings-subnav-invoices"]');
-        $I->waitForElementVisible('[data-test="invoice-settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openSettingsSubpage('[data-test="settings-subnav-invoices"]', '[data-test="invoice-settings-page"]', '/nastaveni/faktury');
         $I->seeInCurrentUrl('/nastaveni/faktury');
 
-        $I->clickStable('[data-test="settings-subnav-automation"]');
-        $I->waitForElementVisible('[data-test="settings-automation-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openSettingsSubpage('[data-test="settings-subnav-automation"]', '[data-test="settings-automation-page"]', '/nastaveni/automatizace');
         $I->seeInCurrentUrl('/nastaveni/automatizace');
 
-        $I->clickStable('[data-test="settings-subnav-overview"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openSettingsSubpage('[data-test="settings-subnav-overview"]', '[data-test="settings-page"]', '/nastaveni');
         $I->seeInCurrentUrl('/nastaveni');
     }
 
@@ -159,8 +145,7 @@ class SettingsCest extends BaseAcceptanceCest
 
         $I->wantTo('verify clicking cards on settings overview navigates to the correct section');
 
-        $I->clickStable('[data-test="utility-nav-settings"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openSettingsOverview();
 
         $this->openLinkAndWaitForElementWithSkautisRetry(
             $I,
@@ -233,10 +218,7 @@ class SettingsCest extends BaseAcceptanceCest
 
         $I->wantTo('hide page help by default and open it with the title icon');
 
-        $I->clickStable('[data-test="utility-nav-settings"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->clickStable('[data-test="settings-subnav-user"]');
-        $I->waitForElementVisible('[data-test="settings-user-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openUserSettingsPage();
 
         $I->seeElement('.page-heading .page-lead > [data-page-help-toggle]');
         $I->seeElement('[data-page-help-content]:not([hidden])');
@@ -257,8 +239,7 @@ class SettingsCest extends BaseAcceptanceCest
         $I->seeElement('.page-heading .page-lead[data-page-help-expanded="true"]');
         $I->seeElement('[data-page-help-content]:not([hidden])');
 
-        $I->clickStable('[data-test="settings-subnav-invoices"]');
-        $I->waitForElementVisible('[data-test="invoice-settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openSettingsSubpage('[data-test="settings-subnav-invoices"]', '[data-test="invoice-settings-page"]', '/nastaveni/faktury');
         $I->seeElement('[data-page-help-toggle][aria-expanded="false"]');
         $I->seeElement('[data-help-layout][data-help-collapsed="true"]');
         $I->seeElement('[data-help-toggle][aria-expanded="false"]');
@@ -275,10 +256,7 @@ class SettingsCest extends BaseAcceptanceCest
 
         $I->wantTo('enable background SkautIS login extension in user settings');
 
-        $I->clickStable('[data-test="utility-nav-settings"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->clickStable('[data-test="settings-subnav-user"]');
-        $I->waitForElementVisible('[data-test="settings-user-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openUserSettingsPage();
 
         $I->dontSeeElement('body[data-session-keep-alive-url]');
         $I->checkOption('input[name="extendSkautisLogin"]');
@@ -311,11 +289,7 @@ class SettingsCest extends BaseAcceptanceCest
 
         $I->wantTo('verify bank accounts page displays hero, add/import buttons, and account list');
 
-        $I->clickStable('[data-test="utility-nav-settings"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-
-        $I->clickStable('[data-test="settings-subnav-bank-accounts"]');
-        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openBankAccountsSettingsPage();
 
         // Action buttons visible
         $I->seeElement('[data-test="settings-bank-accounts-add"]');
@@ -333,11 +307,7 @@ class SettingsCest extends BaseAcceptanceCest
 
         $I->wantTo('create, read, edit, and delete a bank account');
 
-        $I->clickStable('[data-test="utility-nav-settings"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-
-        $I->clickStable('[data-test="settings-subnav-bank-accounts"]');
-        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openBankAccountsSettingsPage();
 
         // ── CREATE ───────────────────────────────────────────────
         $I->clickStable('[data-test="settings-bank-accounts-add"]');
@@ -462,14 +432,61 @@ class SettingsCest extends BaseAcceptanceCest
         ]);
     }
 
+    private function openSettingsOverview(): void
+    {
+        $this->openLinkAndWaitForElementWithSkautisRetry(
+            $this->I,
+            '[data-test="utility-nav-settings"]',
+            '[data-test="settings-page"]',
+            '/nastaveni',
+        );
+    }
+
+    private function openSettingsSubpage(
+        string $linkSelector,
+        string $expectedSelector,
+        string $expectedUrlPart,
+    ): void {
+        $this->openLinkAndWaitForElementWithSkautisRetry(
+            $this->I,
+            $linkSelector,
+            $expectedSelector,
+            $expectedUrlPart,
+        );
+    }
+
+    private function openSettingsSubpageFromOverview(
+        string $linkSelector,
+        string $expectedSelector,
+        string $expectedUrlPart,
+    ): void {
+        $this->openSettingsOverview();
+        $this->openSettingsSubpage($linkSelector, $expectedSelector, $expectedUrlPart);
+    }
+
+    private function openUserSettingsPage(): void
+    {
+        $this->openSettingsSubpageFromOverview(
+            '[data-test="settings-subnav-user"]',
+            '[data-test="settings-user-page"]',
+            '/nastaveni/uzivatel',
+        );
+    }
+
+    private function openBankAccountsSettingsPage(): void
+    {
+        $this->openSettingsSubpageFromOverview(
+            '[data-test="settings-subnav-bank-accounts"]',
+            '[data-test="settings-bank-accounts-page"]',
+            '/nastaveni/bankovni-ucty',
+        );
+    }
+
     private function openNewBankAccountForm(): void
     {
         $I = $this->I;
 
-        $I->clickStable('[data-test="utility-nav-settings"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->clickStable('[data-test="settings-subnav-bank-accounts"]');
-        $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openBankAccountsSettingsPage();
         $I->clickStable('[data-test="settings-bank-accounts-add"]');
         $I->waitForElementVisible('[data-test="settings-bank-account-new-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
     }
@@ -497,11 +514,7 @@ class SettingsCest extends BaseAcceptanceCest
 
         $I->wantTo('verify mails settings page displays hero and connect button');
 
-        $I->clickStable('[data-test="utility-nav-settings"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-
-        $I->clickStable('[data-test="settings-subnav-mails"]');
-        $I->waitForElementVisible('[data-test="settings-mails-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openSettingsSubpageFromOverview('[data-test="settings-subnav-mails"]', '[data-test="settings-mails-page"]', '/nastaveni/emaily');
         $I->seeInCurrentUrl('/nastaveni/emaily');
         $I->seeElement('[data-test="settings-mail-connect"]');
     }
@@ -515,11 +528,7 @@ class SettingsCest extends BaseAcceptanceCest
 
         $I->wantTo('verify invoice settings page displays hero and back link');
 
-        $I->clickStable('[data-test="utility-nav-settings"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-
-        $I->clickStable('[data-test="settings-subnav-invoices"]');
-        $I->waitForElementVisible('[data-test="invoice-settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openSettingsSubpageFromOverview('[data-test="settings-subnav-invoices"]', '[data-test="invoice-settings-page"]', '/nastaveni/faktury');
         $I->seeInCurrentUrl('/nastaveni/faktury');
         $I->seeElement('[data-test="invoice-settings-back"]');
     }
@@ -533,11 +542,7 @@ class SettingsCest extends BaseAcceptanceCest
 
         $I->wantTo('verify automation page displays CRON and history cards');
 
-        $I->clickStable('[data-test="utility-nav-settings"]');
-        $I->waitForElementVisible('[data-test="settings-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-
-        $I->clickStable('[data-test="settings-subnav-automation"]');
-        $I->waitForElementVisible('[data-test="settings-automation-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openSettingsSubpageFromOverview('[data-test="settings-subnav-automation"]', '[data-test="settings-automation-page"]', '/nastaveni/automatizace');
         $I->seeInCurrentUrl('/nastaveni/automatizace');
         $I->seeElement('[data-test="settings-automation-card-cron"]');
         $I->seeElement('[data-test="settings-automation-card-history"]');

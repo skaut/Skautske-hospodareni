@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Codeception\Actor;
-use Facebook\WebDriver\Exception\TimeoutException;
+use Facebook\WebDriver\Exception\WebDriverException;
 use PHPUnit\Framework\Assert;
 
 final class SkautisWsdlPageException extends RuntimeException
@@ -59,7 +59,7 @@ class AcceptanceTester extends Actor
     {
         try {
             $this->generatedWaitForElement($element, $timeout);
-        } catch (TimeoutException $exception) {
+        } catch (WebDriverException $exception) {
             $this->throwOnSkautisWsdlErrorPage($exception, 'waiting for element', (string) json_encode($element));
         }
     }
@@ -68,7 +68,7 @@ class AcceptanceTester extends Actor
     {
         try {
             $this->generatedWaitForElementVisible($element, $timeout);
-        } catch (TimeoutException $exception) {
+        } catch (WebDriverException $exception) {
             $this->throwOnSkautisWsdlErrorPage($exception, 'waiting for visible element', (string) json_encode($element));
         }
     }
@@ -81,7 +81,7 @@ class AcceptanceTester extends Actor
             } else {
                 $this->generatedWaitForText($text, $timeout, $selector);
             }
-        } catch (TimeoutException $exception) {
+        } catch (WebDriverException $exception) {
             $expected = $selector === null
                 ? $text
                 : $text.' in '.(string) json_encode($selector);
@@ -93,7 +93,7 @@ class AcceptanceTester extends Actor
     {
         try {
             $this->generatedWaitForJS($script, $timeout);
-        } catch (TimeoutException $exception) {
+        } catch (WebDriverException $exception) {
             $this->throwOnSkautisWsdlErrorPage($exception, 'waiting for JavaScript condition', $script);
         }
     }
@@ -153,7 +153,7 @@ class AcceptanceTester extends Actor
             try {
                 $this->submitSkautisLoginForm();
                 $this->waitForLoginSuccessOrSkautisDnsError();
-            } catch (Facebook\WebDriver\Exception\WebDriverException $e) {
+            } catch (WebDriverException $e) {
                 if (! $this->isRetryableSkautisLoginWebDriverFailure($e) || $attempt === self::LOGIN_ATTEMPTS) {
                     throw $e;
                 }
@@ -443,7 +443,7 @@ class AcceptanceTester extends Actor
         return str_starts_with($locator, '//') || str_starts_with($locator, '(') || str_starts_with($locator, './/');
     }
 
-    private function isRetryableSkautisLoginWebDriverFailure(Facebook\WebDriver\Exception\WebDriverException $e): bool
+    private function isRetryableSkautisLoginWebDriverFailure(WebDriverException $e): bool
     {
         $message = $e->getMessage();
 
@@ -452,7 +452,7 @@ class AcceptanceTester extends Actor
     }
 
     private function throwOnSkautisWsdlErrorPage(
-        TimeoutException $exception,
+        WebDriverException $exception,
         string $actionDescription,
         string $expectedDescription,
     ): void {
