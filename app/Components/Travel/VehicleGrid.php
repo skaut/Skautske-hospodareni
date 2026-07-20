@@ -68,9 +68,18 @@ class VehicleGrid extends BaseGridControl
     public function handleRemove(int $id): void
     {
         $vehicle = $this->travel->getVehicleDTO($id);
-        if ($vehicle === null || $vehicle->getUnitId() !== $this->unitId) {
+        if ($vehicle === null) {
+            $this->flashMessage('Vozidlo nebylo nalezeno', 'warning');
+            $this->redirectToList();
+
+            return;
+        }
+
+        if ($vehicle->getUnitId() !== $this->unitId) {
             $this->flashMessage('Nemáte oprávnění k vozidlu', 'danger');
-            $this->redirect('VehicleList:default');
+            $this->redirectToList();
+
+            return;
         }
 
         try {
@@ -82,6 +91,11 @@ class VehicleGrid extends BaseGridControl
             $this->flashMessage('Vozidlo nebylo nalezeno', 'warning');
         }
 
-        $this->redirect('VehicleList:default');
+        $this->redirectToList();
+    }
+
+    private function redirectToList(): void
+    {
+        $this->getPresenter()->redirect('VehicleList:default');
     }
 }
