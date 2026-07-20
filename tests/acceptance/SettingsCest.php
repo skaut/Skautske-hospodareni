@@ -256,13 +256,21 @@ class SettingsCest extends BaseAcceptanceCest
 
         $I->wantTo('enable background SkautIS login extension in user settings');
 
-        $this->openUserSettingsPage();
+        $this->runWithSkautisRetry(
+            $I,
+            function () use ($I): string {
+                $this->openUserSettingsPage();
 
-        $I->dontSeeElement('body[data-session-keep-alive-url]');
-        $I->checkOption('input[name="extendSkautisLogin"]');
-        $I->checkOption('input[name="rememberSkautisRole"]');
-        $I->click('input[type="submit"]');
-        $I->waitForElementVisible('[data-test="settings-user-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+                $I->dontSeeElement('body[data-session-keep-alive-url]');
+                $I->checkOption('input[name="extendSkautisLogin"]');
+                $I->checkOption('input[name="rememberSkautisRole"]');
+                $I->clickStable('input[type="submit"]');
+
+                return $I->waitForElementOrSkautisConnectionError('[data-test="settings-user-page"]');
+            },
+            'saving background SkautIS login extension settings',
+            '[data-test="settings-user-page"]',
+        );
 
         $I->seeInDatabase('user_preference', [
             'user_id' => self::ACCEPTANCE_USER_ID,

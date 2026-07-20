@@ -35,7 +35,11 @@ abstract class PaymentAcceptanceCest extends BaseAcceptanceCest
             $I,
             function () use ($I, $menuItemSelector, $pageTitle): string {
                 $I->amOnPage('/nastenka');
-                $I->waitForElementVisible('[data-test="global-nav-payments"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+                $navigationState = $I->waitForElementOrSkautisConnectionError('[data-test="global-nav-payments"]');
+                if ($navigationState !== AcceptanceTester::PAGE_STATE_EXPECTED) {
+                    return $navigationState;
+                }
+
                 $I->clickStable('[data-test="global-nav-payments"]');
                 $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
                 $I->clickStable('[data-test="payment-nav-groups"]');

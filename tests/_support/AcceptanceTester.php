@@ -234,7 +234,7 @@ class AcceptanceTester extends Actor
         );
     }
 
-    private function waitForElementOrSkautisConnectionError(string $expectedSelector, int $timeout = self::ELEMENT_LOAD_TIMEOUT): string
+    public function waitForElementOrSkautisConnectionError(string $expectedSelector, int $timeout = self::ELEMENT_LOAD_TIMEOUT): string
     {
         $selector = json_encode($expectedSelector);
         $skautisErrorCondition = $this->buildSkautisWsdlErrorJsCondition('text');
