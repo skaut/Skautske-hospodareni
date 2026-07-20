@@ -81,7 +81,7 @@ jobs:
           mv /tmp/workdir.tar.gz "$GITHUB_WORKSPACE/"
 
       - name: Upload workdir
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: workdir
           path: workdir.tar.gz
@@ -155,7 +155,7 @@ jobs:
             rm -f migrations.tar.gz
           fi
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: migrations
@@ -299,13 +299,13 @@ jobs:
           docker compose ps --all > artifacts/logs/compose-ps.txt || true
           docker compose logs --no-color > artifacts/logs/compose-logs.txt || true
           tar -czf compose-logs.tar.gz -C artifacts logs || true
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: tests-output-${{ matrix.shard }}
           path: tests-output.tar.gz
           if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: compose-logs-${{ matrix.shard }}
