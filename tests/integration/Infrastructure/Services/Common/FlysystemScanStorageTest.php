@@ -47,6 +47,16 @@ final class FlysystemScanStorageTest extends Unit
         );
     }
 
+    public function testSaveFileWithRepeatedDotsInOriginalFilename(): void
+    {
+        $contents = Image::fromBlank(1, 1)->toString(Image::JPEG);
+
+        $filepath = $this->getFilePath('action-26.4..jpg');
+        $this->storage->save($filepath, $contents);
+
+        $this->assertFileExists($this->directory.'/'.$filepath->getPath());
+    }
+
     public function testGetThrowsExceptionIfFileDoesNotExist(): void
     {
         $this->expectException(FileNotFound::class);
