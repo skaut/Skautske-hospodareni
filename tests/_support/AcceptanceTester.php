@@ -3,7 +3,12 @@
 declare(strict_types=1);
 
 use Codeception\Actor;
+use Facebook\WebDriver\Exception\TimeoutException;
 use PHPUnit\Framework\Assert;
+
+final class SkautisWsdlPageException extends RuntimeException
+{
+}
 
 /**
  * Inherited Methods.
@@ -22,13 +27,22 @@ use PHPUnit\Framework\Assert;
  */
 class AcceptanceTester extends Actor
 {
-    use _generated\AcceptanceTesterActions;
+    use _generated\AcceptanceTesterActions {
+        waitForElement as private generatedWaitForElement;
+        waitForElementVisible as private generatedWaitForElementVisible;
+        waitForJS as private generatedWaitForJS;
+        waitForText as private generatedWaitForText;
+    }
 
     public const PAGE_STATE_EXPECTED = 'expected';
     public const PAGE_STATE_SKAUTIS_UNAVAILABLE = 'skautis-unavailable';
     public const PAGE_STATE_UNKNOWN = 'unknown';
 
-    private const SKAUTIS_CONNECTION_ERROR_TEXT = 'Could not connect to host';
+    private const SKAUTIS_CONNECTION_ERROR_TEXTS = [
+        'Could not connect to host',
+        'Error Fetching http headers',
+        'php_network_getaddresses',
+    ];
 
     private const LOGIN = 'crash01';
 
@@ -40,6 +54,49 @@ class AcceptanceTester extends Actor
     public const ELEMENT_LOAD_TIMEOUT = 30;
     public const UNIT_LEADER_ROLE = 'Středisko: vedoucí/admin - 621.66';
     public const UNIT_ID = 27266;
+
+    public function waitForElement($element, int $timeout = 10): void
+    {
+        try {
+            $this->generatedWaitForElement($element, $timeout);
+        } catch (TimeoutException $exception) {
+            $this->throwOnSkautisWsdlErrorPage($exception, 'waiting for element', (string) json_encode($element));
+        }
+    }
+
+    public function waitForElementVisible($element, int $timeout = 10): void
+    {
+        try {
+            $this->generatedWaitForElementVisible($element, $timeout);
+        } catch (TimeoutException $exception) {
+            $this->throwOnSkautisWsdlErrorPage($exception, 'waiting for visible element', (string) json_encode($element));
+        }
+    }
+
+    public function waitForText(string $text, int $timeout = 10, $selector = null): void
+    {
+        try {
+            if ($selector === null) {
+                $this->generatedWaitForText($text, $timeout);
+            } else {
+                $this->generatedWaitForText($text, $timeout, $selector);
+            }
+        } catch (TimeoutException $exception) {
+            $expected = $selector === null
+                ? $text
+                : $text.' in '.(string) json_encode($selector);
+            $this->throwOnSkautisWsdlErrorPage($exception, 'waiting for text', $expected);
+        }
+    }
+
+    public function waitForJS(string $script, int $timeout = 5): void
+    {
+        try {
+            $this->generatedWaitForJS($script, $timeout);
+        } catch (TimeoutException $exception) {
+            $this->throwOnSkautisWsdlErrorPage($exception, 'waiting for JavaScript condition', $script);
+        }
+    }
 
     /**
      * @throws Exception
@@ -180,19 +237,19 @@ class AcceptanceTester extends Actor
     private function waitForElementOrSkautisConnectionError(string $expectedSelector, int $timeout = self::ELEMENT_LOAD_TIMEOUT): string
     {
         $selector = json_encode($expectedSelector);
-        $errorText = json_encode(self::SKAUTIS_CONNECTION_ERROR_TEXT);
+        $skautisErrorCondition = $this->buildSkautisWsdlErrorJsCondition('text');
 
-        $this->waitForJS(
+        $this->generatedWaitForJS(
             'const expected = document.querySelector('.$selector.') !== null;'
             .'const text = document.body?.textContent ?? "";'
-            .'return expected || (text.includes("WsdlException") && text.includes('.$errorText.'));',
+            .'return expected || ('.$skautisErrorCondition.');',
             $timeout,
         );
 
         return (string) $this->executeJS(
             'const text = document.body?.textContent ?? "";'
             .'if (document.querySelector('.$selector.') !== null) { return '.json_encode(self::PAGE_STATE_EXPECTED).'; }'
-            .'if (text.includes("WsdlException") && text.includes('.$errorText.')) { return '.json_encode(self::PAGE_STATE_SKAUTIS_UNAVAILABLE).'; }'
+            .'if ('.$skautisErrorCondition.') { return '.json_encode(self::PAGE_STATE_SKAUTIS_UNAVAILABLE).'; }'
             .'return '.json_encode(self::PAGE_STATE_UNKNOWN).';',
         );
     }
@@ -200,19 +257,19 @@ class AcceptanceTester extends Actor
     public function waitForPageTextOrSkautisConnectionError(string $expectedText, int $timeout = self::ELEMENT_LOAD_TIMEOUT): string
     {
         $text = json_encode($expectedText);
-        $errorText = json_encode(self::SKAUTIS_CONNECTION_ERROR_TEXT);
+        $skautisErrorCondition = $this->buildSkautisWsdlErrorJsCondition('bodyText');
 
-        $this->waitForJS(
+        $this->generatedWaitForJS(
             'const bodyText = document.body?.textContent ?? "";'
             .'return bodyText.includes('.$text.') || '
-            .'(bodyText.includes("WsdlException") && bodyText.includes('.$errorText.'));',
+            .'('.$skautisErrorCondition.');',
             $timeout,
         );
 
         return (string) $this->executeJS(
             'const bodyText = document.body?.textContent ?? "";'
             .'if (bodyText.includes('.$text.')) { return '.json_encode(self::PAGE_STATE_EXPECTED).'; }'
-            .'if (bodyText.includes("WsdlException") && bodyText.includes('.$errorText.')) { return '.json_encode(self::PAGE_STATE_SKAUTIS_UNAVAILABLE).'; }'
+            .'if ('.$skautisErrorCondition.') { return '.json_encode(self::PAGE_STATE_SKAUTIS_UNAVAILABLE).'; }'
             .'return '.json_encode(self::PAGE_STATE_UNKNOWN).';',
         );
     }
@@ -273,7 +330,7 @@ class AcceptanceTester extends Actor
         Assert::fail(
             'SkautIS WSDL communication failed after '.$attempts.' attempts while '.$actionDescription
             .'; expected '.$expectedDescription.' at '.$this->grabFromCurrentUrl()
-            .'. Last rendered page contains WsdlException: '.self::SKAUTIS_CONNECTION_ERROR_TEXT.'.',
+            .'. Last rendered page contains a retryable WsdlException.',
         );
     }
 
@@ -392,6 +449,40 @@ class AcceptanceTester extends Actor
 
         return str_contains($message, 'Timed out receiving message from renderer')
             || str_contains($message, "doesn't evaluate to true");
+    }
+
+    private function throwOnSkautisWsdlErrorPage(
+        TimeoutException $exception,
+        string $actionDescription,
+        string $expectedDescription,
+    ): void {
+        if (! $this->isSkautisWsdlErrorPage()) {
+            throw $exception;
+        }
+
+        throw new SkautisWsdlPageException('SkautIS WSDL communication failed while '.$actionDescription.'; expected '.$expectedDescription.' at '.$this->grabFromCurrentUrl().'. Last rendered page contains a retryable WsdlException.');
+    }
+
+    private function isSkautisWsdlErrorPage(): bool
+    {
+        try {
+            return (bool) $this->executeJS(
+                'const text = document.body?.textContent ?? "";'
+                .'return '.$this->buildSkautisWsdlErrorJsCondition('text').';',
+            );
+        } catch (Throwable) {
+            return false;
+        }
+    }
+
+    private function buildSkautisWsdlErrorJsCondition(string $textVariable): string
+    {
+        $conditions = [];
+        foreach (self::SKAUTIS_CONNECTION_ERROR_TEXTS as $errorText) {
+            $conditions[] = $textVariable.'.includes('.json_encode($errorText).')';
+        }
+
+        return $textVariable.'.includes("WsdlException") && ('.implode(' || ', $conditions).')';
     }
 
     private function scrollElementToCenter(string $locator): void

@@ -31,14 +31,26 @@ abstract class PaymentAcceptanceCest extends BaseAcceptanceCest
     {
         $I = $this->I;
 
-        $I->clickStable('[data-test="global-nav-payments"]');
-        $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->clickStable('[data-test="payment-nav-groups"]');
-        $I->waitForText('Platební skupiny', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->clickStable('[data-test="create-button-toggle"]');
-        $I->waitForElementVisible('[data-test="create-button-menu"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->clickStable($menuItemSelector);
-        $I->waitForText($pageTitle, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->runWithSkautisRetry(
+            $I,
+            function () use ($I, $menuItemSelector, $pageTitle): string {
+                $I->amOnPage('/nastenka');
+                $I->waitForElementVisible('[data-test="global-nav-payments"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+                $I->clickStable('[data-test="global-nav-payments"]');
+                $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+                $I->clickStable('[data-test="payment-nav-groups"]');
+                $I->waitForText('Platební skupiny', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+                $I->clickStable('[data-test="create-button-toggle"]');
+                $I->waitForElementVisible('[data-test="create-button-menu"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+                $I->clickStable($menuItemSelector);
+                $I->waitForText($pageTitle, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+                return AcceptanceTester::PAGE_STATE_EXPECTED;
+            },
+            'opening payment subtype selector '.$menuItemSelector,
+            $pageTitle,
+        );
+
         $I->seeInCurrentUrl($currentUrl);
     }
 

@@ -7,6 +7,7 @@ namespace acceptance;
 use AcceptanceTester;
 use Exception;
 use PHPUnit\Framework\Assert;
+use SkautisWsdlPageException;
 
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 abstract class BaseAcceptanceCest
@@ -71,7 +72,11 @@ abstract class BaseAcceptanceCest
         $pageState = AcceptanceTester::PAGE_STATE_UNKNOWN;
 
         for ($attemptNumber = 1; $attemptNumber <= self::SKAUTIS_PAGE_OPEN_ATTEMPTS; ++$attemptNumber) {
-            $pageState = $attempt();
+            try {
+                $pageState = $attempt();
+            } catch (SkautisWsdlPageException) {
+                $pageState = AcceptanceTester::PAGE_STATE_SKAUTIS_UNAVAILABLE;
+            }
 
             if ($pageState !== AcceptanceTester::PAGE_STATE_SKAUTIS_UNAVAILABLE || $attemptNumber === self::SKAUTIS_PAGE_OPEN_ATTEMPTS) {
                 break;
