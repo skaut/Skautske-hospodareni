@@ -63,16 +63,16 @@
         },
         {
             "name": "beberlei/assert",
-            "version": "v3.3.3",
+            "version": "v3.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/beberlei/assert.git",
-                "reference": "b5fd8eacd8915a1b627b8bfc027803f1939734dd"
+                "reference": "f193f4613c7d7fbcee2c05e4daff4061d49c040e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/beberlei/assert/zipball/b5fd8eacd8915a1b627b8bfc027803f1939734dd",
-                "reference": "b5fd8eacd8915a1b627b8bfc027803f1939734dd",
+                "url": "https://api.github.com/repos/beberlei/assert/zipball/f193f4613c7d7fbcee2c05e4daff4061d49c040e",
+                "reference": "f193f4613c7d7fbcee2c05e4daff4061d49c040e",
                 "shasum": ""
             },
             "require": {
@@ -124,9 +124,9 @@
             ],
             "support": {
                 "issues": "https://github.com/beberlei/assert/issues",
-                "source": "https://github.com/beberlei/assert/tree/v3.3.3"
+                "source": "https://github.com/beberlei/assert/tree/v3.3.4"
             },
-            "time": "2024-07-15T13:18:35+00:00"
+            "time": "2026-06-10T19:47:05+00:00"
         },
         {
             "name": "beberlei/doctrineextensions",
@@ -8944,16 +8944,16 @@
         },
         {
             "name": "symfony/event-dispatcher-contracts",
-            "version": "v3.6.0",
+            "version": "v3.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher-contracts.git",
-                "reference": "59eb412e93815df44f05f342958efa9f46b1e586"
+                "reference": "c7de7a00ffb67842132da02ea92988a39ccd9f4e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/event-dispatcher-contracts/zipball/59eb412e93815df44f05f342958efa9f46b1e586",
-                "reference": "59eb412e93815df44f05f342958efa9f46b1e586",
+                "url": "https://api.github.com/repos/symfony/event-dispatcher-contracts/zipball/c7de7a00ffb67842132da02ea92988a39ccd9f4e",
+                "reference": "c7de7a00ffb67842132da02ea92988a39ccd9f4e",
                 "shasum": ""
             },
             "require": {
@@ -8967,7 +8967,7 @@
                     "name": "symfony/contracts"
                 },
                 "branch-alias": {
-                    "dev-main": "3.6-dev"
+                    "dev-main": "3.7-dev"
                 }
             },
             "autoload": {
@@ -9000,7 +9000,7 @@
                 "standards"
             ],
             "support": {
-                "source": "https://github.com/symfony/event-dispatcher-contracts/tree/v3.6.0"
+                "source": "https://github.com/symfony/event-dispatcher-contracts/tree/v3.7.1"
             },
             "funding": [
                 {
@@ -9012,11 +9012,15 @@
                     "type": "github"
                 },
                 {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
                     "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-09-25T14:21:43+00:00"
+            "time": "2026-06-05T06:23:12+00:00"
         },
         {
             "name": "symfony/filesystem",
@@ -12484,16 +12488,16 @@
         },
         {
             "name": "php-vcr/php-vcr",
-            "version": "1.8.2",
+            "version": "1.11.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-vcr/php-vcr.git",
-                "reference": "fbc88e02d4658eea255ce39c937c32937ae606f7"
+                "reference": "f255a2462607fc9ecd8a98c18869078f40ad103b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-vcr/php-vcr/zipball/fbc88e02d4658eea255ce39c937c32937ae606f7",
-                "reference": "fbc88e02d4658eea255ce39c937c32937ae606f7",
+                "url": "https://api.github.com/repos/php-vcr/php-vcr/zipball/f255a2462607fc9ecd8a98c18869078f40ad103b",
+                "reference": "f255a2462607fc9ecd8a98c18869078f40ad103b",
                 "shasum": ""
             },
             "require": {
@@ -12514,7 +12518,8 @@
                 "phpstan/phpstan": "^1",
                 "phpstan/phpstan-beberlei-assert": "^1",
                 "phpstan/phpstan-phpunit": "^1",
-                "phpunit/phpunit": "^9.5.10",
+                "phpunit/phpunit": "^9.5.10|^10.5|^11.0",
+                "symfony/http-client": "^5.4|^6.0|^7.0",
                 "thecodingmachine/phpstan-strict-rules": "^1"
             },
             "type": "library",
@@ -12531,14 +12536,19 @@
                 {
                     "name": "Adrian Philipp",
                     "email": "mail@adrian-philipp.com"
+                },
+                {
+                    "name": "Daniel Hürtgen",
+                    "email": "daniel@higidi.com",
+                    "role": "Maintainer"
                 }
             ],
             "description": "Record your test suite's HTTP interactions and replay them during future test runs for fast, deterministic, accurate tests.",
             "support": {
                 "issues": "https://github.com/php-vcr/php-vcr/issues",
-                "source": "https://github.com/php-vcr/php-vcr/tree/1.8.2"
+                "source": "https://github.com/php-vcr/php-vcr/tree/1.11.2"
             },
-            "time": "2025-12-30T08:17:19+00:00"
+            "time": "2026-07-18T20:32:27+00:00"
         },
         {
             "name": "php-webdriver/webdriver",
