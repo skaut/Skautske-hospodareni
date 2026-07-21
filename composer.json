@@ -24,7 +24,7 @@
         "heureka/bank-account-validator": "1.2.*",
         "http-interop/http-factory-guzzle": "^1.2",
         "ifm24/bank-statements": "^3.0",
-        "illuminate/collections": "^12.36",
+        "illuminate/collections": "^13.20",
         "kdyby/forms-replicator": "^2.0",
         "latte/latte": " ~3.0",
         "league/flysystem": "^3.21",
