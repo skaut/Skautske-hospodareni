@@ -6,6 +6,9 @@ namespace Tests\Unit\Infrastructure\Log\Monolog;
 
 use App\Model\Infrastructure\Log\Monolog\FormContextProcessor;
 use Codeception\Test\Unit;
+use DateTimeImmutable;
+use Monolog\Level;
+use Monolog\LogRecord;
 use Nette\Http\Request;
 use Nette\Http\UrlScript;
 
@@ -26,11 +29,16 @@ final class FormContextProcessorTest extends Unit
             method: Request::POST,
         ));
 
-        $record = $processor(['context' => []]);
+        $record = $processor(new LogRecord(
+            new DateTimeImmutable(),
+            'app',
+            Level::Info,
+            'Test message',
+        ));
 
         self::assertSame(
             '{"token":"<redacted>","_token_":"<redacted>","nested":{"password":"<redacted>","name":"visible"}}',
-            $record['context']['post'],
+            $record->context['post'],
         );
     }
 }

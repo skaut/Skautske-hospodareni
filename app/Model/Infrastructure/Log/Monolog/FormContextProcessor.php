@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Model\Infrastructure\Log\Monolog;
 
+use Monolog\LogRecord;
 use Nette\Http\Request;
 
 use function in_array;
@@ -24,18 +25,16 @@ class FormContextProcessor
     {
     }
 
-    /**
-     * @param mixed[] $record
-     *
-     * @return mixed[]
-     */
-    public function __invoke(array $record): array
+    public function __invoke(LogRecord $record): LogRecord
     {
-        if ($this->request->isMethod(Request::POST)) {
-            $record['context']['post'] = json_encode($this->redactSensitiveValues($this->request->getPost()));
+        if (! $this->request->isMethod(Request::POST)) {
+            return $record;
         }
 
-        return $record;
+        return $record->with(context: [
+            ...$record->context,
+            'post' => json_encode($this->redactSensitiveValues($this->request->getPost())),
+        ]);
     }
 
     /**
