@@ -36,6 +36,7 @@ use App\Model\DTO\Cashbook\ChitItem;
 use App\Model\Skautis\Exception\AmountMustBeGreaterThanZero;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
+use Contributte\FormMultiplier\Multiplier;
 use InvalidArgumentException;
 use LogicException;
 use NasExt\Forms\DependentData;
@@ -259,7 +260,7 @@ final class ChitForm extends BaseControl
         $items->addSubmit('addItem', 'Přidat další položku')
             ->setValidationScope([])
             ->onClick[] = function () use ($items): void {
-                $items->createOne();
+                $items->addCopy();
                 $this->reload();
                 $this->setDisplayChitForm(true);
             };
@@ -309,10 +310,10 @@ final class ChitForm extends BaseControl
     {
         $container = $button->getParent();
         $replicator = $container->getParent();
-        if (! ($replicator instanceof \Kdyby\Replicator\Container && $container instanceof Container)) {
+        if (! ($replicator instanceof Multiplier && $container instanceof Container)) {
             throw new LogicException('Assertion failed.');
         }
-        $replicator->remove($container, true);
+        $replicator->removeComponent($container);
         $this->reload();
     }
 
