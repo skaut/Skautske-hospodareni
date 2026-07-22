@@ -32,7 +32,7 @@
         "@types/webpack-env": "^1.18.8",
         "autoprefixer": "^10.5.2",
         "babel-loader": "^9.2.1",
-        "css-loader": "^7.1.2",
+        "css-loader": "^7.1.4",
         "lint-staged": "^15.2.10",
         "mini-css-extract-plugin": "^2.9.1",
         "postcss": "^8.5.10",
