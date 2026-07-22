@@ -2267,10 +2267,10 @@ ms@^2.1.3:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
-naja@^3.2.1:
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/naja/-/naja-3.2.1.tgz#6eba488cf5b4df7896fffd8bb7e88a64b443b66e"
-  integrity sha512-Q2A9u7A4WA+pA/Nvsvq0hYk87wEULuPba0gj1IqEZ6JfJd7g0QHdiS+G6lBkY+CMzY2lM0V0E2zxwvpdBSyqBg==
+naja@^3.3.3:
+  version "3.3.3"
+  resolved "https://registry.yarnpkg.com/naja/-/naja-3.3.3.tgz#245aad0cf956d25c17f5f94491fed6e502605b87"
+  integrity sha512-ppEWzXspWMAaUnau5n/xiyinA83fJB1Xo/FL5rk4siA4h15BdRkoMMUQEI15YcEHvTeNNLQ29DWs5+BZ6eVQsA==
 
 nanoid@^3.3.16:
   version "3.3.16"
