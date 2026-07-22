@@ -2719,12 +2719,10 @@ run-parallel@^1.1.9:
   dependencies:
     queue-microtask "^1.2.2"
 
-sass-loader@^16.0.2:
-  version "16.0.2"
-  resolved "https://registry.yarnpkg.com/sass-loader/-/sass-loader-16.0.2.tgz#e581bc13d7cb5090e27f155c6aa2855c08cafe86"
-  integrity sha512-Ll6iXZ1EYwYT19SqW4mSBb76vSSi8JgzElmzIerhEGgzB5hRjDQIWsPmuk1UrAXkR16KJHqVY0eH+5/uw9Tmfw==
-  dependencies:
-    neo-async "^2.6.2"
+sass-loader@^17.0.0:
+  version "17.0.0"
+  resolved "https://registry.yarnpkg.com/sass-loader/-/sass-loader-17.0.0.tgz#8f4f8864d834c1abb18f0f3d2bc653bbf29dde2a"
+  integrity sha512-0Ybm8ohBQ9LcrycVrFQp/KQBNX5a3Wda9/smS0mE/xLffzEnwvV8nykOzrbiSWNzTE3IB/jiXx8O4QmDPG2+Gw==
 
 sass@^1.101.0:
   version "1.101.0"
