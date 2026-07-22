@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Model\Infrastructure\Log\Monolog;
 
 use App\Model\Infrastructure\Log\UserContextProvider;
+use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
 
 class UserContextProcessor implements ProcessorInterface
@@ -13,19 +14,14 @@ class UserContextProcessor implements ProcessorInterface
     {
     }
 
-    /**
-     * @param array<string, mixed> $record
-     *
-     * @return array<string, mixed>
-     */
-    public function __invoke(array $record): array
+    public function __invoke(LogRecord $record): LogRecord
     {
         $userData = $this->userContext->getUserData();
 
-        if ($this->userContext->getUserData() !== null) {
-            $record['extra']['user'] = $userData;
+        if ($userData === null) {
+            return $record;
         }
 
-        return $record;
+        return $record->with(extra: [...$record->extra, 'user' => $userData]);
     }
 }
