@@ -53,6 +53,9 @@ export default function (): void {
 
     // Prevents NS_ERROR_ILLEGAL_VALUE on large pages in Firefox
     naja.historyHandler.historyAdapter = {
+        get state() {
+            return window.history.state;
+        },
         replaceState: () => {},
         pushState: () => {},
     };
