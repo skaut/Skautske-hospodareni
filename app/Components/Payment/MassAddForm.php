@@ -16,6 +16,7 @@ use Component\Forms\BaseContainer;
 use Component\Forms\BaseForm;
 use LogicException;
 use Nette\Forms\Controls\TextBase;
+use RuntimeException;
 
 use function array_filter;
 use function array_map;
@@ -61,7 +62,7 @@ class MassAddForm extends BaseControl
             $this->formSubmitted($form);
         };
 
-        $group = $this->payments->getGroup($this->groupId);
+        $group = $this->payments->getGroup($this->groupId) ?? throw new RuntimeException('Platební skupina nebyla nalezena.');
 
         $form->setDefaults([
             'amount' => $group->getDefaultAmount(),

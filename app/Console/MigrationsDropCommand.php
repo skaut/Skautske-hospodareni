@@ -27,7 +27,7 @@ class MigrationsDropCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName(self::$defaultName)
+        $this->setName((string) self::$defaultName)
             ->setDescription('Drops all tables from the database')
             ->addOption('force', null, InputOption::VALUE_NONE, 'Allow execution outside the testing environment');
     }
