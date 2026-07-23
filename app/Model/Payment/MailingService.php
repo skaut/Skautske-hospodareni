@@ -188,7 +188,9 @@ class MailingService
             'image/png',
         );
 
-        return substr((string) $part->getHeader('Content-ID'), 1, -1);
+        $contentId = $part->getHeader('Content-ID');
+
+        return substr(is_string($contentId) ? $contentId : '', 1, -1);
     }
 
     private function createPayment(Payment $payment): MailPayment

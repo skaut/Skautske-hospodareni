@@ -161,7 +161,7 @@ class ChitListControl extends BaseControl
 
         $form->onSuccess[] = function (BaseForm $form) use ($printButton, $exportButton, $moveChitsButton): void {
             $chitIds = $form->getHttpData($form::DATA_TEXT, 'chits-'.$this->paymentMethod.'[]');
-            $chitIds = array_map('\intval', $chitIds);
+            $chitIds = array_map('\intval', (array) $chitIds);
 
             if ($printButton->isSubmittedBy()) {
                 $this->redirectToExport(':Unit:CashbookExport:printChits', $chitIds);
