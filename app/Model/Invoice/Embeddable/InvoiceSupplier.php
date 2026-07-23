@@ -46,8 +46,8 @@ class InvoiceSupplier
             $officialUnit->getDisplayName(),
             $officialUnit->getStreet(),
             $officialUnit->getCity(),
-            $officialUnit->getPostcode(),
-            $officialUnit->getIc(),
+            (string) $officialUnit->getPostcode(),
+            (string) $officialUnit->getIc(),
             $phone,
         );
     }

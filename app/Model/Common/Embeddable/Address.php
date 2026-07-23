@@ -103,7 +103,7 @@ class Address
 
     public function getCountryName(): string
     {
-        return $this->countryName;
+        return $this->countryName ?? '';
     }
 
     public function setCountryName(string $countryName): void
@@ -113,7 +113,7 @@ class Address
 
     public function getCountryCode(): string
     {
-        return $this->countryCode;
+        return $this->countryCode ?? '';
     }
 
     public function setCountryCode(string $countryCode): void

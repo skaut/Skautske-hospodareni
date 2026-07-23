@@ -38,7 +38,7 @@ final class RepaymentCandidateListQueryHandler
         $group = $this->groups->find($query->getGroupId());
         $object = $group->getObject();
         if ($object !== null && $object->getType()->equals(Type::CAMP())) {
-            $this->setRepaymentsFromCamp(new SkautisCampId($group->getObject()->getId()), $repayments);
+            $this->setRepaymentsFromCamp(new SkautisCampId(($group->getObject() ?? throw new LogicException('Group has no SkautIS object.'))->getId()), $repayments);
         }
 
         return $repayments;

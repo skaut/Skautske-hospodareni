@@ -21,7 +21,7 @@ abstract class BaseControl extends Control
 
     abstract public function render(): void;
 
-    public function getPresenter(bool $throw = true): ?BasePresenter
+    public function getPresenter(bool $throw = true): BasePresenter
     {
         $presenter = parent::getPresenter($throw);
 

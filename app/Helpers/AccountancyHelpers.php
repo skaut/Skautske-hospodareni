@@ -232,7 +232,7 @@ abstract class AccountancyHelpers
 
     public static function postCode(string $oldPsc): string
     {
-        $psc = preg_replace('/[^0-9]/', '', $oldPsc);
+        $psc = (string) preg_replace('/[^0-9]/', '', $oldPsc);
 
         if (strlen($psc) === 5) {
             return substr($psc, 0, 3).' '.substr($psc, -2);
@@ -376,6 +376,10 @@ abstract class AccountancyHelpers
             }
 
             return $start->format(self::DATE_FORMAT_FULL);
+        }
+
+        if ($start === null) {
+            return $end->format(self::DATE_FORMAT_FULL);
         }
 
         if ($start->year !== $end->year) {

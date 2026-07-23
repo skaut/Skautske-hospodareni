@@ -49,7 +49,7 @@ class EmailTemplate
 
         $subject = $this->replace($parameters, $this->subject);
 
-        if (Strings::contains($this->body, '%qrcode')) {
+        if ($bankAccount !== null && Strings::contains($this->body, '%qrcode')) {
             $parameters['%qrcode%'] = $this->getQrHtml($payment, $bankAccount, $qrCodeCid);
         }
 

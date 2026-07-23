@@ -18,6 +18,7 @@ use App\Model\Payment\Repositories\IPaymentRepository;
 use App\Model\Services\TemplateFactory;
 use DateTimeImmutable;
 use Nette\Mail\Message;
+use RuntimeException;
 
 use function nl2br;
 use function rand;
@@ -102,7 +103,7 @@ class MailingService
             'obsah poznámky',
         );
 
-        $this->send($group, $payment, $group->getEmailTemplate(EmailType::get(EmailType::PAYMENT_INFO)), $user->getName());
+        $this->send($group, $payment, $group->getEmailTemplate(EmailType::get(EmailType::PAYMENT_INFO)) ?? throw new RuntimeException('Skupina nemá e-mailovou šablonu.'), $user->getName());
 
         return $user->getEmail();
     }

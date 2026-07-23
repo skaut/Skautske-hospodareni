@@ -121,7 +121,7 @@ final class ChitScanControl extends BaseControl
         }
 
         $this->commandBus->handle(
-            new AddChitScan($this->cashbookId, (int) $chitId, $upload->getSanitizedName(), $upload->getContents()),
+            new AddChitScan($this->cashbookId, (int) $chitId, $upload->getSanitizedName(), (string) $upload->getContents()),
         );
 
         $this->getPresenter()->flashMessage('Sken byl nahrán', 'success');

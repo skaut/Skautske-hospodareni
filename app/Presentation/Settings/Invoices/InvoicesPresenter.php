@@ -12,6 +12,7 @@ use App\Presentation\InvoiceAccess\InvoiceAccessGuard;
 use Component\Forms\BaseForm;
 use Contributte\Application\Response\PSR7StreamResponse;
 use InvalidArgumentException;
+use LogicException;
 use Nette\Application\BadRequestException;
 use Nette\Forms\Controls\SelectBox;
 use Nette\Forms\Controls\SubmitButton;
@@ -127,7 +128,7 @@ final class InvoicesPresenter extends \App\Presentation\Settings\SettingsBasePre
 
     public function handleLoadYear(SubmitButton $button): void
     {
-        $values = $button->getForm()->getValues(ArrayHash::class);
+        $values = ($button->getForm() ?? throw new LogicException('Formulář není dostupný.'))->getValues(ArrayHash::class);
 
         $this->redirect('default', ['year' => (int) $values->year, 'unitId' => $this->getUnitId()]);
     }

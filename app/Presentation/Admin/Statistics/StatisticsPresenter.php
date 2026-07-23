@@ -29,7 +29,7 @@ final class StatisticsPresenter extends \App\Presentation\Admin\AdminBasePresent
     {
         $unit = $this->queryBus->handle(new UnitQuery($this->unitId->toInt()));
         $unitTree = $this->unitService->getTreeUnder($unit);
-        $data = $this->statService->getEventStatistics($unitTree, $this->year);
+        $data = $this->statService->getEventStatistics($unitTree, (int) $this->year);
 
         $this->template->setParameters([
             'adminSection' => 'statistics',

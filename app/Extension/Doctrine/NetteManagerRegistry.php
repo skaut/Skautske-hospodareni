@@ -10,6 +10,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\AbstractManagerRegistry;
 use Doctrine\Persistence\Proxy;
+use InvalidArgumentException;
 
 final class NetteManagerRegistry extends AbstractManagerRegistry
 {
@@ -33,7 +34,7 @@ final class NetteManagerRegistry extends AbstractManagerRegistry
 
     protected function getService($name)
     {
-        return $this->services[$name] ?? null;
+        return $this->services[$name] ?? throw new InvalidArgumentException(sprintf('Unknown Doctrine service "%s".', $name));
     }
 
     protected function resetService($name): void

@@ -135,7 +135,7 @@ final class ParticipantPresenter extends BasePresenter
     protected function createComponentParticipantList(): ParticipantList
     {
         $control = $this->participantListFactory->create(
-            $this->aid,
+            (int) $this->aid,
             $this->campParticipants(),
             true,
             true,

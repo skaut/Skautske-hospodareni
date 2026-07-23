@@ -305,7 +305,7 @@ final class BugReportsPresenter extends \App\Presentation\Admin\AdminBasePresent
         $grid->addAction('github', '', 'detail', ['id' => 'id'])
             ->setRenderer(static function (TechnicalErrorReport $report): Html {
                 return Html::el('a')
-                    ->href($report->getGitHubIssueUrl())
+                    ->href((string) $report->getGitHubIssueUrl())
                     ->class('btn btn-sm btn-light m-1')
                     ->title('Otevřít GitHub issue')
                     ->target('_blank')

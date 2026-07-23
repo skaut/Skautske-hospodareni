@@ -44,6 +44,7 @@ use Nette\Application\Attributes\Persistent;
 use Nette\Utils\Strings;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use RuntimeException;
 use Skautis\Wsdl\PermissionException;
 
 use function array_filter;
@@ -191,7 +192,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
     {
         $this->assertCanEditGroup();
 
-        $group = $this->model->getGroup($id);
+        $group = $this->model->getGroup($id) ?? throw new RuntimeException('Platební skupina nebyla nalezena.');
         $payments = $this->getPaymentsForGroup($id);
         $groupName = substr(Strings::webalize($group->getName(), null, false), 0, Worksheet::SHEET_TITLE_MAXIMUM_LENGTH);
 
@@ -310,7 +311,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
     protected function createComponentEmailButton(): EmailButton
     {
-        $group = $this->model->getGroup($this->id);
+        $group = $this->model->getGroup($this->id) ?? throw new RuntimeException('Platební skupina nebyla nalezena.');
 
         return $this->emailButtonFactory->create($this->isEditable, $this->payments, $group);
     }

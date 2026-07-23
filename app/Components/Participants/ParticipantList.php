@@ -10,6 +10,7 @@ use App\Model\DTO\Participant\UpdateParticipant;
 use App\Model\Participant\ParticipantNotFound;
 use App\Utils\CzechStringComparator;
 use Component\Forms\BaseForm;
+use LogicException;
 use Nette\Application\Attributes\Persistent;
 use Nette\Application\BadRequestException;
 use Nette\Forms\Controls\SubmitButton;
@@ -223,7 +224,7 @@ final class ParticipantList extends BaseControl
             $this->redirect('Default:');
         }
 
-        $values = $button->getForm()->getValues(\Nette\Utils\ArrayHash::class)['edit'];
+        $values = ($button->getForm() ?? throw new LogicException('Formulář není dostupný.'))->getValues(\Nette\Utils\ArrayHash::class)['edit'];
 
         $changes = [];
         $currentParticipants = [];
@@ -277,7 +278,7 @@ final class ParticipantList extends BaseControl
         }
 
         $ids = [];
-        foreach ($button->getForm()->getValues(\Nette\Utils\ArrayHash::class)->participantIds as $participantId) {
+        foreach (($button->getForm() ?? throw new LogicException('Formulář není dostupný.'))->getValues(\Nette\Utils\ArrayHash::class)->participantIds as $participantId) {
             $ids[] = $participantId;
         }
 

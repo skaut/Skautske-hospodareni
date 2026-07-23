@@ -72,7 +72,7 @@ class InvoiceForm extends BaseControl
     {
         $form = new BaseForm();
         $form->addDate('dueDate', 'Datum splatnosti')
-            ->setDefaultValue((new ChronosDate())->addDays($this->invoiceSequence->getDefaultDueDate()))
+            ->setDefaultValue((new ChronosDate())->addDays((int) $this->invoiceSequence->getDefaultDueDate()))
             ->addRule(Form::REQUIRED);
 
         $form->addDate('dateOfIssue', 'Datum vystavení')
@@ -200,9 +200,12 @@ class InvoiceForm extends BaseControl
     private function removeItem(SubmitButton $button): void
     {
         $container = $button->getParent();
-        $replicator = $container->getParent();
+        if (! $container instanceof Container) {
+            throw new LogicException('Nepodařilo se odebrat položku faktury.');
+        }
 
-        if (! $replicator instanceof Multiplier || ! $container instanceof Container) {
+        $replicator = $container->getParent();
+        if (! $replicator instanceof Multiplier) {
             throw new LogicException('Nepodařilo se odebrat položku faktury.');
         }
 

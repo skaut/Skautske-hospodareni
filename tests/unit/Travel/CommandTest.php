@@ -115,7 +115,7 @@ class CommandTest extends Unit
             new TravelDetails($date->modify('+ 3 days'), TransportType::get(TransportType::BUS), 'Brno', 'Praha'),
         );
 
-        $this->assertSame($date->format('Y-m-d'), $command->getFirstTravelDate()->format('Y-m-d'));
+        $this->assertSame($date->format('Y-m-d'), $command->getFirstTravelDate()?->format('Y-m-d'));
     }
 
     public function testUpdateMethod(): void

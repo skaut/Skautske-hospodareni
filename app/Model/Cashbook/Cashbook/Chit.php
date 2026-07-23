@@ -170,7 +170,7 @@ class Chit
 
     public function getPurpose(): string
     {
-        return implode(', ', $this->items->map(function (?ChitItem $item = null) {
+        return implode(', ', $this->items->map(function (ChitItem $item) {
             return $item->getPurpose();
         })->toArray());
     }
@@ -205,7 +205,7 @@ class Chit
             $newCashbook,
             $this->body,
             $this->paymentMethod,
-            $this->items->map(function (?ChitItem $item = null): ChitItem {
+            $this->items->map(function (ChitItem $item): ChitItem {
                 return clone $item;
             })->toArray(),
             $this->scans->toArray(),
@@ -219,7 +219,7 @@ class Chit
 
     public function copyToCashbookWithUndefinedCategory(Cashbook $newCashbook): self
     {
-        $items = $this->items->map(function (?ChitItem $item = null): ChitItem {
+        $items = $this->items->map(function (ChitItem $item): ChitItem {
             $category = new Category(
                 $this->isIncome() ? CategoryAggregate::UNDEFINED_INCOME_ID : CategoryAggregate::UNDEFINED_EXPENSE_ID,
                 $item->getCategory()->getOperationType(),

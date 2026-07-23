@@ -87,7 +87,7 @@ final class ImportDialog extends Dialog
         $csvParser = new CsvParser();
 
         try {
-            $csv = $csvParser->parse($this->groupId, $upload->getContents());
+            $csv = $csvParser->parse($this->groupId, (string) $upload->getContents());
             foreach ($csv as $value) {
                 $this->commandBus->handle($value);
             }

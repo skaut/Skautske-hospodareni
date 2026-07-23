@@ -82,8 +82,12 @@ class BasePresenter extends \App\BaseSectionPresenter
         }
     }
 
-    protected function getCampId(): ?int
+    protected function getCampId(): int
     {
+        if ($this->aid === null) {
+            throw new LogicException('Camp ID is not set.');
+        }
+
         return $this->aid;
     }
 }

@@ -31,7 +31,7 @@ class BankAccountValidator extends Czech
         array_shift($data);
         $validBank = [];
         foreach ($data as &$row) {
-            $row = str_getcsv($row, ';', '"', '');
+            $row = str_getcsv((string) $row, ';', '"', '');
             if ($row[0] && $row[1]) {
                 $validBank[(string) $row[0]] = new BankInfoDTO($row[0], $row[1], $row[2] ?? null, $row[3] ?? null);
             }

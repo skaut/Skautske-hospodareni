@@ -9,6 +9,7 @@ use App\Model\Common\Services\CommandBus;
 use App\Model\Skautis\Exception\MissingCurrentRole;
 use App\Model\Unit\UserHasNoUnit;
 use App\Model\User\Exception\UserHasNoRole;
+use LogicException;
 use Nette;
 use Nette\Application\Request;
 use Nette\Application\UI\Presenter;
@@ -55,7 +56,7 @@ class ErrorPresenter extends Presenter
             try {
                 $this->commandBus->handle(new SelectFirstActiveRole());
                 $this->flashMessage('Chyběla aktivní role, byl jste automaticky přehlášen na jinou roli.', 'danger');
-                $this->forward($request);
+                $this->forward($request ?? throw new LogicException('Chybí původní požadavek.'));
             } catch (UserHasNoRole) {
                 $this->setView('noRole');
             }
