@@ -47,7 +47,7 @@ class PaymentGroupVisitRepositoryTest extends IntegrationTest
 
         $groups = $this->repository->findRecentlyVisitedGroups(2465, [10], 3);
 
-        self::assertSame([2, 3, 1], array_map(static fn (Group $group): int => $group->getId(), $groups));
+        self::assertSame([2, 3, 1], array_map(static fn (Group $group): int => (int) $group->getId(), $groups));
     }
 
     public function testDeleteVisitsOverLimitKeepsOnlyNewestUserVisits(): void

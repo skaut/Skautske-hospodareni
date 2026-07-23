@@ -15,6 +15,7 @@ use App\Model\Cashbook\ReadModel\Queries\InconsistentEducationCategoryTotalsQuer
 use App\Model\Event\SkautisEducationId;
 use App\Model\Skautis\ReadModel\Queries\EducationBudgetQuery;
 use App\Presentation\Education\BasePresenter;
+use LogicException;
 
 use function count;
 
@@ -50,13 +51,13 @@ final class BudgetPresenter extends BasePresenter
 
         try {
             $budgetEntries = $budgetAvailable
-                ? $this->queryBus->handle(new EducationBudgetQuery($educationId, $this->event->grantId))
+                ? $this->queryBus->handle(new EducationBudgetQuery($educationId, $this->event->grantId ?? throw new LogicException('Vzdělávací akce nemá přiřazenou dotaci.')))
                 : [];
             $inconsistentTotals = $categoriesAvailable
-                ? $this->queryBus->handle(new InconsistentEducationCategoryTotalsQuery($educationId, $this->event->startDate->year))
+                ? $this->queryBus->handle(new InconsistentEducationCategoryTotalsQuery($educationId, ($this->event->getStartDate() ?? throw new LogicException('Vzdělávací akce nemá datum zahájení.'))->year))
                 : [];
             $categoriesSummary = $categoriesAvailable
-                ? $this->queryBus->handle(new CategoriesSummaryQuery($this->getCashbookId($aid, $this->event->startDate->year)))
+                ? $this->queryBus->handle(new CategoriesSummaryQuery($this->getCashbookId($aid, $this->event->getStartDate()->year)))
                 : [];
         } catch (MissingCategory $e) {
             $this->flashMessage($e->getMessage(), 'danger');
@@ -86,7 +87,7 @@ final class BudgetPresenter extends BasePresenter
     {
         $this->editableOnly();
 
-        $this->commandBus->handle(new UpdateEducationCategoryTotals($this->getCashbookId($aid, $this->event->startDate->year)));
+        $this->commandBus->handle(new UpdateEducationCategoryTotals($this->getCashbookId($aid, ($this->event->getStartDate() ?? throw new LogicException('Vzdělávací akce nemá datum zahájení.'))->year)));
         $this->flashMessage('Kategorie byly přepočítány.');
 
         if ($this->isAjax()) {
