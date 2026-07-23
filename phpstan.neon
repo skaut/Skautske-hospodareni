@@ -8,10 +8,6 @@ parameters:
         -
             identifier: missingType.iterableValue
             path: tests/acceptance/PublicAccessCest.php
-        # getClassMetadata() nad dynamickým class-string neumí navázat generický typ (limit phpstan-doctrine).
-        -
-            identifier: argument.templateType
-            path: tests/_support/IntegrationTest.php
 
     doctrine:
         objectManagerLoader: tests/object-manager.php
@@ -55,4 +51,7 @@ services:
 	# Dynamic method return types
 	#
 	- class: CodeQuality\PresenterDynamicReturnTypeExtension
+	  tags: [ phpstan.broker.dynamicMethodReturnTypeExtension ]
+
+	- class: CodeQuality\GrabServiceReturnTypeExtension
 	  tags: [ phpstan.broker.dynamicMethodReturnTypeExtension ]

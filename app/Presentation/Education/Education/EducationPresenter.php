@@ -163,6 +163,6 @@ final class EducationPresenter extends BasePresenter
             },
         );
 
-        return count($propertyValues) > 0 ? array_sum($propertyValues) : null;
+        return count($propertyValues) > 0 ? (int) array_sum($propertyValues) : null;
     }
 }

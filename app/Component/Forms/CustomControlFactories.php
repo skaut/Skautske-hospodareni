@@ -24,8 +24,9 @@ trait CustomControlFactories
     {
         $control = new BaseContainer();
         $control->currentGroup = $this->currentGroup;
+        $this[(string) $name] = $control;
 
-        return $this[$name] = $control;
+        return $control;
     }
 
     public function addDynamic(string $name, callable $factory, int $createDefault = 0, bool $forceDefault = false): Multiplier

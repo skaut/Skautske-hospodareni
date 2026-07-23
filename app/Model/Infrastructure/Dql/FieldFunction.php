@@ -45,7 +45,7 @@ final class FieldFunction extends FunctionNode
 
     public function getSql(SqlWalker $sqlWalker): string
     {
-        $parts = [$this->expr->dispatch($sqlWalker)];
+        $parts = [$this->expr instanceof Node ? $this->expr->dispatch($sqlWalker) : $this->expr];
         foreach ($this->vals as $v) {
             $parts[] = $v->dispatch($sqlWalker);
         }

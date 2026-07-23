@@ -102,7 +102,8 @@ final class BugReportNotificationServiceTest extends Unit
 
         self::assertInstanceOf(Message::class, $mailer->message);
         self::assertCount(1, $mailer->message->getAttachments());
-        self::assertStringContainsString('filename="screenshot.jpg"', (string) $mailer->message->getAttachments()[0]->getHeader('Content-Disposition'));
+        $contentDisposition = $mailer->message->getAttachments()[0]->getHeader('Content-Disposition');
+        self::assertStringContainsString('filename="screenshot.jpg"', is_string($contentDisposition) ? $contentDisposition : '');
         self::assertSame('jpeg-content', $mailer->message->getAttachments()[0]->getBody());
         self::assertStringContainsString('Screenshot: screenshot.jpg', (string) $mailer->message->getBody());
     }

@@ -128,6 +128,7 @@ final class PersonPicker extends BaseControl
             ->setHtmlAttribute('class', 'btn btn-primary');
 
         $form->onSuccess[] = function (BaseForm $form): void {
+            /** @var array<string, mixed> $values */
             $values = $form->getValues('array');
 
             $this->onNonMemberAdd(

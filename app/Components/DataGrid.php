@@ -11,6 +11,8 @@ use Ublaboo\DataGrid\Localization\SimpleTranslator;
 use function array_map;
 use function array_reverse;
 use function date;
+use function is_array;
+use function iterator_to_array;
 use function range;
 use function Safe\array_combine;
 
@@ -71,11 +73,13 @@ class DataGrid extends \Ublaboo\DataGrid\DataGrid
      */
     public function getFilteredAndSortedData(): array
     {
-        return $this->dataModel->filterData(
+        $data = $this->dataModel->filterData(
             $this->getPaginator(),
             $this->createSorting($this->sort, $this->sortCallback),
             $this->assembleFilters(),
         );
+
+        return is_array($data) ? $data : iterator_to_array($data);
     }
 
     public function addYearFilter(string $name, string $label): FilterSelect

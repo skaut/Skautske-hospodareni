@@ -11,6 +11,7 @@ use DateTimeImmutable;
 
 use function array_values;
 
+/** @extends AbstractRepository<BankTransaction> */
 class BankTransactionRepository extends AbstractRepository
 {
     public function getEntityClass(): string

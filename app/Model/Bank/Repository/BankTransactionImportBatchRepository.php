@@ -10,6 +10,7 @@ use App\Model\Infrastructure\Repository\AbstractRepository;
 
 use function array_values;
 
+/** @extends AbstractRepository<BankTransactionImportBatch> */
 class BankTransactionImportBatchRepository extends AbstractRepository
 {
     public function getEntityClass(): string

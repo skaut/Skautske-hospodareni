@@ -9,6 +9,7 @@ use Nette\Application\UI\Control;
 use Nette\Bridges\ApplicationLatte\DefaultTemplate;
 use Nette\InvalidStateException;
 use stdClass;
+use Stringable;
 
 /**
  * @property DefaultTemplate $template
@@ -31,7 +32,7 @@ abstract class BaseControl extends Control
         return $presenter;
     }
 
-    /** @param string $message */
+    /** @param string|Stringable $message */
     // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
     public function flashMessage($message, string $type = 'info'): stdClass
     {
