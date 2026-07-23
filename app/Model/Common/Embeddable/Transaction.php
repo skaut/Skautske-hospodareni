@@ -111,6 +111,6 @@ class Transaction
             && $other->bankAccount === $this->bankAccount
             && $other->note === $this->note
             && $other->payer === $this->payer
-            && (($other->date === null && $this->date === null) || $other->date->equals($this->date));
+            && ($other->date === null ? $this->date === null : ($this->date !== null && $other->date->equals($this->date)));
     }
 }

@@ -292,8 +292,12 @@ final class ChitForm extends BaseControl
     private function removeItem(SubmitButton $button): void
     {
         $container = $button->getParent();
+        if (! $container instanceof Container) {
+            throw new LogicException('Assertion failed.');
+        }
+
         $replicator = $container->getParent();
-        if (! ($replicator instanceof Multiplier && $container instanceof Container)) {
+        if (! $replicator instanceof Multiplier) {
             throw new LogicException('Assertion failed.');
         }
         $replicator->removeComponent($container);
