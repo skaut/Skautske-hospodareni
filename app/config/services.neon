@@ -200,7 +200,7 @@ services:
     # Latte
     nette.latteFactory:
         setup:
-            - addFilterLoader([App\Helpers\AccountancyHelpers, loader])
+            - addExtension(App\Helpers\AccountancyLatteExtension())
 
 decorator:
     Doctrine\DBAL\Configuration:

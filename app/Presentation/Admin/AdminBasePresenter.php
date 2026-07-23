@@ -29,7 +29,7 @@ abstract class AdminBasePresenter extends \App\BasePresenter
             $this->redirect(':Default:');
         }
 
-        $unitId = $this->getParameter('unitId', null);
+        $unitId = $this->getParameter('unitId');
         $this->unitId = new UnitId($unitId !== null ? (int) $unitId : $this->unitService->getUnitId());
     }
 }

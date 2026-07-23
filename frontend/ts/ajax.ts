@@ -9,6 +9,7 @@ import {SnippetProcessor} from "./SnippetProcessor";
 import {initializeAutoSubmit} from "./autoSubmitForm";
 import {initializeLinksThatRequireConfirmation} from "./confirmDialogs";
 import {initializeCheckAllCheckboxes, initializeCheckboxToggle} from "./checkboxes";
+import {initializeDependentSelect} from "./dependentSelect";
 import {DataGridExtension} from "./DataGridExtension";
 import {initializeDatePicker} from "./datePicker";
 import {initializeMassEmailSelection} from "./massEmailSelection";
@@ -38,6 +39,7 @@ export default function (): void {
         initializeLinksThatRequireConfirmation(snippet, 'data-confirm');
         initializeCheckAllCheckboxes(snippet, 'data-dependent-checkboxes');
         initializeCheckboxToggle(snippet, 'data-visible-if-checked', 'data-visible-if-not-checked');
+        initializeDependentSelect(snippet, 'data-depends');
         initializeSendMassForm(snippet, 'chits-');
         initializeEditForm(snippet,'chits-');
         snippet.querySelectorAll<HTMLElement>('.date').forEach(initializeDatePicker);

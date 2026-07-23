@@ -125,9 +125,9 @@ class CommandForm extends Control
 
         $form->onSuccess[] = function (BaseForm $form): void {
             if ($this->commandId === null) {
-                $this->createCommand($form->getValues());
+                $this->createCommand($form->getValues(ArrayHash::class));
             } else {
-                $this->updateCommand($form->getValues());
+                $this->updateCommand($form->getValues(ArrayHash::class));
             }
 
             $this->onSuccess();

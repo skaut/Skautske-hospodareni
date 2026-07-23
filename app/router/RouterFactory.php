@@ -19,12 +19,12 @@ class RouterFactory
         $router = new RouteList();
 
         // Static pages
-        $router[] = new Route('app.manifest', 'Offline:manifest');
-        $router[] = new Route('o-projektu', 'Default:about');
-        $router[] = new Route('posily', 'Default:reinforcement');
-        $router[] = new Route('changelog', 'Default:changelog');
-        $router[] = new Route('design', 'Design:default');
-        $router[] = new Route('nahlasit-problem', 'BugReport:default');
+        $router->addRoute('app.manifest', 'Offline:manifest');
+        $router->addRoute('o-projektu', 'Default:about');
+        $router->addRoute('posily', 'Default:reinforcement');
+        $router->addRoute('changelog', 'Default:changelog');
+        $router->addRoute('design', 'Design:default');
+        $router->addRoute('nahlasit-problem', 'BugReport:default');
 
         // Sections
         $this->addTravelRoutes($router);
@@ -35,10 +35,10 @@ class RouterFactory
         $this->addSettingsRoutes($router);
 
         // Utility & auth
-        $router[] = new Route('debugging', 'Admin:Debugging:default');
-        $router[] = new Route('prodlouzit-prihlaseni', 'SessionKeepAlive:default');
-        $router[] = new Route('google/<action>', 'Settings:Google:default');
-        $router[] = new Route(
+        $router->addRoute('debugging', 'Admin:Debugging:default');
+        $router->addRoute('prodlouzit-prihlaseni', 'SessionKeepAlive:default');
+        $router->addRoute('google/<action>', 'Settings:Google:default');
+        $router->addRoute(
             'sign/<action>[/back-<backlink>]',
             [
                 'presenter' => 'Auth',
@@ -46,8 +46,8 @@ class RouterFactory
                 'backlink' => null,
             ],
         );
-        $router[] = new Route('nastenka', 'Dashboard:default');
-        $router[] = new Route(
+        $router->addRoute('nastenka', 'Dashboard:default');
+        $router->addRoute(
             'prirucka/<action>[#<anchor>]',
             [
                 'presenter' => 'Tutorial',
@@ -61,14 +61,14 @@ class RouterFactory
                 ],
             ],
         );
-        $router[] = new Route(
+        $router->addRoute(
             'offline/<action>.html',
             [
                 'presenter' => 'Offline',
                 'action' => 'list',
             ],
         );
-        $router[] = new Route('export/<action>/<cashbookId>', ['presenter' => 'Unit:CashbookExport', 'action' => 'default']);
+        $router->addRoute('export/<action>/<cashbookId>', ['presenter' => 'Unit:CashbookExport', 'action' => 'default']);
 
         $router->add(new SimpleRouter('Default:default'));
 
@@ -77,7 +77,7 @@ class RouterFactory
 
     private function addTravelRoutes(RouteList $router): void
     {
-        $router[] = $travel = new RouteList('Travel');
+        $router->add($travel = new RouteList('Travel'));
         $travel
             ->addRoute('cestaky/prikazy/new', 'Command:default')
             ->addRoute('cestaky/prikazy/<id [0-9]+>/edit', 'Command:edit')
@@ -92,7 +92,7 @@ class RouterFactory
     private function addEventRoutes(RouteList $router): void
     {
         // Education
-        $router[] = new Route(
+        $router->addRoute(
             'vzdelavacky/<aid [0-9]+>[/<presenter>[/<action>]]',
             [
                 'presenter' => [
@@ -108,10 +108,10 @@ class RouterFactory
                 'action' => 'default',
             ],
         );
-        $router[] = new Route('vzdelavacky', 'Education:Default:default');
+        $router->addRoute('vzdelavacky', 'Education:Default:default');
 
         // Camps
-        $router[] = new Route(
+        $router->addRoute(
             'tabory/<aid [0-9]+>/<action>',
             [
                 'presenter' => 'Camps:Detail',
@@ -120,7 +120,7 @@ class RouterFactory
                 ],
             ],
         );
-        $router[] = new Route(
+        $router->addRoute(
             'tabory/<aid [0-9]+>[/<presenter>[/<action>]]',
             [
                 'presenter' => [
@@ -135,11 +135,11 @@ class RouterFactory
                 'action' => 'default',
             ],
         );
-        $router[] = new Route('tabory', 'Camps:Default:default');
+        $router->addRoute('tabory', 'Camps:Default:default');
 
         // Events
-        $router[] = new Route('akce/nova', 'Events:NewEvent:default');
-        $router[] = new Route(
+        $router->addRoute('akce/nova', 'Events:NewEvent:default');
+        $router->addRoute(
             'akce/<aid [0-9]+>/<action>',
             [
                 'presenter' => 'Events:Event',
@@ -151,7 +151,7 @@ class RouterFactory
                 ],
             ],
         );
-        $router[] = new Route(
+        $router->addRoute(
             'akce/<aid [0-9]+>[/<presenter>[/<action>]]',
             [
                 'presenter' => [
@@ -166,12 +166,12 @@ class RouterFactory
                 'action' => 'default',
             ],
         );
-        $router[] = new Route('akce', 'Events:Default:default');
+        $router->addRoute('akce', 'Events:Default:default');
     }
 
     private function addUnitRoutes(RouteList $router): void
     {
-        $router[] = new Route(
+        $router->addRoute(
             'jednotka/<unitId [0-9]+>/rozpocet[/<action>] ? rok=<year>',
             [
                 'presenter' => 'Unit:Budget',
@@ -181,14 +181,14 @@ class RouterFactory
                 ],
             ],
         );
-        $router[] = new Route('jednotka/<unitId [0-9]+>/paragony ? rok=<year> & onlyUnlocked=<onlyUnlocked>', 'Unit:Chit:default');
-        $router[] = new Route('jednotka/<unitId [0-9]+>/kniha ? rok=<year>', 'Unit:Cashbook:default');
-        $router[] = new Route('jednotka ? jednotka=<unitId> & rok=<year>', 'Unit:Cashbook:default');
+        $router->addRoute('jednotka/<unitId [0-9]+>/paragony ? rok=<year> & onlyUnlocked=<onlyUnlocked>', 'Unit:Chit:default');
+        $router->addRoute('jednotka/<unitId [0-9]+>/kniha ? rok=<year>', 'Unit:Cashbook:default');
+        $router->addRoute('jednotka ? jednotka=<unitId> & rok=<year>', 'Unit:Cashbook:default');
     }
 
     private function addPaymentRoutes(RouteList $router): void
     {
-        $router[] = $payments = new RouteList('Payments');
+        $router->add($payments = new RouteList('Payments'));
         $payments
             ->addRoute('platby', 'Dashboard:default')
             // Groups
@@ -224,7 +224,7 @@ class RouterFactory
 
     private function addAdminRoutes(RouteList $router): void
     {
-        $router[] = $admin = new RouteList('Admin');
+        $router->add($admin = new RouteList('Admin'));
         $admin
             ->addRoute('admin', 'Default:default')
             ->withPath('admin')
@@ -237,7 +237,7 @@ class RouterFactory
 
     private function addSettingsRoutes(RouteList $router): void
     {
-        $router[] = $settings = new RouteList('Settings');
+        $router->add($settings = new RouteList('Settings'));
         $settings
             ->addRoute(
                 'nastaveni/bankovni-ucty/<id [0-9]+>[/<action>] ? jednotka=<unitId>',

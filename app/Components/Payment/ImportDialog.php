@@ -76,7 +76,7 @@ final class ImportDialog extends Dialog
 
     private function importSubmitted(Form $form): void
     {
-        $upload = $form->getValues()->file;
+        $upload = $form->getValues(\Nette\Utils\ArrayHash::class)->file;
         if (! $upload instanceof FileUpload) {
             throw new LogicException('Assertion failed.');
         }

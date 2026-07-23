@@ -38,6 +38,9 @@ final class UserContextProvider
             throw new LogicException('Assertion failed.');
         }
 
+        /** @var array<int, stdClass> $skautisRoles */
+        $skautisRoles = $identity->skautisRoles ?? [];
+
         return [
             'id' => $identity->getId(),
             'currentRole' => $this->formatRole($currentRole),
@@ -45,7 +48,7 @@ final class UserContextProvider
                 function (stdClass $r) {
                     return sprintf('DisplayName: %s, Unit: %s, IsActive: %s', $r->DisplayName, $r->Unit, $r->IsActive);
                 },
-                $identity->getRoles(),
+                $skautisRoles,
             ),
         ];
     }

@@ -7,6 +7,7 @@ namespace Component\Forms;
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use InvalidArgumentException;
+use Nette\Forms\Control;
 use Nette\Forms\Controls\DateTimeControl;
 use Nette\Utils\Html;
 
@@ -34,7 +35,7 @@ class DateControl extends DateTimeControl
     public function disableWeekends(): self
     {
         $this->addRule(
-            function (self $control): bool {
+            function (Control $control): bool {
                 $value = $control->getValue();
 
                 return $value === null || (new ChronosDate($value))->isWeekday();

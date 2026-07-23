@@ -12,12 +12,13 @@ use Assert\Assertion;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
 use LogicException;
+use Nette\Application\Attributes\Persistent;
 use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
 
 final class EditTravelDialog extends Dialog
 {
-    /** @var int|null @persistent */
+    #[Persistent]
     public ?int $travelId = null;
 
     public function __construct(private int $commandId, private TravelService $model)
@@ -84,7 +85,7 @@ final class EditTravelDialog extends Dialog
         ]);
 
         $form->onSuccess[] = function (Form $form) use ($travelId): void {
-            $this->formSucceeded($travelId, $form->getValues());
+            $this->formSucceeded($travelId, $form->getValues(ArrayHash::class));
         };
 
         return $form;

@@ -16,6 +16,7 @@ use App\Model\Unit\Unit;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
 use LogicException;
+use Nette\Application\Attributes\Persistent;
 
 /**
  * @method void onSelect(int[] $personIds)
@@ -23,10 +24,10 @@ use LogicException;
  */
 final class PersonPicker extends BaseControl
 {
-    /** @persistent */
+    #[Persistent]
     public ?string $unitId = null;
 
-    /** @persistent */
+    #[Persistent]
     public bool $directMemberOnly = false;
 
     /** @var callable[] */

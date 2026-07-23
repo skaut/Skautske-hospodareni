@@ -110,7 +110,7 @@ final class CashbookPresenter extends BasePresenter
     private function formImportHpdSubmitted(BaseForm $form): void
     {
         $this->editableOnly();
-        $values = $form->getValues();
+        $values = $form->getValues(\Nette\Utils\ArrayHash::class);
 
         $amount = $this->queryBus->handle(new EducationParticipantIncomeQuery(new SkautisEducationId($this->aid)));
 

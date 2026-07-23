@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App;
 
-use Component\Forms\DateControl;
-use DateTimeInterface;
-use Nette\Forms\Controls\MultiChoiceControl;
+use Nette\Forms\Control;
 use Nette\StaticClass;
 use Nette\Utils\Validators;
 
@@ -27,15 +25,14 @@ class MyValidators
         return $control->value !== null;
     }
 
-    public static function isValidRange(DateControl $end, DateTimeInterface $start): bool
+    public static function isValidRange(Control $end, mixed $start): bool
     {
         return $start <= $end->getValue();
     }
 
-    /** @param mixed[] $values */
-    public static function hasSelectedAny(MultiChoiceControl $control, array $values): bool
+    public static function hasSelectedAny(Control $control, mixed $values): bool
     {
-        return count(array_intersect($control->getValue(), $values)) !== 0;
+        return count(array_intersect((array) $control->getValue(), (array) $values)) !== 0;
     }
 
     public static function isValidEmailList(mixed $control): bool

@@ -143,7 +143,7 @@ final class CashbookPresenter extends BasePresenter
             $this->redirect('default', ['aid' => $this->getCampId()]);
         }
 
-        $values = $form->getValues();
+        $values = $form->getValues(\Nette\Utils\ArrayHash::class);
 
         try {
             $amount = $this->queryBus->handle(new CampParticipantIncomeQuery(

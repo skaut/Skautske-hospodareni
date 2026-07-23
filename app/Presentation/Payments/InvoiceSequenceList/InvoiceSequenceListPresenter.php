@@ -291,7 +291,7 @@ class InvoiceSequenceListPresenter extends PaymentsBasePresenter
 
     public function formSucceeded(BaseForm $form): void
     {
-        $values = $form->getValues();
+        $values = $form->getValues(ArrayHash::class);
 
         $role = $this->queryBus->handle(new ActiveSkautisRoleQuery());
         if (! $role instanceof SkautisRole) {

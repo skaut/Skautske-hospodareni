@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Components;
 
+use Nette\Application\Attributes\Persistent;
 use Nette\InvalidStateException;
 
 /**
@@ -14,11 +15,8 @@ use Nette\InvalidStateException;
  */
 abstract class Dialog extends BaseControl
 {
-    /**
-     * @internal
-     *
-     * @var bool @persistent
-     */
+    /** @internal */
+    #[Persistent]
     public bool $opened = false;
 
     protected function beforeRender(): void

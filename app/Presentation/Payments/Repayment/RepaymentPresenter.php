@@ -101,7 +101,7 @@ final class RepaymentPresenter extends BasePresenter
 
     private function repaymentFormSubmitted(BaseForm $form): void
     {
-        $values = $form->getValues();
+        $values = $form->getValues(\Nette\Utils\ArrayHash::class);
 
         if (! $this->isEditable) {
             $this->flashMessage('Nemáte oprávnění pro práci s platbami jednotky', 'danger');
