@@ -30,7 +30,7 @@
         "@babel/core": "^7.29.7",
         "@babel/preset-env": "^7.29.7",
         "@types/webpack-env": "^1.18.8",
-        "autoprefixer": "^10.5.2",
+        "autoprefixer": "^10.5.4",
         "babel-loader": "^10.1.1",
         "css-loader": "^7.1.4",
         "lint-staged": "^17.1.1",
