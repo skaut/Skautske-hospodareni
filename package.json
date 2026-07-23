@@ -42,7 +42,6 @@
         "typescript": "^6.0.3",
         "uglify-js": "^3.19.3",
         "webpack": "^5.108.4",
-        "webpack-bundle-analyzer": "^4.10.2",
         "webpack-cli": "^7.2.1"
     },
     "resolutions": {
