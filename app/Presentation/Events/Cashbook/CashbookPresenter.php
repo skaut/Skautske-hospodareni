@@ -82,14 +82,14 @@ final class CashbookPresenter extends BasePresenter
             }
         }
 
-        $totalPayment = $this->queryBus->handle(new EventParticipantIncomeQuery(new SkautisEventId($this->aid)));
+        $totalPayment = $this->queryBus->handle(new EventParticipantIncomeQuery(new SkautisEventId((int) $this->aid)));
 
         if ($totalPayment === 0.0) {
             $this->flashMessage('Nemáte žádné příjmy od účastníků');
             $this->redirect('this');
         }
 
-        $functions = $this->queryBus->handle(new EventFunctions(new SkautisEventId($this->aid)));
+        $functions = $this->queryBus->handle(new EventFunctions(new SkautisEventId((int) $this->aid)));
 
         if (! $functions instanceof Functions) {
             throw new LogicException('Assertion failed.');
@@ -128,6 +128,6 @@ final class CashbookPresenter extends BasePresenter
 
     private function getCashbookId(): CashbookId
     {
-        return $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($this->aid)));
+        return $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId((int) $this->aid)));
     }
 }

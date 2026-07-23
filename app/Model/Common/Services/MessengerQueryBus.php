@@ -23,7 +23,7 @@ final class MessengerQueryBus implements QueryBus
                 throw new LogicException('Assertion failed.');
             }
         } catch (HandlerFailedException $e) {
-            throw $e->getPrevious();
+            throw $e->getPrevious() ?? $e;
         }
 
         return $stamp->getResult();

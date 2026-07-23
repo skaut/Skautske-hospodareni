@@ -121,6 +121,6 @@ final class DetailPresenter extends BasePresenter
 
     protected function createComponentCategoryAutocomputedControl(): MissingAutocomputedCategoryControl
     {
-        return $this->missingAutocomputedCategoryControlFactory->create(new SkautisCampId($this->aid));
+        return $this->missingAutocomputedCategoryControlFactory->create(new SkautisCampId((int) $this->aid));
     }
 }

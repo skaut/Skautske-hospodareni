@@ -83,8 +83,8 @@ final class EventPresenter extends BasePresenter
             throw new LogicException('Assertion failed.');
         }
         $this->template->setParameters([
-            'statistic' => $this->queryBus->handle(new EventStatisticsQuery(new SkautisEventId($this->aid))),
-            'finalRealBalance' => $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId($this->aid))),
+            'statistic' => $this->queryBus->handle(new EventStatisticsQuery(new SkautisEventId((int) $this->aid))),
+            'finalRealBalance' => $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId((int) $this->aid))),
             'accessEditBase' => $accessEditBase,
             'accessCloseEvent' => $this->authorizator->isAllowed(Event::CLOSE, $aid),
             'accessOpenEvent' => $this->authorizator->isAllowed(Event::OPEN, $aid),
@@ -146,7 +146,7 @@ final class EventPresenter extends BasePresenter
 
     public function handleActivateStatistic(): void
     {
-        $this->commandBus->handle(new ActivateStatistics($this->aid));
+        $this->commandBus->handle(new ActivateStatistics((int) $this->aid));
         $this->redirect('this', ['aid' => $this->aid]);
     }
 
@@ -209,7 +209,7 @@ final class EventPresenter extends BasePresenter
 
         $id = (int) $this->aid;
         /** @var array<string, mixed> $values */
-        $values = $button->getForm()->getValues('array');
+        $values = ($button->getForm() ?? throw new LogicException('Formulář není dostupný.'))->getValues('array');
 
         $this->commandBus->handle(
             new UpdateEvent(
@@ -229,7 +229,7 @@ final class EventPresenter extends BasePresenter
 
     protected function createComponentFunctions(): FunctionsControl
     {
-        return $this->functionsFactory->create($this->aid, $this->getCurrentUnitId());
+        return $this->functionsFactory->create((int) $this->aid, $this->getCurrentUnitId());
     }
 
     private function getCashbookId(int $skautisEventId): CashbookId

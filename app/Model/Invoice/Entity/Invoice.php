@@ -230,7 +230,7 @@ class Invoice extends AbstractIdEntity
     public function getEmailRecipients(): array
     {
         return $this->emailRecipients
-            ->map(fn (?InvoiceEmailRecipient $recipient = null) => $recipient->getEmailAddress())
+            ->map(fn (InvoiceEmailRecipient $recipient) => $recipient->getEmailAddress())
             ->getValues();
     }
 

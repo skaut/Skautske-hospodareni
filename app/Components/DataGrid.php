@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Components;
 
+use LogicException;
 use Ublaboo\DataGrid\Column\Action;
 use Ublaboo\DataGrid\Filter\FilterSelect;
 use Ublaboo\DataGrid\Localization\SimpleTranslator;
@@ -73,7 +74,7 @@ class DataGrid extends \Ublaboo\DataGrid\DataGrid
      */
     public function getFilteredAndSortedData(): array
     {
-        $data = $this->dataModel->filterData(
+        $data = ($this->dataModel ?? throw new LogicException('Data source not set.'))->filterData(
             $this->getPaginator(),
             $this->createSorting($this->sort, $this->sortCallback),
             $this->assembleFilters(),

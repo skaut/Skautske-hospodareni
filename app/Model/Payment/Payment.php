@@ -123,7 +123,7 @@ class Payment extends Aggregate
             throw new InvalidArgumentException('Payment amount must be larger than 0');
         }
 
-        $this->groupId = $group->getId();
+        $this->groupId = (int) $group->getId();
         $this->personId = $personId;
         $this->state = State::get(State::PREPARING);
         $this->amount = $amount;
@@ -132,7 +132,7 @@ class Payment extends Aggregate
         $this->splitFromPayment = $splitFromPayment;
         $this->sentEmails = new ArrayCollection();
 
-        $this->raise(new PaymentWasCreated($group->getId(), $variableSymbol));
+        $this->raise(new PaymentWasCreated((int) $group->getId(), $variableSymbol));
     }
 
     public function getId(): int
@@ -275,7 +275,7 @@ class Payment extends Aggregate
     public function getEmailRecipients(): array
     {
         return $this->emailRecipients
-            ->map(fn (?EmailRecipient $recipient = null) => $recipient->getEmailAddress())
+            ->map(fn (EmailRecipient $recipient) => $recipient->getEmailAddress())
             ->getValues();
     }
 

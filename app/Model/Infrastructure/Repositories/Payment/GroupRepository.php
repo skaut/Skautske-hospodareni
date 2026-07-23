@@ -157,7 +157,7 @@ final class GroupRepository implements IGroupRepository
             function (EntityManager $entityManager) use ($group): void {
                 $entityManager->remove($group);
 
-                $this->eventBus->handle(new GroupWasRemoved($group->getId()));
+                $this->eventBus->handle(new GroupWasRemoved((int) $group->getId()));
 
                 $entityManager->flush();
             },

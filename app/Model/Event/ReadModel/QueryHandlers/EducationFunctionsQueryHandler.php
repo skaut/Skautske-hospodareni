@@ -37,7 +37,7 @@ class EducationFunctionsQueryHandler
             PersonFactory::create($functions[1]),
             PersonFactory::create($functions[2]),
             PersonFactory::create($functions[3]),
-            array_map([PersonFactory::class, 'create'], $assistants),
+            array_filter(array_map([PersonFactory::class, 'create'], $assistants)),
         );
     }
 }

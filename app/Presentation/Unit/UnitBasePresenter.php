@@ -45,7 +45,7 @@ class UnitBasePresenter extends BaseSectionPresenter
     {
         parent::beforeRender();
 
-        $presenterName = explode(':', $this->getName());
+        $presenterName = explode(':', (string) $this->getName());
 
         $this->template->setParameters([
             'year' => $this->year,

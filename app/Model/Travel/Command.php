@@ -252,7 +252,7 @@ class Command
     private function getDistance(): float
     {
         $distances = $this->travels
-                    ->map(fn (?Travel $t = null) => $t instanceof VehicleTravel ? $t->getDistance() : 0)
+                    ->map(fn (Travel $t) => $t instanceof VehicleTravel ? $t->getDistance() : 0)
                     ->toArray();
 
         return array_sum($distances);
@@ -388,7 +388,7 @@ class Command
     {
         return $this->travels->isEmpty()
             ? null
-            : min($this->travels->map(function (?Travel $travel = null) {
+            : min($this->travels->map(function (Travel $travel) {
                 return $travel->getDetails()->getDate()->toNative();
             })->toArray());
     }
@@ -418,7 +418,7 @@ class Command
     public function getUsedTransportTypes(): array
     {
         return array_unique(
-            $this->travels->map(fn (?Travel $travel = null) => $travel->getDetails()->getTransportType())->toArray(),
+            $this->travels->map(fn (Travel $travel) => $travel->getDetails()->getTransportType())->toArray(),
         );
     }
 

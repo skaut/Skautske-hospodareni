@@ -55,7 +55,7 @@ final class FinalBalanceQueryHandlerTest extends Unit
         $queryBus->shouldReceive('handle')
             ->withArgs(static function (ChitListQuery $query) {
                 return $query->getCashbookId()->toString() === self::CASHBOOK_ID
-                    && $query->getPaymentMethod()->equalsValue(Cashbook\PaymentMethod::CASH);
+                    && $query->getPaymentMethod()?->equalsValue(Cashbook\PaymentMethod::CASH) === true;
             })
             ->andReturn($chits);
 

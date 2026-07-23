@@ -15,6 +15,7 @@ use Component\Forms\BaseForm;
 use Exception;
 use Nette\Application\UI\Form;
 use Nette\Security\SimpleIdentity;
+use RuntimeException;
 
 use function array_column;
 use function array_filter;
@@ -66,7 +67,7 @@ class ContractPresenter extends \App\Presentation\Travel\TravelBasePresenter
 
     public function actionDetail(int $id): void
     {
-        $contract = $this->travelService->getContract($id);
+        $contract = $this->travelService->getContract($id) ?? throw new RuntimeException('Smlouva nebyla nalezena.');
 
         if (! $this->isContractAccessible($contract)) {
             $this->setView('accessDenied');
@@ -87,7 +88,7 @@ class ContractPresenter extends \App\Presentation\Travel\TravelBasePresenter
 
     public function actionPrint(int $id): void
     {
-        $contract = $this->travelService->getContract($id);
+        $contract = $this->travelService->getContract($id) ?? throw new RuntimeException('Smlouva nebyla nalezena.');
         if (! $this->isContractAccessible($contract)) {
             $this->setView('accessDenied');
             $this->template->setParameters(['message' => 'Nemáte oprávnění ke smlouvě o proplácení cestovních náhrad.']);
@@ -125,7 +126,7 @@ class ContractPresenter extends \App\Presentation\Travel\TravelBasePresenter
             $this->redirect('this');
         }
 
-        $contract = $this->travelService->getContract($contractId);
+        $contract = $this->travelService->getContract($contractId) ?? throw new RuntimeException('Smlouva nebyla nalezena.');
         if (! $this->isContractEditable($contract)) {
             $this->setView('accessDenied');
             $this->template->setParameters(['message' => 'Nemáte oprávnění ke smlouvě o proplácení cestovních náhrad.']);
