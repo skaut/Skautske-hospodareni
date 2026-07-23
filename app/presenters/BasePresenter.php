@@ -294,6 +294,7 @@ abstract class BasePresenter extends Presenter
         $this->redirect(':Default:', ['backlink' => $backlink]);
     }
 
+    /** @phpstan-assert-if-true !null $identity */
     private function isValidUserIdentity(?IIdentity $identity): bool
     {
         return $identity !== null && is_numeric($identity->getId());
@@ -392,7 +393,7 @@ abstract class BasePresenter extends Presenter
     /** @return array{0: string|null, 1: string} */
     private function resolveTemplateSection(): array
     {
-        $presenterNameParts = explode(':', $this->getName());
+        $presenterNameParts = explode(':', (string) $this->getName());
         $presenterName = $presenterNameParts[array_key_last($presenterNameParts)];
 
         if (($presenterNameParts[0] ?? null) === 'Accountancy') {

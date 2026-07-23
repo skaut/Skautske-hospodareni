@@ -36,7 +36,7 @@ class CampFunctionsHandler
     /**
      * @param stdClass[] $functions
      *
-     * @return Person[]
+     * @return array<string, Person|null>
      */
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     private function getFunctionsByType(array $functions): array
@@ -44,7 +44,7 @@ class CampFunctionsHandler
         $functionsByType = [];
 
         foreach ($functions as $function) {
-            $functionsByType[$function->EventFunctionTypeKey] = PersonFactory::create($function);
+            $functionsByType[(string) $function->EventFunctionTypeKey] = PersonFactory::create($function);
         }
 
         return $functionsByType;

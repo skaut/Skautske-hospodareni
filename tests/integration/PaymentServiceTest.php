@@ -56,7 +56,7 @@ class PaymentServiceTest extends IntegrationTest
         $expectedVariableSymbols = [1, 2, 3, 4, 5];
 
         foreach ($expectedVariableSymbols as $index => $variableSymbol) {
-            $this->assertSame($variableSymbol, $payments[$index]->getVariableSymbol()->toInt());
+            $this->assertSame($variableSymbol, $payments[$index]->getVariableSymbol()?->toInt());
         }
     }
 

@@ -18,7 +18,7 @@ final class MessengerEventBus implements EventBus
         try {
             $this->eventBus->dispatch($event);
         } catch (HandlerFailedException $e) {
-            throw $e->getPrevious();
+            throw $e->getPrevious() ?? $e;
         }
     }
 }

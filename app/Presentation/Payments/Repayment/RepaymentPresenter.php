@@ -34,13 +34,14 @@ final class RepaymentPresenter extends BasePresenter
 
     public function actionDefault(int $id): void
     {
-        $group = $this->group = $this->payments->getGroup($id);
+        $group = $this->payments->getGroup($id);
 
-        if ($group === null && ! $this->isEditable) {
+        if ($group === null) {
             $this->flashMessage('K této skupině nemáte přístup');
             $this->redirect('GroupList:');
         }
 
+        $this->group = $group;
         $this->template->setParameters(['group' => $group]);
     }
 

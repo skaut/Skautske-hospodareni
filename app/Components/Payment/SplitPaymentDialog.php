@@ -135,9 +135,12 @@ final class SplitPaymentDialog extends Dialog
     private function removeSplit(SubmitButton $button): void
     {
         $container = $button->getParent();
-        $replicator = $container->getParent();
+        if (! $container instanceof Container) {
+            throw new LogicException('Nepodařilo se odebrat část rozdělení platby.');
+        }
 
-        if (! $container instanceof Container || ! $replicator instanceof Multiplier) {
+        $replicator = $container->getParent();
+        if (! $replicator instanceof Multiplier) {
             throw new LogicException('Nepodařilo se odebrat část rozdělení platby.');
         }
 

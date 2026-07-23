@@ -18,6 +18,7 @@ use App\Model\Payment\InvalidBankAccountNumber;
 use Component\Forms\BaseForm;
 use InvalidArgumentException;
 use Nette\Utils\ArrayHash;
+use RuntimeException;
 use Utility\Cnb\BankNotFoundException;
 
 class BankAccountForm extends BaseControl
@@ -109,7 +110,7 @@ class BankAccountForm extends BaseControl
         };
 
         if ($this->id !== null) {
-            $account = $this->model->find($this->id);
+            $account = $this->model->find($this->id) ?? throw new RuntimeException('Bankovní účet nebyl nalezen.');
             $form->setDefaults([
                 'name' => $account->getName(),
                 'prefix' => $account->getNumber()->getPrefix(),

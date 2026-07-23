@@ -242,7 +242,7 @@ class Group
     public function getUnitIds(): array
     {
         return $this->units->map(
-            function (?Unit $unit = null): int {
+            function (Unit $unit): int {
                 return $unit->getUnitId();
             },
         )->toArray();

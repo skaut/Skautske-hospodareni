@@ -194,6 +194,6 @@ final class CashbookPresenter extends BasePresenter
 
     protected function createComponentCategoryAutocomputedControl(): MissingAutocomputedCategoryControl
     {
-        return $this->categoryAutocomputedFactory->create(new SkautisCampId($this->aid));
+        return $this->categoryAutocomputedFactory->create(new SkautisCampId((int) $this->aid));
     }
 }

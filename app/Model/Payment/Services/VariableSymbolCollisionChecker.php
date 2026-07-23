@@ -59,7 +59,7 @@ final class VariableSymbolCollisionChecker
             return;
         }
 
-        foreach ($this->payments->findByGroup($group->getId()) as $payment) {
+        foreach ($this->payments->findByGroup((int) $group->getId()) as $payment) {
             if (! $payment instanceof Payment || ! $payment->canBePaired()) {
                 continue;
             }

@@ -71,7 +71,7 @@ class Event implements ISkautisEvent
         int $typeId,
     ): void {
         $this->displayName = $displayName;
-        $this->location = $location;
+        $this->location = $location ?? '';
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->scopeId = $scopeId;

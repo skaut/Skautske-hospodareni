@@ -337,6 +337,7 @@ class GroupTest extends Unit
     {
         foreach ($expected as $key => $value) {
             $actual = $group->getEmailTemplate(EmailType::get($key));
+            $this->assertNotNull($actual);
             $this->assertTrue($value->equals($actual));
         }
     }

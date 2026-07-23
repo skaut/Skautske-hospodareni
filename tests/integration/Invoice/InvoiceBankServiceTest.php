@@ -108,7 +108,7 @@ class InvoiceBankServiceTest extends IntegrationTest
 
         $pairedCount = $this->invoiceBankService->pairAllSequences([$sequence->getId()], 7);
 
-        $pairedInvoice = $this->invoiceRepository->find($invoice->getId());
+        $pairedInvoice = $this->invoiceRepository->findOrFail($invoice->getId());
         self::assertSame(1, $pairedCount);
         self::assertTrue($pairedInvoice->isPaid());
         self::assertNotNull($pairedInvoice->getClosedAt());
@@ -154,7 +154,7 @@ class InvoiceBankServiceTest extends IntegrationTest
 
         self::assertSame(1, $this->invoiceBankService->pairAllSequences([$sequence->getId()], 7));
 
-        $pairedInvoice = $this->invoiceRepository->find($invoice->getId());
+        $pairedInvoice = $this->invoiceRepository->findOrFail($invoice->getId());
         self::assertTrue($pairedInvoice->isPaid());
         self::assertSame(
             'gpc:33a0e9641c4ccabc6e189f0be182c1aec44d51f87c36899402eae37a8da8',
@@ -181,7 +181,7 @@ class InvoiceBankServiceTest extends IntegrationTest
 
         self::assertSame(0, $this->invoiceBankService->pairAllSequences([$sequence->getId()], 7));
 
-        $pairedInvoice = $this->invoiceRepository->find($invoice->getId());
+        $pairedInvoice = $this->invoiceRepository->findOrFail($invoice->getId());
         self::assertFalse($pairedInvoice->isPaid());
         self::assertNull($pairedInvoice->getTransaction());
         self::assertNull($this->entityManager->getRepository(BankTransactionPairing::class)->findOneBy([
@@ -207,7 +207,7 @@ class InvoiceBankServiceTest extends IntegrationTest
             ]);
 
         self::assertSame(0, $this->invoiceBankService->pairAllSequences([$sequenceOne->getId()], 7));
-        self::assertFalse($this->invoiceRepository->find($invoiceOne->getId())->isPaid());
+        self::assertFalse($this->invoiceRepository->findOrFail($invoiceOne->getId())->isPaid());
         self::assertNull($this->entityManager->getRepository(BankTransactionPairing::class)->findOneBy([
             'invoice' => $invoiceOne,
             'transactionKey' => '1',
@@ -231,8 +231,8 @@ class InvoiceBankServiceTest extends IntegrationTest
             ]);
 
         self::assertSame(0, $this->invoiceBankService->pairAllSequences([$sequenceOne->getId(), $sequenceTwo->getId()], 7));
-        self::assertFalse($this->invoiceRepository->find($invoiceOne->getId())->isPaid());
-        self::assertFalse($this->invoiceRepository->find($invoiceTwo->getId())->isPaid());
+        self::assertFalse($this->invoiceRepository->findOrFail($invoiceOne->getId())->isPaid());
+        self::assertFalse($this->invoiceRepository->findOrFail($invoiceTwo->getId())->isPaid());
         self::assertSame([], $this->entityManager->getRepository(BankTransactionPairing::class)->findBy([]));
     }
 
@@ -254,8 +254,8 @@ class InvoiceBankServiceTest extends IntegrationTest
             ]);
 
         self::assertSame(0, $this->invoiceBankService->pairAutomaticSequences());
-        self::assertFalse($this->invoiceRepository->find($enabledInvoice->getId())->isPaid());
-        self::assertFalse($this->invoiceRepository->find($disabledInvoice->getId())->isPaid());
+        self::assertFalse($this->invoiceRepository->findOrFail($enabledInvoice->getId())->isPaid());
+        self::assertFalse($this->invoiceRepository->findOrFail($disabledInvoice->getId())->isPaid());
 
         $this->entityManager->persist(new BankTransaction(
             $bankAccount,
@@ -292,10 +292,10 @@ class InvoiceBankServiceTest extends IntegrationTest
         $this->entityManager->flush();
 
         self::assertSame(1, $this->invoiceBankService->pairAutomaticSequences());
-        self::assertTrue($this->invoiceRepository->find($enabledInvoice->getId())->isPaid());
-        self::assertFalse($this->invoiceRepository->find($disabledInvoice->getId())->isPaid());
-        self::assertNotNull($this->invoiceRepository->find($enabledInvoice->getId())->getSequence()->getLastPairing());
-        self::assertNull($this->invoiceRepository->find($disabledInvoice->getId())->getSequence()->getLastPairing());
+        self::assertTrue($this->invoiceRepository->findOrFail($enabledInvoice->getId())->isPaid());
+        self::assertFalse($this->invoiceRepository->findOrFail($disabledInvoice->getId())->isPaid());
+        self::assertNotNull($this->invoiceRepository->findOrFail($enabledInvoice->getId())->getSequence()->getLastPairing());
+        self::assertNull($this->invoiceRepository->findOrFail($disabledInvoice->getId())->getSequence()->getLastPairing());
     }
 
     private function createSequence(BankAccount $bankAccount, int $sequenceId, string $sequencePrefix, bool $automaticPairingEnabled): InvoiceSequence

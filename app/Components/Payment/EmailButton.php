@@ -30,7 +30,7 @@ class EmailButton extends BaseControl
     public const NO_TEMPLATE_ASSIGNED = 'Skupina nemá nastavenou šablonu pro upomínku';
 
     /** @param Payment[] $payments */
-    public function __construct(private QueryBus $queryBus, private CommandBus $commandBus, private MailingService $mailing, private bool $isEditable, private array $payments, private ?Group $group)
+    public function __construct(private QueryBus $queryBus, private CommandBus $commandBus, private MailingService $mailing, private bool $isEditable, private array $payments, private Group $group)
     {
     }
 
