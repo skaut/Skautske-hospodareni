@@ -5,7 +5,7 @@ Aplikace vyžaduje:
 - MySQL 8
 - Nginx
 - Composer
-- Node.js 22 a Yarn
+- Node.js 22 a npm
 - Docker Compose
 
 Všechny potřebné nástroje jsou instalovány v příslušných kontejnerech

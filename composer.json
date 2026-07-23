@@ -175,11 +175,11 @@
         "app-init": [
             "composer install --no-interaction",
             "[ -f .env.local ] || cp .env.local.example .env.local",
-            "yarn install",
+            "npm install",
             "bash -lc 'mkdir -p log temp/cache temp/sessions temp/mail-panel-latte temp/mail-panel-mails temp/mpdf www/webtemp && rm -rf temp/cache/* temp/sessions/* temp/mail-panel-latte/* temp/mail-panel-mails/* temp/mpdf/* www/webtemp/* frontend/.cache node_modules/.cache && rm -f temp/.phpcs-cache temp/vite-dev-server.log www/js/app.min.js www/js/app.min.js.LICENSE.txt www/css/app.css'",
             "bin/console migrations:drop-all-tables-views --force --no-interaction",
             "bin/console migrations:migrate --no-interaction",
-            "yarn build"
+            "npm run build"
         ],
         "diff": [
             "console doctrine:cache:clear",
