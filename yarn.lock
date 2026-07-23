@@ -1087,10 +1087,10 @@
   resolved "https://registry.yarnpkg.com/@tabler/icons/-/icons-3.44.0.tgz#286b203aac98591e27360de03974762568bbb272"
   integrity sha512-Wn0AOZG9sg0L+bjfMqq4eNhC6pQjIrk94LvvWYNYkY8KH8wC3YILRzQlrnVJc4FUeMxH/AK97QsYCX35H3LndA==
 
-"@types/bootstrap@^5.2.10":
-  version "5.2.10"
-  resolved "https://registry.yarnpkg.com/@types/bootstrap/-/bootstrap-5.2.10.tgz#58506463bccc6602bc051487ad8d3a6458f94c6c"
-  integrity sha512-F2X+cd6551tep0MvVZ6nM8v7XgGN/twpdNDjqS1TUM7YFNEtQYWk+dKAnH+T1gr6QgCoGMPl487xw/9hXooa2g==
+"@types/bootstrap@^5.2.11":
+  version "5.2.11"
+  resolved "https://registry.yarnpkg.com/@types/bootstrap/-/bootstrap-5.2.11.tgz#65916c7b3520e10e732802756414a16b5db9cd80"
+  integrity sha512-69ykbLiNzQxi6Q/y/aYJLrlzI5QkLQjhIYW2U+cxujBxAmaBtmXKtxnFes59Ttfpt936as6xJU0dYnmVpcwIwg==
   dependencies:
     "@popperjs/core" "^2.9.2"
 

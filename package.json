@@ -15,7 +15,7 @@
         "@popperjs/core": "^2.11.8",
         "@tabler/core": "^1.4.0",
         "@tabler/icons": "^3.44.0",
-        "@types/bootstrap": "^5.2.10",
+        "@types/bootstrap": "^5.2.11",
         "@types/nprogress": "^0.2.3",
         "@types/pikaday": "^1.7.9",
         "bootstrap": "5.3.8",
