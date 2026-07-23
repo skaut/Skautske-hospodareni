@@ -24,7 +24,7 @@
         "nprogress": "^0.2.0",
         "pikaday": "^1.8.2",
         "postcss-cli": "^11.0.0",
-        "postcss-loader": "^8.1.1"
+        "postcss-loader": "^8.2.1"
     },
     "devDependencies": {
         "@babel/core": "^7.29.7",
