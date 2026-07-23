@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Console;
 
 use FilesystemIterator;
+use SplFileInfo;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -52,6 +53,10 @@ final class CachePurgeCommand extends Command
         $items = new FilesystemIterator($directory, FilesystemIterator::SKIP_DOTS);
 
         foreach ($items as $item) {
+            if (! $item instanceof SplFileInfo) {
+                continue;
+            }
+
             $path = $item->getPathname();
 
             if ($item->isDir() && ! $item->isLink()) {

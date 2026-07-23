@@ -208,6 +208,7 @@ final class EventPresenter extends BasePresenter
         }
 
         $id = (int) $this->aid;
+        /** @var array<string, mixed> $values */
         $values = $button->getForm()->getValues('array');
 
         $this->commandBus->handle(
