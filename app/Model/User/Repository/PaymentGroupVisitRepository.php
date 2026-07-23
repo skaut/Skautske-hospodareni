@@ -13,6 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 use function array_map;
 
+/** @extends AbstractRepository<PaymentGroupVisit> */
 class PaymentGroupVisitRepository extends AbstractRepository
 {
     public function __construct(EntityManagerInterface $entityManager)

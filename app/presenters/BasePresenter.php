@@ -432,14 +432,14 @@ abstract class BasePresenter extends Presenter
         $activeItem = $rootItem->findActiveItem();
 
         $items = [[
-            'title' => $rootItem->getRealTitle(),
+            'title' => (string) $rootItem->getRealTitle(),
             'link' => $activeItem instanceof IMenuItem ? $rootItem->getRealLink() : null,
             'current' => ! $activeItem instanceof IMenuItem,
         ]];
 
         if ($activeItem instanceof IMenuItem) {
             $items[] = [
-                'title' => $activeItem->getRealTitle(),
+                'title' => (string) $activeItem->getRealTitle(),
                 'link' => null,
                 'current' => true,
             ];

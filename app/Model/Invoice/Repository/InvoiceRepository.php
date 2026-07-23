@@ -17,6 +17,7 @@ use LogicException;
 use function count;
 use function preg_match;
 
+/** @extends AbstractRepository<Invoice> */
 class InvoiceRepository extends AbstractRepository
 {
     public function __construct(EntityManagerInterface $entityManager)

@@ -148,7 +148,7 @@ final class BankAccountDetailViewFactory
         $accessibleGroupIds = array_keys($groupNames);
         $accessibleGroups = [];
         foreach ($this->groups->findByIds($accessibleGroupIds) as $group) {
-            $accessibleGroups[$group->getId()] = $group;
+            $accessibleGroups[(int) $group->getId()] = $group;
         }
 
         $accessiblePayments = array_filter(

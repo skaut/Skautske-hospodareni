@@ -30,7 +30,7 @@ final class CzechStringComparator
         if (class_exists(Collator::class)) {
             self::$collator ??= new Collator('cs_CZ');
 
-            return self::$collator->compare($left, $right);
+            return (int) self::$collator->compare($left, $right);
         }
 
         setlocale(LC_COLLATE, 'cs_CZ.utf8');

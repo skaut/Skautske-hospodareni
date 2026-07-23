@@ -33,7 +33,7 @@ class ChitListControl extends BaseControl
 
     public function handleLockChit(int $chitId): void
     {
-        $this->commandBus->handle(new LockChit($this->cashbookId, $chitId, $this->user->getId()));
+        $this->commandBus->handle(new LockChit($this->cashbookId, $chitId, (int) $this->user->getId()));
 
         $this->flashMessage('Doklad byl uzamčen', 'success');
         $this->redrawControl();

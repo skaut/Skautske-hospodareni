@@ -23,7 +23,7 @@ abstract class SettingsBasePresenter extends BaseSectionPresenter
         parent::startup();
 
         $role = $this->queryBus->handle(new ActiveSkautisRoleQuery());
-        $this->editableUnits = array_keys($this->queryBus->handle(new EditableUnitsQuery($role)));
+        $this->editableUnits = array_map('\intval', array_keys($this->queryBus->handle(new EditableUnitsQuery($role))));
 
         $this->isEditable = in_array($this->unitId->toInt(), $this->editableUnits, true);
 
