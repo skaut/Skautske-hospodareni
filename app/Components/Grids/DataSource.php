@@ -11,6 +11,9 @@ use Ublaboo\DataGrid\Filter\Filter;
 use Ublaboo\DataGrid\Utils\Sorting;
 
 use function count;
+use function is_array;
+use function iterator_to_array;
+use function max;
 
 abstract class DataSource implements IDataSource
 {
@@ -51,10 +54,12 @@ abstract class DataSource implements IDataSource
         }
 
         if ($this->limit !== null) {
-            $dataSource->limit($this->offset, $this->limit);
+            $dataSource->limit(max(0, $this->offset ?? 0), max(0, $this->limit));
         }
 
-        return $dataSource->getData();
+        $data = $dataSource->getData();
+
+        return is_array($data) ? $data : iterator_to_array($data);
     }
 
     /** @param Filter[] $filters */

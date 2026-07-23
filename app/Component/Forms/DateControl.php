@@ -61,7 +61,7 @@ class DateControl extends DateTimeControl
             return $value;
         }
 
-        $result = DateTimeImmutable::createFromFormat(self::DATE_FORMAT, str_replace(' ', '', $value));
+        $result = DateTimeImmutable::createFromFormat(self::DATE_FORMAT, str_replace(' ', '', (string) $value));
 
         return $result === false ? null : $result;
     }
@@ -72,7 +72,7 @@ class DateControl extends DateTimeControl
 
         $value = $this->getValue();
 
-        if ($value !== null) {
+        if ($value instanceof DateTimeImmutable) {
             $control->setAttribute('value', $value->format(self::DATE_FORMAT));
         }
 

@@ -139,6 +139,7 @@ abstract class AbstractRepository extends EntityRepository
      */
     public function getReferenceOrFail(mixed $id): object
     {
+        /** @var T|null $reference */
         $reference = $this
             ->getEntityManager()
             ->getReference($this->getEntityClass(), $id);

@@ -48,6 +48,7 @@ final class CashbookHandlersTest extends Unit
             ->once()
             ->with($cashbook);
 
+        /** @var callable $handler */
         $handler = new $handlerClass($repository);
 
         $handler($commandInstance);

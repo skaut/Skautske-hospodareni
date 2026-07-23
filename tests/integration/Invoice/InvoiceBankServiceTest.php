@@ -113,7 +113,7 @@ class InvoiceBankServiceTest extends IntegrationTest
         self::assertTrue($pairedInvoice->isPaid());
         self::assertNotNull($pairedInvoice->getClosedAt());
         self::assertNotNull($pairedInvoice->getTransaction());
-        self::assertSame('1', $pairedInvoice->getTransaction()?->getId());
+        self::assertSame('1', $pairedInvoice->getTransaction()->getId());
         $pairing = $this->entityManager->getRepository(BankTransactionPairing::class)->findOneBy([
             'invoice' => $invoice,
             'transactionKey' => '1',

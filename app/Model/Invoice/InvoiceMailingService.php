@@ -155,6 +155,8 @@ final class InvoiceMailingService
             return null;
         }
 
-        return substr((string) $part->getHeader('Content-ID'), 1, -1);
+        $contentId = $part->getHeader('Content-ID');
+
+        return substr(is_string($contentId) ? $contentId : '', 1, -1);
     }
 }

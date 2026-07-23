@@ -8,6 +8,7 @@ use App\Components\Factories\Travel\ICommandFormFactory;
 use App\Components\Factories\Travel\IEditTravelDialogFactory;
 use App\Components\Travel\CommandForm;
 use App\Components\Travel\EditTravelDialog;
+use App\Helpers\AccountancyLatteExtension;
 use App\Model\Services\PdfRenderer;
 use App\Model\Travel\Commands\Command\AddReturnTravel;
 use App\Model\Travel\Commands\Command\DuplicateTravel;
@@ -118,7 +119,7 @@ final class CommandPresenter extends \App\BasePresenter
         if (! $template instanceof Template) {
             throw new LogicException('Assertion failed.');
         }
-        $template->getLatte()->addFilterLoader('\\App\\Helpers\AccountancyHelpers::loader');
+        $template->getLatte()->addExtension(new AccountancyLatteExtension());
 
         $this->pdf->render(
             $template->renderToString(

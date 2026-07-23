@@ -12,6 +12,7 @@ use App\Model\Payment\Payment;
 
 use function array_values;
 
+/** @extends AbstractRepository<BankTransactionPairing> */
 class BankTransactionPairingRepository extends AbstractRepository
 {
     public function getEntityClass(): string

@@ -170,7 +170,7 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
             ->getSingleScalarResult();
 
         return $result !== null
-            ? new VariableSymbol($result)
+            ? new VariableSymbol((string) $result)
             : null;
     }
 

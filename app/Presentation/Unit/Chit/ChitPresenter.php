@@ -65,7 +65,7 @@ class ChitPresenter extends UnitBasePresenter
 
     public function handleLockCashbook(string $cashbookId): void
     {
-        $this->commandBus->handle(new LockCashbook(CashbookId::fromString($cashbookId), $this->getUser()->getId()));
+        $this->commandBus->handle(new LockCashbook(CashbookId::fromString($cashbookId), (int) $this->getUser()->getId()));
 
         $this->flashMessage('Evidence plateb byla uzamčena', 'success');
         $this->redrawControl();
