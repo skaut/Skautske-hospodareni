@@ -247,7 +247,7 @@ class BankAccountService
         return $this->transactions->importGpcTransactions(
             $bankAccountId,
             $fileUpload->getSanitizedName(),
-            $fileUpload->getContents(),
+            (string) $fileUpload->getContents(),
             $importedBy,
         );
     }

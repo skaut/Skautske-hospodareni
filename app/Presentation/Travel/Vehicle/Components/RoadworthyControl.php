@@ -96,7 +96,7 @@ final class RoadworthyControl extends BaseControl
         }
 
         $this->commandBus->handle(
-            new AddRoadworthyScan($this->vehicleId, $upload->getSanitizedName(), $upload->getContents()),
+            new AddRoadworthyScan($this->vehicleId, $upload->getSanitizedName(), (string) $upload->getContents()),
         );
 
         $this->presenter->flashMessage('Sken byl nahrán', 'success');
