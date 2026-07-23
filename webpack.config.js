@@ -55,8 +55,6 @@ export default {
             // both options are optional
             filename: 'css/[name].css',
         }),
-        // Useful for bundle size analysis:
-        // new (require('webpack-bundle-analyzer').BundleAnalyzerPlugin),
     ],
     resolve: {
         extensions: ['.ts', '.js', '.json', '.scss'],

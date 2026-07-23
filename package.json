@@ -14,7 +14,6 @@
         "@fortawesome/free-solid-svg-icons": "^7.3.0",
         "@popperjs/core": "^2.11.8",
         "@tabler/core": "^1.4.0",
-        "@tabler/icons": "^3.44.0",
         "@types/bootstrap": "^5.2.11",
         "@types/nprogress": "^0.2.3",
         "@types/pikaday": "^1.7.10",
@@ -23,7 +22,6 @@
         "naja": "^3.3.3",
         "nprogress": "^0.2.0",
         "pikaday": "^1.8.2",
-        "postcss-cli": "^11.0.0",
         "postcss-loader": "^8.2.1"
     },
     "devDependencies": {
@@ -40,9 +38,7 @@
         "sass-loader": "^17.0.0",
         "ts-loader": "^9.6.2",
         "typescript": "^6.0.3",
-        "uglify-js": "^3.19.3",
         "webpack": "^5.108.4",
-        "webpack-bundle-analyzer": "^4.10.2",
         "webpack-cli": "^7.2.1"
     },
     "resolutions": {
