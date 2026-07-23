@@ -27,7 +27,7 @@ class BankAccountValidator extends Czech
         if (! is_file($codesFile)) {
             throw new MissingBankCodesFileException('Czech bank codes CSV file is not valid. '.$codesFile);
         }
-        $data = str_getcsv(file_get_contents($codesFile), "\n", '"', '');
+        $data = str_getcsv((string) file_get_contents($codesFile), "\n", '"', '');
         array_shift($data);
         $validBank = [];
         foreach ($data as &$row) {
