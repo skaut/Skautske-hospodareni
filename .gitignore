@@ -11,9 +11,7 @@ deployment.*
 .wercker*
 tests/_output/*
 tests/_support/_generated/*
-www/css/app.css
-www/css/app.css.map
-www/js/app.min.js
+/www/dist
 app/config/google-credentials*
 adminer.php
 *.sh

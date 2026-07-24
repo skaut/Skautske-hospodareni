@@ -30,7 +30,7 @@
 
     <title>{block #title|stripHtml|trim}Skautské hospodaření{/block}</title>
 
-    <link rel="stylesheet" href="/css/app.css?{md5_file($wwwDir . '/css/app.css')}">
+    <link rel="stylesheet" href="/dist/css/app.css?{md5_file($wwwDir . '/dist/css/app.css')}">
 </head>
 
 <body class="app-shell" data-page-help-expanded="{$showPageHelp ? 'true' : 'false'}"
@@ -170,7 +170,7 @@
         </div>
     </footer>
     </div>
-    {var $jsBundle = '/js/app.min.js'}
+    {var $jsBundle = '/dist/js/app.min.js'}
     <script type="text/javascript" src="{$jsBundle}?{md5_file($wwwDir . '/' . $jsBundle)}"></script>
 </div>
 </body>
