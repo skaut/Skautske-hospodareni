@@ -8,7 +8,6 @@ final class Context
 {
     public function __construct(
         private string $appDir,
-        private string $wwwDir,
         private bool $productionMode,
         private bool $showTestBackground,
         private string $environmentLabel,
@@ -19,11 +18,6 @@ final class Context
     public function getAppDir(): string
     {
         return $this->appDir;
-    }
-
-    public function getWwwDir(): string
-    {
-        return $this->wwwDir;
     }
 
     public function isProduction(): bool

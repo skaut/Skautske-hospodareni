@@ -167,7 +167,6 @@ abstract class BasePresenter extends Presenter
             'linkGenerator' => $this->linkGenerator,
             'navigationBreadcrumbs' => $this->resolveNavigationBreadcrumbs($module),
             'productionMode' => $this->appContext->isProduction(),
-            'wwwDir' => $this->appContext->getWwwDir(),
             'currentUrl' => (string) $this->getHttpRequest()->getUrl(),
             'canAccessAdmin' => $this->authorizator->isAllowed(Admin::ACCESS, null),
             'canAccessInvoiceAccess' => $this->authorizator->isAllowed(InvoiceAccess::ACCESS, null),

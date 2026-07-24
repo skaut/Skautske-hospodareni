@@ -109,7 +109,6 @@ services:
     # App
     - App\Context(
           appDir: %appDir%
-          wwwDir: %wwwDir%
           productionMode: %productionMode%
           showTestBackground: %testBackground%
           environmentLabel: %environmentLabel%
@@ -197,10 +196,18 @@ services:
       )
     - App\Model\BugReport\BugReportService(appRelease: %sentry.releaseHash%)
 
+    # Vite (frontend build manifest)
+    - App\Ui\ViteManifest(
+          manifestPath: %wwwDir%/dist/.vite/manifest.json
+          basePath: /dist
+      )
+    - App\Ui\ViteExtension
+
     # Latte
     nette.latteFactory:
         setup:
             - addFilterLoader([App\Helpers\AccountancyHelpers, loader])
+            - addExtension(@App\Ui\ViteExtension)
 
 decorator:
     Doctrine\DBAL\Configuration:
