@@ -15,7 +15,7 @@ bin/console migrations:diff
 ```
 
 ## Buildování frontendu
-Pro vybuildování assetů používáme [Webpack](https://webpack.js.org/) a [Sass](https://sass-lang.com/).
+Pro vybuildování assetů používáme [Vite](https://vite.dev/) a [Sass](https://sass-lang.com/).
 
 Yarn je k dispozici v hlavním docker containeru.
 

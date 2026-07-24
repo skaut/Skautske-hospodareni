@@ -2,8 +2,8 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "webpack --mode=development",
-        "build-production": "webpack --mode=production",
+        "build": "vite build --mode development",
+        "build-production": "vite build",
         "check-types": "yarn tsc --noEmit"
     },
     "dependencies": {
@@ -23,27 +23,16 @@
         "naja": "^3.3.3",
         "nprogress": "^0.2.0",
         "pikaday": "^1.8.2",
-        "postcss-cli": "^11.0.0",
-        "postcss-loader": "^8.2.1"
+        "postcss-cli": "^11.0.0"
     },
     "devDependencies": {
-        "@babel/core": "^7.29.7",
-        "@babel/preset-env": "^7.29.7",
-        "@types/webpack-env": "^1.18.8",
         "autoprefixer": "^10.5.2",
-        "babel-loader": "^10.1.1",
-        "css-loader": "^7.1.4",
         "lint-staged": "^17.1.1",
-        "mini-css-extract-plugin": "^2.9.1",
         "postcss": "^8.5.10",
         "sass": "^1.101.0",
-        "sass-loader": "^17.0.0",
-        "ts-loader": "^9.6.2",
         "typescript": "^6.0.3",
         "uglify-js": "^3.19.3",
-        "webpack": "^5.108.4",
-        "webpack-bundle-analyzer": "^4.10.2",
-        "webpack-cli": "^7.2.1"
+        "vite": "^7.1.0"
     },
     "resolutions": {
         "bootstrap": "5.3.8"
