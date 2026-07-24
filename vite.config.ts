@@ -2,20 +2,26 @@ import { resolve } from 'node:path';
 
 import { defineConfig } from 'vite';
 
-// The frontend is bundled straight into the `www` directory that the PHP
-// application serves. The output file names are referenced verbatim from the
-// Latte templates (`/js/app.min.js`, `/css/app.css`), so they must stay stable.
+// All build output goes into `www/dist`, a gitignored directory served by the
+// PHP application (its document root is `www`). Keeping every generated file
+// under a single dedicated folder separates build artifacts from both the
+// committed assets in `www` and the sources in `frontend`. The bundle file
+// names are referenced verbatim from the Latte templates
+// (`/dist/js/app.min.js`, `/dist/css/app.css`), so they must stay stable.
 //
 // A plain Rollup entry (rather than Vite's `build.lib` mode) is used on
 // purpose: library mode always inlines CSS-referenced assets as base64 data
 // URIs, whereas here the icon fonts must be emitted as separate files (as they
 // were under Webpack).
 export default defineConfig(({ mode }) => ({
+    // Generated asset URLs (e.g. fonts referenced from the CSS) are served from
+    // `/dist/`, matching the output directory below.
+    base: '/dist/',
     build: {
-        outDir: 'www',
-        // `www` also contains committed, non-generated assets (index.php,
-        // images, other CSS, …) so it must never be wiped before a build.
-        emptyOutDir: false,
+        outDir: 'www/dist',
+        // The output directory holds nothing but build artifacts, so it is safe
+        // (and desirable) to wipe it on every build to avoid stale files.
+        emptyOutDir: true,
         // Emit a single stylesheet instead of per-chunk CSS.
         cssCodeSplit: false,
         sourcemap: mode === 'development',
@@ -41,7 +47,7 @@ export default defineConfig(({ mode }) => ({
                         return 'css/app.css';
                     }
                     // Fonts and other assets referenced from the CSS, emitted
-                    // to the `www` root with a content hash (as with Webpack).
+                    // to the `dist` root with a content hash.
                     return '[name]-[hash][extname]';
                 },
             },
