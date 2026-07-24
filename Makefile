@@ -15,9 +15,9 @@ EXEC_PHP_TEST   = docker exec -u docker -it hskauting.app-test
 COMPOSER_ROOT_VERSION ?= dev-master
 COMPOSER_ENV = env COMPOSER_ROOT_VERSION=$(COMPOSER_ROOT_VERSION)
 
-APP_SERVICES        = traefik php php-xdebug nginx mysql adminer
-TEST_SERVICES       = mysql-test php-test
-ACCEPTANCE_SERVICES = traefik mysql-test selenium nginx php-test
+APP_SERVICES        = traefik php php-xdebug nginx mysql adminer gotenberg
+TEST_SERVICES       = mysql-test php-test gotenberg
+ACCEPTANCE_SERVICES = traefik mysql-test selenium nginx php-test gotenberg
 
 TEST ?=
 TEST_ARGS = $(if $(strip $(TEST)),$(TEST),)

@@ -131,7 +131,7 @@ services:
     - App\Components\Payment\BankAccountDetail\BankAccountManualPairingService
 
     # PDF & Excel
-    - App\Model\Services\PdfRenderer(%tempDir%)
+    - App\Model\Services\PdfRenderer(%gotenbergUrl%, %appDir%/../www, GuzzleHttp\Client({ timeout: 60 }))
     - App\Model\Cashbook\ReadModel\SpreadsheetFactory
     - App\Model\Cashbook\ReadModel\QueryHandlers\Pdf\SheetChitsGenerator
 

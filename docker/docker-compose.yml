@@ -172,3 +172,13 @@ services:
             traefik.http.services.adminer.loadbalancer.server.port: 8080
         depends_on:
             - mysql
+
+    gotenberg:
+        image: gotenberg/gotenberg:8
+        restart: unless-stopped
+        networks:
+            - traefik
+        command:
+            - gotenberg
+            - --chromium-disable-javascript=true
+            - --chromium-allow-list=file:///tmp/.*
