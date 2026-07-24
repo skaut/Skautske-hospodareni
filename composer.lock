@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b9ad70066e65e1da828927ac6db1446c",
+    "content-hash": "2384804692272ee077dc62f0c11f7a88",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -669,37 +669,35 @@
         },
         {
             "name": "contributte/console",
-            "version": "v0.9.4",
+            "version": "v0.10.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/contributte/console.git",
-                "reference": "1021a24c98dff6ecdf4cc3d77cc3db159959b45c"
+                "reference": "dc2b84fb8dd795ea9988f396311aeed435aed495"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/contributte/console/zipball/1021a24c98dff6ecdf4cc3d77cc3db159959b45c",
-                "reference": "1021a24c98dff6ecdf4cc3d77cc3db159959b45c",
+                "url": "https://api.github.com/repos/contributte/console/zipball/dc2b84fb8dd795ea9988f396311aeed435aed495",
+                "reference": "dc2b84fb8dd795ea9988f396311aeed435aed495",
                 "shasum": ""
             },
             "require": {
-                "contributte/di": "^0.5.1|^0.6.0",
-                "php": ">=7.2",
-                "symfony/console": "^4.2.9|^5.0.0|^6.0.0"
+                "nette/di": "^3.1.8",
+                "php": ">=8.1",
+                "symfony/console": "^6.4.2 || ^7.0.2"
             },
             "require-dev": {
-                "nette/http": "^3.0.1",
-                "ninjify/nunjuck": "^0.4",
-                "ninjify/qa": "^0.13.0",
-                "phpstan/phpstan": "^1.8.11",
-                "phpstan/phpstan-deprecation-rules": "^1.0",
-                "phpstan/phpstan-nette": "^1.1.0",
-                "phpstan/phpstan-strict-rules": "^1.4.4",
-                "symfony/event-dispatcher": "^4.3 || ^5.0 || ^6.0"
+                "contributte/phpstan": "^0.1",
+                "contributte/qa": "^0.4",
+                "contributte/tester": "^0.4",
+                "mockery/mockery": "^1.6.7",
+                "nette/http": "^3.2.3",
+                "symfony/event-dispatcher": "^6.4.2 || ^7.0.2"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.10.x-dev"
+                    "dev-master": "0.11.x-dev"
                 }
             },
             "autoload": {
@@ -726,7 +724,7 @@
             ],
             "support": {
                 "issues": "https://github.com/contributte/console/issues",
-                "source": "https://github.com/contributte/console/tree/v0.9.4"
+                "source": "https://github.com/contributte/console/tree/v0.10.1"
             },
             "funding": [
                 {
@@ -738,43 +736,41 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-08-17T08:31:22+00:00"
+            "time": "2024-01-04T20:10:58+00:00"
         },
         {
             "name": "contributte/console-extra",
-            "version": "v0.7.2",
+            "version": "v0.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/contributte/console-extra.git",
-                "reference": "2deeadc71090e3483feeca41200a4179d7c589ef"
+                "reference": "09e14dcde8676828976c4c86bd912c8a67835975"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/contributte/console-extra/zipball/2deeadc71090e3483feeca41200a4179d7c589ef",
-                "reference": "2deeadc71090e3483feeca41200a4179d7c589ef",
+                "url": "https://api.github.com/repos/contributte/console-extra/zipball/09e14dcde8676828976c4c86bd912c8a67835975",
+                "reference": "09e14dcde8676828976c4c86bd912c8a67835975",
                 "shasum": ""
             },
             "require": {
-                "contributte/di": "^0.5.0",
-                "php": ">=7.2",
-                "symfony/console": "^4.0.0 || ^5.0.0 || ^6.0.0"
+                "nette/di": "^3.1.8",
+                "php": ">=8.1",
+                "symfony/console": "^6.4.2 || ^7.0.2"
             },
             "conflict": {
                 "nette/schema": "<1.0.1"
             },
             "require-dev": {
-                "contributte/console": "~0.7",
-                "latte/latte": "^2.6.0",
-                "nette/application": "^3.1.3",
-                "nette/bootstrap": "^3.1.1",
-                "nette/caching": "^3.1.1",
-                "nette/security": "^3.1.1",
-                "ninjify/nunjuck": "^0.4",
-                "ninjify/qa": "^0.13",
-                "phpstan/phpstan": "^1.0.0",
-                "phpstan/phpstan-deprecation-rules": "^1.0.0",
-                "phpstan/phpstan-nette": "^1.0.0",
-                "phpstan/phpstan-strict-rules": "^1.0.0"
+                "contributte/console": "~0.10",
+                "contributte/phpstan": "^0.1",
+                "contributte/qa": "^0.4",
+                "contributte/tester": "^0.4",
+                "latte/latte": "^3.0.12",
+                "mockery/mockery": "^1.5.0",
+                "nette/application": "^3.1.14",
+                "nette/bootstrap": "^3.2.1",
+                "nette/caching": "^3.2.3",
+                "nette/security": "^3.1.8"
             },
             "suggest": {
                 "contributte/console": "Symfony\\Console for Nette"
@@ -782,7 +778,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.7.x-dev"
+                    "dev-master": "0.9.x-dev"
                 }
             },
             "autoload": {
@@ -809,7 +805,7 @@
             ],
             "support": {
                 "issues": "https://github.com/contributte/console-extra/issues",
-                "source": "https://github.com/contributte/console-extra/tree/v0.7.2"
+                "source": "https://github.com/contributte/console-extra/tree/v0.8.0"
             },
             "funding": [
                 {
@@ -821,7 +817,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-06-15T07:40:08+00:00"
+            "time": "2024-01-04T12:17:40+00:00"
         },
         {
             "name": "contributte/di",
@@ -1052,38 +1048,35 @@
         },
         {
             "name": "contributte/scheduler",
-            "version": "v0.7.3",
+            "version": "v0.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/contributte/scheduler.git",
-                "reference": "eb2c21094fc3563ebbf82c5a280fc59d451af988"
+                "reference": "e7ea58b7c0f210acd3d3c566f9890d535d63bcc6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/contributte/scheduler/zipball/eb2c21094fc3563ebbf82c5a280fc59d451af988",
-                "reference": "eb2c21094fc3563ebbf82c5a280fc59d451af988",
+                "url": "https://api.github.com/repos/contributte/scheduler/zipball/e7ea58b7c0f210acd3d3c566f9890d535d63bcc6",
+                "reference": "e7ea58b7c0f210acd3d3c566f9890d535d63bcc6",
                 "shasum": ""
             },
             "require": {
-                "contributte/di": "^0.5",
-                "dragonmantank/cron-expression": "^3.0.1",
-                "php": ">=7.2",
-                "symfony/console": "^5.0.0 || ^6.0.0"
+                "dragonmantank/cron-expression": "^3.3.3",
+                "nette/di": "^3.1.8",
+                "php": ">=8.2",
+                "symfony/console": "^6.4.1 || ^7.0.1 || ^8.0.0"
             },
             "require-dev": {
-                "mockery/mockery": "^1.2.0",
-                "ninjify/nunjuck": "^0.4",
-                "ninjify/qa": "^0.13",
-                "phpstan/phpstan": "^1.0",
-                "phpstan/phpstan-deprecation-rules": "^1.0",
-                "phpstan/phpstan-nette": "^1.0",
-                "phpstan/phpstan-strict-rules": "^1.0",
-                "tracy/tracy": "^2.6.2"
+                "contributte/phpstan": "^0.2.0",
+                "contributte/qa": "^0.4.0",
+                "contributte/tester": "^0.4.0",
+                "mockery/mockery": "^1.6.12",
+                "tracy/tracy": "^2.10.5"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.8.x-dev"
+                    "dev-master": "0.10.x-dev"
                 }
             },
             "autoload": {
@@ -1115,7 +1108,7 @@
             ],
             "support": {
                 "issues": "https://github.com/contributte/scheduler/issues",
-                "source": "https://github.com/contributte/scheduler/tree/v0.7.3"
+                "source": "https://github.com/contributte/scheduler/tree/v0.9.0"
             },
             "funding": [
                 {
@@ -1127,7 +1120,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-02-10T12:08:12+00:00"
+            "time": "2026-01-04T19:56:27+00:00"
         },
         {
             "name": "dasprid/enum",
