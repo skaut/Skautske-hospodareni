@@ -35,11 +35,7 @@ export default defineConfig(({ mode }) => ({
         rollupOptions: {
             input: resolve(import.meta.dirname, 'frontend/app.ts'),
             output: {
-                // A classic (non-module) self-executing script, included via a
-                // plain <script src> tag.
-                format: 'iife',
-                name: 'app',
-                inlineDynamicImports: true,
+                // Emitted as an ES module, loaded via <script type="module">.
                 entryFileNames: 'js/app.min.js',
                 assetFileNames: (assetInfo): string => {
                     const name = assetInfo.names?.[0] ?? '';
