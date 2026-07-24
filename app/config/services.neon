@@ -197,10 +197,19 @@ services:
       )
     - App\Model\BugReport\BugReportService(appRelease: %sentry.releaseHash%)
 
+    # Vite (frontend build manifest)
+    - App\Ui\ViteManifest(
+          manifestPath: %wwwDir%/dist/.vite/manifest.json
+          basePath: /dist
+      )
+    - App\Ui\ViteExtension
+
     # Latte
     nette.latteFactory:
         setup:
             - addExtension(App\Helpers\AccountancyLatteExtension())
+            - addFilterLoader([App\Helpers\AccountancyHelpers, loader])
+            - addExtension(@App\Ui\ViteExtension)
 
 decorator:
     Doctrine\DBAL\Configuration:
