@@ -7,8 +7,8 @@ namespace App\Ui;
 use Latte\Extension;
 
 /**
- * Exposes the Vite manifest to Latte templates via the `viteJs()` and
- * `viteCss()` functions, e.g. `<script src={viteJs('frontend/app.ts')}>`.
+ * Exposes the Vite manifest to Latte templates via the `viteJs()`, `viteCss()`
+ * and `viteJsPreload()` functions, e.g. `<script src={viteJs('frontend/app.ts')}>`.
  */
 final class ViteExtension extends Extension
 {
@@ -22,6 +22,7 @@ final class ViteExtension extends Extension
         return [
             'viteJs' => $this->manifest->js(...),
             'viteCss' => $this->manifest->css(...),
+            'viteJsPreload' => $this->manifest->jsPreload(...),
         ];
     }
 }

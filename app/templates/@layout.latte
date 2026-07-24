@@ -31,6 +31,7 @@
     <title>{block #title|stripHtml|trim}Skautské hospodaření{/block}</title>
 
     <link n:foreach="viteCss('frontend/app.ts') as $href" rel="stylesheet" href="{$href}">
+    <link n:foreach="viteJsPreload('frontend/app.ts') as $href" rel="modulepreload" href="{$href}">
 </head>
 
 <body class="app-shell" data-page-help-expanded="{$showPageHelp ? 'true' : 'false'}"
