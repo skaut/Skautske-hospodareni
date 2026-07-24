@@ -12,10 +12,10 @@ use Money\Money;
 
 use function sprintf;
 
-/** @ORM\Entity() */
+#[ORM\Entity]
 class TransportTravel extends Travel
 {
-    /** @ORM\Column(type="money") */
+    #[ORM\Column(type: 'money')]
     private Money $price;
 
     public function __construct(int $id, Money $price, TravelDetails $details, Command $command)

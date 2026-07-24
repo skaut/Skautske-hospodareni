@@ -76,7 +76,7 @@ class Invoice extends AbstractIdEntity
     #[Column(type: Types::DATETIME_IMMUTABLE, nullable: false)]
     private DateTimeImmutable $dateOfTaxPayment;
 
-    #[Column(type: 'string_enum', length: 20)]
+    #[Column(type: Types::STRING, length: 20)]
     private string $state = InvoiceState::ISSUED;
 
     #[Column(type: 'variable_symbol', length: 10, nullable: false)]
@@ -104,7 +104,7 @@ class Invoice extends AbstractIdEntity
     #[OneToMany(mappedBy: 'invoice', targetEntity: InvoiceSentEmail::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $sentEmails;
 
-    #[Column(type: 'string_enum', length: 20)]
+    #[Column(type: Types::STRING, length: 20)]
     private string $paymentType;
 
     #[Column(type: Types::STRING, length: 255, nullable: true)]

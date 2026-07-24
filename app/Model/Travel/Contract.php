@@ -9,35 +9,31 @@ use App\Model\Unit\Unit;
 use Cake\Chronos\ChronosDate;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(name="tc_contracts")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'tc_contracts')]
 class Contract
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    /** @ORM\Column(type="integer") */
+    #[ORM\Column(type: 'integer')]
     private int $unitId;
 
-    /** @ORM\Column(type="string", length=64) */
+    #[ORM\Column(type: 'string', length: 64)]
     private string $unitRepresentative;
 
-    /** @ORM\Column(type="chronos_date", nullable=true) */
+    #[ORM\Column(type: 'chronos_date', nullable: true)]
     private ?ChronosDate $since = null;
 
-    /** @ORM\Column(type="chronos_date", nullable=true) */
+    #[ORM\Column(type: 'chronos_date', nullable: true)]
     private ?ChronosDate $until = null;
 
-    /** @ORM\Embedded(class=ContractPassenger::class, columnPrefix=false) */
+    #[ORM\Embedded(class: ContractPassenger::class, columnPrefix: false)]
     private ContractPassenger $passenger;
 
-    /** @ORM\Column(type="smallint", options={"comment":"1-old, 2-podle NOZ"}) */
+    #[ORM\Column(type: 'smallint', options: ['comment' => '1-old, 2-podle NOZ'])]
     private int $templateVersion = 2;
 
     public function __construct(Unit $unit, string $unitRepresentative, ChronosDate $since, ContractPassenger $passenger)

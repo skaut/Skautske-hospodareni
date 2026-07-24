@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Model\Infrastructure\DoctrineNullableEmbeddables;
 
-use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LifecycleEventArgs;
@@ -16,10 +15,6 @@ use function strpos;
 
 class Subscriber implements EventSubscriber
 {
-    public function __construct(private Reader $reader)
-    {
-    }
-
     /** @return string[] */
     public function getSubscribedEvents(): array
     {
@@ -90,6 +85,6 @@ class Subscriber implements EventSubscriber
 
     private function hasNullableAnnotation(ReflectionProperty $property): bool
     {
-        return $this->reader->getPropertyAnnotation($property, Nullable::class) !== null;
+        return $property->getAttributes(Nullable::class) !== [];
     }
 }

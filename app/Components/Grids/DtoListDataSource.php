@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Components\Grids;
 
 use App\Utils\CzechStringComparator;
+use Contributte\Datagrid\DataSource\IDataSource;
+use Contributte\Datagrid\Utils\Sorting;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\ClosureExpressionVisitor;
 use Nette\NotImplementedException;
-use Ublaboo\DataGrid\DataSource\IDataSource;
-use Ublaboo\DataGrid\Utils\Sorting;
 
 use function usort;
 

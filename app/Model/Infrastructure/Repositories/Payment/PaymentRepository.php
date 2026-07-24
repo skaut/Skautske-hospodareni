@@ -57,8 +57,9 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
 
         foreach ($res as $row) {
             $id = (int) $row['groupId'];
-            $amounts[$id][$row['state']] += (float) $row['amount'];
-            $counts[$id][$row['state']] = (int) $row['number'];
+            $state = $row['state']->getValue();
+            $amounts[$id][$state] += (float) $row['amount'];
+            $counts[$id][$state] = (int) $row['number'];
         }
 
         $summaries = array_fill_keys($groupIds, []);

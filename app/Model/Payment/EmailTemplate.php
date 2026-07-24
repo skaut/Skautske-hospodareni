@@ -12,13 +12,13 @@ use function array_keys;
 use function array_values;
 use function str_replace;
 
-/** @ORM\Embeddable() */
+#[ORM\Embeddable]
 class EmailTemplate
 {
-    /** @ORM\Column(type="string") */
+    #[ORM\Column(type: 'string')]
     private string $subject;
 
-    /** @ORM\Column(type="text") */
+    #[ORM\Column(type: 'text')]
     private string $body;
 
     public function __construct(string $subject, string $body)

@@ -14,13 +14,13 @@ use App\Model\BugReport\Manager\TechnicalErrorReportManager;
 use App\Model\BugReport\Repository\TechnicalErrorReportRepository;
 use Component\Forms\BaseForm;
 use Contributte\Application\Response\PSR7StreamResponse;
+use Contributte\Datagrid\Column\Action\Confirmation\StringConfirmation;
 use Nette\Application\UI\Form;
 use Nette\Utils\Html;
 use Nette\Utils\Json;
 use Nette\Utils\Strings;
 use RuntimeException;
 use Throwable;
-use Ublaboo\DataGrid\Column\Action\Confirmation\StringConfirmation;
 
 final class BugReportsPresenter extends \App\Presentation\Admin\AdminBasePresenter
 {
