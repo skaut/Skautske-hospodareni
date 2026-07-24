@@ -32,15 +32,45 @@ dbal:
           collate: utf8mb4_czech_ci
 
         typesMapping:
-            enum: string_enum
+            enum: string
             set: string
             bigint: int64
 
         types:
+            string_enum:
+                class: App\Model\Infrastructure\Types\StringEnumType
+                commented: true
             int64:
                 class: App\Model\Infrastructure\Types\Int64Type
-            string_enum:
-                class: Consistence\Doctrine\Enum\Type\StringEnumType
+            payment_state:
+                class: App\Model\Infrastructure\Types\PaymentStateType
+                commented: true
+            payment_email_type:
+                class: App\Model\Infrastructure\Types\PaymentEmailTypeType
+                commented: true
+            payment_group_type:
+                class: App\Model\Infrastructure\Types\PaymentGroupTypeType
+                commented: true
+            log_type:
+                class: App\Model\Infrastructure\Types\LogTypeType
+                commented: true
+            travel_transport_type:
+                class: App\Model\Infrastructure\Types\TravelTransportTypeType
+                commented: true
+            cashbook_operation:
+                class: App\Model\Infrastructure\Types\CashbookOperationType
+                commented: true
+            cashbook_type:
+                class: App\Model\Infrastructure\Types\CashbookTypeType
+                commented: true
+            cashbook_object_type:
+                class: App\Model\Infrastructure\Types\CashbookObjectTypeType
+                commented: true
+            chit_payment_method:
+                class: App\Model\Infrastructure\Types\ChitPaymentMethodType
+                commented: true
+            participant_event_type:
+                class: App\Model\Infrastructure\Types\ParticipantEventTypeType
                 commented: true
             money:
                 class: App\Model\Infrastructure\Types\MoneyType

@@ -16,19 +16,18 @@ use function sprintf;
 use function str_replace;
 
 /**
- * @ORM\Embeddable()
- *
  * @property string $expression
  * @property float  $value
  */
+#[ORM\Embeddable]
 class Amount
 {
     use SmartObject;
 
-    /** @ORM\Column(type="string", name="priceText", length=100) */
+    #[ORM\Column(type: 'string', name: 'priceText', length: 100)]
     private string $expression;
 
-    /** @ORM\Column(type="float", name="price") */
+    #[ORM\Column(type: 'float', name: 'price')]
     private float $value;
 
     public function __construct(string $expression)

@@ -97,6 +97,7 @@ final class BankServiceTest extends Unit
         $bankService->pairAllGroups([$groupId]);
 
         $transaction = $payments[0]->getTransaction();
+        $this->assertNotNull($transaction);
         $this->assertSame('123', $transaction->getId());
         $this->assertSame($account, $transaction->getBankAccount());
         $this->assertSame('note123', $transaction->getNote());
@@ -331,7 +332,7 @@ final class BankServiceTest extends Unit
             $candidates,
             $pairingService,
         );
-        $bankService->pairAllGroups([$group1->getId()]);
+        $bankService->pairAllGroups([(int) $group1->getId()]);
 
         // Pair group 1# and #2
         $bank = m::mock(BankTransactionService::class);
@@ -377,7 +378,7 @@ final class BankServiceTest extends Unit
             $candidates,
             $pairingService,
         );
-        $bankService->pairAllGroups([$group1->getId(), $group2->getId()]);
+        $bankService->pairAllGroups([(int) $group1->getId(), (int) $group2->getId()]);
     }
 
     /** @param BankAccount[] $bankAccounts */

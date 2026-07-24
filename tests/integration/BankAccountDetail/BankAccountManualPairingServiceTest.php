@@ -105,7 +105,7 @@ final class BankAccountManualPairingServiceTest extends IntegrationTest
                 $bankAccount->getId(),
                 $paymentTransaction->getTransactionKey(),
                 $siblingPayment->getId(),
-                [$accessibleGroup->getId()],
+                [(int) $accessibleGroup->getId()],
                 'Tester',
             );
             self::fail('Sibling payment pairing should be blocked.');
@@ -149,7 +149,7 @@ final class BankAccountManualPairingServiceTest extends IntegrationTest
             $bankAccount->getId(),
             $paymentTransaction->getTransactionKey(),
             $payment->getId(),
-            [$group->getId()],
+            [(int) $group->getId()],
             'Tester',
         );
         self::assertSame('Bankovní transakce byla ručně spárována s platbou.', $paymentOutcome->successMessage);
@@ -223,7 +223,7 @@ final class BankAccountManualPairingServiceTest extends IntegrationTest
             new LinkGenerator(new SimpleRouter(), new UrlScript('https://example.test/')),
         );
 
-        $detail = $factory->create($bankAccount->getId(), [$group->getId() => $group->getName()], [11], includeInvoices: false);
+        $detail = $factory->create($bankAccount->getId(), [(int) $group->getId() => $group->getName()], [11], includeInvoices: false);
 
         self::assertNotNull($detail->transactionRows);
         self::assertSame('payment:'.$amountCandidate->getId(), $detail->transactionRows[0]->manualCandidates[0]->targetKey);

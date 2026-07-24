@@ -54,7 +54,7 @@ final class CampAddParticipantsPresenter extends BasePresenter
         );
 
         try {
-            $this->participantPaymentDetails = $this->model->getParticipantPaymentDetails(new SkautisCampId($this->group->getSkautisId()));
+            $this->participantPaymentDetails = $this->model->getParticipantPaymentDetails(new SkautisCampId((int) $this->group->getSkautisId()));
         } catch (CampInvitationNotFound) {
             $this->flashMessage('Nelze načíst data z e-přihlášek. E-přihláška není aktivní, nebo nemáte oprávnění.', 'warning');
         }
@@ -96,8 +96,8 @@ final class CampAddParticipantsPresenter extends BasePresenter
                 $this->queryBus->handle(new MemberEmailsQuery($p->getPersonId())),
                 $p->getDisplayName(),
                 $amount === 0.0 ? null : $amount,
-                $paymentNote,
-                $variableSymbol,
+                (string) $paymentNote,
+                (string) $variableSymbol,
                 $dueDate,
             );
         }

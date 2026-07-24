@@ -16,7 +16,6 @@ use App\Model\Cashbook\Events\ChitWasRemoved;
 use App\Model\Cashbook\Events\ChitWasUpdated;
 use App\Model\Common\Aggregate;
 use App\Model\Common\FilePath;
-use Consistence\Doctrine\Enum\EnumAnnotation;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -30,41 +29,34 @@ use function max;
 use function sprintf;
 use function uasort;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(name="ac_cashbook")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'ac_cashbook')]
 class Cashbook extends Aggregate
 {
-    /**
-     * @ORM\Id()
-     * @ORM\Column(type="cashbook_id")
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'cashbook_id')]
     private CashbookId $id;
 
     /**
-     * @ORM\Column(type="string_enum")
-     *
      * @var CashbookType
-     * @EnumAnnotation(class=CashbookType::class)
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
+    #[ORM\Column(type: 'cashbook_type')]
     private $type;
 
-    /** @ORM\Column(type="string", nullable=true) */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $cashChitNumberPrefix = null;
 
-    /** @ORM\Column(type="string", nullable=true) */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $bankChitNumberPrefix = null;
 
     /**
-     * @ORM\OneToMany(targetEntity=Chit::class, mappedBy="cashbook", cascade={"persist", "remove"}, orphanRemoval=true)
-     *
      * @var Collection&iterable<Chit>
      */
+    #[ORM\OneToMany(targetEntity: Chit::class, mappedBy: 'cashbook', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $chits;
 
-    /** @ORM\Column(type="text") */
+    #[ORM\Column(type: 'text')]
     private string $note;
 
     public function __construct(CashbookId $id, CashbookType $type)
@@ -385,10 +377,10 @@ class Cashbook extends Aggregate
         $chit->removeScan($path);
     }
 
-    /** @phpstan-return ArrayCollection<int, Chit> */
-    private function getChitsByPaymentMethod(PaymentMethod $paymentMethod): ArrayCollection
+    /** @phpstan-return Collection<int, Chit> */
+    private function getChitsByPaymentMethod(PaymentMethod $paymentMethod): Collection
     {
-        return $this->chits->filter(function (?Chit $chit = null) use ($paymentMethod): bool {
+        return $this->chits->filter(function (Chit $chit) use ($paymentMethod): bool {
             return $chit->getPaymentMethod()->equals($paymentMethod);
         });
     }

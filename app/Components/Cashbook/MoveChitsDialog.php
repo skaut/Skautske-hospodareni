@@ -24,6 +24,7 @@ use App\Model\Event\ReadModel\Queries\CampListQuery;
 use App\Model\Event\ReadModel\Queries\EventListQuery;
 use Component\Forms\BaseForm;
 use LogicException;
+use Nette\Application\Attributes\Persistent;
 use Nette\Utils\ArrayHash;
 
 use function array_map;
@@ -33,14 +34,11 @@ use function in_array;
 
 class MoveChitsDialog extends Dialog
 {
-    /**
-     * Comma-separated chit IDS (because persistent parameters don't support arrays).
-     *
-     * @persistent
-     */
+    /** Comma-separated chit IDS (because persistent parameters don't support arrays). */
+    #[Persistent]
     public string $chitIds = '';
 
-    /** @persistent */
+    #[Persistent]
     public bool $opened = false;
 
     public function __construct(

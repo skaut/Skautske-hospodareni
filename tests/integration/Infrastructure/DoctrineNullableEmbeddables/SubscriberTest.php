@@ -6,7 +6,6 @@ namespace Infrastructure\DoctrineNullableEmbeddables;
 
 use App\Model\Common\Embeddable\AccountNumber;
 use App\Model\Infrastructure\DoctrineNullableEmbeddables\Subscriber;
-use Doctrine\Common\Annotations\Reader;
 use IntegrationTest;
 use ReflectionClass;
 use ReflectionMethod;
@@ -22,7 +21,7 @@ final class SubscriberTest extends IntegrationTest
 
     public function testEmptyEmbeddableCheckIgnoresUninitializedTypedProperties(): void
     {
-        $subscriber = new Subscriber($this->createMock(Reader::class));
+        $subscriber = new Subscriber();
         $accountNumber = (new ReflectionClass(AccountNumber::class))->newInstanceWithoutConstructor();
         $metadata = $this->entityManager->getClassMetadata(AccountNumber::class);
 

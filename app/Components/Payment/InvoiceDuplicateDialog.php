@@ -14,12 +14,13 @@ use App\Model\Invoice\Repository\InvoiceSequenceRepository;
 use Component\Forms\BaseForm;
 use InvalidArgumentException;
 use LogicException;
+use Nette\Application\Attributes\Persistent;
 use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
 
 final class InvoiceDuplicateDialog extends Dialog
 {
-    /** @persistent */
+    #[Persistent]
     public int $invoiceId = -1;
 
     /**
@@ -66,7 +67,7 @@ final class InvoiceDuplicateDialog extends Dialog
         };
 
         $form->onSuccess[] = function (Form $form): void {
-            $this->duplicateInvoice($form->getValues());
+            $this->duplicateInvoice($form->getValues(ArrayHash::class));
         };
 
         return $form;

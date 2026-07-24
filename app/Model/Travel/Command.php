@@ -24,72 +24,64 @@ use function array_unique;
 use function array_values;
 use function min;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(name="tc_commands")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'tc_commands')]
 class Command
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    /** @ORM\Column(type="integer") */
+    #[ORM\Column(type: 'integer')]
     private int $unitId;
 
-    /** @ORM\ManyToOne(targetEntity=Vehicle::class) */
+    #[ORM\ManyToOne(targetEntity: Vehicle::class)]
     private ?Vehicle $vehicle = null;
 
-    /** @ORM\Embedded(class=Passenger::class, columnPrefix=false) */
+    #[ORM\Embedded(class: Passenger::class, columnPrefix: false)]
     private Passenger $passenger;
 
-    /** @ORM\Column(type="string", length=64) */
+    #[ORM\Column(type: 'string', length: 64)]
     private string $purpose;
 
-    /** @ORM\Column(type="string", length=64) */
+    #[ORM\Column(type: 'string', length: 64)]
     private string $place;
 
-    /** @ORM\Column(type="string", length=256) */
+    #[ORM\Column(type: 'string', length: 256)]
     private string $fellowPassengers;
 
-    /** @ORM\Column(type="money") */
+    #[ORM\Column(type: 'money')]
     private Money $fuelPrice;
 
-    /** @ORM\Column(type="money") */
+    #[ORM\Column(type: 'money')]
     private Money $amortization;
 
-    /** @ORM\Column(type="string", length=64) */
+    #[ORM\Column(type: 'string', length: 64)]
     private string $note;
 
-    /** @ORM\Column(type="datetime_immutable", nullable=true) */
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?DateTimeImmutable $closedAt = null;
 
     /**
-     * @ORM\OneToMany(targetEntity=Travel::class, indexBy="id", mappedBy="command", cascade={"persist", "remove"}, orphanRemoval=true)
-     *
      * @var Collection&iterable<Travel>
      */
+    #[ORM\OneToMany(targetEntity: Travel::class, indexBy: 'id', mappedBy: 'command', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $travels;
 
-    /** @ORM\Column(type="integer") */
+    #[ORM\Column(type: 'integer')]
     private int $nextTravelId = 0;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $ownerId = null;
 
     /**
-     * @ORM\Column(type="transport_types")
-     *
      * @var list<TransportType>
      */
+    #[ORM\Column(type: 'transport_types')]
     private array $transportTypes;
 
-    /**
-     * * @ORM\Column(type="string", length=64)
-     */
+    #[ORM\Column(type: 'string', length: 64)]
     private string $unit;
 
     /** @param list<TransportType> $transportTypes */
@@ -252,7 +244,7 @@ class Command
     private function getDistance(): float
     {
         $distances = $this->travels
-                    ->map(fn (?Travel $t = null) => $t instanceof VehicleTravel ? $t->getDistance() : 0)
+                    ->map(fn (Travel $t) => $t instanceof VehicleTravel ? $t->getDistance() : 0)
                     ->toArray();
 
         return array_sum($distances);
@@ -388,7 +380,7 @@ class Command
     {
         return $this->travels->isEmpty()
             ? null
-            : min($this->travels->map(function (?Travel $travel = null) {
+            : min($this->travels->map(function (Travel $travel) {
                 return $travel->getDetails()->getDate()->toNative();
             })->toArray());
     }
@@ -418,7 +410,7 @@ class Command
     public function getUsedTransportTypes(): array
     {
         return array_unique(
-            $this->travels->map(fn (?Travel $travel = null) => $travel->getDetails()->getTransportType())->toArray(),
+            $this->travels->map(fn (Travel $travel) => $travel->getDetails()->getTransportType())->toArray(),
         );
     }
 

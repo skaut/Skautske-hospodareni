@@ -135,7 +135,7 @@ class BankServiceTest extends IntegrationTest
                 $this->createTransaction(400, '345'),
             ]);
 
-        $pairingResults = $this->bankService->pairAllGroups([$group1->getId(), $group2->getId()], 7);
+        $pairingResults = $this->bankService->pairAllGroups([(int) $group1->getId(), (int) $group2->getId()], 7);
 
         self::assertCount(1, $pairingResults);
         self::assertSame([1], $this->activePairedPaymentIds());
@@ -176,7 +176,7 @@ class BankServiceTest extends IntegrationTest
         $pairings = $this->entityManager->getRepository(BankTransactionPairing::class)->findBy(['cancelledAt' => null]);
 
         return array_map(
-            static fn (BankTransactionPairing $pairing): int => $pairing->getPayment()?->getId(),
+            static fn (BankTransactionPairing $pairing): int => (int) $pairing->getPayment()?->getId(),
             $pairings,
         );
     }

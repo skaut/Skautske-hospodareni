@@ -131,7 +131,7 @@ services:
     - App\Components\Payment\BankAccountDetail\BankAccountManualPairingService
 
     # PDF & Excel
-    - App\Model\Services\PdfRenderer(%tempDir%)
+    - App\Model\Services\PdfRenderer(%gotenbergUrl%, %appDir%/../www, GuzzleHttp\Client({ timeout: 60 }))
     - App\Model\Cashbook\ReadModel\SpreadsheetFactory
     - App\Model\Cashbook\ReadModel\QueryHandlers\Pdf\SheetChitsGenerator
 
@@ -200,7 +200,7 @@ services:
     # Latte
     nette.latteFactory:
         setup:
-            - addFilterLoader([App\Helpers\AccountancyHelpers, loader])
+            - addExtension(App\Helpers\AccountancyLatteExtension())
 
 decorator:
     Doctrine\DBAL\Configuration:

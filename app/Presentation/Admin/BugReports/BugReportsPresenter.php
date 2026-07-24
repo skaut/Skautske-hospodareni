@@ -14,13 +14,13 @@ use App\Model\BugReport\Manager\TechnicalErrorReportManager;
 use App\Model\BugReport\Repository\TechnicalErrorReportRepository;
 use Component\Forms\BaseForm;
 use Contributte\Application\Response\PSR7StreamResponse;
+use Contributte\Datagrid\Column\Action\Confirmation\StringConfirmation;
 use Nette\Application\UI\Form;
 use Nette\Utils\Html;
 use Nette\Utils\Json;
 use Nette\Utils\Strings;
 use RuntimeException;
 use Throwable;
-use Ublaboo\DataGrid\Column\Action\Confirmation\StringConfirmation;
 
 final class BugReportsPresenter extends \App\Presentation\Admin\AdminBasePresenter
 {
@@ -119,7 +119,7 @@ final class BugReportsPresenter extends \App\Presentation\Admin\AdminBasePresent
             ->setHtmlAttribute('class', 'btn btn-primary');
 
         $form->onSuccess[] = function (Form $form): void {
-            $values = $form->getValues();
+            $values = $form->getValues(\Nette\Utils\ArrayHash::class);
             $report = $this->repository->findUnresolved((int) $values->id);
             if (! $report instanceof TechnicalErrorReport) {
                 $this->flashMessage('Hlášení technické chyby nebylo nalezeno nebo už je vyřízené.', 'warning');
@@ -174,7 +174,7 @@ final class BugReportsPresenter extends \App\Presentation\Admin\AdminBasePresent
             ->setHtmlAttribute('class', 'btn btn-outline-dark btn-sm');
 
         $form->onSuccess[] = function (Form $form): void {
-            $values = $form->getValues();
+            $values = $form->getValues(\Nette\Utils\ArrayHash::class);
             $report = $this->repository->findUnresolved((int) $values->id);
             if (! $report instanceof TechnicalErrorReport) {
                 $this->flashMessage('Hlášení technické chyby nebylo nalezeno nebo už je vyřízené.', 'warning');
@@ -215,7 +215,7 @@ final class BugReportsPresenter extends \App\Presentation\Admin\AdminBasePresent
             ->setHtmlAttribute('class', 'btn btn-danger');
 
         $form->onSuccess[] = function (Form $form): void {
-            $values = $form->getValues();
+            $values = $form->getValues(\Nette\Utils\ArrayHash::class);
             $report = $this->repository->findUnresolved((int) $values->id);
             if (! $report instanceof TechnicalErrorReport) {
                 $this->flashMessage('Hlášení technické chyby nebylo nalezeno nebo už je vyřízené.', 'warning');
@@ -305,7 +305,7 @@ final class BugReportsPresenter extends \App\Presentation\Admin\AdminBasePresent
         $grid->addAction('github', '', 'detail', ['id' => 'id'])
             ->setRenderer(static function (TechnicalErrorReport $report): Html {
                 return Html::el('a')
-                    ->href($report->getGitHubIssueUrl())
+                    ->href((string) $report->getGitHubIssueUrl())
                     ->class('btn btn-sm btn-light m-1')
                     ->title('Otevřít GitHub issue')
                     ->target('_blank')

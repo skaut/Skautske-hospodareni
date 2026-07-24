@@ -10,10 +10,10 @@ use InvalidArgumentException;
 
 use function sprintf;
 
-/** @ORM\Entity() */
+#[ORM\Entity]
 class VehicleTravel extends Travel
 {
-    /** @ORM\Column(type="float") */
+    #[ORM\Column(type: 'float')]
     private float $distance;
 
     public function __construct(int $id, float $distance, TravelDetails $details, Command $command)

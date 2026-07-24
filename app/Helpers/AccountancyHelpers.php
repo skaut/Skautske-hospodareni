@@ -13,12 +13,10 @@ use DateTimeInterface;
 use InvalidArgumentException;
 use Money\Money;
 use Nette\Utils\Html;
-use RuntimeException;
 
 use function array_reverse;
 use function count;
 use function explode;
-use function is_callable;
 use function mb_strtoupper;
 use function mb_substr;
 use function number_format;
@@ -34,17 +32,6 @@ abstract class AccountancyHelpers
     private const DATE_FORMAT_FULL = 'j. n. Y';
     private const DATE_FORMAT_DAY_MONTH = 'j. n.';
     private const DATE_FORMAT_DAY = 'j.';
-
-    public static function loader(string $filter): callable
-    {
-        $method = [self::class, $filter];
-
-        if (is_callable($method)) {
-            return $method;
-        }
-
-        throw new RuntimeException('Filter not found');
-    }
 
     /**
      * @filter
@@ -245,7 +232,7 @@ abstract class AccountancyHelpers
 
     public static function postCode(string $oldPsc): string
     {
-        $psc = preg_replace('/[^0-9]/', '', $oldPsc);
+        $psc = (string) preg_replace('/[^0-9]/', '', $oldPsc);
 
         if (strlen($psc) === 5) {
             return substr($psc, 0, 3).' '.substr($psc, -2);
@@ -389,6 +376,10 @@ abstract class AccountancyHelpers
             }
 
             return $start->format(self::DATE_FORMAT_FULL);
+        }
+
+        if ($start === null) {
+            return $end->format(self::DATE_FORMAT_FULL);
         }
 
         if ($start->year !== $end->year) {

@@ -22,6 +22,7 @@ use App\MyValidators;
 use Brick\Math\BigDecimal;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
+use Contributte\FormMultiplier\Multiplier;
 use LogicException;
 use Nette\Forms\Container;
 use Nette\Forms\Controls\RadioList;
@@ -71,7 +72,7 @@ class InvoiceForm extends BaseControl
     {
         $form = new BaseForm();
         $form->addDate('dueDate', 'Datum splatnosti')
-            ->setDefaultValue((new ChronosDate())->addDays($this->invoiceSequence->getDefaultDueDate()))
+            ->setDefaultValue((new ChronosDate())->addDays((int) $this->invoiceSequence->getDefaultDueDate()))
             ->addRule(Form::REQUIRED);
 
         $form->addDate('dateOfIssue', 'Datum vystavení')
@@ -166,10 +167,10 @@ class InvoiceForm extends BaseControl
             ->setHtmlAttribute('class', 'btn btn-light ajax')
             ->setValidationScope([])
             ->onClick[] = function () use ($items): void {
-                $items->createOne();
+                $item = $items->addCopy();
                 $defaultValues = ['quantity' => 1, 'price' => '0.00', 'unit' => 'ks', 'purpose' => ''];
 
-                $items->setValues($defaultValues);
+                $item->setValues($defaultValues);
                 $this->reload();
             };
 
@@ -199,13 +200,16 @@ class InvoiceForm extends BaseControl
     private function removeItem(SubmitButton $button): void
     {
         $container = $button->getParent();
-        $replicator = $container->getParent();
-
-        if (! $replicator instanceof \Kdyby\Replicator\Container || ! $container instanceof Container) {
+        if (! $container instanceof Container) {
             throw new LogicException('Nepodařilo se odebrat položku faktury.');
         }
 
-        $replicator->remove($container, true);
+        $replicator = $container->getParent();
+        if (! $replicator instanceof Multiplier) {
+            throw new LogicException('Nepodařilo se odebrat položku faktury.');
+        }
+
+        $replicator->removeComponent($container);
         $this->reload();
     }
 
@@ -218,7 +222,7 @@ class InvoiceForm extends BaseControl
             throw new LogicException('Kontejner odběratele nebyl nalezen.');
         }
 
-        $values = $customerContainer->getUntrustedValues();
+        $values = $customerContainer->getUntrustedValues(ArrayHash::class);
         $companyNumber = trim((string) ($values->companyNumber ?? ''));
 
         if ($companyNumber === '') {
@@ -453,7 +457,7 @@ class InvoiceForm extends BaseControl
         return $this->invoice?->getPaymentType() ?? $this->defaultPaymentType();
     }
 
-    private function applyDefaults(BaseForm $form, \Kdyby\Replicator\Container $items): void
+    private function applyDefaults(BaseForm $form, Multiplier $items): void
     {
         if (! $this->isEditMode()) {
             return;

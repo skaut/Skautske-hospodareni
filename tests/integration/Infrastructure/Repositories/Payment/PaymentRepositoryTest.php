@@ -101,7 +101,9 @@ class PaymentRepositoryTest extends IntegrationTest
             null,
         );
 
-        $this->assertTrue($expectedTransaction->equals($payment->getTransaction()));
+        $actualTransaction = $payment->getTransaction();
+        $this->assertNotNull($actualTransaction);
+        $this->assertTrue($expectedTransaction->equals($actualTransaction));
     }
 
     public function testFindWithSentEmails(): void

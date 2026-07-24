@@ -29,7 +29,7 @@ class NotificationsCollector
     /**
      * Returns collected notifications and clears notifications queue.
      *
-     * @return array<(string|int)[]> Array of (type, message, count) tuples i.e. [["info", "Something happened", 2]]
+     * @return list<array{string, string, int}> Array of (type, message, count) tuples i.e. [["info", "Something happened", 2]]
      */
     public function popNotifications(): array
     {
@@ -39,7 +39,7 @@ class NotificationsCollector
             $this->notifications[$type] = [];
 
             foreach ($notifications as $message => $count) {
-                $result[] = [$type, $message, $count];
+                $result[] = [(string) $type, (string) $message, $count];
             }
         }
 

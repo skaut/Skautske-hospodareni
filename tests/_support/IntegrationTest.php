@@ -24,7 +24,7 @@ abstract class IntegrationTest extends Codeception\Test\Unit
     private $schemaTool;
 
     /**
-     * @return string[] FQCN of aggregate roots
+     * @return class-string[] FQCN of aggregate roots
      */
     protected function getTestedAggregateRoots(): array
     {
@@ -75,7 +75,7 @@ abstract class IntegrationTest extends Codeception\Test\Unit
      * Returns FQCN of entities used in test case.
      * Database schema is generated from mapping of these entities.
      *
-     * @return string[]
+     * @return class-string[]
      */
     private function getTestedEntities(): array
     {
@@ -114,7 +114,7 @@ abstract class IntegrationTest extends Codeception\Test\Unit
     }
 
     /**
-     * @return string[]
+     * @return class-string[]
      */
     private function getChildEntityClasses(string $parentEntityClass): array
     {

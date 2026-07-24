@@ -7,6 +7,7 @@ namespace App\Model\Bank\Repository;
 use App\Model\Bank\Entity\BankAccount;
 use App\Model\Infrastructure\Repository\AbstractRepository;
 
+/** @extends AbstractRepository<BankAccount> */
 class BankAccountRepository extends AbstractRepository
 {
     public function getEntityClass(): string

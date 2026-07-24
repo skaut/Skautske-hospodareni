@@ -19,7 +19,7 @@ class ViAresInfo
     private bool $vatPayer = false;
     private ?string $countryCode = null;
 
-    /** @param array<string, string> $data */
+    /** @param array<string, int|string|null> $data */
     public function __construct(array $data = [])
     {
         if (empty($data)) {
@@ -78,34 +78,34 @@ class ViAresInfo
     }
 
     /**
-     * @param array<string, string> $data
+     * @param array<string, int|string|null> $data
      *
      * @return $this
      */
     public function fromArray(array $data): self
     {
         if (isset($data['vat'])) {
-            $this->vat = $data['vat'];
+            $this->vat = (string) $data['vat'];
         }
 
         if (isset($data['name'])) {
-            $this->name = $data['name'];
+            $this->name = (string) $data['name'];
         }
 
         if (isset($data['companyName'])) {
-            $this->companyName = $data['companyName'];
+            $this->companyName = (string) $data['companyName'];
         }
 
         if (isset($data['street'])) {
-            $this->street = $data['street'];
+            $this->street = (string) $data['street'];
         }
 
         if (isset($data['streetNumber'])) {
-            $this->streetNumber = $data['streetNumber'];
+            $this->streetNumber = (string) $data['streetNumber'];
         }
 
         if (isset($data['streetNumberSuffix'])) {
-            $this->streetNumberSuffix = $data['streetNumberSuffix'];
+            $this->streetNumberSuffix = (string) $data['streetNumberSuffix'];
         }
 
         if (isset($data['vatPayer'])) {
@@ -113,13 +113,13 @@ class ViAresInfo
         }
 
         if (isset($data['countryCode'])) {
-            $this->countryCode = $data['countryCode'];
+            $this->countryCode = (string) $data['countryCode'];
         }
 
         return $this;
     }
 
-    /** @return array<string, string> */
+    /** @return array<string, int|string|null> */
     public function toArray(): array
     {
         return [

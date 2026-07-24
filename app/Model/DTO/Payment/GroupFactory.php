@@ -13,7 +13,7 @@ class GroupFactory
         $object = $group->getObject();
 
         return new Group(
-            $group->getId(),
+            (int) $group->getId(),
             $object?->getType()->getValue(),
             $group->getUnitIds(),
             $object?->getId(),

@@ -4,17 +4,20 @@ declare(strict_types=1);
 
 namespace App\Components;
 
-use Ublaboo\DataGrid\Column\Action;
-use Ublaboo\DataGrid\Filter\FilterSelect;
-use Ublaboo\DataGrid\Localization\SimpleTranslator;
+use Contributte\Datagrid\Column\Action;
+use Contributte\Datagrid\Filter\FilterSelect;
+use Contributte\Datagrid\Localization\SimpleTranslator;
+use LogicException;
 
 use function array_map;
 use function array_reverse;
 use function date;
+use function is_array;
+use function iterator_to_array;
 use function range;
 use function Safe\array_combine;
 
-class DataGrid extends \Ublaboo\DataGrid\DataGrid
+class DataGrid extends \Contributte\Datagrid\Datagrid
 {
     public const OPTION_ALL = 'all';
 
@@ -32,33 +35,33 @@ class DataGrid extends \Ublaboo\DataGrid\DataGrid
         };
 
         $translator = new SimpleTranslator([
-            'ublaboo_datagrid.no_item_found_reset' => 'Nenalezeny žádné záznamy. Můžete zrušit filtr',
-            'ublaboo_datagrid.no_item_found' => 'Nenalezeny žádné záznamy.',
-            'ublaboo_datagrid.here' => 'zde',
-            'ublaboo_datagrid.items' => 'Položky',
-            'ublaboo_datagrid.all' => 'vše',
-            'ublaboo_datagrid.from' => 'od',
-            'ublaboo_datagrid.reset_filter' => 'Zrušit filtr',
-            'ublaboo_datagrid.group_actions' => 'Hromadné akce',
-            'ublaboo_datagrid.show' => 'Zobrazit',
-            'ublaboo_datagrid.add' => 'Přidat',
-            'ublaboo_datagrid.edit' => 'Upravit',
-            'ublaboo_datagrid.show_all_columns' => 'Zobrazit všechny sloupce',
-            'ublaboo_datagrid.show_default_columns' => 'Zobrazit výchozí sloupce',
-            'ublaboo_datagrid.hide_column' => 'Skrýt sloupec',
-            'ublaboo_datagrid.action' => 'Akce',
-            'ublaboo_datagrid.previous' => 'Předchozí',
-            'ublaboo_datagrid.next' => 'Další',
-            'ublaboo_datagrid.choose' => 'Vybrat',
-            'ublaboo_datagrid.choose_input_required' => 'Text hromadné akce nesmí být prázdný',
-            'ublaboo_datagrid.execute' => 'Provést',
-            'ublaboo_datagrid.save' => 'Uložit',
-            'ublaboo_datagrid.cancel' => 'Zrušit',
-            'ublaboo_datagrid.multiselect_choose' => 'Vybrat',
-            'ublaboo_datagrid.multiselect_selected' => '{0} vybráno',
-            'ublaboo_datagrid.filter_submit_button' => 'Filtrovat',
-            'ublaboo_datagrid.show_filter' => 'Zobrazit filtr',
-            'ublaboo_datagrid.per_page_submit' => 'Změnit',
+            'contributte_datagrid.no_item_found_reset' => 'Nenalezeny žádné záznamy. Můžete zrušit filtr',
+            'contributte_datagrid.no_item_found' => 'Nenalezeny žádné záznamy.',
+            'contributte_datagrid.here' => 'zde',
+            'contributte_datagrid.items' => 'Položky',
+            'contributte_datagrid.all' => 'vše',
+            'contributte_datagrid.from' => 'od',
+            'contributte_datagrid.reset_filter' => 'Zrušit filtr',
+            'contributte_datagrid.group_actions' => 'Hromadné akce',
+            'contributte_datagrid.show' => 'Zobrazit',
+            'contributte_datagrid.add' => 'Přidat',
+            'contributte_datagrid.edit' => 'Upravit',
+            'contributte_datagrid.show_all_columns' => 'Zobrazit všechny sloupce',
+            'contributte_datagrid.show_default_columns' => 'Zobrazit výchozí sloupce',
+            'contributte_datagrid.hide_column' => 'Skrýt sloupec',
+            'contributte_datagrid.action' => 'Akce',
+            'contributte_datagrid.previous' => 'Předchozí',
+            'contributte_datagrid.next' => 'Další',
+            'contributte_datagrid.choose' => 'Vybrat',
+            'contributte_datagrid.choose_input_required' => 'Text hromadné akce nesmí být prázdný',
+            'contributte_datagrid.execute' => 'Provést',
+            'contributte_datagrid.save' => 'Uložit',
+            'contributte_datagrid.cancel' => 'Zrušit',
+            'contributte_datagrid.multiselect_choose' => 'Vybrat',
+            'contributte_datagrid.multiselect_selected' => '{0} vybráno',
+            'contributte_datagrid.filter_submit_button' => 'Filtrovat',
+            'contributte_datagrid.show_filter' => 'Zobrazit filtr',
+            'contributte_datagrid.per_page_submit' => 'Změnit',
         ]);
 
         $this->setTranslator($translator);
@@ -71,11 +74,13 @@ class DataGrid extends \Ublaboo\DataGrid\DataGrid
      */
     public function getFilteredAndSortedData(): array
     {
-        return $this->dataModel->filterData(
+        $data = ($this->dataModel ?? throw new LogicException('Data source not set.'))->filterData(
             $this->getPaginator(),
             $this->createSorting($this->sort, $this->sortCallback),
             $this->assembleFilters(),
         );
+
+        return is_array($data) ? $data : iterator_to_array($data);
     }
 
     public function addYearFilter(string $name, string $label): FilterSelect

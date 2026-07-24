@@ -36,7 +36,7 @@ class BigDecimalType extends DecimalType
     public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?BigDecimal
     {
         if (is_numeric($value)) {
-            return BigDecimal::of($value);
+            return BigDecimal::of((string) $value);
         }
 
         if ($value === null) {

@@ -125,9 +125,9 @@ class CommandForm extends Control
 
         $form->onSuccess[] = function (BaseForm $form): void {
             if ($this->commandId === null) {
-                $this->createCommand($form->getValues());
+                $this->createCommand($form->getValues(ArrayHash::class));
             } else {
-                $this->updateCommand($form->getValues());
+                $this->updateCommand($form->getValues(ArrayHash::class));
             }
 
             $this->onSuccess();
@@ -151,7 +151,7 @@ class CommandForm extends Control
 
     private function loadDefaultValues(BaseForm $form): void
     {
-        $command = $this->model->getCommandDetail($this->commandId);
+        $command = $this->model->getCommandDetail((int) $this->commandId);
 
         if ($command === null) {
             throw new InvalidStateException('Travel command #'.$this->commandId.' not found');
@@ -248,7 +248,7 @@ class CommandForm extends Control
     private function updateCommand(ArrayHash $values): void
     {
         $this->model->updateCommand(
-            $this->commandId,
+            (int) $this->commandId,
             isset($values['contract_id']) ? (int) $values['contract_id'] : null,
             $this->createPassenger($values),
             $values['vehicle_id'],

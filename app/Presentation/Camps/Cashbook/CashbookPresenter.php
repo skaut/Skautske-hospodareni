@@ -143,7 +143,7 @@ final class CashbookPresenter extends BasePresenter
             $this->redirect('default', ['aid' => $this->getCampId()]);
         }
 
-        $values = $form->getValues();
+        $values = $form->getValues(\Nette\Utils\ArrayHash::class);
 
         try {
             $amount = $this->queryBus->handle(new CampParticipantIncomeQuery(
@@ -194,6 +194,6 @@ final class CashbookPresenter extends BasePresenter
 
     protected function createComponentCategoryAutocomputedControl(): MissingAutocomputedCategoryControl
     {
-        return $this->categoryAutocomputedFactory->create(new SkautisCampId($this->aid));
+        return $this->categoryAutocomputedFactory->create(new SkautisCampId((int) $this->aid));
     }
 }

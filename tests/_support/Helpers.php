@@ -116,12 +116,12 @@ class Helpers
     }
 
     /**
-     * @return list<ICategory>
+     * @return array<int, ICategory>
      */
     public static function mockCashbookCategories(?int $categoryId = null, ?Operation $operation = null): array
     {
         return [
-            $categoryId => m::mock(App\Model\Cashbook\Category::class, [
+            ($categoryId ?? 1) => m::mock(App\Model\Cashbook\Category::class, [
                 'getId' => $categoryId ?? 1,
                 'getOperationType' => $operation ?? Operation::INCOME(),
                 'isVirtual' => false,

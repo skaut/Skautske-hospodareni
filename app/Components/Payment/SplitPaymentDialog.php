@@ -17,8 +17,9 @@ use App\Model\Payment\VariableSymbol;
 use App\Model\Payment\VariableSymbolCollision;
 use Component\Forms\BaseForm;
 use Component\Forms\VariableSymbolControl;
-use Kdyby\Replicator\Container as ReplicatorContainer;
+use Contributte\FormMultiplier\Multiplier;
 use LogicException;
+use Nette\Application\Attributes\Persistent;
 use Nette\Application\UI\Form;
 use Nette\Forms\Container;
 use Nette\Forms\Controls\SubmitButton;
@@ -37,7 +38,7 @@ final class SplitPaymentDialog extends Dialog
     /** @var callable[] */
     public array $onSuccess = [];
 
-    /** @persistent */
+    #[Persistent]
     public int $paymentId = -1;
 
     public function __construct(
@@ -104,7 +105,7 @@ final class SplitPaymentDialog extends Dialog
             ->setHtmlAttribute('aria-label', 'Přidat další variabilní symbol a částku')
             ->setHtmlAttribute('data-test', 'payment-split-add')
             ->onClick[] = function () use ($splits): void {
-                $splits->createOne();
+                $splits->addCopy();
                 $this->redrawControl();
             };
 
@@ -134,13 +135,16 @@ final class SplitPaymentDialog extends Dialog
     private function removeSplit(SubmitButton $button): void
     {
         $container = $button->getParent();
-        $replicator = $container->getParent();
-
-        if (! $container instanceof Container || ! $replicator instanceof ReplicatorContainer) {
+        if (! $container instanceof Container) {
             throw new LogicException('Nepodařilo se odebrat část rozdělení platby.');
         }
 
-        $replicator->remove($container, true);
+        $replicator = $container->getParent();
+        if (! $replicator instanceof Multiplier) {
+            throw new LogicException('Nepodařilo se odebrat část rozdělení platby.');
+        }
+
+        $replicator->removeComponent($container);
         $this->redrawControl();
     }
 

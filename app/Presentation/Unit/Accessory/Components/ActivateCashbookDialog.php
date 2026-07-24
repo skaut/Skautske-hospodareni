@@ -14,13 +14,14 @@ use App\Model\Common\UnitId;
 use App\Model\DTO\Cashbook\UnitCashbook;
 use Component\Forms\BaseForm;
 use LogicException;
+use Nette\Application\Attributes\Persistent;
 use Nette\Utils\ArrayHash;
 
 use function sprintf;
 
 class ActivateCashbookDialog extends Dialog
 {
-    /** @var bool @persistent */
+    #[Persistent]
     public bool $opened = false;
 
     /** @var callable[] */
