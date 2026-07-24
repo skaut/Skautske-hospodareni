@@ -21,8 +21,8 @@ docker compose -f docker/docker-compose.yml run --rm -T --entrypoint '' --user d
     bin/console migrations:migrate
 ```
 
-## Vzhled a chování stránek
-Pro vybuildování assetů používáme [Webpack](https://webpack.js.org/) a [Sass](https://sass-lang.com/).
+## Buildování frontendu
+Pro vybuildování assetů používáme [Vite](https://vite.dev/) a [Sass](https://sass-lang.com/).
 
 npm je k dispozici v hlavním Docker kontejneru.
 
