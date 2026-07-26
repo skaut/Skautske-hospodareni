@@ -26,12 +26,6 @@ export default defineConfig(({ mode }) => ({
         manifest: true,
         sourcemap: mode === 'development',
         minify: mode !== 'development',
-        commonjsOptions: {
-            // netteForms.js (a UMD module shipped by the PHP dependency) lives
-            // outside node_modules, so it must be opted into CommonJS interop.
-            include: [/node_modules/, /vendor\/nette\/forms/],
-            transformMixedEsModules: true,
-        },
         rollupOptions: {
             input: resolve(import.meta.dirname, 'frontend/app.ts'),
         },
