@@ -2,20 +2,10 @@ import { resolve } from 'node:path';
 
 import { defineConfig } from 'vite';
 
-// All build output goes into `www/dist`, a gitignored directory served by the
-// PHP application (its document root is `www`). Keeping every generated file
-// under a single dedicated folder separates build artifacts from both the
-// committed assets in `www` and the sources in `frontend`.
-//
 // Output file names are content-hashed (Vite's default). The PHP side does not
 // hard-code them: it reads `dist/.vite/manifest.json` to resolve the entry
 // (`frontend/app.ts`) to its hashed JS and CSS URLs. This enables immutable
 // long-term caching of the assets.
-//
-// The bundle is emitted as an ES module (Vite's default) and loaded via
-// `<script type="module">`. This is what lets the manifest track the entry's
-// stylesheet as a separate file (`build.lib` / an `iife` output would instead
-// inline the CSS into the JS bundle).
 export default defineConfig(({ mode }) => ({
     // Generated asset URLs (in the manifest and in the built CSS) are served
     // from `/dist/`, matching the output directory below.
@@ -33,10 +23,7 @@ export default defineConfig(({ mode }) => ({
     css: {
         preprocessorOptions: {
             scss: {
-                api: 'modern-compiler',
-                // Silence warnings from dependencies (Bootstrap, Tabler, …).
                 quietDeps: true,
-                silenceDeprecations: ['color-functions', 'global-builtin', 'import'],
             },
         },
     },
