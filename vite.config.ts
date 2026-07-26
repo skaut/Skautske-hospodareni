@@ -22,9 +22,6 @@ export default defineConfig(({ mode }) => ({
     base: '/dist/',
     build: {
         outDir: 'www/dist',
-        // The output directory holds nothing but build artifacts, so it is safe
-        // (and desirable) to wipe it on every build to avoid stale files.
-        emptyOutDir: true,
         // Emit `.vite/manifest.json` mapping the entry to its hashed files.
         manifest: true,
         sourcemap: mode === 'development',
