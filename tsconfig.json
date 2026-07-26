@@ -11,11 +11,6 @@
             "dom.iterable",
             "scripthost"
         ],
-        "paths": {
-            "@/*": [
-                "./frontend/*"
-            ]
-        },
         "typeRoots": [
             "./node_modules/@types",
             "./frontend/types"
