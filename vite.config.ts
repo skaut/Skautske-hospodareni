@@ -30,11 +30,6 @@ export default defineConfig(({ mode }) => ({
             input: resolve(import.meta.dirname, 'frontend/app.ts'),
         },
     },
-    resolve: {
-        alias: {
-            '@': resolve(import.meta.dirname, 'frontend'),
-        },
-    },
     css: {
         preprocessorOptions: {
             scss: {
