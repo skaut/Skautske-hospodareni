@@ -82,6 +82,6 @@ final class LazyWebServiceTest extends Unit
 
     public function testWebServiceIsNotCreatedBeforeFirstCall(): void
     {
-        new LazyWebService('org', Mockery::mock(Skautis::class));
+        self::assertInstanceOf(LazyWebService::class, new LazyWebService('org', Mockery::mock(Skautis::class)));
     }
 }

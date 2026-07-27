@@ -36,7 +36,7 @@ final class ObjectIdentityComparisonRule implements Rule
                 RuleErrorBuilder::message(
                     'Object are compared using ===, '
                     . 'use custom equals() method or spl_object_id if you really wan\'t to check reference'
-                )->line($node->getLine())->build()
+                )->line($node->getStartLine())->identifier('comparison.objectIdentity')->build()
             ];
         }
 
