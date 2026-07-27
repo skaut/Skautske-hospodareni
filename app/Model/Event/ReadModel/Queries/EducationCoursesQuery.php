@@ -13,7 +13,7 @@ final class EducationCoursesQuery
     {
     }
 
-    public function getEventEducationId(): ?int
+    public function getEventEducationId(): int
     {
         return $this->eventEducationId;
     }

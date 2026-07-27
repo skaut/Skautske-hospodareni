@@ -291,7 +291,7 @@ abstract class AbstractManager
                 $placeholders = implode(', ', array_fill(0, count($columns), '?'));
                 $query = 'INSERT INTO '.$table.' ('.implode(', ', $columns).') VALUES ';
             } elseif (array_keys($row) !== $columns) {
-                /** @var string[] $columns */
+                /** @var list<int|string> $columns */
                 throw new InvalidArgumentException("Row [{$i}] must contain exactly these columns: ".implode(', ', $columns));
             }
 

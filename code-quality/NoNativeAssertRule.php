@@ -9,6 +9,7 @@ use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
+use PHPStan\Rules\RuleErrorBuilder;
 
 class NoNativeAssertRule implements Rule
 {
@@ -18,7 +19,7 @@ class NoNativeAssertRule implements Rule
     }
 
     /**
-     * @return list<string>
+     * @return list<\PHPStan\Rules\IdentifierRuleError>
      */
     public function processNode(Node $node, Scope $scope): array
     {
@@ -40,7 +41,9 @@ class NoNativeAssertRule implements Rule
         }
 
         return [
-            'Do not use native assert() in application code. Use an explicit guard that throws an exception.',
+            RuleErrorBuilder::message('Do not use native assert() in application code. Use an explicit guard that throws an exception.')
+                ->identifier('skautis.nativeAssert')
+                ->build(),
         ];
     }
 }

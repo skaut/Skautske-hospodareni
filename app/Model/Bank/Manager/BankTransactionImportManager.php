@@ -81,7 +81,7 @@ final class BankTransactionImportManager extends AbstractManager
         ?BankTransactionImportBatch $batch = null,
     ): int {
         $existingKeys = $this->bankTransactions->findExistingTransactionKeys(
-            array_values(array_map(static fn (Transaction $transaction): string => $transaction->getId(), $transactions)),
+            array_map(static fn (Transaction $transaction): string => $transaction->getId(), $transactions),
         );
 
         $newTransactions = array_values(

@@ -68,7 +68,7 @@ final class CampCategoryRepositoryTest extends Unit
             $categories,
         );
 
-        $expectedCategories = array_slice(array_map('array_values', self::CATEGORIES), 1);
+        $expectedCategories = array_slice(array_map(array_values(...), self::CATEGORIES), 1);
 
         foreach ($expectedCategories as $index => [$id, $isIncome, $name, $amount]) {
             $category = $categories[$index];

@@ -343,7 +343,7 @@ class Group
             throw NoAccessToBankAccount::forUnits($unitIds, $bankAccount->getId());
         }
 
-        if ($currentBankAccountId === $bankAccount->getId() && $this->bankAccount !== null) {
+        if ($currentBankAccountId === $bankAccount->getId()) {
             return;
         }
 
