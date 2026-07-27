@@ -21,7 +21,9 @@ use function preg_replace_callback;
 use function rtrim;
 use function sprintf;
 use function str_starts_with;
+use function stripos;
 use function strtolower;
+use function substr;
 
 use const PATHINFO_EXTENSION;
 use const PHP_URL_PATH;
@@ -63,12 +65,36 @@ class PdfRenderer
 
         header('Content-Type: application/pdf');
         header(sprintf('Content-Disposition: inline; filename="%s"', $filename));
+        header('Cache-Control: no-store, max-age=0');
         echo $pdf;
     }
 
+    /**
+     * Emuluje chování mpdf (`shrink_tables_to_fit`), na které jsou staré PDF šablony laděné: přeširoký
+     * obsah (fixní `width:800px` apod.) se v mpdf zužoval na šířku stránky, kdežto Chromium ho nechá
+     * přetéct. `max-width` je samostatná vlastnost, takže fixní `width` v šablonách není nutné měnit.
+     */
+    private const NormalizeCss = '<style>'
+        .'html,body{margin:0}'
+        // !important, aby normalizace přebila vlastní max-width šablon (faktura má .invoice-box{max-width:800px},
+        // což je širší než tisková plocha A4 → jinak ořez vpravo). Emuluje mpdf shrink-to-fit.
+        // box-sizing:border-box, aby se do 100 % započítal i vlastní padding kontejneru (jinak width:100%+padding přeteče).
+        // calc(100% - 2px): necháme 2px vpravo, aby obvodová 1px čára rámečku (např. cestovní příkaz) neležela
+        // přesně na hraně tiskové plochy a nevykreslila se tenčí/oříznutá.
+        .'body>*{max-width:calc(100% - 2px)!important;box-sizing:border-box}'
+        .'table{max-width:100%}'
+        .'img{max-width:100%}'
+        // HTML atribut border="1" renderuje Chromium jako slabé nejednotné "inset" okraje buněk; mpdf
+        // ho kreslil jako plné jednotné 1px černé čáry. Sjednotíme na collapsed solid, ať PDF sedí.
+        // Necháme kousek místa vpravo: u border-collapse leží obvodová čára na hraně (půl ven), a když
+        // tabulka vyplní 100 %, pravá půlka přeteče za tiskovou plochu a ořízne se.
+        .'table[border]{border-collapse:collapse;border:0;max-width:calc(100% - 2px)}'
+        .'table[border] th,table[border] td{border:1px solid #000;padding:2px 5px}'
+        .'</style>';
+
     public function renderToString(string $template, bool $landscape = false): string
     {
-        $html = $this->inlineImages($template);
+        $html = $this->injectNormalizeCss($this->inlineImages($template));
 
         try {
             $response = $this->client->request('POST', rtrim($this->gotenbergUrl, '/').'/forms/chromium/convert/html', [
@@ -89,6 +115,23 @@ class PdfRenderer
         }
 
         return (string) $response->getBody();
+    }
+
+    /**
+     * Vkládá normalizační `<style>` do `<head>`, aby u plnohodnotných HTML dokumentů (faktura má vlastní
+     * `<!DOCTYPE html>`) zůstal zachován standards mode – prepend před `<!DOCTYPE>` by prohlížeč přepnul
+     * do quirks mode a rozhodil box model. Staré reportové šablony jsou fragmenty bez `<head>`, u těch
+     * prepend nevadí.
+     */
+    private function injectNormalizeCss(string $html): string
+    {
+        $pos = stripos($html, '</head>');
+
+        if ($pos !== false) {
+            return substr($html, 0, $pos).self::NormalizeCss.substr($html, $pos);
+        }
+
+        return self::NormalizeCss.$html;
     }
 
     private function inlineImages(string $html): string

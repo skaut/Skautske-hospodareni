@@ -93,6 +93,15 @@ class RouterFactory
     {
         // Education
         $router->addRoute(
+            'vzdelavacky/<aid [0-9]+>/<action>',
+            [
+                'presenter' => 'Education:Education',
+                'action' => [
+                    Route::PATTERN => 'report',
+                ],
+            ],
+        );
+        $router->addRoute(
             'vzdelavacky/<aid [0-9]+>[/<presenter>[/<action>]]',
             [
                 'presenter' => [
