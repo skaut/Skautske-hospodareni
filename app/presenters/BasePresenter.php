@@ -396,11 +396,11 @@ abstract class BasePresenter extends Presenter
         $presenterNameParts = explode(':', (string) $this->getName());
         $presenterName = $presenterNameParts[array_key_last($presenterNameParts)];
 
-        if (($presenterNameParts[0] ?? null) === 'Accountancy') {
+        if ($presenterNameParts[0] === 'Accountancy') {
             return [$presenterNameParts[1] ?? null, $presenterName];
         }
 
-        return [$presenterNameParts[0] ?? null, $presenterName];
+        return [$presenterNameParts[0], $presenterName];
     }
 
     private function usesPresentationDirectory(): bool

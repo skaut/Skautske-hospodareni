@@ -4,6 +4,43 @@ parameters:
             identifier: missingType.generics
         # Errors related mostly to usage of assert($x instanceof A || $x === null) and similar asserts
         - '~Unreachable statement - code above always terminates.~'
+        # Defenzivní runtime guardy (`if (! $x instanceof X) throw 'Assertion failed'`, `if (! is_float(...))
+        # throw UnexpectedValueException`) po volně typovaných voláních – container->getByType(), form
+        # komponentách a queryBus->handle() (za běhu `mixed`). PHPStan 2 je staticky vyhodnotí jako
+        # nadbytečné, ale za běhu drží reálnou pojistku proti nesouladu anotace vs. skutečnost – nemažeme je.
+        -
+            identifier: instanceof.alwaysTrue
+        -
+            identifier: function.alreadyNarrowedType
+        -
+            identifier: method.alreadyNarrowedType
+        -
+            identifier: staticMethod.alreadyNarrowedType
+        # ublaboo/contributte Datagrid::getPresenter() je za běhu nullable (guard je nutný), phpstan-nette
+        # ho ale typuje jako non-null → hlásí null check jako vždy false. Guard nemažeme.
+        -
+            identifier: identical.alwaysFalse
+            path: app/Components/Grids/GridFactory.php
+        # Dynamický přístup k hodnotám formuláře ($v->emails[type]); phpstan-nette ho typuje jako non-null,
+        # ale za běhu nemusí být pole vyplněné → defenzivní ?-> ponecháváme.
+        -
+            identifier: nullsafe.neverNull
+            path: app/Components/Payment/GroupForm.php
+        # Znovupoužitelné entity-partial traity zatím žádná entita nepoužívá – PHPStan je „neanalyzuje";
+        # jde o záměrné utility, ne mrtvý kód konkrétní třídy.
+        -
+            identifier: trait.unused
+            path: app/Extension/Doctrine/Entity/Partials/*
+        # Guzzle Middleware::history() zapisuje do by-ref kontejneru typu array|ArrayAccess – žádný
+        # array-generic pro náš testovací &$history mu přesně neodpovídá. Testový helper, container řídí Guzzle.
+        -
+            identifier: parameterByRef.type
+            path: tests/unit/BugReport/GitHubIssueServiceTest.php
+        # PHPStan 2 nevyřeší typ prvku při destrukturaci konstantního pole (array_map + array_values nad
+        # self::CATEGORIES) → hlásí $expected jako neřešitelný typ. Čistě testový artefakt inference.
+        -
+            identifier: argument.unresolvableType
+            path: tests/unit/Skautis/Cashbook/Repositories/CampCategoryRepositoryTest.php
         # Codeception\Example (codeception 5) je iterovatelný, ale negenerický – hodnotový typ nelze anotovat.
         -
             identifier: missingType.iterableValue

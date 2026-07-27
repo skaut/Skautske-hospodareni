@@ -378,11 +378,11 @@ class Command
 
     public function getFirstTravelDate(): ?DateTimeImmutable
     {
-        return $this->travels->isEmpty()
-            ? null
-            : min($this->travels->map(function (Travel $travel) {
-                return $travel->getDetails()->getDate()->toNative();
-            })->toArray());
+        $dates = $this->travels->map(function (Travel $travel) {
+            return $travel->getDetails()->getDate()->toNative();
+        })->toArray();
+
+        return $dates === [] ? null : min($dates);
     }
 
     public function getTravelCount(): int

@@ -14,7 +14,7 @@ abstract class IntegrationTest extends Codeception\Test\Unit
     /** @var IntegrationTester */
     protected $tester;
 
-    /** @var ClassMetadata[] */
+    /** @var list<ClassMetadata> */
     private $metadata;
 
     /** @var EntityManager */
@@ -48,7 +48,7 @@ abstract class IntegrationTest extends Codeception\Test\Unit
     protected function _before(): void
     {
         $this->entityManager = $this->tester->grabService(EntityManager::class);
-        $this->metadata = array_map([$this->entityManager, 'getClassMetadata'], $this->getTestedEntities());
+        $this->metadata = array_values(array_map([$this->entityManager, 'getClassMetadata'], $this->getTestedEntities()));
         $this->schemaTool = new SchemaTool($this->entityManager);
         // pro MySQL jistota kvůli FK
         $conn = $this->entityManager->getConnection();
