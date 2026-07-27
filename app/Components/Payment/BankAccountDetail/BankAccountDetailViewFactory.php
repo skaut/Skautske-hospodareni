@@ -151,11 +151,11 @@ final class BankAccountDetailViewFactory
             $accessibleGroups[(int) $group->getId()] = $group;
         }
 
-        $accessiblePayments = array_filter(
+        $accessiblePayments = array_values(array_filter(
             $this->payments->findByMultipleGroups($accessibleGroupIds),
             static fn (Payment $payment): bool => $payment->canBePaired(),
-        );
-        $accessibleInvoices = $includeInvoices ? $this->invoices->findOpenTransferInvoicesByUnits($readableUnitIds) : [];
+        ));
+        $accessibleInvoices = $includeInvoices ? array_values($this->invoices->findOpenTransferInvoicesByUnits($readableUnitIds)) : [];
         $rows = [];
 
         foreach ($transactions as $transaction) {

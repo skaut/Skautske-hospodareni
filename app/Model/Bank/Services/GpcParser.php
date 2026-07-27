@@ -177,7 +177,7 @@ final class GpcParser
 
             fflush($temporaryFile);
             $metadata = stream_get_meta_data($temporaryFile);
-            $temporaryFilePath = $metadata['uri'];
+            $temporaryFilePath = $metadata['uri'] ?? '';
 
             if ($temporaryFilePath === '') {
                 throw new RuntimeException('Nepodarilo se zjistit cestu k docasnemu GPC souboru.');

@@ -578,7 +578,7 @@ class InvoiceForm extends BaseControl
             throw new LogicException('Upravovaná faktura nebyla nalezena.');
         }
 
-        return array_map(
+        return array_values(array_map(
             static fn (InvoiceItem $item): array => [
                 'purpose' => $item->getPurpose(),
                 'quantity' => $item->getQuantity(),
@@ -586,7 +586,7 @@ class InvoiceForm extends BaseControl
                 'price' => (string) $item->getPrice(),
             ],
             $this->invoice->getItems()->toArray(),
-        );
+        ));
     }
 
     private function customerType(): string

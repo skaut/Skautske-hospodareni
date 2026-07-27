@@ -73,10 +73,10 @@
         "php-cs-fixer/shim": "^3.89",
         "php-vcr/php-vcr": "^1.8.2",
         "phpstan/extension-installer": "^1.1",
-        "phpstan/phpstan": "^1.5",
-        "phpstan/phpstan-doctrine": "^1.0",
-        "phpstan/phpstan-mockery": "^1.0",
-        "phpstan/phpstan-nette": "^1.0",
+        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-doctrine": "^2.0",
+        "phpstan/phpstan-mockery": "^2.0",
+        "phpstan/phpstan-nette": "^2.0",
         "roave/security-advisories": "dev-master"
     },
     "autoload": {

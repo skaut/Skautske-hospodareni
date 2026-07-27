@@ -321,7 +321,7 @@ class TravelService
             $fuelPrice,
             $amortization,
             $note,
-            array_merge($types, $command->getUsedTransportTypes()),
+            array_values(array_merge($types, $command->getUsedTransportTypes())),
             $unit,
         );
 

@@ -7,6 +7,7 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
+use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
 
 class UnusedMoneyMethodResultRule implements Rule
@@ -16,6 +17,9 @@ class UnusedMoneyMethodResultRule implements Rule
         return MethodCall::class;
     }
 
+    /**
+     * @return list<\PHPStan\Rules\IdentifierRuleError>
+     */
     public function processNode(Node $node, Scope $scope) : array
     {
         if (! ($node instanceof MethodCall)) {
@@ -32,10 +36,12 @@ class UnusedMoneyMethodResultRule implements Rule
         }
 
         return [
-            sprintf(
-                'Result of Money::%s() is not used. Money object is immutable, so this does nothing!',
-                $node->name
-            ),
+            RuleErrorBuilder::message(
+                sprintf(
+                    'Result of Money::%s() is not used. Money object is immutable, so this does nothing!',
+                    $node->name
+                )
+            )->identifier('money.unusedResult')->build(),
         ];
     }
 }

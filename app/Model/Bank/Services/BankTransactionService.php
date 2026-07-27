@@ -57,7 +57,7 @@ class BankTransactionService
         if ($bankAccount->getTransactionSource()->value === BankTransactionSource::FIO->value) {
             $this->importManager->importFioTransactions(
                 $bankAccount,
-                $this->fio->getTransactions($since, $until, $bankAccount),
+                array_values($this->fio->getTransactions($since, $until, $bankAccount)),
                 new DateTimeImmutable(),
             );
         }
