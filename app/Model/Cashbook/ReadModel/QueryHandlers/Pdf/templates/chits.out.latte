@@ -47,7 +47,7 @@ $item - položka výdaje
     <tr>
         {var $amount = $chit->amount->toFloat()}
         <td><b>Celkem Kč:</b>{if $amount !== 0.0} {= number_format($amount, 2, ",", "")}=={/if}</td>
-        <td colspan="2"><b>Slovy:</b>{if $amount !== 0.0}&nbsp;=={$amount|pricetostring}korun=={/if}</td>
+        <td colspan="2"><b>Slovy:</b>{if $amount !== 0.0}&nbsp;=={$amount|priceToString}korun=={/if}</td>
     </tr>
     <tr>
         <td><b>přezkoušel dne:</b> </td>
