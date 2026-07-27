@@ -41,7 +41,6 @@ td {
         <th>Celkem</th>
         <th>Na účet?</th>
     </tr>
-    {dump $list}
     {$totPay = $totRepay = $totAccount = 0}
      <tr n:foreach="$list as $p">
         {do $totPay += $p->payment}

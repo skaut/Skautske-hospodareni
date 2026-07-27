@@ -27,30 +27,36 @@ final class CategoryTotalsCalculator
         $totalByCategories = $cashbook->getCategoryTotals();
 
         if ($cashbook->getType()->equalsValue(CashbookType::CAMP)) {
-            $totalByCategories = self::categorySubtract($totalByCategories, self::getCampIncomeCategoryId($categories, ParticipantType::CHILD()), ICategory::CATEGORY_REFUND_CHILD_ID);
-            $totalByCategories = self::categorySubtract($totalByCategories, self::getCampIncomeCategoryId($categories, ParticipantType::ADULT()), ICategory::CATEGORY_REFUND_ADULT_ID);
+            $totalByCategories = self::categorySubtract($totalByCategories, fn (): int => self::getCampIncomeCategoryId($categories, ParticipantType::CHILD()), ICategory::CATEGORY_REFUND_CHILD_ID);
+            $totalByCategories = self::categorySubtract($totalByCategories, fn (): int => self::getCampIncomeCategoryId($categories, ParticipantType::ADULT()), ICategory::CATEGORY_REFUND_ADULT_ID);
         } elseif ($cashbook->getType()->equalsValue(CashbookType::EDUCATION)) {
-            $totalByCategories = self::categorySubtract($totalByCategories, self::getEducationIncomeCategoryId($categories), ICategory::CATEGORY_REFUND_ID);
+            $totalByCategories = self::categorySubtract($totalByCategories, fn (): int => self::getEducationIncomeCategoryId($categories), ICategory::CATEGORY_REFUND_ID);
         } else {
             if (array_key_exists(ICategory::CATEGORY_HPD_ID, $totalByCategories)) {
                 $totalByCategories[ICategory::CATEGORY_PARTICIPANT_INCOME_ID] = ($totalByCategories[ICategory::CATEGORY_PARTICIPANT_INCOME_ID] ?? 0) + $totalByCategories[ICategory::CATEGORY_HPD_ID];
                 unset($totalByCategories[ICategory::CATEGORY_HPD_ID]);
             }
 
-            $totalByCategories = self::categorySubtract($totalByCategories, ICategory::CATEGORY_PARTICIPANT_INCOME_ID, ICategory::CATEGORY_REFUND_ID);
+            $totalByCategories = self::categorySubtract($totalByCategories, fn (): int => ICategory::CATEGORY_PARTICIPANT_INCOME_ID, ICategory::CATEGORY_REFUND_ID);
         }
 
         return $totalByCategories;
     }
 
     /**
+     * Dohledání cílové kategorie (`$resolveCategoryId`) je líné – provede se jen tehdy, když je opravdu co
+     * odečítat (existuje dočasná kategorie vratky). Bez vratky se tak nevyhazuje MissingCategory u pokladen,
+     * které příslušnou příjmovou kategorii nemají (např. prázdná vzdělávačka / tábor) – stejně jako u akcí.
+     *
      * @param array<int, float> $totalByCategories
+     * @param callable(): int   $resolveCategoryId
      *
      * @return array<int, float>
      */
-    private static function categorySubtract(array $totalByCategories, int $categoryId, int $temporaryId): array
+    private static function categorySubtract(array $totalByCategories, callable $resolveCategoryId, int $temporaryId): array
     {
         if (array_key_exists($temporaryId, $totalByCategories)) {
+            $categoryId = $resolveCategoryId();
             $totalByCategories[$categoryId] = ($totalByCategories[$categoryId] ?? 0) - $totalByCategories[$temporaryId];
             unset($totalByCategories[$temporaryId]);
         }
