@@ -237,7 +237,7 @@ class CommandForm extends Control
             MoneyFactory::fromFloat((float) $values['fuel_price']),
             MoneyFactory::fromFloat((float) $values['amortization']),
             $values['note'],
-            array_map(fn (string $type) => TransportType::get($type), $values['type']),
+            array_values(array_map(fn (string $type) => TransportType::get($type), $values['type'])),
             $presenter->getLoggedInUserId(),
             $values['unit'],
         );
@@ -258,7 +258,7 @@ class CommandForm extends Control
             MoneyFactory::fromFloat((float) $values['fuel_price']),
             MoneyFactory::fromFloat((float) $values['amortization']),
             $values['note'],
-            array_map(fn (string $type) => TransportType::get($type), $values['type']),
+            array_values(array_map(fn (string $type) => TransportType::get($type), $values['type'])),
             $values['unit'],
         );
 
