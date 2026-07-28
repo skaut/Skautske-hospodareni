@@ -9,13 +9,6 @@ use Consistence\Enum\Enum;
 
 final class PaymentGroupTypeType extends AbstractEnumType
 {
-    public const NAME = 'payment_group_type';
-
-    public function getName(): string
-    {
-        return self::NAME;
-    }
-
     /** @return class-string<Enum> */
     protected function enumClass(): string
     {

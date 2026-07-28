@@ -11,11 +11,6 @@ use LogicException;
 
 class EmailAddressType extends StringType
 {
-    public function getName(): string
-    {
-        return 'email_address';
-    }
-
     public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): ?string
     {
         if ($value === null) {
