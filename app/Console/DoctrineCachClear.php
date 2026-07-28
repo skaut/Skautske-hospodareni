@@ -8,16 +8,16 @@ use Contributte\Psr6\ICachePoolFactory;
 use Nette\Caching\Cache as NetteCache;
 use Nette\Caching\Storage as NetteStorage;
 use Nette\Utils\FileSystem;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
+#[AsCommand(name: 'doctrine:cache:clear', description: 'Clear Doctrine/Nette caches used by EntityManagerFactory.')]
 final class DoctrineCacheClearCommand extends Command
 {
-    protected static $defaultName = 'doctrine:cache:clear';
-
     /** @var string[] */
     private array $poolNames = ['annotations', 'metadata', 'query', 'result', 'secondLevel', 'enums'];
 
@@ -32,7 +32,6 @@ final class DoctrineCacheClearCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setDescription('Clear Doctrine/Nette caches used by EntityManagerFactory.')
             ->addOption('pool', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Limit to selected pool(s) (annotations|metadata|query|result|secondLevel|enums)')
             ->addOption('list', null, InputOption::VALUE_NONE, 'List configured pools and exit')
             ->addOption('purge-dirs', null, InputOption::VALUE_NONE, 'Also remove cache directories from %tempDir%');

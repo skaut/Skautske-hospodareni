@@ -13,11 +13,6 @@ use function is_string;
 
 class RecipientType extends StringType
 {
-    public function getName(): string
-    {
-        return 'recipient';
-    }
-
     public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): ?string
     {
         if ($value === null) {

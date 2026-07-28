@@ -7,6 +7,7 @@ namespace App\Model\Event\ReadModel\QueryHandlers;
 use App\Model\Cashbook\Operation;
 use App\Model\Event\ReadModel\Queries\CampStatisticsQuery;
 use App\Model\Event\SkautisCampId;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 
@@ -31,7 +32,7 @@ class CampStatisticsQueryHandler
             Operation::EXPENSE,
             $query->getYear(),
         ];
-        $types = [Connection::PARAM_INT_ARRAY, ParameterType::INTEGER, ParameterType::INTEGER];
+        $types = [ArrayParameterType::INTEGER, ParameterType::INTEGER, ParameterType::INTEGER];
         $sql = <<<'SQL'
             SELECT o.id, COUNT(ci.price) as sum
             FROM `ac_chits` c
