@@ -2909,16 +2909,16 @@
         },
         {
             "name": "illuminate/collections",
-            "version": "v13.22.0",
+            "version": "v13.23.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/collections.git",
-                "reference": "7f71432aaf2a542ef0c18854e2d3a2bb5e51034e"
+                "reference": "79b5d04507a255e35ce34cec621696aca84ee242"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/collections/zipball/7f71432aaf2a542ef0c18854e2d3a2bb5e51034e",
-                "reference": "7f71432aaf2a542ef0c18854e2d3a2bb5e51034e",
+                "url": "https://api.github.com/repos/illuminate/collections/zipball/79b5d04507a255e35ce34cec621696aca84ee242",
+                "reference": "79b5d04507a255e35ce34cec621696aca84ee242",
                 "shasum": ""
             },
             "require": {
@@ -2965,7 +2965,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2026-07-15T15:50:17+00:00"
+            "time": "2026-07-26T13:07:32+00:00"
         },
         {
             "name": "illuminate/conditionable",
@@ -3169,16 +3169,16 @@
         },
         {
             "name": "latte/latte",
-            "version": "v3.1.5",
+            "version": "v3.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/latte.git",
-                "reference": "8422eea5dd09c777e892d10f7d87dda42b117253"
+                "reference": "adccfac3d5d7bff441a0e5ae85978f448787f5d4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/latte/zipball/8422eea5dd09c777e892d10f7d87dda42b117253",
-                "reference": "8422eea5dd09c777e892d10f7d87dda42b117253",
+                "url": "https://api.github.com/repos/nette/latte/zipball/adccfac3d5d7bff441a0e5ae85978f448787f5d4",
+                "reference": "adccfac3d5d7bff441a0e5ae85978f448787f5d4",
                 "shasum": ""
             },
             "require": {
@@ -3254,9 +3254,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/latte/issues",
-                "source": "https://github.com/nette/latte/tree/v3.1.5"
+                "source": "https://github.com/nette/latte/tree/v3.1.6"
             },
-            "time": "2026-07-25T15:27:40+00:00"
+            "time": "2026-07-27T14:32:10+00:00"
         },
         {
             "name": "league/flysystem",
@@ -4511,16 +4511,16 @@
         },
         {
             "name": "nette/mail",
-            "version": "v4.1.2",
+            "version": "v4.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/mail.git",
-                "reference": "c4ffac25187b1212fb9014341ecf96ed2fd8c4fc"
+                "reference": "6dd1042fb3cb95ebd3c6ca79507154dc74215bd2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/mail/zipball/c4ffac25187b1212fb9014341ecf96ed2fd8c4fc",
-                "reference": "c4ffac25187b1212fb9014341ecf96ed2fd8c4fc",
+                "url": "https://api.github.com/repos/nette/mail/zipball/6dd1042fb3cb95ebd3c6ca79507154dc74215bd2",
+                "reference": "6dd1042fb3cb95ebd3c6ca79507154dc74215bd2",
                 "shasum": ""
             },
             "require": {
@@ -4539,7 +4539,9 @@
             "suggest": {
                 "ext-dom": "to use Nette\\Mail\\CssInliner",
                 "ext-fileinfo": "to detect type of attached files",
-                "ext-openssl": "to use Nette\\Mail\\DkimSigner"
+                "ext-intl": "to send to internationalized (IDN) domains",
+                "ext-openssl": "to use Nette\\Mail\\DkimSigner with an RSA key",
+                "ext-sodium": "to use Nette\\Mail\\DkimSigner with an Ed25519 key"
             },
             "type": "library",
             "extra": {
@@ -4582,9 +4584,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/mail/issues",
-                "source": "https://github.com/nette/mail/tree/v4.1.2"
+                "source": "https://github.com/nette/mail/tree/v4.2.0"
             },
-            "time": "2026-05-19T18:23:42+00:00"
+            "time": "2026-07-27T15:28:54+00:00"
         },
         {
             "name": "nette/neon",
