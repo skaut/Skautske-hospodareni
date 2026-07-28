@@ -12,8 +12,9 @@ use Nette\DI\Definitions\ServiceDefinition;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 use ReflectionClass;
+use ReflectionMethod;
 use ReflectionNamedType;
-use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBus;
 use Symfony\Component\Messenger\Middleware\HandleMessageMiddleware;
 
@@ -24,7 +25,6 @@ use function class_exists;
 use function count;
 use function implode;
 use function is_array;
-use function is_int;
 use function is_string;
 use function sprintf;
 
@@ -142,55 +142,65 @@ final class MessengerExtension extends CompilerExtension
         }
 
         $reflection = new ReflectionClass($className);
+        $fromAttributes = $this->resolveFromAttributes($reflection);
 
-        if ($reflection->implementsInterface(MessageSubscriberInterface::class)) {
-            return $this->normalizeHandledMessages($className::getHandledMessages());
+        if ($fromAttributes !== []) {
+            return $fromAttributes;
         }
 
-        return [$this->guessMessageFromInvoke($reflection) => ['method' => '__invoke']];
+        return [$this->guessMessageFromMethod($reflection->getMethod('__invoke')) => ['method' => '__invoke']];
     }
 
     /**
-     * @param iterable<int|string, mixed> $handledMessages
+     * Handlery označené `#[AsMessageHandler]`.
      *
-     * @return array<string, array<string, mixed>>
+     * Atribut nahradil zrušené `MessageSubscriberInterface`; zpracovávaná zpráva se bere z typu
+     * parametru metody, takže se nikde neduplikuje. Jedna třída může mít označených metod víc,
+     * každou pro jinou zprávu.
+     *
+     * @return array<string, array<string, mixed>> message class => options
      */
-    private function normalizeHandledMessages(iterable $handledMessages): array
+    private function resolveFromAttributes(ReflectionClass $reflection): array
     {
-        $normalized = [];
+        $handled = [];
 
-        foreach ($handledMessages as $message => $options) {
-            if (is_int($message)) {
-                assert(is_string($options));
-                $normalized[$options] = [];
+        foreach ($reflection->getAttributes(AsMessageHandler::class) as $attribute) {
+            $instance = $attribute->newInstance();
+            $method = $instance->method ?? '__invoke';
 
-                continue;
-            }
-
-            if (is_string($options)) {
-                $options = ['method' => $options];
-            }
-
-            assert(is_array($options));
-            $normalized[$message] = $options;
+            $handled[$instance->handles ?? $this->guessMessageFromMethod($reflection->getMethod($method))] = [
+                'method' => $method,
+                'bus' => $instance->bus,
+            ];
         }
 
-        return $normalized;
+        foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+            foreach ($method->getAttributes(AsMessageHandler::class) as $attribute) {
+                $instance = $attribute->newInstance();
+
+                $handled[$instance->handles ?? $this->guessMessageFromMethod($method)] = [
+                    'method' => $method->getName(),
+                    'bus' => $instance->bus,
+                ];
+            }
+        }
+
+        return $handled;
     }
 
-    private function guessMessageFromInvoke(ReflectionClass $reflection): string
+    private function guessMessageFromMethod(ReflectionMethod $method): string
     {
-        $method = $reflection->getMethod('__invoke');
         $parameters = $method->getParameters();
+        $name = $method->getDeclaringClass()->getName().'::'.$method->getName().'()';
 
         if (count($parameters) !== 1) {
-            throw new LogicException(sprintf('Handler "%s::__invoke()" must take exactly one parameter.', $reflection->getName()));
+            throw new LogicException(sprintf('Handler "%s" must take exactly one parameter.', $name));
         }
 
         $type = $parameters[0]->getType();
 
         if (! $type instanceof ReflectionNamedType || $type->isBuiltin()) {
-            throw new LogicException(sprintf('Handler "%s::__invoke()" must type-hint the handled message class.', $reflection->getName()));
+            throw new LogicException(sprintf('Handler "%s" must type-hint the handled message class.', $name));
         }
 
         return $type->getName();
