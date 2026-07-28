@@ -21,7 +21,7 @@ class EmailRecipient
     #[ORM\JoinColumn(nullable: false)]
     private Payment $payment;
 
-    #[ORM\Column(type: 'email_address')]
+    #[ORM\Column(type: 'email_address', length: 255)]
     private EmailAddress $emailAddress;
 
     public function __construct(Payment $payment, EmailAddress $emailAddress)

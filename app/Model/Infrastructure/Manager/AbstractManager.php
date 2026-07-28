@@ -207,19 +207,16 @@ abstract class AbstractManager
         $this->em->initializeObject($entity);
     }
 
-    /** @phpstan-param LockMode::* $lockMode */
-    public function refresh(object $entity, ?int $lockMode = null): void
+    public function refresh(object $entity, ?LockMode $lockMode = null): void
     {
         $this->em->refresh($entity, $lockMode);
     }
 
     /**
-     * @phpstan-param LockMode::* $lockMode
-     *
      * @throws OptimisticLockException
      * @throws PessimisticLockException
      */
-    public function lock(object $entity, int $lockMode, int|DateTimeInterface|null $lockVersion = null): void
+    public function lock(object $entity, LockMode $lockMode, int|DateTimeInterface|null $lockVersion = null): void
     {
         $this->em->lock($entity, $lockMode, $lockVersion);
     }

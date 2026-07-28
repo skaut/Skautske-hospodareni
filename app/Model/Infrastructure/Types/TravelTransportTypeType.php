@@ -9,13 +9,6 @@ use Consistence\Enum\Enum;
 
 final class TravelTransportTypeType extends AbstractEnumType
 {
-    public const NAME = 'travel_transport_type';
-
-    public function getName(): string
-    {
-        return self::NAME;
-    }
-
     /** @return class-string<Enum> */
     protected function enumClass(): string
     {

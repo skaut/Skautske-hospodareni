@@ -15,7 +15,7 @@ use function str_replace;
 #[ORM\Embeddable]
 class EmailTemplate
 {
-    #[ORM\Column(type: 'string')]
+    #[ORM\Column(type: 'string', length: 255)]
     private string $subject;
 
     #[ORM\Column(type: 'text')]

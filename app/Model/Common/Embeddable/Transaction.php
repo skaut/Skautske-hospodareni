@@ -29,10 +29,10 @@ class Transaction
     #[Column(type: 'string', length: 64, nullable: true)]
     private ?string $bankAccount = null;
 
-    #[Column(name: 'transaction_payer', type: 'string', nullable: true)]
+    #[Column(name: 'transaction_payer', type: 'string', length: 255, nullable: true)]
     private ?string $payer = null;
 
-    #[Column(name: 'transaction_note', type: 'string', nullable: true)]
+    #[Column(name: 'transaction_note', type: 'string', length: 255, nullable: true)]
     private ?string $note = null;
 
     #[Column(type: 'chronos_date', nullable: true)]

@@ -15,15 +15,9 @@ use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Proxy\ProxyFactory;
-use Doctrine\ORM\Tools\Setup;
 use Psr\Cache\CacheItemPoolInterface;
 
-use function class_exists;
-
 use const CASE_LOWER;
-
-// BC wrapper pro lib očekávající Doctrine Cache
-// dostupné v novějších ORM
 
 final class EntityManagerFactory
 {
@@ -39,14 +33,9 @@ final class EntityManagerFactory
     {
         $proxyDir = $this->tempDir.'/doctrine/proxies';
 
-        // jednotná defaultní cache pro ORMSetup factory – klidně použij "metadata" pool
-        $defaultCache = $this->cache('metadata'); // CacheItemPoolInterface
-
-        // neutrální konfigurace; driver nastavíme ručně (chain)
-        $configuration = class_exists(ORMSetup::class)
-            // ✅ tímhle obejdeš Redis/Memcached autodetekci uvnitř ORMSetup
-            ? ORMSetup::createConfiguration($this->debugMode, $proxyDir, $defaultCache)
-            : Setup::createConfiguration($this->debugMode, $proxyDir);
+        // Neutrální konfigurace s explicitní PSR-6 cache (obchází Redis/Memcached
+        // autodetekci uvnitř ORMSetup); metadata driver nastavíme ručně níže.
+        $configuration = ORMSetup::createConfiguration($this->debugMode, $proxyDir, $this->cache('metadata'));
 
         $configuration->setAutoGenerateProxyClasses(
             $this->debugMode ? ProxyFactory::AUTOGENERATE_ALWAYS : ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS,
@@ -63,7 +52,7 @@ final class EntityManagerFactory
         $this->connection->getConfiguration()->setResultCache($this->cache('result'));
 
         // Naming, DQL
-        $configuration->setNamingStrategy(new UnderscoreNamingStrategy(CASE_LOWER, true));
+        $configuration->setNamingStrategy(new UnderscoreNamingStrategy(CASE_LOWER));
         // $configuration->addCustomStringFunction('field', Field::class);
         $configuration->addCustomStringFunction('field', Dql\FieldFunction::class);
 
@@ -76,7 +65,7 @@ final class EntityManagerFactory
         );
         $configuration->setSecondLevelCacheConfiguration($cacheConfiguration);
 
-        $em = EntityManager::create($this->connection, $configuration);
+        $em = new EntityManager($this->connection, $configuration);
 
         // Čistí prázdné nullable embeddables po načtení (čte #[Nullable] reflexí).
         $em->getEventManager()->addEventSubscriber(new Subscriber());

@@ -7,6 +7,7 @@ namespace App\Model\Infrastructure\Repositories\Travel;
 use App\Model\Travel\Command;
 use App\Model\Travel\Travel\TransportType;
 use App\Model\Travel\Vehicle;
+use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManager;
@@ -298,6 +299,34 @@ class CommandRepositoryTest extends IntegrationTest
                 return $command->getId();
             }, $commands),
         );
+    }
+
+    /**
+     * Vozidlo se z příkazu načítá líně, tedy jako ORM proxy. Proxy v ORM 3 stojí na
+     * LazyGhostTrait a hydratace jde přes magické `__set` – kdyby entita měla
+     * `Nette\SmartObject`, přebral by ho a vyhodil „Cannot write to a read-only property“.
+     */
+    public function testVehicleIsHydratedFromLazyProxy(): void
+    {
+        $this->tester->haveInDatabase('tc_vehicle', self::VEHICLE);
+        $this->tester->haveInDatabase('tc_commands', ['vehicle_id' => self::VEHICLE['id']] + self::COMMAND);
+        $this->tester->haveInDatabase('tc_travels', ['command_id' => self::COMMAND_ID] + self::VEHICLE_TRAVEL);
+
+        $command = $this->repository->find(self::COMMAND_ID);
+
+        $this->assertSame(self::VEHICLE['id'], $command->getVehicleId());
+
+        // amortizace * km + cena paliva * (km * spotřeba / 100); čtení spotřeby inicializuje proxy
+        $distance = self::VEHICLE_TRAVEL['distance'];
+        $expectedTotal = MoneyFactory::floor(
+            Money::CZK(self::COMMAND['amortization'])->multiply((string) $distance)
+                ->add(
+                    Money::CZK(self::COMMAND['fuel_price'])
+                        ->multiply((string) ($distance * self::VEHICLE['consumption'] / 100)),
+                ),
+        );
+
+        $this->assertEquals($expectedTotal, $command->calculateTotal());
     }
 
     private function createCommandWithTwoTravels(int $commandId = self::COMMAND_ID): void

@@ -10,13 +10,7 @@ use Doctrine\DBAL\Types\StringType;
 
 class VariableSymbolType extends StringType
 {
-    public const NAME = 'variable_symbol';
     public const LENGTH = 10;
-
-    public function getName(): string
-    {
-        return self::NAME;
-    }
 
     public function getDefaultLength(AbstractPlatform $platform): int
     {
