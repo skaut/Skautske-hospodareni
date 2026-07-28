@@ -6,27 +6,21 @@ namespace App\Console;
 
 use FilesystemIterator;
 use SplFileInfo;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+#[AsCommand(name: 'app:cache:purge', description: 'Clear temp folders and others')]
 final class CachePurgeCommand extends Command
 {
-    protected static $defaultName = 'app:cache:purge';
-
     /**
      * @param string[] $dirs
      */
     public function __construct(private array $dirs)
     {
         parent::__construct();
-    }
-
-    protected function configure(): void
-    {
-        $this->setName((string) self::$defaultName);
-        $this->setDescription('Clear temp folders and others');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

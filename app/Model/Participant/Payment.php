@@ -33,7 +33,7 @@ class Payment
     #[ORM\Column(type: 'money')]
     private Money $repayment;
 
-    #[ORM\Column(type: 'string')]
+    #[ORM\Column(type: 'string', length: 255)]
     private string $account;
 
     public function __construct(PaymentId $id, int $participantId, Event $event, ?Money $payment = null, ?Money $repayment = null, string $account = 'N')

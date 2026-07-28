@@ -38,9 +38,4 @@ abstract class AbstractEnumType extends StringType
 
         return $value instanceof Enum ? (string) $value->getValue() : (string) $value;
     }
-
-    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
-    {
-        return true;
-    }
 }

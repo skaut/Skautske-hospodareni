@@ -18,13 +18,13 @@ final class Passenger
 {
     use SmartObject;
 
-    #[ORM\Column(type: 'string', name: 'driver_name')]
+    #[ORM\Column(type: 'string', name: 'driver_name', length: 255)]
     private string $name;
 
-    #[ORM\Column(type: 'string', name: 'driver_contact')]
+    #[ORM\Column(type: 'string', name: 'driver_contact', length: 255)]
     private string $contact;
 
-    #[ORM\Column(type: 'string', name: 'driver_address')]
+    #[ORM\Column(type: 'string', name: 'driver_address', length: 255)]
     private string $address;
 
     #[ORM\Column(type: 'integer', nullable: true)]

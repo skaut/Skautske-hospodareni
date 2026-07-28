@@ -29,7 +29,7 @@ class Email
      * @var EmailType
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
-    #[ORM\Column(type: 'payment_email_type')]
+    #[ORM\Column(type: 'payment_email_type', length: 255)]
     private $type;
 
     #[ORM\Embedded(class: EmailTemplate::class)]

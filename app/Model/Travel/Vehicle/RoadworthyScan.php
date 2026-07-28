@@ -26,7 +26,7 @@ class RoadworthyScan
     #[ORM\JoinColumn(nullable: false)]
     private Vehicle $vehicle;
 
-    #[ORM\Column(type: 'file_path')]
+    #[ORM\Column(type: 'file_path', length: 255)]
     private FilePath $filePath;
 
     public function __construct(Vehicle $vehicle, FilePath $filePath)

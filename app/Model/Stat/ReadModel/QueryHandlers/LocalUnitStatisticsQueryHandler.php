@@ -11,6 +11,7 @@ use App\Model\Payment\Group;
 use App\Model\Payment\Payment\State;
 use App\Model\Stat\ReadModel\Queries\LocalUnitStatisticsQuery;
 use DateTimeImmutable;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 
@@ -72,7 +73,7 @@ SQL;
             'paymentCanceled' => State::CANCELED,
             'automaticPairing' => BankTransactionPairingMode::AUTOMATIC->value,
         ], [
-            'unitIds' => Connection::PARAM_INT_ARRAY,
+            'unitIds' => ArrayParameterType::INTEGER,
             'year' => ParameterType::INTEGER,
         ])->fetchAllAssociative() as $row) {
             $this->counter($statistics, (int) $row['unit_id'])->addPaymentStats(
@@ -123,7 +124,7 @@ SQL;
             'paid' => InvoiceState::PAID,
             'cancelled' => InvoiceState::CANCELLED,
         ], [
-            'unitIds' => Connection::PARAM_INT_ARRAY,
+            'unitIds' => ArrayParameterType::INTEGER,
             'year' => ParameterType::INTEGER,
         ])->fetchAllAssociative() as $row) {
             $this->counter($statistics, (int) $row['unit_id'])->addInvoiceStats(
@@ -162,7 +163,7 @@ SQL;
             'unitIds' => $query->getUnitIds(),
             'year' => $query->getYear(),
         ], [
-            'unitIds' => Connection::PARAM_INT_ARRAY,
+            'unitIds' => ArrayParameterType::INTEGER,
             'year' => ParameterType::INTEGER,
         ])->fetchAllAssociative() as $row) {
             $this->counter($statistics, (int) $row['unit_id'])->addBankStats(
@@ -198,7 +199,7 @@ SQL;
             'unitIds' => $query->getUnitIds(),
             'year' => $query->getYear(),
         ], [
-            'unitIds' => Connection::PARAM_INT_ARRAY,
+            'unitIds' => ArrayParameterType::INTEGER,
             'year' => ParameterType::INTEGER,
         ])->fetchAllAssociative() as $row) {
             $this->counter($statistics, (int) $row['unit_id'])->addBugReportStats(

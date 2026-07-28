@@ -20,7 +20,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use LogicException;
 use Nette\DI\Container;
-use Nettrine\Fixtures\ContainerAwareInterface;
+use Nettrine\Fixtures\Fixture\ContainerAwareInterface;
 use RuntimeException;
 
 use function sprintf;

@@ -6,18 +6,24 @@ namespace Extension\Doctrine\Types;
 
 use Carbon\CarbonImmutable;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\BigIntType;
+use Doctrine\DBAL\Types\Type;
 use InvalidArgumentException;
 
 use function is_numeric;
 
-class CarbonTimestampImmutableMsType extends BigIntType
+/**
+ * BIGINT sloupec (unixový čas v ms) mapovaný na CarbonImmutable.
+ *
+ * Nedědí z BigIntType – ten má v DBAL 4 pevný návratový typ `int|string|null` u convertToPHPValue.
+ */
+class CarbonTimestampImmutableMsType extends Type
 {
     public const NAME = 'carbon_timestamp_immutable_ms';
 
-    public function getName(): string
+    /** @param array<string, mixed> $column */
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return self::NAME;
+        return $platform->getBigIntTypeDeclarationSQL($column);
     }
 
     public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): ?int
@@ -44,10 +50,5 @@ class CarbonTimestampImmutableMsType extends BigIntType
         }
 
         throw new InvalidArgumentException('Carbon timestamp field has to be saved as int|null in database');
-    }
-
-    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
-    {
-        return true;
     }
 }

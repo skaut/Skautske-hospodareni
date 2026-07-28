@@ -13,11 +13,6 @@ use function is_string;
 
 final class CashbookIdType extends GuidType
 {
-    public function getName(): string
-    {
-        return 'cashbook_id';
-    }
-
     public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?CashbookId
     {
         if ($value === null) {

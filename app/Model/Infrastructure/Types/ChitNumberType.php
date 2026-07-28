@@ -11,11 +11,6 @@ use LogicException;
 
 class ChitNumberType extends StringType
 {
-    public function getName(): string
-    {
-        return 'chit_number';
-    }
-
     public function getDefaultLength(AbstractPlatform $platform): int
     {
         return 5;

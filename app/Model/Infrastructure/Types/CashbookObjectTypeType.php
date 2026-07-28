@@ -9,13 +9,6 @@ use Consistence\Enum\Enum;
 
 final class CashbookObjectTypeType extends AbstractEnumType
 {
-    public const NAME = 'cashbook_object_type';
-
-    public function getName(): string
-    {
-        return self::NAME;
-    }
-
     /** @return class-string<Enum> */
     protected function enumClass(): string
     {
