@@ -24,7 +24,6 @@
         "guzzlehttp/psr7": "^2.2.1",
         "heureka/bank-account-validator": "1.2.*",
         "http-interop/http-factory-guzzle": "^1.2",
-        "ifm24/bank-statements": "^3.0",
         "illuminate/collections": "^13.20",
         "latte/latte": " ~3.0",
         "league/flysystem": "^3.21",
@@ -61,6 +60,7 @@
         "ublaboo/datagrid": "^7.2",
         "vlucas/phpdotenv": "^5.5",
         "warhuhn/chronos-doctrine": "^5.0.0",
+        "webwingscz/bank-statements": "^1.0",
         "webwingscz/fio-api-php": "6.0.0"
     },
     "require-dev": {
