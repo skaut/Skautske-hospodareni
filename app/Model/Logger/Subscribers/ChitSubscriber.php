@@ -8,9 +8,9 @@ use App\Model\Chit\Events\ChitWasRemoved;
 use App\Model\Chit\Events\ChitWasUpdated;
 use App\Model\Logger\Log\Type;
 use App\Model\Logger\LoggerService;
-use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-final class ChitSubscriber implements MessageSubscriberInterface
+final class ChitSubscriber
 {
     private LoggerService $loggerService;
 
@@ -19,15 +19,7 @@ final class ChitSubscriber implements MessageSubscriberInterface
         $this->loggerService = $ls;
     }
 
-    /** @return array<string, mixed> */
-    public static function getHandledMessages(): array
-    {
-        return [
-            ChitWasUpdated::class => ['method' => 'handleUpdate'],
-            ChitWasRemoved::class => ['method' => 'handleRemove'],
-        ];
-    }
-
+    #[AsMessageHandler]
     public function handleUpdate(ChitWasUpdated $chit): void
     {
         $this->loggerService->log(
@@ -39,6 +31,7 @@ final class ChitSubscriber implements MessageSubscriberInterface
         );
     }
 
+    #[AsMessageHandler]
     public function handleRemove(ChitWasRemoved $chit): void
     {
         $this->loggerService->log(
