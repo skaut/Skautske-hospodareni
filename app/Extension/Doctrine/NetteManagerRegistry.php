@@ -32,12 +32,12 @@ final class NetteManagerRegistry extends AbstractManagerRegistry
         $this->services['doctrine.entityManager'] = $em;
     }
 
-    protected function getService($name)
+    protected function getService(string $name): object
     {
         return $this->services[$name] ?? throw new InvalidArgumentException(sprintf('Unknown Doctrine service "%s".', $name));
     }
 
-    protected function resetService($name): void
+    protected function resetService(string $name): void
     {
         if (
             $name !== 'doctrine.entityManager'

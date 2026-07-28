@@ -15,11 +15,6 @@ use function array_values;
 
 final class TransportTypeListType extends Type
 {
-    public function getName(): string
-    {
-        return 'transport_types';
-    }
-
     /** @param array<string, mixed> $fieldDeclaration */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
     {

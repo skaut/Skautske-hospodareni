@@ -35,11 +35,8 @@ class PairedPaymentsQueryHandler
             ->andWhere('p.transaction.id IS NOT NULL')
             ->andWhere('p.closedAt BETWEEN :since AND :until')
             ->setParameter('bankAccountId', $query->getBankAccountId()->toInt())
-            ->setParameters([
-                'bankAccountId' => $query->getBankAccountId()->toInt(),
-                'since' => $query->getSince(),
-                'until' => $query->getUntil(),
-            ])
+            ->setParameter('since', $query->getSince())
+            ->setParameter('until', $query->getUntil())
             ->getQuery()
             ->getResult();
 

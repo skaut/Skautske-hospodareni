@@ -29,7 +29,7 @@ class Category
      * @var Operation
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
-    #[ORM\Column(type: 'cashbook_operation')]
+    #[ORM\Column(type: 'cashbook_operation', length: 255)]
     private $type;
 
     /**
@@ -42,7 +42,9 @@ class Category
     #[ORM\JoinColumn(name: 'parentId', referencedColumnName: 'id')]
     private ?Category $parent = null;
 
-    #[ORM\Column(type: 'float', options: ['default' => 0])]
+    // Default jako string – MySQL introspekce vrací default DOUBLE sloupce jako '0'
+    // a komparátor DBAL 4 porovnává striktně, takže int 0 by generoval trvalý diff.
+    #[ORM\Column(type: 'float', options: ['default' => '0'])]
     private float $value;
 
     #[ORM\Column(type: 'smallint')]

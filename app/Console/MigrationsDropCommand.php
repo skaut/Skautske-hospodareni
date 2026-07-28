@@ -6,6 +6,7 @@ namespace Console;
 
 use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -14,12 +15,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use function getenv;
 use function sprintf;
 
+#[AsCommand(name: 'migrations:drop-all-tables-views', description: 'Drops all tables from the database')]
 class MigrationsDropCommand extends Command
 {
-    // phpcs:disable SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
-    /** @var string|null The default command name */
-    protected static $defaultName = 'migrations:drop-all-tables-views';
-
     public function __construct(private EntityManagerInterface $em)
     {
         parent::__construct();
@@ -27,9 +25,7 @@ class MigrationsDropCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName((string) self::$defaultName)
-            ->setDescription('Drops all tables from the database')
-            ->addOption('force', null, InputOption::VALUE_NONE, 'Allow execution outside the testing environment');
+        $this->addOption('force', null, InputOption::VALUE_NONE, 'Allow execution outside the testing environment');
     }
 
     /** @throws Exception */

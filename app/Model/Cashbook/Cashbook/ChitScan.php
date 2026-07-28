@@ -25,7 +25,7 @@ class ChitScan
     #[ORM\JoinColumn(nullable: false)]
     private Chit $chit;
 
-    #[ORM\Column(type: 'file_path')]
+    #[ORM\Column(type: 'file_path', length: 255)]
     private FilePath $filePath;
 
     public function __construct(Chit $chit, FilePath $filePath)

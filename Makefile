@@ -136,7 +136,7 @@ init: ## Inicializace aplikace (composer app-init)
 
 fixtures: ## Načte vývojová fixture data bez mazání databáze
 	$(call reset_writable_dirs,php)
-	$(RUN_PHP_DEV) bin/console doctrine:fixtures:load --append --no-interaction
+	$(RUN_PHP_DEV) bin/console doctrine:fixtures:load --no-interaction
 
 test-enter: ## Shell do test PHP kontejneru
 	$(EXEC_PHP_TEST) bash

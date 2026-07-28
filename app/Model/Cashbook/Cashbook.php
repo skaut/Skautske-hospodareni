@@ -41,13 +41,13 @@ class Cashbook extends Aggregate
      * @var CashbookType
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
-    #[ORM\Column(type: 'cashbook_type')]
+    #[ORM\Column(type: 'cashbook_type', length: 255)]
     private $type;
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $cashChitNumberPrefix = null;
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $bankChitNumberPrefix = null;
 
     /**

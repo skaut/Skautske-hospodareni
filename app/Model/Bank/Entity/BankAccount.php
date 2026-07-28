@@ -30,13 +30,13 @@ class BankAccount
     #[Column(type: 'integer')]
     private int $unitId;
 
-    #[Column(type: 'string')]
+    #[Column(type: 'string', length: 255)]
     private string $name;
 
     #[Embedded(class: AccountNumber::class)]
     private AccountNumber $number;
 
-    #[Column(type: 'string', nullable: true)]
+    #[Column(type: 'string', length: 255, nullable: true)]
     private ?string $token = null;
 
     #[Column(type: 'string', length: 20, nullable: true)]

@@ -26,13 +26,13 @@ class SentEmail
      * @var EmailType
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
-    #[ORM\Column(type: 'payment_email_type')]
+    #[ORM\Column(type: 'payment_email_type', length: 255)]
     private $type;
 
     #[ORM\Column(type: 'datetime_immutable')]
     private DateTimeImmutable $time;
 
-    #[ORM\Column(type: 'string')]
+    #[ORM\Column(type: 'string', length: 255)]
     private string $senderName;
 
     public function __construct(Payment $payment, EmailType $type, DateTimeImmutable $time, string $senderName)

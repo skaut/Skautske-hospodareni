@@ -21,7 +21,7 @@ final class PaymentDefaults
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $constantSymbol = null;
 
-    #[ORM\Column(type: 'variable_symbol', nullable: true)]
+    #[ORM\Column(type: 'variable_symbol', length: 255, nullable: true)]
     private ?VariableSymbol $nextVariableSymbol = null;
 
     /** @throws DueDateIsNotWorkday */
