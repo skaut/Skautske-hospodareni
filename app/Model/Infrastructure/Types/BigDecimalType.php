@@ -6,18 +6,22 @@ namespace App\Model\Infrastructure\Types;
 
 use Brick\Math\BigDecimal;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\DecimalType;
+use Doctrine\DBAL\Types\Type;
 use InvalidArgumentException;
 
 use function is_numeric;
 
-class BigDecimalType extends DecimalType
+/**
+ * DECIMAL sloupec mapovaný na Brick\Math\BigDecimal.
+ *
+ * Nedědí z DecimalType – ten má v DBAL 4 pevný návratový typ `?string` u convertToPHPValue.
+ */
+class BigDecimalType extends Type
 {
-    public const NAME = 'big_decimal';
-
-    public function getName(): string
+    /** @param array<string, mixed> $column */
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return self::NAME;
+        return $platform->getDecimalTypeDeclarationSQL($column);
     }
 
     public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): ?string
@@ -44,10 +48,5 @@ class BigDecimalType extends DecimalType
         }
 
         throw new InvalidArgumentException('BigDecimal field has to be saved as string|null in database');
-    }
-
-    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
-    {
-        return true;
     }
 }

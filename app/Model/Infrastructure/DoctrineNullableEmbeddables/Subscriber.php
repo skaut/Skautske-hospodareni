@@ -6,7 +6,7 @@ namespace App\Model\Infrastructure\DoctrineNullableEmbeddables;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PostLoadEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use ReflectionProperty;
 
@@ -31,6 +31,11 @@ class Subscriber implements EventSubscriber
             }
 
             $field = $metadata->getReflectionProperty($fieldName);
+
+            if ($field === null) {
+                continue;
+            }
+
             $value = $field->getValue($object);
 
             if (! is_object($value)) {
@@ -46,7 +51,7 @@ class Subscriber implements EventSubscriber
                 $entityManager,
             );
 
-            if (! $this->isEmpty($value, $entityManager->getClassMetadata($embeddable['class']))) {
+            if (! $this->isEmpty($value, $entityManager->getClassMetadata($embeddable->class))) {
                 continue;
             }
 
@@ -54,13 +59,11 @@ class Subscriber implements EventSubscriber
         }
     }
 
-    public function postLoad(LifecycleEventArgs $args): void
+    public function postLoad(PostLoadEventArgs $args): void
     {
-        $object = $args->getObject();
-
         $this->clearEmbeddablesIfNecessary(
-            $object,
-            $args->getEntityManager(),
+            $args->getObject(),
+            $args->getObjectManager(),
         );
     }
 
@@ -69,7 +72,7 @@ class Subscriber implements EventSubscriber
         foreach ($metadata->getFieldNames() as $fieldName) {
             $field = $metadata->getReflectionProperty($fieldName);
 
-            if (! $field->isInitialized($object)) {
+            if ($field === null || ! $field->isInitialized($object)) {
                 continue;
             }
 

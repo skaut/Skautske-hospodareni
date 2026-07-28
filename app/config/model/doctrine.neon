@@ -9,121 +9,62 @@ extensions:
     psr6: Contributte\Psr6\DI\Psr6CachingExtension
 
 migrations:
-    directory: %appDir%/../migrations
+    directories:
+        Migrations: %appDir%/../migrations
     versionsOrganization: year
 
 dbal:
     debug:
         panel: %debugMode%
 
-    configuration:
-        resultCache: Doctrine\Common\Cache\Psr6\DoctrineProvider::wrap(Symfony\Component\Cache\Adapter\ArrayAdapter())
+    typesMapping:
+        enum: string
+        set: string
+        bigint: int64
 
-    connection:
-        host: %database.host%
-        user: %database.user%
-        password: %database.password%
-        dbname: %database.name%
-        serverVersion: 8.0
-        driver: pdo_mysql
-        charset: utf8mb4
-        default_table_options:
-          charset: utf8mb4
-          collate: utf8mb4_czech_ci
+    types:
+        int64: App\Model\Infrastructure\Types\Int64Type
+        payment_state: App\Model\Infrastructure\Types\PaymentStateType
+        payment_email_type: App\Model\Infrastructure\Types\PaymentEmailTypeType
+        payment_group_type: App\Model\Infrastructure\Types\PaymentGroupTypeType
+        log_type: App\Model\Infrastructure\Types\LogTypeType
+        travel_transport_type: App\Model\Infrastructure\Types\TravelTransportTypeType
+        cashbook_operation: App\Model\Infrastructure\Types\CashbookOperationType
+        cashbook_type: App\Model\Infrastructure\Types\CashbookTypeType
+        cashbook_object_type: App\Model\Infrastructure\Types\CashbookObjectTypeType
+        chit_payment_method: App\Model\Infrastructure\Types\ChitPaymentMethodType
+        participant_event_type: App\Model\Infrastructure\Types\ParticipantEventTypeType
+        money: App\Model\Infrastructure\Types\MoneyType
+        variable_symbol: App\Model\Infrastructure\Types\VariableSymbolType
+        chit_number: App\Model\Infrastructure\Types\ChitNumberType
+        recipient: App\Model\Infrastructure\Types\RecipientType
+        chronos_date: Warhuhn\Doctrine\DBAL\Types\ChronosDateType
+        cashbook_id: App\Model\Infrastructure\Types\CashbookIdType
+        unit_id: App\Model\Infrastructure\Types\UnitIdType
+        payment_id: App\Model\Infrastructure\Types\PaymentIdType
+        file_path: App\Model\Infrastructure\Types\FilePathType
+        oauth_id: App\Model\Infrastructure\Types\OAuthIdType
+        transport_types: App\Model\Infrastructure\Types\TransportTypeListType
+        email_address: App\Model\Infrastructure\Types\EmailAddressType
+        skautis_event_id: App\Model\Infrastructure\Types\SkautisEventIdType
+        skautis_education_id: App\Model\Infrastructure\Types\SkautisEducationIdType
+        skautis_camp_id: App\Model\Infrastructure\Types\SkautisCampIdType
+        big_decimal: App\Model\Infrastructure\Types\BigDecimalType
+        carbon_timestamp_immutable_ms: Extension\Doctrine\Types\CarbonTimestampImmutableMsType
+        uuid_binary: Ramsey\Uuid\Doctrine\UuidBinaryType
 
-        typesMapping:
-            enum: string
-            set: string
-            bigint: int64
-
-        types:
-            string_enum:
-                class: App\Model\Infrastructure\Types\StringEnumType
-                commented: true
-            int64:
-                class: App\Model\Infrastructure\Types\Int64Type
-            payment_state:
-                class: App\Model\Infrastructure\Types\PaymentStateType
-                commented: true
-            payment_email_type:
-                class: App\Model\Infrastructure\Types\PaymentEmailTypeType
-                commented: true
-            payment_group_type:
-                class: App\Model\Infrastructure\Types\PaymentGroupTypeType
-                commented: true
-            log_type:
-                class: App\Model\Infrastructure\Types\LogTypeType
-                commented: true
-            travel_transport_type:
-                class: App\Model\Infrastructure\Types\TravelTransportTypeType
-                commented: true
-            cashbook_operation:
-                class: App\Model\Infrastructure\Types\CashbookOperationType
-                commented: true
-            cashbook_type:
-                class: App\Model\Infrastructure\Types\CashbookTypeType
-                commented: true
-            cashbook_object_type:
-                class: App\Model\Infrastructure\Types\CashbookObjectTypeType
-                commented: true
-            chit_payment_method:
-                class: App\Model\Infrastructure\Types\ChitPaymentMethodType
-                commented: true
-            participant_event_type:
-                class: App\Model\Infrastructure\Types\ParticipantEventTypeType
-                commented: true
-            money:
-                class: App\Model\Infrastructure\Types\MoneyType
-                commented: true
-            variable_symbol:
-                class: App\Model\Infrastructure\Types\VariableSymbolType
-                commented: true
-            chit_number:
-                class: App\Model\Infrastructure\Types\ChitNumberType
-                commented: true
-            recipient:
-                class: App\Model\Infrastructure\Types\RecipientType
-                commented: true
-            chronos_date:
-                class: Warhuhn\Doctrine\DBAL\Types\ChronosDateType
-                commented: true
-            cashbook_id:
-                class: App\Model\Infrastructure\Types\CashbookIdType
-                commented: true
-            unit_id:
-                class: App\Model\Infrastructure\Types\UnitIdType
-                commented: true
-            payment_id:
-                class: App\Model\Infrastructure\Types\PaymentIdType
-                commented: true
-            file_path:
-                class: App\Model\Infrastructure\Types\FilePathType
-                commented: true
-            oauth_id:
-                class: App\Model\Infrastructure\Types\OAuthIdType
-                commented: true
-            transport_types:
-                class: App\Model\Infrastructure\Types\TransportTypeListType
-                commented: true
-            email_address:
-                class: App\Model\Infrastructure\Types\EmailAddressType
-                commented: true
-            skautis_event_id:
-                class: App\Model\Infrastructure\Types\SkautisEventIdType
-                commented: true
-            skautis_education_id:
-                class: App\Model\Infrastructure\Types\SkautisEducationIdType
-                commented: true
-            skautis_camp_id:
-                class: App\Model\Infrastructure\Types\SkautisCampIdType
-                commented: true
-            big_decimal:
-                class: App\Model\Infrastructure\Types\BigDecimalType
-                commented: true
-            carbon_timestamp_immutable_ms:
-                class: Extension\Doctrine\Types\CarbonTimestampImmutableMsType
-                commented: true
-            uuid_binary: Ramsey\Uuid\Doctrine\UuidBinaryType
+    connections:
+        default:
+            host: %database.host%
+            user: %database.user%
+            password: %database.password%
+            dbname: %database.name%
+            serverVersion: '8.0'
+            driver: pdo_mysql
+            charset: utf8mb4
+            defaultTableOptions:
+                charset: utf8mb4
+                collate: utf8mb4_czech_ci
 
 services:
   # ── EntityManager z vaší továrny ──────────────────────────────────────────────
@@ -138,22 +79,18 @@ services:
   doctrine.managerRegistry:
     factory: Infrastructure\Doctrine\NetteManagerRegistry(
       @doctrine.entityManager,
-      @dbal.connection
+      @Doctrine\DBAL\Connection
     )
     type: Doctrine\Persistence\ManagerRegistry
 
-  # ── CLI providers (ORM/DBAL) ─────────────────────────────────────────────────
+  # ── CLI provider (ORM) ───────────────────────────────────────────────────────
+  # DBAL ConnectionProvider a dbal:run-sql registruje Nettrine\DBAL sám.
   doctrine.entityManagerProvider:
     factory: Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider(
       @doctrine.entityManager
     )
 
-  doctrine.connectionProvider:
-    factory: Doctrine\DBAL\Tools\Console\ConnectionProvider\SingleConnectionProvider(
-      @dbal.connection
-    )
-
-  # ── Doctrine ORM/DBAL příkazy registrované s providers ───────────────────────
+  # ── Doctrine ORM příkazy registrované s providerem ───────────────────────────
   doctrine.orm.command.validate_schema:
     factory: Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand(
       @doctrine.entityManagerProvider
@@ -165,7 +102,6 @@ services:
       @doctrine.entityManagerProvider
     )
     tags: { console.command: orm:generate-proxies }
-    # Pozn.: v ORM 3 deprecated – až přejdete, klidně odstranit.
 
   doctrine.orm.command.schema_update:
     factory: Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand(
@@ -184,12 +120,6 @@ services:
       @doctrine.entityManagerProvider
     )
     tags: { console.command: orm:schema-tool:drop }
-
-  doctrine.dbal.command.run_sql:
-    factory: Doctrine\DBAL\Tools\Console\Command\RunSqlCommand(
-      @doctrine.connectionProvider
-    )
-    tags: { console.command: dbal:run-sql }
 
 decorator:
     Doctrine\Migrations\Configuration\Configuration:

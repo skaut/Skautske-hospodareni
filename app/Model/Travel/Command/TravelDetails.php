@@ -27,7 +27,7 @@ class TravelDetails
      * @var TransportType
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
-    #[ORM\Column(type: 'travel_transport_type')]
+    #[ORM\Column(type: 'travel_transport_type', length: 255)]
     private $transportType;
 
     #[ORM\Column(type: 'string', length: 64)]
