@@ -90,7 +90,7 @@ final class InvoiceDuplicateDialog extends Dialog
             }
 
             if (
-                $invoice->getPaymentType()->value === InvoicePaymentType::TRANSFER->value
+                $invoice->getPaymentType() === InvoicePaymentType::TRANSFER
                 && $sequence->getBankAccount() === null
             ) {
                 continue;
