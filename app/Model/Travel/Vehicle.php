@@ -12,26 +12,17 @@ use App\Model\Unit\Unit;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Nette\SmartObject;
 
 /**
- * @property int      $id
- * @property string   $type
- * @property int      $unitId
- * @property int|null $subunitId
- * @property string   $registration
- * @property float    $consumption
- * @property string   $note
- * @property bool     $archived
- * @property string   $label
- * @property Metadata $metadata
+ * Bez `Nette\SmartObject`: magické `@property` accessory se v ORM 3 bijí s lazy-ghost proxy
+ * (`Symfony\Component\VarExporter\LazyGhostTrait`). Hydratace typované vlastnosti bez defaultu
+ * jde na proxy přes `__set`, kde ho SmartObject přebere a vyhodí „Cannot write to a read-only
+ * property“. Přístup k datům je výhradně přes gettery níže.
  */
 #[ORM\Entity]
 #[ORM\Table(name: 'tc_vehicle')]
 class Vehicle
 {
-    use SmartObject;
-
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[ORM\Column(type: 'integer')]

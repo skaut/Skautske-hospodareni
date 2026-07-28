@@ -13,11 +13,6 @@ use function is_string;
 
 final class OAuthIdType extends GuidType
 {
-    public function getName(): string
-    {
-        return 'oauth_id';
-    }
-
     public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?OAuthId
     {
         if ($value === null) {

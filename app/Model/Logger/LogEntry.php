@@ -35,7 +35,7 @@ class LogEntry
      * @var Type
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
-    #[ORM\Column(type: 'log_type')]
+    #[ORM\Column(type: 'log_type', length: 255)]
     private $type;
 
     #[ORM\Column(type: 'integer', nullable: true)]
