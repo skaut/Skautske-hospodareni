@@ -6667,16 +6667,16 @@
         },
         {
             "name": "symfony/cache",
-            "version": "v7.4.14",
+            "version": "v7.4.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/cache.git",
-                "reference": "9adfcb2a7fc3924473b09f5a0b058dcc2cc7be9a"
+                "reference": "c1e7abe8e8c9b315d6d8b86446ffd9cf73679303"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/cache/zipball/9adfcb2a7fc3924473b09f5a0b058dcc2cc7be9a",
-                "reference": "9adfcb2a7fc3924473b09f5a0b058dcc2cc7be9a",
+                "url": "https://api.github.com/repos/symfony/cache/zipball/c1e7abe8e8c9b315d6d8b86446ffd9cf73679303",
+                "reference": "c1e7abe8e8c9b315d6d8b86446ffd9cf73679303",
                 "shasum": ""
             },
             "require": {
@@ -6747,7 +6747,7 @@
                 "psr6"
             ],
             "support": {
-                "source": "https://github.com/symfony/cache/tree/v7.4.14"
+                "source": "https://github.com/symfony/cache/tree/v7.4.15"
             },
             "funding": [
                 {
@@ -6767,7 +6767,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-17T14:44:48+00:00"
+            "time": "2026-07-29T04:03:42+00:00"
         },
         {
             "name": "symfony/cache-contracts",
@@ -7098,16 +7098,16 @@
         },
         {
             "name": "symfony/messenger",
-            "version": "v7.4.14",
+            "version": "v7.4.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/messenger.git",
-                "reference": "1ebe448527c77d9efaf2d3205b23707ebaaa28c4"
+                "reference": "6338eed8f65c593469fdbdbe043d2a7552264403"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/messenger/zipball/1ebe448527c77d9efaf2d3205b23707ebaaa28c4",
-                "reference": "1ebe448527c77d9efaf2d3205b23707ebaaa28c4",
+                "url": "https://api.github.com/repos/symfony/messenger/zipball/6338eed8f65c593469fdbdbe043d2a7552264403",
+                "reference": "6338eed8f65c593469fdbdbe043d2a7552264403",
                 "shasum": ""
             },
             "require": {
@@ -7168,7 +7168,7 @@
             "description": "Helps applications send and receive messages to/from other applications or via message queues",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/messenger/tree/v7.4.14"
+                "source": "https://github.com/symfony/messenger/tree/v7.4.15"
             },
             "funding": [
                 {
@@ -7188,7 +7188,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-08T20:24:16+00:00"
+            "time": "2026-07-22T12:46:20+00:00"
         },
         {
             "name": "symfony/options-resolver",
@@ -9211,16 +9211,16 @@
         },
         {
             "name": "webwingscz/bank-statements",
-            "version": "1.0.0",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webwingscz/bank-statements.git",
-                "reference": "8836c49bb6812f128e69ca976e55c17116557ee0"
+                "reference": "d1c4a02b02e66113211c1a523aa9022b99a10c56"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webwingscz/bank-statements/zipball/8836c49bb6812f128e69ca976e55c17116557ee0",
-                "reference": "8836c49bb6812f128e69ca976e55c17116557ee0",
+                "url": "https://api.github.com/repos/webwingscz/bank-statements/zipball/d1c4a02b02e66113211c1a523aa9022b99a10c56",
+                "reference": "d1c4a02b02e66113211c1a523aa9022b99a10c56",
                 "shasum": ""
             },
             "require": {
@@ -9255,23 +9255,26 @@
                     "role": "Developer"
                 }
             ],
-            "description": "Parser of Czech and Slovak bank account statements in the ABO/GPC format. No runtime dependencies.",
+            "description": "Parser of bank account statements: the Czech and Slovak ABO/GPC format and Wise CSV exports. No runtime dependencies.",
             "homepage": "https://github.com/webwingscz/bank-statements",
             "keywords": [
                 "Bank",
                 "Banking",
+                "Wise",
                 "abo",
+                "csv",
                 "czech",
                 "gpc",
                 "parser",
                 "slovak",
-                "statement"
+                "statement",
+                "transferwise"
             ],
             "support": {
                 "issues": "https://github.com/webwingscz/bank-statements/issues",
-                "source": "https://github.com/webwingscz/bank-statements/tree/1.0.0"
+                "source": "https://github.com/webwingscz/bank-statements/tree/1.1.0"
             },
-            "time": "2026-07-28T14:17:31+00:00"
+            "time": "2026-07-28T18:02:51+00:00"
         },
         {
             "name": "webwingscz/fio-api-php",
@@ -10783,11 +10786,11 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.2.6",
+            "version": "2.2.7",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/a6e9b5a9420f6109c091e87d82683bd1a80b87ed",
-                "reference": "a6e9b5a9420f6109c091e87d82683bd1a80b87ed",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/692db47b9dddb0487934e5236e77d48594aef921",
+                "reference": "692db47b9dddb0487934e5236e77d48594aef921",
                 "shasum": ""
             },
             "require": {
@@ -10843,7 +10846,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-07-26T21:22:49+00:00"
+            "time": "2026-07-29T17:39:32+00:00"
         },
         {
             "name": "phpstan/phpstan-doctrine",
@@ -11604,12 +11607,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "e7d396822cefa7207fd352f61f68660811e108a4"
+                "reference": "e0739cf6f94302acbdfb1807731568a47830bb4d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/e7d396822cefa7207fd352f61f68660811e108a4",
-                "reference": "e7d396822cefa7207fd352f61f68660811e108a4",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/e0739cf6f94302acbdfb1807731568a47830bb4d",
+                "reference": "e0739cf6f94302acbdfb1807731568a47830bb4d",
                 "shasum": ""
             },
             "conflict": {
@@ -12301,7 +12304,7 @@
                 "propel/propel": ">=2.0.0.0-alpha1,<2.0.0.0-alpha8",
                 "propel/propel1": ">=1,<1.7.2",
                 "psy/psysh": "<=0.11.22|>=0.12,<=0.12.18",
-                "pterodactyl/panel": "<1.12.3",
+                "pterodactyl/panel": "<=1.12.4",
                 "ptheofan/yii2-statemachine": ">=2.0.0.0-RC1-dev,<=2",
                 "ptrofimov/beanstalk_console": "<1.7.14",
                 "pubnub/pubnub": "<6.1",
@@ -12612,6 +12615,7 @@
                 "wnx/laravel-backup-restore": "<=1.9.3",
                 "woocommerce/woocommerce": "<6.6|>=8.8,<8.8.5|>=8.9,<8.9.3",
                 "wp-cli/wp-cli": ">=0.12,<2.5",
+                "wp-coding-standards/wpcs": ">=0.14.1,<3.4.1",
                 "wp-graphql/wp-graphql": "<=1.14.5",
                 "wp-premium/gravityforms": "<2.4.21",
                 "wpanel/wpanel4-cms": "<=4.3.1",
@@ -12717,7 +12721,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-07-24T23:00:42+00:00"
+            "time": "2026-07-28T15:20:31+00:00"
         },
         {
             "name": "sebastian/cli-parser",
