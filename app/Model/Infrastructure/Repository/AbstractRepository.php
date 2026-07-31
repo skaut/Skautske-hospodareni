@@ -237,7 +237,7 @@ abstract class AbstractRepository extends EntityRepository
     }
 
     /**
-     * @param Comparison        $criteria
+     * @param QueryByCriteria   $criteria
      * @param QueryByParameters $parameters
      */
     public function getQueryBy(callable|string|Comparison|Composite|Func $criteria, array $parameters = [], string $alias = 'entity'): QueryBuilder
@@ -253,7 +253,7 @@ abstract class AbstractRepository extends EntityRepository
     }
 
     /**
-     * @param Comparison        $criteria
+     * @param QueryByCriteria   $criteria
      * @param QueryByParameters $parameters
      *
      * @return int<0, max>
