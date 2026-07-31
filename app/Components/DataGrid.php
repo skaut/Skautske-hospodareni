@@ -9,13 +9,13 @@ use Contributte\Datagrid\Filter\FilterSelect;
 use Contributte\Datagrid\Localization\SimpleTranslator;
 use LogicException;
 
+use function array_combine;
 use function array_map;
 use function array_reverse;
 use function date;
 use function is_array;
 use function iterator_to_array;
 use function range;
-use function Safe\array_combine;
 
 class DataGrid extends \Contributte\Datagrid\Datagrid
 {

@@ -6,7 +6,6 @@ parameters:
 extensions:
     migrations: Nettrine\Migrations\DI\MigrationsExtension
     dbal: Nettrine\DBAL\DI\DbalExtension
-    psr6: Contributte\Psr6\DI\Psr6CachingExtension
 
 migrations:
     directories:
@@ -67,6 +66,10 @@ dbal:
                 collate: utf8mb4_czech_ci
 
 services:
+  # ── PSR-6 pooly pro Doctrine cache (symfony/cache) ───────────────────────────
+  doctrine.cachePoolFactory:
+    factory: App\Model\Infrastructure\Cache\DoctrineCachePoolFactory(%cacheDir%)
+
   # ── EntityManager z vaší továrny ──────────────────────────────────────────────
   doctrine.entityManagerFactory:
     factory: App\Model\Infrastructure\EntityManagerFactory(%debugMode%, %cacheDir%)
