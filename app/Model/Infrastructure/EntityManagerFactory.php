@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Model\Infrastructure;
 
+use App\Model\Infrastructure\Cache\DoctrineCachePool;
+use App\Model\Infrastructure\Cache\DoctrineCachePoolFactory;
 use App\Model\Infrastructure\DoctrineNullableEmbeddables\Subscriber;
-use Contributte\Psr6\ICachePoolFactory;
 use Doctrine\DBAL\Connection;
-use Doctrine\ORM\Cache\CacheConfiguration;
-use Doctrine\ORM\Cache\DefaultCacheFactory;
-use Doctrine\ORM\Cache\RegionsConfiguration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
@@ -25,7 +23,7 @@ final class EntityManagerFactory
         private bool $debugMode,
         private string $tempDir,
         private Connection $connection,
-        private ICachePoolFactory $cachePoolFactory,
+        private DoctrineCachePoolFactory $cachePoolFactory,
     ) {
     }
 
@@ -35,7 +33,7 @@ final class EntityManagerFactory
 
         // Neutrální konfigurace s explicitní PSR-6 cache (obchází Redis/Memcached
         // autodetekci uvnitř ORMSetup); metadata driver nastavíme ručně níže.
-        $configuration = ORMSetup::createConfiguration($this->debugMode, $proxyDir, $this->cache('metadata'));
+        $configuration = ORMSetup::createConfiguration($this->debugMode, $proxyDir, $this->cache(DoctrineCachePool::Metadata));
 
         $configuration->setAutoGenerateProxyClasses(
             $this->debugMode ? ProxyFactory::AUTOGENERATE_ALWAYS : ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS,
@@ -46,24 +44,31 @@ final class EntityManagerFactory
         $configuration->setMetadataDriverImpl($attributeDriver);
 
         // Cache
-        $configuration->setMetadataCache($this->cache('metadata'));
-        $configuration->setQueryCache($this->cache('query'));
+        $configuration->setMetadataCache($this->cache(DoctrineCachePool::Metadata));
+        $configuration->setQueryCache($this->cache(DoctrineCachePool::Query));
         // DBAL result cache
-        $this->connection->getConfiguration()->setResultCache($this->cache('result'));
+        $this->connection->getConfiguration()->setResultCache($this->cache(DoctrineCachePool::Result));
 
         // Naming, DQL
         $configuration->setNamingStrategy(new UnderscoreNamingStrategy(CASE_LOWER));
-        // $configuration->addCustomStringFunction('field', Field::class);
         $configuration->addCustomStringFunction('field', Dql\FieldFunction::class);
 
-        // 2nd level cache
-        $configuration->setSecondLevelCacheEnabled(true);
-
-        $cacheConfiguration = new CacheConfiguration();
-        $cacheConfiguration->setCacheFactory(
-            new DefaultCacheFactory(new RegionsConfiguration(), $this->cache('secondLevel')),
-        );
-        $configuration->setSecondLevelCacheConfiguration($cacheConfiguration);
+        // Second-level cache je záměrně vypnutá.
+        //
+        // Historicky tu zapnutá byla, ale reálně nikdy nic nevrátila: PSR-6 pooly stavěl
+        // skaut/psr6-caching, jehož `getItems()` vracel list místo mapy `key => item`, takže
+        // `Doctrine\ORM\Cache\Region\DefaultRegion::getMultiple()` (kontrola `isset($items[$key])`)
+        // vždycky minul. Cache se tedy jen zapisovala.
+        //
+        // Jakmile ji obsluhuje funkční pool (symfony/cache), rozbije aplikaci: entity se z cache
+        // hydratují unserializací, což u consistence enumů vyrobí novou instanci — a
+        // `Consistence\Enum\Enum::equals()` porovnává identitou (`$this === $that`). Filtr
+        // v CategoryPairsQueryHandler pak zahodí všechny kategorie a formulář dokladu má prázdné
+        // selecty (pokryto v OperationSerializationTest a EntityManagerCacheTest).
+        //
+        // Zapnout ji lze až po migraci consistence enumů na nativní PHP enumy — jejich case
+        // přežije unserializaci jako tatáž instance.
+        $configuration->setSecondLevelCacheEnabled(false);
 
         $em = new EntityManager($this->connection, $configuration);
 
@@ -73,9 +78,8 @@ final class EntityManagerFactory
         return $em;
     }
 
-    private function cache(string $name): CacheItemPoolInterface
+    private function cache(DoctrineCachePool $pool): CacheItemPoolInterface
     {
-        // vytvoří PSR-6 pool (Filesystem/Redis/… podle implementace ICachePoolFactory)
-        return $this->cachePoolFactory->create('doctrine.'.$name);
+        return $this->cachePoolFactory->create($pool);
     }
 }
