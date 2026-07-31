@@ -12,7 +12,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'ac_chitsCategory')]
 #[ORM\Index(name: 'deleted', columns: ['deleted'])]
 #[ORM\Index(name: 'priority', columns: ['priority'])]
-#[ORM\Cache]
+// Bez #[ORM\Cache]: second-level cache je vypnutá, protože z ní hydratovaný $operationType
+// (consistence enum) ztratí identitu singletonu a Enum::equals() pak vrací false.
+// Viz EntityManagerFactory::create().
 class Category implements ICategory
 {
     public const EVENT_PARTICIPANTS_INCOME_CATEGORY_ID = 11;
