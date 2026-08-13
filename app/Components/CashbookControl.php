@@ -11,10 +11,11 @@ use App\Components\Factories\IChitFormFactory;
 use App\Model\Cashbook\Cashbook\CashbookId;
 use App\Model\Cashbook\Cashbook\PaymentMethod;
 use App\Model\Common\UnitId;
+use Nette\Application\Attributes\Persistent;
 
 class CashbookControl extends BaseControl
 {
-    /** @var bool @persistent */
+    #[Persistent]
     public bool $displayChitForm = false;
 
     private INoteFormFactory $noteFormFactory;

@@ -9,27 +9,26 @@ use Doctrine\ORM\Mapping as ORM;
 use Nette\SmartObject;
 
 /**
- * @ORM\Embeddable()
- *
  * @property string           $name
  * @property string           $contact
  * @property string           $address
  * @property ChronosDate|null $birthday
  */
+#[ORM\Embeddable]
 final class Passenger
 {
     use SmartObject;
 
-    /** @ORM\Column(type="string", name="driver_name", length=64) */
+    #[ORM\Column(type: 'string', name: 'driver_name', length: 64)]
     private string $name;
 
-    /** @ORM\Column(type="string", name="driver_contact", length=64, nullable=true) */
+    #[ORM\Column(type: 'string', name: 'driver_contact', length: 64, nullable: true)]
     private string $contact;
 
-    /** @ORM\Column(type="string", name="driver_address", length=64) */
+    #[ORM\Column(type: 'string', name: 'driver_address', length: 64)]
     private string $address;
 
-    /** @ORM\Column(type="chronos_date", nullable=true, name="driver_birthday") */
+    #[ORM\Column(type: 'chronos_date', nullable: true, name: 'driver_birthday')]
     private ?ChronosDate $birthday = null;
 
     public function __construct(string $name, string $contact, string $address, ?ChronosDate $birthday)

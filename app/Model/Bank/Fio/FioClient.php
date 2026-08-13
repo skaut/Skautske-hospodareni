@@ -85,7 +85,7 @@ class FioClient implements IFioClient
      */
     private function loadTransactionsFromApi(ChronosDate $since, ChronosDate $until, BankAccount $account): array
     {
-        $api = $this->downloaderFactory->create($account->getToken());
+        $api = $this->downloaderFactory->create((string) $account->getToken());
 
         try {
             $list = $api->downloadFromTo($since->toNative(), $until->toNative());

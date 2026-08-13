@@ -10,6 +10,7 @@ use App\Model\User\Entity\InvoiceAccessRequest;
 use App\Model\User\InvoiceAccessNotificationService;
 use Codeception\Test\Unit;
 use Latte\Engine;
+use Nette\Application\UI\Control;
 use Nette\Bridges\ApplicationLatte\LatteFactory;
 use Nette\Mail\Mailer;
 use Nette\Mail\Message;
@@ -82,7 +83,7 @@ final class InvoiceAccessNotificationServiceTest extends Unit
             false,
             'https://h.skauting.cz',
             new TemplateFactory(new class implements LatteFactory {
-                public function create(): Engine
+                public function create(?Control $control = null): Engine
                 {
                     return new Engine();
                 }

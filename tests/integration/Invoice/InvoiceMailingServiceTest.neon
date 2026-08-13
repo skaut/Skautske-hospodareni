@@ -3,7 +3,7 @@ services:
     - App\Model\Payment\MailerFactoryStub
     - Stubs\GoogleRepositoryStub
     - App\Model\Services\TemplateFactory
-    - App\Model\Services\PdfRenderer(%tempDir%)
+    - App\Model\Services\PdfRenderer('http://gotenberg:3000', %tempDir%, GuzzleHttp\Client({ timeout: 60 }))
     - League\Flysystem\Filesystem(League\Flysystem\Local\LocalFilesystemAdapter(%tempDir%/uploads))
     - App\Model\Invoice\InvoiceImageStorage(
           filesystem: @League\Flysystem\Filesystem

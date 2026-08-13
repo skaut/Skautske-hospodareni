@@ -15,9 +15,9 @@ EXEC_PHP_TEST   = docker exec -u docker -it hskauting.app-test
 COMPOSER_ROOT_VERSION ?= dev-master
 COMPOSER_ENV = env COMPOSER_ROOT_VERSION=$(COMPOSER_ROOT_VERSION)
 
-APP_SERVICES        = traefik php php-xdebug nginx mysql adminer
-TEST_SERVICES       = mysql-test php-test
-ACCEPTANCE_SERVICES = traefik mysql-test selenium nginx php-test
+APP_SERVICES        = traefik php php-xdebug nginx mysql adminer gotenberg
+TEST_SERVICES       = mysql-test php-test gotenberg
+ACCEPTANCE_SERVICES = traefik mysql-test selenium nginx php-test gotenberg
 
 TEST ?=
 TEST_ARGS = $(if $(strip $(TEST)),$(TEST),)
@@ -136,7 +136,7 @@ init: ## Inicializace aplikace (composer app-init)
 
 fixtures: ## Načte vývojová fixture data bez mazání databáze
 	$(call reset_writable_dirs,php)
-	$(RUN_PHP_DEV) bin/console doctrine:fixtures:load --append --no-interaction
+	$(RUN_PHP_DEV) bin/console doctrine:fixtures:load --no-interaction
 
 test-enter: ## Shell do test PHP kontejneru
 	$(EXEC_PHP_TEST) bash

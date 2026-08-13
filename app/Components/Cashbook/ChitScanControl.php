@@ -101,7 +101,7 @@ final class ChitScanControl extends BaseControl
 
     private function formSucceeded(BaseForm $form): void
     {
-        $chitId = $form->getValues()->chitId;
+        $chitId = $form->getValues(\Nette\Utils\ArrayHash::class)->chitId;
         $chitId = $chitId !== null ? (int) $chitId : $chitId;
 
         if (! $this->isChitReadable()) {
@@ -111,7 +111,7 @@ final class ChitScanControl extends BaseControl
             return;
         }
 
-        $upload = $form->getValues()->scan;
+        $upload = $form->getValues(\Nette\Utils\ArrayHash::class)->scan;
 
         if (! $upload instanceof FileUpload) {
             throw new LogicException('Assertion failed.');
@@ -121,7 +121,7 @@ final class ChitScanControl extends BaseControl
         }
 
         $this->commandBus->handle(
-            new AddChitScan($this->cashbookId, (int) $chitId, $upload->getSanitizedName(), $upload->getContents()),
+            new AddChitScan($this->cashbookId, (int) $chitId, $upload->getSanitizedName(), (string) $upload->getContents()),
         );
 
         $this->getPresenter()->flashMessage('Sken byl nahrán', 'success');

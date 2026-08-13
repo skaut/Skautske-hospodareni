@@ -340,7 +340,12 @@ class ExportService
         $education = $this->queryBus->handle(new EducationQuery($educationId));
         $terms = $this->queryBus->handle(new EducationTermsQuery($educationId->toInt()));
         $courseParticipationStats = $this->queryBus->handle(new EducationCourseParticipationStatsQuery($educationId->toInt()));
-        $participantParticipationStats = $this->queryBus->handle(new EducationParticipantParticipationStatsQuery($education->grantId->toInt()));
+
+        // Statistiky účasti pocházejí z dotace – vzdělávačka bez grantu je nemá (grantId je null).
+        $grantId = $education->getGrantId();
+        $participantParticipationStats = $grantId !== null
+            ? $this->queryBus->handle(new EducationParticipantParticipationStatsQuery($grantId->toInt()))
+            : [];
 
         return $this->templateFactory->create(__DIR__.'/templates/educationReport.latte', [
             'education' => $education,
@@ -429,7 +434,7 @@ class ExportService
             'qrPaymentSvg' => $qrPaymentSvg,
             'stampImagePath' => $stampImageSrc ?? $this->getInvoiceStampImagePath($invoice),
             'logoImagePath' => $logoImageSrc ?? $this->getInvoiceLogoImagePath($invoice),
-            'user' => [
+            'issuer' => [
                 'name' => $invoice->getIssuedBy(),
             ],
         ];
@@ -439,7 +444,7 @@ class ExportService
 
     private function buildQrPaymentSvg(Invoice $invoice): ?string
     {
-        if ($invoice->getPaymentType()->value !== InvoicePaymentType::TRANSFER->value) {
+        if ($invoice->getPaymentType() !== InvoicePaymentType::TRANSFER) {
             return null;
         }
 

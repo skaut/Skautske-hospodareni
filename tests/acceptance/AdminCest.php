@@ -85,11 +85,11 @@ final class AdminCest extends BaseAcceptanceCest
         // Card links work
         $I->seeElement('[data-test="admin-link-users"].stretched-link');
         $usersHref = $I->grabAttributeFrom('[data-test="admin-link-users"]', 'href');
-        Assert::assertStringContainsString('/admin/uzivatele', $usersHref);
+        Assert::assertStringContainsString('/admin/uzivatele', (string) $usersHref);
 
         $I->seeElement('[data-test="admin-link-statistics"].stretched-link');
         $statsHref = $I->grabAttributeFrom('[data-test="admin-link-statistics"]', 'href');
-        Assert::assertStringContainsString('/admin/statistiky', $statsHref);
+        Assert::assertStringContainsString('/admin/statistiky', (string) $statsHref);
 
         $I->seeElement('[data-test="admin-link-invoice-access"].stretched-link');
         $I->seeElement('[data-test="admin-link-bug-reports"].stretched-link');

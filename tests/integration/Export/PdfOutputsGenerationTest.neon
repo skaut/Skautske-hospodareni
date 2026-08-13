@@ -1,0 +1,13 @@
+services:
+    - App\Model\Services\TemplateFactory
+    - App\Model\Services\PdfRenderer('http://gotenberg:3000', %tempDir%, GuzzleHttp\Client({ timeout: 60 }))
+
+    nette.latteFactory:
+        setup:
+            - addExtension(App\Helpers\AccountancyLatteExtension())
+
+includes:
+    - ../config/doctrine.neon
+
+extensions:
+    latte: Nette\Bridges\ApplicationDI\LatteExtension(%tempDir%, true)

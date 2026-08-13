@@ -20,6 +20,7 @@ use App\Model\Event\ReadModel\Queries\EventFunctions;
 use App\Model\Event\SkautisEventId;
 use Component\Forms\BaseForm;
 use LogicException;
+use Nette\Application\Attributes\Persistent;
 use Nette\Forms\Controls\SelectBox;
 use Nette\Forms\Form;
 use Nette\Utils\ArrayHash;
@@ -27,7 +28,7 @@ use Skautis\Wsdl\PermissionException;
 
 class FunctionsControl extends BaseControl
 {
-    /** @persistent */
+    #[Persistent]
     public bool $editation = false;
 
     public function __construct(

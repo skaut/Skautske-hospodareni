@@ -26,6 +26,7 @@ use App\Utils\CzechStringComparator;
 use Assert\Assert;
 use DateTimeImmutable;
 use InvalidArgumentException;
+use LogicException;
 use Skautis\Skautis;
 use stdClass;
 
@@ -147,7 +148,7 @@ class PaymentService
 
         $this->groups->save($group);
 
-        return $group->getId();
+        return (int) $group->getId();
     }
 
     /** @param EmailTemplate[] $emails */
@@ -359,7 +360,7 @@ class PaymentService
 
         return array_map(
             function (Group $group) {
-                return $group->getObject()->getId();
+                return ($group->getObject() ?? throw new LogicException('Group has no SkautIS object.'))->getId();
             },
             $groups,
         );
@@ -408,8 +409,8 @@ class PaymentService
         );
 
         return array_map(
-            function (Payment $p) {
-                return $p->getPersonId();
+            function (Payment $p): int {
+                return (int) $p->getPersonId();
             },
             $payments,
         );

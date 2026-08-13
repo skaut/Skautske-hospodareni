@@ -36,9 +36,9 @@ use App\Model\DTO\Cashbook\ChitItem;
 use App\Model\Skautis\Exception\AmountMustBeGreaterThanZero;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
+use Contributte\FormMultiplier\Multiplier;
 use InvalidArgumentException;
 use LogicException;
-use NasExt\Forms\DependentData;
 use Nette\Application\BadRequestException;
 use Nette\Forms\Container;
 use Nette\Forms\Control;
@@ -117,11 +117,12 @@ final class ChitForm extends BaseControl
 
     public function setDisplayChitParent(bool $displayChitForm): void
     {
-        if (! $this->parent instanceof CashbookControl) {
+        $parent = $this->getParent();
+        if (! $parent instanceof CashbookControl) {
             return;
         }
 
-        $this->parent->displayChitForm = $displayChitForm;
+        $parent->displayChitForm = $displayChitForm;
     }
 
     public function editChit(int $chitId): void
@@ -164,23 +165,6 @@ final class ChitForm extends BaseControl
         $this['form']->setDefaults(['items' => $items]);
 
         $this->redrawControl();
-    }
-
-    /** @param mixed[] $values */
-    public function getCategoryItems(array $values): DependentData
-    {
-        $type = $values['type'];
-
-        if ($type !== null) {
-            return new DependentData(
-                $this->getCategoryPairsByType(Operation::get($type)),
-            );
-        }
-
-        return new DependentData([
-            Operation::INCOME => $this->getCategoryPairsByType(Operation::get(Operation::INCOME)),
-            Operation::EXPENSE => $this->getCategoryPairsByType(Operation::get(Operation::EXPENSE)),
-        ]);
     }
 
     protected function createComponentForm(): BaseForm
@@ -259,7 +243,7 @@ final class ChitForm extends BaseControl
         $items->addSubmit('addItem', 'Přidat další položku')
             ->setValidationScope([])
             ->onClick[] = function () use ($items): void {
-                $items->createOne();
+                $items->addCopy();
                 $this->reload();
                 $this->setDisplayChitForm(true);
             };
@@ -308,11 +292,15 @@ final class ChitForm extends BaseControl
     private function removeItem(SubmitButton $button): void
     {
         $container = $button->getParent();
-        $replicator = $container->getParent();
-        if (! ($replicator instanceof \Kdyby\Replicator\Container && $container instanceof Container)) {
+        if (! $container instanceof Container) {
             throw new LogicException('Assertion failed.');
         }
-        $replicator->remove($container, true);
+
+        $replicator = $container->getParent();
+        if (! $replicator instanceof Multiplier) {
+            throw new LogicException('Assertion failed.');
+        }
+        $replicator->removeComponent($container);
         $this->reload();
     }
 

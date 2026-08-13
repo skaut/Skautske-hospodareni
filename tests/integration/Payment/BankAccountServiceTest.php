@@ -92,9 +92,9 @@ class BankAccountServiceTest extends IntegrationTest
         $group1 = $this->groups->find(1); // subunit
         $group2 = $this->groups->find(2); // subunit
         $group3 = $this->groups->find(3);
-        $sequence1 = $this->invoiceSequences->find($sequence1->getId());
-        $sequence2 = $this->invoiceSequences->find($sequence2->getId());
-        $sequence3 = $this->invoiceSequences->find($sequence3->getId());
+        $sequence1 = $this->invoiceSequences->findOrFail($sequence1->getId());
+        $sequence2 = $this->invoiceSequences->findOrFail($sequence2->getId());
+        $sequence3 = $this->invoiceSequences->findOrFail($sequence3->getId());
 
         $this->assertNull($group1->getBankAccountId());
         $this->assertNull($group2->getBankAccountId());
@@ -122,8 +122,8 @@ class BankAccountServiceTest extends IntegrationTest
         $this->em->clear();
 
         $group = $this->groups->find(1);
-        $reloadedSequence = $this->invoiceSequences->find($sequence->getId());
-        $reloadedInvoice = $this->invoiceRepository->find($invoice->getId());
+        $reloadedSequence = $this->invoiceSequences->findOrFail($sequence->getId());
+        $reloadedInvoice = $this->invoiceRepository->findOrFail($invoice->getId());
 
         $this->assertNull($group->getBankAccountId());
         $this->assertNull($reloadedSequence->getBankAccount());

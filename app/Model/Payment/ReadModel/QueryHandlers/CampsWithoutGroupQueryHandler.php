@@ -62,7 +62,7 @@ final class CampsWithoutGroupQueryHandler
 
         return array_map(
             function (Group $group): int {
-                return $group->getObject()->getId();
+                return ($group->getObject() ?? throw new LogicException('Group has no SkautIS object.'))->getId();
             },
             $this->groups->findBySkautisEntities(...$skautisEntities),
         );

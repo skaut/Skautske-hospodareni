@@ -32,7 +32,7 @@ final class PairButtonBankAccountSupport
 
     private function supportsPairing(BankAccountDto $account): bool
     {
-        return $account->getTransactionSource()->value === BankTransactionSource::GPC->value
+        return $account->getTransactionSource() === BankTransactionSource::GPC
             || $account->getToken() !== null;
     }
 }

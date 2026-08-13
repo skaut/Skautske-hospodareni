@@ -100,7 +100,7 @@ final class UsersPresenter extends \App\Presentation\Admin\AdminBasePresenter
             $this->redirect('default');
         }
 
-        $userId = (int) $form->getValues()->userId;
+        $userId = (int) $form->getValues(\Nette\Utils\ArrayHash::class)->userId;
         $existingAdminUser = $this->adminUserRepository->findOneByUserId($userId);
 
         if (

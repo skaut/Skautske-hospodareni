@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Components\Grids;
 
 use Codeception\Test\Unit;
-use Ublaboo\DataGrid\Utils\Sorting;
+use Contributte\Datagrid\Utils\Sorting;
 
 use function array_map;
 

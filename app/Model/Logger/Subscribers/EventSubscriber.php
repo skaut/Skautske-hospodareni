@@ -9,9 +9,9 @@ use App\Model\Events\Events\EventWasOpened;
 use App\Model\Logger\Log\Type;
 use App\Model\Logger\LoggerService;
 use App\Model\User\UserService;
-use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-final class EventSubscriber implements MessageSubscriberInterface
+final class EventSubscriber
 {
     private LoggerService $loggerService;
 
@@ -20,16 +20,8 @@ final class EventSubscriber implements MessageSubscriberInterface
         $this->loggerService = $logger;
     }
 
-    /** @return array<string, mixed> */
-    public static function getHandledMessages(): array
-    {
-        return [
-            EventWasOpened::class => ['method' => 'handleOpened'],
-            EventWasClosed::class => ['method' => 'handleClosed'],
-        ];
-    }
-
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    #[AsMessageHandler]
     public function handleOpened(EventWasOpened $event): void
     {
         $user = $this->userService->getUserDetail();
@@ -42,6 +34,7 @@ final class EventSubscriber implements MessageSubscriberInterface
         );
     }
 
+    #[AsMessageHandler]
     public function handleClosed(EventWasClosed $event): void
     {
         $user = $this->userService->getUserDetail();

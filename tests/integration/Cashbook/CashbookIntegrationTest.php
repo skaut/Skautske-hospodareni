@@ -425,9 +425,9 @@ class CashbookIntegrationTest extends IntegrationTest
 
         $cashbook->generateChitNumbers(PaymentMethod::CASH());
 
-        $this->assertSame('4', $cashbook->getChits()[0]->getBody()->getNumber()->toString());
+        $this->assertSame('4', $cashbook->getChits()[0]->getBody()->getNumber()?->toString());
         $this->assertNull($cashbook->getChits()[1]->getBody()->getNumber());
-        $this->assertSame('3', $cashbook->getChits()[2]->getBody()->getNumber()->toString());
-        $this->assertSame('2', $cashbook->getChits()[3]->getBody()->getNumber()->toString());
+        $this->assertSame('3', $cashbook->getChits()[2]->getBody()->getNumber()?->toString());
+        $this->assertSame('2', $cashbook->getChits()[3]->getBody()->getNumber()?->toString());
     }
 }

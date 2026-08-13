@@ -7,7 +7,6 @@ namespace App\Presentation\Settings\Automation;
 use App\Model\Auth\Resources\InvoiceAccess;
 
 use function array_filter;
-use function array_values;
 
 final class AutomationPresenter extends \App\Presentation\Settings\SettingsBasePresenter
 {
@@ -32,11 +31,11 @@ final class AutomationPresenter extends \App\Presentation\Settings\SettingsBaseP
     {
         $this->setSettingsTemplateParameters();
         $this->template->setParameters([
-            'jobs' => array_values(array_filter(
+            'jobs' => array_filter(
                 self::SCHEDULED_JOBS,
                 fn (array $job): bool => ! ($job['requiresInvoiceAccess'] ?? false)
                     || $this->authorizator->isAllowed(InvoiceAccess::ACCESS, null),
-            )),
+            ),
         ]);
     }
 }

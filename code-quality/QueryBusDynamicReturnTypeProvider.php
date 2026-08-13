@@ -8,22 +8,18 @@ use Model\Common\Services\QueryBus;
 use Nette\Loaders\RobotLoader;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
-use PHPStan\Broker\Broker;
-use PHPStan\Reflection\BrokerAwareExtension;
 use PHPStan\Reflection\MethodReflection;
+use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\NeverType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeWithClassName;
 
-final class QueryBusDynamicReturnTypeProvider implements DynamicMethodReturnTypeExtension, BrokerAwareExtension
+final class QueryBusDynamicReturnTypeProvider implements DynamicMethodReturnTypeExtension
 {
-    /** @var array<string, Type> query class => type */
+    /** @var array<string, Type>|null query class => type */
     private $returnTypes;
-
-    /** @var Broker */
-    private $broker;
 
     /** @var array<string> */
     private $autoloadDirectories;
@@ -34,20 +30,18 @@ final class QueryBusDynamicReturnTypeProvider implements DynamicMethodReturnType
     /** @var string */
     private $queryHandlerClassRegex;
 
+    private ReflectionProvider $reflectionProvider;
+
     /**
      * @param array<string> $autoloadDirectories
      * @param string $queryHandlerClassRegex regex for FQCN of query handlers
      */
-    public function __construct(array $autoloadDirectories, string $tempDir, string $queryHandlerClassRegex)
+    public function __construct(array $autoloadDirectories, string $tempDir, string $queryHandlerClassRegex, ReflectionProvider $reflectionProvider)
     {
         $this->autoloadDirectories    = $autoloadDirectories;
         $this->tempDir                = $tempDir;
         $this->queryHandlerClassRegex = $queryHandlerClassRegex;
-    }
-
-    public function setBroker(Broker $broker): void
-    {
-        $this->broker = $broker;
+        $this->reflectionProvider     = $reflectionProvider;
     }
 
     public function getClass(): string
@@ -85,7 +79,7 @@ final class QueryBusDynamicReturnTypeProvider implements DynamicMethodReturnType
         $this->returnTypes = [];
 
         foreach ($this->getQueryHandlerClasses() as $className) {
-            $classReflection = $this->broker->getClass($className);
+            $classReflection = $this->reflectionProvider->getClass($className);
 
             if ($classReflection->isAbstract()) {
                 continue;

@@ -14,6 +14,7 @@ use App\Model\Common\Services\QueryBus;
 use App\Model\Common\UnitId;
 use App\Model\DTO\Cashbook\UnitCashbook;
 use Component\Forms\BaseForm;
+use Nette\Application\Attributes\Persistent;
 use Nette\Utils\ArrayHash;
 
 use function array_diff;
@@ -21,7 +22,7 @@ use function array_map;
 
 class CreateCashbookDialog extends Dialog
 {
-    /** @var bool @persistent */
+    #[Persistent]
     public bool $opened = false;
 
     /** @var callable[] */

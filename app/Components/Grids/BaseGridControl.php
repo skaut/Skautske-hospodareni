@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Components\Grids;
 
 use App\Components\BaseControl;
-use Ublaboo\DataGrid\DataGrid;
+use Contributte\Datagrid\Datagrid;
 
 abstract class BaseGridControl extends BaseControl
 {
@@ -16,9 +16,9 @@ abstract class BaseGridControl extends BaseControl
         $this->template->render();
     }
 
-    abstract protected function createComponentGrid(): DataGrid;
+    abstract protected function createComponentGrid(): Datagrid;
 
-    protected function createGrid(): DataGrid
+    protected function createGrid(): Datagrid
     {
         $grid = (new GridFactory())->create();
         $grid->setRememberState(false); // It's mostly WTF

@@ -18,7 +18,7 @@ final class MessengerCommandBus implements CommandBus
         try {
             $this->commandBus->dispatch($command);
         } catch (HandlerFailedException $e) {
-            throw $e->getPrevious();
+            throw $e->getPrevious() ?? $e;
         }
     }
 }

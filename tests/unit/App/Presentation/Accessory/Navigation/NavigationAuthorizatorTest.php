@@ -19,11 +19,11 @@ final class NavigationAuthorizatorTest extends Unit
         $authorizator->shouldNotReceive('isAllowed');
 
         $item = Mockery::mock(IMenuItem::class);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresAdmin', false)
             ->once()
             ->andReturn(false);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresInvoiceAccess', false)
             ->once()
             ->andReturn(false);
@@ -40,11 +40,11 @@ final class NavigationAuthorizatorTest extends Unit
             ->andReturn(true);
 
         $item = Mockery::mock(IMenuItem::class);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresAdmin', false)
             ->once()
             ->andReturn(true);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresInvoiceAccess', false)
             ->once()
             ->andReturn(false);
@@ -61,11 +61,11 @@ final class NavigationAuthorizatorTest extends Unit
             ->andReturn(false);
 
         $item = Mockery::mock(IMenuItem::class);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresAdmin', false)
             ->once()
             ->andReturn(1);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresInvoiceAccess', false)
             ->once()
             ->andReturn(false);
@@ -82,11 +82,11 @@ final class NavigationAuthorizatorTest extends Unit
             ->andReturn(true);
 
         $item = Mockery::mock(IMenuItem::class);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresAdmin', false)
             ->once()
             ->andReturn(false);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresInvoiceAccess', false)
             ->once()
             ->andReturn(true);

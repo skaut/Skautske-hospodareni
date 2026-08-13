@@ -31,6 +31,7 @@ use App\SkautisMaintenance;
 use Contributte\Application\Response\PSR7StreamResponse;
 use GuzzleHttp\Psr7\Utils;
 use LogicException;
+use Nette\Application\Attributes\Persistent;
 use Nette\Application\BadRequestException;
 use Nette\Http\IResponse;
 use Nette\Utils\Image;
@@ -47,7 +48,7 @@ use function sprintf;
 
 final class CashbookExportPresenter extends BaseSectionPresenter
 {
-    /** @persistent */
+    #[Persistent]
     public string $cashbookId = '';
 
     public function __construct(private ExportService $exportService, private ExcelService $excelService, private PdfRenderer $pdf)

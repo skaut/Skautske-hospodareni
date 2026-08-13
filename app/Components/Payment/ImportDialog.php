@@ -76,7 +76,7 @@ final class ImportDialog extends Dialog
 
     private function importSubmitted(Form $form): void
     {
-        $upload = $form->getValues()->file;
+        $upload = $form->getValues(\Nette\Utils\ArrayHash::class)->file;
         if (! $upload instanceof FileUpload) {
             throw new LogicException('Assertion failed.');
         }
@@ -87,7 +87,7 @@ final class ImportDialog extends Dialog
         $csvParser = new CsvParser();
 
         try {
-            $csv = $csvParser->parse($this->groupId, $upload->getContents());
+            $csv = $csvParser->parse($this->groupId, (string) $upload->getContents());
             foreach ($csv as $value) {
                 $this->commandBus->handle($value);
             }

@@ -14,6 +14,7 @@ use App\Model\Bank\Repository\BankTransactionRepository;
 use App\Model\Bank\Services\BankTransactionKeyGenerator;
 use App\Model\Bank\Services\BankTransactionService;
 use App\Model\Bank\Services\GpcParser;
+use App\Model\Bank\Transaction;
 use App\Model\Infrastructure\Repositories\Payment\BankAccountRepository as LegacyBankAccountRepository;
 use App\Model\Payment\Fio\IFioClient;
 use App\Model\Payment\IUnitResolver;
@@ -60,6 +61,71 @@ final class BankTransactionServiceTest extends IntegrationTest
             new GpcParser(),
             new BankTransactionKeyGenerator(),
         );
+    }
+
+    /**
+     * Produkce má GPC transakce uložené pod klíčem z implementace nad ifm24/bank-statements, která
+     * protiúčet nenormalizovala. Klíč je identifikátor napříč tabulkami, takže se nepřepisuje —
+     * import místo toho musí transakci pod starým klíčem najít a znovu ji nezaložit.
+     */
+    public function testTransactionStoredUnderLegacyKeyIsNotImportedAgain(): void
+    {
+        $account = new BankAccount(
+            1,
+            'GPC účet',
+            Helpers::createAccountNumber(),
+            null,
+            new DateTimeImmutable(),
+            m::mock(IUnitResolver::class, ['getOfficialUnitId' => 1]),
+            BankTransactionSource::GPC,
+        );
+        $this->bankAccounts->save($account);
+
+        $contents = str_replace(
+            '0000008310192897',
+            '0000002000942144',
+            (string) file_get_contents(__DIR__.'/../../../_data/bank/sample.gpc'),
+        );
+
+        $parsed = (new GpcParser())->parse(
+            $account->getNumber()->getNumberWithPrefixAndBankCode(),
+            $contents,
+            new BankTransactionKeyGenerator(),
+        )[0];
+
+        $legacyKey = $parsed->getLegacyId();
+        self::assertNotNull($legacyKey);
+        self::assertNotSame($parsed->getId(), $legacyKey);
+
+        // Řádek, jaký by v databázi zůstal po starém importu.
+        $legacyTransaction = new Transaction(
+            $legacyKey,
+            BankTransactionSource::GPC,
+            $parsed->getDate(),
+            $parsed->getAmount(),
+            '000000-0000000000/0000',
+            $parsed->getName(),
+            $parsed->getVariableSymbol(),
+            $parsed->getConstantSymbol(),
+            $parsed->getNote(),
+            $parsed->getSourceTransactionId(),
+        );
+        $this->entityManager->persist(new BankTransaction($account, $legacyTransaction, new DateTimeImmutable()));
+        $this->entityManager->flush();
+
+        $batch = $this->service->importGpcTransactions($account->getId(), 'sample.gpc', $contents, 'Tester');
+
+        self::assertSame(1, $batch->getTransactionCount());
+        self::assertSame(0, $batch->getNewTransactionCount(), 'transakce pod starým klíčem se nesmí naimportovat znovu');
+
+        $stored = $this->bankTransactions->findByAccountAndDateRange(
+            $account,
+            new DateTimeImmutable('2026-01-01 00:00:00'),
+            new DateTimeImmutable('2026-12-31 23:59:59'),
+        );
+        self::assertCount(1, $stored);
+        // Starý klíč zůstal nedotčený, protože na něj odkazují párování i doklady.
+        self::assertSame($legacyKey, $stored[0]->getTransactionKey());
     }
 
     public function testRepeatedImportDoesNotCreateDuplicateTransactions(): void

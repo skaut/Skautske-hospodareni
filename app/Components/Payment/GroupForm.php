@@ -186,7 +186,7 @@ final class GroupForm extends BaseControl
 
     private function formSucceeded(BaseForm $form): void
     {
-        $v = $form->getValues();
+        $v = $form->getValues(ArrayHash::class);
 
         $originalGroupData = $this->buildDefaultsFromGroup($this->bankAccountItems(), $this->oAuthItems());
 

@@ -11,11 +11,6 @@ use LogicException;
 
 final class UnitIdType extends GuidType
 {
-    public function getName(): string
-    {
-        return 'unit_id';
-    }
-
     public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?UnitId
     {
         if ($value === null) {

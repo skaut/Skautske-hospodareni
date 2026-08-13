@@ -309,8 +309,8 @@ class InvoiceCest extends BaseAcceptanceCest
         ]);
         Assert::assertNotEmpty($sourceSequenceIds, 'Source invoice sequence was not created.');
         Assert::assertNotEmpty($targetSequenceIds, 'Target invoice sequence was not created.');
-        $sourceSequenceId = (int) max($sourceSequenceIds);
-        $targetSequenceId = (int) max($targetSequenceIds);
+        $sourceSequenceId = $sourceSequenceIds === [] ? 0 : (int) max($sourceSequenceIds);
+        $targetSequenceId = $targetSequenceIds === [] ? 0 : (int) max($targetSequenceIds);
 
         $this->openInvoices();
         $I->clickStable('[data-test="invoice-sequence-create-invoice-'.$sourceSequenceId.'"]');

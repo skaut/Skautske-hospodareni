@@ -176,6 +176,7 @@ final class Environment
         return [
             'appEnv' => $appEnv,
             'appBaseUrl' => $baseUrl,
+            'gotenbergUrl' => self::getString('GOTENBERG_URL', 'http://gotenberg:3000'),
             'sendEmail' => self::getBool('SEND_EMAIL', $appEnv !== 'dev'),
             'errorEmails' => self::getList('ERROR_EMAILS'),
             'testBackground' => self::getBool('TEST_BACKGROUND', $appEnv !== 'prod'),

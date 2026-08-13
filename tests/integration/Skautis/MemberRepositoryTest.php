@@ -33,7 +33,7 @@ final class MemberRepositoryTest extends SkautisTest
 
         $this->assertSame(146478, $members[1]->getId());
         $this->assertSame('Čestný Random', $members[1]->getName());
-        $this->assertSame('2003-04-14', $members[1]->getBirthday()->format('Y-m-d'));
+        $this->assertSame('2003-04-14', $members[1]->getBirthday()?->format('Y-m-d'));
     }
 
     public function testFindByUnitReturnsDirectMembers(): void
@@ -46,7 +46,7 @@ final class MemberRepositoryTest extends SkautisTest
 
         $this->assertSame(146478, $members[0]->getId());
         $this->assertSame('Čestný Random', $members[0]->getName());
-        $this->assertSame('2003-04-14', $members[0]->getBirthday()->format('Y-m-d'));
+        $this->assertSame('2003-04-14', $members[0]->getBirthday()?->format('Y-m-d'));
     }
 
     private function getRepository(): MemberRepository

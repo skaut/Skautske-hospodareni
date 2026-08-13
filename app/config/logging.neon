@@ -1,6 +1,8 @@
 tracy:
     email: %errorEmails%
-    strictMode: TRUE
+    # Reálné chyby (warnings, notices, type errors) zůstávají fatální. Deprecations se pouze logují,
+    # aby nezhazovaly běh (typicky během přechodu na novější Nette) – nejde o skrytí, zůstávají v logu.
+    strictMode: 'E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED'
     maxDepth: 6
     maxLength: 500
     showBar: %tracyShowBar%

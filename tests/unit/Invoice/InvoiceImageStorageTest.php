@@ -89,6 +89,7 @@ final class InvoiceImageStorageTest extends Unit
         $image = imagecreatetruecolor(1, 1);
         self::assertNotFalse($image);
         $color = imagecolorallocate($image, 255, 255, 255);
+        self::assertNotFalse($color);
         imagefill($image, 0, 0, $color);
         imagepng($image, $path);
         imagedestroy($image);

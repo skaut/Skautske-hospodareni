@@ -13,6 +13,7 @@ use App\Model\Unit\UnitNotFound;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 
+/** @extends AbstractRepository<InvoiceSequence> */
 class InvoiceSequenceRepository extends AbstractRepository
 {
     public function __construct(EntityManagerInterface $entityManager, protected IUnitRepository $unitRepository)
@@ -201,6 +202,6 @@ class InvoiceSequenceRepository extends AbstractRepository
             return 1;
         }
 
-        return $sequenceId === null ? 1 : $sequenceId + 1;
+        return $sequenceId === null ? 1 : (int) $sequenceId + 1;
     }
 }

@@ -86,7 +86,7 @@ final class RoadworthyControl extends BaseControl
     {
         $this->assertIsEditable();
 
-        $upload = $form->getValues()->scan;
+        $upload = $form->getValues(\Nette\Utils\ArrayHash::class)->scan;
 
         if (! $upload instanceof FileUpload) {
             throw new LogicException('Assertion failed.');
@@ -96,7 +96,7 @@ final class RoadworthyControl extends BaseControl
         }
 
         $this->commandBus->handle(
-            new AddRoadworthyScan($this->vehicleId, $upload->getSanitizedName(), $upload->getContents()),
+            new AddRoadworthyScan($this->vehicleId, $upload->getSanitizedName(), (string) $upload->getContents()),
         );
 
         $this->presenter->flashMessage('Sken byl nahrán', 'success');

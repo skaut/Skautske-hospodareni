@@ -82,7 +82,7 @@ final class BugReportPresenter extends BasePresenter
         $form->addSubmit('send', 'Odeslat hlášení');
 
         $form->onValidate[] = function (Form $form): void {
-            $upload = $form->getValues()->screenshot;
+            $upload = $form->getValues(\Nette\Utils\ArrayHash::class)->screenshot;
             if (! $upload instanceof FileUpload) {
                 throw new LogicException('Assertion failed.');
             }
@@ -96,7 +96,7 @@ final class BugReportPresenter extends BasePresenter
         };
 
         $form->onSuccess[] = function (Form $form): void {
-            $values = $form->getValues();
+            $values = $form->getValues(\Nette\Utils\ArrayHash::class);
             $reporterEmail = $this->reporterEmail;
             if (isset($values->reporterEmail)) {
                 $reporterEmail = (string) $values->reporterEmail;
