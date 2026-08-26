@@ -10,9 +10,8 @@ final class Context
         private string $appDir,
         private string $wwwDir,
         private bool $productionMode,
-        private bool $showTestBackground,
+        private string $environmentMode,
         private string $environmentLabel,
-        private string $environmentColor,
     ) {
     }
 
@@ -31,9 +30,9 @@ final class Context
         return $this->productionMode;
     }
 
-    public function shouldShowTestBackground(): bool
+    public function shouldShowEnvironmentBadge(): bool
     {
-        return $this->showTestBackground;
+        return $this->environmentMode !== EnvironmentMode::PRODUCTION->value;
     }
 
     public function getEnvironmentLabel(): string
@@ -41,8 +40,8 @@ final class Context
         return $this->environmentLabel;
     }
 
-    public function getEnvironmentColor(): string
+    public function getEnvironmentMode(): string
     {
-        return $this->environmentColor;
+        return $this->environmentMode;
     }
 }
