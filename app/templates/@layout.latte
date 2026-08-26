@@ -33,19 +33,19 @@
     <link rel="stylesheet" href="/css/app.css?{md5_file($wwwDir . '/css/app.css')}">
 </head>
 
-<body class="app-shell" data-page-help-expanded="{$showPageHelp ? 'true' : 'false'}"
+<body class="app-shell" data-environment="{$environmentMode}" data-page-help-expanded="{$showPageHelp ? 'true' : 'false'}"
       {if $sessionKeepAliveEnabled}data-session-keep-alive-url="{$sessionKeepAliveUrl}" data-session-keep-alive-interval="{$sessionKeepAliveInterval}"{/if}>
 <div class="page">
 
-    <nav n:class="navbar, navbar-expand-lg, navbar-light, site-header, sticky-top, $testBackground ? 'navbar--' . $environmentColor">
+    <nav n:class="navbar, navbar-expand-lg, navbar-light, site-header, sticky-top, $showEnvironmentBadge ? 'navbar--' . $environmentMode">
         <div class="container-xl">
             {* ── Brand ── *}
             {if $user->isLoggedIn()}
                 <a class="navbar-brand" n:href=":Dashboard:default">
-                    {if $testBackground}
+                    {if $showEnvironmentBadge}
                         <span class="navbar-test-badge" title="{$environmentLabel}" data-test="test-server-badge">
                             <i class="fas fa-flask" aria-hidden="true"></i>
-                            <span class="visually-hidden">{$environmentLabel}</span>
+                            <span class="navbar-environment-label">{$environmentLabel}</span>
                         </span>
                     {else}
                         <img src="/images/skaut-logo.svg" class="navbar-brand-icon" alt="" aria-hidden="true">
@@ -54,10 +54,10 @@
                 </a>
             {else}
                 <a class="navbar-brand" n:href=":Default:">
-                    {if $testBackground}
+                    {if $showEnvironmentBadge}
                         <span class="navbar-test-badge" title="{$environmentLabel}" data-test="test-server-badge">
                             <i class="fas fa-flask" aria-hidden="true"></i>
-                            <span class="visually-hidden">{$environmentLabel}</span>
+                            <span class="navbar-environment-label">{$environmentLabel}</span>
                         </span>
                     {else}
                         <img src="/images/skaut-logo.svg" class="navbar-brand-icon" alt="" aria-hidden="true">
@@ -138,6 +138,22 @@
                 </div>
             {/foreach}
         {/snippet}
+
+        {if $navigationBreadcrumbs}
+            <nav class="app-breadcrumbs" aria-label="Drobečková navigace" data-test="breadcrumbs">
+                <ol class="breadcrumb mb-3">
+                    {foreach $navigationBreadcrumbs as $breadcrumb}
+                        <li n:class="breadcrumb-item, $breadcrumb['current'] ? active" n:attr="aria-current => $breadcrumb['current'] ? 'page' : null">
+                            {if $breadcrumb['link'] !== null}
+                                <a href="{$breadcrumb['link']}">{$breadcrumb['title']}</a>
+                            {else}
+                                {$breadcrumb['title']}
+                            {/if}
+                        </li>
+                    {/foreach}
+                </ol>
+            </nav>
+        {/if}
 
         {include #content}
     </main>
