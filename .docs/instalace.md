@@ -1,45 +1,45 @@
 # Instalace pro lokální vývoj
 
-Aplikace vyžaduje:
-- PHP 8.3
-- MySQL 8
-- Nginx
-- Composer
-- Node.js 22 a Yarn
-- Docker Compose
-
-Všechny potřebné nástroje jsou instalovány v příslušných kontejnerech
-Na hostujícím stroji musí být ve výchozím stavu volné porty 80 a 3306. Port 3306 je možné použít pro propojená s IDE
-
-## Docker
-Pro lokální vývoj je připraven Docker container a konfigurace pro **docker compose**.
-Všechny potřebné příkazy jsou definované v `Makefile`.
-
-```bash
-make build # Sestaví image
-make up    # Spustí dev stack v detached módu
-```
-
-V kontejneru je možné spustit bash pomocným skriptem:
-```bash
-make enter
-```
-
-## Nastavení hosts
-Skautis při přihlašování přesměrovává na `moje-hospodareni.cz`.
-Proto je třeba nastavit si mapování této domény na localhost.
-
-Stačí přidat tento řádek do souboru `/etc/hosts`:
-```
-127.0.0.1   moje-hospodareni.cz
-```
+Pro práci na vlastním počítači potřebujete Docker Engine nebo Docker Desktop s Docker Compose a volný HTTP port. PHP, databáze, Composer, Node.js, Yarn i webový server běží v připravených kontejnerech, proto je kvůli tomuto projektu neinstalujte přímo do počítače.
 
 ## Příprava projektu
-Stačí spustit příkaz `make init`.
-Ten sestaví image, spustí dev stack a uvnitř PHP kontejneru zavolá `composer app-init`, který provede lokální inicializaci projektu včetně závislostí, migrací a frontend buildu.
 
-## Rozběhnutí na macOS
-Je potřeba si založit v domovské složce `.env` soubor s obsahem
+1. Stáhněte repozitář a přejděte do jeho kořenové složky.
+2. Přidejte do `/etc/hosts` řádek `127.0.0.1 moje-hospodareni.cz`. SkautIS při přihlašování používá právě tuto adresu.
+3. Spusťte přípravu projektu:
+
+   ```bash
+   make init
+   ```
+
+`make init` připraví vše potřebné: kontejnery, závislosti, databázi, vývojová data i podobu stránky. Aplikace pak běží na `http://moje-hospodareni.cz`; nástroj pro prohlížení databáze je na `http://adminer.localhost`.
+
+## Běžná práce
+
 ```bash
-COMPOSE_FILE=-f docker/docker-compose.yml -f docker/docker-compose.macos.yml
+make up       # spustí vývojové prostředí
+make down     # zastaví vývojové prostředí a odstraní jeho kontejnery
+make logs     # zobrazí logy
+make enter    # otevře shell ve vývojovém PHP kontejneru
+make help     # vypíše všechny dostupné příkazy
+```
+
+K vývojové databázi se lze z vývojového nástroje připojit přes port 3306. Testovací databáze z počítače dostupná není.
+
+## Obsazený HTTP port
+
+Výchozí port 80 používá webový server projektu. Pokud jej používá jiná aplikace, spusťte projekt na jiném portu:
+
+```bash
+TRAEFIK_HOST_PORT=8080 make up
+```
+
+Potom otevírejte aplikaci na `http://moje-hospodareni.cz:8080`.
+
+## macOS
+
+Na Macu s Apple Silicon nastavte před spuštěním příkazů `make` oba Compose soubory, oddělené dvojtečkou:
+
+```bash
+export COMPOSE_FILE=docker/docker-compose.yml:docker/docker-compose.macos.yml
 ```

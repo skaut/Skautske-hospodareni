@@ -178,9 +178,8 @@ final class Environment
             'appBaseUrl' => $baseUrl,
             'sendEmail' => self::getBool('SEND_EMAIL', $appEnv !== 'dev'),
             'errorEmails' => self::getList('ERROR_EMAILS'),
-            'testBackground' => self::getBool('TEST_BACKGROUND', $appEnv !== 'prod'),
-            'environmentLabel' => self::getString('ENVIRONMENT_LABEL', 'Testovací server'),
-            'environmentColor' => self::getEnvironmentColor(),
+            'environmentMode' => EnvironmentMode::fromAppEnv($appEnv)->value,
+            'environmentLabel' => EnvironmentMode::fromAppEnv($appEnv)->getLabel(),
             'maintenance' => [
                 'enabled' => self::getBool('MAINTENANCE_MODE', false),
                 'allowedIps' => self::getList('MAINTENANCE_ALLOWED_IPS'),
@@ -273,17 +272,6 @@ final class Environment
         }
 
         return $default;
-    }
-
-    private static function getEnvironmentColor(): string
-    {
-        $value = strtolower(self::getString('ENVIRONMENT_COLOR', 'test'));
-
-        if (in_array($value, ['test', 'beta'], true)) {
-            return $value;
-        }
-
-        return 'test';
     }
 
     /** @return string[] */

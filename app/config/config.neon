@@ -15,9 +15,8 @@ parameters:
     uploadDirectory: %appDir%/../uploads
     sendEmail: %envConfig.sendEmail%
     errorEmails: %envConfig.errorEmails%
-    testBackground: %envConfig.testBackground%
+    environmentMode: %envConfig.environmentMode%
     environmentLabel: %envConfig.environmentLabel%
-    environmentColor: %envConfig.environmentColor%
     tracyShowBar: %envConfig.tracyShowBar%
     adminAllowedUserIds: []
     invoiceAccessAllowedUserIds: []

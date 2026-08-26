@@ -130,9 +130,9 @@ abstract class BasePresenter extends Presenter
         $this->template->setParameters([
             'templateBlockDir' => $this->appDir.'/templateBlocks/',
             'backlink' => $backlink = $this->getParameter('backlink'),
-            'testBackground' => $this->appContext->shouldShowTestBackground(),
+            'showEnvironmentBadge' => $this->appContext->shouldShowEnvironmentBadge(),
             'environmentLabel' => $this->appContext->getEnvironmentLabel(),
-            'environmentColor' => $this->appContext->getEnvironmentColor(),
+            'environmentMode' => $this->appContext->getEnvironmentMode(),
         ]);
 
         if ($this->getUser()->isLoggedIn()) {
@@ -412,8 +412,19 @@ abstract class BasePresenter extends Presenter
     /** @return array<int, array{title: string, link: string|null, current: bool}> */
     private function resolveNavigationBreadcrumbs(?string $module): array
     {
+        $mainMenu = $this->menuContainer->getMenu('main');
+        $mainMenu->setActivePresenter($this);
+
+        $mainItem = $mainMenu->findActiveItem();
+        if (! $mainItem instanceof IMenuItem) {
+            return [];
+        }
+
         $menuName = match ($module) {
             'Payment', 'Payments' => 'payments',
+            'Settings' => 'settings',
+            'Admin' => 'admin',
+            'Travel' => 'travel',
             default => null,
         };
 
@@ -424,26 +435,22 @@ abstract class BasePresenter extends Presenter
         $menu = $this->menuContainer->getMenu($menuName);
         $menu->setActivePresenter($this);
 
-        $rootItem = $menu->findActiveItem();
-        if (! $rootItem instanceof IMenuItem) {
+        $activeItem = $menu->findActiveItem();
+        if (! $activeItem instanceof IMenuItem || $activeItem->getRealTitle() === 'Přehled') {
             return [];
         }
 
-        $activeItem = $rootItem->findActiveItem();
-
         $items = [[
-            'title' => $rootItem->getRealTitle(),
-            'link' => $activeItem instanceof IMenuItem ? $rootItem->getRealLink() : null,
-            'current' => ! $activeItem instanceof IMenuItem,
+            'title' => $mainItem->getRealTitle(),
+            'link' => $mainItem->getRealLink(),
+            'current' => false,
         ]];
 
-        if ($activeItem instanceof IMenuItem) {
-            $items[] = [
-                'title' => $activeItem->getRealTitle(),
-                'link' => null,
-                'current' => true,
-            ];
-        }
+        $items[] = [
+            'title' => $activeItem->getRealTitle(),
+            'link' => null,
+            'current' => true,
+        ];
 
         return $items;
     }

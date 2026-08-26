@@ -284,6 +284,7 @@
                                                 {$td->endTag()|noescape}
                                             {/foreach}
                                             <td n:if="$actions || $control->isSortable() || $itemsDetail || $inlineEdit || $inlineAdd" class="col-action">
+                                                <div class="datagrid-row-actions">
                                                 {foreach $actions as $key => $action}
                                                     {if $row->hasAction($key)}
                                                         {if $action->hasTemplate()}
@@ -302,6 +303,7 @@
                                                 {if $itemsDetail && $itemsDetail->shouldBeRendered($row)}
                                                     {$itemsDetail->renderButton($row)|noescape}
                                                 {/if}
+                                                </div>
                                             </td>
                                         </tr>
                                     {/if}

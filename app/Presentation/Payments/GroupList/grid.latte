@@ -36,7 +36,7 @@
 {/define}
 
 {define col-actions}
-    <div class="d-flex justify-content-end gap-1">
+    <div class="datagrid-row-actions">
         <a href="{$control->getPresenter()->link(':Payments:Payment:default', ['id' => $item['id']])}"
            class="btn btn-sm btn-light"
            data-test="payment-group-detail-{$item['id']}"

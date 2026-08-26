@@ -58,6 +58,7 @@
 {/block}
 
 {block actions}
+    <div class="datagrid-row-actions">
         {foreach $actions as $key => $action}
             {if $row->hasAction($key)}
                 {if $action->hasTemplate()}
@@ -76,6 +77,7 @@
         {if $items_detail && $items_detail->shouldBeRendered($row)}
             {$items_detail->renderButton($row)|noescape}
         {/if}
+    </div>
 {/block}
 
 {define inlineAddRow}

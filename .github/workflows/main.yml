@@ -338,16 +338,13 @@ jobs:
       SSH_USERNAME: vu011961
       HOST: www.skauting.cz
       PORT: "11961"
-      APP_ENV: ${{ vars.APP_ENV }}
+      APP_ENV: beta
       APP_BASE_URL: ${{ vars.APP_BASE_URL }}
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
       DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
       SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
       SEND_EMAIL: ${{ vars.SEND_EMAIL }}
       ERROR_EMAILS: ${{ vars.ERROR_EMAILS }}
-      ENVIRONMENT_LABEL: ${{ vars.ENVIRONMENT_LABEL }}
-      ENVIRONMENT_COLOR: ${{ vars.ENVIRONMENT_COLOR }}
-      TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
       TRACY_SHOW_BAR: ${{ vars.TRACY_SHOW_BAR }}
       DB_HOST: ${{ vars.DB_HOST }}
       DB_NAME: ${{ vars.DB_NAME }}
@@ -403,16 +400,13 @@ jobs:
       SSH_USERNAME: vu009010
       HOST: www.skauting.cz
       PORT: "9010"
-      APP_ENV: ${{ vars.APP_ENV }}
+      APP_ENV: test
       APP_BASE_URL: ${{ vars.APP_BASE_URL }}
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
       DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
       SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
       SEND_EMAIL: ${{ vars.SEND_EMAIL }}
       ERROR_EMAILS: ${{ vars.ERROR_EMAILS }}
-      ENVIRONMENT_LABEL: ${{ vars.ENVIRONMENT_LABEL }}
-      ENVIRONMENT_COLOR: ${{ vars.ENVIRONMENT_COLOR }}
-      TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
       TRACY_SHOW_BAR: ${{ vars.TRACY_SHOW_BAR }}
       DB_HOST: ${{ vars.DB_HOST }}
       DB_NAME: ${{ vars.DB_NAME }}
@@ -453,7 +447,6 @@ jobs:
       SKAUTIS_TEST_MODE: "false"
       SEND_EMAIL: "true"
       ERROR_EMAILS: alex@skaut.cz
-      TEST_BACKGROUND: "false"
       TRACY_SHOW_BAR: "false"
       DB_HOST: localhost
       DB_NAME: h

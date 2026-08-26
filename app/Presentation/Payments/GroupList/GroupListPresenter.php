@@ -154,7 +154,7 @@ final class GroupListPresenter extends PaymentsBasePresenter
 
     protected function createComponentGrid(): DataGrid
     {
-        $grid = $this->gridFactory->createSimpleGrid(__DIR__.'/grid.latte');
+        $grid = $this->gridFactory->create(__DIR__.'/grid.latte');
 
         $grid->addColumnText('name', 'Název')
             ->setSortable();
@@ -168,7 +168,7 @@ final class GroupListPresenter extends PaymentsBasePresenter
         $grid->addColumnText('state', 'Stav')
             ->setSortable();
         $grid->addColumnText('actions', 'Akce')
-            ->addCellAttributes(['class' => 'text-end text-nowrap']);
+            ->addCellAttributes(['class' => 'text-end']);
 
         $grid->addFilterText('search', '', ['name', 'units'])
             ->setPlaceholder('Hledat skupinu...');

@@ -234,6 +234,17 @@
   box-shadow: 0 1px 3px rgba(77, 64, 29, 0.08);
 }
 
+.navbar--dev {
+  --tblr-navbar-bg: #f3edff;
+  --site-header-color: #4a2c78;
+  --site-header-muted: #76549d;
+  --site-header-hover-bg: #e8dcff;
+  --site-header-active-bg: #ddccfa;
+  --site-header-border: #cbb4eb;
+  --site-header-control-border: rgba(74, 44, 120, 0.26);
+  box-shadow: 0 1px 3px rgba(74, 44, 120, 0.08);
+}
+
 .navbar--beta {
   --tblr-navbar-bg: #e9f2ff;
   --site-header-color: #173b65;
@@ -245,11 +256,22 @@
   box-shadow: 0 1px 3px rgba(23, 59, 101, 0.08);
 }
 
+.navbar--dev .navbar-brand-icon,
 .navbar--test .navbar-brand-icon,
 .navbar--beta .navbar-brand-icon {
   filter: none;
 }
 
+.navbar--dev .nav-link:hover,
+.navbar--dev .nav-link:focus,
+.navbar--dev .nav-item.active .nav-link,
+.navbar--dev .nav-link.active,
+.navbar--dev .active > .btn,
+.navbar--dev .nav-item.active .nav-link-icon,
+.navbar--dev .btn-light:hover,
+.navbar--dev .btn-light:focus,
+.navbar--dev .dark-mode-toggle:hover,
+.navbar--dev .dark-mode-toggle:focus,
 .navbar--test .nav-link:hover,
 .navbar--test .nav-link:focus,
 .navbar--test .nav-item.active .nav-link,
@@ -273,6 +295,8 @@
   color: #4d401d;
 }
 
+.navbar--dev .navbar-logout:hover,
+.navbar--dev .navbar-logout:focus,
 .navbar--test .navbar-logout:hover,
 .navbar--test .navbar-logout:focus,
 .navbar--beta .navbar-logout:hover,
@@ -280,11 +304,13 @@
   color: #4d401d;
 }
 
+.navbar--dev .navbar-toggler,
 .navbar--test .navbar-toggler,
 .navbar--beta .navbar-toggler {
   border-color: rgba(77, 64, 29, 0.25);
 }
 
+.navbar--dev .navbar-toggler-icon,
 .navbar--test .navbar-toggler-icon,
 .navbar--beta .navbar-toggler-icon {
   filter: none;
@@ -309,13 +335,26 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
+  min-height: 2rem;
+  padding: 0.25rem 0.5rem;
   border: 1px solid #e1c874;
   border-radius: var(--tblr-border-radius);
   background: #fff2bd;
   color: #6c5017;
   flex-shrink: 0;
+}
+
+.navbar-environment-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.navbar--dev .navbar-test-badge {
+  border-color: #c3a7e5;
+  background: #e8dcff;
+  color: #59358a;
 }
 
 .navbar--beta .navbar-test-badge {

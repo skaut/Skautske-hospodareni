@@ -44,6 +44,16 @@
     --site-header-control-border: rgba(248, 231, 181, 0.28);
   }
 
+  .navbar--dev {
+    --tblr-navbar-bg: #302044;
+    --site-header-color: #efe4ff;
+    --site-header-muted: #cbb4e7;
+    --site-header-hover-bg: #402a59;
+    --site-header-active-bg: #50356d;
+    --site-header-border: #634681;
+    --site-header-control-border: rgba(239, 228, 255, 0.28);
+  }
+
   .navbar--beta {
     --tblr-navbar-bg: #17283c;
     --site-header-color: #d8ebff;
@@ -54,6 +64,16 @@
     --site-header-control-border: rgba(216, 235, 255, 0.28);
   }
 
+  .navbar--dev .nav-link:hover,
+  .navbar--dev .nav-link:focus,
+  .navbar--dev .nav-item.active .nav-link,
+  .navbar--dev .nav-link.active,
+  .navbar--dev .active > .btn,
+  .navbar--dev .nav-item.active .nav-link-icon,
+  .navbar--dev .btn-light:hover,
+  .navbar--dev .btn-light:focus,
+  .navbar--dev .dark-mode-toggle:hover,
+  .navbar--dev .dark-mode-toggle:focus,
   .navbar--test .nav-link:hover,
   .navbar--test .nav-link:focus,
   .navbar--test .nav-item.active .nav-link,
@@ -100,6 +120,12 @@
     border-color: #46688f;
     background: #203652;
     color: #b8dbff;
+  }
+
+  .navbar--dev .navbar-test-badge {
+    border-color: #8060a4;
+    background: #402a59;
+    color: #dfcaff;
   }
 
   .btn-light {

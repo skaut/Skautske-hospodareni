@@ -34,10 +34,14 @@ class GridFactory
      * 'Inserted' => 'Vloženo',
      * ];.
      */
-    public function create(): DataGrid
+    /** @param array<string, mixed> $templateParameters */
+    public function create(?string $templateFile = null, array $templateParameters = []): DataGrid
     {
         $grid = new DataGrid();
         $grid->setDefaultPerPage(20);
+        if ($templateFile !== null) {
+            $this->configureTemplate($grid, $templateFile, $templateParameters);
+        }
         DataGrid::$iconPrefix = '';
 
         // $grid->setTranslator(new SimpleTranslator(self::TRANSLATIONS));
@@ -58,20 +62,7 @@ class GridFactory
         $grid->setRememberState(false);
         $grid->setRefreshUrl(true);
 
-        $grid->onAnchor[] = function () use ($grid, $templateFile, $templateParameters): void {
-            $template = $grid->getTemplate();
-            if (! $template instanceof DefaultTemplate) {
-                throw new LogicException('Assertion failed.');
-            }
-            $baseTemplate = __DIR__.'/../../Components/templates/datagrid.latte';
-
-            // This is variable with original layout in DataGrid 6.0+ (it replaces $original_template)
-            $template->setParameters(['originalTemplate' => $baseTemplate]);
-            $template->setParameters(['baseTemplate' => $baseTemplate]);
-            $grid->setTemplateFile($templateFile ?? $baseTemplate);
-
-            $template->setParameters($templateParameters);
-        };
+        $this->configureTemplate($grid, $templateFile, $templateParameters);
 
         $grid->onRedraw[] = function () use ($grid): void {
             $presenter = $grid->presenter;
@@ -89,5 +80,24 @@ class GridFactory
         DataGrid::$iconPrefix = '';
 
         return $grid;
+    }
+
+    /** @param array<string, mixed> $templateParameters */
+    private function configureTemplate(DataGrid $grid, ?string $templateFile, array $templateParameters): void
+    {
+        $grid->onAnchor[] = function () use ($grid, $templateFile, $templateParameters): void {
+            $template = $grid->getTemplate();
+            if (! $template instanceof DefaultTemplate) {
+                throw new LogicException('Assertion failed.');
+            }
+            $baseTemplate = __DIR__.'/../../Components/templates/datagrid.latte';
+
+            // This is variable with original layout in DataGrid 6.0+ (it replaces $original_template)
+            $template->setParameters(['originalTemplate' => $baseTemplate]);
+            $template->setParameters(['baseTemplate' => $baseTemplate]);
+            $grid->setTemplateFile($templateFile ?? $baseTemplate);
+
+            $template->setParameters($templateParameters);
+        };
     }
 }
