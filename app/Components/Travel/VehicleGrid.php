@@ -39,10 +39,10 @@ class VehicleGrid extends BaseGridControl
             ->setFilterSelect($units, 'subunitId')->setPrompt('Všechny');
 
         $grid->addColumnDateTime('metadata.createdAt', 'Vytvořeno')
-            ->setSortable();
+            ->setSortable('v.metadata.createdAt');
 
         $grid->addColumnDateTime('metadata.authorName', 'Vytvořil')
-            ->setSortable();
+            ->setSortable('v.metadata.authorName');
 
         $grid->addFilterText('search', '', ['type', 'v.metadata.authorName', 'registration'])
             ->setPlaceholder('Typ vozdila, uživatel...');

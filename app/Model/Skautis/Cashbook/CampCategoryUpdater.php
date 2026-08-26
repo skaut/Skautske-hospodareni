@@ -8,11 +8,11 @@ use App\Model\Auth\IAuthorizator;
 use App\Model\Auth\Resources\Camp;
 use App\Model\Cashbook\CampBudgetUpdateNotAllowed;
 use App\Model\Cashbook\Cashbook\CashbookId;
+use App\Model\Cashbook\NegativeCampCategoryTotal;
 use App\Model\Cashbook\Repositories\ICampCategoryRepository;
 use App\Model\Cashbook\Repositories\ICampRepository;
 use App\Model\Cashbook\Services\ICampCategoryUpdater;
 use App\Model\Event\SkautisCampId;
-use App\Model\Skautis\Exception\AmountMustBeGreaterThanZero;
 use App\Model\Utils\MoneyFactory;
 use Skautis\Wsdl\WebServiceInterface;
 use Skautis\Wsdl\WsdlException;
@@ -39,6 +39,12 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
     /** @param array<int, float> $cashbookTotals */
     public function updateCategories(CashbookId $cashbookId, array $cashbookTotals): void
     {
+        foreach ($cashbookTotals as $total) {
+            if ($total < 0) {
+                throw new NegativeCampCategoryTotal();
+            }
+        }
+
         $campSkautisId = $this->campRepository->findByCashbookId($cashbookId)->getSkautisId();
         if (! $this->authorizator->isAllowed(Camp::UPDATE_BUDGET, $campSkautisId->toInt())) {
             throw new CampBudgetUpdateNotAllowed();
@@ -77,7 +83,7 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
                 throw $exc;
             }
 
-            throw new AmountMustBeGreaterThanZero();
+            throw new NegativeCampCategoryTotal();
         }
     }
 
