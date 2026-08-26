@@ -10,37 +10,15 @@ use Nette\Bridges\ApplicationLatte\DefaultTemplate;
 
 class GridFactory
 {
-    /**
-     * private const TRANSLATIONS = [
-     * 'ublaboo_datagrid.no_item_found_reset' => 'Nebyly nalezeny žádné položky. Zkuste zrušit filtry.',
-     * 'ublaboo_datagrid.no_item_found' => 'Nebyly nalezeny žádné položky.',
-     * 'ublaboo_datagrid.here' => 'Zde',
-     * 'ublaboo_datagrid.items' => 'Položky',
-     * 'ublaboo_datagrid.all' => 'vše',
-     * 'ublaboo_datagrid.from' => 'od',
-     * 'ublaboo_datagrid.reset_filter' => 'Zrušit filtry',
-     * 'ublaboo_datagrid.group_actions' => 'Hromadné operace',
-     * 'ublaboo_datagrid.show_all_columns' => 'Zobrazit všechny sloupce',
-     * 'ublaboo_datagrid.show_default_columns' => 'Zobrazit výchozí sloupce',
-     * 'ublaboo_datagrid.hide_column' => 'Skrýt sloupec',
-     * 'ublaboo_datagrid.action' => 'Akce',
-     * 'ublaboo_datagrid.previous' => 'Předchozí',
-     * 'ublaboo_datagrid.next' => 'Další',
-     * 'ublaboo_datagrid.choose' => 'Vybrat',
-     * 'ublaboo_datagrid.execute' => 'Provést',
-     * 'ublaboo_datagrid.save' => 'Uložit',
-     * 'ublaboo_datagrid.cancel' => 'Zrušit',
-     * 'Name' => 'Jméno',
-     * 'Inserted' => 'Vloženo',
-     * ];.
-     */
-    public function create(): DataGrid
+    /** @param array<string, mixed> $templateParameters */
+    public function create(?string $templateFile = null, array $templateParameters = []): DataGrid
     {
         $grid = new DataGrid();
         $grid->setDefaultPerPage(20);
+        if ($templateFile !== null) {
+            $this->configureTemplate($grid, $templateFile, $templateParameters);
+        }
         DataGrid::$iconPrefix = '';
-
-        // $grid->setTranslator(new SimpleTranslator(self::TRANSLATIONS));
 
         return $grid;
     }
@@ -51,27 +29,13 @@ class GridFactory
         $grid = new DataGrid();
 
         $grid->setColumnReset(false);
-        // $grid->setTranslator(new SimpleTranslator(self::TRANSLATIONS));
         $grid->setOuterFilterRendering(true);
         $grid->setCollapsibleOuterFilters(false);
         $grid->setPagination(false);
         $grid->setRememberState(false);
         $grid->setRefreshUrl(true);
 
-        $grid->onAnchor[] = function () use ($grid, $templateFile, $templateParameters): void {
-            $template = $grid->getTemplate();
-            if (! $template instanceof DefaultTemplate) {
-                throw new LogicException('Assertion failed.');
-            }
-            $baseTemplate = __DIR__.'/../../Components/templates/datagrid.latte';
-
-            // $originalTemplate (vendor default 7.x) nastavuje sám grid v render(); náš datagrid.latte
-            // ho přes {extends $originalTemplate} rozšiřuje. Konkrétní gridy dědí přes $baseTemplate.
-            $template->setParameters(['baseTemplate' => $baseTemplate]);
-            $grid->setTemplateFile($templateFile ?? $baseTemplate);
-
-            $template->setParameters($templateParameters);
-        };
+        $this->configureTemplate($grid, $templateFile, $templateParameters);
 
         $grid->onRedraw[] = function () use ($grid): void {
             $presenter = $grid->getPresenter();
@@ -89,5 +53,24 @@ class GridFactory
         DataGrid::$iconPrefix = '';
 
         return $grid;
+    }
+
+    /** @param array<string, mixed> $templateParameters */
+    private function configureTemplate(DataGrid $grid, ?string $templateFile, array $templateParameters): void
+    {
+        $grid->onAnchor[] = function () use ($grid, $templateFile, $templateParameters): void {
+            $template = $grid->getTemplate();
+            if (! $template instanceof DefaultTemplate) {
+                throw new LogicException('Assertion failed.');
+            }
+            $baseTemplate = __DIR__.'/../../Components/templates/datagrid.latte';
+
+            // $originalTemplate (vendor default 7.x) nastavuje sám grid v render(); náš datagrid.latte
+            // ho přes {extends $originalTemplate} rozšiřuje. Konkrétní gridy dědí přes $baseTemplate.
+            $template->setParameters(['baseTemplate' => $baseTemplate]);
+            $grid->setTemplateFile($templateFile ?? $baseTemplate);
+
+            $template->setParameters($templateParameters);
+        };
     }
 }

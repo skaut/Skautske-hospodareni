@@ -1,46 +1,27 @@
-# Write model
-Jedná se víceméně o [OLTP](https://en.wikipedia.org/wiki/Online_transaction_processing).
+# Architektura systému
 
-Hodně je zde využívána terminologie 
+Aplikace odděluje změny dat od jejich zobrazování. Pravidla hospodaření jsou v `app/Model`, obrazovky v `app/Presentation` a znovupoužitelné části obrazovek v `app/Components`.
 
-Zde je implementována (převážně) logika, která vede k side-effectům (změna v db, poslání mailu, ...).
-Většina logiky je realizována skrze [agregáty](https://martinfowler.com/bliki/DDD_Aggregate.html),
-případně doménové služby.
+## Když se mění data
 
-Write model můžeme rozdělit do několika vrstev:
-- Aplikační - command bus
-- Doména - agregáty, doménové služby - logika spojená s hospodařením
-- Infrastruktura - prakticky vše, co se dotýká světa mimo doménu (persistence do databáze, Skautis)
+Změna začíná příkazem, který předá práci správné části aplikace. Ta načte potřebná data, použije pravidla hospodaření a výsledek uloží. Pravidla patří do modelu; presenter ani Latte šablona je nenahrazují.
 
-## Doména
-agregáty, doménové služby - logika spojená s hospodařením
+- Rozhraní pro práci s uloženými daty patří k dané oblasti modelu. Jejich databázové provedení je v `app/Model/Infrastructure/Repositories`.
+- SkautIS, e-mail a jiné vnější služby jsou oddělené za rozhraním, aby je šlo bezpečně nahradit při testování.
+- Každá změna struktury databáze musí mít migraci v `migrations/<rok>`.
 
-Patří sem také Commandy a Command Handlery.
+Samostatná pravidla ověřují malé testy bez databáze. Spolupráci s databází a vnějšími službami ověřují integrační testy.
 
-Pokud Doména využívá nějakých externích služeb, definuje rozhraní,
-které je následně implementováno v Infrastruktuře.
+## Když se data zobrazují
 
-Jednotlivé části aplikace jsou dekomponovány do modulů/[bounded contextů](https://martinfowler.com/bliki/BoundedContext.html).
+Načítání dat pro obrazovku nic nemění. Presenter vytvoří dotaz z `ReadModel/Queries`, předá ho aplikaci a dostane data připravená pro zobrazení.
 
-### Testování
-Doménovou logiku (AKA business logic) testujeme pomocí unit testů.
-Testujeme všechny scénáře, ve kterých jsou agregáty a doménové
-služby používány.
+Tím zůstává načítání dat oddělené od akcí, které něco mění. Kód zajišťující dotaz data neukládá ani nemění pravidla hospodaření.
 
+## Uživatelské rozhraní
 
-## Infrastruktura
+Nette presentery a Latte šablony jsou rozdělené podle částí aplikace v `app/Presentation`. Presenter připraví data a předá práci modelu; šablona výsledek jen zobrazí. Nové společné ovládací prvky patří do `app/Components`.
 
-### Repozitáře
-Agregáty jsou v rámci write modelu získávány a ukládány pomocí repozitářů.
-Repozitáře jsou definovány jako interface v `<bounded context>/Repositories`.
-Implementace těchto repozitářů jsou v Infrastructure (ve adresáři `Infrastructure/Repositories/<bounded context>`),
-případně v jiném bounded contextu, který implementaci poskytuje (pro implementaci rozhraní z `ContextA` v `ContextB` v adresáři `ContextB\ContextA\Repositories`.
+Adresy stránek jsou definované v `app/router/RouterFactory.php`. Formuláře používají Nette Forms. Rostoucí seznamy používají společný Ublaboo DataGrid; vzhled a chování stránky staví na TypeScriptu, Sassu, Tableru a Bootstrapu.
 
-# Read model
-Model, který slouží pouze pro získávání dat pro UI.
-Je bez side-effectů (pokud pomineme IO spojené s cachováním).
-
-Existují zde 4 základní typy objektů:
-- DTO - data transfer objekt
-- Query - value objekt posílaný přes query bus
-- Query handler - zpracovává query a vrací DTO/kolekci DTO
+Podrobné pracovní pokyny pro automatizované agenty nejsou součástí této dokumentace; jsou odděleně ve složce `.agents`.

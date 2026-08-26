@@ -86,6 +86,19 @@
   margin-bottom: 1.5rem;
 }
 
+.app-breadcrumbs {
+  margin-top: 1rem;
+}
+
+.app-breadcrumbs .breadcrumb {
+  margin-bottom: 0;
+  font-size: 0.875rem;
+}
+
+.app-breadcrumbs .breadcrumb-item.active {
+  color: var(--tblr-secondary);
+}
+
 .page-heading > .card-body {
   display: flex;
   align-items: center;

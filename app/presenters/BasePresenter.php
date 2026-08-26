@@ -19,8 +19,8 @@ use App\Model\User\UserPreferencesService;
 use App\Model\User\UserService;
 use Contributte\MenuControl\IMenuItem;
 use Contributte\MenuControl\MenuContainer;
+use Contributte\MenuControl\UI\IMenuComponentFactory;
 use Contributte\MenuControl\UI\MenuComponent;
-use Contributte\MenuControl\UI\MenuComponentFactory;
 use LogicException;
 use Nette\Application\BadRequestException;
 use Nette\Application\LinkGenerator;
@@ -82,7 +82,7 @@ abstract class BasePresenter extends Presenter
 
     private Context $appContext;
 
-    private MenuComponentFactory $menuComponentFactory;
+    private IMenuComponentFactory $menuComponentFactory;
 
     private MenuContainer $menuContainer;
 
@@ -100,7 +100,7 @@ abstract class BasePresenter extends Presenter
         LoggerInterface $logger,
         LinkGenerator $linkGenerator,
         Context $appContext,
-        MenuComponentFactory $menuComponentFactory,
+        IMenuComponentFactory $menuComponentFactory,
         MenuContainer $menuContainer,
         UserPreferencesService $userPreferences,
     ): void {
@@ -130,9 +130,9 @@ abstract class BasePresenter extends Presenter
         $this->template->setParameters([
             'templateBlockDir' => $this->appDir.'/templateBlocks/',
             'backlink' => $backlink = $this->getParameter('backlink'),
-            'testBackground' => $this->appContext->shouldShowTestBackground(),
+            'showEnvironmentBadge' => $this->appContext->shouldShowEnvironmentBadge(),
             'environmentLabel' => $this->appContext->getEnvironmentLabel(),
-            'environmentColor' => $this->appContext->getEnvironmentColor(),
+            'environmentMode' => $this->appContext->getEnvironmentMode(),
         ]);
 
         if ($this->getUser()->isLoggedIn()) {
@@ -294,7 +294,6 @@ abstract class BasePresenter extends Presenter
         $this->redirect(':Default:', ['backlink' => $backlink]);
     }
 
-    /** @phpstan-assert-if-true !null $identity */
     private function isValidUserIdentity(?IIdentity $identity): bool
     {
         return $identity !== null && is_numeric($identity->getId());
@@ -393,14 +392,14 @@ abstract class BasePresenter extends Presenter
     /** @return array{0: string|null, 1: string} */
     private function resolveTemplateSection(): array
     {
-        $presenterNameParts = explode(':', (string) $this->getName());
+        $presenterNameParts = explode(':', $this->getName());
         $presenterName = $presenterNameParts[array_key_last($presenterNameParts)];
 
-        if ($presenterNameParts[0] === 'Accountancy') {
+        if (($presenterNameParts[0] ?? null) === 'Accountancy') {
             return [$presenterNameParts[1] ?? null, $presenterName];
         }
 
-        return [$presenterNameParts[0], $presenterName];
+        return [$presenterNameParts[0] ?? null, $presenterName];
     }
 
     private function usesPresentationDirectory(): bool
@@ -413,8 +412,19 @@ abstract class BasePresenter extends Presenter
     /** @return array<int, array{title: string, link: string|null, current: bool}> */
     private function resolveNavigationBreadcrumbs(?string $module): array
     {
+        $mainMenu = $this->menuContainer->getMenu('main');
+        $mainMenu->setActivePresenter($this);
+
+        $mainItem = $mainMenu->findActiveItem();
+        if (! $mainItem instanceof IMenuItem) {
+            return [];
+        }
+
         $menuName = match ($module) {
             'Payment', 'Payments' => 'payments',
+            'Settings' => 'settings',
+            'Admin' => 'admin',
+            'Travel' => 'travel',
             default => null,
         };
 
@@ -425,26 +435,22 @@ abstract class BasePresenter extends Presenter
         $menu = $this->menuContainer->getMenu($menuName);
         $menu->setActivePresenter($this);
 
-        $rootItem = $menu->findActiveItem();
-        if (! $rootItem instanceof IMenuItem) {
+        $activeItem = $menu->findActiveItem();
+        if (! $activeItem instanceof IMenuItem || $activeItem->getRealTitle() === 'Přehled') {
             return [];
         }
 
-        $activeItem = $rootItem->findActiveItem();
-
         $items = [[
-            'title' => (string) $rootItem->getRealTitle(),
-            'link' => $activeItem instanceof IMenuItem ? $rootItem->getRealLink() : null,
-            'current' => ! $activeItem instanceof IMenuItem,
+            'title' => $mainItem->getRealTitle(),
+            'link' => $mainItem->getRealLink(),
+            'current' => false,
         ]];
 
-        if ($activeItem instanceof IMenuItem) {
-            $items[] = [
-                'title' => (string) $activeItem->getRealTitle(),
-                'link' => null,
-                'current' => true,
-            ];
-        }
+        $items[] = [
+            'title' => $activeItem->getRealTitle(),
+            'link' => null,
+            'current' => true,
+        ];
 
         return $items;
     }
