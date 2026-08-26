@@ -179,7 +179,6 @@ final class Environment
             'sendEmail' => self::getBool('SEND_EMAIL', $appEnv !== 'dev'),
             'errorEmails' => self::getList('ERROR_EMAILS'),
             'environmentMode' => EnvironmentMode::fromAppEnv($appEnv)->value,
-            'environmentLabel' => EnvironmentMode::fromAppEnv($appEnv)->getLabel(),
             'maintenance' => [
                 'enabled' => self::getBool('MAINTENANCE_MODE', false),
                 'allowedIps' => self::getList('MAINTENANCE_ALLOWED_IPS'),

@@ -34,6 +34,7 @@ use App\Model\Common\UnitId;
 use App\Model\DTO\Cashbook\Cashbook;
 use App\Model\DTO\Cashbook\Chit;
 use App\Model\DTO\Cashbook\ChitItem;
+use App\Model\Skautis\Exception\AmountMustBeGreaterThanZero;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
 use InvalidArgumentException;
@@ -362,7 +363,10 @@ final class ChitForm extends BaseControl
             $this->flashMessage('Nemáte oprávnění upravovat rozpočtové kategorie tábora ve skautISu. Doklad nebyl uložen.', 'danger');
         } catch (ChitLocked) {
             $this->flashMessage('Nelze upravit zamčený paragon', 'error');
-        } catch (NegativeCampCategoryTotal) {
+        } catch (NegativeCampCategoryTotal|AmountMustBeGreaterThanZero) {
+            // Camp cashbooks throw NegativeCampCategoryTotal, education cashbooks still
+            // translate the Skautis validation error into AmountMustBeGreaterThanZero.
+            // Both must be caught before the generic WsdlException below.
             $form->addError('Nelze uložit doklad, protože kategorie ve skautisu nemůže být záporná!');
         } catch (WsdlException $exc) {
             $this->logger->error(

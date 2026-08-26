@@ -82,6 +82,13 @@ table.table a:hover {
   display: grid;
   gap: 1.5rem;
 
+  // Grid items default to `min-width: auto`, so wide content (a DataGrid table)
+  // would stretch the 1fr track past the available width, push the sidebar out
+  // and overflow the page instead of scrolling inside its own .table-responsive.
+  > * {
+    min-width: 0;
+  }
+
   @media (min-width: 992px) {
     grid-template-columns: 1fr 20rem;
   }

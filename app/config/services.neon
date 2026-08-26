@@ -112,7 +112,6 @@ services:
           wwwDir: %wwwDir%
           productionMode: %productionMode%
           environmentMode: %environmentMode%
-          environmentLabel: %environmentLabel%
       )
     - App\RouterFactory
     router: @App\RouterFactory::createRouter

@@ -8,6 +8,7 @@ use AcceptanceTester;
 use Cake\Chronos\ChronosDate;
 use PHPUnit\Framework\Assert;
 
+use function rawurlencode;
 use function uniqid;
 
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
@@ -34,6 +35,41 @@ class PaymentDetailCest extends PaymentAcceptanceCest
         $I->waitForElementVisible('[data-test="payment-group-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForText($groupName, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeCurrentUrlMatches('~^/platby/skupiny/\d+/platby(?:\?.*)?$~');
+    }
+
+    /** @group payment */
+    public function searchPaymentGroupsByName(): void
+    {
+        $I = $this->I;
+
+        $groupName = uniqid('Selenium Search ', true);
+
+        $I->wantTo('search payment groups by name');
+
+        $this->createGeneralPaymentGroup($groupName);
+        $groupId = $I->grabFromDatabase('pa_group', 'id', ['name' => $groupName]);
+
+        $I->clickStable('[data-test="payment-nav-groups"]');
+        $I->waitForElementVisible('[data-test="payments-groups-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->waitForElementVisible(
+            '[data-test="payment-group-detail-'.$groupId.'"]',
+            AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
+        );
+
+        // The search box is rendered only through the grid's outer filter row, so it
+        // disappears silently when the grid loses setOuterFilterRendering(true).
+        $I->seeElement('[data-test="datagrid-filter-search"]');
+
+        $I->amOnPage('/platby/skupiny?grid-filter%5Bsearch%5D='.rawurlencode('Neexistujici skupina'));
+        $I->waitForText('Nenalezeny žádné záznamy.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->dontSeeElement('[data-test="payment-group-detail-'.$groupId.'"]');
+
+        $I->amOnPage('/platby/skupiny?grid-filter%5Bsearch%5D='.rawurlencode($groupName));
+        $I->waitForElementVisible(
+            '[data-test="payment-group-detail-'.$groupId.'"]',
+            AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
+        );
+        $I->seeElement('[data-test="datagrid-filter-search"]');
     }
 
     /** @group payment */

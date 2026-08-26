@@ -16,7 +16,6 @@ parameters:
     sendEmail: %envConfig.sendEmail%
     errorEmails: %envConfig.errorEmails%
     environmentMode: %envConfig.environmentMode%
-    environmentLabel: %envConfig.environmentLabel%
     tracyShowBar: %envConfig.tracyShowBar%
     adminAllowedUserIds: []
     invoiceAccessAllowedUserIds: []

@@ -156,6 +156,15 @@ final class GroupListPresenter extends PaymentsBasePresenter
     {
         $grid = $this->gridFactory->create(__DIR__.'/grid.latte');
 
+        // Unlike createSimpleGrid() this grid keeps pagination, but it still needs the
+        // search box rendered above the table (grid.latte only defines {block filters},
+        // which DataGrid renders solely through the outer filter row) and it must not
+        // remember filters in the session between visits.
+        $grid->setOuterFilterRendering(true);
+        $grid->setCollapsibleOuterFilters(false);
+        $grid->setRememberState(false);
+        $grid->setColumnReset(false);
+
         $grid->addColumnText('name', 'Název')
             ->setSortable();
         $grid->addColumnText('units', 'Jednotky')

@@ -91,6 +91,7 @@ menu:
                     - '^Payments:Dashboard:.*$'
                 data:
                     test: payment-nav-overview
+                    hub: true
                     icon: fi fi-rr-apps
                     preserveParameters:
                         jednotka: unitId
@@ -131,6 +132,7 @@ menu:
                     - '^Settings:Default:.*$'
                 data:
                     test: settings-subnav-overview
+                    hub: true
                     icon: fi fi-rr-apps
                     preserveParameters:
                         jednotka: unitId
@@ -203,6 +205,7 @@ menu:
                     - '^Admin:Default:.*$'
                 data:
                     test: admin-nav-overview
+                    hub: true
                     icon: fi fi-rr-apps
             users:
                 title: Uživatelé
@@ -249,6 +252,7 @@ menu:
                     - '^Travel:Default:.*$'
                 data:
                     test: travel-subnav-commands
+                    hub: true
                     icon: fas fa-route
             vehicles:
                 title: Vozidla
