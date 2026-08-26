@@ -1,62 +1,90 @@
+# Dotazy pro přehledy
 
-## report_chit_items
+Tyto dotazy vytvářejí jednorázové přehledy z databáze a data nemění. Spouštějte je jen s oprávněním ke čtení, nejdříve je vyzkoušejte na kopii dat a při exportu dodržujte pravidla pro práci s osobními údaji.
+
+Příklady používají proměnné MySQL. Před spuštěním vždy doplňte vlastní hodnotu a zkontrolujte, jaká data dotaz vrátí.
+
+## Položky dokladů konkrétní pokladní knihy
+
 ```sql
-SELECT `ch`.`id` AS `chit_id`,`ch`.`eventId` AS `eventId`,`ch`.`recipient` AS `recipient`,`ch`.`num` AS `num`,`ch`.`date` AS `date`,
-`ch`.`payment_method` AS `payment_method`,`ci`.`id` AS `id`,`ci`.`purpose` AS `purpose`,
-`ci`.`price` AS `price`,`ci`.`priceText` AS `priceText`,`ci`.`category` AS `category`,`ci`.`category_operation_type` AS `category_operation_type`
-FROM `ac_chits` `ch`
-LEFT JOIN `ac_chit_to_item` `cti` ON `ch`.`id` = `cti`.`chit_id`
-LEFT JOIN `ac_chits_item` `ci` ON `cti`.`item_id` = `ci`.`id`;
+SET @cashbook_id = 'doplňte-ID-pokladní-knihy';
+
+SELECT
+    ch.id AS chit_id,
+    ch.eventId AS cashbook_id,
+    ch.recipient,
+    ch.num,
+    ch.date,
+    ch.payment_method,
+    ci.id AS item_id,
+    ci.purpose,
+    ci.price,
+    ci.priceText,
+    ci.category,
+    ci.category_operation_type
+FROM ac_chits AS ch
+LEFT JOIN ac_chit_to_item AS cti ON ch.id = cti.chit_id
+LEFT JOIN ac_chits_item AS ci ON cti.item_id = ci.id
+WHERE ch.eventId = @cashbook_id
+ORDER BY ch.date, ch.num, ci.id;
 ```
 
-## report_cashbooks
+## Počet pokladních knih podle typu a roku
+
 ```sql
-SELECT c.type as Type,
-        YEAR(`ch`.`date`) AS `Year`,
-        COUNT(DISTINCT `ch`.`eventId`) AS `count of cashbooks`,
-        ROUND(SUM(`ci`.`price` )) AS `Total amount`
-FROM `ac_chits` `ch` 
-LEFT JOIN `ac_chit_to_item` `cti` ON `ch`.`id` = `cti`.`chit_id` 
-LEFT JOIN `ac_chits_item` `ci` ON `cti`.`item_id` = `ci`.`id`
-LEFT JOIN `ac_cashbook` `c` ON `ch`.`eventId` = `c`.`id`
-GROUP BY Type, Year
-ORDER BY Type, Year DESC 
+SELECT
+    c.type AS cashbook_type,
+    YEAR(ch.date) AS year,
+    COUNT(DISTINCT ch.eventId) AS cashbook_count,
+    ROUND(SUM(ci.price)) AS total_amount
+FROM ac_chits AS ch
+LEFT JOIN ac_chit_to_item AS cti ON ch.id = cti.chit_id
+LEFT JOIN ac_chits_item AS ci ON cti.item_id = ci.id
+LEFT JOIN ac_cashbook AS c ON ch.eventId = c.id
+GROUP BY c.type, YEAR(ch.date)
+ORDER BY c.type, YEAR(ch.date) DESC;
 ```
 
-## report_cashbooks_amount
+## Částky pokladních knih podle typu, roku a operace
+
 ```sql
-SELECT c.type as Type,
-        YEAR(`ch`.`date`) AS `Year`,
-        `ci`.`category_operation_type` as `Operational type`,
-        ROUND(SUM(`ci`.`price` )) AS `Amount`
-FROM `ac_chits` `ch` 
-LEFT JOIN `ac_chit_to_item` `cti` ON `ch`.`id` = `cti`.`chit_id` 
-LEFT JOIN `ac_chits_item` `ci` ON `cti`.`item_id` = `ci`.`id`
-LEFT JOIN `ac_cashbook` `c` ON `ch`.`eventId` = `c`.`id`
-GROUP BY Type, Year, `ci`.`category_operation_type`
-ORDER BY Type, Year DESC
+SELECT
+    c.type AS cashbook_type,
+    YEAR(ch.date) AS year,
+    ci.category_operation_type AS operation_type,
+    ROUND(SUM(ci.price)) AS total_amount
+FROM ac_chits AS ch
+LEFT JOIN ac_chit_to_item AS cti ON ch.id = cti.chit_id
+LEFT JOIN ac_chits_item AS ci ON cti.item_id = ci.id
+LEFT JOIN ac_cashbook AS c ON ch.eventId = c.id
+GROUP BY c.type, YEAR(ch.date), ci.category_operation_type
+ORDER BY c.type, YEAR(ch.date) DESC, ci.category_operation_type;
 ```
 
-## report_payment_groups
+## Platební skupiny podle typu a roku splatnosti
+
 ```sql
-SELECT g.groupType AS Type,
-    YEAR(p.due_date) AS Year, 
-    COUNT(DISTINCT g.id) AS 'Count of groups'
-FROM `pa_payment` p
-LEFT JOIN pa_group g ON g.id = p.group_id
-WHERE  p.state != 'canceled'
-GROUP BY Year, Type
-ORDER BY Type, Year DESC
+SELECT
+    g.groupType AS group_type,
+    YEAR(p.due_date) AS year,
+    COUNT(DISTINCT g.id) AS group_count
+FROM pa_payment AS p
+LEFT JOIN pa_group AS g ON g.id = p.group_id
+WHERE p.state != 'canceled'
+GROUP BY g.groupType, YEAR(p.due_date)
+ORDER BY g.groupType, YEAR(p.due_date) DESC;
 ```
 
-## report_payment_groups_amounts
+## Částky plateb podle typu skupiny, roku a stavu
+
 ```sql
-SELECT g.groupType AS Type,
-    YEAR(p.due_date) AS Year, 
-    p.state AS 'Status',
-    ROUND(SUM(p.amount)) AS 'Total amount'
-FROM `pa_payment` p
-LEFT JOIN pa_group g ON g.id = p.group_id
-GROUP BY Year, Type, p.state
-ORDER BY Type, Year DESC
+SELECT
+    g.groupType AS group_type,
+    YEAR(p.due_date) AS year,
+    p.state,
+    ROUND(SUM(p.amount)) AS total_amount
+FROM pa_payment AS p
+LEFT JOIN pa_group AS g ON g.id = p.group_id
+GROUP BY g.groupType, YEAR(p.due_date), p.state
+ORDER BY g.groupType, YEAR(p.due_date) DESC, p.state;
 ```
