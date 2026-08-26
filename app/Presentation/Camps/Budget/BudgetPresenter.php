@@ -10,6 +10,7 @@ use App\Model\Auth\Resources\Camp;
 use App\Model\Cashbook\Cashbook\CashbookId;
 use App\Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotals;
 use App\Model\Cashbook\MissingCategory;
+use App\Model\Cashbook\NegativeCampCategoryTotal;
 use App\Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use App\Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use App\Model\Cashbook\ReadModel\Queries\InconsistentCampCategoryTotalsQuery;
@@ -68,8 +69,12 @@ final class BudgetPresenter extends BasePresenter
     {
         $this->editableOnly();
 
-        $this->commandBus->handle(new UpdateCampCategoryTotals($this->getCashbookId($aid)));
-        $this->flashMessage('Kategorie byly přepočítány.');
+        try {
+            $this->commandBus->handle(new UpdateCampCategoryTotals($this->getCashbookId($aid)));
+            $this->flashMessage('Kategorie byly přepočítány.');
+        } catch (NegativeCampCategoryTotal) {
+            $this->flashMessage('Kategorie nelze přepočítat, protože jejich výsledný součet nesmí být záporný. Upravte nejdříve vratky nebo příjmy účastníků.', 'danger');
+        }
 
         if ($this->isAjax()) {
             $this->redrawControl('flash');
