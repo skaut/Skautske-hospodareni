@@ -10,6 +10,7 @@ use App\Model\Cashbook\Camp;
 use App\Model\Cashbook\CampBudgetUpdateNotAllowed;
 use App\Model\Cashbook\CampCategory;
 use App\Model\Cashbook\Cashbook\CashbookId;
+use App\Model\Cashbook\NegativeCampCategoryTotal;
 use App\Model\Cashbook\Operation;
 use App\Model\Cashbook\Repositories\ICampCategoryRepository;
 use App\Model\Cashbook\Repositories\ICampRepository;
@@ -67,6 +68,55 @@ final class CampCategoryUpdaterTest extends Unit
         );
 
         $updater->updateCategories(CashbookId::generate(), [1 => 200.0, 2 => 50.0]);
+    }
+
+    public function testDoesNotContactSkautisWhenCategoryTotalIsNegative(): void
+    {
+        $eventWebService = m::mock(WebServiceInterface::class);
+        $eventWebService->shouldNotReceive('EventCampStatementUpdate');
+
+        $authorizator = m::mock(IAuthorizator::class);
+        $authorizator->shouldNotReceive('isAllowed');
+
+        $campRepository = m::mock(ICampRepository::class);
+        $campRepository->shouldNotReceive('findByCashbookId');
+
+        $campCategories = m::mock(ICampCategoryRepository::class);
+        $campCategories->shouldNotReceive('findForCamp');
+
+        $updater = new CampCategoryUpdater($eventWebService, $authorizator, $campRepository, $campCategories);
+
+        $this->expectException(NegativeCampCategoryTotal::class);
+
+        $updater->updateCategories(CashbookId::generate(), [1 => -0.01]);
+    }
+
+    public function testAllowsZeroCategoryTotal(): void
+    {
+        $eventWebService = m::mock(WebServiceInterface::class);
+        $eventWebService->expects('EventCampStatementUpdate')
+            ->with([
+                'ID' => 1,
+                'ID_EventCamp' => self::CAMP_ID,
+                'Ammount' => 0.0,
+                'IsEstimate' => false,
+            ], 'eventCampStatement');
+
+        $campCategories = m::mock(ICampCategoryRepository::class);
+        $campCategories->expects('findForCamp')
+            ->with(self::CAMP_ID)
+            ->andReturn([
+                new CampCategory(1, Operation::INCOME(), 'Příjem od dětí', MoneyFactory::fromFloat(100.0)),
+            ]);
+
+        $updater = new CampCategoryUpdater(
+            $eventWebService,
+            $this->createAuthorizator(true),
+            $this->createCampRepository(),
+            $campCategories,
+        );
+
+        $updater->updateCategories(CashbookId::generate(), [1 => 0.0]);
     }
 
     private function createAuthorizator(bool $isAllowed): IAuthorizator

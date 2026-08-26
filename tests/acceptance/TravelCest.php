@@ -169,9 +169,23 @@ class TravelCest extends BaseAcceptanceCest
         $I->see('Nenalezeny žádné záznamy.', '#snippet-grid-grid-table');
         $I->amOnPage('/cestaky/vozidla?grid-grid-filter%5Bsearch%5D='.rawurlencode($licensePlate));
         $I->waitForText($licensePlate, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '#snippet-grid-grid-table');
+        $this->sortVehiclesBy($I, 'metadata.createdAt');
+        $this->sortVehiclesBy($I, 'metadata.authorName');
         $I->click($licensePlate, '#snippet-grid-grid-table');
         $I->waitForText('Údaje o vozidle', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/cestaky/vozidla/detail/');
+    }
+
+    private function sortVehiclesBy(AcceptanceTester $I, string $column): void
+    {
+        $selector = '[id="datagrid-sort-'.$column.'"]';
+
+        $I->clickStable($selector);
+        $I->waitForJS(
+            'return document.querySelector('.json_encode($selector).')?.classList.contains("sort") === true;',
+            AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
+        );
+        $I->waitForText($this->licensePlate, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '#snippet-grid-grid-table');
     }
 
     protected function deleteVehicle(AcceptanceTester $I, string $licensePlate): void
