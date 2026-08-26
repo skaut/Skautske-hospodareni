@@ -12,6 +12,13 @@ table.table a:hover {
   text-align: right;
 }
 
+.datagrid-row-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.25rem;
+}
+
 .w-15 {
   width: 15%;
 }
