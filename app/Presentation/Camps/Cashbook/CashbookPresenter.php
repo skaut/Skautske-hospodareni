@@ -16,6 +16,7 @@ use App\Model\Cashbook\Cashbook\ChitBody;
 use App\Model\Cashbook\Cashbook\PaymentMethod;
 use App\Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use App\Model\Cashbook\MissingCategory;
+use App\Model\Cashbook\NegativeCampCategoryTotal;
 use App\Model\Cashbook\ParticipantType;
 use App\Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use App\Model\Cashbook\ReadModel\Queries\CampParticipantCategoryIdQuery;
@@ -170,6 +171,10 @@ final class CashbookPresenter extends BasePresenter
         $items = [new ChitItem($amount, $categoriesDto[$categoryId], $purpose)];
         try {
             $this->commandBus->handle(new AddChitToCashbook($this->getCashbookId(), $body, $values->isAccount === 'Y' ? PaymentMethod::BANK() : PaymentMethod::CASH(), $items));
+        } catch (NegativeCampCategoryTotal) {
+            $form->addError('Nelze importovat účastnické příjmy, protože výsledný součet kategorie by byl záporný. Upravte nejdříve vratky nebo příjmy účastníků.');
+
+            return;
         } catch (CampBudgetUpdateNotAllowed) {
             $this->flashMessage('Nemáte oprávnění upravovat rozpočtové kategorie tábora ve skautISu. Účastnické příjmy nebyly importovány.', 'danger');
             $this->redirect('default', ['aid' => $this->getCampId()]);
