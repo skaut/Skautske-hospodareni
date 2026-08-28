@@ -60,7 +60,9 @@ class PaymentDetailCest extends PaymentAcceptanceCest
         // disappears silently when the grid loses setOuterFilterRendering(true).
         $I->seeElement('[data-test="datagrid-filter-search"]');
 
-        $I->amOnPage('/platby/skupiny?grid-filter%5Bsearch%5D='.rawurlencode('Neexistujici skupina'));
+        // A single nonsense token: the grid filter splits a phrase into words and
+        // matches any of them, so a two-word term would hit unrelated groups.
+        $I->amOnPage('/platby/skupiny?grid-filter%5Bsearch%5D='.rawurlencode(uniqid('nenajdese', true)));
         $I->waitForText('Nenalezeny žádné záznamy.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->dontSeeElement('[data-test="payment-group-detail-'.$groupId.'"]');
 
