@@ -235,6 +235,14 @@ menu:
                     test: admin-nav-bug-reports
                     icon: fi fi-rr-bug
                     requiresBugReportsAccess: true
+            help:
+                title: Nápovědy
+                action: 'Admin:Help:default'
+                include:
+                    - '^Admin:Help:.*$'
+                    data:
+                        test: admin-nav-help
+                        icon: fi fi-rr-lightbulb-on
             invoiceAccess:
                 title: Fakturace
                 action: 'Admin:InvoiceAccess:default'

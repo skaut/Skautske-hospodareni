@@ -1,14 +1,11 @@
 {block title}Platby{/block}
 
-{block #content}
+{block content}
 <div data-test="payments-page" class="d-grid gap-4">
     <div class="card page-heading">
         <div class="card-body">
             <h1 class="h3 mb-2">Platby</h1>
-            <div class="page-lead">
-                <i class="fi fi-rr-info" aria-hidden="true"></i>
-                <span>Platební skupiny a faktury jsou soustředěné v jedné pracovní sekci. Nastavení bankovních účtů, e-mailů a faktur najdete v samostatném Nastavení.</span>
-            </div>
+            {include pageLead, default: 'Platební skupiny a faktury jsou soustředěné v jedné pracovní sekci. Nastavení bankovních účtů, e-mailů a faktur najdete v samostatném Nastavení.'}
         </div>
     </div>
 
