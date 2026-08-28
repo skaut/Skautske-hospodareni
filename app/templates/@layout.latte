@@ -6,6 +6,13 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" type="image/svg+xml" href="/images/skaut-logo.svg">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#4d8746">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#315b35">
+    {* iOS ignores the manifest icon and name, it reads its own tags. *}
+    <link rel="apple-touch-icon" href="/images/pwa/icon-apple-touch.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Hospodaření">
 
     <script n:syntax="off">
         if ("theme" in localStorage) {
@@ -138,6 +145,29 @@
                 </div>
             {/foreach}
         {/snippet}
+
+        {* Offer to install the application on a phone. Stays hidden until the browser
+           reports the application can be installed, so it never shows inside the
+           installed app. Android installs it on one tap, iOS only through its own
+           share menu, so the button and the instruction never show at once. *}
+        <div id="appInstallBanner" class="alert app-install-banner" role="region" aria-label="Instalace aplikace"
+             data-test="app-install-banner" hidden>
+            <img src="/images/pwa/icon-192.png" class="app-install-banner__icon" alt="" aria-hidden="true" width="48" height="48">
+            <div class="app-install-banner__content">
+                <strong class="app-install-banner__title">Hospodaření jako aplikace</strong>
+                <p class="app-install-banner__text">Nainstalujte si Hospodaření do telefonu a otevírejte ho rovnou z plochy.</p>
+                <p class="app-install-banner__text" id="appInstallManualHint" data-test="app-install-hint" hidden>
+                    Otevřete nabídku Sdílet a zvolte Přidat na plochu.
+                </p>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-primary" id="appInstallButton">
+                    <i class="fi fi-rr-download" aria-hidden="true"></i>
+                    <span>Instalovat</span>
+                </button>
+                <button type="button" class="btn btn-light" id="appInstallDismiss">Teď ne</button>
+            </div>
+        </div>
 
         {if $navigationBreadcrumbs}
             <nav class="app-breadcrumbs" aria-label="Drobečková navigace" data-test="breadcrumbs">
