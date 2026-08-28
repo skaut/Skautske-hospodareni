@@ -19,13 +19,13 @@
                         type="button"
                         data-bs-toggle="dropdown"
                         title="Odeslané e-maily">
-                    <i class="far fa-envelope-open"></i>&nbsp;{count($emails)}
+                    <i class="fi fi-rr-envelope-open" aria-hidden="true"></i>&nbsp;{count($emails)}
                 </button>
                 <div class="dropdown-menu dropdown-menu-end p-0 border-0 text-nowrap">
                     <ul class="list-group" n:inner-foreach="$emails as $email">
                         <li class="list-group-item align-items-center d-flex">
                             <div class="flex-grow-1">
-                                <i class="far fa-envelope-open"></i>
+                                <i class="fi fi-rr-envelope-open" aria-hidden="true"></i>
                                 {var $emailType = $email->getType()->toString()}
                                 {switch $emailType}
                                     {case \App\Model\Payment\EmailType::PAYMENT_INFO}
@@ -48,7 +48,7 @@
         {if $note}
             <div class="dropdown d-inline-flex">
                 <button class="btn btn-sm" type="button" title="{$note}" >
-                    <i class="far fa-comment"></i>
+                    <i class="fi fi-rr-comment" aria-hidden="true"></i>
                 </button>
             </div>
         {/if}
@@ -65,17 +65,17 @@
         }
         <a href="{$control->getPresenter()->link('paymentDialog:open!', $item->getId())}"
            class="btn btn-sm btn-light ajax"
-           title="Upravit platbu"><i class="far fa-edit"></i></a>
+           title="Upravit platbu"><i class="fi fi-rr-edit" aria-hidden="true"></i></a>
         <a href="{$control->getPresenter()->link('splitPaymentDialog:open!', $item->getId())}"
            n:if="$item->getAmount() > 0"
            class="btn btn-sm btn-light ajax"
            data-test="payment-split-action-{$item->getId()}"
-           title="Rozdělit platbu"><i class="fas fa-right-left"></i></a>
+           title="Rozdělit platbu"><i class="fi fi-rr-exchange" aria-hidden="true"></i></a>
         <a href="{$control->getParent()->link(send, $item->getId())}"
            n:class="btn, btn-sm, $canSendEmail ? btn-primary : btn-light, $canSendEmail ? 'ui--sendEmail' : disabled"
            data-test="payment-email-action-{$item->getId()}"
            title="{$emailActionTitle}"><i
-                    class="far fa-envelope-open"></i></a>
+                    class="fi fi-rr-envelope-open" aria-hidden="true"></i></a>
         {if $isReminderSendActive}
         {var $reminderSentToday = $item->hasSentReminderToday()}
         {var $isOverdueForReminder = $item->getDueDate()->format('Y-m-d') < (new \DateTimeImmutable())->format('Y-m-d')}
@@ -90,7 +90,7 @@
            n:attr="onclick => $canSendReminder ? null : 'return false;'"
            data-test="payment-reminder-action-{$item->getId()}"
            title="{$reminderActionTitle}"><i
-                    class="far fa-bell"></i></a>
+                    class="fi fi-rr-bell" aria-hidden="true"></i></a>
         {/if}
         {/if}
         <a
@@ -98,19 +98,19 @@
             href="{$control->getPresenter()->link(':Settings:BankAccounts:detail', ['id' => $bankAccountId, 'paymentId' => $item->getId()])}"
             class="btn btn-sm btn-light"
             title="Ruční párování s bankovní transakcí"
-        ><i class="fas fa-university"></i></a>
+        ><i class="fi fi-rr-bank" aria-hidden="true"></i></a>
         <a href="{$control->getParent()->link(complete, $item->getId())}" class="btn btn-sm btn-success" data-test="payment-complete-action-{$item->getId()}" title="Zaplaceno"><i
-                    class="fas fa-check"></i></a>
+                    class="fi fi-rr-check" aria-hidden="true"></i></a>
     {elseif $item->isClosed()}
         <a href="{$control->getPresenter()->link('paymentNoteDialog:open!', $item->getId())}"
            class="btn btn-sm btn-light ajax"
-           title="Upravit poznámku"><i class="fa fa-comment"></i></a>
+           title="Upravit poznámku"><i class="fi fi-rr-comment" aria-hidden="true"></i></a>
     {var $transaction = $item->getTransaction()}
             <div class="dropdown d-inline-block">
                 <button class="btn btn-sm btn-light" type="button"
                         data-bs-toggle="dropdown">
                 {if $transaction !== NULL}
-                    <span class="fas fa-university"></span>
+                    <span class="fi fi-rr-bank"></span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end p-3">
                     <li><strong>ID:</strong> {$transaction->getId()}</li>
@@ -120,7 +120,7 @@
                     <li><strong>Poznámka:</strong> {$transaction->getNote()}</li>
                 </ul>
                 {else}
-                    <span class="far fa-user"></span>
+                    <span class="fi fi-rr-user"></span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end p-3">
                     <li><strong>Uzavřel:</strong> {$item->getClosedByUsername()}</li>
@@ -131,8 +131,8 @@
 
     <a href="{$control->getParent()->link(cancel, $item->getId())}" n:if="$isEditable && ! $item->getState()->equalsValue('canceled')"
        class="btn btn-sm btn-danger"
-       onclick="return confirm('Opravdu chcete zrušit platbu?');"
-       title="Zrušit"><i class="fas fa-times"></i></a>
+       data-confirm="Opravdu chcete zrušit platbu?"
+       title="Zrušit"><i class="fi fi-rr-cross-small" aria-hidden="true"></i></a>
 {/block}
 
 {block action-col-classes}w-15{/block}
