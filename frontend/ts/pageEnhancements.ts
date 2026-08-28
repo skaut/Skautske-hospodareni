@@ -1,3 +1,5 @@
+import {initializeHelpSectionEditor} from './helpSectionEditor';
+
 const initializedAttribute = 'data-ui-initialized';
 let pageHelpId = 0;
 const flashViewportPadding = 16;
@@ -281,4 +283,5 @@ export function initializePageEnhancements(root: ParentNode = document): void {
     initializePaymentForms(root);
     initializeCustomerTypeFields(root);
     initializeBugReportDiagnostics(root);
+    initializeHelpSectionEditor(root);
 }
