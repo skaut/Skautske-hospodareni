@@ -97,6 +97,11 @@ class Vehicle
         $this->archived = true;
     }
 
+    public function restore(): void
+    {
+        $this->archived = false;
+    }
+
     public function getType(): string
     {
         return $this->type;
