@@ -1,7 +1,7 @@
 <!-- Button trigger modal -->
 <button class="btn btn-sm btn-light d-inline" type="button" id="chitScanList" data-bs-toggle="modal" aria-haspopup="true" aria-expanded="false" data-bs-target="#chitScanModal-{$chitId}">
-    <i class="far fa-folder-open"></i>
-    <span n:if="count($files) > 0" class="badge bg-light text-dark">{count($files)}</span>
+    <i class="fi fi-rr-folder-open" aria-hidden="true"></i>
+    <span n:if="count($files) > 0" class="badge text-bg-light">{count($files)}</span>
 </button>
 
 
@@ -21,11 +21,11 @@
                     n:if="$isEditable"
                             title="Smazat soubor"
                             data-bs-toggle="tooltip"
-                            onclick="return confirm('Opravdu chcete smazat sken?');"
-                            class="text-danger float-end ms-2"><i class="far fa-trash-alt"></i></a>
+                            data-confirm="Opravdu chcete smazat sken?"
+                            class="text-danger float-end ms-2"><i class="fi fi-rr-trash" aria-hidden="true"></i></a>
                     <a href="{plink :Unit:CashbookExport:downloadScan $cashbookId, $chitId, $file->getFilePath()->getPath()}"
                        class="float-end" title="Stáhnout soubor" data-bs-toggle="tooltip">
-                        <i class="fas fa-arrow-down"></i>
+                        <i class="fi fi-rr-arrow-down" aria-hidden="true"></i>
                     </a>
                 </div>
                 {control uploadForm}
