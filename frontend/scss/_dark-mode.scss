@@ -145,4 +145,18 @@
   .site-footer__text {
     color: #9fb2a7;
   }
+
+  // Cashbook table. Only the tokens declared on .cashbook-table are redefined,
+  // so the light palette above stays the single source for the layout rules.
+  .cashbook-table {
+    --cashbook-header-bg: #26302c;
+    --cashbook-header-border: #3d4d46;
+    --cashbook-header-color: #d6e1db;
+    --cashbook-btn-bg: #2f3b36;
+    --cashbook-btn-color: #dce6e0;
+    --cashbook-btn-border: #465650;
+    --cashbook-btn-hover-bg: #3a4842;
+    --cashbook-btn-hover-border: #58685f;
+    --cashbook-btn-active-bg: #45554e;
+  }
 }
