@@ -1,15 +1,12 @@
-{block #content}
+{block content}
 <div data-test="travel-contract-detail-page">
     <div class="card page-heading">
         <div class="card-body">
             <h1 class="h3 mb-2" n:inner-block="title">Smlouva o proplácení cestovních náhrad</h1>
-            <div class="page-lead mb-3">
-                <i class="fi fi-rr-info" aria-hidden="true"></i>
-                <span>Detail smlouvy, údaje o řidiči a přehled přidružených cestovních příkazů.</span>
-            </div>
+            {include pageLead, default: 'Detail smlouvy, údaje o řidiči a přehled přidružených cestovních příkazů.', class: 'mb-3'}
             <div class="d-flex flex-wrap gap-2 align-items-center">
                 <a data-test="contract-delete" n:if="empty($commands)" n:href="delete! $contract->id" class="btn btn-sm btn-outline-danger"
-                        onclick='return confirm("Opravdu chcete smazat smlouvu?");'>
+                        data-confirm="Opravdu chcete smazat smlouvu?">
                     <i class="fi fi-rr-trash" aria-hidden="true"></i> Smazat
                 </a>
                 {var $justDriver = $contract->unitRepresentative === '' || $contract->since === NULL || $contract->until === NULL}
@@ -20,7 +17,7 @@
         </div>
     </div>
 
-    <div n:if="!empty($commands)" class="alert alert-info d-none d-md-block">
+    <div n:if="!empty($commands)" class="alert alert-info">
         Smazat smlouvu lze jen pokud nemá přidružené cestovní příkazy.
     </div>
 
@@ -75,6 +72,7 @@
                                         {if $c->vehicleId !== NULL}
                                             {var $vehicle = $vehicles[$c->vehicleId] ?? NULL}
                                             <a n:if="$vehicle !== NULL" href="{plink :Travel:Vehicle:detail $c->vehicleId}">{$vehicle->label}</a>
+                                            <span n:if="$vehicle !== NULL && $vehicle->archived" class="badge text-bg-secondary">Archiv</span>
                                             <span n:if="$vehicle === NULL">-</span>
                                         {/if}
                                     </td>
