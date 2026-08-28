@@ -1,16 +1,13 @@
-{block #title}{$event->getDisplayName()} - základní informace{/block}
+{block title}{$event->getDisplayName()} - základní informace{/block}
 
 {block #subMenu}{include ../header.latte}{/block}
 
-{block #content}
+{block content}
 <div data-test="education-detail-page">
     <div class="card page-heading">
         <div class="card-body">
             <h1 class="h3 mb-2">{$event->getDisplayName()}</h1>
-            <div class="page-lead mb-3">
-                <i class="fi fi-rr-info" aria-hidden="true"></i>
-                <span>Základní údaje vzdělávací akce, stav, termín a návazné finanční informace.</span>
-            </div>
+            {include pageLead, default: 'Základní údaje vzdělávací akce, stav, termín a návazné finanční informace.', class: 'mb-3'}
             <div class="d-flex flex-wrap gap-2 align-items-center text-body-secondary small mb-3">
                 <span data-bs-toggle="tooltip">
                     {$event->getState()|educationStateLabel|noescape}
