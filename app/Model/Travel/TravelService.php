@@ -67,18 +67,9 @@ class TravelService
         return $pairs;
     }
 
-    /** @return DTO\Vehicle[] */
-    public function getAllVehicles(int $unitId): array
+    public function getVehiclesByFilter(int $unitId, bool $archived = false): QueryBuilder
     {
-        return array_map(
-            [DTO\VehicleFactory::class, 'create'],
-            $this->vehicles->findByUnit($unitId),
-        );
-    }
-
-    public function getVehiclesByFilter(int $unitId): QueryBuilder
-    {
-        return $this->vehicles->findByFilter($unitId);
+        return $this->vehicles->findByFilter($unitId, $archived);
     }
 
     /** @throws VehicleLinkedRecord|VehicleNotFound */
@@ -94,6 +85,8 @@ class TravelService
 
     /**
      * Archives specified vehicle.
+     *
+     * @throws VehicleNotFound
      */
     public function archiveVehicle(int $vehicleId): void
     {
@@ -104,6 +97,23 @@ class TravelService
         }
 
         $vehicle->archive();
+        $this->vehicles->save($vehicle);
+    }
+
+    /**
+     * Returns archived vehicle back among the active ones.
+     *
+     * @throws VehicleNotFound
+     */
+    public function restoreVehicle(int $vehicleId): void
+    {
+        $vehicle = $this->vehicles->find($vehicleId);
+
+        if (! $vehicle->isArchived()) {
+            return;
+        }
+
+        $vehicle->restore();
         $this->vehicles->save($vehicle);
     }
 
@@ -269,9 +279,7 @@ class TravelService
         int $ownerId,
         string $unit,
     ): void {
-        $vehicle = $vehicleId !== null
-            ? $this->vehicles->find($vehicleId)
-            : null;
+        $vehicle = $this->findVehicleForCommand($vehicleId);
 
         $command = new Command(
             $unitId,
@@ -308,9 +316,9 @@ class TravelService
     ): void {
         $command = $this->commands->find($id);
 
-        $vehicle = $vehicleId !== null
-            ? $this->vehicles->find($vehicleId)
-            : null;
+        // An archived vehicle stays on the commands that already use it, so editing
+        // such a command must not fail - but it can't be swapped for another archived one.
+        $vehicle = $this->findVehicleForCommand($vehicleId, $command->getVehicleId());
 
         $command->update(
             $vehicle,
@@ -326,6 +334,27 @@ class TravelService
         );
 
         $this->commands->save($command);
+    }
+
+    /**
+     * Archived vehicles are not offered for new records, so they must not be
+     * accepted from a forged request either.
+     *
+     * @throws VehicleNotFound|VehicleIsArchived
+     */
+    private function findVehicleForCommand(?int $vehicleId, ?int $currentVehicleId = null): ?Vehicle
+    {
+        if ($vehicleId === null) {
+            return null;
+        }
+
+        $vehicle = $this->vehicles->find($vehicleId);
+
+        if ($vehicle->isArchived() && $vehicleId !== $currentVehicleId) {
+            throw new VehicleIsArchived();
+        }
+
+        return $vehicle;
     }
 
     /**
