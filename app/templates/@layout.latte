@@ -162,12 +162,12 @@
            the page has one, otherwise the text the template ships with - so a page
            works before anyone writes help for it and dynamic wording stays possible.
         *}
-        {block pageLead}
+        {define pageLead, $default, $class = null}
             <div n:class="page-lead, $class">
                 <i class="fi fi-rr-info" aria-hidden="true"></i>
                 <span>{$pageHelp?->getLead() ?? $default}</span>
             </div>
-        {/block}
+        {/define}
 
         {var $pageHelp = $pageHelp ?? null}
         {if $pageHelp !== null}
