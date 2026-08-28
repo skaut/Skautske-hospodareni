@@ -20,15 +20,15 @@
 {/block}
 
 {block icon-sort-up}
-    <i class="fas fa-sort-up"></i>
+    <i class="fi fi-rr-caret-up" aria-hidden="true"></i>
 {/block}
 
 {block icon-sort}
-    <i class="fas fa-sort"></i>
+    <i class="fi fi-rr-sort" aria-hidden="true"></i>
 {/block}
 
 {block icon-sort-down}
-    <i class="fas fa-sort-down"></i>
+    <i class="fi fi-rr-caret-down" aria-hidden="true"></i>
 {/block}
 
 {block tfoot}
@@ -38,7 +38,7 @@
     <div class="col-auto mb-2">
         <div class="input-group">
             <label n:name="filter-{$name}" class="input-group-text">
-                <i n:ifset="$icon" class="{$icon} me-1"></i>
+                <i n:ifset="$icon" class="{$icon} me-1" aria-hidden="true"></i>
                 {$label}
             </label>
             <select n:name="filter-{$name}" class="form-control form-select"/>
@@ -49,8 +49,11 @@
 {block filter-type-search}
     <div class="col-auto mb-2">
         <div class="input-group">
+            {* The icon is decorative, so the label needs its own text for screen readers.
+               Including templates pass `searchLabel` to name what is being searched. *}
             <label n:name="filter-search" class="input-group-text">
-                <i class="fas fa-search"></i>
+                <i class="fi fi-rr-search" aria-hidden="true"></i>
+                <span class="visually-hidden">{$searchLabel ?? 'Hledat'}</span>
             </label>
             <input n:name="filter-search" class="form-control" data-test="datagrid-filter-search">
         </div>
@@ -69,7 +72,7 @@
             {/if}
         {/foreach}
         <span class="handle-sort btn btn-sm btn-light" n:if="$control->isSortable()">
-												<i n:block = "icon-arrows-v" class="{$iconPrefix}arrows-v"></i>
+												<i n:block = "icon-arrows-v" class="{$iconPrefix}arrows-v" aria-hidden="true"></i>
 											</span>
         {if $inlineEdit && $row->hasInlineEdit()}
             {$inlineEdit->renderButton($row)|noescape}

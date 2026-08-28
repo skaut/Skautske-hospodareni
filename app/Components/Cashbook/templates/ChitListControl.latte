@@ -6,7 +6,7 @@
             <div class="flex-shrink-0">
                 <h4 id="chitList-payment" class="mb-0 text-nowrap">{$paymentMethod->getName()}</h4>
             </div>
-            <div class="export-panel text-end d-none d-md-block">
+            <div class="export-panel text-md-end">
                 {include 'ChitListControl.topPanel.latte'}
             </div>
         </div>
@@ -17,19 +17,19 @@
                 <thead>
                 <tr>
                     <th class="cashbook-table__actions">
-                        <form n:name="formMass" class="formMass cashbook-table__bulk-actions">
+                        <form n:name="formMass" class="formMass cashbook-table__bulk-actions inline-errors">
                             <input type="checkbox" name="chits-all"
                                    class="form-check-input cashbook-table__checkbox" data-dependent-checkboxes="#{$control->getUniqueId()} .dependent-checkbox"/>
                             <button n:if="$isCash"
                                     n:name="massPrintSend" title="Vytisknout vybrané"
                                     class="btn btn-outline-secondary btn-sm cashbook-table__icon-button"
                                     type="submit">
-                                <i class="fas fa-print"></i>
+                                <i class="fi fi-rr-print" aria-hidden="true"></i>
                             </button>
                             <button n:if="$canMoveChits" n:name="massMoveSend" title="Přesunout vybrané" role="button" data-bs-toggle="modal"
-                               class="btn btn-outline-secondary btn-sm cashbook-table__icon-button"><i class="fas fa-step-forward"></i></button>
+                               class="btn btn-outline-secondary btn-sm cashbook-table__icon-button"><i class="fi fi-rr-forward-fast" aria-hidden="true"></i></button>
                             <button n:if="$canMassExport" name="massExportSend" title="Exportovat vybrané"
-                                    class="btn btn-outline-secondary btn-sm cashbook-table__icon-button" type="submit"><i class="fas fa-download"></i></button>
+                                    class="btn btn-outline-secondary btn-sm cashbook-table__icon-button" type="submit"><i class="fi fi-rr-download" aria-hidden="true"></i></button>
                         </form>
                     </th>
                     <th>Ze dne</th>
@@ -58,22 +58,22 @@
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         class="btn btn-sm btn-light cashbook-table__icon-button"><i
-                                            class="fas fa-print"></i></a>
+                                            class="fi fi-rr-print" aria-hidden="true"></i></a>
                                 {control "chitScan-$chit->id"}
                                 <a n:if="$isEditable && ! $chit->locked" n:href="edit! $chit->id" data-bs-toggle="chitEdit"
-                                        class="ajax btn btn-sm btn-primary ui--editChit"><i class="far fa-edit"></i></a>
+                                        class="ajax btn btn-sm btn-primary ui--editChit"><i class="fi fi-rr-edit" aria-hidden="true"></i></a>
 
                                 <a n:if="$isEditable && ! $chit->locked" n:href="remove! $chit->id"
-                                        onclick="return confirm('Opravdu chcete smazat paragon?')"
-                                        class="btn btn-sm btn-danger ui--removeChit"><i class="far fa-trash-alt"></i></a>
+                                        data-confirm="Opravdu chcete smazat paragon?"
+                                        class="btn btn-sm btn-danger ui--removeChit"><i class="fi fi-rr-trash" aria-hidden="true"></i></a>
 
                                 <a n:if="$isEditable && $chit->locked" n:href="showLocked" title="Paragon je uzamčen."
-                                        class="btn btn-warning btn-sm"><i class="fas fa-lock"></i></a>
+                                        class="btn btn-warning btn-sm"><i class="fi fi-rr-lock" aria-hidden="true"></i></a>
 
                                 <a n:if="$isEditable && count(array_intersect($validInverseCashbookTypes, $chit->inverseCashbookTypes))"
-                                        class="ajax btn btn-sm btn-light d-none d-md-inline" n:href="invertChitDialog:open! $chit->id"
+                                        class="ajax btn btn-sm btn-light" n:href="invertChitDialog:open! $chit->id"
                                         title="Vytvořit protidoklad">
-                                    <i class="fas fa-exchange-alt"></i>
+                                    <i class="fi fi-rr-exchange" aria-hidden="true"></i>
                                 </a>
                             </div>
                         </td>

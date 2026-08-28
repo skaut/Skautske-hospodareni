@@ -59,7 +59,7 @@ final class BugReportCest extends BaseAcceptanceCest
         $I->amOnPage('/admin/hlaseni-chyb');
         $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->see($prefix.' 24', '[data-test="admin-bug-reports-grid"]');
-        $I->waitForElementVisible('[data-test="admin-bug-report-github-grid"] svg[data-icon="github"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->waitForElementVisible('[data-test="admin-bug-report-github-grid"] i.fi-brands-github', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-test="admin-bug-report-github-grid"][href="https://github.com/skaut/Skautske-hospodareni/issues/987"][target="_blank"]');
 
         $paginatorLayout = $I->executeJS(<<<'JS'
@@ -117,7 +117,7 @@ final class BugReportCest extends BaseAcceptanceCest
         $I->waitForElementVisible('[data-test="bug-report-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->see('výhradně k hlášení technických chyb');
         $I->see('Není to helpdesk');
-        $I->seeElement('[data-test="bug-report-help"]');
+        $I->seeElement('[data-test="help-sidebar"]');
         $I->seeElement('[data-test="bug-report-form"] textarea[name="description"]');
         $I->seeElement('[data-test="bug-report-form"] input[name="url"]');
         $I->dontSeeElement('[data-test="bug-report-form"] input[name="url"][required]');
@@ -177,8 +177,8 @@ final class BugReportCest extends BaseAcceptanceCest
         $I->seeElement('[data-test="admin-bug-reports-grid"]');
         $I->see($description);
         $I->seeElement('[data-test="admin-nav-bug-reports"].btn-primary');
-        $I->seeElement('[data-test="admin-bug-report-detail-grid"] svg[data-icon="eye"]');
-        $I->seeElement('[data-test="admin-bug-report-resolve-grid"] svg[data-icon="circle-check"]');
+        $I->seeElement('[data-test="admin-bug-report-detail-grid"] .fi-rr-eye');
+        $I->seeElement('[data-test="admin-bug-report-resolve-grid"] .fi-rr-check-circle');
 
         $I->amOnPage('/admin/hlaseni-chyb/'.$reportId);
         $I->waitForElementVisible('[data-test="admin-bug-report-detail"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);

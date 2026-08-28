@@ -103,7 +103,7 @@ menu:
                     - '^Payments:(GroupList|Group|Payment|Participants|People|Repayment|Journal|CampAddParticipants|CampCreateGroup|CampSelectForGroup|EventAddParticipants|EventCreateGroup|EventSelectForGroup|EducationAddParticipants|EducationCreateGroup|EducationSelectForGroup|RegistrationAddMembers|RegistrationCreateGroup|RegistrationJournal):.*$'
                 data:
                     test: payment-nav-groups
-                    icon: far fa-list-alt
+                    icon: fi fi-rr-list-check
                     preserveParameters:
                         jednotka: unitId
                         rok: year
@@ -114,7 +114,7 @@ menu:
                     - '^Payments:(InvoiceList|InvoiceSequence|InvoiceSequenceList):.*$'
                 data:
                     test: payment-nav-invoices
-                    icon: fas fa-file-invoice-dollar
+                    icon: fi fi-rr-file-invoice-dollar
                     requiresInvoiceAccess: true
                     preserveParameters:
                         jednotka: unitId
@@ -261,7 +261,7 @@ menu:
                 data:
                     test: travel-subnav-commands
                     hub: true
-                    icon: fas fa-route
+                    icon: fi fi-rr-road
             vehicles:
                 title: Vozidla
                 action: 'Travel:VehicleList:default'
@@ -269,7 +269,7 @@ menu:
                     - '^Travel:(VehicleList|Vehicle):.*$'
                 data:
                     test: travel-subnav-vehicles
-                    icon: fas fa-car
+                    icon: fi fi-rr-car-side
             contracts:
                 title: Smlouvy
                 action: 'Travel:Contract:default'
@@ -277,4 +277,4 @@ menu:
                     - '^Travel:Contract:.*$'
                 data:
                     test: travel-subnav-contracts
-                    icon: fas fa-file-contract
+                    icon: fi fi-rr-file-signature
