@@ -1,12 +1,9 @@
-{block #content}
+{block content}
 <div data-test="invoice-sequence-list">
     <div class="card page-heading">
         <div class="card-body">
             <h1 n:inner-block="title" class="h3 mb-2">Fakturační řady</h1>
-            <div class="page-lead mb-3">
-                <i class="fi fi-rr-info" aria-hidden="true"></i>
-                <span>Přehled všech řad, jejich počtu vystavených faktur a přímý vstup do nastavení nebo práce s konkrétní řadou.</span>
-            </div>
+            {include pageLead, default: 'Přehled všech řad, jejich počtu vystavených faktur a přímý vstup do nastavení nebo práce s konkrétní řadou.', class: 'mb-3'}
             <div class="d-flex flex-wrap gap-2 align-items-center">
                 <a n:href=":Payments:InvoiceList:default, unitId => $unitId" class="btn btn-outline-secondary btn-sm" data-test="invoice-sequence-back">
                     <i class="fi fi-rr-arrow-left" aria-hidden="true"></i>

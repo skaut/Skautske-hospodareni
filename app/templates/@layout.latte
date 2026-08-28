@@ -155,7 +155,29 @@
             </nav>
         {/if}
 
-        {include #content}
+        {* The help panel is rendered here for every page that has help in the database,
+           so its placement, look and controls never differ between pages. *}
+        {*
+           The lead strip under a page title. Uses the wording set in Admin:Help when
+           the page has one, otherwise the text the template ships with - so a page
+           works before anyone writes help for it and dynamic wording stays possible.
+        *}
+        {define pageLead, $default, $class = null}
+            <div n:class="page-lead, $class">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>{$pageHelp?->getLead() ?? $default}</span>
+            </div>
+        {/define}
+
+        {var $pageHelp = $pageHelp ?? null}
+        {if $pageHelp !== null}
+            <div class="design-help-layout" data-help-layout>
+                <div class="design-help-main">{include #content}</div>
+                {include 'helpSidebar.latte', pageHelp: $pageHelp}
+            </div>
+        {else}
+            {include #content}
+        {/if}
     </main>
 
     <footer class="site-footer" id="footer" data-test="site-footer">

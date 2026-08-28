@@ -1,0 +1,107 @@
+{block content}
+<div data-test="admin-help-form-page">
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 n:inner-block="title" class="h3 mb-2">Nápověda: {$pageKey}</h1>
+            {include pageLead, default: 'Horní proužek je jedna věta u nadpisu stránky. Každý blok je jeden odstavec v pravém panelu: krátký tučný nadpis, text a nepovinné odrážky.', class: 'mb-3'}
+            <div class="d-flex flex-wrap gap-2">
+                <a n:href="default" class="btn btn-sm btn-light">
+                    <i class="fi fi-rr-arrow-left" aria-hidden="true"></i> Zpět na seznam
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <form n:name="form" class="inline-errors" data-test="admin-help-form">
+                        <div class="mb-4 pb-3 border-bottom">
+                            {label lead /}
+                            {input lead, class => 'form-control', data-test => 'help-lead'}
+                            <div class="form-text">Krátká věta v šedém proužku u nadpisu stránky. Prázdné pole
+                                znamená, že se použije text, který má stránka zabudovaný.</div>
+                        </div>
+
+                        {* Every block is always posted; showing and hiding is only visual,
+                           an empty block is simply not saved. *}
+                        <div data-help-sections>
+                            <fieldset n:formContainer="sections"
+                                      n:foreach="range(0, $sectionSlots - 1) as $index"
+                                      n:inner-formContainer="$index"
+                                      class="mb-4"
+                                      aria-labelledby="help-section-label-{$index}"
+                                      data-help-section
+                                      data-test="help-section-{$index}">
+                                {* A <legend> is not a flex item, so the heading is a plain
+                                   element and the fieldset is labelled through aria. *}
+                                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                                    <span class="h6 text-body-secondary mb-0" id="help-section-label-{$index}">
+                                        Blok <span data-help-section-number>{$index + 1}</span>
+                                    </span>
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-danger"
+                                            data-help-section-remove
+                                            data-test="help-section-remove-{$index}">
+                                        <i class="fi fi-rr-trash" aria-hidden="true"></i> Smazat blok
+                                    </button>
+                                </div>
+                                <div class="mb-3">
+                                    {label heading /}
+                                    {input heading, class => 'form-control'}
+                                </div>
+                                <div class="mb-3">
+                                    {label text /}
+                                    {input text, class => 'form-control'}
+                                </div>
+                                <div class="mb-3">
+                                    {label items /}
+                                    {input items, class => 'form-control'}
+                                </div>
+                            </fieldset>
+
+                            <button type="button"
+                                    class="btn btn-outline-secondary mb-4"
+                                    data-help-section-add
+                                    data-test="help-section-add">
+                                <i class="fi fi-rr-plus-small" aria-hidden="true"></i> Přidat blok
+                            </button>
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-2">
+                            {input send}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <strong>Jak nápověda vypadá</strong>
+                    <p class="text-body-secondary small mt-2 mb-0">
+                        Panel se zobrazí vpravo vedle obsahu stránky, na mobilu pod ním. Uživatel si ho může
+                        sbalit a jeho volba se pamatuje. Odrážky jsou nepovinné, hodí se pro výčty jako
+                        seznam proměnných v e-mailu. Bloků je nejvýš pět.
+                    </p>
+                    <hr>
+                    <strong>Odebrání nápovědy</strong>
+                    <p class="text-body-secondary small mt-2 mb-0">
+                        Smažte všechny bloky i horní proužek a uložte. Panel se na stránce přestane
+                        zobrazovat a proužek se vrátí k textu zabudovanému ve stránce.
+                    </p>
+                    {if $help !== null}
+                        <hr>
+                        <strong>Poslední úprava</strong>
+                        <p class="text-body-secondary small mt-2 mb-0">
+                            {$help->getUpdatedAt()|date:'j. n. Y H:i'}
+                            {if $help->getUpdatedByName() !== null}· {$help->getUpdatedByName()}{/if}
+                        </p>
+                    {/if}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
