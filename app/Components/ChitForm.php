@@ -362,7 +362,7 @@ final class ChitForm extends BaseControl
         } catch (CampBudgetUpdateNotAllowed) {
             $this->flashMessage('Nemáte oprávnění upravovat rozpočtové kategorie tábora ve skautISu. Doklad nebyl uložen.', 'danger');
         } catch (ChitLocked) {
-            $this->flashMessage('Nelze upravit zamčený paragon', 'error');
+            $this->flashMessage('Nelze upravit zamčený paragon', 'danger');
         } catch (NegativeCampCategoryTotal|AmountMustBeGreaterThanZero) {
             // Camp cashbooks throw NegativeCampCategoryTotal, education cashbooks still
             // translate the Skautis validation error into AmountMustBeGreaterThanZero.

@@ -1,12 +1,9 @@
-{block #content}
+{block content}
 <div data-test="travel-contracts-page">
     <div class="card page-heading">
         <div class="card-body">
             <h1 class="h3 mb-2" n:inner-block="title">Smlouvy o proplácení cestovních náhrad</h1>
-            <div class="page-lead mb-3">
-                <i class="fi fi-rr-info" aria-hidden="true"></i>
-                <span>Přehled uzavřených smluv o cestovních náhradách, tisk a správa smluvních dokumentů.</span>
-            </div>
+            {include pageLead, default: 'Přehled uzavřených smluv o cestovních náhradách, tisk a správa smluvních dokumentů.', class: 'mb-3'}
             <div n:if="$canCreate" class="d-flex flex-wrap gap-2">
                 <a n:href="new" class="btn btn-sm btn-primary"><i class="fi fi-rr-plus-small" aria-hidden="true"></i> Založit smlouvu</a>
             </div>
@@ -34,7 +31,7 @@
                         <td>{$c->since?->toNative()|date:"j. n. Y"}</td>
                         <td>{$c->until?->toNative()|date:"j. n. Y"}</td>
                         <td class="text-end">
-                            <a n:href="print $c->id" class="btn btn-sm btn-outline-secondary d-none d-md-inline-block" title="Vytisknout"><i class="fi fi-rr-print" aria-hidden="true"></i></a>
+                            <a n:href="print $c->id" class="btn btn-sm btn-outline-secondary" title="Vytisknout"><i class="fi fi-rr-print" aria-hidden="true"></i></a>
                             <a n:href="detail $c->id" class="btn btn-sm btn-light" title="Detail" data-test="{$c->unitRepresentative}"><i class="fi fi-rr-search" aria-hidden="true"></i></a>
                         </td>
                     </tr>

@@ -1,7 +1,8 @@
 {block content}
 {include '../Accessory/groupCreatePage.latte',
     pageTest: 'payment-registration-create-group-page',
-    heading: 'Nová skupina plateb pro registraci <span class="text-body-secondary fw-normal">' . $registration->getUnitName() . '</span>',
+    heading: 'Nová skupina plateb pro registraci',
+    subject: $registration->getUnitName(),
     description: 'Vyplňte název, bankovní účet a případné e-mailové šablony pro novou platební skupinu registrace.',
     backLink: $presenter->link(':Payments:GroupList:default'),
     backLabel: 'Zpět na skupiny',

@@ -35,7 +35,7 @@
             </div>
             <div class="dropdown-divider"></div>
             {/foreach}
-            <form n:name="uploadForm" class="px-4 py-1 text-center ajax" n:if="$isEditable">
+            <form n:name="uploadForm" class="px-4 py-1 text-center ajax inline-errors" n:if="$isEditable">
                 <input n:name="scan" class="d-none" id="scan-upload-control">
                 <label for="scan-upload-control" class="btn btn-light">
                     <i class="fi fi-rr-cloud-upload-alt" aria-hidden="true"></i>

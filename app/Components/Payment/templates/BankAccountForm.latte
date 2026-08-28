@@ -1,5 +1,5 @@
 {snippet form}
-<form n:name="form" class="form-horizontal">
+<form n:name="form" class="form-horizontal inline-errors">
     {if !empty($form->errors)}
         <div n:foreach="$form->errors as $error" class="alert alert-danger">{$error}</div>
     {/if}

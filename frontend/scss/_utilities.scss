@@ -23,11 +23,6 @@ table.table a:hover {
   width: 15%;
 }
 
-.visually-disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
-}
-
 // Auto-fit card grid — used by invoices and payment groups dashboard
 .invoice-sequence-grid {
   display: grid;
@@ -130,5 +125,48 @@ table.table a:hover {
       width: auto;
       min-width: 0;
     }
+  }
+}
+
+// Touch targets. The UI guideline requires a 44 x 44 px target for every
+// interactive control that is not embedded in running text. Applied below the
+// `md` breakpoint only, so desktop keeps its information density.
+@media (max-width: 767.98px) {
+  .btn,
+  .navbar-toggler,
+  .btn-close,
+  .site-footer__link,
+  .dark-mode-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+  }
+
+  // Bootstrap check inputs are replaced elements, so the hit area can only grow
+  // with the box itself. The tick scales with it because of `background-size`.
+  .form-check-input:not(.form-switch .form-check-input) {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  // Keep the dense cashbook toolbar from wrapping into a tall stack.
+  .cashbook-table__bulk-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  // Links that are not buttons but still are the whole control: grid column sorting,
+  // the row name that opens a record, and breadcrumb steps. They render as plain
+  // inline text, so they need the target spelled out.
+  .datagrid th a,
+  .datagrid td a:not(.btn),
+  .app-breadcrumbs a {
+    display: inline-flex;
+    align-items: center;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
   }
 }
