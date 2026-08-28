@@ -13,12 +13,13 @@
     </span>
 
     <div class="dropdown d-inline-flex">
-          <button class="btn btn-link btn-sm p-0 ms-1" type="button" data-bs-toggle="dropdown">
-              <i class="far fa-edit"></i>
+          <button class="btn btn-link btn-sm p-0 ms-1" type="button" data-bs-toggle="dropdown"
+                  title="Upravit jednotky skupiny" aria-label="Upravit jednotky skupiny">
+              <i class="fi fi-rr-edit" aria-hidden="true"></i>
           </button>
           <div class="dropdown-menu dropdown-menu-end px-4 py-3 text-nowrap">
               {snippet form}
-              <form n:name="form">
+              <form n:name="form" class="inline-errors">
                   <h5>Jednotky s přístupem</h5>
                   <div class="form-check" n:foreach="$form['unitIds']->items as $key => $label">
                       <label n:name="unitIds:$key" class="form-check-label">
@@ -28,7 +29,7 @@
                   </div>
                   <div class="dropdown-divider"></div>
                   <button class="btn btn-sm btn-primary ajax float-end" n:name="save">
-                      <i class="fas fa-check"></i> Uložit
+                      <i class="fi fi-rr-check" aria-hidden="true"></i> Uložit
                   </button>
               </form>
               {/snippet}

@@ -3,7 +3,6 @@ import 'moment/locale/cs';
 import 'bootstrap/js/dist/collapse';
 import Dropdown from 'bootstrap/js/dist/dropdown';
 import Tooltip from 'bootstrap/js/dist/tooltip';
-import {dom} from './icons';
 import {DarkModeToggle} from './DarkModeToggle';
 
 import {LogoutTimer} from './LogoutTimer';
@@ -33,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeAjax();
     new DarkModeToggle('darkModeToggle');
     new LogoutTimer('timer', 'timer-minutes');
-    dom.watch();
     initializeDropdowns();
     initializeTooltips();
     initializeMassEmailSelection();

@@ -44,7 +44,7 @@
                 <a class="navbar-brand" n:href=":Dashboard:default">
                     {if $showEnvironmentBadge}
                         <span class="navbar-test-badge" title="{$environmentLabel}" data-test="test-server-badge">
-                            <i class="fas fa-flask" aria-hidden="true"></i>
+                            <i class="fi fi-rr-flask" aria-hidden="true"></i>
                             <span class="navbar-environment-label">{$environmentLabel}</span>
                         </span>
                     {else}
@@ -56,7 +56,7 @@
                 <a class="navbar-brand" n:href=":Default:">
                     {if $showEnvironmentBadge}
                         <span class="navbar-test-badge" title="{$environmentLabel}" data-test="test-server-badge">
-                            <i class="fas fa-flask" aria-hidden="true"></i>
+                            <i class="fi fi-rr-flask" aria-hidden="true"></i>
                             <span class="navbar-environment-label">{$environmentLabel}</span>
                         </span>
                     {else}
@@ -87,7 +87,7 @@
                     {control darkModeToggle}
                     {if $user->isLoggedIn()}
                         <span id="timer" class="w-auto small p-1 rounded text-nowrap">
-                            <i class="far fa-clock"></i>
+                            <i class="fi fi-rr-clock" aria-hidden="true"></i>
                             <span id="timer-minutes"></span>
                         </span>
                     {/if}
@@ -198,7 +198,7 @@
                 <a n:href=":Default:reinforcement" class="site-footer__link">Posily</a>
                 <a href="https://github.com/skaut/Skautske-hospodareni/graphs/contributors" class="site-footer__link">Autoři</a>
                 <a href="https://github.com/skaut/Skautske-hospodareni" class="site-footer__link">
-                    <i class="fab fa-github" aria-hidden="true"></i>
+                    <i class="fi fi-brands-github" aria-hidden="true"></i>
                     <span>Pošli PR</span>
                 </a>
                 <a href="https://headwayapp.co/skautske-hospodareni-changelog" target="_blank" rel="noopener noreferrer" class="site-footer__link">
