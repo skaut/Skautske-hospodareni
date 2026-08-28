@@ -112,7 +112,7 @@
     <main role="main" class="container-xl shell-main page-body">
         {snippet flash}
             {foreach $flashes as $flash}
-                {var $flashType = $flash->type}
+                {var $flashType = $flash->type === 'error' ? 'danger' : $flash->type}
                 <div class="alert alert-{$flashType} flash-message alert-dismissible fade show" role="alert">
                     <span class="flash-message__icon" aria-hidden="true">
                         {if $flashType === 'success'}
@@ -162,12 +162,12 @@
            the page has one, otherwise the text the template ships with - so a page
            works before anyone writes help for it and dynamic wording stays possible.
         *}
-        {block pageLead}
+        {define pageLead, $default, $class = null}
             <div n:class="page-lead, $class">
                 <i class="fi fi-rr-info" aria-hidden="true"></i>
                 <span>{$pageHelp?->getLead() ?? $default}</span>
             </div>
-        {/block}
+        {/define}
 
         {var $pageHelp = $pageHelp ?? null}
         {if $pageHelp !== null}
