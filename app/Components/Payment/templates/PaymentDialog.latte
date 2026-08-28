@@ -25,7 +25,7 @@
                 <label n:name="email"/>
                 <small class="text-body-secondary">volitelný</small>
                 <span title="Pro více příjemců, oddělte jejich e-mailové adresy čárkou" data-bs-toggle="tooltip">
-                        <i class="fas fa-info-circle d-none d-md-inline"></i>
+                        <i class="fi fi-rr-info d-none d-md-inline" aria-hidden="true"></i>
                 </span>
                 {include control $form['email']}
                 {include errors $form['email']}
@@ -46,7 +46,7 @@
                 <label n:name="dueDate"/>
                 <div class="input-group w-50">
                     <div class="input-group-text">
-                        <i class="far fa-calendar"></i>
+                        <i class="fi fi-rr-calendar" aria-hidden="true"></i>
                     </div>
                     {include control $form['dueDate'], 'date'}
                 </div>
@@ -63,7 +63,7 @@
                             <div class="input-group-text"
                                  title="Předvyplněná hodnota je dosavadní nejvyšší hodnota +1"
                                  data-bs-toggle="tooltip">
-                                <i class="fas fa-info-circle d-none d-md-inline"></i>
+                                <i class="fi fi-rr-info d-none d-md-inline" aria-hidden="true"></i>
                             </div>
                         </div>
                         {include errors $form['variableSymbol']}
