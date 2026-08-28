@@ -1,0 +1,40 @@
+{
+    "id": "/",
+    "name": "Skautské hospodaření",
+    "short_name": "Hospodaření",
+    "description": "Finance jednotky, akce, tábory, cesťáky i platby na jednom místě.",
+    "lang": "cs",
+    "dir": "ltr",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "any",
+    "background_color": "#eef7fc",
+    "theme_color": "#4d8746",
+    "icons": [
+        {
+            "src": "/images/pwa/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/images/pwa/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/images/pwa/icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "/images/pwa/icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}

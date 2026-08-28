@@ -4,7 +4,7 @@
     "scripts": {
         "build": "webpack --mode=development",
         "build-production": "webpack --mode=production",
-        "check-types": "yarn tsc --noEmit"
+        "check-types": "yarn tsc --noEmit && yarn tsc --noEmit -p tsconfig.sw.json"
     },
     "dependencies": {
         "@flaticon/flaticon-uicons": "3.3.1",

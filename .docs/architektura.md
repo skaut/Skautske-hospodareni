@@ -24,4 +24,10 @@ Nette presentery a Latte šablony jsou rozdělené podle částí aplikace v `ap
 
 Adresy stránek jsou definované v `app/router/RouterFactory.php`. Formuláře používají Nette Forms. Rostoucí seznamy používají společný Ublaboo DataGrid; vzhled a chování stránky staví na TypeScriptu, Sassu, Tableru a Bootstrapu.
 
+### Instalace do telefonu
+
+Hospodaření jde nainstalovat jako aplikaci a spouštět z plochy telefonu. Popis aplikace je ve `www/manifest.webmanifest`, ikony ve `www/images/pwa` a service worker se sestavuje z `frontend/sw`; ten kromě náhradní stránky `www/offline.html` nic neukládá, aby uživatel nikdy neviděl stará data.
+
+Nabídku instalace řeší `frontend/ts/appInstall.ts`. Na Androidu ji prohlížeč umí spustit přímo z tlačítka v nabídce, na iOS zbývá jen postup přes nabídku Sdílet, takže se tam místo tlačítka ukáže návod. V nainstalované aplikaci se nabídka neobjeví.
+
 Podrobné pracovní pokyny pro automatizované agenty nejsou součástí této dokumentace; jsou odděleně ve složce `.agents`.

@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="cs">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex">
+    <title>Jste offline – Skautské hospodaření</title>
+    <style>
+        :root {
+            color-scheme: light dark;
+            --offline-bg: #eef7fc;
+            --offline-surface: #ffffff;
+            --offline-text: #302821;
+            --offline-muted: #5b6b63;
+            --offline-brand: #4d8746;
+            --offline-border: #d7e5ec;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --offline-bg: #121a17;
+                --offline-surface: #1a231f;
+                --offline-text: #e6eee9;
+                --offline-muted: #a9b8b0;
+                --offline-brand: #7fb877;
+                --offline-border: #2b3a33;
+            }
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 1.5rem;
+            background: var(--offline-bg);
+            color: var(--offline-text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.5;
+        }
+
+        main {
+            max-width: 26rem;
+            padding: 2rem;
+            border: 1px solid var(--offline-border);
+            border-radius: 8px;
+            background: var(--offline-surface);
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0 0 0.75rem;
+            color: var(--offline-brand);
+            font-size: 1.5rem;
+        }
+
+        p {
+            margin: 0 0 1.5rem;
+            color: var(--offline-muted);
+        }
+
+        button {
+            min-height: 2.75rem;
+            padding: 0.5rem 1.25rem;
+            border: 0;
+            border-radius: 6px;
+            background: var(--offline-brand);
+            color: #ffffff;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        button:focus-visible {
+            outline: 2px solid var(--offline-text);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <h1>Jste offline</h1>
+    <p>Hospodaření pracuje s daty ze skautISu, a proto potřebuje připojení k internetu. Jakmile budete znovu online, zkuste stránku načíst.</p>
+    <button type="button" id="retry">Zkusit znovu</button>
+</main>
+<script>
+    document.getElementById('retry').addEventListener('click', function () {
+        window.location.reload();
+    });
+</script>
+</body>
+</html>
