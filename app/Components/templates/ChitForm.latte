@@ -8,7 +8,7 @@
 
         <div class="collapse {if $displayChitForm}show{/if}" id="chitCollapse">
             <div class="card-body" >
-                <form n:name="form" class="chit-form">
+                <form n:name="form" class="chit-form inline-errors">
                     <ul class="alert alert-danger" n:if="$form->hasErrors()">
                         <li n:foreach="$form->errors as $error">{$error}</li>
                     </ul>

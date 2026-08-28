@@ -12,6 +12,10 @@ use SkautisWsdlPageException;
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 abstract class BaseAcceptanceCest
 {
+    /** Matches `--window-size` in acceptance.suite.yml. */
+    protected const DEFAULT_WINDOW_WIDTH = 1920;
+    protected const DEFAULT_WINDOW_HEIGHT = 1080;
+
     protected const WEBDRIVER_WARMUP_ATTEMPTS = 3;
     protected const SKAUTIS_PAGE_OPEN_ATTEMPTS = 3;
     protected const SKAUTIS_PAGE_OPEN_RETRY_DELAY_SECONDS = 2;
@@ -36,6 +40,11 @@ abstract class BaseAcceptanceCest
         if ($lastException !== null) {
             throw $lastException;
         }
+
+        // The browser session is shared between scenarios, so a test that narrows the
+        // window for a responsive check would otherwise leave every later scenario on
+        // a phone-sized viewport with a collapsed navigation.
+        $I->resizeWindow(self::DEFAULT_WINDOW_WIDTH, self::DEFAULT_WINDOW_HEIGHT);
 
         $I->setCookie('SELENIUM', 'SELENIUM', [
             'domain' => '.moje-hospodareni.cz',
