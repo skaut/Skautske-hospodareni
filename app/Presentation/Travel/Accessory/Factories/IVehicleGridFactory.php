@@ -8,5 +8,5 @@ use App\Presentation\Travel\Accessory\Components\VehicleGrid;
 
 interface IVehicleGridFactory
 {
-    public function create(int $unitId): VehicleGrid;
+    public function create(int $unitId, bool $archived): VehicleGrid;
 }
