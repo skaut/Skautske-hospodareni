@@ -1,7 +1,7 @@
 {extends $baseTemplate}
 
 {block filters}
-    {include #filter-type-search}
+    {include #filter-type-search, searchLabel: 'Hledat cestovní příkaz'}
     {include #filter-type-select name => 'state', label => 'Stav'}
 {/block}
 
@@ -23,13 +23,12 @@
 {define col-vehicle}
     {var $vehicleId = $item->vehicleId}
     {var $vehicle = $vehicleId !== NULL ? ($vehicles[$vehicleId] ?? NULL) : NULL}
-    <a n:if="$vehicle !== NULL && $vehicleId !== NULL" href="{plink :Travel:Vehicle:detail $vehicleId}">
-        {$vehicle->label} <i n:if="$vehicle->archived" class="fi fi-rr-trash" aria-hidden="true"></i>
-    </a>
+    <a n:if="$vehicle !== NULL && $vehicleId !== NULL" href="{plink :Travel:Vehicle:detail $vehicleId}">{$vehicle->label}</a>
+    <span n:if="$vehicle !== NULL && $vehicle->archived" class="badge text-bg-secondary">Archiv</span>
     <span n:if="$vehicleId !== NULL && $vehicle === NULL" class="text-body-secondary">Neznáme vozidlo</span>
 
     <div n:inner-foreach="$item->getTransportTypePairs() as $type">
-        <span class="badge bg-info">{$type}</span>
+        <span class="badge text-bg-info">{$type}</span>
     </div>
 {/define}
 

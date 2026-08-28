@@ -84,6 +84,7 @@ class RouterFactory
             ->addRoute('cestaky/prikazy/<id [0-9]+>/print', 'Command:print')
             ->addRoute('cestaky/prikazy/<id [0-9]+>', 'Command:detail')
             ->addRoute('cestaky/vozidla', 'VehicleList:default')
+            ->addRoute('cestaky/vozidla/archiv', 'VehicleList:archived')
             ->addRoute('cestaky/vozidla/<action>[/<id [0-9]+>]', ['presenter' => 'Vehicle', 'action' => 'default'])
             ->addRoute('cestaky/smlouvy[/<action>][/<id [0-9]+>]', ['presenter' => 'Contract', 'action' => 'default'])
             ->addRoute('cestaky', 'Default:default');
