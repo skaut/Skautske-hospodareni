@@ -141,6 +141,21 @@ class VehiclePresenter extends TravelBasePresenter
         $this->redirect('this');
     }
 
+    public function handleRestore(int $vehicleId): void
+    {
+        $vehicle = $this->getVehicle($vehicleId);
+        if (! $this->isVehicleEditable($vehicle)) {
+            $this->setView('accessDenied');
+
+            return;
+        }
+
+        $this->travelService->restoreVehicle($vehicleId);
+        $this->flashMessage('Vozidlo bylo vráceno mezi aktivní.', 'success');
+
+        $this->redirect('this');
+    }
+
     protected function createComponentFormCreateVehicle(): Form
     {
         $form = new BaseForm();

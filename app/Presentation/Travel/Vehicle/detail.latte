@@ -1,27 +1,35 @@
-{block #content}
+{block content}
 <div data-test="travel-vehicle-detail-page">
     <div class="card page-heading">
         <div class="card-body">
             <h1 class="h3 mb-2" n:block="title">{$vehicle->label}</h1>
-            <div class="page-lead mb-3">
-                <i class="fi fi-rr-info" aria-hidden="true"></i>
-                <span>Detail vozidla, technické údaje a přehled navázaných cestovních příkazů.</span>
-            </div>
+            {include pageLead, default: 'Detail vozidla, technické údaje a přehled navázaných cestovních příkazů.', class: 'mb-3'}
             <div class="d-flex flex-wrap gap-2 align-items-center">
                 {control roadworthy}
                 {if $vehicle->archived}
-                    <div class="alert alert-warning mb-0 py-2 px-3">Toto vozidlo je archivované.</div>
+                    <span class="badge text-bg-warning" data-test="travel-vehicle-archived-badge">Archivované vozidlo</span>
+                    <a n:if="$isEditable"
+                            n:href="restore! $vehicle->id"
+                            class="btn btn-sm btn-outline-secondary"
+                            data-test="travel-vehicle-restore"
+                    >
+                        <i class="fi fi-rr-rotate-left" aria-hidden="true"></i> Obnovit vozidlo
+                    </a>
                 {else}
-                    <a n:if="$isEditable" n:href="archive! $vehicle->id" class="btn btn-sm btn-outline-secondary">
-                        <i class="fi fi-rr-box" aria-hidden="true"></i>
-                        Archivovat
+                    <a n:if="$isEditable"
+                            n:href="archive! $vehicle->id"
+                            class="btn btn-sm btn-outline-secondary"
+                            data-confirm="Opravdu chcete vozidlo archivovat?"
+                            data-test="travel-vehicle-archive"
+                    >
+                        <i class="fi fi-rr-box" aria-hidden="true"></i> Archivovat
                     </a>
                 {/if}
                 <span n:tag-if="!$canDelete" title="Nelze mazat vozidla s cestovními příkazy" data-bs-toggle="tooltip">
                     <a n:if="$isEditable"
                             n:href="remove! $vehicle->id"
                             n:class="!$canDelete ? disabled, btn, btn-sm, btn-outline-danger"
-                            onclick="return confirm('Opravdu chcete vozidlo smazat?');"
+                            data-confirm="Opravdu chcete vozidlo smazat?"
                     >
                         <i class="fi fi-rr-trash" aria-hidden="true"></i> Smazat vozidlo
                     </a>
@@ -96,3 +104,4 @@
         </div>
     </div>
 </div>
+{/block}

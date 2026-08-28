@@ -15,8 +15,13 @@ use Ublaboo\DataGrid\DataGrid;
 
 class VehicleGrid extends BaseGridControl
 {
-    public function __construct(private int $unitId, private TravelService $travel, private UnitService $units, private GridFactory $gridFactory)
-    {
+    public function __construct(
+        private int $unitId,
+        private bool $archived,
+        private TravelService $travel,
+        private UnitService $units,
+        private GridFactory $gridFactory,
+    ) {
     }
 
     protected function createComponentGrid(): DataGrid
@@ -25,7 +30,7 @@ class VehicleGrid extends BaseGridControl
 
         $grid = $this->gridFactory->createSimpleGrid(
             __DIR__.'/templates/VehicleGrid.latte',
-            ['units' => $units],
+            ['units' => $units, 'archived' => $this->archived],
         );
 
         $grid->addColumnText('type', 'Typ')
@@ -47,15 +52,24 @@ class VehicleGrid extends BaseGridControl
         $grid->addFilterText('search', '', ['type', 'v.metadata.authorName', 'registration'])
             ->setPlaceholder('Typ vozdila, uživatel...');
 
-        $grid->setDataSource($this->travel->getVehiclesByFilter($this->unitId));
+        $grid->setDataSource($this->travel->getVehiclesByFilter($this->unitId, $this->archived));
 
         $grid->addAction('edit', '', ':Travel:Vehicle:detail', ['id' => 'id'])
-            ->setIcon('far fa-edit')
+            ->setIcon('fi fi-rr-edit')
             ->setTitle('Detail vozidla')
             ->setClass('btn btn-sm btn-light');
 
+        if ($this->archived) {
+            $grid->addAction('restore', '', 'restore!', ['id' => 'id'])
+                ->setIcon('fi fi-rr-rotate-left')
+                ->setTitle('Obnovit vozidlo')
+                ->setClass('btn btn-sm btn-outline-secondary');
+
+            return $grid;
+        }
+
         $grid->addAction('delete', '', 'remove!', ['id' => 'id'])
-            ->setIcon('far fa-trash-can')
+            ->setIcon('fi fi-rr-trash')
             ->setTitle('Smazat vozidlo')
             ->setClass('btn btn-sm btn-outline-danger')
             ->setConfirmation(
@@ -94,8 +108,37 @@ class VehicleGrid extends BaseGridControl
         $this->redirectToList();
     }
 
+    public function handleRestore(int $id): void
+    {
+        $vehicle = $this->travel->getVehicleDTO($id);
+        if ($vehicle === null) {
+            $this->flashMessage('Vozidlo nebylo nalezeno', 'warning');
+            $this->redirectToList();
+
+            return;
+        }
+
+        if ($vehicle->getUnitId() !== $this->unitId) {
+            $this->flashMessage('Nemáte oprávnění k vozidlu', 'danger');
+            $this->redirectToList();
+
+            return;
+        }
+
+        try {
+            $this->travel->restoreVehicle($id);
+            $this->flashMessage('Vozidlo bylo vráceno mezi aktivní.', 'success');
+        } catch (VehicleNotFound) {
+            $this->flashMessage('Vozidlo nebylo nalezeno', 'warning');
+        }
+
+        $this->redirectToList();
+    }
+
     private function redirectToList(): void
     {
-        $this->getPresenter()->redirect(':Travel:VehicleList:default');
+        $this->getPresenter()->redirect(
+            $this->archived ? ':Travel:VehicleList:archived' : ':Travel:VehicleList:default',
+        );
     }
 }

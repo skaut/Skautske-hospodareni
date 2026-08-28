@@ -1,31 +1,28 @@
-{block #content}
+{block content}
 <div data-test="travel-command-detail-page">
     <div class="card page-heading">
         <div class="card-body">
             <h1 class="h3 mb-2" n:inner-block="title">Cestovní příkaz</h1>
-            <div class="page-lead mb-3">
-                <i class="fi fi-rr-info" aria-hidden="true"></i>
-                <span>Detail příkazu, přehled provedených cest a kalkulace náhrad.</span>
-            </div>
+            {include pageLead, default: 'Detail příkazu, přehled provedených cest a kalkulace náhrad.', class: 'mb-3'}
             <div class="d-flex flex-wrap gap-2 align-items-center">
                 {if $isEditable}
                 <a n:href="edit $command->id" class="btn btn-sm btn-light">
                     <i class="fi fi-rr-edit" aria-hidden="true"></i>
                     Upravit
                 </a>
-                <a n:href="removeCommand! $command->id" class="btn btn-sm btn-outline-danger" onclick="return confirm('Opravdu chcete smazat cestovní příkaz?')">
+                <a n:href="removeCommand! $command->id" class="btn btn-sm btn-outline-danger" data-confirm="Opravdu chcete smazat cestovní příkaz?">
                     <i class="fi fi-rr-trash" aria-hidden="true"></i> Smazat
                 </a>
-                <a n:href="closeCommand! $command->id" class="btn btn-sm btn-outline-warning" onclick="return confirm('Opravdu chcete uzavřít cestovní příkaz?')">
+                <a n:href="closeCommand! $command->id" class="btn btn-sm btn-outline-warning" data-confirm="Opravdu chcete uzavřít cestovní příkaz?">
                     <i class="fi fi-rr-lock" aria-hidden="true"></i> Uzavřít
                 </a>
                 {else}
-                <a n:href="openCommand! $command->id" class="btn btn-sm btn-outline-warning" onclick="return confirm('Opravdu chcete otevřít cestovní příkaz?')">
+                <a n:href="openCommand! $command->id" class="btn btn-sm btn-outline-warning" data-confirm="Opravdu chcete otevřít cestovní příkaz?">
                     <i class="fi fi-rr-unlock" aria-hidden="true"></i> Otevřít
                 </a>
                 {/if}
                 {if $command->passenger->contractId !== NULL}
-                    <a n:href=":Travel:Contract:detail $command->passenger->contractId" class="btn btn-sm btn-light d-none d-md-inline">
+                    <a n:href=":Travel:Contract:detail $command->passenger->contractId" class="btn btn-sm btn-light">
                         <i class="fi fi-rr-document-signed" aria-hidden="true"></i> Smlouva
                     </a>
                 {/if}
@@ -78,7 +75,10 @@
                         {if $vehicle !== null}
                         <li class="list-group-item d-flex">
                             <div class="fw-bold me-auto">Vozidlo</div>
-                            <div class="text-end"><a n:href=":Travel:Vehicle:detail $vehicle->id">{$vehicle->type} ({$vehicle->registration})</a></div>
+                            <div class="text-end">
+                                <a n:href=":Travel:Vehicle:detail $vehicle->id">{$vehicle->type} ({$vehicle->registration})</a>
+                                <span n:if="$vehicle->archived" class="badge text-bg-secondary">Archiv</span>
+                            </div>
                         </li>
                         <li class="list-group-item d-flex">
                             <div class="fw-bold me-auto">&#0216; spotřeba dle t.p.</div>
@@ -101,7 +101,7 @@
                 </div>
             </div>
         </div>
-        <div n:if="$command->passenger->contractId !== NULL" class="col-md-4 d-none d-md-block">
+        <div n:if="$command->passenger->contractId !== NULL" class="col-md-4">
             <div class="card h-100">
                 <div class="card-body">
                     <strong>Cestující</strong>
@@ -169,7 +169,7 @@
                                         <a n:href="duplicateTravel! $command->id, $t->id" class="btn btn-sm btn-outline-secondary" title="Duplikovat cestu"><i class="fi fi-rr-copy" aria-hidden="true"></i></a>
                                         <a n:href="addReturnTravel! $command->id, $t->id" class="btn btn-sm btn-outline-secondary" title="Přidat zpáteční cestu"><i class="fi fi-rr-arrow-circle-left" aria-hidden="true"></i></a>
                                         <a n:href="editTravel! $t->id" class="ajax btn btn-sm btn-light" title="Upravit"><i class="fi fi-rr-pencil" aria-hidden="true"></i></a>
-                                        <a n:href="removeTravel! $command->id, $t->id" class="btn btn-sm btn-outline-danger" onclick="return confirm('Opravdu chcete smazat cestu?')" title="Smazat cestu"><i class="fi fi-rr-trash" aria-hidden="true"></i></a>
+                                        <a n:href="removeTravel! $command->id, $t->id" class="btn btn-sm btn-outline-danger" data-confirm="Opravdu chcete smazat cestu?" title="Smazat cestu"><i class="fi fi-rr-trash" aria-hidden="true"></i></a>
                                     </td>
                                 </tr>
                                 <tr>

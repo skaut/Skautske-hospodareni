@@ -1,4 +1,4 @@
-{block #content}
+{block content}
 <div data-test="travel-vehicles-page">
     <div class="card page-heading">
         <div class="card-body">
@@ -10,6 +10,10 @@
         </div>
     </div>
 
-    {control grid}
+    <section class="card" data-test="travel-vehicles-table">
+        <div class="card-body">
+            {control grid}
+        </div>
+    </section>
 </div>
 {/block}

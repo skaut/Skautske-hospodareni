@@ -1,15 +1,24 @@
 {extends $baseTemplate}
 
 {block filters}
-    {include #filter-type-search}
+    {include #filter-type-search, searchLabel: 'Hledat vozidlo'}
     {include #filter-type-select name => 'subunit', label => 'Oddíl'}
 
 {/block}
 
 {block global-actions}
-    <a href="{plink :Travel:Vehicle:new}" class="btn btn-primary" data-test="travel-vehicle-create-link">
-        <i class="fi fi-rr-plus-small" aria-hidden="true"></i> Založit nové vozidlo
-    </a>
+    {if $archived}
+        <a href="{plink :Travel:VehicleList:default}" class="btn btn-light" data-test="travel-vehicle-active-link">
+            <i class="fi fi-rr-arrow-left" aria-hidden="true"></i> Aktivní vozidla
+        </a>
+    {else}
+        <a href="{plink :Travel:VehicleList:archived}" class="btn btn-light" data-test="travel-vehicle-archive-link">
+            <i class="fi fi-rr-box" aria-hidden="true"></i> Archiv vozidel
+        </a>
+        <a href="{plink :Travel:Vehicle:new}" class="btn btn-primary" data-test="travel-vehicle-create-link">
+            <i class="fi fi-rr-plus-small" aria-hidden="true"></i> Založit nové vozidlo
+        </a>
+    {/if}
 {/block}
 
 {define col-subunit}
