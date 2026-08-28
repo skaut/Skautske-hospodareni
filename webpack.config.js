@@ -2,20 +2,35 @@ import path from 'path';
 import webpack from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
+// The service worker has to sit in the site root to control the whole application
+// and it compiles against the web worker library instead of the DOM one.
+const serviceWorkerDir = path.resolve(import.meta.dirname, 'frontend/sw');
+
 export default {
     entry: {
         'app': './frontend/app.ts',
+        'sw': './frontend/sw/serviceWorker.ts',
     },
     output: {
-        filename: 'js/[name].min.js',
+        filename: (pathData) => pathData.chunk.name === 'sw' ? '[name].js' : 'js/[name].min.js',
         path: path.resolve(import.meta.dirname, 'www')
     },
     module: {
         rules: [
             {
                 test: /\.tsx?$/,
+                include: serviceWorkerDir,
+                use: {
+                    loader: 'ts-loader',
+                    options: {
+                        configFile: path.resolve(import.meta.dirname, 'tsconfig.sw.json'),
+                    },
+                },
+            },
+            {
+                test: /\.tsx?$/,
                 use: 'ts-loader',
-                exclude: /node_modules/
+                exclude: [/node_modules/, serviceWorkerDir]
             },
             {
                 test: /\.js$/,

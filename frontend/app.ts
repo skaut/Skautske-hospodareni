@@ -8,6 +8,7 @@ import {DarkModeToggle} from './DarkModeToggle';
 import {LogoutTimer} from './LogoutTimer';
 import './ts/checkAll';
 import initializeAjax from './ts/ajax';
+import {initializeAppInstall} from './ts/appInstall';
 import {initializeMassEmailSelection} from './ts/massEmailSelection';
 import {initializePageEnhancements} from './ts/pageEnhancements';
 import {initializeSessionKeepAlive} from './ts/sessionKeepAlive';
@@ -37,4 +38,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeMassEmailSelection();
     initializePageEnhancements();
     initializeSessionKeepAlive();
+    initializeAppInstall();
 });
