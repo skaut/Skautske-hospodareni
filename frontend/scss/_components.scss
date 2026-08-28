@@ -710,3 +710,41 @@ fieldset:disabled label {
     border-radius: 0;
   }
 }
+
+.app-install-banner {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  border-color: rgba(var(--tblr-primary-rgb), 0.32);
+  background: var(--app-green-soft);
+  color: var(--tblr-body-color);
+}
+
+.app-install-banner__icon {
+  width: 3rem;
+  height: 3rem;
+  flex: 0 0 auto;
+  border-radius: var(--tblr-border-radius);
+}
+
+.app-install-banner__content {
+  min-width: 0;
+  flex: 1 1 14rem;
+}
+
+.app-install-banner__title {
+  display: block;
+}
+
+.app-install-banner__text {
+  margin-bottom: 0;
+}
+
+.app-install-banner__text + .app-install-banner__text {
+  margin-top: 0.25rem;
+}
+
+.app-install-banner .btn {
+  min-height: 2.75rem;
+}

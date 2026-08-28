@@ -19,7 +19,6 @@ class RouterFactory
         $router = new RouteList();
 
         // Static pages
-        $router[] = new Route('app.manifest', 'Offline:manifest');
         $router[] = new Route('o-projektu', 'Default:about');
         $router[] = new Route('posily', 'Default:reinforcement');
         $router[] = new Route('changelog', 'Default:changelog');
