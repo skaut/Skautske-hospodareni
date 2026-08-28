@@ -54,7 +54,7 @@ final class ChitScanControl extends BaseControl
     public function handleRemove(string $path): void
     {
         if (! $this->isChitEditable()) {
-            $this->getPresenter()->flashMessage('U pokladního dokladu nyní nelze odebírat naskenované doklady!', 'error');
+            $this->getPresenter()->flashMessage('U pokladního dokladu nyní nelze odebírat naskenované doklady!', 'danger');
 
             return;
         }
@@ -105,7 +105,7 @@ final class ChitScanControl extends BaseControl
         $chitId = $chitId !== null ? (int) $chitId : $chitId;
 
         if (! $this->isChitReadable()) {
-            $this->getPresenter()->flashMessage('Nemáte právo číst doklad!', 'error');
+            $this->getPresenter()->flashMessage('Nemáte právo číst doklad!', 'danger');
             $this->getPresenter()->redirect('this');
 
             return;

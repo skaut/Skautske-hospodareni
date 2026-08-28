@@ -112,19 +112,19 @@
     <main role="main" class="container-xl shell-main page-body">
         {snippet flash}
             {foreach $flashes as $flash}
-                {var $flashType = $flash->type === 'error' ? 'danger' : $flash->type}
+                {var $flashType = $flash->type}
                 <div class="alert alert-{$flashType} flash-message alert-dismissible fade show" role="alert">
                     <span class="flash-message__icon" aria-hidden="true">
                         {if $flashType === 'success'}
-                            <i class="fi fi-rr-check-circle"></i>
+                            <i class="fi fi-rr-check-circle" aria-hidden="true"></i>
                         {elseif $flashType === 'danger'}
-                            <i class="fi fi-rr-cross-circle"></i>
+                            <i class="fi fi-rr-cross-circle" aria-hidden="true"></i>
                         {elseif $flashType === 'warning'}
-                            <i class="fi fi-rr-triangle-warning"></i>
+                            <i class="fi fi-rr-triangle-warning" aria-hidden="true"></i>
                         {elseif $flashType === 'info'}
-                            <i class="fi fi-rr-info"></i>
+                            <i class="fi fi-rr-info" aria-hidden="true"></i>
                         {else}
-                            <i class="fi fi-rr-bell"></i>
+                            <i class="fi fi-rr-bell" aria-hidden="true"></i>
                         {/if}
                     </span>
                     <div class="flash-message__content">

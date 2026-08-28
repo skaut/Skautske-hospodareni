@@ -296,7 +296,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
 
                 $isFio = $account['sourceType'] === BankTransactionSource::FIO->value;
                 $badge = Html::el('span')
-                    ->setAttribute('class', $isFio ? 'badge bg-success' : 'badge bg-secondary');
+                    ->setAttribute('class', $isFio ? 'badge text-bg-success' : 'badge text-bg-secondary');
                 $badge->addHtml(
                     Html::el('i')->setAttribute(
                         'class',
@@ -523,7 +523,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
 
         if ($row->pairingLabel !== null) {
             $pairing = Html::el('div');
-            $pairing->addHtml(Html::el('span')->setAttribute('class', 'badge bg-info text-dark')->setText('Spárováno'));
+            $pairing->addHtml(Html::el('span')->setAttribute('class', 'badge text-bg-info')->setText('Spárováno'));
             $pairing->addText(' ');
             $pairing->addHtml($this->formatTransactionLink($row->pairingLabel));
             $container->addHtml($pairing);
@@ -607,7 +607,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
     private function formatTypeBadge(string $type): Html
     {
         return Html::el('span')
-            ->setAttribute('class', $type === 'invoice' ? 'badge bg-secondary' : 'badge bg-primary')
+            ->setAttribute('class', $type === 'invoice' ? 'badge text-bg-secondary' : 'badge text-bg-primary')
             ->setText($type === 'invoice' ? 'Faktura' : 'Platba');
     }
 

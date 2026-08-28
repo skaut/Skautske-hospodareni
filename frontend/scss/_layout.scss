@@ -8,6 +8,14 @@ html {
   --app-green: #4d8746;
   --app-green-soft: #edf6eb;
   --app-ink: #302821;
+
+  // Ground for scanned documents and invoice previews. Stays paper white in
+  // both themes on purpose - the preview shows a physical document.
+  --app-paper: #fff;
+
+  // Foreground for surfaces that stay light in both themes, such as info and
+  // warning badges. Unlike --app-ink this must not flip with the theme.
+  --app-ink-on-light: #302821;
 }
 
 body {
@@ -30,11 +38,12 @@ main[role="main"] {
 
 .shell-main {
   position: relative;
-}
 
-.shell-main--dashboard {
-  padding-right: var(--tblr-gutter-x, 1rem);
-  padding-left: var(--tblr-gutter-x, 1rem);
+  // A Bootstrap row pulls itself out by half of its own gutter. Tabler gives the
+  // page container a smaller gutter (1rem) than `.g-4` rows use (1.5rem), so such
+  // a row sticks out past the viewport - 4 px on each side at 375 px. Keep the
+  // container padding at least half of the widest gutter used inside it.
+  padding-inline: max(var(--tblr-gutter-x, 1rem) * 0.5, 0.75rem);
 }
 
 .card {
