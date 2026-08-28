@@ -1,12 +1,9 @@
-{block #content}
+{block content}
 <div data-test="invoice-edit-page">
     <div class="card page-heading">
         <div class="card-body">
             <h1 n:inner-block="title" class="h3 mb-2">Úprava faktury {$invoice->getInvoiceNumber()}</h1>
-            <div class="page-lead mb-3">
-                <i class="fi fi-rr-info" aria-hidden="true"></i>
-                <span>Upravit lze pouze fakturu ve stavu Vystavená. Po uložení zůstane číslo faktury i variabilní symbol zachovaný.</span>
-            </div>
+            {include pageLead, default: 'Upravit lze pouze fakturu ve stavu Vystavená. Po uložení zůstane číslo faktury i variabilní symbol zachovaný.', class: 'mb-3'}
             <div class="d-flex flex-wrap gap-2 align-items-center">
                 <a n:href=":Payments:InvoiceList:default, invoiceSequenceId => $invoice->getSequence()->getId(), unitId => $unitId" class="btn btn-outline-secondary btn-sm">
                     <i class="fi fi-rr-file-invoice" aria-hidden="true"></i>

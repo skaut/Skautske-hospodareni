@@ -1,12 +1,9 @@
-{block #content}
+{block content}
 <div data-test="payments-groups-page">
     <div class="card page-heading">
         <div class="card-body">
             <h1 n:inner-block="title" class="h3 mb-2">Platební skupiny</h1>
-            <div class="page-lead mb-3">
-                <i class="fi fi-rr-info" aria-hidden="true"></i>
-                <span>Seznam všech platebních skupin. Filtrujte podle stavu, párujte úhrady a spravujte platby.</span>
-            </div>
+            {include pageLead, default: 'Seznam všech platebních skupin. Filtrujte podle stavu, párujte úhrady a spravujte platby.', class: 'mb-3'}
             <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
                 <div class="d-flex flex-wrap gap-2 align-items-center">
                     <div class="dropdown">
@@ -30,33 +27,12 @@
         </div>
     </div>
 
-    <div class="design-help-layout" data-help-layout>
-        <section class="card" data-test="payments-groups-table">
-            <div class="card-body">
-                <div data-test="payments-groups-grid">
-                    {control grid}
-                </div>
+    <section class="card" data-test="payments-groups-table">
+        <div class="card-body">
+            <div data-test="payments-groups-grid">
+                {control grid}
             </div>
-        </section>
-        <aside class="design-help-sidebar" data-help-card data-test="help-sidebar">
-            <button
-                type="button"
-                class="btn btn-link p-0 pb-2 border-bottom w-100 text-start text-decoration-none d-inline-flex align-items-center gap-2"
-                data-help-toggle
-                data-test="help-toggle"
-                aria-expanded="true"
-                title="Skrýt nápovědu"
-            >
-                <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary bg-opacity-10 p-2">
-                    <i class="fi fi-rr-lightbulb-on text-primary" aria-hidden="true"></i>
-                </span>
-                <span class="fw-semibold text-primary-emphasis" data-help-content>Nápověda</span>
-            </button>
-            <div data-help-content data-test="help-content">
-                <p><strong>Platební skupina</strong><br>Skupina sdružuje související platby, jejich stav a způsob párování úhrad.</p>
-                <p class="mb-0"><strong>Hledání a filtry</strong><br>Vyhledávejte podle názvu nebo jednotky. Pro dokončené skupiny přepněte filtr v hlavičce seznamu.</p>
-            </div>
-        </aside>
-    </div>
+        </div>
+    </section>
 </div>
 {/block}

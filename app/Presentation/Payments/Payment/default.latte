@@ -1,12 +1,9 @@
-{block #content}
+{block content}
 <div data-test="payment-group-detail-page">
     <div class="card page-heading">
         <div class="card-body">
             <h1 n:inner-block="title" class="h3 mb-2">{$group->name}</h1>
-            <div class="page-lead">
-                <i class="fi fi-rr-info" aria-hidden="true"></i>
-                <span>Přehled plateb ve skupině, jejich stavu, párování, rozesílání údajů a dostupných hromadných akcí.</span>
-            </div>
+            {include pageLead, default: 'Přehled plateb ve skupině, jejich stavu, párování, rozesílání údajů a dostupných hromadných akcí.'}
             <div class="d-flex flex-wrap gap-2 align-items-center text-body-secondary small mb-3">
                 {$group->state|groupState|noescape}
                 <span>·</span>

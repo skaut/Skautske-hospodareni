@@ -116,6 +116,9 @@ services:
     - App\RouterFactory
     router: @App\RouterFactory::createRouter
 
+    # Help
+    - App\Model\Help\PageCatalog(%appDir%)
+
     # Grids
     - App\Components\Grids\GridFactory
 
