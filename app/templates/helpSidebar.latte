@@ -1,0 +1,33 @@
+{**
+ * Contextual page help. The only place the panel is defined, so its look and its
+ * controls are identical on every page. The content comes from the `page_help`
+ * table and is edited in Admin:Help - never written into a template.
+ *
+ * @param App\Model\Help\Entity\PageHelp $pageHelp
+ *}
+<aside class="design-help-sidebar" data-help-card data-test="help-sidebar">
+    <button
+        type="button"
+        class="btn btn-link p-0 pb-2 border-bottom w-100 text-start text-decoration-none d-inline-flex align-items-center gap-2"
+        data-help-toggle
+        data-test="help-toggle"
+        aria-expanded="true"
+        title="Skrýt nápovědu"
+    >
+        <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary bg-opacity-10 p-2">
+            <i class="fi fi-rr-lightbulb-on text-primary" aria-hidden="true"></i>
+        </span>
+        <span class="fw-semibold text-primary-emphasis" data-help-content>Nápověda</span>
+    </button>
+    <div data-help-content data-test="help-content">
+        {foreach $pageHelp->getSections() as $section}
+            <div n:class="$iterator->last ? 'mb-0' : 'mb-3'">
+                <strong>{$section->getHeading()}</strong><br>
+                {$section->getText()}
+                <ul n:if="$section->hasItems()" class="small mt-2 mb-0">
+                    <li n:foreach="$section->getItems() as $item">{$item}</li>
+                </ul>
+            </div>
+        {/foreach}
+    </div>
+</aside>

@@ -5,10 +5,7 @@
     <div class="card page-heading">
         <div class="card-body">
             <h1 class="h3 mb-2">Předběžný přístup k fakturaci</h1>
-            <div class="page-lead">
-                <i class="fi fi-rr-info" aria-hidden="true"></i>
-                <span>Správa uživatelů, kteří mohou používat fakturaci v testovacím programu.</span>
-            </div>
+            {include pageLead, default: 'Správa uživatelů, kteří mohou používat fakturaci v testovacím programu.'}
         </div>
     </div>
 
@@ -66,7 +63,7 @@
                                 class="btn btn-sm btn-outline-danger"
                                 title="Zamítnout"
                                 n:attr="data-test => 'invoice-access-request-reject-' . $request->getId()"
-                                onclick='return confirm("Opravdu chcete zamítnout tuto žádost?");'
+                                data-confirm="Opravdu chcete zamítnout tuto žádost?"
                             >
                                 <i class="fi fi-rr-cross-small" aria-hidden="true"></i>
                             </a>
@@ -122,7 +119,7 @@
                                 class="btn btn-sm btn-outline-danger"
                                 title="Odebrat"
                                 n:attr="data-test => 'invoice-access-user-delete-' . $accessUser->getId()"
-                                onclick='return confirm("Opravdu chcete odebrat přístup k fakturaci?");'
+                                data-confirm="Opravdu chcete odebrat přístup k fakturaci?"
                             >
                                 <i class="fi fi-rr-trash" aria-hidden="true"></i>
                             </a>

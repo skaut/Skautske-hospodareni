@@ -14,6 +14,7 @@ use App\Model\Auth\Resources\InvoiceAccess;
 use App\Model\Common\Services\CommandBus;
 use App\Model\Common\Services\NotificationsCollector;
 use App\Model\Common\Services\QueryBus;
+use App\Model\Help\Manager\PageHelpManager;
 use App\Model\Unit\UnitService;
 use App\Model\User\UserPreferencesService;
 use App\Model\User\UserService;
@@ -88,6 +89,8 @@ abstract class BasePresenter extends Presenter
 
     private UserPreferencesService $userPreferences;
 
+    private PageHelpManager $pageHelp;
+
     public function injectAll(
         UserService $userService,
         UnitService $unitService,
@@ -103,6 +106,7 @@ abstract class BasePresenter extends Presenter
         IMenuComponentFactory $menuComponentFactory,
         MenuContainer $menuContainer,
         UserPreferencesService $userPreferences,
+        PageHelpManager $pageHelp,
     ): void {
         $this->userService = $userService;
         $this->unitService = $unitService;
@@ -118,6 +122,7 @@ abstract class BasePresenter extends Presenter
         $this->menuComponentFactory = $menuComponentFactory;
         $this->menuContainer = $menuContainer;
         $this->userPreferences = $userPreferences;
+        $this->pageHelp = $pageHelp;
     }
 
     protected function startup(): void
@@ -172,6 +177,7 @@ abstract class BasePresenter extends Presenter
             'canAccessAdmin' => $this->authorizator->isAllowed(Admin::ACCESS, null),
             'canAccessInvoiceAccess' => $this->authorizator->isAllowed(InvoiceAccess::ACCESS, null),
             'showPageHelp' => $this->userPreferences->shouldShowHelp(),
+            'pageHelp' => $this->pageHelp->findForPage($this->getPageHelpKey()),
             'sessionKeepAliveEnabled' => $sessionKeepAliveEnabled,
             'sessionKeepAliveInterval' => self::SESSION_KEEP_ALIVE_INTERVAL_MS,
             'sessionKeepAliveUrl' => $sessionKeepAliveEnabled
@@ -387,6 +393,16 @@ abstract class BasePresenter extends Presenter
             ...parent::formatLayoutTemplateFiles(),
             $this->appDir.'/templates/@'.$layout.'.latte',
         ];
+    }
+
+    /**
+     * Identifies the current page for contextual help, for example
+     * `Travel:Contract:default`. Kept public so the administration can offer the
+     * same keys when picking a page to write help for.
+     */
+    public function getPageHelpKey(): string
+    {
+        return $this->getName().':'.$this->getAction();
     }
 
     /** @return array{0: string|null, 1: string} */

@@ -231,6 +231,8 @@ class RouterFactory
             ->addRoute('hlaseni-chyb/<id [0-9]+>', 'BugReports:detail')
             ->addRoute('hlaseni-chyb', 'BugReports:default')
             ->addRoute('uzivatele', 'Users:default')
+            ->addRoute('napovedy/<pageKey>', 'Help:edit')
+            ->addRoute('napovedy', 'Help:default')
             ->addRoute('statistiky ? jednotka=<unitId>', 'Statistics:default')
             ->addRoute('<presenter>[/<action>]', ['action' => 'default']);
     }

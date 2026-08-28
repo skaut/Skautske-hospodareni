@@ -1,16 +1,13 @@
-{block #title}{$event->getDisplayName()} - základní údaje{/block}
+{block title}{$event->getDisplayName()} - základní údaje{/block}
 
 {block #subMenu}{include ../header.latte}{/block}
 
-{block #content}
+{block content}
 <div data-test="camp-detail-page">
     <div class="card page-heading">
         <div class="card-body">
             <h1 class="h3 mb-2">{$event->getDisplayName()}</h1>
-            <div class="page-lead mb-3">
-                <i class="fi fi-rr-info" aria-hidden="true"></i>
-                <span>Základní údaje tábora, stav, termíny a přehled návazných finančních podkladů.</span>
-            </div>
+            {include pageLead, default: 'Základní údaje tábora, stav, termíny a přehled návazných finančních podkladů.', class: 'mb-3'}
             <div class="d-flex flex-wrap gap-2 align-items-center text-body-secondary small mb-3">
                 {var $state = $event->getState()}
                 <span n:tag-if="$state == 'closed'"
@@ -71,59 +68,63 @@
             <div class="card">
                 <div class="card-body">
                     <strong>Statistiky</strong>
-                    <table class="table table-sm mb-0 mt-3">
-                        <tr>
-                            <th>Počet dnů</th>
-                            <td class="text-end">{$event->getTotalDays()}</td>
-                        </tr>
-                        {if $event->getParticipantStatistics() !== null}
-                            {var $stats = $event->getParticipantStatistics()}
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0 mt-3">
                             <tr>
-                                <th>Počet dospělých</th>
-                                <td class="text-end">{$stats->getRealAdult()}</td>
+                                <th>Počet dnů</th>
+                                <td class="text-end">{$event->getTotalDays()}</td>
                             </tr>
-                            <tr>
-                                <th>Počet dětí</th>
-                                <td class="text-end">{$stats->getRealChild()}</td>
-                            </tr>
-                            <tr>
-                                <th>Počet celkem</th>
-                                <td class="text-end">{$stats->getRealCount()}</td>
-                            </tr>
-                            <tr>
-                                <th>Osobodnů</th>
-                                <td class="text-end">{$stats->getRealPersonDays() ?? "-"}</td>
-                            </tr>
-                            <tr>
-                                <th>Dětodnů</th>
-                                <td class="text-end">{$stats->getRealChildDays() ?? "-"}</td>
-                            </tr>
-                        {/if}
-                    </table>
+                            {if $event->getParticipantStatistics() !== null}
+                                {var $stats = $event->getParticipantStatistics()}
+                                <tr>
+                                    <th>Počet dospělých</th>
+                                    <td class="text-end">{$stats->getRealAdult()}</td>
+                                </tr>
+                                <tr>
+                                    <th>Počet dětí</th>
+                                    <td class="text-end">{$stats->getRealChild()}</td>
+                                </tr>
+                                <tr>
+                                    <th>Počet celkem</th>
+                                    <td class="text-end">{$stats->getRealCount()}</td>
+                                </tr>
+                                <tr>
+                                    <th>Osobodnů</th>
+                                    <td class="text-end">{$stats->getRealPersonDays() ?? "-"}</td>
+                                </tr>
+                                <tr>
+                                    <th>Dětodnů</th>
+                                    <td class="text-end">{$stats->getRealChildDays() ?? "-"}</td>
+                                </tr>
+                            {/if}
+                        </table>
+                    </div>
                 </div>
             </div>
 
             <div class="card mt-4" n:if="$pragueParticipants !== NULL">
                 <div class="card-body">
                     <strong>Pražští účastníci</strong>
-                    <table class="table table-sm mb-0 mt-3">
-                        <tr>
-                            <th>Osobodnů pod 26</th>
-                            <td class="text-end">{$pragueParticipants->personDaysUnder26}</td>
-                        </tr>
-                        <tr>
-                            <th>Osob pod 18</th>
-                            <td class="text-end">{$pragueParticipants->under18}</td>
-                        </tr>
-                        <tr>
-                            <th>Osob mezi 18 a 26</th>
-                            <td class="text-end">{$pragueParticipants->between18and26}</td>
-                        </tr>
-                        <tr>
-                            <th>Osob celkem</th>
-                            <td class="text-end">{$pragueParticipants->citizensCount}</td>
-                        </tr>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0 mt-3">
+                            <tr>
+                                <th>Osobodnů pod 26</th>
+                                <td class="text-end">{$pragueParticipants->personDaysUnder26}</td>
+                            </tr>
+                            <tr>
+                                <th>Osob pod 18</th>
+                                <td class="text-end">{$pragueParticipants->under18}</td>
+                            </tr>
+                            <tr>
+                                <th>Osob mezi 18 a 26</th>
+                                <td class="text-end">{$pragueParticipants->between18and26}</td>
+                            </tr>
+                            <tr>
+                                <th>Osob celkem</th>
+                                <td class="text-end">{$pragueParticipants->citizensCount}</td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

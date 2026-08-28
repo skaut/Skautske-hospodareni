@@ -1,0 +1,69 @@
+{block content}
+<div data-test="admin-help-page">
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 n:inner-block="title" class="h3 mb-2">Nápovědy</h1>
+            <div class="page-lead">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Texty kontextové nápovědy, které se uživatelům zobrazují v pravém panelu stránky. Vyplněno {$filledCount} ze {$totalCount} stránek.</span>
+            </div>
+        </div>
+    </div>
+
+    <section class="card" data-test="admin-help-list">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>Stránka</th>
+                            <th>Modul</th>
+                            <th>Proužek</th>
+                            <th>Bloků</th>
+                            <th>Naposledy upraveno</th>
+                            <th class="text-end">Akce</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr n:foreach="$rows as $row" data-test="admin-help-row-{$row['pageKey']}">
+                            <td class="text-nowrap">{$row['pageKey']}</td>
+                            <td>{$row['module']}</td>
+                            <td>
+                                {if $row['hasLead']}
+                                    <i class="fi fi-rr-check" aria-hidden="true"></i>
+                                    <span class="visually-hidden">vlastní</span>
+                                {else}
+                                    <span class="text-body-secondary">—</span>
+                                {/if}
+                            </td>
+                            <td>
+                                {if $row['sectionCount'] > 0}
+                                    <span class="badge text-bg-success">{$row['sectionCount']}</span>
+                                {else}
+                                    <span class="text-body-secondary">—</span>
+                                {/if}
+                            </td>
+                            <td>
+                                {if $row['updatedAt'] !== null}
+                                    {$row['updatedAt']|date:'j. n. Y H:i'}
+                                    <span n:if="$row['updatedByName'] !== null" class="text-body-secondary">· {$row['updatedByName']}</span>
+                                {else}
+                                    <span class="text-body-secondary">—</span>
+                                {/if}
+                            </td>
+                            <td class="text-end">
+                                <a n:href="edit $row['pageKey']" class="btn btn-sm btn-light"
+                                   data-test="admin-help-edit-{$row['pageKey']}"
+                                   title="Upravit nápovědu">
+                                    <i class="fi fi-rr-edit" aria-hidden="true"></i>
+                                    {if $row['sectionCount'] > 0}Upravit{else}Napsat{/if}
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+{/block}

@@ -1,18 +1,15 @@
-{block #title}{$event->getDisplayName()} - seznam účastníků{/block}
+{block title}{$event->getDisplayName()} - seznam účastníků{/block}
 
 {block #subMenu}{include ../header.latte}{/block}
 
-{block #content}
+{block content}
 <div data-test="event-participant-page">
 
     {* Hero *}
     <div class="card page-heading">
         <div class="card-body">
             <h1 class="h3 mb-2">{$event->getDisplayName()}</h1>
-            <div class="page-lead">
-                <i class="fi fi-rr-info" aria-hidden="true"></i>
-                <span>Seznam účastníků akce a práce s jejich přidáváním i evidencí.</span>
-            </div>
+            {include pageLead, default: 'Seznam účastníků akce a práce s jejich přidáváním i evidencí.'}
         </div>
     </div>
 
