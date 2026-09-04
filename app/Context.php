@@ -11,7 +11,6 @@ final class Context
     public function __construct(
         private string $appDir,
         private string $wwwDir,
-        private bool $productionMode,
         string $environmentMode,
     ) {
         $this->environmentMode = EnvironmentMode::fromAppEnv($environmentMode);
@@ -25,11 +24,6 @@ final class Context
     public function getWwwDir(): string
     {
         return $this->wwwDir;
-    }
-
-    public function isProduction(): bool
-    {
-        return $this->productionMode;
     }
 
     public function shouldShowEnvironmentBadge(): bool

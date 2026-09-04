@@ -24,17 +24,6 @@
         }
     </script>
 
-    {if $productionMode}
-        <script n:syntax="off">
-            ga = function (){ga.q.push(arguments)};
-            ga.q = [];
-            ga.l = +new Date;
-            ga('create', 'UA-50892244-1', 'auto');
-            ga('send', 'pageview');
-        </script>
-        <script src="https://www.google-analytics.com/analytics.js" async defer></script>
-    {/if}
-
     <title>{block #title|stripHtml|trim}Skautské hospodaření{/block}</title>
 
     <link rel="stylesheet" href="/css/app.css?{md5_file($wwwDir . '/css/app.css')}">
@@ -226,6 +215,7 @@
                 </a>
                 <a n:href=":Default:about" class="site-footer__link">O projektu</a>
                 <a n:href=":Default:reinforcement" class="site-footer__link">Posily</a>
+                <a n:href=":Default:privacy" class="site-footer__link" data-test="footer-privacy-link">Soukromí a data</a>
                 <a href="https://github.com/skaut/Skautske-hospodareni/graphs/contributors" class="site-footer__link">Autoři</a>
                 <a href="https://github.com/skaut/Skautske-hospodareni" class="site-footer__link">
                     <i class="fi fi-brands-github" aria-hidden="true"></i>

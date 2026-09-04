@@ -110,7 +110,6 @@ services:
     - App\Context(
           appDir: %appDir%
           wwwDir: %wwwDir%
-          productionMode: %productionMode%
           environmentMode: %environmentMode%
       )
     - App\RouterFactory

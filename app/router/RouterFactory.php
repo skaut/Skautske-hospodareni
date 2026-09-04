@@ -22,6 +22,7 @@ class RouterFactory
         $router->addRoute('app.manifest', 'Offline:manifest');
         $router->addRoute('o-projektu', 'Default:about');
         $router->addRoute('posily', 'Default:reinforcement');
+        $router->addRoute('zasady-soukromi', 'Default:privacy');
         $router->addRoute('changelog', 'Default:changelog');
         $router->addRoute('design', 'Design:default');
         $router->addRoute('nahlasit-problem', 'BugReport:default');
