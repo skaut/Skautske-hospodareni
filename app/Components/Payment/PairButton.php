@@ -19,10 +19,18 @@ use function array_merge;
 
 class PairButton extends BaseControl
 {
+    /**
+     * @method void                    onSuccess()
+     * @var    array<callable(): void>
+     */
+    public array $onSuccess = [];
+
     /** @var array<string, string> */
     protected array $css = [];
 
     private PairButtonScope $scope;
+
+    private bool $ajaxEnabled = false;
 
     public function __construct(
         private PaymentService $payments,
@@ -54,6 +62,11 @@ class PairButton extends BaseControl
     public function setCss(string $key, string $value): void
     {
         $this->css[$key] = $value;
+    }
+
+    public function enableAjax(): void
+    {
+        $this->ajaxEnabled = true;
     }
 
     public function handlePair(): void
@@ -97,6 +110,7 @@ class PairButton extends BaseControl
             'scopeLabel' => 'úhrady',
             'disabledReason' => $this->scope->getDisabledReason(),
             'css' => $this->css,
+            'ajaxEnabled' => $this->ajaxEnabled,
         ]);
         $this->template->setFile(__DIR__.'/templates/PairButton.latte');
         $this->template->render();
@@ -141,6 +155,12 @@ class PairButton extends BaseControl
             $this->presenter->flashMessage(BankPairingUiMessages::wrongTokenAccountMessage($e), 'danger');
         } catch (InvalidOAuth $exc) {
             $this->presenter->flashMessage($exc->getExplainedMessage(), 'danger');
+        }
+
+        if ($this->ajaxEnabled && $this->presenter->isAjax()) {
+            $this->onSuccess();
+
+            return;
         }
 
         $this->presenter->redirect('this');
