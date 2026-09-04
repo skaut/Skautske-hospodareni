@@ -122,6 +122,36 @@ class PaymentDetailCest extends PaymentAcceptanceCest
         $this->createGeneralPaymentGroup($groupName);
 
         $I->seeCurrentUrlMatches('~^/platby/skupiny/\d+/platby(?:\?.*)?$~');
+        $I->resizeWindow(1440, 900);
+        $I->seeElement('[data-test="payment-add-button-toggle"].btn.btn-primary.btn-sm');
+        $I->seeElement('[data-test="payment-group-email-toggle"].btn.btn-light.btn-sm');
+        $I->seeElement('[data-test="pair-button-main"].btn.btn-light.btn-sm');
+
+        $actionSizes = $I->executeJS(<<<'JS'
+const selectors = [
+    '[data-test="payment-group-email-toggle"]',
+    '[data-test="pair-button-main"]',
+    '[data-test="payment-add-button-toggle"]',
+];
+
+return selectors.map(selector => {
+    const rect = document.querySelector(selector)?.getBoundingClientRect();
+
+    return rect === undefined ? null : {
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
+    };
+});
+JS);
+        Assert::assertSame($actionSizes[0]['height'], $actionSizes[1]['height']);
+        Assert::assertSame($actionSizes[1]['height'], $actionSizes[2]['height']);
+
+        $I->clickStable('[data-test="payment-group-email-toggle"]');
+        $I->waitForElementVisible('[data-test="payment-group-email-menu"].show', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeElement('[data-test="payment-group-email-test"]');
+        $I->clickStable('[data-test="payment-group-email-toggle"]');
+        $I->waitForElementNotVisible('[data-test="payment-group-email-menu"].show', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
         $I->clickStable('[data-test="payment-add-button-toggle"]');
         $I->waitForElementVisible('[data-test="payment-add-button-menu"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('[data-test="payment-add-button-item-member"]');
@@ -385,12 +415,15 @@ class PaymentDetailCest extends PaymentAcceptanceCest
 
         $I->amOnPage('/platby/skupiny/'.$groupId.'/platby');
         $I->waitForElementVisible('[data-test="payment-group-bank-account-toggle"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->waitForElementVisible('[data-page-help-toggle]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->resizeWindow(1440, 900);
         $headingLayout = $I->executeJS(<<<'JS'
 const heading = document.querySelector('[data-test="payment-group-detail-page"] .page-heading');
 const body = heading?.querySelector(':scope > .card-body');
 const title = heading?.querySelector('h1');
 const actions = heading?.querySelector('.page-heading-actions');
+const action = actions?.querySelector('.btn');
+const toggle = actions?.querySelector('[data-page-help-toggle]');
 const lead = heading?.querySelector('.page-lead');
 const style = body === null ? null : getComputedStyle(body);
 
@@ -399,12 +432,18 @@ return {
     actionsTop: actions?.getBoundingClientRect().top ?? null,
     titleBottom: title?.getBoundingClientRect().bottom ?? null,
     actionsBottom: actions?.getBoundingClientRect().bottom ?? null,
+    actionCenter: Math.round(((action?.getBoundingClientRect().top ?? 0) + (action?.getBoundingClientRect().bottom ?? 0)) / 2),
+    toggleCenter: Math.round(((toggle?.getBoundingClientRect().top ?? 0) + (toggle?.getBoundingClientRect().bottom ?? 0)) / 2),
+    actionsRight: Math.round(actions?.getBoundingClientRect().right ?? 0),
+    toggleRight: Math.round(toggle?.getBoundingClientRect().right ?? 0),
     leadTop: lead?.getBoundingClientRect().top ?? null,
     leadWidth: Math.round(lead?.getBoundingClientRect().width ?? 0),
     bodyContentWidth: Math.round((body?.clientWidth ?? 0) - Number.parseFloat(style?.paddingLeft ?? '0') - Number.parseFloat(style?.paddingRight ?? '0')),
 };
 JS);
         Assert::assertSame($headingLayout['titleTop'], $headingLayout['actionsTop']);
+        Assert::assertSame($headingLayout['actionCenter'], $headingLayout['toggleCenter']);
+        Assert::assertSame($headingLayout['actionsRight'], $headingLayout['toggleRight']);
         Assert::assertGreaterThanOrEqual(
             max($headingLayout['titleBottom'], $headingLayout['actionsBottom']),
             $headingLayout['leadTop'],
