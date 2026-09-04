@@ -120,17 +120,21 @@ table.table a:not(.btn):hover {
 
   .datagrid .datagrid-actions-row > * {
     border-top-width: 0;
-    padding-top: 0.25rem;
+    padding: 0.25rem 0 0;
     text-align: right;
   }
 
+  // The action cell spans the whole (scrollable) table width, so anchoring the buttons
+  // with a sticky right offset lands them past the scrollport by the cell padding.
+  // Give the block the scrollport width instead and right-align inside it.
   .datagrid .datagrid-actions-row .datagrid-row-actions {
     position: sticky;
-    right: 0.5rem;
+    left: 0;
     z-index: 1;
-    width: fit-content;
-    max-width: calc(100% - 0.5rem);
-    max-width: calc(100cqw - 0.5rem);
+    width: 100cqw;
+    max-width: 100cqw;
+    margin-left: 0;
+    padding-right: 0.75rem;
   }
 }
 

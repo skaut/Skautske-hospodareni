@@ -8,7 +8,9 @@ use AcceptanceTester;
 use Cake\Chronos\ChronosDate;
 use PHPUnit\Framework\Assert;
 
+use function json_encode;
 use function rawurlencode;
+use function sprintf;
 use function uniqid;
 
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
@@ -513,7 +515,7 @@ JS);
         $I->waitForElementVisible('[data-test="payment-group-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->seeElement('[data-test="payment-group-bank-account-toggle-disabled"].disabled[aria-disabled="true"]');
-        $I->seeElement('[title="Není připojený žádný bankovní účet."][data-bs-toggle="tooltip"]');
+        $I->seeTooltip('Není připojený žádný bankovní účet.');
         $I->dontSeeElement('[data-test="payment-group-bank-account-transactions"]');
     }
 
@@ -591,12 +593,14 @@ return {
 };
 JS);
 
-            Assert::assertSame('table-row', $mobileLayout['actionRowDisplay']);
-            Assert::assertSame(0, $mobileLayout['horizontalOverflow']);
-            Assert::assertSame(0, $mobileLayout['scrollerScrollLeft']);
-            Assert::assertSame(0, $mobileLayout['inaccessibleButtons']);
-            Assert::assertGreaterThanOrEqual(6, $mobileLayout['rightInset']);
-            Assert::assertSame(0, $mobileLayout['smallButtons']);
+            $context = sprintf('Akce v gridu na %d px: %s', $width, (string) json_encode($mobileLayout));
+
+            Assert::assertSame('table-row', $mobileLayout['actionRowDisplay'], $context);
+            Assert::assertSame(0, $mobileLayout['horizontalOverflow'], $context);
+            Assert::assertSame(0, $mobileLayout['scrollerScrollLeft'], $context);
+            Assert::assertSame(0, $mobileLayout['inaccessibleButtons'], $context);
+            Assert::assertGreaterThanOrEqual(6, $mobileLayout['rightInset'], $context);
+            Assert::assertSame(0, $mobileLayout['smallButtons'], $context);
         }
     }
 
