@@ -18,8 +18,8 @@
                             <i class="fi fi-rr-list" aria-hidden="true"></i>
                         </span>
                         <div>
-                            <h2 class="h5 mb-1"><a n:href=":Payments:GroupList:" class="stretched-link text-body text-decoration-none" data-test="payments-link-groups">Platební skupiny</a></h2>
-                            <p class="text-body-secondary small mb-0">Seznam skupin, párování úhrad, rozesílání e-mailů a provozní práce s platbami.</p>
+                            <h2 class="h4 mb-1"><a n:href=":Payments:GroupList:" class="stretched-link text-body text-decoration-none" data-test="payments-link-groups">Platební skupiny</a></h2>
+                            <p class="text-body-secondary mb-0">Seznam skupin, párování úhrad, rozesílání e-mailů a provozní práce s platbami.</p>
                         </div>
                     </div>
                     <div n:if="$isEditable" class="navigation-card-actions">
@@ -37,9 +37,9 @@
                             <i n:class="$canAccessInvoices ? 'fi fi-rr-file-invoice' : 'fi fi-rr-lock'" aria-hidden="true"></i>
                         </span>
                         <div>
-                            <h2 class="h5 mb-1"><a n:href=":Payments:InvoiceList:default, unitId => $unitId" class="stretched-link text-body text-decoration-none" data-test="payments-link-invoices">Faktury</a></h2>
-                            <p n:if="$canAccessInvoices" class="text-body-secondary small mb-0">Vystavování faktur, přehled řad, PDF a navazující odesílání přímo v provozní platební části.</p>
-                            <p n:if="! $canAccessInvoices" class="text-body-secondary small mb-0">Fakturace je v předběžném přístupu. Požádejte o zařazení do testovacího programu.</p>
+                            <h2 class="h4 mb-1"><a n:href=":Payments:InvoiceList:default, unitId => $unitId" class="stretched-link text-body text-decoration-none" data-test="payments-link-invoices">Faktury</a></h2>
+                            <p n:if="$canAccessInvoices" class="text-body-secondary mb-0">Vystavování faktur, přehled řad, PDF a navazující odesílání přímo v provozní platební části.</p>
+                            <p n:if="! $canAccessInvoices" class="text-body-secondary mb-0">Fakturace je v předběžném přístupu. Požádejte o zařazení do testovacího programu.</p>
                         </div>
                     </div>
                     <div n:if="$isEditable && $canAccessInvoices" class="navigation-card-actions">

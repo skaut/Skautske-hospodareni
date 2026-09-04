@@ -7,9 +7,11 @@
                 <i class="fi fi-rr-info" aria-hidden="true"></i>
                 <span>Přehled změn časopisů po registraci <strong>{$year}</strong> pro jednotku {$units[$unitId]->getDisplayName()} a jí podřízených jednotek.</span>
             </div>
-            <a n:href=":Payments:Payment:default $group->id" class="page-heading-actions btn btn-outline-secondary btn-sm">
-                <i class="fi fi-rr-arrow-left" aria-hidden="true"></i> {$group->name}
-            </a>
+            <div class="page-heading-actions d-flex flex-wrap gap-2 align-items-center">
+                <a n:href=":Payments:Payment:default $group->id" class="btn btn-outline-secondary btn-sm">
+                    <i class="fi fi-rr-arrow-left" aria-hidden="true"></i> {$group->name}
+                </a>
+            </div>
         </div>
     </div>
 
