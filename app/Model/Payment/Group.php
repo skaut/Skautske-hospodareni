@@ -23,63 +23,81 @@ use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
 use LogicException;
 
-#[ORM\Entity]
-#[ORM\Table(name: 'pa_group')]
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="pa_group")
+ */
 class Group
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'AUTO')]
-    #[ORM\Column(type: 'integer')]
+    /**
+     * @ORM\Id()
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     */
     private int $id;
 
     /**
+     * @ORM\OneToMany(
+     *     targetEntity=Unit::class,
+     *     mappedBy="group",
+     *     orphanRemoval=true,
+     *     cascade={"persist", "remove"},
+     *     indexBy="index"
+     * )
+     *
      * @var Collection&iterable<Unit>
      */
-    #[ORM\OneToMany(targetEntity: Unit::class, mappedBy: 'group', orphanRemoval: true, cascade: ['persist', 'remove'], indexBy: 'index')]
     private Collection $units;
 
-    #[ORM\Embedded(class: SkautisEntity::class, columnPrefix: false)]
-    #[Nullable]
+    /**
+     * @ORM\Embedded(class=SkautisEntity::class, columnPrefix=false)
+     *
+     * @Nullable()
+     */
     private ?SkautisEntity $object = null;
 
-    #[ORM\Column(type: 'string', length: 64)]
+    /** @ORM\Column(type="string", length=64) */
     private string $name;
 
-    #[ORM\Embedded(class: PaymentDefaults::class, columnPrefix: false)]
+    /** @ORM\Embedded(class=PaymentDefaults::class, columnPrefix=false) */
     private PaymentDefaults $paymentDefaults;
 
-    #[ORM\Column(type: 'string', length: 20)]
+    /** @ORM\Column(type="string", length=20) */
     private string $state = self::STATE_OPEN;
 
-    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    /** @ORM\Column(type="datetime_immutable", nullable=true) */
     private ?DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(type: 'boolean', options: ['default' => 0])]
+    /** @ORM\Column(type="boolean", options={"default"=0}) */
     private bool $isRemindersEnabled = false;
 
-    #[ORM\Embedded(class: Group\BankAccount::class, columnPrefix: false)]
-    #[Nullable]
+    /**
+     * @ORM\Embedded(class=Group\BankAccount::class, columnPrefix=false)
+     *
+     * @Nullable()
+     */
     private ?Group\BankAccount $bankAccount = null;
 
     /**
+     * @ORM\OneToMany(targetEntity=Email::class, mappedBy="group", cascade={"persist", "remove"}, orphanRemoval=true)
+     *
      * @var Collection&iterable<Email>
      */
-    #[ORM\OneToMany(targetEntity: Email::class, mappedBy: 'group', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $emails;
 
-    #[ORM\Column(type: 'oauth_id', nullable: true)]
+    /** @ORM\Column(type="oauth_id", nullable=true) */
     private ?OAuthId $oauthId;
 
-    #[ORM\Column(type: 'string', length: 250)]
+    /** @ORM\Column(type="string", length=250) */
     private string $note = '';
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    /** @ORM\Column(type="integer", nullable=true) */
     private ?int $smtpId = null;
 
-    #[ORM\Column(type: 'boolean', options: ['default' => 0])]
+    /** @ORM\Column(type="boolean", options={"default"=0}) */
     private bool $automaticPairingEnabled = false;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    /** @ORM\Column(type="integer", nullable=true) */
     private ?int $pairingDaysBack = null;
 
     public const STATE_OPEN = 'open';
@@ -202,7 +220,7 @@ class Group
             $this->units->add(new Unit($this, $unitId));
         }
 
-        $bankAccount = $this->bankAccount;
+        $bankAccount = $this->linkedBankAccount();
 
         if ($bankAccount !== null && ! $bankAccountAccessChecker->allUnitsHaveAccessToBankAccount($unitIds, $bankAccount->getId())) {
             $this->bankAccount = null;
@@ -224,7 +242,7 @@ class Group
     public function getUnitIds(): array
     {
         return $this->units->map(
-            function (Unit $unit): int {
+            function (?Unit $unit = null): int {
                 return $unit->getUnitId();
             },
         )->toArray();
@@ -291,25 +309,29 @@ class Group
 
     public function updateLastPairing(DateTimeImmutable $at): void
     {
-        if ($this->bankAccount === null) {
+        $bankAccount = $this->linkedBankAccount();
+
+        if ($bankAccount === null) {
             return;
         }
 
-        $this->bankAccount = $this->bankAccount->updateLastPairing($at);
+        $this->bankAccount = $bankAccount->updateLastPairing($at);
     }
 
     public function invalidateLastPairing(): void
     {
-        if ($this->bankAccount === null) {
+        $bankAccount = $this->linkedBankAccount();
+
+        if ($bankAccount === null) {
             return;
         }
 
-        $this->bankAccount = $this->bankAccount->invalidateLastPairing();
+        $this->bankAccount = $bankAccount->invalidateLastPairing();
     }
 
     public function getLastPairing(): ?DateTimeImmutable
     {
-        return $this->bankAccount?->getLastPairing();
+        return $this->linkedBankAccount()?->getLastPairing();
     }
 
     public function getOauthId(): ?OAuthId
@@ -324,12 +346,20 @@ class Group
 
     public function getBankAccountId(): ?int
     {
-        return $this->bankAccount?->getId();
+        return $this->linkedBankAccount()?->getId();
+    }
+
+    /** Null both for a group without a bank account and for an empty hydrated embeddable. */
+    private function linkedBankAccount(): ?Group\BankAccount
+    {
+        $bankAccount = $this->bankAccount;
+
+        return $bankAccount !== null && ! $bankAccount->isEmpty() ? $bankAccount : null;
     }
 
     private function changeBankAccount(?BankAccount $bankAccount, IBankAccountAccessChecker $accessChecker): void
     {
-        $currentBankAccountId = $this->bankAccount?->getId();
+        $currentBankAccountId = $this->linkedBankAccount()?->getId();
 
         if ($bankAccount === null) {
             $this->bankAccount = null;
@@ -343,7 +373,7 @@ class Group
             throw NoAccessToBankAccount::forUnits($unitIds, $bankAccount->getId());
         }
 
-        if ($currentBankAccountId === $bankAccount->getId()) {
+        if ($currentBankAccountId === $bankAccount->getId() && $this->linkedBankAccount() !== null) {
             return;
         }
 

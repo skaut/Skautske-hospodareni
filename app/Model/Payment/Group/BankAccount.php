@@ -37,6 +37,15 @@ final class BankAccount
         return new self($this->id, null);
     }
 
+    /**
+     * Doctrine instantiates an embeddable even when every mapped column is NULL, so a group
+     * without a bank account is hydrated with an uninitialized id instead of a null embeddable.
+     */
+    public function isEmpty(): bool
+    {
+        return ! isset($this->id);
+    }
+
     public function getId(): int
     {
         return $this->id;

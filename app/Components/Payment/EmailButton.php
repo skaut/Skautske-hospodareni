@@ -53,12 +53,6 @@ class EmailButton extends BaseControl
         return ! ($this->group->getOauthId() === null) && ! ($this->group->getBankAccountId() === null);
     }
 
-    public function renderLight(): void
-    {
-        $this->template->setParameters(['style' => 'light']);
-        $this->render();
-    }
-
     /**
      * rozešle všechny neposlané e-maily.
      */
