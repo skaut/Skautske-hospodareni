@@ -40,7 +40,7 @@
         <div class="card-body">
             <h1 n:inner-block="title" class="h3 mb-2">{$unitPairs[$unitId]}</h1>
             {include pageLead, default: 'Přehled kategorií, plánovaných částek a správa rozpočtu pro vybraný rok.', class: 'mb-3'}
-            <div class="d-flex flex-wrap gap-2">
+            <div class="page-heading-actions d-flex flex-wrap gap-2">
                 <a n:href="add unitId: $unitId, year: $year" class="btn btn-primary" data-test="unit-budget-add-link">
                     <i class="fi fi-rr-plus-small" aria-hidden="true"></i> Založit kategorii
                 </a>

@@ -4,7 +4,7 @@
         <div class="card-body">
             <h1 n:inner-block="title" class="h3 mb-2">Založit fakturační řadu</h1>
             {include pageLead, default: 'Nastavte prefix, číselnou řadu, bankovní účet a e-mailové šablony. Po uložení se otevře práce s fakturami v nové řadě.', class: 'mb-3'}
-            <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+            <div class="page-heading-actions d-flex flex-wrap gap-2 align-items-center justify-content-between">
                 <div class="d-flex flex-wrap gap-2 align-items-center">
                     <a n:href=":Payments:InvoiceList:default, unitId => $unitId" class="btn btn-outline-secondary btn-sm" data-test="invoice-sequence-create-back">
                         <i class="fi fi-rr-arrow-left" aria-hidden="true"></i>

@@ -4,7 +4,7 @@
         <div class="card-body">
             <h1 n:inner-block="title" class="h3 mb-2">Úprava fakturační řady: {$invoiceSequence->getDisplayLabel()}</h1>
             {include pageLead, default: 'Správa číselné řady, bankovního párování a e-mailových šablon pro vybranou fakturační řadu.', class: 'mb-3'}
-            <div class="d-flex flex-wrap gap-2 align-items-center">
+            <div class="page-heading-actions d-flex flex-wrap gap-2 align-items-center">
                 <a n:href=":Payments:InvoiceList:default, invoiceSequenceId => $invoiceSequence->getId(), unitId => $unitId" class="btn btn-outline-secondary btn-sm" data-test="invoice-sequence-edit-open">
                     <i class="fi fi-rr-file-invoice" aria-hidden="true"></i>
                     Otevřít faktury v řadě
