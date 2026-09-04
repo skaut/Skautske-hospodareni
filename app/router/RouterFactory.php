@@ -197,6 +197,7 @@ class RouterFactory
             ->addRoute('platby/skupiny/nova', 'Group:newGroup')
             ->addRoute('platby/skupiny/<id [0-9]+>/klonovat', 'Group:clone')
             ->addRoute('platby/skupiny/<id [0-9]+>/upravit', 'Group:edit')
+            ->addRoute('platby/skupiny/<id [0-9]+>/platby/parovat', 'Payment:pairTransactionToPayment')
             ->addRoute('platby/skupiny/<id [0-9]+>/platby', 'Payment:default')
             ->addRoute('platby/skupiny/<id [0-9]+>/ucastnici', 'Participants:default')
             ->addRoute('platby/skupiny/<id [0-9]+>/osoby', 'People:default')

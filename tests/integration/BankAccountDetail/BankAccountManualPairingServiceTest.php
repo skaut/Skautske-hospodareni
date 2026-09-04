@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\BankAccountDetail;
 
+use App\Components\Grids\GridFactory;
 use App\Components\Payment\BankAccountDetail\BankAccountDetailViewFactory;
 use App\Components\Payment\BankAccountDetail\BankAccountManualPairingService;
 use App\Model\Bank\Entity\BankAccount;
@@ -12,6 +13,7 @@ use App\Model\Bank\Entity\BankTransactionPairing;
 use App\Model\Bank\Enum\BankTransactionPairingMode;
 use App\Model\Bank\Enum\BankTransactionSource;
 use App\Model\Bank\Manager\BankTransactionPairingManager;
+use App\Model\Bank\PairingCandidate;
 use App\Model\Bank\Repository\BankTransactionPairingRepository;
 use App\Model\Bank\Repository\BankTransactionRepository;
 use App\Model\Bank\Services\AutomaticBankPairingService;
@@ -221,6 +223,7 @@ final class BankAccountManualPairingServiceTest extends IntegrationTest
             new InvoiceRepository($this->entityManager),
             new GroupRepository($this->entityManager, new NullEventBus()),
             new LinkGenerator(new SimpleRouter(), new UrlScript('https://example.test/')),
+            new GridFactory(),
         );
 
         $detail = $factory->create($bankAccount->getId(), [$group->getId() => $group->getName()], [11], includeInvoices: false);
@@ -230,6 +233,61 @@ final class BankAccountManualPairingServiceTest extends IntegrationTest
         self::assertNull($detail->transactionRows[0]->conflictReason);
         self::assertSame([], $detail->transactionRows[1]->manualCandidates);
         self::assertNotNull($detail->transactionRows[1]->pairing);
+    }
+
+    public function testPaymentGroupDetailOnlyOffersItsOwnPaymentsAndWarnsAboutOtherGroups(): void
+    {
+        $bankAccount = $this->createBankAccount();
+        $group = $this->createGroup(11, $bankAccount, 'Moje skupina');
+        $otherGroup = $this->createGroup(11, $bankAccount, 'Jiná skupina');
+        $payment = $this->createPayment($group, 200.00, '200001');
+        $otherPayment = $this->createPayment($otherGroup, 200.00, '200001');
+        $transaction = $this->createTransaction($bankAccount, 200.00, 200001);
+
+        $accounts = m::mock(BankAccountService::class);
+        $accounts->shouldReceive('getPersistentTransactions')
+            ->once()
+            ->with($bankAccount->getId(), 60)
+            ->andReturn([$transaction]);
+
+        $pairingCandidates = m::mock(BankPairingCandidateProvider::class);
+        $pairingCandidates->shouldReceive('getDomainCandidatesForBankAccount')
+            ->once()
+            ->with($bankAccount->getId())
+            ->andReturn([PairingCandidate::forPayment($payment), PairingCandidate::forPayment($otherPayment)]);
+
+        $pairings = m::mock(BankTransactionPairingRepository::class);
+        $pairings->shouldReceive('findActiveByTransactionKeys')
+            ->once()
+            ->with([$transaction->getTransactionKey()])
+            ->andReturn([]);
+
+        $factory = new BankAccountDetailViewFactory(
+            $accounts,
+            $pairingCandidates,
+            $pairings,
+            new PaymentRepository($this->entityManager, new NullEventBus()),
+            new InvoiceRepository($this->entityManager),
+            new GroupRepository($this->entityManager, new NullEventBus()),
+            new LinkGenerator(new SimpleRouter(), new UrlScript('https://example.test/')),
+            new GridFactory(),
+        );
+
+        $detail = $factory->createForPaymentGroup($bankAccount->getId(), $group->getId(), $group->getName(), $payment->getId());
+
+        self::assertNotNull($detail->transactionRows);
+        self::assertSame(
+            'Zobrazené transakce relevantní pro platbu '.$payment->getName().'.',
+            $detail->focusTargetLabel,
+        );
+        self::assertCount(1, $detail->transactionRows[0]->manualCandidates);
+        self::assertSame('payment:'.$payment->getId(), $detail->transactionRows[0]->manualCandidates[0]->targetKey);
+        self::assertCount(1, $detail->transactionRows[0]->exactCandidates);
+        self::assertSame('payment:'.$payment->getId(), $detail->transactionRows[0]->exactCandidates[0]->targetKey);
+        self::assertSame(
+            'Nespárovaná platba odpovídá více platebním skupinám se stejným VS a částkou.',
+            $detail->transactionRows[0]->conflictReason,
+        );
     }
 
     private function createBankAccount(): BankAccount

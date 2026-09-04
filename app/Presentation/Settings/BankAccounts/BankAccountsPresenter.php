@@ -9,11 +9,8 @@ use App\Components\Factories\Payment\IBankAccountFormFactory;
 use App\Components\Grids\GridFactory;
 use App\Components\Payment\BankAccountDetail\BankAccountDetail;
 use App\Components\Payment\BankAccountDetail\BankAccountDetailViewFactory;
-use App\Components\Payment\BankAccountDetail\BankAccountManualCandidate;
 use App\Components\Payment\BankAccountDetail\BankAccountManualPairingOutcome;
 use App\Components\Payment\BankAccountDetail\BankAccountManualPairingService;
-use App\Components\Payment\BankAccountDetail\BankAccountTransactionLink;
-use App\Components\Payment\BankAccountDetail\BankAccountTransactionRow;
 use App\Components\Payment\BankAccountForm;
 use App\Components\Payment\GpcImportDialog;
 use App\Model\Auth\Resources\InvoiceAccess;
@@ -40,9 +37,6 @@ use Nette\Utils\Html;
 use function array_keys;
 use function array_map;
 use function array_reduce;
-use function array_values;
-use function implode;
-use function number_format;
 
 final class BankAccountsPresenter extends SettingsBasePresenter
 {
@@ -353,41 +347,13 @@ final class BankAccountsPresenter extends SettingsBasePresenter
 
     protected function createComponentTransactionsGrid(): DataGrid
     {
-        $grid = $this->gridFactory->createSimpleGrid();
-        $grid->setPrimaryKey('transactionKey');
+        $detail = $this->detail ?? $this->resolveDetailForCurrentRequest();
 
-        $grid->addColumnDateTime('date', 'Datum')
-            ->setFormat('j.n. Y')
-            ->setSortable();
-
-        $grid->addColumnText('amount', 'Částka')
-            ->setRenderer(fn (array $row): Html => $this->renderTransactionAmount((float) $row['amount']))
-            ->setSortable('amountSort');
-
-        $grid->addColumnText('counterAccount', 'Účet')
-            ->setSortable();
-
-        $grid->addColumnText('counterName', 'Jméno')
-            ->setSortable();
-
-        $grid->addColumnText('constantSymbol', 'KS')
-            ->setSortable();
-
-        $grid->addColumnText('variableSymbol', 'VS')
-            ->setSortable();
-
-        $grid->addColumnText('note', 'Poznámka');
-
-        $grid->addColumnText('status', 'Stav / kandidáti')
-            ->setRenderer(fn (array $row): Html => $this->renderTransactionStatus($row['row']));
-
-        $grid->addFilterText('search', '', ['counterAccount', 'counterName', 'constantSymbol', 'variableSymbol', 'note', 'statusSearch'])
-            ->setPlaceholder('Hledat transakci...');
-
-        $grid->setDefaultSort(['date' => DataGrid::SORT_DESC]);
-        $grid->setDataSource($this->buildTransactionGridRows());
-
-        return $grid;
+        return $this->detailViewFactory->createTransactionsGrid(
+            $detail->transactionRows ?? [],
+            $this->transactionView === self::TRANSACTION_VIEW_INCOMING,
+            false,
+        );
     }
 
     protected function createComponentGpcImportDialog(): GpcImportDialog
@@ -437,45 +403,6 @@ final class BankAccountsPresenter extends SettingsBasePresenter
         return $groupNames;
     }
 
-    /** @return list<array<string, mixed>> */
-    private function buildTransactionGridRows(): array
-    {
-        $detail = $this->detail ?? $this->resolveDetailForCurrentRequest();
-        if ($detail->transactionRows === null) {
-            return [];
-        }
-
-        $rows = array_map(
-            static function (BankAccountTransactionRow $row): array {
-                $transaction = $row->transaction;
-
-                return [
-                    'transactionKey' => $transaction->getTransactionKey(),
-                    'date' => $transaction->getDate(),
-                    'amount' => $transaction->getAmount(),
-                    'amountSort' => sprintf('%020.2f', $transaction->getAmount() + 1000000000),
-                    'counterAccount' => $transaction->getCounterAccount() ?? '',
-                    'counterName' => $transaction->getCounterName(),
-                    'constantSymbol' => $transaction->getConstantSymbol() !== null ? (string) $transaction->getConstantSymbol() : '',
-                    'variableSymbol' => $transaction->getVariableSymbol() !== null ? (string) $transaction->getVariableSymbol() : '',
-                    'note' => $transaction->getNote() ?? '',
-                    'statusSearch' => self::buildStatusSearchText($row),
-                    'row' => $row,
-                ];
-            },
-            $detail->transactionRows,
-        );
-
-        if ($this->transactionView === self::TRANSACTION_VIEW_ALL) {
-            return $rows;
-        }
-
-        return array_values(array_filter(
-            $rows,
-            static fn (array $row): bool => (float) $row['amount'] > 0,
-        ));
-    }
-
     private function resolveDetailForCurrentRequest(): BankAccountDetail
     {
         $id = (int) $this->getParameter('id');
@@ -499,137 +426,6 @@ final class BankAccountsPresenter extends SettingsBasePresenter
         return $transactionView === self::TRANSACTION_VIEW_ALL
             ? self::TRANSACTION_VIEW_ALL
             : self::TRANSACTION_VIEW_INCOMING;
-    }
-
-    private function renderTransactionAmount(float $amount): Html
-    {
-        $strong = Html::el('strong')
-            ->setText(number_format($amount, 2, ',', ' ').' Kč');
-
-        if ($amount < 0) {
-            $strong->setAttribute('class', 'text-danger');
-        }
-
-        return Html::el('div')
-            ->setAttribute('class', 'text-end')
-            ->addHtml($strong);
-    }
-
-    private function renderTransactionStatus(BankAccountTransactionRow $row): Html
-    {
-        $container = Html::el('div')
-            ->setAttribute('class', 'd-flex flex-column gap-1');
-
-        if ($row->pairingLabel !== null) {
-            $pairing = Html::el('div');
-            $pairing->addHtml(Html::el('span')->setAttribute('class', 'badge text-bg-info')->setText('Spárováno'));
-            $pairing->addText(' ');
-            $pairing->addHtml($this->renderTransactionLink($row->pairingLabel));
-            $container->addHtml($pairing);
-        }
-
-        if ($row->manualCandidates !== []) {
-            $container->addHtml(Html::el('div')->setAttribute('class', 'small text-body-secondary')->setText('Ruční párování podle částky:'));
-
-            foreach ($row->manualCandidates as $candidate) {
-                $container->addHtml($this->renderManualCandidate($candidate));
-            }
-        }
-
-        if ($row->exactCandidates !== []) {
-            $container->addHtml(Html::el('div')->setAttribute('class', 'small text-body-secondary')->setText('Jednoznačné automatické shody:'));
-
-            foreach ($row->exactCandidates as $candidate) {
-                $container->addHtml($this->renderCandidateLink($candidate));
-            }
-        }
-
-        if ($row->conflictReason !== null) {
-            $container->addHtml(Html::el('div')->setAttribute('class', 'small text-danger')->setText($row->conflictReason));
-        }
-
-        if ($row->variableSymbolCandidates !== [] && $row->exactCandidates === []) {
-            $container->addHtml(Html::el('div')->setAttribute('class', 'small text-body-secondary')->setText('Položky se shodným VS:'));
-
-            foreach ($row->variableSymbolCandidates as $candidate) {
-                $container->addHtml($this->renderCandidateLink($candidate));
-            }
-        }
-
-        return $container;
-    }
-
-    private function renderManualCandidate(BankAccountManualCandidate $candidate): Html
-    {
-        $container = Html::el('div')->setAttribute('class', 'mb-1');
-        $container->addHtml($this->renderTypeBadge($candidate->type));
-        $container->addText(' ');
-        $container->addHtml(Html::el('a')->href($candidate->url)->setText($candidate->label));
-        $container->addText(' ');
-        $container->addHtml(
-            Html::el('a')
-                ->href($candidate->actionUrl)
-                ->setAttribute('class', 'btn btn-sm btn-outline-success ms-1')
-                ->setAttribute('data-confirm', 'Opravdu chceš ručně spárovat tuto bankovní transakci?')
-                ->setText('Spárovat'),
-        );
-
-        if ($candidate->warnings !== []) {
-            $container->addText(' ');
-            $container->addHtml(Html::el('span')->setAttribute('class', 'small text-warning ms-1')->setText(implode(', ', $candidate->warnings)));
-        }
-
-        return $container;
-    }
-
-    private function renderCandidateLink(BankAccountTransactionLink $candidate): Html
-    {
-        $container = Html::el('div');
-        $container->addHtml($this->renderTypeBadge($candidate->type));
-        $container->addText(' ');
-        $container->addHtml($this->renderTransactionLink($candidate));
-
-        return $container;
-    }
-
-    private function renderTransactionLink(BankAccountTransactionLink $link): Html
-    {
-        if ($link->url === null) {
-            return Html::el('span')->setText($link->label);
-        }
-
-        return Html::el('a')
-            ->href($link->url)
-            ->setText($link->label);
-    }
-
-    private function renderTypeBadge(string $type): Html
-    {
-        return Html::el('span')
-            ->setAttribute('class', $type === 'invoice' ? 'badge text-bg-secondary' : 'badge text-bg-primary')
-            ->setText($type === 'invoice' ? 'Faktura' : 'Platba');
-    }
-
-    private static function buildStatusSearchText(BankAccountTransactionRow $row): string
-    {
-        $parts = [];
-
-        foreach ([$row->pairingLabel, ...$row->exactCandidates, ...$row->variableSymbolCandidates] as $link) {
-            if ($link instanceof BankAccountTransactionLink) {
-                $parts[] = $link->label;
-            }
-        }
-
-        foreach ($row->manualCandidates as $candidate) {
-            $parts[] = $candidate->label;
-            $parts[] = implode(' ', $candidate->warnings);
-        }
-
-        if ($row->conflictReason !== null) {
-            $parts[] = $row->conflictReason;
-        }
-
-        return implode(' ', $parts);
     }
 
     private function canAccessInvoices(): bool

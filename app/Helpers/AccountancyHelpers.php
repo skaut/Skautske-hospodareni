@@ -18,6 +18,7 @@ use RuntimeException;
 use function array_reverse;
 use function count;
 use function explode;
+use function intdiv;
 use function is_callable;
 use function mb_strtoupper;
 use function mb_substr;
@@ -241,6 +242,30 @@ abstract class AccountancyHelpers
     public static function num(int|float|string $num): string
     {
         return number_format((float) $num, strpos((string) $num, '.') ? 2 : 0, ',', ' ');
+    }
+
+    /**
+     * @filter
+     *
+     * délka sezení v lidsky čitelném tvaru, např. "1 h 24 min"
+     */
+    public static function duration(?int $seconds): string
+    {
+        if ($seconds === null) {
+            return '–';
+        }
+
+        if ($seconds < 60) {
+            return $seconds.' s';
+        }
+
+        $minutes = intdiv($seconds, 60);
+
+        if ($minutes < 60) {
+            return $minutes.' min';
+        }
+
+        return intdiv($minutes, 60).' h '.($minutes % 60).' min';
     }
 
     public static function postCode(string $oldPsc): string
