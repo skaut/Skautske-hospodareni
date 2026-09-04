@@ -14,7 +14,7 @@
                 {elseif $group->type === "event"}Akce
                 {elseif $group->type === "registration"}Registrace{/if}
             </div>
-            <div class="d-flex flex-wrap gap-2 align-items-center" n:if="$isEditable">
+            <div class="page-heading-actions d-flex flex-wrap gap-2 align-items-center" n:if="$isEditable">
                 {if $group->state === 'open'}
                     <a n:href="closeGroup!" class="btn btn-light btn-sm" data-test="payment-group-close">
                         <i class="fi fi-rr-lock" aria-hidden="true"></i> Uzavřít
@@ -30,8 +30,66 @@
                         <i class="fi fi-rr-trash" aria-hidden="true"></i> Smazat skupinu
                     </a>
                 {/if}
+                <span n:snippet="bankAccountTransactionsToggle">
+                    {if $hasBankAccount}
+                        {if $bankAccountTransactionsLoaded}
+                            <a n:href="hideBankAccountTransactions!" class="ajax btn btn-light btn-sm" data-test="payment-group-bank-account-toggle">
+                                <i class="fi fi-rr-eye-crossed" aria-hidden="true"></i> Skrýt bankovní platby
+                            </a>
+                        {else}
+                            <a n:href="loadBankAccountTransactions!" class="ajax btn btn-light btn-sm" data-test="payment-group-bank-account-toggle">
+                                <i class="fi fi-rr-bank" aria-hidden="true"></i> Zobrazit bankovní platby
+                            </a>
+                        {/if}
+                    {else}
+                        <span class="d-inline-block" tabindex="0" data-bs-toggle="tooltip" title="Není připojený žádný bankovní účet.">
+                            <span class="btn btn-light btn-sm disabled" aria-disabled="true" data-test="payment-group-bank-account-toggle-disabled">
+                                <i class="fi fi-rr-bank" aria-hidden="true"></i> Zobrazit bankovní platby
+                            </span>
+                        </span>
+                    {/if}
+                </span>
             </div>
         </div>
+    </div>
+
+    <div n:snippet="bankAccountTransactions">
+        <section n:if="$bankAccountTransactionsLoaded" class="card mb-4" data-test="payment-group-bank-account-transactions">
+            <div class="card-body">
+                <h2 class="h4 mb-3">
+                    <i class="fi fi-rr-bank me-2" aria-hidden="true"></i>Přehled plateb pro tuto skupinu
+                </h2>
+                {if $hasBankAccount}
+                    <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+                        <div>
+                            {if $bankAccount !== null}
+                                <p class="text-body-secondary mb-0">
+                                    Příchozí transakce z účtu <strong>{$bankAccount->getName()}</strong> ({$bankAccount->getNumber()}).
+                                </p>
+                            {/if}
+                            <p n:if="$bankAccountDetail?->focusTargetLabel !== null" class="small text-body-secondary mb-0">
+                                {$bankAccountDetail->focusTargetLabel}
+                            </p>
+                        </div>
+                        <a n:href="loadBankAccountTransactions! paymentId => $bankAccountPaymentId" class="ajax btn btn-light" data-test="payment-group-bank-account-reload">
+                            <i class="fi fi-rr-refresh me-1" aria-hidden="true"></i>
+                            Obnovit přehled
+                        </a>
+                    </div>
+
+                    {if $bankAccountDetail === null || $bankAccountDetail->transactionRows === null}
+                        <div class="alert alert-danger mb-0" n:if="$bankAccountDetail?->errorMessage !== null">{$bankAccountDetail->errorMessage}</div>
+                        <div class="alert alert-warning mb-0" n:if="$bankAccountDetail?->warningMessage !== null">{$bankAccountDetail->warningMessage}</div>
+                    {elseif count($bankAccountDetail->transactionRows) > 0}
+                        {control bankAccountTransactionsGrid}
+                    {else}
+                        <p class="alert alert-info text-center mb-0">Nebyly nalezeny žádné příchozí transakce.</p>
+                    {/if}
+                {else}
+                    <p class="alert alert-info mb-0">Platební skupina nemá připojený bankovní účet.</p>
+                {/if}
+            </div>
+        </section>
     </div>
 
     <section class="card mb-4" data-test="payment-group-progress">
