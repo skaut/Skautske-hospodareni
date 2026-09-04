@@ -6,7 +6,7 @@
         <div class="card-body">
             <h1 n:inner-block="title" class="h3 mb-2">{$unitPairs[$unitId]}</h1>
             {include pageLead, default: 'Evidence plateb, přehled dokladů a rozpočet pro vybranou jednotku na jednom místě.', class: 'mb-3'}
-            <div class="d-flex flex-wrap gap-2">
+            <div class="page-heading-actions d-flex flex-wrap gap-2">
                 <a n:href="createCashbook!" class="ajax btn btn-primary" data-test="unit-cashbook-create">
                     <i class="fi fi-rr-plus-small" aria-hidden="true"></i> Založit novou pokladní knihu
                 </a>

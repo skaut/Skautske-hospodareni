@@ -223,7 +223,8 @@
   width: 100%;
 }
 
-.navbar--test {
+.navbar--test,
+.navbar--dev {
   --tblr-navbar-bg: #fff7dc;
   --site-header-color: #4d401d;
   --site-header-muted: #806c35;
@@ -232,17 +233,6 @@
   --site-header-border: #ecd795;
   --site-header-control-border: rgba(77, 64, 29, 0.28);
   box-shadow: 0 1px 3px rgba(77, 64, 29, 0.08);
-}
-
-.navbar--dev {
-  --tblr-navbar-bg: #f3edff;
-  --site-header-color: #4a2c78;
-  --site-header-muted: #76549d;
-  --site-header-hover-bg: #e8dcff;
-  --site-header-active-bg: #ddccfa;
-  --site-header-border: #cbb4eb;
-  --site-header-control-border: rgba(74, 44, 120, 0.26);
-  box-shadow: 0 1px 3px rgba(74, 44, 120, 0.08);
 }
 
 .navbar--beta {
@@ -319,6 +309,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.25rem;
   min-height: 2rem;
   padding: 0.25rem 0.5rem;
   border: 1px solid #e1c874;
@@ -333,12 +324,6 @@
   font-weight: 700;
   line-height: 1;
   white-space: nowrap;
-}
-
-.navbar--dev .navbar-test-badge {
-  border-color: #c3a7e5;
-  background: #e8dcff;
-  color: #59358a;
 }
 
 .navbar--beta .navbar-test-badge {
