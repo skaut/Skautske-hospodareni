@@ -7,6 +7,10 @@ namespace acceptance;
 use AcceptanceTester;
 use PHPUnit\Framework\Assert;
 
+use function date;
+use function implode;
+use function sprintf;
+
 final class AdminCest extends BaseAcceptanceCest
 {
     private const ACCEPTANCE_ADMIN_USER_ID = 2465;
@@ -52,6 +56,11 @@ final class AdminCest extends BaseAcceptanceCest
         $I->waitForElement('.alert-danger', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/');
         $I->dontSeeElement('[data-test="admin-bug-reports-page"]');
+
+        $I->amOnPage('/admin/vyuziti');
+        $I->waitForElement('.alert-danger', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeInCurrentUrl('/');
+        $I->dontSeeElement('[data-test="admin-usage-page"]');
     }
 
     // ─── Overview Page ───────────────────────────────────────────
@@ -380,7 +389,205 @@ final class AdminCest extends BaseAcceptanceCest
         $I->seeInCurrentUrl('/admin/hlaseni-chyb');
     }
 
+    // ─── Usage Page ──────────────────────────────────────────────
+
+    /**
+     * Renders the page with real rows in `user_login`. Without them the template
+     * stops at the "no data yet" notice and never reaches the tiles, breakdowns
+     * and heat map — which is exactly where it used to fall over.
+     *
+     * @group admin
+     */
+    public function adminUsagePageRendersEveryCardWhenLoginsExist(): void
+    {
+        $I = $this->I;
+        $this->becomeAdmin();
+        $this->haveLogins();
+
+        $I->wantTo('verify admin usage page renders all cards from recorded logins');
+
+        $I->amOnPage('/admin/vyuziti');
+        $I->waitForElementVisible('[data-test="admin-usage-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        // A Latte runtime error renders as a Tracy page, not as our markup.
+        $I->dontSeeElement('#tracy-bs');
+        $I->dontSee('Undefined variable');
+        $I->dontSee('incompatible content type');
+
+        // Filters
+        $I->seeElement('[data-test="admin-usage-page"] select[name="unitId"]');
+        $I->seeElement('[data-test="admin-usage-page"] select[name="year"]');
+
+        // Every card
+        $I->seeElement('[data-test="admin-usage-logins-card"]');
+        $I->seeElement('[data-test="admin-usage-devices-card"]');
+        $I->seeElement('[data-test="admin-usage-week-card"]');
+        $I->seeElement('[data-test="admin-usage-preferences-card"]');
+        $I->seeElement('[data-test="admin-usage-engagement-card"]');
+        $I->seeElement('[data-test="admin-usage-monthly-card"]');
+
+        // Data branch, not the empty-state notice
+        $I->dontSeeElement('[data-test="admin-usage-no-data"]');
+        $I->dontSeeElement('[data-test="admin-usage-tracking-unavailable"]');
+
+        // The tiles that used to blow up on the |num filter
+        $I->seeElement('[data-test="admin-usage-headline"] .usage-kpi__value');
+        $I->seeNumberOfElements('[data-test="admin-usage-headline"] .usage-kpi', 4);
+
+        // Formatted numbers actually made it into the markup
+        $headline = $I->grabTextFrom('[data-test="admin-usage-headline"]');
+        Assert::assertStringContainsString('Přihlášení', $headline);
+        Assert::assertStringContainsString('Uživatelé', $headline);
+
+        // Breakdown bars and the 7 x 24 heat map
+        $I->seeElement('[data-test="admin-usage-devices-card"] .usage-bar__fill');
+
+        // Twelve months of logins — not the domain counts Admin:Statistics owns.
+        $I->seeNumberOfElements('[data-test="admin-usage-monthly-card"] .usage-bar', 12);
+        $I->seeNumberOfElements('[data-test="admin-usage-week-card"] .usage-heatmap tbody tr', 7);
+        $I->seeNumberOfElements('[data-test="admin-usage-week-card"] .usage-heatmap tbody tr:first-child td', 24);
+    }
+
+    /** @group admin */
+    public function adminUsagePageExplainsItselfWithoutRecordedLogins(): void
+    {
+        $I = $this->I;
+        $this->becomeAdmin();
+        $I->deleteFromDatabase('user_login', ['unit_id' => AcceptanceTester::UNIT_ID]);
+
+        $I->wantTo('verify admin usage page stays readable before any login is recorded');
+
+        $I->amOnPage('/admin/vyuziti');
+        $I->waitForElementVisible('[data-test="admin-usage-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        $I->dontSeeElement('#tracy-bs');
+        $I->seeElement('[data-test="admin-usage-no-data"]');
+
+        // Cards that do not depend on login tracking still render.
+        $I->seeElement('[data-test="admin-usage-preferences-card"]');
+        $I->seeElement('[data-test="admin-usage-engagement-card"]');
+
+        // The login-only cards are hidden rather than shown empty.
+        $I->dontSeeElement('[data-test="admin-usage-devices-card"]');
+        $I->dontSeeElement('[data-test="admin-usage-week-card"]');
+        $I->dontSeeElement('[data-test="admin-usage-monthly-card"]');
+    }
+
+    /** @group admin */
+    public function adminUsagePageFitsAPhoneWithoutHorizontalOverflow(): void
+    {
+        $I = $this->I;
+        $this->becomeAdmin();
+        $this->haveLogins();
+
+        $I->wantTo('verify the usage page does not overflow sideways on a phone');
+
+        $I->resizeWindow(375, 900);
+        $I->amOnPage('/admin/vyuziti');
+        $I->waitForElementVisible('[data-test="admin-usage-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        // The heat map and the month table have to scroll inside their own
+        // container. Naming the widest element turns a failure here into a
+        // pointer instead of a hunt.
+        $measured = $I->executeJS(<<<'JS'
+const limit = document.documentElement.clientWidth;
+const offenders = [];
+
+document.querySelectorAll('[data-test="admin-usage-page"] *').forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if (rect.right <= limit + 1 || rect.width === 0) { return; }
+
+    // Anything inside a horizontal scroll container is meant to be wider.
+    let ancestor = el.parentElement, contained = false;
+    while (ancestor && ancestor !== document.body) {
+        const overflowX = getComputedStyle(ancestor).overflowX;
+        if (overflowX === 'auto' || overflowX === 'scroll' || overflowX === 'hidden') { contained = true; break; }
+        ancestor = ancestor.parentElement;
+    }
+    if (contained) { return; }
+
+    offenders.push(
+        el.tagName.toLowerCase()
+        + '.' + (el.className || '').toString().split(' ').slice(0, 2).join('.')
+        + ' (' + Math.round(rect.width) + 'px)'
+    );
+});
+
+return {
+    overflow: document.documentElement.scrollWidth - limit,
+    offenders: offenders.slice(0, 5),
+};
+JS);
+
+        Assert::assertLessThanOrEqual(
+            1,
+            (int) $measured['overflow'],
+            sprintf(
+                'Stránka Využití přetéká vodorovně na 375 px o %d px. Nejširší prvky: %s',
+                (int) $measured['overflow'],
+                implode(', ', $measured['offenders']) ?: 'neurčeno',
+            ),
+        );
+
+        $I->resizeWindow(self::DEFAULT_WINDOW_WIDTH, self::DEFAULT_WINDOW_HEIGHT);
+    }
+
+    /** @group admin */
+    public function adminUsagePageIsReachableFromOverviewAndSubmenu(): void
+    {
+        $I = $this->I;
+        $this->becomeAdmin();
+
+        $I->wantTo('verify the usage page is linked from the admin overview and submenu');
+
+        $I->amOnPage('/admin');
+        $I->waitForElementVisible('[data-test="admin-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        $I->seeElement('[data-test="admin-card-usage"].navigation-card');
+        $usageHref = $I->grabAttributeFrom('[data-test="admin-link-usage"]', 'href');
+        Assert::assertStringContainsString('/admin/vyuziti', $usageHref);
+
+        $I->clickStable('[data-test="admin-nav-usage"]');
+        $I->waitForElementVisible('[data-test="admin-usage-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeInCurrentUrl('/admin/vyuziti');
+        $I->seeElement('[data-test="admin-nav-usage"].btn-primary');
+    }
+
     // ─── Helpers ─────────────────────────────────────────────────
+
+    /** Spread over two weekdays and two browsers so every breakdown has something to show. */
+    private function haveLogins(): void
+    {
+        $I = $this->I;
+        $year = (int) date('Y');
+
+        $I->deleteFromDatabase('user_login', ['unit_id' => AcceptanceTester::UNIT_ID]);
+
+        $rows = [
+            // Monday morning, desktop, ended by logout
+            [1, $year.'-01-05 09:00:00', $year.'-01-05 09:42:00', 'logout', 'desktop', 'Chrome', '130', 'Windows'],
+            [1, $year.'-01-05 14:00:00', $year.'-01-05 14:05:00', null, 'desktop', 'Chrome', '130', 'Windows'],
+            [2, $year.'-01-06 20:00:00', $year.'-01-06 20:30:00', null, 'mobile', 'Safari', null, 'iOS'],
+            [3, $year.'-01-06 21:00:00', $year.'-01-06 21:10:00', null, 'tablet', 'Firefox', '131', 'Android'],
+        ];
+
+        foreach ($rows as [$userId, $loggedInAt, $lastSeenAt, $endReason, $deviceType, $browser, $browserVersion, $platform]) {
+            $I->haveInDatabase('user_login', [
+                'user_id' => $userId,
+                'unit_id' => AcceptanceTester::UNIT_ID,
+                'role_id' => 1,
+                'role_key' => 'vedouciStredisko',
+                'logged_in_at' => $loggedInAt,
+                'last_seen_at' => $lastSeenAt,
+                'logged_out_at' => $endReason === null ? null : $lastSeenAt,
+                'end_reason' => $endReason,
+                'device_type' => $deviceType,
+                'browser' => $browser,
+                'browser_version' => $browserVersion,
+                'platform' => $platform,
+            ]);
+        }
+    }
 
     private function becomeAdmin(): void
     {

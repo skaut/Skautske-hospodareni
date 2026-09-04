@@ -63,6 +63,12 @@ class SkautisRole
         $this->unitName = (string) ($values['unitName'] ?? '');
     }
 
+    /** Raw skautIS key, e.g. `vedouciStredisko`. */
+    public function getKey(): string
+    {
+        return $this->key;
+    }
+
     public function getName(): string
     {
         return $this->name;

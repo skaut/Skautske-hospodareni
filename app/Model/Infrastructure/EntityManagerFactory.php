@@ -71,6 +71,7 @@ final class EntityManagerFactory
         $driverChain->addDriver($attributeDriver, 'App\Model\User\Entity');
         $driverChain->addDriver($attributeDriver, 'App\Model\BugReport\Entity');
         $driverChain->addDriver($attributeDriver, 'App\Model\Help\Entity');
+        $driverChain->addDriver($attributeDriver, 'App\Model\PageView\Entity');
         $driverChain->addDriver($attributeDriver, 'App\Model\Invoice\Entity');
         $driverChain->addDriver($attributeDriver, 'App\Model\Invoice\Embeddable');
         $driverChain->addDriver($attributeDriver, 'App\Model\Bank\Entity');

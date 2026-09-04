@@ -21,6 +21,7 @@ class RouterFactory
         // Static pages
         $router[] = new Route('o-projektu', 'Default:about');
         $router[] = new Route('posily', 'Default:reinforcement');
+        $router->addRoute('zasady-soukromi', 'Default:privacy');
         $router[] = new Route('changelog', 'Default:changelog');
         $router[] = new Route('design', 'Design:default');
         $router[] = new Route('nahlasit-problem', 'BugReport:default');
@@ -234,6 +235,7 @@ class RouterFactory
             ->addRoute('napovedy/<pageKey>', 'Help:edit')
             ->addRoute('napovedy', 'Help:default')
             ->addRoute('statistiky ? jednotka=<unitId>', 'Statistics:default')
+            ->addRoute('vyuziti ? jednotka=<unitId>', 'Usage:default')
             ->addRoute('<presenter>[/<action>]', ['action' => 'default']);
     }
 
