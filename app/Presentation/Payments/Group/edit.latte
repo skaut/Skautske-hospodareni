@@ -4,7 +4,7 @@
         <div class="card-body">
             <h1 n:inner-block="title" class="h3 mb-2">Editace skupiny: {$group->getName()}</h1>
             {include pageLead, default: 'Upravte název, bankovní účet nebo e-mailové šablony platební skupiny.', class: 'mb-3'}
-            <div class="d-flex flex-wrap gap-2">
+            <div class="page-heading-actions d-flex flex-wrap gap-2">
                 <a n:href=":Payments:Payment:default $group->id" class="btn btn-outline-secondary btn-sm">
                     <i class="fi fi-rr-arrow-left" aria-hidden="true"></i>
                     Zpět na {$group->name}

@@ -10,7 +10,7 @@
         <div class="card-body">
             <h1 class="h3 mb-2">{$event->getDisplayName()}</h1>
             {include pageLead, default: 'Evidence plateb akce, kontrola zůstatku a návaznost na příjmy od účastníků.', class: 'mb-3'}
-            <div n:if="$isEditable" class="d-flex flex-wrap gap-2">
+            <div n:if="$isEditable" class="page-heading-actions d-flex flex-wrap gap-2">
                 <a n:href="importHpd! aid => $aid" class="btn btn-sm btn-primary">
                     <i class="fi fi-rr-user" aria-hidden="true"></i>&nbsp;Načíst příjmy od účastníků
                 </a>
