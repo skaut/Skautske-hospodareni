@@ -14,6 +14,21 @@ use function random_int;
 class PaymentDashboardCest extends PaymentAcceptanceCest
 {
     /** @group payment */
+    public function paymentNavigationTilesUseReadableTypography(): void
+    {
+        $I = $this->I;
+
+        $I->amOnPage('/platby');
+        $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        foreach (['groups', 'invoices'] as $tile) {
+            $card = '[data-test="payments-card-'.$tile.'"]';
+            $I->seeElement($card.' h2.h4');
+            $I->dontSeeElement($card.' p.small');
+        }
+    }
+
+    /** @group payment */
     public function dashboardPaymentGroupTileShowsCountsAndLinksToDetail(): void
     {
         $I = $this->I;

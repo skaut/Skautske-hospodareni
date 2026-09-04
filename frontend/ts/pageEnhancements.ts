@@ -90,7 +90,14 @@ export function initializePageHelp(root: ParentNode = document): void {
         toggle.setAttribute('aria-controls', helpContentId);
         toggle.appendChild(icon);
         toggle.insertAdjacentHTML('beforeend', '<span class="visually-hidden">Přepnout nápovědu</span>');
-        help.appendChild(toggle);
+
+        let actions = cardBody.querySelector<HTMLElement>(':scope > .page-heading-actions');
+        if (actions === null) {
+            actions = document.createElement('div');
+            actions.className = 'page-heading-actions page-heading-help-actions';
+            cardBody.appendChild(actions);
+        }
+        actions.appendChild(toggle);
 
         const setExpanded = (expanded: boolean): void => {
             heading.dataset.pageHelpExpanded = String(expanded);

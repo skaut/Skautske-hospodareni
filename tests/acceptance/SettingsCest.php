@@ -216,11 +216,41 @@ class SettingsCest extends BaseAcceptanceCest
     {
         $I = $this->I;
 
-        $I->wantTo('hide page help by default and open it with the title icon');
+        $I->wantTo('hide page help by default and toggle it from the page heading actions');
 
         $this->openUserSettingsPage();
 
-        $I->seeElement('.page-heading .page-lead > [data-page-help-toggle]');
+        $I->waitForElementVisible('[data-page-help-toggle]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->resizeWindow(1440, 900);
+        $I->seeElement('.page-heading > .card-body > .page-heading-actions [data-page-help-toggle]');
+        $I->dontSeeElement('.page-heading .page-lead [data-page-help-toggle]');
+
+        $headingLayout = $I->executeJS(<<<'JS'
+const heading = document.querySelector('[data-test="settings-user-page"] .page-heading');
+const body = heading?.querySelector(':scope > .card-body');
+const title = heading?.querySelector('h1');
+const actions = heading?.querySelector(':scope > .card-body > .page-heading-actions');
+const toggle = actions?.querySelector('[data-page-help-toggle]');
+const lead = heading?.querySelector(':scope > .card-body > .page-lead');
+const bodyStyle = body === null || body === undefined ? null : getComputedStyle(body);
+
+return {
+    toggleInActions: actions?.contains(toggle) ?? false,
+    titleTop: Math.round(title?.getBoundingClientRect().top ?? 0),
+    actionsTop: Math.round(actions?.getBoundingClientRect().top ?? 0),
+    toggleTop: Math.round(toggle?.getBoundingClientRect().top ?? 0),
+    actionsBottom: Math.round(actions?.getBoundingClientRect().bottom ?? 0),
+    leadTop: Math.round(lead?.getBoundingClientRect().top ?? 0),
+    toggleRight: Math.round(toggle?.getBoundingClientRect().right ?? 0),
+    bodyContentRight: Math.round((body?.getBoundingClientRect().right ?? 0) - Number.parseFloat(bodyStyle?.paddingRight ?? '0')),
+};
+JS);
+        Assert::assertTrue($headingLayout['toggleInActions']);
+        Assert::assertSame($headingLayout['titleTop'], $headingLayout['actionsTop']);
+        Assert::assertSame($headingLayout['actionsTop'], $headingLayout['toggleTop']);
+        Assert::assertGreaterThanOrEqual($headingLayout['actionsBottom'], $headingLayout['leadTop']);
+        Assert::assertSame($headingLayout['bodyContentRight'], $headingLayout['toggleRight']);
+
         $I->seeElement('[data-page-help-content]:not([hidden])');
         $I->uncheckOption('input[name="showHelp"]');
         $I->click('input[type="submit"]');
@@ -233,11 +263,28 @@ class SettingsCest extends BaseAcceptanceCest
         $I->seeElement('[data-page-help-toggle][aria-expanded="false"]');
         $I->seeElement('.page-heading .page-lead[data-page-help-expanded="false"]');
         $I->dontSeeElement('[data-page-help-content]:not([hidden])');
+        $collapsedHelpDisplay = $I->executeJS(<<<'JS'
+const lead = document.querySelector('[data-test="settings-user-page"] .page-lead');
+
+return lead === null ? null : getComputedStyle(lead).display;
+JS);
+        Assert::assertSame('none', $collapsedHelpDisplay);
 
         $I->click('[data-page-help-toggle]');
         $I->waitForJS('return document.querySelector(".page-heading")?.dataset.pageHelpExpanded === "true"', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('.page-heading .page-lead[data-page-help-expanded="true"]');
         $I->seeElement('[data-page-help-content]:not([hidden])');
+        $expandedHelpDisplay = $I->executeJS(<<<'JS'
+const lead = document.querySelector('[data-test="settings-user-page"] .page-lead');
+
+return lead === null ? null : getComputedStyle(lead).display;
+JS);
+        Assert::assertSame('flex', $expandedHelpDisplay);
+
+        $I->click('[data-page-help-toggle]');
+        $I->waitForJS('return document.querySelector(".page-heading")?.dataset.pageHelpExpanded === "false"', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeElement('.page-heading .page-lead[data-page-help-expanded="false"]');
+        $I->dontSeeElement('[data-page-help-content]:not([hidden])');
 
         $this->openSettingsSubpage('[data-test="settings-subnav-invoices"]', '[data-test="invoice-settings-page"]', '/nastaveni/faktury');
         $I->seeElement('[data-page-help-toggle][aria-expanded="false"]');
