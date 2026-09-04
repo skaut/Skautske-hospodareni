@@ -1,10 +1,10 @@
 <div class="btn-group" title="{if !$canSend}Pro rozeslání emailů musí být přiřazený email a bankovní účet v nastavená platební skupiny{/if}">
-    <button n:class="!$canSend ? disabled, 'btn btn-light dropdown-toggle'" type="button" id="emailsDropd"
-            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+    <button n:class="!$canSend ? disabled, 'btn btn-light btn-sm dropdown-toggle'" type="button" id="emailsDropdown"
+            data-test="payment-group-email-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <i class="fi fi-rr-envelope-open" aria-hidden="true"></i> E-mail <span class="caret"></span>
     </button>
-    <div class="dropdown-menu" aria-labelledby="emailsDropdown">
-        <a n:href="sendTest!" class="dropdown-item">
+    <div class="dropdown-menu" aria-labelledby="emailsDropdown" data-test="payment-group-email-menu">
+        <a n:href="sendTest!" class="dropdown-item" data-test="payment-group-email-test">
             <i class="fi fi-rr-pencil-ruler" aria-hidden="true"></i>
             Zaslat testovací e-mail
         </a>
