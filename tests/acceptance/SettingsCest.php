@@ -261,7 +261,7 @@ JS);
             'show_help' => 0,
         ]);
         $I->seeElement('[data-page-help-toggle][aria-expanded="false"]');
-        $I->seeElement('.page-heading .page-lead[data-page-help-expanded="false"]');
+        $I->seeElementInDOM('.page-heading .page-lead[data-page-help-expanded="false"]');
         $I->dontSeeElement('[data-page-help-content]:not([hidden])');
         $collapsedHelpDisplay = $I->executeJS(<<<'JS'
 const lead = document.querySelector('[data-test="settings-user-page"] .page-lead');
@@ -283,7 +283,7 @@ JS);
 
         $I->click('[data-page-help-toggle]');
         $I->waitForJS('return document.querySelector(".page-heading")?.dataset.pageHelpExpanded === "false"', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->seeElement('.page-heading .page-lead[data-page-help-expanded="false"]');
+        $I->seeElementInDOM('.page-heading .page-lead[data-page-help-expanded="false"]');
         $I->dontSeeElement('[data-page-help-content]:not([hidden])');
 
         $this->openSettingsSubpage('[data-test="settings-subnav-invoices"]', '[data-test="invoice-settings-page"]', '/nastaveni/faktury');

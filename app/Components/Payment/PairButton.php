@@ -40,17 +40,14 @@ class PairButton extends BaseControl
         private PairButtonBankAccountSupport $bankAccountSupport,
     ) {
         $this->scope = new EmptyPairButtonScope();
-        $style = 'primary';
-        $this->css = [
+        $this->css = array_merge([
             'wrap' => 'd-inline-block',
-            'btn' => 'btn btn-sm btn-'.$style,
-            'toggle' => 'btn btn-sm btn-'.$style.' dropdown-toggle',
             'menu' => 'dropdown-menu dropdown-menu-end p-3',
             'icon' => 'fi fi-rr-bank',
             'inputGroup' => 'input-group input-group-sm',
             'submit' => 'btn btn-sm btn-primary',
             'submitCol' => 'col-4',
-        ];
+        ], self::buttonCssForStyle('primary'));
     }
 
     /** @param array<string, string> $css */
@@ -118,8 +115,17 @@ class PairButton extends BaseControl
 
     public function renderLight(): void
     {
-        $this->template->setParameters(['style' => 'light']);
+        $this->addCss(self::buttonCssForStyle('light'));
         $this->render();
+    }
+
+    /** @return array<string, string> */
+    private static function buttonCssForStyle(string $style): array
+    {
+        return [
+            'btn' => 'btn btn-sm btn-'.$style,
+            'toggle' => 'btn btn-sm btn-'.$style.' dropdown-toggle',
+        ];
     }
 
     protected function createComponentForm(): BaseForm

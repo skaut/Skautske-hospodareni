@@ -92,7 +92,7 @@
         </section>
     </div>
 
-    <section class="card mb-4" data-test="payment-group-progress">
+    <section class="card mb-4" data-test="payment-group-progress" n:snippet="groupProgress">
         <div class="card-body">
             {control progress}
         </div>
@@ -118,7 +118,7 @@
                         </a>
                     {/if}
 
-                    {control emailButton:light}
+                    {control emailButton}
                     {control pairButton:light}
                     <a n:href=":Payments:Repayment: $group->id" class="btn btn-light btn-sm" data-test="payment-group-repayments-link">
                         <i class="fi fi-rr-arrow-left" aria-hidden="true"></i>

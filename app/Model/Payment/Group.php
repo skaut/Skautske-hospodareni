@@ -220,7 +220,7 @@ class Group
             $this->units->add(new Unit($this, $unitId));
         }
 
-        $bankAccount = $this->bankAccount;
+        $bankAccount = $this->linkedBankAccount();
 
         if ($bankAccount !== null && ! $bankAccountAccessChecker->allUnitsHaveAccessToBankAccount($unitIds, $bankAccount->getId())) {
             $this->bankAccount = null;
@@ -309,25 +309,29 @@ class Group
 
     public function updateLastPairing(DateTimeImmutable $at): void
     {
-        if ($this->bankAccount === null) {
+        $bankAccount = $this->linkedBankAccount();
+
+        if ($bankAccount === null) {
             return;
         }
 
-        $this->bankAccount = $this->bankAccount->updateLastPairing($at);
+        $this->bankAccount = $bankAccount->updateLastPairing($at);
     }
 
     public function invalidateLastPairing(): void
     {
-        if ($this->bankAccount === null) {
+        $bankAccount = $this->linkedBankAccount();
+
+        if ($bankAccount === null) {
             return;
         }
 
-        $this->bankAccount = $this->bankAccount->invalidateLastPairing();
+        $this->bankAccount = $bankAccount->invalidateLastPairing();
     }
 
     public function getLastPairing(): ?DateTimeImmutable
     {
-        return $this->bankAccount?->getLastPairing();
+        return $this->linkedBankAccount()?->getLastPairing();
     }
 
     public function getOauthId(): ?OAuthId
@@ -342,12 +346,20 @@ class Group
 
     public function getBankAccountId(): ?int
     {
-        return $this->bankAccount?->getId();
+        return $this->linkedBankAccount()?->getId();
+    }
+
+    /** Null both for a group without a bank account and for an empty hydrated embeddable. */
+    private function linkedBankAccount(): ?Group\BankAccount
+    {
+        $bankAccount = $this->bankAccount;
+
+        return $bankAccount !== null && ! $bankAccount->isEmpty() ? $bankAccount : null;
     }
 
     private function changeBankAccount(?BankAccount $bankAccount, IBankAccountAccessChecker $accessChecker): void
     {
-        $currentBankAccountId = $this->bankAccount?->getId();
+        $currentBankAccountId = $this->linkedBankAccount()?->getId();
 
         if ($bankAccount === null) {
             $this->bankAccount = null;
@@ -361,7 +373,7 @@ class Group
             throw NoAccessToBankAccount::forUnits($unitIds, $bankAccount->getId());
         }
 
-        if ($currentBankAccountId === $bankAccount->getId() && $this->bankAccount !== null) {
+        if ($currentBankAccountId === $bankAccount->getId() && $this->linkedBankAccount() !== null) {
             return;
         }
 

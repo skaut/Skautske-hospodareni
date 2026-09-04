@@ -66,11 +66,31 @@ class AcceptanceTester extends Actor
 
     public function waitForElementVisible(mixed $element, int $timeout = 10): void
     {
+        if (is_string($element)) {
+            $this->waitForStableLocatorVisible($element, $timeout);
+
+            return;
+        }
+
         try {
             $this->generatedWaitForElementVisible($element, $timeout);
         } catch (WebDriverException $exception) {
             $this->throwOnSkautisWsdlErrorPage($exception, 'waiting for visible element', (string) json_encode($element));
         }
+    }
+
+    /**
+     * Bootstrap moves `title` into `data-bs-original-title` as soon as it initializes a tooltip,
+     * so a plain [title=...] assertion only holds before the frontend boots.
+     */
+    public function seeTooltip(string $text): void
+    {
+        $quoted = str_replace('"', '\\"', $text);
+
+        $this->seeElement(
+            '[data-bs-toggle="tooltip"][title="'.$quoted.'"],'
+            .'[data-bs-toggle="tooltip"][data-bs-original-title="'.$quoted.'"]',
+        );
     }
 
     public function waitForText(string $text, int $timeout = 10, mixed $selector = null): void
@@ -425,22 +445,7 @@ class AcceptanceTester extends Actor
 
     public function waitForStableLocatorVisible(string $locator, int $timeout = self::ELEMENT_LOAD_TIMEOUT): void
     {
-        if (! $this->isXPathLocator($locator)) {
-            $this->waitForElementVisible($locator, $timeout);
-
-            return;
-        }
-
-        $this->waitForJS($this->buildLocatorScript(
-            $locator,
-            'var style = window.getComputedStyle(el);'
-            .' return style.display !== "none" && style.visibility !== "hidden" && el.getClientRects().length > 0;',
-        ), $timeout);
-    }
-
-    private function isXPathLocator(string $locator): bool
-    {
-        return str_starts_with($locator, '//') || str_starts_with($locator, '(') || str_starts_with($locator, './/');
+        $this->waitForJS('return '.$this->buildLocatorScript($locator, 'return true;').';', $timeout);
     }
 
     private function isRetryableSkautisLoginWebDriverFailure(WebDriverException $e): bool
@@ -493,18 +498,28 @@ class AcceptanceTester extends Actor
         ));
     }
 
+    /**
+     * Resolves the first visible match instead of the first match in the DOM. Grids render
+     * row actions twice - in the actions cell and in the following actions row - and a
+     * container query decides which copy is shown, so the first match is often the hidden one.
+     */
     private function buildLocatorScript(string $locator, string $action): string
     {
         $quotedLocator = json_encode($locator);
 
         return '(function(){'
             .'var locator = '.$quotedLocator.';'
-            .'var el = null;'
+            .'var nodes = [];'
             .'if (locator.startsWith("//") || locator.startsWith("(") || locator.startsWith(".//")) {'
-                .'el = document.evaluate(locator, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;'
+                .'var found = document.evaluate(locator, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);'
+                .'for (var i = 0; i < found.snapshotLength; i++) { nodes.push(found.snapshotItem(i)); }'
             .'} else {'
-                .'el = document.querySelector(locator);'
+                .'nodes = Array.prototype.slice.call(document.querySelectorAll(locator));'
             .'}'
+            .'var el = nodes.filter(function (node) {'
+                .'var style = window.getComputedStyle(node);'
+                .'return style.display !== "none" && style.visibility !== "hidden" && node.getClientRects().length > 0;'
+            .'})[0];'
             .'if (!el) { return false; }'
             .$action
             .'})()';

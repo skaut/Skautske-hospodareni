@@ -517,6 +517,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
         }
         $paymentList->setPayments($this->payments);
         $this->redrawControl('grid');
+        $this->redrawControl('groupProgress');
     }
 
     private function redrawPaymentAndBankAccountGrids(): void
