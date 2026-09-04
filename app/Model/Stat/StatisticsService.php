@@ -15,6 +15,7 @@ use App\Model\Event\ReadModel\Queries\EventStatisticsQuery;
 use App\Model\Skautis\ISkautisEvent;
 use App\Model\Stat\ReadModel\Queries\LocalUnitStatisticsQuery;
 use App\Model\Unit\Unit;
+use Cake\Chronos\ChronosDate;
 
 use function array_filter;
 use function array_key_exists;
@@ -25,6 +26,15 @@ use function in_array;
 
 class StatisticsService
 {
+    /**
+     * After this long, a draft is not work in progress — it is paperwork nobody
+     * came back to. Counted off the end of the event, so a camp still running
+     * never shows up here.
+     */
+    private const STALE_DRAFT_DAYS = 90;
+
+    private const DRAFT_STATE = 'draft';
+
     public function __construct(private QueryBus $queryBus)
     {
     }
@@ -59,14 +69,25 @@ class StatisticsService
             $merged[$k] = $counter;
         }
 
+        $staleBefore = ChronosDate::today()->subDays(self::STALE_DRAFT_DAYS);
+
         foreach ($events as $eventId => $event) {
             $merged[$event->getUnitId()->toInt()] ??= new Counter();
-            $merged[$event->getUnitId()->toInt()]->addEvent($event->getState(), array_key_exists($eventId, $eventStats));
+            $merged[$event->getUnitId()->toInt()]->addEvent(
+                $event->getState(),
+                array_key_exists($eventId, $eventStats),
+                $this->isStaleDraft($event->getState(), $event->getEndDate(), $staleBefore),
+            );
         }
 
         foreach ($camps as $campId => $camp) {
             $merged[$camp->getUnitId()->toInt()] ??= new Counter();
-            $merged[$camp->getUnitId()->toInt()]->addCamp($camp->getState(), array_key_exists($campId, $campStats), $camp->getParticipantStatistics() !== null);
+            $merged[$camp->getUnitId()->toInt()]->addCamp(
+                $camp->getState(),
+                array_key_exists($campId, $campStats),
+                $camp->getParticipantStatistics() !== null,
+                $this->isStaleDraft($camp->getState(), $camp->getEndDate(), $staleBefore),
+            );
         }
 
         return array_filter(
@@ -75,6 +96,11 @@ class StatisticsService
                 return ! $c->isEmpty();
             },
         );
+    }
+
+    private function isStaleDraft(string $state, ChronosDate $endDate, ChronosDate $staleBefore): bool
+    {
+        return $state === self::DRAFT_STATE && $endDate->lessThan($staleBefore);
     }
 
     /**

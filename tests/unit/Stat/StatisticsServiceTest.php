@@ -14,6 +14,7 @@ use App\Model\Event\ReadModel\Queries\EventStatisticsQuery;
 use App\Model\Skautis\ISkautisEvent;
 use App\Model\Stat\ReadModel\Queries\LocalUnitStatisticsQuery;
 use App\Model\Unit\Unit;
+use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit as TestCase;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -84,6 +85,50 @@ final class StatisticsServiceTest extends TestCase
         self::assertSame(1, $statistics[30]->getCampWithParticipantStats());
     }
 
+    public function testOnlyLongFinishedDraftsCountAsForgotten(): void
+    {
+        $root = $this->createUnit(10);
+        $queryBus = Mockery::mock(QueryBus::class);
+
+        $queryBus->shouldReceive('handle')
+            ->with(Mockery::type(EventListQuery::class))
+            ->once()
+            ->andReturn([
+                // Finished last year and still a draft — nobody is coming back to it.
+                10 => $this->createEvent(10, 'draft', false, ChronosDate::today()->subDays(200)),
+                // Finished last week: still ordinary work in progress.
+                11 => $this->createEvent(10, 'draft', false, ChronosDate::today()->subDays(7)),
+                // Old, but closed — not forgotten, just done.
+                12 => $this->createEvent(10, 'closed', false, ChronosDate::today()->subDays(200)),
+            ]);
+        $queryBus->shouldReceive('handle')
+            ->with(Mockery::type(CampListQuery::class))
+            ->once()
+            ->andReturn([
+                20 => $this->createEvent(10, 'draft', false, ChronosDate::today()->subDays(400)),
+                21 => $this->createEvent(10, 'real', false, ChronosDate::today()->subDays(400)),
+            ]);
+        $queryBus->shouldReceive('handle')
+            ->with(Mockery::type(EventStatisticsQuery::class))
+            ->once()
+            ->andReturn([]);
+        $queryBus->shouldReceive('handle')
+            ->with(Mockery::type(CampStatisticsQuery::class))
+            ->once()
+            ->andReturn([]);
+        $queryBus->shouldReceive('handle')
+            ->with(Mockery::type(LocalUnitStatisticsQuery::class))
+            ->once()
+            ->andReturn([]);
+
+        $statistics = (new StatisticsService($queryBus))->getEventStatistics($root, 2026);
+
+        self::assertSame(2, $statistics[10]->getEventDraft());
+        self::assertSame(1, $statistics[10]->getEventDraftStale());
+        self::assertSame(1, $statistics[10]->getCampDraft());
+        self::assertSame(1, $statistics[10]->getCampDraftStale());
+    }
+
     /** @param Unit[] $children */
     private function createUnit(int $id, array $children = []): Unit
     {
@@ -111,11 +156,19 @@ final class StatisticsServiceTest extends TestCase
         return [30 => $counter];
     }
 
-    private function createEvent(int $unitId, string $state, bool $withParticipantStatistics = false): ISkautisEvent
-    {
-        return new class($unitId, $state, $withParticipantStatistics) implements ISkautisEvent {
-            public function __construct(private int $unitId, private string $state, private bool $withParticipantStatistics)
-            {
+    private function createEvent(
+        int $unitId,
+        string $state,
+        bool $withParticipantStatistics = false,
+        ?ChronosDate $endDate = null,
+    ): ISkautisEvent {
+        return new class($unitId, $state, $withParticipantStatistics, $endDate ?? ChronosDate::today()) implements ISkautisEvent {
+            public function __construct(
+                private int $unitId,
+                private string $state,
+                private bool $withParticipantStatistics,
+                private ChronosDate $endDate,
+            ) {
             }
 
             public function getUnitId(): UnitId
@@ -126,6 +179,11 @@ final class StatisticsServiceTest extends TestCase
             public function getState(): string
             {
                 return $this->state;
+            }
+
+            public function getEndDate(): ChronosDate
+            {
+                return $this->endDate;
             }
 
             public function getParticipantStatistics(): ?object

@@ -34,6 +34,7 @@
                 <td>{$counter->eventCancelled}</td>
                 <td>{$counter->eventWithExpense}</td>
                 <td>{$counter->eventWithoutExpense}</td>
+                <td n:class="$counter->eventDraftStale > 0 ? 'text-warning-emphasis fw-semibold'">{$counter->eventDraftStale}</td>
                 <td>{$counter->campTotal}</td>
                 <td>{$counter->campDraft}</td>
                 <td>{$counter->campApprovedParent}</td>
@@ -42,6 +43,7 @@
                 <td>{$counter->campWithExpense}</td>
                 <td>{$counter->campWithoutExpense}</td>
                 <td>{$counter->campWithParticipantStats}</td>
+                <td n:class="$counter->campDraftStale > 0 ? 'text-warning-emphasis fw-semibold'">{$counter->campDraftStale}</td>
             {elseif $section === 'payments'}
                 <td>{$counter->paymentGroups}</td>
                 <td>{$counter->paymentGroupsOpen}</td>
@@ -140,6 +142,10 @@
                         <th>Zrušené</th>
                         <th>S dokl.</th>
                         <th>Bez dokl.</th>
+                        <th>
+                            Zapomenuté
+                            <i class="fi fi-rr-interrogation" aria-hidden="true" data-bs-toggle="tooltip" title="Rozpracované výpravy, které skončily před více než 90 dny a nikdo je neuzavřel."></i>
+                        </th>
                         <th>Tábory</th>
                         <th>Návrh</th>
                         <th>Schv. stř.</th>
@@ -148,6 +154,10 @@
                         <th>S dokl.</th>
                         <th>Bez dokl.</th>
                         <th>Statistiky</th>
+                        <th>
+                            Zapomenuté
+                            <i class="fi fi-rr-interrogation" aria-hidden="true" data-bs-toggle="tooltip" title="Tábory ve stavu návrh, které skončily před více než 90 dny."></i>
+                        </th>
                     </tr>
                     </thead>
                     <tbody>{include statRows, section => 'events'}</tbody>
