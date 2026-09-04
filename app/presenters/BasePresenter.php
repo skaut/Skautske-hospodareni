@@ -15,7 +15,9 @@ use App\Model\Common\Services\CommandBus;
 use App\Model\Common\Services\NotificationsCollector;
 use App\Model\Common\Services\QueryBus;
 use App\Model\Help\Manager\PageHelpManager;
+use App\Model\PageView\Services\PageViewTracker;
 use App\Model\Unit\UnitService;
+use App\Model\User\Services\LoginTracker;
 use App\Model\User\UserPreferencesService;
 use App\Model\User\UserService;
 use Contributte\MenuControl\IMenuItem;
@@ -52,7 +54,7 @@ abstract class BasePresenter extends Presenter
     private const SESSION_KEEP_ALIVE_INTERVAL_MS = 1_200_000;
 
     private const PUBLIC_ACTIONS = [
-        'Default' => ['default', 'about', 'reinforcement'],
+        'Default' => ['default', 'about', 'reinforcement', 'privacy'],
     ];
 
     private const AUTH_ACTIONS = ['ajax', 'default', 'logonskautis', 'logoutsis', 'skautis', 'skautislogout'];
@@ -91,6 +93,10 @@ abstract class BasePresenter extends Presenter
 
     private PageHelpManager $pageHelp;
 
+    protected LoginTracker $loginTracker;
+
+    private PageViewTracker $pageViewTracker;
+
     public function injectAll(
         UserService $userService,
         UnitService $unitService,
@@ -107,6 +113,8 @@ abstract class BasePresenter extends Presenter
         MenuContainer $menuContainer,
         UserPreferencesService $userPreferences,
         PageHelpManager $pageHelp,
+        LoginTracker $loginTracker,
+        PageViewTracker $pageViewTracker,
     ): void {
         $this->userService = $userService;
         $this->unitService = $unitService;
@@ -123,6 +131,8 @@ abstract class BasePresenter extends Presenter
         $this->menuContainer = $menuContainer;
         $this->userPreferences = $userPreferences;
         $this->pageHelp = $pageHelp;
+        $this->loginTracker = $loginTracker;
+        $this->pageViewTracker = $pageViewTracker;
     }
 
     protected function startup(): void
@@ -153,14 +163,44 @@ abstract class BasePresenter extends Presenter
             $this->redirect(':Default:', ['backlink' => $backlink]);
         }
 
+        if ($this->getUser()->isLoggedIn() && ! $this->isSessionKeepAliveRequest()) {
+            $this->loginTracker->touch();
+        }
+
         if ($this->getUser()->isLoggedIn() && $backlink !== null) {
             $this->restoreRequest($backlink);
         }
     }
 
+    /**
+     * Counts the page for the usage statistics. Only a plain page load counts:
+     * an AJAX snippet redraw is one page being used further, not another view,
+     * and a form submission is counted by the page it lands on.
+     */
+    private function recordPageView(): void
+    {
+        if ($this->isAjax() || ! $this->getHttpRequest()->isMethod('GET')) {
+            return;
+        }
+
+        $this->pageViewTracker->record($this->getPageHelpKey());
+    }
+
+    /**
+     * The keep-alive ping fires on a timer whether or not anyone is at the
+     * keyboard, so it must not count as activity — otherwise every user who
+     * opted into it would appear to work for as long as the tab stays open.
+     */
+    private function isSessionKeepAliveRequest(): bool
+    {
+        return $this->getName() === 'SessionKeepAlive';
+    }
+
     protected function beforeRender(): void
     {
         parent::beforeRender();
+
+        $this->recordPageView();
 
         [$module, $presenterName] = $this->resolveTemplateSection();
         $sessionKeepAliveEnabled = $this->getUser()->isLoggedIn()
@@ -171,7 +211,6 @@ abstract class BasePresenter extends Presenter
             'presenterName' => $presenterName,
             'linkGenerator' => $this->linkGenerator,
             'navigationBreadcrumbs' => $this->resolveNavigationBreadcrumbs($module),
-            'productionMode' => $this->appContext->isProduction(),
             'wwwDir' => $this->appContext->getWwwDir(),
             'currentUrl' => (string) $this->getHttpRequest()->getUrl(),
             'canAccessAdmin' => $this->authorizator->isAllowed(Admin::ACCESS, null),

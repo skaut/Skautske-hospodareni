@@ -31,6 +31,7 @@ class ResponsiveCest extends BaseAcceptanceCest
         '/platby/skupiny' => '[data-test="payments-groups-page"]',
         '/cestaky/smlouvy' => '[data-test="travel-contracts-page"]',
         '/nastaveni' => '[data-test="settings-page"]',
+        '/zasady-soukromi' => '[data-test="privacy-page"]',
     ];
 
     protected AcceptanceTester $I;

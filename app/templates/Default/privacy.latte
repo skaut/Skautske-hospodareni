@@ -1,0 +1,134 @@
+{block title}Soukromí a data ve skautském hospodaření{/block}
+
+{block content}
+<div data-test="privacy-page" class="d-grid gap-4">
+
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 class="h3 mb-2">Soukromí a data</h1>
+            {include pageLead, default: 'Co Hospodaření ukládá, proč to ukládá a co se ukládá ve vašem prohlížeči. Popis je technický a odpovídá tomu, co aplikace skutečně dělá.'}
+        </div>
+    </div>
+
+    <section class="card">
+        <div class="card-body">
+            <h2 class="h5 mb-3">Přihlášení přes skautIS</h2>
+            <p>
+                Do Hospodaření se přihlašujete skautISem. Aplikace nezná ani neukládá vaše heslo — dostane od skautISu
+                přihlašovací token a k němu údaje o vás a vašich rolích, které potřebuje k rozhodnutí, co smíte vidět.
+                Členské údaje jednotky vede skautIS, Hospodaření si je jen půjčuje pro práci s akcemi, tábory a platbami.
+            </p>
+            <p class="mb-0">
+                Token má omezenou platnost a drží se v serverovém sezení. Odhlášením ho aplikace zneplatní.
+            </p>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="card-body">
+            <h2 class="h5 mb-3">Co aplikace ví o svém používání</h2>
+            <p>
+                Hospodaření nepoužívá Google Analytics ani žádnou jinou analytiku třetí strany, nezobrazuje reklamu
+                a nikoho neprofiluje. Vlastní měření je celé serverové a skládá se ze dvou věcí:
+            </p>
+            <ul>
+                <li>
+                    <strong>Přihlášení a sezení.</strong> Ke každému přihlášení se ukládá vaše skautIS ID, jednotka, role,
+                    čas přihlášení a poslední aktivity a kategorie zařízení — typ zařízení, rodina prohlížeče a platforma.
+                    Ne IP adresa a ne úplný User-Agent, protože k odpovědi na otázku „na čem lidé pracují“ nejsou potřeba.
+                </li>
+                <li>
+                    <strong>Zobrazení stránek.</strong> U každé stránky se počítá, kolikrát se za daný den otevřela.
+                    Je to jedno číslo na stránku a den, bez uživatele, bez jednotky a bez IP adresy — z takového záznamu
+                    se nedá zjistit, kdo se na co koukal. Slouží k rozhodování, které části aplikace dopracovat.
+                </li>
+            </ul>
+            <p class="mb-0">
+                Kromě toho se pamatuje vaše nastavení aplikace (zobrazování nápověd, prodloužené přihlášení, zapamatovaná role)
+                a poslední navštívené platební skupiny, aby je šlo nabídnout na nástěnce.
+            </p>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="card-body">
+            <h2 class="h5 mb-3">Data, která do aplikace vložíte</h2>
+            <p class="mb-0">
+                Pokladní knihy, rozpočty, cestovní příkazy, faktury, seznamy účastníků a platby včetně e-mailových adres
+                pro rozesílání podkladů jsou provozní data jednotky. Hospodaření je uchovává, aby s nimi mohla jednotka
+                pracovat, a zpřístupňuje je lidem s příslušnou rolí ve skautISu. U změn se eviduje, kdo je provedl.
+            </p>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="card-body">
+            <h2 class="h5 mb-3">Hlášení chyb a technický provoz</h2>
+            <p>
+                Když nahlásíte problém tlačítkem v patičce, uloží se popis, adresa stránky, vaše jméno, jednotka a role,
+                dále IP adresa, User-Agent a případný snímek obrazovky, který přiložíte. Bez těchto údajů se řada chyb
+                nedá reprodukovat. Hlášení vidí správci aplikace a může z něj vzniknout issue na GitHubu — tam se
+                přenáší popis problému, ne vaše IP adresa.
+            </p>
+            <p class="mb-0">
+                Chyby na serveru se odesílají do služby Sentry, která je pro vývojáře shromažďuje. Součástí takového
+                záznamu je adresa požadavku a technický kontext chyby.
+            </p>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="card-body">
+            <h2 class="h5 mb-3">Odesílání e-mailů</h2>
+            <p class="mb-0">
+                Zprávy o platbách odesílá aplikace z e-mailového účtu, který jednotka připojí přes Google. Připojením
+                získá Hospodaření oprávnění odesílat za tento účet zprávy; obsah poštovní schránky nečte.
+            </p>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="card-body">
+            <h2 class="h5 mb-3">Co se ukládá ve vašem prohlížeči</h2>
+            <p>
+                Hospodaření nemá žádné sledovací ani reklamní cookies, a proto nepotřebuje lištu se souhlasem.
+                V prohlížeči zůstává jen to, bez čeho by nefungovalo to, co jste si sami vyžádali:
+            </p>
+            <ul>
+                <li><strong>Cookie sezení</strong> — drží vaše přihlášení. Bez ní by přihlášení nešlo.</li>
+                <li><strong>Zvolený vzhled</strong> — světlý nebo tmavý režim podle přepínače v hlavičce.</li>
+                <li><strong>Čas posledního prodloužení přihlášení</strong> — aby otevřené karty prodlužovaly sezení jen jednou.</li>
+                <li><strong>Odložení nabídky instalace</strong> — abyste po kliknutí na „Teď ne“ neviděli nabídku hned znovu.</li>
+                <li><strong>Offline stránka</strong> — nainstalovaná aplikace si ji uloží, aby něco zobrazila i bez signálu.</li>
+            </ul>
+            <p class="mb-0">
+                Všechny tyto údaje zůstávají ve vašem prohlížeči a nikam se neposílají. Smazáním dat webu v prohlížeči je odstraníte.
+            </p>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="card-body">
+            <h2 class="h5 mb-3">Kdo k datům má přístup</h2>
+            <p class="mb-0">
+                Aplikaci provozuje Junák – český skaut na své infrastruktuře a spravují ji dobrovolníci projektu.
+                Data se nepředávají nikomu pro marketingové účely. Mimo aplikaci putují jen tam, kde to popisují
+                předchozí odstavce: do skautISu, kterému patří členské údaje, do Sentry kvůli chybám na serveru,
+                ke Googlu při odesílání e-mailů a na GitHub u nahlášených problémů.
+            </p>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="card-body">
+            <h2 class="h5 mb-3">Dotazy k vašim údajům</h2>
+            <p class="mb-0">
+                S dotazem na uložené údaje, jejich opravu nebo smazání se obraťte na
+                hskauting(zavinac)skaut(tecka)cz. Členské údaje vedené ve skautISu spravuje skautIS, takže žádosti
+                o jejich opravu nebo smazání řeší on, ne Hospodaření.
+            </p>
+        </div>
+    </section>
+
+</div>
+{/block}
