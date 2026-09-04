@@ -13,7 +13,7 @@ Apply these rules to every new or modified user-facing route. Use the dashboard,
 ## Actions, forms, and messages
 
 - Use existing Tabler/Bootstrap components, tokens, and icons. Use `btn-primary` for the primary action, `btn-outline-secondary` or `btn-light` for secondary actions, and confirmed `btn-outline-danger` for destructive actions.
-- Keep every action available at 375 px. Use `d-flex flex-wrap gap-2`; interactive controls need a 44 × 44 px target unless embedded in normal text.
+- Keep every action available at 375 px. Use `d-flex flex-wrap gap-2` and give peer actions in one toolbar the same size. Compact `btn-sm` controls are appropriate for desktop toolbars; at 375 px, non-inline controls need a 44 × 44 px target unless embedded in normal text.
 - New or modernized Nette forms use `class="inline-errors"`. Render field errors directly below their field with `.is-invalid` and `.invalid-feedback`; use a summary only for errors without a field. Client and server validation share the same Nette rules.
 - Report completed actions and general failures through global `success`, `info`, `warning`, or `danger` flash messages. Do not add local toasts, `alert()`, duplicate field-error flashes, or HTML in new flash messages.
 

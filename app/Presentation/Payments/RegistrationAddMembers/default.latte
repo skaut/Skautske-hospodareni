@@ -4,9 +4,11 @@
         <div class="card-body">
             <h1 n:inner-block="title" class="h3 mb-2">Přidat osoby z registrace</h1>
             {include pageLead, default: 'Členové, kteří už mají v této skupině platbu, nejsou zobrazeni. U každé osoby lze vybrat libovolný e-mail pomocí stisknuté klávesy CTRL.', class: 'mb-3'}
-            <a n:href="default $group->id" class="page-heading-actions btn btn-outline-secondary btn-sm">
-                <i class="fi fi-rr-arrow-left" aria-hidden="true"></i> {$group->name}
-            </a>
+            <div class="page-heading-actions d-flex flex-wrap gap-2 align-items-center">
+                <a n:href="default $group->id" class="btn btn-outline-secondary btn-sm">
+                    <i class="fi fi-rr-arrow-left" aria-hidden="true"></i> {$group->name}
+                </a>
+            </div>
         </div>
     </div>
 
