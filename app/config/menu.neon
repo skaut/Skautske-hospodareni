@@ -226,6 +226,15 @@ menu:
                     test: admin-nav-statistics
                     icon: fi fi-rr-chart-pie
                     requiresAdmin: true
+            usage:
+                title: Využití
+                action: 'Admin:Usage:default'
+                include:
+                    - '^Admin:Usage:.*$'
+                data:
+                    test: admin-nav-usage
+                    icon: fi fi-rr-chart-histogram
+                    requiresAdmin: true
             bugReports:
                 title: Hlášení chyb
                 action: 'Admin:BugReports:default'
