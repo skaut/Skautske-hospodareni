@@ -4,7 +4,7 @@
         <div class="card-body">
             <h1 class="h3 mb-2" n:inner-block="title">Cestovní příkaz</h1>
             {include pageLead, default: 'Detail příkazu, přehled provedených cest a kalkulace náhrad.', class: 'mb-3'}
-            <div class="d-flex flex-wrap gap-2 align-items-center">
+            <div class="page-heading-actions d-flex flex-wrap gap-2 align-items-center">
                 {if $isEditable}
                 <a n:href="edit $command->id" class="btn btn-sm btn-light">
                     <i class="fi fi-rr-edit" aria-hidden="true"></i>

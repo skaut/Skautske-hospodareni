@@ -4,7 +4,7 @@
         <div class="card-body">
             <h1 class="h3 mb-2" n:inner-block="title">Smlouvy o proplácení cestovních náhrad</h1>
             {include pageLead, default: 'Přehled uzavřených smluv o cestovních náhradách, tisk a správa smluvních dokumentů.', class: 'mb-3'}
-            <div n:if="$canCreate" class="d-flex flex-wrap gap-2">
+            <div n:if="$canCreate" class="page-heading-actions d-flex flex-wrap gap-2">
                 <a n:href="new" class="btn btn-sm btn-primary"><i class="fi fi-rr-plus-small" aria-hidden="true"></i> Založit smlouvu</a>
             </div>
         </div>

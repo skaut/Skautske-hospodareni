@@ -34,7 +34,8 @@
     color: #b8c9bf;
   }
 
-  .navbar--test {
+  .navbar--test,
+  .navbar--dev {
     --tblr-navbar-bg: #3a311d;
     --site-header-color: #f8e7b5;
     --site-header-muted: #d8bd72;
@@ -42,16 +43,6 @@
     --site-header-active-bg: #594923;
     --site-header-border: #66542b;
     --site-header-control-border: rgba(248, 231, 181, 0.28);
-  }
-
-  .navbar--dev {
-    --tblr-navbar-bg: #302044;
-    --site-header-color: #efe4ff;
-    --site-header-muted: #cbb4e7;
-    --site-header-hover-bg: #402a59;
-    --site-header-active-bg: #50356d;
-    --site-header-border: #634681;
-    --site-header-control-border: rgba(239, 228, 255, 0.28);
   }
 
   .navbar--beta {
@@ -109,12 +100,6 @@
     border-color: #46688f;
     background: #203652;
     color: #b8dbff;
-  }
-
-  .navbar--dev .navbar-test-badge {
-    border-color: #8060a4;
-    background: #402a59;
-    color: #dfcaff;
   }
 
   .btn-light {

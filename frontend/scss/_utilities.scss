@@ -4,8 +4,14 @@ table.table a {
   text-decoration: none;
 }
 
-table.table a:hover {
+table.table a:not(.btn):hover {
   text-decoration: underline;
+}
+
+.btn,
+.btn:hover,
+.btn:focus {
+  text-decoration: none;
 }
 
 .col-action {
@@ -13,10 +19,143 @@ table.table a:hover {
 }
 
 .datagrid-row-actions {
-  display: inline-flex;
+  display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 0.25rem;
+  width: max-content;
+  max-width: 100%;
+  margin-left: auto;
+}
+
+.datagrid .table-responsive {
+  container-type: inline-size;
+}
+
+.datagrid-group-actions,
+.datagrid-group-action-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.datagrid-group-actions-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.datagrid-group-actions-toolbar .datagrid-toolbar {
+  float: none;
+  margin-top: 0;
+  margin-left: auto;
+}
+
+// Action rows are present for every data row so a container query can switch
+// layouts when the help sidebar changes the available space. Keep their stripe
+// in sync with the preceding data row rather than with their DOM position.
+.datagrid-actions-row {
+  display: none;
+}
+
+.datagrid .table-striped > tbody > .datagrid-data-row > *,
+.datagrid .table-striped > tbody > .datagrid-actions-row > * {
+  --tblr-table-color-type: inherit;
+  --tblr-table-bg-type: transparent;
+}
+
+.datagrid .table-striped > tbody > .datagrid-row-striped > * {
+  --tblr-table-color-type: var(--tblr-table-striped-color);
+  --tblr-table-bg-type: var(--tblr-table-striped-bg);
+}
+
+@container (max-width: 575.98px) {
+  .datagrid .datagrid-group-actions-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .datagrid .datagrid-group-actions-toolbar .datagrid-toolbar {
+    align-self: flex-start;
+    margin-left: 0;
+  }
+
+  .datagrid .datagrid-group-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    max-width: 100%;
+    max-width: 100cqw;
+  }
+
+  .datagrid .datagrid-group-action-controls {
+    flex-direction: column;
+    align-items: stretch;
+    inline-size: min(100%, 18rem);
+    inline-size: min(100cqw, 18rem);
+  }
+
+  .datagrid .datagrid-group-action-controls > .btn,
+  .datagrid .datagrid-group-action-controls > .form-control {
+    inline-size: 100%;
+  }
+}
+
+@container (max-width: 68.75rem) {
+  .datagrid .datagrid-actions-row {
+    display: table-row;
+  }
+
+  .datagrid .datagrid-data-row > .datagrid-actions-cell,
+  .datagrid .datagrid-actions-header,
+  .datagrid .table thead .col-actions {
+    display: none;
+  }
+
+  .datagrid .datagrid-data-row:has(+ .datagrid-actions-row) > * {
+    border-bottom-width: 0;
+    padding-bottom: 0;
+  }
+
+  .datagrid .datagrid-actions-row > * {
+    border-top-width: 0;
+    padding-top: 0.25rem;
+    text-align: right;
+  }
+
+  .datagrid .datagrid-actions-row .datagrid-row-actions {
+    position: sticky;
+    right: 0.5rem;
+    z-index: 1;
+    width: fit-content;
+    max-width: calc(100% - 0.5rem);
+    max-width: calc(100cqw - 0.5rem);
+  }
+}
+
+@container (max-width: 36rem) {
+  .datagrid .datagrid-actions-row .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: 2.75rem;
+    min-block-size: 2.75rem;
+  }
+
+  .datagrid .datagrid-actions-row .datagrid-row-actions {
+    gap: 0.25rem;
+  }
+}
+
+@container (max-width: 68.75rem) {
+  .datagrid .table-hover > tbody > .datagrid-data-row:hover > *,
+  .datagrid .table-hover > tbody > .datagrid-data-row:has(+ .datagrid-actions-row:hover) > *,
+  .datagrid .table-hover > tbody > .datagrid-data-row:hover + .datagrid-actions-row > *,
+  .datagrid .table-hover > tbody > .datagrid-actions-row:hover > * {
+    --tblr-table-color-state: var(--tblr-table-hover-color);
+    --tblr-table-bg-state: var(--tblr-table-hover-bg);
+  }
 }
 
 .w-15 {

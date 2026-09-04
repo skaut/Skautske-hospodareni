@@ -72,29 +72,34 @@
                     <thead n:block="header">
                         <tr class="row-group-actions" n:if="$hasGroupActions || $exports || $toolbarButtons || $control->canHideColumns() || $inlineAdd" n:block="group-actions">
                             <th colspan="{$control->getColumnsCount()}" class="ublaboo-datagrid-th-form-inline">
-                                {if $hasGroupActions}
-                                    {block group_actions}
-                                        <span class="datagrid-group-action-title">
-                                            {='ublaboo_datagrid.group_actions'|translate}:
-                                        </span>
-                                        {foreach $filter['group_action']->getControls() as $form_control}
-                                            {if $form_control instanceof \Nette\Forms\Controls\SubmitButton && $form_control->getName() === 'submit'}
-                                                {input $form_control, class => 'btn btn-primary btn-sm', disabled => TRUE}
-                                            {elseif $form_control instanceof \Nette\Forms\Controls\SubmitButton}
-                                                {input $form_control, disabled => TRUE}
-                                            {elseif $form_control->getName() == 'group_action'}
-                                                {input $form_control, class => 'form-control form-control-sm', disabled => TRUE}
-                                            {else}
-                                                {input $form_control}
-                                            {/if}
-                                        {/foreach}
-                                        {if $control->shouldShowSelectedRowsCount()}
-                                            <span class="datagrid-selected-rows-count"></span>
-                                        {/if}
-                                    {/block}
-                                {/if}
+                                <div class="datagrid-group-actions-toolbar">
+                                    {if $hasGroupActions}
+                                        {block group_actions}
+                                            <div class="datagrid-group-actions">
+                                                <span class="datagrid-group-action-title">
+                                                    {='ublaboo_datagrid.group_actions'|translate}:
+                                                </span>
+                                                <div class="datagrid-group-action-controls">
+                                                    {foreach $filter['group_action']->getControls() as $form_control}
+                                                        {if $form_control instanceof \Nette\Forms\Controls\SubmitButton && $form_control->getName() === 'submit'}
+                                                            {input $form_control, class => 'btn btn-primary btn-sm', disabled => TRUE}
+                                                        {elseif $form_control instanceof \Nette\Forms\Controls\SubmitButton}
+                                                            {input $form_control, disabled => TRUE}
+                                                        {elseif $form_control->getName() == 'group_action'}
+                                                            {input $form_control, class => 'form-control form-control-sm', disabled => TRUE}
+                                                        {else}
+                                                            {input $form_control}
+                                                        {/if}
+                                                    {/foreach}
+                                                    {if $control->shouldShowSelectedRowsCount()}
+                                                        <span class="datagrid-selected-rows-count"></span>
+                                                    {/if}
+                                                </div>
+                                            </div>
+                                        {/block}
+                                    {/if}
 
-                                <div class="datagrid-toolbar" n:if="$control->canHideColumns() || $inlineAdd || $exports || $toolbarButtons">
+                                    <div class="datagrid-toolbar" n:if="$control->canHideColumns() || $inlineAdd || $exports || $toolbarButtons">
                                     <span n:if="$toolbarButtons">
                                         {foreach $toolbarButtons as $toolbar_button}{$toolbar_button->renderButton()}{/foreach}
                                     </span>
@@ -109,7 +114,7 @@
                                         {/if}
 
                                         <div class="btn-group float-end dropstart">
-                                            <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" n:if="$control->canHideColumns()">
+                                            <button type="button" class="btn btn-light" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" n:if="$control->canHideColumns()">
                                                 <i n:block="icon-gear" class="fi fi-rr-settings" aria-hidden="true"></i>
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-end dropdown-menu--grid dropdown-fix">
@@ -137,6 +142,7 @@
                                         </div>
                                         <div class="clearfix"></div>
                                     </div>
+                                </div>
                                 </div>
                             </th>
                         </tr>
@@ -184,7 +190,7 @@
                                     </div>
                                 {$th->endTag()|noescape}
                             {/foreach}
-                            <th n:if="$actions || $control->isSortable() || $itemsDetail || $inlineEdit || $inlineAdd" class="col-action text-center">
+                            <th n:if="$actions || $control->isSortable() || $itemsDetail || $inlineEdit || $inlineAdd" class="col-action datagrid-actions-header text-center">
                                 {='ublaboo_datagrid.action'|translate}
                             </th>
                         </tr>
@@ -212,7 +218,7 @@
                                 {/if}
                                 {$th->endTag()|noescape}
                             {/foreach}
-                            <th n:if="$actions || $control->isSortable() || $itemsDetail || $inlineEdit || $inlineAdd" class="col-action text-center">
+                            <th n:if="$actions || $control->isSortable() || $itemsDetail || $inlineEdit || $inlineAdd" class="col-action datagrid-actions-header text-center">
                                 {if !$control->hasAutoSubmit() && !$control->hasOuterFilterRendering()}
                                     {input $filter['filter']['submit']}
                                 {/if}
@@ -233,12 +239,18 @@
 
                             {foreach $rows as $row}
                                 {var $item = $row->getItem()}
+                                {var $rowIsStriped = $iterator->isEven()}
+                                {var $hasColumnActions = isset($columns['actions'])}
+                                {var $hasBuiltInActions = $actions || $control->isSortable() || $itemsDetail || $inlineEdit || $inlineAdd}
 
                                 {if !isset($toggle_detail)}
                                     {if $inlineEdit && $inlineEdit->getItemId() == $row->getId()}
                                         {do $inlineEdit->onSetDefaults($filter['inline_edit'], $item) }
 
-                                        <tr data-id="{$row->getId()}" n:snippet="item-{$row->getId()}" n:attr="$row->getControl()->attrs">
+                                        <tr n:class="'datagrid-data-row', $rowIsStriped ? 'datagrid-row-striped'"
+                                            data-id="{$row->getId()}"
+                                            n:snippet="item-{$row->getId()}"
+                                            n:attr="$row->getControl()->attrs">
                                             <td n:if="$hasGroupActions" class="col-checkbox"></td>
 
                                             {foreach $columns as $key => $column}
@@ -269,7 +281,10 @@
                                             </td>
                                         </tr>
                                     {else}
-                                        <tr data-id="{$row->getId()}" n:snippet="item-{$row->getId()}" n:attr="$row->getControl()->attrs">
+                                        <tr n:class="'datagrid-data-row', $rowIsStriped ? 'datagrid-row-striped'"
+                                            data-id="{$row->getId()}"
+                                            n:snippet="item-{$row->getId()}"
+                                            n:attr="$row->getControl()->attrs">
                                             <td n:if="$hasGroupActions" class="col-checkbox">
                                                 {if $row->hasGroupAction()}
                                                     <input n:class="$control->shouldUseHappyComponents() ? 'happy gray-border' , primary" type="checkbox" data-check="{$control->getFullName()}" data-check-all-{$control->getFullName()|noescape} name="{$control->getFullName()|lower}_group_action_item[{$row->getId()}]">
@@ -279,31 +294,27 @@
                                                 {do $column = $row->applyColumnCallback($key, clone $column)}
 
                                                 {var $td = $column->getElementForRender('td', $key, $row)}
+                                                {if $key === 'actions'}
+                                                    {do $td->class[] = 'datagrid-actions-cell'}
+                                                {/if}
                                                 {$td->startTag()|noescape}
                                                     {include column-value, column => $column, row => $row, key => $key}
                                                 {$td->endTag()|noescape}
                                             {/foreach}
-                                            <td n:if="$actions || $control->isSortable() || $itemsDetail || $inlineEdit || $inlineAdd" class="col-action">
-                                                <div class="datagrid-row-actions">
-                                                {foreach $actions as $key => $action}
-                                                    {if $row->hasAction($key)}
-                                                        {if $action->hasTemplate()}
-                                                            {include $action->getTemplate(), item => $item, (expand) $action->getTemplateVariables(), row => $row}
-                                                        {else}
-                                                            {$action->render($row)|noescape}
-                                                        {/if}
-                                                    {/if}
-                                                {/foreach}
-                                                <span class="handle-sort btn btn-sm btn-light" n:if="$control->isSortable()">
-                                                    <i n:block="icon-arrows-v" class="{$iconPrefix}arrows-v {$iconPrefix}arrows-alt-v" aria-hidden="true"></i>
-                                                </span>
-                                                {if $inlineEdit && $row->hasInlineEdit()}
-                                                    {$inlineEdit->renderButton($row)|noescape}
+                                            <td n:if="$hasBuiltInActions" class="col-action datagrid-actions-cell">
+                                                {include defaultRowActions}
+                                            </td>
+                                        </tr>
+                                        <tr n:if="$hasColumnActions || $hasBuiltInActions"
+                                            n:class="'datagrid-actions-row', $rowIsStriped ? 'datagrid-row-striped'">
+                                            <td colspan="{$control->getColumnsCount()}">
+                                                {if $hasColumnActions}
+                                                    {var $actionColumn = $row->applyColumnCallback('actions', clone $columns['actions'])}
+                                                    {include column-value, column => $actionColumn, row => $row, key => 'actions'}
                                                 {/if}
-                                                {if $itemsDetail && $itemsDetail->shouldBeRendered($row)}
-                                                    {$itemsDetail->renderButton($row)|noescape}
+                                                {if $hasBuiltInActions}
+                                                    {include defaultRowActions}
                                                 {/if}
-                                                </div>
                                             </td>
                                         </tr>
                                     {/if}
@@ -507,6 +518,29 @@
 	{/if}
 {/define}
 
+
+{define defaultRowActions}
+    <div class="datagrid-row-actions">
+        {foreach $actions as $key => $action}
+            {if $row->hasAction($key)}
+                {if $action->hasTemplate()}
+                    {include $action->getTemplate(), item => $item, (expand) $action->getTemplateVariables(), row => $row}
+                {else}
+                    {$action->render($row)|noescape}
+                {/if}
+            {/if}
+        {/foreach}
+        <span class="handle-sort btn btn-sm btn-light" n:if="$control->isSortable()">
+            <i n:block="icon-arrows-v" class="{$iconPrefix}arrows-v {$iconPrefix}arrows-alt-v" aria-hidden="true"></i>
+        </span>
+        {if $inlineEdit && $row->hasInlineEdit()}
+            {$inlineEdit->renderButton($row)|noescape}
+        {/if}
+        {if $itemsDetail && $itemsDetail->shouldBeRendered($row)}
+            {$itemsDetail->renderButton($row)|noescape}
+        {/if}
+    </div>
+{/define}
 
 {define column-value}
 	{var $col = 'col-' . $key}
