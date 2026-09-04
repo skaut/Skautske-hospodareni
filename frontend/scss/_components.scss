@@ -58,7 +58,7 @@
 
 .page-heading > .card-body {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   flex-wrap: wrap;
   gap: 1rem;
 }
@@ -66,17 +66,31 @@
 .page-heading > .card-body > h1 {
   flex: 0 0 auto;
   margin-bottom: 0 !important;
+  order: 1;
 }
 
 .page-heading > .card-body > .page-lead {
-  flex: 1 1 22rem;
+  flex: 0 0 100%;
   min-width: 0;
   margin-bottom: 0 !important;
+  order: 2;
 }
 
-.page-heading > .card-body > :not(h1):not(.page-lead) {
+.page-heading-actions {
+  display: flex;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  margin-left: auto;
+  order: 1;
+}
+
+.page-heading > .card-body > :not(h1):not(.page-lead):not(.page-heading-actions) {
   flex: 1 0 100%;
   min-width: 0;
+  order: 3;
 }
 
 .page-help-toggle {
