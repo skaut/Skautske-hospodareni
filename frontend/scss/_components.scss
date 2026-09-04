@@ -39,6 +39,34 @@
   --bs-btn-disabled-color: #302821;
 }
 
+// Add and create actions use the requested brighter green. Keep the foreground
+// dark so the label remains legible in both application themes.
+.btn-primary {
+  --tblr-btn-bg: rgba(66, 205, 50, 0.8);
+  --tblr-btn-border-color: rgba(66, 205, 50, 0.8);
+  --tblr-btn-color: #302821;
+  --tblr-btn-hover-bg: rgba(53, 180, 41, 0.9);
+  --tblr-btn-hover-border-color: rgba(53, 180, 41, 0.9);
+  --tblr-btn-hover-color: #302821;
+  --tblr-btn-active-bg: rgba(48, 165, 37, 0.92);
+  --tblr-btn-active-border-color: rgba(48, 165, 37, 0.92);
+  --tblr-btn-active-color: #302821;
+  --tblr-btn-disabled-bg: rgba(66, 205, 50, 0.8);
+  --tblr-btn-disabled-color: #302821;
+
+  --bs-btn-bg: rgba(66, 205, 50, 0.8);
+  --bs-btn-border-color: rgba(66, 205, 50, 0.8);
+  --bs-btn-color: #302821;
+  --bs-btn-hover-bg: rgba(53, 180, 41, 0.9);
+  --bs-btn-hover-border-color: rgba(53, 180, 41, 0.9);
+  --bs-btn-hover-color: #302821;
+  --bs-btn-active-bg: rgba(48, 165, 37, 0.92);
+  --bs-btn-active-border-color: rgba(48, 165, 37, 0.92);
+  --bs-btn-active-color: #302821;
+  --bs-btn-disabled-bg: rgba(66, 205, 50, 0.8);
+  --bs-btn-disabled-color: #302821;
+}
+
 .page-heading {
   margin-bottom: 1.5rem;
 }
@@ -65,6 +93,8 @@
 
 .page-heading > .card-body > h1 {
   flex: 0 0 auto;
+  font-size: 1.166667rem;
+  line-height: 1.5rem;
   margin-bottom: 0 !important;
   order: 1;
 }
@@ -107,8 +137,6 @@
   color: var(--app-green);
   font-size: 1rem;
   cursor: pointer;
-  margin-left: auto;
-  order: 2;
 }
 
 .page-help-toggle:hover {
@@ -120,16 +148,9 @@
   outline-offset: 2px;
 }
 
-body[data-page-help-expanded="false"] .page-heading:not([data-page-help-initialized="true"]) > .card-body > .page-lead > :not(i) {
-  display: none;
-}
-
 body[data-page-help-expanded="false"] .page-heading:not([data-page-help-initialized="true"]) > .card-body > .page-lead,
 .page-lead[data-page-help-expanded="false"] {
-  gap: 0;
-  padding: 0;
-  border-color: transparent;
-  background: transparent;
+  display: none;
 }
 
 .page-lead {
@@ -164,14 +185,6 @@ body[data-page-help-expanded="false"] .page-heading:not([data-page-help-initiali
   width: 1.5rem;
   height: 1.5rem;
   order: 2;
-}
-
-.page-lead[data-page-help-expanded="false"] .page-help-toggle {
-  margin-left: auto;
-}
-
-body[data-page-help-expanded="false"] .page-heading:not([data-page-help-initialized="true"]) > .card-body > .page-lead > i {
-  margin-left: auto;
 }
 
 .card-header {
