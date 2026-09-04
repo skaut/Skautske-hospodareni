@@ -4,7 +4,7 @@
         <div class="card-body">
             <h1 n:inner-block="title" class="h3 mb-2">Nápověda: {$pageKey}</h1>
             {include pageLead, default: 'Horní proužek je jedna věta u nadpisu stránky. Každý blok je jeden odstavec v pravém panelu: krátký tučný nadpis, text a nepovinné odrážky.', class: 'mb-3'}
-            <div class="d-flex flex-wrap gap-2">
+            <div class="page-heading-actions d-flex flex-wrap gap-2">
                 <a n:href="default" class="btn btn-sm btn-light">
                     <i class="fi fi-rr-arrow-left" aria-hidden="true"></i> Zpět na seznam
                 </a>
@@ -16,12 +16,30 @@
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-body">
+                    {snippet editorForm}
                     <form n:name="form" class="inline-errors" data-test="admin-help-form">
+                        <div n:foreach="$form->getOwnErrors() as $error" class="alert alert-danger" role="alert">{$error}</div>
                         <div class="mb-4 pb-3 border-bottom">
                             {label lead /}
                             {input lead, class => 'form-control', data-test => 'help-lead'}
                             <div class="form-text">Krátká věta v šedém proužku u nadpisu stránky. Prázdné pole
                                 znamená, že se použije text, který má stránka zabudovaný.</div>
+                        </div>
+
+                        <div class="mb-4 pb-3 border-bottom">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    {label youtubeTitle /}
+                                    {input youtubeTitle, class => 'form-control', data-test => 'help-youtube-title'}
+                                    <div class="invalid-feedback d-block" n:foreach="$form['youtubeTitle']->getErrors() as $error">{$error}</div>
+                                </div>
+                                <div class="col-12">
+                                    {label youtubeUrl /}
+                                    {input youtubeUrl, class => 'form-control', data-test => 'help-youtube-url'}
+                                    <div class="invalid-feedback d-block" n:foreach="$form['youtubeUrl']->getErrors() as $error">{$error}</div>
+                                    <div class="form-text">Obě pole jsou nepovinná. Odkaz se otevře v novém okně a jeho sledovací parametry se automaticky odstraní.</div>
+                                </div>
+                            </div>
                         </div>
 
                         {* Every block is always posted; showing and hiding is only visual,
@@ -70,13 +88,16 @@
                         </div>
 
                         <div class="d-flex flex-wrap gap-2">
-                            {input send}
+                            {input save, class => 'btn btn-primary ajax', data-test => 'admin-help-save'}
+                            {input send, class => 'btn btn-outline-secondary', data-test => 'admin-help-save-close'}
                         </div>
                     </form>
+                    {/snippet}
                 </div>
             </div>
         </div>
         <div class="col-lg-4">
+            {snippet helpSidebar}
             <div class="card">
                 <div class="card-body">
                     <strong>Jak nápověda vypadá</strong>
@@ -88,7 +109,7 @@
                     <hr>
                     <strong>Odebrání nápovědy</strong>
                     <p class="text-body-secondary small mt-2 mb-0">
-                        Smažte všechny bloky i horní proužek a uložte. Panel se na stránce přestane
+                        Smažte všechny bloky, horní proužek i video a uložte. Panel se na stránce přestane
                         zobrazovat a proužek se vrátí k textu zabudovanému ve stránce.
                     </p>
                     {if $help !== null}
@@ -101,6 +122,47 @@
                     {/if}
                 </div>
             </div>
+
+            <section class="card mt-4" data-test="admin-help-preview">
+                <div class="card-body">
+                    <h2 class="h5 mb-1">Náhled pro danou stránku</h2>
+                    <p class="text-body-secondary small mb-3">{$pageKey}</p>
+                    {if $help !== null && ($help->getSections() !== [] || $help->getYoutubeUrl() !== null)}
+                        <aside class="design-help-sidebar position-static" data-test="admin-help-preview-content">
+                            <div class="d-inline-flex align-items-center gap-2 pb-2 border-bottom w-100">
+                                <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary bg-opacity-10 p-2">
+                                    <i class="fi fi-rr-lightbulb-on text-primary" aria-hidden="true"></i>
+                                </span>
+                                <span class="fw-semibold text-primary-emphasis">Nápověda</span>
+                            </div>
+                            {var $youtubeUrl = $help->getYoutubeUrl()}
+                            <div n:if="$youtubeUrl !== null" class="mt-2 mb-2">
+                                <a href="{$youtubeUrl}" target="_blank" rel="nofollow noopener noreferrer"
+                                   class="d-flex align-items-center gap-2 text-decoration-none fw-semibold">
+                                    <i class="fi fi-brands-youtube text-danger" aria-hidden="true"></i>
+                                    <span class="text-break">{$help->getYoutubeTitle()}</span>
+                                </a>
+                            </div>
+                            <div n:class="$youtubeUrl !== null ? 'mt-2'">
+                                {foreach $help->getSections() as $section}
+                                    <div n:class="$iterator->last ? 'mb-0' : 'mb-3'">
+                                        <strong>{$section->getHeading()}</strong><br>
+                                        {$section->getText()}
+                                        <ul n:if="$section->hasItems()" class="small mt-2 mb-0">
+                                            <li n:foreach="$section->getItems() as $item">{$item}</li>
+                                        </ul>
+                                    </div>
+                                {/foreach}
+                            </div>
+                        </aside>
+                    {else}
+                        <p class="text-body-secondary small mb-0" data-test="admin-help-preview-empty">
+                            Zatím není co zobrazit. Vyplňte alespoň jeden blok nápovědy a uložte ho.
+                        </p>
+                    {/if}
+                </div>
+            </section>
+            {/snippet}
         </div>
     </div>
 </div>

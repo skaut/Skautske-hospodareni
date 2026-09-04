@@ -8,10 +8,15 @@ use App\Model\Help\Entity\PageHelp;
 use App\Model\Help\HelpSection;
 use App\Model\Help\Manager\PageHelpManager;
 use App\Model\Help\PageCatalog;
+use App\Model\PageView\ReadModel\Queries\PageViewSummaryQuery;
 use App\Presentation\Admin\AdminBasePresenter;
 use Component\Forms\BaseForm;
+use DateTimeImmutable;
+use InvalidArgumentException;
+use LogicException;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
+use Nette\Forms\Controls\TextInput;
 use Nette\Http\IResponse;
 
 use function count;
@@ -32,6 +37,9 @@ final class HelpPresenter extends AdminBasePresenter
 {
     private const SECTION_SLOTS = 5;
 
+    /** Long enough to cover a whole season of the year, short enough to describe today. */
+    private const VIEW_WINDOW_DAYS = 90;
+
     private ?string $pageKey = null;
 
     public function __construct(
@@ -48,6 +56,11 @@ final class HelpPresenter extends AdminBasePresenter
             $existing[$help->getPageKey()] = $help;
         }
 
+        $today = new DateTimeImmutable('today');
+        $pageViews = $this->queryBus->handle(
+            new PageViewSummaryQuery($today->modify('-'.self::VIEW_WINDOW_DAYS.' days'), $today),
+        );
+
         $rows = [];
 
         foreach ($this->pageCatalog->getPages() as $pageKey) {
@@ -61,18 +74,24 @@ final class HelpPresenter extends AdminBasePresenter
                 'hasLead' => $help?->getLead() !== null,
                 'updatedAt' => $help?->getUpdatedAt(),
                 'updatedByName' => $help?->getUpdatedByName(),
+                'views' => $pageViews->getViews($pageKey),
             ];
         }
 
-        // Pages that already have help first, so the list doubles as a coverage overview.
+        // Pages that already have help first, so the list doubles as a coverage
+        // overview; the most used pages lead within each group, which is the order
+        // in which writing the missing texts pays off.
         usort($rows, static function (array $a, array $b): int {
-            return [$b['sectionCount'] > 0, $a['pageKey']] <=> [$a['sectionCount'] > 0, $b['pageKey']];
+            return [$b['sectionCount'] > 0, $b['views'], $a['pageKey']]
+                <=> [$a['sectionCount'] > 0, $a['views'], $b['pageKey']];
         });
 
         $this->template->setParameters([
             'rows' => $rows,
             'filledCount' => count($existing),
             'totalCount' => count($this->pageCatalog->getPages()),
+            'viewWindowDays' => self::VIEW_WINDOW_DAYS,
+            'viewsSince' => $pageViews->countedSince,
         ]);
     }
 
@@ -101,7 +120,12 @@ final class HelpPresenter extends AdminBasePresenter
 
     private function fillForm(PageHelp $help): void
     {
-        $defaults = ['lead' => $help->getLead(), 'sections' => []];
+        $defaults = [
+            'lead' => $help->getLead(),
+            'youtubeTitle' => $help->getYoutubeTitle(),
+            'youtubeUrl' => $help->getYoutubeUrl(),
+            'sections' => [],
+        ];
 
         foreach ($help->getSections() as $index => $section) {
             if ($index >= self::SECTION_SLOTS) {
@@ -127,6 +151,22 @@ final class HelpPresenter extends AdminBasePresenter
             ->setHtmlAttribute('rows', 2)
             ->setHtmlAttribute('placeholder', 'Nechte prázdné a použije se text zabudovaný ve stránce.');
 
+        $youtubeTitle = $form->addText('youtubeTitle', 'Název videa YouTube')
+            ->setNullable()
+            ->setMaxLength(PageHelp::YOUTUBE_TITLE_MAX_LENGTH)
+            ->setHtmlAttribute('placeholder', 'např. Jak založit platební skupinu');
+        $youtubeUrl = $form->addText('youtubeUrl', 'Odkaz na video YouTube')
+            ->setNullable()
+            ->setMaxLength(PageHelp::YOUTUBE_URL_MAX_LENGTH)
+            ->setHtmlAttribute('placeholder', 'https://www.youtube.com/watch?v=...');
+        $youtubeTitle
+            ->addConditionOn($youtubeUrl, Form::FILLED)
+            ->setRequired('Vyplňte název videa YouTube.');
+        $youtubeUrl
+            ->addConditionOn($youtubeTitle, Form::FILLED)
+            ->setRequired('Vyplňte odkaz na video YouTube.')
+            ->addRule(Form::URL, 'Zadejte platnou URL adresu.');
+
         $sections = $form->addContainer('sections');
 
         for ($index = 0; $index < self::SECTION_SLOTS; ++$index) {
@@ -141,11 +181,18 @@ final class HelpPresenter extends AdminBasePresenter
                 ->setHtmlAttribute('rows', 3);
         }
 
-        $form->addSubmit('send', 'Uložit nápovědu')
+        $form->addSubmit('save', 'Uložit')
             ->setHtmlAttribute('class', 'btn btn-primary');
+        $form->addSubmit('send', 'Uložit a zavřít')
+            ->setHtmlAttribute('class', 'btn btn-outline-secondary');
 
         $form->onSuccess[] = function (Form $form): void {
             $this->formSubmitted($form);
+        };
+        $form->onError[] = function (): void {
+            if ($this->isAjax()) {
+                $this->redrawControl('editorForm');
+            }
         };
 
         return $form;
@@ -160,6 +207,10 @@ final class HelpPresenter extends AdminBasePresenter
         $values = $form->getValues();
         $lead = trim((string) $values->lead);
         $lead = $lead === '' ? null : $lead;
+        $youtubeTitle = trim((string) $values->youtubeTitle);
+        $youtubeTitle = $youtubeTitle === '' ? null : $youtubeTitle;
+        $youtubeUrl = trim((string) $values->youtubeUrl);
+        $youtubeUrl = $youtubeUrl === '' ? null : $youtubeUrl;
         $sections = [];
 
         foreach ($values->sections as $section) {
@@ -173,6 +224,10 @@ final class HelpPresenter extends AdminBasePresenter
             if ($heading === '' || $text === '') {
                 $form->addError('U každé sekce vyplňte nadpis i text, nebo nechte obě pole prázdná.');
 
+                if ($this->isAjax()) {
+                    $this->redrawControl('editorForm');
+                }
+
                 return;
             }
 
@@ -181,13 +236,50 @@ final class HelpPresenter extends AdminBasePresenter
             $sections[] = HelpSection::create($heading, $text, $items === false ? [] : $items);
         }
 
-        $this->pageHelpManager->save($this->pageKey, $lead, $sections, $this->getEditorName());
+        try {
+            $this->pageHelpManager->save(
+                $this->pageKey,
+                $lead,
+                $sections,
+                $youtubeTitle,
+                $youtubeUrl,
+                $this->getEditorName(),
+            );
+        } catch (InvalidArgumentException $exception) {
+            $youtubeUrlControl = $form->getComponent('youtubeUrl');
+            if (! $youtubeUrlControl instanceof TextInput) {
+                throw new LogicException('YouTube URL field is missing.');
+            }
+
+            $youtubeUrlControl->addError($exception->getMessage());
+
+            if ($this->isAjax()) {
+                $this->redrawControl('editorForm');
+            }
+
+            return;
+        }
 
         $this->flashMessage(
-            $lead === null && $sections === []
+            $lead === null && $sections === [] && $youtubeUrl === null
                 ? 'Nápověda byla odebrána, na stránce se už nezobrazí.'
                 : 'Nápověda byla uložena.',
         );
+
+        if ($form->isSubmitted() === $form['save']) {
+            if ($this->isAjax()) {
+                $this->template->setParameters([
+                    'help' => $this->pageHelpManager->findForPage($this->pageKey),
+                ]);
+                $this->redrawControl('helpSidebar');
+                $this->redrawControl('flash');
+
+                return;
+            }
+
+            $this->redirect('edit', ['pageKey' => $this->pageKey]);
+        }
+
         $this->redirect('default');
     }
 
