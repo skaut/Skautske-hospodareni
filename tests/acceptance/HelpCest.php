@@ -7,6 +7,9 @@ namespace acceptance;
 use AcceptanceTester;
 use PHPUnit\Framework\Assert;
 
+use function date;
+use function preg_replace;
+use function strtotime;
 use function time;
 
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
@@ -39,6 +42,7 @@ class HelpCest extends BaseAcceptanceCest
     public function _after(AcceptanceTester $I): void
     {
         $I->deleteFromDatabase('page_help', ['page_key' => self::PAGE_KEY]);
+        $I->deleteFromDatabase('page_view_daily', ['page_key' => self::PAGE_KEY]);
     }
 
     /** @group help */
@@ -72,6 +76,7 @@ class HelpCest extends BaseAcceptanceCest
         $I = $this->I;
         $heading = 'Platnost tři roky';
         $text = 'Testovací nápověda '.time();
+        $youtubeTitle = 'Jak založit platební skupinu';
 
         $I->wantTo('write help in the administration and see it on the page');
 
@@ -82,10 +87,23 @@ class HelpCest extends BaseAcceptanceCest
         $I->fillFieldStable('[data-test="admin-help-form"] input[name="sections[0][heading]"]', $heading);
         $I->fillFieldStable('[data-test="admin-help-form"] textarea[name="sections[0][text]"]', $text);
         $I->fillFieldStable('[data-test="admin-help-form"] textarea[name="sections[0][items]"]', "první odrážka\ndruhá odrážka");
-        $I->clickStable('[data-test="admin-help-form"] [name=send]');
+        $I->fillFieldStable('[data-test="help-youtube-title"]', $youtubeTitle);
+        $I->fillFieldStable('[data-test="help-youtube-url"]', 'https://youtu.be/kfVsfOSbJY0?si=source&utm_source=newsletter');
+        $I->clickStable('[data-test="admin-help-save"]');
 
         $I->waitForText('Nápověda byla uložena.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->seeInDatabase('page_help', ['page_key' => self::PAGE_KEY]);
+        $I->seeInCurrentUrl('/admin/napovedy/'.self::PAGE_KEY);
+        $I->see('Náhled pro danou stránku', '[data-test="admin-help-preview"]');
+        $I->see($heading, '[data-test="admin-help-preview-content"]');
+        $I->see($text, '[data-test="admin-help-preview-content"]');
+        $I->see($youtubeTitle, '[data-test="admin-help-preview-content"]');
+        $I->dontSee('Vlastní proužek '.$heading, '[data-test="admin-help-preview"]');
+        $I->seeElement('[data-test="admin-help-save-close"][value="Uložit a zavřít"]');
+        $I->seeInDatabase('page_help', [
+            'page_key' => self::PAGE_KEY,
+            'youtube_title' => $youtubeTitle,
+            'youtube_url' => 'https://www.youtube.com/watch?v=kfVsfOSbJY0',
+        ]);
 
         $I->amOnPage(self::PAGE_URL);
         $I->waitForElementVisible('[data-test="help-sidebar"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
@@ -93,16 +111,54 @@ class HelpCest extends BaseAcceptanceCest
         $I->see($text, '[data-test="help-content"]');
         $I->see('první odrážka', '[data-test="help-content"]');
         $I->see('Vlastní proužek '.$heading, '.page-lead');
+        $I->see($youtubeTitle, '[data-test="help-youtube-link"]');
+        $I->seeElement('[data-test="help-youtube-link"][href="https://www.youtube.com/watch?v=kfVsfOSbJY0"][target="_blank"][rel~="nofollow"][title="'.$youtubeTitle.'"]');
+
+        $expandedVideoAlignment = $I->executeJS(<<<'JS'
+const icon = document.querySelector('[data-test="help-youtube-icon"]')?.getBoundingClientRect();
+const title = document.querySelector('[data-test="help-youtube-title"]')?.getBoundingClientRect();
+
+return {
+    iconCenter: icon === undefined ? null : icon.top + icon.height / 2,
+    titleCenter: title === undefined ? null : title.top + title.height / 2,
+};
+JS);
+        Assert::assertEqualsWithDelta($expandedVideoAlignment['iconCenter'], $expandedVideoAlignment['titleCenter'], 0.5);
+
+        $I->clickStable('[data-test="help-toggle"]');
+        $I->waitForJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed === "true"', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeElement('[data-test="help-youtube-link"]');
+
+        $iconSizes = $I->executeJS(<<<'JS'
+const titleIcon = document.querySelector('[data-test="help-title-icon"]')?.getBoundingClientRect();
+const youtubeIcon = document.querySelector('[data-test="help-youtube-icon"]')?.getBoundingClientRect();
+const title = document.querySelector('[data-test="help-youtube-title"]');
+
+return {
+    titleIcon: {width: titleIcon?.width, height: titleIcon?.height},
+    youtubeIcon: {width: youtubeIcon?.width, height: youtubeIcon?.height},
+    titleVisible: title !== null && window.getComputedStyle(title).display !== 'none',
+};
+JS);
+        Assert::assertSame($iconSizes['titleIcon'], $iconSizes['youtubeIcon']);
+        Assert::assertFalse($iconSizes['titleVisible']);
+
+        $I->clickStable('[data-test="help-toggle"]');
+        $I->waitForJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed === "false"', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->see($youtubeTitle, '[data-test="help-youtube-link"]');
 
         $I->wantTo('remove the help again by clearing the form');
 
         $I->amOnPage('/admin/napovedy/'.self::PAGE_KEY);
         $I->waitForElementVisible('[data-test="admin-help-form"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->fillFieldStable('[data-test="admin-help-form"] [data-test="help-lead"]', '');
+        $I->fillFieldStable('[data-test="help-youtube-title"]', '');
+        $I->fillFieldStable('[data-test="help-youtube-url"]', '');
         $I->clickStable('[data-test="admin-help-form"] [data-test="help-section-remove-0"]');
         $I->clickStable('[data-test="admin-help-form"] [name=send]');
 
         $I->waitForText('Nápověda byla odebrána', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->waitForElementVisible('[data-test="admin-help-list"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->dontSeeInDatabase('page_help', ['page_key' => self::PAGE_KEY]);
 
         $I->amOnPage(self::PAGE_URL);
@@ -175,6 +231,33 @@ JS);
             Assert::assertSame(0, $layout['overflow'], 'Vodorovné přetečení na šířce '.$width.' px');
             Assert::assertTrue($layout['asideVisible'], 'Panel je vidět na šířce '.$width.' px');
         }
+    }
+
+    /**
+     * The page list doubles as the place to see which pages are worth a text,
+     * which is what the removed Google Analytics never told anyone.
+     *
+     * @group help
+     */
+    public function pageListShowsHowMuchEachPageIsUsed(): void
+    {
+        $I = $this->I;
+
+        $I->wantTo('see how much a page is used next to its help');
+
+        $I->haveInDatabase('page_view_daily', [
+            'page_key' => self::PAGE_KEY,
+            'day' => date('Y-m-d', strtotime('-10 days')),
+            'views' => 4242,
+        ]);
+
+        $I->amOnPage('/admin/napovedy');
+        $I->waitForElementVisible('[data-test="admin-help-list"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        // The column is a 90 day sum, and the other scenarios open this very page,
+        // so the only stable expectation is that the seeded views are included.
+        $shown = (int) preg_replace('~\D~', '', $I->grabTextFrom('[data-test="admin-help-views-'.self::PAGE_KEY.'"]'));
+        Assert::assertGreaterThanOrEqual(4242, $shown);
     }
 
     /** @group help */
