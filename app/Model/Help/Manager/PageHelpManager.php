@@ -30,16 +30,22 @@ class PageHelpManager
     }
 
     /**
-     * Stores the help for one page. An empty lead together with an empty section list
-     * removes the record, which is how an editor turns the panel off again.
+     * Stores the help for one page. Empty content removes the record, which is how
+     * an editor turns the panel off again.
      *
      * @param HelpSection[] $sections
      */
-    public function save(string $pageKey, ?string $lead, array $sections, ?string $editorName): void
-    {
+    public function save(
+        string $pageKey,
+        ?string $lead,
+        array $sections,
+        ?string $youtubeTitle,
+        ?string $youtubeUrl,
+        ?string $editorName,
+    ): void {
         $help = $this->repository->findByPageKey($pageKey);
 
-        if ($lead === null && $sections === []) {
+        if ($lead === null && $sections === [] && $youtubeTitle === null && $youtubeUrl === null) {
             if ($help !== null) {
                 $this->entityManager->remove($help);
                 $this->entityManager->flush();
@@ -51,9 +57,9 @@ class PageHelpManager
         $now = new DateTimeImmutable();
 
         if ($help === null) {
-            $help = new PageHelp($pageKey, $lead, $sections, $now, $editorName);
+            $help = new PageHelp($pageKey, $lead, $sections, $youtubeTitle, $youtubeUrl, $now, $editorName);
         } else {
-            $help->update($lead, $sections, $now, $editorName);
+            $help->update($lead, $sections, $youtubeTitle, $youtubeUrl, $now, $editorName);
         }
 
         $this->entityManager->persist($help);

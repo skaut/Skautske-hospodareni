@@ -14,12 +14,27 @@
         aria-expanded="true"
         title="Skrýt nápovědu"
     >
-        <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary bg-opacity-10 p-2">
+        <span class="help-sidebar-icon d-inline-flex align-items-center justify-content-center rounded-3 bg-primary bg-opacity-10 p-2"
+              data-test="help-title-icon">
             <i class="fi fi-rr-lightbulb-on text-primary" aria-hidden="true"></i>
         </span>
         <span class="fw-semibold text-primary-emphasis" data-help-content>Nápověda</span>
     </button>
-    <div data-help-content data-test="help-content">
+    {var $youtubeUrl = $pageHelp->getYoutubeUrl()}
+    <div n:if="$youtubeUrl !== null" class="mt-2 mb-2" data-help-youtube>
+        <a href="{$youtubeUrl}" target="_blank" rel="nofollow noopener noreferrer"
+           class="d-flex align-items-center gap-2 text-decoration-none fw-semibold"
+           data-test="help-youtube-link"
+           title="{$pageHelp->getYoutubeTitle()}"
+           aria-label="Video: {$pageHelp->getYoutubeTitle()}">
+            <span class="help-sidebar-icon d-inline-flex align-items-center justify-content-center rounded-3 bg-danger bg-opacity-10 p-2"
+                  data-test="help-youtube-icon">
+                <i class="fi fi-brands-youtube text-danger" aria-hidden="true"></i>
+            </span>
+            <span class="text-break align-self-center" data-test="help-youtube-title">{$pageHelp->getYoutubeTitle()}</span>
+        </a>
+    </div>
+    <div n:class="$youtubeUrl !== null ? 'mt-2'" data-help-content data-test="help-content">
         {foreach $pageHelp->getSections() as $section}
             <div n:class="$iterator->last ? 'mb-0' : 'mb-3'">
                 <strong>{$section->getHeading()}</strong><br>

@@ -96,10 +96,16 @@ table.table a:hover {
   background: var(--tblr-bg-surface);
   align-self: start;
   position: sticky;
-  top: 5rem;
+  top: 6rem;
   font-size: 0.92rem;
   line-height: 1.6;
   transition: opacity 0.2s ease;
+}
+
+.help-sidebar-icon {
+  flex: 0 0 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
 }
 
 .design-help-sidebar [data-help-toggle] {
@@ -115,6 +121,14 @@ table.table a:hover {
 // Collapsed state — hide content, keep toggle visible
 [data-help-collapsed="true"] {
   .design-help-sidebar [data-help-content] {
+    display: none;
+  }
+
+  .design-help-sidebar [data-help-youtube-link] {
+    width: 2.5rem;
+  }
+
+  .design-help-sidebar [data-test="help-youtube-title"] {
     display: none;
   }
 
