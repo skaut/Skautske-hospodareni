@@ -30,4 +30,14 @@ Hospodaření jde nainstalovat jako aplikaci a spouštět z plochy telefonu. Pop
 
 Nabídku instalace řeší `frontend/ts/appInstall.ts`. Na Androidu ji prohlížeč umí spustit přímo z tlačítka v nabídce, na iOS zbývá jen postup přes nabídku Sdílet, takže se tam místo tlačítka ukáže návod. V nainstalované aplikaci se nabídka neobjeví.
 
+### Měření používání
+
+Hospodaření nepoužívá žádnou analytiku třetí strany. Místo ní si u každé stránky počítá na serveru, kolikrát se za daný den otevřela: jeden součet na stránku a den v tabulce `page_view_daily`. K záznamu nepatří uživatel, jednotka ani IP adresa, takže z něj nejde zjistit, kdo se na co koukal, a v prohlížeči se kvůli měření neukládá nic.
+
+Počítá se jen běžné zobrazení stránky, ne dotažení části stránky přes AJAX ani odeslání formuláře. Zapisuje se stranou provozu: když zápis selže, zaloguje se a stránka se zobrazí normálně. Do doby, než proběhne migrace, měření samo mlčí.
+
+Čísla se zobrazují v Admin:Nápovědy jako součet za posledních 90 dní. Seznam stránek bez nápovědy je díky tomu seřazený od nejpoužívanějších, takže je vidět, kde se psaní nápovědy vyplatí nejdřív.
+
+Co aplikace o uživatelích ukládá a co zůstává v prohlížeči, popisuje veřejná stránka `/zasady-soukromi`.
+
 Podrobné pracovní pokyny pro automatizované agenty nejsou součástí této dokumentace; jsou odděleně ve složce `.agents`.
