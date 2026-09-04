@@ -7,6 +7,15 @@
                 <i class="fi fi-rr-info" aria-hidden="true"></i>
                 <span>Texty kontextové nápovědy, které se uživatelům zobrazují v pravém panelu stránky. Vyplněno {$filledCount} ze {$totalCount} stránek.</span>
             </div>
+            <p class="text-body-secondary small mb-0">
+                Sloupec Zobrazení říká, kolikrát se stránka za posledních {$viewWindowDays} dní otevřela — počítá se na serveru,
+                bez cookies a bez údajů o uživateli. Stránky bez nápovědy jsou seřazené od nejpoužívanějších, takže se dá psát v tom pořadí, v jakém se to vyplatí.
+                {if $viewsSince === null}
+                    Zatím se nic nezaznamenalo; počítání začne po nasazení migrace.
+                {else}
+                    Zaznamenává se od {$viewsSince|date:'j. n. Y'}.
+                {/if}
+            </p>
         </div>
     </div>
 
@@ -20,6 +29,7 @@
                             <th>Modul</th>
                             <th>Proužek</th>
                             <th>Bloků</th>
+                            <th class="text-end">Zobrazení</th>
                             <th>Naposledy upraveno</th>
                             <th class="text-end">Akce</th>
                         </tr>
@@ -39,6 +49,13 @@
                             <td>
                                 {if $row['sectionCount'] > 0}
                                     <span class="badge text-bg-success">{$row['sectionCount']}</span>
+                                {else}
+                                    <span class="text-body-secondary">—</span>
+                                {/if}
+                            </td>
+                            <td class="text-end" data-test="admin-help-views-{$row['pageKey']}">
+                                {if $row['views'] > 0}
+                                    {$row['views']|num}
                                 {else}
                                     <span class="text-body-secondary">—</span>
                                 {/if}
