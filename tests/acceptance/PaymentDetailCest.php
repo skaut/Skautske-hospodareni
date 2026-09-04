@@ -288,6 +288,197 @@ class PaymentDetailCest extends PaymentAcceptanceCest
     }
 
     /** @group payment */
+    public function paymentGroupBankAccountOverviewIsScopedAndPairsItsPayment(): void
+    {
+        $I = $this->I;
+        $bankAccountId = $I->haveInDatabase('pa_bank_account', [
+            'unit_id' => AcceptanceTester::UNIT_ID,
+            'name' => 'Účet přehledu skupiny',
+            'token' => null,
+            'transaction_source' => 'gpc',
+            'created_at' => '2026-06-18 12:00:00',
+            'allowed_for_subunits' => 1,
+            'number_prefix' => null,
+            'number_number' => '2000942146',
+            'number_bank_code' => '2010',
+        ]);
+        $groupId = $this->createSubtypePaymentGroup('event', $bankAccountId);
+        $otherGroupId = $this->createSubtypePaymentGroup('event', $bankAccountId);
+        $paymentId = $I->haveInDatabase('pa_payment', [
+            'group_id' => $groupId,
+            'name' => 'Platba aktuální skupiny',
+            'amount' => 250,
+            'due_date' => ChronosDate::today()->addWeekdays(1)->format('Y-m-d'),
+            'variable_symbol' => '220001',
+            'constant_symbol' => null,
+            'note' => '',
+            'state' => 'preparing',
+        ]);
+        $I->haveInDatabase('pa_payment', [
+            'group_id' => $otherGroupId,
+            'name' => 'Platba jiné skupiny',
+            'amount' => 250,
+            'due_date' => ChronosDate::today()->addWeekdays(1)->format('Y-m-d'),
+            'variable_symbol' => '220001',
+            'constant_symbol' => null,
+            'note' => '',
+            'state' => 'preparing',
+        ]);
+        $manualPaymentId = $I->haveInDatabase('pa_payment', [
+            'group_id' => $groupId,
+            'name' => 'Platba pro ruční párování',
+            'amount' => 150,
+            'due_date' => ChronosDate::today()->addWeekdays(1)->format('Y-m-d'),
+            'variable_symbol' => '220003',
+            'constant_symbol' => null,
+            'note' => '',
+            'state' => 'preparing',
+        ]);
+        $transactionKey = 'acceptance-group-payment-'.$groupId;
+        $manualTransactionKey = 'acceptance-group-manual-'.$groupId;
+        $transactionDate = ChronosDate::today()->format('Y-m-d').' 12:00:00';
+        $I->haveInDatabase('bank_transaction', [
+            'bank_account_id' => $bankAccountId,
+            'import_batch_id' => null,
+            'source' => 'fio',
+            'transaction_key' => $transactionKey,
+            'source_transaction_id' => 'source-'.$transactionKey,
+            'date' => $transactionDate,
+            'amount' => 250,
+            'counter_account' => '123456789/2010',
+            'counter_name' => 'Příjem pro skupinu',
+            'variable_symbol' => 220001,
+            'constant_symbol' => null,
+            'note' => 'Bankovní úhrada',
+            'imported_at' => $transactionDate,
+        ]);
+        $I->haveInDatabase('bank_transaction', [
+            'bank_account_id' => $bankAccountId,
+            'import_batch_id' => null,
+            'source' => 'fio',
+            'transaction_key' => $manualTransactionKey,
+            'source_transaction_id' => 'source-'.$manualTransactionKey,
+            'date' => $transactionDate,
+            'amount' => 150,
+            'counter_account' => '123456789/2010',
+            'counter_name' => 'Příjem pro ruční párování',
+            'variable_symbol' => null,
+            'constant_symbol' => null,
+            'note' => 'Bankovní úhrada bez VS',
+            'imported_at' => $transactionDate,
+        ]);
+        $I->haveInDatabase('bank_transaction', [
+            'bank_account_id' => $bankAccountId,
+            'import_batch_id' => null,
+            'source' => 'fio',
+            'transaction_key' => 'acceptance-group-outgoing-'.$groupId,
+            'source_transaction_id' => 'source-outgoing-'.$groupId,
+            'date' => $transactionDate,
+            'amount' => -250,
+            'counter_account' => '123456789/2010',
+            'counter_name' => 'Odchozí platba',
+            'variable_symbol' => 220001,
+            'constant_symbol' => null,
+            'note' => 'Odchozí bankovní pohyb',
+            'imported_at' => $transactionDate,
+        ]);
+
+        $I->amOnPage('/platby/skupiny/'.$groupId.'/platby');
+        $I->waitForElementVisible('[data-test="payment-group-bank-account-toggle"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->resizeWindow(1440, 900);
+        $headingLayout = $I->executeJS(<<<'JS'
+const heading = document.querySelector('[data-test="payment-group-detail-page"] .page-heading');
+const body = heading?.querySelector(':scope > .card-body');
+const title = heading?.querySelector('h1');
+const actions = heading?.querySelector('.page-heading-actions');
+const lead = heading?.querySelector('.page-lead');
+const style = body === null ? null : getComputedStyle(body);
+
+return {
+    titleTop: title?.getBoundingClientRect().top ?? null,
+    actionsTop: actions?.getBoundingClientRect().top ?? null,
+    titleBottom: title?.getBoundingClientRect().bottom ?? null,
+    actionsBottom: actions?.getBoundingClientRect().bottom ?? null,
+    leadTop: lead?.getBoundingClientRect().top ?? null,
+    leadWidth: Math.round(lead?.getBoundingClientRect().width ?? 0),
+    bodyContentWidth: Math.round((body?.clientWidth ?? 0) - Number.parseFloat(style?.paddingLeft ?? '0') - Number.parseFloat(style?.paddingRight ?? '0')),
+};
+JS);
+        Assert::assertSame($headingLayout['titleTop'], $headingLayout['actionsTop']);
+        Assert::assertGreaterThanOrEqual(
+            max($headingLayout['titleBottom'], $headingLayout['actionsBottom']),
+            $headingLayout['leadTop'],
+        );
+        Assert::assertSame($headingLayout['bodyContentWidth'], $headingLayout['leadWidth']);
+
+        $I->resizeWindow(375, 900);
+        $mobileHeadingLayout = $I->executeJS(<<<'JS'
+const heading = document.querySelector('[data-test="payment-group-detail-page"] .page-heading');
+const actions = heading?.querySelector('.page-heading-actions');
+const lead = heading?.querySelector('.page-lead');
+
+return {
+    overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    actionsBottom: actions?.getBoundingClientRect().bottom ?? null,
+    leadTop: lead?.getBoundingClientRect().top ?? null,
+};
+JS);
+        Assert::assertSame(0, $mobileHeadingLayout['overflow']);
+        Assert::assertGreaterThanOrEqual($mobileHeadingLayout['actionsBottom'], $mobileHeadingLayout['leadTop']);
+        $I->see('Zobrazit bankovní platby', '[data-test="payment-group-bank-account-toggle"]');
+        $I->seeElement('[data-test="payment-group-bank-account-toggle"].ajax.btn-light.btn-sm');
+        $I->dontSeeElement('[data-test="payment-group-bank-account-transactions"]');
+        $I->seeElement('[data-test="pair-button-main"].ajax');
+
+        $I->clickStable('[data-test="payment-group-bank-account-toggle"]');
+        $I->waitForElementVisible('[data-test="payment-group-bank-account-transactions"] .datagrid', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->see('Skrýt bankovní platby', '[data-test="payment-group-bank-account-toggle"]');
+        $I->see('Účet přehledu skupiny', '[data-test="payment-group-bank-account-transactions"]');
+        $I->see('Příjem pro skupinu', '[data-test="payment-group-bank-account-transactions"]');
+        $I->dontSee('Odchozí platba', '[data-test="payment-group-bank-account-transactions"]');
+        $I->see('Platba aktuální skupiny', '[data-test="payment-group-bank-account-transactions"]');
+        $I->dontSee('Platba jiné skupiny', '[data-test="payment-group-bank-account-transactions"]');
+        $I->see('Nespárovaná platba odpovídá více platebním skupinám', '[data-test="payment-group-bank-account-transactions"]');
+        $I->seeElement('[data-test="payment-group-bank-account-transactions"] #frm-bankAccountTransactionsGrid-filter-filter-search');
+        $I->seeElement('[data-test="payment-group-bank-account-transactions"] #datagrid-sort-date');
+        $I->seeElement('[data-test="payment-group-bank-account-transactions"] .btn-outline-success.ajax');
+
+        $I->clickStable('[data-test="payment-group-bank-account-toggle"]');
+        $I->waitForText('Zobrazit bankovní platby', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '[data-test="payment-group-bank-account-toggle"]');
+        $I->dontSeeElement('[data-test="payment-group-bank-account-transactions"]');
+        Assert::assertStringNotContainsString('bankAccountTransactionsLoaded', $I->grabFromCurrentUrl());
+        Assert::assertStringNotContainsString('bankAccountPaymentId', $I->grabFromCurrentUrl());
+
+        $I->clickStable('[data-test="payment-group-bank-account-toggle"]');
+        $I->waitForElementVisible('[data-test="payment-group-bank-account-transactions"] .datagrid', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        $I->disablePopups();
+        $I->clickStable('[data-test="payment-group-bank-account-transactions"] .btn-outline-success');
+        $I->waitForText('Bankovní transakce byla ručně spárována s platbou.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeInDatabase('bank_transaction_pairing', [
+            'transaction_key' => $manualTransactionKey,
+            'payment_id' => $manualPaymentId,
+        ]);
+        $I->seeInDatabase('pa_payment', ['id' => $manualPaymentId, 'state' => 'completed']);
+        $I->seeCurrentUrlMatches('~^/platby/skupiny/\d+/platby(?:\?.*)?$~');
+    }
+
+    /** @group payment */
+    public function paymentGroupWithoutBankAccountDisablesBankAccountOverview(): void
+    {
+        $I = $this->I;
+        $groupId = $this->createSubtypePaymentGroup('event');
+        $I->updateInDatabase('pa_group', ['bank_account_id' => null], ['id' => $groupId]);
+
+        $I->amOnPage('/platby/skupiny/'.$groupId.'/platby');
+        $I->waitForElementVisible('[data-test="payment-group-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        $I->seeElement('[data-test="payment-group-bank-account-toggle-disabled"].disabled[aria-disabled="true"]');
+        $I->seeElement('[title="Není připojený žádný bankovní účet."][data-bs-toggle="tooltip"]');
+        $I->dontSeeElement('[data-test="payment-group-bank-account-transactions"]');
+    }
+
+    /** @group payment */
     public function paymentGridRendersRowWithTextNote(): void
     {
         $I = $this->I;

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Components\Payment\BankAccountDetail;
 
+use App\Components\DataGrid;
+use App\Components\Grids\GridFactory;
 use App\Components\Payment\BankPairingUiMessages;
 use App\Model\Bank\Entity\BankTransaction;
 use App\Model\Bank\Entity\BankTransactionPairing;
@@ -22,12 +24,14 @@ use App\Model\Payment\Repositories\IGroupRepository;
 use App\Model\Payment\Repositories\IPaymentRepository;
 use App\Model\Payment\TokenNotSet;
 use Nette\Application\LinkGenerator;
+use Nette\Utils\Html;
 
 use function array_filter;
 use function array_keys;
 use function array_map;
 use function array_values;
 use function count;
+use function implode;
 use function in_array;
 use function number_format;
 use function sprintf;
@@ -44,6 +48,7 @@ final class BankAccountDetailViewFactory
         private readonly InvoiceRepository $invoices,
         private readonly IGroupRepository $groups,
         private readonly LinkGenerator $linkGenerator,
+        private readonly GridFactory $gridFactory,
     ) {
     }
 
@@ -109,6 +114,97 @@ final class BankAccountDetailViewFactory
         }
     }
 
+    public function createForPaymentGroup(int $accountId, int $groupId, string $groupName, ?int $paymentId = null): BankAccountDetail
+    {
+        $focusTarget = $this->resolveFocusTarget($accountId, $paymentId, null, [], [$groupId]);
+
+        try {
+            $transactions = $this->accounts->getPersistentTransactions($accountId, self::DAYS_BACK);
+            $domainCandidates = array_values(array_filter(
+                $this->pairingCandidates->getDomainCandidatesForBankAccount($accountId),
+                static fn (PairingCandidate $candidate): bool => $candidate->getPayment() instanceof Payment,
+            ));
+            $activePairings = $this->pairings->findActiveByTransactionKeys(
+                array_map(static fn (BankTransaction $transaction): string => $transaction->getTransactionKey(), $transactions),
+            );
+
+            return new BankAccountDetail(
+                $this->buildTransactionRows(
+                    $transactions,
+                    $domainCandidates,
+                    $activePairings,
+                    [$groupId => $groupName],
+                    [],
+                    $focusTarget?->targetKey,
+                    false,
+                    null,
+                    $groupId,
+                ),
+                [],
+                $focusTarget?->label,
+            );
+        } catch (TokenNotSet) {
+            return new BankAccountDetail(null, [], $focusTarget?->label, warningMessage: 'Nemáte vyplněný token pro komunikaci s FIO');
+        } catch (BankTimeLimit) {
+            return new BankAccountDetail(null, [], $focusTarget?->label, warningMessage: BankPairingUiMessages::TIME_LIMIT_MESSAGE);
+        } catch (BankTimeout) {
+            return new BankAccountDetail(null, [], $focusTarget?->label, null, BankPairingUiMessages::TIMEOUT_MESSAGE);
+        } catch (BankWrongTokenAccount $exception) {
+            return new BankAccountDetail(null, [], $focusTarget?->label, null, BankPairingUiMessages::wrongTokenAccountMessage($exception));
+        }
+    }
+
+    /**
+     * @param list<BankAccountTransactionRow> $transactionRows
+     */
+    public function createTransactionsGrid(array $transactionRows, bool $incomingOnly, bool $paginate): DataGrid
+    {
+        $grid = $paginate
+            ? $this->gridFactory->create(__DIR__.'/templates/BankAccountTransactionsGrid.latte')
+            : $this->gridFactory->createSimpleGrid();
+        if ($paginate) {
+            $grid->setOuterFilterRendering(true);
+            $grid->setCollapsibleOuterFilters(false);
+            $grid->setRememberState(false);
+            $grid->setColumnReset(false);
+        }
+
+        $grid->setPrimaryKey('transactionKey');
+
+        $grid->addColumnDateTime('date', 'Datum')
+            ->setFormat('j.n. Y')
+            ->setSortable();
+
+        $grid->addColumnText('amount', 'Částka')
+            ->setRenderer(fn (array $row): Html => $this->renderTransactionAmount((float) $row['amount']))
+            ->setSortable('amountSort');
+
+        $grid->addColumnText('counterAccount', 'Účet')
+            ->setSortable();
+
+        $grid->addColumnText('counterName', 'Jméno')
+            ->setSortable();
+
+        $grid->addColumnText('constantSymbol', 'KS')
+            ->setSortable();
+
+        $grid->addColumnText('variableSymbol', 'VS')
+            ->setSortable();
+
+        $grid->addColumnText('note', 'Poznámka');
+
+        $grid->addColumnText('status', 'Stav / kandidáti')
+            ->setRenderer(fn (array $row): Html => $this->renderTransactionStatus($row['row']));
+
+        $grid->addFilterText('search', '', ['counterAccount', 'counterName', 'constantSymbol', 'variableSymbol', 'note', 'statusSearch'])
+            ->setPlaceholder('Hledat transakci...');
+
+        $grid->setDefaultSort(['date' => DataGrid::SORT_DESC]);
+        $grid->setDataSource($this->buildTransactionGridRows($transactionRows, $incomingOnly));
+
+        return $grid;
+    }
+
     /**
      * @param  list<BankTransaction>           $transactions
      * @param  list<PairingCandidate>          $domainCandidates
@@ -126,6 +222,7 @@ final class BankAccountDetailViewFactory
         ?string $focusTargetKey,
         bool $includeInvoices,
         ?string $transactionView,
+        ?int $manualPairingGroupId = null,
     ): array {
         $pairingsByTransactionKey = [];
         foreach ($activePairings as $pairing) {
@@ -179,6 +276,7 @@ final class BankAccountDetailViewFactory
                     $accessibleGroups,
                     $groupNames,
                     $transactionView,
+                    $manualPairingGroupId,
                 )
                 : [];
 
@@ -189,7 +287,15 @@ final class BankAccountDetailViewFactory
                 $manualCandidates,
                 $visibleExactCandidates,
                 $visibleVariableSymbolCandidates,
-                $this->resolveConflictReason($transaction, $pairing, $allExactCandidates, $allVariableSymbolCandidates, $visibleExactCandidates, $manualCandidates),
+                $this->resolveConflictReason(
+                    $transaction,
+                    $pairing,
+                    $allExactCandidates,
+                    $allVariableSymbolCandidates,
+                    $visibleExactCandidates,
+                    $manualCandidates,
+                    $manualPairingGroupId !== null,
+                ),
                 $focusTargetKey !== null && (
                     ($pairingLabel?->targetKey === $focusTargetKey)
                     || $this->containsTargetKey($manualCandidates, $focusTargetKey)
@@ -278,6 +384,7 @@ final class BankAccountDetailViewFactory
         array $groups,
         array $groupNames,
         ?string $transactionView,
+        ?int $manualPairingGroupId,
     ): array {
         $transactionAmount = number_format($transaction->getAmount(), 2, '.', '');
         $descriptions = [];
@@ -306,12 +413,18 @@ final class BankAccountDetailViewFactory
                     isset($groupNames[$payment->getGroupId()]) ? ' ve skupině '.$groupNames[$payment->getGroupId()] : '',
                 ),
                 $this->linkGenerator->link('Payments:Payment:default', ['id' => $payment->getGroupId()]).'#payment-'.$payment->getId(),
-                $this->linkGenerator->link('Settings:BankAccounts:pairTransactionToPayment', [
-                    'accountId' => $transaction->getBankAccount()->getId(),
-                    'transactionKey' => $transaction->getTransactionKey(),
-                    'paymentId' => $payment->getId(),
-                    'transactionView' => $transactionView,
-                ]),
+                $this->linkGenerator->link(
+                    $manualPairingGroupId === null
+                        ? 'Settings:BankAccounts:pairTransactionToPayment'
+                        : 'Payments:Payment:pairTransactionToPayment',
+                    [
+                        'id' => $manualPairingGroupId,
+                        'accountId' => $transaction->getBankAccount()->getId(),
+                        'transactionKey' => $transaction->getTransactionKey(),
+                        'paymentId' => $payment->getId(),
+                        'transactionView' => $transactionView,
+                    ],
+                ),
                 $warnings,
                 'payment:'.$payment->getId(),
             );
@@ -414,6 +527,7 @@ final class BankAccountDetailViewFactory
         array $allVariableSymbolCandidates,
         array $visibleExactCandidates,
         array $manualCandidates,
+        bool $isPaymentGroupScope,
     ): ?string {
         if ($pairing !== null) {
             return null;
@@ -426,6 +540,10 @@ final class BankAccountDetailViewFactory
         }
 
         if (count($allExactCandidates) > 1) {
+            if ($isPaymentGroupScope && $this->matchesMultiplePaymentGroups($allExactCandidates)) {
+                return 'Nespárovaná platba odpovídá více platebním skupinám se stejným VS a částkou.';
+            }
+
             return 'Existuje více otevřených položek se stejným VS a částkou.';
         }
 
@@ -442,6 +560,188 @@ final class BankAccountDetailViewFactory
         }
 
         return null;
+    }
+
+    /** @param list<PairingCandidate> $candidates */
+    private function matchesMultiplePaymentGroups(array $candidates): bool
+    {
+        $groupIds = [];
+        foreach ($candidates as $candidate) {
+            $payment = $candidate->getPayment();
+            if ($payment instanceof Payment) {
+                $groupIds[$payment->getGroupId()] = true;
+            }
+        }
+
+        return count($groupIds) > 1;
+    }
+
+    /**
+     * @param  list<BankAccountTransactionRow> $transactionRows
+     * @return list<array<string, mixed>>
+     */
+    private function buildTransactionGridRows(array $transactionRows, bool $incomingOnly): array
+    {
+        $rows = array_map(
+            static function (BankAccountTransactionRow $row): array {
+                $transaction = $row->transaction;
+
+                return [
+                    'transactionKey' => $transaction->getTransactionKey(),
+                    'date' => $transaction->getDate(),
+                    'amount' => $transaction->getAmount(),
+                    'amountSort' => sprintf('%020.2f', $transaction->getAmount() + 1000000000),
+                    'counterAccount' => $transaction->getCounterAccount() ?? '',
+                    'counterName' => $transaction->getCounterName(),
+                    'constantSymbol' => $transaction->getConstantSymbol() !== null ? (string) $transaction->getConstantSymbol() : '',
+                    'variableSymbol' => $transaction->getVariableSymbol() !== null ? (string) $transaction->getVariableSymbol() : '',
+                    'note' => $transaction->getNote() ?? '',
+                    'statusSearch' => self::buildStatusSearchText($row),
+                    'row' => $row,
+                ];
+            },
+            $transactionRows,
+        );
+
+        if (! $incomingOnly) {
+            return $rows;
+        }
+
+        return array_values(array_filter(
+            $rows,
+            static fn (array $row): bool => (float) $row['amount'] > 0,
+        ));
+    }
+
+    private function renderTransactionAmount(float $amount): Html
+    {
+        $strong = Html::el('strong')
+            ->setText(number_format($amount, 2, ',', ' ').' Kč');
+
+        if ($amount < 0) {
+            $strong->setAttribute('class', 'text-danger');
+        }
+
+        return Html::el('div')
+            ->setAttribute('class', 'text-end')
+            ->addHtml($strong);
+    }
+
+    private function renderTransactionStatus(BankAccountTransactionRow $row): Html
+    {
+        $container = Html::el('div')
+            ->setAttribute('class', 'd-flex flex-column gap-1');
+
+        if ($row->pairingLabel !== null) {
+            $pairing = Html::el('div');
+            $pairing->addHtml(Html::el('span')->setAttribute('class', 'badge text-bg-info')->setText('Spárováno'));
+            $pairing->addText(' ');
+            $pairing->addHtml($this->renderTransactionLink($row->pairingLabel));
+            $container->addHtml($pairing);
+        }
+
+        if ($row->manualCandidates !== []) {
+            $container->addHtml(Html::el('div')->setAttribute('class', 'small text-body-secondary')->setText('Ruční párování podle částky:'));
+
+            foreach ($row->manualCandidates as $candidate) {
+                $container->addHtml($this->renderManualCandidate($candidate));
+            }
+        }
+
+        if ($row->exactCandidates !== []) {
+            $container->addHtml(Html::el('div')->setAttribute('class', 'small text-body-secondary')->setText('Jednoznačné automatické shody:'));
+
+            foreach ($row->exactCandidates as $candidate) {
+                $container->addHtml($this->renderCandidateLink($candidate));
+            }
+        }
+
+        if ($row->conflictReason !== null) {
+            $container->addHtml(Html::el('div')->setAttribute('class', 'small text-danger')->setText($row->conflictReason));
+        }
+
+        if ($row->variableSymbolCandidates !== [] && $row->exactCandidates === []) {
+            $container->addHtml(Html::el('div')->setAttribute('class', 'small text-body-secondary')->setText('Položky se shodným VS:'));
+
+            foreach ($row->variableSymbolCandidates as $candidate) {
+                $container->addHtml($this->renderCandidateLink($candidate));
+            }
+        }
+
+        return $container;
+    }
+
+    private function renderManualCandidate(BankAccountManualCandidate $candidate): Html
+    {
+        $container = Html::el('div')->setAttribute('class', 'mb-1');
+        $container->addHtml($this->renderTypeBadge($candidate->type));
+        $container->addText(' ');
+        $container->addHtml(Html::el('a')->href($candidate->url)->setText($candidate->label));
+        $container->addText(' ');
+        $container->addHtml(
+            Html::el('a')
+                ->href($candidate->actionUrl)
+                ->setAttribute('class', 'ajax btn btn-sm btn-outline-success ms-1')
+                ->setAttribute('data-confirm', 'Opravdu chceš ručně spárovat tuto bankovní transakci?')
+                ->setText('Spárovat'),
+        );
+
+        if ($candidate->warnings !== []) {
+            $container->addText(' ');
+            $container->addHtml(Html::el('span')->setAttribute('class', 'small text-warning ms-1')->setText(implode(', ', $candidate->warnings)));
+        }
+
+        return $container;
+    }
+
+    private function renderCandidateLink(BankAccountTransactionLink $candidate): Html
+    {
+        $container = Html::el('div');
+        $container->addHtml($this->renderTypeBadge($candidate->type));
+        $container->addText(' ');
+        $container->addHtml($this->renderTransactionLink($candidate));
+
+        return $container;
+    }
+
+    private function renderTransactionLink(BankAccountTransactionLink $link): Html
+    {
+        if ($link->url === null) {
+            return Html::el('span')->setText($link->label);
+        }
+
+        return Html::el('a')
+            ->href($link->url)
+            ->setText($link->label);
+    }
+
+    private function renderTypeBadge(string $type): Html
+    {
+        return Html::el('span')
+            ->setAttribute('class', $type === 'invoice' ? 'badge text-bg-secondary' : 'badge text-bg-primary')
+            ->setText($type === 'invoice' ? 'Faktura' : 'Platba');
+    }
+
+    private static function buildStatusSearchText(BankAccountTransactionRow $row): string
+    {
+        $parts = [];
+
+        foreach ([$row->pairingLabel, ...$row->exactCandidates, ...$row->variableSymbolCandidates] as $link) {
+            if ($link instanceof BankAccountTransactionLink) {
+                $parts[] = $link->label;
+            }
+        }
+
+        foreach ($row->manualCandidates as $candidate) {
+            $parts[] = $candidate->label;
+            $parts[] = implode(' ', $candidate->warnings);
+        }
+
+        if ($row->conflictReason !== null) {
+            $parts[] = $row->conflictReason;
+        }
+
+        return implode(' ', $parts);
     }
 
     /** @param list<object{targetKey: string}> $descriptions */

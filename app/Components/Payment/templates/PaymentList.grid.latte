@@ -56,6 +56,7 @@
 {/block}
 
 {block col-actions}
+    <div class="datagrid-row-actions">
     {if !$item->isClosed() && $isEditable}
         {var $hasEmailRecipient = !empty($item->getEmailRecipients())}
         {var $canSendEmail = $hasEmailSender && $hasEmailRecipient}
@@ -72,7 +73,7 @@
            data-test="payment-split-action-{$item->getId()}"
            title="Rozdělit platbu"><i class="fi fi-rr-exchange" aria-hidden="true"></i></a>
         <a href="{$control->getParent()->link(send, $item->getId())}"
-           n:class="btn, btn-sm, $canSendEmail ? btn-primary : btn-light, $canSendEmail ? 'ui--sendEmail' : disabled"
+           n:class="btn, btn-sm, ajax, $canSendEmail ? btn-primary : btn-light, $canSendEmail ? 'ui--sendEmail' : disabled"
            data-test="payment-email-action-{$item->getId()}"
            title="{$emailActionTitle}"><i
                     class="fi fi-rr-envelope-open" aria-hidden="true"></i></a>
@@ -86,7 +87,7 @@
         }
         {if $isOverdueForReminder || $reminderSentToday}
         <a href="{$canSendReminder ? $control->getParent()->link(sendReminder, $item->getId()) : '#'}"
-           n:class="btn, btn-sm, $canSendReminder ? btn-warning : btn-light, $canSendReminder ? 'ui--sendEmail' : disabled"
+           n:class="btn, btn-sm, ajax, $canSendReminder ? btn-warning : btn-light, $canSendReminder ? 'ui--sendEmail' : disabled"
            n:attr="onclick => $canSendReminder ? null : 'return false;'"
            data-test="payment-reminder-action-{$item->getId()}"
            title="{$reminderActionTitle}"><i
@@ -95,11 +96,12 @@
         {/if}
         <a
             n:if="$bankAccountId !== null && $item->canBePaired()"
-            href="{$control->getPresenter()->link(':Settings:BankAccounts:detail', ['id' => $bankAccountId, 'paymentId' => $item->getId()])}"
-            class="btn btn-sm btn-light"
+            href="{$control->getPresenter()->link('loadBankAccountTransactions!', ['paymentId' => $item->getId()])}"
+            class="ajax btn btn-sm btn-light"
+            data-test="payment-bank-transaction-action-{$item->getId()}"
             title="Ruční párování s bankovní transakcí"
         ><i class="fi fi-rr-bank" aria-hidden="true"></i></a>
-        <a href="{$control->getParent()->link(complete, $item->getId())}" class="btn btn-sm btn-success" data-test="payment-complete-action-{$item->getId()}" title="Zaplaceno"><i
+        <a href="{$control->getParent()->link(complete, $item->getId())}" class="ajax btn btn-sm btn-success" data-test="payment-complete-action-{$item->getId()}" title="Zaplaceno"><i
                     class="fi fi-rr-check" aria-hidden="true"></i></a>
     {elseif $item->isClosed()}
         <a href="{$control->getPresenter()->link('paymentNoteDialog:open!', $item->getId())}"
@@ -130,9 +132,8 @@
     {else}&nbsp;{/if}
 
     <a href="{$control->getParent()->link(cancel, $item->getId())}" n:if="$isEditable && ! $item->getState()->equalsValue('canceled')"
-       class="btn btn-sm btn-danger"
+       class="ajax btn btn-sm btn-danger"
        data-confirm="Opravdu chcete zrušit platbu?"
        title="Zrušit"><i class="fi fi-rr-cross-small" aria-hidden="true"></i></a>
+    </div>
 {/block}
-
-{block action-col-classes}w-15{/block}
