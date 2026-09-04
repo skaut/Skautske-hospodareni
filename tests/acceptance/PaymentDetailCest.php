@@ -309,6 +309,65 @@ class PaymentDetailCest extends PaymentAcceptanceCest
         $I->seeElement('[data-test="payment-group-grid"] [title="Textová poznámka v gridu"]');
         $I->seeElement('[data-test="payment-split-action-'.$paymentId.'"]');
         $I->seeElement('[data-test="payment-email-action-'.$paymentId.'"]');
+
+        $I->resizeWindow(900, 900);
+
+        $compactLayout = $I->executeJS(<<<'JS'
+const action = document.querySelector('[data-test^="payment-split-action-"]');
+const dataRow = action?.closest('tr');
+const actionRow = dataRow?.nextElementSibling;
+const primaryActions = dataRow?.querySelector('.datagrid-actions-cell');
+const visibleAction = actionRow?.querySelector('.btn');
+
+return {
+    actionRowDisplay: actionRow === null ? null : getComputedStyle(actionRow).display,
+    primaryActionsDisplay: primaryActions === null ? null : getComputedStyle(primaryActions).display,
+    buttonDecoration: visibleAction === null ? null : getComputedStyle(visibleAction).textDecorationLine,
+};
+JS);
+
+        Assert::assertSame('table-row', $compactLayout['actionRowDisplay']);
+        Assert::assertSame('none', $compactLayout['primaryActionsDisplay']);
+        Assert::assertSame('none', $compactLayout['buttonDecoration']);
+
+        foreach ([360, 393] as $width) {
+            $I->resizeWindow($width, 900);
+
+            $mobileLayout = $I->executeJS(<<<'JS'
+const action = document.querySelector('[data-test^="payment-split-action-"]');
+const dataRow = action?.closest('tr');
+const actionRow = dataRow?.nextElementSibling;
+const scroller = actionRow?.closest('.table-responsive');
+const scrollerRect = scroller?.getBoundingClientRect();
+const buttons = Array.from(actionRow?.querySelectorAll('a.btn, button.btn, input.btn') ?? []);
+
+return {
+    actionRowDisplay: actionRow === null ? null : getComputedStyle(actionRow).display,
+    horizontalOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    scrollerScrollLeft: scroller?.scrollLeft ?? null,
+    inaccessibleButtons: buttons.filter(button => {
+        const rect = button.getBoundingClientRect();
+
+        return scrollerRect === undefined || rect.left < scrollerRect.left - 1 || rect.right > scrollerRect.right + 1;
+    }).length,
+    rightInset: scrollerRect === undefined || buttons.length === 0
+        ? null
+        : Math.min(...buttons.map(button => scrollerRect.right - button.getBoundingClientRect().right)),
+    smallButtons: buttons.filter(button => {
+        const rect = button.getBoundingClientRect();
+
+        return rect.width < 44 || rect.height < 44;
+    }).length,
+};
+JS);
+
+            Assert::assertSame('table-row', $mobileLayout['actionRowDisplay']);
+            Assert::assertSame(0, $mobileLayout['horizontalOverflow']);
+            Assert::assertSame(0, $mobileLayout['scrollerScrollLeft']);
+            Assert::assertSame(0, $mobileLayout['inaccessibleButtons']);
+            Assert::assertGreaterThanOrEqual(6, $mobileLayout['rightInset']);
+            Assert::assertSame(0, $mobileLayout['smallButtons']);
+        }
     }
 
     /** @group payment */

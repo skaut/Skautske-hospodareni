@@ -8,7 +8,7 @@
             <h1 class="h3 mb-2" n:inner-block="title">Bankovní účty</h1>
             {include pageLead, default: 'Seznam účtů jednotky, jejich zdrojů transakcí, importů a vstupů do detailu i správy párování.', class: 'mb-3'}
 
-            <div class="d-flex flex-wrap gap-2">
+            <div class="page-heading-actions d-flex flex-wrap gap-2">
                 <span
                     class="d-inline-block"
                     n:attr="!$canEdit ? [title => $disabledReason, data-bs-toggle => 'tooltip']"

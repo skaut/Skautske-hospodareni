@@ -94,6 +94,7 @@
 {/block}
 
 {block col-actions}
+    <div class="datagrid-row-actions">
     {if ($showOpenSequenceAction ?? false)}
         <a href="{$control->getPresenter()->link('default', ['invoiceSequenceId' => $item->getSequence()->getId()])}"
            class="btn btn-sm btn-light"
@@ -150,6 +151,5 @@
            n:attr="aria-disabled => $reminderDisabledReason !== null ? 'true' : null,
                    tabindex => $reminderDisabledReason !== null ? '-1' : null"><i class="fi fi-rr-bell" aria-hidden="true"></i></a>
     {/if}
+    </div>
 {/block}
-
-{block action-col-classes}w-15{/block}
