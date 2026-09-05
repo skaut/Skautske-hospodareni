@@ -294,54 +294,6 @@ class AcceptanceTester extends Actor
         );
     }
 
-    public function clickLinkAndWaitForElementWithSkautisRetry(
-        string $linkSelector,
-        string $expectedSelector,
-        ?string $expectedUrlPart,
-        int $attempts,
-        int $retryDelaySeconds,
-    ): void {
-        $linkUrl = null;
-        $pageState = 'unknown';
-
-        for ($attempt = 1; $attempt <= $attempts; ++$attempt) {
-            if ($linkUrl === null) {
-                $this->waitForElementVisible($linkSelector, self::ELEMENT_LOAD_TIMEOUT);
-                $linkUrl = (string) $this->grabAttributeFrom($linkSelector, 'href');
-                $this->clickStable($linkSelector);
-            } else {
-                $this->amOnPage($linkUrl);
-            }
-
-            $pageState = $this->waitForElementOrSkautisConnectionError($expectedSelector);
-
-            if ($pageState !== self::PAGE_STATE_SKAUTIS_UNAVAILABLE || $attempt === $attempts) {
-                break;
-            }
-
-            sleep($retryDelaySeconds);
-        }
-
-        if ($pageState === self::PAGE_STATE_SKAUTIS_UNAVAILABLE) {
-            $this->failBecauseSkautisConnectionFailedAfterRetries(
-                'opening '.$linkUrl.' via '.$linkSelector,
-                $expectedSelector,
-                $attempts,
-            );
-        }
-
-        if ($pageState !== self::PAGE_STATE_EXPECTED) {
-            Assert::fail(
-                'Expected '.$expectedSelector.' after opening '.$linkUrl.' via '.$linkSelector
-                .', got '.$pageState.' state at '.$this->grabFromCurrentUrl().'.',
-            );
-        }
-
-        if ($expectedUrlPart !== null) {
-            $this->seeInCurrentUrl($expectedUrlPart);
-        }
-    }
-
     public function failBecauseSkautisConnectionFailedAfterRetries(
         string $actionDescription,
         string $expectedDescription,
@@ -350,7 +302,8 @@ class AcceptanceTester extends Actor
         Assert::fail(
             'SkautIS WSDL communication failed after '.$attempts.' attempts while '.$actionDescription
             .'; expected '.$expectedDescription.' at '.$this->grabFromCurrentUrl()
-            .'. Last rendered page contains a retryable WsdlException.',
+            .'. SkautIS is an external system, so an outage of it is not an application defect'
+            .' and cannot be worked around here. Re-run the test.',
         );
     }
 
@@ -445,7 +398,13 @@ class AcceptanceTester extends Actor
 
     public function waitForStableLocatorVisible(string $locator, int $timeout = self::ELEMENT_LOAD_TIMEOUT): void
     {
-        $this->waitForJS('return '.$this->buildLocatorScript($locator, 'return true;').';', $timeout);
+        // Reported through the locator rather than through waitForJS, whose failure message
+        // would be the whole generated script instead of the element that was waited for.
+        try {
+            $this->generatedWaitForJS('return '.$this->buildLocatorScript($locator, 'return true;').';', $timeout);
+        } catch (WebDriverException $exception) {
+            $this->throwOnSkautisWsdlErrorPage($exception, 'waiting for visible element', $locator);
+        }
     }
 
     private function isRetryableSkautisLoginWebDriverFailure(WebDriverException $e): bool
@@ -465,7 +424,7 @@ class AcceptanceTester extends Actor
             throw $exception;
         }
 
-        throw new SkautisWsdlPageException('SkautIS WSDL communication failed while '.$actionDescription.'; expected '.$expectedDescription.' at '.$this->grabFromCurrentUrl().'. Last rendered page contains a retryable WsdlException.');
+        throw new SkautisWsdlPageException('SkautIS WSDL communication failed while '.$actionDescription.'; expected '.$expectedDescription.' at '.$this->grabFromCurrentUrl().'. The rendered page is a SkautIS outage, not an application defect. Re-run the test; if this keeps happening here, route the step through the shared SkautIS retry helper in BaseAcceptanceCest.');
     }
 
     private function isSkautisWsdlErrorPage(): bool
