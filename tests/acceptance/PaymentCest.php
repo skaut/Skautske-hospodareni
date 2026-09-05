@@ -179,7 +179,7 @@ class PaymentCest extends PaymentAcceptanceCest
 
         $I->updateInDatabase('pa_group', [
             'name' => $sourceName,
-            'amount' => 1250.5,
+            'amount' => 125050, // 1 250,50 Kč v haléřích
             'due_date' => $dueDate->format('Y-m-d'),
             'constant_symbol' => 308,
             'next_variable_symbol' => '777',
@@ -197,7 +197,7 @@ class PaymentCest extends PaymentAcceptanceCest
         $I->haveInDatabase('pa_payment', [
             'group_id' => $sourceGroupId,
             'name' => 'Data zdrojové skupiny',
-            'amount' => 100,
+            'amount' => 10000, // 100 Kč v haléřích
             'due_date' => ChronosDate::today()->format('Y-m-d'),
             'variable_symbol' => '991001',
             'constant_symbol' => null,
@@ -214,7 +214,7 @@ class PaymentCest extends PaymentAcceptanceCest
 
         Assert::assertSame($groupsBefore, $I->grabNumRecords('pa_group'));
         Assert::assertSame($sourceName, $I->grabValueFrom('input[name="name"]'));
-        Assert::assertSame('1250.5', $I->grabValueFrom('input[name="amount"]'));
+        Assert::assertSame('1250.50', $I->grabValueFrom('input[name="amount"]'));
         Assert::assertSame($dueDate->format('d.m.Y'), $I->grabValueFrom('input[name="dueDate"]'));
         Assert::assertSame('308', $I->grabValueFrom('input[name="constantSymbol"]'));
         Assert::assertNotSame('777', $I->grabValueFrom('input[name="nextVs"]'));
@@ -236,7 +236,7 @@ class PaymentCest extends PaymentAcceptanceCest
         $cloneId = $I->grabFromDatabase('pa_group', 'id', ['name' => $cloneName]);
         $I->seeInDatabase('pa_group', [
             'id' => $cloneId,
-            'amount' => 1250.5,
+            'amount' => 125050,
             'due_date' => $dueDate->format('Y-m-d'),
             'constant_symbol' => 308,
             'bank_account_id' => 1,

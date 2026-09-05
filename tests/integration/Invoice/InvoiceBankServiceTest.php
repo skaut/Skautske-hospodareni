@@ -22,6 +22,7 @@ use App\Model\Payment\Group;
 use App\Model\Payment\Payment;
 use App\Model\Payment\Repositories\IBankAccountRepository;
 use App\Model\Payment\VariableSymbol;
+use App\Model\Utils\MoneyFactory;
 use BankingFixtures;
 use Brick\Math\BigDecimal;
 use DateTimeImmutable;
@@ -140,7 +141,7 @@ class InvoiceBankServiceTest extends IntegrationTest
                 'gpc:33a0e9641c4ccabc6e189f0be182c1aec44d51f87c36899402eae37a8da8',
                 BankTransactionSource::GPC,
                 new DateTimeImmutable(),
-                150.00,
+                MoneyFactory::fromDecimal('150.00'),
                 '',
                 'Payer',
                 123456,
@@ -263,7 +264,7 @@ class InvoiceBankServiceTest extends IntegrationTest
                 'stored-enabled',
                 BankTransactionSource::FIO,
                 new DateTimeImmutable(),
-                150.00,
+                MoneyFactory::fromDecimal('150.00'),
                 '',
                 'Payer',
                 123456,
@@ -279,7 +280,7 @@ class InvoiceBankServiceTest extends IntegrationTest
                 'stored-disabled',
                 BankTransactionSource::FIO,
                 new DateTimeImmutable(),
-                200.00,
+                MoneyFactory::fromDecimal('200.00'),
                 '',
                 'Payer',
                 543217,
