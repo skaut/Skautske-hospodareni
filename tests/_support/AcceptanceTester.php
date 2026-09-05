@@ -502,6 +502,13 @@ class AcceptanceTester extends Actor
      * Resolves the first visible match instead of the first match in the DOM. Grids render
      * row actions twice - in the actions cell and in the following actions row - and a
      * container query decides which copy is shown, so the first match is often the hidden one.
+     *
+     * Visibility has to stay as strict as WebDriver's own check, otherwise a wait succeeds
+     * before the element can be interacted with. An element inside a collapsing Bootstrap
+     * panel keeps its own box while the panel is still zero height, so clipping by an
+     * ancestor has to be taken into account - but only where the ancestor really hides the
+     * overflow. Content that merely sits outside a scrollable ancestor, such as a wide grid
+     * inside `.table-responsive`, stays reachable and therefore counts as visible.
      */
     private function buildLocatorScript(string $locator, string $action): string
     {
@@ -518,7 +525,21 @@ class AcceptanceTester extends Actor
             .'}'
             .'var el = nodes.filter(function (node) {'
                 .'var style = window.getComputedStyle(node);'
-                .'return style.display !== "none" && style.visibility !== "hidden" && node.getClientRects().length > 0;'
+                .'if (style.display === "none" || style.visibility === "hidden" || style.opacity === "0") {'
+                    .'return false;'
+                .'}'
+                .'var rect = node.getBoundingClientRect();'
+                .'if (rect.width <= 0 || rect.height <= 0) { return false; }'
+                .'for (var parent = node.parentElement; parent !== null; parent = parent.parentElement) {'
+                    .'var parentStyle = window.getComputedStyle(parent);'
+                    .'var clipsX = parentStyle.overflowX === "hidden" || parentStyle.overflowX === "clip";'
+                    .'var clipsY = parentStyle.overflowY === "hidden" || parentStyle.overflowY === "clip";'
+                    .'if (! clipsX && ! clipsY) { continue; }'
+                    .'var clip = parent.getBoundingClientRect();'
+                    .'if (clipsX && (rect.right <= clip.left || rect.left >= clip.right)) { return false; }'
+                    .'if (clipsY && (rect.bottom <= clip.top || rect.top >= clip.bottom)) { return false; }'
+                .'}'
+                .'return true;'
             .'})[0];'
             .'if (!el) { return false; }'
             .$action
