@@ -12,8 +12,6 @@ use App\Model\DTO\Cashbook\Chit;
 use App\Model\Utils\MoneyFactory;
 use Money\Money;
 
-use function array_map;
-use function array_sum;
 
 class FinalCashBalanceQueryHandler
 {
@@ -25,10 +23,6 @@ class FinalCashBalanceQueryHandler
     {
         $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $query->getCashbookId()));
 
-        $balance = array_sum(array_map(function (Chit $chit): float {
-            return $chit->getSignedAmount();
-        }, $chits));
-
-        return MoneyFactory::fromFloat($balance);
+        return array_reduce($chits, fn (Money $total, Chit $chit): Money => $total->add($chit->getSignedAmount()), MoneyFactory::zero());
     }
 }

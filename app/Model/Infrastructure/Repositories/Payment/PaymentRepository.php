@@ -15,6 +15,7 @@ use App\Model\Payment\Summary;
 use App\Model\Payment\VariableSymbol;
 use Assert\Assert;
 use DateTimeImmutable;
+use Money\Money;
 
 use function array_fill_keys;
 
@@ -52,13 +53,13 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
             ->getQuery()
             ->getResult();
 
-        $amounts = array_fill_keys($groupIds, array_fill_keys($states, 0));
+        $amounts = array_fill_keys($groupIds, array_fill_keys($states, Money::CZK(0)));
         $counts = array_fill_keys($groupIds, array_fill_keys($states, 0));
 
         foreach ($res as $row) {
             $id = (int) $row['groupId'];
             $state = $row['state']->getValue();
-            $amounts[$id][$state] += (float) $row['amount'];
+            $amounts[$id][$state] = $amounts[$id][$state]->add(Money::CZK((int) $row['amount']));
             $counts[$id][$state] = (int) $row['number'];
         }
 

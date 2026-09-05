@@ -8,6 +8,7 @@ use App\Model\Cashbook\Operation;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Money\Money;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'ac_unit_budget_category')]
@@ -42,15 +43,13 @@ class Category
     #[ORM\JoinColumn(name: 'parentId', referencedColumnName: 'id')]
     private ?Category $parent = null;
 
-    // Default jako string – MySQL introspekce vrací default DOUBLE sloupce jako '0'
-    // a komparátor DBAL 4 porovnává striktně, takže int 0 by generoval trvalý diff.
-    #[ORM\Column(type: 'float', options: ['default' => '0'])]
-    private float $value;
+    #[ORM\Column(type: 'money', options: ['default' => 0])]
+    private Money $value;
 
     #[ORM\Column(type: 'smallint')]
     private int $year;
 
-    public function __construct(int $unitId, string $label, Operation $type, ?Category $parent, float $value, int $year)
+    public function __construct(int $unitId, string $label, Operation $type, ?Category $parent, Money $value, int $year)
     {
         $this->unitId = $unitId;
         $this->label = $label;
@@ -75,7 +74,7 @@ class Category
         return $this->label;
     }
 
-    public function getValue(): float
+    public function getValue(): Money
     {
         return $this->value;
     }

@@ -6,10 +6,10 @@ namespace App\Model\Cashbook\ReadModel\QueryHandlers;
 
 use App\Model\Cashbook\Cashbook\Chit;
 use App\Model\Cashbook\ReadModel\Queries\ParticipantChitSumQuery;
+use App\Model\Utils\MoneyFactory;
 use Doctrine\ORM\EntityManager;
+use Money\Money;
 
-use function array_map;
-use function array_sum;
 
 class ParticipantChitSumQueryHandler
 {
@@ -19,7 +19,7 @@ class ParticipantChitSumQueryHandler
     {
     }
 
-    public function __invoke(ParticipantChitSumQuery $query): float
+    public function __invoke(ParticipantChitSumQuery $query): Money
     {
         $queryBuilder = $this->entityManager->createQueryBuilder()
             ->select('c')
@@ -32,8 +32,6 @@ class ParticipantChitSumQueryHandler
 
         $chits = $queryBuilder->getQuery()->getResult();
 
-        return array_sum(array_map(function (Chit $c) {
-            return $c->getAmount()->toFloat();
-        }, $chits));
+        return array_reduce($chits, fn (Money $total, Chit $chit): Money => $total->add($chit->getAmount()->toMoney()), MoneyFactory::zero());
     }
 }

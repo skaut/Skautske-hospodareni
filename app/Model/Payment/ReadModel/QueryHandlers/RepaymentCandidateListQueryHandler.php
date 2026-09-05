@@ -14,6 +14,7 @@ use App\Model\Payment\ReadModel\Queries\PaymentListQuery;
 use App\Model\Payment\ReadModel\Queries\RepaymentCandidateListQuery;
 use App\Model\Payment\Repositories\IGroupRepository;
 use LogicException;
+use Money\Money;
 
 use function array_column;
 use function array_filter;
@@ -53,7 +54,7 @@ final class RepaymentCandidateListQueryHandler
     {
         $participantsPayments = array_filter(
             array_column($this->participants->findByCamp($campId), 'repayment', 'personId'),
-            fn (float $amount) => $amount > 0,
+            fn (Money $amount) => ! $amount->isZero(),
         );
 
         foreach ($repayments as $repayment) {

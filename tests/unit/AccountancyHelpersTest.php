@@ -111,4 +111,11 @@ class AccountancyHelpersTest extends Unit
         $this->assertSame('Jednostotisícdevětsetpadesátosm', AccountancyHelpers::priceToString(100958.0));
         $this->assertSame('PŘÍLIŠ VYSOKÉ ČÍSLO', AccountancyHelpers::priceToString(8777666.0));
     }
+
+    public function testPriceFormatsMoneyWithoutFloatArtifacts(): void
+    {
+        $this->assertSame('-0,19', AccountancyHelpers::price(Money::CZK(-19)));
+        $this->assertSame('1', AccountancyHelpers::price(Money::CZK(50), false));
+        $this->assertSame('0', AccountancyHelpers::price(Money::CZK(-49), false));
+    }
 }
