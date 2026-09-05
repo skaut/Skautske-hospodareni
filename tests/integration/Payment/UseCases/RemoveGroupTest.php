@@ -11,6 +11,7 @@ use App\Model\Payment\Handlers\Group\RemoveGroupHandler;
 use App\Model\Payment\Payment;
 use App\Model\Payment\Repositories\IGroupRepository;
 use App\Model\Payment\Repositories\IPaymentRepository;
+use App\Model\Utils\MoneyFactory;
 use DateTimeImmutable;
 use Helpers;
 use IntegrationTest;
@@ -69,7 +70,7 @@ final class RemoveGroupTest extends IntegrationTest
 
         for ($i = 1; $i <= 3; ++$i) {
             $this->payments->save(
-                new Payment($group, 'test'.$i, [], 120, Helpers::getValidDueDate(), null, null, null, ''),
+                new Payment($group, 'test'.$i, [], MoneyFactory::fromDecimal('120.00'), Helpers::getValidDueDate(), null, null, null, ''),
             );
         }
 

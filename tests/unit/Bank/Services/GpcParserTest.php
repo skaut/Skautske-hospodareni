@@ -6,6 +6,7 @@ namespace App\Model\Bank\Services;
 
 use App\Model\Bank\Enum\BankTransactionSource;
 use App\Model\Bank\Transaction;
+use App\Model\Utils\MoneyFactory;
 use Codeception\Test\Unit;
 use DateTimeImmutable;
 use InvalidArgumentException;
@@ -59,7 +60,7 @@ final class GpcParserTest extends Unit
 
         self::assertCount(1, $transactions);
         self::assertSame('8310192897', $parsedFile->statementAccountNumber);
-        self::assertSame(-24.20, $transactions[0]->getAmount());
+        self::assertTrue(MoneyFactory::fromDecimal('-24.20')->equals($transactions[0]->getAmount()));
         self::assertSame('Najem kancelari 1/26', $transactions[0]->getName());
         self::assertNull($transactions[0]->getVariableSymbol());
         self::assertNull($transactions[0]->getConstantSymbol());
@@ -118,7 +119,7 @@ final class GpcParserTest extends Unit
         self::assertCount(2, $transactions);
 
         $credit = $transactions[0];
-        self::assertSame(100.0, $credit->getAmount());
+        self::assertTrue(MoneyFactory::fromDecimal('100')->equals($credit->getAmount()));
         self::assertSame('19-17608/2010', $credit->getBankAccount());
         self::assertSame(1234567890, $credit->getVariableSymbol());
         self::assertSame(308, $credit->getConstantSymbol());
@@ -139,7 +140,7 @@ final class GpcParserTest extends Unit
             new BankTransactionKeyGenerator(),
         );
 
-        self::assertSame(-100.0, $transactions[1]->getAmount());
+        self::assertTrue(MoneyFactory::fromDecimal('-100')->equals($transactions[1]->getAmount()));
         self::assertSame('Storno platby', $transactions[1]->getName());
     }
 
@@ -155,8 +156,8 @@ final class GpcParserTest extends Unit
         );
 
         self::assertCount(2, $transactions);
-        self::assertSame(10.0, $transactions[0]->getAmount());
-        self::assertSame(-5.0, $transactions[1]->getAmount());
+        self::assertTrue(MoneyFactory::fromDecimal('10')->equals($transactions[0]->getAmount()));
+        self::assertTrue(MoneyFactory::fromDecimal('-5')->equals($transactions[1]->getAmount()));
     }
 
     /**
@@ -170,7 +171,7 @@ final class GpcParserTest extends Unit
         $transactions = (new GpcParser())->parse('123456789/0800', $contents, new BankTransactionKeyGenerator());
 
         // Kód 3 je u ČS storno debetu, tedy peníze zpět na účet.
-        self::assertSame(100.0, $transactions[0]->getAmount());
+        self::assertTrue(MoneyFactory::fromDecimal('100')->equals($transactions[0]->getAmount()));
     }
 
     public function testUnknownPostingCodeForTheGivenBankIsReported(): void
@@ -219,7 +220,7 @@ final class GpcParserTest extends Unit
             'gpc:abc',
             BankTransactionSource::GPC,
             new DateTimeImmutable('2026-02-28'),
-            -24.2,
+            MoneyFactory::fromDecimal('-24.20'),
             null,
             'Nekdo',
         );
@@ -246,8 +247,8 @@ final class GpcParserTest extends Unit
             ] as $normalized => $legacyRaw
         ) {
             self::assertSame(
-                $generator->fromGpc('1/2010', $date, 100.0, $legacyRaw, 'Nekdo', 1, 2, 'note'),
-                $generator->legacyFromGpc('1/2010', $date, 100.0, $normalized === '' ? null : $normalized, 'Nekdo', 1, 2, 'note'),
+                $generator->fromGpc('1/2010', $date, MoneyFactory::fromDecimal('100'), $legacyRaw, 'Nekdo', 1, 2, 'note'),
+                $generator->legacyFromGpc('1/2010', $date, MoneyFactory::fromDecimal('100'), $normalized === '' ? null : $normalized, 'Nekdo', 1, 2, 'note'),
                 sprintf('protiúčet %s', $legacyRaw),
             );
         }

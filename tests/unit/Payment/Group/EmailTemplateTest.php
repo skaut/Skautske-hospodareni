@@ -8,6 +8,7 @@ use App\Model\Common\EmailAddress;
 use App\Model\Payment\EmailTemplate;
 use App\Model\Payment\Group;
 use App\Model\Payment\Mailing\Payment;
+use App\Model\Utils\MoneyFactory;
 use Codeception\Test\Unit;
 use DateTimeImmutable;
 use Mockery as m;
@@ -30,11 +31,11 @@ class EmailTemplateTest extends Unit
 
         $group = m::mock(Group::class);
         $group->shouldReceive('getName')->andReturn('Skupina');
-        $payment = new Payment('František Maša', 200, [new EmailAddress('frantisekmasa1@gmail.com')], new DateTimeImmutable('2017-04-27'), 4554, 303, 'Poznámka');
+        $payment = new Payment('František Maša', MoneyFactory::fromDecimal('200.00'), [new EmailAddress('frantisekmasa1@gmail.com')], new DateTimeImmutable('2017-04-27'), 4554, 303, 'Poznámka');
 
         $evaluatedTemplate = $template->evaluate($group, $payment, '19-2000145399/0800', 'Sináček', 'qr-code@example.test');
 
-        $expectedSubject = 'Skupina | František Maša | 19-2000145399/0800 | 200 | 27.4.2017 | 2017-04-27 | 4554 | 303 | Poznámka | Sináček';
+        $expectedSubject = 'Skupina | František Maša | 19-2000145399/0800 | 200.00 | 27.4.2017 | 2017-04-27 | 4554 | 303 | Poznámka | Sináček';
 
         $expectedBody = 'Body: '.$expectedSubject.' | <img alt="QR platbu se nepodařilo zobrazit" src="cid:qr-code@example.test">';
 

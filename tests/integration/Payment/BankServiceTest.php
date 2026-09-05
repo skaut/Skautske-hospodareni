@@ -17,6 +17,7 @@ use App\Model\Payment\Repositories\IBankAccountRepository;
 use App\Model\Payment\Repositories\IGroupRepository;
 use App\Model\Payment\Repositories\IPaymentRepository;
 use App\Model\Payment\VariableSymbol;
+use App\Model\Utils\MoneyFactory;
 use BankingFixtures;
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
@@ -147,7 +148,7 @@ class BankServiceTest extends IntegrationTest
             $group,
             Random::generate(),
             [],
-            $amount,
+            MoneyFactory::fromDecimal((string) $amount),
             new ChronosDate(),
             $variableSymbol === null ? null : new VariableSymbol($variableSymbol),
             null,

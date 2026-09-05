@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Model\Utils;
 
+use InvalidArgumentException;
 use Money\Currency;
 use Money\Money;
 use Nette\StaticClass;
-use InvalidArgumentException;
 
 use function abs;
 use function floor;

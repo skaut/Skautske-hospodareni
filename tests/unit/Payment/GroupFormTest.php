@@ -17,6 +17,7 @@ use App\Model\Payment\ReadModel\Queries\NextVariableSymbolSequenceQuery;
 use App\Model\Payment\ReadModel\Queries\OAuthsAccessibleByGroupsQuery;
 use App\Model\Payment\VariableSymbol;
 use App\Model\Unit\ReadModel\Queries\UnitsDetailQuery;
+use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use Component\Forms\VariableSymbolControl;
@@ -39,7 +40,7 @@ final class GroupFormTest extends Unit
             [123],
             null,
             'Zdrojová skupina',
-            1500.5,
+            MoneyFactory::fromDecimal('1500.50'),
             new ChronosDate('2026-06-19'),
             308,
             new VariableSymbol('999'),
@@ -112,7 +113,7 @@ final class GroupFormTest extends Unit
         self::assertInstanceOf(TextInput::class, $paymentInfoSubject);
 
         self::assertSame('Zdrojová skupina', $name->getValue());
-        self::assertSame(1500.5, $amount->getValue());
+        self::assertSame('1500.50', $amount->getValue());
         self::assertSame('308', (string) $constantSymbol->getValue());
         self::assertSame('2601', (string) $nextVs->getControl()->value);
         self::assertTrue($automaticPairingEnabled->getValue());
@@ -130,5 +131,18 @@ final class GroupFormTest extends Unit
         $nextVs->setValue('2601');
         $form->validate();
         self::assertSame(['Musíte zadat název skupiny'], $name->getErrors());
+
+        $name->setValue('Zdrojová skupina');
+
+        // Výchozí částka nesmí vyžadovat desetinný tvar.
+        foreach (['1500', '1500,00', '1500.00', '1500,50'] as $validAmount) {
+            $amount->setValue($validAmount);
+            $form->validate();
+            self::assertSame([], $amount->getErrors(), 'Částka '.$validAmount.' má být platná');
+        }
+
+        $amount->setValue('1500.999');
+        $form->validate();
+        self::assertSame([PaymentFormFields::MONEY_PATTERN_MESSAGE], $amount->getErrors());
     }
 }

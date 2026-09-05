@@ -39,7 +39,10 @@ final class SplitPaymentHandler
             }
 
             $sourceAmount = $source->getAmount();
-            $splitAmount = array_reduce($parts, fn (\Money\Money $total, SplitPaymentPart $part): \Money\Money => $total->add($part->getAmount()), \Money\Money::CZK(0));
+            $splitAmount = \Money\Money::CZK(0);
+            foreach ($parts as $part) {
+                $splitAmount = $splitAmount->add($part->getAmount());
+            }
 
             if ($splitAmount->greaterThan($sourceAmount)) {
                 throw new InvalidPaymentSplit('Součet dělených částek nesmí být větší než původní částka.');
@@ -100,5 +103,4 @@ final class SplitPaymentHandler
             $this->payments->saveMany([$source, ...$splitPayments]);
         });
     }
-
 }

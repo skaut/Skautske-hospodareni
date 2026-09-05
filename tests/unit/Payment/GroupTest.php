@@ -10,6 +10,7 @@ use App\Model\Google\OAuthId;
 use App\Model\Payment\Group\PaymentDefaults;
 use App\Model\Payment\Services\IBankAccountAccessChecker;
 use App\Model\Payment\Services\IOAuthAccessChecker;
+use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use DateTimeImmutable;
@@ -24,7 +25,7 @@ class GroupTest extends Unit
         $dueDate = new ChronosDate('2018-01-19'); // friday
         $createdAt = new DateTimeImmutable();
         $variableSymbol = new VariableSymbol('666');
-        $paymentDefaults = new PaymentDefaults(200.2, $dueDate, 203, $variableSymbol);
+        $paymentDefaults = new PaymentDefaults(MoneyFactory::fromDecimal('200.20'), $dueDate, 203, $variableSymbol);
         $bankAccount = m::mock(BankAccount::class, ['getId' => 23]);
         $emails = Helpers::createEmails();
         $oAuthId = OAuthId::generate();
@@ -45,7 +46,7 @@ class GroupTest extends Unit
         $this->assertSame([20, 22], $group->getUnitIds());
         $this->assertNull($group->getObject());
         $this->assertSame('Skupina 01', $group->getName());
-        $this->assertSame(200.2, $group->getDefaultAmount());
+        $this->assertTrue(MoneyFactory::fromDecimal('200.20')->equals($group->getDefaultAmount()));
         $this->assertSame($dueDate, $group->getDueDate());
         $this->assertSame(203, $group->getConstantSymbol());
         $this->assertSame($variableSymbol, $group->getPaymentDefaults()->getNextVariableSymbol());
@@ -67,7 +68,7 @@ class GroupTest extends Unit
             [20, 22],
             null,
             'Skupina 01',
-            new PaymentDefaults(200.2, new ChronosDate('2018-01-19'), 203, new VariableSymbol('666')),
+            new PaymentDefaults(MoneyFactory::fromDecimal('200.20'), new ChronosDate('2018-01-19'), 203, new VariableSymbol('666')),
             new DateTimeImmutable(),
             Helpers::createEmails(),
             null,
@@ -87,7 +88,7 @@ class GroupTest extends Unit
             [20, 22],
             null,
             'Skupina 01',
-            new PaymentDefaults(200.2, new ChronosDate('2018-01-19'), 203, new VariableSymbol('666')),
+            new PaymentDefaults(MoneyFactory::fromDecimal('200.20'), new ChronosDate('2018-01-19'), 203, new VariableSymbol('666')),
             new DateTimeImmutable(),
             Helpers::createEmails(),
             $oAuthId,
@@ -118,7 +119,7 @@ class GroupTest extends Unit
 
         $group->update(
             'Skupina Jiná',
-            new PaymentDefaults(120.0, null, null, null),
+            new PaymentDefaults(MoneyFactory::fromDecimal('120.00'), null, null, null),
             $oAuthId,
             $bankAccount,
             $this->mockBankAccountAccessChecker([20], $bankAccount->getId(), true),
@@ -128,7 +129,7 @@ class GroupTest extends Unit
         $this->assertSame([20], $group->getUnitIds());
         $this->assertNull($group->getObject());
         $this->assertSame('Skupina Jiná', $group->getName());
-        $this->assertSame(120.0, $group->getDefaultAmount());
+        $this->assertTrue(MoneyFactory::fromDecimal('120.00')->equals($group->getDefaultAmount()));
         $this->assertNull($group->getDueDate());
         $this->assertNull($group->getConstantSymbol());
         $this->assertNull($group->getPaymentDefaults()->getNextVariableSymbol());
@@ -314,7 +315,7 @@ class GroupTest extends Unit
         ?OAuthId $oAuthId = null,
     ): Group {
         $dueDate ??= new ChronosDate('2018-01-19'); // defaults to friday
-        $paymentDefaults = new PaymentDefaults(200.2, $dueDate, 203, new VariableSymbol('666'));
+        $paymentDefaults = new PaymentDefaults(MoneyFactory::fromDecimal('200.20'), $dueDate, 203, new VariableSymbol('666'));
         $createdAt ??= new DateTimeImmutable();
         $emails = Helpers::createEmails();
 

@@ -33,8 +33,12 @@ class MoneyType extends Type
         return $value === null ? null : Money::CZK((int) $value);
     }
 
-    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): string
+    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): ?string
     {
+        if ($value === null) {
+            return null;
+        }
+
         if (! $value instanceof Money) {
             throw new InvalidArgumentException('Only instances of '.Money::class.'allowed');
         }

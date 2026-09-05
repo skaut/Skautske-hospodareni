@@ -8,10 +8,12 @@ use App\Model\Budget\Repositories\ICategoryRepository;
 use App\Model\Budget\Unit\Category;
 use App\Model\Cashbook\Operation;
 use App\Model\DTO\Budget\CategoryFactory;
+use App\Model\Utils\MoneyFactory;
 use LogicException;
 
 use function array_map;
 use function str_replace;
+use function trim;
 
 class BudgetService
 {
@@ -31,14 +33,17 @@ class BudgetService
         ];
     }
 
+    /** Kořenová kategorie nemá pole s částkou, proto se prázdná hodnota bere jako nula. */
     public function addCategory(int $unitId, string $label, string $type, ?int $parentId, string $value, int $year): void
     {
+        $value = trim($value);
+
         $category = new Category(
             $unitId,
             $label,
             Operation::get($type),
             $parentId === null ? null : $this->repository->find($parentId),
-            (float) str_replace(',', '.', $value),
+            $value === '' ? MoneyFactory::zero() : MoneyFactory::fromDecimal(str_replace(',', '.', $value)),
             $year,
         );
         $this->repository->save($category);
