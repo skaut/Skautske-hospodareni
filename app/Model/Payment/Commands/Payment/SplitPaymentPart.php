@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Model\Payment\Commands\Payment;
 
 use App\Model\Payment\VariableSymbol;
+use Money\Money;
 
 final class SplitPaymentPart
 {
     public function __construct(
         private VariableSymbol $variableSymbol,
-        private float $amount,
+        private Money $amount,
         private ?string $note = null,
     ) {
     }
@@ -20,7 +21,7 @@ final class SplitPaymentPart
         return $this->variableSymbol;
     }
 
-    public function getAmount(): float
+    public function getAmount(): Money
     {
         return $this->amount;
     }

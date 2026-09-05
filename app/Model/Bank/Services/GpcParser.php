@@ -6,6 +6,7 @@ namespace App\Model\Bank\Services;
 
 use App\Model\Bank\Enum\BankTransactionSource;
 use App\Model\Bank\Transaction;
+use App\Model\Utils\MoneyFactory;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use Webwings\BankStatements\Abo\AboDialect;
@@ -103,7 +104,7 @@ final class GpcParser
         $date = $transaction->date() ?? new DateTimeImmutable();
         $counterAccount = $transaction->counterAccount?->toString();
         $name = $transaction->payerOrPayeeName() ?? $transaction->documentId ?? '';
-        $amount = $transaction->amount->toFloat();
+        $amount = MoneyFactory::fromFloat($transaction->amount->toFloat());
         $variableSymbol = $this->toInt($transaction->variableSymbol);
         $constantSymbol = $this->toInt($transaction->constantSymbol);
 

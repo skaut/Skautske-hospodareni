@@ -16,4 +16,11 @@ final class InvoiceItemTest extends Unit
 
         self::assertSame('242.00', (string) $item->getTotalPrice());
     }
+
+    public function testDecimalUnitPriceKeepsCentsExact(): void
+    {
+        $item = new InvoiceItem(BigDecimal::of('0.10'), 'Služba', 3, 'ks');
+
+        self::assertSame('0.30', (string) $item->getTotalPrice());
+    }
 }
