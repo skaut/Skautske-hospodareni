@@ -17,6 +17,7 @@ use App\Model\Cashbook\Events\ChitWasRemoved;
 use App\Model\Cashbook\Events\ChitWasUpdated;
 use App\Model\Common\FilePath;
 use App\Model\Common\ScanNotFound;
+use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use Helpers;
 use IntegrationTest;
@@ -204,8 +205,8 @@ class CashbookIntegrationTest extends IntegrationTest
         // inverse chit must have inverse category type
         $this->assertSame(Operation::get($originalOperation)->getInverseOperation(), $newChit->getOperation());
         $this->assertTrue($body->withoutChitNumber()->equals($newChit->getBody()));
-        $this->assertSame([$newCategoryId => 101.0], $cashbook->getCategoryTotals());
-        $this->assertSame([$originalCategoryId => 101.0], $originalCashbook->getCategoryTotals()); // other cashbook is not changed by this action
+        $this->assertTrue(MoneyFactory::fromDecimal('101.00')->equals($cashbook->getCategoryTotals()[$newCategoryId]));
+        $this->assertTrue(MoneyFactory::fromDecimal('101.00')->equals($originalCashbook->getCategoryTotals()[$originalCategoryId])); // other cashbook is not changed by this action
 
         $events = $cashbook->extractEventsToDispatch();
 
@@ -342,10 +343,12 @@ class CashbookIntegrationTest extends IntegrationTest
 
         $targetCashbook->copyChitsFrom([1], $sourceCashbook);
 
-        $this->assertSame(
-            $sourceCashbook->getCategoryTotals(),
-            $targetCashbook->getCategoryTotals(),
-        );
+        $sourceTotals = $sourceCashbook->getCategoryTotals();
+        $targetTotals = $targetCashbook->getCategoryTotals();
+        $this->assertSame(array_keys($sourceTotals), array_keys($targetTotals));
+        foreach ($sourceTotals as $categoryId => $sourceTotal) {
+            $this->assertTrue($sourceTotal->equals($targetTotals[$categoryId]));
+        }
     }
 
     /** @return string[][] */
@@ -366,8 +369,8 @@ class CashbookIntegrationTest extends IntegrationTest
 
         $targetCashbook->copyChitsFrom([1], $sourceCashbook);
 
-        $chitAmount = $sourceCashbook->getChits()[0]->getAmount()->toFloat();
-        $this->assertSame([Category::UNDEFINED_INCOME_ID => $chitAmount], $targetCashbook->getCategoryTotals());
+        $chitAmount = $sourceCashbook->getChits()[0]->getAmount()->toMoney();
+        $this->assertTrue($chitAmount->equals($targetCashbook->getCategoryTotals()[Category::UNDEFINED_INCOME_ID]));
     }
 
     public function testAddChitScan(): void

@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Model\DTO\Budget;
 
+use Money\Money;
 use Nette\SmartObject;
 
 /**
  * @property string     $label
- * @property float      $value
+ * @property Money      $value
  * @property Category[] $children
  */
 class Category
@@ -16,7 +17,7 @@ class Category
     use SmartObject;
 
     /** @param Category[] $children */
-    public function __construct(private int $id, private string $label, private float $value, private array $children)
+    public function __construct(private int $id, private string $label, private Money $value, private array $children)
     {
     }
 
@@ -30,7 +31,7 @@ class Category
         return $this->label;
     }
 
-    public function getValue(): float
+    public function getValue(): Money
     {
         return $this->value;
     }

@@ -10,7 +10,6 @@ use App\Model\Utils\MoneyFactory;
 use Doctrine\ORM\EntityManager;
 use Money\Money;
 
-
 class ParticipantChitSumQueryHandler
 {
     private const PARTICIPANT_INCOME_CATEGORY_IDS = [1, 11];
@@ -32,6 +31,11 @@ class ParticipantChitSumQueryHandler
 
         $chits = $queryBuilder->getQuery()->getResult();
 
-        return array_reduce($chits, fn (Money $total, Chit $chit): Money => $total->add($chit->getAmount()->toMoney()), MoneyFactory::zero());
+        $total = MoneyFactory::zero();
+        foreach ($chits as $chit) {
+            $total = $total->add($chit->getAmount()->toMoney());
+        }
+
+        return $total;
     }
 }

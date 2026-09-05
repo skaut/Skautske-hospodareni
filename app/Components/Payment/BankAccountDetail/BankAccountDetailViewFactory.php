@@ -7,6 +7,7 @@ namespace App\Components\Payment\BankAccountDetail;
 use App\Components\DataGrid;
 use App\Components\Grids\GridFactory;
 use App\Components\Payment\BankPairingUiMessages;
+use App\Helpers\AccountancyHelpers;
 use App\Model\Bank\Entity\BankTransaction;
 use App\Model\Bank\Entity\BankTransactionPairing;
 use App\Model\Bank\Exception\BankTimeLimit;
@@ -19,12 +20,13 @@ use App\Model\Invoice\Entity\Invoice;
 use App\Model\Invoice\Repository\InvoiceRepository;
 use App\Model\Payment\BankAccountService;
 use App\Model\Payment\Payment;
-use App\Model\Utils\MoneyFactory;
 use App\Model\Payment\PaymentNotFound;
 use App\Model\Payment\Repositories\IGroupRepository;
 use App\Model\Payment\Repositories\IPaymentRepository;
 use App\Model\Payment\TokenNotSet;
+use App\Model\Utils\MoneyFactory;
 use Nette\Application\LinkGenerator;
+use Money\Money;
 use Nette\Utils\Html;
 
 use function array_filter;
@@ -34,7 +36,6 @@ use function array_values;
 use function count;
 use function implode;
 use function in_array;
-use function number_format;
 use function sprintf;
 
 final class BankAccountDetailViewFactory
@@ -177,7 +178,7 @@ final class BankAccountDetailViewFactory
             ->setSortable();
 
         $grid->addColumnText('amount', 'Částka')
-            ->setRenderer(fn (array $row): Html => $this->renderTransactionAmount((float) $row['amount']))
+            ->setRenderer(fn (array $row): Html => $this->renderTransactionAmount($row['amount']))
             ->setSortable('amountSort');
 
         $grid->addColumnText('counterAccount', 'Účet')
@@ -432,7 +433,7 @@ final class BankAccountDetailViewFactory
         }
 
         foreach ($invoices as $invoice) {
-            if (number_format((float) (string) $invoice->getTotalAmount(), 2, '.', '') !== $transactionAmount) {
+            if (MoneyFactory::fromDecimal((string) $invoice->getTotalAmount())->getAmount() !== $transactionAmount) {
                 continue;
             }
 
@@ -591,7 +592,7 @@ final class BankAccountDetailViewFactory
                     'transactionKey' => $transaction->getTransactionKey(),
                     'date' => $transaction->getDate(),
                     'amount' => $transaction->getAmount(),
-                    'amountSort' => sprintf('%020.2f', $transaction->getAmount() + 1000000000),
+                    'amountSort' => sprintf('%020d', (int) $transaction->getAmount()->getAmount() + 100000000000),
                     'counterAccount' => $transaction->getCounterAccount() ?? '',
                     'counterName' => $transaction->getCounterName(),
                     'constantSymbol' => $transaction->getConstantSymbol() !== null ? (string) $transaction->getConstantSymbol() : '',
@@ -610,16 +611,16 @@ final class BankAccountDetailViewFactory
 
         return array_values(array_filter(
             $rows,
-            static fn (array $row): bool => (float) $row['amount'] > 0,
+            static fn (array $row): bool => $row['amount']->isPositive(),
         ));
     }
 
-    private function renderTransactionAmount(float $amount): Html
+    private function renderTransactionAmount(Money $amount): Html
     {
         $strong = Html::el('strong')
-            ->setText(number_format($amount, 2, ',', ' ').' Kč');
+            ->setText(AccountancyHelpers::price($amount).' Kč');
 
-        if ($amount < 0) {
+        if ($amount->isNegative()) {
             $strong->setAttribute('class', 'text-danger');
         }
 
