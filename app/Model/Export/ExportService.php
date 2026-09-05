@@ -122,10 +122,27 @@ class ExportService
             $list = $this->queryBus->handle(new EventParticipantListQuery($event->getId()));
         }
 
+        $totalPayment = MoneyFactory::zero();
+        $totalRepayment = MoneyFactory::zero();
+        $totalOnAccount = MoneyFactory::zero();
+        foreach ($list as $participant) {
+            $totalPayment = $totalPayment->add($participant->getPayment());
+            $totalRepayment = $totalRepayment->add($participant->getRepayment());
+
+            if ($participant->getOnAccount() !== 'Y') {
+                continue;
+            }
+
+            $totalOnAccount = $totalOnAccount->add($participant->getPayment()->subtract($participant->getRepayment()));
+        }
+
         return $this->templateFactory->create($templateFile, [
             'list' => $list,
             'displayName' => $displayName,
             'unitFullNameWithAddress' => $this->units->getOfficialUnit($unitId->toInt())->getFullDisplayNameWithAddress(),
+            'totalPayment' => $totalPayment,
+            'totalRepayment' => $totalRepayment,
+            'totalOnAccount' => $totalOnAccount,
         ]);
     }
 

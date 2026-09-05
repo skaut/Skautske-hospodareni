@@ -28,7 +28,6 @@ use App\Presentation\Events\BasePresenter;
 use LogicException;
 use Money\Money;
 
-
 final class CashbookPresenter extends BasePresenter
 {
     public function __construct(private ICashbookControlFactory $cashbookFactory)

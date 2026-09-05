@@ -30,4 +30,12 @@ final class MoneyTypeTest extends Unit
 
         self::assertSame('30', $type->convertToDatabaseValue(MoneyFactory::fromDecimal('0.30'), $platform));
     }
+
+    public function testNullMoneyIsPersistedAsNull(): void
+    {
+        $type = new MoneyType();
+        $platform = m::mock(AbstractPlatform::class);
+
+        self::assertNull($type->convertToDatabaseValue(null, $platform));
+    }
 }

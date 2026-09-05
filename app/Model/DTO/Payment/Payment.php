@@ -12,9 +12,9 @@ use App\Model\Payment\Payment\State;
 use App\Model\Payment\VariableSymbol;
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
+use Money\Money;
 use Nette\SmartObject;
 use Nette\Utils\Strings;
-use Money\Money;
 
 use function array_map;
 use function implode;
