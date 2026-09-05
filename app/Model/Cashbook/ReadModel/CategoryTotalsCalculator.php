@@ -11,6 +11,8 @@ use App\Model\Cashbook\EducationCategory;
 use App\Model\Cashbook\ICategory;
 use App\Model\Cashbook\MissingCategory;
 use App\Model\Cashbook\ParticipantType;
+use App\Model\Utils\MoneyFactory;
+use Money\Money;
 
 use function array_key_exists;
 use function sprintf;
@@ -20,7 +22,7 @@ final class CategoryTotalsCalculator
     /**
      * @param ICategory[] $categories
      *
-     * @return array<int, float>
+     * @return array<int, Money>
      */
     public function calculate(Cashbook $cashbook, array $categories): array
     {
@@ -33,7 +35,7 @@ final class CategoryTotalsCalculator
             $totalByCategories = self::categorySubtract($totalByCategories, fn (): int => self::getEducationIncomeCategoryId($categories), ICategory::CATEGORY_REFUND_ID);
         } else {
             if (array_key_exists(ICategory::CATEGORY_HPD_ID, $totalByCategories)) {
-                $totalByCategories[ICategory::CATEGORY_PARTICIPANT_INCOME_ID] = ($totalByCategories[ICategory::CATEGORY_PARTICIPANT_INCOME_ID] ?? 0) + $totalByCategories[ICategory::CATEGORY_HPD_ID];
+                $totalByCategories[ICategory::CATEGORY_PARTICIPANT_INCOME_ID] = ($totalByCategories[ICategory::CATEGORY_PARTICIPANT_INCOME_ID] ?? MoneyFactory::zero())->add($totalByCategories[ICategory::CATEGORY_HPD_ID]);
                 unset($totalByCategories[ICategory::CATEGORY_HPD_ID]);
             }
 
@@ -48,16 +50,15 @@ final class CategoryTotalsCalculator
      * odečítat (existuje dočasná kategorie vratky). Bez vratky se tak nevyhazuje MissingCategory u pokladen,
      * které příslušnou příjmovou kategorii nemají (např. prázdná vzdělávačka / tábor) – stejně jako u akcí.
      *
-     * @param array<int, float> $totalByCategories
+     * @param array<int, Money> $totalByCategories
      * @param callable(): int   $resolveCategoryId
-     *
-     * @return array<int, float>
+     * @return array<int, Money>
      */
     private static function categorySubtract(array $totalByCategories, callable $resolveCategoryId, int $temporaryId): array
     {
         if (array_key_exists($temporaryId, $totalByCategories)) {
             $categoryId = $resolveCategoryId();
-            $totalByCategories[$categoryId] = ($totalByCategories[$categoryId] ?? 0) - $totalByCategories[$temporaryId];
+            $totalByCategories[$categoryId] = ($totalByCategories[$categoryId] ?? MoneyFactory::zero())->subtract($totalByCategories[$temporaryId]);
             unset($totalByCategories[$temporaryId]);
         }
 

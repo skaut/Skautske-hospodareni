@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Model\Bank\Services;
 
+use App\Model\Utils\MoneyFactory;
 use Codeception\Test\Unit;
 use DateTimeImmutable;
 
@@ -23,7 +24,7 @@ final class BankTransactionKeyGeneratorTest extends Unit
         $first = $generator->fromGpc(
             '8310192897/2010',
             new DateTimeImmutable('2026-02-28 12:00:00'),
-            -24.20,
+            MoneyFactory::fromDecimal('-24.20'),
             null,
             'Najem kancelari 1/26',
             null,
@@ -33,7 +34,7 @@ final class BankTransactionKeyGeneratorTest extends Unit
         $second = $generator->fromGpc(
             '8310192897/2010',
             new DateTimeImmutable('2026-02-28 12:00:00'),
-            -24.20,
+            MoneyFactory::fromDecimal('-24.20'),
             null,
             'Najem kancelari 1/26',
             null,

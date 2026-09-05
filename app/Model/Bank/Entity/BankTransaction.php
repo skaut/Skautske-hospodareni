@@ -9,6 +9,7 @@ use App\Model\Bank\Repository\BankTransactionRepository;
 use App\Model\Bank\Transaction as BankTransactionModel;
 use App\Model\Infrastructure\Entity\AbstractIdEntity;
 use App\Model\Infrastructure\Types\Int64Type;
+use App\Model\Infrastructure\Types\MoneyType;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Column;
@@ -17,6 +18,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\UniqueConstraint;
+use Money\Money;
 
 #[Entity(repositoryClass: BankTransactionRepository::class)]
 #[Table(name: 'bank_transaction')]
@@ -39,8 +41,8 @@ class BankTransaction extends AbstractIdEntity
     #[Column(type: Types::DATETIME_IMMUTABLE)]
     private DateTimeImmutable $date;
 
-    #[Column(type: Types::FLOAT)]
-    private float $amount;
+    #[Column(type: MoneyType::NAME)]
+    private Money $amount;
 
     #[Column(name: 'counter_account', type: Types::STRING, length: 64, nullable: true)]
     private ?string $counterAccount;
@@ -126,7 +128,7 @@ class BankTransaction extends AbstractIdEntity
         return $this->date;
     }
 
-    public function getAmount(): float
+    public function getAmount(): Money
     {
         return $this->amount;
     }

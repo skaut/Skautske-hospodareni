@@ -9,6 +9,7 @@ use App\Model\Payment\VariableSymbol;
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use Nette\SmartObject;
+use Money\Money;
 
 /**
  * @property int                    $id
@@ -16,7 +17,7 @@ use Nette\SmartObject;
  * @property int                    $unitId
  * @property int|null               $skautisId
  * @property string                 $name
- * @property float|null             $defaultAmount
+ * @property Money|null             $defaultAmount
  * @property ChronosDate|null       $dueDate
  * @property int|null               $constantSymbol
  * @property VariableSymbol|null    $nextVariableSymbol
@@ -37,7 +38,7 @@ class Group
         private array $unitIds,
         private ?int $skautisId,
         private string $name,
-        private ?float $defaultAmount,
+        private ?Money $defaultAmount,
         private ?ChronosDate $dueDate,
         private ?int $constantSymbol,
         private ?VariableSymbol $nextVariableSymbol,
@@ -83,7 +84,7 @@ class Group
         return $this->name;
     }
 
-    public function getDefaultAmount(): ?float
+    public function getDefaultAmount(): ?Money
     {
         return $this->defaultAmount;
     }
