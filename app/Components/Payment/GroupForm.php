@@ -21,9 +21,9 @@ use App\Model\Payment\ReadModel\Queries\BankAccount\BankAccountsAccessibleByUnit
 use App\Model\Payment\ReadModel\Queries\GroupEmailQuery;
 use App\Model\Payment\ReadModel\Queries\NextVariableSymbolSequenceQuery;
 use App\Model\Payment\ReadModel\Queries\OAuthsAccessibleByGroupsQuery;
-use App\Model\Utils\MoneyFactory;
 use App\Model\Unit\ReadModel\Queries\UnitsDetailQuery;
 use App\Model\Unit\Unit;
+use App\Model\Utils\MoneyFactory;
 use Assert\Assertion;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
@@ -101,7 +101,8 @@ final class GroupForm extends BaseControl
             ->setHtmlAttribute('class', 'form-control')
             ->setRequired(false)
             ->setNullable()
-            ->addRule(Form::FLOAT, 'Částka musí být zadaná jako číslo');
+            ->addRule(Form::FLOAT, 'Částka musí být zadaná jako číslo')
+            ->addRule(Form::PATTERN, PaymentFormFields::MONEY_PATTERN_MESSAGE, PaymentFormFields::MONEY_PATTERN);
 
         $form->addDate('dueDate', 'Výchozí splatnost')
             ->disableWeekends()

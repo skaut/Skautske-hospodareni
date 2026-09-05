@@ -17,6 +17,7 @@ use App\Model\Payment\Group;
 use App\Model\Payment\Payment;
 use App\Model\Payment\VariableSymbol;
 use App\Model\Payment\VariableSymbolCollision;
+use App\Model\Utils\MoneyFactory;
 use BankingFixtures;
 use DateTimeImmutable;
 use Hskauting\Tests\NullEventBus;
@@ -123,7 +124,7 @@ final class VariableSymbolCollisionCheckerTest extends IntegrationTest
             $group,
             'Platba',
             [],
-            150.00,
+            MoneyFactory::fromDecimal('150.00'),
             new \Cake\Chronos\ChronosDate('2026-03-20'),
             new VariableSymbol($variableSymbol),
             null,

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Model\Payment;
 
-use Nette\SmartObject;
 use Money\Money;
+use Nette\SmartObject;
 
 /**
  * @property int   $count

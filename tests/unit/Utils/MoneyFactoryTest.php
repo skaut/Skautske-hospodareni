@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Model\Utils;
 
 use Codeception\Test\Unit;
+use InvalidArgumentException;
 use Money\Currency;
 use Money\Money;
 
@@ -44,7 +45,7 @@ class MoneyFactoryTest extends Unit
 
     public function testFromDecimalRejectsFractionsOfCents(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         MoneyFactory::fromDecimal('0.001');
     }
