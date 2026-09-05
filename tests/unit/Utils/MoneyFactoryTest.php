@@ -34,6 +34,37 @@ class MoneyFactoryTest extends Unit
         $this->assertSame('CZK', $money->getCurrency()->getCode());
     }
 
+    public function testFromDecimalKeepsCentsExact(): void
+    {
+        $money = MoneyFactory::fromDecimal('0,19');
+
+        $this->assertSame('19', $money->getAmount());
+        $this->assertSame('0.19', MoneyFactory::toDecimal($money));
+    }
+
+    public function testFromDecimalRejectsFractionsOfCents(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        MoneyFactory::fromDecimal('0.001');
+    }
+
+    public function testMoneyArithmeticKeepsCentsExact(): void
+    {
+        $income = MoneyFactory::fromDecimal('0.10')->add(MoneyFactory::fromDecimal('0.20'));
+        $balance = $income->subtract(MoneyFactory::fromDecimal('0.49'));
+
+        $this->assertSame('30', $income->getAmount());
+        $this->assertSame('-19', $balance->getAmount());
+        $this->assertSame('-0.19', MoneyFactory::toDecimal($balance));
+    }
+
+    public function testDecimalFormattingPreservesNegativeCents(): void
+    {
+        $this->assertSame('-0.01', MoneyFactory::toDecimal(Money::CZK(-1)));
+        $this->assertSame('-15.80', MoneyFactory::toDecimal(Money::CZK(-1580)));
+    }
+
     /** @dataProvider dataFloor */
     public function testFloor(float $amount, float $flooredAmount): void
     {
