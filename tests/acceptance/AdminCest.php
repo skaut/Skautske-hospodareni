@@ -102,8 +102,7 @@ final class AdminCest extends BaseAcceptanceCest
 
         $I->wantTo('verify admin overview page shows cards with correct links');
 
-        $I->amOnPage('/admin');
-        $I->waitForElementVisible('[data-test="admin-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin', '[data-test="admin-page"]');
 
         // Utility navigation active state
         $I->seeElement('.active [data-test="utility-nav-admin"]');
@@ -144,31 +143,27 @@ final class AdminCest extends BaseAcceptanceCest
         $I->wantTo('verify admin submenu highlights the correct active section');
 
         // Overview active
-        $I->amOnPage('/admin');
-        $I->waitForElementVisible('[data-test="admin-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin', '[data-test="admin-page"]');
         $I->seeElement('[data-test="admin-nav-overview"].btn-primary');
         $I->seeElement('[data-test="admin-nav-users"].btn-light');
         $I->seeElement('[data-test="admin-nav-statistics"].btn-light');
         $I->seeElement('[data-test="admin-nav-bug-reports"].btn-light');
 
         // Users active
-        $I->amOnPage('/admin/uzivatele');
-        $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/uzivatele', '[data-test="admin-users-page"]');
         $I->seeElement('[data-test="admin-nav-users"].btn-primary');
         $I->seeElement('[data-test="admin-nav-overview"].btn-light');
         $I->seeElement('[data-test="admin-nav-statistics"].btn-light');
         $I->seeElement('[data-test="admin-nav-bug-reports"].btn-light');
 
         // Statistics active
-        $I->amOnPage('/admin/statistiky');
-        $I->waitForElementVisible('[data-test="admin-statistics-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/statistiky', '[data-test="admin-statistics-page"]');
         $I->seeElement('[data-test="admin-nav-statistics"].btn-primary');
         $I->seeElement('[data-test="admin-nav-overview"].btn-light');
         $I->seeElement('[data-test="admin-nav-users"].btn-light');
 
         // Bug reports active
-        $I->amOnPage('/admin/hlaseni-chyb');
-        $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/hlaseni-chyb', '[data-test="admin-bug-reports-page"]');
         $I->seeElement('[data-test="admin-nav-bug-reports"].btn-primary');
         $I->seeElement('[data-test="admin-nav-overview"].btn-light');
         $I->seeElement('[data-test="admin-nav-users"].btn-light');
@@ -182,8 +177,7 @@ final class AdminCest extends BaseAcceptanceCest
 
         $I->wantTo('verify admin submenu pill buttons navigate to correct pages');
 
-        $I->amOnPage('/admin');
-        $I->waitForElementVisible('[data-test="admin-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin', '[data-test="admin-page"]');
 
         // Click Users pill
         $I->clickStable('[data-test="admin-nav-users"]');
@@ -216,8 +210,7 @@ final class AdminCest extends BaseAcceptanceCest
 
         $I->wantTo('verify admin users page displays hero, form toggle, and list card');
 
-        $I->amOnPage('/admin/uzivatele');
-        $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/uzivatele', '[data-test="admin-users-page"]');
 
         // Hero card visible
         $I->seeElement('[data-test="admin-users-page"] .card');
@@ -247,8 +240,7 @@ final class AdminCest extends BaseAcceptanceCest
 
         $I->wantTo('create, read, update, and delete a user with system roles');
 
-        $I->amOnPage('/admin/uzivatele');
-        $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/uzivatele', '[data-test="admin-users-page"]');
 
         // ── CREATE ───────────────────────────────────────────────
         // Open form
@@ -324,8 +316,7 @@ final class AdminCest extends BaseAcceptanceCest
 
         $I->wantTo('verify that creating a duplicate role assignment user is rejected');
 
-        $I->amOnPage('/admin/uzivatele');
-        $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/uzivatele', '[data-test="admin-users-page"]');
 
         // Open form and try adding existing user_id
         $I->clickStable('[data-test="admin-users-form-toggle"]');
@@ -348,8 +339,11 @@ final class AdminCest extends BaseAcceptanceCest
 
         $I->wantTo('verify cancelling edit returns to the default users view');
 
-        $I->amOnPage('/admin/uzivatele?edit='.self::ACCEPTANCE_ADMIN_USER_ID);
-        $I->waitForElementVisible('[data-test="admin-users-form-collapse"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry(
+            $I,
+            '/admin/uzivatele?edit='.self::ACCEPTANCE_ADMIN_USER_ID,
+            '[data-test="admin-users-form-collapse"]',
+        );
         $I->seeElement('[data-test="admin-users-form-cancel"]');
         $I->see((string) self::ACCEPTANCE_ADMIN_USER_ID, '[data-test="admin-users-edited-user-id"]');
         $I->dontSeeElement('[data-test="admin-users-form"] input[name="userId"]');
@@ -371,8 +365,7 @@ final class AdminCest extends BaseAcceptanceCest
 
         $I->wantTo('verify admin statistics page displays hero, year filter, and data table');
 
-        $I->amOnPage('/admin/statistiky');
-        $I->waitForElementVisible('[data-test="admin-statistics-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/statistiky', '[data-test="admin-statistics-page"]');
 
         // Hero card
         $I->seeElement('[data-test="admin-statistics-page"] .card');
@@ -407,8 +400,7 @@ final class AdminCest extends BaseAcceptanceCest
 
         $I->wantTo('verify clicking cards on admin overview navigates to the correct section');
 
-        $I->amOnPage('/admin');
-        $I->waitForElementVisible('[data-test="admin-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin', '[data-test="admin-page"]');
 
         // Click Users card link
         $I->clickStable('[data-test="admin-link-users"]');
@@ -416,15 +408,13 @@ final class AdminCest extends BaseAcceptanceCest
         $I->seeInCurrentUrl('/admin/uzivatele');
 
         // Go back and click Statistics card link
-        $I->amOnPage('/admin');
-        $I->waitForElementVisible('[data-test="admin-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin', '[data-test="admin-page"]');
         $I->clickStable('[data-test="admin-link-statistics"]');
         $I->waitForElementVisible('[data-test="admin-statistics-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/admin/statistiky');
 
         // Go back and click Bug reports card link
-        $I->amOnPage('/admin');
-        $I->waitForElementVisible('[data-test="admin-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin', '[data-test="admin-page"]');
         $I->clickStable('[data-test="admin-link-bug-reports"]');
         $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/admin/hlaseni-chyb');
@@ -447,8 +437,7 @@ final class AdminCest extends BaseAcceptanceCest
 
         $I->wantTo('verify admin usage page renders all cards from recorded logins');
 
-        $I->amOnPage('/admin/vyuziti');
-        $I->waitForElementVisible('[data-test="admin-usage-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/vyuziti', '[data-test="admin-usage-page"]');
 
         // A Latte runtime error renders as a Tracy page, not as our markup.
         $I->dontSeeElement('#tracy-bs');
@@ -498,8 +487,7 @@ final class AdminCest extends BaseAcceptanceCest
 
         $I->wantTo('verify admin usage page stays readable before any login is recorded');
 
-        $I->amOnPage('/admin/vyuziti');
-        $I->waitForElementVisible('[data-test="admin-usage-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/vyuziti', '[data-test="admin-usage-page"]');
 
         $I->dontSeeElement('#tracy-bs');
         $I->seeElement('[data-test="admin-usage-no-data"]');
@@ -524,8 +512,7 @@ final class AdminCest extends BaseAcceptanceCest
         $I->wantTo('verify the usage page does not overflow sideways on a phone');
 
         $I->resizeWindow(375, 900);
-        $I->amOnPage('/admin/vyuziti');
-        $I->waitForElementVisible('[data-test="admin-usage-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/vyuziti', '[data-test="admin-usage-page"]');
 
         // The heat map and the month table have to scroll inside their own
         // container. Naming the widest element turns a failure here into a
@@ -581,8 +568,7 @@ JS);
 
         $I->wantTo('verify the usage page is linked from the admin overview and submenu');
 
-        $I->amOnPage('/admin');
-        $I->waitForElementVisible('[data-test="admin-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin', '[data-test="admin-page"]');
 
         $I->seeElement('[data-test="admin-card-usage"].navigation-card');
         $usageHref = $I->grabAttributeFrom('[data-test="admin-link-usage"]', 'href');
