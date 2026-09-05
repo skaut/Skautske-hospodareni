@@ -6,6 +6,7 @@ namespace App\Model\DTO\Cashbook;
 
 use App\Model\Cashbook\Cashbook\Amount;
 use App\Model\Cashbook\Operation;
+use Money\Money;
 use Nette\SmartObject;
 
 /**
@@ -36,12 +37,12 @@ class ChitItem
         return $this->purpose;
     }
 
-    public function getSignedAmount(): float
+    public function getSignedAmount(): Money
     {
-        $amount = $this->amount->toFloat();
+        $amount = $this->amount->toMoney();
 
         if ($this->category->getOperationType()->equalsValue(Operation::EXPENSE)) {
-            return -1 * $amount;
+            return $amount->multiply(-1);
         }
 
         return $amount;

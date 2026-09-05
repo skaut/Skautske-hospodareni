@@ -11,6 +11,7 @@ use App\Model\Payment\EmailType;
 use App\Model\Payment\Group;
 use App\Model\Payment\GroupNotFound;
 use App\Model\Payment\VariableSymbol;
+use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use IntegrationTest;
@@ -69,7 +70,7 @@ class GroupRepositoryTest extends IntegrationTest
         $createdAt = new DateTimeImmutable(self::ROW['created_at']);
         $lastPairing = new DateTimeImmutable(self::ROW['last_pairing']);
         $paymentDefaults = new Group\PaymentDefaults(
-            self::ROW['amount'],
+            MoneyFactory::fromDecimal((string) self::ROW['amount']),
             new ChronosDate('2018-01-29'),
             self::ROW['constant_symbol'],
             new VariableSymbol(self::ROW['next_variable_symbol']),
@@ -83,7 +84,7 @@ class GroupRepositoryTest extends IntegrationTest
             'last_pairing' => $lastPairing->format('Y-m-d H:i:s'),
             'oauth_id' => '42288e92-27fb-453c-9904-36a7ebd14fe2',
             'bank_account_id' => 100,
-            'amount' => $paymentDefaults->getAmount(),
+            'amount' => 10000,
             'next_variable_symbol' => $paymentDefaults->getNextVariableSymbol()->toInt(),
             'due_date' => $paymentDefaults->getDueDate()->format('Y-m-d'),
             'constant_symbol' => $paymentDefaults->getConstantSymbol(),
@@ -119,7 +120,7 @@ class GroupRepositoryTest extends IntegrationTest
         $this->assertEquals($lastPairing, $group->getLastPairing());
         $this->assertSame($row['oauth_id'], $group->getOauthId()->toString());
         $this->assertSame($row['bank_account_id'], $group->getBankAccountId());
-        $this->assertSame($paymentDefaults->getAmount(), $group->getPaymentDefaults()->getAmount());
+        $this->assertTrue($paymentDefaults->getAmount()->equals($group->getPaymentDefaults()->getAmount()));
         $this->assertEquals($paymentDefaults->getDueDate(), $group->getPaymentDefaults()->getDueDate());
         $this->assertSame($paymentDefaults->getConstantSymbol(), $group->getPaymentDefaults()->getConstantSymbol());
         $this->assertEquals($paymentDefaults->getNextVariableSymbol(), $group->getPaymentDefaults()->getNextVariableSymbol());

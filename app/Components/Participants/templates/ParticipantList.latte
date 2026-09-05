@@ -134,7 +134,6 @@ $showUnits bool - zobrazovat číslo jednotky
                     </th>
                 </tr>
                 </thead>
-                {var $totalPayment = $totalRepayment = 0}
                 {if !empty($participants)}
                     <tr n:foreach="$participants as $p" id='par-list-row-{$p->id}' data-pid='{$p->id}'>
                         <td n:if="$isAllowAnyAction" class="text-center participantCheckbox">
@@ -143,8 +142,8 @@ $showUnits bool - zobrazovat číslo jednotky
                         <td><label for="massParticipants-{$p->id}">{$p->displayName}</label></td>
                         <td n:if="$showUnits">{ifset $p->unitRegistrationNumber}{$p->unitRegistrationNumber}{/ifset}</td>
                         <td class="text-end" n:if="$isAllowDaysUpdate">{$p->days}</td>
-                        <td class="text-end">{$p->payment|price:false}{do $totalPayment += $p->payment}</td>
-                        <td class="text-end" n:if="$isAllowRepayment">{$p->repayment|price:false}{do $totalRepayment += $p->repayment}</td>
+                        <td class="text-end">{$p->payment|price:false}</td>
+                        <td class="text-end" n:if="$isAllowRepayment">{$p->repayment|price:false}</td>
                         <td n:if="$isAllowIsAccount">{$p->onAccount === 'Y' ? 'Ano'}</td>
                         <td n:if="$isAllowAnyAction" class="text-end text-nowrap">
                             <a n:if="$isAllowParticipantUpdate"
@@ -157,7 +156,6 @@ $showUnits bool - zobrazovat číslo jednotky
                         </td>
                     </tr>
                     <tr>
-                        {var $total = $totalPayment - $totalRepayment}
                         {var $colspanHeader = 1+($isAllowAnyAction ?1:0)+($showUnits?1:0)+($isAllowDaysUpdate?1:0)}
                         <td colspan="{$colspanHeader}" class="b">Celkem: {= count($participants)} osob</td>
                         {if $isAllowRepayment}

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Presentation\Unit\Budget;
 
 use App\Model\Budget\BudgetService;
+use App\Model\Utils\MoneyFactory;
 use App\Presentation\Unit\UnitBasePresenter;
 use Component\Forms\BaseForm;
 use LogicException;
@@ -26,6 +27,7 @@ class BudgetPresenter extends UnitBasePresenter
             'categories' => $this->budgetService->getCategories($this->unitId->toInt()),
             'unitPairs' => $this->unitService->getReadUnits($this->user),
             'year' => $year,
+            'zeroMoney' => MoneyFactory::zero(),
         ]);
     }
 

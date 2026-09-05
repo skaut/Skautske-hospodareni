@@ -10,10 +10,12 @@ use App\Model\Payment\Payment;
 use App\Model\Payment\PaymentNotFound;
 use App\Model\Payment\Summary;
 use App\Model\Payment\VariableSymbol;
+use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use Helpers;
 use Hskauting\Tests\NullEventBus;
 use IntegrationTest;
+use Money\Money;
 
 use function array_fill;
 use function array_map;
@@ -73,7 +75,7 @@ class PaymentRepositoryTest extends IntegrationTest
 
         $this->assertSame($data['group_id'], $payment->getGroupId());
         $this->assertSame($data['name'], $payment->getName());
-        $this->assertSame($data['amount'], $payment->getAmount());
+        $this->assertTrue(Money::CZK((int) $data['amount'])->equals($payment->getAmount()));
         $this->assertEquals(new ChronosDate($data['due_date']), $payment->getDueDate());
         $this->assertTrue($payment->getState()->equalsValue($data['state']), "Payment is not should be 'preparing'");
         $this->assertEquals(new VariableSymbol($data['variable_symbol']), $payment->getVariableSymbol(), 'Variable symbol doesn\'t match');
@@ -194,7 +196,7 @@ class PaymentRepositoryTest extends IntegrationTest
             return [
                 'group_id' => $payment[0],
                 'name' => 'Test',
-                'amount' => $payment[1],
+                'amount' => $payment[1] * 100,
                 'due_date' => '2017-10-29',
                 'note' => '',
                 'state' => $payment[2],
@@ -212,12 +214,12 @@ class PaymentRepositoryTest extends IntegrationTest
 
         $expectedSummaries = [
             1 => [
-                Payment\State::PREPARING => new Summary(2, 600.0),
-                Payment\State::COMPLETED => new Summary(2, 200.0),
+                Payment\State::PREPARING => new Summary(2, MoneyFactory::fromDecimal('600.00')),
+                Payment\State::COMPLETED => new Summary(2, MoneyFactory::fromDecimal('200.00')),
             ],
             2 => [
-                Payment\State::PREPARING => new Summary(2, 200.0),
-                Payment\State::COMPLETED => new Summary(2, 600.0),
+                Payment\State::PREPARING => new Summary(2, MoneyFactory::fromDecimal('200.00')),
+                Payment\State::COMPLETED => new Summary(2, MoneyFactory::fromDecimal('600.00')),
             ],
         ];
 
@@ -229,7 +231,7 @@ class PaymentRepositoryTest extends IntegrationTest
                 assert($actualSummary instanceof Summary);
 
                 $this->assertSame($expectedSummary->getCount(), $actualSummary->getCount());
-                $this->assertSame($expectedSummary->getAmount(), $actualSummary->getAmount());
+                $this->assertTrue($expectedSummary->getAmount()->equals($actualSummary->getAmount()));
             }
         }
     }

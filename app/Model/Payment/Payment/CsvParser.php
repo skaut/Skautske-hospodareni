@@ -7,6 +7,7 @@ namespace App\Model\Payment\Payment;
 use App\Model\Common\EmailAddress;
 use App\Model\Payment\Commands\Payment\CreatePayment;
 use App\Model\Payment\VariableSymbol;
+use App\Model\Utils\MoneyFactory;
 use App\Model\Utils\Strings;
 use Cake\Chronos\ChronosDate;
 use Nette\Schema\Expect;
@@ -60,7 +61,7 @@ class CsvParser
             $groupId,
             $validValues->name,
             $validValues->emails,
-            $validValues->amount,
+            MoneyFactory::fromDecimal((string) $validValues->amount),
             $validValues->date,
             null,
             $validValues->variableSymbol,

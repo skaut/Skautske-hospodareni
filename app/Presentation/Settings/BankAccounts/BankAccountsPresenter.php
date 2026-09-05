@@ -16,6 +16,7 @@ use App\Components\Payment\BankAccountDetail\BankAccountTransactionLink;
 use App\Components\Payment\BankAccountDetail\BankAccountTransactionRow;
 use App\Components\Payment\BankAccountForm;
 use App\Components\Payment\GpcImportDialog;
+use App\Helpers\AccountancyHelpers;
 use App\Model\Auth\Resources\InvoiceAccess;
 use App\Model\Auth\Resources\Unit as UnitResource;
 use App\Model\Bank\BankTransactionAmountMismatch;
@@ -34,15 +35,14 @@ use App\Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use App\Model\User\SkautisRole;
 use App\Presentation\Settings\SettingsBasePresenter;
 use InvalidArgumentException;
+use Money\Money;
 use Nette\Application\BadRequestException;
 use Nette\Utils\Html;
 
 use function array_keys;
 use function array_map;
 use function array_reduce;
-use function array_values;
 use function implode;
-use function number_format;
 
 final class BankAccountsPresenter extends SettingsBasePresenter
 {
@@ -361,7 +361,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
             ->setSortable();
 
         $grid->addColumnText('amount', 'Částka')
-            ->setRenderer(fn (array $row): Html => $this->renderTransactionAmount((float) $row['amount']))
+            ->setRenderer(fn (array $row): Html => $this->renderTransactionAmount($row['amount']))
             ->setSortable('amountSort');
 
         $grid->addColumnText('counterAccount', 'Účet')
@@ -453,7 +453,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
                     'transactionKey' => $transaction->getTransactionKey(),
                     'date' => $transaction->getDate(),
                     'amount' => $transaction->getAmount(),
-                    'amountSort' => sprintf('%020.2f', $transaction->getAmount() + 1000000000),
+                    'amountSort' => sprintf('%020d', (int) $transaction->getAmount()->getAmount() + 100000000000),
                     'counterAccount' => $transaction->getCounterAccount() ?? '',
                     'counterName' => $transaction->getCounterName(),
                     'constantSymbol' => $transaction->getConstantSymbol() !== null ? (string) $transaction->getConstantSymbol() : '',
@@ -470,10 +470,14 @@ final class BankAccountsPresenter extends SettingsBasePresenter
             return $rows;
         }
 
-        return array_values(array_filter(
-            $rows,
-            static fn (array $row): bool => (float) $row['amount'] > 0,
-        ));
+        $positiveRows = [];
+        foreach ($rows as $row) {
+            if ($row['amount']->isPositive()) {
+                $positiveRows[] = $row;
+            }
+        }
+
+        return $positiveRows;
     }
 
     private function resolveDetailForCurrentRequest(): BankAccountDetail
@@ -501,12 +505,12 @@ final class BankAccountsPresenter extends SettingsBasePresenter
             : self::TRANSACTION_VIEW_INCOMING;
     }
 
-    private function renderTransactionAmount(float $amount): Html
+    private function renderTransactionAmount(Money $amount): Html
     {
         $strong = Html::el('strong')
-            ->setText(number_format($amount, 2, ',', ' ').' Kč');
+            ->setText(AccountancyHelpers::price($amount).' Kč');
 
-        if ($amount < 0) {
+        if ($amount->isNegative()) {
             $strong->setAttribute('class', 'text-danger');
         }
 

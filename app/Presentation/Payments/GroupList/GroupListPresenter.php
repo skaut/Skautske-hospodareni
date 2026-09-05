@@ -18,9 +18,11 @@ use App\Model\Payment\ReadModel\Queries\GetGroupList;
 use App\Model\Payment\Summary;
 use App\Model\Unit\ReadModel\Queries\UnitQuery;
 use App\Model\Unit\UnitNotFound;
+use App\Model\Utils\MoneyFactory;
 use App\Presentation\Payments\PaymentsBasePresenter;
 use DateTimeImmutable;
 use LogicException;
+use Money\Money;
 use Nette\Application\UI\Multiplier;
 
 use function array_filter;
@@ -34,7 +36,7 @@ use function in_array;
 
 final class GroupListPresenter extends PaymentsBasePresenter
 {
-    /** @var array<int, array{id: int, name: string, units: string, progress: int, completedCount: int, totalCount: int, completedAmount: float, totalAmount: float, state: string, createdAt: DateTimeImmutable|null, canEdit: bool, canClone: bool, canPair: bool, pairLink: string|null}> */
+    /** @var array<int, array{id: int, name: string, units: string, progress: int, completedCount: int, totalCount: int, completedAmount: Money, totalAmount: Money, state: string, createdAt: DateTimeImmutable|null, canEdit: bool, canClone: bool, canPair: bool, pairLink: string|null}> */
     private array $gridRows = [];
 
     /** @var int[] */
@@ -106,9 +108,9 @@ final class GroupListPresenter extends PaymentsBasePresenter
             $allPayments = array_reduce(
                 $groupSummaries,
                 static fn (Summary $total, Summary $summary): Summary => $total->add($summary),
-                new Summary(0, 0),
+                new Summary(0, MoneyFactory::zero()),
             );
-            $completedPayments = $groupSummaries[State::COMPLETED] ?? new Summary(0, 0);
+            $completedPayments = $groupSummaries[State::COMPLETED] ?? new Summary(0, MoneyFactory::zero());
             $canEdit = in_array($groupId, $editableGroupIds, true);
             $canPair = in_array($groupId, $this->pairableGroupIds, true);
 

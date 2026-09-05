@@ -6,6 +6,7 @@ namespace App\Model\Bank;
 
 use App\Model\Bank\Enum\BankTransactionSource;
 use DateTimeImmutable;
+use Money\Money;
 use Nette\SmartObject;
 
 class Transaction
@@ -16,7 +17,7 @@ class Transaction
         private string $id,
         private BankTransactionSource $source,
         private DateTimeImmutable $date,
-        private float $amount,
+        private Money $amount,
         private ?string $bankAccount,
         private string $name,
         private ?int $variableSymbol = null,
@@ -41,7 +42,7 @@ class Transaction
         return $this->date;
     }
 
-    public function getAmount(): float
+    public function getAmount(): Money
     {
         return $this->amount;
     }

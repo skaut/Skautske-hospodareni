@@ -16,6 +16,7 @@ use App\Model\Payment\Repositories\IBankAccountRepository;
 use App\Model\Payment\Repositories\IGroupRepository;
 use App\Model\Payment\Repositories\IPaymentRepository;
 use App\Model\Services\TemplateFactory;
+use App\Model\Utils\MoneyFactory;
 use DateTimeImmutable;
 use Nette\Mail\Message;
 
@@ -94,7 +95,7 @@ class MailingService
 
         $payment = new MailPayment(
             'Testovací účel',
-            $group->getDefaultAmount() ?? rand(50, 1000),
+            $group->getDefaultAmount() ?? MoneyFactory::fromDecimal((string) rand(50, 1000)),
             [new EmailAddress($user->getEmail())],
             $group->getDueDate()?->toNative() ?? new DateTimeImmutable('+ 2 weeks'),
             rand(1000, 100000),
@@ -180,7 +181,7 @@ class MailingService
             'qr-platba.png',
             QrPaymentCode::buildPng(
                 $bankAccountNumber,
-                $payment->getAmount(),
+                MoneyFactory::toDecimal($payment->getAmount()),
                 $payment->getVariableSymbol(),
                 $payment->getConstantSymbol(),
                 $payment->getName(),

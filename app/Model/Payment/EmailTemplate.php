@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Model\Payment;
 
 use App\Model\Payment\Mailing\Payment;
+use App\Model\Utils\MoneyFactory;
 use Doctrine\ORM\Mapping as ORM;
 use Nette\Utils\Strings;
 
@@ -38,7 +39,7 @@ class EmailTemplate
             '%account%' => $bankAccount,
             '%name%' => $payment->getName(),
             '%groupname%' => $group->getName(),
-            '%amount%' => $payment->getAmount(),
+            '%amount%' => MoneyFactory::toDecimal($payment->getAmount()),
             '%maturity%' => $payment->getDueDate()->format('j.n.Y'),
             '%maturityus%' => $payment->getDueDate()->format('Y-m-d'),
             '%vs%' => $payment->getVariableSymbol(),
@@ -87,7 +88,7 @@ class EmailTemplate
 
         $file = QrPaymentCode::buildImageUrl(
             $bankAccount,
-            $payment->getAmount(),
+            MoneyFactory::toDecimal($payment->getAmount()),
             $payment->getVariableSymbol(),
             $payment->getConstantSymbol(),
             $payment->getName(),

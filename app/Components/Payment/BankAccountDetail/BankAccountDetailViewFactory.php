@@ -21,6 +21,7 @@ use App\Model\Payment\PaymentNotFound;
 use App\Model\Payment\Repositories\IGroupRepository;
 use App\Model\Payment\Repositories\IPaymentRepository;
 use App\Model\Payment\TokenNotSet;
+use App\Model\Utils\MoneyFactory;
 use Nette\Application\LinkGenerator;
 
 use function array_filter;
@@ -29,7 +30,6 @@ use function array_map;
 use function array_values;
 use function count;
 use function in_array;
-use function number_format;
 use function sprintf;
 
 final class BankAccountDetailViewFactory
@@ -214,7 +214,7 @@ final class BankAccountDetailViewFactory
             return null;
         }
 
-        return $transaction->getVariableSymbol().'|'.number_format($transaction->getAmount(), 2, '.', '');
+        return $transaction->getVariableSymbol().'|'.$transaction->getAmount()->getAmount();
     }
 
     /**
@@ -279,11 +279,11 @@ final class BankAccountDetailViewFactory
         array $groupNames,
         ?string $transactionView,
     ): array {
-        $transactionAmount = number_format($transaction->getAmount(), 2, '.', '');
+        $transactionAmount = $transaction->getAmount()->getAmount();
         $descriptions = [];
 
         foreach ($payments as $payment) {
-            if (number_format($payment->getAmount(), 2, '.', '') !== $transactionAmount) {
+            if ($payment->getAmount()->getAmount() !== $transactionAmount) {
                 continue;
             }
 
@@ -318,7 +318,7 @@ final class BankAccountDetailViewFactory
         }
 
         foreach ($invoices as $invoice) {
-            if (number_format((float) (string) $invoice->getTotalAmount(), 2, '.', '') !== $transactionAmount) {
+            if (MoneyFactory::fromDecimal((string) $invoice->getTotalAmount())->getAmount() !== $transactionAmount) {
                 continue;
             }
 

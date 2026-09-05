@@ -47,7 +47,7 @@ class CategoriesSummaryQueryHandler
             $categoriesSummaryById[$category->getId()] = new CategorySummary(
                 $category->getId(),
                 $category->getName(),
-                MoneyFactory::fromFloat($totalByCategories[$category->getId()] ?? 0),
+                $totalByCategories[$category->getId()] ?? MoneyFactory::zero(),
                 $category->getOperationType(),
                 $category->isVirtual(),
             );

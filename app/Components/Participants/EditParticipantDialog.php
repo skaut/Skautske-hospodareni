@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Components\Participants;
 
 use App\Components\Dialog;
+use App\Components\Payment\PaymentFormFields;
 use App\Model\DTO\Participant\Participant;
 use App\Model\DTO\Participant\UpdateParticipant;
+use App\Model\Utils\MoneyFactory;
 use Assert\Assertion;
 use Closure;
 use Component\Forms\BaseForm;
@@ -64,14 +66,18 @@ final class EditParticipantDialog extends Dialog
 
         $form->addText('payment', 'Částka')
             ->setRequired('Musíte vyplnit částku')
+            ->addRule(BaseForm::FLOAT, 'Částka musí být zadaná jako číslo')
+            ->addRule(BaseForm::PATTERN, PaymentFormFields::MONEY_PATTERN_MESSAGE, PaymentFormFields::MONEY_PATTERN)
             ->addRule(BaseForm::MIN, 'Minimální částka je %d Kč', 0)
-            ->setDefaultValue($participant->getPayment());
+            ->setDefaultValue(MoneyFactory::toDecimal($participant->getPayment()));
 
         if ($this->isRepaymentAllowed) {
             $form->addText('repayment', 'Vratka')
                 ->setRequired(false)
+                ->addRule(BaseForm::FLOAT, 'Vratka musí být zadaná jako číslo')
+                ->addRule(BaseForm::PATTERN, PaymentFormFields::MONEY_PATTERN_MESSAGE, PaymentFormFields::MONEY_PATTERN)
                 ->addRule(BaseForm::MIN, 'Minimální částka vratky je %d Kč', 0)
-                ->setDefaultValue($participant->getRepayment());
+                ->setDefaultValue(MoneyFactory::toDecimal($participant->getRepayment()));
         }
 
         if ($this->isAccountAllowed) {
@@ -85,16 +91,23 @@ final class EditParticipantDialog extends Dialog
         $form->onSuccess[] = function ($_x, array $values) use ($participant): void {
             $changes = [];
 
-            if ($values['payment'] !== $participant->getPayment()) {
-                $changes[UpdateParticipant::FIELD_PAYMENT] = $values['payment'];
+            $payment = MoneyFactory::fromDecimal((string) $values['payment']);
+            if (! $payment->equals($participant->getPayment())) {
+                $changes[UpdateParticipant::FIELD_PAYMENT] = MoneyFactory::toDecimal($payment);
             }
 
             if ($this->isAllowedDaysUpdate && isset($values['days']) && $values['days'] !== $participant->getDays()) {
                 $changes[UpdateParticipant::FIELD_DAYS] = $values['days'];
             }
 
-            if ($this->isRepaymentAllowed && $values['repayment'] !== $participant->getRepayment()) {
-                $changes[UpdateParticipant::FIELD_REPAYMENT] = $values['repayment'];
+            if ($this->isRepaymentAllowed) {
+                $repayment = $values['repayment'] === null || $values['repayment'] === ''
+                    ? MoneyFactory::zero()
+                    : MoneyFactory::fromDecimal((string) $values['repayment']);
+
+                if (! $repayment->equals($participant->getRepayment())) {
+                    $changes[UpdateParticipant::FIELD_REPAYMENT] = MoneyFactory::toDecimal($repayment);
+                }
             }
 
             if ($this->isAccountAllowed && $values['isAccount'] !== $participant->getOnAccount()) {

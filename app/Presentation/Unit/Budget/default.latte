@@ -4,7 +4,7 @@
         <th colspan="2">Kategorie</th>
         <th>Předpoklad</th>
     </tr>
-    {var $sum = 0}
+    {var $sum = $zeroMoney}
     {foreach $rootCategories as $rootCategory}
         {var $subcategoryCount = count($rootCategory->children)}
         {if $subcategoryCount === 0}
@@ -16,16 +16,16 @@
             <tr>
                 <td rowspan="{$subcategoryCount}">{$rootCategory->label}</td>
                 <td>{$rootCategory->children[0]->label}</td>
-                <td class="text-end">{do $sum += $rootCategory->children[0]->value} {$rootCategory->children[0]->value|number:2, ',', ' '} Kč</td>
+                <td class="text-end">{do $sum = $sum->add($rootCategory->children[0]->value)} {$rootCategory->children[0]->value|price} Kč</td>
             </tr>
             <tr n:for="$i = 1; $i < $subcategoryCount; $i++">
                 {var $subcategory = $rootCategory->children[$i]}
                 <td>{$subcategory->label}</td>
-                <td class="text-end">{do $sum += $subcategory->value} {$subcategory->value|number:2, ',', ' '} Kč</td>
+                <td class="text-end">{do $sum = $sum->add($subcategory->value)} {$subcategory->value|price} Kč</td>
             </tr>
         {/if}
     {/foreach}
-    <tr><th colspan="2">Celkem</th><th class="text-end">{$sum|number:2, ',', ' '} Kč</th></tr>
+    <tr><th colspan="2">Celkem</th><th class="text-end">{$sum|price} Kč</th></tr>
 </table>
 {/block}
 

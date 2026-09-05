@@ -8,6 +8,7 @@ use App\Components\BaseControl;
 use App\Components\DataGrid;
 use App\Components\Grids\DtoListDataSource;
 use App\Components\Grids\GridFactory;
+use App\Helpers\AccountancyHelpers;
 use App\Model\Common\Services\CommandBus;
 use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Payment\Payment;
@@ -100,6 +101,7 @@ final class PaymentList extends BaseControl
             ->setSortable();
 
         $grid->addColumnText('amount', 'Částka')
+            ->setRenderer(static fn (Payment $payment): string => AccountancyHelpers::price($payment->getAmount()))
             ->setSortable();
 
         $grid->addColumnText('variableSymbol', 'VS')

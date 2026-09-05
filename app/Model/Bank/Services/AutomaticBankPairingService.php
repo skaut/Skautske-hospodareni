@@ -13,7 +13,6 @@ use DateTimeImmutable;
 
 use function array_values;
 use function count;
-use function number_format;
 
 class AutomaticBankPairingService
 {
@@ -140,6 +139,6 @@ class AutomaticBankPairingService
             return null;
         }
 
-        return $variableSymbol.'|'.number_format($transaction->getAmount(), 2, '.', '');
+        return $variableSymbol.'|'.$transaction->getAmount()->getAmount();
     }
 }

@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Model\Bank\Services;
 
 use DateTimeImmutable;
+use Money\Money;
 
 use function hash;
 use function implode;
-use function number_format;
 use function trim;
 
 final class BankTransactionKeyGenerator
@@ -21,7 +21,7 @@ final class BankTransactionKeyGenerator
     public function fromGpc(
         string $accountNumber,
         DateTimeImmutable $date,
-        float $amount,
+        Money $amount,
         ?string $counterAccount,
         string $name,
         ?int $variableSymbol,
@@ -32,7 +32,7 @@ final class BankTransactionKeyGenerator
             'gpc',
             $accountNumber,
             $date->format('Y-m-d'),
-            number_format($amount, 2, '.', ''),
+            $amount->getAmount(),
             trim((string) $counterAccount),
             trim($name),
             (string) $variableSymbol,

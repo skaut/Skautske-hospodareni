@@ -6,10 +6,12 @@ namespace App\Model\Bank\Services;
 
 use App\Model\Bank\Enum\BankTransactionSource;
 use App\Model\Bank\Transaction;
+use App\Model\Utils\MoneyFactory;
 use DateTimeImmutable;
 use JakubZapletal\Component\BankStatement\Parser\ABOParser;
 use JakubZapletal\Component\BankStatement\Statement\Transaction\AdditionalInformationInterface;
 use JakubZapletal\Component\BankStatement\Statement\Transaction\TransactionInterface;
+use Money\Money;
 use RuntimeException;
 use Throwable;
 
@@ -107,9 +109,7 @@ final class GpcParser
         $name = $this->resolveName($transaction->getAdditionalInformation(), $note, $receiptId);
         $credit = (float) $transaction->getCredit();
         $debit = (float) $transaction->getDebit();
-        $amount = $credit !== 0.0
-            ? $credit
-            : -$debit;
+        $amount = MoneyFactory::fromDecimal((string) ($credit !== 0.0 ? $credit : -$debit));
         $variableSymbol = $this->normalizeInt($transaction->getVariableSymbol());
         $constantSymbol = $this->normalizeInt($transaction->getConstantSymbol());
 
@@ -282,22 +282,22 @@ final class GpcParser
         );
     }
 
-    private function resolveFallbackAmount(string $line, string $accountNumber): float
+    private function resolveFallbackAmount(string $line, string $accountNumber): Money
     {
-        $amount = (float) ((int) ltrim(substr($line, 48, 12), '0')) / 100;
+        $amount = Money::CZK((int) ltrim(substr($line, 48, 12), '0'));
         $postingCode = (int) substr($line, 60, 1);
         $bankCode = $this->resolveBankCode($accountNumber);
         $postingCodeMap = $bankCode === '0300'
             ? [1 => 1, 2 => 2, 3 => 4, 4 => 5]
             : [1 => 1, 2 => 2, 4 => 4, 5 => 5];
 
-        return match ($postingCodeMap[$postingCode] ?? null) {
-            1 => -$amount,
-            2 => $amount,
-            4 => $amount,
-            5 => -$amount,
+        $multiplier = match ($postingCodeMap[$postingCode] ?? null) {
+            1, 5 => -1,
+            2, 4 => 1,
             default => throw new RuntimeException('Nepodporovany GPC posting code: '.$postingCode),
         };
+
+        return $amount->multiply($multiplier);
     }
 
     private function parseFallbackDate(string $value): DateTimeImmutable

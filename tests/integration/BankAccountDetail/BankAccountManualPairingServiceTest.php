@@ -34,6 +34,7 @@ use App\Model\Payment\Group;
 use App\Model\Payment\IUnitResolver;
 use App\Model\Payment\Payment;
 use App\Model\Payment\VariableSymbol;
+use App\Model\Utils\MoneyFactory;
 use Brick\Math\BigDecimal;
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
@@ -275,7 +276,7 @@ final class BankAccountManualPairingServiceTest extends IntegrationTest
             $group,
             'Platba '.$variableSymbol,
             [],
-            $amount,
+            MoneyFactory::fromDecimal((string) $amount),
             new ChronosDate('2026-03-20'),
             new VariableSymbol($variableSymbol),
             null,
@@ -335,7 +336,7 @@ final class BankAccountManualPairingServiceTest extends IntegrationTest
                 'tx-'.$variableSymbol.'-'.(string) $amount,
                 BankTransactionSource::FIO,
                 new DateTimeImmutable('2026-03-14 10:00:00'),
-                $amount,
+                MoneyFactory::fromDecimal((string) $amount),
                 '12-3456789/2010',
                 'Frantisek Masa',
                 $variableSymbol,

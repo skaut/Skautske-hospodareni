@@ -7,6 +7,7 @@ namespace App\Model\Payment\Commands\Payment;
 use App\Model\Common\EmailAddress;
 use App\Model\Payment\VariableSymbol;
 use Cake\Chronos\ChronosDate;
+use Money\Money;
 
 final class UpdatePayment
 {
@@ -15,7 +16,7 @@ final class UpdatePayment
         private int $paymentId,
         private string $name,
         private array $recipients,
-        private float $amount,
+        private Money $amount,
         private ChronosDate $dueDate,
         private ?VariableSymbol $variableSymbol,
         private ?int $constantSymbol,
@@ -39,7 +40,7 @@ final class UpdatePayment
         return $this->recipients;
     }
 
-    public function getAmount(): float
+    public function getAmount(): Money
     {
         return $this->amount;
     }

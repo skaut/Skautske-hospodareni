@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Model\Bank\Services;
 
+use App\Model\Utils\MoneyFactory;
 use Codeception\Test\Unit;
 
 final class GpcParserTest extends Unit
@@ -52,7 +53,7 @@ final class GpcParserTest extends Unit
 
         self::assertCount(1, $transactions);
         self::assertSame('8310192897', $parsedFile->statementAccountNumber);
-        self::assertSame(-24.20, $transactions[0]->getAmount());
+        self::assertTrue(MoneyFactory::fromDecimal('-24.20')->equals($transactions[0]->getAmount()));
         self::assertSame('Najem kancelari 1/26', $transactions[0]->getName());
         self::assertNull($transactions[0]->getVariableSymbol());
         self::assertNull($transactions[0]->getConstantSymbol());

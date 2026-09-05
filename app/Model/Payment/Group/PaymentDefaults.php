@@ -8,12 +8,13 @@ use App\Model\Payment\DueDateIsNotWorkday;
 use App\Model\Payment\VariableSymbol;
 use Cake\Chronos\ChronosDate;
 use Doctrine\ORM\Mapping as ORM;
+use Money\Money;
 
 /** @ORM\Embeddable() */
 final class PaymentDefaults
 {
-    /** @ORM\Column(type="float", nullable=true) */
-    private ?float $amount = null;
+    /** @ORM\Column(type="money", nullable=true) */
+    private ?Money $amount = null;
 
     /** @ORM\Column(type="chronos_date", nullable=true) */
     private ?ChronosDate $dueDate = null;
@@ -26,7 +27,7 @@ final class PaymentDefaults
 
     /** @throws DueDateIsNotWorkday */
     public function __construct(
-        ?float $amount,
+        ?Money $amount,
         ?ChronosDate $dueDate,
         ?int $constantSymbol,
         ?VariableSymbol $nextVariableSymbol,
@@ -35,13 +36,13 @@ final class PaymentDefaults
             throw new DueDateIsNotWorkday();
         }
 
-        $this->amount = $amount !== 0.0 ? $amount : null;
+        $this->amount = $amount !== null && ! $amount->isZero() ? $amount : null;
         $this->dueDate = $dueDate;
         $this->constantSymbol = $constantSymbol;
         $this->nextVariableSymbol = $nextVariableSymbol;
     }
 
-    public function getAmount(): ?float
+    public function getAmount(): ?Money
     {
         return $this->amount;
     }

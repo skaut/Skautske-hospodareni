@@ -16,6 +16,7 @@ use App\Model\Cashbook\Events\ChitWasRemoved;
 use App\Model\Cashbook\Events\ChitWasUpdated;
 use App\Model\Common\Aggregate;
 use App\Model\Common\FilePath;
+use App\Model\Utils\MoneyFactory;
 use Consistence\Doctrine\Enum\EnumAnnotation;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -188,7 +189,7 @@ class Cashbook extends Aggregate
         $this->raise(new ChitWasUpdated($this->id));
     }
 
-    /** @return float[] Category totals indexed by category IDs */
+    /** @return array<int, \Money\Money> Category totals indexed by category IDs */
     public function getCategoryTotals(): array
     {
         $totalByCategories = [];
@@ -196,7 +197,7 @@ class Cashbook extends Aggregate
         foreach ($this->chits as $chit) {
             foreach ($chit->getItems() as $item) {
                 $categoryId = $item->getCategory()->getId();
-                $totalByCategories[$categoryId] = ($totalByCategories[$categoryId] ?? 0) + $item->getAmount()->toFloat();
+                $totalByCategories[$categoryId] = ($totalByCategories[$categoryId] ?? MoneyFactory::zero())->add($item->getAmount()->toMoney());
             }
         }
 

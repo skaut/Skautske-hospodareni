@@ -67,7 +67,7 @@
            class="btn btn-sm btn-light ajax"
            title="Upravit platbu"><i class="far fa-edit"></i></a>
         <a href="{$control->getPresenter()->link('splitPaymentDialog:open!', $item->getId())}"
-           n:if="$item->getAmount() > 0"
+           n:if="!$item->getAmount()->isZero()"
            class="btn btn-sm btn-light ajax"
            data-test="payment-split-action-{$item->getId()}"
            title="Rozdělit platbu"><i class="fas fa-right-left"></i></a>
