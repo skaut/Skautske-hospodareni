@@ -7,6 +7,7 @@ namespace App\Model\Cashbook;
 use App\Model\Cashbook\Cashbook\CashbookId;
 use App\Model\Cashbook\Cashbook\CashbookType;
 use App\Model\Cashbook\Cashbook\Chit;
+use App\Model\Utils\MoneyFactory;
 use App\Model\Cashbook\Cashbook\ChitBody;
 use App\Model\Cashbook\Cashbook\ChitItem;
 use App\Model\Cashbook\Cashbook\ChitNumber;
@@ -188,7 +189,7 @@ class Cashbook extends Aggregate
         $this->raise(new ChitWasUpdated($this->id));
     }
 
-    /** @return float[] Category totals indexed by category IDs */
+    /** @return array<int, \Money\Money> Category totals indexed by category IDs */
     public function getCategoryTotals(): array
     {
         $totalByCategories = [];
@@ -196,7 +197,7 @@ class Cashbook extends Aggregate
         foreach ($this->chits as $chit) {
             foreach ($chit->getItems() as $item) {
                 $categoryId = $item->getCategory()->getId();
-                $totalByCategories[$categoryId] = ($totalByCategories[$categoryId] ?? 0) + $item->getAmount()->toFloat();
+                $totalByCategories[$categoryId] = ($totalByCategories[$categoryId] ?? MoneyFactory::zero())->add($item->getAmount()->toMoney());
             }
         }
 

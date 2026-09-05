@@ -12,6 +12,7 @@ use App\Model\Google\InvalidOAuth;
 use App\Model\Mail\IMailerFactory;
 use App\Model\Mail\Repositories\IGoogleRepository;
 use App\Model\Payment\Mailing\Payment as MailPayment;
+use App\Model\Utils\MoneyFactory;
 use App\Model\Payment\Repositories\IBankAccountRepository;
 use App\Model\Payment\Repositories\IGroupRepository;
 use App\Model\Payment\Repositories\IPaymentRepository;
@@ -94,7 +95,7 @@ class MailingService
 
         $payment = new MailPayment(
             'Testovací účel',
-            $group->getDefaultAmount() ?? rand(50, 1000),
+            $group->getDefaultAmount() === null ? (string) rand(50, 1000) : MoneyFactory::toDecimal($group->getDefaultAmount()),
             [new EmailAddress($user->getEmail())],
             $group->getDueDate()?->toNative() ?? new DateTimeImmutable('+ 2 weeks'),
             rand(1000, 100000),
@@ -180,7 +181,7 @@ class MailingService
             'qr-platba.png',
             QrPaymentCode::buildPng(
                 $bankAccountNumber,
-                $payment->getAmount(),
+                MoneyFactory::toDecimal($payment->getAmount()),
                 $payment->getVariableSymbol(),
                 $payment->getConstantSymbol(),
                 $payment->getName(),

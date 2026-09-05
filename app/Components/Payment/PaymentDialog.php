@@ -10,6 +10,7 @@ use App\Model\Common\Services\CommandBus;
 use App\Model\DTO\Payment\Payment;
 use App\Model\Payment\Commands\Payment\CreatePayment;
 use App\Model\Payment\Commands\Payment\UpdatePayment;
+use App\Model\Utils\MoneyFactory;
 use App\Model\Payment\InvalidVariableSymbol;
 use App\Model\Payment\PaymentService;
 use App\Model\Payment\VariableSymbolCollision;
@@ -82,7 +83,7 @@ final class PaymentDialog extends Dialog
         if ($payment !== null) {
             $form->setDefaults([
                 'name' => $payment->getName(),
-                'amount' => $payment->getAmount(),
+                'amount' => MoneyFactory::toDecimal($payment->getAmount()),
                 'email' => implode(MyValidators::EMAIL_SEPARATOR, $payment->getEmailRecipients()),
                 'dueDate' => $payment->getDueDate(),
                 'variableSymbol' => $payment->getVariableSymbol(),
@@ -101,7 +102,7 @@ final class PaymentDialog extends Dialog
             }
 
             $form->setDefaults([
-                'amount' => $group->getDefaultAmount(),
+                'amount' => $group->getDefaultAmount() === null ? null : MoneyFactory::toDecimal($group->getDefaultAmount()),
                 'dueDate' => $group->getDueDate(),
                 'variableSymbol' => $nextVS !== null ? (string) $nextVS : '',
                 'constantSymbol' => $group->getConstantSymbol(),
@@ -155,7 +156,7 @@ final class PaymentDialog extends Dialog
                 $this->paymentId,
                 $values->name,
                 $this->processEmails($values->email),
-                $values->amount,
+                MoneyFactory::fromDecimal((string) $values->amount),
                 new ChronosDate($values->dueDate),
                 $values->variableSymbol,
                 $values->constantSymbol,
@@ -185,7 +186,7 @@ final class PaymentDialog extends Dialog
                 $this->groupId,
                 $values->name,
                 $this->processEmails($values->email),
-                $values->amount,
+                MoneyFactory::fromDecimal((string) $values->amount),
                 new ChronosDate($values->dueDate),
                 null,
                 $values->variableSymbol,

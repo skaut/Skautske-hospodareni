@@ -16,6 +16,7 @@ use App\Model\Payment\Payment\State;
 use App\Model\Payment\PaymentService;
 use App\Model\Payment\ReadModel\Queries\GetGroupList;
 use App\Model\Payment\Summary;
+use App\Model\Utils\MoneyFactory;
 use App\Model\Unit\ReadModel\Queries\UnitQuery;
 use App\Model\Unit\UnitNotFound;
 use App\Presentation\Payments\PaymentsBasePresenter;
@@ -106,9 +107,9 @@ final class GroupListPresenter extends PaymentsBasePresenter
             $allPayments = array_reduce(
                 $groupSummaries,
                 static fn (Summary $total, Summary $summary): Summary => $total->add($summary),
-                new Summary(0, 0),
+                new Summary(0, MoneyFactory::zero()),
             );
-            $completedPayments = $groupSummaries[State::COMPLETED] ?? new Summary(0, 0);
+            $completedPayments = $groupSummaries[State::COMPLETED] ?? new Summary(0, MoneyFactory::zero());
             $canEdit = in_array($groupId, $editableGroupIds, true);
             $canPair = in_array($groupId, $this->pairableGroupIds, true);
 

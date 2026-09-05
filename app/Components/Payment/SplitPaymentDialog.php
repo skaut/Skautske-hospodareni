@@ -14,6 +14,7 @@ use App\Model\Payment\PaymentClosed;
 use App\Model\Payment\PaymentNotFound;
 use App\Model\Payment\PaymentService;
 use App\Model\Payment\VariableSymbol;
+use App\Model\Utils\MoneyFactory;
 use App\Model\Payment\VariableSymbolCollision;
 use Component\Forms\BaseForm;
 use Component\Forms\VariableSymbolControl;
@@ -167,17 +168,14 @@ final class SplitPaymentDialog extends Dialog
             return;
         }
 
-        $splitAmountInCents = array_sum(array_map(
-            fn (ArrayHash $part): int => $this->toCents((float) $part->amount),
-            $parts,
-        ));
+        $splitAmount = array_reduce($parts, fn (\Money\Money $total, ArrayHash $part): \Money\Money => $total->add(MoneyFactory::fromDecimal((string) $part->amount)), \Money\Money::CZK(0));
 
-        if ($splitAmountInCents > $this->toCents($payment->getAmount())) {
+        if ($splitAmount->greaterThan($payment->getAmount())) {
             $form->addError('Součet dělených částek nesmí být větší než původní částka.');
         }
 
         $sourceVariableSymbol = $payment->getVariableSymbol();
-        $remainingSourceAmountInCents = $this->toCents($payment->getAmount()) - $splitAmountInCents;
+        $remainingSourceAmount = $payment->getAmount()->subtract($splitAmount);
         $variableSymbols = [];
 
         foreach ($parts as $part) {
@@ -186,12 +184,12 @@ final class SplitPaymentDialog extends Dialog
                 continue;
             }
 
-            $partAmountInCents = $this->toCents((float) $part->amount);
+            $partAmount = MoneyFactory::fromDecimal((string) $part->amount);
 
             if (
                 $sourceVariableSymbol !== null
                 && $sourceVariableSymbol->toInt() === $variableSymbol->toInt()
-                && $remainingSourceAmountInCents === $partAmountInCents
+                && $remainingSourceAmount->equals($partAmount)
             ) {
                 $form->addError('Stejný variabilní symbol lze při rozdělení použít jen u rozdílných částek.');
             }
@@ -210,7 +208,7 @@ final class SplitPaymentDialog extends Dialog
         $parts = array_values(array_map(
             fn (ArrayHash $part): SplitPaymentPart => new SplitPaymentPart(
                 $part->variableSymbol,
-                (float) $part->amount,
+                MoneyFactory::fromDecimal((string) $part->amount),
                 $part->note,
             ),
             iterator_to_array($values->splits),

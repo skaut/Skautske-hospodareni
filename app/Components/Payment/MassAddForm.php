@@ -11,6 +11,7 @@ use App\Model\DTO\Payment\MemberEmail;
 use App\Model\DTO\Payment\MemberEmailType;
 use App\Model\Payment\Commands\Payment\CreatePayment;
 use App\Model\Payment\PaymentService;
+use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseContainer;
 use Component\Forms\BaseForm;
@@ -64,7 +65,7 @@ class MassAddForm extends BaseControl
         $group = $this->payments->getGroup($this->groupId);
 
         $form->setDefaults([
-            'amount' => $group->getDefaultAmount(),
+            'amount' => $group->getDefaultAmount() === null ? null : MoneyFactory::toDecimal($group->getDefaultAmount()),
             'dueDate' => $group->getDueDate(),
             'constantSymbol' => $group->getConstantSymbol(),
         ]);
@@ -73,7 +74,7 @@ class MassAddForm extends BaseControl
     }
 
     /** @param MemberEmail[] $emails */
-    public function addPerson(int $id, array $emails, string $name, ?float $amount = null, string $note = '', string $variableSymbol = '', ?ChronosDate $dueDate = null): void
+    public function addPerson(int $id, array $emails, string $name, ?\Money\Money $amount = null, string $note = '', string $variableSymbol = '', ?ChronosDate $dueDate = null): void
     {
         $form = $this['form'];
         $persons = $form['persons'];
@@ -115,7 +116,7 @@ class MassAddForm extends BaseControl
             ->setHtmlType('number')
             ->setRequired(false)
             ->setNullable()
-            ->setDefaultValue($amount)
+            ->setDefaultValue($amount === null ? null : MoneyFactory::toDecimal($amount))
             ->addConditionOn($selected, $form::FILLED)
             ->addRule($form::FLOAT, 'Částka musí být číslo')
             ->addRule($form::MIN, 'Čátka musí být větší než 0', 0.01)
@@ -194,7 +195,7 @@ class MassAddForm extends BaseControl
                     $this->groupId,
                     $person->name,
                     array_map(fn (string $email) => new EmailAddress($email), $person->email),
-                    (float) ($person->amount ?? $values->amount),
+                    MoneyFactory::fromDecimal((string) ($person->amount ?? $values->amount)),
                     new ChronosDate($person->dueDate ?? $values->dueDate),
                     (int) $person->id,
                     $person->variableSymbol,

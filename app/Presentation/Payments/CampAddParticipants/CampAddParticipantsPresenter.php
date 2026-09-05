@@ -14,6 +14,7 @@ use App\Model\Event\Exception\CampInvitationNotFound;
 use App\Model\Event\SkautisCampId;
 use App\Model\Payment\PaymentService;
 use App\Model\Payment\ReadModel\Queries\MemberEmailsQuery;
+use App\Model\Utils\MoneyFactory;
 use App\Model\Unit\ReadModel\Queries\UnitQuery;
 use App\Presentation\Payments\PaymentsBasePresenter as BasePresenter;
 
@@ -83,19 +84,19 @@ final class CampAddParticipantsPresenter extends BasePresenter
                 $paymentNote = $participantPaymentDetail->getPaymentNote();
                 $variableSymbol = $participantPaymentDetail->getVariableSymbol();
                 $dueDate = $participantPaymentDetail->getPaymentTerm();
-                $amount = $p->getPayment() === 0.0 ? $participantPaymentDetail->getPrice() : $p->getPayment();
+                $amount = $p->getPayment()->isZero() ? MoneyFactory::fromDecimal((string) $participantPaymentDetail->getPrice()) : $p->getPayment();
             } else {
                 $paymentNote = '';
                 $variableSymbol = '';
                 $dueDate = null;
-                $amount = $p->getPayment() === 0.0 ? null : $p->getPayment();
+                $amount = $p->getPayment()->isZero() ? null : $p->getPayment();
             }
 
             $form->addPerson(
                 $p->getPersonId(),
                 $this->queryBus->handle(new MemberEmailsQuery($p->getPersonId())),
                 $p->getDisplayName(),
-                $amount === 0.0 ? null : $amount,
+                $amount === null || $amount->isZero() ? null : $amount,
                 $paymentNote,
                 $variableSymbol,
                 $dueDate,

@@ -9,6 +9,7 @@ use Consistence\Doctrine\Enum\EnumAnnotation;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Money\Money;
 
 /**
  * @ORM\Entity()
@@ -54,13 +55,13 @@ class Category
      */
     private ?Category $parent = null;
 
-    /** @ORM\Column(type="float", options={"default"=0}) */
-    private float $value;
+    /** @ORM\Column(type="money", options={"default"=0}) */
+    private Money $value;
 
     /** @ORM\Column(type="smallint") */
     private int $year;
 
-    public function __construct(int $unitId, string $label, Operation $type, ?Category $parent, float $value, int $year)
+    public function __construct(int $unitId, string $label, Operation $type, ?Category $parent, Money $value, int $year)
     {
         $this->unitId = $unitId;
         $this->label = $label;
@@ -85,7 +86,7 @@ class Category
         return $this->label;
     }
 
-    public function getValue(): float
+    public function getValue(): Money
     {
         return $this->value;
     }

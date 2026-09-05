@@ -22,6 +22,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
+use Money\Money;
 
 use function array_map;
 use function array_unique;
@@ -56,8 +57,8 @@ class Payment extends Aggregate
     /** @ORM\Column(type="integer", nullable=true) */
     private ?int $personId = null;
 
-    /** @ORM\Column(type="float") */
-    private float $amount;
+    /** @ORM\Column(type="money") */
+    private Money $amount;
 
     /** @ORM\Column(type="chronos_date") */
     private ChronosDate $dueDate;
@@ -111,7 +112,7 @@ class Payment extends Aggregate
         Group $group,
         string $name,
         array $recipients,
-        float $amount,
+        Money $amount,
         ChronosDate $dueDate,
         ?VariableSymbol $variableSymbol,
         ?int $constantSymbol,
@@ -119,7 +120,7 @@ class Payment extends Aggregate
         string $note,
         ?Payment $splitFromPayment = null,
     ) {
-        if ($amount <= 0) {
+        if ($amount->isZero() || $amount->isNegative()) {
             throw new InvalidArgumentException('Payment amount must be larger than 0');
         }
 
@@ -148,7 +149,7 @@ class Payment extends Aggregate
     public function update(
         string $name,
         array $recipients,
-        float $amount,
+        Money $amount,
         ChronosDate $dueDate,
         ?VariableSymbol $variableSymbol,
         ?int $constantSymbol,
@@ -163,28 +164,28 @@ class Payment extends Aggregate
 
         $this->variableSymbol = $variableSymbol;
 
-        if ($amount !== $this->amount) {
+        if (! $amount->equals($this->amount)) {
             $this->raise(new PaymentAmountWasChanged($this->groupId, $this->variableSymbol));
         }
 
         $this->amount = $amount;
     }
 
-    public function reduceAmountBySplit(float $amount): void
+    public function reduceAmountBySplit(Money $amount): void
     {
         $this->checkNotClosed();
 
-        if ($amount <= 0) {
+        if ($amount->isZero() || $amount->isNegative()) {
             throw new InvalidArgumentException('Split amount must be larger than 0');
         }
 
-        $remainingAmount = round($this->amount - $amount, 2);
+        $remainingAmount = $this->amount->subtract($amount);
 
-        if ($remainingAmount < 0) {
+        if ($remainingAmount->isNegative()) {
             throw new InvalidArgumentException('Split amount must not exceed payment amount');
         }
 
-        if ($remainingAmount !== $this->amount) {
+        if (! $remainingAmount->equals($this->amount)) {
             $this->raise(new PaymentAmountWasChanged($this->groupId, $this->variableSymbol));
         }
 
@@ -284,7 +285,7 @@ class Payment extends Aggregate
         return $this->personId;
     }
 
-    public function getAmount(): float
+    public function getAmount(): Money
     {
         return $this->amount;
     }

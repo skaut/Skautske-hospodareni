@@ -27,10 +27,10 @@ final class CategoryTotalsCalculatorTest extends Unit
         $calculator = new CategoryTotalsCalculator();
         $totals = $calculator->calculate($cashbook, []);
 
-        $this->assertSame(400.0, $totals[ICategory::CATEGORY_PARTICIPANT_INCOME_ID]);
+        $this->assertTrue(MoneyFactory::fromFloat(400.0)->equals($totals[ICategory::CATEGORY_PARTICIPANT_INCOME_ID]));
         $this->assertFalse(array_key_exists(ICategory::CATEGORY_HPD_ID, $totals));
         $this->assertFalse(array_key_exists(ICategory::CATEGORY_REFUND_ID, $totals));
-        $this->assertSame(200.0, $totals[2]);
+        $this->assertTrue(MoneyFactory::fromFloat(200.0)->equals($totals[2]));
     }
 
     public function testCampCalculation(): void
@@ -44,9 +44,9 @@ final class CategoryTotalsCalculatorTest extends Unit
         ];
         $totals = $calculator->calculate($cashbook, $categories);
 
-        $this->assertSame(250.0, $totals[self::CATEGORY_INCOME_CHILD_ID]);
-        $this->assertSame(100.0, $totals[self::CATEGORY_INCOME_ADULT_ID]);
-        $this->assertSame(200.0, $totals[2]);
+        $this->assertTrue(MoneyFactory::fromFloat(250.0)->equals($totals[self::CATEGORY_INCOME_CHILD_ID]));
+        $this->assertTrue(MoneyFactory::fromFloat(100.0)->equals($totals[self::CATEGORY_INCOME_ADULT_ID]));
+        $this->assertTrue(MoneyFactory::fromFloat(200.0)->equals($totals[2]));
     }
 
     private function mockEventCashbook(): Cashbook
@@ -55,10 +55,10 @@ final class CategoryTotalsCalculatorTest extends Unit
 
         $cashbook->shouldReceive('getCategoryTotals')
             ->andReturn([
-                2 => 200.0,
-                ICategory::CATEGORY_HPD_ID => 500.0,
-                ICategory::CATEGORY_REFUND_ID => 155.0,
-                ICategory::CATEGORY_PARTICIPANT_INCOME_ID => 55.0,
+                2 => MoneyFactory::fromFloat(200.0),
+                ICategory::CATEGORY_HPD_ID => MoneyFactory::fromFloat(500.0),
+                ICategory::CATEGORY_REFUND_ID => MoneyFactory::fromFloat(155.0),
+                ICategory::CATEGORY_PARTICIPANT_INCOME_ID => MoneyFactory::fromFloat(55.0),
             ]);
         $cashbook->shouldReceive('getType')
             ->andReturn(Cashbook\CashbookType::get(Cashbook\CashbookType::EVENT));
@@ -72,11 +72,11 @@ final class CategoryTotalsCalculatorTest extends Unit
 
         $cashbook->shouldReceive('getCategoryTotals')
             ->andReturn([
-                2 => 200.0,
-                self::CATEGORY_INCOME_CHILD_ID => 300.0,
-                self::CATEGORY_INCOME_ADULT_ID => 123.0,
-                ICategory::CATEGORY_REFUND_CHILD_ID => 50.0,
-                ICategory::CATEGORY_REFUND_ADULT_ID => 23.0,
+                2 => MoneyFactory::fromFloat(200.0),
+                self::CATEGORY_INCOME_CHILD_ID => MoneyFactory::fromFloat(300.0),
+                self::CATEGORY_INCOME_ADULT_ID => MoneyFactory::fromFloat(123.0),
+                ICategory::CATEGORY_REFUND_CHILD_ID => MoneyFactory::fromFloat(50.0),
+                ICategory::CATEGORY_REFUND_ADULT_ID => MoneyFactory::fromFloat(23.0),
             ]);
         $cashbook->shouldReceive('getType')
             ->andReturn(Cashbook\CashbookType::get(Cashbook\CashbookType::CAMP));

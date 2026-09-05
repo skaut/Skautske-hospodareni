@@ -22,6 +22,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
 use LogicException;
+use Money\Money;
 
 /**
  * @ORM\Entity()
@@ -263,7 +264,7 @@ class Group
         return $this->paymentDefaults;
     }
 
-    public function getDefaultAmount(): ?float
+    public function getDefaultAmount(): ?Money
     {
         return $this->paymentDefaults->getAmount();
     }

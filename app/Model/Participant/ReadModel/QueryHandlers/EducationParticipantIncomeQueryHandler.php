@@ -8,7 +8,9 @@ use App\Model\Cashbook\ReadModel\Queries\EducationParticipantIncomeQuery;
 use App\Model\Cashbook\ReadModel\Queries\EducationParticipantListQuery;
 use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Participant\Participant;
+use App\Model\Utils\MoneyFactory;
 use LogicException;
+use Money\Money;
 
 class EducationParticipantIncomeQueryHandler
 {
@@ -16,16 +18,16 @@ class EducationParticipantIncomeQueryHandler
     {
     }
 
-    public function __invoke(EducationParticipantIncomeQuery $query): float
+    public function __invoke(EducationParticipantIncomeQuery $query): Money
     {
         $participants = $this->queryBus->handle(new EducationParticipantListQuery($query->getEducationId()));
 
-        $participantIncome = 0.0;
+        $participantIncome = MoneyFactory::zero();
         foreach ($participants as $p) {
             if (! $p instanceof Participant) {
                 throw new LogicException('Assertion failed.');
             }
-            $participantIncome += $p->getPayment();
+            $participantIncome = $participantIncome->add($p->getPayment());
         }
 
         return $participantIncome;

@@ -17,6 +17,7 @@ use App\Model\Invoice\Entity\Invoice;
 use App\Model\Invoice\Repository\InvoiceRepository;
 use App\Model\Payment\BankAccountService;
 use App\Model\Payment\Payment;
+use App\Model\Utils\MoneyFactory;
 use App\Model\Payment\PaymentNotFound;
 use App\Model\Payment\Repositories\IGroupRepository;
 use App\Model\Payment\Repositories\IPaymentRepository;
@@ -214,7 +215,7 @@ final class BankAccountDetailViewFactory
             return null;
         }
 
-        return $transaction->getVariableSymbol().'|'.number_format($transaction->getAmount(), 2, '.', '');
+        return $transaction->getVariableSymbol().'|'.$transaction->getAmount()->getAmount();
     }
 
     /**
@@ -279,11 +280,11 @@ final class BankAccountDetailViewFactory
         array $groupNames,
         ?string $transactionView,
     ): array {
-        $transactionAmount = number_format($transaction->getAmount(), 2, '.', '');
+        $transactionAmount = $transaction->getAmount()->getAmount();
         $descriptions = [];
 
         foreach ($payments as $payment) {
-            if (number_format($payment->getAmount(), 2, '.', '') !== $transactionAmount) {
+            if ($payment->getAmount()->getAmount() !== $transactionAmount) {
                 continue;
             }
 

@@ -14,11 +14,12 @@ use App\Model\Bank\PairingCandidate;
 use App\Model\Bank\Repository\BankTransactionPairingRepository;
 use App\Model\Invoice\Entity\Invoice;
 use App\Model\Payment\Payment;
+use App\Model\Utils\MoneyFactory;
 use App\Model\Payment\Repositories\IGroupRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 
-use function number_format;
+use Money\Money;
 
 class BankTransactionPairingService
 {
@@ -74,7 +75,7 @@ class BankTransactionPairingService
         DateTimeImmutable $pairedAt,
         ?string $pairedBy = null,
     ): ManualBankTransactionPairingResult {
-        $this->assertAmountsMatch((float) (string) $invoice->getTotalAmount(), $transaction->getAmount());
+        $this->assertAmountsMatch(MoneyFactory::fromDecimal((string) $invoice->getTotalAmount()), $transaction->getAmount());
         $warnings = $this->collectInvoiceWarnings($transaction, $invoice);
 
         $this->entityManager->wrapInTransaction(function () use ($transaction, $invoice, $pairedAt, $pairedBy): void {
@@ -155,9 +156,9 @@ class BankTransactionPairingService
         return $warnings;
     }
 
-    private function assertAmountsMatch(float $expectedAmount, float $transactionAmount): void
+    private function assertAmountsMatch(Money $expectedAmount, Money $transactionAmount): void
     {
-        if ($this->normalizeAmount($expectedAmount) === $this->normalizeAmount($transactionAmount)) {
+        if ($expectedAmount->equals($transactionAmount)) {
             return;
         }
 
@@ -181,8 +182,4 @@ class BankTransactionPairingService
         return new BankTransactionPairingNotAllowed('Ruční bankovní párování nelze provést.');
     }
 
-    private function normalizeAmount(float $amount): string
-    {
-        return number_format($amount, 2, '.', '');
-    }
 }

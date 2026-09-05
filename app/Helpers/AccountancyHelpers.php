@@ -16,12 +16,14 @@ use Nette\Utils\Html;
 use RuntimeException;
 
 use function array_reverse;
+use function abs;
 use function count;
 use function explode;
 use function is_callable;
 use function mb_strtoupper;
 use function mb_substr;
 use function number_format;
+use function intdiv;
 use function preg_replace;
 use function sprintf;
 use function str_split;
@@ -225,13 +227,20 @@ abstract class AccountancyHelpers
             return ' '; // je tam nedělitelná mezera
         }
 
-        $decimals = $full ? 2 : 0;
-
         if ($price instanceof Money) {
-            $price = (float) $price->getAmount() / 100;
+            $amount = (int) $price->getAmount();
+            $sign = $amount < 0 ? '-' : '';
+            $amount = abs($amount);
+            if (! $full) {
+                $rounded = intdiv($amount + 50, 100);
+
+                return ($rounded === 0 ? '' : $sign).number_format($rounded, 0, ',', ' ');
+            }
+
+            return $sign.number_format(intdiv($amount, 100), 0, ',', ' ').','.str_pad((string) ($amount % 100), 2, '0', STR_PAD_LEFT);
         }
 
-        return number_format((float) $price, $decimals, ',', ' '); // nedělitelná mezera
+        return number_format((float) $price, $full ? 2 : 0, ',', ' '); // nedělitelná mezera
     }
 
     /**

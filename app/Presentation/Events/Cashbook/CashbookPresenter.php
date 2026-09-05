@@ -7,7 +7,6 @@ namespace App\Presentation\Events\Cashbook;
 use App\Components\CashbookControl;
 use App\Components\Factories\ICashbookControlFactory;
 use App\Model\Auth\Resources\Event;
-use App\Model\Cashbook\Cashbook\Amount;
 use App\Model\Cashbook\Cashbook\CashbookId;
 use App\Model\Cashbook\Cashbook\ChitBody;
 use App\Model\Cashbook\Cashbook\PaymentMethod;
@@ -29,7 +28,6 @@ use App\Presentation\Events\BasePresenter;
 use LogicException;
 use Money\Money;
 
-use function is_float;
 
 final class CashbookPresenter extends BasePresenter
 {
@@ -52,7 +50,7 @@ final class CashbookPresenter extends BasePresenter
         $finalBalance = $this->queryBus->handle(new FinalCashBalanceQuery($this->getCashbookId()));
         $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId()));
 
-        if (! is_float($incomeBalance)) {
+        if (! $incomeBalance instanceof Money) {
             throw new LogicException('Assertion failed.');
         }
         if (! $finalBalance instanceof Money) {
@@ -84,7 +82,7 @@ final class CashbookPresenter extends BasePresenter
 
         $totalPayment = $this->queryBus->handle(new EventParticipantIncomeQuery(new SkautisEventId($this->aid)));
 
-        if ($totalPayment === 0.0) {
+        if (! $totalPayment instanceof Money || $totalPayment->isZero()) {
             $this->flashMessage('Nemáte žádné příjmy od účastníků');
             $this->redirect('this');
         }
@@ -97,7 +95,6 @@ final class CashbookPresenter extends BasePresenter
         $accountant = $functions->getAccountant() !== null
             ? new Recipient($functions->getAccountant()->getName())
             : null;
-        $amount = new Amount((string) $totalPayment);
         $cashbookId = $this->getCashbookId();
         $categoriesDto = $this->queryBus->handle(new CategoryListQuery($this->getCashbookId()));
 
@@ -106,7 +103,7 @@ final class CashbookPresenter extends BasePresenter
                 $cashbookId,
                 new ChitBody(null, $this->event->getStartDate(), $accountant),
                 PaymentMethod::CASH(),
-                [new ChitItem($amount, $categoriesDto[Category::EVENT_PARTICIPANTS_INCOME_CATEGORY_ID], 'účastnické příspěvky')],
+                [new ChitItem(\App\Model\Cashbook\Cashbook\Amount::fromMoney($totalPayment), $categoriesDto[Category::EVENT_PARTICIPANTS_INCOME_CATEGORY_ID], 'účastnické příspěvky')],
             ),
         );
 

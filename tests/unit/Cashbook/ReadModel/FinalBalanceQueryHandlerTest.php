@@ -35,14 +35,23 @@ final class FinalBalanceQueryHandlerTest extends Unit
         ]);
     }
 
-    private function mockChit(int $amount, string $operation): Chit
+    public function testCashbookBalanceKeepsOneCentDifferenceExact(): void
+    {
+        $this->assertBalance(Money::CZK(-19), [
+            $this->mockChit(Money::CZK(10), Operation::INCOME),
+            $this->mockChit(Money::CZK(20), Operation::INCOME),
+            $this->mockChit(Money::CZK(49), Operation::EXPENSE),
+        ]);
+    }
+
+    private function mockChit(int|Money $amount, string $operation): Chit
     {
         $op = Operation::get($operation);
 
         return m::mock(Chit::class, [
             'getBody' => new Cashbook\ChitBody(null, new ChronosDate('2017-11-17'), null),
             'getCategory' => new Category(1, 'catName', 'a', $op, false),
-            'getSignedAmount' => $amount * ($op->equalsValue(Operation::INCOME) ? 1 : -1),
+            'getSignedAmount' => ($amount instanceof Money ? $amount : MoneyFactory::fromFloat($amount))->multiply($op->equalsValue(Operation::INCOME) ? 1 : -1),
         ]);
     }
 

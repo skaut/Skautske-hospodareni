@@ -236,17 +236,17 @@ class ChitListControl extends BaseControl
     /**
      * @param Chit[] $chits
      *
-     * @return float[]
+     * @return array<string, \Money\Money>
      */
     private function getTotals(array $chits): array
     {
-        $income = 0;
-        $expense = 0;
+        $income = \Money\Money::CZK(0);
+        $expense = \Money\Money::CZK(0);
         foreach ($chits as $chit) {
             if ($chit->isIncome()) {
-                $income += $chit->getAmount()->toFloat();
+                $income = $income->add($chit->getAmount()->toMoney());
             } else {
-                $expense += $chit->getAmount()->toFloat();
+                $expense = $expense->add($chit->getAmount()->toMoney());
             }
         }
 

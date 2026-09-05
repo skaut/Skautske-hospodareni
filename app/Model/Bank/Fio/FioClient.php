@@ -13,6 +13,7 @@ use App\Model\Bank\Services\BankTransactionKeyGenerator;
 use App\Model\Bank\Transaction as BankTransaction;
 use App\Model\Payment\Fio\IFioClient;
 use App\Model\Payment\TokenNotSet;
+use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use FioApi\Download\Entity\Transaction as ApiTransaction;
 use FioApi\Exceptions\InternalErrorException;
@@ -61,7 +62,7 @@ class FioClient implements IFioClient
                     $this->transactionKeyGenerator->fromFio($transaction->getId()),
                     BankTransactionSource::FIO,
                     $transaction->getDate(),
-                    $transaction->getAmount(),
+                    MoneyFactory::fromDecimal((string) $transaction->getAmount()),
                     $transaction->getSenderAccountNumber().'/'.$transaction->getSenderBankCode(),
                     $transaction->getUserIdentity() ?? $transaction->getPerformedBy() ?? '',
                     $transaction->getVariableSymbol() !== null ? (int) $transaction->getVariableSymbol() : null,

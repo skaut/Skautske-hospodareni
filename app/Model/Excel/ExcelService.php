@@ -145,9 +145,9 @@ class ExcelService
                 ->setCellValue('F'.$rowCnt, $row->getCity())
                 ->setCellValue('G'.$rowCnt, $row->getPostcode())
                 ->setCellValue('H'.$rowCnt, $row->getBirthday()?->format('d.m.Y') ?? '')
-                ->setCellValue('I'.$rowCnt, $row->getPayment())
-                ->setCellValue('J'.$rowCnt, $row->getRepayment())
-                ->setCellValue('K'.$rowCnt, $row->getPayment() - $row->getRepayment())
+                ->setCellValue('I'.$rowCnt, MoneyFactory::toDecimal($row->getPayment()))
+                ->setCellValue('J'.$rowCnt, MoneyFactory::toDecimal($row->getRepayment()))
+                ->setCellValue('K'.$rowCnt, MoneyFactory::toDecimal($row->getPayment()->subtract($row->getRepayment())))
                 ->setCellValue('L'.$rowCnt, $row->getOnAccount() === 'Y' ? 'Ano' : 'Ne');
             ++$rowCnt;
         }
@@ -195,9 +195,9 @@ class ExcelService
                 ->setCellValue('H'.$rowCnt, $row->getBirthday()?->format('d.m.Y') ?? '')
                 ->setCellValue('I'.$rowCnt, $row->getDays())
                 ->setCellValue('J'.$rowCnt, $row->getAge() < self::ADULT_AGE ? $row->getDays() : 0)
-                ->setCellValue('K'.$rowCnt, $row->getPayment())
-                ->setCellValue('L'.$rowCnt, $row->getRepayment())
-                ->setCellValue('M'.$rowCnt, $row->getPayment() - $row->getRepayment())
+                ->setCellValue('K'.$rowCnt, MoneyFactory::toDecimal($row->getPayment()))
+                ->setCellValue('L'.$rowCnt, MoneyFactory::toDecimal($row->getRepayment()))
+                ->setCellValue('M'.$rowCnt, MoneyFactory::toDecimal($row->getPayment()->subtract($row->getRepayment())))
                 ->setCellValue('N'.$rowCnt, $row->getOnAccount() === 'Y' ? 'Ano' : 'Ne');
             ++$rowCnt;
         }
@@ -240,7 +240,7 @@ class ExcelService
                 ->setCellValue('I'.$rowCnt, $row->getUnitRegistrationNumber())
                 ->setCellValue('J'.$rowCnt, $row->getDays())
                 ->setCellValue('K'.$rowCnt, $row->getBirthday() !== null && $startDate->diffInYears($row->getBirthday()) < self::ADULT_AGE ? $row->getDays() : 0)
-                ->setCellValue('L'.$rowCnt, $row->getPayment());
+                ->setCellValue('L'.$rowCnt, MoneyFactory::toDecimal($row->getPayment()));
             ++$rowCnt;
         }
 

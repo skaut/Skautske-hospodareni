@@ -21,6 +21,7 @@ use App\Model\Payment\ReadModel\Queries\BankAccount\BankAccountsAccessibleByUnit
 use App\Model\Payment\ReadModel\Queries\GroupEmailQuery;
 use App\Model\Payment\ReadModel\Queries\NextVariableSymbolSequenceQuery;
 use App\Model\Payment\ReadModel\Queries\OAuthsAccessibleByGroupsQuery;
+use App\Model\Utils\MoneyFactory;
 use App\Model\Unit\ReadModel\Queries\UnitsDetailQuery;
 use App\Model\Unit\Unit;
 use Assert\Assertion;
@@ -191,7 +192,7 @@ final class GroupForm extends BaseControl
         $originalGroupData = $this->buildDefaultsFromGroup($this->bankAccountItems(), $this->oAuthItems());
 
         $paymentDefaults = new PaymentDefaults(
-            $v->amount,
+            $v->amount === null ? null : MoneyFactory::fromDecimal((string) $v->amount),
             $v->dueDate === null ? null : new ChronosDate($v->dueDate),
             $v->constantSymbol,
             $v->nextVs ?? $originalGroupData['nextVs'] ?? null,
@@ -284,7 +285,7 @@ final class GroupForm extends BaseControl
 
         $defaults = [
             'name' => $group->getName(),
-            'amount' => $group->getDefaultAmount(),
+            'amount' => $group->getDefaultAmount() === null ? null : MoneyFactory::toDecimal($group->getDefaultAmount()),
             'dueDate' => $group->getDueDate(),
             'constantSymbol' => $group->getConstantSymbol(),
             'oAuthId' => $this->isOAuthAvailable($group->getOAuthId()?->toString(), $oAuthItems)

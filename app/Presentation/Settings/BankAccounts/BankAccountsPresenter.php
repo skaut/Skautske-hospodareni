@@ -453,7 +453,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
                     'transactionKey' => $transaction->getTransactionKey(),
                     'date' => $transaction->getDate(),
                     'amount' => $transaction->getAmount(),
-                    'amountSort' => sprintf('%020.2f', $transaction->getAmount() + 1000000000),
+                    'amountSort' => sprintf('%020d', (int) $transaction->getAmount()->getAmount() + 100000000000),
                     'counterAccount' => $transaction->getCounterAccount() ?? '',
                     'counterName' => $transaction->getCounterName(),
                     'constantSymbol' => $transaction->getConstantSymbol() !== null ? (string) $transaction->getConstantSymbol() : '',
