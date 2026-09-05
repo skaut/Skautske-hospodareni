@@ -14,6 +14,7 @@ use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use Nette\SmartObject;
 use Nette\Utils\Strings;
+use Money\Money;
 
 use function array_map;
 use function implode;
@@ -21,7 +22,7 @@ use function implode;
 /**
  * @property int                    $id
  * @property string                 $name
- * @property float                  $amount
+ * @property Money                  $amount
  * @property EmailAddress[]         $recipients
  * @property ChronosDate            $dueDate
  * @property VariableSymbol|null    $variableSymbol
@@ -47,7 +48,7 @@ class Payment
     public function __construct(
         private int $id,
         private string $name,
-        private float $amount,
+        private Money $amount,
         private array $recipients,
         private ChronosDate $dueDate,
         private ?VariableSymbol $variableSymbol,
@@ -75,7 +76,7 @@ class Payment
         return $this->name;
     }
 
-    public function getAmount(): float
+    public function getAmount(): Money
     {
         return $this->amount;
     }

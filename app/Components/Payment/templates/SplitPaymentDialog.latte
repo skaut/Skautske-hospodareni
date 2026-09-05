@@ -14,7 +14,7 @@
 
         <div class="d-flex flex-wrap justify-content-between gap-2 mb-3 small">
             <span><strong>Původní platba:</strong> {$payment->getName()}</span>
-            <span><strong>Částka:</strong> {$payment->getAmount()|number:2, ',', ' '} Kč</span>
+            <span><strong>Částka:</strong> {$payment->getAmount()|price} Kč</span>
         </div>
 
         <form n:name="form" class="inline-errors" data-test="payment-split-form">

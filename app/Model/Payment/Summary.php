@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace App\Model\Payment;
 
 use Nette\SmartObject;
+use Money\Money;
 
 /**
  * @property int   $count
- * @property float $amount
+ * @property Money $amount
  */
 class Summary
 {
     use SmartObject;
 
-    public function __construct(private int $count, private float $amount)
+    public function __construct(private int $count, private Money $amount)
     {
     }
 
@@ -23,13 +24,13 @@ class Summary
         return $this->count;
     }
 
-    public function getAmount(): float
+    public function getAmount(): Money
     {
         return $this->amount;
     }
 
     public function add(self $other): self
     {
-        return new self($this->count + $other->count, $this->amount + $other->amount);
+        return new self($this->count + $other->count, $this->amount->add($other->amount));
     }
 }

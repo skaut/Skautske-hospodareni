@@ -8,6 +8,7 @@ use App\Model\Cashbook\ReadModel\Queries\EducationParticipantBalanceQuery;
 use App\Model\Cashbook\ReadModel\Queries\EducationParticipantIncomeQuery;
 use App\Model\Cashbook\ReadModel\Queries\ParticipantChitSumQuery;
 use App\Model\Common\Services\QueryBus;
+use Money\Money;
 
 class EducationParticipantBalanceQueryHandler
 {
@@ -15,11 +16,11 @@ class EducationParticipantBalanceQueryHandler
     {
     }
 
-    public function __invoke(EducationParticipantBalanceQuery $query): float
+    public function __invoke(EducationParticipantBalanceQuery $query): Money
     {
         $participantIncome = $this->queryBus->handle(new EducationParticipantIncomeQuery($query->getEducationId()));
         $chitSum = $this->queryBus->handle(new ParticipantChitSumQuery($query->getCashbookId()));
 
-        return $participantIncome - $chitSum;
+        return $participantIncome->subtract($chitSum);
     }
 }
