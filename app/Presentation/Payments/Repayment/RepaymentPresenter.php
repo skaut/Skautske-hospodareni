@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Presentation\Payments\Repayment;
 
+use App\Components\Payment\PaymentFormFields;
 use App\Model\Common\Embeddable\AccountNumber;
 use App\Model\DTO\Payment\Group;
 use App\Model\DTO\Payment\RepaymentCandidate;
@@ -72,10 +73,11 @@ final class RepaymentPresenter extends BasePresenter
                 ->setRequired('Zadejte název vratky!');
 
             $container->addText('amount')
-                ->setDefaultValue($repayment->getAmount())
+                ->setDefaultValue(MoneyFactory::toDecimal($repayment->getAmount()))
                 ->addConditionOn($checkbox, $form::EQUAL, true)
                 ->setRequired('Zadejte částku vratky u '.$repayment->getName())
-                ->addRule($form::NUMERIC, 'Vratka musí být číslo!');
+                ->addRule($form::FLOAT, 'Vratka musí být číslo!')
+                ->addRule($form::PATTERN, PaymentFormFields::MONEY_PATTERN_MESSAGE, PaymentFormFields::MONEY_PATTERN);
 
             $invalidBankAccountMessage = 'Zadejte platný bankovní účet u '.$repayment->getName();
             $container->addText('account')
@@ -117,7 +119,7 @@ final class RepaymentPresenter extends BasePresenter
 
             $repayments[] = new Repayment(
                 AccountNumber::fromString($repayment->account),
-                MoneyFactory::fromFloat((float) $repayment->amount),
+                MoneyFactory::fromDecimal((string) $repayment->amount),
                 $repayment->name,
             );
         }

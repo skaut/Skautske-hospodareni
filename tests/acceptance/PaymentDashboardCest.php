@@ -23,7 +23,7 @@ class PaymentDashboardCest extends PaymentAcceptanceCest
             $I->haveInDatabase('pa_payment', [
                 'group_id' => $groupId,
                 'name' => 'Dashboard platba '.($index + 1),
-                'amount' => 100,
+                'amount' => 10000, // 100 Kč v haléřích
                 'due_date' => ChronosDate::today()->format('Y-m-d'),
                 'variable_symbol' => (string) (910000 + $index),
                 'constant_symbol' => null,

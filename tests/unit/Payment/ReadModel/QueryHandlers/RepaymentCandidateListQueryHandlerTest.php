@@ -9,7 +9,6 @@ use App\Model\Common\Repositories\IParticipantRepository;
 use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Participant\Participant;
 use App\Model\DTO\Payment\Payment;
-use App\Model\DTO\Payment\RepaymentCandidate;
 use App\Model\Event\SkautisCampId;
 use App\Model\Payment\Group;
 use App\Model\Payment\Group\SkautisEntity;
@@ -18,13 +17,12 @@ use App\Model\Payment\Payment\State;
 use App\Model\Payment\ReadModel\Queries\PaymentListQuery;
 use App\Model\Payment\ReadModel\Queries\RepaymentCandidateListQuery;
 use App\Model\Payment\Repositories\IGroupRepository;
+use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use DateTimeImmutable;
 use Mockery;
 
-use function array_map;
-use function array_sum;
 use function count;
 
 final class RepaymentCandidateListQueryHandlerTest extends Unit
@@ -77,7 +75,11 @@ final class RepaymentCandidateListQueryHandlerTest extends Unit
         $this->assertSame(3, count($repaymentCandidates));
 
         // total amount of suggested repayments
-        $this->assertSame(630.0, array_sum(array_map(fn (RepaymentCandidate $candidate) => $candidate->getAmount(), $repaymentCandidates)));
+        $total = MoneyFactory::zero();
+        foreach ($repaymentCandidates as $candidate) {
+            $total = $total->add($candidate->getAmount());
+        }
+        $this->assertTrue(MoneyFactory::fromDecimal('630.00')->equals($total));
     }
 
     private function createPayment(string $state, ?int $personId, float $amount, ?string $bankAccount): Payment
@@ -85,7 +87,7 @@ final class RepaymentCandidateListQueryHandlerTest extends Unit
         return new Payment(
             1,
             'My Name',
-            $amount,
+            MoneyFactory::fromDecimal((string) $amount),
             [],
             ChronosDate::create(2021, 06, 17),
             null,
@@ -106,7 +108,7 @@ final class RepaymentCandidateListQueryHandlerTest extends Unit
     {
         return Mockery::mock(Participant::class, [
             'getPersonId' => $personId,
-            'getRepayment' => $repayment,
+            'getRepayment' => MoneyFactory::fromDecimal((string) $repayment),
         ]);
     }
 }

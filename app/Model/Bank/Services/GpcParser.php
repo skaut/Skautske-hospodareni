@@ -7,11 +7,11 @@ namespace App\Model\Bank\Services;
 use App\Model\Bank\Enum\BankTransactionSource;
 use App\Model\Bank\Transaction;
 use App\Model\Utils\MoneyFactory;
-use Money\Money;
 use DateTimeImmutable;
 use JakubZapletal\Component\BankStatement\Parser\ABOParser;
 use JakubZapletal\Component\BankStatement\Statement\Transaction\AdditionalInformationInterface;
 use JakubZapletal\Component\BankStatement\Statement\Transaction\TransactionInterface;
+use Money\Money;
 use RuntimeException;
 use Throwable;
 
@@ -291,13 +291,13 @@ final class GpcParser
             ? [1 => 1, 2 => 2, 3 => 4, 4 => 5]
             : [1 => 1, 2 => 2, 4 => 4, 5 => 5];
 
-        return match ($postingCodeMap[$postingCode] ?? null) {
-            1 => $amount->multiply(-1),
-            2 => $amount,
-            4 => $amount,
-            5 => $amount->multiply(-1),
+        $multiplier = match ($postingCodeMap[$postingCode] ?? null) {
+            1, 5 => -1,
+            2, 4 => 1,
             default => throw new RuntimeException('Nepodporovany GPC posting code: '.$postingCode),
         };
+
+        return $amount->multiply($multiplier);
     }
 
     private function parseFallbackDate(string $value): DateTimeImmutable

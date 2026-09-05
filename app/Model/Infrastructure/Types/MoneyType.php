@@ -23,8 +23,12 @@ class MoneyType extends IntegerType
         return $value === null ? null : Money::CZK(parent::convertToPHPValue($value, $platform));
     }
 
-    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): string
+    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): ?string
     {
+        if ($value === null) {
+            return null;
+        }
+
         if (! $value instanceof Money) {
             throw new InvalidArgumentException('Only instances of '.Money::class.'allowed');
         }

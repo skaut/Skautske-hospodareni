@@ -6,6 +6,7 @@ namespace App\Model\Infrastructure\Repositories\Budget;
 
 use App\Model\Budget\Unit\Category;
 use App\Model\Cashbook\Operation;
+use App\Model\Utils\MoneyFactory;
 use Doctrine\ORM\EntityManager;
 use IntegrationTest;
 
@@ -28,7 +29,7 @@ class CategoryRepositoryTest extends IntegrationTest
 
     public function testSaveRootCategory(): void
     {
-        $category = new Category(1, 'P1 root', Operation::INCOME(), null, 0, 2019);
+        $category = new Category(1, 'P1 root', Operation::INCOME(), null, MoneyFactory::zero(), 2019);
 
         $this->repository->save($category);
 
@@ -37,13 +38,13 @@ class CategoryRepositoryTest extends IntegrationTest
 
         $this->assertSame($category->getLabel(), $category2->getLabel());
         $this->assertSame([], $category2->getChildren());
-        $this->assertSame($category->getValue(), $category2->getValue());
+        $this->assertTrue($category->getValue()->equals($category2->getValue()));
     }
 
     public function testSaveCategoryTree(): void
     {
-        $categoryRoot = new Category(1, 'P1 root', Operation::INCOME(), null, 0, 2019);
-        $categoryLeaf = new Category(2, 'P1.2 leaf', Operation::INCOME(), $categoryRoot, 0, 2019);
+        $categoryRoot = new Category(1, 'P1 root', Operation::INCOME(), null, MoneyFactory::zero(), 2019);
+        $categoryLeaf = new Category(2, 'P1.2 leaf', Operation::INCOME(), $categoryRoot, MoneyFactory::zero(), 2019);
 
         $this->repository->save($categoryRoot);
         $this->repository->save($categoryLeaf);
@@ -56,6 +57,6 @@ class CategoryRepositoryTest extends IntegrationTest
 
         $this->assertSame($categoryLeaf->getLabel(), $categoryLeaf2->getLabel());
         $this->assertSame([], $categoryLeaf2->getChildren());
-        $this->assertSame($categoryLeaf->getValue(), $categoryLeaf2->getValue());
+        $this->assertTrue($categoryLeaf->getValue()->equals($categoryLeaf2->getValue()));
     }
 }

@@ -36,6 +36,7 @@ class MassAddForm extends BaseControl
             ->setNullable()
             ->setRequired(false)
             ->addRule($form::FLOAT, 'Částka musí být číslo')
+            ->addRule($form::PATTERN, PaymentFormFields::MONEY_PATTERN_MESSAGE, PaymentFormFields::MONEY_PATTERN)
             ->addRule($form::MIN, 'Čátka musí být větší než 0', 0.01)
             ->setHtmlAttribute('class', 'input-mini');
 
@@ -114,11 +115,13 @@ class MassAddForm extends BaseControl
         $container->addText('amount', 'Částka:')
             ->setHtmlAttribute('class', 'input-mini')
             ->setHtmlType('number')
+            ->setHtmlAttribute('step', '0.01')
             ->setRequired(false)
             ->setNullable()
             ->setDefaultValue($amount === null ? null : MoneyFactory::toDecimal($amount))
             ->addConditionOn($selected, $form::FILLED)
             ->addRule($form::FLOAT, 'Částka musí být číslo')
+            ->addRule($form::PATTERN, PaymentFormFields::MONEY_PATTERN_MESSAGE, PaymentFormFields::MONEY_PATTERN)
             ->addRule($form::MIN, 'Čátka musí být větší než 0', 0.01)
             ->addConditionOn($defaultAmount, $form::BLANK)
             ->setRequired('Musíte vyplnit částku');

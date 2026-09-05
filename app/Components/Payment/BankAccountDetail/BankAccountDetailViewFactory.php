@@ -17,11 +17,11 @@ use App\Model\Invoice\Entity\Invoice;
 use App\Model\Invoice\Repository\InvoiceRepository;
 use App\Model\Payment\BankAccountService;
 use App\Model\Payment\Payment;
-use App\Model\Utils\MoneyFactory;
 use App\Model\Payment\PaymentNotFound;
 use App\Model\Payment\Repositories\IGroupRepository;
 use App\Model\Payment\Repositories\IPaymentRepository;
 use App\Model\Payment\TokenNotSet;
+use App\Model\Utils\MoneyFactory;
 use Nette\Application\LinkGenerator;
 
 use function array_filter;
@@ -30,7 +30,6 @@ use function array_map;
 use function array_values;
 use function count;
 use function in_array;
-use function number_format;
 use function sprintf;
 
 final class BankAccountDetailViewFactory
@@ -319,7 +318,7 @@ final class BankAccountDetailViewFactory
         }
 
         foreach ($invoices as $invoice) {
-            if (number_format((float) (string) $invoice->getTotalAmount(), 2, '.', '') !== $transactionAmount) {
+            if (MoneyFactory::fromDecimal((string) $invoice->getTotalAmount())->getAmount() !== $transactionAmount) {
                 continue;
             }
 

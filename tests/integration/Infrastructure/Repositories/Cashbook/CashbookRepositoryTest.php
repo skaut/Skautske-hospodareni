@@ -70,7 +70,7 @@ class CashbookRepositoryTest extends IntegrationTest
 
         $chitItem = [
             'purpose' => 'Purpose',
-            'price' => '100.00',
+            'price' => 10000,
             'priceText' => '100',
             'category' => 10,
             'category_operation_type' => Operation::INCOME,

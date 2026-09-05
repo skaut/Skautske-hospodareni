@@ -27,12 +27,12 @@ class FinalRealBalanceQueryHandler
             return ! $categorySummary->isVirtual();
         });
 
-        return array_reduce(
-            $categories,
-            fn (Money $total, CategorySummary $categorySummary): Money => $total->add(
-                $categorySummary->isIncome() ? $categorySummary->getTotal() : $categorySummary->getTotal()->multiply(-1),
-            ),
-            MoneyFactory::zero(),
-        );
+        $total = MoneyFactory::zero();
+        foreach ($categories as $categorySummary) {
+            $amount = $categorySummary->getTotal();
+            $total = $total->add($categorySummary->isIncome() ? $amount : $amount->multiply(-1));
+        }
+
+        return $total;
     }
 }

@@ -12,11 +12,11 @@ use App\Model\Google\InvalidOAuth;
 use App\Model\Mail\IMailerFactory;
 use App\Model\Mail\Repositories\IGoogleRepository;
 use App\Model\Payment\Mailing\Payment as MailPayment;
-use App\Model\Utils\MoneyFactory;
 use App\Model\Payment\Repositories\IBankAccountRepository;
 use App\Model\Payment\Repositories\IGroupRepository;
 use App\Model\Payment\Repositories\IPaymentRepository;
 use App\Model\Services\TemplateFactory;
+use App\Model\Utils\MoneyFactory;
 use DateTimeImmutable;
 use Nette\Mail\Message;
 
@@ -95,7 +95,7 @@ class MailingService
 
         $payment = new MailPayment(
             'Testovací účel',
-            $group->getDefaultAmount() === null ? (string) rand(50, 1000) : MoneyFactory::toDecimal($group->getDefaultAmount()),
+            $group->getDefaultAmount() ?? MoneyFactory::fromDecimal((string) rand(50, 1000)),
             [new EmailAddress($user->getEmail())],
             $group->getDueDate()?->toNative() ?? new DateTimeImmutable('+ 2 weeks'),
             rand(1000, 100000),

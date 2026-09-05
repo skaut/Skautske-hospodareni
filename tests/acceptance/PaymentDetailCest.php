@@ -73,6 +73,30 @@ class PaymentDetailCest extends PaymentAcceptanceCest
     }
 
     /** @group payment */
+    public function repaymentFormPrefillsCompletedPaymentIncludingCents(): void
+    {
+        $I = $this->I;
+
+        $I->wantTo('open repayments of a group with a completed payment that has cents');
+
+        $groupId = $this->createSubtypePaymentGroup('event');
+        $paymentId = $I->haveInDatabase('pa_payment', [
+            'group_id' => $groupId,
+            'name' => 'Zaplacená platba s haléři',
+            'amount' => 150055, // 1 500,55 Kč v haléřích
+            'due_date' => ChronosDate::today()->format('Y-m-d'),
+            'variable_symbol' => '900010',
+            'constant_symbol' => null,
+            'note' => '',
+            'state' => 'completed',
+        ]);
+
+        $I->amOnPage('/platby/skupiny/'.$groupId.'/vratky');
+        $I->waitForElementVisible('[data-test="payment-repayments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeInField('input[name="payments[payment'.$paymentId.'][amount]"]', '1500.55');
+    }
+
+    /** @group payment */
     public function openPaymentMassAddOnCanonicalUrl(): void
     {
         $I = $this->I;
@@ -228,7 +252,7 @@ class PaymentDetailCest extends PaymentAcceptanceCest
         $paymentId = $I->haveInDatabase('pa_payment', [
             'group_id' => $groupId,
             'name' => 'Platba bez odesílatele',
-            'amount' => 500,
+            'amount' => 50000, // 500 Kč v haléřích
             'due_date' => ChronosDate::today()->addWeekdays(1)->format('Y-m-d'),
             'variable_symbol' => '900001',
             'constant_symbol' => null,
@@ -257,7 +281,7 @@ class PaymentDetailCest extends PaymentAcceptanceCest
         $paymentId = $I->haveInDatabase('pa_payment', [
             'group_id' => $groupId,
             'name' => 'Platba s textovou poznámkou',
-            'amount' => 500,
+            'amount' => 50000, // 500 Kč v haléřích
             'due_date' => ChronosDate::today()->addWeekdays(1)->format('Y-m-d'),
             'variable_symbol' => '900002',
             'constant_symbol' => null,
@@ -282,7 +306,7 @@ class PaymentDetailCest extends PaymentAcceptanceCest
             'group_id' => $groupId,
             'name' => 'Dělená účastnická platba',
             'person_id' => 987,
-            'amount' => 1000,
+            'amount' => 100000, // 1 000 Kč v haléřích
             'due_date' => ChronosDate::today()->addWeekdays(1)->format('Y-m-d'),
             'variable_symbol' => '100100',
             'constant_symbol' => 308,
@@ -296,7 +320,7 @@ class PaymentDetailCest extends PaymentAcceptanceCest
         $I->haveInDatabase('pa_payment', [
             'group_id' => $groupId,
             'name' => 'Jiná platba ve skupině',
-            'amount' => 100,
+            'amount' => 10000, // 100 Kč v haléřích
             'due_date' => ChronosDate::today()->addWeekdays(1)->format('Y-m-d'),
             'variable_symbol' => '100103',
             'constant_symbol' => null,
@@ -323,7 +347,7 @@ class PaymentDetailCest extends PaymentAcceptanceCest
 
         $I->waitForElementVisible('[data-test="payment-split-errors"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForText('Každá nová platba musí mít jiný variabilní symbol.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '[data-test="payment-split-errors"]');
-        $I->seeInDatabase('pa_payment', ['id' => $sourcePaymentId, 'amount' => 1000]);
+        $I->seeInDatabase('pa_payment', ['id' => $sourcePaymentId, 'amount' => 100000]);
         $I->dontSeeInDatabase('pa_payment', ['split_from_payment_id' => $sourcePaymentId]);
 
         $I->fillFieldStable('#frm-splitPaymentDialog-form-splits-0-variableSymbol', '100103', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
@@ -332,7 +356,7 @@ class PaymentDetailCest extends PaymentAcceptanceCest
 
         $I->waitForElementVisible('[data-test="payment-split-errors"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForText('Variabilní symbol 100103 je už použitý v této platební skupině.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '[data-test="payment-split-errors"]');
-        $I->seeInDatabase('pa_payment', ['id' => $sourcePaymentId, 'amount' => 1000]);
+        $I->seeInDatabase('pa_payment', ['id' => $sourcePaymentId, 'amount' => 100000]);
         $I->dontSeeInDatabase('pa_payment', ['split_from_payment_id' => $sourcePaymentId]);
 
         $I->fillFieldStable('#frm-splitPaymentDialog-form-splits-0-variableSymbol', '100101', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
@@ -342,10 +366,10 @@ class PaymentDetailCest extends PaymentAcceptanceCest
         $I->waitForElementNotVisible('.modal-backdrop', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInDatabase('pa_payment', [
             'id' => $sourcePaymentId,
-            'amount' => 500,
+            'amount' => 50000,
         ]);
 
-        foreach ([['100101', 300, 'Faktura zaměstnavatele'], ['100102', 200, 'Platba účastníka']] as [$variableSymbol, $amount, $note]) {
+        foreach ([['100101', 30000, 'Faktura zaměstnavatele'], ['100102', 20000, 'Platba účastníka']] as [$variableSymbol, $amount, $note]) {
             $I->seeInDatabase('pa_payment', [
                 'group_id' => $groupId,
                 'name' => 'Dělená účastnická platba',

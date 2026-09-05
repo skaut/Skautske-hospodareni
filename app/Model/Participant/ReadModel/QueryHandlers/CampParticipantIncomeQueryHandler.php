@@ -8,8 +8,8 @@ use App\Model\Cashbook\ReadModel\Queries\CampParticipantIncomeQuery;
 use App\Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
 use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Participant\Participant;
-use App\Model\Utils\MoneyFactory;
 use App\Model\Participant\ZeroParticipantIncome;
+use App\Model\Utils\MoneyFactory;
 use LogicException;
 use Money\Money;
 
