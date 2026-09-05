@@ -71,7 +71,7 @@ abstract class PaymentAcceptanceCest extends BaseAcceptanceCest
             'groupType' => $type,
             'sisId' => 1000 + random_int(1, 100000),
             'name' => uniqid('Payment subtype '.$type.' ', true),
-            'amount' => 100.0,
+            'amount' => 10000, // 100 Kč v haléřích
             'due_date' => ChronosDate::today()->format('Y-m-d'),
             'constant_symbol' => null,
             'next_variable_symbol' => null,

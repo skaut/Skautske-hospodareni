@@ -13,6 +13,7 @@ use App\Model\Cashbook\Cashbook\PaymentMethod;
 use App\Model\Cashbook\Cashbook\Recipient;
 use App\Model\Cashbook\Operation;
 use DateTimeImmutable;
+use Money\Money;
 use Nette\SmartObject;
 
 use function array_map;
@@ -144,12 +145,12 @@ class Chit
         return $this->paymentMethod;
     }
 
-    public function getSignedAmount(): float
+    public function getSignedAmount(): Money
     {
-        $amount = $this->amount->toFloat();
+        $amount = $this->amount->toMoney();
 
         if ($this->operation->equalsValue(Operation::EXPENSE)) {
-            return -1 * $amount;
+            return $amount->multiply(-1);
         }
 
         return $amount;

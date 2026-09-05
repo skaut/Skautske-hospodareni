@@ -8,8 +8,8 @@ use App\Model\Google\OAuthId;
 use App\Model\Payment\VariableSymbol;
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
-use Nette\SmartObject;
 use Money\Money;
+use Nette\SmartObject;
 
 /**
  * @property int                    $id

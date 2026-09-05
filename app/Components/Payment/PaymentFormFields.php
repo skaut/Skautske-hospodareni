@@ -10,6 +10,15 @@ use Nette\Application\UI\Form;
 
 final class PaymentFormFields
 {
+    /**
+     * Částka v korunách smí mít nejvýše dvě desetinná místa, aby šla beze zbytku
+     * převést na haléře. Mezery jsou povolené jako oddělovač tisíců, desetinná
+     * čárka i tečka, protože stejný vstup si pak zpracuje pravidlo Form::FLOAT.
+     */
+    public const MONEY_PATTERN = '-?[\d ]+([.,]\d{1,2})?';
+
+    public const MONEY_PATTERN_MESSAGE = 'Částka může mít nejvýše dvě desetinná místa';
+
     public static function addName(BaseForm|BaseContainer $container, string $label = 'Název'): void
     {
         $container->addText('name', $label)
@@ -22,6 +31,7 @@ final class PaymentFormFields
             ->setNullable()
             ->setRequired(false)
             ->addRule(Form::FLOAT, 'Částka musí být zadaná jako číslo')
+            ->addRule(Form::PATTERN, self::MONEY_PATTERN_MESSAGE, self::MONEY_PATTERN)
             ->addRule(Form::MIN, 'Částka musí být větší než 0', 0.01);
 
         if ($required) {

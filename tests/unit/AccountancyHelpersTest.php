@@ -118,4 +118,19 @@ class AccountancyHelpersTest extends Unit
         $this->assertSame('1', AccountancyHelpers::price(Money::CZK(50), false));
         $this->assertSame('0', AccountancyHelpers::price(Money::CZK(-49), false));
     }
+
+    public function testNumAcceptsMoneyAndShowsDecimalsOnlyWhenNeeded(): void
+    {
+        $this->assertSame('1 500', AccountancyHelpers::num(Money::CZK(150000)));
+        $this->assertSame('1 500,50', AccountancyHelpers::num(Money::CZK(150050)));
+        $this->assertSame('-1 500', AccountancyHelpers::num(Money::CZK(-150000)));
+        $this->assertSame('-0,19', AccountancyHelpers::num(Money::CZK(-19)));
+        $this->assertSame('0', AccountancyHelpers::num(MoneyFactory::zero()));
+    }
+
+    public function testPriceToStringAcceptsMoney(): void
+    {
+        $this->assertSame('Dvacetsedm', AccountancyHelpers::priceToString(Money::CZK(2700)));
+        $this->assertSame('Třicetpět', AccountancyHelpers::priceToString(Money::CZK(3520)));
+    }
 }

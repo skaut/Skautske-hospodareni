@@ -7,6 +7,7 @@ namespace App\Model\Payment;
 use App\Model\Common\Services\CommandBus;
 use App\Model\Payment\Commands\Payment\CreatePayment;
 use App\Model\Payment\Repositories\IPaymentRepository;
+use App\Model\Utils\MoneyFactory;
 use Helpers;
 use IntegrationTest;
 
@@ -63,7 +64,7 @@ class PaymentServiceTest extends IntegrationTest
     private function createPaymentWithoutVariableSymbol(int $groupId): void
     {
         $this->commandBus->handle(
-            new CreatePayment($groupId, 'test', [], 100, Helpers::getValidDueDate(), null, null, null, ''),
+            new CreatePayment($groupId, 'test', [], MoneyFactory::fromDecimal('100.00'), Helpers::getValidDueDate(), null, null, null, ''),
         );
     }
 }

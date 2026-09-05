@@ -8,21 +8,23 @@ use App\Model\Common\ShouldNotHappen;
 use App\Model\Event\Enum\CampState;
 use App\Model\Event\Enum\EventState;
 use App\Model\Payment\Payment\State;
+use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use DateTimeInterface;
 use InvalidArgumentException;
 use Money\Money;
 use Nette\Utils\Html;
+use RuntimeException;
 
-use function array_reverse;
 use function abs;
+use function array_reverse;
 use function count;
 use function explode;
 use function intdiv;
+use function is_callable;
 use function mb_strtoupper;
 use function mb_substr;
 use function number_format;
-use function intdiv;
 use function preg_replace;
 use function sprintf;
 use function str_split;
@@ -35,6 +37,28 @@ abstract class AccountancyHelpers
     private const DATE_FORMAT_FULL = 'j. n. Y';
     private const DATE_FORMAT_DAY_MONTH = 'j. n.';
     private const DATE_FORMAT_DAY = 'j.';
+
+    public static function loader(string $filter): callable
+    {
+        $method = [self::class, $filter];
+
+        if (is_callable($method)) {
+            return $method;
+        }
+
+        throw new RuntimeException('Filter not found');
+    }
+
+    public static function loader(string $filter): callable
+    {
+        $method = [self::class, $filter];
+
+        if (is_callable($method)) {
+            return $method;
+        }
+
+        throw new RuntimeException('Filter not found');
+    }
 
     /**
      * @filter
@@ -235,8 +259,12 @@ abstract class AccountancyHelpers
      * @filter
      * formátuje číslo podle toho zda obsahuje desetinou část nebo ne
      */
-    public static function num(int|float|string $num): string
+    public static function num(int|float|string|Money $num): string
     {
+        if ($num instanceof Money) {
+            return self::price($num, (int) $num->getAmount() % 100 !== 0);
+        }
+
         return number_format((float) $num, strpos((string) $num, '.') ? 2 : 0, ',', ' ');
     }
 
@@ -279,8 +307,12 @@ abstract class AccountancyHelpers
      * @filter
      * převádí zadané číslo na slovní řetězec
      */
-    public static function priceToString(float $price): string
+    public static function priceToString(float|Money $price): string
     {
+        if ($price instanceof Money) {
+            $price = MoneyFactory::toFloat($price);
+        }
+
         // @todo ošetření správného tvaru
 
         $_jednotky = [

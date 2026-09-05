@@ -8,10 +8,8 @@ use App\Model\Cashbook\Cashbook\PaymentMethod;
 use App\Model\Cashbook\ReadModel\Queries\ChitListQuery;
 use App\Model\Cashbook\ReadModel\Queries\FinalCashBalanceQuery;
 use App\Model\Common\Services\QueryBus;
-use App\Model\DTO\Cashbook\Chit;
 use App\Model\Utils\MoneyFactory;
 use Money\Money;
-
 
 class FinalCashBalanceQueryHandler
 {
@@ -23,6 +21,11 @@ class FinalCashBalanceQueryHandler
     {
         $chits = $this->queryBus->handle(ChitListQuery::withMethod(PaymentMethod::CASH(), $query->getCashbookId()));
 
-        return array_reduce($chits, fn (Money $total, Chit $chit): Money => $total->add($chit->getSignedAmount()), MoneyFactory::zero());
+        $total = MoneyFactory::zero();
+        foreach ($chits as $chit) {
+            $total = $total->add($chit->getSignedAmount());
+        }
+
+        return $total;
     }
 }

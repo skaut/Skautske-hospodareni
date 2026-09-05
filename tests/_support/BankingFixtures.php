@@ -15,6 +15,7 @@ use App\Model\Invoice\Enum\InvoicePaymentType;
 use App\Model\Payment\Group;
 use App\Model\Payment\IUnitResolver;
 use App\Model\Payment\VariableSymbol;
+use App\Model\Utils\MoneyFactory;
 use Brick\Math\BigDecimal;
 use Mockery as m;
 use Stubs\BankAccountAccessCheckerStub;
@@ -64,7 +65,7 @@ trait BankingFixtures
             (string) $transactionId,
             BankTransactionSource::FIO,
             new DateTimeImmutable(),
-            $amount,
+            MoneyFactory::fromDecimal((string) $amount),
             '',
             'Payer',
             $variableSymbol === null || $variableSymbol === '' ? null : (int) $variableSymbol,

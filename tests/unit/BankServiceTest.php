@@ -22,6 +22,7 @@ use App\Model\Payment\Repositories\IBankAccountRepository;
 use App\Model\Payment\Repositories\IGroupRepository;
 use App\Model\Payment\Repositories\IPaymentRepository;
 use App\Model\Payment\VariableSymbol;
+use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use DateTimeImmutable;
@@ -74,7 +75,7 @@ final class BankServiceTest extends Unit
             ->andReturn([]);
 
         $payments = [
-            new Payment($group, '-', [], $amount, ChronosDate::now(), $vs, null, null, ''),
+            new Payment($group, '-', [], MoneyFactory::fromDecimal((string) $amount), ChronosDate::now(), $vs, null, null, ''),
         ];
 
         Helpers::assignIdentity($payments[0], 1);
@@ -153,8 +154,8 @@ final class BankServiceTest extends Unit
             ->andReturn([]);
 
         $payments1 = [
-            new Payment($group1, '-', [], $amount, ChronosDate::now(), $vs1, null, null, ''),
-            new Payment($group2, '-', [], $amount, ChronosDate::now(), $vs2, null, null, ''),
+            new Payment($group1, '-', [], MoneyFactory::fromDecimal((string) $amount), ChronosDate::now(), $vs1, null, null, ''),
+            new Payment($group2, '-', [], MoneyFactory::fromDecimal((string) $amount), ChronosDate::now(), $vs2, null, null, ''),
         ];
         Helpers::assignIdentity($payments1[0], 1);
 
@@ -233,10 +234,10 @@ final class BankServiceTest extends Unit
             ->andReturn([]);
 
         $payments1 = [
-            new Payment($group1, '-', [], 200.50, ChronosDate::now(), new VariableSymbol('123456'), null, null, ''),
+            new Payment($group1, '-', [], MoneyFactory::fromDecimal('200.50'), ChronosDate::now(), new VariableSymbol('123456'), null, null, ''),
         ];
         $payments2 = [
-            new Payment($group2, '-', [], 300.50, ChronosDate::now(), new VariableSymbol('654321'), null, null, ''),
+            new Payment($group2, '-', [], MoneyFactory::fromDecimal('300.50'), ChronosDate::now(), new VariableSymbol('654321'), null, null, ''),
         ];
 
         Helpers::assignIdentity($payments1[0], 1);
@@ -283,8 +284,8 @@ final class BankServiceTest extends Unit
         ];
 
         $payments1 = [
-            new Payment($group1, '-', [], 100, ChronosDate::now(), new VariableSymbol('123456'), null, null, ''),
-            new Payment($group2, '-', [], 100, ChronosDate::now(), new VariableSymbol('7854'), null, null, ''),
+            new Payment($group1, '-', [], MoneyFactory::fromDecimal('100.00'), ChronosDate::now(), new VariableSymbol('123456'), null, null, ''),
+            new Payment($group2, '-', [], MoneyFactory::fromDecimal('100.00'), ChronosDate::now(), new VariableSymbol('7854'), null, null, ''),
         ];
         Helpers::assignIdentity($payments1[0], 1);
         Helpers::assignIdentity($payments1[1], 2);
@@ -472,7 +473,7 @@ final class BankServiceTest extends Unit
                 $id,
                 BankTransactionSource::FIO,
                 $today,
-                $amount,
+                MoneyFactory::fromDecimal((string) $amount),
                 $counterAccount,
                 'František Maša',
                 $variableSymbol->toInt(),

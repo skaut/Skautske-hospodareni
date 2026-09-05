@@ -12,6 +12,7 @@ use App\Model\Payment\Group\PaymentDefaults;
 use App\Model\Payment\IUnitResolver;
 use App\Model\Payment\Services\IBankAccountAccessChecker;
 use App\Model\Payment\Services\IOAuthAccessChecker;
+use App\Model\Utils\MoneyFactory;
 use DateTimeImmutable;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -53,7 +54,7 @@ final class PaymentGroupFixture extends AbstractFixture implements ContainerAwar
             [self::UNIT_ID],
             null,
             self::GROUP_NAME,
-            new PaymentDefaults(500.0, null, null, null),
+            new PaymentDefaults(MoneyFactory::fromDecimal('500.00'), null, null, null),
             new DateTimeImmutable(),
             [
                 EmailType::PAYMENT_INFO => new EmailTemplate(

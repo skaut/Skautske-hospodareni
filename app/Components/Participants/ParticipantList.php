@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Components\Participants;
 
 use App\Components\BaseControl;
+use App\Components\Payment\PaymentFormFields;
 use App\Model\DTO\Participant\Participant;
 use App\Model\DTO\Participant\UpdateParticipant;
 use App\Model\Participant\NonMemberParticipantService;
 use App\Model\Participant\ParticipantNotFound;
+use App\Model\Utils\MoneyFactory;
 use App\Utils\CzechStringComparator;
 use Component\Forms\BaseForm;
 use Nette\Application\Attributes\Persistent;
@@ -85,6 +87,13 @@ final class ParticipantList extends BaseControl
             unset($sortOptions['onAccount']);
         }
 
+        $totalPayment = MoneyFactory::zero();
+        $totalRepayment = MoneyFactory::zero();
+        foreach ($this->currentParticipants as $participant) {
+            $totalPayment = $totalPayment->add($participant->getPayment());
+            $totalRepayment = $totalRepayment->add($participant->getRepayment());
+        }
+
         $this->template->setFile(__DIR__.'/templates/ParticipantList.latte');
         $this->template->setParameters([
             'aid' => $this->aid,
@@ -98,6 +107,9 @@ final class ParticipantList extends BaseControl
             'isAllowParticipantUpdate' => $this->isAllowParticipantUpdate,
             'isAllowParticipantDelete' => $this->isAllowParticipantDelete,
             'isAllowAnyAction' => $this->isAllowParticipantUpdate || $this->isAllowParticipantDelete,
+            'totalPayment' => $totalPayment,
+            'totalRepayment' => $totalRepayment,
+            'total' => $totalPayment->subtract($totalRepayment),
             'participantsWithMissingSex' => $this->checkNonMemberSex
                 ? $this->nonMemberParticipants->findParticipantsWithMissingSex($this->currentParticipants)
                 : [],
@@ -209,10 +221,14 @@ final class ParticipantList extends BaseControl
 
         $editCon->addText('payment', 'Částka')
             ->setNullable()
+            ->addRule(BaseForm::FLOAT, 'Částka musí být zadaná jako číslo')
+            ->addRule(BaseForm::PATTERN, PaymentFormFields::MONEY_PATTERN_MESSAGE, PaymentFormFields::MONEY_PATTERN)
             ->setHtmlAttribute('placeholder', 'Ponechat původní hodnotu');
 
         $editCon->addText('repayment', 'Vratka')
             ->setNullable()
+            ->addRule(BaseForm::FLOAT, 'Vratka musí být zadaná jako číslo')
+            ->addRule(BaseForm::PATTERN, PaymentFormFields::MONEY_PATTERN_MESSAGE, PaymentFormFields::MONEY_PATTERN)
             ->setHtmlAttribute('placeholder', 'Ponechat původní hodnotu');
 
         $form->addCheckboxList('participantIds', null, array_map(fn () => '', $this->participantsById()))
@@ -262,11 +278,11 @@ final class ParticipantList extends BaseControl
             }
 
             if ($values['payment'] !== null) {
-                $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_PAYMENT, $values['payment'], $participant->isAccepted());
+                $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_PAYMENT, (string) $values['payment'], $participant->isAccepted());
             }
 
             if ($values['repayment'] !== null) {
-                $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_REPAYMENT, $values['repayment'], $participant->isAccepted());
+                $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_REPAYMENT, (string) $values['repayment'], $participant->isAccepted());
             }
 
             if (in_array($values['isAccount'], [self::NO_ACTION, null])) {

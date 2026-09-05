@@ -7,6 +7,7 @@ namespace App\Presentation\Payments\RegistrationAddMembers;
 use App\Components\Factories\Payment\IMassAddFormFactory;
 use App\Components\Payment\MassAddForm;
 use App\Model\Payment\PaymentService;
+use App\Model\Utils\MoneyFactory;
 use App\Presentation\Payments\PaymentsBasePresenter as BasePresenter;
 use InvalidArgumentException;
 use LogicException;
@@ -65,8 +66,8 @@ final class RegistrationAddMembersPresenter extends BasePresenter
         $list = array_slice($list, 0, 50);
 
         foreach ($list as $p) {
-            $totalAmount = (float) $p['AmountTotal'];
-            if ($totalAmount === 0.0) {
+            $totalAmount = MoneyFactory::fromDecimal((string) $p['AmountTotal']);
+            if ($totalAmount->isZero()) {
                 continue;
             }
 

@@ -14,11 +14,10 @@ use App\Model\Bank\PairingCandidate;
 use App\Model\Bank\Repository\BankTransactionPairingRepository;
 use App\Model\Invoice\Entity\Invoice;
 use App\Model\Payment\Payment;
-use App\Model\Utils\MoneyFactory;
 use App\Model\Payment\Repositories\IGroupRepository;
+use App\Model\Utils\MoneyFactory;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-
 use Money\Money;
 
 class BankTransactionPairingService
@@ -181,5 +180,4 @@ class BankTransactionPairingService
 
         return new BankTransactionPairingNotAllowed('Ruční bankovní párování nelze provést.');
     }
-
 }
