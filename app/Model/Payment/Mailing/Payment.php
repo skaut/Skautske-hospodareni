@@ -6,13 +6,14 @@ namespace App\Model\Payment\Mailing;
 
 use App\Model\Common\EmailAddress;
 use DateTimeImmutable;
+use Money\Money;
 
 class Payment
 {
     /** @param EmailAddress[] $recipients */
     public function __construct(
         private string $name,
-        private float $amount,
+        private Money $amount,
         private array $recipients,
         private DateTimeImmutable $dueDate,
         private ?int $variableSymbol,
@@ -26,7 +27,7 @@ class Payment
         return $this->name;
     }
 
-    public function getAmount(): float
+    public function getAmount(): Money
     {
         return $this->amount;
     }

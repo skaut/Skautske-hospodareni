@@ -30,6 +30,27 @@ class AmountTest extends Unit
         new Amount('0');
     }
 
+    public function testDecimalSumIsExactInCents(): void
+    {
+        $amount = new Amount('0.10 + 0.20');
+
+        $this->assertSame('30', $amount->toMoney()->getAmount());
+    }
+
+    public function testDecimalMultiplicationIsExactInCents(): void
+    {
+        $amount = new Amount('1.99 * 3');
+
+        $this->assertSame('597', $amount->toMoney()->getAmount());
+    }
+
+    public function testFormulaWithFractionOfCentIsRejected(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        new Amount('0.01 * 0.01');
+    }
+
     /** @return mixed[] */
     public function getSums(): array
     {

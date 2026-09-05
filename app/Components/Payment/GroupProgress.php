@@ -7,6 +7,7 @@ namespace App\Components\Payment;
 use App\Components\BaseControl;
 use App\Model\Payment\Payment\State;
 use App\Model\Payment\Summary;
+use App\Model\Utils\MoneyFactory;
 
 use function array_reduce;
 
@@ -28,7 +29,7 @@ final class GroupProgress extends BaseControl
                 function (Summary $first, Summary $second): Summary {
                     return $first->add($second);
                 },
-                new Summary(0, 0),
+                new Summary(0, MoneyFactory::zero()),
             ),
             'completedPayments' => $this->summaries[State::COMPLETED],
         ]);
