@@ -6,6 +6,7 @@ namespace App\Model\Auth;
 
 use App\Model\Admin\Services\AdminAccessChecker;
 use App\Model\Auth\Resources\Admin;
+use App\Model\Auth\Resources\BugReports;
 use App\Model\Auth\Resources\InvoiceAccess;
 use App\Model\Invoice\InvoiceAccessChecker;
 use App\Model\Skautis\Auth\SkautisAuthorizator;
@@ -31,6 +32,14 @@ final class CompositeAuthorizator implements IAuthorizator
 
         if ($action === Admin::ACCESS) {
             return $this->adminAccessChecker->isCurrentUserAllowed();
+        }
+
+        if ($action === Admin::ANY_ACCESS) {
+            return $this->adminAccessChecker->canAccessAdministration();
+        }
+
+        if ($action === BugReports::ACCESS) {
+            return $this->adminAccessChecker->canAccessBugReports();
         }
 
         if ($action === InvoiceAccess::ACCESS) {

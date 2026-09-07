@@ -11,4 +11,6 @@ final class Admin
     use StaticClass;
 
     public const ACCESS = [self::class, 'ADMIN_ACCESS'];
+
+    public const ANY_ACCESS = [self::class, 'ANY_ADMIN_ACCESS'];
 }

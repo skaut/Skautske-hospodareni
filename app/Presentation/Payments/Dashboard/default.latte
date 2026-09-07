@@ -86,7 +86,7 @@
                         <div class="d-flex flex-wrap align-items-center gap-2"
                              data-test="dashboard-group-heading-{$group->getId()}">
                             {$group->getState()|groupState|noescape}
-                            <h3 class="h6 fw-bold mb-0">
+                            <h3 class="h5 fw-bold mb-0">
                                 <a n:href=":Payments:Payment:default, id => $group->getId()"
                                    class="stretched-link text-body text-decoration-none"
                                    data-test="dashboard-group-link-{$group->getId()}">{$group->getName()}</a>
@@ -150,7 +150,7 @@
                             <span>{$sequence['year']}</span>
                             <span>{$sequence['invoiceCount']} faktur</span>
                         </div>
-                        <h3 class="h6 fw-bold mb-0">
+                        <h3 class="h5 fw-bold mb-0">
                             <a n:href=":Payments:InvoiceList:default, invoiceSequenceId => $sequence['id'], unitId => $unitId"
                                class="stretched-link text-body text-decoration-none"
                                data-test="dashboard-sequence-link-{$sequence['id']}">{$sequence['sequence']}/{$sequence['year']}</a>

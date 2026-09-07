@@ -2,123 +2,93 @@
 
 {block content}
 <div data-test="admin-users-page">
-    {* Hero *}
     <div class="card page-heading">
         <div class="card-body">
             <h1 class="h3 mb-2">Uživatelé</h1>
             <div class="page-lead">
                 <i class="fi fi-rr-info" aria-hidden="true"></i>
-                <span>Správa administrátorů s přístupem do systémové sekce. Přidávejte nebo odebírejte uživatele podle potřeby.</span>
+                <span>Správa systémových rolí uživatelů. Oprávnění více přiřazených rolí se sčítají.</span>
             </div>
         </div>
     </div>
 
     <div n:if="! $storageAvailable" class="alert alert-warning" data-test="admin-users-storage-warning">
-        Tabulka <code>admin_user</code> ještě není v databázi dostupná. Spusťte migraci a potom bude možné adminy
-        spravovat přímo odsud.
+        Tabulka <code>system_user_role</code> ještě není v databázi dostupná. Spusťte migraci a potom bude možné role spravovat přímo odsud.
     </div>
 
     <div n:if="$configuredAdminUserIds !== []" class="alert alert-info" data-test="admin-users-config-fallback">
-        Dočasný config fallback je stále aktivní pro user_id:
+        Dočasný config fallback stále přiděluje roli <code>admin</code> pro user_id:
         <strong>{implode(', ', $configuredAdminUserIds)}</strong>
     </div>
 
-    {* Toggle button for add form *}
-    <div n:if="$storageAvailable && $editedAdminUser === null" class="d-flex justify-content-end mb-3">
-        <button
-            class="btn btn-primary"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#adminUserFormCollapse"
-            aria-expanded="false"
-            aria-controls="adminUserFormCollapse"
-            data-test="admin-users-form-toggle"
-        >
-            <i class="fi fi-rr-plus-small" aria-hidden="true"></i> Přidat admina
+    <div n:if="$storageAvailable && $editedUserId === null" class="d-flex justify-content-end mb-3">
+        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#userRolesFormCollapse" aria-expanded="false" aria-controls="userRolesFormCollapse" data-test="admin-users-form-toggle">
+            <i class="fi fi-rr-plus-small" aria-hidden="true"></i> Přidat uživatele
         </button>
     </div>
 
-    {* Collapsible form card *}
-    <div
-        class="collapse {if $editedAdminUser !== null}show{/if}"
-        id="adminUserFormCollapse"
-        data-test="admin-users-form-collapse"
-    >
+    <div class="collapse {if $editedUserId !== null}show{/if}" id="userRolesFormCollapse" data-test="admin-users-form-collapse">
         <article class="card mb-4" data-test="admin-users-form-card">
             <div class="card-body">
-                <h2 class="h5 mb-0">{if $editedAdminUser !== null}Upravit admina{else}Přidat admina{/if}</h2>
-                <p class="mt-2">
-                    Spravuje se jen persistentní allowlist administrátorů. Žádná další uživatelská metadata se sem zatím
-                    neukládají.
-                </p>
-
+                <h2 class="h4 mb-0">
+                    {if $editedUserId !== null}
+                        Upravit role uživatele <strong data-test="admin-users-edited-user-id">#{$editedUserId}</strong>
+                    {else}
+                        Přidat uživatele
+                    {/if}
+                </h2>
+                <p class="mt-2">Vyberte všechny role, které má uživatel mít. Přístupy rolí se spojí.</p>
                 <div n:if="$storageAvailable" class="mt-3" data-test="admin-users-form">
-                    {control adminUserForm}
+                    {form userRolesForm}
+                        <div n:foreach="$form->getOwnErrors() as $error" class="alert alert-danger">{$error}</div>
+                        <div n:if="$editedUserId === null" class="mb-3">
+                            {label userId /}
+                            {input userId class => 'form-control'}
+                            {inputError userId}
+                        </div>
+                        <fieldset class="border rounded-3 bg-body-tertiary p-3 mt-4 mb-4" data-test="admin-users-roles-panel">
+                            <legend class="float-none w-auto px-2 fs-4 fw-semibold mb-0">Systémové role</legend>
+                            <div class="d-grid gap-2" data-test="admin-users-role-options">
+                                <div n:foreach="$form['roles']->getItems() as $key => $label" class="form-check">
+                                    <input n:name="$form['roles']:$key" class="form-check-input">
+                                    <label n:name="$form['roles']:$key" class="form-check-label">{$label}</label>
+                                </div>
+                            </div>
+                            {inputError roles}
+                        </fieldset>
+                        <div class="d-flex flex-wrap gap-2" data-test="admin-users-form-actions">
+                            {input submit class => 'btn btn-primary'}
+                            <a n:if="$editedUserId !== null" n:href="default" class="btn btn-outline-secondary" data-test="admin-users-form-cancel">
+                                <i class="fi fi-rr-cross-small" aria-hidden="true"></i> Zrušit úpravu
+                            </a>
+                        </div>
+                    {/form}
                 </div>
-
-                <div n:if="! $storageAvailable" class="text-body-secondary mt-3">
-                    Formulář se zobrazí po aplikaci databázové migrace.
-                </div>
-
-                <a
-                    n:if="$editedAdminUser !== null"
-                    n:href="default"
-                    class="btn btn-outline-secondary mt-3"
-                    data-test="admin-users-form-cancel"
-                >
-                    <i class="fi fi-rr-cross-small" aria-hidden="true"></i> Zrušit úpravu
-                </a>
             </div>
         </article>
     </div>
 
-    {* Users table *}
     <article class="card" data-test="admin-users-list-card">
         <div class="card-body">
-            <h2 class="h5 mb-0">Persistentní administrátoři</h2>
-
-            <div n:if="$storageAvailable && $adminUsers !== []" class="table-responsive mt-3" data-test="admin-users-list">
+            <h2 class="h5 mb-0">Uživatelé se systémovou rolí</h2>
+            <div n:if="$storageAvailable && $managedUsers !== []" class="table-responsive mt-3" data-test="admin-users-list">
                 <table class="table table-hover table-striped mb-0">
-                    <thead>
-                    <tr>
-                        <th>User ID</th>
-                        <th>Přidáno</th>
-                        <th class="text-end">Akce</th>
-                    </tr>
-                    </thead>
+                    <thead><tr><th>User ID</th><th>Jméno ze SkautISu</th><th>Role</th><th class="text-end">Akce</th></tr></thead>
                     <tbody>
-                    <tr
-                        n:foreach="$adminUsers as $adminUser"
-                        n:attr="data-test => 'admin-user-row-' . $adminUser->getId()"
-                    >
-                        <td><code>{$adminUser->getUserId()}</code></td>
-                        <td>{$adminUser->getCreatedAt()|date:'j. n. Y H:i'}</td>
+                    <tr n:foreach="$managedUsers as $managedUser" n:attr="data-test => 'admin-user-row-' . $managedUser['userId']">
+                        <td><code>{$managedUser['userId']}</code></td>
+                        <td>{$managedUser['name']}</td>
+                        <td n:attr="data-test => 'admin-user-roles-' . $managedUser['userId']">{$managedUser['roles']}</td>
                         <td class="text-end">
-                            <a
-                                n:href="default, edit => $adminUser->getId()"
-                                class="btn btn-sm btn-light"
-                                title="Upravit"
-                                n:attr="data-test => 'admin-user-edit-' . $adminUser->getId()"
-                            >
-                                <i class="fi fi-rr-pencil" aria-hidden="true"></i>
-                            </a>
-                            <a
-                                n:href="deleteAdminUser!, id => $adminUser->getId()"
-                                class="btn btn-sm btn-outline-danger"
-                                title="Odebrat"
-                                n:attr="data-test => 'admin-user-delete-' . $adminUser->getId()"
-                                onclick='return confirm("Opravdu chcete odebrat tohoto administrátora?");'
-                            >
-                                <i class="fi fi-rr-trash" aria-hidden="true"></i>
-                            </a>
+                            <a n:href="default, edit => $managedUser['userId']" class="btn btn-sm btn-light" title="Upravit role" n:attr="data-test => 'admin-user-edit-' . $managedUser['userId']"><i class="fi fi-rr-pencil" aria-hidden="true"></i></a>
+                            <a n:href="deleteUserRoles!, userId => $managedUser['userId']" class="btn btn-sm btn-outline-danger" title="Odebrat všechny role" n:attr="data-test => 'admin-user-delete-' . $managedUser['userId']" onclick='return confirm("Opravdu chcete odebrat všechny role tohoto uživatele?");'><i class="fi fi-rr-trash" aria-hidden="true"></i></a>
                         </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
-
-            <div n:if="$storageAvailable && $adminUsers === []" class="alert alert-light mt-3 mb-0" data-test="admin-users-empty">
-                V databázi zatím není uložen žádný administrátor.
+            <div n:if="$storageAvailable && $managedUsers === []" class="alert alert-light mt-3 mb-0" data-test="admin-users-empty">
+                V databázi zatím není uloženo žádné přiřazení systémové role.
             </div>
         </div>
     </article>

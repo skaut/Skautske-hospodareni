@@ -6,13 +6,15 @@ namespace App\Model\Auth;
 
 use App\Model\Admin\Services\AdminAccessChecker;
 use App\Model\Auth\Resources\Admin;
+use App\Model\Auth\Resources\BugReports;
 use App\Model\Auth\Resources\Event as EventResource;
 use App\Model\Auth\Resources\InvoiceAccess;
 use App\Model\Auth\Resources\Unit as UnitResource;
 use App\Model\Invoice\InvoiceAccessChecker;
 use App\Model\Skautis\Auth\SkautisAuthorizator;
-use App\Model\User\Repository\AdminUserRepository;
+use App\Model\User\Enum\SystemRole;
 use App\Model\User\Repository\InvoiceAccessUserRepository;
+use App\Model\User\Repository\SystemUserRoleRepository;
 use Codeception\Test\Unit;
 use Mockery;
 use Nette\Security\IUserStorage;
@@ -25,9 +27,9 @@ final class CompositeAuthorizatorTest extends Unit
 {
     public function testReturnsTrueForAdminAccessWhenAdminCheckerAllowsCurrentUser(): void
     {
-        $repository = Mockery::mock(AdminUserRepository::class);
-        $repository->shouldReceive('hasUserId')
-            ->with(1942)
+        $repository = Mockery::mock(SystemUserRoleRepository::class);
+        $repository->shouldReceive('hasRole')
+            ->with(1942, SystemRole::ADMIN)
             ->once()
             ->andReturn(true);
 
@@ -49,8 +51,8 @@ final class CompositeAuthorizatorTest extends Unit
         $webservice = Mockery::mock(WebServiceInterface::class);
         $webservice->shouldNotReceive('ActionVerify');
 
-        $adminRepository = Mockery::mock(AdminUserRepository::class);
-        $adminRepository->shouldNotReceive('hasUserId');
+        $adminRepository = Mockery::mock(SystemUserRoleRepository::class);
+        $adminRepository->shouldNotReceive('hasRole');
 
         $invoiceRepository = Mockery::mock(InvoiceAccessUserRepository::class);
         $invoiceRepository->shouldReceive('hasUserId')
@@ -81,8 +83,8 @@ final class CompositeAuthorizatorTest extends Unit
             ])
             ->andReturn([$allowedAction]);
 
-        $repository = Mockery::mock(AdminUserRepository::class);
-        $repository->shouldNotReceive('hasUserId');
+        $repository = Mockery::mock(SystemUserRoleRepository::class);
+        $repository->shouldNotReceive('hasRole');
 
         $adminAccessChecker = new AdminAccessChecker($this->mockUser(null), $repository, []);
         $authorizator = new CompositeAuthorizator(
@@ -110,6 +112,25 @@ final class CompositeAuthorizatorTest extends Unit
         $authorizator = new SkautisAuthorizator($webservice);
 
         self::assertTrue($authorizator->isAllowed(EventResource::CREATE, null));
+    }
+
+    public function testSupportCanAccessBugReportsButNotFullAdmin(): void
+    {
+        $webservice = Mockery::mock(WebServiceInterface::class);
+        $webservice->shouldNotReceive('ActionVerify');
+        $repository = Mockery::mock(SystemUserRoleRepository::class);
+        $repository->shouldReceive('hasRole')->with(1942, SystemRole::ADMIN)->times(3)->andReturn(false);
+        $repository->shouldReceive('hasRole')->with(1942, SystemRole::SUPPORT)->twice()->andReturn(true);
+
+        $authorizator = new CompositeAuthorizator(
+            new SkautisAuthorizator($webservice),
+            new AdminAccessChecker($this->mockUser(1942), $repository, []),
+            $this->invoiceAccessChecker(),
+        );
+
+        self::assertFalse($authorizator->isAllowed(Admin::ACCESS, null));
+        self::assertTrue($authorizator->isAllowed(Admin::ANY_ACCESS, null));
+        self::assertTrue($authorizator->isAllowed(BugReports::ACCESS, null));
     }
 
     private function invoiceAccessChecker(): InvoiceAccessChecker
