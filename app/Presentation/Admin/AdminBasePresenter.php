@@ -24,12 +24,18 @@ abstract class AdminBasePresenter extends \App\BasePresenter
             }
         }
 
-        if (! $this->authorizator->isAllowed(Admin::ACCESS, null)) {
+        if (! $this->authorizator->isAllowed($this->getRequiredAdminAccess(), null)) {
             $this->flashMessage('Nemáte oprávnění vstoupit do administrace.', 'danger');
             $this->redirect(':Default:');
         }
 
         $unitId = $this->getParameter('unitId', null);
         $this->unitId = new UnitId($unitId !== null ? (int) $unitId : $this->unitService->getUnitId());
+    }
+
+    /** @return string[] */
+    protected function getRequiredAdminAccess(): array
+    {
+        return Admin::ACCESS;
     }
 }

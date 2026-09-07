@@ -5,38 +5,44 @@ declare(strict_types=1);
 namespace App\Presentation\Admin\Users;
 
 use App\Model\Admin\Services\AdminAccessChecker;
-use App\Model\User\Entity\AdminUser;
-use App\Model\User\Manager\AdminUserManager;
-use App\Model\User\Repository\AdminUserRepository;
+use App\Model\Common\Repositories\IUserRepository;
+use App\Model\User\Enum\SystemRole;
+use App\Model\User\Manager\SystemUserRoleManager;
+use App\Model\User\Repository\SystemUserRoleRepository;
 use Component\Forms\BaseForm;
 use Nette\Application\AbortException;
 use Nette\Application\UI\Form;
+use Throwable;
+
+use function array_map;
+use function count;
+use function implode;
+use function sprintf;
 
 final class UsersPresenter extends \App\Presentation\Admin\AdminBasePresenter
 {
-    private ?AdminUser $editedAdminUser = null;
+    private ?int $editedUserId = null;
 
     public function __construct(
-        private AdminUserRepository $adminUserRepository,
-        private AdminUserManager $adminUserManager,
+        private SystemUserRoleRepository $systemUserRoleRepository,
+        private SystemUserRoleManager $systemUserRoleManager,
         private AdminAccessChecker $adminAccessChecker,
+        private IUserRepository $userRepository,
     ) {
     }
 
     public function actionDefault(?int $edit = null): void
     {
-        if ($edit === null || ! $this->adminUserRepository->isStorageAvailable()) {
+        if ($edit === null || ! $this->systemUserRoleRepository->isStorageAvailable()) {
             return;
         }
 
-        $adminUser = $this->adminUserRepository->find($edit);
-
-        if (! $adminUser instanceof AdminUser) {
-            $this->flashMessage('Požadovaný admin uživatel nebyl nalezen.', 'warning');
+        if (! $this->systemUserRoleRepository->hasUserId($edit)) {
+            $this->flashMessage('Požadovaný uživatel nebyl nalezen.', 'warning');
             $this->redirect('default');
         }
 
-        $this->editedAdminUser = $adminUser;
+        $this->editedUserId = $edit;
     }
 
     public function renderDefault(): void
@@ -44,84 +50,105 @@ final class UsersPresenter extends \App\Presentation\Admin\AdminBasePresenter
         $this->template->setParameters([
             'adminSection' => 'users',
             'unitId' => $this->unitId->toInt(),
-            'adminUsers' => $this->adminUserRepository->findAllOrderedByUserId(),
+            'managedUsers' => $this->getManagedUsers(),
             'configuredAdminUserIds' => $this->adminAccessChecker->getConfiguredAdminUserIds(),
-            'storageAvailable' => $this->adminUserRepository->isStorageAvailable(),
-            'editedAdminUser' => $this->editedAdminUser,
+            'storageAvailable' => $this->systemUserRoleRepository->isStorageAvailable(),
+            'editedUserId' => $this->editedUserId,
         ]);
     }
 
-    public function handleDeleteAdminUser(int $id): void
+    public function handleDeleteUserRoles(int $userId): void
     {
-        if (! $this->adminUserRepository->isStorageAvailable()) {
-            $this->flashMessage('Perzistentní tabulka adminů ještě není dostupná. Spusťte nejdřív migraci databáze.', 'danger');
+        if (! $this->systemUserRoleRepository->isStorageAvailable()) {
+            $this->flashMessage('Tabulka systémových rolí ještě není dostupná. Spusťte nejdřív migraci databáze.', 'danger');
             $this->redirect('default');
         }
 
-        $adminUser = $this->adminUserRepository->find($id);
-
-        if (! $adminUser instanceof AdminUser) {
-            $this->flashMessage('Požadovaný admin uživatel nebyl nalezen.', 'warning');
+        if (! $this->systemUserRoleRepository->hasUserId($userId)) {
+            $this->flashMessage('Požadovaný uživatel nebyl nalezen.', 'warning');
             $this->redirect('default');
         }
 
-        $this->adminUserManager->delete($adminUser);
-        $this->flashMessage('Admin uživatel byl odebrán.', 'success');
+        $this->systemUserRoleManager->removeAllForUser($userId);
+        $this->flashMessage('Všechny systémové role uživatele byly odebrány.', 'success');
         $this->redirect('default');
     }
 
-    public function createComponentAdminUserForm(): Form
+    public function createComponentUserRolesForm(): Form
     {
         $form = new BaseForm();
-        $form->addInteger('userId', 'User ID')
-            ->setRequired('Zadejte user_id administrátora.')
-            ->addRule(Form::MIN, 'User ID musí být kladné číslo.', 1);
+        if ($this->editedUserId === null) {
+            $form->addInteger('userId', 'User ID')
+                ->setRequired('Zadejte user_id uživatele.')
+                ->addRule(Form::MIN, 'User ID musí být kladné číslo.', 1);
+        }
+        $form->addCheckboxList('roles', 'Role', SystemRole::options())
+            ->setRequired('Vyberte alespoň jednu roli.');
+        $form->addSubmit('submit', $this->editedUserId === null ? 'Přidat uživatele' : 'Uložit role');
 
-        $form->addSubmit('submit', $this->editedAdminUser instanceof AdminUser ? 'Uložit změny' : 'Přidat admina');
-
-        if ($this->editedAdminUser instanceof AdminUser) {
+        if ($this->editedUserId !== null) {
             $form->setDefaults([
-                'userId' => $this->editedAdminUser->getUserId(),
+                'roles' => array_map(
+                    static fn (SystemRole $role): string => $role->value,
+                    $this->systemUserRoleRepository->findAllGroupedByUserId()[$this->editedUserId] ?? [],
+                ),
             ]);
         }
 
         $form->onSuccess[] = function (Form $form): void {
-            $this->processAdminUserForm($form);
+            $this->processUserRolesForm($form);
         };
 
         return $form;
     }
 
     /** @throws AbortException */
-    private function processAdminUserForm(Form $form): void
+    private function processUserRolesForm(Form $form): void
     {
-        if (! $this->adminUserRepository->isStorageAvailable()) {
-            $this->flashMessage('Perzistentní tabulka adminů ještě není dostupná. Spusťte nejdřív migraci databáze.', 'danger');
+        if (! $this->systemUserRoleRepository->isStorageAvailable()) {
+            $this->flashMessage('Tabulka systémových rolí ještě není dostupná. Spusťte nejdřív migraci databáze.', 'danger');
             $this->redirect('default');
         }
 
-        $userId = (int) $form->getValues()->userId;
-        $existingAdminUser = $this->adminUserRepository->findOneByUserId($userId);
-
-        if (
-            $existingAdminUser instanceof AdminUser
-            && (
-                ! $this->editedAdminUser instanceof AdminUser
-                || $existingAdminUser->getId() !== $this->editedAdminUser->getId()
-            )
-        ) {
-            $this->flashMessage('Tento user_id už mezi administrátory existuje.', 'warning');
-            $this->redirect('default', $this->editedAdminUser instanceof AdminUser ? ['edit' => $this->editedAdminUser->getId()] : []);
+        $values = $form->getValues();
+        $userId = $this->editedUserId ?? (int) $values->userId;
+        if ($this->editedUserId === null && $this->systemUserRoleRepository->hasUserId($userId)) {
+            $this->flashMessage('Tento user_id už má přiřazené systémové role.', 'warning');
+            $this->redirect('default');
         }
 
-        if ($this->editedAdminUser instanceof AdminUser) {
-            $this->adminUserManager->updateUserId($this->editedAdminUser, $userId);
-            $this->flashMessage('Admin uživatel byl upraven.', 'success');
-        } else {
-            $this->adminUserManager->create($userId);
-            $this->flashMessage('Admin uživatel byl přidán.', 'success');
-        }
-
+        $roles = array_map(
+            static fn (string $role): SystemRole => SystemRole::from($role),
+            (array) $values->roles,
+        );
+        $this->systemUserRoleManager->replaceRoles($userId, $roles);
+        $this->flashMessage($this->editedUserId === null ? 'Uživateli byly přiřazeny systémové role.' : 'Systémové role uživatele byly upraveny.', 'success');
         $this->redirect('default');
+    }
+
+    /** @return array<int, array{userId: int, name: string, roles: string}> */
+    private function getManagedUsers(): array
+    {
+        $managedUsers = [];
+        foreach ($this->systemUserRoleRepository->findAllGroupedByUserId() as $userId => $roles) {
+            $managedUsers[] = [
+                'userId' => $userId,
+                'name' => $this->resolveUserName($userId),
+                'roles' => count($roles) > 3
+                    ? sprintf('%d rolí', count($roles))
+                    : implode(', ', array_map(static fn (SystemRole $role): string => $role->label(), $roles)),
+            ];
+        }
+
+        return $managedUsers;
+    }
+
+    private function resolveUserName(int $userId): string
+    {
+        try {
+            return $this->userRepository->find($userId)->getName();
+        } catch (Throwable) {
+            return 'Nedostupné ve SkautISu';
+        }
     }
 }

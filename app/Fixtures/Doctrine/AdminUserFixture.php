@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Fixtures\Doctrine;
 
-use App\Model\User\Entity\AdminUser;
-use App\Model\User\Repository\AdminUserRepository;
+use App\Model\User\Entity\SystemUserRole;
+use App\Model\User\Enum\SystemRole;
+use App\Model\User\Repository\SystemUserRoleRepository;
 use DateTimeImmutable;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Persistence\ObjectManager;
@@ -21,17 +22,17 @@ final class AdminUserFixture extends AbstractFixture
             return;
         }
 
-        if (! $manager->getConnection()->createSchemaManager()->tablesExist(['admin_user'])) {
+        if (! $manager->getConnection()->createSchemaManager()->tablesExist(['system_user_role'])) {
             return;
         }
 
-        $repository = $manager->getRepository(AdminUser::class);
+        $repository = $manager->getRepository(SystemUserRole::class);
 
-        if ($repository instanceof AdminUserRepository && $repository->hasUserId(self::ADMIN_USER_ID)) {
+        if ($repository instanceof SystemUserRoleRepository && $repository->hasRole(self::ADMIN_USER_ID, SystemRole::ADMIN)) {
             return;
         }
 
-        $manager->persist(new AdminUser(self::ADMIN_USER_ID, new DateTimeImmutable(self::CREATED_AT)));
+        $manager->persist(new SystemUserRole(self::ADMIN_USER_ID, SystemRole::ADMIN, new DateTimeImmutable(self::CREATED_AT)));
         $manager->flush();
     }
 }

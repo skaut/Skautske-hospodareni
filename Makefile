@@ -9,6 +9,7 @@ COMPOSE_FILE   ?= docker/docker-compose.yml
 COMPOSE         = docker compose $(foreach file,$(subst :, ,$(COMPOSE_FILE)),-f $(file))
 RUN_PHP_DEV     = $(COMPOSE) run --rm -T --entrypoint '' --user docker php
 RUN_PHP_TEST    = $(COMPOSE) run --rm -T --entrypoint '' --user docker php-test
+RUN_PHP_TEST_ROOT = $(COMPOSE) run --rm -T --entrypoint '' --user root php-test
 RUN_PHP_XDEBUG  = $(COMPOSE) run --rm --entrypoint '' --user docker php-xdebug
 EXEC_PHP        = docker exec -u docker -it hskauting.app
 EXEC_PHP_TEST   = docker exec -u docker -it hskauting.app-test
@@ -202,8 +203,8 @@ check-phpstan: ## PHPStan analýza
 	$(RUN_PHP_TEST) sh -c "vendor/bin/codecept build && $(COMPOSER_ENV) composer static-analysis"
 
 check-cs: ## Coding standard (opraví)
-	$(call reset_writable_dirs,php-test)
-	$(RUN_PHP_TEST) $(COMPOSER_ENV) composer coding-standard
+	$(RUN_PHP_TEST_ROOT) sh -c 'mkdir -p log uploads temp tests/_output tests/_support/_generated www/webtemp'
+	$(RUN_PHP_TEST_ROOT) $(COMPOSER_ENV) composer coding-standard
 
 check-cs-check: ## Coding standard (dry-run pro CI)
 	$(call reset_writable_dirs,php-test)

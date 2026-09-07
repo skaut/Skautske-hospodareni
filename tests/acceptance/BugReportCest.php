@@ -27,9 +27,10 @@ final class BugReportCest extends BaseAcceptanceCest
         $I = $this->I;
         $prefix = 'Acceptance GitHub grid '.uniqid('', true);
 
-        $I->deleteFromDatabase('admin_user', ['user_id' => self::ACCEPTANCE_ADMIN_USER_ID]);
-        $I->haveInDatabase('admin_user', [
+        $I->deleteFromDatabase('system_user_role', ['user_id' => self::ACCEPTANCE_ADMIN_USER_ID]);
+        $I->haveInDatabase('system_user_role', [
             'user_id' => self::ACCEPTANCE_ADMIN_USER_ID,
+            'role' => 'admin',
             'created_at' => '2026-07-15 09:00:00',
         ]);
 
@@ -167,8 +168,10 @@ final class BugReportCest extends BaseAcceptanceCest
         Assert::assertStringContainsString('"viewport"', $diagnostics);
         Assert::assertStringContainsString('"allRoles"', $diagnostics);
 
-        $I->haveInDatabase('admin_user', [
+        $I->deleteFromDatabase('system_user_role', ['user_id' => self::ACCEPTANCE_ADMIN_USER_ID]);
+        $I->haveInDatabase('system_user_role', [
             'user_id' => self::ACCEPTANCE_ADMIN_USER_ID,
+            'role' => 'support',
             'created_at' => '2026-06-18 12:00:00',
         ]);
 

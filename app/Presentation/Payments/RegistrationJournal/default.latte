@@ -15,11 +15,11 @@
             <div class="card-body">
                 <h2 class="h5 mb-3">{$units[$uId]->getDisplayName()}</h2>
                 {if count($unitChanges["add"]) > 0}
-                    <h3 class="h6">Nově přidané časopisy po registraci vůči aktuálnímu stavu</h3>
+                    <h3 class="h5">Nově přidané časopisy po registraci vůči aktuálnímu stavu</h3>
                     <ul>{foreach $unitChanges["add"] as $item}<li>{$item}</li>{/foreach}</ul>
                 {/if}
                 {if count($unitChanges["remove"]) > 0}
-                    <h3 class="h6">Nově odebrané časopisy po registraci vůči aktuálnímu stavu</h3>
+                    <h3 class="h5">Nově odebrané časopisy po registraci vůči aktuálnímu stavu</h3>
                     <ul>{foreach $unitChanges["remove"] as $item}<li>{$item}</li>{/foreach}</ul>
                 {/if}
             </div>

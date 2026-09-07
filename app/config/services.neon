@@ -80,7 +80,7 @@ services:
     - App\Model\Common\Services\MessengerEventBus(@messenger.eventBus.bus)
 
     # Auth
-    - factory: App\Model\Admin\Services\AdminAccessChecker(@Nette\Security\User, @App\Model\User\Repository\AdminUserRepository, %adminAllowedUserIds%)
+    - factory: App\Model\Admin\Services\AdminAccessChecker(@Nette\Security\User, @App\Model\User\Repository\SystemUserRoleRepository, %adminAllowedUserIds%)
     - factory: App\Model\Invoice\InvoiceAccessChecker(@Nette\Security\User, @App\Model\User\Repository\InvoiceAccessUserRepository, %invoiceAccessAllowedUserIds%)
     - App\Model\Auth\CompositeAuthorizator(@skautisAuthorizator, @App\Model\Admin\Services\AdminAccessChecker, @App\Model\Invoice\InvoiceAccessChecker)
     - App\Presentation\Accessory\Navigation\NavigationAuthorizator

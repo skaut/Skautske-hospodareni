@@ -64,11 +64,11 @@
                 </div>
 
                 <div class="border rounded-3 bg-body-tertiary p-3" data-customer-section>
-                    <h4 class="h6 mb-3">Odběratel</h4>
+                    <h4 class="mb-3">Odběratel</h4>
 
                     {var $customer = $form['customer']}
                     <fieldset class="mb-3">
-                        <legend class="fs-6 fw-semibold mb-2">Typ odběratele</legend>
+                        <legend class="fs-4 fw-semibold mb-2">Typ odběratele</legend>
                         <div class="d-grid gap-2">
                             <div n:foreach="$customer['type']->getItems() as $key => $label" class="form-check">
                                 <input
@@ -152,7 +152,7 @@
                 <div class="d-grid gap-3">
                     <article n:foreach="$items as $item" class="border rounded-3 bg-body-tertiary p-3">
                         <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
-                            <h4 class="h6 mb-0">Položka</h4>
+                            <h4 class="mb-0">Položka</h4>
                             <div n:if="count($items) > 1">
                                 {input $item['remove'] class => 'btn btn-outline-danger btn-sm ajax'}
                             </div>

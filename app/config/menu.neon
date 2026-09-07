@@ -76,7 +76,7 @@ menu:
                 data:
                     test: utility-nav-admin
                     icon: fi fi-rr-shield-check
-                    requiresAdmin: true
+                    requiresAdminArea: true
 
     payments:
         authorizator: @App\Presentation\Accessory\Navigation\NavigationAuthorizator
@@ -204,6 +204,7 @@ menu:
                 data:
                     test: admin-nav-overview
                     icon: fi fi-rr-apps
+                    requiresAdmin: true
             users:
                 title: Uživatelé
                 action: 'Admin:Users:default'
@@ -212,6 +213,7 @@ menu:
                 data:
                     test: admin-nav-users
                     icon: fi fi-rr-users-alt
+                    requiresAdmin: true
             statistics:
                 title: Statistiky
                 action: 'Admin:Statistics:default'
@@ -220,6 +222,7 @@ menu:
                 data:
                     test: admin-nav-statistics
                     icon: fi fi-rr-chart-pie
+                    requiresAdmin: true
             bugReports:
                 title: Hlášení chyb
                 action: 'Admin:BugReports:default'
@@ -228,6 +231,7 @@ menu:
                 data:
                     test: admin-nav-bug-reports
                     icon: fi fi-rr-bug
+                    requiresBugReportsAccess: true
             invoiceAccess:
                 title: Fakturace
                 action: 'Admin:InvoiceAccess:default'
@@ -236,6 +240,7 @@ menu:
                 data:
                     test: admin-nav-invoice-access
                     icon: fi fi-rr-lock
+                    requiresAdmin: true
 
     travel:
         authorizator: @App\Presentation\Accessory\Navigation\NavigationAuthorizator

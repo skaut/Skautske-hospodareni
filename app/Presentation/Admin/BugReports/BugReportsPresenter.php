@@ -6,6 +6,7 @@ namespace App\Presentation\Admin\BugReports;
 
 use App\Components\DataGrid;
 use App\Components\Grids\GridFactory;
+use App\Model\Auth\Resources\BugReports;
 use App\Model\BugReport\BugReportNotificationService;
 use App\Model\BugReport\BugReportScreenshotStorage;
 use App\Model\BugReport\Entity\TechnicalErrorReport;
@@ -34,6 +35,12 @@ final class BugReportsPresenter extends \App\Presentation\Admin\AdminBasePresent
         private GitHubIssueService $gitHubIssueService,
         private GridFactory $gridFactory,
     ) {
+    }
+
+    /** @return string[] */
+    protected function getRequiredAdminAccess(): array
+    {
+        return BugReports::ACCESS;
     }
 
     public function actionDetail(int $id): void

@@ -54,6 +54,36 @@ final class AdminCest extends BaseAcceptanceCest
         $I->dontSeeElement('[data-test="admin-bug-reports-page"]');
     }
 
+    /** @group admin */
+    public function supportCanOnlyAccessBugReports(): void
+    {
+        $I = $this->I;
+        $I->deleteFromDatabase('system_user_role', ['user_id' => self::ACCEPTANCE_ADMIN_USER_ID]);
+        $I->haveInDatabase('system_user_role', [
+            'user_id' => self::ACCEPTANCE_ADMIN_USER_ID,
+            'role' => 'support',
+            'created_at' => '2026-09-07 12:00:00',
+        ]);
+
+        $I->amOnPage('/admin');
+        $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeInCurrentUrl('/admin/hlaseni-chyb');
+        $I->seeElement('[data-test="utility-nav-admin"]');
+        $I->seeElement('[data-test="admin-nav-bug-reports"]');
+        $I->dontSeeElement('[data-test="admin-nav-overview"]');
+        $I->dontSeeElement('[data-test="admin-nav-users"]');
+        $I->dontSeeElement('[data-test="admin-nav-statistics"]');
+        $I->dontSeeElement('[data-test="admin-nav-invoice-access"]');
+
+        $I->amOnPage('/admin/uzivatele');
+        $I->waitForElement('.alert-danger', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeInCurrentUrl('/');
+
+        $I->amOnPage('/admin/statistiky');
+        $I->waitForElement('.alert-danger', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeInCurrentUrl('/');
+    }
+
     // ─── Overview Page ───────────────────────────────────────────
 
     /** @group admin */
@@ -198,7 +228,7 @@ final class AdminCest extends BaseAcceptanceCest
         $I->seeElement('[data-test="admin-users-list"]');
     }
 
-    // ─── CRUD: Create, Read, Update, Delete Admin User ───────────
+    // ─── CRUD: Create, Read, Update, Delete System User Roles ───
 
     /** @group admin */
     public function adminUserCrudWorkflow(): void
@@ -207,7 +237,7 @@ final class AdminCest extends BaseAcceptanceCest
         $this->becomeAdmin();
         $I->disablePopups();
 
-        $I->wantTo('create, read, update, and delete an admin user');
+        $I->wantTo('create, read, update, and delete a user with system roles');
 
         $I->amOnPage('/admin/uzivatele');
         $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
@@ -219,6 +249,7 @@ final class AdminCest extends BaseAcceptanceCest
 
         // Fill and submit
         $I->fillField('[data-test="admin-users-form"] input[name="userId"]', (string) self::NEW_ADMIN_USER_ID);
+        $I->checkOption('input[name="roles[]"][value="support"]');
         $I->clickStable('[data-test="admin-users-form"] input[type="submit"]');
         $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
@@ -228,14 +259,16 @@ final class AdminCest extends BaseAcceptanceCest
         // ── READ ─────────────────────────────────────────────────
         // Verify user appears in the list
         $I->seeElement('[data-test="admin-users-list"]');
-        $I->seeInDatabase('admin_user', ['user_id' => self::NEW_ADMIN_USER_ID]);
+        $I->seeInDatabase('system_user_role', ['user_id' => self::NEW_ADMIN_USER_ID, 'role' => 'support']);
+        $I->see('support', '[data-test="admin-user-roles-'.self::NEW_ADMIN_USER_ID.'"]');
+        $I->seeElement('[data-test="admin-user-row-'.self::NEW_ADMIN_USER_ID.'"] td:nth-child(2)');
 
         // Verify at least 2 rows (self + new user)
         $I->seeNumberOfElements('[data-test="admin-users-list"] tbody tr', [2, 100]);
 
         // ── UPDATE ───────────────────────────────────────────────
         // Find the new user's row and click edit
-        $newUser = $I->grabFromDatabase('admin_user', 'id', ['user_id' => self::NEW_ADMIN_USER_ID]);
+        $newUser = self::NEW_ADMIN_USER_ID;
         $I->seeElement('[data-test="admin-user-edit-'.$newUser.'"]');
         $I->clickStable('[data-test="admin-user-edit-'.$newUser.'"]');
 
@@ -243,18 +276,25 @@ final class AdminCest extends BaseAcceptanceCest
         $I->waitForElementVisible('[data-test="admin-users-form-collapse"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-test="admin-users-form"]');
         $I->seeElement('[data-test="admin-users-form-cancel"]');
+        $I->see((string) $newUser, '[data-test="admin-users-edited-user-id"]');
+        $I->seeElement('h2.h4 [data-test="admin-users-edited-user-id"]');
+        $I->dontSeeElement('[data-test="admin-users-form"] input[name="userId"]');
+        $I->seeElement('[data-test="admin-users-roles-panel"]');
+        $I->seeElement('[data-test="admin-users-roles-panel"] legend.fs-4');
+        $I->seeNumberOfElements('[data-test="admin-users-role-options"] .form-check', 2);
+        $I->seeElement('[data-test="admin-users-form-actions"] input[type="submit"]');
+        $I->seeElement('[data-test="admin-users-form-actions"] [data-test="admin-users-form-cancel"]');
         $I->seeInCurrentUrl('edit='.$newUser);
 
-        // Change user_id
-        $updatedUserId = self::NEW_ADMIN_USER_ID + 1;
-        $I->fillField('[data-test="admin-users-form"] input[name="userId"]', (string) $updatedUserId);
+        // Add admin role; both permissions must remain assigned.
+        $I->checkOption('input[name="roles[]"][value="admin"]');
         $I->clickStable('[data-test="admin-users-form"] input[type="submit"]');
         $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         // Verify update in DB
         $I->seeElement('.alert-success');
-        $I->seeInDatabase('admin_user', ['user_id' => $updatedUserId]);
-        $I->dontSeeInDatabase('admin_user', ['user_id' => self::NEW_ADMIN_USER_ID]);
+        $I->seeInDatabase('system_user_role', ['user_id' => self::NEW_ADMIN_USER_ID, 'role' => 'admin']);
+        $I->seeInDatabase('system_user_role', ['user_id' => self::NEW_ADMIN_USER_ID, 'role' => 'support']);
 
         // ── DELETE ───────────────────────────────────────────────
         $I->waitForElementVisible('[data-test="admin-user-delete-'.$newUser.'"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
@@ -265,7 +305,7 @@ final class AdminCest extends BaseAcceptanceCest
 
         // Verify deletion
         $I->seeElement('.alert-success');
-        $I->dontSeeInDatabase('admin_user', ['user_id' => $updatedUserId]);
+        $I->dontSeeInDatabase('system_user_role', ['user_id' => self::NEW_ADMIN_USER_ID]);
     }
 
     /** @group admin */
@@ -274,7 +314,7 @@ final class AdminCest extends BaseAcceptanceCest
         $I = $this->I;
         $this->becomeAdmin();
 
-        $I->wantTo('verify that creating admin with duplicate user_id is rejected');
+        $I->wantTo('verify that creating a duplicate role assignment user is rejected');
 
         $I->amOnPage('/admin/uzivatele');
         $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
@@ -284,6 +324,7 @@ final class AdminCest extends BaseAcceptanceCest
         $I->waitForElementVisible('[data-test="admin-users-form"] input[name="userId"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->fillFieldStable('[data-test="admin-users-form"] input[name="userId"]', (string) self::ACCEPTANCE_ADMIN_USER_ID);
+        $I->checkOption('input[name="roles[]"][value="admin"]');
         $I->clickStable('[data-test="admin-users-form"] input[type="submit"]');
         $I->waitForJS('return document.querySelector(".alert-warning") !== null;', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
@@ -299,12 +340,13 @@ final class AdminCest extends BaseAcceptanceCest
 
         $I->wantTo('verify cancelling edit returns to the default users view');
 
-        // Get our admin user ID
-        $adminId = $I->grabFromDatabase('admin_user', 'id', ['user_id' => self::ACCEPTANCE_ADMIN_USER_ID]);
-
-        $I->amOnPage('/admin/uzivatele?edit='.$adminId);
+        $I->amOnPage('/admin/uzivatele?edit='.self::ACCEPTANCE_ADMIN_USER_ID);
         $I->waitForElementVisible('[data-test="admin-users-form-collapse"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-test="admin-users-form-cancel"]');
+        $I->see((string) self::ACCEPTANCE_ADMIN_USER_ID, '[data-test="admin-users-edited-user-id"]');
+        $I->dontSeeElement('[data-test="admin-users-form"] input[name="userId"]');
+        $I->seeElement('[data-test="admin-users-form-actions"] input[type="submit"]');
+        $I->seeElement('[data-test="admin-users-form-actions"] [data-test="admin-users-form-cancel"]');
 
         $I->clickStable('[data-test="admin-users-form-cancel"]');
         $I->waitForElementVisible('[data-test="admin-users-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
@@ -384,8 +426,9 @@ final class AdminCest extends BaseAcceptanceCest
 
     private function becomeAdmin(): void
     {
-        $this->I->haveInDatabase('admin_user', [
+        $this->I->haveInDatabase('system_user_role', [
             'user_id' => self::ACCEPTANCE_ADMIN_USER_ID,
+            'role' => 'admin',
             'created_at' => '2026-03-19 12:00:00',
         ]);
     }
