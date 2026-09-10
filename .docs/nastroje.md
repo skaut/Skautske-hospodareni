@@ -17,16 +17,16 @@ bin/console migrations:diff
 ## Buildování frontendu
 Pro vybuildování assetů používáme [Webpack](https://webpack.js.org/) a [Sass](https://sass-lang.com/).
 
-Yarn je k dispozici v hlavním docker containeru.
+npm je k dispozici v hlavním docker containeru.
 
 ```bash
-yarn install
-yarn build
+npm install
+npm run build
 ```
 
 Pro automatické buildování při změně SCSS/TS souboru, lze použít:
 ```bash
-yarn build --watch
+npm run build -- --watch
 ```
 
 ## Testy
