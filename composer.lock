@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c8bbfb2506524a09161fbd8e5064f791",
+    "content-hash": "0c364325e6faa0a06e24c18556b663ed",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -958,6 +958,72 @@
                 }
             ],
             "time": "2023-09-05T08:23:55+00:00"
+        },
+        {
+            "name": "contributte/forms-multiplier",
+            "version": "v3.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/contributte/forms-multiplier.git",
+                "reference": "80e15b6515a372c46e564decc7608f2f548d42d6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/contributte/forms-multiplier/zipball/80e15b6515a372c46e564decc7608f2f548d42d6",
+                "reference": "80e15b6515a372c46e564decc7608f2f548d42d6",
+                "shasum": ""
+            },
+            "require": {
+                "nette/forms": "^3.1.0",
+                "php": ">=7.2"
+            },
+            "require-dev": {
+                "codeception/codeception": "^4.0.0",
+                "codeception/module-asserts": "^1.3",
+                "codeception/module-phpbrowser": "^1.0",
+                "latte/latte": "^3.0.0",
+                "nette/application": "^3.0.0",
+                "nette/di": "^3.0.0",
+                "ninjify/qa": "^0.12",
+                "phpstan/phpstan": "^1.0",
+                "phpstan/phpstan-deprecation-rules": "^1.0",
+                "phpstan/phpstan-nette": "^1.0",
+                "webchemistry/testing-helpers": "~2.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Contributte\\FormMultiplier\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Multiplier for nette forms",
+            "keywords": [
+                "Forms",
+                "contributte",
+                "multiplier",
+                "nette"
+            ],
+            "support": {
+                "issues": "https://github.com/contributte/forms-multiplier/issues",
+                "source": "https://github.com/contributte/forms-multiplier/tree/v3.3.1"
+            },
+            "funding": [
+                {
+                    "url": "https://contributte.org/partners.html",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/f3l1x",
+                    "type": "github"
+                }
+            ],
+            "time": "2022-12-03T18:36:23+00:00"
         },
         {
             "name": "contributte/menu-control",
@@ -3691,79 +3757,6 @@
                 "source": "https://github.com/Jean85/pretty-package-versions/tree/2.1.1"
             },
             "time": "2025-03-19T14:43:43+00:00"
-        },
-        {
-            "name": "kdyby/forms-replicator",
-            "version": "v2.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Kdyby/FormsReplicator.git",
-                "reference": "cd6c9ccfaade43b85d181a8041ec5a7f842969b1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Kdyby/FormsReplicator/zipball/cd6c9ccfaade43b85d181a8041ec5a7f842969b1",
-                "reference": "cd6c9ccfaade43b85d181a8041ec5a7f842969b1",
-                "shasum": ""
-            },
-            "require": {
-                "nette/forms": "^3.0",
-                "nette/utils": "^3.0",
-                "php": ">=7.1"
-            },
-            "require-dev": {
-                "nette/application": "^3.0@rc",
-                "nette/bootstrap": "^3.0@rc",
-                "nette/di": "^3.0@rc",
-                "nette/tester": "^2.2",
-                "tracy/tracy": "^2.6"
-            },
-            "suggest": {
-                "nette/di": "to use ReplicatorExtension[CompilerExtension]"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Kdyby\\Replicator\\": "src/Replicator/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause",
-                "GPL-2.0",
-                "GPL-3.0"
-            ],
-            "authors": [
-                {
-                    "name": "Filip Procházka",
-                    "email": "filip@prochazka.su",
-                    "homepage": "http://filip-prochazka.com"
-                },
-                {
-                    "name": "David Šolc",
-                    "email": "solcik@gmail.com",
-                    "homepage": "https://solc.dev"
-                }
-            ],
-            "description": "Nette forms container replicator aka addDynamic",
-            "homepage": "http://kdyby.org",
-            "keywords": [
-                "Forms",
-                "addDynamic",
-                "kdyby",
-                "nette",
-                "replicator"
-            ],
-            "support": {
-                "issues": "https://github.com/Kdyby/FormsReplicator/issues",
-                "source": "https://github.com/Kdyby/FormsReplicator/tree/master"
-            },
-            "time": "2019-03-18T16:16:28+00:00"
         },
         {
             "name": "laminas/laminas-code",
