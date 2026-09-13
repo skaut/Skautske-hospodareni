@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace App\Model\Bank\Services;
 
+use App\Model\Bank\Enum\BankTransactionSource;
+use App\Model\Bank\Transaction;
 use Codeception\Test\Unit;
+use DateTimeImmutable;
 use InvalidArgumentException;
 
 use function file_get_contents;
+use function sprintf;
 
 final class GpcParserTest extends Unit
 {
@@ -178,5 +182,74 @@ final class GpcParserTest extends Unit
 
         // Účet u FIO, kde kód 3 neexistuje — soubor patrí jiné bance a nesmí projít tiše.
         (new GpcParser())->parse('123456789/2010', $contents, new BankTransactionKeyGenerator());
+    }
+
+    /**
+     * Zlatá hodnota odebraná ze skutečné implementace nad ifm24/bank-statements ještě před jejím
+     * smazáním. Klíč je identifikátor napříč tabulkami (bank_transaction_pairing, snapshot
+     * spárované transakce v pa_payment a invoice), takže existující data se nepřepisují — import
+     * musí umět transakci dohledat i pod tímto starým klíčem.
+     */
+    public function testLegacyKeyMatchesTheKeyProducedByThePreviousImplementation(): void
+    {
+        $transaction = (new GpcParser())->parse(
+            '8310192897/2010',
+            (string) file_get_contents(__DIR__.'/../../../_data/bank/sample.gpc'),
+            new BankTransactionKeyGenerator(),
+        )[0];
+
+        self::assertSame(
+            'gpc:0d629eef2403d55f38643fc8da26e685fb5d021e259bee6d0c90734672716906',
+            $transaction->getLegacyId(),
+        );
+        self::assertNotSame($transaction->getId(), $transaction->getLegacyId());
+        self::assertSame(
+            [$transaction->getId(), $transaction->getLegacyId()],
+            $transaction->getKnownIds(),
+        );
+    }
+
+    /**
+     * U protiúčtu, který nová i stará implementace formátovaly stejně, se klíč nemění a legacy klíč
+     * je tedy zbytečný.
+     */
+    public function testKnownIdsHoldASingleKeyWhenNothingChanged(): void
+    {
+        $transaction = new Transaction(
+            'gpc:abc',
+            BankTransactionSource::GPC,
+            new DateTimeImmutable('2026-02-28'),
+            -24.2,
+            null,
+            'Nekdo',
+        );
+
+        self::assertNull($transaction->getLegacyId());
+        self::assertSame(['gpc:abc'], $transaction->getKnownIds());
+    }
+
+    /**
+     * Rekonstrukce nenormalizovaného protiúčtu musí dát stejný klíč jako výpočet ze surové hodnoty,
+     * jakou vracela stará knihovna.
+     */
+    public function testLegacyKeyReconstructsTheUnnormalizedCounterAccount(): void
+    {
+        $generator = new BankTransactionKeyGenerator();
+        $date = new DateTimeImmutable('2026-03-15');
+
+        foreach (
+            [
+                '19-17608/0100' => '000019-0000017608/0100',
+                '8310192897/2010' => '000000-8310192897/2010',
+                '112233/0800' => '000000-0000112233/0800',
+                null => '000000-0000000000/0000',
+            ] as $normalized => $legacyRaw
+        ) {
+            self::assertSame(
+                $generator->fromGpc('1/2010', $date, 100.0, $legacyRaw, 'Nekdo', 1, 2, 'note'),
+                $generator->legacyFromGpc('1/2010', $date, 100.0, $normalized === '' ? null : $normalized, 'Nekdo', 1, 2, 'note'),
+                sprintf('protiúčet %s', $legacyRaw),
+            );
+        }
     }
 }
