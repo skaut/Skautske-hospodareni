@@ -24,7 +24,7 @@ class UnitBasePresenter extends BaseSectionPresenter
         parent::startup();
 
         $this->type = 'unit';
-        $this->year = (int) $this->getParameter('year', date('Y'));
+        $this->year = (int) ($this->getParameter('year') ?? date('Y'));
 
         $user = $this->getUser();
         $readableUnits = $this->unitService->getReadUnits($user);
