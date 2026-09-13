@@ -130,7 +130,7 @@ final class InvoiceMailingService
             return null;
         }
 
-        if ($invoice->getPaymentType()->value !== InvoicePaymentType::TRANSFER->value) {
+        if ($invoice->getPaymentType() !== InvoicePaymentType::TRANSFER) {
             return null;
         }
 

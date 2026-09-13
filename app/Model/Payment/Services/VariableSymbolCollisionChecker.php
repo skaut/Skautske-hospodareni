@@ -25,7 +25,7 @@ final class VariableSymbolCollisionChecker
 
     public function assertUniqueForInvoice(Invoice $invoice, VariableSymbol $variableSymbol): void
     {
-        if ($invoice->getPaymentType()->value !== InvoicePaymentType::TRANSFER->value) {
+        if ($invoice->getPaymentType() !== InvoicePaymentType::TRANSFER) {
             return;
         }
 
