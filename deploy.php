@@ -108,8 +108,6 @@ task('build:runtime_files', function () {
         'APPLICATION_ID' => requiredEnv('APPLICATION_ID'),
         'SEND_EMAIL' => requiredEnv('SEND_EMAIL'),
         'ERROR_EMAILS' => optionalEnv('ERROR_EMAILS') ?? '',
-        'ENVIRONMENT_LABEL' => optionalEnv('ENVIRONMENT_LABEL') ?? 'Testovací server',
-        'ENVIRONMENT_COLOR' => optionalEnv('ENVIRONMENT_COLOR') ?? 'test',
         'MAINTENANCE_MODE' => optionalEnv('MAINTENANCE_MODE') ?? 'false',
         'MAINTENANCE_ALLOWED_IPS' => optionalEnv('MAINTENANCE_ALLOWED_IPS') ?? '',
         'MAINTENANCE_STARTED_AT_LABEL' => optionalEnv('MAINTENANCE_STARTED_AT_LABEL') ?? 'čtvrtek 2. 7. 2026 od 20:00',
@@ -127,7 +125,7 @@ task('build:runtime_files', function () {
         'SKAUTIS_TEST_MODE' => optionalEnv('SKAUTIS_TEST_MODE') ?? ($appEnv === 'prod' ? 'false' : 'true'),
     ];
 
-    foreach (['TEST_BACKGROUND', 'SENTRY_DSN'] as $name) {
+    foreach (['SENTRY_DSN'] as $name) {
         $value = optionalEnv($name);
         if ($value !== null) {
             $values[$name] = $value;

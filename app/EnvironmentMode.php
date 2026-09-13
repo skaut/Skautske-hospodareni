@@ -33,6 +33,9 @@ enum EnvironmentMode: string
 
     public function shouldShowBadge(): bool
     {
-        return $this->value !== self::PRODUCTION->value;
+        return match ($this) {
+            self::PRODUCTION => false,
+            default => true,
+        };
     }
 }
