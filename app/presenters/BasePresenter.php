@@ -19,8 +19,8 @@ use App\Model\User\UserPreferencesService;
 use App\Model\User\UserService;
 use Contributte\MenuControl\IMenuItem;
 use Contributte\MenuControl\MenuContainer;
-use Contributte\MenuControl\UI\IMenuComponentFactory;
 use Contributte\MenuControl\UI\MenuComponent;
+use Contributte\MenuControl\UI\MenuComponentFactory;
 use LogicException;
 use Nette\Application\BadRequestException;
 use Nette\Application\LinkGenerator;
@@ -82,7 +82,7 @@ abstract class BasePresenter extends Presenter
 
     private Context $appContext;
 
-    private IMenuComponentFactory $menuComponentFactory;
+    private MenuComponentFactory $menuComponentFactory;
 
     private MenuContainer $menuContainer;
 
@@ -100,7 +100,7 @@ abstract class BasePresenter extends Presenter
         LoggerInterface $logger,
         LinkGenerator $linkGenerator,
         Context $appContext,
-        IMenuComponentFactory $menuComponentFactory,
+        MenuComponentFactory $menuComponentFactory,
         MenuContainer $menuContainer,
         UserPreferencesService $userPreferences,
     ): void {
@@ -350,7 +350,7 @@ abstract class BasePresenter extends Presenter
         $presenterDir = dirname((string) static::getReflection()->getFileName());
 
         return [
-            $presenterDir.'/'.$this->view.'.latte',
+            $presenterDir.'/'.$this->getView().'.latte',
             ...parent::formatTemplateFiles(),
         ];
     }
@@ -358,15 +358,15 @@ abstract class BasePresenter extends Presenter
     /** @return string[] */
     public function formatLayoutTemplateFiles(): array
     {
-        if (preg_match('#/|\\\\#', (string) $this->layout)) {
-            return [(string) $this->layout];
+        if (preg_match('#/|\\\\#', (string) $this->getLayout())) {
+            return [(string) $this->getLayout()];
         }
 
         if (! $this->usesPresentationDirectory()) {
             return parent::formatLayoutTemplateFiles();
         }
 
-        $layout = $this->layout ?: 'layout';
+        $layout = $this->getLayout() ?: 'layout';
         $presenterDir = dirname((string) static::getReflection()->getFileName());
         $moduleDir = dirname($presenterDir);
         $presentationRoot = dirname($moduleDir);
