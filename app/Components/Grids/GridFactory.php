@@ -65,8 +65,8 @@ class GridFactory
             }
             $baseTemplate = __DIR__.'/../../Components/templates/datagrid.latte';
 
-            // This is variable with original layout in DataGrid 6.0+ (it replaces $original_template)
-            $template->setParameters(['originalTemplate' => $baseTemplate]);
+            // $originalTemplate (vendor default 7.x) nastavuje sám grid v render(); náš datagrid.latte
+            // ho přes {extends $originalTemplate} rozšiřuje. Konkrétní gridy dědí přes $baseTemplate.
             $template->setParameters(['baseTemplate' => $baseTemplate]);
             $grid->setTemplateFile($templateFile ?? $baseTemplate);
 
@@ -74,9 +74,9 @@ class GridFactory
         };
 
         $grid->onRedraw[] = function () use ($grid): void {
-            $presenter = $grid->presenter;
+            $presenter = $grid->getPresenter();
 
-            if (! $presenter->isAjax()) {
+            if ($presenter === null || ! $presenter->isAjax()) {
                 return;
             }
 
