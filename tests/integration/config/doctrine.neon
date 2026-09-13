@@ -14,20 +14,17 @@ services:
 extensions:
     console: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
     decorator: Nette\DI\Extensions\DecoratorExtension # default extension in Nette DI
-    messenger: Fmasa\Messenger\DI\MessengerExtension
+    messenger: App\Model\Infrastructure\Messenger\DI\MessengerExtension
     http: Nette\Bridges\HttpDI\HttpExtension
 
 messenger:
     buses:
         commandBus:
             singleHandlerPerMessage: true
-            panel: false
         eventBus:
             allowNoHandlers: true
-            panel: false
         queryBus:
             singleHandlerPerMessage: true
-            panel: false
 
 includes:
     - ../../../app/config/model/doctrine.neon

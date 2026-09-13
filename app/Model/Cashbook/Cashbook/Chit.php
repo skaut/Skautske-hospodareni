@@ -12,7 +12,6 @@ use App\Model\Common\FilePath;
 use App\Model\Common\ScanNotFound;
 use App\Model\Common\ShouldNotHappen;
 use Assert\Assertion;
-use Consistence\Doctrine\Enum\EnumAnnotation;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -25,68 +24,46 @@ use function implode;
 use function in_array;
 use function sprintf;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(name="ac_chits")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'ac_chits')]
 class Chit
 {
-    /**
-     * @ORM\Id()
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue()
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private ?int $id = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Cashbook::class, inversedBy="chits")
-     * @ORM\JoinColumn(name="eventId", nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: Cashbook::class, inversedBy: 'chits')]
+    #[ORM\JoinColumn(name: 'eventId', nullable: false)]
     private Cashbook $cashbook;
 
-    /** @ORM\Embedded(class=ChitBody::class, columnPrefix=false) */
+    #[ORM\Embedded(class: ChitBody::class, columnPrefix: false)]
     private ChitBody $body;
 
     /**
-     * @ORM\ManyToMany(targetEntity=ChitItem::class, cascade={"persist", "remove"}, orphanRemoval=true)
-     * @ORM\JoinTable(
-     *     name="ac_chit_to_item",
-     *     joinColumns={@ORM\JoinColumn(name="chit_id", referencedColumnName="id", onDelete="CASCADE")},
-     *     inverseJoinColumns={
-     *         @ORM\JoinColumn(name="item_id", referencedColumnName="id", unique=true, onDelete="CASCADE")
-     *     }
-     * )
-     *
      * @var Collection&iterable<ChitItem>
      */
+    #[ORM\ManyToMany(targetEntity: ChitItem::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\JoinTable(name: 'ac_chit_to_item', joinColumns: [new ORM\JoinColumn(name: 'chit_id', referencedColumnName: 'id', onDelete: 'CASCADE')], inverseJoinColumns: [new ORM\JoinColumn(name: 'item_id', referencedColumnName: 'id', unique: true, onDelete: 'CASCADE')])]
     private Collection $items;
 
     /**
-     * @ORM\Column(type="string_enum", length=13)
-     *
      * @var PaymentMethod
-     * @EnumAnnotation(class=PaymentMethod::class)
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
+    #[ORM\Column(type: 'chit_payment_method', length: 13)]
     private $paymentMethod;
 
     /**
      * ID of person that locked this.
-     *
-     * @ORM\Column(type="integer", nullable=true)
      */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $locked = null;
 
     /**
-     * @ORM\OneToMany(
-     *     targetEntity=ChitScan::class,
-     *     mappedBy="chit",
-     *     cascade={"persist", "remove"},
-     *     orphanRemoval=true
-     * )
-     *
      * @var Collection&iterable<ChitScan>
      */
+    #[ORM\OneToMany(targetEntity: ChitScan::class, mappedBy: 'chit', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $scans;
 
     /**
