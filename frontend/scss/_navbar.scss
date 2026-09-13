@@ -291,44 +291,28 @@
 .navbar--beta .btn-light:hover,
 .navbar--beta .btn-light:focus,
 .navbar--beta .dark-mode-toggle:hover,
-.navbar--beta .dark-mode-toggle:focus {
-  color: #4d401d;
-}
-
+.navbar--beta .dark-mode-toggle:focus,
 .navbar--dev .navbar-logout:hover,
 .navbar--dev .navbar-logout:focus,
 .navbar--test .navbar-logout:hover,
 .navbar--test .navbar-logout:focus,
 .navbar--beta .navbar-logout:hover,
 .navbar--beta .navbar-logout:focus {
-  color: #4d401d;
+  // Each variant defines its own --site-header-color above; hardcoding one
+  // variant's hex here left the others off-palette.
+  color: var(--site-header-color);
 }
 
 .navbar--dev .navbar-toggler,
 .navbar--test .navbar-toggler,
 .navbar--beta .navbar-toggler {
-  border-color: rgba(77, 64, 29, 0.25);
+  border-color: var(--site-header-control-border);
 }
 
 .navbar--dev .navbar-toggler-icon,
 .navbar--test .navbar-toggler-icon,
 .navbar--beta .navbar-toggler-icon {
   filter: none;
-}
-
-.navbar--beta .nav-link:hover,
-.navbar--beta .nav-link:focus,
-.navbar--beta .nav-item.active .nav-link,
-.navbar--beta .nav-link.active,
-.navbar--beta .active > .btn,
-.navbar--beta .nav-item.active .nav-link-icon,
-.navbar--beta .btn-light:hover,
-.navbar--beta .btn-light:focus,
-.navbar--beta .dark-mode-toggle:hover,
-.navbar--beta .dark-mode-toggle:focus,
-.navbar--beta .navbar-logout:hover,
-.navbar--beta .navbar-logout:focus {
-  color: #173b65;
 }
 
 .navbar-test-badge {
