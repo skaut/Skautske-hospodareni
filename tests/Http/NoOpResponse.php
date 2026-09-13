@@ -7,8 +7,9 @@ namespace Tests\Http;
 use AllowDynamicProperties;
 use DateTimeInterface;
 use Nette\Http\IResponse;
+use Nette\Http\SameSite;
 
-#[AllowDynamicProperties] // ← přidat
+#[AllowDynamicProperties]
 final class NoOpResponse implements IResponse
 {
     private int $code = IResponse::S200_OK;
@@ -71,12 +72,7 @@ final class NoOpResponse implements IResponse
         /* no-op */
     }
 
-    /**
-     * @param string|int|DateTimeInterface $expire time, value null means "until the browser session ends"
-     *
-     * @return $this
-     */
-    public function setCookie(string $name, string $value, $expire, ?string $path = null, ?string $domain = null, ?bool $secure = null, ?bool $httpOnly = null, ?string $sameSite = null): static
+    public function setCookie(string $name, string $value, string|int|DateTimeInterface|null $expire, ?string $path = null, ?string $domain = null, ?bool $secure = null, ?bool $httpOnly = null, SameSite|string|null $sameSite = null, bool $partitioned = false): static
     {
         return $this;
     }
