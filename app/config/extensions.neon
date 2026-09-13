@@ -1,5 +1,5 @@
 extensions:
-    skautis: Skautis\Nette\SkautisExtension
+    skautis: App\Model\Skautis\DI\SkautisExtension
     messenger: Fmasa\Messenger\DI\MessengerExtension
     console: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
     console.cache: Contributte\Console\Extra\DI\CacheConsoleExtension(%consoleMode%)
