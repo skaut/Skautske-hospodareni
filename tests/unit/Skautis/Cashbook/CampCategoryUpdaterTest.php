@@ -52,19 +52,14 @@ final class CampCategoryUpdaterTest extends Unit
                 'IsEstimate' => false,
             ], 'eventCampStatement');
 
-        $campCategories = m::mock(ICampCategoryRepository::class);
-        $campCategories->expects('findForCamp')
-            ->with(self::CAMP_ID)
-            ->andReturn([
-                new CampCategory(1, Operation::INCOME(), 'Příjem od dětí', MoneyFactory::fromFloat(100.0)),
-                new CampCategory(2, Operation::EXPENSE(), 'Materiál', MoneyFactory::fromFloat(50.0)),
-            ]);
-
         $updater = new CampCategoryUpdater(
             $eventWebService,
             $this->createAuthorizator(true),
             $this->createCampRepository(),
-            $campCategories,
+            $this->createCampCategories([
+                new CampCategory(1, Operation::INCOME(), 'Příjem od dětí', MoneyFactory::fromFloat(100.0)),
+                new CampCategory(2, Operation::EXPENSE(), 'Materiál', MoneyFactory::fromFloat(50.0)),
+            ]),
         );
 
         $updater->updateCategories(CashbookId::generate(), [1 => 200.0, 2 => 50.0]);
@@ -75,20 +70,67 @@ final class CampCategoryUpdaterTest extends Unit
         $eventWebService = m::mock(WebServiceInterface::class);
         $eventWebService->shouldNotReceive('EventCampStatementUpdate');
 
-        $authorizator = m::mock(IAuthorizator::class);
-        $authorizator->shouldNotReceive('isAllowed');
-
-        $campRepository = m::mock(ICampRepository::class);
-        $campRepository->shouldNotReceive('findByCashbookId');
-
-        $campCategories = m::mock(ICampCategoryRepository::class);
-        $campCategories->shouldNotReceive('findForCamp');
-
-        $updater = new CampCategoryUpdater($eventWebService, $authorizator, $campRepository, $campCategories);
+        $updater = new CampCategoryUpdater(
+            $eventWebService,
+            $this->createAuthorizator(true),
+            $this->createCampRepository(),
+            $this->createCampCategories([
+                new CampCategory(1, Operation::INCOME(), 'Příjem od dětí', MoneyFactory::fromFloat(100.0)),
+            ]),
+        );
 
         $this->expectException(NegativeCampCategoryTotal::class);
 
         $updater->updateCategories(CashbookId::generate(), [1 => -0.01]);
+    }
+
+    public function testNegativeTotalOfCategoryThatIsNotSentToSkautisDoesNotBlockUpdate(): void
+    {
+        // Category 2 exists only in the cashbook, so it is never sent to Skautis and its
+        // negative total must not block updating category 1.
+        $eventWebService = m::mock(WebServiceInterface::class);
+        $eventWebService->expects('EventCampStatementUpdate')
+            ->with([
+                'ID' => 1,
+                'ID_EventCamp' => self::CAMP_ID,
+                'Ammount' => 200.0,
+                'IsEstimate' => false,
+            ], 'eventCampStatement');
+
+        $updater = new CampCategoryUpdater(
+            $eventWebService,
+            $this->createAuthorizator(true),
+            $this->createCampRepository(),
+            $this->createCampCategories([
+                new CampCategory(1, Operation::INCOME(), 'Příjem od dětí', MoneyFactory::fromFloat(100.0)),
+            ]),
+        );
+
+        $updater->updateCategories(CashbookId::generate(), [1 => 200.0, 2 => -50.0]);
+    }
+
+    public function testResetsCategoryThatIsNoLongerInCashbookButStillHasTotalInSkautis(): void
+    {
+        $eventWebService = m::mock(WebServiceInterface::class);
+        $eventWebService->expects('EventCampStatementUpdate')
+            ->with([
+                'ID' => 2,
+                'ID_EventCamp' => self::CAMP_ID,
+                'Ammount' => 0.0,
+                'IsEstimate' => false,
+            ], 'eventCampStatement');
+
+        $updater = new CampCategoryUpdater(
+            $eventWebService,
+            $this->createAuthorizator(true),
+            $this->createCampRepository(),
+            $this->createCampCategories([
+                new CampCategory(1, Operation::INCOME(), 'Příjem od dětí', MoneyFactory::fromFloat(100.0)),
+                new CampCategory(2, Operation::EXPENSE(), 'Materiál', MoneyFactory::fromFloat(50.0)),
+            ]),
+        );
+
+        $updater->updateCategories(CashbookId::generate(), [1 => 100.0]);
     }
 
     public function testAllowsZeroCategoryTotal(): void
@@ -102,18 +144,13 @@ final class CampCategoryUpdaterTest extends Unit
                 'IsEstimate' => false,
             ], 'eventCampStatement');
 
-        $campCategories = m::mock(ICampCategoryRepository::class);
-        $campCategories->expects('findForCamp')
-            ->with(self::CAMP_ID)
-            ->andReturn([
-                new CampCategory(1, Operation::INCOME(), 'Příjem od dětí', MoneyFactory::fromFloat(100.0)),
-            ]);
-
         $updater = new CampCategoryUpdater(
             $eventWebService,
             $this->createAuthorizator(true),
             $this->createCampRepository(),
-            $campCategories,
+            $this->createCampCategories([
+                new CampCategory(1, Operation::INCOME(), 'Příjem od dětí', MoneyFactory::fromFloat(100.0)),
+            ]),
         );
 
         $updater->updateCategories(CashbookId::generate(), [1 => 0.0]);
@@ -127,6 +164,17 @@ final class CampCategoryUpdaterTest extends Unit
             ->andReturn($isAllowed);
 
         return $authorizator;
+    }
+
+    /** @param CampCategory[] $categories */
+    private function createCampCategories(array $categories): ICampCategoryRepository
+    {
+        $campCategories = m::mock(ICampCategoryRepository::class);
+        $campCategories->expects('findForCamp')
+            ->with(self::CAMP_ID)
+            ->andReturn($categories);
+
+        return $campCategories;
     }
 
     private function createCampRepository(): ICampRepository
