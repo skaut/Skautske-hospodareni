@@ -4,6 +4,14 @@ parameters:
             identifier: missingType.generics
         # Errors related mostly to usage of assert($x instanceof A || $x === null) and similar asserts
         - '~Unreachable statement - code above always terminates.~'
+        # Codeception\Example (codeception 5) je iterovatelný, ale negenerický – hodnotový typ nelze anotovat.
+        -
+            identifier: missingType.iterableValue
+            path: tests/acceptance/PublicAccessCest.php
+        # getClassMetadata() nad dynamickým class-string neumí navázat generický typ (limit phpstan-doctrine).
+        -
+            identifier: argument.templateType
+            path: tests/_support/IntegrationTest.php
 
     doctrine:
         objectManagerLoader: tests/object-manager.php
