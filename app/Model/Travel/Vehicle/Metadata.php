@@ -7,13 +7,13 @@ namespace App\Model\Travel\Vehicle;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
-/** @ORM\Embeddable() */
+#[ORM\Embeddable]
 class Metadata
 {
-    /** @ORM\Column(type="datetime_immutable") */
+    #[ORM\Column(type: 'datetime_immutable')]
     private DateTimeImmutable $createdAt;
 
-    /** @ORM\Column(type="string") */
+    #[ORM\Column(type: 'string')]
     private string $authorName;
 
     public function __construct(DateTimeImmutable $createdAt, string $authorName)

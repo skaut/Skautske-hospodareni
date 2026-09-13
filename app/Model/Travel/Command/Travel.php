@@ -7,31 +7,26 @@ namespace App\Model\Travel\Command;
 use App\Model\Travel\Command;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(name="tc_travels")
- * @ORM\InheritanceType(value="SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="has_fuel", type="smallint")
- * @ORM\DiscriminatorMap(value={"1"=VehicleTravel::class, "0"=TransportTravel::class})
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'tc_travels')]
+#[ORM\InheritanceType(value: 'SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'has_fuel', type: 'smallint')]
+#[ORM\DiscriminatorMap(value: ['1' => VehicleTravel::class, '0' => TransportTravel::class])]
 abstract class Travel
 {
-    /**
-     * @ORM\Id()
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
     /**
      * @internal - for mapping only
-     *
-     * @ORM\Id()
-     * @ORM\ManyToOne(targetEntity=Command::class, inversedBy="travels")
-     * @ORM\JoinColumn(name="command_id", referencedColumnName="id", nullable=false)
      */
+    #[ORM\Id]
+    #[ORM\ManyToOne(targetEntity: Command::class, inversedBy: 'travels')]
+    #[ORM\JoinColumn(name: 'command_id', referencedColumnName: 'id', nullable: false)]
     private Command $command;
 
-    /** @ORM\Embedded(class=TravelDetails::class, columnPrefix=false) */
+    #[ORM\Embedded(class: TravelDetails::class, columnPrefix: false)]
     private TravelDetails $details;
 
     protected function __construct(int $id, Command $command, TravelDetails $details)

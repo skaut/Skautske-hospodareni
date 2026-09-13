@@ -5,51 +5,40 @@ declare(strict_types=1);
 namespace App\Model\Logger;
 
 use App\Model\Logger\Log\Type;
-use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(
- *     name="log",
- *     indexes={
- *          @ORM\Index(name="unitId", columns={"unit_id"}),
- *          @ORM\Index(name="typeId", columns={"type_id"}),
- *      }
- * )
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'log')]
+#[ORM\Index(name: 'unitId', columns: ['unit_id'])]
+#[ORM\Index(name: 'typeId', columns: ['type_id'])]
 class LogEntry
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    /** @ORM\Column(type="integer") */
+    #[ORM\Column(type: 'integer')]
     private int $unitId;
 
-    /** @ORM\Column(type="datetime_immutable") */
+    #[ORM\Column(type: 'datetime_immutable')]
     private DateTimeImmutable $date;
 
-    /** @ORM\Column(type="integer") */
+    #[ORM\Column(type: 'integer')]
     private int $userId;
 
-    /** @ORM\Column(type="text") */
+    #[ORM\Column(type: 'text')]
     private string $description;
 
     /**
-     * @ORM\Column(type="string_enum")
-     *
-     * @Enum(class=Type::class)
      * @var Type
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
+    #[ORM\Column(type: 'log_type')]
     private $type;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $typeId = null;
 
     public function __construct(

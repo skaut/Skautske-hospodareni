@@ -31,6 +31,7 @@ use App\Model\User\SkautisRole;
 use App\Presentation\InvoiceAccess\InvoiceAccessGuard;
 use App\Presentation\Payments\PaymentsBasePresenter;
 use Component\Forms\BaseForm;
+use Contributte\Datagrid\Column\Action\Confirmation\StringConfirmation;
 use Illuminate\Support\Collection;
 use LogicException;
 use Nette\Forms\Controls\TextInput;
@@ -38,7 +39,6 @@ use Nette\Forms\Form;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\FileSystem;
 use Throwable;
-use Ublaboo\DataGrid\Column\Action\Confirmation\StringConfirmation;
 
 use function array_filter;
 use function array_keys;

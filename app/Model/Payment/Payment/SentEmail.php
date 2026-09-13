@@ -6,42 +6,33 @@ namespace App\Model\Payment\Payment;
 
 use App\Model\Payment\EmailType;
 use App\Model\Payment\Payment;
-use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(name="pa_payment_sent_emails")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'pa_payment_sent_emails')]
 class SentEmail
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Payment::class, inversedBy="sentEmails")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: Payment::class, inversedBy: 'sentEmails')]
+    #[ORM\JoinColumn(nullable: false)]
     private Payment $payment;
 
     /**
-     * @ORM\Column(type="string_enum")
-     *
-     * @Enum(class=EmailType::class)
      * @var EmailType
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
+    #[ORM\Column(type: 'payment_email_type')]
     private $type;
 
-    /** @ORM\Column(type="datetime_immutable") */
+    #[ORM\Column(type: 'datetime_immutable')]
     private DateTimeImmutable $time;
 
-    /** @ORM\Column(type="string") */
+    #[ORM\Column(type: 'string')]
     private string $senderName;
 
     public function __construct(Payment $payment, EmailType $type, DateTimeImmutable $time, string $senderName)

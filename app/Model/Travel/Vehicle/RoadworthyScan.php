@@ -8,30 +8,25 @@ use App\Model\Common\FilePath;
 use App\Model\Travel\Vehicle;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(name="tc_vehicle_roadworthy_scan")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'tc_vehicle_roadworthy_scan')]
 class RoadworthyScan
 {
     public const FILE_PATH_PREFIX = 'roadworthies';
 
     /**
      * @internal only for infrastructure
-     *
-     * @ORM\Id()
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
      */
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Vehicle::class, inversedBy="roadworthyScans")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: Vehicle::class, inversedBy: 'roadworthyScans')]
+    #[ORM\JoinColumn(nullable: false)]
     private Vehicle $vehicle;
 
-    /** @ORM\Column(type="file_path") */
+    #[ORM\Column(type: 'file_path')]
     private FilePath $filePath;
 
     public function __construct(Vehicle $vehicle, FilePath $filePath)
