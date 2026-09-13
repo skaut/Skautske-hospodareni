@@ -429,7 +429,7 @@ class ExportService
             'qrPaymentSvg' => $qrPaymentSvg,
             'stampImagePath' => $stampImageSrc ?? $this->getInvoiceStampImagePath($invoice),
             'logoImagePath' => $logoImageSrc ?? $this->getInvoiceLogoImagePath($invoice),
-            'user' => [
+            'issuer' => [
                 'name' => $invoice->getIssuedBy(),
             ],
         ];
