@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Components\Grids;
 
+use Contributte\Datagrid\DataSource\DoctrineCollectionDataSource;
+use Contributte\Datagrid\DataSource\IDataSource;
+use Contributte\Datagrid\Filter\Filter;
+use Contributte\Datagrid\Utils\Sorting;
 use Doctrine\Common\Collections\ArrayCollection;
-use Ublaboo\DataGrid\DataSource\DoctrineCollectionDataSource;
-use Ublaboo\DataGrid\DataSource\IDataSource;
-use Ublaboo\DataGrid\Filter\Filter;
-use Ublaboo\DataGrid\Utils\Sorting;
 
 use function count;
 use function is_array;
