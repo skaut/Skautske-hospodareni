@@ -176,7 +176,7 @@ class ContractPresenter extends \App\Presentation\Travel\TravelBasePresenter
 
     private function formCreateContractSubmitted(Form $form): void
     {
-        $v = $form->getValues();
+        $v = $form->getValues(\Nette\Utils\ArrayHash::class);
 
         $passenger = new Passenger(
             (string) $v->passengerName,

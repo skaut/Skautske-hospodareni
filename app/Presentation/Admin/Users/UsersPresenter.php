@@ -110,7 +110,7 @@ final class UsersPresenter extends \App\Presentation\Admin\AdminBasePresenter
             $this->redirect('default');
         }
 
-        $values = $form->getValues();
+        $values = $form->getValues(\Nette\Utils\ArrayHash::class);
         $userId = $this->editedUserId ?? (int) $values->userId;
         if ($this->editedUserId === null && $this->systemUserRoleRepository->hasUserId($userId)) {
             $this->flashMessage('Tento user_id už má přiřazené systémové role.', 'warning');

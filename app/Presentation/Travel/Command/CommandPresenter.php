@@ -269,7 +269,7 @@ final class CommandPresenter extends \App\BasePresenter
 
     private function formAddTravelSubmitted(Form $form): void
     {
-        $values = $form->getValues();
+        $values = $form->getValues(\Nette\Utils\ArrayHash::class);
         $commandId = (int) $values['command_id'];
 
         if (! $this->isCommandEditable($commandId)) {

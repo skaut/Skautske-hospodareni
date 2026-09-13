@@ -49,7 +49,7 @@ final class ExportDialog extends Dialog
         $form->addSubmit('download', 'Stáhnout export');
 
         $form->onSuccess[] = function (BaseForm $form): void {
-            $this->formSucceeded($form->getValues());
+            $this->formSucceeded($form->getValues(ArrayHash::class));
         };
 
         return $form;

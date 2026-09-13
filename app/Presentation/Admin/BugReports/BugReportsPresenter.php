@@ -126,7 +126,7 @@ final class BugReportsPresenter extends \App\Presentation\Admin\AdminBasePresent
             ->setHtmlAttribute('class', 'btn btn-primary');
 
         $form->onSuccess[] = function (Form $form): void {
-            $values = $form->getValues();
+            $values = $form->getValues(\Nette\Utils\ArrayHash::class);
             $report = $this->repository->findUnresolved((int) $values->id);
             if (! $report instanceof TechnicalErrorReport) {
                 $this->flashMessage('Hlášení technické chyby nebylo nalezeno nebo už je vyřízené.', 'warning');
@@ -181,7 +181,7 @@ final class BugReportsPresenter extends \App\Presentation\Admin\AdminBasePresent
             ->setHtmlAttribute('class', 'btn btn-outline-dark btn-sm');
 
         $form->onSuccess[] = function (Form $form): void {
-            $values = $form->getValues();
+            $values = $form->getValues(\Nette\Utils\ArrayHash::class);
             $report = $this->repository->findUnresolved((int) $values->id);
             if (! $report instanceof TechnicalErrorReport) {
                 $this->flashMessage('Hlášení technické chyby nebylo nalezeno nebo už je vyřízené.', 'warning');
@@ -222,7 +222,7 @@ final class BugReportsPresenter extends \App\Presentation\Admin\AdminBasePresent
             ->setHtmlAttribute('class', 'btn btn-danger');
 
         $form->onSuccess[] = function (Form $form): void {
-            $values = $form->getValues();
+            $values = $form->getValues(\Nette\Utils\ArrayHash::class);
             $report = $this->repository->findUnresolved((int) $values->id);
             if (! $report instanceof TechnicalErrorReport) {
                 $this->flashMessage('Hlášení technické chyby nebylo nalezeno nebo už je vyřízené.', 'warning');

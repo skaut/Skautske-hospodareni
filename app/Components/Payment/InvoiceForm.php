@@ -219,7 +219,7 @@ class InvoiceForm extends BaseControl
             throw new LogicException('Kontejner odběratele nebyl nalezen.');
         }
 
-        $values = $customerContainer->getUntrustedValues();
+        $values = $customerContainer->getUntrustedValues(ArrayHash::class);
         $companyNumber = trim((string) ($values->companyNumber ?? ''));
 
         if ($companyNumber === '') {
