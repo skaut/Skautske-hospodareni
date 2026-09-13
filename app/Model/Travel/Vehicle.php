@@ -15,9 +15,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Nette\SmartObject;
 
 /**
- * @ORM\Entity()
- * @ORM\Table(name="tc_vehicle")
- *
  * @property int      $id
  * @property string   $type
  * @property int      $unitId
@@ -29,51 +26,45 @@ use Nette\SmartObject;
  * @property string   $label
  * @property Metadata $metadata
  */
+#[ORM\Entity]
+#[ORM\Table(name: 'tc_vehicle')]
 class Vehicle
 {
     use SmartObject;
 
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    /** @ORM\Column(type="string", length=64) */
+    #[ORM\Column(type: 'string', length: 64)]
     private string $type;
 
-    /** @ORM\Column(type="integer") */
+    #[ORM\Column(type: 'integer')]
     private int $unitId;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $subunitId = null;
 
-    /** @ORM\Column(type="string", length=64) */
+    #[ORM\Column(type: 'string', length: 64)]
     private string $registration;
 
-    /** @ORM\Column(type="float") */
+    #[ORM\Column(type: 'float')]
     private float $consumption;
 
-    /** @ORM\Column(type="string", length=64) */
+    #[ORM\Column(type: 'string', length: 64)]
     private string $note = '';
 
-    /** @ORM\Column(type="boolean", options={"default"=0}) */
+    #[ORM\Column(type: 'boolean', options: ['default' => 0])]
     private bool $archived = false;
 
-    /** @ORM\Embedded(class=Metadata::class) */
+    #[ORM\Embedded(class: Metadata::class)]
     private Metadata $metadata;
 
     /**
-     * @ORM\OneToMany(
-     *     targetEntity=RoadworthyScan::class,
-     *     mappedBy="vehicle",
-     *     cascade={"persist", "remove"},
-     *     orphanRemoval=true
-     * )
-     *
      * @var Collection&iterable<RoadworthyScan>
      */
+    #[ORM\OneToMany(targetEntity: RoadworthyScan::class, mappedBy: 'vehicle', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $roadworthyScans;
 
     public function __construct(string $type, Unit $unit, ?Unit $subunit, string $registration, float $consumption, Metadata $metadata)

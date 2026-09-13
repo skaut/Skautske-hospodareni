@@ -12,36 +12,28 @@ use Money\Money;
 
 use function in_array;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(
- *     name="ac_participants",
- *     indexes={
- *         @ORM\Index(name="eventId", columns={"event_id"}),
- *     }
- * )
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'ac_participants')]
+#[ORM\Index(name: 'eventId', columns: ['event_id'])]
 class Payment
 {
-    /**
-     * @ORM\Id()
-     * @ORM\Column(type="payment_id")
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'payment_id')]
     private PaymentId $id;
 
-    /** @ORM\Column(type="integer") */
+    #[ORM\Column(type: 'integer')]
     private int $participantId;
 
-    /** @ORM\Embedded(class=Event::class) */
+    #[ORM\Embedded(class: Event::class)]
     private Event $event;
 
-    /** @ORM\Column(type="money") */
+    #[ORM\Column(type: 'money')]
     private Money $payment;
 
-    /** @ORM\Column(type="money") */
+    #[ORM\Column(type: 'money')]
     private Money $repayment;
 
-    /** @ORM\Column(type="string") */
+    #[ORM\Column(type: 'string')]
     private string $account;
 
     public function __construct(PaymentId $id, int $participantId, Event $event, ?Money $payment = null, ?Money $repayment = null, string $account = 'N')
