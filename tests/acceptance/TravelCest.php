@@ -54,6 +54,22 @@ class TravelCest extends BaseAcceptanceCest
         $this->deleteContract($I, $unitRepresentative);
     }
 
+    public function travelHubHasNoSelfReferencingBreadcrumb(AcceptanceTester $I): void
+    {
+        $I->wantTo('see breadcrumbs only outside the travel hub');
+
+        // The hub sub-menu item points at the same action as the main-menu item, so a
+        // breadcrumb there would link back to the page the user is already on.
+        $I->amOnPage('/cestaky');
+        $I->waitForElementVisible('[data-test="travel-subnav-vehicles"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->dontSeeElement('[data-test="breadcrumbs"]');
+
+        $I->clickStable('[data-test="travel-subnav-vehicles"]');
+        $I->waitForElementVisible('[data-test="breadcrumbs"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->see('Cesťáky', '[data-test="breadcrumbs"]');
+        $I->see('Vozidla', '[data-test="breadcrumbs"]');
+    }
+
     protected function navigateToTravelOrder(AcceptanceTester $I): void
     {
         $I->amOnPage('/');
@@ -169,14 +185,14 @@ class TravelCest extends BaseAcceptanceCest
         $I->see('Nenalezeny žádné záznamy.', '#snippet-grid-grid-table');
         $I->amOnPage('/cestaky/vozidla?grid-grid-filter%5Bsearch%5D='.rawurlencode($licensePlate));
         $I->waitForText($licensePlate, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '#snippet-grid-grid-table');
-        $this->sortVehiclesBy($I, 'metadata.createdAt');
-        $this->sortVehiclesBy($I, 'metadata.authorName');
+        $this->sortVehiclesBy($I, 'metadata.createdAt', $licensePlate);
+        $this->sortVehiclesBy($I, 'metadata.authorName', $licensePlate);
         $I->click($licensePlate, '#snippet-grid-grid-table');
         $I->waitForText('Údaje o vozidle', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/cestaky/vozidla/detail/');
     }
 
-    private function sortVehiclesBy(AcceptanceTester $I, string $column): void
+    private function sortVehiclesBy(AcceptanceTester $I, string $column, string $licensePlate): void
     {
         $selector = '[id="datagrid-sort-'.$column.'"]';
 
@@ -185,7 +201,7 @@ class TravelCest extends BaseAcceptanceCest
             'return document.querySelector('.json_encode($selector).')?.classList.contains("sort") === true;',
             AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
         );
-        $I->waitForText($this->licensePlate, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '#snippet-grid-grid-table');
+        $I->waitForText($licensePlate, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '#snippet-grid-grid-table');
     }
 
     protected function deleteVehicle(AcceptanceTester $I, string $licensePlate): void
