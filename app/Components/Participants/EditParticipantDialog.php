@@ -14,10 +14,11 @@ use Cake\Chronos\ChronosDate;
 use Closure;
 use Component\Forms\BaseForm;
 use LogicException;
+use Nette\Application\Attributes\Persistent;
 
 final class EditParticipantDialog extends Dialog
 {
-    /** @persistent */
+    #[Persistent]
     public ?int $participantId = null;
 
     /** @var Closure[] */

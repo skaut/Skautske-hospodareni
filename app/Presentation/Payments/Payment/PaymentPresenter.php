@@ -40,6 +40,7 @@ use App\Model\User\Manager\PaymentGroupVisitManager;
 use App\Presentation\Payments\PaymentsBasePresenter;
 use DateTimeImmutable;
 use LogicException;
+use Nette\Application\Attributes\Persistent;
 use Nette\Utils\Strings;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -53,10 +54,10 @@ use function substr;
 
 final class PaymentPresenter extends PaymentsBasePresenter
 {
-    /** @persistent */
+    #[Persistent]
     public int $id = 0;
 
-    /** @persistent */
+    #[Persistent]
     public bool $directMemberOnly = true;
 
     /** @var string[] */
