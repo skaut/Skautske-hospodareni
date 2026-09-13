@@ -76,14 +76,14 @@ class BankAccount
     {
         $resolvedSource = $transactionSource ?? $this->resolveDefaultTransactionSource($number);
 
-        if ($resolvedSource->value === BankTransactionSource::FIO->value && $number->getBankCode() !== self::FIO_BANK_CODE) {
+        if ($resolvedSource === BankTransactionSource::FIO && $number->getBankCode() !== self::FIO_BANK_CODE) {
             throw new InvalidArgumentException('FIO zdroj lze použít pouze pro účty vedené u FIO banky.');
         }
 
         $this->name = $name;
         $this->number = $number;
         $this->transactionSource = $resolvedSource->value;
-        $this->token = $resolvedSource->value !== BankTransactionSource::FIO->value || $token === '' ? null : $token;
+        $this->token = $resolvedSource !== BankTransactionSource::FIO || $token === '' ? null : $token;
     }
 
     public function getId(): int
