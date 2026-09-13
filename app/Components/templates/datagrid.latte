@@ -1,15 +1,21 @@
-{extends DataGrid.layout.latte}
+{**
+ * Tenká přizpůsobovací vrstva nad výchozí šablonou Contributte\Datagrid (7.x). Extends přes proměnnou
+ * $originalTemplate, kterou grid nastavuje na vendor default – nedržíme vlastní kopii celé šablony.
+ * Konkrétní gridy dědí z této šablony (viz GridFactory: baseTemplate) a přepisují bloky col-*, filters,
+ * global-actions apod.
+ *}
+{extends $originalTemplate}
 
 {block table-class}table table-vcenter table-hover table-striped{/block}
 
 {block outer-filters}
     <div class="d-md-flex justify-content-between">
         <div data-naja-history="on">
-                <div class="row auto-submit">
-                    {ifset #filters}
-                        {include #filters}
-                    {/ifset}
-                </div>
+            <div class="row auto-submit">
+                {ifset #filters}
+                    {include #filters}
+                {/ifset}
+            </div>
         </div>
         <div class="text-md-end">
             {ifset #global-actions}
@@ -56,58 +62,3 @@
         </div>
     </div>
 {/block}
-
-{block actions}
-        {foreach $actions as $key => $action}
-            {if $row->hasAction($key)}
-                {if $action->hasTemplate()}
-                    {include $action->getTemplate(), item => $item, (expand) $action->getTemplateVariables(), row => $row}
-                {else}
-                    {$action->render($row)|noescape}
-                {/if}
-            {/if}
-        {/foreach}
-        <span class="handle-sort btn btn-sm btn-light" n:if="$control->isSortable()">
-												<i n:block = "icon-arrows-v" class="{$iconPrefix}arrows-v"></i>
-											</span>
-        {if $inlineEdit && $row->hasInlineEdit()}
-            {$inlineEdit->renderButton($row)|noescape}
-        {/if}
-        {if $items_detail && $items_detail->shouldBeRendered($row)}
-            {$items_detail->renderButton($row)|noescape}
-        {/if}
-{/block}
-
-{define inlineAddRow}
-    {do $inlineAdd->onSetDefaults($filter['inline_add']) }
-
-    <tr class="datagrid-row-inline-add datagrid-row-inline-add-hidden">
-        <td n:if="$hasGroupActions" class="col-checkbox"></td>
-
-        {foreach $columns as $key => $column}
-            {var $col = 'col-' . $key}
-
-            {var $td = clone $column->getElementForRender('td', $key)}
-            {var $td->class[] = 'datagrid-inline-edit'}
-            {$td->startTag()|noescape}
-            {if isset($filter['inline_add'][$key])}
-                {if $filter['inline_add'][$key] instanceof \Nette\Forms\Container}
-                    {foreach $filter['inline_add'][$key]->getControls() as $inlineAddControl}
-                        {input $inlineAddControl}
-                    {/foreach}
-                {else}
-                    {input $filter['inline_add'][$key]}
-                {/if}
-            {/if}
-            {$td->endTag()|noescape}
-        {/foreach}
-
-        <td class="col-action col-action-inline-edit">
-            {ifset $filter['inline_add']['cancel']}
-                {input $filter['inline_add']['cancel']}
-            {/ifset}
-
-            <input n:name="$filter['inline_add']['submit']">
-        </td>
-    </tr>
-{/define}
