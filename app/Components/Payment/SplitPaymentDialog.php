@@ -19,6 +19,7 @@ use Component\Forms\BaseForm;
 use Component\Forms\VariableSymbolControl;
 use Contributte\FormMultiplier\Multiplier;
 use LogicException;
+use Nette\Application\Attributes\Persistent;
 use Nette\Application\UI\Form;
 use Nette\Forms\Container;
 use Nette\Forms\Controls\SubmitButton;
@@ -37,7 +38,7 @@ final class SplitPaymentDialog extends Dialog
     /** @var callable[] */
     public array $onSuccess = [];
 
-    /** @persistent */
+    #[Persistent]
     public int $paymentId = -1;
 
     public function __construct(

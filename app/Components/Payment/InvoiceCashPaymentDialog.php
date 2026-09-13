@@ -10,6 +10,7 @@ use App\Model\Invoice\Manager\InvoiceManager;
 use App\Model\Invoice\Repository\InvoiceRepository;
 use Component\Forms\BaseForm;
 use InvalidArgumentException;
+use Nette\Application\Attributes\Persistent;
 use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
 
@@ -19,7 +20,7 @@ final class InvoiceCashPaymentDialog extends Dialog
     /** @var callable[] */
     public array $onSuccess = [];
 
-    /** @persistent */
+    #[Persistent]
     public int $invoiceId = -1;
 
     public function __construct(
@@ -68,7 +69,7 @@ final class InvoiceCashPaymentDialog extends Dialog
         };
 
         $form->onSuccess[] = function (Form $form): void {
-            $this->invoiceSubmitted($form->getValues());
+            $this->invoiceSubmitted($form->getValues(ArrayHash::class));
         };
 
         return $form;

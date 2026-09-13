@@ -14,6 +14,7 @@ use Closure;
 use Component\Forms\BaseForm;
 use InvalidArgumentException;
 use LogicException;
+use Nette\Application\Attributes\Persistent;
 use Nette\Application\UI\Form;
 use Nette\Http\FileUpload;
 use Nette\Utils\ArrayHash;
@@ -36,7 +37,7 @@ final class GpcImportDialog extends Dialog
     /** @var callable[] */
     public array $onSuccess = [];
 
-    /** @persistent */
+    #[Persistent]
     public int $bankAccountId = -1;
 
     /**
@@ -116,7 +117,7 @@ final class GpcImportDialog extends Dialog
 
     private function importSubmitted(Form $form): void
     {
-        $values = $form->getValues();
+        $values = $form->getValues(ArrayHash::class);
         $upload = $values->file;
         if (! $upload instanceof FileUpload) {
             throw new LogicException('Assertion failed.');

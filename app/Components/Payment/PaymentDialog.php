@@ -18,6 +18,7 @@ use App\Model\Payment\VariableSymbolCollision;
 use Assert\Assertion;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
+use Nette\Application\Attributes\Persistent;
 use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
 
@@ -31,7 +32,7 @@ final class PaymentDialog extends Dialog
     /** @var callable[] */
     public array $onSuccess = [];
 
-    /** @persistent */
+    #[Persistent]
     public int $paymentId = -1;
 
     public function __construct(private int $groupId, private CommandBus $commandBus, private QueryBus $queryBus, private PaymentService $paymentService)
@@ -116,7 +117,7 @@ final class PaymentDialog extends Dialog
 
     private function paymentSubmitted(Form $form): void
     {
-        $v = $form->getValues();
+        $v = $form->getValues(ArrayHash::class);
 
         try {
             if ($this->isEditing()) {

@@ -10,6 +10,7 @@ use App\Model\Common\Services\CommandBus;
 use App\Model\DTO\Payment\Payment;
 use App\Model\Payment\PaymentService;
 use Component\Forms\BaseForm;
+use Nette\Application\Attributes\Persistent;
 use Nette\Application\UI\Form;
 
 /** @method void onSuccess() */
@@ -18,7 +19,7 @@ final class PaymentNoteDialog extends Dialog
     /** @var callable[] */
     public array $onSuccess = [];
 
-    /** @persistent */
+    #[Persistent]
     public int $paymentId = -1;
 
     public function __construct(private int $groupId, private CommandBus $commandBus, private PaymentService $paymentService)
@@ -71,7 +72,7 @@ final class PaymentNoteDialog extends Dialog
 
     private function paymentSubmitted(Form $form): void
     {
-        $values = $form->getValues();
+        $values = $form->getValues(\Nette\Utils\ArrayHash::class);
         $payment = $this->payment();
         if ($payment === null) {
             $this->presenter->flashMessage('Zadaná platba neexistuje', 'danger');

@@ -11,6 +11,7 @@ use App\Model\Participant\NonMemberParticipantService;
 use App\Model\Participant\ParticipantNotFound;
 use App\Utils\CzechStringComparator;
 use Component\Forms\BaseForm;
+use Nette\Application\Attributes\Persistent;
 use Nette\Application\BadRequestException;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Http\IResponse;
@@ -48,10 +49,10 @@ final class ParticipantList extends BaseControl
     /** @var callable[] */
     public array $onRemove = [];
 
-    /** @persistent */
+    #[Persistent]
     public bool $showUnits = false;
 
-    /** @persistent */
+    #[Persistent]
     public ?string $sort = 'displayName';
 
     /** @param Participant[] $currentParticipants */
@@ -240,7 +241,7 @@ final class ParticipantList extends BaseControl
             $this->redirect('Default:');
         }
 
-        $values = $button->getForm()->getValues()['edit'];
+        $values = $button->getForm()->getValues(\Nette\Utils\ArrayHash::class)['edit'];
 
         $changes = [];
         $currentParticipants = [];
@@ -249,7 +250,7 @@ final class ParticipantList extends BaseControl
         }
 
         $participantUpdateError = [];
-        foreach ($button->getForm()->getValues()->participantIds as $participantId) {
+        foreach ($button->getForm()->getValues(\Nette\Utils\ArrayHash::class)->participantIds as $participantId) {
             $participant = $currentParticipants[$participantId] ?? throw new ParticipantNotFound('Cannot find participant from the given data');
 
             if ($values['days'] !== null) {
@@ -294,7 +295,7 @@ final class ParticipantList extends BaseControl
         }
 
         $ids = [];
-        foreach ($button->getForm()->getValues()->participantIds as $participantId) {
+        foreach ($button->getForm()->getValues(\Nette\Utils\ArrayHash::class)->participantIds as $participantId) {
             $ids[] = $participantId;
         }
 
