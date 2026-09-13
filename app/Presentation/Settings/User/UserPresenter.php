@@ -32,7 +32,7 @@ final class UserPresenter extends \App\Presentation\Settings\SettingsBasePresent
             ->setDefaultValue($this->preferences->shouldRememberSkautisRole());
         $form->addSubmit('save', 'Uložit nastavení');
         $form->onSuccess[] = function (Form $form): void {
-            $values = $form->getValues();
+            $values = $form->getValues(\Nette\Utils\ArrayHash::class);
             $this->preferences->setPreferences(
                 (bool) $values->showHelp,
                 (bool) $values->extendSkautisLogin,

@@ -86,7 +86,7 @@ final class RoadworthyControl extends BaseControl
     {
         $this->assertIsEditable();
 
-        $upload = $form->getValues()->scan;
+        $upload = $form->getValues(\Nette\Utils\ArrayHash::class)->scan;
 
         if (! $upload instanceof FileUpload) {
             throw new LogicException('Assertion failed.');

@@ -76,21 +76,21 @@ final class InvoicesPresenter extends \App\Presentation\Settings\SettingsBasePre
         $form->addText('unitName', 'Jednotka')
             ->setDisabled()
             ->setDefaultValue($officialUnit->getDisplayName());
-        $form->addYearSelect('year', 'Rok')
+        $yearSelect = $form->addYearSelect('year', 'Rok')
             ->setRequired('Vyberte rok')
             ->setDefaultValue($this->selectedYear);
 
         $loadYear = $form->addSubmit('loadYear', 'Načíst rok');
-        $loadYear->setValidationScope([$form['year']]);
+        $loadYear->setValidationScope([$yearSelect]);
         $loadYear->onClick[] = [$this, 'handleLoadYear'];
 
-        $form->addText('companyNumber', 'IČO')
+        $companyNumber = $form->addText('companyNumber', 'IČO')
             ->addFilter(fn (string $value) => trim((string) preg_replace('/\s+/', '', $value)))
             ->setRequired('IČO musí být vyplněno');
 
         $getContactInfo = $form->addSubmit('getContactInfo', 'Získat data z registru');
         $getContactInfo->setHtmlAttribute('class', 'btn btn-primary ajax');
-        $getContactInfo->setValidationScope([$form['companyNumber']]);
+        $getContactInfo->setValidationScope([$companyNumber]);
         $getContactInfo->onClick[] = [$this, 'handleGetContactInfo'];
 
         $form->addText('name', 'Název')
@@ -127,7 +127,7 @@ final class InvoicesPresenter extends \App\Presentation\Settings\SettingsBasePre
 
     public function handleLoadYear(SubmitButton $button): void
     {
-        $values = $button->getForm()->getValues();
+        $values = $button->getForm()->getValues(ArrayHash::class);
 
         $this->redirect('default', ['year' => (int) $values->year, 'unitId' => $this->getUnitId()]);
     }
@@ -139,7 +139,7 @@ final class InvoicesPresenter extends \App\Presentation\Settings\SettingsBasePre
             throw new InvalidArgumentException('Očekáván formulář nastavení faktur.');
         }
 
-        $values = $form->getValues();
+        $values = $form->getValues(ArrayHash::class);
         $selectedYear = $this->resolveSelectedYear($form, $values);
 
         try {
