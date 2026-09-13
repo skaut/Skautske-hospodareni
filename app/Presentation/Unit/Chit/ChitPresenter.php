@@ -20,6 +20,7 @@ use App\Presentation\Unit\Accessory\Components\ChitListControl;
 use App\Presentation\Unit\Accessory\Factories\IChitListControlFactory;
 use App\Presentation\Unit\UnitBasePresenter;
 use LogicException;
+use Nette\Application\Attributes\Persistent;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Multiplier;
 use Nette\Http\IResponse;
@@ -37,7 +38,7 @@ class ChitPresenter extends UnitBasePresenter
      */
     private array $cashbooks = [];
 
-    /** @persistent */
+    #[Persistent]
     public int $onlyUnlocked = 1;
 
     public function __construct(private IChitListControlFactory $chitListFactory)

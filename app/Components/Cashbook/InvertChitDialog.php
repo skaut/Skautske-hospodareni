@@ -21,6 +21,7 @@ use App\Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use App\Model\User\ReadModel\Queries\EditableUnitsQuery;
 use Component\Forms\BaseForm;
 use LogicException;
+use Nette\Application\Attributes\Persistent;
 use Nette\Application\BadRequestException;
 use Nette\Http\IResponse;
 use RuntimeException;
@@ -31,11 +32,8 @@ use function sprintf;
 
 class InvertChitDialog extends Dialog
 {
-    /**
-     * (string because persistent parameters aren't auto-casted).
-     *
-     * @persistent
-     */
+    /** (string because persistent parameters aren't auto-casted). */
+    #[Persistent]
     public int|string|null $chitId = null;
 
     /** @var array<string, string>|null */

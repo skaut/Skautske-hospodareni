@@ -12,6 +12,7 @@ use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Cashbook\Cashbook;
 use Component\Forms\BaseForm;
 use LogicException;
+use Nette\Application\Attributes\Persistent;
 
 use function htmlspecialchars;
 use function nl2br;
@@ -19,7 +20,7 @@ use function preg_replace;
 
 final class NoteForm extends BaseControl
 {
-    /** @var bool @persistent */
+    #[Persistent]
     public bool $editation = false;
 
     /**
@@ -99,6 +100,6 @@ final class NoteForm extends BaseControl
             $this->redirect('this');
         }
 
-        $this->commandBus->handle(new UpdateNote($this->cashbookId, $form->getValues()->note));
+        $this->commandBus->handle(new UpdateNote($this->cashbookId, $form->getValues(\Nette\Utils\ArrayHash::class)->note));
     }
 }
