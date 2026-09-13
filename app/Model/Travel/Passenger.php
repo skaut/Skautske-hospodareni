@@ -8,27 +8,26 @@ use Doctrine\ORM\Mapping as ORM;
 use Nette\SmartObject;
 
 /**
- * @ORM\Embeddable()
- *
  * @property string   $name
  * @property string   $contact
  * @property string   $address
  * @property int|null $contractId
  */
+#[ORM\Embeddable]
 final class Passenger
 {
     use SmartObject;
 
-    /** @ORM\Column(type="string", name="driver_name") */
+    #[ORM\Column(type: 'string', name: 'driver_name')]
     private string $name;
 
-    /** @ORM\Column(type="string", name="driver_contact") */
+    #[ORM\Column(type: 'string', name: 'driver_contact')]
     private string $contact;
 
-    /** @ORM\Column(type="string", name="driver_address") */
+    #[ORM\Column(type: 'string', name: 'driver_address')]
     private string $address;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $contractId = null;
 
     public function __construct(string $name, string $contact, string $address)
