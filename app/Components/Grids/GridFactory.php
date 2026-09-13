@@ -18,6 +18,9 @@ class GridFactory
         if ($templateFile !== null) {
             $this->configureTemplate($grid, $templateFile, $templateParameters);
         }
+
+        $this->configureAjaxRedraw($grid);
+
         DataGrid::$iconPrefix = '';
 
         return $grid;
@@ -36,7 +39,19 @@ class GridFactory
         $grid->setRefreshUrl(true);
 
         $this->configureTemplate($grid, $templateFile, $templateParameters);
+        $this->configureAjaxRedraw($grid);
 
+        DataGrid::$iconPrefix = '';
+
+        return $grid;
+    }
+
+    /**
+     * Keeps the grid snippet and the browser URL in sync when filtering, sorting
+     * or paging happens over AJAX.
+     */
+    private function configureAjaxRedraw(DataGrid $grid): void
+    {
         $grid->onRedraw[] = function () use ($grid): void {
             $presenter = $grid->getPresenter();
 
@@ -49,10 +64,6 @@ class GridFactory
             $presenter->payload->url = $grid->link('this');
             $presenter->payload->postGet = true;
         };
-
-        DataGrid::$iconPrefix = '';
-
-        return $grid;
     }
 
     /** @param array<string, mixed> $templateParameters */
