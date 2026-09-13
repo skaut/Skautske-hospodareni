@@ -22,9 +22,8 @@ use function is_array;
  */
 class Bootstrap5FormRenderer extends DefaultFormRenderer
 {
-    /** @var mixed[] */
-    // phpcs:disable SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
-    public $wrappers = [
+    /** @var array<string, array<string, Nette\Utils\Html|string|null>> */
+    public array $wrappers = [
         'form' => ['container' => null],
         'error' => [
             'container' => 'div class="row mb-3"',
