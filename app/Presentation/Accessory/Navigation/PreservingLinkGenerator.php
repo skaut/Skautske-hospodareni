@@ -23,7 +23,7 @@ final class PreservingLinkGenerator implements ILinkGenerator
 
     public function link(IMenuItem $item): string
     {
-        $action = $item->getAction();
+        $action = $item->getActionTarget();
         if ($action !== null) {
             return $this->linkGenerator->link($action, $this->buildActionParameters($item));
         }
@@ -36,11 +36,23 @@ final class PreservingLinkGenerator implements ILinkGenerator
         return '#';
     }
 
+    public function absoluteLink(IMenuItem $item): string
+    {
+        $url = $this->httpRequest->getUrl();
+        $prefix = $url->getScheme().'://'.$url->getHost();
+
+        if ($url->getPort() !== 80) {
+            $prefix .= ':'.$url->getPort();
+        }
+
+        return $prefix.$this->link($item);
+    }
+
     /** @return array<string, mixed> */
     private function buildActionParameters(IMenuItem $item): array
     {
         $parameters = $item->getActionParameters();
-        $preserveParameters = $item->getData('preserveParameters', []);
+        $preserveParameters = $item->getDataItem('preserveParameters', []);
 
         if (! is_array($preserveParameters)) {
             return $parameters;
