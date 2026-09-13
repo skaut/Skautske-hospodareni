@@ -11,6 +11,7 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use ReflectionProperty;
 
+use function is_object;
 use function strpos;
 
 class Subscriber implements EventSubscriber
@@ -25,7 +26,7 @@ class Subscriber implements EventSubscriber
         return ['postLoad'];
     }
 
-    private function clearEmbeddablesIfNecessary(mixed $object, EntityManagerInterface $entityManager): void
+    private function clearEmbeddablesIfNecessary(object $object, EntityManagerInterface $entityManager): void
     {
         $metadata = $entityManager->getClassMetadata($object::class);
 
@@ -37,7 +38,7 @@ class Subscriber implements EventSubscriber
             $field = $metadata->getReflectionProperty($fieldName);
             $value = $field->getValue($object);
 
-            if ($value === null) {
+            if (! is_object($value)) {
                 continue;
             }
 
