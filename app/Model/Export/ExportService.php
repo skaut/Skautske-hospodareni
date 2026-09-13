@@ -444,7 +444,7 @@ class ExportService
 
     private function buildQrPaymentSvg(Invoice $invoice): ?string
     {
-        if ($invoice->getPaymentType()->value !== InvoicePaymentType::TRANSFER->value) {
+        if ($invoice->getPaymentType() !== InvoicePaymentType::TRANSFER) {
             return null;
         }
 
