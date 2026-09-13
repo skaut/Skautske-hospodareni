@@ -159,7 +159,7 @@ class MassAddForm extends BaseControl
 
     private function formSubmitted(BaseForm $form): void
     {
-        $values = $form->getValues();
+        $values = $form->getValues(\Nette\Utils\ArrayHash::class);
 
         $persons = array_filter(
             (array) $values->persons,

@@ -129,7 +129,7 @@ final class InvoiceAccessPresenter extends \App\Presentation\Admin\AdminBasePres
             $this->redirect('default');
         }
 
-        $userId = (int) $form->getValues()->userId;
+        $userId = (int) $form->getValues(\Nette\Utils\ArrayHash::class)->userId;
         if ($this->accessUserRepository->hasUserId($userId)) {
             $this->flashMessage('Tento user_id už má přístup k fakturaci povolený.', 'warning');
             $this->redirect('default');
