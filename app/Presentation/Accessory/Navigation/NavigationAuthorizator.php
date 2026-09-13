@@ -19,10 +19,10 @@ final class NavigationAuthorizator implements IAuthorizator
 
     public function isMenuItemAllowed(IMenuItem $item): bool
     {
-        $requiresAdmin = (bool) $item->getData('requiresAdmin', false);
-        $requiresAdminArea = (bool) $item->getData('requiresAdminArea', false);
-        $requiresBugReportsAccess = (bool) $item->getData('requiresBugReportsAccess', false);
-        $requiresInvoiceAccess = (bool) $item->getData('requiresInvoiceAccess', false);
+        $requiresAdmin = (bool) $item->getDataItem('requiresAdmin', false);
+        $requiresAdminArea = (bool) $item->getDataItem('requiresAdminArea', false);
+        $requiresBugReportsAccess = (bool) $item->getDataItem('requiresBugReportsAccess', false);
+        $requiresInvoiceAccess = (bool) $item->getDataItem('requiresInvoiceAccess', false);
 
         if ($requiresAdmin && ! $this->authorizator->isAllowed(Admin::ACCESS, null)) {
             return false;
