@@ -20,9 +20,9 @@ abstract class BaseControl extends Control
 
     abstract public function render(): void;
 
-    public function getPresenter(): ?BasePresenter
+    public function getPresenter(bool $throw = true): ?BasePresenter
     {
-        $presenter = parent::getPresenter();
+        $presenter = parent::getPresenter($throw);
 
         if (! $presenter instanceof BasePresenter) {
             throw new InvalidStateException('Presenter using BaseControl derived controls must inherit from '.BasePresenter::class);
