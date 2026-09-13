@@ -8,26 +8,20 @@ use App\Model\Common\EmailAddress;
 use App\Model\Payment\Payment;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(name="pa_payment_email_recipients")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'pa_payment_email_recipients')]
 class EmailRecipient
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Payment::class, inversedBy="emailRecipients")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: Payment::class, inversedBy: 'emailRecipients')]
+    #[ORM\JoinColumn(nullable: false)]
     private Payment $payment;
 
-    /** @ORM\Column(type="email_address") */
+    #[ORM\Column(type: 'email_address')]
     private EmailAddress $emailAddress;
 
     public function __construct(Payment $payment, EmailAddress $emailAddress)
