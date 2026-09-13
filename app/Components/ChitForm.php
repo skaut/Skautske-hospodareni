@@ -39,7 +39,6 @@ use Component\Forms\BaseForm;
 use Contributte\FormMultiplier\Multiplier;
 use InvalidArgumentException;
 use LogicException;
-use NasExt\Forms\DependentData;
 use Nette\Application\BadRequestException;
 use Nette\Forms\Container;
 use Nette\Forms\Control;
@@ -118,11 +117,12 @@ final class ChitForm extends BaseControl
 
     public function setDisplayChitParent(bool $displayChitForm): void
     {
-        if (! $this->parent instanceof CashbookControl) {
+        $parent = $this->getParent();
+        if (! $parent instanceof CashbookControl) {
             return;
         }
 
-        $this->parent->displayChitForm = $displayChitForm;
+        $parent->displayChitForm = $displayChitForm;
     }
 
     public function editChit(int $chitId): void
@@ -165,23 +165,6 @@ final class ChitForm extends BaseControl
         $this['form']->setDefaults(['items' => $items]);
 
         $this->redrawControl();
-    }
-
-    /** @param mixed[] $values */
-    public function getCategoryItems(array $values): DependentData
-    {
-        $type = $values['type'];
-
-        if ($type !== null) {
-            return new DependentData(
-                $this->getCategoryPairsByType(Operation::get($type)),
-            );
-        }
-
-        return new DependentData([
-            Operation::INCOME => $this->getCategoryPairsByType(Operation::get(Operation::INCOME)),
-            Operation::EXPENSE => $this->getCategoryPairsByType(Operation::get(Operation::EXPENSE)),
-        ]);
     }
 
     protected function createComponentForm(): BaseForm
