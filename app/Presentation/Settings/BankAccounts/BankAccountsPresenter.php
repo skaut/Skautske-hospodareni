@@ -340,7 +340,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
                 'name' => $account->getName(),
                 'number' => (string) $account->getNumber(),
                 'source' => (
-                    $account->getTransactionSource()->value === BankTransactionSource::FIO->value
+                    $account->getTransactionSource() === BankTransactionSource::FIO
                     && $account->getToken() === null
                 ) ? '' : $account->getTransactionSource()->label(),
                 'sourceType' => $account->getTransactionSource()->value,
@@ -757,6 +757,6 @@ final class BankAccountsPresenter extends SettingsBasePresenter
     private function canImportGpcForAccount(BankAccount $account): bool
     {
         return $this->canEdit($account->getUnitId())
-            && $account->getTransactionSource()->value === BankTransactionSource::GPC->value;
+            && $account->getTransactionSource() === BankTransactionSource::GPC;
     }
 }

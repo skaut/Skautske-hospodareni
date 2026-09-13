@@ -73,7 +73,7 @@ class BankService
                 : ChronosDate::today()->subDays($daysBack),
             fn (BankAccount $bankAccount, ChronosDate $pairSince, ChronosDate $now): array => $this->transactions->getPersistentTransactionsForPeriod($bankAccount, $pairSince, $now),
             fn (BankAccount $bankAccount, array $groups): bool => ! (
-                $bankAccount->getTransactionSource()->value === BankTransactionSource::FIO->value
+                $bankAccount->getTransactionSource() === BankTransactionSource::FIO
                 && $bankAccount->getToken() === null
             ) && $this->payments->findByMultipleGroups(array_values(array_map(static fn (Group $group): int => (int) $group->getId(), $groups))) !== [],
         ) as $result) {

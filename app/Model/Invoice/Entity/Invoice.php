@@ -428,7 +428,7 @@ class Invoice extends AbstractIdEntity
 
     public function pairWithBankTransaction(DateTimeImmutable $time, ?string $userName, Transaction $transaction): bool
     {
-        if ($this->getPaymentType()->value !== InvoicePaymentType::TRANSFER->value) {
+        if ($this->getPaymentType() !== InvoicePaymentType::TRANSFER) {
             throw new InvalidArgumentException('Bankovní párování lze použít jen u faktury hrazené převodem.');
         }
 
@@ -446,7 +446,7 @@ class Invoice extends AbstractIdEntity
 
     public function unpairBankTransaction(): bool
     {
-        if ($this->getPaymentType()->value !== InvoicePaymentType::TRANSFER->value) {
+        if ($this->getPaymentType() !== InvoicePaymentType::TRANSFER) {
             throw new InvalidArgumentException('Zrušení bankovního párování lze použít jen u faktury hrazené převodem.');
         }
 
@@ -569,7 +569,7 @@ class Invoice extends AbstractIdEntity
             throw new InvalidArgumentException('Musíte zadat číslo příjmového dokladu.');
         }
 
-        if ($this->getPaymentType()->value !== InvoicePaymentType::CASH->value) {
+        if ($this->getPaymentType() !== InvoicePaymentType::CASH) {
             throw new InvalidArgumentException('Hotovostní úhradu lze nastavit jen u faktury s formou úhrady "V hotovosti".');
         }
 
@@ -592,7 +592,7 @@ class Invoice extends AbstractIdEntity
 
     public function canBePaidInCash(): bool
     {
-        return $this->getPaymentType()->value === InvoicePaymentType::CASH->value && ! $this->isPaid();
+        return $this->getPaymentType() === InvoicePaymentType::CASH && ! $this->isPaid();
     }
 
     public function hasEmailRecipients(): bool
