@@ -76,7 +76,7 @@ final class GpcParser
         foreach ($rawLines === false ? [] : $rawLines as $index => $raw) {
             $line = new Line($raw, $index + 1);
 
-            if ($line->type()?->value !== RecordType::StatementHeader->value) {
+            if ($line->type() !== RecordType::StatementHeader) {
                 continue;
             }
 
@@ -118,6 +118,9 @@ final class GpcParser
             $constantSymbol,
             $transaction->note,
             $transaction->documentId,
+            // Klíč z implementace nad ifm24 — díky němu import pozná transakci, která už je
+            // v databázi z doby před přechodem na webwingscz/bank-statements.
+            $keyGenerator->legacyFromGpc($accountNumber, $date, $amount, $counterAccount, $name, $variableSymbol, $constantSymbol, $transaction->note),
         );
     }
 
