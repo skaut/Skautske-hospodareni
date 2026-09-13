@@ -82,6 +82,9 @@ final class BugReportService
         if (! is_array($access)) {
             $access = [];
         }
+
+        /** @var array<int, mixed> $skautisRoles */
+        $skautisRoles = $identity->skautisRoles ?? [];
         $diagnostics = [
             'user' => [
                 'id' => $userId,
@@ -94,7 +97,7 @@ final class BugReportService
                 ],
                 'allRoles' => array_map(
                     static fn (mixed $role): mixed => $role instanceof stdClass ? get_object_vars($role) : $role,
-                    $identity->getRoles(),
+                    $skautisRoles,
                 ),
                 'accessibleUnitIds' => [
                     UserService::ACCESS_READ => $this->unitIdsFromAccess($access[UserService::ACCESS_READ] ?? []),
