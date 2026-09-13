@@ -17,9 +17,9 @@ use App\Model\User\Repository\InvoiceAccessUserRepository;
 use App\Model\User\Repository\SystemUserRoleRepository;
 use Codeception\Test\Unit;
 use Mockery;
-use Nette\Security\IUserStorage;
 use Nette\Security\SimpleIdentity;
 use Nette\Security\User;
+use Nette\Security\UserStorage;
 use Skautis\Wsdl\WebServiceInterface;
 use stdClass;
 
@@ -143,13 +143,9 @@ final class CompositeAuthorizatorTest extends Unit
 
     private function mockUser(?int $userId): User
     {
-        $storage = Mockery::mock(IUserStorage::class);
-        $storage->shouldReceive('isAuthenticated')
-            ->andReturn($userId !== null);
-        $storage->shouldReceive('getIdentity')
-            ->andReturn($userId !== null ? new SimpleIdentity($userId) : null);
-        $storage->shouldReceive('getLogoutReason')
-            ->andReturn(null);
+        $storage = Mockery::mock(UserStorage::class);
+        $storage->shouldReceive('getState')
+            ->andReturn([$userId !== null, $userId !== null ? new SimpleIdentity($userId) : null, null]);
 
         return new User($storage);
     }
