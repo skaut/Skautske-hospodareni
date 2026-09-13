@@ -9,9 +9,17 @@ use PhpParser\Node\Expr\BinaryOp;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
+use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\TypeWithClassName;
 
+/**
+ * Brání porovnávání hodnotových objektů referencí — dvě instance se stejným obsahem jsou různé
+ * objekty, takže `===` u nich téměř vždy znamená chybu.
+ *
+ * Enumy jsou vyňaté: každý case je singleton, takže `===` je u nich jediný správný a idiomatický
+ * způsob porovnání. Bez této výjimky si pravidlo vynucovalo obcházení přes `->value`.
+ */
 final class ObjectIdentityComparisonRule implements Rule
 {
     public function getNodeType() : string
@@ -28,6 +36,10 @@ final class ObjectIdentityComparisonRule implements Rule
         $left = TypeCombinator::removeNull($scope->getType($node->left));
         $right = TypeCombinator::removeNull($scope->getType($node->right));
 
+        if ($this->isEnum($left) || $this->isEnum($right)) {
+            return [];
+        }
+
         if (
             $left instanceof TypeWithClassName
             && $right instanceof TypeWithClassName
@@ -41,5 +53,10 @@ final class ObjectIdentityComparisonRule implements Rule
         }
 
         return [];
+    }
+
+    private function isEnum(Type $type) : bool
+    {
+        return ! $type->isEnum()->no();
     }
 }
