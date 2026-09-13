@@ -7,41 +7,32 @@ namespace App\Model\Payment\Group;
 use App\Model\Payment\EmailTemplate;
 use App\Model\Payment\EmailType;
 use App\Model\Payment\Group;
-use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(name="pa_group_email")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'pa_group_email')]
 class Email
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Group::class, inversedBy="emails")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: Group::class, inversedBy: 'emails')]
+    #[ORM\JoinColumn(nullable: false)]
     private Group $group;
 
-    /** @ORM\Column(type="boolean") */
+    #[ORM\Column(type: 'boolean')]
     private bool $enabled = true;
 
     /**
-     * @ORM\Column(type="string_enum")
-     *
-     * @Enum(class=EmailType::class)
      * @var EmailType
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
+    #[ORM\Column(type: 'payment_email_type')]
     private $type;
 
-    /** @ORM\Embedded(class=EmailTemplate::class) */
+    #[ORM\Embedded(class: EmailTemplate::class)]
     private EmailTemplate $template;
 
     public function __construct(Group $group, EmailType $type, EmailTemplate $template)

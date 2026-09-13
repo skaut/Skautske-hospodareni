@@ -76,7 +76,7 @@ class InvoiceSequence extends AbstractIdEntity
     #[Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?DateTimeImmutable $lastPairing = null;
 
-    #[Column(type: 'string_enum', length: 20)]
+    #[Column(type: Types::STRING, length: 20)]
     private string $state = InvoiceSequenceState::OPEN;
 
     #[Column(type: Types::STRING, length: 255, nullable: true)]

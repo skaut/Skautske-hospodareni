@@ -7,30 +7,25 @@ namespace App\Model\Cashbook\Cashbook;
 use App\Model\Common\FilePath;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(name="ac_chit_scan")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'ac_chit_scan')]
 class ChitScan
 {
     public const FILE_PATH_PREFIX = 'chits';
 
     /**
      * @internal only for infrastructure
-     *
-     * @ORM\Id()
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
      */
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Chit::class, inversedBy="scans")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: Chit::class, inversedBy: 'scans')]
+    #[ORM\JoinColumn(nullable: false)]
     private Chit $chit;
 
-    /** @ORM\Column(type="file_path") */
+    #[ORM\Column(type: 'file_path')]
     private FilePath $filePath;
 
     public function __construct(Chit $chit, FilePath $filePath)
