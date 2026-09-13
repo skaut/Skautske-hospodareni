@@ -80,10 +80,14 @@ class AuthPresenter extends BasePresenter
             }
 
             $user->setExpiration('+ 29 minutes'); // nastavíme expiraci
+            // SkautIS role jsou objekty, nepatří do typovaného slotu rolí Nette identity (list<string>),
+            // ukládáme je do datového slotu vedle aktuální role.
             $user->login(new SimpleIdentity(
                 $userId,
-                $roles,
-                ['currentRole' => $this->userService->getActualRole()],
+                data: [
+                    'currentRole' => $this->userService->getActualRole(),
+                    'skautisRoles' => $roles,
+                ],
             ));
 
             $this->updateUserAccess();
