@@ -10,8 +10,8 @@ use App\Model\Travel\TravelService;
 use App\Model\Travel\VehicleLinkedRecord;
 use App\Model\Travel\VehicleNotFound;
 use App\Model\Unit\UnitService;
-use Ublaboo\DataGrid\Column\Action\Confirmation\StringConfirmation;
-use Ublaboo\DataGrid\DataGrid;
+use Contributte\Datagrid\Column\Action\Confirmation\StringConfirmation;
+use Contributte\Datagrid\Datagrid;
 
 class VehicleGrid extends BaseGridControl
 {
@@ -19,7 +19,7 @@ class VehicleGrid extends BaseGridControl
     {
     }
 
-    protected function createComponentGrid(): DataGrid
+    protected function createComponentGrid(): Datagrid
     {
         $units = $this->units->getSubunitPairs($this->unitId);
 

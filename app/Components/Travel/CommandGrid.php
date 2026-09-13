@@ -8,9 +8,9 @@ use App\Components\Grids\BaseGridControl;
 use App\Components\Grids\GridFactory;
 use App\Model\DTO\Travel\Command;
 use App\Model\Travel\TravelService;
+use Contributte\Datagrid\Datagrid;
+use Contributte\Datagrid\DataSource\DoctrineCollectionDataSource;
 use Doctrine\Common\Collections\ArrayCollection;
-use Ublaboo\DataGrid\DataGrid;
-use Ublaboo\DataGrid\DataSource\DoctrineCollectionDataSource;
 
 use function array_column;
 use function array_filter;
@@ -27,7 +27,7 @@ class CommandGrid extends BaseGridControl
     ) {
     }
 
-    protected function createComponentGrid(): DataGrid
+    protected function createComponentGrid(): Datagrid
     {
         $commands = $this->travel->getVisibleUserCommands($this->readableUnitIds, $this->userId);
 
