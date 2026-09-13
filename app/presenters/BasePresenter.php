@@ -14,7 +14,10 @@ use App\Model\Auth\Resources\InvoiceAccess;
 use App\Model\Common\Services\CommandBus;
 use App\Model\Common\Services\NotificationsCollector;
 use App\Model\Common\Services\QueryBus;
+use App\Model\Help\Manager\PageHelpManager;
+use App\Model\PageView\Services\PageViewTracker;
 use App\Model\Unit\UnitService;
+use App\Model\User\Services\LoginTracker;
 use App\Model\User\UserPreferencesService;
 use App\Model\User\UserService;
 use Contributte\MenuControl\IMenuItem;
@@ -51,7 +54,7 @@ abstract class BasePresenter extends Presenter
     private const SESSION_KEEP_ALIVE_INTERVAL_MS = 1_200_000;
 
     private const PUBLIC_ACTIONS = [
-        'Default' => ['default', 'about', 'reinforcement'],
+        'Default' => ['default', 'about', 'reinforcement', 'privacy'],
     ];
 
     private const AUTH_ACTIONS = ['ajax', 'default', 'logonskautis', 'logoutsis', 'skautis', 'skautislogout'];
@@ -88,6 +91,12 @@ abstract class BasePresenter extends Presenter
 
     private UserPreferencesService $userPreferences;
 
+    private PageHelpManager $pageHelp;
+
+    protected LoginTracker $loginTracker;
+
+    private PageViewTracker $pageViewTracker;
+
     public function injectAll(
         UserService $userService,
         UnitService $unitService,
@@ -103,6 +112,9 @@ abstract class BasePresenter extends Presenter
         IMenuComponentFactory $menuComponentFactory,
         MenuContainer $menuContainer,
         UserPreferencesService $userPreferences,
+        PageHelpManager $pageHelp,
+        LoginTracker $loginTracker,
+        PageViewTracker $pageViewTracker,
     ): void {
         $this->userService = $userService;
         $this->unitService = $unitService;
@@ -118,6 +130,9 @@ abstract class BasePresenter extends Presenter
         $this->menuComponentFactory = $menuComponentFactory;
         $this->menuContainer = $menuContainer;
         $this->userPreferences = $userPreferences;
+        $this->pageHelp = $pageHelp;
+        $this->loginTracker = $loginTracker;
+        $this->pageViewTracker = $pageViewTracker;
     }
 
     protected function startup(): void
@@ -130,9 +145,9 @@ abstract class BasePresenter extends Presenter
         $this->template->setParameters([
             'templateBlockDir' => $this->appDir.'/templateBlocks/',
             'backlink' => $backlink = $this->getParameter('backlink'),
-            'testBackground' => $this->appContext->shouldShowTestBackground(),
+            'showEnvironmentBadge' => $this->appContext->shouldShowEnvironmentBadge(),
             'environmentLabel' => $this->appContext->getEnvironmentLabel(),
-            'environmentColor' => $this->appContext->getEnvironmentColor(),
+            'environmentMode' => $this->appContext->getEnvironmentMode(),
         ]);
 
         if ($this->getUser()->isLoggedIn()) {
@@ -148,14 +163,44 @@ abstract class BasePresenter extends Presenter
             $this->redirect(':Default:', ['backlink' => $backlink]);
         }
 
+        if ($this->getUser()->isLoggedIn() && ! $this->isSessionKeepAliveRequest()) {
+            $this->loginTracker->touch();
+        }
+
         if ($this->getUser()->isLoggedIn() && $backlink !== null) {
             $this->restoreRequest($backlink);
         }
     }
 
+    /**
+     * Counts the page for the usage statistics. Only a plain page load counts:
+     * an AJAX snippet redraw is one page being used further, not another view,
+     * and a form submission is counted by the page it lands on.
+     */
+    private function recordPageView(): void
+    {
+        if ($this->isAjax() || ! $this->getHttpRequest()->isMethod('GET')) {
+            return;
+        }
+
+        $this->pageViewTracker->record($this->getPageHelpKey());
+    }
+
+    /**
+     * The keep-alive ping fires on a timer whether or not anyone is at the
+     * keyboard, so it must not count as activity — otherwise every user who
+     * opted into it would appear to work for as long as the tab stays open.
+     */
+    private function isSessionKeepAliveRequest(): bool
+    {
+        return $this->getName() === 'SessionKeepAlive';
+    }
+
     protected function beforeRender(): void
     {
         parent::beforeRender();
+
+        $this->recordPageView();
 
         [$module, $presenterName] = $this->resolveTemplateSection();
         $sessionKeepAliveEnabled = $this->getUser()->isLoggedIn()
@@ -166,12 +211,12 @@ abstract class BasePresenter extends Presenter
             'presenterName' => $presenterName,
             'linkGenerator' => $this->linkGenerator,
             'navigationBreadcrumbs' => $this->resolveNavigationBreadcrumbs($module),
-            'productionMode' => $this->appContext->isProduction(),
             'wwwDir' => $this->appContext->getWwwDir(),
             'currentUrl' => (string) $this->getHttpRequest()->getUrl(),
             'canAccessAdmin' => $this->authorizator->isAllowed(Admin::ACCESS, null),
             'canAccessInvoiceAccess' => $this->authorizator->isAllowed(InvoiceAccess::ACCESS, null),
             'showPageHelp' => $this->userPreferences->shouldShowHelp(),
+            'pageHelp' => $this->pageHelp->findForPage($this->getPageHelpKey()),
             'sessionKeepAliveEnabled' => $sessionKeepAliveEnabled,
             'sessionKeepAliveInterval' => self::SESSION_KEEP_ALIVE_INTERVAL_MS,
             'sessionKeepAliveUrl' => $sessionKeepAliveEnabled
@@ -350,7 +395,7 @@ abstract class BasePresenter extends Presenter
         $presenterDir = dirname((string) static::getReflection()->getFileName());
 
         return [
-            $presenterDir.'/'.$this->view.'.latte',
+            $presenterDir.'/'.$this->getView().'.latte',
             ...parent::formatTemplateFiles(),
         ];
     }
@@ -358,15 +403,15 @@ abstract class BasePresenter extends Presenter
     /** @return string[] */
     public function formatLayoutTemplateFiles(): array
     {
-        if (preg_match('#/|\\\\#', (string) $this->layout)) {
-            return [(string) $this->layout];
+        if (preg_match('#/|\\\\#', (string) $this->getLayout())) {
+            return [(string) $this->getLayout()];
         }
 
         if (! $this->usesPresentationDirectory()) {
             return parent::formatLayoutTemplateFiles();
         }
 
-        $layout = $this->layout ?: 'layout';
+        $layout = $this->getLayout() ?: 'layout';
         $presenterDir = dirname((string) static::getReflection()->getFileName());
         $moduleDir = dirname($presenterDir);
         $presentationRoot = dirname($moduleDir);
@@ -387,6 +432,16 @@ abstract class BasePresenter extends Presenter
             ...parent::formatLayoutTemplateFiles(),
             $this->appDir.'/templates/@'.$layout.'.latte',
         ];
+    }
+
+    /**
+     * Identifies the current page for contextual help, for example
+     * `Travel:Contract:default`. Kept public so the administration can offer the
+     * same keys when picking a page to write help for.
+     */
+    public function getPageHelpKey(): string
+    {
+        return $this->getName().':'.$this->getAction();
     }
 
     /** @return array{0: string|null, 1: string} */
@@ -412,8 +467,19 @@ abstract class BasePresenter extends Presenter
     /** @return array<int, array{title: string, link: string|null, current: bool}> */
     private function resolveNavigationBreadcrumbs(?string $module): array
     {
+        $mainMenu = $this->menuContainer->getMenu('main');
+        $mainMenu->setActivePresenter($this);
+
+        $mainItem = $mainMenu->findActiveItem();
+        if (! $mainItem instanceof IMenuItem) {
+            return [];
+        }
+
         $menuName = match ($module) {
             'Payment', 'Payments' => 'payments',
+            'Settings' => 'settings',
+            'Admin' => 'admin',
+            'Travel' => 'travel',
             default => null,
         };
 
@@ -424,26 +490,26 @@ abstract class BasePresenter extends Presenter
         $menu = $this->menuContainer->getMenu($menuName);
         $menu->setActivePresenter($this);
 
-        $rootItem = $menu->findActiveItem();
-        if (! $rootItem instanceof IMenuItem) {
+        $activeItem = $menu->findActiveItem();
+
+        // Hub items point at the same action as their main-menu parent, so a breadcrumb
+        // there would link back to the page the user is already on. Marked in menu.neon
+        // with `hub: true` rather than matched on the displayed title.
+        if (! $activeItem instanceof IMenuItem || $activeItem->getData('hub', false) === true) {
             return [];
         }
 
-        $activeItem = $rootItem->findActiveItem();
-
         $items = [[
-            'title' => $rootItem->getRealTitle(),
-            'link' => $activeItem instanceof IMenuItem ? $rootItem->getRealLink() : null,
-            'current' => ! $activeItem instanceof IMenuItem,
+            'title' => $mainItem->getRealTitle(),
+            'link' => $mainItem->getRealLink(),
+            'current' => false,
         ]];
 
-        if ($activeItem instanceof IMenuItem) {
-            $items[] = [
-                'title' => $activeItem->getRealTitle(),
-                'link' => null,
-                'current' => true,
-            ];
-        }
+        $items[] = [
+            'title' => $activeItem->getRealTitle(),
+            'link' => null,
+            'current' => true,
+        ];
 
         return $items;
     }

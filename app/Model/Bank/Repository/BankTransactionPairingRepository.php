@@ -10,8 +10,7 @@ use App\Model\Infrastructure\Repository\AbstractRepository;
 use App\Model\Invoice\Entity\Invoice;
 use App\Model\Payment\Payment;
 
-use function array_values;
-
+/** @extends AbstractRepository<BankTransactionPairing> */
 class BankTransactionPairingRepository extends AbstractRepository
 {
     public function getEntityClass(): string
@@ -43,14 +42,12 @@ class BankTransactionPairingRepository extends AbstractRepository
             return [];
         }
 
-        return array_values(
-            $this->createQueryBuilder('entity')
-                ->where('entity.transactionKey IN (:transactionKeys)')
-                ->andWhere('entity.cancelledAt IS NULL')
-                ->setParameter('transactionKeys', $transactionKeys)
-                ->getQuery()
-                ->getResult(),
-        );
+        return $this->createQueryBuilder('entity')
+            ->where('entity.transactionKey IN (:transactionKeys)')
+            ->andWhere('entity.cancelledAt IS NULL')
+            ->setParameter('transactionKeys', $transactionKeys)
+            ->getQuery()
+            ->getResult();
     }
 
     public function findActiveByPayment(Payment $payment): ?BankTransactionPairing

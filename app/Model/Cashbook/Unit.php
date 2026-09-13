@@ -15,30 +15,25 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use LogicException;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(name="ac_units")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'ac_units')]
 class Unit extends Aggregate
 {
-    /**
-     * @ORM\Id()
-     * @ORM\Column(type="unit_id")
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'unit_id')]
     private UnitId $id;
 
     /**
-     * @ORM\OneToMany(targetEntity=Cashbook::class, mappedBy="unit", cascade={"persist", "remove"}, orphanRemoval=true)
-     *
      * @var ArrayCollection&iterable<Cashbook>
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
+    #[ORM\OneToMany(targetEntity: Cashbook::class, mappedBy: 'unit', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private $cashbooks;
 
-    /** @ORM\Column(type="integer") */
+    #[ORM\Column(type: 'integer')]
     private int $activeCashbookId;
 
-    /** @ORM\Column(type="integer") */
+    #[ORM\Column(type: 'integer')]
     private int $nextCashbookId = 1;
 
     public function __construct(UnitId $id, CashbookId $activeCashbookId, int $activeCashbookYear)
@@ -104,7 +99,7 @@ class Unit extends Aggregate
 
     private function cashbookForYearExists(int $year): bool
     {
-        return $this->cashbooks->exists(function (?int $_x = null, ?Cashbook $cashbook = null) use ($year): bool {
+        return $this->cashbooks->exists(function (int|string $_x, Cashbook $cashbook) use ($year): bool {
             return $cashbook->getYear() === $year;
         });
     }

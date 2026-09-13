@@ -6,6 +6,13 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" type="image/svg+xml" href="/images/skaut-logo.svg">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#4d8746">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#315b35">
+    {* iOS ignores the manifest icon and name, it reads its own tags. *}
+    <link rel="apple-touch-icon" href="/images/pwa/icon-apple-touch.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Hospodaření">
 
     <script n:syntax="off">
         if ("theme" in localStorage) {
@@ -17,35 +24,24 @@
         }
     </script>
 
-    {if $productionMode}
-        <script n:syntax="off">
-            ga = function (){ga.q.push(arguments)};
-            ga.q = [];
-            ga.l = +new Date;
-            ga('create', 'UA-50892244-1', 'auto');
-            ga('send', 'pageview');
-        </script>
-        <script src="https://www.google-analytics.com/analytics.js" async defer></script>
-    {/if}
-
     <title>{block #title|stripHtml|trim}Skautské hospodaření{/block}</title>
 
     <link rel="stylesheet" href="/css/app.css?{md5_file($wwwDir . '/css/app.css')}">
 </head>
 
-<body class="app-shell" data-page-help-expanded="{$showPageHelp ? 'true' : 'false'}"
+<body class="app-shell" data-environment="{$environmentMode}" data-page-help-expanded="{$showPageHelp ? 'true' : 'false'}"
       {if $sessionKeepAliveEnabled}data-session-keep-alive-url="{$sessionKeepAliveUrl}" data-session-keep-alive-interval="{$sessionKeepAliveInterval}"{/if}>
 <div class="page">
 
-    <nav n:class="navbar, navbar-expand-lg, navbar-light, site-header, sticky-top, $testBackground ? 'navbar--' . $environmentColor">
+    <nav n:class="navbar, navbar-expand-lg, navbar-light, site-header, sticky-top, $showEnvironmentBadge ? 'navbar--' . $environmentMode">
         <div class="container-xl">
             {* ── Brand ── *}
             {if $user->isLoggedIn()}
                 <a class="navbar-brand" n:href=":Dashboard:default">
-                    {if $testBackground}
+                    {if $showEnvironmentBadge}
                         <span class="navbar-test-badge" title="{$environmentLabel}" data-test="test-server-badge">
-                            <i class="fas fa-flask" aria-hidden="true"></i>
-                            <span class="visually-hidden">{$environmentLabel}</span>
+                            <i class="fi fi-rr-flask" aria-hidden="true"></i>
+                            <span class="navbar-environment-label">{$environmentLabel}</span>
                         </span>
                     {else}
                         <img src="/images/skaut-logo.svg" class="navbar-brand-icon" alt="" aria-hidden="true">
@@ -54,10 +50,10 @@
                 </a>
             {else}
                 <a class="navbar-brand" n:href=":Default:">
-                    {if $testBackground}
+                    {if $showEnvironmentBadge}
                         <span class="navbar-test-badge" title="{$environmentLabel}" data-test="test-server-badge">
-                            <i class="fas fa-flask" aria-hidden="true"></i>
-                            <span class="visually-hidden">{$environmentLabel}</span>
+                            <i class="fi fi-rr-flask" aria-hidden="true"></i>
+                            <span class="navbar-environment-label">{$environmentLabel}</span>
                         </span>
                     {else}
                         <img src="/images/skaut-logo.svg" class="navbar-brand-icon" alt="" aria-hidden="true">
@@ -87,7 +83,7 @@
                     {control darkModeToggle}
                     {if $user->isLoggedIn()}
                         <span id="timer" class="w-auto small p-1 rounded text-nowrap">
-                            <i class="far fa-clock"></i>
+                            <i class="fi fi-rr-clock" aria-hidden="true"></i>
                             <span id="timer-minutes"></span>
                         </span>
                     {/if}
@@ -116,15 +112,15 @@
                 <div class="alert alert-{$flashType} flash-message alert-dismissible fade show" role="alert">
                     <span class="flash-message__icon" aria-hidden="true">
                         {if $flashType === 'success'}
-                            <i class="fi fi-rr-check-circle"></i>
+                            <i class="fi fi-rr-check-circle" aria-hidden="true"></i>
                         {elseif $flashType === 'danger'}
-                            <i class="fi fi-rr-cross-circle"></i>
+                            <i class="fi fi-rr-cross-circle" aria-hidden="true"></i>
                         {elseif $flashType === 'warning'}
-                            <i class="fi fi-rr-triangle-warning"></i>
+                            <i class="fi fi-rr-triangle-warning" aria-hidden="true"></i>
                         {elseif $flashType === 'info'}
-                            <i class="fi fi-rr-info"></i>
+                            <i class="fi fi-rr-info" aria-hidden="true"></i>
                         {else}
-                            <i class="fi fi-rr-bell"></i>
+                            <i class="fi fi-rr-bell" aria-hidden="true"></i>
                         {/if}
                     </span>
                     <div class="flash-message__content">
@@ -139,7 +135,68 @@
             {/foreach}
         {/snippet}
 
-        {include #content}
+        {* Offer to install the application on a phone. Stays hidden until the browser
+           reports the application can be installed, so it never shows inside the
+           installed app. Android installs it on one tap, iOS only through its own
+           share menu, so the button and the instruction never show at once. *}
+        <div id="appInstallBanner" class="alert app-install-banner" role="region" aria-label="Instalace aplikace"
+             data-test="app-install-banner" hidden>
+            <img src="/images/pwa/icon-192.png" class="app-install-banner__icon" alt="" aria-hidden="true" width="48" height="48">
+            <div class="app-install-banner__content">
+                <strong class="app-install-banner__title">Hospodaření jako aplikace</strong>
+                <p class="app-install-banner__text">Nainstalujte si Hospodaření do telefonu a otevírejte ho rovnou z plochy.</p>
+                <p class="app-install-banner__text" id="appInstallManualHint" data-test="app-install-hint" hidden>
+                    Otevřete nabídku Sdílet a zvolte Přidat na plochu.
+                </p>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-primary" id="appInstallButton">
+                    <i class="fi fi-rr-download" aria-hidden="true"></i>
+                    <span>Instalovat</span>
+                </button>
+                <button type="button" class="btn btn-light" id="appInstallDismiss">Teď ne</button>
+            </div>
+        </div>
+
+        {if $navigationBreadcrumbs}
+            <nav class="app-breadcrumbs" aria-label="Drobečková navigace" data-test="breadcrumbs">
+                <ol class="breadcrumb mb-3">
+                    {foreach $navigationBreadcrumbs as $breadcrumb}
+                        <li n:class="breadcrumb-item, $breadcrumb['current'] ? active" n:attr="aria-current => $breadcrumb['current'] ? 'page' : null">
+                            {if $breadcrumb['link'] !== null}
+                                <a href="{$breadcrumb['link']}">{$breadcrumb['title']}</a>
+                            {else}
+                                {$breadcrumb['title']}
+                            {/if}
+                        </li>
+                    {/foreach}
+                </ol>
+            </nav>
+        {/if}
+
+        {* The help panel is rendered here for every page that has help in the database,
+           so its placement, look and controls never differ between pages. *}
+        {*
+           The lead strip under a page title. Uses the wording set in Admin:Help when
+           the page has one, otherwise the text the template ships with - so a page
+           works before anyone writes help for it and dynamic wording stays possible.
+        *}
+        {define pageLead, $default, $class = null}
+            <div n:class="page-lead, $class">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>{$pageHelp?->getLead() ?? $default}</span>
+            </div>
+        {/define}
+
+        {var $pageHelp = $pageHelp ?? null}
+        {if $pageHelp !== null}
+            <div class="design-help-layout" data-help-layout>
+                <div class="design-help-main">{include #content}</div>
+                {include 'helpSidebar.latte', pageHelp: $pageHelp}
+            </div>
+        {else}
+            {include #content}
+        {/if}
     </main>
 
     <footer class="site-footer" id="footer" data-test="site-footer">
@@ -158,9 +215,10 @@
                 </a>
                 <a n:href=":Default:about" class="site-footer__link">O projektu</a>
                 <a n:href=":Default:reinforcement" class="site-footer__link">Posily</a>
+                <a n:href=":Default:privacy" class="site-footer__link" data-test="footer-privacy-link">Soukromí a data</a>
                 <a href="https://github.com/skaut/Skautske-hospodareni/graphs/contributors" class="site-footer__link">Autoři</a>
                 <a href="https://github.com/skaut/Skautske-hospodareni" class="site-footer__link">
-                    <i class="fab fa-github" aria-hidden="true"></i>
+                    <i class="fi fi-brands-github" aria-hidden="true"></i>
                     <span>Pošli PR</span>
                 </a>
                 <a href="https://headwayapp.co/skautske-hospodareni-changelog" target="_blank" rel="noopener noreferrer" class="site-footer__link">

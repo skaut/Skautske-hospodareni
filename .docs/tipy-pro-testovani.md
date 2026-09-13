@@ -1,39 +1,36 @@
-# Tipy pro testování
-Automatické testy by nám měly zajišťovat ověření správného chování funkcí.
+# Jak ověřovat změny
 
-Pro efektivní a ne příliš otravující testování je pár doporučení, kterými je dobré se řídit.
-Spousta jich vychází z [Extremely Defensive PHP](https://ocramius.github.io/extremely-defensive-php/#/)
+Automatické testy ověřují změnu co nejjednodušším vhodným způsobem. Všechny běží v Dockeru a nesmějí komunikovat se skutečným SkautISem ani jinou externí službou.
 
-## Jak testovat agregáty (entity) a doménové servisy
-- Chování (změnu stavu) pokrýváme unit testy. Testujeme všechny scénáře (cesty, kterými se kód může ubírat) [\[1\]](https://ocramius.github.io/extremely-defensive-php/#/107)
+## Volba typu testu
 
-## Jak testovat listenery
-V listenerech se většinou nachází nějaké side-effecty, kterými se nechceme zabývat při vykonávání hlavní akce (odeslání e-mailu o nějaké akci, apod). Stačí testovat v rámci integračního testu hlavní akce.
+- **Jednotkový test** ověřuje malou část pravidel bez databáze.
+- **Integrační test** ověřuje spolupráci kódu s databází nebo nastavením aplikace.
+- **Akceptační test** ověřuje důležitý a stabilní postup uživatele v prohlížeči, například stránku, formulář nebo seznam.
 
-## Jak testovat repozitáře
-Integrační test s databází
+Ověřte běžný postup i důležité chybové stavy. Pravidla hospodaření nepatří do šablon ani obrazovek, aby šla ověřit samostatně.
 
-## Jak testovat komunikaci se SkautISem
-Vyřezávat komunikaci se SkautISem do samostatných služeb které pouze volají SkautIS a mapují I/O na nějaká rozumná DTO.
-API těchto služeb nadefinovat jako interface a pro testy implementaci nahrazovat fake objektem.
+## Databáze a obrazovky
 
-## Jak testovat presentery
-Akceptační testy, pokud jsou jednoduché (většinou nejsou a je s tím hrozná práce). Pokud nejsou, tak :pray: 
+- Komunikaci se SkautISem nahraďte v testech bezpečnou náhradou; test nesmí volat síť.
+- Ukládání dat a změny databáze ověřujte integračním testem proti testovací databázi.
+- Akceptační test si připraví vlastní data a musí fungovat samostatně i v celé sadě.
+- Pokud se při přechodu mezi stránkami nebo odeslání formuláře může objevit dočasná chyba spojení se SkautISem, použijte společný pomocný postup z rodičovské třídy akceptačních testů. Nevytvářejte vlastní opakování ani pevně zapsané čekání.
 
+## Spouštění
 
-## Spouštění testů
-Jednotlivé testy: 
+Při prvním spuštění připravte testovací prostředí:
+
 ```bash
-make test-unit TEST=App/RouterFactoryTest
+make test-init
+```
+
+Cílený test spusťte přes `TEST` včetně cesty k souboru:
+
+```bash
+make test-unit TEST=tests/unit/App/SomeTest.php
 make test-integration TEST=tests/integration/SomeCest.php
 make test-acceptance TEST=tests/acceptance/SomeCest.php:scenarioName
 ```
 
-Všechny daného typu lze spustit přes `make`:
-```bash
-make test-unit
-make test-integration
-make test-acceptance
-make ci-acceptance
-make ci
-```
+Celé skupiny spustíte příkazy `make test-unit`, `make test-integration` a `make test-acceptance`. Před odevzdáním změny spusťte nejmenší odpovídající sadu a příslušné kontroly z [Příkazů pro práci na projektu](nastroje.md).

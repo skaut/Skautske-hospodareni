@@ -7,13 +7,13 @@ namespace App\Model\Payment\Group;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
-/** @ORM\Embeddable() */
+#[ORM\Embeddable]
 final class BankAccount
 {
-    /** @ORM\Column(type="integer", nullable=true, name="bank_account_id") */
+    #[ORM\Column(type: 'integer', nullable: true, name: 'bank_account_id')]
     private int $id;
 
-    /** @ORM\Column(type="datetime_immutable", nullable=true) */
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?DateTimeImmutable $lastPairing = null;
 
     private function __construct(int $id, ?DateTimeImmutable $lastPairing)
@@ -35,6 +35,15 @@ final class BankAccount
     public function invalidateLastPairing(): self
     {
         return new self($this->id, null);
+    }
+
+    /**
+     * Doctrine instantiates an embeddable even when every mapped column is NULL, so a group
+     * without a bank account is hydrated with an uninitialized id instead of a null embeddable.
+     */
+    public function isEmpty(): bool
+    {
+        return ! isset($this->id);
     }
 
     public function getId(): int

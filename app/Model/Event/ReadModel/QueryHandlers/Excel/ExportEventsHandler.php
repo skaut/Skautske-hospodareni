@@ -123,7 +123,7 @@ final class ExportEventsHandler
 
             $pragueParticipants = $pragueParticipantsPerEvent[$event->getId()->toInt()];
 
-            $sheet->setCellValue('U'.$row, $pragueParticipants->isSupportable($event->getTotalDays()) ? 'Ano' : 'Ne')
+            $sheet->setCellValue('U'.$row, $pragueParticipants->isSupportable((int) $event->getTotalDays()) ? 'Ano' : 'Ne')
                 ->setCellValue('V'.$row, $pragueParticipants->getPersonDaysUnder26())
                 ->setCellValue('W'.$row, $pragueParticipants->getUnder18())
                 ->setCellValue('X'.$row, $pragueParticipants->getBetween18and26())

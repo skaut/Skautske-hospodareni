@@ -60,7 +60,7 @@ class DashboardPresenter extends BasePresenter
             'btn' => 'btn btn-sm btn-light',
             'toggle' => 'btn btn-sm btn-light dropdown-toggle',
             'menu' => 'dropdown-menu pairForm dropdown-menu-end',
-            'icon' => 'fa-solid fa-building-columns',
+            'icon' => 'fi fi-rr-bank',
             'inputGroup' => 'input-group input-group-sm',
             'submit' => 'btn btn-primary btn-sm',
             'submitCol' => 'col-4 d-grid',

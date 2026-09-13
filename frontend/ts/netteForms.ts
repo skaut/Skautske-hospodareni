@@ -29,17 +29,23 @@ netteFormsInstance.showFormErrors = (form: HTMLFormElement, messages: { element:
     messages.forEach(message => {
         message.element.classList.add(invalidControlClass);
 
-        const formGroup = message.element.closest('.mb-3');
-
-        if (formGroup === null) {
-            return;
-        }
-
         const messageElement = document.createElement('div');
         messageElement.innerText = message.message;
         messageElement.setAttribute('class', errorMessageClass + ' d-block');
 
-        formGroup.appendChild(messageElement);
+        // Prefer the Bootstrap form group so the message lines up under the whole
+        // field. Forms without one still have to show the error, otherwise failed
+        // client-side validation would be silent.
+        const formGroup = message.element.closest('.mb-3');
+
+        if (formGroup !== null) {
+            formGroup.appendChild(messageElement);
+
+            return;
+        }
+
+        const anchor = message.element.closest('.input-group') ?? message.element;
+        anchor.parentNode?.insertBefore(messageElement, anchor.nextSibling);
     });
 };
 

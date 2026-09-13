@@ -22,6 +22,44 @@ final class PublicAccessCest extends BaseAcceptanceCest
         $I->seeElement('.site-header.navbar--test');
     }
 
+    public function everyPageOffersInstallationOfTheApplication(AcceptanceTester $I): void
+    {
+        $I->amOnPage('/');
+        $I->waitForElementVisible('[data-test="homepage"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        $I->seeElementInDOM('link[rel="manifest"][href="/manifest.webmanifest"]');
+        $I->seeElementInDOM('link[rel="apple-touch-icon"][href="/images/pwa/icon-apple-touch.png"]');
+
+        // The offer belongs to phones that can install the application, so on
+        // a desktop browser it must stay in the page but out of sight. The manual
+        // instruction is for iOS only and stays hidden even inside the offer.
+        $I->seeElementInDOM('[data-test="app-install-banner"][hidden]');
+        $I->dontSeeElement('[data-test="app-install-banner"]');
+        $I->seeElementInDOM('[data-test="app-install-hint"][hidden]');
+    }
+
+    /**
+     * The layout used to load Google Analytics on every production page. The property
+     * had been switched off for years, so the request bought nothing — and the tag
+     * must not quietly come back with a copied snippet.
+     */
+    public function noPageLoadsExternalAnalytics(AcceptanceTester $I): void
+    {
+        $I->amOnPage('/');
+        $I->waitForElementVisible('[data-test="homepage"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        $I->dontSeeElementInDOM('script[src*="google-analytics.com"]');
+        $I->dontSeeElementInDOM('script[src*="googletagmanager.com"]');
+
+        $html = $I->executeJS('return document.documentElement.innerHTML');
+        Assert::assertStringNotContainsString('UA-50892244', $html);
+        Assert::assertStringNotContainsString('google-analytics', $html);
+        Assert::assertStringNotContainsString('gtag(', $html);
+
+        // What replaced it: a description of the measurement instead of a foreign request.
+        $I->seeElement('[data-test="footer-privacy-link"]');
+    }
+
     /** @dataProvider publicPages */
     public function publicPagesRemainAccessible(AcceptanceTester $I, \Codeception\Example $example): void
     {
@@ -46,6 +84,7 @@ final class PublicAccessCest extends BaseAcceptanceCest
             'homepage' => ['url' => '/', 'selector' => '[data-test="homepage"]'],
             'about' => ['url' => '/o-projektu', 'selector' => 'h1'],
             'reinforcement' => ['url' => '/posily', 'selector' => 'h1'],
+            'privacy' => ['url' => '/zasady-soukromi', 'selector' => '[data-test="privacy-page"]'],
         ];
     }
 

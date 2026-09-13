@@ -18,6 +18,7 @@ use App\Model\Payment\Commands\Payment\UpdatePayment;
 use App\Model\Payment\Repositories\IGroupRepository;
 use App\Model\Payment\Services\BankAccountAccessChecker;
 use App\Model\Payment\Services\IOAuthAccessChecker;
+use App\Model\Utils\MoneyFactory;
 use DateTimeImmutable;
 use Helpers;
 use IntegrationTest;
@@ -66,7 +67,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
         $this->pairPayments();
 
         $this->commandBus->handle(
-            new CreatePayment(1, 'a', [], 2, Helpers::getValidDueDate(), null, new VariableSymbol('2'), null, ''),
+            new CreatePayment(1, 'a', [], MoneyFactory::fromDecimal('2.00'), Helpers::getValidDueDate(), null, new VariableSymbol('2'), null, ''),
         );
 
         $this->assertGroupHasEmptyLastPairing();
@@ -85,7 +86,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
                 1,
                 'a',
                 [],
-                self::ORIGINAL_AMOUNT + 1,
+                MoneyFactory::fromDecimal((string) (self::ORIGINAL_AMOUNT + 1)),
                 Helpers::getValidDueDate(),
                 $originalVariableSymbol,
                 null,
@@ -109,7 +110,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
                 1,
                 'a',
                 [],
-                self::ORIGINAL_AMOUNT,
+                MoneyFactory::fromDecimal((string) self::ORIGINAL_AMOUNT),
                 Helpers::getValidDueDate(),
                 $originalVariableSymbol->increment(),
                 null,
@@ -131,7 +132,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
                 1,
                 'a',
                 [],
-                self::ORIGINAL_AMOUNT,
+                MoneyFactory::fromDecimal((string) self::ORIGINAL_AMOUNT),
                 Helpers::getValidDueDate(),
                 null,
                 null,
@@ -155,7 +156,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
                 1,
                 'a',
                 [],
-                self::ORIGINAL_AMOUNT + 1,
+                MoneyFactory::fromDecimal((string) (self::ORIGINAL_AMOUNT + 1)),
                 Helpers::getValidDueDate(),
                 $originalVariableSymbol,
                 null,
@@ -206,7 +207,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
                 1,
                 'x',
                 [],
-                self::ORIGINAL_AMOUNT,
+                MoneyFactory::fromDecimal((string) self::ORIGINAL_AMOUNT),
                 Helpers::getValidDueDate(),
                 null,
                 $variableSymbol,
@@ -221,7 +222,7 @@ final class LastPairingInvalidationTest extends IntegrationTest
                 1,
                 'x',
                 [],
-                self::ORIGINAL_AMOUNT,
+                MoneyFactory::fromDecimal((string) self::ORIGINAL_AMOUNT),
                 Helpers::getValidDueDate(),
                 null,
                 new VariableSymbol('1'),

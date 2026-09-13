@@ -16,6 +16,7 @@ use App\Model\Unit\Unit;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
 use LogicException;
+use Nette\Application\Attributes\Persistent;
 
 /**
  * @method void onSelect(int[] $personIds)
@@ -23,10 +24,10 @@ use LogicException;
  */
 final class PersonPicker extends BaseControl
 {
-    /** @persistent */
+    #[Persistent]
     public ?string $unitId = null;
 
-    /** @persistent */
+    #[Persistent]
     public bool $directMemberOnly = false;
 
     /** @var callable[] */
@@ -127,6 +128,7 @@ final class PersonPicker extends BaseControl
             ->setHtmlAttribute('class', 'btn btn-primary');
 
         $form->onSuccess[] = function (BaseForm $form): void {
+            /** @var array<string, mixed> $values */
             $values = $form->getValues('array');
 
             $this->onNonMemberAdd(

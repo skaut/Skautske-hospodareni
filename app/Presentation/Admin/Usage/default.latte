@@ -1,0 +1,293 @@
+{block title}Admin Využití{/block}
+
+{*
+    Both defines take already-formatted strings. Filters stay in output position
+    or inside a parenthesised expression; a bare filter in a {var} is a compile
+    error, and one applied to an {include} argument fails at runtime with
+    "incompatible content type HTML".
+*}
+{define kpi, string $label, string $value, string $note}
+    <div class="col-6 col-lg-3">
+        <div class="usage-kpi">
+            <span class="usage-kpi__value">{$value}</span>
+            <span class="usage-kpi__label">{$label}</span>
+            <span n:if="$note !== ''" class="usage-kpi__note">{$note}</span>
+        </div>
+    </div>
+{/define}
+
+{define breakdown, string $heading, array $rows, string $emptyText}
+    <div class="col-12 col-lg-4">
+        <h3 class="h6 text-body-secondary mb-3">{$heading}</h3>
+        {if $rows === []}
+            <p class="text-body-secondary small mb-0">{$emptyText}</p>
+        {else}
+            {var $max = max($rows)}
+            <div class="usage-bars">
+                <div n:foreach="$rows as $label => $count" class="usage-bar">
+                    <span class="usage-bar__label">{$label}</span>
+                    <span class="usage-bar__track">
+                        <span class="usage-bar__fill" style="width: {$max > 0 ? round($count / $max * 100) : 0}%"></span>
+                    </span>
+                    <span class="usage-bar__value">{$count|num}</span>
+                </div>
+            </div>
+        {/if}
+    </div>
+{/define}
+
+{block content}
+{* Declared inside the block — a {var} in the template body is not visible here. *}
+{var $logins = $usage->logins}
+{var $preferences = $usage->preferences}
+{var $engagement = $usage->engagement}
+
+<div data-test="admin-usage-page" class="usage-page d-grid gap-4">
+
+    {* Hero *}
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 class="h3 mb-2">Využití systému</h1>
+            {include pageLead, default: 'Kdo Hospodaření používá, z čeho k němu přistupuje a jak dlouho v něm pracuje. Doménové statistiky o obsahu najdete v sekci Statistiky.'}
+        </div>
+    </div>
+
+    {* Filter *}
+    <div class="card">
+        <div class="card-body">
+            {control selectYearForm}
+        </div>
+    </div>
+
+    {* ── Přihlášení ─────────────────────────────────────────────── *}
+    <article class="card" data-test="admin-usage-logins-card">
+        <div class="card-body">
+            <h2 class="h5 mb-3">Přihlášení a sezení</h2>
+
+            {if ! $logins->available}
+                <div class="alert alert-warning mb-0" data-test="admin-usage-tracking-unavailable">
+                    <strong>Sledování přihlášení zatím neběží.</strong>
+                    Tabulka <code>user_login</code> v databázi chybí — spusťte migrace a údaje se začnou zaznamenávat od dalšího přihlášení.
+                </div>
+            {elseif ! $logins->hasData()}
+                <div class="alert alert-info mb-0" data-test="admin-usage-no-data">
+                    <strong>Za rok {$year} zatím nejsou žádná data.</strong>
+                    Přihlášení se zaznamenávají teprve od nasazení této funkce, starší období tedy zůstane prázdné.
+                </div>
+            {else}
+                {var $sessionsPerUser = $logins->getSessionsPerUser()}
+                {var $logoutShare = $logins->getLogoutShare()}
+
+                <div class="row g-3" data-test="admin-usage-headline">
+                    {include kpi,
+                        label => 'Přihlášení',
+                        value => ($logins->logins|num),
+                        note => 'v celém systému ' . ($logins->loginsAllUnits|num)}
+                    {include kpi,
+                        label => 'Uživatelé',
+                        value => ($logins->users|num),
+                        note => 'v celém systému ' . ($logins->usersAllUnits|num)}
+                    {include kpi,
+                        label => 'Aktivní jednotky',
+                        value => ($logins->units|num),
+                        note => ''}
+                    {include kpi,
+                        label => 'Noví uživatelé',
+                        value => ($logins->newUsers|num),
+                        note => 'vracejících se ' . ($logins->getReturningUsers()|num)}
+                </div>
+
+                <hr class="my-4">
+
+                <div class="row g-3">
+                    {include kpi,
+                        label => 'Medián délky sezení',
+                        value => ($logins->sessionMedianSeconds|duration),
+                        note => 'p90 ' . ($logins->sessionP90Seconds|duration)}
+                    {include kpi,
+                        label => 'Sezení na uživatele',
+                        value => $sessionsPerUser === null ? '–' : ($sessionsPerUser|number:1, ',', ' '),
+                        note => 'za rok ' . $year}
+                    {include kpi,
+                        label => 'Ukončeno odhlášením',
+                        value => $logoutShare === null ? '–' : ($logoutShare|number:0, ',', ' ') . ' %',
+                        note => ($logins->endedByLogout|num) . ' sezení'}
+                    {include kpi,
+                        label => 'Zavřeno bez odhlášení',
+                        value => ($logins->getEndedWithoutLogout()|num),
+                        note => 'zavřená karta nebo vypršení'}
+                </div>
+
+                <p class="text-body-secondary small mb-0 mt-3">
+                    Délka sezení se počítá od prvního po poslední skutečný požadavek, ne podle platnosti skautIS tokenu.
+                    Automatické prodlužování přihlášení se do aktivity nezapočítává, jinak by uživatelům s touto funkcí
+                    sezení trvalo tak dlouho, jak dlouho mají otevřenou kartu prohlížeče.
+                </p>
+            {/if}
+        </div>
+    </article>
+
+    {* ── Zařízení ───────────────────────────────────────────────── *}
+    <article n:if="$logins->hasData()" class="card" data-test="admin-usage-devices-card">
+        <div class="card-body">
+            <h2 class="h5 mb-4">Zařízení, prohlížeče a role</h2>
+            <div class="row g-4">
+                {include breakdown,
+                    heading => 'Typ zařízení',
+                    rows => $logins->deviceTypes,
+                    emptyText => 'Žádná data.'}
+                {include breakdown,
+                    heading => 'Prohlížeč',
+                    rows => $logins->browsers,
+                    emptyText => 'Žádná data.'}
+                {include breakdown,
+                    heading => 'Platforma',
+                    rows => $logins->platforms,
+                    emptyText => 'Žádná data.'}
+            </div>
+
+            <hr class="my-4">
+
+            <div class="row g-4">
+                {include breakdown,
+                    heading => 'Role při přihlášení',
+                    rows => $logins->roleGroups,
+                    emptyText => 'Žádná data.'}
+            </div>
+        </div>
+    </article>
+
+    {* ── Kdy se pracuje ─────────────────────────────────────────── *}
+    <article n:if="$logins->getWeekTotal() > 0" class="card" data-test="admin-usage-week-card">
+        <div class="card-body">
+            <h2 class="h5 mb-1">Kdy se pracuje</h2>
+            <p class="text-body-secondary small mb-3">Přihlášení podle dne v týdnu a hodiny. Sytější pole znamená víc přihlášení.</p>
+
+            {var $weekPeak = $logins->getWeekPeak()}
+            {var $dayNames = [1 => 'Po', 2 => 'Út', 3 => 'St', 4 => 'Čt', 5 => 'Pá', 6 => 'So', 7 => 'Ne']}
+
+            <div class="table-responsive">
+                <table class="usage-heatmap">
+                    <thead>
+                    <tr>
+                        <th scope="col"><span class="visually-hidden">Den</span></th>
+                        <th n:for="$hour = 0; $hour < 24; $hour++" scope="col">{if $hour % 3 === 0}{$hour}{/if}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr n:foreach="$dayNames as $day => $dayName">
+                        <th scope="row">{$dayName}</th>
+                        <td n:for="$hour = 0; $hour < 24; $hour++"
+                            style="--usage-intensity: {$weekPeak > 0 ? round($logins->weekMap[$day][$hour] / $weekPeak, 3) : 0}"
+                            title="{$dayName} {$hour}:00 — {$logins->weekMap[$day][$hour]} přihlášení">
+                            <span class="visually-hidden">{$logins->weekMap[$day][$hour]}</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </article>
+
+    {* ── Volitelné funkce ───────────────────────────────────────── *}
+    <article class="card" data-test="admin-usage-preferences-card">
+        <div class="card-body">
+            <h2 class="h5 mb-1">Volitelné funkce</h2>
+            <p class="text-body-secondary small mb-3">
+                Kolik lidí si funkci nechalo zapnutou. Počítáno napříč celým systémem — nastavení se neváže na jednotku,
+                a zahrnutý je jen ten, kdo si nastavení někdy uložil ({$preferences->users|num} uživatelů).
+            </p>
+
+            {if $preferences->users === 0}
+                <p class="text-body-secondary small mb-0">Zatím si nikdo neuložil vlastní nastavení.</p>
+            {else}
+                <div class="row g-3">
+                    {include kpi,
+                        label => 'Zobrazují nápovědy',
+                        value => ($preferences->getShowHelpShare()|number:0, ',', ' ') . ' %',
+                        note => ($preferences->showHelp|num) . ' uživatelů'}
+                    {include kpi,
+                        label => 'Prodloužené přihlášení',
+                        value => ($preferences->getExtendLoginShare()|number:0, ',', ' ') . ' %',
+                        note => ($preferences->extendLogin|num) . ' uživatelů'}
+                    {include kpi,
+                        label => 'Zapamatovaná role',
+                        value => ($preferences->getRememberRoleShare()|number:0, ',', ' ') . ' %',
+                        note => ($preferences->rememberRole|num) . ' uživatelů'}
+                </div>
+            {/if}
+        </div>
+    </article>
+
+    {* ── Provozní signály ───────────────────────────────────────── *}
+    <article class="card" data-test="admin-usage-engagement-card">
+        <div class="card-body">
+            <h2 class="h5 mb-1">Signály z provozních dat</h2>
+            <p class="text-body-secondary small mb-3">Odvozené z údajů, které aplikace ukládá kvůli samotným funkcím — proto u nich sedí uvedené výhrady.</p>
+
+            {var $pairingShare = $engagement->getAutomaticPairingShare()}
+
+            <div class="row g-3">
+                {include kpi,
+                    label => 'Automaticky spárováno',
+                    value => $pairingShare === null ? '–' : ($pairingShare|number:0, ',', ' ') . ' %',
+                    note => ($engagement->pairingsAutomatic|num) . ' z ' . ($engagement->pairingsTotal|num) . ' párování'}
+                {include kpi,
+                    label => 'Autoři změn',
+                    value => ($engagement->activeAuthors|num),
+                    note => 'lidí, kteří něco změnili'}
+                {include kpi,
+                    label => 'Zapojení v Platbách',
+                    value => ($engagement->paymentVisitUsers|num),
+                    note => 'lidí s navštívenou skupinou'}
+                {include kpi,
+                    label => 'Zařízení z hlášení',
+                    value => ($engagement->getReportDeviceTotal()|num),
+                    note => 'vzorek jen z nahlášených chyb'}
+            </div>
+
+            <div n:if="$engagement->reportDeviceTypes !== []" class="row g-4 mt-1">
+                {include breakdown,
+                    heading => 'Typ zařízení v technických hlášeních',
+                    rows => $engagement->reportDeviceTypes,
+                    emptyText => 'Žádná hlášení.'}
+            </div>
+
+            <ul class="text-body-secondary small mb-0 mt-3 ps-3">
+                <li><strong>Autoři změn</strong> jsou lidé zapsaní v provozním logu. Kdo si stránky jen prohlížel, tady není.</li>
+                <li><strong>Zapojení v Platbách</strong> je počet lidí, ne návštěv — u každého se pamatují nejvýš tři poslední skupiny.</li>
+                <li><strong>Zařízení z hlášení</strong> vychází z těch, kdo nahlásili chybu, takže vzorek je vychýlený. Skutečná čísla jsou v sekci výše.</li>
+            </ul>
+        </div>
+    </article>
+
+    {* ── Aktivita v roce ────────────────────────────────────────── *}
+    <article n:if="$logins->hasData()" class="card" data-test="admin-usage-monthly-card">
+        <div class="card-body">
+            <h2 class="h5 mb-1">Přihlášení v průběhu roku {$year}</h2>
+            <p class="text-body-secondary small mb-3">
+                Kdy v roce se do systému skutečně chodí. Kolik skupin a faktur za měsíc vzniklo
+                najdete ve <a n:href=":Admin:Statistics: unitId => $unitId">Statistikách</a> — je to údaj o obsahu, ne o využití.
+            </p>
+
+            {var $monthNames = [1 => 'Leden', 2 => 'Únor', 3 => 'Březen', 4 => 'Duben', 5 => 'Květen', 6 => 'Červen', 7 => 'Červenec', 8 => 'Srpen', 9 => 'Září', 10 => 'Říjen', 11 => 'Listopad', 12 => 'Prosinec']}
+            {var $monthPeak = $logins->getMonthlyPeak()}
+
+            {if $monthPeak === 0}
+                <p class="text-body-secondary small mb-0">Za rok {$year} nejsou zaznamenaná žádná přihlášení.</p>
+            {else}
+                <div class="usage-bars">
+                    <div n:foreach="$logins->monthly as $month => $count" class="usage-bar">
+                        <span class="usage-bar__label">{$monthNames[$month]}</span>
+                        <span class="usage-bar__track">
+                            <span class="usage-bar__fill" style="width: {round($count / $monthPeak * 100)}%"></span>
+                        </span>
+                        <span class="usage-bar__value">{$count|num}</span>
+                    </div>
+                </div>
+            {/if}
+        </div>
+    </article>
+
+</div>
+{/block}
