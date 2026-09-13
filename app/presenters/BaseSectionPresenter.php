@@ -62,7 +62,7 @@ abstract class BaseSectionPresenter extends BasePresenter
             $this->aid = (int) $this->aid;
         }
 
-        $unitId = $this->getParameter('unitId', null);
+        $unitId = $this->getParameter('unitId');
         $this->unitId = new UnitId($unitId !== null ? (int) $unitId : $this->unitService->getUnitId());
 
         $this->userService->updateLogoutTime();
