@@ -6,13 +6,15 @@ namespace App;
 
 final class Context
 {
+    private EnvironmentMode $environmentMode;
+
     public function __construct(
         private string $appDir,
         private string $wwwDir,
         private bool $productionMode,
-        private string $environmentMode,
-        private string $environmentLabel,
+        string $environmentMode,
     ) {
+        $this->environmentMode = EnvironmentMode::fromAppEnv($environmentMode);
     }
 
     public function getAppDir(): string
@@ -32,16 +34,16 @@ final class Context
 
     public function shouldShowEnvironmentBadge(): bool
     {
-        return $this->environmentMode !== EnvironmentMode::PRODUCTION->value;
+        return $this->environmentMode->shouldShowBadge();
     }
 
     public function getEnvironmentLabel(): string
     {
-        return $this->environmentLabel;
+        return $this->environmentMode->getLabel();
     }
 
     public function getEnvironmentMode(): string
     {
-        return $this->environmentMode;
+        return $this->environmentMode->value;
     }
 }

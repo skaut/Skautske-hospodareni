@@ -436,7 +436,11 @@ abstract class BasePresenter extends Presenter
         $menu->setActivePresenter($this);
 
         $activeItem = $menu->findActiveItem();
-        if (! $activeItem instanceof IMenuItem || $activeItem->getRealTitle() === 'Přehled') {
+
+        // Hub items point at the same action as their main-menu parent, so a breadcrumb
+        // there would link back to the page the user is already on. Marked in menu.neon
+        // with `hub: true` rather than matched on the displayed title.
+        if (! $activeItem instanceof IMenuItem || $activeItem->getData('hub', false) === true) {
             return [];
         }
 
