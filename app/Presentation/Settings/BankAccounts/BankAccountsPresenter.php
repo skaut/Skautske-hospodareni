@@ -33,6 +33,7 @@ use App\Presentation\Settings\SettingsBasePresenter;
 use InvalidArgumentException;
 use Nette\Application\BadRequestException;
 use Nette\Utils\Html;
+use RuntimeException;
 
 use function array_keys;
 use function array_map;
@@ -240,7 +241,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
     public function renderDetail(int $id, ?int $paymentId = null, ?int $invoiceId = null, ?string $transactionView = null): void
     {
         $this->transactionView = $this->normalizeTransactionView($transactionView);
-        $account = $this->accounts->find($id);
+        $account = $this->accounts->find($id) ?? throw new RuntimeException('Bankovní účet nebyl nalezen.');
         $readableUnitIds = array_keys($this->unitService->getReadUnits($this->user));
         $groupNames = $this->resolveGroupNames($readableUnitIds);
         $canAccessInvoices = $this->canAccessInvoices();
@@ -333,7 +334,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
                 'name' => $account->getName(),
                 'number' => (string) $account->getNumber(),
                 'source' => (
-                    $account->getTransactionSource()->value === BankTransactionSource::FIO->value
+                    $account->getTransactionSource() === BankTransactionSource::FIO
                     && $account->getToken() === null
                 ) ? '' : $account->getTransactionSource()->label(),
                 'sourceType' => $account->getTransactionSource()->value,
