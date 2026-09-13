@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Component\Forms;
 
 use Contributte\FormMultiplier\Multiplier;
-use NasExt\Forms\Controls\DependentSelectBox;
-use Nette\Forms\Control;
+use Stringable;
 
 trait CustomControlFactories
 {
-    public function addDate(string $name, $label = null): DateControl
+    public function addDate(string $name, string|Stringable|null $label = null): DateControl
     {
         return $this[$name] = new DateControl($label);
     }
@@ -27,11 +26,6 @@ trait CustomControlFactories
         $control->currentGroup = $this->currentGroup;
 
         return $this[$name] = $control;
-    }
-
-    public function addDependentSelectBox(string $name, ?string $label, Control ...$parents): DependentSelectBox
-    {
-        return $this[$name] = new DependentSelectBox($label, $parents);
     }
 
     public function addDynamic(string $name, callable $factory, int $createDefault = 0, bool $forceDefault = false): Multiplier
