@@ -54,7 +54,7 @@ class BankTransactionService
     /** @return list<BankTransaction> */
     public function getPersistentTransactionsForPeriod(BankAccount $bankAccount, ChronosDate $since, ChronosDate $until): array
     {
-        if ($bankAccount->getTransactionSource()->value === BankTransactionSource::FIO->value) {
+        if ($bankAccount->getTransactionSource() === BankTransactionSource::FIO) {
             $this->importManager->importFioTransactions(
                 $bankAccount,
                 array_values($this->fio->getTransactions($since, $until, $bankAccount)),
@@ -79,7 +79,7 @@ class BankTransactionService
     {
         $bankAccount = $this->bankAccounts->find($bankAccountId);
 
-        if ($bankAccount->getTransactionSource()->value !== BankTransactionSource::GPC->value) {
+        if ($bankAccount->getTransactionSource() !== BankTransactionSource::GPC) {
             throw new InvalidArgumentException('GPC import lze použít pouze pro účty se zdrojem GPC.');
         }
 

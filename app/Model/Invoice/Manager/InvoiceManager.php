@@ -90,7 +90,7 @@ class InvoiceManager extends AbstractManager
         }
 
         if (
-            $sourceInvoice->getPaymentType()->value === InvoicePaymentType::TRANSFER->value
+            $sourceInvoice->getPaymentType() === InvoicePaymentType::TRANSFER
             && $targetSequence->getBankAccount() === null
         ) {
             throw new InvalidArgumentException('Do zvolené řady nelze duplikovat fakturu hrazenou převodem bez bankovního účtu.');
