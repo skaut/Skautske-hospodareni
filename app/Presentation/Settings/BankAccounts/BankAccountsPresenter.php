@@ -361,7 +361,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
             ->setSortable();
 
         $grid->addColumnText('amount', 'Částka')
-            ->setRenderer(fn (array $row): Html => $this->renderTransactionAmount((float) $row['amount']))
+            ->setRenderer(fn (array $row): Html => $this->formatTransactionAmount((float) $row['amount']))
             ->setSortable('amountSort');
 
         $grid->addColumnText('counterAccount', 'Účet')
@@ -379,7 +379,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
         $grid->addColumnText('note', 'Poznámka');
 
         $grid->addColumnText('status', 'Stav / kandidáti')
-            ->setRenderer(fn (array $row): Html => $this->renderTransactionStatus($row['row']));
+            ->setRenderer(fn (array $row): Html => $this->formatTransactionStatus($row['row']));
 
         $grid->addFilterText('search', '', ['counterAccount', 'counterName', 'constantSymbol', 'variableSymbol', 'note', 'statusSearch'])
             ->setPlaceholder('Hledat transakci...');
@@ -501,7 +501,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
             : self::TRANSACTION_VIEW_INCOMING;
     }
 
-    private function renderTransactionAmount(float $amount): Html
+    private function formatTransactionAmount(float $amount): Html
     {
         $strong = Html::el('strong')
             ->setText(number_format($amount, 2, ',', ' ').' Kč');
@@ -515,7 +515,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
             ->addHtml($strong);
     }
 
-    private function renderTransactionStatus(BankAccountTransactionRow $row): Html
+    private function formatTransactionStatus(BankAccountTransactionRow $row): Html
     {
         $container = Html::el('div')
             ->setAttribute('class', 'd-flex flex-column gap-1');
@@ -524,7 +524,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
             $pairing = Html::el('div');
             $pairing->addHtml(Html::el('span')->setAttribute('class', 'badge bg-info text-dark')->setText('Spárováno'));
             $pairing->addText(' ');
-            $pairing->addHtml($this->renderTransactionLink($row->pairingLabel));
+            $pairing->addHtml($this->formatTransactionLink($row->pairingLabel));
             $container->addHtml($pairing);
         }
 
@@ -532,7 +532,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
             $container->addHtml(Html::el('div')->setAttribute('class', 'small text-body-secondary')->setText('Ruční párování podle částky:'));
 
             foreach ($row->manualCandidates as $candidate) {
-                $container->addHtml($this->renderManualCandidate($candidate));
+                $container->addHtml($this->formatManualCandidate($candidate));
             }
         }
 
@@ -540,7 +540,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
             $container->addHtml(Html::el('div')->setAttribute('class', 'small text-body-secondary')->setText('Jednoznačné automatické shody:'));
 
             foreach ($row->exactCandidates as $candidate) {
-                $container->addHtml($this->renderCandidateLink($candidate));
+                $container->addHtml($this->formatCandidateLink($candidate));
             }
         }
 
@@ -552,17 +552,17 @@ final class BankAccountsPresenter extends SettingsBasePresenter
             $container->addHtml(Html::el('div')->setAttribute('class', 'small text-body-secondary')->setText('Položky se shodným VS:'));
 
             foreach ($row->variableSymbolCandidates as $candidate) {
-                $container->addHtml($this->renderCandidateLink($candidate));
+                $container->addHtml($this->formatCandidateLink($candidate));
             }
         }
 
         return $container;
     }
 
-    private function renderManualCandidate(BankAccountManualCandidate $candidate): Html
+    private function formatManualCandidate(BankAccountManualCandidate $candidate): Html
     {
         $container = Html::el('div')->setAttribute('class', 'mb-1');
-        $container->addHtml($this->renderTypeBadge($candidate->type));
+        $container->addHtml($this->formatTypeBadge($candidate->type));
         $container->addText(' ');
         $container->addHtml(Html::el('a')->href($candidate->url)->setText($candidate->label));
         $container->addText(' ');
@@ -582,17 +582,17 @@ final class BankAccountsPresenter extends SettingsBasePresenter
         return $container;
     }
 
-    private function renderCandidateLink(BankAccountTransactionLink $candidate): Html
+    private function formatCandidateLink(BankAccountTransactionLink $candidate): Html
     {
         $container = Html::el('div');
-        $container->addHtml($this->renderTypeBadge($candidate->type));
+        $container->addHtml($this->formatTypeBadge($candidate->type));
         $container->addText(' ');
-        $container->addHtml($this->renderTransactionLink($candidate));
+        $container->addHtml($this->formatTransactionLink($candidate));
 
         return $container;
     }
 
-    private function renderTransactionLink(BankAccountTransactionLink $link): Html
+    private function formatTransactionLink(BankAccountTransactionLink $link): Html
     {
         if ($link->url === null) {
             return Html::el('span')->setText($link->label);
@@ -603,7 +603,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
             ->setText($link->label);
     }
 
-    private function renderTypeBadge(string $type): Html
+    private function formatTypeBadge(string $type): Html
     {
         return Html::el('span')
             ->setAttribute('class', $type === 'invoice' ? 'badge bg-secondary' : 'badge bg-primary')
