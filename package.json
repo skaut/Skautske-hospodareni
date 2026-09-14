@@ -4,7 +4,7 @@
     "scripts": {
         "build": "vite build --mode development",
         "build-production": "vite build",
-        "check-types": "yarn tsc --noEmit"
+        "check-types": "tsc --noEmit && tsc --noEmit -p tsconfig.sw.json"
     },
     "dependencies": {
         "@flaticon/flaticon-uicons": "3.3.1",
@@ -30,7 +30,7 @@
         "uglify-js": "^3.19.3",
         "vite": "^7.1.0"
     },
-    "resolutions": {
+    "overrides": {
         "bootstrap": "5.3.8"
     },
     "lint-staged": {

@@ -16,7 +16,7 @@ Skautske hospodareni is a web application for accounting and financial administr
 
 ## Docker Is Mandatory
 
-Run all project runtime, build, dependency, database, and check commands in Docker. Do not run `php`, `composer`, `bin/console`, `vendor/bin/*`, `node`, `npm`, `yarn`, `webpack`, or database clients against the project DB on the host.
+Run all project runtime, build, dependency, database, and check commands in Docker. Do not run `php`, `composer`, `bin/console`, `vendor/bin/*`, `node`, `npm`, `vite`, or database clients against the project DB on the host.
 
 Only repository reading and editing tools may be used on the host, for example `git`, `rg`, `sed`, and `apply_patch`.
 
@@ -106,14 +106,14 @@ When modifying older code, preserve local conventions unless they directly confl
 ## Frontend
 
 - TypeScript 5.6 in strict mode.
-- Webpack 5 as the only frontend build system.
+- Vite 7 as the only frontend build system.
 - Sass/SCSS and PostCSS/Autoprefixer for styles.
 - Tabler Core 1.4 and Bootstrap 5.3.8 for UI.
 - Naja 1.7 for AJAX and redrawing Nette snippets.
 - NProgress, Pikaday, and Moment with Czech locale are existing support libraries.
 - Build visual elements on existing components, tokens, and utilities. Do not introduce React, Vue, Tailwind, another CSS framework, or a parallel icon system.
 - Write new behavior as a TypeScript module in `frontend`; do not embed extensive JavaScript directly into Latte templates.
-- After changing TypeScript or SCSS, run typecheck and frontend build in Docker. For frontend work, use the existing Yarn/Webpack commands, for example `yarn build`, `yarn build --watch`, and `yarn check-types`, always inside the project container.
+- After changing TypeScript or SCSS, run typecheck and frontend build in Docker. For frontend work, use `npm run check-types`, `npm run build`, and `npm run build -- --watch` inside the project container.
 
 ## Testing
 
@@ -189,7 +189,7 @@ docker compose -f docker/docker-compose.yml exec -T php-test \
 - `make check-cs` fixes the coding standard, `make check-cs-check` is the CI dry run.
 - `make fix` runs fixable checks without tests.
 - Verify Latte through `vendor/bin/latte-lint`.
-- Verify TypeScript through `yarn check-types`.
+- Verify TypeScript through `npm run check-types`.
 - Preserve LF line endings.
 - Use precise types, return types, and concrete array shapes where they improve static analysis.
 - Do not use native PHP `assert()` in application code. For runtime invariants and type narrowing, use an explicit guard that throws an exception.
@@ -206,8 +206,8 @@ docker compose -f docker/docker-compose.yml exec -T php-test \
 
 ## Dependencies And Stack Changes
 
-- PHP dependencies are managed by Composer, frontend dependencies by Yarn.
-- Respect `composer.lock` and `yarn.lock`; after an intentional dependency change, update the relevant lock file in Docker.
+- PHP dependencies are managed by Composer, frontend dependencies by NPM.
+- Respect `composer.lock` and `package-lock.json`; after an intentional dependency change, update the relevant lock file in Docker.
 - Before adding a new dependency, check whether the problem is already solved by a framework or library in use.
 - When existing dependencies emit compatibility warnings or deprecations on the target PHP version, prefer moving the application and dependency stack forward over adding suppressions or lowering error visibility.
 - Add a new technology or replace any of the technologies listed above only when explicitly requested by the user.

@@ -200,7 +200,7 @@ services:
     # Vite (frontend build manifest)
     - App\Ui\ViteManifest(
           manifestPath: %wwwDir%/dist/.vite/manifest.json
-          basePath: /dist
+          basePath: /
       )
     - App\Ui\ViteExtension
 
