@@ -12,6 +12,8 @@ deployment.*
 tests/_output/*
 tests/_support/_generated/*
 /www/dist
+/www/sw.js
+/www/sw.js.map
 app/config/google-credentials*
 adminer.php
 *.sh
