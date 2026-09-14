@@ -56,6 +56,7 @@ jobs:
       # Výroba tarballu bez zbytečností
       - name: Create tarball
         run: |
+          set -euo pipefail
           find "$GITHUB_WORKSPACE" -mindepth 1 -maxdepth 1 \
               ! -name '.git' \
               ! -name '.github' \
@@ -65,6 +66,7 @@ jobs:
               ! -name 'temp' \
               ! -name '_temp' \
               ! -name 'workdir.tar.gz' \
+              ! -name 'workdir.tar.gz.sha256' \
               -printf '%P\0' \
             | tar -C "$GITHUB_WORKSPACE" \
               --exclude-vcs \
@@ -73,17 +75,21 @@ jobs:
               --exclude='www/webtemp' \
               --null \
               --files-from=- \
-              --warning=no-file-changed \
-              --ignore-failed-read \
               --use-compress-program='gzip -9' \
               -cf /tmp/workdir.tar.gz
           mv /tmp/workdir.tar.gz "$GITHUB_WORKSPACE/"
+          test -s workdir.tar.gz
+          gzip -t workdir.tar.gz
+          tar -tzf workdir.tar.gz >/dev/null
+          sha256sum workdir.tar.gz > workdir.tar.gz.sha256
 
       - name: Upload workdir
         uses: actions/upload-artifact@v7
         with:
           name: workdir
-          path: workdir.tar.gz
+          path: |
+            workdir.tar.gz
+            workdir.tar.gz.sha256
           if-no-files-found: error
           compression-level: 0
           retention-days: 7
@@ -125,9 +131,14 @@ jobs:
         run: |
           rm -rf _tmp_unpack
           mkdir _tmp_unpack
+          test -s workdir.tar.gz
+          sha256sum -c workdir.tar.gz.sha256
+          gzip -t workdir.tar.gz
+          tar -tzf workdir.tar.gz >/dev/null
           tar --no-overwrite-dir --no-same-owner --no-same-permissions -xzf workdir.tar.gz -C _tmp_unpack
           find _tmp_unpack -mindepth 1 -maxdepth 1 -exec mv -t . -- {} +
           rm -rf _tmp_unpack
+          rm -f workdir.tar.gz workdir.tar.gz.sha256
 
       - name: Build CI PHP image
         run: docker compose build php-test
@@ -367,7 +378,13 @@ jobs:
         with:
           name: workdir
           path: .
-      - run: tar --no-overwrite-dir --no-same-owner --no-same-permissions -xzf workdir.tar.gz
+      - run: |
+          test -s workdir.tar.gz
+          sha256sum -c workdir.tar.gz.sha256
+          gzip -t workdir.tar.gz
+          tar -tzf workdir.tar.gz >/dev/null
+          tar --no-overwrite-dir --no-same-owner --no-same-permissions -xzf workdir.tar.gz
+          rm -f workdir.tar.gz workdir.tar.gz.sha256
       - name: Install deploy tools
         run: |
           rm -f /etc/apt/sources.list.d/google-chrome.list
