@@ -23,6 +23,7 @@ docker compose -f docker/docker-compose.yml run --rm -T --entrypoint '' --user d
 
 ## Buildování frontendu
 Pro vybuildování assetů používáme [Vite](https://vite.dev/) a [Sass](https://sass-lang.com/).
+Build vytváří hashované assety v `www/dist` a service worker v `www/sw.js`.
 
 npm je k dispozici v hlavním Docker kontejneru.
 
