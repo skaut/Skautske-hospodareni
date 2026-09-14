@@ -25,8 +25,8 @@ use App\Model\Payment\Repositories\IGroupRepository;
 use App\Model\Payment\Repositories\IPaymentRepository;
 use App\Model\Payment\TokenNotSet;
 use App\Model\Utils\MoneyFactory;
-use Nette\Application\LinkGenerator;
 use Money\Money;
+use Nette\Application\LinkGenerator;
 use Nette\Utils\Html;
 
 use function array_filter;
