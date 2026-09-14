@@ -8,8 +8,7 @@ extensions:
     dbal: Nettrine\DBAL\DI\DbalExtension
 
 migrations:
-    directories:
-        Migrations: %appDir%/../migrations
+    directory: %appDir%/../migrations
     versionsOrganization: year
 
 dbal:
