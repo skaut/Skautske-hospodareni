@@ -29,7 +29,7 @@ Cílený test spusťte přes `TEST` včetně cesty k souboru:
 
 ```bash
 make test-unit TEST=tests/unit/App/SomeTest.php
-make test-integration TEST=tests/integration/SomeCest.php
+make test-integration TEST=tests/integration/SomeTest.php
 make test-acceptance TEST=tests/acceptance/SomeCest.php:scenarioName
 ```
 

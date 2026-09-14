@@ -22,22 +22,18 @@ docker compose -f docker/docker-compose.yml run --rm -T --entrypoint '' --user d
 ```
 
 ## Vzhled a chování stránek
-## Buildování frontendu
 Pro vybuildování assetů používáme [Webpack](https://webpack.js.org/) a [Sass](https://sass-lang.com/).
 
-npm je k dispozici v hlavním docker containeru.
+npm je k dispozici v hlavním Docker kontejneru.
 
-Po změně vzhledu (SCSS) nebo chování stránky (TypeScript) spusťte v běžícím vývojovém prostředí:
+Po spuštění vývojového prostředí přes `make up` nainstalujte frontendové závislosti a sestavte assety:
 ```bash
-npm install
-npm run build
+docker compose -f docker/docker-compose.yml exec -T php npm install
+docker compose -f docker/docker-compose.yml exec -T php npm run check-types
+docker compose -f docker/docker-compose.yml exec -T php npm run build
 ```
 
-```bash
-npm run build -- --watch
-```
-
-Při průběžné práci použijte `docker compose -f docker/docker-compose.yml exec php yarn build --watch`; soubory se po změně sestaví znovu.
+Při průběžné práci použijte `docker compose -f docker/docker-compose.yml exec -T php npm run build -- --watch`; soubory se po změně sestaví znovu.
 
 ## Testy a kontroly
 
