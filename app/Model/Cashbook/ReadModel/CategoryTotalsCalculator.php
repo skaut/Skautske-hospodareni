@@ -50,8 +50,8 @@ final class CategoryTotalsCalculator
      * odečítat (existuje dočasná kategorie vratky). Bez vratky se tak nevyhazuje MissingCategory u pokladen,
      * které příslušnou příjmovou kategorii nemají (např. prázdná vzdělávačka / tábor) – stejně jako u akcí.
      *
-     * @param array<int, Money> $totalByCategories
-     * @param callable(): int   $resolveCategoryId
+     * @param  array<int, Money> $totalByCategories
+     * @param  callable(): int   $resolveCategoryId
      * @return array<int, Money>
      */
     private static function categorySubtract(array $totalByCategories, callable $resolveCategoryId, int $temporaryId): array
