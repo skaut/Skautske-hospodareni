@@ -25,7 +25,7 @@ use function count;
 /**
  * TravelService nad reálnými repozitáři a databází — cestovní příkazy, vozidla a smlouvy.
  */
-final class TravelServiceTest extends IntegrationTest
+final class TravelServiceIntegrationTest extends IntegrationTest
 {
     private const UNIT_ID = 5;
     private const OWNER_ID = 77;
