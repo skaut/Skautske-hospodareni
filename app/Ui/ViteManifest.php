@@ -124,7 +124,7 @@ final class ViteManifest
     private function load(): array
     {
         if (! is_file($this->manifestPath)) {
-            throw new RuntimeException(sprintf('Vite manifest not found at "%s". Run the frontend build (yarn build).', $this->manifestPath));
+            throw new RuntimeException(sprintf('Vite manifest not found at "%s". Run the frontend build (npm run build).', $this->manifestPath));
         }
 
         return json_decode((string) file_get_contents($this->manifestPath), true, 512, JSON_THROW_ON_ERROR);
