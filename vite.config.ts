@@ -2,22 +2,30 @@ import { resolve } from 'node:path';
 
 import { defineConfig } from 'vite';
 
-// Output file names are content-hashed (Vite's default). The PHP side does not
-// hard-code them: it reads `dist/.vite/manifest.json` to resolve the entry
-// (`frontend/app.ts`) to its hashed JS and CSS URLs. This enables immutable
-// long-term caching of the assets.
+// The PHP side resolves the application entry through the Vite manifest. The
+// application assets are content-hashed below www/dist/assets, while the
+// service worker stays at www/sw.js so it can control the whole application.
 export default defineConfig(({ mode }) => ({
-    // Generated asset URLs (in the manifest and in the built CSS) are served
-    // from `/dist/`, matching the output directory below.
+    // Generated application asset URLs are served from `/dist/`.
     base: '/dist/',
     build: {
-        outDir: 'www/dist',
-        // Emit `.vite/manifest.json` mapping the entry to its hashed files.
-        manifest: true,
+        outDir: 'www',
+        // www contains committed application files as well as build output.
+        emptyOutDir: false,
+        manifest: 'dist/.vite/manifest.json',
         sourcemap: mode === 'development',
         minify: mode !== 'development',
         rollupOptions: {
-            input: resolve(import.meta.dirname, 'frontend/app.ts'),
+            input: [
+                resolve(import.meta.dirname, 'frontend/app.ts'),
+                resolve(import.meta.dirname, 'frontend/sw/serviceWorker.ts'),
+            ],
+            output: {
+                entryFileNames: (chunkInfo): string => chunkInfo.facadeModuleId?.endsWith('/frontend/sw/serviceWorker.ts')
+                    ? 'sw.js'
+                    : 'dist/assets/[name]-[hash].js',
+                assetFileNames: 'dist/assets/[name]-[hash][extname]',
+            },
         },
     },
     css: {
