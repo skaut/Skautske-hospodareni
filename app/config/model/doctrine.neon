@@ -8,60 +8,62 @@ extensions:
     dbal: Nettrine\DBAL\DI\DbalExtension
 
 migrations:
-    directory: %appDir%/../migrations
+    directories:
+        Migrations: %appDir%/../migrations
     versionsOrganization: year
 
 dbal:
     debug:
         panel: %debugMode%
 
-    connection:
-        host: %database.host%
-        user: %database.user%
-        password: %database.password%
-        dbname: %database.name%
-        serverVersion: '8.0'
-        driver: pdo_mysql
-        charset: utf8mb4
-        defaultTableOptions:
+    typesMapping:
+        enum: string
+        set: string
+        bigint: int64
+
+    types:
+        int64: App\Model\Infrastructure\Types\Int64Type
+        payment_state: App\Model\Infrastructure\Types\PaymentStateType
+        payment_email_type: App\Model\Infrastructure\Types\PaymentEmailTypeType
+        payment_group_type: App\Model\Infrastructure\Types\PaymentGroupTypeType
+        log_type: App\Model\Infrastructure\Types\LogTypeType
+        travel_transport_type: App\Model\Infrastructure\Types\TravelTransportTypeType
+        cashbook_operation: App\Model\Infrastructure\Types\CashbookOperationType
+        cashbook_type: App\Model\Infrastructure\Types\CashbookTypeType
+        cashbook_object_type: App\Model\Infrastructure\Types\CashbookObjectTypeType
+        chit_payment_method: App\Model\Infrastructure\Types\ChitPaymentMethodType
+        participant_event_type: App\Model\Infrastructure\Types\ParticipantEventTypeType
+        money: App\Model\Infrastructure\Types\MoneyType
+        variable_symbol: App\Model\Infrastructure\Types\VariableSymbolType
+        chit_number: App\Model\Infrastructure\Types\ChitNumberType
+        recipient: App\Model\Infrastructure\Types\RecipientType
+        chronos_date: Warhuhn\Doctrine\DBAL\Types\ChronosDateType
+        cashbook_id: App\Model\Infrastructure\Types\CashbookIdType
+        unit_id: App\Model\Infrastructure\Types\UnitIdType
+        payment_id: App\Model\Infrastructure\Types\PaymentIdType
+        file_path: App\Model\Infrastructure\Types\FilePathType
+        oauth_id: App\Model\Infrastructure\Types\OAuthIdType
+        transport_types: App\Model\Infrastructure\Types\TransportTypeListType
+        email_address: App\Model\Infrastructure\Types\EmailAddressType
+        skautis_event_id: App\Model\Infrastructure\Types\SkautisEventIdType
+        skautis_education_id: App\Model\Infrastructure\Types\SkautisEducationIdType
+        skautis_camp_id: App\Model\Infrastructure\Types\SkautisCampIdType
+        big_decimal: App\Model\Infrastructure\Types\BigDecimalType
+        carbon_timestamp_immutable_ms: Extension\Doctrine\Types\CarbonTimestampImmutableMsType
+        uuid_binary: Ramsey\Uuid\Doctrine\UuidBinaryType
+
+    connections:
+        default:
+            host: %database.host%
+            user: %database.user%
+            password: %database.password%
+            dbname: %database.name%
+            serverVersion: '8.0'
+            driver: pdo_mysql
             charset: utf8mb4
-            collate: utf8mb4_czech_ci
-
-        typesMapping:
-            enum: string
-            set: string
-            bigint: int64
-
-        types:
-            int64: App\Model\Infrastructure\Types\Int64Type
-            payment_state: App\Model\Infrastructure\Types\PaymentStateType
-            payment_email_type: App\Model\Infrastructure\Types\PaymentEmailTypeType
-            payment_group_type: App\Model\Infrastructure\Types\PaymentGroupTypeType
-            log_type: App\Model\Infrastructure\Types\LogTypeType
-            travel_transport_type: App\Model\Infrastructure\Types\TravelTransportTypeType
-            cashbook_operation: App\Model\Infrastructure\Types\CashbookOperationType
-            cashbook_type: App\Model\Infrastructure\Types\CashbookTypeType
-            cashbook_object_type: App\Model\Infrastructure\Types\CashbookObjectTypeType
-            chit_payment_method: App\Model\Infrastructure\Types\ChitPaymentMethodType
-            participant_event_type: App\Model\Infrastructure\Types\ParticipantEventTypeType
-            money: App\Model\Infrastructure\Types\MoneyType
-            variable_symbol: App\Model\Infrastructure\Types\VariableSymbolType
-            chit_number: App\Model\Infrastructure\Types\ChitNumberType
-            recipient: App\Model\Infrastructure\Types\RecipientType
-            chronos_date: Warhuhn\Doctrine\DBAL\Types\ChronosDateType
-            cashbook_id: App\Model\Infrastructure\Types\CashbookIdType
-            unit_id: App\Model\Infrastructure\Types\UnitIdType
-            payment_id: App\Model\Infrastructure\Types\PaymentIdType
-            file_path: App\Model\Infrastructure\Types\FilePathType
-            oauth_id: App\Model\Infrastructure\Types\OAuthIdType
-            transport_types: App\Model\Infrastructure\Types\TransportTypeListType
-            email_address: App\Model\Infrastructure\Types\EmailAddressType
-            skautis_event_id: App\Model\Infrastructure\Types\SkautisEventIdType
-            skautis_education_id: App\Model\Infrastructure\Types\SkautisEducationIdType
-            skautis_camp_id: App\Model\Infrastructure\Types\SkautisCampIdType
-            big_decimal: App\Model\Infrastructure\Types\BigDecimalType
-            carbon_timestamp_immutable_ms: Extension\Doctrine\Types\CarbonTimestampImmutableMsType
-            uuid_binary: Ramsey\Uuid\Doctrine\UuidBinaryType
+            defaultTableOptions:
+                charset: utf8mb4
+                collate: utf8mb4_czech_ci
 
 services:
   # ── PSR-6 pooly pro Doctrine cache (symfony/cache) ───────────────────────────

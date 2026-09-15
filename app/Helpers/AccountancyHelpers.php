@@ -49,17 +49,6 @@ abstract class AccountancyHelpers
         throw new RuntimeException('Filter not found');
     }
 
-    public static function loader(string $filter): callable
-    {
-        $method = [self::class, $filter];
-
-        if (is_callable($method)) {
-            return $method;
-        }
-
-        throw new RuntimeException('Filter not found');
-    }
-
     /**
      * @filter
      *

@@ -70,7 +70,7 @@ final class NoOpResponse implements IResponse
         /* no-op */
     }
 
-    public function setCookie(string $name, string $value, $expire, ?string $path = null, ?string $domain = null, ?bool $secure = null, ?bool $httpOnly = null): static
+    public function setCookie(string $name, string $value, $expire, ?string $path = null, ?string $domain = null, ?bool $secure = null, ?bool $httpOnly = null, mixed ...$options): static
     {
         return $this;
     }
