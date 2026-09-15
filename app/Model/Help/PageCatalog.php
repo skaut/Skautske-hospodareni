@@ -13,11 +13,11 @@ use SplFileInfo;
 
 use function class_exists;
 use function dirname;
+use function file_get_contents;
 use function is_dir;
 use function ksort;
 use function lcfirst;
 use function preg_match;
-use function Safe\file_get_contents;
 use function str_contains;
 use function str_ends_with;
 use function str_starts_with;
@@ -70,6 +70,7 @@ class PageCatalog
                 continue;
             }
 
+            /** @var class-string<object> $class */
             $reflection = new ReflectionClass($class);
 
             if ($reflection->isAbstract()) {
@@ -118,6 +119,9 @@ class PageCatalog
                 }
 
                 $source = file_get_contents($file->getPathname());
+                if ($source === false) {
+                    continue;
+                }
 
                 if (preg_match('~^namespace\s+([^;]+);~m', $source, $namespace) !== 1) {
                     continue;
@@ -188,6 +192,7 @@ class PageCatalog
      */
     private function resolveActionsFromTemplates(string $class): array
     {
+        /** @var class-string<object> $class */
         $reflection = new ReflectionClass($class);
         $fileName = $reflection->getFileName();
 
@@ -208,7 +213,8 @@ class PageCatalog
                 continue;
             }
 
-            if (! str_contains(file_get_contents($file->getPathname()), '{block content}')) {
+            $template = file_get_contents($file->getPathname());
+            if ($template === false || ! str_contains($template, '{block content}')) {
                 continue;
             }
 
