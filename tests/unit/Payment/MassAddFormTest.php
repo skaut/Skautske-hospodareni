@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Components\Payment;
 
+use App\BasePresenter;
 use App\Model\Common\Services\CommandBus;
 use App\Model\DTO\Payment\Group;
 use App\Model\Payment\PaymentService;
@@ -15,6 +16,10 @@ use Component\Forms\BaseForm;
 use Mockery;
 use Nette\Forms\Controls\Checkbox;
 use Nette\Forms\Controls\TextInput;
+use Nette\Http\Request;
+use Nette\Http\Response;
+use Nette\Http\Session;
+use Nette\Http\UrlScript;
 
 final class MassAddFormTest extends Unit
 {
@@ -105,6 +110,14 @@ final class MassAddFormTest extends Unit
             ->with(self::GROUP_ID)
             ->andReturn($group);
 
-        return new MassAddForm(self::GROUP_ID, $payments, Mockery::mock(CommandBus::class));
+        $component = new MassAddForm(self::GROUP_ID, $payments, Mockery::mock(CommandBus::class));
+        $request = new Request(new UrlScript('http://localhost/'));
+        $response = new Response();
+        $presenter = new class extends BasePresenter {
+        };
+        $presenter->injectPrimary($request, $response, session: new Session($request, $response));
+        $presenter->addComponent($component, 'massAdd');
+
+        return $component;
     }
 }
