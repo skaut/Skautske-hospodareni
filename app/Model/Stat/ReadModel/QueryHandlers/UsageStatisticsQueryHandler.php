@@ -14,6 +14,7 @@ use App\Model\User\DeviceInfo;
 use App\Model\User\Entity\UserLogin;
 use App\Model\User\Services\DeviceClassifier;
 use App\Model\User\SkautisRole;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 
@@ -120,7 +121,7 @@ SQL;
             'year' => $year,
             'logout' => UserLogin::END_REASON_LOGOUT,
         ], [
-            'unitIds' => Connection::PARAM_INT_ARRAY,
+            'unitIds' => ArrayParameterType::INTEGER,
             'year' => ParameterType::INTEGER,
         ])->fetchAssociative();
 
@@ -184,7 +185,7 @@ SQL;
             'unitIds' => $unitIds,
             'year' => $year,
         ], [
-            'unitIds' => Connection::PARAM_INT_ARRAY,
+            'unitIds' => ArrayParameterType::INTEGER,
             'year' => ParameterType::INTEGER,
         ])->fetchOne();
     }
@@ -211,7 +212,7 @@ SQL;
             'unitIds' => $unitIds,
             'year' => $year,
         ], [
-            'unitIds' => Connection::PARAM_INT_ARRAY,
+            'unitIds' => ArrayParameterType::INTEGER,
             'year' => ParameterType::INTEGER,
         ])->fetchAllKeyValue();
 
@@ -244,7 +245,7 @@ SQL;
             'unitIds' => $unitIds,
             'year' => $year,
         ], [
-            'unitIds' => Connection::PARAM_INT_ARRAY,
+            'unitIds' => ArrayParameterType::INTEGER,
             'year' => ParameterType::INTEGER,
         ])->fetchAllKeyValue();
 
@@ -274,7 +275,7 @@ SQL;
             'unitIds' => $unitIds,
             'year' => $year,
         ], [
-            'unitIds' => Connection::PARAM_INT_ARRAY,
+            'unitIds' => ArrayParameterType::INTEGER,
             'year' => ParameterType::INTEGER,
         ])->fetchAllKeyValue();
 
@@ -332,7 +333,7 @@ SQL;
             'unitIds' => $unitIds,
             'year' => $year,
         ], [
-            'unitIds' => Connection::PARAM_INT_ARRAY,
+            'unitIds' => ArrayParameterType::INTEGER,
             'year' => ParameterType::INTEGER,
         ])->fetchAllAssociative() as $row) {
             // WEEKDAY() counts Monday as 0; the map is 1-based so the template reads naturally.
@@ -370,7 +371,7 @@ SQL;
             'unitIds' => $unitIds,
             'year' => $year,
         ], [
-            'unitIds' => Connection::PARAM_INT_ARRAY,
+            'unitIds' => ArrayParameterType::INTEGER,
             'year' => ParameterType::INTEGER,
         ])->fetchAllKeyValue() as $month => $logins) {
             $months[(int) $month] = (int) $logins;
@@ -456,7 +457,7 @@ SQL;
             'year' => $year,
             'automatic' => BankTransactionPairingMode::AUTOMATIC->value,
         ], [
-            'unitIds' => Connection::PARAM_INT_ARRAY,
+            'unitIds' => ArrayParameterType::INTEGER,
             'year' => ParameterType::INTEGER,
         ])->fetchAssociative();
 
@@ -486,7 +487,7 @@ SQL;
         return (int) $this->connection->executeQuery($sql, [
             'unitIds' => $unitIds,
         ], [
-            'unitIds' => Connection::PARAM_INT_ARRAY,
+            'unitIds' => ArrayParameterType::INTEGER,
         ])->fetchOne();
     }
 
@@ -501,7 +502,7 @@ SQL;
         return (int) $this->connection->executeQuery(
             'SELECT COUNT(DISTINCT user_id) FROM log WHERE unit_id IN (:unitIds) AND YEAR(date) = :year',
             ['unitIds' => $unitIds, 'year' => $year],
-            ['unitIds' => Connection::PARAM_INT_ARRAY, 'year' => ParameterType::INTEGER],
+            ['unitIds' => ArrayParameterType::INTEGER, 'year' => ParameterType::INTEGER],
         )->fetchOne();
     }
 
@@ -520,7 +521,7 @@ SQL;
         $userAgents = $this->connection->executeQuery(
             'SELECT user_agent FROM technical_error_report WHERE unit_id IN (:unitIds) AND YEAR(created_at) = :year',
             ['unitIds' => $unitIds, 'year' => $year],
-            ['unitIds' => Connection::PARAM_INT_ARRAY, 'year' => ParameterType::INTEGER],
+            ['unitIds' => ArrayParameterType::INTEGER, 'year' => ParameterType::INTEGER],
         )->fetchFirstColumn();
 
         $devices = [];

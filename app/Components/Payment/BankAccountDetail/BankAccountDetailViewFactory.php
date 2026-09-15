@@ -611,7 +611,9 @@ final class BankAccountDetailViewFactory
 
         return array_values(array_filter(
             $rows,
-            static fn (array $row): bool => $row['amount']->isPositive(),
+            static function (array $row): bool {
+                return $row['amount']->isPositive();
+            },
         ));
     }
 
