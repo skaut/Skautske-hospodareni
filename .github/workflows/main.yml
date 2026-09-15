@@ -55,6 +55,7 @@ jobs:
 
       # Výroba tarballu bez zbytečností
       - name: Create tarball
+        shell: bash
         run: |
           set -euo pipefail
           find "$GITHUB_WORKSPACE" -mindepth 1 -maxdepth 1 \
