@@ -274,7 +274,12 @@ final class BankAccountManualPairingServiceTest extends IntegrationTest
             new GridFactory(),
         );
 
-        $detail = $factory->createForPaymentGroup($bankAccount->getId(), $group->getId(), $group->getName(), $payment->getId());
+        $groupId = $group->getId();
+        if ($groupId === null) {
+            self::fail('Expected persisted payment group to have an ID.');
+        }
+
+        $detail = $factory->createForPaymentGroup($bankAccount->getId(), $groupId, $group->getName(), $payment->getId());
 
         self::assertNotNull($detail->transactionRows);
         self::assertSame(

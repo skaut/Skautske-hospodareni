@@ -6,12 +6,13 @@ namespace App\Model\Payment\Group;
 
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use LogicException;
 
 #[ORM\Embeddable]
 final class BankAccount
 {
     #[ORM\Column(type: 'integer', nullable: true, name: 'bank_account_id')]
-    private int $id;
+    private ?int $id = null;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?DateTimeImmutable $lastPairing = null;
@@ -29,12 +30,12 @@ final class BankAccount
 
     public function updateLastPairing(DateTimeImmutable $lastPairing): self
     {
-        return new self($this->id, $lastPairing);
+        return new self($this->getId(), $lastPairing);
     }
 
     public function invalidateLastPairing(): self
     {
-        return new self($this->id, null);
+        return new self($this->getId(), null);
     }
 
     /**
@@ -43,11 +44,15 @@ final class BankAccount
      */
     public function isEmpty(): bool
     {
-        return ! isset($this->id);
+        return $this->id === null;
     }
 
     public function getId(): int
     {
+        if ($this->id === null) {
+            throw new LogicException('Bank account ID is not initialized.');
+        }
+
         return $this->id;
     }
 

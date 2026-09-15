@@ -97,8 +97,8 @@ final class CampAddParticipantsPresenter extends BasePresenter
                 $this->queryBus->handle(new MemberEmailsQuery($p->getPersonId())),
                 $p->getDisplayName(),
                 $amount === null || $amount->isZero() ? null : $amount,
-                $paymentNote,
-                $variableSymbol,
+                $paymentNote ?? '',
+                $variableSymbol ?? '',
                 $dueDate,
             );
         }
