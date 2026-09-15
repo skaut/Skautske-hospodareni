@@ -72,10 +72,8 @@ final class EnvironmentTest extends Unit
         self::assertSame('http://moje-hospodareni.cz', $configuration['appBaseUrl']);
         self::assertSame('http://gotenberg:3000', $configuration['gotenbergUrl']);
         self::assertFalse($configuration['sendEmail'], 'v dev se maily neposílají');
-        self::assertTrue($configuration['testBackground']);
         self::assertSame([], $configuration['errorEmails']);
-        self::assertSame('Testovací server', $configuration['environmentLabel']);
-        self::assertSame('test', $configuration['environmentColor']);
+        self::assertSame('dev', $configuration['environmentMode']);
         self::assertFalse($configuration['maintenance']['enabled']);
         self::assertSame([], $configuration['maintenance']['allowedIps']);
         self::assertTrue($configuration['tracyShowBar'], 'v dev je Tracy bar vidět');
@@ -99,22 +97,22 @@ final class EnvironmentTest extends Unit
 
         self::assertSame('prod', $configuration['appEnv']);
         self::assertTrue($configuration['sendEmail']);
-        self::assertFalse($configuration['testBackground']);
+        self::assertSame('prod', $configuration['environmentMode']);
         self::assertFalse($configuration['tracyShowBar']);
         self::assertFalse($configuration['skautis']['testMode']);
     }
 
     public function testEnvironmentSpecificFileOverridesBaseFile(): void
     {
-        $this->writeEnv('.env', $this->requiredVariables()."\nAPP_ENV=staging\nENVIRONMENT_LABEL=Základní\n");
-        $this->writeEnv('.env.staging', "ENVIRONMENT_LABEL=Staging\nENVIRONMENT_COLOR=beta\n");
+        $this->writeEnv('.env', $this->requiredVariables()."\nAPP_ENV=staging\n");
+        $this->writeEnv('.env.staging', "SEND_EMAIL=no\n");
         $this->writeEnv('.env.staging.local', "APP_BASE_URL=https://staging.example.com/\n");
 
         Environment::reload($this->workDir);
         $configuration = Environment::getConfiguration();
 
-        self::assertSame('Staging', $configuration['environmentLabel']);
-        self::assertSame('beta', $configuration['environmentColor']);
+        self::assertSame('test', $configuration['environmentMode']);
+        self::assertFalse($configuration['sendEmail']);
         self::assertSame('https://staging.example.com', $configuration['appBaseUrl'], 'koncové lomítko se odřezává');
         self::assertSame('https://staging.example.com/google/token', $configuration['google']['redirectUri']);
     }
@@ -122,12 +120,13 @@ final class EnvironmentTest extends Unit
     public function testCiEnvironmentIgnoresLocalOverrideAndUsesCiCredentials(): void
     {
         $this->writeEnv('.env', $this->requiredVariables()."\nAPP_ENV=ci\n");
-        $this->writeEnv('.env.local', "ENVIRONMENT_LABEL=Nepoužije se\n");
+        $this->writeEnv('.env.local', "APP_BASE_URL=https://local.example.com\n");
 
         Environment::reload($this->workDir);
         $configuration = Environment::getConfiguration();
 
-        self::assertSame('Testovací server', $configuration['environmentLabel']);
+        self::assertSame('test', $configuration['environmentMode']);
+        self::assertSame('http://moje-hospodareni.cz', $configuration['appBaseUrl']);
         self::assertSame($this->workDir.'/app/config/ci-google-credentials.json', $configuration['google']['credentialsPath']);
     }
 
@@ -138,7 +137,7 @@ final class EnvironmentTest extends Unit
             $this->requiredVariables()
             ."# komentář\n"
             ."\n"
-            ."export ENVIRONMENT_LABEL=\"Beta \\\"server\\\"\"\n"
+            ."export APP_BASE_URL=\"https://beta.example.com\"\n"
             ."MAINTENANCE_STARTED_AT_LABEL='pátek 3. 7.'\n"
             ."GOTENBERG_URL=http://gotenberg:3000 # interní služba\n"
             ."ERROR_EMAILS= admin@example.com , dev@example.com ,\n"
@@ -149,7 +148,7 @@ final class EnvironmentTest extends Unit
         Environment::reload($this->workDir);
         $configuration = Environment::getConfiguration();
 
-        self::assertSame('Beta "server"', $configuration['environmentLabel']);
+        self::assertSame('https://beta.example.com', $configuration['appBaseUrl']);
         self::assertSame('pátek 3. 7.', $configuration['maintenance']['startedAtLabel']);
         self::assertSame('http://gotenberg:3000', $configuration['gotenbergUrl'], 'komentář za hodnotou se odřízne');
         self::assertSame(['admin@example.com', 'dev@example.com'], $configuration['errorEmails']);
@@ -162,7 +161,6 @@ final class EnvironmentTest extends Unit
             $this->requiredVariables()
             ."SEND_EMAIL=yes\n"
             ."MAINTENANCE_MODE=ON\n"
-            ."TEST_BACKGROUND=off\n"
             ."TRACY_SHOW_BAR=rozhodně\n"
             ."APP_MAINTENANCE_BYPASS=1\n"
             ."MAINTENANCE_ALLOWED_IPS=10.0.0.1,10.0.0.2\n",
@@ -173,19 +171,18 @@ final class EnvironmentTest extends Unit
 
         self::assertTrue($configuration['sendEmail']);
         self::assertTrue($configuration['maintenance']['enabled']);
-        self::assertFalse($configuration['testBackground']);
         self::assertTrue($configuration['maintenance']['debugBypass']);
         self::assertTrue($configuration['tracyShowBar'], 'nesmyslná hodnota padá na default, bypass ho pak zapne');
         self::assertSame(['10.0.0.1', '10.0.0.2'], $configuration['maintenance']['allowedIps']);
     }
 
-    public function testUnknownEnvironmentColorFallsBackToTest(): void
+    public function testUnknownEnvironmentFallsBackToTestMode(): void
     {
-        $this->writeEnv('.env', $this->requiredVariables()."ENVIRONMENT_COLOR=fialová\n");
+        $this->writeEnv('.env', $this->requiredVariables()."APP_ENV=fialová\n");
 
         Environment::reload($this->workDir);
 
-        self::assertSame('test', Environment::getConfiguration()['environmentColor']);
+        self::assertSame('test', Environment::getConfiguration()['environmentMode']);
     }
 
     public function testAbsoluteGoogleCredentialsPathIsKeptAsIs(): void
@@ -209,13 +206,13 @@ final class EnvironmentTest extends Unit
 
     public function testRepeatedLoadOfTheSameProjectIsNoOp(): void
     {
-        $this->writeEnv('.env', $this->requiredVariables()."ENVIRONMENT_LABEL=První\n");
+        $this->writeEnv('.env', $this->requiredVariables()."APP_BASE_URL=https://first.example.com\n");
         Environment::reload($this->workDir);
 
-        $this->writeEnv('.env', $this->requiredVariables()."ENVIRONMENT_LABEL=Druhý\n");
+        $this->writeEnv('.env', $this->requiredVariables()."APP_BASE_URL=https://second.example.com\n");
         Environment::load($this->workDir);
 
-        self::assertSame('První', Environment::getConfiguration()['environmentLabel']);
+        self::assertSame('https://first.example.com', Environment::getConfiguration()['appBaseUrl']);
     }
 
     private function requiredVariables(): string
@@ -241,8 +238,6 @@ final class EnvironmentTest extends Unit
             'DB_USER',
             'DB_PASSWORD',
             'DB_NAME',
-            'ENVIRONMENT_COLOR',
-            'ENVIRONMENT_LABEL',
             'ERROR_EMAILS',
             'GOOGLE_CREDENTIALS_FILE',
             'GOOGLE_REDIRECT_URI',
@@ -257,7 +252,6 @@ final class EnvironmentTest extends Unit
             'SEND_EMAIL',
             'SENTRY_DSN',
             'SKAUTIS_TEST_MODE',
-            'TEST_BACKGROUND',
             'TRACY_SHOW_BAR',
             'BROKEN_LINE_WITHOUT_SEPARATOR',
         ];

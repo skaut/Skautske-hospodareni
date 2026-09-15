@@ -14,6 +14,7 @@ use App\Model\Cashbook\ReadModel\CategoryTotalsCalculator;
 use App\Model\Utils\MoneyFactory;
 use Codeception\Test\Unit;
 use Mockery as m;
+use Money\Money;
 
 use function array_key_exists;
 
@@ -55,9 +56,9 @@ final class CategoryTotalsCalculatorTest extends Unit
     {
         $cashbook = $this->mockCashbook(
             [
-                2 => 200.0,
-                self::CATEGORY_EDUCATION_FEES_ID => 500.0,
-                ICategory::CATEGORY_REFUND_ID => 120.0,
+                2 => MoneyFactory::fromFloat(200.0),
+                self::CATEGORY_EDUCATION_FEES_ID => MoneyFactory::fromFloat(500.0),
+                ICategory::CATEGORY_REFUND_ID => MoneyFactory::fromFloat(120.0),
             ],
             Cashbook\CashbookType::EDUCATION,
         );
@@ -68,9 +69,9 @@ final class CategoryTotalsCalculatorTest extends Unit
         $totals = (new CategoryTotalsCalculator())->calculate($cashbook, $categories);
 
         // 500 příjem - 120 vratka
-        $this->assertSame(380.0, $totals[self::CATEGORY_EDUCATION_FEES_ID]);
+        $this->assertTrue(MoneyFactory::fromFloat(380.0)->equals($totals[self::CATEGORY_EDUCATION_FEES_ID]));
         $this->assertFalse(array_key_exists(ICategory::CATEGORY_REFUND_ID, $totals));
-        $this->assertSame(200.0, $totals[2]);
+        $this->assertTrue(MoneyFactory::fromFloat(200.0)->equals($totals[2]));
     }
 
     /**
@@ -79,25 +80,25 @@ final class CategoryTotalsCalculatorTest extends Unit
      */
     public function testEducationCalculationWithoutRefundDoesNotRequireFeesCategory(): void
     {
-        $cashbook = $this->mockCashbook([2 => 200.0], Cashbook\CashbookType::EDUCATION);
+        $cashbook = $this->mockCashbook([2 => MoneyFactory::fromFloat(200.0)], Cashbook\CashbookType::EDUCATION);
 
         $totals = (new CategoryTotalsCalculator())->calculate($cashbook, []);
 
-        $this->assertSame([2 => 200.0], $totals);
+        $this->assertTrue(MoneyFactory::fromFloat(200.0)->equals($totals[2]));
     }
 
     /** Stejná regrese pro tábor. */
     public function testCampCalculationWithoutRefundDoesNotRequireIncomeCategories(): void
     {
-        $cashbook = $this->mockCashbook([2 => 200.0], Cashbook\CashbookType::CAMP);
+        $cashbook = $this->mockCashbook([2 => MoneyFactory::fromFloat(200.0)], Cashbook\CashbookType::CAMP);
 
         $totals = (new CategoryTotalsCalculator())->calculate($cashbook, []);
 
-        $this->assertSame([2 => 200.0], $totals);
+        $this->assertTrue(MoneyFactory::fromFloat(200.0)->equals($totals[2]));
     }
 
     /**
-     * @param array<int, float> $categoryTotals
+     * @param array<int, Money> $categoryTotals
      */
     private function mockCashbook(array $categoryTotals, string $type): Cashbook
     {
