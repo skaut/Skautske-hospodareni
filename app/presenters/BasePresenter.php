@@ -22,8 +22,8 @@ use App\Model\User\UserPreferencesService;
 use App\Model\User\UserService;
 use Contributte\MenuControl\IMenuItem;
 use Contributte\MenuControl\MenuContainer;
-use Contributte\MenuControl\UI\IMenuComponentFactory;
 use Contributte\MenuControl\UI\MenuComponent;
+use Contributte\MenuControl\UI\MenuComponentFactory;
 use LogicException;
 use Nette\Application\BadRequestException;
 use Nette\Application\LinkGenerator;
@@ -85,7 +85,7 @@ abstract class BasePresenter extends Presenter
 
     private Context $appContext;
 
-    private IMenuComponentFactory $menuComponentFactory;
+    private MenuComponentFactory $menuComponentFactory;
 
     private MenuContainer $menuContainer;
 
@@ -109,7 +109,7 @@ abstract class BasePresenter extends Presenter
         LoggerInterface $logger,
         LinkGenerator $linkGenerator,
         Context $appContext,
-        IMenuComponentFactory $menuComponentFactory,
+        MenuComponentFactory $menuComponentFactory,
         MenuContainer $menuContainer,
         UserPreferencesService $userPreferences,
         PageHelpManager $pageHelp,
@@ -296,7 +296,7 @@ abstract class BasePresenter extends Presenter
     public function getLoggedInUserId(): int
     {
         $identity = $this->getUser()->getIdentity();
-        if (! $this->isValidUserIdentity($identity)) {
+        if (! $identity instanceof IIdentity || ! $this->isValidUserIdentity($identity)) {
             throw new BadRequestException('User identity is not valid', IResponse::S403_Forbidden);
         }
 
@@ -447,14 +447,19 @@ abstract class BasePresenter extends Presenter
     /** @return array{0: string|null, 1: string} */
     private function resolveTemplateSection(): array
     {
-        $presenterNameParts = explode(':', $this->getName());
+        $name = $this->getName();
+        if ($name === null) {
+            return [null, ''];
+        }
+
+        $presenterNameParts = explode(':', $name);
         $presenterName = $presenterNameParts[array_key_last($presenterNameParts)];
 
-        if (($presenterNameParts[0] ?? null) === 'Accountancy') {
+        if ($presenterNameParts[0] === 'Accountancy') {
             return [$presenterNameParts[1] ?? null, $presenterName];
         }
 
-        return [$presenterNameParts[0] ?? null, $presenterName];
+        return [$presenterNameParts[0], $presenterName];
     }
 
     private function usesPresentationDirectory(): bool
@@ -495,18 +500,18 @@ abstract class BasePresenter extends Presenter
         // Hub items point at the same action as their main-menu parent, so a breadcrumb
         // there would link back to the page the user is already on. Marked in menu.neon
         // with `hub: true` rather than matched on the displayed title.
-        if (! $activeItem instanceof IMenuItem || $activeItem->getData('hub', false) === true) {
+        if (! $activeItem instanceof IMenuItem || $activeItem->getDataItem('hub', false) === true) {
             return [];
         }
 
         $items = [[
-            'title' => $mainItem->getRealTitle(),
+            'title' => (string) $mainItem->getRealTitle(),
             'link' => $mainItem->getRealLink(),
             'current' => false,
         ]];
 
         $items[] = [
-            'title' => $activeItem->getRealTitle(),
+            'title' => (string) $activeItem->getRealTitle(),
             'link' => null,
             'current' => true,
         ];

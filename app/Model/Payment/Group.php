@@ -342,7 +342,7 @@ class Group
 
     private function changeBankAccount(?BankAccount $bankAccount, IBankAccountAccessChecker $accessChecker): void
     {
-        $currentBankAccountId = $this->linkedBankAccount()?->getId();
+        $currentBankAccount = $this->linkedBankAccount();
 
         if ($bankAccount === null) {
             $this->bankAccount = null;
@@ -356,7 +356,7 @@ class Group
             throw NoAccessToBankAccount::forUnits($unitIds, $bankAccount->getId());
         }
 
-        if ($currentBankAccountId === $bankAccount->getId() && $this->linkedBankAccount() !== null) {
+        if ($currentBankAccount !== null && $currentBankAccount->getId() === $bankAccount->getId()) {
             return;
         }
 
