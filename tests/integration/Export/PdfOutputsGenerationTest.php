@@ -10,6 +10,7 @@ use App\Model\Services\TemplateFactory;
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use IntegrationTest;
+use Money\Money;
 
 /**
  * Ověřuje, že se **každý** PDF výstup aplikace skutečně vygeneruje – šablona se přes produkční Latte
@@ -164,6 +165,9 @@ final class PdfOutputsGenerationTest extends IntegrationTest
                 $this->participant('Jan', 'Novák'),
                 $this->participant('Marie', 'Nováková'),
             ],
+            'totalPayment' => Money::CZK(100_000),
+            'totalRepayment' => Money::CZK(0),
+            'totalOnAccount' => Money::CZK(0),
         ];
     }
 
@@ -180,7 +184,7 @@ final class PdfOutputsGenerationTest extends IntegrationTest
 
             public ?DateTimeImmutable $birthday;
 
-            public float $payment = 500.0;
+            public Money $payment;
 
             public int $age = 12;
 
@@ -188,12 +192,14 @@ final class PdfOutputsGenerationTest extends IntegrationTest
 
             public string $onAccount = 'Y';
 
-            public float $repayment = 0.0;
+            public Money $repayment;
 
             public function __construct(public string $firstName, public string $lastName)
             {
                 $this->displayName = $lastName.' '.$firstName;
                 $this->birthday = new DateTimeImmutable('2010-05-01');
+                $this->payment = Money::CZK(50_000);
+                $this->repayment = Money::CZK(0);
             }
         };
     }
