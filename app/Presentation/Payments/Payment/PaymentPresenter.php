@@ -437,7 +437,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
     protected function createComponentBankAccountTransactionsGrid(): DataGrid
     {
         return $this->bankAccountDetailViewFactory->createTransactionsGrid(
-            $this->bankAccountDetail?->transactionRows ?? [],
+            $this->bankAccountDetail->transactionRows ?? [],
             true,
             true,
         );

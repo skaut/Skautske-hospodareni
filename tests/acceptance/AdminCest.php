@@ -573,7 +573,7 @@ JS);
 
         $I->seeElement('[data-test="admin-card-usage"].navigation-card');
         $usageHref = $I->grabAttributeFrom('[data-test="admin-link-usage"]', 'href');
-        Assert::assertStringContainsString('/admin/vyuziti', $usageHref);
+        Assert::assertStringContainsString('/admin/vyuziti', (string) $usageHref);
 
         $I->clickStable('[data-test="admin-nav-usage"]');
         $I->waitForElementVisible('[data-test="admin-usage-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
