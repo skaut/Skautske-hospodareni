@@ -8,6 +8,7 @@ use App\Model\Common\ShouldNotHappen;
 use App\Model\Event\Enum\CampState;
 use App\Model\Event\Enum\EventState;
 use App\Model\Payment\Payment\State;
+use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use DateTimeInterface;
 use InvalidArgumentException;
@@ -15,9 +16,11 @@ use Money\Money;
 use Nette\Utils\Html;
 use RuntimeException;
 
+use function abs;
 use function array_reverse;
 use function count;
 use function explode;
+use function intdiv;
 use function is_callable;
 use function mb_strtoupper;
 use function mb_substr;
@@ -54,9 +57,9 @@ abstract class AccountancyHelpers
     public static function eventStateLabel(string $s): string
     {
         return match ($s) {
-            EventState::DRAFT->value => '<span class="badge bg-warning text-dark">Rozpracováno</span>',
-            EventState::CLOSED->value => '<span class="badge bg-success">Uzavřeno</span>',
-            default => '<span class="badge bg-danger">Zrušeno</span>',
+            EventState::DRAFT->value => '<span class="badge text-bg-warning">Rozpracováno</span>',
+            EventState::CLOSED->value => '<span class="badge text-bg-success">Uzavřeno</span>',
+            default => '<span class="badge text-bg-danger">Zrušeno</span>',
         };
     }
 
@@ -69,31 +72,31 @@ abstract class AccountancyHelpers
     {
         switch ($s) {
             case 'draft':
-                return '<span class=\'badge bg-warning text-dark\'>Rozpracováno</span>';
+                return '<span class=\'badge text-bg-warning\'>Rozpracováno</span>';
 
             case 'published':
-                return '<span class=\'badge bg-info text-dark\'>Zveřejněno</span>';
+                return '<span class=\'badge text-bg-info\'>Zveřejněno</span>';
 
             case 'confirmed':
-                return '<span class=\'badge bg-info text-dark\'>Potvrzeno vedoucím</span>';
+                return '<span class=\'badge text-bg-info\'>Potvrzeno vedoucím</span>';
 
             case 'waiting':
-                return '<span class=\'badge bg-info text-dark\'>Čeká na schválení</span>';
+                return '<span class=\'badge text-bg-info\'>Čeká na schválení</span>';
 
             case 'approved':
-                return '<span class=\'badge bg-info text-dark\'>Schváleno</span>';
+                return '<span class=\'badge text-bg-info\'>Schváleno</span>';
 
             case 'closed':
-                return '<span class=\'badge bg-success\'>Uzavřeno</span>';
+                return '<span class=\'badge text-bg-success\'>Uzavřeno</span>';
 
             case 'rejected':
-                return '<span class=\'badge bg-danger\'>Potvrzení odmítnuto</span>';
+                return '<span class=\'badge text-bg-danger\'>Potvrzení odmítnuto</span>';
 
             case 'disapproved':
-                return '<span class=\'badge bg-danger\'>Schválení odmítnuto</span>';
+                return '<span class=\'badge text-bg-danger\'>Schválení odmítnuto</span>';
 
             default:
-                return '<span class=\'badge bg-danger\'>Zrušeno</span>';
+                return '<span class=\'badge text-bg-danger\'>Zrušeno</span>';
         }
     }
 
@@ -106,56 +109,56 @@ abstract class AccountancyHelpers
     {
         switch ($s) {
             case 'new':
-                return '<span class=\'badge bg-warning text-dark\'>Nová</span>';
+                return '<span class=\'badge text-bg-warning\'>Nová</span>';
 
             case 'unfinished':
-                return '<span class=\'badge bg-warning text-dark\'>Rozpracováno</span>';
+                return '<span class=\'badge text-bg-warning\'>Rozpracováno</span>';
 
             case 'complement':
             case 'waitsForAmendation':
-                return '<span class=\'badge bg-info text-dark\'>Čeká na doplnění</span>';
+                return '<span class=\'badge text-bg-info\'>Čeká na doplnění</span>';
 
             case 'waitsForAdvanceSend':
-                return '<span class=\'badge bg-info text-dark\'>Čeká na odeslání zálohy</span>';
+                return '<span class=\'badge text-bg-info\'>Čeká na odeslání zálohy</span>';
 
             case 'waitsForConfirmation':
-                return '<span class=\'badge bg-info text-dark\'>Čeká na potvrzení</span>';
+                return '<span class=\'badge text-bg-info\'>Čeká na potvrzení</span>';
 
             case 'waitsForAuthorization':
-                return '<span class=\'badge bg-info text-dark\'>Čeká na potvrzení RK</span>';
+                return '<span class=\'badge text-bg-info\'>Čeká na potvrzení RK</span>';
 
             case 'waitsForDecisionApprove':
-                return '<span class=\'badge bg-info text-dark\'>Čeká na potvrzení rozhodnutí</span>';
+                return '<span class=\'badge text-bg-info\'>Čeká na potvrzení rozhodnutí</span>';
 
             case 'waitsForApproval':
-                return '<span class=\'badge bg-info text-dark\'>Čeká na schválení</span>';
+                return '<span class=\'badge text-bg-info\'>Čeká na schválení</span>';
 
             case 'waitsForAudit':
-                return '<span class=\'badge bg-info text-dark\'>Čeká na vyúčtování OJ</span>';
+                return '<span class=\'badge text-bg-info\'>Čeká na vyúčtování OJ</span>';
 
             case 'centralCheck':
-                return '<span class=\'badge bg-info text-dark\'>Kontrola ústředím</span>';
+                return '<span class=\'badge text-bg-info\'>Kontrola ústředím</span>';
 
             case 'submitted':
-                return '<span class=\'badge bg-info text-dark\'>Odevzdáno</span>';
+                return '<span class=\'badge text-bg-info\'>Odevzdáno</span>';
 
             case 'confirmed':
-                return '<span class=\'badge bg-info text-dark\'>Potvrzeno</span>';
+                return '<span class=\'badge text-bg-info\'>Potvrzeno</span>';
 
             case 'approved':
-                return '<span class=\'badge bg-info text-dark\'>Schváleno</span>';
+                return '<span class=\'badge text-bg-info\'>Schváleno</span>';
 
             case 'closed':
-                return '<span class=\'badge bg-success\'>Uzavřeno</span>';
+                return '<span class=\'badge text-bg-success\'>Uzavřeno</span>';
 
             case 'running':
-                return '<span class=\'badge bg-success\'>V realizaci OJ</span>';
+                return '<span class=\'badge text-bg-success\'>V realizaci OJ</span>';
 
             case 'denied':
-                return '<span class=\'badge bg-danger\'>Zamítnuto</span>';
+                return '<span class=\'badge text-bg-danger\'>Zamítnuto</span>';
 
             default:
-                return '<span class=\'badge bg-danger\'>Zrušeno</span>';
+                return '<span class=\'badge text-bg-danger\'>Zrušeno</span>';
         }
     }
 
@@ -167,11 +170,11 @@ abstract class AccountancyHelpers
     public static function campStateLabel(string $s): string
     {
         return match ($s) {
-            CampState::DRAFT->value => '<span class=\'badge bg-warning text-dark\'>Rozpracováno</span>',
-            CampState::APPROVED_PARENT->value => '<span class=\'badge bg-info text-dark\'>Schválený střediskem</span>',
-            CampState::APPROVED_LEADER->value => '<span class=\'badge bg-info text-dark\'>Schválený vedoucím</span>',
-            CampState::REAL->value => '<span class=\'badge bg-success\'>Skutečnost odevzdána</span>',
-            default => '<span class=\'badge bg-danger\'>Zrušený</span>',
+            CampState::DRAFT->value => '<span class=\'badge text-bg-warning\'>Rozpracováno</span>',
+            CampState::APPROVED_PARENT->value => '<span class=\'badge text-bg-info\'>Schválený střediskem</span>',
+            CampState::APPROVED_LEADER->value => '<span class=\'badge text-bg-info\'>Schválený vedoucím</span>',
+            CampState::REAL->value => '<span class=\'badge text-bg-success\'>Skutečnost odevzdána</span>',
+            default => '<span class=\'badge text-bg-danger\'>Zrušený</span>',
         };
     }
 
@@ -179,10 +182,10 @@ abstract class AccountancyHelpers
     public static function commandState(?DateTimeInterface $s): string
     {
         if ($s === null) {
-            return '<span class="hidden-xs hidden-sm badge bg-warning text-dark">Rozpracovaný</span>';
+            return '<span class="hidden-xs hidden-sm badge text-bg-warning">Rozpracovaný</span>';
         }
 
-        return '<span class="badge bg-success" title="Uzavřeno dne: '.
+        return '<span class="badge text-bg-success" title="Uzavřeno dne: '.
             $s->format('j.n.Y H:i:s').'">Uzavřený</span>';
     }
 
@@ -225,27 +228,62 @@ abstract class AccountancyHelpers
             return ' '; // je tam nedělitelná mezera
         }
 
-        $decimals = $full ? 2 : 0;
-
         if ($price instanceof Money) {
-            $price = (float) $price->getAmount() / 100;
+            $amount = (int) $price->getAmount();
+            $sign = $amount < 0 ? '-' : '';
+            $amount = abs($amount);
+            if (! $full) {
+                $rounded = intdiv($amount + 50, 100);
+
+                return ($rounded === 0 ? '' : $sign).number_format($rounded, 0, ',', ' ');
+            }
+
+            return $sign.number_format(intdiv($amount, 100), 0, ',', ' ').','.str_pad((string) ($amount % 100), 2, '0', STR_PAD_LEFT);
         }
 
-        return number_format((float) $price, $decimals, ',', ' '); // nedělitelná mezera
+        return number_format((float) $price, $full ? 2 : 0, ',', ' '); // nedělitelná mezera
     }
 
     /**
      * @filter
      * formátuje číslo podle toho zda obsahuje desetinou část nebo ne
      */
-    public static function num(int|float|string $num): string
+    public static function num(int|float|string|Money $num): string
     {
+        if ($num instanceof Money) {
+            return self::price($num, (int) $num->getAmount() % 100 !== 0);
+        }
+
         return number_format((float) $num, strpos((string) $num, '.') ? 2 : 0, ',', ' ');
+    }
+
+    /**
+     * @filter
+     *
+     * délka sezení v lidsky čitelném tvaru, např. "1 h 24 min"
+     */
+    public static function duration(?int $seconds): string
+    {
+        if ($seconds === null) {
+            return '–';
+        }
+
+        if ($seconds < 60) {
+            return $seconds.' s';
+        }
+
+        $minutes = intdiv($seconds, 60);
+
+        if ($minutes < 60) {
+            return $minutes.' min';
+        }
+
+        return intdiv($minutes, 60).' h '.($minutes % 60).' min';
     }
 
     public static function postCode(string $oldPsc): string
     {
-        $psc = preg_replace('/[^0-9]/', '', $oldPsc);
+        $psc = (string) preg_replace('/[^0-9]/', '', $oldPsc);
 
         if (strlen($psc) === 5) {
             return substr($psc, 0, 3).' '.substr($psc, -2);
@@ -258,8 +296,12 @@ abstract class AccountancyHelpers
      * @filter
      * převádí zadané číslo na slovní řetězec
      */
-    public static function priceToString(float $price): string
+    public static function priceToString(float|Money $price): string
     {
+        if ($price instanceof Money) {
+            $price = MoneyFactory::toFloat($price);
+        }
+
         // @todo ošetření správného tvaru
 
         $_jednotky = [
@@ -363,7 +405,7 @@ abstract class AccountancyHelpers
                 return '<span class=\'badge text-bg-success\'>Otevřená</span>';
 
             case 'closed':
-                return '<span class=\'badge bg-warning text-dark\'>Uzavřená</span>';
+                return '<span class=\'badge text-bg-warning\'>Uzavřená</span>';
 
             default:
                 throw new ShouldNotHappen(sprintf('Unknown group state "%s"', $s));
@@ -389,6 +431,10 @@ abstract class AccountancyHelpers
             }
 
             return $start->format(self::DATE_FORMAT_FULL);
+        }
+
+        if ($start === null) {
+            return $end->format(self::DATE_FORMAT_FULL);
         }
 
         if ($start->year !== $end->year) {

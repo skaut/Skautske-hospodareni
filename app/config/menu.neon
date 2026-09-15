@@ -91,6 +91,7 @@ menu:
                     - '^Payments:Dashboard:.*$'
                 data:
                     test: payment-nav-overview
+                    hub: true
                     icon: fi fi-rr-apps
                     preserveParameters:
                         jednotka: unitId
@@ -102,7 +103,7 @@ menu:
                     - '^Payments:(GroupList|Group|Payment|Participants|People|Repayment|Journal|CampAddParticipants|CampCreateGroup|CampSelectForGroup|EventAddParticipants|EventCreateGroup|EventSelectForGroup|EducationAddParticipants|EducationCreateGroup|EducationSelectForGroup|RegistrationAddMembers|RegistrationCreateGroup|RegistrationJournal):.*$'
                 data:
                     test: payment-nav-groups
-                    icon: far fa-list-alt
+                    icon: fi fi-rr-list-check
                     preserveParameters:
                         jednotka: unitId
                         rok: year
@@ -113,7 +114,7 @@ menu:
                     - '^Payments:(InvoiceList|InvoiceSequence|InvoiceSequenceList):.*$'
                 data:
                     test: payment-nav-invoices
-                    icon: fas fa-file-invoice-dollar
+                    icon: fi fi-rr-file-invoice-dollar
                     requiresInvoiceAccess: true
                     preserveParameters:
                         jednotka: unitId
@@ -131,6 +132,7 @@ menu:
                     - '^Settings:Default:.*$'
                 data:
                     test: settings-subnav-overview
+                    hub: true
                     icon: fi fi-rr-apps
                     preserveParameters:
                         jednotka: unitId
@@ -203,6 +205,7 @@ menu:
                     - '^Admin:Default:.*$'
                 data:
                     test: admin-nav-overview
+                    hub: true
                     icon: fi fi-rr-apps
                     requiresAdmin: true
             users:
@@ -223,6 +226,15 @@ menu:
                     test: admin-nav-statistics
                     icon: fi fi-rr-chart-pie
                     requiresAdmin: true
+            usage:
+                title: Využití
+                action: 'Admin:Usage:default'
+                include:
+                    - '^Admin:Usage:.*$'
+                data:
+                    test: admin-nav-usage
+                    icon: fi fi-rr-chart-histogram
+                    requiresAdmin: true
             bugReports:
                 title: Hlášení chyb
                 action: 'Admin:BugReports:default'
@@ -232,6 +244,14 @@ menu:
                     test: admin-nav-bug-reports
                     icon: fi fi-rr-bug
                     requiresBugReportsAccess: true
+            help:
+                title: Nápovědy
+                action: 'Admin:Help:default'
+                include:
+                    - '^Admin:Help:.*$'
+                    data:
+                        test: admin-nav-help
+                        icon: fi fi-rr-lightbulb-on
             invoiceAccess:
                 title: Fakturace
                 action: 'Admin:InvoiceAccess:default'
@@ -254,7 +274,8 @@ menu:
                     - '^Travel:Default:.*$'
                 data:
                     test: travel-subnav-commands
-                    icon: fas fa-route
+                    hub: true
+                    icon: fi fi-rr-road
             vehicles:
                 title: Vozidla
                 action: 'Travel:VehicleList:default'
@@ -262,7 +283,7 @@ menu:
                     - '^Travel:(VehicleList|Vehicle):.*$'
                 data:
                     test: travel-subnav-vehicles
-                    icon: fas fa-car
+                    icon: fi fi-rr-car-side
             contracts:
                 title: Smlouvy
                 action: 'Travel:Contract:default'
@@ -270,4 +291,4 @@ menu:
                     - '^Travel:Contract:.*$'
                 data:
                     test: travel-subnav-contracts
-                    icon: fas fa-file-contract
+                    icon: fi fi-rr-file-signature

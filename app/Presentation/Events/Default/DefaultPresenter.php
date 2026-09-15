@@ -107,7 +107,7 @@ final class DefaultPresenter extends \App\Presentation\Events\BasePresenter
         $grid->addAction('cancel', '', ':cancel!', ['aid' => 'id'])
             ->setClass('btn btn-danger btn-sm')
             ->setTitle('Zrušit akci')
-            ->setIcon('far fa-trash-alt')
+            ->setIcon('fi fi-rr-trash')
             ->addAttributes([
                 'data-confirm' => 'Opravdu chcete zrušit tuto akci?',
                 'data-test' => 'event-cancel-action',

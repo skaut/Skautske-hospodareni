@@ -161,7 +161,7 @@ class ChitListControl extends BaseControl
 
         $form->onSuccess[] = function (BaseForm $form) use ($printButton, $exportButton, $moveChitsButton): void {
             $chitIds = $form->getHttpData($form::DATA_TEXT, 'chits-'.$this->paymentMethod.'[]');
-            $chitIds = array_map('\intval', $chitIds);
+            $chitIds = array_map('\intval', (array) $chitIds);
 
             if ($printButton->isSubmittedBy()) {
                 $this->redirectToExport(':Unit:CashbookExport:printChits', $chitIds);
@@ -236,17 +236,17 @@ class ChitListControl extends BaseControl
     /**
      * @param Chit[] $chits
      *
-     * @return float[]
+     * @return array<string, \Money\Money>
      */
     private function getTotals(array $chits): array
     {
-        $income = 0;
-        $expense = 0;
+        $income = \Money\Money::CZK(0);
+        $expense = \Money\Money::CZK(0);
         foreach ($chits as $chit) {
             if ($chit->isIncome()) {
-                $income += $chit->getAmount()->toFloat();
+                $income = $income->add($chit->getAmount()->toMoney());
             } else {
-                $expense += $chit->getAmount()->toFloat();
+                $expense = $expense->add($chit->getAmount()->toMoney());
             }
         }
 

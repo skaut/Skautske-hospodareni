@@ -17,6 +17,7 @@ use Nette\SmartObject;
  * @property int                    $eventCancelled
  * @property int                    $eventWithExpense
  * @property int                    $eventWithoutExpense
+ * @property int                    $eventDraftStale
  * @property int                    $campTotal
  * @property int                    $campDraft
  * @property int                    $campApprovedParent
@@ -25,6 +26,7 @@ use Nette\SmartObject;
  * @property int                    $campWithExpense
  * @property int                    $campWithoutExpense
  * @property int                    $campWithParticipantStats
+ * @property int                    $campDraftStale
  * @property int                    $paymentGroupsOpen
  * @property int                    $paymentGroupsClosed
  * @property int                    $paymentsTotal
@@ -64,6 +66,7 @@ final class Counter
     private int $eventCancelled = 0;
     private int $eventWithExpense = 0;
     private int $eventWithoutExpense = 0;
+    private int $eventDraftStale = 0;
     private int $campTotal = 0;
     private int $campDraft = 0;
     private int $campApprovedParent = 0;
@@ -72,6 +75,7 @@ final class Counter
     private int $campWithExpense = 0;
     private int $campWithoutExpense = 0;
     private int $campWithParticipantStats = 0;
+    private int $campDraftStale = 0;
     private int $paymentGroupsOpen = 0;
     private int $paymentGroupsClosed = 0;
     private int $paymentsTotal = 0;
@@ -106,7 +110,7 @@ final class Counter
     {
     }
 
-    public function addEvent(string $state, bool $withExpense): void
+    public function addEvent(string $state, bool $withExpense, bool $isStaleDraft = false): void
     {
         ++$this->eventTotal;
         match ($state) {
@@ -115,6 +119,10 @@ final class Counter
             'cancelled' => ++$this->eventCancelled,
             default => null,
         };
+
+        if ($isStaleDraft) {
+            ++$this->eventDraftStale;
+        }
 
         if ($withExpense) {
             ++$this->eventWithExpense;
@@ -125,7 +133,7 @@ final class Counter
         ++$this->eventWithoutExpense;
     }
 
-    public function addCamp(string $state, bool $withExpense, bool $withParticipantStats): void
+    public function addCamp(string $state, bool $withExpense, bool $withParticipantStats, bool $isStaleDraft = false): void
     {
         ++$this->campTotal;
         match ($state) {
@@ -135,6 +143,10 @@ final class Counter
             'real' => ++$this->campReal,
             default => null,
         };
+
+        if ($isStaleDraft) {
+            ++$this->campDraftStale;
+        }
 
         if ($withExpense) {
             ++$this->campWithExpense;
@@ -265,6 +277,7 @@ final class Counter
         $this->eventCancelled += $counter->getEventCancelled();
         $this->eventWithExpense += $counter->getEventWithExpense();
         $this->eventWithoutExpense += $counter->getEventWithoutExpense();
+        $this->eventDraftStale += $counter->getEventDraftStale();
         $this->campTotal += $counter->getCampTotal();
         $this->campDraft += $counter->getCampDraft();
         $this->campApprovedParent += $counter->getCampApprovedParent();
@@ -273,6 +286,7 @@ final class Counter
         $this->campWithExpense += $counter->getCampWithExpense();
         $this->campWithoutExpense += $counter->getCampWithoutExpense();
         $this->campWithParticipantStats += $counter->getCampWithParticipantStats();
+        $this->campDraftStale += $counter->getCampDraftStale();
         $this->paymentGroupsOpen += $counter->getPaymentGroupsOpen();
         $this->paymentGroupsClosed += $counter->getPaymentGroupsClosed();
         $this->paymentsTotal += $counter->getPaymentsTotal();
@@ -338,6 +352,12 @@ final class Counter
         return $this->eventWithoutExpense;
     }
 
+    /** Drafts whose event finished long enough ago that nobody is coming back to close them. */
+    public function getEventDraftStale(): int
+    {
+        return $this->eventDraftStale;
+    }
+
     public function getCampTotal(): int
     {
         return $this->campTotal;
@@ -376,6 +396,11 @@ final class Counter
     public function getCampWithParticipantStats(): int
     {
         return $this->campWithParticipantStats;
+    }
+
+    public function getCampDraftStale(): int
+    {
+        return $this->campDraftStale;
     }
 
     public function getPaymentGroupsOpen(): int

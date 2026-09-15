@@ -4,21 +4,166 @@ table.table a {
   text-decoration: none;
 }
 
-table.table a:hover {
+table.table a:not(.btn):hover {
   text-decoration: underline;
+}
+
+.btn,
+.btn:hover,
+.btn:focus {
+  text-decoration: none;
 }
 
 .col-action {
   text-align: right;
 }
 
-.w-15 {
-  width: 15%;
+.datagrid-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  width: max-content;
+  max-width: 100%;
+  margin-left: auto;
 }
 
-.visually-disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
+.datagrid .table-responsive {
+  container-type: inline-size;
+}
+
+.datagrid-group-actions,
+.datagrid-group-action-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.datagrid-group-actions-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.datagrid-group-actions-toolbar .datagrid-toolbar {
+  float: none;
+  margin-top: 0;
+  margin-left: auto;
+}
+
+// Action rows are present for every data row so a container query can switch
+// layouts when the help sidebar changes the available space. Keep their stripe
+// in sync with the preceding data row rather than with their DOM position.
+.datagrid-actions-row {
+  display: none;
+}
+
+.datagrid .table-striped > tbody > .datagrid-data-row > *,
+.datagrid .table-striped > tbody > .datagrid-actions-row > * {
+  --tblr-table-color-type: inherit;
+  --tblr-table-bg-type: transparent;
+}
+
+.datagrid .table-striped > tbody > .datagrid-row-striped > * {
+  --tblr-table-color-type: var(--tblr-table-striped-color);
+  --tblr-table-bg-type: var(--tblr-table-striped-bg);
+}
+
+@container (max-width: 575.98px) {
+  .datagrid .datagrid-group-actions-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .datagrid .datagrid-group-actions-toolbar .datagrid-toolbar {
+    align-self: flex-start;
+    margin-left: 0;
+  }
+
+  .datagrid .datagrid-group-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    max-width: 100%;
+    max-width: 100cqw;
+  }
+
+  .datagrid .datagrid-group-action-controls {
+    flex-direction: column;
+    align-items: stretch;
+    inline-size: min(100%, 18rem);
+    inline-size: min(100cqw, 18rem);
+  }
+
+  .datagrid .datagrid-group-action-controls > .btn,
+  .datagrid .datagrid-group-action-controls > .form-control {
+    inline-size: 100%;
+  }
+}
+
+@container (max-width: 68.75rem) {
+  .datagrid .datagrid-actions-row {
+    display: table-row;
+  }
+
+  .datagrid .datagrid-data-row > .datagrid-actions-cell,
+  .datagrid .datagrid-actions-header,
+  .datagrid .table thead .col-actions {
+    display: none;
+  }
+
+  .datagrid .datagrid-data-row:has(+ .datagrid-actions-row) > * {
+    border-bottom-width: 0;
+    padding-bottom: 0;
+  }
+
+  .datagrid .datagrid-actions-row > * {
+    border-top-width: 0;
+    padding: 0.25rem 0 0;
+    text-align: right;
+  }
+
+  // The action cell spans the whole (scrollable) table width, so anchoring the buttons
+  // with a sticky right offset lands them past the scrollport by the cell padding.
+  // Give the block the scrollport width instead and right-align inside it.
+  .datagrid .datagrid-actions-row .datagrid-row-actions {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    width: 100cqw;
+    max-width: 100cqw;
+    margin-left: 0;
+    padding-right: 0.75rem;
+  }
+}
+
+@container (max-width: 36rem) {
+  .datagrid .datagrid-actions-row .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: 2.75rem;
+    min-block-size: 2.75rem;
+  }
+
+  .datagrid .datagrid-actions-row .datagrid-row-actions {
+    gap: 0.25rem;
+  }
+}
+
+@container (max-width: 68.75rem) {
+  .datagrid .table-hover > tbody > .datagrid-data-row:hover > *,
+  .datagrid .table-hover > tbody > .datagrid-data-row:has(+ .datagrid-actions-row:hover) > *,
+  .datagrid .table-hover > tbody > .datagrid-data-row:hover + .datagrid-actions-row > *,
+  .datagrid .table-hover > tbody > .datagrid-actions-row:hover > * {
+    --tblr-table-color-state: var(--tblr-table-hover-color);
+    --tblr-table-bg-state: var(--tblr-table-hover-bg);
+  }
+}
+
+.w-15 {
+  width: 15%;
 }
 
 // Auto-fit card grid — used by invoices and payment groups dashboard
@@ -74,6 +219,13 @@ table.table a:hover {
   display: grid;
   gap: 1.5rem;
 
+  // Grid items default to `min-width: auto`, so wide content (a DataGrid table)
+  // would stretch the 1fr track past the available width, push the sidebar out
+  // and overflow the page instead of scrolling inside its own .table-responsive.
+  > * {
+    min-width: 0;
+  }
+
   @media (min-width: 992px) {
     grid-template-columns: 1fr 20rem;
   }
@@ -86,10 +238,16 @@ table.table a:hover {
   background: var(--tblr-bg-surface);
   align-self: start;
   position: sticky;
-  top: 5rem;
+  top: 6rem;
   font-size: 0.92rem;
   line-height: 1.6;
   transition: opacity 0.2s ease;
+}
+
+.help-sidebar-icon {
+  flex: 0 0 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
 }
 
 .design-help-sidebar [data-help-toggle] {
@@ -108,6 +266,14 @@ table.table a:hover {
     display: none;
   }
 
+  .design-help-sidebar [data-help-youtube-link] {
+    width: 2.5rem;
+  }
+
+  .design-help-sidebar [data-test="help-youtube-title"] {
+    display: none;
+  }
+
   @media (min-width: 992px) {
     grid-template-columns: 1fr auto;
 
@@ -115,5 +281,49 @@ table.table a:hover {
       width: auto;
       min-width: 0;
     }
+  }
+}
+
+// Touch targets. The UI guideline requires a 44 x 44 px target for every
+// interactive control that is not embedded in running text. Applied below the
+// `md` breakpoint only, so desktop keeps its information density.
+@media (max-width: 767.98px) {
+  .btn,
+  .navbar-toggler,
+  .btn-close,
+  .site-footer__link,
+  .dark-mode-toggle,
+  .page-help-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+  }
+
+  // Bootstrap check inputs are replaced elements, so the hit area can only grow
+  // with the box itself. The tick scales with it because of `background-size`.
+  .form-check-input:not(.form-switch .form-check-input) {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  // Keep the dense cashbook toolbar from wrapping into a tall stack.
+  .cashbook-table__bulk-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  // Links that are not buttons but still are the whole control: grid column sorting,
+  // the row name that opens a record, and breadcrumb steps. They render as plain
+  // inline text, so they need the target spelled out.
+  .datagrid th a,
+  .datagrid td a:not(.btn),
+  .app-breadcrumbs a {
+    display: inline-flex;
+    align-items: center;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
   }
 }

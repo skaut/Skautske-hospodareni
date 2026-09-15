@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Components\Participants;
 
 use App\Components\BaseControl;
+use App\Components\Payment\PaymentFormFields;
 use App\Model\DTO\Participant\Participant;
 use App\Model\DTO\Participant\UpdateParticipant;
 use App\Model\Participant\ParticipantNotFound;
+use App\Model\Utils\MoneyFactory;
 use App\Utils\CzechStringComparator;
 use Component\Forms\BaseForm;
+use Nette\Application\Attributes\Persistent;
 use Nette\Application\BadRequestException;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Http\IResponse;
@@ -47,10 +50,10 @@ final class ParticipantList extends BaseControl
     /** @var callable[] */
     public array $onRemove = [];
 
-    /** @persistent */
+    #[Persistent]
     public bool $showUnits = false;
 
-    /** @persistent */
+    #[Persistent]
     public ?string $sort = 'displayName';
 
     /** @param Participant[] $currentParticipants */
@@ -81,6 +84,13 @@ final class ParticipantList extends BaseControl
             unset($sortOptions['onAccount']);
         }
 
+        $totalPayment = MoneyFactory::zero();
+        $totalRepayment = MoneyFactory::zero();
+        foreach ($this->currentParticipants as $participant) {
+            $totalPayment = $totalPayment->add($participant->getPayment());
+            $totalRepayment = $totalRepayment->add($participant->getRepayment());
+        }
+
         $this->template->setFile(__DIR__.'/templates/ParticipantList.latte');
         $this->template->setParameters([
             'aid' => $this->aid,
@@ -94,6 +104,9 @@ final class ParticipantList extends BaseControl
             'isAllowParticipantUpdate' => $this->isAllowParticipantUpdate,
             'isAllowParticipantDelete' => $this->isAllowParticipantDelete,
             'isAllowAnyAction' => $this->isAllowParticipantUpdate || $this->isAllowParticipantDelete,
+            'totalPayment' => $totalPayment,
+            'totalRepayment' => $totalRepayment,
+            'total' => $totalPayment->subtract($totalRepayment),
         ]);
 
         $this->template->render();
@@ -190,10 +203,14 @@ final class ParticipantList extends BaseControl
 
         $editCon->addText('payment', 'Částka')
             ->setNullable()
+            ->addRule(BaseForm::FLOAT, 'Částka musí být zadaná jako číslo')
+            ->addRule(BaseForm::PATTERN, PaymentFormFields::MONEY_PATTERN_MESSAGE, PaymentFormFields::MONEY_PATTERN)
             ->setHtmlAttribute('placeholder', 'Ponechat původní hodnotu');
 
         $editCon->addText('repayment', 'Vratka')
             ->setNullable()
+            ->addRule(BaseForm::FLOAT, 'Vratka musí být zadaná jako číslo')
+            ->addRule(BaseForm::PATTERN, PaymentFormFields::MONEY_PATTERN_MESSAGE, PaymentFormFields::MONEY_PATTERN)
             ->setHtmlAttribute('placeholder', 'Ponechat původní hodnotu');
 
         $form->addCheckboxList('participantIds', null, array_map(fn () => '', $this->participantsById()))
@@ -222,7 +239,7 @@ final class ParticipantList extends BaseControl
             $this->redirect('Default:');
         }
 
-        $values = $button->getForm()->getValues()['edit'];
+        $values = $button->getForm()->getValues(\Nette\Utils\ArrayHash::class)['edit'];
 
         $changes = [];
         $currentParticipants = [];
@@ -231,7 +248,7 @@ final class ParticipantList extends BaseControl
         }
 
         $participantUpdateError = [];
-        foreach ($button->getForm()->getValues()->participantIds as $participantId) {
+        foreach ($button->getForm()->getValues(\Nette\Utils\ArrayHash::class)->participantIds as $participantId) {
             $participant = $currentParticipants[$participantId] ?? throw new ParticipantNotFound('Cannot find participant from the given data');
 
             if ($values['days'] !== null) {
@@ -243,11 +260,11 @@ final class ParticipantList extends BaseControl
             }
 
             if ($values['payment'] !== null) {
-                $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_PAYMENT, $values['payment'], $participant->isAccepted());
+                $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_PAYMENT, (string) $values['payment'], $participant->isAccepted());
             }
 
             if ($values['repayment'] !== null) {
-                $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_REPAYMENT, $values['repayment'], $participant->isAccepted());
+                $changes[] = new UpdateParticipant($this->aid, $participantId, UpdateParticipant::FIELD_REPAYMENT, (string) $values['repayment'], $participant->isAccepted());
             }
 
             if (in_array($values['isAccount'], [self::NO_ACTION, null])) {
@@ -276,7 +293,7 @@ final class ParticipantList extends BaseControl
         }
 
         $ids = [];
-        foreach ($button->getForm()->getValues()->participantIds as $participantId) {
+        foreach ($button->getForm()->getValues(\Nette\Utils\ArrayHash::class)->participantIds as $participantId) {
             $ids[] = $participantId;
         }
 

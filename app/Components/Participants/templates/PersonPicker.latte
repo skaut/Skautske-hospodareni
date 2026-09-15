@@ -15,7 +15,7 @@
                         </a>
                         <div class="dropdown-divider"></div>
                         <a n:if="$parentUnit !== null" n:href="this unitId => $parentUnit->getId()" class="dropdown-item">
-                            <i class="fas fa-arrow-up"></i>
+                            <i class="fi fi-rr-arrow-up" aria-hidden="true"></i>
                             {$parentUnit->getDisplayName()}
                         </a>
                         <a class="dropdown-item active" href="#">
@@ -23,7 +23,7 @@
                         </a>
                         <a n:foreach="$subunits as $subunit" n:href="this unitId => $subunit->getId()" class="dropdown-item">
 
-                            <i class="fas fa-arrow-right"></i>
+                            <i class="fi fi-rr-arrow-right" aria-hidden="true"></i>
                             {$subunit->getDisplayName()}
                         </a>
                     </div>
@@ -33,51 +33,54 @@
                 </div>
             </div>
             <a class="btn btn-primary btn ms-auto" href="#addParticipant" data-bs-toggle="modal">
-                <i class="fas fa-plus"></i>
+                <i class="fi fi-rr-plus" aria-hidden="true"></i>
                 Přidat nečlena
             </a>
         </div>
         {form massAddForm}
-            <table class="table table-hover table-striped table-sm mt-2">
-                <thead class="onlyWithUnitPersons">
-                <tr>
-                    <th class="text-center">
-                        <input type="checkbox" class="personPicker-person-all" data-dependent-checkboxes=".personPicker-person">
-                    </th>
-                    <th>
-                        <div data-visible-if-not-checked=".personPicker-person-all, .personPicker-person-input">
-                            Příjmení a jméno
-                        </div>
-                        <div data-visible-if-checked=".personPicker-person-all, .personPicker-person-input" class="text-end">
-                            <button n:name="send" class="btn btn-primary btn-sm" type="submit">
-                                <i class="fas fa-plus"></i>
-                                Přidat vybrané
-                            </button>
-                        </div>
-                    </th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                {if count($form['personIds']->items) > 0}
-                    <tr n:foreach="$form['personIds']->items as $id => $name">
-                        <td class="personPicker-person text-center">
-                            <input n:name="personIds:$id" class="personPicker-person-input" id="personIds-{$id}">
-                        </td>
-                        <td><label n:name="personIds:$id">{$name}</label></td>
-                        <td class="text-end">
-                            <a n:href="add! $id" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i></a>
-                        </td>
+            <div class="table-responsive">
+                <table class="table table-hover table-striped table-sm mt-2">
+                    <thead class="onlyWithUnitPersons">
+                    <tr>
+                        <th class="text-center">
+                            <input type="checkbox" class="personPicker-person-all" data-dependent-checkboxes=".personPicker-person">
+                        </th>
+                        <th>
+                            <div data-visible-if-not-checked=".personPicker-person-all, .personPicker-person-input">
+                                Příjmení a jméno
+                            </div>
+                            <div data-visible-if-checked=".personPicker-person-all, .personPicker-person-input" class="text-end">
+                                <button n:name="send" class="btn btn-primary btn-sm" type="submit">
+                                    <i class="fi fi-rr-plus" aria-hidden="true"></i>
+                                    Přidat vybrané
+                                </button>
+                            </div>
+                        </th>
+                        <th></th>
                     </tr>
-                {else}
-                    <tr class="alert info no-unit-persons">
-                        <td colspan="3">
-                            <b>Nejsou žádné nevybrané osoby v jednotce.</b>
-                        </td>
-                    </tr>
-                {/if}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {if count($form['personIds']->items) > 0}
+                        <tr n:foreach="$form['personIds']->items as $id => $name">
+                            <td class="personPicker-person text-center">
+                                <input n:name="personIds:$id" class="personPicker-person-input" id="personIds-{$id}">
+                            </td>
+                            <td><label n:name="personIds:$id">{$name}</label></td>
+                            <td class="text-end">
+                                <a n:href="add! $id" class="btn btn-primary btn-sm" title="Přidat účastníka"
+                                   aria-label="Přidat účastníka {$name}"><i class="fi fi-rr-plus" aria-hidden="true"></i></a>
+                            </td>
+                        </tr>
+                    {else}
+                        <tr class="alert info no-unit-persons">
+                            <td colspan="3">
+                                <b>Nejsou žádné nevybrané osoby v jednotce.</b>
+                            </td>
+                        </tr>
+                    {/if}
+                    </tbody>
+                </table>
+            </div>
         {/form}
     {/snippet}
 
@@ -89,7 +92,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zavřít"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="alert alert-info"><i class="fas fa-info-circle"></i> Údaje založeného účastníka nelze editovat, lze ho pouze smazat a znovu založit.</div>
+                    <div class="alert alert-info"><i class="fi fi-rr-info" aria-hidden="true"></i> Údaje založeného účastníka nelze editovat, lze ho pouze smazat a znovu založit.</div>
                     {control nonMemberParticipantForm}
                 </div>
             </div>

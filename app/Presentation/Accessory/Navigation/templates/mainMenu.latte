@@ -4,14 +4,14 @@
         <a
             href="{$item->getRealLink()}"
             n:class="nav-link, main-nav-link, $item->isActive() ? active"
-            n:attr="data-test => $item->getData('test')"
+            n:attr="data-test => $item->getDataItem('test')"
             title="{$item->getRealTitle()}"
             aria-label="{$item->getRealTitle()}"
             data-bs-toggle="tooltip"
             data-bs-placement="bottom"
         >
-            <span n:if="$item->hasData('icon')" class="nav-link-icon">
-                <i class="{$item->getData('icon')}" aria-hidden="true"></i>
+            <span n:if="$item->hasDataItem('icon')" class="nav-link-icon">
+                <i class="{$item->getDataItem('icon')}" aria-hidden="true"></i>
             </span>
             <span class="nav-link-title">{$item->getRealTitle()}</span>
         </a>

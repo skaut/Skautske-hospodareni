@@ -8,6 +8,7 @@ use App\Model\Infrastructure\Repository\AbstractRepository;
 use App\Model\User\Entity\InvoiceAccessUser;
 use Doctrine\ORM\EntityManagerInterface;
 
+/** @extends AbstractRepository<InvoiceAccessUser> */
 class InvoiceAccessUserRepository extends AbstractRepository
 {
     private ?bool $storageAvailable = null;

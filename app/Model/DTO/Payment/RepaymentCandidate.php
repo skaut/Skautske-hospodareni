@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Model\DTO\Payment;
 
 use App\Model\Common\Embeddable\AccountNumber;
+use Money\Money;
 
 class RepaymentCandidate
 {
@@ -12,7 +13,7 @@ class RepaymentCandidate
         private int $paymentId,
         private ?int $personId,
         private string $name,
-        private float $amount,
+        private Money $amount,
         private ?AccountNumber $bankAccount,
     ) {
     }
@@ -32,7 +33,7 @@ class RepaymentCandidate
         return $this->name;
     }
 
-    public function getAmount(): float
+    public function getAmount(): Money
     {
         return $this->amount;
     }
@@ -42,7 +43,7 @@ class RepaymentCandidate
         return $this->bankAccount;
     }
 
-    public function setAmount(float $amount): void
+    public function setAmount(Money $amount): void
     {
         $this->amount = $amount;
     }

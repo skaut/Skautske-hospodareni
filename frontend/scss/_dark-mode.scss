@@ -34,7 +34,8 @@
     color: #b8c9bf;
   }
 
-  .navbar--test {
+  .navbar--test,
+  .navbar--dev {
     --tblr-navbar-bg: #3a311d;
     --site-header-color: #f8e7b5;
     --site-header-muted: #d8bd72;
@@ -54,6 +55,16 @@
     --site-header-control-border: rgba(216, 235, 255, 0.28);
   }
 
+  .navbar--dev .nav-link:hover,
+  .navbar--dev .nav-link:focus,
+  .navbar--dev .nav-item.active .nav-link,
+  .navbar--dev .nav-link.active,
+  .navbar--dev .active > .btn,
+  .navbar--dev .nav-item.active .nav-link-icon,
+  .navbar--dev .btn-light:hover,
+  .navbar--dev .btn-light:focus,
+  .navbar--dev .dark-mode-toggle:hover,
+  .navbar--dev .dark-mode-toggle:focus,
   .navbar--test .nav-link:hover,
   .navbar--test .nav-link:focus,
   .navbar--test .nav-item.active .nav-link,
@@ -74,20 +85,9 @@
   .navbar--beta .btn-light:focus,
   .navbar--beta .dark-mode-toggle:hover,
   .navbar--beta .dark-mode-toggle:focus {
-    color: #fff4d2;
-  }
-
-  .navbar--beta .nav-link:hover,
-  .navbar--beta .nav-link:focus,
-  .navbar--beta .nav-item.active .nav-link,
-  .navbar--beta .nav-link.active,
-  .navbar--beta .active > .btn,
-  .navbar--beta .nav-item.active .nav-link-icon,
-  .navbar--beta .btn-light:hover,
-  .navbar--beta .btn-light:focus,
-  .navbar--beta .dark-mode-toggle:hover,
-  .navbar--beta .dark-mode-toggle:focus {
-    color: #e9f5ff;
+    // Each variant defines its own --site-header-color above; hardcoding one
+    // variant's hex here left the others off-palette.
+    color: var(--site-header-color);
   }
 
   .navbar-test-badge {
@@ -129,5 +129,19 @@
 
   .site-footer__text {
     color: #9fb2a7;
+  }
+
+  // Cashbook table. Only the tokens declared on .cashbook-table are redefined,
+  // so the light palette above stays the single source for the layout rules.
+  .cashbook-table {
+    --cashbook-header-bg: #26302c;
+    --cashbook-header-border: #3d4d46;
+    --cashbook-header-color: #d6e1db;
+    --cashbook-btn-bg: #2f3b36;
+    --cashbook-btn-color: #dce6e0;
+    --cashbook-btn-border: #465650;
+    --cashbook-btn-hover-bg: #3a4842;
+    --cashbook-btn-hover-border: #58685f;
+    --cashbook-btn-active-bg: #45554e;
   }
 }

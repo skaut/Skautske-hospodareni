@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Model\DTO\Participant;
 
 use App\Model\Participant\Payment;
-use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
+use Money\Money;
 use Nette\SmartObject;
 
 /**
@@ -22,8 +22,8 @@ use Nette\SmartObject;
  * @property int              $postcode
  * @property ChronosDate|null $birthday
  * @property string           $unitRegistrationNumber
- * @property float            $payment
- * @property float            $repayment
+ * @property Money            $payment
+ * @property Money            $repayment
  * @property string           $onAccount
  * @property int              $days
  * @property bool             $isAccepted
@@ -131,14 +131,14 @@ class Participant
         return $this->days;
     }
 
-    public function getPayment(): float
+    public function getPayment(): Money
     {
-        return MoneyFactory::toFloat($this->paymentObj->getPayment());
+        return $this->paymentObj->getPayment();
     }
 
-    public function getRepayment(): float
+    public function getRepayment(): Money
     {
-        return MoneyFactory::toFloat($this->paymentObj->getRepayment());
+        return $this->paymentObj->getRepayment();
     }
 
     public function getOnAccount(): string

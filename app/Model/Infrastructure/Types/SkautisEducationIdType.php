@@ -11,11 +11,6 @@ use LogicException;
 
 final class SkautisEducationIdType extends GuidType
 {
-    public function getName(): string
-    {
-        return 'skautis_education_id';
-    }
-
     public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?SkautisEducationId
     {
         if ($value === null) {

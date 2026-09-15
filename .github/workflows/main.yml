@@ -41,22 +41,23 @@ jobs:
       - name: Install Composer deps
         run: composer install --no-interaction --prefer-dist --no-progress --ignore-platform-reqs
 
-      # Node/Yarn + cache
-      - name: Setup Node.js (+ Yarn cache)
+      # Node/npm + cache
+      - name: Setup Node.js (+ npm cache)
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'yarn'
-          cache-dependency-path: yarn.lock
+          cache: 'npm'
 
       - name: Install JS deps
-        run: yarn install --frozen-lockfile --non-interactive --prefer-offline
+        run: npm ci
       - name: Build production assets
-        run: yarn build-production
+        run: npm run build-production
 
       # Výroba tarballu bez zbytečností
       - name: Create tarball
+        shell: bash
         run: |
+          set -euo pipefail
           find "$GITHUB_WORKSPACE" -mindepth 1 -maxdepth 1 \
               ! -name '.git' \
               ! -name '.github' \
@@ -66,6 +67,7 @@ jobs:
               ! -name 'temp' \
               ! -name '_temp' \
               ! -name 'workdir.tar.gz' \
+              ! -name 'workdir.tar.gz.sha256' \
               -printf '%P\0' \
             | tar -C "$GITHUB_WORKSPACE" \
               --exclude-vcs \
@@ -74,17 +76,21 @@ jobs:
               --exclude='www/webtemp' \
               --null \
               --files-from=- \
-              --warning=no-file-changed \
-              --ignore-failed-read \
               --use-compress-program='gzip -9' \
               -cf /tmp/workdir.tar.gz
           mv /tmp/workdir.tar.gz "$GITHUB_WORKSPACE/"
+          test -s workdir.tar.gz
+          gzip -t workdir.tar.gz
+          tar -tzf workdir.tar.gz >/dev/null
+          sha256sum workdir.tar.gz > workdir.tar.gz.sha256
 
       - name: Upload workdir
         uses: actions/upload-artifact@v7
         with:
           name: workdir
-          path: workdir.tar.gz
+          path: |
+            workdir.tar.gz
+            workdir.tar.gz.sha256
           if-no-files-found: error
           compression-level: 0
           retention-days: 7
@@ -126,9 +132,14 @@ jobs:
         run: |
           rm -rf _tmp_unpack
           mkdir _tmp_unpack
+          test -s workdir.tar.gz
+          sha256sum -c workdir.tar.gz.sha256
+          gzip -t workdir.tar.gz
+          tar -tzf workdir.tar.gz >/dev/null
           tar --no-overwrite-dir --no-same-owner --no-same-permissions -xzf workdir.tar.gz -C _tmp_unpack
           find _tmp_unpack -mindepth 1 -maxdepth 1 -exec mv -t . -- {} +
           rm -rf _tmp_unpack
+          rm -f workdir.tar.gz workdir.tar.gz.sha256
 
       - name: Build CI PHP image
         run: docker compose build php-test
@@ -338,16 +349,13 @@ jobs:
       SSH_USERNAME: vu011961
       HOST: www.skauting.cz
       PORT: "11961"
-      APP_ENV: ${{ vars.APP_ENV }}
+      APP_ENV: beta
       APP_BASE_URL: ${{ vars.APP_BASE_URL }}
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
       DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
       SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
       SEND_EMAIL: ${{ vars.SEND_EMAIL }}
       ERROR_EMAILS: ${{ vars.ERROR_EMAILS }}
-      ENVIRONMENT_LABEL: ${{ vars.ENVIRONMENT_LABEL }}
-      ENVIRONMENT_COLOR: ${{ vars.ENVIRONMENT_COLOR }}
-      TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
       TRACY_SHOW_BAR: ${{ vars.TRACY_SHOW_BAR }}
       DB_HOST: ${{ vars.DB_HOST }}
       DB_NAME: ${{ vars.DB_NAME }}
@@ -371,7 +379,13 @@ jobs:
         with:
           name: workdir
           path: .
-      - run: tar --no-overwrite-dir --no-same-owner --no-same-permissions -xzf workdir.tar.gz
+      - run: |
+          test -s workdir.tar.gz
+          sha256sum -c workdir.tar.gz.sha256
+          gzip -t workdir.tar.gz
+          tar -tzf workdir.tar.gz >/dev/null
+          tar --no-overwrite-dir --no-same-owner --no-same-permissions -xzf workdir.tar.gz
+          rm -f workdir.tar.gz workdir.tar.gz.sha256
       - name: Install deploy tools
         run: |
           rm -f /etc/apt/sources.list.d/google-chrome.list
@@ -403,16 +417,13 @@ jobs:
       SSH_USERNAME: vu009010
       HOST: www.skauting.cz
       PORT: "9010"
-      APP_ENV: ${{ vars.APP_ENV }}
+      APP_ENV: test
       APP_BASE_URL: ${{ vars.APP_BASE_URL }}
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
       DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
       SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
       SEND_EMAIL: ${{ vars.SEND_EMAIL }}
       ERROR_EMAILS: ${{ vars.ERROR_EMAILS }}
-      ENVIRONMENT_LABEL: ${{ vars.ENVIRONMENT_LABEL }}
-      ENVIRONMENT_COLOR: ${{ vars.ENVIRONMENT_COLOR }}
-      TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
       TRACY_SHOW_BAR: ${{ vars.TRACY_SHOW_BAR }}
       DB_HOST: ${{ vars.DB_HOST }}
       DB_NAME: ${{ vars.DB_NAME }}
@@ -453,7 +464,6 @@ jobs:
       SKAUTIS_TEST_MODE: "false"
       SEND_EMAIL: "true"
       ERROR_EMAILS: alex@skaut.cz
-      TEST_BACKGROUND: "false"
       TRACY_SHOW_BAR: "false"
       DB_HOST: localhost
       DB_NAME: h

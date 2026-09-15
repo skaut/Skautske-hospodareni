@@ -21,6 +21,7 @@ use Component\Forms\BaseForm;
 use Contributte\Application\Response\PSR7StreamResponse;
 use LogicException;
 use Nette\Application\AbortException;
+use Nette\Application\Attributes\Persistent;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Http\IResponse;
@@ -30,7 +31,7 @@ use function in_array;
 
 class VehiclePresenter extends TravelBasePresenter
 {
-    /** @persistent */
+    #[Persistent]
     public int $id = 0;
 
     public function __construct(private TravelService $travelService, private IRoadworthyControlFactory $roadworthyControlFactory)
@@ -137,6 +138,21 @@ class VehiclePresenter extends TravelBasePresenter
 
         $this->travelService->archiveVehicle($vehicleId);
         $this->flashMessage('Vozidlo bylo archivováno', 'success');
+
+        $this->redirect('this');
+    }
+
+    public function handleRestore(int $vehicleId): void
+    {
+        $vehicle = $this->getVehicle($vehicleId);
+        if (! $this->isVehicleEditable($vehicle)) {
+            $this->setView('accessDenied');
+
+            return;
+        }
+
+        $this->travelService->restoreVehicle($vehicleId);
+        $this->flashMessage('Vozidlo bylo vráceno mezi aktivní.', 'success');
 
         $this->redirect('this');
     }

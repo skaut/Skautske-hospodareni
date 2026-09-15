@@ -18,6 +18,7 @@ use App\Model\Payment\InvalidBankAccountNumber;
 use Component\Forms\BaseForm;
 use InvalidArgumentException;
 use Nette\Utils\ArrayHash;
+use RuntimeException;
 use Utility\Cnb\BankNotFoundException;
 
 class BankAccountForm extends BaseControl
@@ -109,7 +110,7 @@ class BankAccountForm extends BaseControl
         };
 
         if ($this->id !== null) {
-            $account = $this->model->find($this->id);
+            $account = $this->model->find($this->id) ?? throw new RuntimeException('Bankovní účet nebyl nalezen.');
             $form->setDefaults([
                 'name' => $account->getName(),
                 'prefix' => $account->getNumber()->getPrefix(),
@@ -190,7 +191,7 @@ class BankAccountForm extends BaseControl
 
     private function resolveToken(BankTransactionSource $transactionSource, mixed $submittedToken): ?string
     {
-        if ($transactionSource->value !== BankTransactionSource::FIO->value) {
+        if ($transactionSource !== BankTransactionSource::FIO) {
             return null;
         }
 
@@ -201,7 +202,7 @@ class BankAccountForm extends BaseControl
 
     private function validateFioTokenIfNeeded(AccountNumber $accountNumber, BankTransactionSource $transactionSource, ?string $token): void
     {
-        if ($transactionSource->value !== BankTransactionSource::FIO->value || $token === null) {
+        if ($transactionSource !== BankTransactionSource::FIO || $token === null) {
             return;
         }
 
@@ -209,7 +210,7 @@ class BankAccountForm extends BaseControl
             $account = $this->model->find($this->id);
             if (
                 $account !== null
-                && $account->getTransactionSource()->value === BankTransactionSource::FIO->value
+                && $account->getTransactionSource() === BankTransactionSource::FIO
                 && $account->getToken() === $token
             ) {
                 return;

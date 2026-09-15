@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Model\Event\ReadModel\QueryHandlers;
 
 use App\Model\Event\ReadModel\Queries\PaymentGroupStatisticsQuery;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 
@@ -25,7 +26,7 @@ class PaymentGroupStatisticsQueryHandler
             $query->getYear(),
         ];
 
-        $types = [Connection::PARAM_INT_ARRAY, ParameterType::INTEGER];
+        $types = [ArrayParameterType::INTEGER, ParameterType::INTEGER];
         $sql = <<<'SQL'
             SELECT p.unit_id, COUNT(p.id) as count
             FROM `pa_group_unit` p
