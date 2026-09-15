@@ -17,6 +17,8 @@ use Money\Money;
  */
 class MoneyType extends Type
 {
+    public const NAME = 'money';
+
     /** @param array<string, mixed> $column */
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
