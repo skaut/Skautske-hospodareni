@@ -8,7 +8,7 @@ use App\Model\Common\Services\CommandBus;
 use App\Model\Payment\PaymentService;
 use Codeception\Test\Unit;
 use Component\Forms\BaseForm;
-use Kdyby\Replicator\Container as ReplicatorContainer;
+use Contributte\FormMultiplier\Multiplier;
 use Mockery;
 use Nette\Forms\Controls\TextInput;
 use ReflectionMethod;
@@ -32,11 +32,12 @@ final class SplitPaymentDialogTest extends Unit
         $form = $this->buildForm();
 
         $splits = $form['splits'];
-        self::assertInstanceOf(ReplicatorContainer::class, $splits);
+        self::assertInstanceOf(Multiplier::class, $splits);
 
         // Bez presenteru replikátor výchozí položku sám nevytvoří, tovární callback
         // s pravidly je ale stejný, jaký se použije při běhu aplikace.
-        $split = $splits->createOne();
+        $splits->addCopy();
+        $split = $splits->getComponents()[0];
         $control = $split['amount'];
         self::assertInstanceOf(TextInput::class, $control);
 

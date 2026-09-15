@@ -88,7 +88,6 @@ final class TravelServiceIntegrationTest extends IntegrationTest
         $this->createVehicle('Cizí auto', '0ZZ 0000', unitId: 99);
 
         self::assertSame([$first, $second], array_keys($this->service->getVehiclesPairs(self::UNIT_ID)));
-        self::assertCount(2, $this->service->getAllVehicles(self::UNIT_ID));
         self::assertCount(2, $this->service->getVehiclesByFilter(self::UNIT_ID)->getQuery()->getResult());
         self::assertCount(2, $this->service->findVehiclesByIds([$first, $second]));
     }

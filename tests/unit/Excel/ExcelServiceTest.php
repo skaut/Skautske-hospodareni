@@ -319,7 +319,7 @@ final class ExcelServiceFixtures
         return new PaymentDto(
             $id,
             $name,
-            $amount,
+            MoneyFactory::fromFloat($amount),
             [new EmailAddress('jan'.$id.'@example.com')],
             new ChronosDate('2026-08-15'),
             new VariableSymbol('10'.$id),

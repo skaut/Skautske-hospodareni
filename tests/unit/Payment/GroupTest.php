@@ -46,7 +46,9 @@ class GroupTest extends Unit
         $this->assertSame([20, 22], $group->getUnitIds());
         $this->assertNull($group->getObject());
         $this->assertSame('Skupina 01', $group->getName());
-        $this->assertTrue(MoneyFactory::fromDecimal('200.20')->equals($group->getDefaultAmount()));
+        $defaultAmount = $group->getDefaultAmount();
+        self::assertNotNull($defaultAmount);
+        $this->assertTrue(MoneyFactory::fromDecimal('200.20')->equals($defaultAmount));
         $this->assertSame($dueDate, $group->getDueDate());
         $this->assertSame(203, $group->getConstantSymbol());
         $this->assertSame($variableSymbol, $group->getPaymentDefaults()->getNextVariableSymbol());
@@ -129,7 +131,9 @@ class GroupTest extends Unit
         $this->assertSame([20], $group->getUnitIds());
         $this->assertNull($group->getObject());
         $this->assertSame('Skupina Jiná', $group->getName());
-        $this->assertTrue(MoneyFactory::fromDecimal('120.00')->equals($group->getDefaultAmount()));
+        $defaultAmount = $group->getDefaultAmount();
+        self::assertNotNull($defaultAmount);
+        $this->assertTrue(MoneyFactory::fromDecimal('120.00')->equals($defaultAmount));
         $this->assertNull($group->getDueDate());
         $this->assertNull($group->getConstantSymbol());
         $this->assertNull($group->getPaymentDefaults()->getNextVariableSymbol());

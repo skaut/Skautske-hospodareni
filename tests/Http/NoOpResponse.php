@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Http;
 
 use AllowDynamicProperties;
+use DateTimeInterface;
 use Nette\Http\IResponse;
 
 #[AllowDynamicProperties]
@@ -70,6 +71,7 @@ final class NoOpResponse implements IResponse
         /* no-op */
     }
 
+    /** @param string|int|DateTimeInterface|null $expire */
     public function setCookie(string $name, string $value, $expire, ?string $path = null, ?string $domain = null, ?bool $secure = null, ?bool $httpOnly = null, mixed ...$options): static
     {
         return $this;

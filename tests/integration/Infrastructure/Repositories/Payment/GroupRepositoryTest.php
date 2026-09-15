@@ -11,6 +11,7 @@ use App\Model\Payment\EmailType;
 use App\Model\Payment\Group;
 use App\Model\Payment\GroupNotFound;
 use App\Model\Payment\VariableSymbol;
+use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use IntegrationTest;
@@ -69,7 +70,7 @@ class GroupRepositoryTest extends IntegrationTest
         $createdAt = new DateTimeImmutable(self::ROW['created_at']);
         $lastPairing = new DateTimeImmutable(self::ROW['last_pairing']);
         $paymentDefaults = new Group\PaymentDefaults(
-            self::ROW['amount'],
+            MoneyFactory::fromFloat(self::ROW['amount']),
             new ChronosDate('2018-01-29'),
             self::ROW['constant_symbol'],
             new VariableSymbol(self::ROW['next_variable_symbol']),
