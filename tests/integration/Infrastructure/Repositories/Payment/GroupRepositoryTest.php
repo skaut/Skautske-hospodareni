@@ -84,7 +84,7 @@ class GroupRepositoryTest extends IntegrationTest
             'last_pairing' => $lastPairing->format('Y-m-d H:i:s'),
             'oauth_id' => '42288e92-27fb-453c-9904-36a7ebd14fe2',
             'bank_account_id' => 100,
-            'amount' => $paymentDefaults->getAmount(),
+            'amount' => $paymentDefaults->getAmount()?->getAmount(),
             'next_variable_symbol' => $paymentDefaults->getNextVariableSymbol()?->toInt(),
             'due_date' => $paymentDefaults->getDueDate()?->format('Y-m-d'),
             'constant_symbol' => $paymentDefaults->getConstantSymbol(),
@@ -120,7 +120,7 @@ class GroupRepositoryTest extends IntegrationTest
         $this->assertEquals($lastPairing, $group->getLastPairing());
         $this->assertSame($row['oauth_id'], $group->getOauthId()?->toString());
         $this->assertSame($row['bank_account_id'], $group->getBankAccountId());
-        $this->assertSame($paymentDefaults->getAmount(), $group->getPaymentDefaults()->getAmount());
+        $this->assertEquals($paymentDefaults->getAmount(), $group->getPaymentDefaults()->getAmount());
         $this->assertEquals($paymentDefaults->getDueDate(), $group->getPaymentDefaults()->getDueDate());
         $this->assertSame($paymentDefaults->getConstantSymbol(), $group->getPaymentDefaults()->getConstantSymbol());
         $this->assertEquals($paymentDefaults->getNextVariableSymbol(), $group->getPaymentDefaults()->getNextVariableSymbol());
