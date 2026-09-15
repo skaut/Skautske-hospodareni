@@ -12,6 +12,8 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 
 use function file_get_contents;
+use function hash;
+use function implode;
 use function sprintf;
 
 final class GpcParserTest extends Unit
@@ -246,9 +248,10 @@ final class GpcParserTest extends Unit
                 null => '000000-0000000000/0000',
             ] as $normalized => $legacyRaw
         ) {
+            $amount = MoneyFactory::fromDecimal('100');
             self::assertSame(
-                $generator->fromGpc('1/2010', $date, MoneyFactory::fromDecimal('100'), $legacyRaw, 'Nekdo', 1, 2, 'note'),
-                $generator->legacyFromGpc('1/2010', $date, MoneyFactory::fromDecimal('100'), $normalized === '' ? null : $normalized, 'Nekdo', 1, 2, 'note'),
+                'gpc:'.hash('sha256', implode('|', ['gpc', '1/2010', '2026-03-15', '100.00', $legacyRaw, 'Nekdo', '1', '2', 'note'])),
+                $generator->legacyFromGpc('1/2010', $date, $amount, $normalized === '' ? null : $normalized, 'Nekdo', 1, 2, 'note'),
                 sprintf('protiúčet %s', $legacyRaw),
             );
         }

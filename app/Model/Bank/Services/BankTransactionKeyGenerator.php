@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Model\Bank\Services;
 
+use App\Model\Utils\MoneyFactory;
 use DateTimeImmutable;
 use Money\Money;
 
@@ -72,16 +73,19 @@ final class BankTransactionKeyGenerator
         ?int $constantSymbol,
         ?string $note,
     ): string {
-        return $this->fromGpc(
+        $canonical = implode('|', [
+            'gpc',
             $accountNumber,
-            $date,
-            $amount,
-            $this->toLegacyCounterAccount($counterAccount),
-            $name,
-            $variableSymbol,
-            $constantSymbol,
-            $note,
-        );
+            $date->format('Y-m-d'),
+            MoneyFactory::toDecimal($amount),
+            trim($this->toLegacyCounterAccount($counterAccount)),
+            trim($name),
+            (string) $variableSymbol,
+            (string) $constantSymbol,
+            trim((string) $note),
+        ]);
+
+        return 'gpc:'.hash('sha256', $canonical);
     }
 
     /**
