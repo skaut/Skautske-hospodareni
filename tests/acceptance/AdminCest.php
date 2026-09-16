@@ -56,7 +56,7 @@ final class AdminCest extends BaseAcceptanceCest
         $I->seeInCurrentUrl('/');
         $I->dontSeeElement('[data-test="admin-bug-reports-page"]');
 
-        $I->amOnPage('/admin/vyuziti');
+        $I->amOnPage('/admin/usage?unitId='.AcceptanceTester::UNIT_ID);
         $I->waitForElement('.alert-danger', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/');
         $I->dontSeeElement('[data-test="admin-usage-page"]');
@@ -437,7 +437,7 @@ final class AdminCest extends BaseAcceptanceCest
 
         $I->wantTo('verify admin usage page renders all cards from recorded logins');
 
-        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/vyuziti', '[data-test="admin-usage-page"]');
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/usage?unitId='.AcceptanceTester::UNIT_ID, '[data-test="admin-usage-page"]');
 
         // A Latte runtime error renders as a Tracy page, not as our markup.
         $I->dontSeeElement('#tracy-bs');
@@ -487,7 +487,7 @@ final class AdminCest extends BaseAcceptanceCest
 
         $I->wantTo('verify admin usage page stays readable before any login is recorded');
 
-        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/vyuziti', '[data-test="admin-usage-page"]');
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/usage?unitId='.AcceptanceTester::UNIT_ID, '[data-test="admin-usage-page"]');
 
         $I->dontSeeElement('#tracy-bs');
         $I->seeElement('[data-test="admin-usage-no-data"]');
@@ -512,7 +512,7 @@ final class AdminCest extends BaseAcceptanceCest
         $I->wantTo('verify the usage page does not overflow sideways on a phone');
 
         $I->resizeWindow(375, 900);
-        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/vyuziti', '[data-test="admin-usage-page"]');
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/usage?unitId='.AcceptanceTester::UNIT_ID, '[data-test="admin-usage-page"]');
 
         // The heat map and the month table have to scroll inside their own
         // container. Naming the widest element turns a failure here into a
@@ -572,11 +572,11 @@ JS);
 
         $I->seeElement('[data-test="admin-card-usage"].navigation-card');
         $usageHref = $I->grabAttributeFrom('[data-test="admin-link-usage"]', 'href');
-        Assert::assertStringContainsString('/admin/vyuziti', (string) $usageHref);
+        Assert::assertStringContainsString('/admin/usage?unitId='.AcceptanceTester::UNIT_ID, (string) $usageHref);
 
         $I->clickStable('[data-test="admin-nav-usage"]');
         $I->waitForElementVisible('[data-test="admin-usage-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->seeInCurrentUrl('/admin/vyuziti');
+        $I->seeInCurrentUrl('/admin/usage');
         $I->seeElement('[data-test="admin-nav-usage"].btn-primary');
     }
 
