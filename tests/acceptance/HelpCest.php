@@ -33,8 +33,9 @@ class HelpCest extends BaseAcceptanceCest
 
         $this->I = $I;
         $I->login(AcceptanceTester::UNIT_LEADER_ROLE);
-        $I->haveInDatabase('admin_user', [
+        $I->haveInDatabase('system_user_role', [
             'user_id' => self::ADMIN_USER_ID,
+            'role' => 'admin',
             'created_at' => '2026-03-19 12:00:00',
         ]);
     }
@@ -52,8 +53,7 @@ class HelpCest extends BaseAcceptanceCest
 
         $I->wantTo('see help that is stored in the database');
 
-        $I->amOnPage('/cestaky/vozidla');
-        $I->waitForElementVisible('[data-test="help-sidebar"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/cestaky/vozidla', '[data-test="help-sidebar"]');
         $I->see('Vozový park', '[data-test="help-content"]');
         $I->see('Archivace', '[data-test="help-content"]');
     }
@@ -65,8 +65,7 @@ class HelpCest extends BaseAcceptanceCest
 
         $I->wantTo('see no help panel on a page that has none');
 
-        $I->amOnPage(self::PAGE_URL);
-        $I->waitForElementVisible(self::PAGE_MARKER, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, self::PAGE_URL, self::PAGE_MARKER);
         $I->dontSeeElement('[data-test="help-sidebar"]');
     }
 
@@ -80,8 +79,7 @@ class HelpCest extends BaseAcceptanceCest
 
         $I->wantTo('write help in the administration and see it on the page');
 
-        $I->amOnPage('/admin/napovedy/'.self::PAGE_KEY);
-        $I->waitForElementVisible('[data-test="admin-help-form"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/napovedy/'.self::PAGE_KEY, '[data-test="admin-help-form"]');
 
         $I->fillFieldStable('[data-test="admin-help-form"] [data-test="help-lead"]', 'Vlastní proužek '.$heading);
         $I->fillFieldStable('[data-test="admin-help-form"] input[name="sections[0][heading]"]', $heading);
@@ -105,8 +103,7 @@ class HelpCest extends BaseAcceptanceCest
             'youtube_url' => 'https://www.youtube.com/watch?v=kfVsfOSbJY0',
         ]);
 
-        $I->amOnPage(self::PAGE_URL);
-        $I->waitForElementVisible('[data-test="help-sidebar"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, self::PAGE_URL, '[data-test="help-sidebar"]');
         $I->see($heading, '[data-test="help-content"]');
         $I->see($text, '[data-test="help-content"]');
         $I->see('první odrážka', '[data-test="help-content"]');
@@ -149,8 +146,7 @@ JS);
 
         $I->wantTo('remove the help again by clearing the form');
 
-        $I->amOnPage('/admin/napovedy/'.self::PAGE_KEY);
-        $I->waitForElementVisible('[data-test="admin-help-form"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/napovedy/'.self::PAGE_KEY, '[data-test="admin-help-form"]');
         $I->fillFieldStable('[data-test="admin-help-form"] [data-test="help-lead"]', '');
         $I->fillFieldStable('[data-test="help-youtube-title"]', '');
         $I->fillFieldStable('[data-test="help-youtube-url"]', '');
@@ -161,8 +157,7 @@ JS);
         $I->waitForElementVisible('[data-test="admin-help-list"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->dontSeeInDatabase('page_help', ['page_key' => self::PAGE_KEY]);
 
-        $I->amOnPage(self::PAGE_URL);
-        $I->waitForElementVisible(self::PAGE_MARKER, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, self::PAGE_URL, self::PAGE_MARKER);
         $I->dontSeeElement('[data-test="help-sidebar"]');
     }
 
@@ -178,8 +173,7 @@ JS);
 
         $I->wantTo('open the editor with a single block and add another one');
 
-        $I->amOnPage('/admin/napovedy/'.self::PAGE_KEY);
-        $I->waitForElementVisible('[data-test="help-section-0"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/napovedy/'.self::PAGE_KEY, '[data-test="help-section-0"]');
 
         $I->dontSeeElement('[data-test="help-section-1"]');
         $I->seeElement('[data-test="help-section-add"]');
@@ -204,8 +198,7 @@ JS);
 
         $I->wantTo('see the help panel beside the content on desktop and below it on a phone');
 
-        $I->amOnPage('/cestaky/vozidla');
-        $I->waitForElementVisible('[data-test="help-sidebar"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/cestaky/vozidla', '[data-test="help-sidebar"]');
 
         // Window width, not viewport width: the browser chrome and scrollbar make the
         // viewport narrower, so the values stay clear of the 992 px breakpoint.
@@ -251,8 +244,7 @@ JS);
             'views' => 4242,
         ]);
 
-        $I->amOnPage('/admin/napovedy');
-        $I->waitForElementVisible('[data-test="admin-help-list"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/napovedy', '[data-test="admin-help-list"]');
 
         // The column is a 90 day sum, and the other scenarios open this very page,
         // so the only stable expectation is that the seeded views are included.
