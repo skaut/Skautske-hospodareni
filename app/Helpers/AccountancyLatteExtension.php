@@ -28,6 +28,7 @@ final class AccountancyLatteExtension extends Extension
             'priceToString' => AccountancyHelpers::priceToString(...),
             'groupState' => AccountancyHelpers::groupState(...),
             'dateRange' => AccountancyHelpers::dateRange(...),
+            'duration' => AccountancyHelpers::duration(...),
         ];
     }
 }

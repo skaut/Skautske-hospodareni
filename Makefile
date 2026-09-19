@@ -9,7 +9,6 @@ COMPOSE_FILE   ?= docker/docker-compose.yml
 COMPOSE         = docker compose $(foreach file,$(subst :, ,$(COMPOSE_FILE)),-f $(file))
 RUN_PHP_DEV     = $(COMPOSE) run --rm -T --entrypoint '' --user docker php
 RUN_PHP_TEST    = $(COMPOSE) run --rm -T --entrypoint '' --user docker php-test
-RUN_PHP_TEST_ROOT = $(COMPOSE) run --rm -T --entrypoint '' --user root php-test
 RUN_PHP_XDEBUG  = $(COMPOSE) run --rm --entrypoint '' --user docker php-xdebug
 EXEC_PHP        = docker exec -u docker -it hskauting.app
 EXEC_PHP_TEST   = docker exec -u docker -it hskauting.app-test
@@ -82,11 +81,6 @@ define wait_for_mysql_test
 	exit 1
 endef
 
-define reset_writable_dirs
-	$(COMPOSE) run --rm -T --no-deps --user docker $(1) sh -c \
-		'mkdir -p log uploads temp tests/_output tests/_support/_generated www/webtemp'
-endef
-
 help: ## Zobrazí tuto nápovědu
 	@grep -E '^[a-zA-Z0-9_-]+:.*## ' Makefile | awk -F ':[^#]*## ' '{printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
@@ -95,7 +89,6 @@ build: ## Sestaví Docker image pro lokální vývoj
 
 up: ## Spustí dev stack
 	$(COMPOSE) up -d $(APP_SERVICES)
-	$(call reset_writable_dirs,php)
 
 down: ## Zastaví dev stack
 	$(COMPOSE) down --remove-orphans
@@ -115,7 +108,6 @@ enter-xdebug: ## Shell do xdebug PHP kontejneru
 	$(RUN_PHP_XDEBUG) bash
 
 clean-cache: ## Vyčistí aplikační cache
-	$(call reset_writable_dirs,php)
 	$(RUN_PHP_DEV) bin/console app:cache:purge
 
 composer-install: ## composer install uvnitř PHP kontejneru
@@ -129,14 +121,12 @@ init: ## Inicializace aplikace (composer app-init)
 	$(MAKE) up
 	$(RUN_PHP_DEV) $(COMPOSER_ENV) composer app-init
 	$(MAKE) fixtures
-	$(call reset_writable_dirs,php)
 	@echo ""
 	@echo "Aplikace:  http://moje-hospodareni.cz"
 	@echo "Adminer:   http://adminer.localhost"
 	@echo "Traefik:   http://traefik.localhost"
 
 fixtures: ## Načte vývojová fixture data bez mazání databáze
-	$(call reset_writable_dirs,php)
 	$(RUN_PHP_DEV) bin/console doctrine:fixtures:load --no-interaction
 
 test-enter: ## Shell do test PHP kontejneru
@@ -145,30 +135,25 @@ test-enter: ## Shell do test PHP kontejneru
 test-init: ## Inicializace testovací aplikace
 	$(MAKE) test-services
 	$(call wait_for_mysql_test)
-	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) $(COMPOSER_ENV) composer app-init
 
 test-services: ## Start test DB a test PHP kontejneru
 	$(COMPOSE) up -d $(TEST_SERVICES)
 
 test-unit: ## Unit testy (volitelně TEST=tests/unit/FooTest.php)
-	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) vendor/bin/codecept run unit $(TEST_ARGS)
 
 test-integration: ## Integrační testy (volitelně TEST=tests/integration/FooTest.php)
 	$(MAKE) test-services
 	$(call wait_for_mysql_test)
-	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) vendor/bin/codecept run integration $(TEST_ARGS)
 
 test-coverage: ## Unit + integration testy s coverage XML
 	$(MAKE) test-services
 	$(call wait_for_mysql_test)
-	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) $(COMPOSER_ENV) composer tests-with-coverage
 
 test-acceptance: ## Akceptační testy lokálně s viditelným Selenium preview
-	$(call reset_writable_dirs,php-test)
 	$(COMPOSE) up -d $(ACCEPTANCE_SERVICES)
 	$(call wait_for_mysql_test)
 	$(call wait_for_selenium)
@@ -182,11 +167,9 @@ test-acceptance: ## Akceptační testy lokálně s viditelným Selenium preview
 test-mapping: ## Validace DB schématu vs migrace
 	$(MAKE) test-services
 	$(call wait_for_mysql_test)
-	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) $(COMPOSER_ENV) composer validate-mapping
 
 ci-acceptance: ## Akceptační testy v CI režimu
-	$(call reset_writable_dirs,php-test)
 	$(COMPOSE) up -d $(ACCEPTANCE_SERVICES)
 	$(call wait_for_mysql_test)
 	$(call wait_for_selenium)
@@ -199,19 +182,15 @@ ci-acceptance: ## Akceptační testy v CI režimu
 	exit $$status
 
 check-phpstan: ## PHPStan analýza
-	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) sh -c "vendor/bin/codecept build && $(COMPOSER_ENV) composer static-analysis"
 
 check-cs: ## Coding standard (opraví)
-	$(RUN_PHP_TEST_ROOT) sh -c 'mkdir -p log uploads temp tests/_output tests/_support/_generated www/webtemp'
-	$(RUN_PHP_TEST_ROOT) $(COMPOSER_ENV) composer coding-standard
+	$(RUN_PHP_TEST) $(COMPOSER_ENV) composer coding-standard
 
 check-cs-check: ## Coding standard (dry-run pro CI)
-	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) $(COMPOSER_ENV) composer coding-standard-ci
 
 check-latte: ## Latte lint
-	$(call reset_writable_dirs,php-test)
 	$(RUN_PHP_TEST) $(COMPOSER_ENV) composer lint
 
 fix: ## Opravitelné kontroly bez testů
