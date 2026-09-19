@@ -47,8 +47,10 @@ endef
 
 define print_application_diagnostics
 	echo "PHP test runtime diagnostics:"; \
-	$(COMPOSE) exec -T php-test sh -lc '\
+	$(COMPOSE) exec -T -u docker php-test sh -lc '\
 		id; \
+		echo "PHP-FPM workers:"; \
+		ps -o user:20,pid,ppid,args -C php-fpm || true; \
 		for path in /app /app/log /app/uploads /app/temp /app/temp/cache /app/temp/sessions; do \
 			if [ -e "$$path" ]; then stat -c "%a %u:%g %n" "$$path"; else echo "Missing: $$path"; fi; \
 		done; \
