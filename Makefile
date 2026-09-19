@@ -45,16 +45,28 @@ define wait_for_selenium
 	exit 1
 endef
 
-define wait_for_application
-	@for i in $$(seq 1 30); do \
-		if $(COMPOSE) exec -T selenium sh -lc "wget -S --header='Cookie: SELENIUM=SELENIUM' -O /dev/null http://moje-hospodareni.cz/ 2>&1 | grep -q 'HTTP/[0-9.][0-9.]* 200'"; then \
+define wait_for_http_200
+	@last_response=''; \
+	for i in $$(seq 1 30); do \
+		last_response="$$($(COMPOSE) exec -T selenium sh -lc 'wget --timeout=2 --tries=1 -S --header="Cookie: SELENIUM=SELENIUM" -O /dev/null $(1) 2>&1')"; \
+		if printf '%s\n' "$$last_response" | grep -q 'HTTP/[0-9.][0-9.]* 200'; then \
 			exit 0; \
 		fi; \
-		echo "Waiting for application... ($$i/30)"; \
+		echo "Waiting for $(2)... ($$i/30)"; \
 		sleep 2; \
 	done; \
-	echo "Application did not become ready in time."; \
+	echo "$(2) did not become ready in time."; \
+	printf '%s\n' "$$last_response"; \
+	$(COMPOSE) ps; \
 	exit 1
+endef
+
+define wait_for_proxy
+	$(call wait_for_http_200,http://moje-hospodareni.cz/robots.txt,application proxy)
+endef
+
+define wait_for_application
+	$(call wait_for_http_200,http://moje-hospodareni.cz/,application)
 endef
 
 define wait_for_skautis_dns
@@ -174,6 +186,7 @@ ci-acceptance: ## Akceptační testy v CI režimu
 	$(call wait_for_mysql_test)
 	$(call wait_for_selenium)
 	$(RUN_PHP_TEST) $(COMPOSER_ENV) composer tests:acceptance:init
+	$(call wait_for_proxy)
 	$(call wait_for_application)
 	$(call wait_for_skautis_dns)
 	$(RUN_PHP_TEST) vendor/bin/codecept run acceptance --env ci -vv $(TEST_ARGS); \
