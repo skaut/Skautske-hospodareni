@@ -3,4 +3,6 @@ FROM thecodingmachine/php:8.3-v4-fpm-node22
 USER docker
 WORKDIR /app
 
+RUN mkdir -p log uploads temp tests/_output tests/_support/_generated www/webtemp
+
 ENV PATH="/app/vendor/bin:/app/bin:${PATH}"
