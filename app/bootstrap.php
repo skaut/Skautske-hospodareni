@@ -23,7 +23,7 @@ $appEnv = $environment['appEnv'];
 $maintenance = $environment['maintenance'];
 
 $configurator = new Configurator();
-$configurator->setDebugMode($appEnv === 'dev' || $appEnv === 'ci' || $maintenance['debugBypass']);
+$configurator->setDebugMode($appEnv === 'dev' || $maintenance['debugBypass']);
 $configurator->enableTracy($logDir);
 $configurator->setTempDirectory($tempDir);
 

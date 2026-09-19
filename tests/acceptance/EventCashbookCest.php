@@ -223,9 +223,8 @@ class EventCashbookCest extends BaseAcceptanceCest
 
     private function openEventList(AcceptanceTester $I): void
     {
-        $I->amOnPage('/akce');
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/akce', self::EVENTS_LIST_SELECTOR);
         $I->waitForDocumentReady();
-        $I->waitForElement(self::EVENTS_LIST_SELECTOR, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
     }
 
     private function fillChitForm(ChronosDate $date, string $purpose, Operation $type, string $category, string $recipient, string $amount): void
