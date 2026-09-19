@@ -569,8 +569,8 @@ JS);
         $I->resizeWindow(900, 900);
 
         $compactLayout = $I->executeJS(<<<'JS'
-const action = document.querySelector('[data-test^="payment-split-action-"]');
-const dataRow = action?.closest('tr');
+const action = document.querySelector('[data-test="payment-group-grid"] .datagrid-data-row [data-test^="payment-split-action-"]');
+const dataRow = action?.closest('.datagrid-data-row');
 const actionRow = dataRow?.nextElementSibling;
 const primaryActions = dataRow?.querySelector('.datagrid-actions-cell');
 const visibleAction = actionRow?.querySelector('.btn');
@@ -590,8 +590,8 @@ JS);
             $I->resizeWindow($width, 900);
 
             $mobileLayout = $I->executeJS(<<<'JS'
-const action = document.querySelector('[data-test^="payment-split-action-"]');
-const dataRow = action?.closest('tr');
+const action = document.querySelector('[data-test="payment-group-grid"] .datagrid-data-row [data-test^="payment-split-action-"]');
+const dataRow = action?.closest('.datagrid-data-row');
 const actionRow = dataRow?.nextElementSibling;
 const scroller = actionRow?.closest('.table-responsive');
 const scrollerRect = scroller?.getBoundingClientRect();
