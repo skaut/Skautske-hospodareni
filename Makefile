@@ -45,6 +45,23 @@ define wait_for_selenium
 	exit 1
 endef
 
+define print_application_diagnostics
+	echo "PHP test runtime diagnostics:"; \
+	$(COMPOSE) exec -T php-test sh -lc '\
+		id; \
+		for path in /app /app/log /app/uploads /app/temp /app/temp/cache /app/temp/sessions; do \
+			if [ -e "$$path" ]; then stat -c "%a %u:%g %n" "$$path"; else echo "Missing: $$path"; fi; \
+		done; \
+		echo "Application log files:"; \
+		find /app/log -maxdepth 1 -type f -printf "%m %u:%g %s %p\n"; \
+		for log in /app/log/*; do \
+			[ -f "$$log" ] || continue; \
+			echo "--- $$log"; \
+			tail -n 200 "$$log"; \
+		done \
+	' 2>&1 || true
+endef
+
 define wait_for_http_200
 	@last_response=''; \
 	for i in $$(seq 1 30); do \
@@ -58,6 +75,7 @@ define wait_for_http_200
 	echo "$(2) did not become ready in time."; \
 	printf '%s\n' "$$last_response"; \
 	$(COMPOSE) ps; \
+	$(call print_application_diagnostics); \
 	exit 1
 endef
 
