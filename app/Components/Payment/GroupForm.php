@@ -87,6 +87,7 @@ final class GroupForm extends BaseControl
     protected function createComponentForm(): BaseForm
     {
         $form = new BaseForm();
+        $form->getElementPrototype()->addClass('inline-errors');
         $bankAccountItems = $this->bankAccountItems();
         $oAuthItems = $this->oAuthItems();
         $defaults = $this->buildDefaultsFromGroup($bankAccountItems, $oAuthItems);

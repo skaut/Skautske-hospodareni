@@ -147,7 +147,7 @@
 
         "coding-standard-ci": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --using-cache=no",
 
-        "lint": "vendor/bin/latte-lint app",
+        "lint": "bin/latte-lint app",
         "latte-lint": "@lint",
 
         "schema:validate": "bin/console orm:validate-schema --skip-sync",
