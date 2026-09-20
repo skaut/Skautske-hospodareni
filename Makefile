@@ -47,10 +47,14 @@ endef
 
 define print_application_diagnostics
 	echo "PHP test runtime diagnostics:"; \
-	$(COMPOSE) exec -T -u docker php-test sh -lc '\
+	$(COMPOSE) ps --all; \
+	php_test_container="$$($(COMPOSE) ps -aq php-test)"; \
+	if [ -n "$$php_test_container" ]; then \
+		echo "PHP test container state:"; \
+		docker inspect --format '{{json .State}}' "$$php_test_container" || true; \
+	fi; \
+	$(COMPOSE) run --rm -T --no-deps --entrypoint '' --user docker php-test sh -lc '\
 		id; \
-		echo "PHP-FPM workers:"; \
-		ps -o user:20,pid,ppid,args -C php-fpm || true; \
 		for path in /app /app/log /app/uploads /app/temp /app/temp/cache /app/temp/sessions; do \
 			if [ -e "$$path" ]; then stat -c "%a %u:%g %n" "$$path"; else echo "Missing: $$path"; fi; \
 		done; \
