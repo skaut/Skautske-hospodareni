@@ -19,12 +19,6 @@ Ověřte běžný postup i důležité chybové stavy. Pravidla hospodaření ne
 
 ## Spouštění
 
-Při prvním spuštění připravte testovací prostředí:
-
-```bash
-make test-init
-```
-
 Cílený test spusťte přes `TEST` včetně cesty k souboru:
 
 ```bash
@@ -33,4 +27,4 @@ make test-integration TEST=tests/integration/SomeTest.php
 make test-acceptance TEST=tests/acceptance/SomeCest.php:scenarioName
 ```
 
-Celé skupiny spustíte příkazy `make test-unit`, `make test-integration` a `make test-acceptance`. Před odevzdáním změny spusťte nejmenší odpovídající sadu a příslušné kontroly z [Příkazů pro práci na projektu](nastroje.md).
+Celé skupiny spustíte příkazy `make test-unit`, `make test-integration` a `make test-acceptance`. Každý příkaz připraví a po dokončení odstraní vlastní testovací stack, proto na pořadí spuštění nezáleží. Před odevzdáním změny spusťte nejmenší odpovídající sadu a příslušné kontroly z [Příkazů pro práci na projektu](nastroje.md).
