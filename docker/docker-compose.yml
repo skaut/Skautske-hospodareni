@@ -42,9 +42,7 @@ services:
         image: traefik:latest
         restart: unless-stopped
         networks:
-            traefik:
-                aliases:
-                    - moje-hospodareni.cz
+            - traefik
         ports:
             - "${TRAEFIK_HOST_PORT:-80}:80"
         volumes:
