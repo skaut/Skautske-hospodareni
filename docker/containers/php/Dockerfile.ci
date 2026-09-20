@@ -1,8 +1,19 @@
 FROM thecodingmachine/php:8.3-v4-fpm-node22
 
-USER docker
 WORKDIR /app
 
-RUN mkdir -p log uploads temp tests/_output tests/_support/_generated www/webtemp
+COPY --chown=docker:docker . /app/
+COPY docker/containers/php/docker.conf /etc/php/8.3/fpm/pool.d/www.conf
+COPY docker/containers/php/ini/php.ini /etc/php/8.3/fpm/conf.d/php.ini
+COPY docker/containers/php/ini/php.ini /etc/php/8.3/cli/conf.d/php.ini
+
+USER docker
+
+ARG CI_INPUTS_PREPARED=0
+
+RUN if [ "$CI_INPUTS_PREPARED" != "1" ]; then npm ci && npm run build-production; fi \
+    && test -f www/dist/.vite/manifest.json \
+    && rm -rf node_modules \
+    && mkdir -p log uploads temp tests/_output tests/_support/_generated www/webtemp
 
 ENV PATH="/app/vendor/bin:/app/bin:${PATH}"

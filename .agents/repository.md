@@ -38,8 +38,8 @@ Make targets are allowed because project commands delegate to Docker. Prefer the
 - `make help` lists available commands.
 - `make init` performs one-time development environment initialization: builds images, starts the stack, installs dependencies, runs migrations/application initialization, and builds the frontend.
 - `make up` / `make down` starts or stops the development stack. The application runs at `http://moje-hospodareni.cz`, Adminer at `http://adminer.localhost`; locally, an entry `127.0.0.1 moje-hospodareni.cz` may be needed in `/etc/hosts`.
-- `make test-init` initializes the test application and test database before the first test run.
-- `make enter` opens a shell in the development PHP container, `make test-enter` in the test PHP container.
+- Each test or CI-check target initializes an isolated test application and database, then removes its CI stack when it finishes.
+- `make enter` opens a shell in the development PHP container. CI images are intentionally immutable, so use a specific test target instead of an interactive test container.
 
 Run Docker commands, starting and stopping project services, and tests autonomously. Do not ask the user for permission to run tests. Resetting the test database is part of the normal test workflow. Do not delete the development database `mysql` volume or run destructive operations on development data unless explicitly requested.
 

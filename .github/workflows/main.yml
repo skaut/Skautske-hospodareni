@@ -103,14 +103,13 @@ jobs:
     environment: test
     env:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
-      COMPOSE_FILE: docker/docker-compose.yml:docker/docker-compose.ci.yml
       COMPOSE_PROJECT_NAME: "quick-${{ github.run_id }}-${{ github.run_attempt }}"
+      CI_INPUTS_PREPARED: "1"
     steps:
       - &clean-workspace
         name: Clean workspace
         shell: bash
         run: |
-          docker compose down -v || true
           if [ -z "${GITHUB_WORKSPACE:-}" ] || [ ! -d "$GITHUB_WORKSPACE" ]; then
             echo "GITHUB_WORKSPACE is not set to an existing directory."
             exit 1
@@ -141,9 +140,6 @@ jobs:
           rm -rf _tmp_unpack
           rm -f workdir.tar.gz workdir.tar.gz.sha256
 
-      - name: Build CI PHP image
-        run: docker compose build php-test
-
       - name: Coding standard
         run: make check-cs-check
 
@@ -160,8 +156,7 @@ jobs:
         if: failure()
         shell: bash
         run: |
-          docker compose run --rm -T --no-deps --entrypoint '' --user docker php-test \
-            sh -lc 'tar -czf - migrations' > migrations.tar.gz || true
+          tar -czf migrations.tar.gz migrations || true
           if [ ! -s migrations.tar.gz ]; then
             rm -f migrations.tar.gz
           fi
@@ -178,17 +173,8 @@ jobs:
         if: always()
         shell: bash
         run: |
-          docker compose down --remove-orphans -v || true
-
-          if [ -z "${COMPOSE_PROJECT_NAME:-}" ]; then
-            echo "COMPOSE_PROJECT_NAME is not set, skipping image cleanup."
-            exit 0
-          fi
-
-          docker image rm \
-            "${COMPOSE_PROJECT_NAME}-php-test" \
-            "${COMPOSE_PROJECT_NAME}-nginx-ci" \
-            2>/dev/null || true
+          make ci-clean
+          make ci-image-clean
 
   collect-code-coverage:
     name: Collect code coverage
@@ -199,20 +185,18 @@ jobs:
     if: github.ref == 'refs/heads/master'
     env:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
-      COMPOSE_FILE: docker/docker-compose.yml:docker/docker-compose.ci.yml
       COMPOSE_PROJECT_NAME: "coverage-${{ github.run_id }}-${{ github.run_attempt }}"
+      CI_INPUTS_PREPARED: "1"
     steps:
       - *clean-workspace
       - uses: actions/download-artifact@v4
         with: { name: workdir, path: . }
       - *extract-workdir
-      - run: docker compose build php-test
       - run: make test-coverage
       - name: Export coverage XML
         shell: bash
         run: |
-          docker compose run --rm -T --no-deps --entrypoint '' --user docker php-test \
-            sh -lc 'cat tests/_output/coverage.xml' > coverage.xml
+          cp artifacts/coverage.xml coverage.xml
       - name: Prepare Codecov environment
         shell: bash
         run: |
@@ -231,7 +215,7 @@ jobs:
   tests:
     name: Tests - ${{ matrix.label }}
     runs-on: [self-hosted, docker, x64]
-    needs: [workdir, quick-checks]
+    needs: workdir
     timeout-minutes: 45
     environment: test
     strategy:
@@ -240,38 +224,24 @@ jobs:
         include:
           - label: Unit
             shard: unit
-            port: 8091
-            build_services: php-test
             command: make test-unit
           - label: Integration
             shard: integration
-            port: 8092
-            build_services: php-test
             command: make test-integration
           - label: Payment groups
             shard: payment-groups
-            port: 8081
-            build_services: php-test nginx
             command: make ci-acceptance TEST='--group payment tests/acceptance/PaymentCest.php'
           - label: Payment detail
             shard: payment-detail
-            port: 8082
-            build_services: php-test nginx
             command: make ci-acceptance TEST='--group payment tests/acceptance/PaymentDetailCest.php'
           - label: Payment dashboard
             shard: payment-dashboard
-            port: 8083
-            build_services: php-test nginx
             command: make ci-acceptance TEST='--group payment tests/acceptance/PaymentDashboardCest.php'
           - label: Invoice
             shard: invoice
-            port: 8084
-            build_services: php-test nginx
             command: make ci-acceptance TEST='--group invoice'
           - label: Settings and admin
             shard: settings-admin
-            port: 8085
-            build_services: php-test nginx
             command: make ci-acceptance TEST='--group settings --group admin'
           - label: Rest grouped
             shard: rest-grouped
@@ -284,60 +254,20 @@ jobs:
             build_services: php-test nginx
             command: make ci-acceptance TEST='--skip-group payment --skip-group invoice --skip-group settings --skip-group admin --skip-group announcements --skip-group bug-report --skip-group dashboard --skip-group unit --skip-group cashbook --skip-group cashbooks'
     env:
-      COMPOSE_FILE: docker/docker-compose.yml:docker/docker-compose.ci.yml
       COMPOSE_PROJECT_NAME: "test-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.shard }}"
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
-      TRAEFIK_HOST_PORT: ${{ matrix.port }}
+      CI_INPUTS_PREPARED: "1"
     steps:
-      - name: Pre-clean compose project
-        shell: bash
-        run: docker compose down --remove-orphans -v || true
       - *clean-workspace
       - uses: actions/download-artifact@v4
         with: { name: workdir, path: . }
       - *extract-workdir
-      - run: docker compose build ${{ matrix.build_services }}
       - run: ${{ matrix.command }}
-      - name: Pack Codeception output
-        if: always()
-        shell: bash
-        run: |
-          docker compose run --rm -T --no-deps --entrypoint '' --user docker php-test \
-            sh -lc 'tar -czf - -C tests _output' > tests-output.tar.gz || true
-          if [ ! -s tests-output.tar.gz ]; then
-            rm -f tests-output.tar.gz
-          fi
-      - name: Collect compose logs
-        if: always()
-        shell: bash
-        run: |
-          mkdir -p artifacts/logs
-          docker compose ps --all > artifacts/logs/compose-ps.txt || true
-          php_test_container="$(docker compose ps -aq php-test || true)"
-          if [ -n "$php_test_container" ]; then
-            docker inspect --format '{{json .State}}' "$php_test_container" > artifacts/logs/php-test-state.json || true
-          fi
-          docker compose logs --no-color > artifacts/logs/compose-logs.txt || true
-          docker compose run --rm -T --no-deps --entrypoint '' --user docker php-test \
-            sh -lc 'id; for path in /app /app/log /app/uploads /app/temp /app/temp/cache /app/temp/sessions; do if [ -e "$path" ]; then stat -c "%a %u:%g %n" "$path"; else echo "Missing: $path"; fi; done; find /app/log -maxdepth 1 -type f -printf "%m %u:%g %s %p\n"' \
-            > artifacts/logs/php-test-runtime.txt 2>&1 || true
-          docker compose run --rm -T --no-deps --entrypoint '' --user docker php-test \
-            sh -lc 'tar -czf - -C /app log' > artifacts/logs/application-logs.tar.gz || true
-          if [ ! -s artifacts/logs/application-logs.tar.gz ]; then
-            rm -f artifacts/logs/application-logs.tar.gz
-          fi
-          tar -czf compose-logs.tar.gz -C artifacts logs || true
       - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: tests-output-${{ matrix.shard }}
-          path: tests-output.tar.gz
-          if-no-files-found: ignore
-      - uses: actions/upload-artifact@v7
-        if: always()
-        with:
-          name: compose-logs-${{ matrix.shard }}
-          path: compose-logs.tar.gz
+          path: artifacts/
           if-no-files-found: ignore
       - *docker-down
 
