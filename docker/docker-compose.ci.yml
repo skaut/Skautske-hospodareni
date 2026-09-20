@@ -19,7 +19,7 @@ services:
             - ci-codeception-output:/app/tests/_output
             - ci-codeception-generated:/app/tests/_support/_generated
             - ci-webtemp:/app/www/webtemp
-            - ./containers/php/docker.ci.conf:/etc/php/8.3/fpm/pool.d/www.conf
+            - ./containers/php/docker.conf:/etc/php/8.3/fpm/pool.d/www.conf
             - ./containers/php/ini/php.ini:/etc/php/8.3/fpm/conf.d/php.ini
             - ./containers/php/ini/php.ini:/etc/php/8.3/cli/conf.d/php.ini
 
@@ -35,7 +35,7 @@ services:
             - ci-codeception-output:/app/tests/_output
             - ci-codeception-generated:/app/tests/_support/_generated
             - ci-webtemp:/app/www/webtemp
-            - ./containers/php/docker.ci.conf:/etc/php/8.3/fpm/pool.d/www.conf
+            - ./containers/php/docker.conf:/etc/php/8.3/fpm/pool.d/www.conf
             - ./containers/php/ini/php.ini:/etc/php/8.3/fpm/conf.d/php.ini
             - ./containers/php/ini/php.ini:/etc/php/8.3/cli/conf.d/php.ini
 
@@ -57,7 +57,7 @@ services:
             - ci-codeception-output:/app/tests/_output
             - ci-codeception-generated:/app/tests/_support/_generated
             - ci-webtemp:/app/www/webtemp
-            - ./containers/php/docker.ci.conf:/etc/php/8.3/fpm/pool.d/www.conf
+            - ./containers/php/docker.conf:/etc/php/8.3/fpm/pool.d/www.conf
             - ./containers/php/ini/php.ini:/etc/php/8.3/fpm/conf.d/php.ini
             - ./containers/php/ini/php.ini:/etc/php/8.3/cli/conf.d/php.ini
 
