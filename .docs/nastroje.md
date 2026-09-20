@@ -8,7 +8,6 @@ Všechny příkazy spouštějte přes Docker. Nejjednodušší je použít `make
 make composer-install
 make composer-update
 make fixtures
-make test-init
 make test-mapping
 ```
 
@@ -54,4 +53,4 @@ make check-cs
 make ci
 ```
 
-`check-cs` formátování opraví, zatímco `check-cs-check` jej jen zkontroluje. `make ci` spustí celou sadu místních kontrol včetně testů v prohlížeči.
+`check-cs` formátování opraví, zatímco `check-cs-check` jej jen zkontroluje. Každý testovací příkaz si vytvoří vlastní čisté CI prostředí a po doběhu ho odstraní. `make ci` spustí celou sadu místních kontrol včetně testů v prohlížeči.
