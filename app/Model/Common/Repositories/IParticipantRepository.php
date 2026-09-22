@@ -33,6 +33,10 @@ interface IParticipantRepository
 
     public function createEventParticipant(SkautisEventId $eventId, NonMemberParticipant $participant): void;
 
+    public function getNonMemberParticipant(int $personId): NonMemberParticipant;
+
+    public function updateNonMemberParticipant(int $personId, NonMemberParticipant $participant): void;
+
     public function removeCampParticipant(int $participantId): void;
 
     public function removeEventParticipant(int $participantId): void;

@@ -32,6 +32,7 @@ final class ParticipantFactory
             $participant->getIsAccepted(),
             $participant->getPayment(),
             $participant->getCategory(),
+            $participant->getUnitId() === null,
         );
     }
 }

@@ -27,6 +27,7 @@ use Nette\SmartObject;
  * @property string           $onAccount
  * @property int              $days
  * @property bool             $isAccepted
+ * @property bool             $isNonMember
  */
 class Participant
 {
@@ -52,6 +53,7 @@ class Participant
         private bool $isAccepted,
         Payment $payment,
         private ?string $category,
+        private bool $isNonMember,
     ) {
         $this->paymentObj = $payment;
     }
@@ -154,5 +156,10 @@ class Participant
     public function isAccepted(): bool
     {
         return $this->isAccepted;
+    }
+
+    public function isNonMember(): bool
+    {
+        return $this->isNonMember;
     }
 }

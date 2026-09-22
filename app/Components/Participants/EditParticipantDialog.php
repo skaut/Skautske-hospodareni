@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Components\Participants;
 
 use App\Components\Dialog;
+use App\Model\DTO\Participant\NonMemberParticipant;
 use App\Model\DTO\Participant\Participant;
 use App\Model\DTO\Participant\UpdateParticipant;
+use App\Model\Participant\NonMemberParticipantService;
 use Assert\Assertion;
+use Cake\Chronos\ChronosDate;
 use Closure;
 use Component\Forms\BaseForm;
 use LogicException;
@@ -21,8 +24,15 @@ final class EditParticipantDialog extends Dialog
     public array $onUpdate = [];
 
     /** @param array<int, Participant> $participants */
-    public function __construct(private array $participants, private bool $isAllowedDaysUpdate, private bool $isAccountAllowed, private bool $isRepaymentAllowed, private bool $isOnlineLogin)
-    {
+    public function __construct(
+        private array $participants,
+        private bool $isAllowedDaysUpdate,
+        private bool $isAccountAllowed,
+        private bool $isRepaymentAllowed,
+        private bool $isOnlineLogin,
+        private bool $isAllowedUpdate,
+        private NonMemberParticipantService $nonMemberParticipants,
+    ) {
     }
 
     public function editParticipant(int $participantId): void
@@ -48,6 +58,13 @@ final class EditParticipantDialog extends Dialog
             throw new LogicException('Assertion failed.');
         }
         $form = new BaseForm();
+        $nonMember = $participant->isNonMember()
+            ? $this->nonMemberParticipants->get($participant->getPersonId())
+            : null;
+
+        if ($nonMember !== null) {
+            $this->addNonMemberFields($form, $nonMember);
+        }
 
         if ($this->isAllowedDaysUpdate) {
             $days = $form->addInteger('days', 'Počet dní')
@@ -82,7 +99,11 @@ final class EditParticipantDialog extends Dialog
         $form->addSubmit('save', 'Upravit')
             ->setHtmlAttribute('class', 'btn btn-primary');
 
-        $form->onSuccess[] = function ($_x, array $values) use ($participant): void {
+        $form->onSuccess[] = function ($_x, array $values) use ($participant, $nonMember): void {
+            if (! $this->isAllowedUpdate) {
+                $this->reload('Nemáte právo upravovat účastníky.', 'danger');
+            }
+
             $changes = [];
 
             if ($values['payment'] !== $participant->getPayment()) {
@@ -101,10 +122,62 @@ final class EditParticipantDialog extends Dialog
                 $changes[UpdateParticipant::FIELD_IS_ACCOUNT] = $values['isAccount'];
             }
 
+            if ($nonMember !== null) {
+                $this->nonMemberParticipants->update(
+                    $participant->getPersonId(),
+                    new NonMemberParticipant(
+                        $values['firstName'],
+                        $values['lastName'],
+                        $values['nick'] === '' ? null : $values['nick'],
+                        $values['sex'],
+                        $values['birthday'] === null ? null : new ChronosDate($values['birthday']),
+                        $values['street'],
+                        $values['city'],
+                        (int) $values['postcode'],
+                    ),
+                );
+            }
+
             $this->onUpdate($this->participantId, $changes, $participant->isAccepted());
             $this->hide();
         };
 
         return $form;
+    }
+
+    private function addNonMemberFields(BaseForm $form, NonMemberParticipant $participant): void
+    {
+        $form->addText('firstName', 'Jméno')
+            ->setRequired('Musíš vyplnit křestní jméno.')
+            ->setDefaultValue($participant->getFirstName());
+
+        $form->addText('lastName', 'Příjmení')
+            ->setRequired('Musíš vyplnit příjmení.')
+            ->setDefaultValue($participant->getLastName());
+
+        $form->addText('street', 'Ulice')
+            ->setRequired('Musíš vyplnit ulici.')
+            ->setDefaultValue($participant->getStreet());
+
+        $form->addText('city', 'Město')
+            ->setRequired('Musíš vyplnit město.')
+            ->setDefaultValue($participant->getCity());
+
+        $form->addText('postcode', 'PSČ')
+            ->setRequired('Musíš vyplnit PSČ.')
+            ->setDefaultValue($participant->getPostcode());
+
+        $form->addText('nick', 'Přezdívka')
+            ->setDefaultValue($participant->getNickName());
+
+        $form->addRadioList('sex', 'Pohlaví', [
+            'male' => 'Muž',
+            'female' => 'Žena',
+        ])
+            ->setRequired('Musíš vybrat pohlaví.')
+            ->setDefaultValue($participant->getSex());
+
+        $form->addDate('birthday', 'Dat. nar.')
+            ->setDefaultValue($participant->getBirthday());
     }
 }

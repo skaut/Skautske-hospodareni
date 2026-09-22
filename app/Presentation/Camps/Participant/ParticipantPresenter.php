@@ -143,6 +143,7 @@ final class ParticipantPresenter extends BasePresenter
             $this->isAllowParticipantUpdate,
             $this->isAllowParticipantDelete,
             $this->event->isOnlineLogin(),
+            true,
         );
 
         $control->onUpdate[] = function (array $updates): void {

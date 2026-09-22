@@ -20,6 +20,7 @@ use App\Model\Participant\PaymentFactory;
 use App\Model\Participant\Repositories\IPaymentRepository;
 use App\Model\Skautis\Factory\ParticipantFactory;
 use App\Utils\CzechStringComparator;
+use Cake\Chronos\ChronosDate;
 use Skautis\Skautis;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WsdlException;
@@ -177,6 +178,27 @@ final class ParticipantRepository implements IParticipantRepository
         $this->fillParticipantInfo($newParticipantArr->ID_Person, $participant);
     }
 
+    public function getNonMemberParticipant(int $personId): NonMemberParticipant
+    {
+        $person = $this->skautis->org->PersonDetail(['ID' => $personId]);
+
+        return new NonMemberParticipant(
+            $person->FirstName,
+            $person->LastName,
+            $person->NickName === '' ? null : $person->NickName,
+            $person->ID_Sex ?? '',
+            $person->Birthday === null ? null : new ChronosDate($person->Birthday),
+            $person->Street,
+            $person->City,
+            (int) $person->Postcode,
+        );
+    }
+
+    public function updateNonMemberParticipant(int $personId, NonMemberParticipant $participant): void
+    {
+        $this->fillParticipantInfo($personId, $participant);
+    }
+
     public function removeEventParticipant(int $participantId): void
     {
         $this->skautis->event->ParticipantGeneralDelete(['ID' => $participantId, 'DeletePerson' => false]);
@@ -193,6 +215,7 @@ final class ParticipantRepository implements IParticipantRepository
             'ID' => $participantId,
             'FirstName' => $participant->getFirstName(),
             'LastName' => $participant->getLastName(),
+            'NickName' => $participant->getNickName(),
             'IdentificationCode' => null,
             'ID_Sex' => $participant->getSex(),
             'Birthday' => $participant->getBirthday()?->format(self::DATETIME_FORMAT),
