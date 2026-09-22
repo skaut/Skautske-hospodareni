@@ -121,6 +121,12 @@ final class PersonPicker extends BaseControl
 
         $form->addText('nick', 'Přezdívka');
 
+        $form->addRadioList('sex', 'Pohlaví', [
+            'male' => 'Muž',
+            'female' => 'Žena',
+        ])
+            ->setRequired('Musíš vybrat pohlaví.');
+
         $form->addDate('birthday', 'Dat. nar.');
 
         $form->addSubmit('send', 'Založit účastníka')
@@ -134,6 +140,7 @@ final class PersonPicker extends BaseControl
                     $values['firstName'],
                     $values['lastName'],
                     $values['nick'],
+                    $values['sex'],
                     $values['birthday'] === null ? null : new ChronosDate($values['birthday']),
                     $values['street'],
                     $values['city'],

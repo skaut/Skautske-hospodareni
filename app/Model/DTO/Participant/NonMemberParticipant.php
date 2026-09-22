@@ -12,6 +12,7 @@ class NonMemberParticipant
         private string $firstName,
         private string $lastName,
         private ?string $nickName,
+        private string $sex,
         private ?ChronosDate $birthday,
         private string $street,
         private string $city,
@@ -32,6 +33,11 @@ class NonMemberParticipant
     public function getNickName(): ?string
     {
         return $this->nickName;
+    }
+
+    public function getSex(): string
+    {
+        return $this->sex;
     }
 
     public function getBirthday(): ?ChronosDate
