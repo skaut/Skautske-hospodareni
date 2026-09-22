@@ -140,7 +140,14 @@ $showUnits bool - zobrazovat číslo jednotky
                         <td n:if="$isAllowAnyAction" class="text-center participantCheckbox">
                             <input n:name="participantIds:$p->id" class="participantCheckboxInput">
                         </td>
-                        <td><label for="massParticipants-{$p->id}">{$p->displayName}</label></td>
+                        <td>
+                            <label for="massParticipants-{$p->id}">{$p->displayName}</label>
+                            <span n:if="isset($participantsWithMissingSex[$p->id])"
+                                  data-bs-toggle="tooltip"
+                                  title="Nečlen nemá vyplněné pohlaví.">
+                                <i class="fa-solid fa-triangle-exclamation text-warning"></i>
+                            </span>
+                        </td>
                         <td n:if="$showUnits">{ifset $p->unitRegistrationNumber}{$p->unitRegistrationNumber}{/ifset}</td>
                         <td class="text-end" n:if="$isAllowDaysUpdate">{$p->days}</td>
                         <td class="text-end">{$p->payment|price:false}{do $totalPayment += $p->payment}</td>

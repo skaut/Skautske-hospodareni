@@ -87,6 +87,7 @@ final class ParticipantPresenter extends BasePresenter
             false,
             false,
             false,
+            false,
         );
 
         $control->onUpdate[] = function (array $updates): void {

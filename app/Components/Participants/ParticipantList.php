@@ -7,6 +7,7 @@ namespace App\Components\Participants;
 use App\Components\BaseControl;
 use App\Model\DTO\Participant\Participant;
 use App\Model\DTO\Participant\UpdateParticipant;
+use App\Model\Participant\NonMemberParticipantService;
 use App\Model\Participant\ParticipantNotFound;
 use App\Utils\CzechStringComparator;
 use Component\Forms\BaseForm;
@@ -63,6 +64,8 @@ final class ParticipantList extends BaseControl
         protected bool $isAllowParticipantUpdate,
         protected bool $isAllowParticipantDelete,
         protected bool $isOnlineLogin,
+        private bool $checkNonMemberSex,
+        private NonMemberParticipantService $nonMemberParticipants,
     ) {
     }
 
@@ -94,6 +97,9 @@ final class ParticipantList extends BaseControl
             'isAllowParticipantUpdate' => $this->isAllowParticipantUpdate,
             'isAllowParticipantDelete' => $this->isAllowParticipantDelete,
             'isAllowAnyAction' => $this->isAllowParticipantUpdate || $this->isAllowParticipantDelete,
+            'participantsWithMissingSex' => $this->checkNonMemberSex
+                ? $this->nonMemberParticipants->findParticipantsWithMissingSex($this->currentParticipants)
+                : [],
         ]);
 
         $this->template->render();
@@ -153,6 +159,10 @@ final class ParticipantList extends BaseControl
 
     public function handleEdit(int $participantId): void
     {
+        if (! $this->isAllowParticipantUpdate) {
+            $this->reload('Nemáte právo upravovat účastníky.', 'danger');
+        }
+
         if (! isset($this->participantsById()[$participantId])) {
             throw new BadRequestException(sprintf('Participant %d does not exist', $participantId), IResponse::S404_NotFound);
         }
@@ -162,7 +172,15 @@ final class ParticipantList extends BaseControl
 
     protected function createComponentEditDialog(): EditParticipantDialog
     {
-        $dialog = new EditParticipantDialog($this->participantsById(), $this->isAllowDaysUpdate, $this->isAllowIsAccount, $this->isAllowRepayment, $this->isOnlineLogin);
+        $dialog = new EditParticipantDialog(
+            $this->participantsById(),
+            $this->isAllowDaysUpdate,
+            $this->isAllowIsAccount,
+            $this->isAllowRepayment,
+            $this->isOnlineLogin,
+            $this->isAllowParticipantUpdate,
+            $this->nonMemberParticipants,
+        );
 
         $dialog->onUpdate[] = function (int $participantId, array $fields, bool $isAccepted): void {
             $changes = [];
