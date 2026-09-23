@@ -140,6 +140,9 @@ jobs:
           rm -rf _tmp_unpack
           rm -f workdir.tar.gz workdir.tar.gz.sha256
 
+      - name: Docker command configuration
+        run: make check-docker-config
+
       - name: Coding standard
         run: make check-cs-check
 
