@@ -14,11 +14,11 @@ make test-mapping
 Strukturu databáze měňte vždy migrací, aby ji šlo bezpečně zopakovat v každém prostředí. Pokud pro daný krok není příkaz `make`, spusťte příkaz v PHP kontejneru:
 
 ```bash
-docker compose -f docker/docker-compose.yml run --rm -T --entrypoint '' --user docker php \
-    bin/console migrations:diff
-docker compose -f docker/docker-compose.yml run --rm -T --entrypoint '' --user docker php \
-    bin/console migrations:migrate
+make run CMD='bin/console migrations:diff'
+make run CMD='bin/console migrations:migrate'
 ```
+
+Pro interaktivní práci použijte `make enter` nebo `make enter-xdebug`. Shell i `make run` zvolí uživatele podle `.make.local`: v rootless režimu kontejnerového `root`, jinak `docker`. Uvnitř shellu spouštějte Composer, konzoli i npm přímo, bez `sudo`. Composer skripty zdědí stejného uživatele a prostředí.
 
 ## Buildování frontendu
 Pro vybuildování assetů používáme [Vite](https://vite.dev/) a [Sass](https://sass-lang.com/).
@@ -28,12 +28,12 @@ npm je k dispozici v hlavním Docker kontejneru.
 
 Po spuštění vývojového prostředí přes `make up` nainstalujte frontendové závislosti a sestavte assety:
 ```bash
-docker compose -f docker/docker-compose.yml exec -T php npm install
-docker compose -f docker/docker-compose.yml exec -T php npm run check-types
-docker compose -f docker/docker-compose.yml exec -T php npm run build
+make run CMD='npm install'
+make run CMD='npm run check-types'
+make run CMD='npm run build'
 ```
 
-Při průběžné práci použijte `docker compose -f docker/docker-compose.yml exec -T php npm run build -- --watch`; soubory se po změně sestaví znovu.
+Při průběžné práci použijte `make run CMD='npm run build -- --watch'`; soubory se po změně sestaví znovu.
 
 ## Testy a kontroly
 
