@@ -34,7 +34,6 @@ final class AnnouncementCest extends BaseAcceptanceCest
     {
         $I = $this->I;
         $this->becomeAdmin();
-        $I->disablePopups();
 
         $suffix = (string) time();
         $title = 'Acceptance oznámení '.$suffix;
@@ -83,7 +82,9 @@ final class AnnouncementCest extends BaseAcceptanceCest
         $I->clickStable('[data-test="admin-announcement-toggle-'.$id.'"]');
         $I->seeInDatabase('announcement', ['id' => $id, 'hidden' => 0]);
 
+        $I->disablePopups();
         $I->clickStable('[data-test="admin-announcement-delete-'.$id.'"]');
+        $I->waitForText('Oznámení bylo trvale smazáno.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->dontSeeInDatabase('announcement', ['id' => $id]);
 
         $now = time();
@@ -147,7 +148,6 @@ final class AnnouncementCest extends BaseAcceptanceCest
     {
         $I = $this->I;
         $this->becomeAdmin();
-        $I->disablePopups();
 
         $title = 'Acceptance bez expirace '.time();
         $I->amOnPage('/admin/oznameni');

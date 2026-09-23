@@ -262,11 +262,16 @@ jobs:
             port: 8085
             build_services: php-test nginx
             command: make ci-acceptance TEST='--group settings --group admin'
-          - label: Rest
-            shard: rest
+          - label: Rest grouped
+            shard: rest-grouped
             port: 8086
             build_services: php-test nginx
-            command: make ci-acceptance TEST='--skip-group payment --skip-group invoice --skip-group settings --skip-group admin'
+            command: make ci-acceptance TEST='--skip-group payment --skip-group invoice --skip-group settings --skip-group admin --group announcements --group bug-report --group dashboard --group unit --group cashbook --group cashbooks'
+          - label: Rest other
+            shard: rest-other
+            port: 8087
+            build_services: php-test nginx
+            command: make ci-acceptance TEST='--skip-group payment --skip-group invoice --skip-group settings --skip-group admin --skip-group announcements --skip-group bug-report --skip-group dashboard --skip-group unit --skip-group cashbook --skip-group cashbooks'
     env:
       COMPOSE_FILE: docker/docker-compose.yml:docker/docker-compose.ci.yml
       COMPOSE_PROJECT_NAME: "test-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.shard }}"
