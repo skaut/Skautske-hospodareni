@@ -1,0 +1,14 @@
+# Development only. Container UID 0 maps to the rootless daemon's host user.
+x-rootless-php: &rootless-php
+    user: root
+    environment:
+        DOCKER_USER: root
+        COMPOSER_ALLOW_SUPERUSER: "1"
+    volumes:
+        - ./containers/php/rootless.conf:/etc/php/8.3/fpm/pool.d/zz-rootless.conf:ro
+
+services:
+    php:
+        <<: *rootless-php
+    php-xdebug:
+        <<: *rootless-php
