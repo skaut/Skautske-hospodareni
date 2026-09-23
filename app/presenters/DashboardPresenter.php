@@ -8,6 +8,7 @@ use App\Components\Factories\Payment\ICreateButtonFactory;
 use App\Components\Factories\Payment\IPairButtonFactory;
 use App\Components\Payment\CreateButton;
 use App\Components\Payment\PairButton;
+use App\Model\Announcement\Repository\AnnouncementRepository;
 use App\Model\Event\ReadModel\Queries\CampStatsQuery;
 use App\Model\Event\ReadModel\Queries\EventStatsQuery;
 use App\Model\Payment\ReadModel\Queries\GetGroupList;
@@ -19,8 +20,11 @@ use function count;
 
 class DashboardPresenter extends BasePresenter
 {
-    public function __construct(private readonly IPairButtonFactory $pairButtonFactory, private readonly ICreateButtonFactory $createButtonFactory)
-    {
+    public function __construct(
+        private readonly IPairButtonFactory $pairButtonFactory,
+        private readonly ICreateButtonFactory $createButtonFactory,
+        private readonly AnnouncementRepository $announcementRepository,
+    ) {
         parent::__construct();
     }
 
@@ -29,6 +33,10 @@ class DashboardPresenter extends BasePresenter
         if (! $this->getUser()->isLoggedIn()) {
             $this->redirect(':Default:default');
         }
+
+        $announcements = $this->announcementRepository->findVisible(new \DateTimeImmutable(), 4);
+        $this->template->dashboardAnnouncements = array_slice($announcements, 0, 3);
+        $this->template->hasMoreAnnouncements = count($announcements) > 3;
 
         try {
             $this->template->campsCount = $this->queryBus->handle(new CampStatsQuery((int) (new DateTime())->format('Y')));

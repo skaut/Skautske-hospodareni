@@ -20,6 +20,27 @@
             </div>
         </div>
 
+        <section n:if="$dashboardAnnouncements !== []" class="card mb-4" aria-labelledby="dashboard-announcements-title" data-test="dashboard-announcements">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
+                    <h2 class="h5 mb-0" id="dashboard-announcements-title">Oznámení</h2>
+                    <a n:if="$hasMoreAnnouncements" n:href=":Announcements:default" class="btn btn-sm btn-outline-primary" data-test="dashboard-announcements-all">Všechna oznámení</a>
+                </div>
+                <article n:foreach="$dashboardAnnouncements as $announcement" class="border-top pt-3 mt-3" data-test="dashboard-announcement">
+                    <div class="d-flex align-items-start gap-3">
+                        <i class="{$announcement->getCategory()->getCode()->icon()} {$announcement->getCategory()->getCode()->colorClass()} mt-1" aria-hidden="true"></i>
+                        <div class="flex-grow-1">
+                            <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
+                                <h3 class="h6 mb-1">{$announcement->getTitle()}</h3>
+                                <time class="small text-body-secondary" datetime="{$announcement->getPublishedAt()->format('c')}">{$announcement->getPublishedAt()->format('d.m.Y H:i')}</time>
+                            </div>
+                            <p class="mb-0">{$announcement->getMessage()}</p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
         <div class="row g-4">
             <div class="col-12 col-md-6 col-xl-4">
                 <article class="card h-100 navigation-card" data-test="dashboard-card-events" aria-labelledby="tile-events-title">
