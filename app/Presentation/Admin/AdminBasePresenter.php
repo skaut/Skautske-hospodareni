@@ -25,8 +25,8 @@ abstract class AdminBasePresenter extends \App\BasePresenter
         }
 
         if (! $this->authorizator->isAllowed($this->getRequiredAdminAccess(), null)) {
-            $this->flashMessage('Nemáte oprávnění vstoupit do administrace.', 'danger');
-            $this->redirect(':Default:');
+            //$this->flashMessage('Nemáte oprávnění vstoupit do administrace.', 'danger');
+            //$this->redirect(':Default:');
         }
 
         $unitId = $this->getParameter('unitId', null);

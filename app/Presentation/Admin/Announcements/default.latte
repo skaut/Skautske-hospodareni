@@ -1,0 +1,90 @@
+{block title}Admin Oznámení{/block}
+
+{block content}
+<div data-test="admin-announcements-page">
+    <div class="card page-heading mb-4">
+        <div class="card-body">
+            <h1 class="h3 mb-2">Oznámení</h1>
+            <div class="page-lead">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Správa zpráv zobrazovaných uživatelům na nástěnce. Nové zprávy se publikují ihned.</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12 col-xl-5">
+            <article class="card" data-test="admin-announcements-form-card">
+                <div class="card-body">
+                    <h2 class="h5">{if $editedAnnouncement === null}Nové oznámení{else}Upravit oznámení{/if}</h2>
+                    {form announcementForm}
+                        <div n:foreach="$form->getOwnErrors() as $error" class="alert alert-danger" data-test="announcement-form-error">{$error}</div>
+                        <div class="mb-3">
+                            {label title /}
+                            {input title class => 'form-control'}
+                            {inputError title}
+                        </div>
+                        <div class="mb-3">
+                            {label message /}
+                            {input message class => 'form-control', rows => 5}
+                            <div class="form-text">Nejvýše 600 znaků.</div>
+                            {inputError message}
+                        </div>
+                        <div class="mb-3">
+                            {label category /}
+                            {input category class => 'form-select'}
+                            {inputError category}
+                        </div>
+                        <div class="mb-3">
+                            {label expiresAt /}
+                            {input expiresAt class => 'form-control'}
+                            {inputError expiresAt}
+                        </div>
+                        <div class="d-flex gap-2">
+                            {input submit class => 'btn btn-primary'}
+                            <a n:if="$editedAnnouncement !== null" n:href="default" class="btn btn-outline-secondary" data-test="admin-announcement-edit-cancel">Zrušit úpravu</a>
+                        </div>
+                    {/form}
+                </div>
+            </article>
+        </div>
+
+        <div class="col-12 col-xl-7">
+            <article class="card" data-test="admin-announcements-list-card">
+                <div class="card-body">
+                    <h2 class="h5">Všechna oznámení</h2>
+                    <div n:if="$announcements !== []" class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" data-test="admin-announcements-list">
+                            <thead>
+                                <tr><th>Název</th><th>Kategorie</th><th>Publikováno</th><th>Stav</th><th class="text-end">Akce</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr n:foreach="$announcements as $announcement" n:attr="data-test => 'admin-announcement-' . $announcement->getId()">
+                                    <td>
+                                        <strong>{$announcement->getTitle()}</strong>
+                                        <div class="small text-body-secondary">{$announcement->getMessage()}</div>
+                                    </td>
+                                    <td><i class="{$announcement->getCategory()->getCode()->icon()} {$announcement->getCategory()->getCode()->colorClass()}" aria-hidden="true"></i> {$announcement->getCategory()->getCode()->label()}</td>
+                                    <td>{$announcement->getPublishedAt()->format('d.m.Y H:i')}</td>
+                                    <td>
+                                        <span n:if="$announcement->isHidden()" class="badge text-bg-secondary">Skryto</span>
+                                        <span n:if="! $announcement->isHidden() && $announcement->getExpiresAt() === null" class="badge text-bg-success">Zobrazeno bez expirace</span>
+                                        <span n:if="! $announcement->isHidden() && $announcement->getExpiresAt() !== null && $announcement->getExpiresAt() <= $now" class="badge text-bg-warning">Prošlé</span>
+                                        <span n:if="! $announcement->isHidden() && $announcement->getExpiresAt() !== null && $announcement->getExpiresAt() > $now" class="badge text-bg-success">Zobrazeno</span>
+                                    </td>
+                                    <td class="text-end text-nowrap">
+                                        <a n:href="default, edit => $announcement->getId()" class="btn btn-sm btn-light" title="Upravit" n:attr="data-test => 'admin-announcement-edit-' . $announcement->getId()"><i class="fi fi-rr-pencil" aria-hidden="true"></i></a>
+                                        <a n:href="toggleHidden!, id => $announcement->getId()" class="btn btn-sm btn-outline-secondary" title="{$announcement->isHidden() ? 'Znovu zobrazit' : 'Skrýt'}" n:attr="data-test => 'admin-announcement-toggle-' . $announcement->getId()">{if $announcement->isHidden()}Zobrazit{else}Skrýt{/if}</a>
+                                        <a n:href="deleteAnnouncement!, id => $announcement->getId()" class="btn btn-sm btn-outline-danger" title="Trvale smazat" n:attr="data-test => 'admin-announcement-delete-' . $announcement->getId()" onclick='return confirm("Opravdu chcete oznámení trvale smazat?");'><i class="fi fi-rr-trash" aria-hidden="true"></i></a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div n:if="$announcements === []" class="alert alert-light mb-0" data-test="admin-announcements-empty">Zatím nebylo vytvořeno žádné oznámení.</div>
+                </div>
+            </article>
+        </div>
+    </div>
+</div>
+{/block}

@@ -1,0 +1,34 @@
+{block title}Oznámení{/block}
+
+{block #content}
+<div class="pb-4" data-test="announcements-page">
+    <div class="card page-heading mb-4">
+        <div class="card-body">
+            <h1 class="h3 mb-2">Oznámení</h1>
+            <div class="page-lead">
+                <i class="fi fi-rr-info" aria-hidden="true"></i>
+                <span>Aktuální zprávy a informace pro uživatele.</span>
+            </div>
+        </div>
+    </div>
+
+    <div n:if="$announcements === []" class="alert alert-light" data-test="announcements-empty">
+        Momentálně nejsou k dispozici žádná oznámení.
+    </div>
+
+    <article n:foreach="$announcements as $announcement" class="card mb-3" data-test="announcement-item">
+        <div class="card-body">
+            <div class="d-flex align-items-start gap-3">
+                <i class="{$announcement->getCategory()->getCode()->icon()} {$announcement->getCategory()->getCode()->colorClass()} mt-1" aria-hidden="true"></i>
+                <div class="flex-grow-1">
+                    <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
+                        <h2 class="h5 mb-1">{$announcement->getTitle()}</h2>
+                        <time class="small text-body-secondary" datetime="{$announcement->getPublishedAt()->format('c')}">{$announcement->getPublishedAt()->format('d.m.Y H:i')}</time>
+                    </div>
+                    <p class="mb-0">{$announcement->getMessage()}</p>
+                </div>
+            </div>
+        </div>
+    </article>
+</div>
+{/block}

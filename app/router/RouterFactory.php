@@ -47,6 +47,7 @@ class RouterFactory
             ],
         );
         $router[] = new Route('nastenka', 'Dashboard:default');
+        $router[] = new Route('oznameni', 'Announcements:default');
         $router[] = new Route(
             'prirucka/<action>[#<anchor>]',
             [
@@ -231,6 +232,7 @@ class RouterFactory
             ->addRoute('hlaseni-chyb/<id [0-9]+>', 'BugReports:detail')
             ->addRoute('hlaseni-chyb', 'BugReports:default')
             ->addRoute('uzivatele', 'Users:default')
+            ->addRoute('oznameni[/<action>][/<id [0-9]+>]', ['presenter' => 'Announcements', 'action' => 'default'])
             ->addRoute('statistiky ? jednotka=<unitId>', 'Statistics:default')
             ->addRoute('<presenter>[/<action>]', ['action' => 'default']);
     }

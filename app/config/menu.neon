@@ -241,6 +241,15 @@ menu:
                     test: admin-nav-invoice-access
                     icon: fi fi-rr-lock
                     requiresAdmin: true
+            announcements:
+                title: Oznámení
+                action: 'Admin:Announcements:default'
+                include:
+                    - '^Admin:Announcements:.*$'
+                data:
+                    test: admin-nav-announcements
+                    icon: fi fi-rr-bell
+                    requiresAdmin: true
 
     travel:
         authorizator: @App\Presentation\Accessory\Navigation\NavigationAuthorizator
