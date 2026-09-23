@@ -175,7 +175,7 @@ final class EditParticipantDialog extends Dialog
             'female' => 'Žena',
         ])
             ->setRequired('Musíš vybrat pohlaví.')
-            ->setDefaultValue($participant->getSex());
+            ->setDefaultValue($participant->getSex() === '' ? null : $participant->getSex());
 
         $form->addDate('birthday', 'Dat. nar.')
             ->setDefaultValue($participant->getBirthday());
