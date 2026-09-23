@@ -12,6 +12,7 @@ use App\Model\Announcement\Repository\AnnouncementRepository;
 use App\Model\Event\ReadModel\Queries\CampStatsQuery;
 use App\Model\Event\ReadModel\Queries\EventStatsQuery;
 use App\Model\Payment\ReadModel\Queries\GetGroupList;
+use DateTimeImmutable;
 use Nette\Utils\DateTime;
 use Skautis\Wsdl\AuthenticationException;
 
@@ -34,7 +35,7 @@ class DashboardPresenter extends BasePresenter
             $this->redirect(':Default:default');
         }
 
-        $announcements = $this->announcementRepository->findVisible(new \DateTimeImmutable(), 4);
+        $announcements = $this->announcementRepository->findVisible(new DateTimeImmutable(), 4);
         $this->template->dashboardAnnouncements = array_slice($announcements, 0, 3);
         $this->template->hasMoreAnnouncements = count($announcements) > 3;
 
