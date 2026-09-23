@@ -208,7 +208,6 @@ services:
     nette.latteFactory:
         setup:
             - addExtension(App\Helpers\AccountancyLatteExtension())
-            - addFilterLoader([App\Helpers\AccountancyHelpers, loader])
             - addExtension(@App\Ui\ViteExtension)
 
 decorator:

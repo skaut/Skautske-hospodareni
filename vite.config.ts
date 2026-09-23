@@ -6,8 +6,8 @@ import { defineConfig } from 'vite';
 // application assets are content-hashed below www/dist/assets, while the
 // service worker stays at www/sw.js so it can control the whole application.
 export default defineConfig(({ mode }) => ({
-    // Generated application asset URLs are served from `/dist/`.
-    base: '/dist/',
+    // Output paths already start with dist/, so serve generated URLs from the application root.
+    base: '/',
     build: {
         outDir: 'www',
         // www contains committed application files as well as build output.

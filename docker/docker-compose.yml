@@ -13,6 +13,7 @@ x-php-base:
     working_dir: /app
     shm_size: 1g
     user: root
+    userns_mode: host
     command: ["php-fpm", "-R"]
     env_file:
         - ./containers/php/ini/image.ini
@@ -77,6 +78,7 @@ services:
     nginx:
         image: nginx:latest
         restart: unless-stopped
+        userns_mode: host
         working_dir: /
         hostname: moje-hospodareni.cz
         networks:

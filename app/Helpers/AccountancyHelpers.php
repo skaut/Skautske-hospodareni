@@ -14,14 +14,12 @@ use DateTimeInterface;
 use InvalidArgumentException;
 use Money\Money;
 use Nette\Utils\Html;
-use RuntimeException;
 
 use function abs;
 use function array_reverse;
 use function count;
 use function explode;
 use function intdiv;
-use function is_callable;
 use function mb_strtoupper;
 use function mb_substr;
 use function number_format;
@@ -37,17 +35,6 @@ abstract class AccountancyHelpers
     private const DATE_FORMAT_FULL = 'j. n. Y';
     private const DATE_FORMAT_DAY_MONTH = 'j. n.';
     private const DATE_FORMAT_DAY = 'j.';
-
-    public static function loader(string $filter): callable
-    {
-        $method = [self::class, $filter];
-
-        if (is_callable($method)) {
-            return $method;
-        }
-
-        throw new RuntimeException('Filter not found');
-    }
 
     /**
      * @filter
