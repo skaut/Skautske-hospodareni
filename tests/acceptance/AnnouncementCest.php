@@ -44,11 +44,18 @@ final class AnnouncementCest extends BaseAcceptanceCest
         $I->fillField('input[name="title"]', $title);
         $I->fillField('textarea[name="message"]', 'Text zprávy pro acceptance test.');
         $I->selectOption('select[name="category"]', 'news');
-        $I->fillField('input[name="expiresAt"]', date('Y-m-d\TH:i', strtotime('+30 days')));
+        $expiresAt = (new \DateTimeImmutable('+30 days'))->format('Y-m-d\TH:i');
+        $I->fillFieldStable('input[name="expiresAt"]', $expiresAt);
+        $I->seeInField('input[name="expiresAt"]', $expiresAt);
         $I->clickStable('[data-test="announcement-form-submit"]');
         $I->waitForText($title, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="admin-announcements-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->seeInDatabase('announcement', ['title' => $title, 'category_code' => 'news', 'hidden' => 0]);
+        $I->seeInDatabase('announcement', [
+            'title' => $title,
+            'category_code' => 'news',
+            'hidden' => 0,
+            'expires_at' => str_replace('T', ' ', $expiresAt).':00',
+        ]);
 
         $id = (int) $I->grabFromDatabase('announcement', 'id', ['title' => $title]);
         $I->amOnPage('/admin/oznameni?edit='.$id);
@@ -57,11 +64,18 @@ final class AnnouncementCest extends BaseAcceptanceCest
         $updatedTitle = $title.' upraveno';
         $I->fillField('textarea[name="message"]', 'Upravený text zprávy.');
         $I->selectOption('select[name="category"]', 'warning');
-        $I->fillField('input[name="expiresAt"]', date('Y-m-d\TH:i', strtotime('+31 days')));
+        $updatedExpiresAt = (new \DateTimeImmutable('+31 days'))->format('Y-m-d\TH:i');
+        $I->fillFieldStable('input[name="expiresAt"]', $updatedExpiresAt);
+        $I->seeInField('input[name="expiresAt"]', $updatedExpiresAt);
         $I->clickStable('[data-test="announcement-form-submit"]');
         $I->waitForText($updatedTitle, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="admin-announcements-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->seeInDatabase('announcement', ['id' => $id, 'title' => $updatedTitle, 'category_code' => 'warning']);
+        $I->seeInDatabase('announcement', [
+            'id' => $id,
+            'title' => $updatedTitle,
+            'category_code' => 'warning',
+            'expires_at' => str_replace('T', ' ', $updatedExpiresAt).':00',
+        ]);
 
         $I->clickStable('[data-test="admin-announcement-toggle-'.$id.'"]');
         $I->seeInDatabase('announcement', ['id' => $id, 'hidden' => 1]);
@@ -148,16 +162,23 @@ final class AnnouncementCest extends BaseAcceptanceCest
         $id = (int) $I->grabFromDatabase('announcement', 'id', ['title' => $title]);
         $I->amOnPage('/admin/oznameni?edit='.$id);
         $I->waitForElementVisible('[data-test="admin-announcements-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->fillField('input[name="expiresAt"]', date('Y-m-d\TH:i', strtotime('+30 days')));
+        $expiresAt = (new \DateTimeImmutable('+30 days'))->format('Y-m-d\TH:i');
+        $I->fillFieldStable('input[name="expiresAt"]', $expiresAt);
+        $I->seeInField('input[name="expiresAt"]', $expiresAt);
         $I->clickStable('[data-test="announcement-form-submit"]');
         $I->waitForJS(
-            "return document.querySelector('[data-test=admin-announcement-{$id}]')?.innerText.includes('Zobrazeno bez expirace') === false;",
+            "return document.querySelector('[data-test=admin-announcement-{$id}] .badge')?.innerText === 'Zobrazeno';",
             AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
         );
+        $I->seeInDatabase('announcement', [
+            'id' => $id,
+            'expires_at' => str_replace('T', ' ', $expiresAt).':00',
+        ]);
 
         $I->amOnPage('/admin/oznameni?edit='.$id);
         $I->waitForElementVisible('[data-test="admin-announcements-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->fillField('input[name="expiresAt"]', '');
+        $I->fillFieldStable('input[name="expiresAt"]', '');
+        $I->seeInField('input[name="expiresAt"]', '');
         $I->clickStable('[data-test="announcement-form-submit"]');
         $I->waitForJS(
             "return document.querySelector('[data-test=admin-announcement-{$id}]')?.innerText.includes('Zobrazeno bez expirace') === true;",
