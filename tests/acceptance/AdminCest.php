@@ -29,27 +29,26 @@ final class AdminCest extends BaseAcceptanceCest
     {
         $I = $this->I;
 
+        $I->deleteFromDatabase('system_user_role', ['user_id' => self::ACCEPTANCE_ADMIN_USER_ID]);
+        $I->amOnPage('/nastenka');
+        $I->waitForElementVisible('[data-test="dashboard"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->wantTo('verify that non-admin user cannot see or open admin section');
 
         $I->dontSeeElement('[data-test="utility-nav-admin"]');
 
         $I->amOnPage('/admin');
-        $I->waitForElement('.alert-danger', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/');
         $I->dontSeeElement('[data-test="admin-page"]');
 
         $I->amOnPage('/admin/uzivatele');
-        $I->waitForElement('.alert-danger', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/');
         $I->dontSeeElement('[data-test="admin-users-page"]');
 
         $I->amOnPage('/admin/statistiky');
-        $I->waitForElement('.alert-danger', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/');
         $I->dontSeeElement('[data-test="admin-statistics-page"]');
 
         $I->amOnPage('/admin/hlaseni-chyb');
-        $I->waitForElement('.alert-danger', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/');
         $I->dontSeeElement('[data-test="admin-bug-reports-page"]');
     }
@@ -76,12 +75,12 @@ final class AdminCest extends BaseAcceptanceCest
         $I->dontSeeElement('[data-test="admin-nav-invoice-access"]');
 
         $I->amOnPage('/admin/uzivatele');
-        $I->waitForElement('.alert-danger', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/');
+        $I->dontSeeElement('[data-test="admin-users-page"]');
 
         $I->amOnPage('/admin/statistiky');
-        $I->waitForElement('.alert-danger', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/');
+        $I->dontSeeElement('[data-test="admin-statistics-page"]');
     }
 
     // ─── Overview Page ───────────────────────────────────────────

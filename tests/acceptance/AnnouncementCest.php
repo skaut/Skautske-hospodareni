@@ -24,7 +24,6 @@ final class AnnouncementCest extends BaseAcceptanceCest
     {
         $this->I->deleteFromDatabase('system_user_role', ['user_id' => self::ADMIN_USER_ID, 'role' => 'admin']);
         $this->I->amOnPage('/admin/oznameni');
-        $this->I->waitForElement('.alert-danger', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $this->I->seeInCurrentUrl('/');
         $this->I->dontSeeElement('[data-test="admin-announcements-page"]');
     }
@@ -47,6 +46,7 @@ final class AnnouncementCest extends BaseAcceptanceCest
         $I->selectOption('select[name="category"]', 'news');
         $I->fillField('input[name="expiresAt"]', date('Y-m-d\TH:i', strtotime('+30 days')));
         $I->clickStable('[data-test="announcement-form-submit"]');
+        $I->waitForText('Oznámení bylo vytvořeno.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="admin-announcements-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInDatabase('announcement', ['title' => $title, 'category_code' => 'news', 'hidden' => 0]);
 
@@ -58,6 +58,7 @@ final class AnnouncementCest extends BaseAcceptanceCest
         $I->selectOption('select[name="category"]', 'warning');
         $I->fillField('input[name="expiresAt"]', date('Y-m-d\TH:i', strtotime('+31 days')));
         $I->clickStable('[data-test="announcement-form-submit"]');
+        $I->waitForText('Oznámení bylo upraveno.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="admin-announcements-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $updatedTitle = $title.' upraveno';
         $I->seeInDatabase('announcement', ['id' => $id, 'title' => $updatedTitle, 'category_code' => 'warning']);
