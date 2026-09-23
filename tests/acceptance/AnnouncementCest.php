@@ -46,7 +46,7 @@ final class AnnouncementCest extends BaseAcceptanceCest
         $I->selectOption('select[name="category"]', 'news');
         $I->fillField('input[name="expiresAt"]', date('Y-m-d\TH:i', strtotime('+30 days')));
         $I->clickStable('[data-test="announcement-form-submit"]');
-        $I->waitForText('Oznámení bylo vytvořeno.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->waitForText($title, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="admin-announcements-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInDatabase('announcement', ['title' => $title, 'category_code' => 'news', 'hidden' => 0]);
 
@@ -54,13 +54,13 @@ final class AnnouncementCest extends BaseAcceptanceCest
         $I->amOnPage('/admin/oznameni?edit='.$id);
         $I->waitForElementVisible('[data-test="admin-announcements-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->fillField('input[name="title"]', $title.' upraveno');
+        $updatedTitle = $title.' upraveno';
         $I->fillField('textarea[name="message"]', 'Upravený text zprávy.');
         $I->selectOption('select[name="category"]', 'warning');
         $I->fillField('input[name="expiresAt"]', date('Y-m-d\TH:i', strtotime('+31 days')));
         $I->clickStable('[data-test="announcement-form-submit"]');
-        $I->waitForText('Oznámení bylo upraveno.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->waitForText($updatedTitle, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="admin-announcements-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $updatedTitle = $title.' upraveno';
         $I->seeInDatabase('announcement', ['id' => $id, 'title' => $updatedTitle, 'category_code' => 'warning']);
 
         $I->clickStable('[data-test="admin-announcement-toggle-'.$id.'"]');
@@ -141,6 +141,7 @@ final class AnnouncementCest extends BaseAcceptanceCest
         $I->fillField('textarea[name="message"]', 'Zpráva bez data konce.');
         $I->selectOption('select[name="category"]', 'info');
         $I->clickStable('[data-test="announcement-form-submit"]');
+        $I->waitForText($title, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="admin-announcements-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInDatabase('announcement', ['title' => $title, 'expires_at' => null]);
 
@@ -149,11 +150,19 @@ final class AnnouncementCest extends BaseAcceptanceCest
         $I->waitForElementVisible('[data-test="admin-announcements-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->fillField('input[name="expiresAt"]', date('Y-m-d\TH:i', strtotime('+30 days')));
         $I->clickStable('[data-test="announcement-form-submit"]');
+        $I->waitForJS(
+            "return document.querySelector('[data-test=admin-announcement-{$id}]')?.innerText.includes('Zobrazeno bez expirace') === false;",
+            AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
+        );
 
         $I->amOnPage('/admin/oznameni?edit='.$id);
         $I->waitForElementVisible('[data-test="admin-announcements-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->fillField('input[name="expiresAt"]', '');
         $I->clickStable('[data-test="announcement-form-submit"]');
+        $I->waitForJS(
+            "return document.querySelector('[data-test=admin-announcement-{$id}]')?.innerText.includes('Zobrazeno bez expirace') === true;",
+            AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
+        );
         $I->seeInDatabase('announcement', ['id' => $id, 'expires_at' => null]);
 
         $I->amOnPage('/nastenka');
