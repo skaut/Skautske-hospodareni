@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace acceptance;
 
 use AcceptanceTester;
+use DateTimeImmutable;
 
 final class AnnouncementCest extends BaseAcceptanceCest
 {
@@ -44,7 +45,7 @@ final class AnnouncementCest extends BaseAcceptanceCest
         $I->fillField('input[name="title"]', $title);
         $I->fillField('textarea[name="message"]', 'Text zprávy pro acceptance test.');
         $I->selectOption('select[name="category"]', 'news');
-        $expiresAt = (new \DateTimeImmutable('+30 days'))->format('Y-m-d\TH:i');
+        $expiresAt = (new DateTimeImmutable('+30 days'))->format('Y-m-d\TH:i');
         $I->fillFieldStable('input[name="expiresAt"]', $expiresAt);
         $I->seeInField('input[name="expiresAt"]', $expiresAt);
         $I->clickStable('[data-test="announcement-form-submit"]');
@@ -64,7 +65,7 @@ final class AnnouncementCest extends BaseAcceptanceCest
         $updatedTitle = $title.' upraveno';
         $I->fillField('textarea[name="message"]', 'Upravený text zprávy.');
         $I->selectOption('select[name="category"]', 'warning');
-        $updatedExpiresAt = (new \DateTimeImmutable('+31 days'))->format('Y-m-d\TH:i');
+        $updatedExpiresAt = (new DateTimeImmutable('+31 days'))->format('Y-m-d\TH:i');
         $I->fillFieldStable('input[name="expiresAt"]', $updatedExpiresAt);
         $I->seeInField('input[name="expiresAt"]', $updatedExpiresAt);
         $I->clickStable('[data-test="announcement-form-submit"]');
@@ -162,7 +163,7 @@ final class AnnouncementCest extends BaseAcceptanceCest
         $id = (int) $I->grabFromDatabase('announcement', 'id', ['title' => $title]);
         $I->amOnPage('/admin/oznameni?edit='.$id);
         $I->waitForElementVisible('[data-test="admin-announcements-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $expiresAt = (new \DateTimeImmutable('+30 days'))->format('Y-m-d\TH:i');
+        $expiresAt = (new DateTimeImmutable('+30 days'))->format('Y-m-d\TH:i');
         $I->fillFieldStable('input[name="expiresAt"]', $expiresAt);
         $I->seeInField('input[name="expiresAt"]', $expiresAt);
         $I->clickStable('[data-test="announcement-form-submit"]');
