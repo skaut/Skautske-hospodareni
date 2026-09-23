@@ -10,6 +10,8 @@ use App\Model\Announcement\Manager\AnnouncementManager;
 use App\Model\Announcement\Repository\AnnouncementRepository;
 use Component\Forms\BaseForm;
 use DateTimeImmutable;
+use Exception;
+use InvalidArgumentException;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 
@@ -59,10 +61,10 @@ final class AnnouncementsPresenter extends \App\Presentation\Admin\AdminBasePres
             ->setRequired('Zadejte text oznámení.')
             ->setMaxLength(Announcement::MAX_MESSAGE_LENGTH)
             ->addRule(Form::MAX_LENGTH, 'Text může mít nejvýše %d znaků.', Announcement::MAX_MESSAGE_LENGTH);
-        $form->addSelect('category', 'Kategorie', AnnouncementCategoryCode::options())
-            ->setRequired('Vyberte kategorii oznámení.');
-        $form->addText('expiresAt', 'Zobrazovat do')
-            ->setHtmlType('datetime-local');
+        $categoryControl = $form->addSelect('category', 'Kategorie', AnnouncementCategoryCode::options());
+        $categoryControl->setRequired('Vyberte kategorii oznámení.');
+        $expiresAtControl = $form->addText('expiresAt', 'Zobrazovat do');
+        $expiresAtControl->setHtmlType('datetime-local');
         $form->addSubmit('submit', $this->editedAnnouncement === null ? 'Vytvořit oznámení' : 'Uložit změny');
 
         if ($this->editedAnnouncement !== null) {
@@ -74,21 +76,21 @@ final class AnnouncementsPresenter extends \App\Presentation\Admin\AdminBasePres
             ]);
         }
 
-        $form->onSuccess[] = function (Form $form): void {
+        $form->onSuccess[] = function (Form $form) use ($categoryControl, $expiresAtControl): void {
             $values = $form->getValues();
             $expiresAtValue = trim((string) $values->expiresAt);
             $expiresAt = null;
             if ($expiresAtValue !== '') {
                 try {
                     $expiresAt = new DateTimeImmutable($expiresAtValue);
-                } catch (\Exception) {
-                    $form['expiresAt']->addError('Zadejte platné datum a čas.');
+                } catch (Exception) {
+                    $expiresAtControl->addError('Zadejte platné datum a čas.');
 
                     return;
                 }
 
                 if ($expiresAt <= new DateTimeImmutable()) {
-                    $form['expiresAt']->addError('Konec zobrazování musí být v budoucnosti.');
+                    $expiresAtControl->addError('Konec zobrazování musí být v budoucnosti.');
 
                     return;
                 }
@@ -97,7 +99,7 @@ final class AnnouncementsPresenter extends \App\Presentation\Admin\AdminBasePres
             try {
                 $category = AnnouncementCategoryCode::tryFrom((string) $values->category);
                 if ($category === null) {
-                    $form['category']->addError('Vyberte platnou kategorii.');
+                    $categoryControl->addError('Vyberte platnou kategorii.');
 
                     return;
                 }
@@ -111,7 +113,7 @@ final class AnnouncementsPresenter extends \App\Presentation\Admin\AdminBasePres
                 }
 
                 $this->redirect('default');
-            } catch (\InvalidArgumentException $exception) {
+            } catch (InvalidArgumentException $exception) {
                 $form->addError($exception->getMessage());
             }
         };

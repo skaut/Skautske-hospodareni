@@ -27,5 +27,4 @@ class AnnouncementCategory
     {
         return AnnouncementCategoryCode::from($this->code);
     }
-
 }

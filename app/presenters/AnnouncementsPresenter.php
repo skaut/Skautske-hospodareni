@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App;
 
 use App\Model\Announcement\Repository\AnnouncementRepository;
+use DateTimeImmutable;
 
 final class AnnouncementsPresenter extends BasePresenter
 {
@@ -19,6 +20,6 @@ final class AnnouncementsPresenter extends BasePresenter
             $this->redirect(':Default:default');
         }
 
-        $this->template->announcements = $this->announcementRepository->findVisible(new \DateTimeImmutable());
+        $this->template->announcements = $this->announcementRepository->findVisible(new DateTimeImmutable());
     }
 }

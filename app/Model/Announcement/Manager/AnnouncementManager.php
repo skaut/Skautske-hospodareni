@@ -8,6 +8,7 @@ use App\Model\Announcement\Entity\Announcement;
 use App\Model\Announcement\Entity\AnnouncementCategory;
 use App\Model\Announcement\Enum\AnnouncementCategoryCode;
 use App\Model\Infrastructure\Manager\AbstractManager;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 
@@ -27,7 +28,7 @@ final class AnnouncementManager extends AbstractManager
         string $title,
         string $message,
         AnnouncementCategoryCode $categoryCode,
-        ?\DateTimeImmutable $expiresAt,
+        ?DateTimeImmutable $expiresAt,
     ): Announcement {
         $category = $this->getCategory($categoryCode);
         $announcement = new Announcement($title, $message, $category, $expiresAt);
@@ -42,7 +43,7 @@ final class AnnouncementManager extends AbstractManager
         string $title,
         string $message,
         AnnouncementCategoryCode $categoryCode,
-        ?\DateTimeImmutable $expiresAt,
+        ?DateTimeImmutable $expiresAt,
     ): void {
         $announcement->update($title, $message, $this->getCategory($categoryCode), $expiresAt);
         $this->em->persist($announcement);
