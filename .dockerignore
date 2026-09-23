@@ -1,5 +1,6 @@
 .git
 .github
+.make.local
 node_modules
 vendor
 log

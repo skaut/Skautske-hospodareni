@@ -20,7 +20,7 @@ Run all project runtime, build, dependency, database, and check commands in Dock
 
 Only repository reading and editing tools may be used on the host, for example `git`, `rg`, `sed`, and `apply_patch`.
 
-Use this Compose file:
+Prefer `make` targets: they select the development user and optional rootless override. For custom commands use `make run CMD='bin/console list'` or `make enter`. The base Compose file is:
 
 ```bash
 docker compose -f docker/docker-compose.yml ...
@@ -43,7 +43,9 @@ Make targets are allowed because project commands delegate to Docker. Prefer the
 
 Run Docker commands, starting and stopping project services, and tests autonomously. Do not ask the user for permission to run tests. Resetting the test database is part of the normal test workflow. Do not delete the development database `mysql` volume or run destructive operations on development data unless explicitly requested.
 
-Run project tools inside containers as the default `docker` user. Do not use `--user root` for Composer, `bin/console`, tests, PHPStan, PHP-CS-Fixer, or frontend builds because it would create root-owned cache and lock files. Root may only be used for one-time directory creation or permission repair; always rerun the subsequent project command as the `docker` user.
+Run development tools as `docker` by default. On rootless Docker, set `DOCKER_ROOTLESS=1` in the ignored `.make.local` file and recreate development containers with `make up`. Make then adds the development-only rootless Compose override and uses container `root` for PHP-FPM, CLI commands, and both interactive shells. Container UID 0 maps to the host user running rootless Docker, so Composer, its scripts, console commands, and frontend builds preserve checkout ownership. Do not enable this flag on a rootful daemon. Never fix checkout access with recursive chown, chmod 777, or Git safe.directory.
+
+CI commands always use the base and CI Compose files, without the rootless override, and execute tools as `docker` against the CI image and volumes. Do not change the CI user based on the local rootless flag.
 
 ## Backend
 

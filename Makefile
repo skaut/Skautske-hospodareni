@@ -1,17 +1,30 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
 
+-include .make.local
+DOCKER_ROOTLESS ?= 0
+ifneq ($(DOCKER_ROOTLESS),0)
+ifneq ($(DOCKER_ROOTLESS),1)
+$(error DOCKER_ROOTLESS must be 0 or 1)
+endif
+endif
+
 # Development uses the source checkout. Tests always use the immutable CI images.
 export DOCKER_SOCKET ?= $(shell docker context inspect --format '{{.Endpoints.docker.Host}}' 2>/dev/null | sed -n 's|^unix://||p')
 
 DEV_COMPOSE = docker compose -f docker/docker-compose.yml
+DEV_USER = docker
+ifeq ($(DOCKER_ROOTLESS),1)
+DEV_COMPOSE += -f docker/docker-compose.rootless.yml
+DEV_USER = root
+endif
 CI_PROJECT_NAME ?= hskauting-ci
 ifneq ($(strip $(COMPOSE_PROJECT_NAME)),)
 CI_PROJECT_NAME := $(COMPOSE_PROJECT_NAME)
 endif
 CI_COMPOSE = COMPOSE_PROJECT_NAME=$(CI_PROJECT_NAME) docker compose -f docker/docker-compose.yml -f docker/docker-compose.ci.yml
 
-RUN_PHP_DEV = $(DEV_COMPOSE) run --rm -T --no-deps --entrypoint '' --user docker php
+RUN_PHP_DEV = $(DEV_COMPOSE) run --rm -T --no-deps --entrypoint '' --user $(DEV_USER) php
 RUN_PHP_CI = $(CI_COMPOSE) run --rm -T --no-deps --entrypoint '' --user docker php-test
 COMPOSER_ROOT_VERSION ?= dev-master
 COMPOSER_ENV = env COMPOSER_ROOT_VERSION=$(COMPOSER_ROOT_VERSION)
@@ -25,10 +38,10 @@ CI_INPUTS_PREPARED ?= 0
 TEST ?=
 TEST_ARGS = $(if $(strip $(TEST)),$(TEST),)
 
-.PHONY: help build up down restart ps logs enter enter-xdebug clean-cache fixtures \
+.PHONY: help build up down restart ps logs enter enter-xdebug run clean-cache fixtures \
 	composer-install composer-update init ci-prepare ci-clean ci-image-clean \
 	test-unit test-integration test-coverage test-acceptance ci-acceptance \
-	test-mapping check-phpstan check-cs check-cs-check check-latte fix ci acceptance-run
+	test-mapping check-phpstan check-cs check-cs-check check-latte check-docker-config fix ci acceptance-run
 
 define print_section
 	@printf "\n\033[1;35m══════ %s ══════\033[0m\n" "$(1)"
@@ -93,7 +106,7 @@ endef
 help: ## Zobrazí kompletní seznam příkazů
 	@grep -E '^[a-zA-Z0-9_-]+:.*## ' Makefile | awk -F ':[^#]*## ' '{printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-build: ## Sestaví Docker image pro rootless vývoj
+build: ## Sestaví Docker image pro vývoj
 	$(DEV_COMPOSE) build php php-xdebug nginx
 
 up: ## Spustí vývojový stack
@@ -111,10 +124,16 @@ logs: ## Stream logů vývojového stacku
 	$(DEV_COMPOSE) logs -f --tail=200
 
 enter: ## Shell do vývojového PHP kontejneru
-	$(DEV_COMPOSE) exec -u docker -it php bash
+	$(DEV_COMPOSE) exec -u $(DEV_USER) -it php bash
 
 enter-xdebug: ## Shell do vývojového Xdebug kontejneru
-	$(DEV_COMPOSE) exec -u docker -it php-xdebug bash
+	$(DEV_COMPOSE) exec -u $(DEV_USER) -it php-xdebug bash
+
+run: ## Spustí vývojový příkaz: make run CMD='bin/console list'
+ifeq ($(strip $(CMD)),)
+	$(error Specify a command, for example: make run CMD='bin/console list')
+endif
+	$(RUN_PHP_DEV) $(CMD)
 
 clean-cache: ## Vyčistí vývojovou aplikační cache
 	$(RUN_PHP_DEV) bin/console app:cache:purge
@@ -183,7 +202,10 @@ fix: ## Spustí opravitelné kontroly vývojového checkoutu
 	$(MAKE) check-latte
 	$(MAKE) check-phpstan
 
-ci: ci-prepare ## Spustí kompletní CI pipeline v lokálním CI prostředí
+check-docker-config: ## Ověří oddělení vývojových a CI příkazů pro oba režimy Dockeru
+	@bash code-quality/check-docker-make.sh
+
+ci: check-docker-config ci-prepare ## Spustí kompletní CI pipeline v lokálním CI prostředí
 	$(call print_section,Coding standard)
 	$(MAKE) check-cs-check
 	$(call print_section,PHPStan)
