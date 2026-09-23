@@ -41,7 +41,7 @@
                             {inputError expiresAt}
                         </div>
                         <div class="d-flex gap-2">
-                            {input submit class => 'btn btn-primary'}
+                            {input submit class => 'btn btn-primary', data-test => 'announcement-form-submit'}
                             <a n:if="$editedAnnouncement !== null" n:href="default" class="btn btn-outline-secondary" data-test="admin-announcement-edit-cancel">Zrušit úpravu</a>
                         </div>
                     {/form}
