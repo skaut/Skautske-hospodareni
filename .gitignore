@@ -18,6 +18,8 @@ app/config/google-credentials*
 adminer.php
 *.sh
 !/code-quality/validate-mapping.sh
+!/code-quality/check-docker-make.sh
 /.env.local
 /.env.*.local
 /.php-cs-fixer.cache
+/.make.local

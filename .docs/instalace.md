@@ -6,7 +6,8 @@ Pro práci na vlastním počítači potřebujete Docker Engine nebo Docker Deskt
 
 1. Stáhněte repozitář a přejděte do jeho kořenové složky.
 2. Přidejte do `/etc/hosts` řádek `127.0.0.1 moje-hospodareni.cz`. SkautIS při přihlašování používá právě tuto adresu.
-3. Spusťte přípravu projektu:
+3. Pokud používáte rootless Docker, vytvořte v kořeni projektu soubor `.make.local` s obsahem `DOCKER_ROOTLESS=1`. Pro běžný Docker tento soubor není potřeba.
+4. Spusťte přípravu projektu:
 
    ```bash
    make init
@@ -25,6 +26,14 @@ make help     # vypíše všechny dostupné příkazy
 ```
 
 K vývojové databázi se lze z vývojového nástroje připojit přes port 3306. Testovací databáze z počítače dostupná není.
+
+## Rootless Docker
+
+Příznak v `.make.local` nastavte jednou; platí pro všechny vývojové příkazy. Soubor se necommituje ani nekopíruje do CI image. Po změně příznaku spusťte `make up`, aby se kontejnery vytvořily se správným nastavením. Není potřeba znovu spouštět `make init` ani resetovat databázi.
+
+`make enter` a `make enter-xdebug` otevřou shell jako kontejnerový `root`. U rootless Dockeru odpovídá tento uživatel vašemu účtu na hostiteli. Přímo v shellu proto můžete spouštět `composer install`, `bin/console` nebo `npm run build`; stejné oprávnění i prostředí zdědí jejich skripty. PHP-FPM používá stejného uživatele. Checkout musí patřit účtu, pod kterým rootless Docker běží.
+
+Příznak nezapínejte u rootful Dockeru. Výchozí vývojové CLI používá uživatele `docker`. Testy včetně `make ci` vždy používají společný CI stack a testovacího uživatele `docker`, bez vývojového rootless override. GitHub Actions nepotřebují lokální příznak ani jiné příkazy.
 
 ## Obsazený HTTP port
 

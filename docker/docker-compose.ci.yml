@@ -67,7 +67,6 @@ services:
                 application: service:php-test
         restart: !reset null
         working_dir: !reset null
-        userns_mode: !reset null
         hostname: !reset null
         labels: !reset {}
         volumes: !reset []
