@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Presentation\Payments\Payment;
 
+use App\Components\DataGrid;
 use App\Components\Factories\Payment\IEmailButtonFactory;
 use App\Components\Factories\Payment\IGroupUnitControlFactory;
 use App\Components\Factories\Payment\IImportDialogFactory;
@@ -14,6 +15,10 @@ use App\Components\Factories\Payment\IPaymentListFactory;
 use App\Components\Factories\Payment\IPaymentNoteDialogFactory;
 use App\Components\Factories\Payment\IRemoveGroupDialogFactory;
 use App\Components\Factories\Payment\ISplitPaymentDialogFactory;
+use App\Components\Payment\BankAccountDetail\BankAccountDetail;
+use App\Components\Payment\BankAccountDetail\BankAccountDetailViewFactory;
+use App\Components\Payment\BankAccountDetail\BankAccountManualPairingOutcome;
+use App\Components\Payment\BankAccountDetail\BankAccountManualPairingService;
 use App\Components\Payment\EmailButton;
 use App\Components\Payment\GroupProgress;
 use App\Components\Payment\GroupUnitControl;
@@ -26,9 +31,14 @@ use App\Components\Payment\PaymentNoteDialog;
 use App\Components\Payment\RemoveGroupDialog;
 use App\Components\Payment\SplitPaymentDialog;
 use App\Http\ExcelResponse;
+use App\Model\Bank\BankTransactionAmountMismatch;
+use App\Model\Bank\BankTransactionPairingNotAllowed;
+use App\Model\DTO\Payment\BankAccount as PaymentBankAccount;
+use App\Model\DTO\Payment\Group as PaymentGroup;
 use App\Model\DTO\Payment\Payment;
 use App\Model\DTO\Payment\Person;
 use App\Model\Excel\ExcelService;
+use App\Model\Payment\BankAccountService;
 use App\Model\Payment\GroupNotFound;
 use App\Model\Payment\InvalidVariableSymbol;
 use App\Model\Payment\Payment\State;
@@ -39,10 +49,13 @@ use App\Model\Unit\UnitService;
 use App\Model\User\Manager\PaymentGroupVisitManager;
 use App\Presentation\Payments\PaymentsBasePresenter;
 use DateTimeImmutable;
+use InvalidArgumentException;
 use LogicException;
+use Nette\Application\Attributes\Persistent;
 use Nette\Utils\Strings;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use RuntimeException;
 use Skautis\Wsdl\PermissionException;
 
 use function array_filter;
@@ -53,17 +66,27 @@ use function substr;
 
 final class PaymentPresenter extends PaymentsBasePresenter
 {
-    /** @persistent */
+    #[Persistent]
     public int $id = 0;
 
-    /** @persistent */
+    #[Persistent]
     public bool $directMemberOnly = true;
+
+    /** @persistent */
+    public bool $bankAccountTransactionsLoaded = false;
+
+    /** @persistent */
+    public ?int $bankAccountPaymentId = null;
 
     /** @var string[] */
     protected array $readUnits;
 
     /** @var Payment[] */
     protected array $payments = [];
+
+    private ?BankAccountDetail $bankAccountDetail = null;
+
+    private ?PaymentBankAccount $bankAccount = null;
 
     public function __construct(
         private PaymentService $model,
@@ -80,6 +103,9 @@ final class PaymentPresenter extends PaymentsBasePresenter
         private IPaymentListFactory $paymentListFactory,
         private ISplitPaymentDialogFactory $splitPaymentDialogFactory,
         private PaymentGroupVisitManager $paymentGroupVisitManager,
+        private BankAccountService $bankAccounts,
+        private BankAccountDetailViewFactory $bankAccountDetailViewFactory,
+        private BankAccountManualPairingService $bankAccountManualPairingService,
     ) {
         parent::__construct();
     }
@@ -117,6 +143,11 @@ final class PaymentPresenter extends PaymentsBasePresenter
         }
 
         $this->payments = $this->getPaymentsForGroup($id);
+        if ($this->bankAccountTransactionsLoaded) {
+            $this->refreshBankAccountTransactions($group);
+        } else {
+            $this->publishBankAccountTemplateParameters($group);
+        }
 
         $this->template->setParameters([
             'group' => $group,
@@ -126,6 +157,116 @@ final class PaymentPresenter extends PaymentsBasePresenter
             'now' => new DateTimeImmutable(),
             'notSentPaymentsCount' => $this->countNotSentPayments($this->payments),
         ]);
+    }
+
+    public function actionPairTransactionToPayment(int $id, int $accountId, string $transactionKey, ?int $paymentId = null): void
+    {
+        $group = $this->model->getGroup($id);
+        if ($group === null || ! $this->canEditGroup($group)) {
+            $this->setView('accessDenied');
+            $this->template->setParameters(['message' => 'Nemáte oprávnění pracovat s touto skupinou.']);
+
+            return;
+        }
+
+        if ($group->getBankAccountId() !== $accountId) {
+            $this->flashMessage('Bankovní transakce nepatří k účtu této platební skupiny.', 'danger');
+            $this->finishManualPairingRequest($group);
+
+            return;
+        }
+
+        if ($paymentId === null) {
+            $this->flashMessage('Pro ruční párování chybí cílová platba.', 'danger');
+            $this->finishManualPairingRequest($group);
+
+            return;
+        }
+
+        try {
+            $outcome = $this->bankAccountManualPairingService->pairTransactionToPayment(
+                $accountId,
+                $transactionKey,
+                $paymentId,
+                [$id],
+                $this->userService->getUserDetail()->Person,
+            );
+            $this->flashManualPairingOutcome($outcome);
+        } catch (BankTransactionAmountMismatch|BankTransactionPairingNotAllowed|InvalidArgumentException $exception) {
+            $this->flashMessage($exception->getMessage(), 'danger');
+        }
+
+        $this->finishManualPairingRequest($group);
+    }
+
+    public function handleLoadBankAccountTransactions(?int $paymentId = null): void
+    {
+        $group = $this->model->getGroup($this->id);
+        if ($group === null || ! $this->canEditGroup($group)) {
+            $this->flashMessage('Nemáte oprávnění pracovat s touto skupinou.', 'danger');
+
+            if ($this->isAjax()) {
+                $this->redrawControl('flash');
+            } else {
+                $this->redirect('default', ['id' => $this->id]);
+            }
+
+            return;
+        }
+
+        if ($group->getBankAccountId() === null) {
+            $this->flashMessage('Platební skupina nemá připojený bankovní účet.', 'warning');
+
+            if ($this->isAjax()) {
+                $this->redrawControl('flash');
+            } else {
+                $this->redirect('default', ['id' => $group->getId()]);
+            }
+
+            return;
+        }
+
+        $this->bankAccountTransactionsLoaded = true;
+        $this->bankAccountPaymentId = $paymentId;
+        $this->refreshBankAccountTransactions($group);
+
+        if (! $this->isAjax()) {
+            $this->redirect('default', ['id' => $group->getId()]);
+        }
+
+        $this->redrawControl('bankAccountTransactions');
+        $this->redrawControl('bankAccountTransactionsToggle');
+        $this->publishBankAccountTransactionsUrl();
+    }
+
+    public function handleHideBankAccountTransactions(): void
+    {
+        $group = $this->model->getGroup($this->id);
+        if ($group === null || ! $this->canEditGroup($group)) {
+            $this->flashMessage('Nemáte oprávnění pracovat s touto skupinou.', 'danger');
+
+            if ($this->isAjax()) {
+                $this->redrawControl('flash');
+            } else {
+                $this->redirect('default', ['id' => $this->id]);
+            }
+
+            return;
+        }
+
+        $this->bankAccountTransactionsLoaded = false;
+        $this->bankAccountPaymentId = null;
+        $this->bankAccount = null;
+        $this->bankAccountDetail = null;
+        $this->publishBankAccountTemplateParameters($group);
+
+        if (! $this->isAjax()) {
+            $this->redirect('default', ['id' => $group->getId()]);
+        }
+
+        $this->redrawControl('bankAccountTransactions');
+        $this->redrawControl('bankAccountTransactionsToggle');
+        $this->publishBankAccountTransactionsUrl();
     }
 
     /** @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY */
@@ -190,7 +331,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
     {
         $this->assertCanEditGroup();
 
-        $group = $this->model->getGroup($id);
+        $group = $this->model->getGroup($id) ?? throw new RuntimeException('Platební skupina nebyla nalezena.');
         $payments = $this->getPaymentsForGroup($id);
         $groupName = substr(Strings::webalize($group->getName(), null, false), 0, Worksheet::SHEET_TITLE_MAXIMUM_LENGTH);
 
@@ -286,8 +427,20 @@ final class PaymentPresenter extends PaymentsBasePresenter
     {
         $paymentList = $this->paymentListFactory->create($this->id, $this->isEditable);
         $paymentList->setPayments($this->payments);
+        $paymentList->onChange[] = function (): void {
+            $this->redrawPaymentAndBankAccountGrids();
+        };
 
         return $paymentList;
+    }
+
+    protected function createComponentBankAccountTransactionsGrid(): DataGrid
+    {
+        return $this->bankAccountDetailViewFactory->createTransactionsGrid(
+            $this->bankAccountDetail->transactionRows ?? [],
+            true,
+            true,
+        );
     }
 
     protected function createComponentSplitPaymentDialog(): SplitPaymentDialog
@@ -304,12 +457,18 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
     protected function createComponentPairButton(): PairButton
     {
-        return $this->pairButtonFactory->create();
+        $pairButton = $this->pairButtonFactory->create();
+        $pairButton->enableAjax();
+        $pairButton->onSuccess[] = function (): void {
+            $this->redrawPaymentAndBankAccountGrids();
+        };
+
+        return $pairButton;
     }
 
     protected function createComponentEmailButton(): EmailButton
     {
-        $group = $this->model->getGroup($this->id);
+        $group = $this->model->getGroup($this->id) ?? throw new RuntimeException('Platební skupina nebyla nalezena.');
 
         return $this->emailButtonFactory->create($this->isEditable, $this->payments, $group);
     }
@@ -360,6 +519,85 @@ final class PaymentPresenter extends PaymentsBasePresenter
         }
         $paymentList->setPayments($this->payments);
         $this->redrawControl('grid');
+        $this->redrawControl('groupProgress');
+    }
+
+    private function redrawPaymentAndBankAccountGrids(): void
+    {
+        $this->redrawPaymentGrid();
+
+        if ($this->bankAccountTransactionsLoaded) {
+            $group = $this->model->getGroup($this->id);
+            if ($group !== null) {
+                $this->refreshBankAccountTransactions($group);
+                $this->redrawControl('bankAccountTransactions');
+            }
+        }
+
+        $this->redrawControl('flash');
+        $this->publishBankAccountTransactionsUrl();
+    }
+
+    private function finishManualPairingRequest(PaymentGroup $group): void
+    {
+        $this->bankAccountTransactionsLoaded = true;
+
+        if (! $this->isAjax()) {
+            $this->redirect('default', ['id' => $group->getId()]);
+        }
+
+        $this->setView('default');
+        $this->redrawPaymentAndBankAccountGrids();
+    }
+
+    private function refreshBankAccountTransactions(PaymentGroup $group): void
+    {
+        $this->bankAccount = null;
+        $this->bankAccountDetail = null;
+
+        $bankAccountId = $group->getBankAccountId();
+        if ($bankAccountId !== null) {
+            $this->bankAccount = $this->bankAccounts->find($bankAccountId);
+            $this->bankAccountDetail = $this->bankAccount === null
+                ? new BankAccountDetail(null, [], errorMessage: 'Připojený bankovní účet již neexistuje.')
+                : $this->bankAccountDetailViewFactory->createForPaymentGroup(
+                    $this->bankAccount->getId(),
+                    $group->getId(),
+                    $group->getName(),
+                    $this->bankAccountPaymentId,
+                );
+        }
+
+        $this->publishBankAccountTemplateParameters($group);
+    }
+
+    private function publishBankAccountTemplateParameters(PaymentGroup $group): void
+    {
+        $this->template->setParameters([
+            'hasBankAccount' => $group->getBankAccountId() !== null,
+            'bankAccountTransactionsLoaded' => $this->bankAccountTransactionsLoaded,
+            'bankAccountPaymentId' => $this->bankAccountPaymentId,
+            'bankAccount' => $this->bankAccount,
+            'bankAccountDetail' => $this->bankAccountDetail,
+        ]);
+    }
+
+    private function publishBankAccountTransactionsUrl(): void
+    {
+        if (! $this->isAjax()) {
+            return;
+        }
+
+        $this->payload->url = $this->link('default', ['id' => $this->id]);
+        $this->payload->postGet = true;
+    }
+
+    private function flashManualPairingOutcome(BankAccountManualPairingOutcome $outcome): void
+    {
+        $this->flashMessage($outcome->successMessage, 'success');
+        foreach ($outcome->warnings as $warning) {
+            $this->flashMessage($warning, 'warning');
+        }
     }
 
     /** @param Payment[] $payments */

@@ -1,0 +1,14 @@
+{extends $baseTemplate}
+
+{block filters}
+    {include #filter-type-search, searchLabel: 'Hledat oznámení'}
+    {include #filter-type-select name => 'categoryCode', label => 'Kategorie'}
+    {include #filter-type-select name => 'status', label => 'Stav'}
+{/block}
+
+{block global-actions}
+    <a href="{plink :Admin:Announcements:create}" class="btn btn-sm btn-primary" data-test="admin-announcement-create">
+        <i class="fi fi-rr-plus" aria-hidden="true"></i>
+        Nové oznámení
+    </a>
+{/block}

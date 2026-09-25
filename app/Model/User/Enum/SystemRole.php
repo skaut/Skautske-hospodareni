@@ -10,6 +10,8 @@ enum SystemRole: string
 
     case SUPPORT = 'support';
 
+    case ANNOUNCEMENT_MANAGER = 'announcement_manager';
+
     /** @return array<string, string> */
     public static function options(): array
     {
@@ -26,6 +28,7 @@ enum SystemRole: string
         return match ($this) {
             self::ADMIN => 'admin',
             self::SUPPORT => 'support',
+            self::ANNOUNCEMENT_MANAGER => 'Správce oznámení',
         };
     }
 }

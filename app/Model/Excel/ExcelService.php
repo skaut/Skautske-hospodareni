@@ -14,6 +14,7 @@ use App\Model\DTO\Cashbook\Cashbook;
 use App\Model\DTO\Cashbook\Chit;
 use App\Model\DTO\Participant\Participant;
 use App\Model\Excel\Builders\CashbookWithCategoriesBuilder;
+use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use LogicException;
 use PhpOffice\PhpSpreadsheet\Exception;
@@ -145,9 +146,9 @@ class ExcelService
                 ->setCellValue('F'.$rowCnt, $row->getCity())
                 ->setCellValue('G'.$rowCnt, $row->getPostcode())
                 ->setCellValue('H'.$rowCnt, $row->getBirthday()?->format('d.m.Y') ?? '')
-                ->setCellValue('I'.$rowCnt, $row->getPayment())
-                ->setCellValue('J'.$rowCnt, $row->getRepayment())
-                ->setCellValue('K'.$rowCnt, $row->getPayment() - $row->getRepayment())
+                ->setCellValue('I'.$rowCnt, MoneyFactory::toDecimal($row->getPayment()))
+                ->setCellValue('J'.$rowCnt, MoneyFactory::toDecimal($row->getRepayment()))
+                ->setCellValue('K'.$rowCnt, MoneyFactory::toDecimal($row->getPayment()->subtract($row->getRepayment())))
                 ->setCellValue('L'.$rowCnt, $row->getOnAccount() === 'Y' ? 'Ano' : 'Ne');
             ++$rowCnt;
         }
@@ -195,9 +196,9 @@ class ExcelService
                 ->setCellValue('H'.$rowCnt, $row->getBirthday()?->format('d.m.Y') ?? '')
                 ->setCellValue('I'.$rowCnt, $row->getDays())
                 ->setCellValue('J'.$rowCnt, $row->getAge() < self::ADULT_AGE ? $row->getDays() : 0)
-                ->setCellValue('K'.$rowCnt, $row->getPayment())
-                ->setCellValue('L'.$rowCnt, $row->getRepayment())
-                ->setCellValue('M'.$rowCnt, $row->getPayment() - $row->getRepayment())
+                ->setCellValue('K'.$rowCnt, MoneyFactory::toDecimal($row->getPayment()))
+                ->setCellValue('L'.$rowCnt, MoneyFactory::toDecimal($row->getRepayment()))
+                ->setCellValue('M'.$rowCnt, MoneyFactory::toDecimal($row->getPayment()->subtract($row->getRepayment())))
                 ->setCellValue('N'.$rowCnt, $row->getOnAccount() === 'Y' ? 'Ano' : 'Ne');
             ++$rowCnt;
         }
@@ -240,7 +241,7 @@ class ExcelService
                 ->setCellValue('I'.$rowCnt, $row->getUnitRegistrationNumber())
                 ->setCellValue('J'.$rowCnt, $row->getDays())
                 ->setCellValue('K'.$rowCnt, $row->getBirthday() !== null && $startDate->diffInYears($row->getBirthday()) < self::ADULT_AGE ? $row->getDays() : 0)
-                ->setCellValue('L'.$rowCnt, $row->getPayment());
+                ->setCellValue('L'.$rowCnt, MoneyFactory::toDecimal($row->getPayment()));
             ++$rowCnt;
         }
 
@@ -439,7 +440,7 @@ class ExcelService
             $sheet->setCellValue('A'.$rowCnt, $rowCnt - 1)
                 ->setCellValue('B'.$rowCnt, $payment->getName())
                 ->setCellValue('C'.$rowCnt, $payment->getRecipientsString())
-                ->setCellValue('D'.$rowCnt, $payment->getAmount())
+                ->setCellValue('D'.$rowCnt, MoneyFactory::toDecimal($payment->getAmount()))
                 ->setCellValue('E'.$rowCnt, $payment->getVariableSymbol())
                 ->setCellValue('F'.$rowCnt, $payment->getDueDate()->format('d.m.Y'))
                 ->setCellValue('G'.$rowCnt, AccountancyHelpers::paymentState($payment->getState()->getValue(), false));

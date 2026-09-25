@@ -11,18 +11,14 @@
             "dom.iterable",
             "scripthost"
         ],
-        "paths": {
-            "@/*": [
-                "./frontend/*"
-            ]
-        },
         "typeRoots": [
             "./node_modules/@types",
             "./frontend/types"
         ]
     },
     "exclude": [
-        "./node_modules"
+        "./node_modules",
+        "./frontend/sw"
     ],
     "include": [
         "./frontend/**/*.ts"

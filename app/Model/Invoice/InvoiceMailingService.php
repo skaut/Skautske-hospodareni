@@ -130,7 +130,7 @@ final class InvoiceMailingService
             return null;
         }
 
-        if ($invoice->getPaymentType()->value !== InvoicePaymentType::TRANSFER->value) {
+        if ($invoice->getPaymentType() !== InvoicePaymentType::TRANSFER) {
             return null;
         }
 
@@ -155,6 +155,8 @@ final class InvoiceMailingService
             return null;
         }
 
-        return substr((string) $part->getHeader('Content-ID'), 1, -1);
+        $contentId = $part->getHeader('Content-ID');
+
+        return substr(is_string($contentId) ? $contentId : '', 1, -1);
     }
 }

@@ -10,6 +10,7 @@ use App\Model\Payment\DomainEvents\PaymentAmountWasChanged;
 use App\Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
 use App\Model\Payment\DomainEvents\PaymentWasCreated;
 use App\Model\Payment\Payment\State;
+use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use DateTimeImmutable;
@@ -39,7 +40,7 @@ class PaymentTest extends Unit
             $this->mockGroup($groupId),
             $name,
             [$email],
-            $amount,
+            MoneyFactory::fromDecimal((string) $amount),
             $dueDate,
             $variableSymbol,
             $constantSymbol,
@@ -49,7 +50,7 @@ class PaymentTest extends Unit
 
         $this->assertSame($name, $payment->getName());
         $this->assertSame($email, $payment->getEmailRecipients()[0]);
-        $this->assertSame((float) $amount, $payment->getAmount());
+        $this->assertTrue(MoneyFactory::fromDecimal((string) $amount)->equals($payment->getAmount()));
         $this->assertSame($dueDate, $payment->getDueDate());
         $this->assertSame($variableSymbol, $payment->getVariableSymbol());
         $this->assertSame($constantSymbol, $payment->getConstantSymbol());
@@ -76,7 +77,7 @@ class PaymentTest extends Unit
             $this->mockGroup(10),
             'František Maša',
             [new EmailAddress('frantisekmasa1@gmail.com')],
-            -500,
+            MoneyFactory::fromDecimal('-500.00'),
             new ChronosDate(),
             null,
             null,
@@ -93,7 +94,7 @@ class PaymentTest extends Unit
             $this->mockGroup(10),
             'František Maša',
             [new EmailAddress('frantisekmasa1@gmail.com')],
-            0,
+            MoneyFactory::zero(),
             new ChronosDate(),
             null,
             null,
@@ -107,9 +108,9 @@ class PaymentTest extends Unit
         $payment = $this->createPayment();
         $payment->extractEventsToDispatch();
 
-        $payment->reduceAmountBySplit(150);
+        $payment->reduceAmountBySplit(MoneyFactory::fromDecimal('150.00'));
 
-        $this->assertSame(350.0, $payment->getAmount());
+        $this->assertTrue(MoneyFactory::fromDecimal('350.00')->equals($payment->getAmount()));
         $events = $payment->extractEventsToDispatch();
         $this->assertCount(1, $events);
         $this->assertInstanceOf(PaymentAmountWasChanged::class, $events[0]);
@@ -119,9 +120,9 @@ class PaymentTest extends Unit
     {
         $payment = $this->createPayment();
 
-        $payment->reduceAmountBySplit(self::AMOUNT);
+        $payment->reduceAmountBySplit(MoneyFactory::fromDecimal((string) self::AMOUNT));
 
-        $this->assertSame(0.0, $payment->getAmount());
+        $this->assertTrue(MoneyFactory::zero()->equals($payment->getAmount()));
     }
 
     public function testSplitCannotExceedOriginalAmount(): void
@@ -129,7 +130,7 @@ class PaymentTest extends Unit
         $payment = $this->createPayment();
 
         $this->expectException(InvalidArgumentException::class);
-        $payment->reduceAmountBySplit(self::AMOUNT + 0.01);
+        $payment->reduceAmountBySplit(MoneyFactory::fromDecimal((string) (self::AMOUNT + 0.01)));
     }
 
     public function testClosedPaymentCannotBeSplit(): void
@@ -138,7 +139,7 @@ class PaymentTest extends Unit
         $payment->completeManually(new DateTimeImmutable(), 'John Doe');
 
         $this->expectException(PaymentClosed::class);
-        $payment->reduceAmountBySplit(100);
+        $payment->reduceAmountBySplit(MoneyFactory::fromDecimal('100.00'));
     }
 
     public function testPaymentCanReferenceSourcePayment(): void
@@ -148,7 +149,7 @@ class PaymentTest extends Unit
             $this->mockGroup(29),
             'Jan novák',
             [],
-            100,
+            MoneyFactory::fromDecimal('100.00'),
             ChronosDate::now(),
             new VariableSymbol('123456'),
             null,
@@ -285,11 +286,11 @@ class PaymentTest extends Unit
         $constantSymbol = 123;
         $note = 'Never pays!';
 
-        $payment->update($name, [$email], $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
+        $payment->update($name, [$email], MoneyFactory::fromDecimal((string) $amount), $dueDate, $variableSymbol, $constantSymbol, $note);
 
         $this->assertSame($name, $payment->getName());
         $this->assertSame($email, $payment->getEmailRecipients()[0]);
-        $this->assertSame((float) $amount, $payment->getAmount());
+        $this->assertTrue(MoneyFactory::fromDecimal((string) $amount)->equals($payment->getAmount()));
         $this->assertSame($dueDate, $payment->getDueDate());
         $this->assertSame($variableSymbol, $payment->getVariableSymbol());
         $this->assertSame($constantSymbol, $payment->getConstantSymbol());
@@ -339,7 +340,7 @@ class PaymentTest extends Unit
 
         $this->expectException(PaymentClosed::class);
 
-        $payment->update($name, [$email], $amount, $dueDate, $variableSymbol, $constantSymbol, $note);
+        $payment->update($name, [$email], MoneyFactory::fromDecimal((string) $amount), $dueDate, $variableSymbol, $constantSymbol, $note);
     }
 
     public function testPairPaymentWithTransaction(): void
@@ -362,7 +363,7 @@ class PaymentTest extends Unit
 
         $newVariableSymbol = new VariableSymbol('12345');
 
-        $payment->update('name', [], self::AMOUNT, ChronosDate::today(), $newVariableSymbol, null, '');
+        $payment->update('name', [], MoneyFactory::fromDecimal((string) self::AMOUNT), ChronosDate::today(), $newVariableSymbol, null, '');
 
         $events = $payment->extractEventsToDispatch();
         $this->assertCount(1, $events);
@@ -378,7 +379,7 @@ class PaymentTest extends Unit
     {
         $payment = $this->createPaymentWithVariableSymbol($variableSymbol);
         $payment->extractEventsToDispatch(); // Clear events
-        $payment->update('name', [], self::AMOUNT, ChronosDate::today(), $variableSymbol, null, '');
+        $payment->update('name', [], MoneyFactory::fromDecimal((string) self::AMOUNT), ChronosDate::today(), $variableSymbol, null, '');
 
         $this->assertSame([], $payment->extractEventsToDispatch());
     }
@@ -397,7 +398,7 @@ class PaymentTest extends Unit
         $payment = $this->createPaymentWithVariableSymbol(null);
         $payment->extractEventsToDispatch(); // Clear events
 
-        $payment->update('name', [], self::AMOUNT * 2, ChronosDate::today(), null, null, '');
+        $payment->update('name', [], MoneyFactory::fromDecimal((string) (self::AMOUNT * 2)), ChronosDate::today(), null, null, '');
 
         $events = $payment->extractEventsToDispatch();
         $this->assertCount(1, $events);
@@ -412,7 +413,7 @@ class PaymentTest extends Unit
     {
         $payment = $this->createPaymentWithVariableSymbol(null);
         $payment->extractEventsToDispatch(); // Clear events
-        $payment->update('name', [], self::AMOUNT, ChronosDate::today(), null, null, '');
+        $payment->update('name', [], MoneyFactory::fromDecimal((string) self::AMOUNT), ChronosDate::today(), null, null, '');
 
         $this->assertSame([], $payment->extractEventsToDispatch());
     }
@@ -496,7 +497,7 @@ class PaymentTest extends Unit
     {
         $email1 = new EmailAddress('test@gmail.com');
         $email2 = new EmailAddress('test@gmail.com');
-        $payment = new Payment($this->mockGroup(29), 'Jan novák', [$email1, $email2], self::AMOUNT, ChronosDate::now(), null, null, null, '');
+        $payment = new Payment($this->mockGroup(29), 'Jan novák', [$email1, $email2], MoneyFactory::fromDecimal((string) self::AMOUNT), ChronosDate::now(), null, null, null, '');
         $this->assertCount(1, $payment->getEmailRecipients());
     }
 
@@ -519,7 +520,7 @@ class PaymentTest extends Unit
     {
         $group = $this->mockGroup(29);
 
-        $payment = new Payment($group, 'Jan novák', [new EmailAddress('test@gmail.com')], self::AMOUNT, $dueDate, $symbol, 666, 454, 'Some note');
+        $payment = new Payment($group, 'Jan novák', [new EmailAddress('test@gmail.com')], MoneyFactory::fromDecimal((string) self::AMOUNT), $dueDate, $symbol, 666, 454, 'Some note');
         Helpers::assignIdentity($payment, 1);
 
         return $payment;

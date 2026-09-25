@@ -23,6 +23,7 @@ use App\Model\Payment\ReadModel\Queries\NextVariableSymbolSequenceQuery;
 use App\Model\Payment\ReadModel\Queries\OAuthsAccessibleByGroupsQuery;
 use App\Model\Unit\ReadModel\Queries\UnitsDetailQuery;
 use App\Model\Unit\Unit;
+use App\Model\Utils\MoneyFactory;
 use Assert\Assertion;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
@@ -86,6 +87,7 @@ final class GroupForm extends BaseControl
     protected function createComponentForm(): BaseForm
     {
         $form = new BaseForm();
+        $form->getElementPrototype()->addClass('inline-errors');
         $bankAccountItems = $this->bankAccountItems();
         $oAuthItems = $this->oAuthItems();
         $defaults = $this->buildDefaultsFromGroup($bankAccountItems, $oAuthItems);
@@ -100,7 +102,8 @@ final class GroupForm extends BaseControl
             ->setHtmlAttribute('class', 'form-control')
             ->setRequired(false)
             ->setNullable()
-            ->addRule(Form::FLOAT, 'Částka musí být zadaná jako číslo');
+            ->addRule(Form::FLOAT, 'Částka musí být zadaná jako číslo')
+            ->addRule(Form::PATTERN, PaymentFormFields::MONEY_PATTERN_MESSAGE, PaymentFormFields::MONEY_PATTERN);
 
         $form->addDate('dueDate', 'Výchozí splatnost')
             ->disableWeekends()
@@ -186,12 +189,12 @@ final class GroupForm extends BaseControl
 
     private function formSucceeded(BaseForm $form): void
     {
-        $v = $form->getValues();
+        $v = $form->getValues(ArrayHash::class);
 
         $originalGroupData = $this->buildDefaultsFromGroup($this->bankAccountItems(), $this->oAuthItems());
 
         $paymentDefaults = new PaymentDefaults(
-            $v->amount,
+            $v->amount === null ? null : MoneyFactory::fromDecimal((string) $v->amount),
             $v->dueDate === null ? null : new ChronosDate($v->dueDate),
             $v->constantSymbol,
             $v->nextVs ?? $originalGroupData['nextVs'] ?? null,
@@ -284,7 +287,7 @@ final class GroupForm extends BaseControl
 
         $defaults = [
             'name' => $group->getName(),
-            'amount' => $group->getDefaultAmount(),
+            'amount' => $group->getDefaultAmount() === null ? null : MoneyFactory::toDecimal($group->getDefaultAmount()),
             'dueDate' => $group->getDueDate(),
             'constantSymbol' => $group->getConstantSymbol(),
             'oAuthId' => $this->isOAuthAvailable($group->getOAuthId()?->toString(), $oAuthItems)

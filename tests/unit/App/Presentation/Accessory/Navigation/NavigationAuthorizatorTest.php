@@ -19,20 +19,20 @@ final class NavigationAuthorizatorTest extends Unit
         $authorizator = Mockery::mock(ApplicationAuthorizator::class);
         $authorizator->shouldNotReceive('isAllowed');
 
-        $item = Mockery::mock(IMenuItem::class);
-        $item->shouldReceive('getData')
+        $item = $this->mockItem();
+        $item->shouldReceive('getDataItem')
             ->with('requiresAdmin', false)
             ->once()
             ->andReturn(false);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresAdminArea', false)
             ->once()
             ->andReturn(false);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresBugReportsAccess', false)
             ->once()
             ->andReturn(false);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresInvoiceAccess', false)
             ->once()
             ->andReturn(false);
@@ -48,20 +48,20 @@ final class NavigationAuthorizatorTest extends Unit
             ->once()
             ->andReturn(true);
 
-        $item = Mockery::mock(IMenuItem::class);
-        $item->shouldReceive('getData')
+        $item = $this->mockItem();
+        $item->shouldReceive('getDataItem')
             ->with('requiresAdmin', false)
             ->once()
             ->andReturn(true);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresAdminArea', false)
             ->once()
             ->andReturn(false);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresBugReportsAccess', false)
             ->once()
             ->andReturn(false);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresInvoiceAccess', false)
             ->once()
             ->andReturn(false);
@@ -77,20 +77,20 @@ final class NavigationAuthorizatorTest extends Unit
             ->once()
             ->andReturn(false);
 
-        $item = Mockery::mock(IMenuItem::class);
-        $item->shouldReceive('getData')
+        $item = $this->mockItem();
+        $item->shouldReceive('getDataItem')
             ->with('requiresAdmin', false)
             ->once()
             ->andReturn(1);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresAdminArea', false)
             ->once()
             ->andReturn(false);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresBugReportsAccess', false)
             ->once()
             ->andReturn(false);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresInvoiceAccess', false)
             ->once()
             ->andReturn(false);
@@ -106,20 +106,20 @@ final class NavigationAuthorizatorTest extends Unit
             ->once()
             ->andReturn(true);
 
-        $item = Mockery::mock(IMenuItem::class);
-        $item->shouldReceive('getData')
+        $item = $this->mockItem();
+        $item->shouldReceive('getDataItem')
             ->with('requiresAdmin', false)
             ->once()
             ->andReturn(false);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresAdminArea', false)
             ->once()
             ->andReturn(true);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresBugReportsAccess', false)
             ->once()
             ->andReturn(false);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresInvoiceAccess', false)
             ->once()
             ->andReturn(false);
@@ -135,20 +135,20 @@ final class NavigationAuthorizatorTest extends Unit
             ->once()
             ->andReturn(false);
 
-        $item = Mockery::mock(IMenuItem::class);
-        $item->shouldReceive('getData')
+        $item = $this->mockItem();
+        $item->shouldReceive('getDataItem')
             ->with('requiresAdmin', false)
             ->once()
             ->andReturn(false);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresAdminArea', false)
             ->once()
             ->andReturn(true);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresBugReportsAccess', false)
             ->once()
             ->andReturn(false);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresInvoiceAccess', false)
             ->once()
             ->andReturn(false);
@@ -164,20 +164,20 @@ final class NavigationAuthorizatorTest extends Unit
             ->once()
             ->andReturn(true);
 
-        $item = Mockery::mock(IMenuItem::class);
-        $item->shouldReceive('getData')
+        $item = $this->mockItem();
+        $item->shouldReceive('getDataItem')
             ->with('requiresAdmin', false)
             ->once()
             ->andReturn(false);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresAdminArea', false)
             ->once()
             ->andReturn(false);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresBugReportsAccess', false)
             ->once()
             ->andReturn(true);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresInvoiceAccess', false)
             ->once()
             ->andReturn(false);
@@ -193,20 +193,20 @@ final class NavigationAuthorizatorTest extends Unit
             ->once()
             ->andReturn(false);
 
-        $item = Mockery::mock(IMenuItem::class);
-        $item->shouldReceive('getData')
+        $item = $this->mockItem();
+        $item->shouldReceive('getDataItem')
             ->with('requiresAdmin', false)
             ->once()
             ->andReturn(false);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresAdminArea', false)
             ->once()
             ->andReturn(false);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresBugReportsAccess', false)
             ->once()
             ->andReturn(true);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresInvoiceAccess', false)
             ->once()
             ->andReturn(false);
@@ -222,24 +222,53 @@ final class NavigationAuthorizatorTest extends Unit
             ->once()
             ->andReturn(true);
 
-        $item = Mockery::mock(IMenuItem::class);
-        $item->shouldReceive('getData')
+        $item = $this->mockItem();
+        $item->shouldReceive('getDataItem')
             ->with('requiresAdmin', false)
             ->once()
             ->andReturn(false);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresAdminArea', false)
             ->once()
             ->andReturn(false);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresBugReportsAccess', false)
             ->once()
             ->andReturn(false);
-        $item->shouldReceive('getData')
+        $item->shouldReceive('getDataItem')
             ->with('requiresInvoiceAccess', false)
             ->once()
             ->andReturn(true);
 
         self::assertTrue((new NavigationAuthorizator($authorizator))->isMenuItemAllowed($item));
+    }
+
+    public function testAnnouncementMenuRequiresAnnouncementAccess(): void
+    {
+        foreach ([true, false] as $allowed) {
+            $authorizator = Mockery::mock(ApplicationAuthorizator::class);
+            $authorizator->shouldReceive('isAllowed')
+                ->with(Admin::ANNOUNCEMENTS_ACCESS, null)
+                ->once()
+                ->andReturn($allowed);
+
+            $item = $this->mockItem(true);
+            foreach (['requiresAdmin', 'requiresAdminArea', 'requiresBugReportsAccess', 'requiresInvoiceAccess'] as $key) {
+                $item->shouldReceive('getDataItem')->with($key, false)->once()->andReturn(false);
+            }
+
+            self::assertSame($allowed, (new NavigationAuthorizator($authorizator))->isMenuItemAllowed($item));
+        }
+    }
+
+    private function mockItem(bool $requiresAnnouncementsAccess = false): IMenuItem&Mockery\MockInterface
+    {
+        $item = Mockery::mock(IMenuItem::class);
+        $item->shouldReceive('getDataItem')
+            ->with('requiresAnnouncementsAccess', false)
+            ->once()
+            ->andReturn($requiresAnnouncementsAccess);
+
+        return $item;
     }
 }

@@ -11,9 +11,7 @@ use App\Model\Bank\PairingCandidate;
 use App\Model\Payment\Payment;
 use DateTimeImmutable;
 
-use function array_values;
 use function count;
-use function number_format;
 
 class AutomaticBankPairingService
 {
@@ -111,8 +109,8 @@ class AutomaticBankPairingService
         }
 
         return [
-            'payments' => array_values($pairedPayments),
-            'invoices' => array_values($pairedInvoices),
+            'payments' => $pairedPayments,
+            'invoices' => $pairedInvoices,
         ];
     }
 
@@ -140,6 +138,6 @@ class AutomaticBankPairingService
             return null;
         }
 
-        return $variableSymbol.'|'.number_format($transaction->getAmount(), 2, '.', '');
+        return $variableSymbol.'|'.$transaction->getAmount()->getAmount();
     }
 }

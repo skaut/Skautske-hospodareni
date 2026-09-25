@@ -41,22 +41,23 @@ jobs:
       - name: Install Composer deps
         run: composer install --no-interaction --prefer-dist --no-progress --ignore-platform-reqs
 
-      # Node/Yarn + cache
-      - name: Setup Node.js (+ Yarn cache)
+      # Node/npm + cache
+      - name: Setup Node.js (+ npm cache)
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'yarn'
-          cache-dependency-path: yarn.lock
+          cache: 'npm'
 
       - name: Install JS deps
-        run: yarn install --frozen-lockfile --non-interactive --prefer-offline
+        run: npm ci
       - name: Build production assets
-        run: yarn build-production
+        run: npm run build-production
 
       # Výroba tarballu bez zbytečností
       - name: Create tarball
+        shell: bash
         run: |
+          set -euo pipefail
           find "$GITHUB_WORKSPACE" -mindepth 1 -maxdepth 1 \
               ! -name '.git' \
               ! -name '.github' \
@@ -66,6 +67,7 @@ jobs:
               ! -name 'temp' \
               ! -name '_temp' \
               ! -name 'workdir.tar.gz' \
+              ! -name 'workdir.tar.gz.sha256' \
               -printf '%P\0' \
             | tar -C "$GITHUB_WORKSPACE" \
               --exclude-vcs \
@@ -74,17 +76,21 @@ jobs:
               --exclude='www/webtemp' \
               --null \
               --files-from=- \
-              --warning=no-file-changed \
-              --ignore-failed-read \
               --use-compress-program='gzip -9' \
               -cf /tmp/workdir.tar.gz
           mv /tmp/workdir.tar.gz "$GITHUB_WORKSPACE/"
+          test -s workdir.tar.gz
+          gzip -t workdir.tar.gz
+          tar -tzf workdir.tar.gz >/dev/null
+          sha256sum workdir.tar.gz > workdir.tar.gz.sha256
 
       - name: Upload workdir
         uses: actions/upload-artifact@v7
         with:
           name: workdir
-          path: workdir.tar.gz
+          path: |
+            workdir.tar.gz
+            workdir.tar.gz.sha256
           if-no-files-found: error
           compression-level: 0
           retention-days: 7
@@ -97,14 +103,13 @@ jobs:
     environment: test
     env:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
-      COMPOSE_FILE: docker/docker-compose.yml:docker/docker-compose.ci.yml
       COMPOSE_PROJECT_NAME: "quick-${{ github.run_id }}-${{ github.run_attempt }}"
+      CI_INPUTS_PREPARED: "1"
     steps:
       - &clean-workspace
         name: Clean workspace
         shell: bash
         run: |
-          docker compose down -v || true
           if [ -z "${GITHUB_WORKSPACE:-}" ] || [ ! -d "$GITHUB_WORKSPACE" ]; then
             echo "GITHUB_WORKSPACE is not set to an existing directory."
             exit 1
@@ -126,12 +131,17 @@ jobs:
         run: |
           rm -rf _tmp_unpack
           mkdir _tmp_unpack
+          test -s workdir.tar.gz
+          sha256sum -c workdir.tar.gz.sha256
+          gzip -t workdir.tar.gz
+          tar -tzf workdir.tar.gz >/dev/null
           tar --no-overwrite-dir --no-same-owner --no-same-permissions -xzf workdir.tar.gz -C _tmp_unpack
           find _tmp_unpack -mindepth 1 -maxdepth 1 -exec mv -t . -- {} +
           rm -rf _tmp_unpack
+          rm -f workdir.tar.gz workdir.tar.gz.sha256
 
-      - name: Build CI PHP image
-        run: docker compose build php-test
+      - name: Docker command configuration
+        run: make check-docker-config
 
       - name: Coding standard
         run: make check-cs-check
@@ -149,8 +159,7 @@ jobs:
         if: failure()
         shell: bash
         run: |
-          docker compose run --rm -T --no-deps --entrypoint '' --user docker php-test \
-            sh -lc 'tar -czf - migrations' > migrations.tar.gz || true
+          tar -czf migrations.tar.gz migrations || true
           if [ ! -s migrations.tar.gz ]; then
             rm -f migrations.tar.gz
           fi
@@ -167,17 +176,8 @@ jobs:
         if: always()
         shell: bash
         run: |
-          docker compose down --remove-orphans -v || true
-
-          if [ -z "${COMPOSE_PROJECT_NAME:-}" ]; then
-            echo "COMPOSE_PROJECT_NAME is not set, skipping image cleanup."
-            exit 0
-          fi
-
-          docker image rm \
-            "${COMPOSE_PROJECT_NAME}-php-test" \
-            "${COMPOSE_PROJECT_NAME}-nginx-ci" \
-            2>/dev/null || true
+          make ci-clean
+          make ci-image-clean
 
   collect-code-coverage:
     name: Collect code coverage
@@ -188,20 +188,18 @@ jobs:
     if: github.ref == 'refs/heads/master'
     env:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
-      COMPOSE_FILE: docker/docker-compose.yml:docker/docker-compose.ci.yml
       COMPOSE_PROJECT_NAME: "coverage-${{ github.run_id }}-${{ github.run_attempt }}"
+      CI_INPUTS_PREPARED: "1"
     steps:
       - *clean-workspace
       - uses: actions/download-artifact@v4
         with: { name: workdir, path: . }
       - *extract-workdir
-      - run: docker compose build php-test
       - run: make test-coverage
       - name: Export coverage XML
         shell: bash
         run: |
-          docker compose run --rm -T --no-deps --entrypoint '' --user docker php-test \
-            sh -lc 'cat tests/_output/coverage.xml' > coverage.xml
+          cp artifacts/coverage.xml coverage.xml
       - name: Prepare Codecov environment
         shell: bash
         run: |
@@ -220,7 +218,7 @@ jobs:
   tests:
     name: Tests - ${{ matrix.label }}
     runs-on: [self-hosted, docker, x64]
-    needs: [workdir, quick-checks]
+    needs: workdir
     timeout-minutes: 45
     environment: test
     strategy:
@@ -229,38 +227,24 @@ jobs:
         include:
           - label: Unit
             shard: unit
-            port: 8091
-            build_services: php-test
             command: make test-unit
           - label: Integration
             shard: integration
-            port: 8092
-            build_services: php-test
             command: make test-integration
           - label: Payment groups
             shard: payment-groups
-            port: 8081
-            build_services: php-test nginx
             command: make ci-acceptance TEST='--group payment tests/acceptance/PaymentCest.php'
           - label: Payment detail
             shard: payment-detail
-            port: 8082
-            build_services: php-test nginx
             command: make ci-acceptance TEST='--group payment tests/acceptance/PaymentDetailCest.php'
           - label: Payment dashboard
             shard: payment-dashboard
-            port: 8083
-            build_services: php-test nginx
             command: make ci-acceptance TEST='--group payment tests/acceptance/PaymentDashboardCest.php'
           - label: Invoice
             shard: invoice
-            port: 8084
-            build_services: php-test nginx
             command: make ci-acceptance TEST='--group invoice'
           - label: Settings and admin
             shard: settings-admin
-            port: 8085
-            build_services: php-test nginx
             command: make ci-acceptance TEST='--group settings --group admin'
           - label: Rest grouped
             shard: rest-grouped
@@ -273,48 +257,20 @@ jobs:
             build_services: php-test nginx
             command: make ci-acceptance TEST='--skip-group payment --skip-group invoice --skip-group settings --skip-group admin --skip-group announcements --skip-group bug-report --skip-group dashboard --skip-group unit --skip-group cashbook --skip-group cashbooks'
     env:
-      COMPOSE_FILE: docker/docker-compose.yml:docker/docker-compose.ci.yml
       COMPOSE_PROJECT_NAME: "test-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.shard }}"
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
-      TRAEFIK_HOST_PORT: ${{ matrix.port }}
+      CI_INPUTS_PREPARED: "1"
     steps:
-      - name: Pre-clean compose project
-        shell: bash
-        run: docker compose down --remove-orphans -v || true
       - *clean-workspace
       - uses: actions/download-artifact@v4
         with: { name: workdir, path: . }
       - *extract-workdir
-      - run: docker compose build ${{ matrix.build_services }}
       - run: ${{ matrix.command }}
-      - name: Pack Codeception output
-        if: always()
-        shell: bash
-        run: |
-          docker compose run --rm -T --no-deps --entrypoint '' --user docker php-test \
-            sh -lc 'tar -czf - -C tests _output' > tests-output.tar.gz || true
-          if [ ! -s tests-output.tar.gz ]; then
-            rm -f tests-output.tar.gz
-          fi
-      - name: Collect compose logs
-        if: always()
-        shell: bash
-        run: |
-          mkdir -p artifacts/logs
-          docker compose ps --all > artifacts/logs/compose-ps.txt || true
-          docker compose logs --no-color > artifacts/logs/compose-logs.txt || true
-          tar -czf compose-logs.tar.gz -C artifacts logs || true
       - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: tests-output-${{ matrix.shard }}
-          path: tests-output.tar.gz
-          if-no-files-found: ignore
-      - uses: actions/upload-artifact@v7
-        if: always()
-        with:
-          name: compose-logs-${{ matrix.shard }}
-          path: compose-logs.tar.gz
+          path: artifacts/
           if-no-files-found: ignore
       - *docker-down
 
@@ -343,16 +299,13 @@ jobs:
       SSH_USERNAME: vu011961
       HOST: www.skauting.cz
       PORT: "11961"
-      APP_ENV: ${{ vars.APP_ENV }}
+      APP_ENV: beta
       APP_BASE_URL: ${{ vars.APP_BASE_URL }}
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
       DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
       SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
       SEND_EMAIL: ${{ vars.SEND_EMAIL }}
       ERROR_EMAILS: ${{ vars.ERROR_EMAILS }}
-      ENVIRONMENT_LABEL: ${{ vars.ENVIRONMENT_LABEL }}
-      ENVIRONMENT_COLOR: ${{ vars.ENVIRONMENT_COLOR }}
-      TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
       TRACY_SHOW_BAR: ${{ vars.TRACY_SHOW_BAR }}
       DB_HOST: ${{ vars.DB_HOST }}
       DB_NAME: ${{ vars.DB_NAME }}
@@ -376,7 +329,13 @@ jobs:
         with:
           name: workdir
           path: .
-      - run: tar --no-overwrite-dir --no-same-owner --no-same-permissions -xzf workdir.tar.gz
+      - run: |
+          test -s workdir.tar.gz
+          sha256sum -c workdir.tar.gz.sha256
+          gzip -t workdir.tar.gz
+          tar -tzf workdir.tar.gz >/dev/null
+          tar --no-overwrite-dir --no-same-owner --no-same-permissions -xzf workdir.tar.gz
+          rm -f workdir.tar.gz workdir.tar.gz.sha256
       - name: Install deploy tools
         run: |
           rm -f /etc/apt/sources.list.d/google-chrome.list
@@ -408,16 +367,13 @@ jobs:
       SSH_USERNAME: vu009010
       HOST: www.skauting.cz
       PORT: "9010"
-      APP_ENV: ${{ vars.APP_ENV }}
+      APP_ENV: test
       APP_BASE_URL: ${{ vars.APP_BASE_URL }}
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
       DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
       SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
       SEND_EMAIL: ${{ vars.SEND_EMAIL }}
       ERROR_EMAILS: ${{ vars.ERROR_EMAILS }}
-      ENVIRONMENT_LABEL: ${{ vars.ENVIRONMENT_LABEL }}
-      ENVIRONMENT_COLOR: ${{ vars.ENVIRONMENT_COLOR }}
-      TEST_BACKGROUND: ${{ vars.TEST_BACKGROUND }}
       TRACY_SHOW_BAR: ${{ vars.TRACY_SHOW_BAR }}
       DB_HOST: ${{ vars.DB_HOST }}
       DB_NAME: ${{ vars.DB_NAME }}
@@ -458,7 +414,6 @@ jobs:
       SKAUTIS_TEST_MODE: "false"
       SEND_EMAIL: "true"
       ERROR_EMAILS: alex@skaut.cz
-      TEST_BACKGROUND: "false"
       TRACY_SHOW_BAR: "false"
       DB_HOST: localhost
       DB_NAME: h

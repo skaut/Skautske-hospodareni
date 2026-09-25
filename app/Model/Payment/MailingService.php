@@ -16,8 +16,10 @@ use App\Model\Payment\Repositories\IBankAccountRepository;
 use App\Model\Payment\Repositories\IGroupRepository;
 use App\Model\Payment\Repositories\IPaymentRepository;
 use App\Model\Services\TemplateFactory;
+use App\Model\Utils\MoneyFactory;
 use DateTimeImmutable;
 use Nette\Mail\Message;
+use RuntimeException;
 
 use function nl2br;
 use function rand;
@@ -94,7 +96,7 @@ class MailingService
 
         $payment = new MailPayment(
             'Testovací účel',
-            $group->getDefaultAmount() ?? rand(50, 1000),
+            $group->getDefaultAmount() ?? MoneyFactory::fromDecimal((string) rand(50, 1000)),
             [new EmailAddress($user->getEmail())],
             $group->getDueDate()?->toNative() ?? new DateTimeImmutable('+ 2 weeks'),
             rand(1000, 100000),
@@ -102,7 +104,7 @@ class MailingService
             'obsah poznámky',
         );
 
-        $this->send($group, $payment, $group->getEmailTemplate(EmailType::get(EmailType::PAYMENT_INFO)), $user->getName());
+        $this->send($group, $payment, $group->getEmailTemplate(EmailType::get(EmailType::PAYMENT_INFO)) ?? throw new RuntimeException('Skupina nemá e-mailovou šablonu.'), $user->getName());
 
         return $user->getEmail();
     }
@@ -180,7 +182,7 @@ class MailingService
             'qr-platba.png',
             QrPaymentCode::buildPng(
                 $bankAccountNumber,
-                $payment->getAmount(),
+                MoneyFactory::toDecimal($payment->getAmount()),
                 $payment->getVariableSymbol(),
                 $payment->getConstantSymbol(),
                 $payment->getName(),
@@ -188,7 +190,9 @@ class MailingService
             'image/png',
         );
 
-        return substr((string) $part->getHeader('Content-ID'), 1, -1);
+        $contentId = $part->getHeader('Content-ID');
+
+        return substr(is_string($contentId) ? $contentId : '', 1, -1);
     }
 
     private function createPayment(Payment $payment): MailPayment

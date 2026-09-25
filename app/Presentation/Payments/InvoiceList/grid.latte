@@ -1,7 +1,7 @@
 {extends $baseTemplate}
 
 {block filters}
-    {include #filter-type-search}
+    {include #filter-type-search, searchLabel: 'Hledat fakturu'}
     {*include #filter-type-select name => 'state', label => 'Stav'*}
 {/block}
 
@@ -94,6 +94,7 @@
 {/block}
 
 {block col-actions}
+    <div class="datagrid-row-actions">
     {if ($showOpenSequenceAction ?? false)}
         <a href="{$control->getPresenter()->link('default', ['invoiceSequenceId' => $item->getSequence()->getId()])}"
            class="btn btn-sm btn-light"
@@ -147,8 +148,8 @@
         <a href="{$reminderDisabledReason === null ? $control->getPresenter()->link('sendReminder!', ['id' => $item->getId()]) : '#'}"
                 n:class="btn, btn-sm, btn-warning, $reminderDisabledReason === null ? '' : disabled"
            title="{$reminderDisabledReason ?? 'Odeslat upomínku'}"
-           {if $reminderDisabledReason !== null}onclick="return false;"{/if}><i class="fi fi-rr-bell" aria-hidden="true"></i></a>
+           n:attr="aria-disabled => $reminderDisabledReason !== null ? 'true' : null,
+                   tabindex => $reminderDisabledReason !== null ? '-1' : null"><i class="fi fi-rr-bell" aria-hidden="true"></i></a>
     {/if}
+    </div>
 {/block}
-
-{block action-col-classes}w-15{/block}

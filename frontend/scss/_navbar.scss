@@ -223,7 +223,8 @@
   width: 100%;
 }
 
-.navbar--test {
+.navbar--test,
+.navbar--dev {
   --tblr-navbar-bg: #fff7dc;
   --site-header-color: #4d401d;
   --site-header-muted: #806c35;
@@ -245,11 +246,22 @@
   box-shadow: 0 1px 3px rgba(23, 59, 101, 0.08);
 }
 
+.navbar--dev .navbar-brand-icon,
 .navbar--test .navbar-brand-icon,
 .navbar--beta .navbar-brand-icon {
   filter: none;
 }
 
+.navbar--dev .nav-link:hover,
+.navbar--dev .nav-link:focus,
+.navbar--dev .nav-item.active .nav-link,
+.navbar--dev .nav-link.active,
+.navbar--dev .active > .btn,
+.navbar--dev .nav-item.active .nav-link-icon,
+.navbar--dev .btn-light:hover,
+.navbar--dev .btn-light:focus,
+.navbar--dev .dark-mode-toggle:hover,
+.navbar--dev .dark-mode-toggle:focus,
 .navbar--test .nav-link:hover,
 .navbar--test .nav-link:focus,
 .navbar--test .nav-item.active .nav-link,
@@ -269,53 +281,49 @@
 .navbar--beta .btn-light:hover,
 .navbar--beta .btn-light:focus,
 .navbar--beta .dark-mode-toggle:hover,
-.navbar--beta .dark-mode-toggle:focus {
-  color: #4d401d;
-}
-
+.navbar--beta .dark-mode-toggle:focus,
+.navbar--dev .navbar-logout:hover,
+.navbar--dev .navbar-logout:focus,
 .navbar--test .navbar-logout:hover,
 .navbar--test .navbar-logout:focus,
 .navbar--beta .navbar-logout:hover,
 .navbar--beta .navbar-logout:focus {
-  color: #4d401d;
+  // Each variant defines its own --site-header-color above; hardcoding one
+  // variant's hex here left the others off-palette.
+  color: var(--site-header-color);
 }
 
+.navbar--dev .navbar-toggler,
 .navbar--test .navbar-toggler,
 .navbar--beta .navbar-toggler {
-  border-color: rgba(77, 64, 29, 0.25);
+  border-color: var(--site-header-control-border);
 }
 
+.navbar--dev .navbar-toggler-icon,
 .navbar--test .navbar-toggler-icon,
 .navbar--beta .navbar-toggler-icon {
   filter: none;
-}
-
-.navbar--beta .nav-link:hover,
-.navbar--beta .nav-link:focus,
-.navbar--beta .nav-item.active .nav-link,
-.navbar--beta .nav-link.active,
-.navbar--beta .active > .btn,
-.navbar--beta .nav-item.active .nav-link-icon,
-.navbar--beta .btn-light:hover,
-.navbar--beta .btn-light:focus,
-.navbar--beta .dark-mode-toggle:hover,
-.navbar--beta .dark-mode-toggle:focus,
-.navbar--beta .navbar-logout:hover,
-.navbar--beta .navbar-logout:focus {
-  color: #173b65;
 }
 
 .navbar-test-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
+  gap: 0.25rem;
+  min-height: 2rem;
+  padding: 0.25rem 0.5rem;
   border: 1px solid #e1c874;
   border-radius: var(--tblr-border-radius);
   background: #fff2bd;
   color: #6c5017;
   flex-shrink: 0;
+}
+
+.navbar-environment-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .navbar--beta .navbar-test-badge {

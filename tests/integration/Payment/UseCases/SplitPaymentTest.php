@@ -12,6 +12,7 @@ use App\Model\Payment\Commands\Payment\SplitPayment;
 use App\Model\Payment\Commands\Payment\SplitPaymentPart;
 use App\Model\Payment\Handlers\Payment\SplitPaymentHandler;
 use App\Model\Payment\Services\VariableSymbolCollisionChecker;
+use App\Model\Utils\MoneyFactory;
 use DateTimeImmutable;
 use Helpers;
 use Hskauting\Tests\NullEventBus;
@@ -70,7 +71,7 @@ final class SplitPaymentTest extends IntegrationTest
             $this->group(),
             'Účastnický poplatek',
             [new EmailAddress('participant@example.com')],
-            1000,
+            MoneyFactory::fromDecimal('1000.00'),
             Helpers::getValidDueDate(),
             new VariableSymbol('100'),
             308,
@@ -80,13 +81,13 @@ final class SplitPaymentTest extends IntegrationTest
         $this->payments->save($source);
 
         ($this->handler)(new SplitPayment($source->getId(), [
-            new SplitPaymentPart(new VariableSymbol('101'), 300, 'Faktura zaměstnavatele'),
-            new SplitPaymentPart(new VariableSymbol('102'), 200),
+            new SplitPaymentPart(new VariableSymbol('101'), MoneyFactory::fromDecimal('300.00'), 'Faktura zaměstnavatele'),
+            new SplitPaymentPart(new VariableSymbol('102'), MoneyFactory::fromDecimal('200.00')),
         ]));
 
         $payments = $this->payments->findByGroup(1);
         $this->assertCount(3, $payments);
-        $this->assertSame(500.0, $payments[0]->getAmount());
+        $this->assertTrue(MoneyFactory::fromDecimal('500.00')->equals($payments[0]->getAmount()));
 
         foreach ([$payments[1], $payments[2]] as $splitPayment) {
             $this->assertSame($source->getId(), $splitPayment->getSplitFromPaymentId());
@@ -97,10 +98,10 @@ final class SplitPaymentTest extends IntegrationTest
             $this->assertSame($source->getPersonId(), $splitPayment->getPersonId());
         }
 
-        $this->assertSame(300.0, $payments[1]->getAmount());
+        $this->assertTrue(MoneyFactory::fromDecimal('300.00')->equals($payments[1]->getAmount()));
         $this->assertSame('101', (string) $payments[1]->getVariableSymbol());
         $this->assertSame('Faktura zaměstnavatele', $payments[1]->getNote());
-        $this->assertSame(200.0, $payments[2]->getAmount());
+        $this->assertTrue(MoneyFactory::fromDecimal('200.00')->equals($payments[2]->getAmount()));
         $this->assertSame('102', (string) $payments[2]->getVariableSymbol());
         $this->assertSame($source->getNote(), $payments[2]->getNote());
     }
@@ -111,7 +112,7 @@ final class SplitPaymentTest extends IntegrationTest
 
         $this->expectException(InvalidPaymentSplit::class);
         ($this->handler)(new SplitPayment($source->getId(), [
-            new SplitPaymentPart(new VariableSymbol('101'), 1000.01),
+            new SplitPaymentPart(new VariableSymbol('101'), MoneyFactory::fromDecimal('1000.01')),
         ]));
     }
 
@@ -122,8 +123,8 @@ final class SplitPaymentTest extends IntegrationTest
         $this->expectException(InvalidPaymentSplit::class);
         $this->expectExceptionMessage('Každá nová platba musí mít jiný variabilní symbol.');
         ($this->handler)(new SplitPayment($source->getId(), [
-            new SplitPaymentPart(new VariableSymbol('101'), 100),
-            new SplitPaymentPart(new VariableSymbol('101'), 200),
+            new SplitPaymentPart(new VariableSymbol('101'), MoneyFactory::fromDecimal('100.00')),
+            new SplitPaymentPart(new VariableSymbol('101'), MoneyFactory::fromDecimal('200.00')),
         ]));
     }
 
@@ -132,14 +133,14 @@ final class SplitPaymentTest extends IntegrationTest
         $source = $this->createSourcePayment();
 
         ($this->handler)(new SplitPayment($source->getId(), [
-            new SplitPaymentPart(new VariableSymbol('100'), 400),
+            new SplitPaymentPart(new VariableSymbol('100'), MoneyFactory::fromDecimal('400.00')),
         ]));
 
         $payments = $this->payments->findByGroup(1);
         $this->assertCount(2, $payments);
-        $this->assertSame(600.0, $payments[0]->getAmount());
+        $this->assertTrue(MoneyFactory::fromDecimal('600.00')->equals($payments[0]->getAmount()));
         $this->assertSame('100', (string) $payments[0]->getVariableSymbol());
-        $this->assertSame(400.0, $payments[1]->getAmount());
+        $this->assertTrue(MoneyFactory::fromDecimal('400.00')->equals($payments[1]->getAmount()));
         $this->assertSame('100', (string) $payments[1]->getVariableSymbol());
     }
 
@@ -150,7 +151,7 @@ final class SplitPaymentTest extends IntegrationTest
         $this->expectException(InvalidPaymentSplit::class);
         $this->expectExceptionMessage('Stejný variabilní symbol lze při rozdělení použít jen u rozdílných částek.');
         ($this->handler)(new SplitPayment($source->getId(), [
-            new SplitPaymentPart(new VariableSymbol('100'), 500),
+            new SplitPaymentPart(new VariableSymbol('100'), MoneyFactory::fromDecimal('500.00')),
         ]));
     }
 
@@ -161,7 +162,7 @@ final class SplitPaymentTest extends IntegrationTest
             $this->group(),
             'Jiná platba',
             [],
-            100,
+            MoneyFactory::fromDecimal('100.00'),
             Helpers::getValidDueDate(),
             new VariableSymbol('101'),
             null,
@@ -172,7 +173,7 @@ final class SplitPaymentTest extends IntegrationTest
         $this->expectException(InvalidPaymentSplit::class);
         $this->expectExceptionMessage('Variabilní symbol 101 je už použitý v této platební skupině.');
         ($this->handler)(new SplitPayment($source->getId(), [
-            new SplitPaymentPart(new VariableSymbol('101'), 100),
+            new SplitPaymentPart(new VariableSymbol('101'), MoneyFactory::fromDecimal('100.00')),
         ]));
     }
 
@@ -182,7 +183,7 @@ final class SplitPaymentTest extends IntegrationTest
             $this->group(),
             'Platba',
             [],
-            1000,
+            MoneyFactory::fromDecimal('1000.00'),
             Helpers::getValidDueDate(),
             new VariableSymbol('100'),
             null,

@@ -13,6 +13,7 @@ use App\Model\Cashbook\Cashbook\ChitBody;
 use App\Model\Cashbook\Cashbook\ChitItem;
 use App\Model\Cashbook\Cashbook\PaymentMethod;
 use App\Model\Cashbook\Events\ChitWasAdded;
+use App\Model\Utils\MoneyFactory;
 use Assert\InvalidArgumentException;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
@@ -79,8 +80,8 @@ class CashbookTest extends Unit
         );
 
         $expectedTotals = [
-            1 => 535.0,
-            2 => 325.0,
+            1 => MoneyFactory::fromDecimal('535.00'),
+            2 => MoneyFactory::fromDecimal('325.00'),
         ];
 
         $totals = $cashbook->getCategoryTotals();
@@ -88,7 +89,9 @@ class CashbookTest extends Unit
         ksort($expectedTotals);
         ksort($totals);
 
-        $this->assertSame($expectedTotals, $totals);
+        foreach ($expectedTotals as $categoryId => $expectedTotal) {
+            $this->assertTrue($expectedTotal->equals($totals[$categoryId]));
+        }
     }
 
     public function testGetCategoryTotalsCountCorrectlyIncome(): void
@@ -100,14 +103,19 @@ class CashbookTest extends Unit
         Helpers::addChitToCashbook($cashbook, null, null, ICategory::CATEGORY_REFUND_ID, '50');
         Helpers::addChitToCashbook($cashbook, null, null, ICategory::CATEGORY_REFUND_ID, '50');
 
-        $expectedTotals = [ICategory::CATEGORY_PARTICIPANT_INCOME_ID => 500.0, ICategory::CATEGORY_REFUND_ID => 100.0];
+        $expectedTotals = [
+            ICategory::CATEGORY_PARTICIPANT_INCOME_ID => MoneyFactory::fromDecimal('500.00'),
+            ICategory::CATEGORY_REFUND_ID => MoneyFactory::fromDecimal('100.00'),
+        ];
 
         $totals = $cashbook->getCategoryTotals();
 
         ksort($expectedTotals);
         ksort($totals);
 
-        $this->assertSame($expectedTotals, $totals);
+        foreach ($expectedTotals as $categoryId => $expectedTotal) {
+            $this->assertTrue($expectedTotal->equals($totals[$categoryId]));
+        }
     }
 
     public function testAddChitRaisesEvent(): void

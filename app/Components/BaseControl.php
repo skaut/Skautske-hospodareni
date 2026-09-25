@@ -9,6 +9,7 @@ use Nette\Application\UI\Control;
 use Nette\Bridges\ApplicationLatte\DefaultTemplate;
 use Nette\InvalidStateException;
 use stdClass;
+use Stringable;
 
 /**
  * @property DefaultTemplate $template
@@ -20,9 +21,9 @@ abstract class BaseControl extends Control
 
     abstract public function render(): void;
 
-    public function getPresenter(): ?BasePresenter
+    public function getPresenter(bool $throw = true): BasePresenter
     {
-        $presenter = parent::getPresenter();
+        $presenter = parent::getPresenter($throw);
 
         if (! $presenter instanceof BasePresenter) {
             throw new InvalidStateException('Presenter using BaseControl derived controls must inherit from '.BasePresenter::class);
@@ -31,7 +32,7 @@ abstract class BaseControl extends Control
         return $presenter;
     }
 
-    /** @param string $message */
+    /** @param string|Stringable $message */
     // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
     public function flashMessage($message, string $type = 'info'): stdClass
     {

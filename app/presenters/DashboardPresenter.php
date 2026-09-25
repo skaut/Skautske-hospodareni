@@ -17,6 +17,7 @@ use Nette\Utils\DateTime;
 use Skautis\Wsdl\AuthenticationException;
 
 use function array_keys;
+use function array_slice;
 use function count;
 
 class DashboardPresenter extends BasePresenter
@@ -35,9 +36,9 @@ class DashboardPresenter extends BasePresenter
             $this->redirect(':Default:default');
         }
 
-        $announcements = $this->announcementRepository->findVisible(new DateTimeImmutable(), 4);
-        $this->template->dashboardAnnouncements = array_slice($announcements, 0, 3);
-        $this->template->hasMoreAnnouncements = count($announcements) > 3;
+        $visibleAnnouncements = $this->announcementRepository->findVisible(new DateTimeImmutable(), 4);
+        $this->template->hasMoreAnnouncements = count($visibleAnnouncements) > 3;
+        $this->template->dashboardAnnouncements = array_slice($visibleAnnouncements, 0, 3);
 
         try {
             $this->template->campsCount = $this->queryBus->handle(new CampStatsQuery((int) (new DateTime())->format('Y')));
@@ -69,7 +70,7 @@ class DashboardPresenter extends BasePresenter
             'btn' => 'btn btn-sm btn-light',
             'toggle' => 'btn btn-sm btn-light dropdown-toggle',
             'menu' => 'dropdown-menu pairForm dropdown-menu-end',
-            'icon' => 'fa-solid fa-building-columns',
+            'icon' => 'fi fi-rr-bank',
             'inputGroup' => 'input-group input-group-sm',
             'submit' => 'btn btn-primary btn-sm',
             'submitCol' => 'col-4 d-grid',

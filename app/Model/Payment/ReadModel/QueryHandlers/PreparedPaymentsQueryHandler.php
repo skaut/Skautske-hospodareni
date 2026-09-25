@@ -34,10 +34,8 @@ class PreparedPaymentsQueryHandler
             ->from(Payment::class, 'p')
             ->where($queryBuilder->expr()->in('p.groupId', $groupIds))
             ->andWhere('p.state = :state')
-            ->setParameters([
-                'state' => State::PREPARING,
-                'bankAccountId' => $query->getBankAccountId()->toInt(),
-            ])
+            ->setParameter('state', State::PREPARING)
+            ->setParameter('bankAccountId', $query->getBankAccountId()->toInt())
             ->getQuery()
             ->getResult();
 

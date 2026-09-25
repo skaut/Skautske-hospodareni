@@ -8,6 +8,7 @@ use AcceptanceTester;
 use App\Model\Cashbook\Operation;
 use Cake\Chronos\ChronosDate;
 use Facebook\WebDriver\WebDriverKeys;
+use RuntimeException;
 use Throwable;
 
 use function count;
@@ -211,6 +212,10 @@ class EventCashbookCest extends BaseAcceptanceCest
             }
 
             $cancelUrl = $I->grabAttributeFrom($cancelButton, 'href');
+            if ($cancelUrl === null) {
+                throw new RuntimeException('Odkaz pro zrušení akce nemá cílovou adresu.');
+            }
+
             $I->disablePopups();
             $I->amOnPage($cancelUrl);
             $this->openEventList($I);
@@ -223,9 +228,8 @@ class EventCashbookCest extends BaseAcceptanceCest
 
     private function openEventList(AcceptanceTester $I): void
     {
-        $I->amOnPage('/akce');
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/akce', self::EVENTS_LIST_SELECTOR);
         $I->waitForDocumentReady();
-        $I->waitForElement(self::EVENTS_LIST_SELECTOR, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
     }
 
     private function fillChitForm(ChronosDate $date, string $purpose, Operation $type, string $category, string $recipient, string $amount): void

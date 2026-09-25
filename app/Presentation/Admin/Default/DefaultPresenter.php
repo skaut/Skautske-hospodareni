@@ -17,7 +17,9 @@ final class DefaultPresenter extends \App\Presentation\Admin\AdminBasePresenter
     public function actionDefault(): void
     {
         if (! $this->authorizator->isAllowed(Admin::ACCESS, null)) {
-            $this->redirect(':Admin:BugReports:default');
+            $this->redirect($this->authorizator->isAllowed(Admin::ANNOUNCEMENTS_ACCESS, null)
+                ? ':Admin:Announcements:default'
+                : ':Admin:BugReports:default');
         }
     }
 

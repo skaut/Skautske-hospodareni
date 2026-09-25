@@ -1,0 +1,53 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use Latte\Tools\Linter;
+use Latte\Tools\LinterExtension;
+use Nette\Bridges\ApplicationLatte\LatteFactory;
+use Nette\DI\Container;
+
+/*
+ * Latte\Tools\LinterExtension checks functions with function_exists(). The
+ * Vite functions are Latte extension functions, so provide their signatures
+ * while linting; rendering still uses App\Ui\ViteExtension from the container.
+ */
+if (! function_exists('viteJs')) {
+    function viteJs(string $entry): string
+    {
+        return '';
+    }
+}
+
+if (! function_exists('viteCss')) {
+    /** @return list<string> */
+    function viteCss(string $entry): array
+    {
+        return [];
+    }
+}
+
+if (! function_exists('viteJsPreload')) {
+    /** @return list<string> */
+    function viteJsPreload(string $entry): array
+    {
+        return [];
+    }
+}
+
+$container = require __DIR__.'/../app/bootstrap.php';
+if (! $container instanceof Container) {
+    throw new RuntimeException('Application bootstrap did not return a DI container.');
+}
+
+$latte = $container->getByType(LatteFactory::class)->create();
+$latte->enablePhpLinter(PHP_BINARY);
+$latte->addExtension(new LinterExtension());
+
+echo "\nLatte linter\n------------\n";
+
+$path = $argv[1] ?? 'app';
+$linter = new Linter(engine: $latte);
+
+exit($linter->scanDirectory($path) ? 0 : 1);

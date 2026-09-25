@@ -12,6 +12,10 @@ use SkautisWsdlPageException;
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 abstract class BaseAcceptanceCest
 {
+    /** Matches `--window-size` in acceptance.suite.yml. */
+    protected const DEFAULT_WINDOW_WIDTH = 1920;
+    protected const DEFAULT_WINDOW_HEIGHT = 1080;
+
     protected const WEBDRIVER_WARMUP_ATTEMPTS = 3;
     protected const SKAUTIS_PAGE_OPEN_ATTEMPTS = 3;
     protected const SKAUTIS_PAGE_OPEN_RETRY_DELAY_SECONDS = 2;
@@ -37,6 +41,11 @@ abstract class BaseAcceptanceCest
             throw $lastException;
         }
 
+        // The browser session is shared between scenarios, so a test that narrows the
+        // window for a responsive check would otherwise leave every later scenario on
+        // a phone-sized viewport with a collapsed navigation.
+        $I->resizeWindow(self::DEFAULT_WINDOW_WIDTH, self::DEFAULT_WINDOW_HEIGHT);
+
         $I->setCookie('SELENIUM', 'SELENIUM', [
             'domain' => '.moje-hospodareni.cz',
             'secure' => false,
@@ -51,12 +60,52 @@ abstract class BaseAcceptanceCest
         string $expectedSelector,
         ?string $expectedUrlPart = null,
     ): void {
-        $I->clickLinkAndWaitForElementWithSkautisRetry(
-            $linkSelector,
+        $linkUrl = null;
+
+        $this->runWithSkautisRetry(
+            $I,
+            static function () use ($I, $linkSelector, $expectedSelector, &$linkUrl): string {
+                // The link is only clickable on the first attempt; a retry re-opens its target
+                // directly, because the SkautIS error page no longer contains the link.
+                if ($linkUrl === null) {
+                    $I->waitForElementVisible($linkSelector, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+                    $linkUrl = (string) $I->grabAttributeFrom($linkSelector, 'href');
+                    $I->clickStable($linkSelector);
+                } else {
+                    $I->amOnPage($linkUrl);
+                }
+
+                return $I->waitForElementOrSkautisConnectionError($expectedSelector);
+            },
+            'opening '.$linkSelector,
             $expectedSelector,
-            $expectedUrlPart,
-            self::SKAUTIS_PAGE_OPEN_ATTEMPTS,
-            self::SKAUTIS_PAGE_OPEN_RETRY_DELAY_SECONDS,
+        );
+
+        if ($expectedUrlPart === null) {
+            return;
+        }
+
+        $I->seeInCurrentUrl($expectedUrlPart);
+    }
+
+    /**
+     * Every authenticated page load calls SkautIS during presenter startup, so a direct
+     * navigation can render a transient WSDL error page instead of the expected screen.
+     */
+    protected function openPageAndWaitForElementWithSkautisRetry(
+        AcceptanceTester $I,
+        string $url,
+        string $expectedSelector,
+    ): void {
+        $this->runWithSkautisRetry(
+            $I,
+            static function () use ($I, $url, $expectedSelector): string {
+                $I->amOnPage($url);
+
+                return $I->waitForElementOrSkautisConnectionError($expectedSelector);
+            },
+            'opening '.$url,
+            $expectedSelector,
         );
     }
 
