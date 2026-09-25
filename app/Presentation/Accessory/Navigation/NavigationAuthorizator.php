@@ -22,6 +22,7 @@ final class NavigationAuthorizator implements IAuthorizator
         $requiresAdmin = (bool) $item->getDataItem('requiresAdmin', false);
         $requiresAdminArea = (bool) $item->getDataItem('requiresAdminArea', false);
         $requiresBugReportsAccess = (bool) $item->getDataItem('requiresBugReportsAccess', false);
+        $requiresAnnouncementsAccess = (bool) $item->getDataItem('requiresAnnouncementsAccess', false);
         $requiresInvoiceAccess = (bool) $item->getDataItem('requiresInvoiceAccess', false);
 
         if ($requiresAdmin && ! $this->authorizator->isAllowed(Admin::ACCESS, null)) {
@@ -33,6 +34,10 @@ final class NavigationAuthorizator implements IAuthorizator
         }
 
         if ($requiresBugReportsAccess && ! $this->authorizator->isAllowed(BugReports::ACCESS, null)) {
+            return false;
+        }
+
+        if ($requiresAnnouncementsAccess && ! $this->authorizator->isAllowed(Admin::ANNOUNCEMENTS_ACCESS, null)) {
             return false;
         }
 

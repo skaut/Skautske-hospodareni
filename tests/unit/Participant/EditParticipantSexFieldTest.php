@@ -8,11 +8,12 @@ use App\Model\Common\Repositories\IParticipantRepository;
 use App\Model\DTO\Participant\NonMemberParticipant;
 use App\Model\DTO\Participant\Participant;
 use App\Model\Participant\NonMemberParticipantService;
+use App\Model\Utils\MoneyFactory;
 use Codeception\Test\Unit;
 use Mockery;
 use ReflectionMethod;
 
-final class EditParticipantDialogTest extends Unit
+final class EditParticipantSexFieldTest extends Unit
 {
     public function testEditFormHandlesMissingSexAndPreservesSelectedSex(): void
     {
@@ -20,7 +21,7 @@ final class EditParticipantDialogTest extends Unit
             $participant = Mockery::mock(Participant::class);
             $participant->shouldReceive('isNonMember')->once()->andReturn(true);
             $participant->shouldReceive('getPersonId')->once()->andReturn(123);
-            $participant->shouldReceive('getPayment')->once()->andReturn(0.0);
+            $participant->shouldReceive('getPayment')->once()->andReturn(MoneyFactory::zero());
 
             $repository = Mockery::mock(IParticipantRepository::class);
             $repository->shouldReceive('getNonMemberParticipant')
