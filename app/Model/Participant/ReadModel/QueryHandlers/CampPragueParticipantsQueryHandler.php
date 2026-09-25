@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Model\Cashbook\ReadModel\QueryHandlers;
 
-use App\Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
 use App\Model\Cashbook\ReadModel\Queries\CampPragueParticipantsQuery;
+use App\Model\Cashbook\ReadModel\Queries\CampRealParticipantListQuery;
 use App\Model\Common\Services\QueryBus;
 use App\Model\Participant\PragueParticipants;
 use Nette\Utils\Strings;
@@ -22,6 +22,6 @@ final class CampPragueParticipantsQueryHandler
             return null;
         }
 
-        return PragueParticipants::fromParticipantList($query->getStartDate(), $this->queryBus->handle(new CampParticipantListQuery($query->getId())));
+        return PragueParticipants::fromParticipantList($query->getStartDate(), $this->queryBus->handle(new CampRealParticipantListQuery($query->getId())));
     }
 }

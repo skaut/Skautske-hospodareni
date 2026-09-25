@@ -19,6 +19,9 @@ interface IParticipantRepository
     /** @return Participant[] */
     public function findByCamp(SkautisCampId $id): array;
 
+    /** @return Participant[] */
+    public function findRealByCamp(SkautisCampId $id): array;
+
     /** @return PaymentDetails[] */
     public function findByPaymentDetail(SkautisCampId $id): array;
 

@@ -58,6 +58,24 @@ final class ParticipantRepository implements IParticipantRepository
     public function findByCamp(SkautisCampId $id): array
     {
         $participants = $this->skautis->event->ParticipantCampAll(['ID_EventCamp' => $id->toInt()]);
+
+        return $this->processCampParticipants($participants, $id);
+    }
+
+    /** @return ParticipantDTO[] */
+    public function findRealByCamp(SkautisCampId $id): array
+    {
+        $participants = $this->skautis->event->ParticipantCampAll([
+            'ID_EventCamp' => $id->toInt(),
+            'Real' => true,
+        ]);
+
+        return $this->processCampParticipants($participants, $id);
+    }
+
+    /** @return ParticipantDTO[] */
+    private function processCampParticipants(mixed $participants, SkautisCampId $id): array
+    {
         if (! is_array($participants)) {
             return []; // API returns empty object when there are no results
         }
