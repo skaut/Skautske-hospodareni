@@ -21,7 +21,10 @@ final class ParticipantRepositoryRealCampTest extends Unit
             /** @var array<string, int|bool> */
             public array $arguments = [];
 
-            /** @return stdClass[] */
+            /**
+             * @param  array<string, int|bool> $arguments
+             * @return stdClass[]
+             */
             public function ParticipantCampAll(array $arguments): array
             {
                 $this->arguments = $arguments;
