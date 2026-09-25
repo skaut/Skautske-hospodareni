@@ -1,0 +1,21 @@
+====== h.skauting: Cestovní příkazy ======
+
+Sekce obsahuje cestovní příkazy, vozidla a smlouvy o proplácení cestovních náhrad.
+
+<color #ed1c24><faicon fab fa-youtube></color><color #22b14c> **Videonávody na YouTube**</color>\\
+<color #22b14c>>></color> [[https://youtu.be/5iMny9z2GG0?feature=shared|Jak na h.skauting | #8 Cestovní příkazy]] \\
+<color #22b14c>>></color> [[https://youtu.be/A5Nc7NhLxME?feature=shared|Jak na h.skauting | #9 Založení vozidla pro cestovní příkaz]] \\
+<color #22b14c>>></color> [[https://youtu.be/tdLl7wSnoso?feature=shared|Jak na h.skauting | #10 Vytvoření nového cestovního příkazu]] \\
+<color #22b14c>>></color> [[https://youtu.be/efepfZHwZWc?feature=shared|Jak na h.skauting | #11 Editace cestovního příkazu]]
+
+===== Vozidla =====
+
+V seznamu vozidel založte nový záznam nebo otevřete existující. Vyplňte identifikační údaje a údaje potřebné pro výpočet cestovních náhrad. Vozidlo zkontrolujte před vytvořením cestovního příkazu.
+
+===== Smlouvy =====
+
+V sekci smluv založte smlouvu o proplácení cestovních náhrad a ověřte její vazbu na řidiče a vozidlo. Před použitím v cestovním příkazu zkontrolujte platnost smlouvy a údaje vozidla.
+
+===== Cestovní příkaz =====
+
+V přehledu založte nový příkaz nebo otevřete existující. Vyplňte údaje o cestě, vozidle a podle potřeby vyberte smlouvu. Po návratu doplňte skutečné údaje, zkontrolujte vypočtené náhrady a teprve poté vytvořte tiskový výstup nebo příkaz uzavřete podle místního postupu jednotky.
