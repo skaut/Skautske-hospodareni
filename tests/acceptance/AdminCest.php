@@ -281,7 +281,8 @@ final class AdminCest extends BaseAcceptanceCest
         $I->dontSeeElement('[data-test="admin-users-form"] input[name="userId"]');
         $I->seeElement('[data-test="admin-users-roles-panel"]');
         $I->seeElement('[data-test="admin-users-roles-panel"] legend.fs-4');
-        $I->seeNumberOfElements('[data-test="admin-users-role-options"] .form-check', 2);
+        $I->seeNumberOfElements('[data-test="admin-users-role-options"] .form-check', 3);
+        $I->seeElement('input[name="roles[]"][value="announcement_manager"]');
         $I->seeElement('[data-test="admin-users-form-actions"] input[type="submit"]');
         $I->seeElement('[data-test="admin-users-form-actions"] [data-test="admin-users-form-cancel"]');
         $I->seeInCurrentUrl('edit='.$newUser);

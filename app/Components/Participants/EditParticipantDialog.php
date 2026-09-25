@@ -9,8 +9,8 @@ use App\Components\Payment\PaymentFormFields;
 use App\Model\DTO\Participant\NonMemberParticipant;
 use App\Model\DTO\Participant\Participant;
 use App\Model\DTO\Participant\UpdateParticipant;
-use App\Model\Utils\MoneyFactory;
 use App\Model\Participant\NonMemberParticipantService;
+use App\Model\Utils\MoneyFactory;
 use Assert\Assertion;
 use Cake\Chronos\ChronosDate;
 use Closure;
@@ -49,6 +49,7 @@ final class EditParticipantDialog extends Dialog
         parent::beforeRender();
 
         $this->template->setFile(__DIR__.'/templates/EditParticipantDialog.latte');
+        $this->template->customClasses = 'modal-dialog-centered modal-dialog-scrollable';
     }
 
     protected function createComponentForm(): BaseForm
@@ -61,6 +62,7 @@ final class EditParticipantDialog extends Dialog
             throw new LogicException('Assertion failed.');
         }
         $form = new BaseForm();
+        $form->getElementPrototype()->addClass('inline-errors');
         $nonMember = $participant->isNonMember()
             ? $this->nonMemberParticipants->get($participant->getPersonId())
             : null;

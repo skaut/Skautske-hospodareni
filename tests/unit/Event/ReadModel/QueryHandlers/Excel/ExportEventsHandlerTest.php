@@ -247,6 +247,7 @@ final class ExportEventsQueryBusStub implements QueryBus
                 'N',
             ),
             null,
+            false,
         );
     }
 

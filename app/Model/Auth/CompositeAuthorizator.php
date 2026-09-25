@@ -38,6 +38,10 @@ final class CompositeAuthorizator implements IAuthorizator
             return $this->adminAccessChecker->canAccessAdministration();
         }
 
+        if ($action === Admin::ANNOUNCEMENTS_ACCESS) {
+            return $this->adminAccessChecker->canManageAnnouncements();
+        }
+
         if ($action === BugReports::ACCESS) {
             return $this->adminAccessChecker->canAccessBugReports();
         }
