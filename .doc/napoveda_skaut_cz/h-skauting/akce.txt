@@ -1,0 +1,43 @@
+====== h.skauting: Akce ======
+
+Sekce **Akce** slouží pro založení, evidenci a vyúčtování výprav a dalších akcí jednotky. V přehledu filtrujte akce podle roku a stavu, otevřete jejich detail nebo podle oprávnění založte novou akci.
+
+<color #ed1c24><faicon fab fa-youtube></color><color #22b14c> **Videonávody na YouTube**</color>\\
+<color #22b14c>>></color> [[https://youtu.be/9K8aL39QdBA?feature=shared|Jak na h.skauting | #2 Obecné informace k akcím]] \\
+<color #22b14c>>></color> [[https://youtu.be/F_now5ran4k?feature=shared|Jak na h.skauting | #3 Založení akce]]
+
+===== Založení a přehled akcí =====
+
+V přehledu zvolte **Založit novou akci**. Vyplňte údaje formuláře; položky označené **(+)** jsou orientační a slouží pro statistiku. Po uložení otevřete detail akce. Dostupnost založení závisí na zvolené roli SkautISu.
+
+V přehledu lze použít filtrování podle roku a stavu. Detail akce otevřete kliknutím na její název.
+
+===== Práce s akcí =====
+
+Detail akce zobrazuje stav, jednotku, termín a místo. Navigace obsahuje **Základní údaje**, **Seznam účastníků** a **Evidenci plateb**. Vpravo jsou dostupné akce **Oprávnění** a **Poslední změny**.
+
+==== Základní údaje a statistiky ====
+
+Tlačítkem **Upravit údaje** lze podle oprávnění změnit základní informace. Po aktivaci automatického dopočítávání se zobrazí počet účastníků, osobodny, dětodny a přehled podle věku. U pražských jednotek se může zobrazit také statistika pražských účastníků.
+
+==== Účastníci ====
+
+V seznamu účastníků lze podle oprávnění vyhledat člena jednotky, přidat jej, upravit jeho údaje nebo jej odebrat. Seznam lze exportovat do PDF a Excelu. Před dokončením akce zkontrolujte skutečnou účast a počet dnů; pokud detail nabízí tlačítko **Aktivovat dopočítávání statistik**, aktivujte jej před vytvořením závěrečné zprávy.
+
+<color #ed1c24><faicon fab fa-youtube></color><color #22b14c> **Videonávod na YouTube** >> </color> [[https://youtu.be/EDEsfD8dpQk?feature=shared|Jak na h.skauting | #4 Účastníci akce]]
+
+==== Evidence plateb ====
+
+V evidenci plateb zapisujte příjmy a výdaje a sledujte výsledek hospodaření. Tlačítko **Načíst příjmy od účastníků** převezme příjmy účastníků do evidence. Upozornění na záporný stav nebo rozdíl mezi příjmy účastníků a evidencí plateb znamená, že je potřeba zkontrolovat import, doklady a jejich částky.
+
+==== Oprávnění a historie ====
+
+Tlačítko **Oprávnění** ukáže, co dovoluje právě zvolená role SkautISu: založení, úpravu, uzavření a otevření akce, úpravu funkcí, účastníků a evidence plateb. Pokud možnost nevidíte, přepněte roli nebo požádejte správce jednotky. Obecný přehled je na stránce [[h-skauting:role-a-opravneni|Role skautISu a jejich oprávnění]].
+
+**Poslední změny** zobrazují datum, čas a popis úprav provedených nad akcí a navazujícími agendami. Historii použijte pro dohledání změny; samotnou opravu proveďte v odpovídající části akce.
+
+===== Uzavření a exporty =====
+
+Před uzavřením zkontrolujte údaje, skutečnou účast, počet dnů, evidenci plateb a výsledek hospodaření. Dokud je akce rozpracovaná, lze ji **Uzavřít**; uzavřenou akci lze podle oprávnění znovu otevřít.
+
+V nabídce **Exportovat** jsou závěrečná zpráva a souhrnný tisk podkladů. Pokud při kontrole zjistíte chybu, akci znovu otevřete, opravte údaje a export vytvořte znovu.
