@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Components\Participants;
 
 use App\Components\Payment\PaymentFormFields;
+use App\Model\Common\Repositories\IParticipantRepository;
 use App\Model\DTO\Participant\Participant;
+use App\Model\Participant\NonMemberParticipantService;
 use App\Model\Participant\Payment;
 use App\Model\Participant\Payment\Event;
 use App\Model\Participant\Payment\EventType;
@@ -14,6 +16,7 @@ use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use Component\Forms\BaseForm;
+use Mockery;
 use Nette\Forms\Controls\TextInput;
 use ReflectionMethod;
 use ReflectionProperty;
@@ -84,9 +87,18 @@ final class EditParticipantDialogTest extends Unit
                 MoneyFactory::fromDecimal('100.25'),
             ),
             null,
+            false,
         );
 
-        $dialog = new EditParticipantDialog([self::PARTICIPANT_ID => $participant], true, true, true, false);
+        $dialog = new EditParticipantDialog(
+            [self::PARTICIPANT_ID => $participant],
+            true,
+            true,
+            true,
+            false,
+            true,
+            new NonMemberParticipantService(Mockery::mock(IParticipantRepository::class)),
+        );
 
         $participantId = new ReflectionProperty($dialog, 'participantId');
         $participantId->setValue($dialog, self::PARTICIPANT_ID);

@@ -1,7 +1,7 @@
 // Application shell and global Tabler adjustments.
 
 html {
-  font-size: 112.5%;
+  font-size: 100%;
 }
 
 :root {
@@ -53,6 +53,52 @@ main[role="main"] {
 .card > .card-body > h1:first-child,
 .card > .card-body > .h3:first-child {
   letter-spacing: 0;
+}
+
+// Older templates sometimes pair a semantic heading with Tabler's compact
+// visual class (for example, `h3.h5`). Keep the document outline authoritative:
+// a heading must never become smaller than a following heading level.
+h1:is(.h2, .h3, .h4, .h5, .h6) {
+  font-size: var(--tblr-font-size-h1);
+  line-height: var(--tblr-line-height-h1);
+}
+
+h2:is(.h3, .h4, .h5, .h6) {
+  font-size: var(--tblr-font-size-h2);
+  line-height: var(--tblr-line-height-h2);
+}
+
+h3:is(.h4, .h5, .h6) {
+  font-size: var(--tblr-font-size-h3);
+  line-height: var(--tblr-line-height-h3);
+}
+
+h4:is(.h5, .h6) {
+  font-size: var(--tblr-font-size-h4);
+  line-height: var(--tblr-line-height-h4);
+}
+
+h5.h6 {
+  font-size: var(--tblr-font-size-h5);
+  line-height: var(--tblr-line-height-h5);
+}
+
+// The installed application has a narrow, task-focused canvas. A centred page
+// title makes the current destination immediately clear without changing the
+// web layout used in a regular browser.
+html[data-app-mode="standalone"] main h1 {
+  text-align: center;
+}
+
+html[data-app-mode="standalone"] .page-heading > .card-body > h1 {
+  flex-basis: 100%;
+}
+
+html[data-app-mode="standalone"] .pwa-single-action {
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
 }
 
 .bg-body-tertiary {

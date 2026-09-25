@@ -11,6 +11,8 @@ final class AnnouncementCategoryCodeTest extends TestCase
 {
     public function testAllCategoriesHaveLabelsAndIcons(): void
     {
+        self::assertSame('fi fi-rr-newspaper', AnnouncementCategoryCode::NEWS->icon());
+        self::assertSame('fi fi-rr-circle-xmark', AnnouncementCategoryCode::ERROR->icon());
         self::assertSame(['news', 'info', 'warning', 'error', 'plan'], array_map(
             static fn (AnnouncementCategoryCode $category): string => $category->value,
             AnnouncementCategoryCode::cases(),

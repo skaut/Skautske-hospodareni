@@ -38,6 +38,46 @@ final class PublicAccessCest extends BaseAcceptanceCest
         $I->seeElementInDOM('[data-test="app-install-hint"][hidden]');
     }
 
+    public function standaloneHomepageCentresItsTitleAndPrimaryAction(AcceptanceTester $I): void
+    {
+        $I->amOnPage('/');
+        $I->waitForElementVisible('[data-test="homepage"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->resizeWindow(375, 900);
+
+        $layout = $I->executeJS(<<<'JS'
+document.documentElement.dataset.appMode = 'standalone';
+
+const title = document.querySelector('#landing-title');
+const action = document.querySelector('[data-test="homepage-login"]');
+const sampleH3 = document.querySelector('[data-test="homepage"] h3');
+const sampleH4 = document.createElement('h4');
+sampleH4.className = 'h6';
+sampleH4.textContent = 'Kontrolní nadpis';
+document.body.append(sampleH4);
+
+const titleRect = title.getBoundingClientRect();
+const actionRect = action.getBoundingClientRect();
+const result = {
+    titleAlignment: getComputedStyle(title).textAlign,
+    titleCentre: Math.round((titleRect.left + titleRect.right) / 2),
+    actionCentre: Math.round((actionRect.left + actionRect.right) / 2),
+    viewportCentre: Math.round(document.documentElement.clientWidth / 2),
+    headingOrder: Number.parseFloat(getComputedStyle(sampleH3).fontSize) >= Number.parseFloat(getComputedStyle(sampleH4).fontSize),
+    aboutIsButton: document.querySelector('[data-test="homepage-about"]').classList.contains('btn'),
+};
+
+sampleH4.remove();
+
+return result;
+JS);
+
+        Assert::assertSame('center', $layout['titleAlignment']);
+        Assert::assertSame($layout['viewportCentre'], $layout['titleCentre']);
+        Assert::assertSame($layout['viewportCentre'], $layout['actionCentre']);
+        Assert::assertTrue($layout['headingOrder']);
+        Assert::assertFalse($layout['aboutIsButton']);
+    }
+
     /**
      * The layout used to load Google Analytics on every production page. The property
      * had been switched off for years, so the request bought nothing — and the tag

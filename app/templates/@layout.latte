@@ -22,6 +22,13 @@
         } else {
             document.documentElement.setAttribute("data-bs-theme", "light");
         }
+
+        if (
+            window.matchMedia("(display-mode: standalone)").matches
+            || window.navigator.standalone === true
+        ) {
+            document.documentElement.setAttribute("data-app-mode", "standalone");
+        }
     </script>
 
     <title>{block #title|stripHtml|trim}Skautské hospodaření{/block}</title>
