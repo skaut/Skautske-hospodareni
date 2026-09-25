@@ -105,6 +105,7 @@ JS);
     {
         $I->amOnPage($example['url']);
         $I->waitForElementVisible($example['selector'], AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->dontSeeElementInDOM('[data-test="footer-bug-report-link"]');
     }
 
     /** @dataProvider protectedPages */
