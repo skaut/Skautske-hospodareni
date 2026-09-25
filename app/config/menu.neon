@@ -252,6 +252,7 @@ menu:
                 data:
                     test: admin-nav-help
                     icon: fi fi-rr-lightbulb-on
+                    requiresAdmin: true
             invoiceAccess:
                 title: Fakturace
                 action: 'Admin:InvoiceAccess:default'
@@ -269,7 +270,7 @@ menu:
                 data:
                     test: admin-nav-announcements
                     icon: fi fi-rr-bell
-                    requiresAdmin: true
+                    requiresAnnouncementsAccess: true
 
     travel:
         authorizator: @App\Presentation\Accessory\Navigation\NavigationAuthorizator

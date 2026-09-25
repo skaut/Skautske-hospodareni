@@ -133,6 +133,26 @@ final class CompositeAuthorizatorTest extends Unit
         self::assertTrue($authorizator->isAllowed(BugReports::ACCESS, null));
     }
 
+    public function testAnnouncementManagerHasScopedAdministrationAccess(): void
+    {
+        $webservice = Mockery::mock(WebServiceInterface::class);
+        $webservice->shouldNotReceive('ActionVerify');
+        $repository = Mockery::mock(SystemUserRoleRepository::class);
+        $repository->shouldReceive('hasRole')->with(1942, SystemRole::ADMIN)->times(3)->andReturn(false);
+        $repository->shouldReceive('hasRole')->with(1942, SystemRole::SUPPORT)->once()->andReturn(false);
+        $repository->shouldReceive('hasRole')->with(1942, SystemRole::ANNOUNCEMENT_MANAGER)->twice()->andReturn(true);
+
+        $authorizator = new CompositeAuthorizator(
+            new SkautisAuthorizator($webservice),
+            new AdminAccessChecker($this->mockUser(1942), $repository, []),
+            $this->invoiceAccessChecker(),
+        );
+
+        self::assertFalse($authorizator->isAllowed(Admin::ACCESS, null));
+        self::assertTrue($authorizator->isAllowed(Admin::ANY_ACCESS, null));
+        self::assertTrue($authorizator->isAllowed(Admin::ANNOUNCEMENTS_ACCESS, null));
+    }
+
     private function invoiceAccessChecker(): InvoiceAccessChecker
     {
         $repository = Mockery::mock(InvoiceAccessUserRepository::class);

@@ -126,4 +126,71 @@ class DashboardCest extends BaseAcceptanceCest
         $I->seeInCurrentUrl('/jednotka');
         $I->seeElement('.active [data-test="global-nav-unit"]');
     }
+
+    /** @group dashboard */
+    public function dashboardUsesReadableAnnouncementHierarchy(): void
+    {
+        $I = $this->I;
+
+        $I->amOnPage('/nastenka');
+        $I->waitForElementVisible('[data-test="dashboard"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        $I->executeJS(<<<'JS'
+const firstAnnouncement = document.querySelector('[data-test="dashboard-announcement"]');
+
+if (firstAnnouncement !== null) {
+    firstAnnouncement.dataset.testTypography = 'true';
+}
+JS);
+
+        $I->seeElement('[data-test="dashboard-card-events"] h2:not(.h5)');
+
+        $typography = $I->executeJS(<<<'JS'
+const title = document.querySelector('[data-test="dashboard"] h1');
+const announcement = document.querySelector('[data-test-typography="true"]');
+
+if (title === null || announcement === null) {
+    return null;
+}
+
+const announcementTitle = announcement.querySelector('h3');
+const announcementText = announcement.querySelector('p');
+const category = announcement.querySelector('[role="img"]');
+const announcementContent = announcement.querySelector('.flex-grow-1');
+const sampleH4 = document.createElement('h4');
+sampleH4.textContent = 'Kontrolní nadpis';
+document.body.append(sampleH4);
+const categoryRect = category.getBoundingClientRect();
+const announcementContentRect = announcementContent.getBoundingClientRect();
+
+const result = {
+    base: Number.parseFloat(getComputedStyle(document.documentElement).fontSize),
+    pageTitle: Number.parseFloat(getComputedStyle(title).fontSize),
+    announcementTitle: Number.parseFloat(getComputedStyle(announcementTitle).fontSize),
+    announcementText: Number.parseFloat(getComputedStyle(announcementText).fontSize),
+    headingFour: Number.parseFloat(getComputedStyle(sampleH4).fontSize),
+    categoryIcon: Number.parseFloat(getComputedStyle(category).fontSize),
+    categoryCentre: (categoryRect.top + categoryRect.bottom) / 2,
+    contentCentre: (announcementContentRect.top + announcementContentRect.bottom) / 2,
+    categoryLabel: category.getAttribute('aria-label') ?? '',
+};
+
+sampleH4.remove();
+
+return result;
+JS);
+
+        if ($typography !== null) {
+            Assert::assertEquals(16, $typography['base']);
+            Assert::assertEquals(23, $typography['pageTitle']);
+            Assert::assertEquals(16, $typography['announcementTitle']);
+            Assert::assertEquals(13, $typography['announcementText']);
+            Assert::assertEquals(15, $typography['headingFour']);
+            Assert::assertEquals(25, $typography['categoryIcon']);
+            Assert::assertEqualsWithDelta($typography['contentCentre'], $typography['categoryCentre'], 1);
+            Assert::assertGreaterThan($typography['announcementText'], $typography['announcementTitle']);
+            Assert::assertGreaterThan($typography['announcementTitle'], $typography['pageTitle']);
+            Assert::assertNotSame('', $typography['categoryLabel']);
+        }
+    }
 }

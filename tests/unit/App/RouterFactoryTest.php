@@ -44,6 +44,11 @@ final class RouterFactoryTest extends Unit
         }
     }
 
+    public function testDoesNotMatchRemovedPublicAnnouncementDetail(): void
+    {
+        self::assertNull($this->createRouter()->match($this->createHttpRequest('/oznameni/42')));
+    }
+
     /**
      * @return list<array{0: array<string, int|string>, 1: string}>
      */
@@ -54,6 +59,10 @@ final class RouterFactoryTest extends Unit
             [['presenter' => 'BugReport', 'url' => 'https://example.test/platby'], '/nahlasit-problem?url=https%3A%2F%2Fexample.test%2Fplatby'],
             [['presenter' => 'Admin:BugReports'], '/admin/hlaseni-chyb'],
             [['presenter' => 'Admin:BugReports', 'action' => 'detail', 'id' => 42], '/admin/hlaseni-chyb/42'],
+            [['presenter' => 'Announcements'], '/oznameni'],
+            [['presenter' => 'Admin:Announcements'], '/admin/oznameni'],
+            [['presenter' => 'Admin:Announcements', 'action' => 'create'], '/admin/oznameni/nove'],
+            [['presenter' => 'Admin:Announcements', 'action' => 'edit', 'id' => 42], '/admin/oznameni/42/upravit'],
             [['presenter' => 'Unit:Cashbook'], '/jednotka'],
             [['presenter' => 'Unit:Cashbook', 'unitId' => 5], '/jednotka/5/kniha'],
             [['presenter' => 'Unit:Cashbook', 'unitId' => 5, 'year' => 2028], '/jednotka/5/kniha?rok=2028'],
@@ -142,6 +151,10 @@ final class RouterFactoryTest extends Unit
             ['/nahlasit-problem?url=https%3A%2F%2Fexample.test%2Fplatby', ['presenter' => 'BugReport', 'action' => 'default', 'url' => 'https://example.test/platby']],
             ['/admin/hlaseni-chyb', ['presenter' => 'Admin:BugReports', 'action' => 'default']],
             ['/admin/hlaseni-chyb/42', ['presenter' => 'Admin:BugReports', 'action' => 'detail', 'id' => 42]],
+            ['/oznameni', ['presenter' => 'Announcements', 'action' => 'default']],
+            ['/admin/oznameni', ['presenter' => 'Admin:Announcements', 'action' => 'default']],
+            ['/admin/oznameni/nove', ['presenter' => 'Admin:Announcements', 'action' => 'create']],
+            ['/admin/oznameni/42/upravit', ['presenter' => 'Admin:Announcements', 'action' => 'edit', 'id' => 42]],
             ['/jednotka', ['presenter' => 'Unit:Cashbook', 'action' => 'default']],
             ['/jednotka/5/kniha', ['presenter' => 'Unit:Cashbook', 'action' => 'default', 'unitId' => 5]],
             ['/jednotka/5/kniha?rok=2028', ['presenter' => 'Unit:Cashbook', 'action' => 'default', 'unitId' => 5, 'year' => 2028]],

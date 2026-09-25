@@ -246,7 +246,9 @@ class RouterFactory
             ->addRoute('uzivatele', 'Users:default')
             ->addRoute('napovedy/<pageKey>', 'Help:edit')
             ->addRoute('napovedy', 'Help:default')
-            ->addRoute('oznameni[/<action>][/<id [0-9]+>]', ['presenter' => 'Announcements', 'action' => 'default'])
+            ->addRoute('oznameni', 'Announcements:default')
+            ->addRoute('oznameni/nove', 'Announcements:create')
+            ->addRoute('oznameni/<id [0-9]+>/upravit', 'Announcements:edit')
             ->addRoute('statistiky ? jednotka=<unitId>', 'Statistics:default')
             ->addRoute('<presenter>[/<action>]', ['action' => 'default']);
     }
