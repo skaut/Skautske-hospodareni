@@ -1,0 +1,15 @@
+====== h.skauting: Jednotka ======
+
+Sekce **Jednotka** slouží pro práci s pokladní knihou, rozpočtem a doklady vybrané jednotky. Před prací vyberte jednotku a rok.
+
+===== Pokladní kniha =====
+
+V pokladní knize se zobrazují doklady a zůstatky podle zvoleného způsobu platby. Doklad otevřete ze seznamu a před uzamčením zkontrolujte jeho údaje. Uzamčený doklad je určen jako dokončený podklad pro hospodaření a nemá se běžně dále upravovat.
+
+===== Rozpočet a kategorie =====
+
+Rozpočet rozlišuje příjmové a výdajové kategorie, jejich plánované částky a skutečnost. Tlačítkem **Založit kategorii** vytvoříte novou kategorii pro vybraný rok. Kategorie nastavte tak, aby odpovídaly evidenci dokladů jednotky.
+
+===== Doklady a exporty =====
+
+Přehled dokladů umožňuje filtrovat rok i volbu mezi odemčenými doklady a celým seznamem. Z pokladní knihy a přehledu dokladů lze podle oprávnění vytvářet tiskové a datové exporty. Před exportem ověřte jednotku, rok a aktivní filtr.

@@ -1,0 +1,23 @@
+====== h.skauting: Nastavení ======
+
+V sekci **Nastavení** spravujete uživatelské volby, bankovní účty, propojené e-mailové účty a automatizace. Dostupnost jednotlivých položek závisí na zvolené roli ve SkautISu a oprávnění pro danou jednotku.
+
+===== Uživatel =====
+
+V nastavení uživatele upravujete osobní volby, které ovlivňují chování aplikace. Tyto volby se týkají přihlášeného uživatele, ne údajů jednotky. Před změnou ověřte, že pracujete ve správné roli SkautISu.
+
+===== Bankovní účty a transakce =====
+
+V bankovních účtech lze přidat účet, načíst dostupné účty ze SkautISu a otevřít detail konkrétního účtu. Detail obsahuje transakce, historii importů a nastavení přístupů pro oddíly.
+
+Import provádějte jen pro správný účet. Po importu zkontrolujte příchozí i ostatní transakce a podle potřeby je spárujte s platbou. Při změně přístupů ověřte, které oddíly mají účet používat.
+
+===== E-maily a automatizace =====
+
+V nastavení e-mailů přidáte a spravujete propojené účty používané pro odesílání platebních údajů a dalších zpráv z aplikace. Po přidání ověřte, že je účet mezi propojenými účty a lze jej použít pro vybranou jednotku.
+
+Automatizace obsahuje dostupné automatizované úlohy pro jednotku. Před jejich zapnutím ověřte, jaké údaje používají a kdo zkontroluje výsledek. Automatizace nenahrazuje kontrolu dokladů, plateb ani údajů ve SkautISu.
+
+<WRAP center round info 100%>
+**Fakturace je připravovaná funkce.** I když se některé související položky mohou zobrazit uživatelům s předběžným přístupem, nápověda k ní zatím nebude zveřejněna.
+</WRAP>

@@ -1,0 +1,31 @@
+====== h.skauting: Tábory ======
+
+Tábor založte a spravujte ve **SkautISu**. V h.skautingu se zobrazí v přehledu spolu s termínem a rychlými odkazy na rozpočet a evidenci plateb.
+
+<WRAP center round info 100%>
+SkautIS je zdrojem údajů o táboře, účastnících, skutečné účasti a rozpočtu. h.skauting tyto údaje používá pro hospodaření, kontrolu a exporty.
+</WRAP>
+
+===== Práce s táborem =====
+
+Ve SkautISu vyplňte základní údaje, termín, místo, účastníky a jejich skutečnou účast. V detailu tábora h.skauting zobrazuje stav, vedení, statistiky a výsledek hospodaření; tlačítko **Upravit ve SkautISu** otevře zdrojový záznam.
+
+Pokud aplikace upozorní na chybějící automatický výpočet osobodnů a dětodnů, otevřete seznam účastníků a použijte nabízené tlačítko **Aktivovat**. Upozornění na chybějící automatické dopočítávání kategorií vyřešte před hospodařením.
+
+===== Účastníci, e-přihlášky a statistiky =====
+
+Seznam účastníků slouží pro pracovní evidenci tábora; podle oprávnění lze účastníky přidávat, upravovat, odebírat a exportovat. Stav e-přihlášky vyjadřuje reakci na přihlášku, například přijetí, odmítnutí, expiraci nebo zrušení. Sám o sobě neurčuje skutečnou účast.
+
+Skutečnou účast a počet dnů nastavujte ve SkautISu. Pražské statistiky i závěrečná zpráva započítávají pouze skutečné účastníky. Skutečný účastník s nulovým počtem dnů se může projevit v počtu osob, ale nepřidá osobodny.
+
+===== Rozpočet a evidence plateb =====
+
+Rozpočet porovnává předpokládané a skutečné náklady a výnosy v kategoriích. Při upozornění na nekonzistentní data zkontrolujte doklady a jejich kategorie; uživatel s oprávněním může následně aktualizovat údaje ve SkautISu.
+
+V evidenci plateb vedete pokladnu a můžete **Načíst příjmy od účastníků**. Záporný stav znamená, že výdaje převyšují načtené příjmy a výnosy; zkontrolujte import, doklady a kategorie.
+
+===== Závěrečná zpráva =====
+
+Závěrečnou zprávu vytvoříte z detailu tábora. Před exportem ověřte skutečnou účast, počet dnů, automatický výpočet osobodnů a dětodnů, pořadatelské údaje, funkce a soulad kategorií se SkautISem. Pokud zpráva upozorní na nesoulad, opravte údaje a vytvořte ji znovu.
+
+Oprávnění pro práci s tábory popisuje [[h-skauting:role-a-opravneni|přehled rolí a oprávnění]].
