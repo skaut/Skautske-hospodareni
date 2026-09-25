@@ -1,0 +1,32 @@
+<section class="card" data-help-form>
+        <div class="card-body">
+            <form n:name="announcementForm" class="inline-errors" data-test="announcement-form">
+                <div n:foreach="$form->getOwnErrors() as $error" class="alert alert-danger" role="alert">{$error}</div>
+                <div class="mb-3">
+                    {label title /}
+                    {input title class => $form['title']->hasErrors() ? 'form-control is-invalid' : 'form-control'}
+                    <div n:foreach="$form['title']->getErrors() as $error" class="invalid-feedback d-block">{$error}</div>
+                </div>
+                <div class="mb-3">
+                    {label message /}
+                    {input message class => $form['message']->hasErrors() ? 'form-control is-invalid' : 'form-control', rows => 5}
+                    <div class="form-text">Nejvýše 600 znaků.</div>
+                    <div n:foreach="$form['message']->getErrors() as $error" class="invalid-feedback d-block">{$error}</div>
+                </div>
+                <div class="mb-3">
+                    {label category /}
+                    {input category class => $form['category']->hasErrors() ? 'form-select is-invalid' : 'form-select'}
+                    <div n:foreach="$form['category']->getErrors() as $error" class="invalid-feedback d-block">{$error}</div>
+                </div>
+                <div class="mb-3">
+                    {label expiresAt /}
+                    {input expiresAt class => $form['expiresAt']->hasErrors() ? 'form-control is-invalid' : 'form-control'}
+                    <div class="form-text">Nepovinné. Bez data zůstane oznámení zobrazené, dokud ho neskryjete.</div>
+                    <div n:foreach="$form['expiresAt']->getErrors() as $error" class="invalid-feedback d-block">{$error}</div>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    {input submit class => 'btn btn-primary', data-test => 'announcement-form-submit'}
+                </div>
+            </form>
+        </div>
+</section>
