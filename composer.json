@@ -63,7 +63,7 @@
         "ublaboo/datagrid": "^v6.9",
         "vlucas/phpdotenv": "^5.5",
         "warhuhn/chronos-doctrine": "v4.1.0",
-        "webwingscz/fio-api-php": "6.0.0"
+        "webwingscz/fio-api-php": "6.1.0"
     },
     "require-dev": {
         "ext-pdo": "*",
