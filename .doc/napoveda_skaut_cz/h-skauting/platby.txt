@@ -1,0 +1,21 @@
+====== h.skauting: Evidence plateb ======
+
+V sekci **Platby** vytváříte a spravujete platební skupiny pro akce, tábory, vzdělávací akce a registrace.
+
+<color #ed1c24><faicon fab fa-youtube></color><color #22b14c> **Videonávod na YouTube** >> </color> [[https://youtu.be/_1h4RJIE4us?feature=shared|Jak na h.skauting | #5 Evidence plateb]]
+
+===== Platební skupiny =====
+
+V přehledu lze zobrazit pouze otevřené skupiny nebo všechny skupiny. Novou skupinu vytvořte pro akci, tábor, vzdělávací akci, registraci nebo jako obecnou skupinu. U skupiny navázané na SkautIS vyberte správný záznam; podle typu pak přidávejte osoby z účastníků, registrace nebo jednotky.
+
+Otevřenou skupinu lze upravit a uzavřít. Uzavřenou skupinu lze podle oprávnění znovu otevřít nebo odstranit.
+
+===== Platby, párování a vratky =====
+
+V otevřené skupině použijte **Přidat platbu**. K dispozici jsou platby za účastníka, člena, registraci nebo obecné platby; hromadný import slouží pro více plateb najednou.
+
+V detailu skupiny lze odeslat platební údaje, párovat úhrady, vytvořit vratku, doplnit či dogenerovat variabilní symboly a exportovat seznam plateb. Variabilní symboly dogenerujte až po vyplnění výchozího symbolu alespoň u jedné platby. Skupinu neuzavírejte, dokud nejsou vyřešené nezaplacené platby, vratky a párování.
+
+<WRAP center round info 100%>
+**Fakturace je připravovaná funkce.** Postupy pro vystavování a správu faktur proto tato nápověda zatím neobsahuje.
+</WRAP>
