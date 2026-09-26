@@ -4,7 +4,7 @@
     "scripts": {
         "build": "webpack --mode=development",
         "build-production": "webpack --mode=production",
-        "check-types": "yarn tsc --noEmit"
+        "check-types": "tsc --noEmit"
     },
     "dependencies": {
         "@flaticon/flaticon-uicons": "3.3.1",
@@ -41,7 +41,7 @@
         "webpack": "^5.110.3",
         "webpack-cli": "^7.2.3"
     },
-    "resolutions": {
+    "overrides": {
         "bootstrap": "5.3.8"
     },
     "lint-staged": {

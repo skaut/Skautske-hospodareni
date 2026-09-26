@@ -41,18 +41,17 @@ jobs:
       - name: Install Composer deps
         run: composer install --no-interaction --prefer-dist --no-progress --ignore-platform-reqs
 
-      # Node/Yarn + cache
-      - name: Setup Node.js (+ Yarn cache)
+      # Node/npm + cache
+      - name: Setup Node.js (+ npm cache)
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'yarn'
-          cache-dependency-path: yarn.lock
+          cache: 'npm'
 
       - name: Install JS deps
-        run: yarn install --frozen-lockfile --non-interactive --prefer-offline
+        run: npm ci
       - name: Build production assets
-        run: yarn build-production
+        run: npm run build-production
 
       # Výroba tarballu bez zbytečností
       - name: Create tarball
