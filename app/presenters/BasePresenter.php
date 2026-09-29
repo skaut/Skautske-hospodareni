@@ -54,7 +54,7 @@ abstract class BasePresenter extends Presenter
     private const SESSION_KEEP_ALIVE_INTERVAL_MS = 1_200_000;
 
     private const PUBLIC_ACTIONS = [
-        'Default' => ['default', 'about', 'reinforcement', 'privacy'],
+        'Default' => ['default', 'about', 'supporters', 'reinforcement', 'privacy'],
     ];
 
     private const AUTH_ACTIONS = ['ajax', 'default', 'logonskautis', 'logoutsis', 'skautis', 'skautislogout'];
