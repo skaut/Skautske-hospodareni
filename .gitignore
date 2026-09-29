@@ -23,3 +23,4 @@ adminer.php
 /.env.*.local
 /.php-cs-fixer.cache
 /.make.local
+/artifacts
