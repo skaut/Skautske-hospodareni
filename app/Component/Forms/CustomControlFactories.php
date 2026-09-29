@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Component\Forms;
 
-use Kdyby\Replicator\Container;
-use NasExt\Forms\Controls\DependentSelectBox;
-use Nette\Forms\Control;
+use Contributte\FormMultiplier\Multiplier;
+use Stringable;
 
 trait CustomControlFactories
 {
-    public function addDate(string $name, $label = null): DateControl
+    public function addDate(string $name, string|Stringable|null $label = null): DateControl
     {
         return $this[$name] = new DateControl($label);
     }
@@ -25,18 +24,14 @@ trait CustomControlFactories
     {
         $control = new BaseContainer();
         $control->currentGroup = $this->currentGroup;
+        $this[(string) $name] = $control;
 
-        return $this[$name] = $control;
+        return $control;
     }
 
-    public function addDependentSelectBox(string $name, ?string $label, Control ...$parents): DependentSelectBox
+    public function addDynamic(string $name, callable $factory, int $createDefault = 0, bool $forceDefault = false): Multiplier
     {
-        return $this[$name] = new DependentSelectBox($label, $parents);
-    }
-
-    public function addDynamic(string $name, callable $factory, int $createDefault = 0, bool $forceDefault = false): Container
-    {
-        $control = new Container($factory, $createDefault, $forceDefault);
+        $control = new Multiplier($factory, $createDefault);
         $control->currentGroup = $this->currentGroup;
 
         return $this[$name] = $control;

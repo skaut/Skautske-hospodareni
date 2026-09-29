@@ -1,0 +1,63 @@
+{block title}Podporovatelé Skautského hospodaření{/block}
+
+{block content}
+<div data-test="supporters-page" class="d-grid gap-4">
+
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 class="h3 mb-2">Podporovatelé</h1>
+            {include pageLead, default: 'Podpora pomáhá Skautské hospodaření rozvíjet a udržovat pro každodenní práci skautských jednotek.'}
+        </div>
+    </div>
+
+    <section class="card bg-body-tertiary" aria-labelledby="supporters-thanks">
+        <div class="card-body">
+            <h2 id="supporters-thanks" class="h5 fw-bold mb-3">Děkujeme za podporu</h2>
+            <p class="text-body-secondary small mb-0">
+                Díky podporovatelům můžeme Skautské hospodaření dál rozvíjet a udržovat.
+            </p>
+        </div>
+    </section>
+
+    <section class="card" aria-labelledby="supporters-contact">
+        <div class="card-body">
+            <h2 id="supporters-contact" class="h5 mb-2">Chcete projekt podpořit?</h2>
+            <p class="mb-0">
+                Pokud chcete projekt podpořit, kontaktujte nás na e-mailu
+                <a href="mailto:hskauting@skaut.cz">hskauting@skaut.cz</a>.
+            </p>
+        </div>
+    </section>
+
+    <section class="card" aria-labelledby="supporters-list">
+        <div class="card-body">
+            <h2 id="supporters-list" class="h5 mb-4">Podporovatelé podle roků</h2>
+
+            {foreach [
+                2026 => [['okres Brno - město', '10 000 Kč']],
+                2025 => [['okres Brno - město', '10 000 Kč']],
+                2024 => [['okres Brno - město', '10 000 Kč']],
+                2023 => [['okres Brno - město', '5 000 Kč']],
+                2022 => [['okres Brno - město', '3 000 Kč']],
+                2021 => [['okres Brno - město', '3 000 Kč']],
+                2020 => [['okres Brno - město', '3 000 Kč']],
+                2019 => [['Středisko Blaník', '20 000 Kč']],
+                2018 => [['Ondřej Kněžour (středisko Douglaska Praha)', '1 000 Kč'], ['Středisko Blaník', '6 000 Kč']],
+                2017 => [['Středisko Blaník', '6 000 Kč'], ['Štěpán Káňa', '500 Kč']],
+                2016 => [['Jaroslav Procházka', '100 Kč']],
+            ] as $year => $supporters}
+                <section class="border rounded bg-body-tertiary p-3 {if !$iterator->last}mb-3{/if}" data-test="supporters-year" aria-labelledby="supporters-year-{$year}">
+                    <h3 id="supporters-year-{$year}" class="supporters-year h5 fw-bold mb-3">{$year}</h3>
+                    <ul class="list-group list-group-flush">
+                        {foreach $supporters as [$name, $amount]}
+                            <li class="list-group-item bg-transparent px-0 d-flex flex-wrap justify-content-between gap-2">
+                                <span>{$name}</span>
+                                <strong class="text-nowrap">{$amount}</strong>
+                            </li>
+                        {/foreach}
+                    </ul>
+                </section>
+            {/foreach}
+        </div>
+    </section>
+</div>

@@ -17,6 +17,11 @@ class VehicleListPresenter extends TravelBasePresenter
 
     protected function createComponentGrid(): VehicleGrid
     {
-        return $this->gridFactory->create($this->getUnitId());
+        return $this->gridFactory->create($this->getUnitId(), $this->isArchivedList());
+    }
+
+    private function isArchivedList(): bool
+    {
+        return $this->getAction() === 'archived';
     }
 }

@@ -9,6 +9,7 @@ use App\Model\Infrastructure\Repository\AbstractRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 
+/** @extends AbstractRepository<TechnicalErrorReport> */
 class TechnicalErrorReportRepository extends AbstractRepository
 {
     public function __construct(EntityManagerInterface $entityManager)

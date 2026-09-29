@@ -79,14 +79,21 @@ class AuthPresenter extends BasePresenter
                 $this->userService->updateSkautISRole($rememberedRoleId);
             }
 
+            $currentRole = $this->userService->getActualRole();
+
             $user->setExpiration('+ 29 minutes'); // nastavíme expiraci
+            // SkautIS role jsou objekty, nepatří do typovaného slotu rolí Nette identity (list<string>),
+            // ukládáme je do datového slotu vedle aktuální role.
             $user->login(new SimpleIdentity(
                 $userId,
-                $roles,
-                ['currentRole' => $this->userService->getActualRole()],
+                data: [
+                    'currentRole' => $currentRole,
+                    'skautisRoles' => $roles,
+                ],
             ));
 
             $this->updateUserAccess();
+            $this->loginTracker->recordLogin($userId, $currentRole, $this->userService->getRoleId());
 
             if ($ReturnUrl !== null) {
                 $this->restoreRequest(substr($ReturnUrl, strlen($this->getHttpRequest()->getUrl()->getBaseUrl())));
@@ -120,6 +127,9 @@ class AuthPresenter extends BasePresenter
      */
     public function actionSkautisLogout(): void
     {
+        // Before logout(true) — the tracking section is dropped with the identity.
+        $this->loginTracker->recordLogout();
+
         $this->getUser()->logout(true);
         if (isset($this->getRequest()->getPost()['skautIS_Logout'])) {
             $this->flashMessage('Byl jsi úspěšně odhlášen.');

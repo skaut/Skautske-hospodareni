@@ -24,6 +24,7 @@ use App\Model\Payment\Payment;
 use App\Model\Payment\Services\IBankAccountAccessChecker;
 use App\Model\Payment\Services\IOAuthAccessChecker;
 use App\Model\Payment\VariableSymbol;
+use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use Doctrine\Common\DataFixtures\AbstractFixture;
@@ -31,7 +32,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use LogicException;
 use Nette\DI\Container;
-use Nettrine\Fixtures\ContainerAwareInterface;
+use Nettrine\Fixtures\Fixture\ContainerAwareInterface;
 
 use function sprintf;
 
@@ -176,7 +177,7 @@ final class Unit25893PaymentGroupFixture extends AbstractFixture implements Cont
         ?GoogleOAuth $googleOAuth = null,
         bool $remindersEnabled = false,
     ): Group {
-        $paymentDefaults = new PaymentDefaults($amount, $dueDate, $constantSymbol, $nextVs);
+        $paymentDefaults = new PaymentDefaults(MoneyFactory::fromDecimal((string) $amount), $dueDate, $constantSymbol, $nextVs);
 
         $emails = [
             EmailType::PAYMENT_INFO => new EmailTemplate(
@@ -221,7 +222,7 @@ final class Unit25893PaymentGroupFixture extends AbstractFixture implements Cont
             $group,
             $name,
             [new EmailAddress($email)],
-            $amount,
+            MoneyFactory::fromDecimal((string) $amount),
             $this->nextWorkday($dueDaysFromNow),
             new VariableSymbol($vs),
             $group->getConstantSymbol(),
@@ -353,7 +354,7 @@ final class Unit25893PaymentGroupFixture extends AbstractFixture implements Cont
                 'fixture-25893-'.$key,
                 BankTransactionSource::GPC,
                 (new DateTimeImmutable('today'))->modify(sprintf('%+d days', $daysFromNow)),
-                $amount,
+                MoneyFactory::fromDecimal((string) $amount),
                 '123456789/0800',
                 'Fixture protistrana',
                 $variableSymbol !== null ? (int) $variableSymbol : null,

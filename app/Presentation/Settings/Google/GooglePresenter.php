@@ -9,6 +9,7 @@ use App\Model\Google\Commands\SaveOAuth;
 use App\Model\Google\ReadModel\Queries\OAuthUrlQuery;
 use App\Presentation\Settings\SettingsBasePresenter;
 use InvalidArgumentException;
+use RuntimeException;
 
 final class GooglePresenter extends SettingsBasePresenter
 {
@@ -19,7 +20,7 @@ final class GooglePresenter extends SettingsBasePresenter
 
     public function actionToken(string $code): void
     {
-        $unitId = $this->userService->getActualRole()->getUnitId();
+        $unitId = ($this->userService->getActualRole() ?? throw new RuntimeException('Není aktivní role.'))->getUnitId();
 
         try {
             $this->commandBus->handle(new SaveOAuth($code, new UnitId($unitId)));

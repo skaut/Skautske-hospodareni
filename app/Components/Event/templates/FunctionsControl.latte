@@ -11,12 +11,12 @@
                 {if $editation}
                     <a n:href="closeEditation!" class="ajax btn-close" aria-label="Zavřít úpravu"></a>
                 {elseif $canEdit}
-                    <a n:href="edit!" class="btn btn-light btn-sm ajax"><i
-                                class="far fa-edit"></i></a>
+                    <a n:href="edit!" class="btn btn-light btn-sm ajax" title="Upravit vedení akce"
+                       aria-label="Upravit vedení akce"><i class="fi fi-rr-edit" aria-hidden="true"></i></a>
                 {/if}
             </div>
             {if $editation}
-                <form n:name="form">
+                <form n:name="form" class="inline-errors">
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item" n:foreach="$functionLabels as $functionName => $label">
                             <div class="mb-3">

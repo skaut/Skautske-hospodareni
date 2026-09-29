@@ -31,7 +31,7 @@ final class UnitCest extends BaseAcceptanceCest
         $I->seeInCurrentUrl('/jednotka/'.AcceptanceTester::UNIT_ID.'/kniha');
 
         $href = $I->grabAttributeFrom('[data-test="unit-subnav-cashbook"]', 'href');
-        Assert::assertMatchesRegularExpression('~^/jednotka/\d+/kniha(?:\?rok=\d+)?$~', $href);
+        Assert::assertMatchesRegularExpression('~^/jednotka/\d+/kniha(?:\?rok=\d+)?$~', (string) $href);
 
         $I->seeElement('.active [data-test="unit-subnav-cashbook"]');
         $I->seeElement('.active [data-test="global-nav-unit"]');
@@ -48,7 +48,7 @@ final class UnitCest extends BaseAcceptanceCest
         $I->waitForElementVisible('[data-test="unit-cashbook-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $href = $I->grabAttributeFrom('[data-test="unit-subnav-budget"]', 'href');
-        Assert::assertMatchesRegularExpression('~^/jednotka/\d+/rozpocet(?:\?rok=\d+)?$~', $href);
+        Assert::assertMatchesRegularExpression('~^/jednotka/\d+/rozpocet(?:\?rok=\d+)?$~', (string) $href);
 
         $I->clickStable('[data-test="unit-subnav-budget"]');
         $I->waitForElementVisible('[data-test="unit-budget-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
@@ -68,7 +68,7 @@ final class UnitCest extends BaseAcceptanceCest
         $I->waitForElementVisible('[data-test="unit-cashbook-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $href = $I->grabAttributeFrom('[data-test="unit-subnav-chits"]', 'href');
-        Assert::assertMatchesRegularExpression('~^/jednotka/\d+/paragony(?:\?rok=\d+)?$~', $href);
+        Assert::assertMatchesRegularExpression('~^/jednotka/\d+/paragony(?:\?rok=\d+)?$~', (string) $href);
 
         $I->clickStable('[data-test="unit-subnav-chits"]');
         $I->waitForElementVisible('[data-test="unit-chits-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);

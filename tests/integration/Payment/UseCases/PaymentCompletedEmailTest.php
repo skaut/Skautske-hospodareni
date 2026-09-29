@@ -16,6 +16,7 @@ use App\Model\Payment\Group;
 use App\Model\Payment\Payment;
 use App\Model\Payment\PaymentService;
 use App\Model\Payment\UserRepositoryStub;
+use App\Model\Utils\MoneyFactory;
 use Helpers;
 use IntegrationTest;
 
@@ -115,7 +116,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
 
         $this->paymentService->createGroup(11, null, 'Test', $paymentDefaults, $emails, $oAuthId, null);
         $this->commandBus->handle(
-            new CreatePayment(1, 'Platba', $paymentEmail !== null ? [new EmailAddress($paymentEmail)] : [], 100, Helpers::getValidDueDate(), null, null, null, ''),
+            new CreatePayment(1, 'Platba', $paymentEmail !== null ? [new EmailAddress($paymentEmail)] : [], MoneyFactory::fromDecimal('100.00'), Helpers::getValidDueDate(), null, null, null, ''),
         );
     }
 

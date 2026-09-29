@@ -8,6 +8,7 @@ use App\Model\Infrastructure\Repository\AbstractRepository;
 use App\Model\User\Entity\AdminUser;
 use Doctrine\ORM\EntityManagerInterface;
 
+/** @extends AbstractRepository<AdminUser> */
 class AdminUserRepository extends AbstractRepository
 {
     private ?bool $storageAvailable = null;

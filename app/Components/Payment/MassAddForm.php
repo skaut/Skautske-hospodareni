@@ -11,11 +11,13 @@ use App\Model\DTO\Payment\MemberEmail;
 use App\Model\DTO\Payment\MemberEmailType;
 use App\Model\Payment\Commands\Payment\CreatePayment;
 use App\Model\Payment\PaymentService;
+use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseContainer;
 use Component\Forms\BaseForm;
 use LogicException;
 use Nette\Forms\Controls\TextBase;
+use RuntimeException;
 
 use function array_filter;
 use function array_map;
@@ -35,6 +37,7 @@ class MassAddForm extends BaseControl
             ->setNullable()
             ->setRequired(false)
             ->addRule($form::FLOAT, 'Částka musí být číslo')
+            ->addRule($form::PATTERN, PaymentFormFields::MONEY_PATTERN_MESSAGE, PaymentFormFields::MONEY_PATTERN)
             ->addRule($form::MIN, 'Čátka musí být větší než 0', 0.01)
             ->setHtmlAttribute('class', 'input-mini');
 
@@ -61,10 +64,10 @@ class MassAddForm extends BaseControl
             $this->formSubmitted($form);
         };
 
-        $group = $this->payments->getGroup($this->groupId);
+        $group = $this->payments->getGroup($this->groupId) ?? throw new RuntimeException('Platební skupina nebyla nalezena.');
 
         $form->setDefaults([
-            'amount' => $group->getDefaultAmount(),
+            'amount' => $group->getDefaultAmount() === null ? null : MoneyFactory::toDecimal($group->getDefaultAmount()),
             'dueDate' => $group->getDueDate(),
             'constantSymbol' => $group->getConstantSymbol(),
         ]);
@@ -73,7 +76,7 @@ class MassAddForm extends BaseControl
     }
 
     /** @param MemberEmail[] $emails */
-    public function addPerson(int $id, array $emails, string $name, ?float $amount = null, string $note = '', string $variableSymbol = '', ?ChronosDate $dueDate = null): void
+    public function addPerson(int $id, array $emails, string $name, ?\Money\Money $amount = null, string $note = '', string $variableSymbol = '', ?ChronosDate $dueDate = null): void
     {
         $form = $this['form'];
         $persons = $form['persons'];
@@ -113,11 +116,13 @@ class MassAddForm extends BaseControl
         $container->addText('amount', 'Částka:')
             ->setHtmlAttribute('class', 'input-mini')
             ->setHtmlType('number')
+            ->setHtmlAttribute('step', '0.01')
             ->setRequired(false)
             ->setNullable()
-            ->setDefaultValue($amount)
+            ->setDefaultValue($amount === null ? null : MoneyFactory::toDecimal($amount))
             ->addConditionOn($selected, $form::FILLED)
             ->addRule($form::FLOAT, 'Částka musí být číslo')
+            ->addRule($form::PATTERN, PaymentFormFields::MONEY_PATTERN_MESSAGE, PaymentFormFields::MONEY_PATTERN)
             ->addRule($form::MIN, 'Čátka musí být větší než 0', 0.01)
             ->addConditionOn($defaultAmount, $form::BLANK)
             ->setRequired('Musíte vyplnit částku');
@@ -159,7 +164,7 @@ class MassAddForm extends BaseControl
 
     private function formSubmitted(BaseForm $form): void
     {
-        $values = $form->getValues();
+        $values = $form->getValues(\Nette\Utils\ArrayHash::class);
 
         $persons = array_filter(
             (array) $values->persons,
@@ -194,7 +199,7 @@ class MassAddForm extends BaseControl
                     $this->groupId,
                     $person->name,
                     array_map(fn (string $email) => new EmailAddress($email), $person->email),
-                    (float) ($person->amount ?? $values->amount),
+                    MoneyFactory::fromDecimal((string) ($person->amount ?? $values->amount)),
                     new ChronosDate($person->dueDate ?? $values->dueDate),
                     (int) $person->id,
                     $person->variableSymbol,

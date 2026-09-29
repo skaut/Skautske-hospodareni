@@ -7,12 +7,13 @@ namespace App\Model\User\Repository;
 use App\Model\Infrastructure\Repository\AbstractRepository;
 use App\Model\Payment\Group;
 use App\Model\User\Entity\PaymentGroupVisit;
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\ORM\EntityManagerInterface;
 
 use function array_map;
 
+/** @extends AbstractRepository<PaymentGroupVisit> */
 class PaymentGroupVisitRepository extends AbstractRepository
 {
     public function __construct(EntityManagerInterface $entityManager)
@@ -58,7 +59,7 @@ class PaymentGroupVisitRepository extends AbstractRepository
                     ORDER BY v.visited_at DESC, v.id DESC
                     LIMIT ?',
                 [$userId, $unitIds, $limit],
-                [ParameterType::INTEGER, Connection::PARAM_INT_ARRAY, ParameterType::INTEGER],
+                [ParameterType::INTEGER, ArrayParameterType::INTEGER, ParameterType::INTEGER],
             )
             ->fetchFirstColumn();
         $groupIds = array_map('intval', $groupIds);

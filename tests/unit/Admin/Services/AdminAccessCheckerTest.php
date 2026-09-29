@@ -8,18 +8,20 @@ use App\Model\User\Enum\SystemRole;
 use App\Model\User\Repository\SystemUserRoleRepository;
 use Codeception\Test\Unit;
 use Mockery;
-use Nette\Security\IUserStorage;
 use Nette\Security\SimpleIdentity;
 use Nette\Security\User;
+use Nette\Security\UserStorage;
 
 final class AdminAccessCheckerTest extends Unit
 {
     public function testReturnsTrueForPersistentAdminRole(): void
     {
         $repository = Mockery::mock(SystemUserRoleRepository::class);
-        $repository->shouldReceive('hasRole')->with(1942, SystemRole::ADMIN)->once()->andReturn(true);
+        $repository->shouldReceive('hasRole')->with(1942, SystemRole::ADMIN)->twice()->andReturn(true);
 
-        self::assertTrue((new AdminAccessChecker($this->mockUser(1942), $repository, []))->isCurrentUserAllowed());
+        $checker = new AdminAccessChecker($this->mockUser(1942), $repository, []);
+        self::assertTrue($checker->isCurrentUserAllowed());
+        self::assertTrue($checker->canManageAnnouncements());
     }
 
     public function testConfiguredFallbackGrantsAdminRole(): void
@@ -36,13 +38,29 @@ final class AdminAccessCheckerTest extends Unit
     public function testSupportCanAccessOnlySupportSection(): void
     {
         $repository = Mockery::mock(SystemUserRoleRepository::class);
-        $repository->shouldReceive('hasRole')->with(1942, SystemRole::ADMIN)->twice()->andReturn(false);
+        $repository->shouldReceive('hasRole')->with(1942, SystemRole::ADMIN)->times(3)->andReturn(false);
         $repository->shouldReceive('hasRole')->with(1942, SystemRole::SUPPORT)->once()->andReturn(true);
+        $repository->shouldReceive('hasRole')->with(1942, SystemRole::ANNOUNCEMENT_MANAGER)->once()->andReturn(false);
 
         $checker = new AdminAccessChecker($this->mockUser(1942), $repository, []);
 
         self::assertFalse($checker->isCurrentUserAllowed());
         self::assertTrue($checker->canAccessAdministration());
+        self::assertFalse($checker->canManageAnnouncements());
+    }
+
+    public function testAnnouncementManagerCanManageAnnouncementsButIsNotAdmin(): void
+    {
+        $repository = Mockery::mock(SystemUserRoleRepository::class);
+        $repository->shouldReceive('hasRole')->with(1942, SystemRole::ADMIN)->times(3)->andReturn(false);
+        $repository->shouldReceive('hasRole')->with(1942, SystemRole::SUPPORT)->once()->andReturn(false);
+        $repository->shouldReceive('hasRole')->with(1942, SystemRole::ANNOUNCEMENT_MANAGER)->twice()->andReturn(true);
+
+        $checker = new AdminAccessChecker($this->mockUser(1942), $repository, []);
+
+        self::assertFalse($checker->isCurrentUserAllowed());
+        self::assertTrue($checker->canAccessAdministration());
+        self::assertTrue($checker->canManageAnnouncements());
     }
 
     public function testReturnsFalseForMissingUserId(): void
@@ -55,10 +73,9 @@ final class AdminAccessCheckerTest extends Unit
 
     private function mockUser(?int $userId): User
     {
-        $storage = Mockery::mock(IUserStorage::class);
-        $storage->shouldReceive('isAuthenticated')->andReturn($userId !== null);
-        $storage->shouldReceive('getIdentity')->andReturn($userId !== null ? new SimpleIdentity($userId) : null);
-        $storage->shouldReceive('getLogoutReason')->andReturn(null);
+        $storage = Mockery::mock(UserStorage::class);
+        $storage->shouldReceive('getState')
+            ->andReturn([$userId !== null, $userId !== null ? new SimpleIdentity($userId) : null, null]);
 
         return new User($storage);
     }

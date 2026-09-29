@@ -24,6 +24,7 @@ use App\Model\Payment\Group;
 use App\Model\Payment\Payment;
 use App\Model\Payment\Repositories\IGroupRepository;
 use App\Model\Payment\VariableSymbol;
+use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use DateTimeImmutable;
@@ -39,7 +40,7 @@ final class BankTransactionPairingServiceTest extends Unit
     {
         $entityManager = $this->mockEntityManager();
         $group = $this->createGroupWithBankAccount(999);
-        $payment = new Payment($group, 'Platba', [], 150.00, ChronosDate::today(), new VariableSymbol('123456'), null, null, '');
+        $payment = new Payment($group, 'Platba', [], MoneyFactory::fromDecimal('150.00'), ChronosDate::today(), new VariableSymbol('123456'), null, null, '');
         $transaction = $this->createTransaction(123, 150.00, 654321);
 
         $groupRepository = m::mock(IGroupRepository::class);
@@ -74,7 +75,7 @@ final class BankTransactionPairingServiceTest extends Unit
     public function testManualPaymentPairingRequiresExactAmountMatch(): void
     {
         $group = $this->createGroupWithBankAccount(999);
-        $payment = new Payment($group, 'Platba', [], 150.00, ChronosDate::today(), new VariableSymbol('123456'), null, null, '');
+        $payment = new Payment($group, 'Platba', [], MoneyFactory::fromDecimal('150.00'), ChronosDate::today(), new VariableSymbol('123456'), null, null, '');
         $transaction = $this->createTransaction(999, 149.99, 123456);
 
         $service = new BankTransactionPairingService(
@@ -162,7 +163,7 @@ final class BankTransactionPairingServiceTest extends Unit
                 'tx-1',
                 BankTransactionSource::FIO,
                 $now,
-                $amount,
+                MoneyFactory::fromDecimal((string) $amount),
                 '12-3456789/2010',
                 'František Maša',
                 $variableSymbol,

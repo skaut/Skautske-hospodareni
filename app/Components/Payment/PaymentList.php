@@ -8,6 +8,7 @@ use App\Components\BaseControl;
 use App\Components\DataGrid;
 use App\Components\Grids\DtoListDataSource;
 use App\Components\Grids\GridFactory;
+use App\Helpers\AccountancyHelpers;
 use App\Model\Common\Services\CommandBus;
 use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Payment\Payment;
@@ -34,6 +35,12 @@ use function usort;
 
 final class PaymentList extends BaseControl
 {
+    /**
+     * @method void                    onChange()
+     * @var    array<callable(): void>
+     */
+    public array $onChange = [];
+
     private const STATE_ORDER = [
         State::PREPARING,
         State::COMPLETED,
@@ -100,6 +107,7 @@ final class PaymentList extends BaseControl
             ->setSortable();
 
         $grid->addColumnText('amount', 'Částka')
+            ->setRenderer(static fn (Payment $payment): string => AccountancyHelpers::price($payment->getAmount()))
             ->setSortable();
 
         $grid->addColumnText('variableSymbol', 'VS')
@@ -149,12 +157,16 @@ final class PaymentList extends BaseControl
 
         if ($payment === null) {
             $this->presenter->flashMessage('Zadaná platba neexistuje', 'danger');
-            $this->presenter->redirect('this');
+            $this->finishMutation();
+
+            return;
         }
 
         if (empty($payment->getEmailRecipients())) {
             $this->presenter->flashMessage('Platba nemá vyplněný e-mail', 'danger');
-            $this->presenter->redirect('this');
+            $this->finishMutation();
+
+            return;
         }
 
         $this->sendMail([$pid]);
@@ -166,17 +178,23 @@ final class PaymentList extends BaseControl
 
         if ($payment === null) {
             $this->presenter->flashMessage('Zadaná platba neexistuje', 'danger');
-            $this->presenter->redirect('this');
+            $this->finishMutation();
+
+            return;
         }
 
         if (empty($payment->getEmailRecipients())) {
             $this->presenter->flashMessage('Platba nemá vyplněný e-mail', 'danger');
-            $this->presenter->redirect('this');
+            $this->finishMutation();
+
+            return;
         }
 
         if (! $payment->canSendReminder()) {
             $this->presenter->flashMessage(PaymentReminderNotAllowed::withName($payment->getName())->getMessage(), 'warning');
-            $this->presenter->redirect('this');
+            $this->finishMutation();
+
+            return;
         }
 
         $this->sendReminder([$pid]);
@@ -219,7 +237,7 @@ final class PaymentList extends BaseControl
             $this->presenter->flashMessage($count.' Informačních e-mailů odesláno', 'info');
         }
 
-        $this->presenter->redirect('this');
+        $this->finishMutation();
     }
 
     /** @param array<int,int> $ids */
@@ -260,7 +278,7 @@ final class PaymentList extends BaseControl
             $this->flashMessage('Platební skupina nemá povolené upomínky', 'warning');
         }
 
-        $this->presenter->redirect('this');
+        $this->finishMutation();
     }
 
     /** @param array<int,int> $ids */
@@ -268,7 +286,9 @@ final class PaymentList extends BaseControl
     {
         if (! $this->isEditable) {
             $this->flashMessage('Nejste oprávněni k uzavření platby!', 'danger');
-            $this->redirect('this');
+            $this->finishMutation();
+
+            return;
         }
 
         foreach ($ids as $id) {
@@ -282,7 +302,7 @@ final class PaymentList extends BaseControl
             }
         }
 
-        $this->presenter->redirect('this');
+        $this->finishMutation();
     }
 
     /** @param array<int,int> $ids */
@@ -297,6 +317,17 @@ final class PaymentList extends BaseControl
             } catch (PaymentClosed $e) {
                 $this->flashMessage($e->getMessage(), 'warning');
             }
+        }
+
+        $this->finishMutation();
+    }
+
+    private function finishMutation(): void
+    {
+        if ($this->presenter->isAjax()) {
+            $this->onChange();
+
+            return;
         }
 
         $this->presenter->redirect('this');

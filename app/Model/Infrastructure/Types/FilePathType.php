@@ -11,11 +11,6 @@ use LogicException;
 
 class FilePathType extends StringType
 {
-    public function getName(): string
-    {
-        return 'file_path';
-    }
-
     public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): ?string
     {
         if ($value === null) {

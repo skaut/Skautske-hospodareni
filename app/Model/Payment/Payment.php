@@ -16,94 +16,81 @@ use App\Model\Payment\Payment\EmailRecipient;
 use App\Model\Payment\Payment\SentEmail;
 use App\Model\Payment\Payment\State;
 use Cake\Chronos\ChronosDate;
-use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
+use Money\Money;
 
 use function array_map;
 use function array_unique;
 use function in_array;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(name="pa_payment")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'pa_payment')]
 class Payment extends Aggregate
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    /** @ORM\Column(type="integer") */
+    #[ORM\Column(type: 'integer')]
     private int $groupId;
 
-    /** @ORM\Column(type="string", length=64) */
+    #[ORM\Column(type: 'string', length: 64)]
     private string $name;
 
     /**
-     * @ORM\OneToMany(targetEntity=EmailRecipient::class, mappedBy="payment", cascade={"persist", "remove"}, orphanRemoval=true)
-     *
      * @var Collection&iterable<EmailRecipient>
      */
+    #[ORM\OneToMany(targetEntity: EmailRecipient::class, mappedBy: 'payment', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $emailRecipients;
 
-    /** @ORM\Column(type="integer", nullable=true) */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $personId = null;
 
-    /** @ORM\Column(type="float") */
-    private float $amount;
+    #[ORM\Column(type: 'money')]
+    private Money $amount;
 
-    /** @ORM\Column(type="chronos_date") */
+    #[ORM\Column(type: 'chronos_date')]
     private ChronosDate $dueDate;
 
-    /** @ORM\Column(type="variable_symbol", nullable=true, length=10) */
+    #[ORM\Column(type: 'variable_symbol', nullable: true, length: 10)]
     private ?VariableSymbol $variableSymbol = null;
 
-    /** @ORM\Column(type="smallint", nullable=true) */
+    #[ORM\Column(type: 'smallint', nullable: true)]
     private ?int $constantSymbol = null;
 
-    /** @ORM\Column(type="string", length=64) */
+    #[ORM\Column(type: 'string', length: 64)]
     private string $note = '';
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Payment::class)
-     * @ORM\JoinColumn(name="split_from_payment_id", referencedColumnName="id", nullable=true, onDelete="SET NULL")
-     */
+    #[ORM\ManyToOne(targetEntity: Payment::class)]
+    #[ORM\JoinColumn(name: 'split_from_payment_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     private ?Payment $splitFromPayment = null;
 
-    /**
-     * @ORM\Embedded(class=Transaction::class, columnPrefix=false)
-     *
-     * @Nullable()
-     */
+    #[ORM\Embedded(class: Transaction::class, columnPrefix: false)]
+    #[Nullable]
     private ?Transaction $transaction = null;
 
-    /** @ORM\Column(type="datetime_immutable", nullable=true) */
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?DateTimeImmutable $closedAt = null;
 
-    /** @ORM\Column(type="string", length=64, nullable=true) */
+    #[ORM\Column(type: 'string', length: 64, nullable: true)]
     private ?string $closedByUsername = null;
 
     /**
-     * @ORM\Column(type="string_enum", length=20)
-     *
-     * @Enum(class=State::class)
      * @var State
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
+    #[ORM\Column(type: 'payment_state', length: 20)]
     private $state;
 
     /**
-     * @ORM\OneToMany(targetEntity=SentEmail::class, mappedBy="payment", cascade={"persist", "remove"}, orphanRemoval=true)
-     *
      * @var Collection&iterable<SentEmail>
      */
+    #[ORM\OneToMany(targetEntity: SentEmail::class, mappedBy: 'payment', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $sentEmails;
 
     /** @param EmailAddress[] $recipients */
@@ -111,7 +98,7 @@ class Payment extends Aggregate
         Group $group,
         string $name,
         array $recipients,
-        float $amount,
+        Money $amount,
         ChronosDate $dueDate,
         ?VariableSymbol $variableSymbol,
         ?int $constantSymbol,
@@ -119,11 +106,11 @@ class Payment extends Aggregate
         string $note,
         ?Payment $splitFromPayment = null,
     ) {
-        if ($amount <= 0) {
+        if ($amount->isZero() || $amount->isNegative()) {
             throw new InvalidArgumentException('Payment amount must be larger than 0');
         }
 
-        $this->groupId = $group->getId();
+        $this->groupId = (int) $group->getId();
         $this->personId = $personId;
         $this->state = State::get(State::PREPARING);
         $this->amount = $amount;
@@ -132,7 +119,7 @@ class Payment extends Aggregate
         $this->splitFromPayment = $splitFromPayment;
         $this->sentEmails = new ArrayCollection();
 
-        $this->raise(new PaymentWasCreated($group->getId(), $variableSymbol));
+        $this->raise(new PaymentWasCreated((int) $group->getId(), $variableSymbol));
     }
 
     public function getId(): int
@@ -148,7 +135,7 @@ class Payment extends Aggregate
     public function update(
         string $name,
         array $recipients,
-        float $amount,
+        Money $amount,
         ChronosDate $dueDate,
         ?VariableSymbol $variableSymbol,
         ?int $constantSymbol,
@@ -163,28 +150,28 @@ class Payment extends Aggregate
 
         $this->variableSymbol = $variableSymbol;
 
-        if ($amount !== $this->amount) {
+        if (! $amount->equals($this->amount)) {
             $this->raise(new PaymentAmountWasChanged($this->groupId, $this->variableSymbol));
         }
 
         $this->amount = $amount;
     }
 
-    public function reduceAmountBySplit(float $amount): void
+    public function reduceAmountBySplit(Money $amount): void
     {
         $this->checkNotClosed();
 
-        if ($amount <= 0) {
+        if ($amount->isZero() || $amount->isNegative()) {
             throw new InvalidArgumentException('Split amount must be larger than 0');
         }
 
-        $remainingAmount = round($this->amount - $amount, 2);
+        $remainingAmount = $this->amount->subtract($amount);
 
-        if ($remainingAmount < 0) {
+        if ($remainingAmount->isNegative()) {
             throw new InvalidArgumentException('Split amount must not exceed payment amount');
         }
 
-        if ($remainingAmount !== $this->amount) {
+        if (! $remainingAmount->equals($this->amount)) {
             $this->raise(new PaymentAmountWasChanged($this->groupId, $this->variableSymbol));
         }
 
@@ -275,7 +262,7 @@ class Payment extends Aggregate
     public function getEmailRecipients(): array
     {
         return $this->emailRecipients
-            ->map(fn (?EmailRecipient $recipient = null) => $recipient->getEmailAddress())
+            ->map(fn (EmailRecipient $recipient) => $recipient->getEmailAddress())
             ->getValues();
     }
 
@@ -284,7 +271,7 @@ class Payment extends Aggregate
         return $this->personId;
     }
 
-    public function getAmount(): float
+    public function getAmount(): Money
     {
         return $this->amount;
     }

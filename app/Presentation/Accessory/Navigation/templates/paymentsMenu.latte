@@ -3,8 +3,8 @@
 {if $items !== []}
     <ul class="navbar-nav me-auto" data-test="payments-submenu">
         <li n:foreach="$items as $item" n:class="nav-item, $item->isActive() ? active">
-            <a href="{$item->getRealLink()}" class="nav-link" n:attr="data-test => $item->getData('test')">
-                <i n:if="$item->hasData('icon')" class="{$item->getData('icon')}" aria-hidden="true"></i>
+            <a href="{$item->getRealLink()}" class="nav-link" n:attr="data-test => $item->getDataItem('test')">
+                <i n:if="$item->hasDataItem('icon')" class="{$item->getDataItem('icon')}" aria-hidden="true"></i>
                 {$item->getRealTitle()}
             </a>
         </li>

@@ -13,4 +13,6 @@ final class Admin
     public const ACCESS = [self::class, 'ADMIN_ACCESS'];
 
     public const ANY_ACCESS = [self::class, 'ANY_ADMIN_ACCESS'];
+
+    public const ANNOUNCEMENTS_ACCESS = [self::class, 'ANNOUNCEMENTS_ACCESS'];
 }

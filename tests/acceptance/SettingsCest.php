@@ -216,14 +216,44 @@ class SettingsCest extends BaseAcceptanceCest
     {
         $I = $this->I;
 
-        $I->wantTo('hide page help by default and open it with the title icon');
+        $I->wantTo('hide page help by default and toggle it from the page heading actions');
 
         $this->openUserSettingsPage();
 
-        $I->seeElement('.page-heading .page-lead > [data-page-help-toggle]');
+        $I->waitForElementVisible('[data-page-help-toggle]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->resizeWindow(1440, 900);
+        $I->seeElement('.page-heading > .card-body > .page-heading-actions [data-page-help-toggle]');
+        $I->dontSeeElement('.page-heading .page-lead [data-page-help-toggle]');
+
+        $headingLayout = $I->executeJS(<<<'JS'
+const heading = document.querySelector('[data-test="settings-user-page"] .page-heading');
+const body = heading?.querySelector(':scope > .card-body');
+const title = heading?.querySelector('h1');
+const actions = heading?.querySelector(':scope > .card-body > .page-heading-actions');
+const toggle = actions?.querySelector('[data-page-help-toggle]');
+const lead = heading?.querySelector(':scope > .card-body > .page-lead');
+const bodyStyle = body === null || body === undefined ? null : getComputedStyle(body);
+
+return {
+    toggleInActions: actions?.contains(toggle) ?? false,
+    titleTop: Math.round(title?.getBoundingClientRect().top ?? 0),
+    actionsTop: Math.round(actions?.getBoundingClientRect().top ?? 0),
+    toggleTop: Math.round(toggle?.getBoundingClientRect().top ?? 0),
+    actionsBottom: Math.round(actions?.getBoundingClientRect().bottom ?? 0),
+    leadTop: Math.round(lead?.getBoundingClientRect().top ?? 0),
+    toggleRight: Math.round(toggle?.getBoundingClientRect().right ?? 0),
+    bodyContentRight: Math.round((body?.getBoundingClientRect().right ?? 0) - Number.parseFloat(bodyStyle?.paddingRight ?? '0')),
+};
+JS);
+        Assert::assertTrue($headingLayout['toggleInActions']);
+        Assert::assertSame($headingLayout['titleTop'], $headingLayout['actionsTop']);
+        Assert::assertSame($headingLayout['actionsTop'], $headingLayout['toggleTop']);
+        Assert::assertGreaterThanOrEqual($headingLayout['actionsBottom'], $headingLayout['leadTop']);
+        Assert::assertSame($headingLayout['bodyContentRight'], $headingLayout['toggleRight']);
+
         $I->seeElement('[data-page-help-content]:not([hidden])');
         $I->uncheckOption('input[name="showHelp"]');
-        $I->click('input[type="submit"]');
+        $I->clickStable('input[type="submit"]');
         $I->waitForElementVisible('[data-test="settings-user-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->seeInDatabase('user_preference', [
@@ -231,20 +261,37 @@ class SettingsCest extends BaseAcceptanceCest
             'show_help' => 0,
         ]);
         $I->seeElement('[data-page-help-toggle][aria-expanded="false"]');
-        $I->seeElement('.page-heading .page-lead[data-page-help-expanded="false"]');
+        $I->seeElementInDOM('.page-heading .page-lead[data-page-help-expanded="false"]');
         $I->dontSeeElement('[data-page-help-content]:not([hidden])');
+        $collapsedHelpDisplay = $I->executeJS(<<<'JS'
+const lead = document.querySelector('[data-test="settings-user-page"] .page-lead');
 
-        $I->click('[data-page-help-toggle]');
+return lead === null ? null : getComputedStyle(lead).display;
+JS);
+        Assert::assertSame('none', $collapsedHelpDisplay);
+
+        $I->clickStable('[data-page-help-toggle]');
         $I->waitForJS('return document.querySelector(".page-heading")?.dataset.pageHelpExpanded === "true"', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('.page-heading .page-lead[data-page-help-expanded="true"]');
         $I->seeElement('[data-page-help-content]:not([hidden])');
+        $expandedHelpDisplay = $I->executeJS(<<<'JS'
+const lead = document.querySelector('[data-test="settings-user-page"] .page-lead');
+
+return lead === null ? null : getComputedStyle(lead).display;
+JS);
+        Assert::assertSame('flex', $expandedHelpDisplay);
+
+        $I->clickStable('[data-page-help-toggle]');
+        $I->waitForJS('return document.querySelector(".page-heading")?.dataset.pageHelpExpanded === "false"', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeElementInDOM('.page-heading .page-lead[data-page-help-expanded="false"]');
+        $I->dontSeeElement('[data-page-help-content]:not([hidden])');
 
         $this->openSettingsSubpage('[data-test="settings-subnav-invoices"]', '[data-test="invoice-settings-page"]', '/nastaveni/faktury');
         $I->seeElement('[data-page-help-toggle][aria-expanded="false"]');
         $I->seeElement('[data-help-layout][data-help-collapsed="true"]');
         $I->seeElement('[data-help-toggle][aria-expanded="false"]');
 
-        $I->click('[data-help-toggle]');
+        $I->clickStable('[data-help-toggle]');
         $I->waitForJS('return document.querySelector("[data-help-layout]")?.dataset.helpCollapsed === "false"', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-help-toggle][aria-expanded="true"]');
     }
@@ -345,9 +392,7 @@ class SettingsCest extends BaseAcceptanceCest
         $I->fillField('input[name="number"]', '2000942144');
         $I->selectOption('select[name="bankCode"]', '0100');
         $I->selectOption('select[name="transactionSource"]', 'gpc');
-        $I->scrollTo('input[type="submit"]');
-        $I->waitForElementClickable('input[type="submit"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->click('input[type="submit"]');
+        $I->clickStable('input[type="submit"]');
 
         // Wait for PRG redirect to complete — flash message is the reliable indicator
         $I->waitForPageTextStable('Bankovní účet byl uložen', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
@@ -373,9 +418,7 @@ class SettingsCest extends BaseAcceptanceCest
         $I->waitForElementVisible('[data-test="settings-bank-account-edit-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         $I->fillField('input[name="name"]', 'Upravený účet Selenium');
-        $I->scrollTo('input[type="submit"]');
-        $I->waitForElementClickable('input[type="submit"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->click('input[type="submit"]');
+        $I->clickStable('input[type="submit"]');
         $I->waitForPageTextStable('Bankovní účet byl uložen', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForElementVisible('[data-test="settings-bank-accounts-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
@@ -508,9 +551,7 @@ class SettingsCest extends BaseAcceptanceCest
         $I->selectOption('select[name="bankCode"]', '2010');
         $I->selectOption('select[name="transactionSource"]', 'fio');
         $I->fillField('input[name="token"]', $token);
-        $I->scrollTo('input[type="submit"]');
-        $I->waitForElementClickable('input[type="submit"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->click('input[type="submit"]');
+        $I->clickStable('input[type="submit"]');
     }
 
     // ─── Mails Page — Layout ─────────────────────────────────────

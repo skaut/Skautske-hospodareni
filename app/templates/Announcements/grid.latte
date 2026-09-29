@@ -1,0 +1,18 @@
+{extends $baseTemplate}
+
+{block filters}
+    {include #filter-type-search, searchLabel: 'Hledat oznámení'}
+    {include #filter-type-select name => 'categoryCode', label => 'Kategorie'}
+{/block}
+
+{define col-category}
+    <span title="{$item['category']}">
+        <i class="{$item['categoryIcon']}" aria-hidden="true"></i>
+        <span class="visually-hidden">{$item['category']}</span>
+    </span>
+{/define}
+
+{define col-title}
+    <strong>{$item['title']}</strong>
+    <p class="mb-0 text-break">{$item['message']}</p>
+{/define}

@@ -1,7 +1,7 @@
 {extends $baseTemplate}
 
 {block filters}
-    {include #filter-type-search}
+    {include #filter-type-search, searchLabel: 'Hledat akci'}
     {include #filter-type-select name => 'year', label => 'Rok', icon => 'fi fi-rr-calendar'}
     {include #filter-type-select name => 'state', label => 'Stav'}
 {/block}

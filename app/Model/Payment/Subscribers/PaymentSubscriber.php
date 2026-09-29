@@ -8,7 +8,7 @@ use App\Model\Payment\DomainEvents\PaymentAmountWasChanged;
 use App\Model\Payment\DomainEvents\PaymentVariableSymbolWasChanged;
 use App\Model\Payment\DomainEvents\PaymentWasCreated;
 use App\Model\Payment\Repositories\IGroupRepository;
-use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
  * When payment VS is changed, there is a risk that corresponding bank transaction
@@ -16,22 +16,13 @@ use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
  *
  * When 'last pairing' is invalidated, all bank payments will be loaded
  */
-final class PaymentSubscriber implements MessageSubscriberInterface
+final class PaymentSubscriber
 {
     public function __construct(private IGroupRepository $groups)
     {
     }
 
-    /** @return array<string, mixed> */
-    public static function getHandledMessages(): array
-    {
-        return [
-            PaymentWasCreated::class => ['method' => 'handlePaymentCreated'],
-            PaymentVariableSymbolWasChanged::class => ['method' => 'handleVariableSymbolChanged'],
-            PaymentAmountWasChanged::class => ['method' => 'handlePaymentAmountChanged'],
-        ];
-    }
-
+    #[AsMessageHandler]
     public function handlePaymentCreated(PaymentWasCreated $event): void
     {
         if ($event->getVariableSymbol() === null) {
@@ -41,6 +32,7 @@ final class PaymentSubscriber implements MessageSubscriberInterface
         $this->invalidateLastPairing($event->getGroupId());
     }
 
+    #[AsMessageHandler]
     public function handleVariableSymbolChanged(PaymentVariableSymbolWasChanged $event): void
     {
         if ($event->getVariableSymbol() === null) {
@@ -50,6 +42,7 @@ final class PaymentSubscriber implements MessageSubscriberInterface
         $this->invalidateLastPairing($event->getGroupId());
     }
 
+    #[AsMessageHandler]
     public function handlePaymentAmountChanged(PaymentAmountWasChanged $event): void
     {
         if ($event->getVariableSymbol() === null) {

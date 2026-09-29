@@ -33,6 +33,15 @@ final class FinalRealBalanceQueryHandlerTest extends Unit
         ]);
     }
 
+    public function testCashbookResultKeepsOneCentDifferenceExact(): void
+    {
+        $this->assertBalance(Money::CZK(-19), [
+            $this->mockCategorySummary(0.10, Operation::INCOME, false),
+            $this->mockCategorySummary(0.20, Operation::INCOME, false),
+            $this->mockCategorySummary(0.49, Operation::EXPENSE, false),
+        ]);
+    }
+
     private function mockCategorySummary(float $amount, string $operation, bool $virtualCategory): CategorySummary
     {
         return m::mock(CategorySummary::class, [

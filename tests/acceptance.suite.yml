@@ -4,7 +4,7 @@
 # Perform tests in browser using the WebDriver or PhpBrowser.
 # If you need both WebDriver and PHPBrowser tests - create a separate suite.
 
-class_name: AcceptanceTester
+actor: AcceptanceTester
 modules:
   enabled:
     - WebDriver:
@@ -14,7 +14,7 @@ modules:
         wait: 30 # Max wait time in seconds for elements
         capabilities:
           acceptInsecureCerts: true # Accept self-signed SSL certificates
-          chromeOptions:
+          goog:chromeOptions:
             args:
               - 'allow-insecure-localhost' # Allow insecure connections to localhost
               - '--ignore-ssl-errors=yes' # Ignore SSL errors
@@ -23,7 +23,12 @@ modules:
               - '--disable-gpu' # Disable GPU acceleration
               - '--no-sandbox' # Disable Chrome's sandboxing
               - '--window-size=1920,1080' # Set the window size
+              # SkautIS (HTTPS) POSTuje token zpět na HTTP app -> recentní Chrome jinak zobrazí interstitial
+              # "The information you're about to submit is not secure". Origin ošetříme jako bezpečný;
+              # --unsafely-treat-insecure-origin-as-secure vyžaduje k účinnosti vlastní --user-data-dir.
               - "--unsafely-treat-insecure-origin-as-secure=http://moje-hospodareni.cz"
+              - '--user-data-dir=/tmp/chrome-user-data'
+              - '--disable-features=InsecureFormSubmissionInterstitial'
 
 
     - \Helper\Acceptance
@@ -43,7 +48,7 @@ env:
       config:
         WebDriver:
           capabilities:
-            chromeOptions:
+            goog:chromeOptions:
               args:
                 - 'allow-insecure-localhost'
                 - '--ignore-ssl-errors=yes'
@@ -54,3 +59,5 @@ env:
                 - '--no-sandbox'
                 - '--window-size=1920,1080'
                 - "--unsafely-treat-insecure-origin-as-secure=http://moje-hospodareni.cz"
+                - '--user-data-dir=/tmp/chrome-user-data'
+                - '--disable-features=InsecureFormSubmissionInterstitial'

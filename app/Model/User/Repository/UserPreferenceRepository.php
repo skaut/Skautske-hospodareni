@@ -8,6 +8,7 @@ use App\Model\Infrastructure\Repository\AbstractRepository;
 use App\Model\User\Entity\UserPreference;
 use Doctrine\ORM\EntityManagerInterface;
 
+/** @extends AbstractRepository<UserPreference> */
 class UserPreferenceRepository extends AbstractRepository
 {
     public function __construct(EntityManagerInterface $entityManager)

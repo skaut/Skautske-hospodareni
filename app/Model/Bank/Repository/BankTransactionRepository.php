@@ -11,6 +11,7 @@ use DateTimeImmutable;
 
 use function array_values;
 
+/** @extends AbstractRepository<BankTransaction> */
 class BankTransactionRepository extends AbstractRepository
 {
     public function getEntityClass(): string
@@ -21,18 +22,16 @@ class BankTransactionRepository extends AbstractRepository
     /** @return list<BankTransaction> */
     public function findByAccountAndDateRange(BankAccount $bankAccount, DateTimeImmutable $since, DateTimeImmutable $until): array
     {
-        return array_values(
-            $this->createQueryBuilder('entity')
-                ->where('entity.bankAccount = :bankAccount')
-                ->andWhere('entity.date BETWEEN :since AND :until')
-                ->orderBy('entity.date', 'DESC')
-                ->addOrderBy('entity.id', 'DESC')
-                ->setParameter('bankAccount', $bankAccount)
-                ->setParameter('since', $since)
-                ->setParameter('until', $until)
-                ->getQuery()
-                ->getResult(),
-        );
+        return $this->createQueryBuilder('entity')
+            ->where('entity.bankAccount = :bankAccount')
+            ->andWhere('entity.date BETWEEN :since AND :until')
+            ->orderBy('entity.date', 'DESC')
+            ->addOrderBy('entity.id', 'DESC')
+            ->setParameter('bankAccount', $bankAccount)
+            ->setParameter('since', $since)
+            ->setParameter('until', $until)
+            ->getQuery()
+            ->getResult();
     }
 
     public function findByTransactionKey(string $transactionKey): ?BankTransaction

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Model\Payment;
 
 use App\Model\Payment\Mailing\Payment;
+use App\Model\Utils\MoneyFactory;
 use Doctrine\ORM\Mapping as ORM;
 use Nette\Utils\Strings;
 
@@ -12,13 +13,13 @@ use function array_keys;
 use function array_values;
 use function str_replace;
 
-/** @ORM\Embeddable() */
+#[ORM\Embeddable]
 class EmailTemplate
 {
-    /** @ORM\Column(type="string") */
+    #[ORM\Column(type: 'string', length: 255)]
     private string $subject;
 
-    /** @ORM\Column(type="text") */
+    #[ORM\Column(type: 'text')]
     private string $body;
 
     public function __construct(string $subject, string $body)
@@ -38,7 +39,7 @@ class EmailTemplate
             '%account%' => $bankAccount,
             '%name%' => $payment->getName(),
             '%groupname%' => $group->getName(),
-            '%amount%' => $payment->getAmount(),
+            '%amount%' => MoneyFactory::toDecimal($payment->getAmount()),
             '%maturity%' => $payment->getDueDate()->format('j.n.Y'),
             '%maturityus%' => $payment->getDueDate()->format('Y-m-d'),
             '%vs%' => $payment->getVariableSymbol(),
@@ -49,7 +50,7 @@ class EmailTemplate
 
         $subject = $this->replace($parameters, $this->subject);
 
-        if (Strings::contains($this->body, '%qrcode')) {
+        if ($bankAccount !== null && Strings::contains($this->body, '%qrcode')) {
             $parameters['%qrcode%'] = $this->getQrHtml($payment, $bankAccount, $qrCodeCid);
         }
 
@@ -87,7 +88,7 @@ class EmailTemplate
 
         $file = QrPaymentCode::buildImageUrl(
             $bankAccount,
-            $payment->getAmount(),
+            MoneyFactory::toDecimal($payment->getAmount()),
             $payment->getVariableSymbol(),
             $payment->getConstantSymbol(),
             $payment->getName(),

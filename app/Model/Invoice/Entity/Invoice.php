@@ -76,7 +76,7 @@ class Invoice extends AbstractIdEntity
     #[Column(type: Types::DATETIME_IMMUTABLE, nullable: false)]
     private DateTimeImmutable $dateOfTaxPayment;
 
-    #[Column(type: 'string_enum', length: 20)]
+    #[Column(type: Types::STRING, length: 20)]
     private string $state = InvoiceState::ISSUED;
 
     #[Column(type: 'variable_symbol', length: 10, nullable: false)]
@@ -104,7 +104,7 @@ class Invoice extends AbstractIdEntity
     #[OneToMany(mappedBy: 'invoice', targetEntity: InvoiceSentEmail::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $sentEmails;
 
-    #[Column(type: 'string_enum', length: 20)]
+    #[Column(type: Types::STRING, length: 20)]
     private string $paymentType;
 
     #[Column(type: Types::STRING, length: 255, nullable: true)]
@@ -230,7 +230,7 @@ class Invoice extends AbstractIdEntity
     public function getEmailRecipients(): array
     {
         return $this->emailRecipients
-            ->map(fn (?InvoiceEmailRecipient $recipient = null) => $recipient->getEmailAddress())
+            ->map(fn (InvoiceEmailRecipient $recipient) => $recipient->getEmailAddress())
             ->getValues();
     }
 
@@ -428,7 +428,7 @@ class Invoice extends AbstractIdEntity
 
     public function pairWithBankTransaction(DateTimeImmutable $time, ?string $userName, Transaction $transaction): bool
     {
-        if ($this->getPaymentType()->value !== InvoicePaymentType::TRANSFER->value) {
+        if ($this->getPaymentType() !== InvoicePaymentType::TRANSFER) {
             throw new InvalidArgumentException('Bankovní párování lze použít jen u faktury hrazené převodem.');
         }
 
@@ -446,7 +446,7 @@ class Invoice extends AbstractIdEntity
 
     public function unpairBankTransaction(): bool
     {
-        if ($this->getPaymentType()->value !== InvoicePaymentType::TRANSFER->value) {
+        if ($this->getPaymentType() !== InvoicePaymentType::TRANSFER) {
             throw new InvalidArgumentException('Zrušení bankovního párování lze použít jen u faktury hrazené převodem.');
         }
 
@@ -569,7 +569,7 @@ class Invoice extends AbstractIdEntity
             throw new InvalidArgumentException('Musíte zadat číslo příjmového dokladu.');
         }
 
-        if ($this->getPaymentType()->value !== InvoicePaymentType::CASH->value) {
+        if ($this->getPaymentType() !== InvoicePaymentType::CASH) {
             throw new InvalidArgumentException('Hotovostní úhradu lze nastavit jen u faktury s formou úhrady "V hotovosti".');
         }
 
@@ -592,7 +592,7 @@ class Invoice extends AbstractIdEntity
 
     public function canBePaidInCash(): bool
     {
-        return $this->getPaymentType()->value === InvoicePaymentType::CASH->value && ! $this->isPaid();
+        return $this->getPaymentType() === InvoicePaymentType::CASH && ! $this->isPaid();
     }
 
     public function hasEmailRecipients(): bool

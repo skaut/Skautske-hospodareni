@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Presentation\Payments\Repayment;
 
+use App\Components\Payment\PaymentFormFields;
 use App\Model\Common\Embeddable\AccountNumber;
 use App\Model\DTO\Payment\Group;
 use App\Model\DTO\Payment\RepaymentCandidate;
@@ -34,13 +35,14 @@ final class RepaymentPresenter extends BasePresenter
 
     public function actionDefault(int $id): void
     {
-        $group = $this->group = $this->payments->getGroup($id);
+        $group = $this->payments->getGroup($id);
 
-        if ($group === null && ! $this->isEditable) {
+        if ($group === null) {
             $this->flashMessage('K této skupině nemáte přístup');
             $this->redirect('GroupList:');
         }
 
+        $this->group = $group;
         $this->template->setParameters(['group' => $group]);
     }
 
@@ -72,10 +74,11 @@ final class RepaymentPresenter extends BasePresenter
                 ->setRequired('Zadejte název vratky!');
 
             $container->addText('amount')
-                ->setDefaultValue($repayment->getAmount())
+                ->setDefaultValue(MoneyFactory::toDecimal($repayment->getAmount()))
                 ->addConditionOn($checkbox, $form::EQUAL, true)
                 ->setRequired('Zadejte částku vratky u '.$repayment->getName())
-                ->addRule($form::NUMERIC, 'Vratka musí být číslo!');
+                ->addRule($form::FLOAT, 'Vratka musí být číslo!')
+                ->addRule($form::PATTERN, PaymentFormFields::MONEY_PATTERN_MESSAGE, PaymentFormFields::MONEY_PATTERN);
 
             $invalidBankAccountMessage = 'Zadejte platný bankovní účet u '.$repayment->getName();
             $container->addText('account')
@@ -101,7 +104,7 @@ final class RepaymentPresenter extends BasePresenter
 
     private function repaymentFormSubmitted(BaseForm $form): void
     {
-        $values = $form->getValues();
+        $values = $form->getValues(\Nette\Utils\ArrayHash::class);
 
         if (! $this->isEditable) {
             $this->flashMessage('Nemáte oprávnění pro práci s platbami jednotky', 'danger');
@@ -117,7 +120,7 @@ final class RepaymentPresenter extends BasePresenter
 
             $repayments[] = new Repayment(
                 AccountNumber::fromString($repayment->account),
-                MoneyFactory::fromFloat((float) $repayment->amount),
+                MoneyFactory::fromDecimal((string) $repayment->amount),
                 $repayment->name,
             );
         }

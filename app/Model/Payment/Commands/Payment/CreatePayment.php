@@ -8,6 +8,7 @@ use App\Model\Common\EmailAddress;
 use App\Model\Payment\Handlers\Payment\CreatePaymentHandler;
 use App\Model\Payment\VariableSymbol;
 use Cake\Chronos\ChronosDate;
+use Money\Money;
 
 /** @see CreatePaymentHandler */
 final class CreatePayment
@@ -17,7 +18,7 @@ final class CreatePayment
         private int $groupId,
         private string $name,
         private array $recipients,
-        private float $amount,
+        private Money $amount,
         private ChronosDate $dueDate,
         private ?int $personId,
         private ?VariableSymbol $variableSymbol,
@@ -42,7 +43,7 @@ final class CreatePayment
         return $this->recipients;
     }
 
-    public function getAmount(): float
+    public function getAmount(): Money
     {
         return $this->amount;
     }

@@ -21,6 +21,7 @@ use App\Model\Payment\EmailType;
 use App\Model\Payment\Group;
 use App\Model\Payment\Payment;
 use App\Model\Payment\VariableSymbol;
+use App\Model\Utils\MoneyFactory;
 use Brick\Math\BigDecimal;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
@@ -112,7 +113,7 @@ final class AutomaticBankPairingServiceTest extends Unit
         );
         Helpers::assignIdentity($group, 1);
 
-        return new Payment($group, 'Platba', [], $amount, ChronosDate::today(), new VariableSymbol($variableSymbol), null, null, '');
+        return new Payment($group, 'Platba', [], MoneyFactory::fromDecimal((string) $amount), ChronosDate::today(), new VariableSymbol($variableSymbol), null, null, '');
     }
 
     private function createInvoice(float $amount, string $variableSymbol): Invoice
@@ -160,7 +161,7 @@ final class AutomaticBankPairingServiceTest extends Unit
                 $id,
                 BankTransactionSource::FIO,
                 $today,
-                $amount,
+                MoneyFactory::fromDecimal((string) $amount),
                 '12-3456789/2010',
                 'František Maša',
                 (new VariableSymbol($variableSymbol))->toInt(),

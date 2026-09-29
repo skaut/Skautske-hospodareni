@@ -54,6 +54,22 @@ class TravelCest extends BaseAcceptanceCest
         $this->deleteContract($I, $unitRepresentative);
     }
 
+    public function travelHubHasNoSelfReferencingBreadcrumb(AcceptanceTester $I): void
+    {
+        $I->wantTo('see breadcrumbs only outside the travel hub');
+
+        // The hub sub-menu item points at the same action as the main-menu item, so a
+        // breadcrumb there would link back to the page the user is already on.
+        $I->amOnPage('/cestaky');
+        $I->waitForElementVisible('[data-test="travel-subnav-vehicles"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->dontSeeElement('[data-test="breadcrumbs"]');
+
+        $I->clickStable('[data-test="travel-subnav-vehicles"]');
+        $I->waitForElementVisible('[data-test="breadcrumbs"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->see('Cesťáky', '[data-test="breadcrumbs"]');
+        $I->see('Vozidla', '[data-test="breadcrumbs"]');
+    }
+
     protected function navigateToTravelOrder(AcceptanceTester $I): void
     {
         $I->amOnPage('/');
@@ -169,9 +185,23 @@ class TravelCest extends BaseAcceptanceCest
         $I->see('Nenalezeny žádné záznamy.', '#snippet-grid-grid-table');
         $I->amOnPage('/cestaky/vozidla?grid-grid-filter%5Bsearch%5D='.rawurlencode($licensePlate));
         $I->waitForText($licensePlate, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '#snippet-grid-grid-table');
+        $this->sortVehiclesBy($I, 'metadata.createdAt', $licensePlate);
+        $this->sortVehiclesBy($I, 'metadata.authorName', $licensePlate);
         $I->click($licensePlate, '#snippet-grid-grid-table');
         $I->waitForText('Údaje o vozidle', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/cestaky/vozidla/detail/');
+    }
+
+    private function sortVehiclesBy(AcceptanceTester $I, string $column, string $licensePlate): void
+    {
+        $selector = '[id="datagrid-sort-'.$column.'"]';
+
+        $I->clickStable($selector);
+        $I->waitForJS(
+            'return document.querySelector('.json_encode($selector).')?.classList.contains("sort") === true;',
+            AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
+        );
+        $I->waitForText($licensePlate, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '#snippet-grid-grid-table');
     }
 
     protected function deleteVehicle(AcceptanceTester $I, string $licensePlate): void
@@ -187,6 +217,68 @@ class TravelCest extends BaseAcceptanceCest
         $I->seeInCurrentUrl('/cestaky/vozidla');
     }
 
+    public function archiveAndRestoreVehicle(AcceptanceTester $I): void
+    {
+        $licensePlate = 'RZR-'.time();
+        $I->wantTo('Archive a vehicle, check it disappears from every offer and restore it back');
+        $this->navigateToVehicle($I);
+        $this->newVehicle($I, $licensePlate);
+
+        $this->openVehicleDetail($I, $licensePlate);
+        $I->clickStable('[data-test="travel-vehicle-archive"]');
+        try {
+            $I->acceptPopup();
+        } catch (Throwable) {
+        }
+
+        $I->waitForText('Vozidlo bylo archivováno', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->waitForElementVisible('[data-test="travel-vehicle-archived-badge"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        // Gone from the list of active vehicles.
+        $I->amOnPage('/cestaky/vozidla?grid-grid-filter%5Bsearch%5D='.rawurlencode($licensePlate));
+        $I->waitForText('Nenalezeny žádné záznamy.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '#snippet-grid-grid-table');
+        $I->dontSee($licensePlate, '#snippet-grid-grid-table');
+
+        // Gone from the vehicle offer of a new travel command. The select lives in a fieldset
+        // that stays hidden until a fuel transport type is picked, so the offer is checked
+        // in the markup instead of on screen.
+        $this->openNewTravelOrderForm($I);
+        $I->dontSeeInSource($licensePlate);
+
+        // Listed in the archive instead.
+        $I->amOnPage('/cestaky/vozidla/archiv?grid-grid-filter%5Bsearch%5D='.rawurlencode($licensePlate));
+        $I->waitForText($licensePlate, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '#snippet-grid-grid-table');
+
+        $I->clickStable('#snippet-grid-grid-table [title="Obnovit vozidlo"]');
+        $I->waitForText('Vozidlo bylo vráceno mezi aktivní.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        // Back among the active vehicles and offered for a new travel command again.
+        $I->amOnPage('/cestaky/vozidla?grid-grid-filter%5Bsearch%5D='.rawurlencode($licensePlate));
+        $I->waitForText($licensePlate, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '#snippet-grid-grid-table');
+
+        $this->openNewTravelOrderForm($I);
+        $I->seeInSource($licensePlate);
+
+        $this->navigateToVehicle($I);
+        $this->deleteVehicle($I, $licensePlate);
+    }
+
+    private function openNewTravelOrderForm(AcceptanceTester $I): void
+    {
+        $I->amOnPage('/cestaky/prikazy/new');
+        $I->waitForElementVisible('#frm-form-form-purpose', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeElementInDOM('#frm-form-form-vehicle_id');
+    }
+
+    private function openVehicleDetail(AcceptanceTester $I, string $licensePlate): void
+    {
+        $I->amOnPage('/cestaky/vozidla?grid-grid-filter%5Bsearch%5D='.rawurlencode($licensePlate));
+        $I->waitForText($licensePlate, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '#snippet-grid-grid-table');
+        $I->click($licensePlate, '#snippet-grid-grid-table');
+        $I->waitForText('Údaje o vozidle', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeInCurrentUrl('/cestaky/vozidla/detail/');
+    }
+
     public function uploadMultipleRoadworthyScans(AcceptanceTester $I): void
     {
         $licensePlate = 'RZS-'.time();
@@ -195,11 +287,7 @@ class TravelCest extends BaseAcceptanceCest
         $this->newVehicle($I, $licensePlate);
 
         // Navigate to the vehicle detail via a full page load so the upload control is bound on load.
-        $I->amOnPage('/cestaky/vozidla?grid-grid-filter%5Bsearch%5D='.rawurlencode($licensePlate));
-        $I->waitForText($licensePlate, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '#snippet-grid-grid-table');
-        $I->click($licensePlate, '#snippet-grid-grid-table');
-        $I->waitForText('Údaje o vozidle', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->seeInCurrentUrl('/cestaky/vozidla/detail/');
+        $this->openVehicleDetail($I, $licensePlate);
         $I->amOnPage($I->grabFromCurrentUrl());
         $I->waitForElementVisible('[data-test="travel-vehicle-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 

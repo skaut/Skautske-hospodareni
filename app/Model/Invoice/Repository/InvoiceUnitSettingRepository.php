@@ -8,6 +8,7 @@ use App\Model\Infrastructure\Repository\AbstractRepository;
 use App\Model\Invoice\Entity\InvoiceUnitSetting;
 use Doctrine\ORM\EntityManagerInterface;
 
+/** @extends AbstractRepository<InvoiceUnitSetting> */
 class InvoiceUnitSettingRepository extends AbstractRepository
 {
     public function __construct(EntityManagerInterface $entityManager)

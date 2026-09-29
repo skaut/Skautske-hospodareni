@@ -8,16 +8,16 @@ use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
-/** @ORM\Embeddable() */
+#[ORM\Embeddable]
 final class ChitBody
 {
-    /** @ORM\Column(type="chit_number", nullable=true, name="num", length=5) */
+    #[ORM\Column(type: 'chit_number', nullable: true, name: 'num', length: 5)]
     private ?ChitNumber $number = null;
 
-    /** @ORM\Column(type="chronos_date") */
+    #[ORM\Column(type: 'chronos_date')]
     private ChronosDate $date;
 
-    /** @ORM\Column(type="recipient", length=64, nullable=true) */
+    #[ORM\Column(type: 'recipient', length: 64, nullable: true)]
     private ?Recipient $recipient = null;
 
     public function __construct(?ChitNumber $number, ChronosDate $date, ?Recipient $recipient)
