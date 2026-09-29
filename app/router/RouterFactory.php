@@ -21,6 +21,7 @@ class RouterFactory
         // Static pages
         $router->addRoute('app.manifest', 'Offline:manifest');
         $router->addRoute('o-projektu', 'Default:about');
+        $router->addRoute('podporovatele', 'Default:supporters');
         $router->addRoute('posily', 'Default:reinforcement');
         $router->addRoute('zasady-soukromi', 'Default:privacy');
         $router->addRoute('changelog', 'Default:changelog');
