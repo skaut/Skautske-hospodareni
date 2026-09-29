@@ -1,76 +1,83 @@
 {block title}O projektu skautské hospodaření{/block}
 
 {block content}
-<h1 class="">O projektu</h1>
+<div data-test="about-page" class="d-grid gap-4">
 
-<div class="row">
-    <div class="col-12">
-        <p>
-            Skautské hospodaření vzniklo na základě potřeby systematizovat vyúčtování víkendových výprav a tím minimalizovat počty chyb a nejasností s tím spojených.
-            Projekt vznikl v roce 2009 a od té doby je průběžně rozšiřován podle možností a potřeby.
-        </p>
-        <p>
-            Na podzim roku 2016 se k rozvoji projektu připojil František Maša, díky kterému získal projekt více nových funkcí a profesionálnější programátorské zázemí. Ten svoje aktivity omezil během roku 2022.
-        </p>
-        <p>
-            V průběhu roku 2023 se do vývoje zapojil Alex, který pomáhá s postupným rozvojem, a Mlha, který se zaměřil na sekci vzdělávacích akcí.
-        </p>
-        <h2 id="ucel">K čemu slouží?</h2>
-        <p>
-            Hlavní myšlenkou je usnadnit práci hospodářům akcí, a proto svým rozsahem pokrývá pouze akce a nikoliv účetnictví celého střediska.
-            Systém je napojen na SkautIS, díky čemuž se může přihlášený uživatel dostat k akcím a členům své jednotky a s nimi jednoduše dále pracovat.
-            <a n:href=":Tutorial:event seznam-ucastniku">Seznam účastníků</a> lze vytořit jednoduše, právě díky napojení na SkautIS, a pak stačí jen doplnit zaplacené účastnické příspěvky.
-            Umožnuje vytvořit přehlednou <a n:href=":Tutorial:event pokladni-kniha">pokladní knihu</a>, která dokáže generovat druhotné pokladní doklady.
-            Z celé akce lze na <a n:href=":Tutorial:event zaver">konci vygenerovat záverečnou zprávu</a>.
-        </p>
-        <h2 id="media">Napsali o nás</h2>
-        <ul>
-            <li><a href="https://archiv2.krizovatka.skaut.cz/component/content/article/897-metodicke-clanky-pro-hospodare/metodicke-clanky-pro-hospodare-prosinec-2017/3636-usnadnete-si-registraci-s-h-skauting-rozesilani-podkladu-k-platbam-i-kontrola-uhrad?autologin=1" target="_blank">křižovatka.skaut.cz (prosinec 2017)</a></li>
-            <li><a href="https://casopisy.skaut.cz/skauting/789#p34" target="_blank">časopis Skauting (říjen 2016)</a></li>
-            <li><a href="https://casopisy.skaut.cz/skauting/695#p26" target="_blank">časopis Skauting (červen 2015)</a></li>
-        </ul>
-        
-        
-        <h2 id="donate">Jak k projektu přispět?</h2>
-        <h3>Hledáním nových možností a starých chyb</h3>
-        <p>
-            Projitím celého systému a sepsáním nedostatků a nápadů na jeho vylepšení, třeba ho pomůžete posunout zase o kus dál. Ne všechny nápady a připomínky lze zapracovat, ať z časových důvodů či z důvodu zvýšení složitosti systému.
-        </p>
-        <h3>Pomocí při programování dalších částí</h3>
-        <p>
-            Zdrojové kódy celého systému jsou <a href="https://github.com/skaut/Skautske-hospodareni">k dispozici na Githubu</a>.
-            Jako první krok doporučujeme seznámit se s <a href="https://github.com/skaut/SkautIS">PHP knihovnou na propojení se SkautISem</a> a vyzkoušet si jak <a href="https://ws.skautis.cz/">webové služby fungují</a>.
-            Systém je napsán v <a href="https://nette.org/cs/">Nette 2.4</a> a používá Doctrine 2.
-            Pro vzhled byl použit <a href="https://twitter.github.com/bootstrap/">Bootstrap</a>.
-        </p>
-
-        <h3>Finančně</h3>
-        <p>
-            Celý projekt je neziskový, ale pokud by někdo chtěl finančně podpořit jak dosavadní tak budoucí rozvoj projektu, budu jen rád, protože vývoj zabere opravdu spoustu času.
-        </p>    
-
-        <p>
-            <h4 id="seznam-darcu">Seznam dárců</h4>
-            <ul>
-                <li>4. 10. 2024 - okres Brno - město - 10 000 kč</li>
-                <li>1. 10. 2023 - okres Brno - město - 5 000 kč</li>
-                <li>5.  3. 2022 - okres Brno - město - 3 000 kč</li>
-                <li>19. 5. 2021 - okres Brno - město - 3 000 kč</li>
-                <li>24. 3. 2020 - okres Brno - město - 3 000 kč</li>
-                <li>15. 4. 2019 - Středisko Blaník - 20 000 kč</li>
-                <li>20. 1. 2018 - Ondřej Kněžour (středisko Douglaska Praha) - 1 000 kč</li>
-                <li>5.  1. 2018 - Středisko Blaník - 6 000 kč</li>
-                <li>20. 10. 2017 - Středisko Blaník - 6 000 kč</li>
-                <li>13. 9. 2017 - Štěpán Káňa - 500 kč</li>
-                <li>17. 6. 2016 - Jaroslav Procházka - 100 kč</li>
-            </ul>
-        </p>
-
-        <h2 id="kontakt">Kontakt</h2>
-        <p>
-            hskauting(zavinac)skaut(tecka)cz<br />
-            <a href="https://www.facebook.com/SkautskeOnlineUcetnictvi/">Facebook</a>
-        </p>
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 class="h3 mb-2">O projektu</h1>
+            {include pageLead, default: 'Skautské hospodaření pomáhá skautským jednotkám vést finance akcí, táborů a běžného provozu na jednom místě.'}
+        </div>
     </div>
 
+    <section class="card" aria-labelledby="about-project">
+        <div class="card-body">
+            <h2 id="about-project" class="h5 mb-3">Jak projekt vznikl</h2>
+            <p>
+                Skautské hospodaření vzniklo na základě potřeby systematizovat vyúčtování víkendových výprav a tím minimalizovat počty chyb a nejasností s tím spojených.
+                Projekt vznikl v roce 2009 a od té doby je průběžně rozšiřován podle možností a potřeby.
+            </p>
+            <p>
+                Na podzim roku 2016 se k rozvoji projektu připojil František Maša, díky kterému získal projekt více nových funkcí a profesionálnější programátorské zázemí. Ten svoje aktivity omezil během roku 2022.
+            </p>
+            <p class="mb-0">
+                V průběhu roku 2023 se do vývoje zapojil Alex, který pomáhá s postupným rozvojem, a Mlha, který se zaměřil na sekci vzdělávacích akcí.
+            </p>
+        </div>
+    </section>
+
+    <section class="card" aria-labelledby="about-purpose">
+        <div class="card-body">
+            <h2 id="about-purpose" class="h5 mb-3">K čemu slouží?</h2>
+            <p class="mb-0">
+                Hlavní myšlenkou je usnadnit práci hospodářům akcí, a proto svým rozsahem pokrývá pouze akce a nikoliv účetnictví celého střediska.
+                Systém je napojen na SkautIS, díky čemuž se může přihlášený uživatel dostat k akcím a členům své jednotky a s nimi jednoduše dále pracovat.
+                <a n:href=":Tutorial:event seznam-ucastniku">Seznam účastníků</a> lze vytvořit jednoduše, právě díky napojení na SkautIS, a pak stačí jen doplnit zaplacené účastnické příspěvky.
+                Umožňuje vytvořit přehlednou <a n:href=":Tutorial:event pokladni-kniha">pokladní knihu</a>, která dokáže generovat druhotné pokladní doklady.
+                Z celé akce lze na <a n:href=":Tutorial:event zaver">konci vygenerovat závěrečnou zprávu</a>.
+            </p>
+        </div>
+    </section>
+
+    <section class="card" aria-labelledby="about-media">
+        <div class="card-body">
+            <h2 id="about-media" class="h5 mb-3">Napsali o nás</h2>
+            <ul class="mb-0">
+                <li><a href="https://archiv2.krizovatka.skaut.cz/component/content/article/897-metodicke-clanky-pro-hospodare/metodicke-clanky-pro-hospodare-prosinec-2017/3636-usnadnete-si-registraci-s-h-skauting-rozesilani-podkladu-k-platbam-i-kontrola-uhrad?autologin=1" target="_blank" rel="noopener noreferrer">křižovatka.skaut.cz (prosinec 2017)</a></li>
+                <li><a href="https://casopisy.skaut.cz/skauting/789#p34" target="_blank" rel="noopener noreferrer">časopis Skauting (říjen 2016)</a></li>
+                <li><a href="https://casopisy.skaut.cz/skauting/695#p26" target="_blank" rel="noopener noreferrer">časopis Skauting (červen 2015)</a></li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="card" aria-labelledby="about-involvement">
+        <div class="card-body">
+            <h2 id="about-involvement" class="h5 mb-4">Jak se zapojit?</h2>
+
+            <h3 class="h6 mb-2">Hledáním nových možností a starých chyb</h3>
+            <p>
+                Projitím celého systému a sepsáním nedostatků a nápadů na jeho vylepšení, třeba ho pomůžete posunout zase o kus dál. Ne všechny nápady a připomínky lze zapracovat, ať z časových důvodů či z důvodu zvýšení složitosti systému.
+            </p>
+
+            <h3 class="h6 mb-2">Pomocí při programování dalších částí</h3>
+            <p class="mb-0">
+                Zdrojové kódy celého systému jsou <a href="https://github.com/skaut/Skautske-hospodareni">k dispozici na GitHubu</a>.
+                Jako první krok doporučujeme seznámit se s <a href="https://github.com/skaut/SkautIS">PHP knihovnou na propojení se SkautISem</a> a vyzkoušet si, jak <a href="https://ws.skautis.cz/">webové služby fungují</a>.
+                Systém je napsán v <a href="https://nette.org/cs/">Nette 2.4</a> a používá Doctrine 2.
+                Pro vzhled byl použit <a href="https://twitter.github.com/bootstrap/">Bootstrap</a>.
+            </p>
+        </div>
+    </section>
+
+    {include 'supportersCta.latte', headingLevel: 2}
+
+    <section class="card" aria-labelledby="about-contact">
+        <div class="card-body">
+            <h2 id="about-contact" class="h5 mb-3">Kontakt</h2>
+            <p class="mb-0">
+                hskauting(zavinac)skaut(tecka)cz<br>
+                <a href="https://www.facebook.com/SkautskeOnlineUcetnictvi/">Facebook</a>
+            </p>
+        </div>
+    </section>
 </div>

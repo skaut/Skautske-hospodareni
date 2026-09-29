@@ -38,6 +38,47 @@ final class PublicAccessCest extends BaseAcceptanceCest
         $I->seeElementInDOM('[data-test="app-install-hint"][hidden]');
     }
 
+    public function homepageOffersSupportersCard(AcceptanceTester $I): void
+    {
+        $I->amOnPage('/');
+        $I->waitForElementVisible('[data-test="homepage"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        $I->seeElement('[data-test="supporters-cta"] a[href="/podporovatele"]');
+        $I->see('Díky podporovatelům můžeme Skautské hospodaření dál rozvíjet a udržovat.', '[data-test="supporters-cta"]');
+        $I->dontSeeElementInDOM('[data-test="homepage-supporters"]');
+    }
+
+    public function aboutPageOffersSupportersCard(AcceptanceTester $I): void
+    {
+        $I->amOnPage('/o-projektu');
+        $I->waitForElementVisible('[data-test="about-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        $I->seeElement('[data-test="about-page"] [data-test="supporters-cta"] a[href="/podporovatele"]');
+        $I->see('Díky podporovatelům můžeme Skautské hospodaření dál rozvíjet a udržovat.', '[data-test="about-page"] [data-test="supporters-cta"]');
+    }
+
+    public function supportersPageShowsSupportByYear(AcceptanceTester $I): void
+    {
+        $I->amOnPage('/podporovatele');
+        $I->waitForElementVisible('[data-test="supporters-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        $I->seeElement('a[href="mailto:hskauting@skaut.cz"]');
+        $I->see('okres Brno - město', '[data-test="supporters-page"]');
+        $I->see('10 000 Kč', '[data-test="supporters-page"]');
+        $I->see('Díky podporovatelům můžeme Skautské hospodaření dál rozvíjet a udržovat.', '[data-test="supporters-page"]');
+
+        $years = $I->executeJS(<<<'JS'
+return Array.from(document.querySelectorAll('[data-test="supporters-page"] .supporters-year'))
+    .map((heading) => heading.textContent.trim());
+JS);
+
+        Assert::assertSame(['2026', '2025', '2024', '2023', '2022', '2021', '2020', '2019', '2018', '2017', '2016'], $years);
+        Assert::assertTrue($I->executeJS(<<<'JS'
+return Array.from(document.querySelectorAll('[data-test="supporters-page"] [data-test="supporters-year"]'))
+    .every((year) => year.classList.contains('border') && year.classList.contains('rounded'));
+JS));
+    }
+
     public function standaloneHomepageCentresItsTitleAndPrimaryAction(AcceptanceTester $I): void
     {
         $I->amOnPage('/');
@@ -124,6 +165,7 @@ JS);
         return [
             'homepage' => ['url' => '/', 'selector' => '[data-test="homepage"]'],
             'about' => ['url' => '/o-projektu', 'selector' => 'h1'],
+            'supporters' => ['url' => '/podporovatele', 'selector' => '[data-test="supporters-page"]'],
             'reinforcement' => ['url' => '/posily', 'selector' => 'h1'],
             'privacy' => ['url' => '/zasady-soukromi', 'selector' => '[data-test="privacy-page"]'],
         ];
