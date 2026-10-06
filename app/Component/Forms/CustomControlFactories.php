@@ -20,6 +20,11 @@ trait CustomControlFactories
         return $this[$name] = new VariableSymbolControl($label);
     }
 
+    public function addEmailList(string $name, string $label, string $fallbackLabel): EmailListControl
+    {
+        return $this[$name] = new EmailListControl($label, $fallbackLabel);
+    }
+
     /** @phpstan-param string|int $name */
     public function addContainer($name): BaseContainer
     {

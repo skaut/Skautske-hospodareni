@@ -36,7 +36,7 @@ class Payment
         $I->fillFieldStable(self::MODAL_NAME_INPUT, $name, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
 
         if ($email !== null) {
-            $I->fillFieldStable('#frm-paymentDialog-form-email', $email, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
+            $I->fillFieldStable('#frm-paymentDialog-form-emails-new', $email, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
         }
 
         $I->fillFieldStable('#frm-paymentDialog-form-amount', (string) $amount, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);

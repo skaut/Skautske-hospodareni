@@ -274,6 +274,63 @@ class PaymentDetailCest extends PaymentAcceptanceCest
     }
 
     /** @group payment */
+    public function editPaymentRecipientsAsAListWithoutSeparators(): void
+    {
+        $I = $this->I;
+        $groupId = $this->createSubtypePaymentGroup('event');
+        $paymentId = $I->haveInDatabase('pa_payment', [
+            'group_id' => $groupId,
+            'name' => 'Platba s více příjemci',
+            'amount' => 500,
+            'due_date' => ChronosDate::today()->addWeekdays(1)->format('Y-m-d'),
+            'variable_symbol' => '900003',
+            'constant_symbol' => null,
+            'note' => '',
+            'state' => 'preparing',
+        ]);
+        foreach (['prvni@example.com', 'druhy@example.com'] as $address) {
+            $I->haveInDatabase('pa_payment_email_recipients', [
+                'payment_id' => $paymentId,
+                'email_address' => $address,
+            ]);
+        }
+
+        $I->amOnPage('/platby/skupiny/'.$groupId.'/platby');
+        $I->waitForElementVisible('[data-test="payment-group-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->clickStable('[data-test="payment-edit-action-'.$paymentId.'"]');
+        $I->waitForElementVisible('[data-test="payment-email-list"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        $list = '[data-test="payment-email-list"]';
+        $I->seeNumberOfElements($list.' [data-test="email-list-item"]', 2);
+        $I->seeCheckboxIsChecked($list.' input[value="prvni@example.com"]');
+        $I->seeCheckboxIsChecked($list.' input[value="druhy@example.com"]');
+
+        $I->amGoingTo('remove one address, add another with the button and leave a third one in the input');
+        $I->clickStable($list.' input[value="druhy@example.com"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
+        $I->dontSeeCheckboxIsChecked($list.' input[value="druhy@example.com"]');
+
+        $I->fillFieldStable('#frm-paymentDialog-form-emails-new', 'treti@example.com', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
+        $I->clickStable($list.' [data-test="email-list-add"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
+        $I->waitForJS(
+            'return document.querySelectorAll(\'[data-test="payment-email-list"] [data-test="email-list-item"]\').length === 3;',
+            AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
+        );
+        $I->seeCheckboxIsChecked($list.' input[value="treti@example.com"]');
+        $I->see('Zadáno ručně', $list);
+        $I->seeInField('#frm-paymentDialog-form-emails-new', '');
+
+        $I->fillFieldStable('#frm-paymentDialog-form-emails-new', 'ctvrty@example.com', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
+        $I->clickStable('.modal.show .modal-footer input[name="send"][form="frm-paymentDialog-form"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
+        $I->waitForText('Platba byla upravena', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        foreach (['prvni@example.com', 'treti@example.com', 'ctvrty@example.com'] as $address) {
+            $I->seeInDatabase('pa_payment_email_recipients', ['payment_id' => $paymentId, 'email_address' => $address]);
+        }
+
+        $I->dontSeeInDatabase('pa_payment_email_recipients', ['payment_id' => $paymentId, 'email_address' => 'druhy@example.com']);
+    }
+
+    /** @group payment */
     public function splitPaymentIntoMultiplePayments(): void
     {
         $I = $this->I;

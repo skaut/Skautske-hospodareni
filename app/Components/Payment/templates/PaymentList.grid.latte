@@ -65,6 +65,7 @@
         }
         <a href="{$control->getPresenter()->link('paymentDialog:open!', $item->getId())}"
            class="btn btn-sm btn-light ajax"
+           data-test="payment-edit-action-{$item->getId()}"
            title="Upravit platbu"><i class="far fa-edit"></i></a>
         <a href="{$control->getPresenter()->link('splitPaymentDialog:open!', $item->getId())}"
            n:if="$item->getAmount() > 0"
