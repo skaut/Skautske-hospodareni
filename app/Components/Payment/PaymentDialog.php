@@ -7,13 +7,14 @@ namespace App\Components\Payment;
 use App\Components\Dialog;
 use App\Model\Common\EmailAddress;
 use App\Model\Common\Services\CommandBus;
+use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Payment\Payment;
 use App\Model\Payment\Commands\Payment\CreatePayment;
 use App\Model\Payment\Commands\Payment\UpdatePayment;
 use App\Model\Payment\InvalidVariableSymbol;
 use App\Model\Payment\PaymentService;
+use App\Model\Payment\ReadModel\Queries\MemberEmailsQuery;
 use App\Model\Payment\VariableSymbolCollision;
-use App\MyValidators;
 use Assert\Assertion;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
@@ -21,20 +22,19 @@ use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
 
 use function array_map;
-use function explode;
-use function implode;
-use function preg_replace;
 
 /** @method void onSuccess() */
 final class PaymentDialog extends Dialog
 {
+    private const MANUAL_EMAIL_LABEL = 'Zadáno ručně';
+
     /** @var callable[] */
     public array $onSuccess = [];
 
     /** @persistent */
     public int $paymentId = -1;
 
-    public function __construct(private int $groupId, private CommandBus $commandBus, private PaymentService $paymentService)
+    public function __construct(private int $groupId, private CommandBus $commandBus, private QueryBus $queryBus, private PaymentService $paymentService)
     {
     }
 
@@ -59,23 +59,18 @@ final class PaymentDialog extends Dialog
     protected function createComponentForm(): BaseForm
     {
         $form = new BaseForm();
+        $payment = $this->payment();
 
         PaymentFormFields::addName($form);
         PaymentFormFields::addAmount($form);
 
-        $form->addText('email', 'E-mail')
-            ->setRequired(false)
-            ->addFilter(fn (string $value) => preg_replace('/\s+/', '', $value))
-            ->setNullable()
-            ->addCondition(Form::FILLED)
-            ->addRule([MyValidators::class, 'isValidEmailList'], 'Zadaný e-mail nemá platný formát. Více adres oddělte pouze čárkou.');
+        $form->addEmailList('emails', 'E-mail', self::MANUAL_EMAIL_LABEL)
+            ->setOffered($this->memberEmails($payment));
 
         PaymentFormFields::addDueDate($form);
         PaymentFormFields::addVariableSymbol($form);
         PaymentFormFields::addConstantSymbol($form);
         PaymentFormFields::addNote($form);
-
-        $payment = $this->payment();
 
         $form->addSubmit('send', $payment === null ? 'Přidat platbu' : 'Uložit platbu');
 
@@ -83,7 +78,7 @@ final class PaymentDialog extends Dialog
             $form->setDefaults([
                 'name' => $payment->getName(),
                 'amount' => $payment->getAmount(),
-                'email' => implode(MyValidators::EMAIL_SEPARATOR, $payment->getEmailRecipients()),
+                'emails' => array_map(static fn (EmailAddress $email): string => $email->getValue(), $payment->getEmailRecipients()),
                 'dueDate' => $payment->getDueDate(),
                 'variableSymbol' => $payment->getVariableSymbol(),
                 'constantSymbol' => $payment->getConstantSymbol(),
@@ -154,7 +149,7 @@ final class PaymentDialog extends Dialog
             new UpdatePayment(
                 $this->paymentId,
                 $values->name,
-                $this->processEmails($values->email),
+                $this->recipients($values),
                 $values->amount,
                 new ChronosDate($values->dueDate),
                 $values->variableSymbol,
@@ -165,26 +160,13 @@ final class PaymentDialog extends Dialog
         $this->flashMessage('Platba byla upravena', 'success');
     }
 
-    /** @return EmailAddress[] */
-    private function processEmails(?string $emails): array
-    {
-        if ($emails === null) {
-            return [];
-        }
-
-        return array_map(
-            fn (string $email) => new EmailAddress($email),
-            explode(MyValidators::EMAIL_SEPARATOR, $emails),
-        );
-    }
-
     private function createPayment(ArrayHash $values): void
     {
         $this->commandBus->handle(
             new CreatePayment(
                 $this->groupId,
                 $values->name,
-                $this->processEmails($values->email),
+                $this->recipients($values),
                 $values->amount,
                 new ChronosDate($values->dueDate),
                 null,
@@ -196,6 +178,33 @@ final class PaymentDialog extends Dialog
 
         $this->flashMessage('Platba byla přidána', 'success');
         $this->hide();
+    }
+
+    /** @return EmailAddress[] */
+    private function recipients(ArrayHash $values): array
+    {
+        return array_map(static fn (string $address): EmailAddress => new EmailAddress($address), $values->emails);
+    }
+
+    /**
+     * The e-mails skautIS has for the person the payment is for, offered for selection only; nothing is
+     * written back to skautIS.
+     *
+     * @return array<string, string> address => label of the contact type
+     */
+    private function memberEmails(?Payment $payment): array
+    {
+        $personId = $payment?->getPersonId();
+        if ($personId === null) {
+            return [];
+        }
+
+        $emails = [];
+        foreach ($this->queryBus->handle(new MemberEmailsQuery($personId)) as $email) {
+            $emails[$email->getAddress()] = $email->getType()->getLabel();
+        }
+
+        return $emails;
     }
 
     private function isEditing(): bool

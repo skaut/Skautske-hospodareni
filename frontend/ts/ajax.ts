@@ -11,6 +11,7 @@ import {initializeCheckAllCheckboxes, initializeCheckboxToggle} from "./checkbox
 import {DataGridExtension} from "./DataGridExtension";
 import {initializeDatePicker} from "./datePicker";
 import {initializeMassEmailSelection} from "./massEmailSelection";
+import {initializeEmailLists} from "./emailList";
 import netteForms from "./netteForms";
 import {initializeSendMassForm} from "./ChitListExtension"
 import {initializeEditForm} from "./ChitListExtension"
@@ -43,6 +44,7 @@ export default function (): void {
         initializeDropdowns(snippet);
         initializeTooltips(snippet);
         initializeMassEmailSelection(snippet);
+        initializeEmailLists(snippet);
         initializePageEnhancements(snippet);
     }));
 

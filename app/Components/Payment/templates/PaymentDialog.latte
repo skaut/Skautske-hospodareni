@@ -21,14 +21,14 @@
                 {include errors $form['name']}
             </div>
 
-            <div class="mb-3">
-                <label n:name="email"/>
+            <div class="mb-3" data-test="payment-email-list">
+                <label n:name="emails"/>
                 <small class="text-body-secondary">volitelný</small>
-                <span title="Pro více příjemců, oddělte jejich e-mailové adresy čárkou" data-bs-toggle="tooltip">
+                <span title="E-maily k platbě dostanou zaškrtnuté adresy. Jinou adresu napište do pole pod seznamem a přidejte ji." data-bs-toggle="tooltip">
                         <i class="fas fa-info-circle d-none d-md-inline"></i>
                 </span>
-                {include control $form['email']}
-                {include errors $form['email']}
+                {input emails}
+                {include errors $form['emails']}
             </div>
 
             <div class="mb-3">
