@@ -116,12 +116,12 @@ final class EmailListControl extends BaseControl
     {
         $this->setOption('rendered', true);
 
-        $items = Html::el('div', ['data-email-list-items' => true]);
+        $items = Html::el('div', ['class' => 'email-list__items', 'data-email-list-items' => true]);
         $index = 0;
         foreach ($this->rows() as $address => $label) {
             $id = $this->getHtmlId().'-'.$index++;
             $items->addHtml(
-                Html::el('div', ['class' => 'form-check', 'data-test' => 'email-list-item'])
+                Html::el('div', ['class' => 'form-check email-list__item', 'data-test' => 'email-list-item'])
                     ->addHtml(Html::el('input', [
                         'type' => 'checkbox',
                         'class' => 'form-check-input',
@@ -132,7 +132,7 @@ final class EmailListControl extends BaseControl
                         'disabled' => $this->isDisabled(),
                     ]))
                     ->addHtml(
-                        Html::el('label', ['class' => 'form-check-label', 'for' => $id])
+                        Html::el('label', ['class' => 'form-check-label email-list__label', 'for' => $id])
                             ->addText($address.' ')
                             ->addHtml(Html::el('span', ['class' => 'text-body-secondary'])->setText('('.$label.')')),
                     ),
@@ -141,7 +141,7 @@ final class EmailListControl extends BaseControl
 
         $typed = Html::el('input', [
             'type' => 'email',
-            'class' => 'form-control',
+            'class' => 'form-control email-list__input',
             'name' => $this->getHtmlName().'[new]',
             'id' => $this->getHtmlId().'-new',
             'placeholder' => 'další e-mail',
@@ -151,20 +151,21 @@ final class EmailListControl extends BaseControl
         ]);
         $add = Html::el('button', [
             'type' => 'button',
-            'class' => 'btn btn-outline-secondary',
+            'class' => 'btn btn-outline-secondary email-list__add',
             'disabled' => $this->isDisabled(),
             'data-email-list-add' => true,
             'data-test' => 'email-list-add',
         ])->setText('Přidat');
 
         return Html::el('div', [
+            'class' => 'email-list',
             'data-email-list' => true,
             'data-email-list-name' => $this->getHtmlName().'[selected][]',
             'data-email-list-id' => $this->getHtmlId(),
             'data-email-list-fallback-label' => $this->fallbackLabel,
         ])
             ->addHtml($items)
-            ->addHtml(Html::el('div', ['class' => 'input-group mt-1'])->addHtml($typed)->addHtml($add));
+            ->addHtml(Html::el('div', ['class' => 'input-group mt-2 email-list__input-group'])->addHtml($typed)->addHtml($add));
     }
 
     /** @return array<string, string> every address to show (offered first) with the label of its source */

@@ -68,12 +68,12 @@ function createItem(list: HTMLElement, address: string, index: number): HTMLElem
     source.textContent = `(${list.dataset.emailListFallbackLabel ?? ''})`;
 
     const label = document.createElement('label');
-    label.className = 'form-check-label';
+    label.className = 'form-check-label email-list__label';
     label.htmlFor = id;
     label.append(`${address} `, source);
 
     const item = document.createElement('div');
-    item.className = 'form-check';
+    item.className = 'form-check email-list__item';
     item.dataset.test = 'email-list-item';
     item.append(checkbox, label);
 
