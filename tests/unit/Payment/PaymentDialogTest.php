@@ -14,6 +14,7 @@ use App\Model\Payment\Payment\State;
 use App\Model\Payment\PaymentService;
 use App\Model\Payment\ReadModel\Queries\MemberEmailsQuery;
 use App\Model\Payment\VariableSymbol;
+use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use Component\Forms\BaseForm;
@@ -67,7 +68,7 @@ final class PaymentDialogTest extends Unit
         return new Payment(
             self::PAYMENT_ID,
             'Testovací platba',
-            500.0,
+            MoneyFactory::fromDecimal('500.00'),
             array_map(static fn (string $address): EmailAddress => new EmailAddress($address), $recipients),
             new ChronosDate('2026-10-20'),
             new VariableSymbol('123'),
