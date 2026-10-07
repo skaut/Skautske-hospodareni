@@ -370,6 +370,42 @@ fieldset:disabled label {
   color: var(--tblr-secondary);
 }
 
+.email-list__items {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.email-list__item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  margin-bottom: 0;
+  padding-left: 0;
+}
+
+.email-list__item .form-check-input {
+  float: none;
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.email-list__item .form-check-input + .email-list__label {
+  min-width: 0;
+  margin-left: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 767.98px) {
+  .email-list__item {
+    min-height: 2.75rem;
+  }
+
+  .email-list__input {
+    min-height: 2.75rem;
+  }
+}
+
 .table-responsive {
   border: 1px solid var(--tblr-border-color);
   border-radius: var(--tblr-border-radius);
