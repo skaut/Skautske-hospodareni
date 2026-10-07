@@ -59,21 +59,21 @@ final class EmailListControlTest extends Unit
 
         self::assertStringContainsString(
             '<input type="checkbox" class="form-check-input" name="emails[selected][]" id="frm-emails-0" value="jan&#64;example.com">'
-            .'<label class="form-check-label" for="frm-emails-0">jan@example.com <span class="text-body-secondary">(Hlavní)</span></label>',
+            .'<label class="form-check-label email-list__label" for="frm-emails-0">jan@example.com <span class="text-body-secondary">(Hlavní)</span></label>',
             $html,
         );
         self::assertStringContainsString(
             '<input type="checkbox" class="form-check-input" name="emails[selected][]" id="frm-emails-1" value="matka&#64;example.com" checked>'
-            .'<label class="form-check-label" for="frm-emails-1">matka@example.com <span class="text-body-secondary">(Matka)</span></label>',
+            .'<label class="form-check-label email-list__label" for="frm-emails-1">matka@example.com <span class="text-body-secondary">(Matka)</span></label>',
             $html,
         );
         self::assertStringContainsString(
             '<input type="checkbox" class="form-check-input" name="emails[selected][]" id="frm-emails-2" value="jiny&#64;example.com" checked>'
-            .'<label class="form-check-label" for="frm-emails-2">jiny@example.com <span class="text-body-secondary">(Zadáno ručně)</span></label>',
+            .'<label class="form-check-label email-list__label" for="frm-emails-2">jiny@example.com <span class="text-body-secondary">(Zadáno ručně)</span></label>',
             $html,
         );
-        self::assertStringContainsString('<input type="email" class="form-control" name="emails[new]" id="frm-emails-new"', $html);
-        self::assertStringContainsString('data-email-list-name="emails[selected][]" data-email-list-id="frm-emails" data-email-list-fallback-label="Zadáno ručně"', $html);
+        self::assertStringContainsString('<input type="email" class="form-control email-list__input" name="emails[new]" id="frm-emails-new"', $html);
+        self::assertStringContainsString('class="email-list" data-email-list data-email-list-name="emails[selected][]" data-email-list-id="frm-emails" data-email-list-fallback-label="Zadáno ručně"', $html);
         self::assertSame('<label>E-mail</label>', (string) $control->getLabel());
     }
 

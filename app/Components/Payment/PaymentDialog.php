@@ -54,6 +54,7 @@ final class PaymentDialog extends Dialog
 
         $this->template->setFile(__DIR__.'/templates/PaymentDialog.latte');
         $this->template->setParameters([
+            'customClasses' => 'modal-dialog-scrollable',
             'payment' => $this->payment(),
             'editing' => $this->isEditing(),
         ]);

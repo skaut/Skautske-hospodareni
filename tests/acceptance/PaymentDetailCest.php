@@ -660,6 +660,44 @@ JS);
         $I->seeCheckboxIsChecked($list.' input[value="prvni@example.com"]');
         $I->seeCheckboxIsChecked($list.' input[value="druhy@example.com"]');
 
+        $I->resizeWindow(375, 900);
+        $mobileLayout = $I->executeJS(<<<'JS'
+const list = document.querySelector('[data-test="payment-email-list"]');
+const rows = Array.from(list?.querySelectorAll('[data-test="email-list-item"]') ?? []).map(row => {
+    const checkbox = row.querySelector('input[type="checkbox"]');
+    const label = row.querySelector('label');
+    const checkboxRect = checkbox?.getBoundingClientRect();
+    const labelRect = label?.getBoundingClientRect();
+
+    return {
+        checkboxWidth: checkboxRect?.width ?? 0,
+        checkboxHeight: checkboxRect?.height ?? 0,
+        checkboxRight: checkboxRect?.right ?? 0,
+        labelLeft: labelRect?.left ?? 0,
+    };
+});
+const input = list?.querySelector('[data-email-list-input]');
+const add = list?.querySelector('[data-email-list-add]');
+
+return {
+    horizontalOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    scrollableDialog: document.querySelector('.modal-dialog')?.classList.contains('modal-dialog-scrollable') ?? false,
+    inputHeight: input?.getBoundingClientRect().height ?? 0,
+    addHeight: add?.getBoundingClientRect().height ?? 0,
+    rows,
+};
+JS);
+
+        Assert::assertSame(0, $mobileLayout['horizontalOverflow'], (string) json_encode($mobileLayout));
+        Assert::assertTrue($mobileLayout['scrollableDialog']);
+        Assert::assertGreaterThanOrEqual(44, $mobileLayout['inputHeight']);
+        Assert::assertGreaterThanOrEqual(44, $mobileLayout['addHeight']);
+        foreach ($mobileLayout['rows'] as $row) {
+            Assert::assertGreaterThanOrEqual(44, $row['checkboxWidth']);
+            Assert::assertGreaterThanOrEqual(44, $row['checkboxHeight']);
+            Assert::assertLessThanOrEqual($row['labelLeft'], $row['checkboxRight']);
+        }
+
         $I->amGoingTo('remove one address, add another with the button and leave a third one in the input');
         $I->clickStable($list.' input[value="druhy@example.com"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
         $I->dontSeeCheckboxIsChecked($list.' input[value="druhy@example.com"]');
