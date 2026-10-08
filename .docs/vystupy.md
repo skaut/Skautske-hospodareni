@@ -59,3 +59,5 @@ nebo `chits.hpd.latte` (hospodářský doklad).
 - Uživatelská data v obrázcích (loga a razítka faktur) se vkládají **inline jako base64** – nikdy nejdou přes veřejnou URL.
 - Horní kontejnery mají vynucené `max-width:100%` + `box-sizing:border-box`, aby se přeširoké šablony (fixní `800px`)
   vešly na tiskovou plochu A4 (emulace mpdf `shrink_tables_to_fit`).
+- Produkce může používat externí Gotenberg přes `GOTENBERG_URL`. Pokud endpoint chrání HTTP Basic autentizace,
+  nastavují se společně `GOTENBERG_USERNAME` a `GOTENBERG_PASSWORD`; heslo patří jen do tajemství nasazení.
