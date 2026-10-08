@@ -20,6 +20,9 @@ use Nette\Http\Request;
 use Nette\Http\Response;
 use Nette\Http\Session;
 use Nette\Http\UrlScript;
+use Nette\Utils\FileSystem;
+
+use function sys_get_temp_dir;
 
 final class MassAddFormTest extends Unit
 {
@@ -113,9 +116,12 @@ final class MassAddFormTest extends Unit
         $component = new MassAddForm(self::GROUP_ID, $payments, Mockery::mock(CommandBus::class));
         $request = new Request(new UrlScript('http://localhost/'));
         $response = new Response();
+        $sessionSavePath = sys_get_temp_dir().'/hskauting-mass-add-form-test-sessions';
+        FileSystem::createDir($sessionSavePath);
+        $session = (new Session($request, $response))->setSavePath($sessionSavePath);
         $presenter = new class extends BasePresenter {
         };
-        $presenter->injectPrimary($request, $response, session: new Session($request, $response));
+        $presenter->injectPrimary($request, $response, session: $session);
         $presenter->addComponent($component, 'massAdd');
 
         return $component;
