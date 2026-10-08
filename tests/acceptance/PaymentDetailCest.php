@@ -754,6 +754,24 @@ JS);
         $I->resizeWindow(1440, 900);
         $I->waitForElementVisible('[data-test="payment-group-grid"] .datagrid', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
+        $rowCheckbox = '[data-test="payment-group-grid"] .datagrid-data-row .col-checkbox input[type="checkbox"]';
+        $I->clickStable($rowCheckbox);
+        $I->waitForJS(<<<'JS'
+const grid = document.querySelector('[data-test="payment-group-grid"] .datagrid');
+const actions = Array.from(grid?.querySelectorAll('.row-group-actions [type="submit"]') ?? []);
+const counter = grid?.querySelector('.datagrid-selected-rows-count');
+
+return actions.length > 0 && actions.every(action => !action.disabled) && counter?.textContent?.trim() === '1/1';
+JS, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->clickStable($rowCheckbox);
+        $I->waitForJS(<<<'JS'
+const grid = document.querySelector('[data-test="payment-group-grid"] .datagrid');
+const actions = Array.from(grid?.querySelectorAll('.row-group-actions [type="submit"]') ?? []);
+const counter = grid?.querySelector('.datagrid-selected-rows-count');
+
+return actions.length > 0 && actions.every(action => action.disabled) && counter?.textContent?.trim() === '';
+JS, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
         $settingsButton = '[data-test="payment-group-grid"] .datagrid-settings button[aria-label="Nastavení sloupců"]';
         $I->seeElement($settingsButton.' .fi-rr-settings');
 
