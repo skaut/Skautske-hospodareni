@@ -51,7 +51,12 @@ class PdfRenderer
         private string $gotenbergUrl,
         private string $wwwDir,
         private ClientInterface $client,
+        private ?string $gotenbergUsername = null,
+        private ?string $gotenbergPassword = null,
     ) {
+        if (($this->gotenbergUsername === null) !== ($this->gotenbergPassword === null)) {
+            throw new RuntimeException('Gotenberg username and password must be configured together.');
+        }
     }
 
     /**
@@ -95,21 +100,30 @@ class PdfRenderer
     public function renderToString(string $template, bool $landscape = false): string
     {
         $html = $this->injectNormalizeCss($this->inlineImages($template));
+        $requestOptions = [
+            'multipart' => [
+                ['name' => 'files', 'contents' => $html, 'filename' => 'index.html'],
+                ['name' => 'paperWidth', 'contents' => '8.27'],
+                ['name' => 'paperHeight', 'contents' => '11.69'],
+                ['name' => 'marginTop', 'contents' => '0.4'],
+                ['name' => 'marginBottom', 'contents' => '0.4'],
+                ['name' => 'marginLeft', 'contents' => '0.4'],
+                ['name' => 'marginRight', 'contents' => '0.4'],
+                ['name' => 'landscape', 'contents' => $landscape ? 'true' : 'false'],
+                ['name' => 'printBackground', 'contents' => 'true'],
+            ],
+        ];
+
+        if ($this->gotenbergUsername !== null) {
+            $requestOptions['auth'] = [$this->gotenbergUsername, $this->gotenbergPassword];
+        }
 
         try {
-            $response = $this->client->request('POST', rtrim($this->gotenbergUrl, '/').'/forms/chromium/convert/html', [
-                'multipart' => [
-                    ['name' => 'files', 'contents' => $html, 'filename' => 'index.html'],
-                    ['name' => 'paperWidth', 'contents' => '8.27'],
-                    ['name' => 'paperHeight', 'contents' => '11.69'],
-                    ['name' => 'marginTop', 'contents' => '0.4'],
-                    ['name' => 'marginBottom', 'contents' => '0.4'],
-                    ['name' => 'marginLeft', 'contents' => '0.4'],
-                    ['name' => 'marginRight', 'contents' => '0.4'],
-                    ['name' => 'landscape', 'contents' => $landscape ? 'true' : 'false'],
-                    ['name' => 'printBackground', 'contents' => 'true'],
-                ],
-            ]);
+            $response = $this->client->request(
+                'POST',
+                rtrim($this->gotenbergUrl, '/').'/forms/chromium/convert/html',
+                $requestOptions,
+            );
         } catch (GuzzleException $e) {
             throw new RuntimeException('Failed to render PDF via Gotenberg.', 0, $e);
         }
