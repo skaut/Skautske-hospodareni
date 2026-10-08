@@ -450,6 +450,76 @@ JS);
     }
 
     /** @group payment */
+    public function paymentEmailActionIsDisabledWithoutRecipient(): void
+    {
+        $I = $this->I;
+        $groupName = uniqid('Selenium recipient warning ', true);
+        $this->createGeneralPaymentGroup($groupName);
+        $groupId = (int) $I->grabFromDatabase('pa_group', 'id', ['name' => $groupName]);
+        $paymentId = $I->haveInDatabase('pa_payment', [
+            'group_id' => $groupId,
+            'name' => 'Platba bez příjemce',
+            'amount' => 50000,
+            'due_date' => ChronosDate::today()->addWeekdays(1)->format('Y-m-d'),
+            'variable_symbol' => '900006',
+            'constant_symbol' => null,
+            'note' => '',
+            'state' => 'preparing',
+        ]);
+
+        $I->amOnPage('/platby/skupiny/'.$groupId.'/platby');
+        $I->waitForElementVisible('[data-test="payment-group-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        $selector = '[data-test="payment-email-action-'.$paymentId.'"]';
+        $I->seeElement($selector.'.btn-light.disabled[aria-disabled="true"]');
+        $I->dontSeeElement($selector.'.ui--sendEmail');
+        Assert::assertSame(
+            'email nejde odeslat, osoba nemá vyplněný žádný email pro doručení',
+            $I->grabAttributeFrom($selector, 'title'),
+        );
+    }
+
+    /** @group payment */
+    public function paymentEmailCanBeSentWithoutBankAccount(): void
+    {
+        $I = $this->I;
+        $groupName = uniqid('Selenium email without bank ', true);
+        $this->createGeneralPaymentGroup($groupName);
+        $groupId = (int) $I->grabFromDatabase('pa_group', 'id', ['name' => $groupName]);
+        $paymentId = $I->haveInDatabase('pa_payment', [
+            'group_id' => $groupId,
+            'name' => 'Platba bez bankovního účtu',
+            'amount' => 50000,
+            'due_date' => ChronosDate::today()->addWeekdays(1)->format('Y-m-d'),
+            'variable_symbol' => '900007',
+            'constant_symbol' => null,
+            'note' => '',
+            'state' => 'preparing',
+        ]);
+        $I->haveInDatabase('pa_payment_email_recipients', [
+            'payment_id' => $paymentId,
+            'email_address' => 'recipient@example.com',
+        ]);
+        $I->updateInDatabase('pa_group', ['bank_account_id' => null], ['id' => $groupId]);
+        $I->updateInDatabase('pa_group_email', [
+            'template_subject' => 'Informace o platbě',
+            'template_body' => 'Tato zpráva neobsahuje údaje o bankovním účtu.',
+        ], [
+            'group_id' => $groupId,
+            'type' => 'payment_info',
+        ]);
+
+        $I->amOnPage('/platby/skupiny/'.$groupId.'/platby');
+        $I->waitForElementVisible('[data-test="payment-group-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        $selector = '[data-test="payment-email-action-'.$paymentId.'"]';
+        $I->seeElement($selector.'.ui--sendEmail');
+        $I->dontSeeElement('[data-test="payment-bank-transaction-action-'.$paymentId.'"]');
+        $I->clickStable($selector);
+        $I->waitForText('1 informační e-mail odeslán', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+    }
+
+    /** @group payment */
     public function paymentGroupBankAccountOverviewIsScopedAndPairsItsPayment(): void
     {
         $I = $this->I;

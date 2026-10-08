@@ -31,6 +31,7 @@ use Component\Forms\DateControl;
 use DateTimeImmutable;
 use LogicException;
 use Nette\Application\UI\Form;
+use Nette\Forms\Controls\SelectBox;
 use Nette\Forms\Controls\TextBase;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\FileSystem;
@@ -173,6 +174,10 @@ final class GroupForm extends BaseControl
             $this->formError($form);
         };
 
+        $form->onValidate[] = function (BaseForm $form, ArrayHash $values): void {
+            $this->validateEmailTemplatesRequireBankAccount($form, $values);
+        };
+
         $form->onSuccess[] = function (BaseForm $form): void {
             $this->formSucceeded($form);
         };
@@ -249,6 +254,34 @@ final class GroupForm extends BaseControl
         }
 
         $this->getPresenter()->redirect(':Payments:Payment:default', ['id' => $this->groupId]);
+    }
+
+    private function validateEmailTemplatesRequireBankAccount(BaseForm $form, ArrayHash $values): void
+    {
+        if ($values->bankAccount !== null && $values->bankAccount !== '') {
+            return;
+        }
+
+        $emails = [
+            $this->buildEmailTemplate($values, EmailType::PAYMENT_INFO),
+            $this->buildEmailTemplate($values, EmailType::PAYMENT_COMPLETED),
+            $this->buildEmailTemplate($values, EmailType::PAYMENT_REMINDER),
+        ];
+
+        foreach ($emails as $email) {
+            if ($email?->requiresBankAccount()) {
+                $bankAccount = $form['bankAccount'];
+                if (! $bankAccount instanceof SelectBox) {
+                    throw new LogicException('Assertion failed.');
+                }
+
+                $bankAccount->addError(
+                    'Šablonu s proměnnou %account% nebo %qrcode% nelze uložit bez bankovního účtu. Upravte šablonu, nebo připojte bankovní účet.',
+                );
+
+                return;
+            }
+        }
     }
 
     private function getDefaultEmailBody(string $name): string

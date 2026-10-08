@@ -25,6 +25,7 @@ use LogicException;
 use Mockery;
 use Nette\Forms\Container;
 use Nette\Forms\Controls\Checkbox;
+use Nette\Forms\Controls\SelectBox;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Forms\Controls\TextInput;
 use ReflectionMethod;
@@ -144,5 +145,48 @@ final class GroupFormTest extends Unit
         $amount->setValue('1500.999');
         $form->validate();
         self::assertSame([PaymentFormFields::MONEY_PATTERN_MESSAGE], $amount->getErrors());
+    }
+
+    public function testRejectsEmailTemplateWithBankVariablesWhenNoBankAccountIsSelected(): void
+    {
+        $paymentService = Mockery::mock(PaymentService::class);
+        $queryBus = Mockery::mock(QueryBus::class);
+        $queryBus->shouldReceive('handle')
+            ->andReturnUsing(static function (object $query): mixed {
+                return match (true) {
+                    $query instanceof NextVariableSymbolSequenceQuery => new VariableSymbol('2601'),
+                    $query instanceof BankAccountsAccessibleByUnitsQuery => [],
+                    $query instanceof OAuthsAccessibleByGroupsQuery => [],
+                    $query instanceof UnitsDetailQuery => [],
+                    default => throw new LogicException('Neočekávaný query '.get_debug_type($query)),
+                };
+            });
+
+        $component = new GroupForm(
+            new UnitId(123),
+            null,
+            null,
+            null,
+            $paymentService,
+            $queryBus,
+        );
+        $method = new ReflectionMethod($component, 'createComponentForm');
+        /** @var \Component\Forms\BaseForm $form */
+        $form = $method->invoke($component);
+        $name = $form['name'];
+        $nextVs = $form['nextVs'];
+        $bankAccount = $form['bankAccount'];
+        if (! $name instanceof TextInput || ! $nextVs instanceof VariableSymbolControl || ! $bankAccount instanceof SelectBox) {
+            throw new LogicException('Assertion failed.');
+        }
+
+        $name->setValue('Skupina bez účtu');
+        $nextVs->setValue('2601');
+        $form->validate();
+
+        self::assertSame(
+            ['Šablonu s proměnnou %account% nebo %qrcode% nelze uložit bez bankovního účtu. Upravte šablonu, nebo připojte bankovní účet.'],
+            $bankAccount->getErrors(),
+        );
     }
 }

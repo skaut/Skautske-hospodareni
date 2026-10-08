@@ -56,7 +56,7 @@ class EmailButton extends BaseControl
 
     public function canSend(): bool
     {
-        return ! ($this->group->getOauthId() === null) && ! ($this->group->getBankAccountId() === null);
+        return $this->group->getOauthId() !== null;
     }
 
     /**
