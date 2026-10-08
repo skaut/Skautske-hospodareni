@@ -1,5 +1,105 @@
 {extends $baseTemplate}
 
+{block group-actions}
+    <tr class="row-group-actions" n:if="$hasGroupActions || $exports || $toolbarButtons || $control->canHideColumns() || $inlineAdd">
+        <th colspan="{$control->getColumnsCount()}" class="datagrid-th-form-inline">
+            <div class="datagrid-group-actions-toolbar">
+                {if $hasGroupActions}
+                    <div class="datagrid-group-actions">
+                        <span class="datagrid-group-action-title">
+                            {='contributte_datagrid.group_actions'|translate}:
+                        </span>
+                        <div class="datagrid-group-action-controls">
+                            {foreach $filter['group_action']->getControls() as $form_control}
+                                {if $form_control instanceof \Nette\Forms\Controls\SubmitButton && $form_control->getName() === 'submit'}
+                                    {input $form_control, class => 'btn btn-primary btn-sm', disabled => TRUE}
+                                {elseif $form_control instanceof \Nette\Forms\Controls\SubmitButton}
+                                    {input $form_control, disabled => TRUE}
+                                {elseif $form_control->getName() == 'group_action'}
+                                    {input $form_control, class => 'form-control form-control-sm', disabled => TRUE}
+                                {else}
+                                    {input $form_control}
+                                {/if}
+                            {/foreach}
+                        </div>
+                        {if $control->shouldShowSelectedRowsCount()}
+                            <span class="datagrid-selected-rows-count"></span>
+                        {/if}
+                    </div>
+                {/if}
+
+                <div class="datagrid-toolbar" n:if="$control->canHideColumns() || $inlineAdd || $exports || $toolbarButtons">
+                    {snippet toolbarButtons}
+                        <span n:if="$toolbarButtons" n:snippet="toolbar">
+                            {foreach $toolbarButtons as $toolbar_button}{$toolbar_button->renderButton()}{/foreach}
+                        </span>
+                    {/snippet}
+
+                    <span class="datagrid-exports" n:if="$exports" n:snippet="exports">
+                        {foreach $exports as $export}{$export->render()}{/foreach}
+                    </span>
+
+                    <div class="datagrid-settings" n:if="$control->canHideColumns() || $inlineAdd">
+                        {if $inlineAdd}
+                            {$inlineAdd->renderButtonAdd()}
+                        {/if}
+
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-xs {$btnSecondaryClass} dropdown-toggle" data-bs-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false" aria-label="Nastavení sloupců"
+                                    n:if="$control->canHideColumns()">
+                                {include #icon-gear}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu--grid">
+                                <li n:foreach="$columnsVisibility as $v_key => $visibility">
+                                    {if $visibility['visible']}
+                                        <a n:href="hideColumn!, column => $v_key" class="ajax dropdown-item">
+                                            {include #icon-checked}
+                                            {include #column-header, column => $visibility['column']}
+                                        </a>
+                                    {else}
+                                        <a n:href="showColumn!, column => $v_key" class="ajax dropdown-item">
+                                            {include #icon-unchecked}
+                                            {include #column-header, column => $visibility['column']}
+                                        </a>
+                                    {/if}
+                                </li>
+                                <li role="separator" class="divider dropdown-divider"></li>
+                                <li>
+                                    <a n:href="showAllColumns!" class="ajax dropdown-item">{include #icon-eye} {='contributte_datagrid.show_all_columns'|translate}</a>
+                                </li>
+                                <li n:if="$control->hasSomeColumnDefaultHide()">
+                                    <a n:href="showDefaultColumns!" class="ajax dropdown-item">{include #icon-repeat} {='contributte_datagrid.show_default_columns'|translate}</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </th>
+    </tr>
+{/block}
+
+{block icon-gear}
+    <i class="fi fi-rr-settings" aria-hidden="true"></i>
+{/block}
+
+{block icon-checked}
+    <span class="datagrid-column-visibility-state datagrid-column-visibility-state--visible" aria-hidden="true"></span>
+{/block}
+
+{block icon-unchecked}
+    <span class="datagrid-column-visibility-state datagrid-column-visibility-state--hidden" aria-hidden="true"></span>
+{/block}
+
+{block icon-eye}
+    <i class="fi fi-rr-eye" aria-hidden="true"></i>
+{/block}
+
+{block icon-repeat}
+    <i class="fi fi-rr-refresh" aria-hidden="true"></i>
+{/block}
+
 {block col-name}
     <div>{$item->getName()}</div>
     <small n:if="$item->getSplitFromPaymentId() !== null" class="text-body-secondary">

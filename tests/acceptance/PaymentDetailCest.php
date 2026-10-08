@@ -787,6 +787,25 @@ return {
 JS);
         Assert::assertTrue($visibility['nameVisible']);
         Assert::assertTrue($visibility['constantSymbolHidden']);
+
+        $I->executeJS(<<<'JS'
+const menu = document.querySelector('[data-test="payment-group-grid"] .dropdown-menu--grid');
+const constantSymbol = Array.from(menu?.querySelectorAll('.dropdown-item') ?? [])
+    .find(item => item.textContent?.trim() === 'KS');
+
+if (!(constantSymbol instanceof HTMLElement)) {
+    throw new Error('Column visibility item for KS was not found.');
+}
+
+constantSymbol.click();
+JS);
+        $I->waitForJS(<<<'JS'
+const menu = document.querySelector('[data-test="payment-group-grid"] .dropdown-menu--grid');
+const constantSymbol = Array.from(menu?.querySelectorAll('.dropdown-item') ?? [])
+    .find(item => item.textContent?.trim() === 'KS');
+
+return constantSymbol?.querySelector('.datagrid-column-visibility-state--visible') !== null;
+JS, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
     }
 
     /** @group payment */
