@@ -501,6 +501,32 @@ class PaymentTest extends Unit
         $this->assertCount(1, $payment->getEmailRecipients());
     }
 
+    public function testUpdateEmailRecipients(): void
+    {
+        $payment = $this->createPayment();
+
+        $payment->updateEmailRecipients([
+            new EmailAddress('main@example.com'),
+            new EmailAddress('parent@example.com'),
+        ]);
+
+        $this->assertSame(
+            ['main@example.com', 'parent@example.com'],
+            array_map(static fn (EmailAddress $email): string => $email->getValue(), $payment->getEmailRecipients()),
+        );
+        $this->assertSame('Jan novák', $payment->getName());
+        $this->assertTrue(MoneyFactory::fromDecimal((string) self::AMOUNT)->equals($payment->getAmount()));
+    }
+
+    public function testClosedPaymentCannotUpdateEmailRecipients(): void
+    {
+        $payment = $this->createPayment();
+        $payment->completeManually(new DateTimeImmutable(), 'John Doe');
+
+        $this->expectException(PaymentClosed::class);
+        $payment->updateEmailRecipients([new EmailAddress('main@example.com')]);
+    }
+
     private function createPayment(): Payment
     {
         return $this->createPaymentWithVariableSymbol(new VariableSymbol('454545'));

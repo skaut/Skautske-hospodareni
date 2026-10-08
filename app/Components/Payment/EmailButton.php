@@ -11,7 +11,6 @@ use App\Model\DTO\Payment\Group;
 use App\Model\DTO\Payment\Payment;
 use App\Model\Google\Exception\OAuthNotSet;
 use App\Model\Google\InvalidOAuth;
-use App\Model\Payment\Commands\Mailing\SendPaymentInfo;
 use App\Model\Payment\Commands\Mailing\SendPaymentReminder;
 use App\Model\Payment\EmailNotSet;
 use App\Model\Payment\EmailTemplateNotSet;
@@ -21,6 +20,7 @@ use App\Model\Payment\MailingService;
 use App\Model\Payment\ReadModel\Queries\GroupEmailQuery;
 
 use function array_filter;
+use function array_map;
 
 class EmailButton extends BaseControl
 {
@@ -28,6 +28,12 @@ class EmailButton extends BaseControl
     public const NO_BANK_ACCOUNT_MESSAGE = 'Skupina nemá nastavený bankovní účet';
 
     public const NO_TEMPLATE_ASSIGNED = 'Skupina nemá nastavenou šablonu pro upomínku';
+
+    /**
+     * @method void                                   onSendPaymentInfoRequested(array $paymentIds)
+     * @var    array<callable(array<int, int>): void>
+     */
+    public array $onSendPaymentInfoRequested = [];
 
     /** @param Payment[] $payments */
     public function __construct(private QueryBus $queryBus, private CommandBus $commandBus, private MailingService $mailing, private bool $isEditable, private array $payments, private Group $group)
@@ -58,7 +64,10 @@ class EmailButton extends BaseControl
      */
     public function handleSendGroup(): void
     {
-        $this->sendPaymentInfoEmails($this->paymentsAvailableForGroupInfoSending($this->payments));
+        $this->onSendPaymentInfoRequested(array_map(
+            static fn (Payment $payment): int => $payment->getId(),
+            $this->paymentsAvailableForGroupInfoSending($this->payments),
+        ));
     }
 
     public function handleSendGroupReminder(): void
@@ -87,39 +96,6 @@ class EmailButton extends BaseControl
         }
 
         $this->redirect('this');
-    }
-
-    /** @param Payment[] $payments */
-    private function sendPaymentInfoEmails(array $payments): void
-    {
-        $sentCount = 0;
-
-        try {
-            foreach ($payments as $payment) {
-                $this->commandBus->handle(new SendPaymentInfo($payment->getId()));
-                ++$sentCount;
-            }
-        } catch (OAuthNotSet) {
-            $this->presenter->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
-            $this->presenter->redirect('this');
-        } catch (InvalidBankAccount) {
-            $this->presenter->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
-            $this->presenter->redirect('this');
-        } catch (InvalidOAuth $e) {
-            $this->oauthError($e);
-            $this->presenter->redirect('this');
-        }
-
-        if ($sentCount > 0) {
-            $this->presenter->flashMessage(
-                $sentCount === 1
-                    ? 'Informační e-mail byl odeslán'
-                    : 'Informační e-maily ('.$sentCount.') byly odeslány',
-                'success',
-            );
-        }
-
-        $this->presenter->redirect('this');
     }
 
     /** @param Payment[] $payments */

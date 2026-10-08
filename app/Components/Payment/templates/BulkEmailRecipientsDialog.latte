@@ -1,0 +1,27 @@
+{layout $layout}
+
+{block dialog-title}Hromadná úprava e-mailů{/block}
+
+{block dialog-body}
+    <p class="text-body-secondary">Upraví se pouze kontakty načtené ze SkautIS. Ručně zadané e-mailové adresy nelze touto akcí měnit.</p>
+    <form n:name="form" class="inline-errors" data-test="payment-bulk-email-recipients-form">
+        <fieldset class="mb-3">
+            <legend class="form-label">Úprava</legend>
+            <div class="form-check" n:foreach="$form['operation']->items as $key => $label">
+                <input n:name="operation:$key" class="form-check-input">
+                <label n:name="operation:$key" class="form-check-label">{$label}</label>
+            </div>
+        </fieldset>
+        <fieldset class="mb-3">
+            <legend class="form-label">Kategorie kontaktů</legend>
+            <div class="form-check" n:foreach="$form['categories']->items as $key => $label">
+                <input n:name="categories:$key" class="form-check-input" data-test="payment-bulk-email-category-{$key}">
+                <label n:name="categories:$key" class="form-check-label">{$label}</label>
+            </div>
+        </fieldset>
+        <div class="invalid-feedback d-block" n:foreach="$form->getErrors() as $error">{$error}</div>
+        <input n:name="send" class="btn btn-primary btn-lg w-100 ajax" data-test="payment-bulk-email-recipients-submit">
+    </form>
+{/block}
+
+{block dialog-footer}{/block}
