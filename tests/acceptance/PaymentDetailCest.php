@@ -194,7 +194,7 @@ JS);
             $I->grabAttributeFrom('[data-test="mass-add-form-back"]', 'href'),
         );
         $I->seeElement('[data-test="mass-add-form-submit"] + [data-test="mass-add-form-back"]');
-        $I->seeElement('[data-test="mass-add-form-sticky-action"][hidden]');
+        $I->dontSeeElement('[data-test="mass-add-form-sticky-action"]');
     }
 
     /** @group payment */
@@ -746,7 +746,7 @@ JS);
             'due_date' => ChronosDate::today()->addWeekdays(1)->format('Y-m-d'),
             'variable_symbol' => '900003',
             'constant_symbol' => null,
-            'note' => null,
+            'note' => '',
             'state' => 'preparing',
         ]);
 
