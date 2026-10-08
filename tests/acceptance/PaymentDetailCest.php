@@ -761,16 +761,24 @@ JS);
 const grid = document.querySelector('[data-test="payment-group-grid"]');
 const actions = grid?.querySelector('.datagrid-group-actions');
 const settings = grid?.querySelector('.datagrid-settings');
+const groupActionButton = grid?.querySelector('.datagrid-group-action-controls .btn');
+const settingsButton = settings?.querySelector('button');
 const actionsRect = actions?.getBoundingClientRect();
 const settingsRect = settings?.getBoundingClientRect();
+const groupActionButtonRect = groupActionButton?.getBoundingClientRect();
+const settingsButtonRect = settingsButton?.getBoundingClientRect();
 
 return {
     sameLine: actionsRect !== undefined && settingsRect !== undefined
         && actionsRect !== null && settingsRect !== null
         && Math.abs((actionsRect.top + actionsRect.bottom) / 2 - (settingsRect.top + settingsRect.bottom) / 2) <= 1,
+    sameHeight: groupActionButtonRect !== undefined && settingsButtonRect !== undefined
+        && groupActionButtonRect !== null && settingsButtonRect !== null
+        && Math.abs(groupActionButtonRect.height - settingsButtonRect.height) <= 1,
 };
 JS);
         Assert::assertTrue($layout['sameLine']);
+        Assert::assertTrue($layout['sameHeight']);
 
         $I->clickStable($settingsButton);
         $I->waitForElementVisible('[data-test="payment-group-grid"] .dropdown-menu--grid.show', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
