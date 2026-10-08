@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration\BankAccountDetail;
 
+use App\Components\Grids\GridFactory;
 use App\Components\Payment\BankAccountDetail\BankAccountDetailViewFactory;
 use App\Components\Payment\BankAccountDetail\BankAccountManualPairingService;
 use App\Model\Bank\Entity\BankAccount;
@@ -12,6 +13,7 @@ use App\Model\Bank\Entity\BankTransactionPairing;
 use App\Model\Bank\Enum\BankTransactionPairingMode;
 use App\Model\Bank\Enum\BankTransactionSource;
 use App\Model\Bank\Manager\BankTransactionPairingManager;
+use App\Model\Bank\PairingCandidate;
 use App\Model\Bank\Repository\BankTransactionPairingRepository;
 use App\Model\Bank\Repository\BankTransactionRepository;
 use App\Model\Bank\Services\AutomaticBankPairingService;
@@ -34,6 +36,7 @@ use App\Model\Payment\Group;
 use App\Model\Payment\IUnitResolver;
 use App\Model\Payment\Payment;
 use App\Model\Payment\VariableSymbol;
+use App\Model\Utils\MoneyFactory;
 use Brick\Math\BigDecimal;
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
@@ -105,7 +108,7 @@ final class BankAccountManualPairingServiceTest extends IntegrationTest
                 $bankAccount->getId(),
                 $paymentTransaction->getTransactionKey(),
                 $siblingPayment->getId(),
-                [$accessibleGroup->getId()],
+                [(int) $accessibleGroup->getId()],
                 'Tester',
             );
             self::fail('Sibling payment pairing should be blocked.');
@@ -149,7 +152,7 @@ final class BankAccountManualPairingServiceTest extends IntegrationTest
             $bankAccount->getId(),
             $paymentTransaction->getTransactionKey(),
             $payment->getId(),
-            [$group->getId()],
+            [(int) $group->getId()],
             'Tester',
         );
         self::assertSame('Bankovní transakce byla ručně spárována s platbou.', $paymentOutcome->successMessage);
@@ -221,15 +224,76 @@ final class BankAccountManualPairingServiceTest extends IntegrationTest
             new InvoiceRepository($this->entityManager),
             new GroupRepository($this->entityManager, new NullEventBus()),
             new LinkGenerator(new SimpleRouter(), new UrlScript('https://example.test/')),
+            new GridFactory(),
         );
 
-        $detail = $factory->create($bankAccount->getId(), [$group->getId() => $group->getName()], [11], includeInvoices: false);
+        $detail = $factory->create($bankAccount->getId(), [(int) $group->getId() => $group->getName()], [11], includeInvoices: false);
 
         self::assertNotNull($detail->transactionRows);
         self::assertSame('payment:'.$amountCandidate->getId(), $detail->transactionRows[0]->manualCandidates[0]->targetKey);
         self::assertNull($detail->transactionRows[0]->conflictReason);
         self::assertSame([], $detail->transactionRows[1]->manualCandidates);
         self::assertNotNull($detail->transactionRows[1]->pairing);
+    }
+
+    public function testPaymentGroupDetailOnlyOffersItsOwnPaymentsAndWarnsAboutOtherGroups(): void
+    {
+        $bankAccount = $this->createBankAccount();
+        $group = $this->createGroup(11, $bankAccount, 'Moje skupina');
+        $otherGroup = $this->createGroup(11, $bankAccount, 'Jiná skupina');
+        $payment = $this->createPayment($group, 200.00, '200001');
+        $otherPayment = $this->createPayment($otherGroup, 200.00, '200001');
+        $transaction = $this->createTransaction($bankAccount, 200.00, 200001);
+
+        $accounts = m::mock(BankAccountService::class);
+        $accounts->shouldReceive('getPersistentTransactions')
+            ->once()
+            ->with($bankAccount->getId(), 60)
+            ->andReturn([$transaction]);
+
+        $pairingCandidates = m::mock(BankPairingCandidateProvider::class);
+        $pairingCandidates->shouldReceive('getDomainCandidatesForBankAccount')
+            ->once()
+            ->with($bankAccount->getId())
+            ->andReturn([PairingCandidate::forPayment($payment), PairingCandidate::forPayment($otherPayment)]);
+
+        $pairings = m::mock(BankTransactionPairingRepository::class);
+        $pairings->shouldReceive('findActiveByTransactionKeys')
+            ->once()
+            ->with([$transaction->getTransactionKey()])
+            ->andReturn([]);
+
+        $factory = new BankAccountDetailViewFactory(
+            $accounts,
+            $pairingCandidates,
+            $pairings,
+            new PaymentRepository($this->entityManager, new NullEventBus()),
+            new InvoiceRepository($this->entityManager),
+            new GroupRepository($this->entityManager, new NullEventBus()),
+            new LinkGenerator(new SimpleRouter(), new UrlScript('https://example.test/')),
+            new GridFactory(),
+        );
+
+        $groupId = $group->getId();
+        if ($groupId === null) {
+            self::fail('Expected persisted payment group to have an ID.');
+        }
+
+        $detail = $factory->createForPaymentGroup($bankAccount->getId(), $groupId, $group->getName(), $payment->getId());
+
+        self::assertNotNull($detail->transactionRows);
+        self::assertSame(
+            'Zobrazené transakce relevantní pro platbu '.$payment->getName().'.',
+            $detail->focusTargetLabel,
+        );
+        self::assertCount(1, $detail->transactionRows[0]->manualCandidates);
+        self::assertSame('payment:'.$payment->getId(), $detail->transactionRows[0]->manualCandidates[0]->targetKey);
+        self::assertCount(1, $detail->transactionRows[0]->exactCandidates);
+        self::assertSame('payment:'.$payment->getId(), $detail->transactionRows[0]->exactCandidates[0]->targetKey);
+        self::assertSame(
+            'Nespárovaná platba odpovídá více platebním skupinám se stejným VS a částkou.',
+            $detail->transactionRows[0]->conflictReason,
+        );
     }
 
     private function createBankAccount(): BankAccount
@@ -275,7 +339,7 @@ final class BankAccountManualPairingServiceTest extends IntegrationTest
             $group,
             'Platba '.$variableSymbol,
             [],
-            $amount,
+            MoneyFactory::fromDecimal((string) $amount),
             new ChronosDate('2026-03-20'),
             new VariableSymbol($variableSymbol),
             null,
@@ -335,7 +399,7 @@ final class BankAccountManualPairingServiceTest extends IntegrationTest
                 'tx-'.$variableSymbol.'-'.(string) $amount,
                 BankTransactionSource::FIO,
                 new DateTimeImmutable('2026-03-14 10:00:00'),
-                $amount,
+                MoneyFactory::fromDecimal((string) $amount),
                 '12-3456789/2010',
                 'Frantisek Masa',
                 $variableSymbol,

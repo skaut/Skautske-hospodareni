@@ -33,7 +33,7 @@ final class FlysystemScanStorage extends AbstractStorage implements IScanStorage
         $mimeType = $this->detectMimeType($contents);
 
         if (! in_array($mimeType, IScanStorage::ALLOWED_MIME_TYPES, true)) {
-            throw InvalidScanFile::invalidType($mimeType);
+            throw InvalidScanFile::invalidType((string) $mimeType);
         }
 
         $this->writePath($path->getPath(), $contents);

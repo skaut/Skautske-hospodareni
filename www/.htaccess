@@ -14,6 +14,11 @@ Header always set X-Content-Type-Options "nosniff"
     Header always set Strict-Transport-Security "max-age=7884000"
 </If>
 
+# Vite build output: file names are content-hashed, so cache forever.
+<If "%{REQUEST_URI} =~ m#^/dist/assets/#">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+</If>
+
 RewriteEngine On
 
 # www.h.skauting.cz -> https://h.skauting.cz

@@ -14,7 +14,7 @@ use function count;
 final readonly class BankAccountPairingRunResult
 {
     /**
-     * @param list<mixed>   $scopeItems
+     * @param array<mixed>  $scopeItems
      * @param list<Payment> $payments
      * @param list<Invoice> $invoices
      */

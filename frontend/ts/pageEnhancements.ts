@@ -1,3 +1,5 @@
+import {initializeHelpSectionEditor} from './helpSectionEditor';
+
 const initializedAttribute = 'data-ui-initialized';
 let pageHelpId = 0;
 const flashViewportPadding = 16;
@@ -55,6 +57,27 @@ export function initializeFlashMessages(root: ParentNode = document): void {
     });
 }
 
+export function initializeErrorFocus(root: ParentNode = document): void {
+    root.querySelectorAll<HTMLElement>('[data-focus-on-load]').forEach((error) => {
+        if (!markInitialized(error)) {
+            return;
+        }
+
+        window.requestAnimationFrame(() => {
+            error.focus({preventScroll: true});
+
+            if (isElementFullyVisible(error)) {
+                return;
+            }
+
+            error.scrollIntoView({
+                block: 'center',
+                behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+            });
+        });
+    });
+}
+
 export function initializePageHelp(root: ParentNode = document): void {
     root.querySelectorAll<HTMLElement>('.page-heading').forEach((heading) => {
         if (heading.dataset.pageHelpInitialized === 'true') {
@@ -88,7 +111,14 @@ export function initializePageHelp(root: ParentNode = document): void {
         toggle.setAttribute('aria-controls', helpContentId);
         toggle.appendChild(icon);
         toggle.insertAdjacentHTML('beforeend', '<span class="visually-hidden">Přepnout nápovědu</span>');
-        help.appendChild(toggle);
+
+        let actions = cardBody.querySelector<HTMLElement>(':scope > .page-heading-actions');
+        if (actions === null) {
+            actions = document.createElement('div');
+            actions.className = 'page-heading-actions page-heading-help-actions';
+            cardBody.appendChild(actions);
+        }
+        actions.appendChild(toggle);
 
         const setExpanded = (expanded: boolean): void => {
             heading.dataset.pageHelpExpanded = String(expanded);
@@ -276,9 +306,11 @@ export function initializeBugReportDiagnostics(root: ParentNode = document): voi
 
 export function initializePageEnhancements(root: ParentNode = document): void {
     initializeFlashMessages(root);
+    initializeErrorFocus(root);
     initializePageHelp(root);
     initializeHelpLayouts(root);
     initializePaymentForms(root);
     initializeCustomerTypeFields(root);
     initializeBugReportDiagnostics(root);
+    initializeHelpSectionEditor(root);
 }

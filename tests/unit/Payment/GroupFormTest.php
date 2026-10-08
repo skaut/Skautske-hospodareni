@@ -17,6 +17,7 @@ use App\Model\Payment\ReadModel\Queries\NextVariableSymbolSequenceQuery;
 use App\Model\Payment\ReadModel\Queries\OAuthsAccessibleByGroupsQuery;
 use App\Model\Payment\VariableSymbol;
 use App\Model\Unit\ReadModel\Queries\UnitsDetailQuery;
+use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use Component\Forms\VariableSymbolControl;
@@ -24,6 +25,7 @@ use LogicException;
 use Mockery;
 use Nette\Forms\Container;
 use Nette\Forms\Controls\Checkbox;
+use Nette\Forms\Controls\SelectBox;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Forms\Controls\TextInput;
 use ReflectionMethod;
@@ -39,7 +41,7 @@ final class GroupFormTest extends Unit
             [123],
             null,
             'Zdrojová skupina',
-            1500.5,
+            MoneyFactory::fromDecimal('1500.50'),
             new ChronosDate('2026-06-19'),
             308,
             new VariableSymbol('999'),
@@ -112,7 +114,7 @@ final class GroupFormTest extends Unit
         self::assertInstanceOf(TextInput::class, $paymentInfoSubject);
 
         self::assertSame('Zdrojová skupina', $name->getValue());
-        self::assertSame(1500.5, $amount->getValue());
+        self::assertSame('1500.50', $amount->getValue());
         self::assertSame('308', (string) $constantSymbol->getValue());
         self::assertSame('2601', (string) $nextVs->getControl()->value);
         self::assertTrue($automaticPairingEnabled->getValue());
@@ -130,5 +132,61 @@ final class GroupFormTest extends Unit
         $nextVs->setValue('2601');
         $form->validate();
         self::assertSame(['Musíte zadat název skupiny'], $name->getErrors());
+
+        $name->setValue('Zdrojová skupina');
+
+        // Výchozí částka nesmí vyžadovat desetinný tvar.
+        foreach (['1500', '1500,00', '1500.00', '1500,50'] as $validAmount) {
+            $amount->setValue($validAmount);
+            $form->validate();
+            self::assertSame([], $amount->getErrors(), 'Částka '.$validAmount.' má být platná');
+        }
+
+        $amount->setValue('1500.999');
+        $form->validate();
+        self::assertSame([PaymentFormFields::MONEY_PATTERN_MESSAGE], $amount->getErrors());
+    }
+
+    public function testRejectsEmailTemplateWithBankVariablesWhenNoBankAccountIsSelected(): void
+    {
+        $paymentService = Mockery::mock(PaymentService::class);
+        $queryBus = Mockery::mock(QueryBus::class);
+        $queryBus->shouldReceive('handle')
+            ->andReturnUsing(static function (object $query): mixed {
+                return match (true) {
+                    $query instanceof NextVariableSymbolSequenceQuery => new VariableSymbol('2601'),
+                    $query instanceof BankAccountsAccessibleByUnitsQuery => [],
+                    $query instanceof OAuthsAccessibleByGroupsQuery => [],
+                    $query instanceof UnitsDetailQuery => [],
+                    default => throw new LogicException('Neočekávaný query '.get_debug_type($query)),
+                };
+            });
+
+        $component = new GroupForm(
+            new UnitId(123),
+            null,
+            null,
+            null,
+            $paymentService,
+            $queryBus,
+        );
+        $method = new ReflectionMethod($component, 'createComponentForm');
+        /** @var \Component\Forms\BaseForm $form */
+        $form = $method->invoke($component);
+        $name = $form['name'];
+        $nextVs = $form['nextVs'];
+        $bankAccount = $form['bankAccount'];
+        if (! $name instanceof TextInput || ! $nextVs instanceof VariableSymbolControl || ! $bankAccount instanceof SelectBox) {
+            throw new LogicException('Assertion failed.');
+        }
+
+        $name->setValue('Skupina bez účtu');
+        $nextVs->setValue('2601');
+        $form->validate();
+
+        self::assertSame(
+            ['Šablonu s proměnnou %account% nebo %qrcode% nelze uložit bez bankovního účtu. Upravte šablonu, nebo připojte bankovní účet.'],
+            $bankAccount->getErrors(),
+        );
     }
 }

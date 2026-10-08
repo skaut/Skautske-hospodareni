@@ -15,21 +15,21 @@ use App\Model\Payment\PaymentNotFound;
 use App\Model\Payment\PaymentService;
 use App\Model\Payment\VariableSymbol;
 use App\Model\Payment\VariableSymbolCollision;
+use App\Model\Utils\MoneyFactory;
 use Component\Forms\BaseForm;
 use Component\Forms\VariableSymbolControl;
-use Kdyby\Replicator\Container as ReplicatorContainer;
+use Contributte\FormMultiplier\Multiplier;
 use LogicException;
+use Nette\Application\Attributes\Persistent;
 use Nette\Application\UI\Form;
 use Nette\Forms\Container;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Utils\ArrayHash;
 
 use function array_map;
-use function array_sum;
 use function array_values;
 use function count;
 use function iterator_to_array;
-use function round;
 
 /** @method void onSuccess() */
 final class SplitPaymentDialog extends Dialog
@@ -37,7 +37,7 @@ final class SplitPaymentDialog extends Dialog
     /** @var callable[] */
     public array $onSuccess = [];
 
-    /** @persistent */
+    #[Persistent]
     public int $paymentId = -1;
 
     public function __construct(
@@ -82,6 +82,7 @@ final class SplitPaymentDialog extends Dialog
                 ->setNullable()
                 ->setRequired('Musíte vyplnit částku')
                 ->addRule(Form::FLOAT, 'Částka musí být zadaná jako číslo')
+                ->addRule(Form::PATTERN, PaymentFormFields::MONEY_PATTERN_MESSAGE, PaymentFormFields::MONEY_PATTERN)
                 ->addRule(Form::MIN, 'Částka musí být větší než 0', 0.01);
 
             $container->addText('note', 'Poznámka')
@@ -104,7 +105,7 @@ final class SplitPaymentDialog extends Dialog
             ->setHtmlAttribute('aria-label', 'Přidat další variabilní symbol a částku')
             ->setHtmlAttribute('data-test', 'payment-split-add')
             ->onClick[] = function () use ($splits): void {
-                $splits->createOne();
+                $splits->addCopy();
                 $this->redrawControl();
             };
 
@@ -134,13 +135,16 @@ final class SplitPaymentDialog extends Dialog
     private function removeSplit(SubmitButton $button): void
     {
         $container = $button->getParent();
-        $replicator = $container->getParent();
-
-        if (! $container instanceof Container || ! $replicator instanceof ReplicatorContainer) {
+        if (! $container instanceof Container) {
             throw new LogicException('Nepodařilo se odebrat část rozdělení platby.');
         }
 
-        $replicator->remove($container, true);
+        $replicator = $container->getParent();
+        if (! $replicator instanceof Multiplier) {
+            throw new LogicException('Nepodařilo se odebrat část rozdělení platby.');
+        }
+
+        $replicator->removeComponent($container);
         $this->redrawControl();
     }
 
@@ -167,17 +171,17 @@ final class SplitPaymentDialog extends Dialog
             return;
         }
 
-        $splitAmountInCents = array_sum(array_map(
-            fn (ArrayHash $part): int => $this->toCents((float) $part->amount),
-            $parts,
-        ));
+        $splitAmount = \Money\Money::CZK(0);
+        foreach ($parts as $part) {
+            $splitAmount = $splitAmount->add(MoneyFactory::fromDecimal((string) $part->amount));
+        }
 
-        if ($splitAmountInCents > $this->toCents($payment->getAmount())) {
+        if ($splitAmount->greaterThan($payment->getAmount())) {
             $form->addError('Součet dělených částek nesmí být větší než původní částka.');
         }
 
         $sourceVariableSymbol = $payment->getVariableSymbol();
-        $remainingSourceAmountInCents = $this->toCents($payment->getAmount()) - $splitAmountInCents;
+        $remainingSourceAmount = $payment->getAmount()->subtract($splitAmount);
         $variableSymbols = [];
 
         foreach ($parts as $part) {
@@ -186,12 +190,12 @@ final class SplitPaymentDialog extends Dialog
                 continue;
             }
 
-            $partAmountInCents = $this->toCents((float) $part->amount);
+            $partAmount = MoneyFactory::fromDecimal((string) $part->amount);
 
             if (
                 $sourceVariableSymbol !== null
                 && $sourceVariableSymbol->toInt() === $variableSymbol->toInt()
-                && $remainingSourceAmountInCents === $partAmountInCents
+                && $remainingSourceAmount->equals($partAmount)
             ) {
                 $form->addError('Stejný variabilní symbol lze při rozdělení použít jen u rozdílných částek.');
             }
@@ -210,7 +214,7 @@ final class SplitPaymentDialog extends Dialog
         $parts = array_values(array_map(
             fn (ArrayHash $part): SplitPaymentPart => new SplitPaymentPart(
                 $part->variableSymbol,
-                (float) $part->amount,
+                MoneyFactory::fromDecimal((string) $part->amount),
                 $part->note,
             ),
             iterator_to_array($values->splits),
@@ -246,10 +250,5 @@ final class SplitPaymentDialog extends Dialog
         }
 
         return $payment;
-    }
-
-    private function toCents(float $amount): int
-    {
-        return (int) round($amount * 100);
     }
 }

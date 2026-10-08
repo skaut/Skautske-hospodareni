@@ -6,9 +6,10 @@ namespace App\Model\Bank;
 
 use App\Model\Invoice\Entity\Invoice;
 use App\Model\Payment\Payment;
+use App\Model\Utils\MoneyFactory;
 use InvalidArgumentException;
+use Money\Money;
 
-use function number_format;
 use function spl_object_id;
 
 final class PairingCandidate
@@ -67,8 +68,8 @@ final class PairingCandidate
         return $this->target instanceof Invoice ? $this->target : null;
     }
 
-    private static function normalizeAmount(float|string $amount): string
+    private static function normalizeAmount(Money|string $amount): string
     {
-        return number_format((float) $amount, 2, '.', '');
+        return $amount instanceof Money ? $amount->getAmount() : MoneyFactory::fromDecimal($amount)->getAmount();
     }
 }

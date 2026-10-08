@@ -88,7 +88,7 @@ final class NewEventPresenter extends BasePresenter
             $this->redirect('this');
         }
 
-        $v = $form->getValues();
+        $v = $form->getValues(\Nette\Utils\ArrayHash::class);
 
         $startDate = $v['start'];
         $endDate = $v['end'];

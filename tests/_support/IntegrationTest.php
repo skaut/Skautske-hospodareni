@@ -14,7 +14,7 @@ abstract class IntegrationTest extends Codeception\Test\Unit
     /** @var IntegrationTester */
     protected $tester;
 
-    /** @var ClassMetadata[] */
+    /** @var list<ClassMetadata> */
     private $metadata;
 
     /** @var EntityManager */
@@ -24,7 +24,7 @@ abstract class IntegrationTest extends Codeception\Test\Unit
     private $schemaTool;
 
     /**
-     * @return string[] FQCN of aggregate roots
+     * @return class-string[] FQCN of aggregate roots
      */
     protected function getTestedAggregateRoots(): array
     {
@@ -48,7 +48,7 @@ abstract class IntegrationTest extends Codeception\Test\Unit
     protected function _before(): void
     {
         $this->entityManager = $this->tester->grabService(EntityManager::class);
-        $this->metadata = array_map([$this->entityManager, 'getClassMetadata'], $this->getTestedEntities());
+        $this->metadata = array_values(array_map([$this->entityManager, 'getClassMetadata'], $this->getTestedEntities()));
         $this->schemaTool = new SchemaTool($this->entityManager);
         // pro MySQL jistota kvůli FK
         $conn = $this->entityManager->getConnection();
@@ -75,7 +75,7 @@ abstract class IntegrationTest extends Codeception\Test\Unit
      * Returns FQCN of entities used in test case.
      * Database schema is generated from mapping of these entities.
      *
-     * @return string[]
+     * @return class-string[]
      */
     private function getTestedEntities(): array
     {
@@ -114,7 +114,7 @@ abstract class IntegrationTest extends Codeception\Test\Unit
     }
 
     /**
-     * @return string[]
+     * @return class-string[]
      */
     private function getChildEntityClasses(string $parentEntityClass): array
     {

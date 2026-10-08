@@ -12,12 +12,13 @@ includes:
 parameters:
     appEnv: %envConfig.appEnv%
     appBaseUrl: %envConfig.appBaseUrl%
+    gotenbergUrl: %envConfig.gotenbergUrl%
+    gotenbergUsername: %envConfig.gotenbergUsername%
+    gotenbergPassword: %envConfig.gotenbergPassword%
     uploadDirectory: %appDir%/../uploads
     sendEmail: %envConfig.sendEmail%
     errorEmails: %envConfig.errorEmails%
-    testBackground: %envConfig.testBackground%
-    environmentLabel: %envConfig.environmentLabel%
-    environmentColor: %envConfig.environmentColor%
+    environmentMode: %envConfig.environmentMode%
     tracyShowBar: %envConfig.tracyShowBar%
     adminAllowedUserIds: []
     invoiceAccessAllowedUserIds: []

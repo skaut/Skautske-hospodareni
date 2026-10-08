@@ -37,10 +37,10 @@ enum AnnouncementCategoryCode: string
     public function icon(): string
     {
         return match ($this) {
-            self::NEWS => 'fi fi-rr-sparkles',
+            self::NEWS => 'fi fi-rr-newspaper',
             self::INFO => 'fi fi-rr-info',
             self::WARNING => 'fi fi-rr-triangle-warning',
-            self::ERROR => 'fi fi-rr-circle-exclamation',
+            self::ERROR => 'fi fi-rr-circle-xmark',
             self::PLAN => 'fi fi-rr-calendar-clock',
         };
     }

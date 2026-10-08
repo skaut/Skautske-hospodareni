@@ -6,18 +6,17 @@ namespace App\Model\Participant\Payment;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/** @ORM\Embeddable() */
+#[ORM\Embeddable]
 final class Event
 {
-    /** @ORM\Column(type="integer") */
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
     /**
-     * @ORM\Column(type="string_enum", length=9)
-     *
      * @var EventType
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
+    #[ORM\Column(type: 'participant_event_type', length: 9)]
     private $type;
 
     public function __construct(int $id, EventType $type)

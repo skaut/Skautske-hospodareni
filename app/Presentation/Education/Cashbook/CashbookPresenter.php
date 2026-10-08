@@ -110,9 +110,9 @@ final class CashbookPresenter extends BasePresenter
     private function formImportHpdSubmitted(BaseForm $form): void
     {
         $this->editableOnly();
-        $values = $form->getValues();
+        $values = $form->getValues(\Nette\Utils\ArrayHash::class);
 
-        $amount = $this->queryBus->handle(new EducationParticipantIncomeQuery(new SkautisEducationId($this->aid)));
+        $amount = $this->queryBus->handle(new EducationParticipantIncomeQuery(new SkautisEducationId((int) $this->aid)));
 
         if ($amount === 0.0) {
             $this->flashMessage('Nemáte žádné příjmy od účastníků, které by bylo možné importovat.', 'warning');
@@ -120,14 +120,17 @@ final class CashbookPresenter extends BasePresenter
         }
 
         $purpose = 'úč. příspěvky '.($values->isAccount === 'Y' ? '- účet' : '- hotovost');
-        $body = new ChitBody(null, $this->event->getStartDate(), null);
+        $body = new ChitBody(null, $this->event->getStartDate() ?? throw new LogicException('Vzdělávací akce nemá datum zahájení.'), null);
 
         $categoryId = $this->queryBus->handle(
-            new EducationParticipantCategoryIdQuery(new SkautisEducationId($this->aid), $this->event->startDate->year),
+            new EducationParticipantCategoryIdQuery(new SkautisEducationId((int) $this->aid), $this->event->getStartDate()->year),
         );
         $categoriesDto = $this->queryBus->handle(new CategoryListQuery($this->getCashbookId()));
 
-        $items = [new ChitItem(Amount::fromFloat($amount), $categoriesDto[$categoryId], $purpose)];
+        if (! $amount instanceof Money) {
+            throw new LogicException('Assertion failed.');
+        }
+        $items = [new ChitItem(Amount::fromMoney($amount), $categoriesDto[$categoryId], $purpose)];
         $this->commandBus->handle(new AddChitToCashbook($this->getCashbookId(), $body, $values->isAccount === 'Y' ? PaymentMethod::BANK() : PaymentMethod::CASH(), $items));
 
         $this->flashMessage('HPD byl importován');
@@ -137,7 +140,7 @@ final class CashbookPresenter extends BasePresenter
 
     private function getCashbookId(): CashbookId
     {
-        return $this->queryBus->handle(new EducationCashbookIdQuery(new SkautisEducationId($this->aid), $this->event->startDate->year));
+        return $this->queryBus->handle(new EducationCashbookIdQuery(new SkautisEducationId((int) $this->aid), ($this->event->getStartDate() ?? throw new LogicException('Vzdělávací akce nemá datum zahájení.'))->year));
     }
 
     private function isCashbookEmpty(): bool

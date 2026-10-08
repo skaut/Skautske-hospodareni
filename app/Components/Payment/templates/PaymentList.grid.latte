@@ -1,5 +1,105 @@
 {extends $baseTemplate}
 
+{block group-actions}
+    <tr class="row-group-actions" n:if="$hasGroupActions || $exports || $toolbarButtons || $control->canHideColumns() || $inlineAdd">
+        <th colspan="{$control->getColumnsCount()}" class="datagrid-th-form-inline">
+            <div class="datagrid-group-actions-toolbar">
+                {if $hasGroupActions}
+                    <div class="datagrid-group-actions">
+                        <span class="datagrid-group-action-title">
+                            {='contributte_datagrid.group_actions'|translate}:
+                        </span>
+                        <div class="datagrid-group-action-controls">
+                            {foreach $filter['group_action']->getControls() as $form_control}
+                                {if $form_control instanceof \Nette\Forms\Controls\SubmitButton && $form_control->getName() === 'submit'}
+                                    {input $form_control, class => 'btn btn-primary btn-sm', disabled => TRUE}
+                                {elseif $form_control instanceof \Nette\Forms\Controls\SubmitButton}
+                                    {input $form_control, disabled => TRUE}
+                                {elseif $form_control->getName() == 'group_action'}
+                                    {input $form_control, class => 'form-control form-control-sm', disabled => TRUE}
+                                {else}
+                                    {input $form_control}
+                                {/if}
+                            {/foreach}
+                        </div>
+                        {if $control->shouldShowSelectedRowsCount()}
+                            <span class="datagrid-selected-rows-count"></span>
+                        {/if}
+                    </div>
+                {/if}
+
+                <div class="datagrid-toolbar" n:if="$control->canHideColumns() || $inlineAdd || $exports || $toolbarButtons">
+                    {snippet toolbarButtons}
+                        <span n:if="$toolbarButtons" n:snippet="toolbar">
+                            {foreach $toolbarButtons as $toolbar_button}{$toolbar_button->renderButton()}{/foreach}
+                        </span>
+                    {/snippet}
+
+                    <span class="datagrid-exports" n:if="$exports" n:snippet="exports">
+                        {foreach $exports as $export}{$export->render()}{/foreach}
+                    </span>
+
+                    <div class="datagrid-settings" n:if="$control->canHideColumns() || $inlineAdd">
+                        {if $inlineAdd}
+                            {$inlineAdd->renderButtonAdd()}
+                        {/if}
+
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm {$btnSecondaryClass} dropdown-toggle" data-bs-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false" aria-label="Nastavení sloupců"
+                                    n:if="$control->canHideColumns()">
+                                {include #icon-gear}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu--grid">
+                                <li n:foreach="$columnsVisibility as $v_key => $visibility">
+                                    {if $visibility['visible']}
+                                        <a n:href="hideColumn!, column => $v_key" class="ajax dropdown-item">
+                                            {include #icon-checked}
+                                            {include #column-header, column => $visibility['column']}
+                                        </a>
+                                    {else}
+                                        <a n:href="showColumn!, column => $v_key" class="ajax dropdown-item">
+                                            {include #icon-unchecked}
+                                            {include #column-header, column => $visibility['column']}
+                                        </a>
+                                    {/if}
+                                </li>
+                                <li role="separator" class="divider dropdown-divider"></li>
+                                <li>
+                                    <a n:href="showAllColumns!" class="ajax dropdown-item">{include #icon-eye} {='contributte_datagrid.show_all_columns'|translate}</a>
+                                </li>
+                                <li n:if="$control->hasSomeColumnDefaultHide()">
+                                    <a n:href="showDefaultColumns!" class="ajax dropdown-item">{include #icon-repeat} {='contributte_datagrid.show_default_columns'|translate}</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </th>
+    </tr>
+{/block}
+
+{block icon-gear}
+    <i class="fi fi-rr-settings" aria-hidden="true"></i>
+{/block}
+
+{block icon-checked}
+    <span class="datagrid-column-visibility-state datagrid-column-visibility-state--visible" aria-hidden="true"></span>
+{/block}
+
+{block icon-unchecked}
+    <span class="datagrid-column-visibility-state datagrid-column-visibility-state--hidden" aria-hidden="true"></span>
+{/block}
+
+{block icon-eye}
+    <i class="fi fi-rr-eye" aria-hidden="true"></i>
+{/block}
+
+{block icon-repeat}
+    <i class="fi fi-rr-refresh" aria-hidden="true"></i>
+{/block}
+
 {block col-name}
     <div>{$item->getName()}</div>
     <small n:if="$item->getSplitFromPaymentId() !== null" class="text-body-secondary">
@@ -19,13 +119,13 @@
                         type="button"
                         data-bs-toggle="dropdown"
                         title="Odeslané e-maily">
-                    <i class="far fa-envelope-open"></i>&nbsp;{count($emails)}
+                    <i class="fi fi-rr-envelope-open" aria-hidden="true"></i>&nbsp;{count($emails)}
                 </button>
                 <div class="dropdown-menu dropdown-menu-end p-0 border-0 text-nowrap">
                     <ul class="list-group" n:inner-foreach="$emails as $email">
                         <li class="list-group-item align-items-center d-flex">
                             <div class="flex-grow-1">
-                                <i class="far fa-envelope-open"></i>
+                                <i class="fi fi-rr-envelope-open" aria-hidden="true"></i>
                                 {var $emailType = $email->getType()->toString()}
                                 {switch $emailType}
                                     {case \App\Model\Payment\EmailType::PAYMENT_INFO}
@@ -48,7 +148,7 @@
         {if $note}
             <div class="dropdown d-inline-flex">
                 <button class="btn btn-sm" type="button" title="{$note}" >
-                    <i class="far fa-comment"></i>
+                    <i class="fi fi-rr-comment" aria-hidden="true"></i>
                 </button>
             </div>
         {/if}
@@ -56,27 +156,35 @@
 {/block}
 
 {block col-actions}
+    <div class="datagrid-row-actions">
     {if !$item->isClosed() && $isEditable}
         {var $hasEmailRecipient = !empty($item->getEmailRecipients())}
         {var $canSendEmail = $hasEmailSender && $hasEmailRecipient}
         {var $emailActionTitle = !$hasEmailSender
             ? 'Skupina nemá nastavený e-mail odesílatele'
-            : (!$hasEmailRecipient ? 'Není uveden email' : 'Odeslat e-mail o platbě')
+            : (!$hasEmailRecipient ? 'email nejde odeslat, osoba nemá vyplněný žádný email pro doručení' : 'Odeslat e-mail o platbě')
         }
         <a href="{$control->getPresenter()->link('paymentDialog:open!', $item->getId())}"
            class="btn btn-sm btn-light ajax"
            data-test="payment-edit-action-{$item->getId()}"
-           title="Upravit platbu"><i class="far fa-edit"></i></a>
+           title="Upravit platbu"><i class="fi fi-rr-edit" aria-hidden="true"></i></a>
         <a href="{$control->getPresenter()->link('splitPaymentDialog:open!', $item->getId())}"
-           n:if="$item->getAmount() > 0"
+           n:if="!$item->getAmount()->isZero()"
            class="btn btn-sm btn-light ajax"
            data-test="payment-split-action-{$item->getId()}"
-           title="Rozdělit platbu"><i class="fas fa-right-left"></i></a>
-        <a href="{$control->getParent()->link(send, $item->getId())}"
-           n:class="btn, btn-sm, $canSendEmail ? btn-primary : btn-light, $canSendEmail ? 'ui--sendEmail' : disabled"
-           data-test="payment-email-action-{$item->getId()}"
-           title="{$emailActionTitle}"><i
-                    class="far fa-envelope-open"></i></a>
+           title="Rozdělit platbu"><i class="fi fi-rr-exchange" aria-hidden="true"></i></a>
+        {if $canSendEmail}
+            <a href="{$control->getParent()->link(send, $item->getId())}"
+               class="btn btn-sm btn-primary ajax ui--sendEmail"
+               data-test="payment-email-action-{$item->getId()}"
+               title="{$emailActionTitle}"><i
+                        class="fi fi-rr-envelope-open" aria-hidden="true"></i></a>
+        {else}
+            <span class="d-inline-block" tabindex="0" data-bs-toggle="tooltip" title="{$emailActionTitle}">
+                <span class="btn btn-sm btn-light disabled" aria-disabled="true" data-test="payment-email-action-{$item->getId()}" title="{$emailActionTitle}"><i
+                            class="fi fi-rr-envelope-open" aria-hidden="true"></i></span>
+            </span>
+        {/if}
         {if $isReminderSendActive}
         {var $reminderSentToday = $item->hasSentReminderToday()}
         {var $isOverdueForReminder = $item->getDueDate()->format('Y-m-d') < (new \DateTimeImmutable())->format('Y-m-d')}
@@ -87,31 +195,32 @@
         }
         {if $isOverdueForReminder || $reminderSentToday}
         <a href="{$canSendReminder ? $control->getParent()->link(sendReminder, $item->getId()) : '#'}"
-           n:class="btn, btn-sm, $canSendReminder ? btn-warning : btn-light, $canSendReminder ? 'ui--sendEmail' : disabled"
+           n:class="btn, btn-sm, ajax, $canSendReminder ? btn-warning : btn-light, $canSendReminder ? 'ui--sendEmail' : disabled"
            n:attr="onclick => $canSendReminder ? null : 'return false;'"
            data-test="payment-reminder-action-{$item->getId()}"
            title="{$reminderActionTitle}"><i
-                    class="far fa-bell"></i></a>
+                    class="fi fi-rr-bell" aria-hidden="true"></i></a>
         {/if}
         {/if}
         <a
             n:if="$bankAccountId !== null && $item->canBePaired()"
-            href="{$control->getPresenter()->link(':Settings:BankAccounts:detail', ['id' => $bankAccountId, 'paymentId' => $item->getId()])}"
-            class="btn btn-sm btn-light"
+            href="{$control->getPresenter()->link('loadBankAccountTransactions!', ['paymentId' => $item->getId()])}"
+            class="ajax btn btn-sm btn-light"
+            data-test="payment-bank-transaction-action-{$item->getId()}"
             title="Ruční párování s bankovní transakcí"
-        ><i class="fas fa-university"></i></a>
-        <a href="{$control->getParent()->link(complete, $item->getId())}" class="btn btn-sm btn-success" data-test="payment-complete-action-{$item->getId()}" title="Zaplaceno"><i
-                    class="fas fa-check"></i></a>
+        ><i class="fi fi-rr-bank" aria-hidden="true"></i></a>
+        <a href="{$control->getParent()->link(complete, $item->getId())}" class="ajax btn btn-sm btn-success" data-test="payment-complete-action-{$item->getId()}" title="Zaplaceno"><i
+                    class="fi fi-rr-check" aria-hidden="true"></i></a>
     {elseif $item->isClosed()}
         <a href="{$control->getPresenter()->link('paymentNoteDialog:open!', $item->getId())}"
            class="btn btn-sm btn-light ajax"
-           title="Upravit poznámku"><i class="fa fa-comment"></i></a>
+           title="Upravit poznámku"><i class="fi fi-rr-comment" aria-hidden="true"></i></a>
     {var $transaction = $item->getTransaction()}
             <div class="dropdown d-inline-block">
                 <button class="btn btn-sm btn-light" type="button"
                         data-bs-toggle="dropdown">
                 {if $transaction !== NULL}
-                    <span class="fas fa-university"></span>
+                    <span class="fi fi-rr-bank"></span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end p-3">
                     <li><strong>ID:</strong> {$transaction->getId()}</li>
@@ -121,7 +230,7 @@
                     <li><strong>Poznámka:</strong> {$transaction->getNote()}</li>
                 </ul>
                 {else}
-                    <span class="far fa-user"></span>
+                    <span class="fi fi-rr-user"></span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end p-3">
                     <li><strong>Uzavřel:</strong> {$item->getClosedByUsername()}</li>
@@ -131,9 +240,8 @@
     {else}&nbsp;{/if}
 
     <a href="{$control->getParent()->link(cancel, $item->getId())}" n:if="$isEditable && ! $item->getState()->equalsValue('canceled')"
-       class="btn btn-sm btn-danger"
-       onclick="return confirm('Opravdu chcete zrušit platbu?');"
-       title="Zrušit"><i class="fas fa-times"></i></a>
+       class="ajax btn btn-sm btn-danger"
+       data-confirm="Opravdu chcete zrušit platbu?"
+       title="Zrušit"><i class="fi fi-rr-cross-small" aria-hidden="true"></i></a>
+    </div>
 {/block}
-
-{block action-col-classes}w-15{/block}

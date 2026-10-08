@@ -66,7 +66,7 @@ final class EducationAddParticipantsPresenter extends BasePresenter
                 $p->getPersonId(),
                 $this->queryBus->handle(new MemberEmailsQuery($p->getPersonId())),
                 $p->getDisplayName(),
-                $amount === 0.0 ? null : $amount,
+                $amount->isZero() ? null : $amount,
             );
         }
 

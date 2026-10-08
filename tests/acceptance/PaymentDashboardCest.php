@@ -14,6 +14,21 @@ use function random_int;
 class PaymentDashboardCest extends PaymentAcceptanceCest
 {
     /** @group payment */
+    public function paymentNavigationTilesUseReadableTypography(): void
+    {
+        $I = $this->I;
+
+        $I->amOnPage('/platby');
+        $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        foreach (['groups', 'invoices'] as $tile) {
+            $card = '[data-test="payments-card-'.$tile.'"]';
+            $I->seeElement($card.' h2.h4');
+            $I->dontSeeElement($card.' p.small');
+        }
+    }
+
+    /** @group payment */
     public function dashboardPaymentGroupTileShowsCountsAndLinksToDetail(): void
     {
         $I = $this->I;
@@ -23,7 +38,7 @@ class PaymentDashboardCest extends PaymentAcceptanceCest
             $I->haveInDatabase('pa_payment', [
                 'group_id' => $groupId,
                 'name' => 'Dashboard platba '.($index + 1),
-                'amount' => 100,
+                'amount' => 10000, // 100 Kč v haléřích
                 'due_date' => ChronosDate::today()->format('Y-m-d'),
                 'variable_symbol' => (string) (910000 + $index),
                 'constant_symbol' => null,
@@ -116,9 +131,12 @@ class PaymentDashboardCest extends PaymentAcceptanceCest
 
         $I->wantTo('open system settings from the utility navigation on the payment dashboard');
 
-        $I->clickStable('[data-test="global-nav-payments"]');
-        $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->seeInCurrentUrl('/platby');
+        $this->openLinkAndWaitForElementWithSkautisRetry(
+            $I,
+            '[data-test="global-nav-payments"]',
+            '[data-test="payments-page"]',
+            '/platby',
+        );
         $I->seeElement('[data-test="payment-nav-overview"]');
         $I->seeElement('[data-test="payments-card-groups"].navigation-card');
         $I->seeElement('[data-test="payments-link-groups"].stretched-link');
@@ -126,11 +144,14 @@ class PaymentDashboardCest extends PaymentAcceptanceCest
         $I->seeElement('[data-test="payments-card-invoices"].navigation-card');
         $I->seeElement('[data-test="payments-link-invoices"].stretched-link');
         $I->dontSeeElement('[data-test="payments-card-settings"]');
-        $I->waitForElementVisible('[data-test="utility-nav-settings"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->clickStable('[data-test="utility-nav-settings"]');
+        $this->openLinkAndWaitForElementWithSkautisRetry(
+            $I,
+            '[data-test="utility-nav-settings"]',
+            '[data-test="settings-page"]',
+            '/nastaveni',
+        );
 
         $I->waitForText('Nastavení', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->seeInCurrentUrl('/nastaveni');
     }
 
     /** @group payment */

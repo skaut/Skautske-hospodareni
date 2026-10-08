@@ -21,6 +21,7 @@ use Component\Forms\BaseForm;
 use LogicException;
 use Nette\Application\BadRequestException;
 use Nette\Utils\ArrayHash;
+use RuntimeException;
 
 use function array_keys;
 use function array_map;
@@ -59,7 +60,7 @@ class GroupUnitControl extends BaseControl
     {
         $form = new BaseForm();
 
-        $group = $this->groups->getGroup($this->groupId);
+        $group = $this->groups->getGroup($this->groupId) ?? throw new RuntimeException('Platební skupina nebyla nalezena.');
 
         $form->addCheckboxList('unitIds')
             ->setItems($this->buildUnitPairs($group->getUnitIds()))

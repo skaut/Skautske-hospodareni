@@ -1,0 +1,20 @@
+{block title}Nové oznámení{/block}
+
+{block content}
+<div data-test="admin-announcements-form-page">
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 class="h3 mb-2">Nové oznámení</h1>
+            {include pageLead, default: 'Vyplňte krátkou zprávu pro uživatele. Oznámení se po uložení zobrazí na nástěnce.', class: 'mb-3'}
+            <div class="page-heading-actions d-flex flex-wrap gap-2">
+                <a n:href="default" class="btn btn-sm btn-outline-secondary">
+                    <i class="fi fi-rr-arrow-left" aria-hidden="true"></i>
+                    Zpět na oznámení
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {include '@form.latte'}
+</div>
+{/block}

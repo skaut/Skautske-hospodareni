@@ -1,0 +1,9 @@
+# Shared settings for every deployed environment (test, beta, production).
+# Loaded through config.<APP_ENV>.neon so that adding a deployed environment
+# is a single include instead of another copy of these rules.
+application:
+    catchExceptions: true
+    debugger: false
+
+services:
+    tracy.logger: Tracy\Bridges\Psr\PsrToTracyLoggerAdapter
