@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Presentation\Payments\Payment;
 
 use App\Components\DataGrid;
+use App\Components\Factories\Payment\IBulkEmailRecipientsDialogFactory;
 use App\Components\Factories\Payment\IEmailButtonFactory;
 use App\Components\Factories\Payment\IGroupUnitControlFactory;
 use App\Components\Factories\Payment\IImportDialogFactory;
 use App\Components\Factories\Payment\IMassAddFormFactory;
 use App\Components\Factories\Payment\IPairButtonFactory;
 use App\Components\Factories\Payment\IPaymentDialogFactory;
+use App\Components\Factories\Payment\IPaymentInfoEmailDialogFactory;
 use App\Components\Factories\Payment\IPaymentListFactory;
 use App\Components\Factories\Payment\IPaymentNoteDialogFactory;
 use App\Components\Factories\Payment\IRemoveGroupDialogFactory;
@@ -19,6 +21,7 @@ use App\Components\Payment\BankAccountDetail\BankAccountDetail;
 use App\Components\Payment\BankAccountDetail\BankAccountDetailViewFactory;
 use App\Components\Payment\BankAccountDetail\BankAccountManualPairingOutcome;
 use App\Components\Payment\BankAccountDetail\BankAccountManualPairingService;
+use App\Components\Payment\BulkEmailRecipientsDialog;
 use App\Components\Payment\EmailButton;
 use App\Components\Payment\GroupProgress;
 use App\Components\Payment\GroupUnitControl;
@@ -26,6 +29,7 @@ use App\Components\Payment\ImportDialog;
 use App\Components\Payment\MassAddForm;
 use App\Components\Payment\PairButton;
 use App\Components\Payment\PaymentDialog;
+use App\Components\Payment\PaymentInfoEmailDialog;
 use App\Components\Payment\PaymentList;
 use App\Components\Payment\PaymentNoteDialog;
 use App\Components\Payment\RemoveGroupDialog;
@@ -72,10 +76,10 @@ final class PaymentPresenter extends PaymentsBasePresenter
     #[Persistent]
     public bool $directMemberOnly = true;
 
-    /** @persistent */
+    #[Persistent]
     public bool $bankAccountTransactionsLoaded = false;
 
-    /** @persistent */
+    #[Persistent]
     public ?int $bankAccountPaymentId = null;
 
     /** @var string[] */
@@ -95,9 +99,11 @@ final class PaymentPresenter extends PaymentsBasePresenter
         private IMassAddFormFactory $massAddFormFactory,
         private IPairButtonFactory $pairButtonFactory,
         private IEmailButtonFactory $emailButtonFactory,
+        private IBulkEmailRecipientsDialogFactory $bulkEmailRecipientsDialogFactory,
         private IGroupUnitControlFactory $unitControlFactory,
         private IRemoveGroupDialogFactory $removeGroupDialogFactory,
         private IPaymentDialogFactory $paymentDialogFactory,
+        private IPaymentInfoEmailDialogFactory $paymentInfoEmailDialogFactory,
         private IImportDialogFactory $importDialogFactory,
         private IPaymentNoteDialogFactory $paymentNoteDialogFactory,
         private IPaymentListFactory $paymentListFactory,
@@ -430,6 +436,12 @@ final class PaymentPresenter extends PaymentsBasePresenter
         $paymentList->onChange[] = function (): void {
             $this->redrawPaymentAndBankAccountGrids();
         };
+        $paymentList->onSendPaymentInfoRequested[] = function (array $paymentIds): void {
+            $this['paymentInfoEmailDialog']->send($paymentIds);
+        };
+        $paymentList->onBulkEmailRecipientsEditRequested[] = function (array $paymentIds): void {
+            $this['bulkEmailRecipientsDialog']->open($paymentIds);
+        };
 
         return $paymentList;
     }
@@ -470,7 +482,33 @@ final class PaymentPresenter extends PaymentsBasePresenter
     {
         $group = $this->model->getGroup($this->id) ?? throw new RuntimeException('Platební skupina nebyla nalezena.');
 
-        return $this->emailButtonFactory->create($this->isEditable, $this->payments, $group);
+        $emailButton = $this->emailButtonFactory->create($this->isEditable, $this->payments, $group);
+        $emailButton->onSendPaymentInfoRequested[] = function (array $paymentIds): void {
+            $this['paymentInfoEmailDialog']->send($paymentIds);
+        };
+
+        return $emailButton;
+    }
+
+    protected function createComponentPaymentInfoEmailDialog(): PaymentInfoEmailDialog
+    {
+        $dialog = $this->paymentInfoEmailDialogFactory->create($this->id);
+        $dialog->onSuccess[] = function (): void {
+            $this->redrawPaymentAndBankAccountGrids();
+        };
+
+        return $dialog;
+    }
+
+    protected function createComponentBulkEmailRecipientsDialog(): BulkEmailRecipientsDialog
+    {
+        $dialog = $this->bulkEmailRecipientsDialogFactory->create($this->id);
+        $dialog->onSuccess[] = function (): void {
+            $this->redrawPaymentGrid();
+            $this->redrawControl('flash');
+        };
+
+        return $dialog;
     }
 
     protected function createComponentMassAddForm(): MassAddForm
