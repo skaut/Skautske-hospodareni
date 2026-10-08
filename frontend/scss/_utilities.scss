@@ -53,6 +53,30 @@ table.table a:not(.btn):hover {
   margin-left: auto;
 }
 
+[data-test='payment-group-grid'] .datagrid-column-visibility-state {
+  display: inline-grid;
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
+  border: 1px solid var(--tblr-border-color);
+  border-radius: 0.2rem;
+  vertical-align: -0.125em;
+  place-items: center;
+}
+
+[data-test='payment-group-grid'] .datagrid-column-visibility-state--visible {
+  border-color: var(--tblr-primary);
+  background: var(--tblr-primary);
+  color: var(--tblr-primary-fg);
+}
+
+[data-test='payment-group-grid'] .datagrid-column-visibility-state--visible::before {
+  content: '✓';
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
 // Action rows are present for every data row so a container query can switch
 // layouts when the help sidebar changes the available space. Keep their stripe
 // in sync with the preceding data row rather than with their DOM position.
