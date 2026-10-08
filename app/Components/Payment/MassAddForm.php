@@ -32,6 +32,7 @@ class MassAddForm extends BaseControl
     protected function createComponentForm(): BaseForm
     {
         $form = new BaseForm();
+        $form->getElementPrototype()->setAttribute('data-mass-add-form', '');
 
         $form->addText('amount', 'Částka:')
             ->setNullable()
@@ -87,7 +88,8 @@ class MassAddForm extends BaseControl
         }
         $container = $persons->addContainer('person'.$id);
 
-        $selected = $container->addCheckbox('selected');
+        $selected = $container->addCheckbox('selected')
+            ->setHtmlAttribute('data-mass-add-person-selection', '');
 
         $emailItems = [];
         $emailTypes = [];
@@ -153,6 +155,7 @@ class MassAddForm extends BaseControl
     public function render(): void
     {
         $this->template->setParameters([
+            'backLink' => $this->getPresenter()->link(':Payments:Payment:default', ['id' => $this->groupId]),
             'emailTypes' => array_values(array_filter(
                 MemberEmailType::cases(),
                 static fn (MemberEmailType $type): bool => $type->isBulkSelectable(),

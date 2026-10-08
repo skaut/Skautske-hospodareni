@@ -10,6 +10,7 @@ import './ts/checkAll';
 import initializeAjax from './ts/ajax';
 import {initializeAppInstall} from './ts/appInstall';
 import {initializeMassEmailSelection} from './ts/massEmailSelection';
+import {initializeMassAddStickyActions} from './ts/massAddStickyAction';
 import {initializePageEnhancements} from './ts/pageEnhancements';
 import {initializeSessionKeepAlive} from './ts/sessionKeepAlive';
 import './app.scss';
@@ -36,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeDropdowns();
     initializeTooltips();
     initializeMassEmailSelection();
+    initializeMassAddStickyActions();
     initializePageEnhancements();
     initializeSessionKeepAlive();
     initializeAppInstall();

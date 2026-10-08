@@ -690,6 +690,49 @@ fieldset:disabled label {
   --tblr-btn-hover-border-color: var(--tblr-border-color);
 }
 
+.mass-add-form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.mass-add-form__actions [data-test='mass-add-form-back'] {
+  margin-left: auto;
+}
+
+.mass-add-form__sticky-action {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1030;
+  padding: 0.75rem max(1rem, env(safe-area-inset-right)) calc(0.75rem + env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+  border-top: 1px solid var(--tblr-border-color);
+  background: var(--tblr-bg-surface);
+  box-shadow: 0 -0.5rem 1.5rem rgba(var(--tblr-dark-rgb), 0.12);
+}
+
+.mass-add-form__sticky-action-inner {
+  display: flex;
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+@media (max-width: 767.98px) {
+  .payment-mass-add__back,
+  .mass-add-form__actions .btn {
+    min-height: 2.75rem;
+  }
+
+  .mass-add-form__sticky-action .btn {
+    width: 100%;
+    min-height: 2.75rem;
+  }
+}
+
 .empty-state {
   padding: 2.5rem 1rem;
   color: var(--tblr-secondary);

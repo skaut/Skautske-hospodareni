@@ -1,7 +1,8 @@
 {form form}
-    <ul class="errors" n:if="$form->hasErrors()">
-        <li n:foreach="$form->errors as $error">{$error}</li>
-    </ul>
+    <div class="alert alert-danger" n:if="$form->hasErrors()" data-test="mass-add-form-errors"
+         data-focus-on-load role="alert" tabindex="-1">
+        <div n:foreach="$form->errors as $error">{$error}</div>
+    </div>
     <div class="table-responsive">
         <table class="table table-hover table-striped table-sm">
             <tr>
@@ -49,5 +50,18 @@
         </table>
     </div>
 
-    {input send}
+    <div class="mass-add-form__actions" data-mass-add-form-actions>
+        {input send, data-test => 'mass-add-form-submit'}
+        <a href="{$backLink}" class="btn btn-outline-secondary btn-lg" data-test="mass-add-form-back">
+            <i class="fi fi-rr-arrow-left" aria-hidden="true"></i> Zpět
+        </a>
+    </div>
+
+    <div class="mass-add-form__sticky-action" data-mass-add-sticky-action data-test="mass-add-form-sticky-action" hidden aria-hidden="true">
+        <div class="mass-add-form__sticky-action-inner">
+            <button type="submit" class="btn btn-primary btn-lg" data-test="mass-add-form-sticky-submit">
+                Přidat vybrané
+            </button>
+        </div>
+    </div>
 {/form}

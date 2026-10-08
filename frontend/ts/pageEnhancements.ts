@@ -57,6 +57,27 @@ export function initializeFlashMessages(root: ParentNode = document): void {
     });
 }
 
+export function initializeErrorFocus(root: ParentNode = document): void {
+    root.querySelectorAll<HTMLElement>('[data-focus-on-load]').forEach((error) => {
+        if (!markInitialized(error)) {
+            return;
+        }
+
+        window.requestAnimationFrame(() => {
+            error.focus({preventScroll: true});
+
+            if (isElementFullyVisible(error)) {
+                return;
+            }
+
+            error.scrollIntoView({
+                block: 'center',
+                behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+            });
+        });
+    });
+}
+
 export function initializePageHelp(root: ParentNode = document): void {
     root.querySelectorAll<HTMLElement>('.page-heading').forEach((heading) => {
         if (heading.dataset.pageHelpInitialized === 'true') {
@@ -285,6 +306,7 @@ export function initializeBugReportDiagnostics(root: ParentNode = document): voi
 
 export function initializePageEnhancements(root: ParentNode = document): void {
     initializeFlashMessages(root);
+    initializeErrorFocus(root);
     initializePageHelp(root);
     initializeHelpLayouts(root);
     initializePaymentForms(root);
