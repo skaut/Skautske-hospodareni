@@ -65,7 +65,7 @@ endef
 
 define wait_for_application
 	ready=false; last_response=''; for i in $$(seq 1 30); do \
-		last_response="$$($(CI_COMPOSE) exec -T selenium sh -lc 'wget --timeout=2 --tries=1 -S --header="Cookie: SELENIUM=SELENIUM" -O /dev/null http://moje-hospodareni.cz/ 2>&1')"; \
+		last_response="$$($(CI_COMPOSE) exec -T selenium sh -lc 'wget --timeout=2 --tries=1 -S --header="Cookie: SELENIUM=SELENIUM" -O /dev/null http://moje-hospodareni.cz/ 2>&1' || true)"; \
 		if printf '%s\n' "$$last_response" | grep -q 'HTTP/[0-9.][0-9.]* 200'; then ready=true; break; fi; \
 		echo "Waiting for application... ($$i/30)"; sleep 2; \
 	done; \
