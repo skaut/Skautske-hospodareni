@@ -16,7 +16,6 @@ use App\Model\Payment\PaymentService;
 use App\Model\Payment\ReadModel\Queries\MemberEmailsQuery;
 use App\Model\Payment\VariableSymbolCollision;
 use App\Model\Utils\MoneyFactory;
-use App\MyValidators;
 use Assert\Assertion;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
