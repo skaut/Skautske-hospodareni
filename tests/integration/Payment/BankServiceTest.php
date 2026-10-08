@@ -142,6 +142,24 @@ class BankServiceTest extends IntegrationTest
         self::assertSame([1], $this->activePairedPaymentIds());
     }
 
+    public function testPairGroupsSkipsPaymentWithoutVariableSymbol(): void
+    {
+        $bankAccount = $this->createBankAccountFixture('Hlavní');
+        $this->bankAccounts->save($bankAccount);
+
+        $group = $this->addGroup($bankAccount);
+        $this->addPayment($group, 200, null);
+
+        $this->tester->grabService(FioClientStub::class)
+            ->setTransactions([$this->createTransaction(200, '123')]);
+
+        $pairingResults = $this->bankService->pairAllGroups([(int) $group->getId()], 7);
+
+        self::assertCount(1, $pairingResults);
+        self::assertSame(0, $pairingResults[0]->getCount());
+        self::assertSame([], $this->activePairedPaymentIds());
+    }
+
     private function addPayment(Group $group, float $amount, ?string $variableSymbol): void
     {
         $payment = new Payment(

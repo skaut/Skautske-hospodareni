@@ -58,7 +58,10 @@ class BankPairingCandidateProvider
         return array_values(array_merge(
             array_map(
                 static fn (Payment $payment): PairingCandidate => PairingCandidate::forPayment($payment),
-                $this->payments->findOpenByBankAccount($bankAccountId),
+                array_filter(
+                    $this->payments->findOpenByBankAccount($bankAccountId),
+                    static fn (Payment $payment): bool => $payment->canBePaired(),
+                ),
             ),
             array_map(
                 static fn (\App\Model\Invoice\Entity\Invoice $invoice): PairingCandidate => PairingCandidate::forInvoice($invoice),
