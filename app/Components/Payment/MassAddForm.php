@@ -33,6 +33,7 @@ class MassAddForm extends BaseControl
     {
         $form = new BaseForm();
         $form->getElementPrototype()->setAttribute('data-mass-add-form', '');
+        $form->getElementPrototype()->setAttribute('novalidate', 'novalidate');
 
         $form->addText('amount', 'Částka:')
             ->setNullable()
