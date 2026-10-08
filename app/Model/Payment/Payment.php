@@ -157,6 +157,17 @@ class Payment extends Aggregate
         $this->amount = $amount;
     }
 
+    /**
+     * @param EmailAddress[] $recipients
+     *
+     * @throws PaymentClosed
+     */
+    public function updateEmailRecipients(array $recipients): void
+    {
+        $this->checkNotClosed();
+        $this->updateRecipients($recipients);
+    }
+
     public function reduceAmountBySplit(Money $amount): void
     {
         $this->checkNotClosed();
@@ -389,6 +400,12 @@ class Payment extends Aggregate
         $this->dueDate = $dueDate;
         $this->constantSymbol = $constantSymbol;
         $this->note = $note;
+        $this->updateRecipients($recipients);
+    }
+
+    /** @param EmailAddress[] $recipients */
+    private function updateRecipients(array $recipients): void
+    {
         $this->emailRecipients = new ArrayCollection(array_map(fn (EmailAddress $emailAddress) => new EmailRecipient($this, $emailAddress), array_unique($recipients)));
     }
 }

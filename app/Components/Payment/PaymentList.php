@@ -14,7 +14,6 @@ use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Payment\Payment;
 use App\Model\Google\Exception\OAuthNotSet;
 use App\Model\Google\InvalidOAuth;
-use App\Model\Payment\Commands\Mailing\SendPaymentInfo;
 use App\Model\Payment\Commands\Mailing\SendPaymentReminder;
 use App\Model\Payment\EmailTemplateNotSet;
 use App\Model\Payment\EmailType;
@@ -40,6 +39,18 @@ final class PaymentList extends BaseControl
      * @var    array<callable(): void>
      */
     public array $onChange = [];
+
+    /**
+     * @method void                                   onSendPaymentInfoRequested(array $paymentIds)
+     * @var    array<callable(array<int, int>): void>
+     */
+    public array $onSendPaymentInfoRequested = [];
+
+    /**
+     * @method void                                   onBulkEmailRecipientsEditRequested(array $paymentIds)
+     * @var    array<callable(array<int, int>): void>
+     */
+    public array $onBulkEmailRecipientsEditRequested = [];
 
     private const STATE_ORDER = [
         State::PREPARING,
@@ -82,7 +93,10 @@ final class PaymentList extends BaseControl
         $grid->setRememberState(false, true);
         $grid->setColumnsHideable();
 
-        $grid->addGroupButtonAction('Odeslat email')->onClick[] = [$this, 'sendMail'];
+        $grid->addGroupButtonAction('Odeslat email')->onClick[] = [$this, 'requestPaymentInfoEmail'];
+        if ($this->isEditable) {
+            $grid->addGroupButtonAction('Úprava e-mailů', 'btn btn-sm btn-light')->onClick[] = [$this, 'openBulkEmailRecipientsDialog'];
+        }
         if ($email !== null && $email->isEnabled()) {
             $grid->addGroupButtonAction('Odeslat upomínku')->onClick[] = [$this, 'sendReminder'];
         }
@@ -169,7 +183,7 @@ final class PaymentList extends BaseControl
             return;
         }
 
-        $this->sendMail([$pid]);
+        $this->requestPaymentInfoEmail([$pid]);
     }
 
     public function handleSendReminder(int $pid): void
@@ -211,33 +225,15 @@ final class PaymentList extends BaseControl
     }
 
     /** @param array<int,int> $ids */
-    public function sendMail(array $ids): void
+    public function requestPaymentInfoEmail(array $ids): void
     {
-        $count = 0;
-        foreach ($ids as $id) {
-            try {
-                $this->commandBus->handle(new SendPaymentInfo($id));
-                ++$count;
-            } catch (OAuthNotSet) {
-                $this->flashMessage(EmailButton::NO_MAILER_MESSAGE, 'warning');
-            } catch (InvalidBankAccount) {
-                $this->flashMessage(EmailButton::NO_BANK_ACCOUNT_MESSAGE, 'warning');
-            } catch (InvalidOAuth $e) {
-                $this->flashMessage($e->getExplainedMessage(), 'danger');
-            } catch (PaymentClosed $e) {
-                $this->flashMessage($e->getMessage(), 'warning');
-            } catch (PaymentHasNoEmails $e) {
-                $this->flashMessage($e->getMessage(), 'warning');
-            }
-        }
+        $this->onSendPaymentInfoRequested($ids);
+    }
 
-        if ($count === 1) {
-            $this->presenter->flashMessage($count.' informační e-mail odeslán', 'info');
-        } else {
-            $this->presenter->flashMessage($count.' Informačních e-mailů odesláno', 'info');
-        }
-
-        $this->finishMutation();
+    /** @param array<int,int> $ids */
+    public function openBulkEmailRecipientsDialog(array $ids): void
+    {
+        $this->onBulkEmailRecipientsEditRequested($ids);
     }
 
     /** @param array<int,int> $ids */

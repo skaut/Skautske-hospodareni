@@ -1,0 +1,22 @@
+{layout $layout}
+
+{block dialog-title}Odeslat pokyny k platbě bez VS?{/block}
+
+{block dialog-body}
+    <div class="alert alert-danger mb-3" role="alert" data-test="payment-info-email-missing-variable-symbol-warning">
+        <div class="d-flex gap-2">
+            <i class="fi fi-rr-triangle-warning mt-1" aria-hidden="true"></i>
+            <div>
+                <strong>{if $paymentsWithoutVariableSymbolCount === 1}Jedna platba nemá dogenerovaný VS.{else}{$paymentsWithoutVariableSymbolCount} plateb nemá dogenerovaný VS.{/if}</strong>
+                <p class="mb-0 mt-1">Pokud platba nebude mít VS, pravděpodobně ji nepůjde spárovat s bankovním účtem.</p>
+            </div>
+        </div>
+    </div>
+    <p class="mb-0">Pokyny můžete odeslat i bez VS, nebo nejdříve VS dogenerovat.</p>
+{/block}
+
+{block dialog-footer}
+    <a n:href="close!" class="btn btn-light ajax" data-bs-dismiss="modal">Zrušit</a>
+    <a n:href="sendWithoutVariableSymbol!" class="btn btn-outline-danger ajax" data-test="payment-info-email-send-without-variable-symbol">Odeslat bez VS</a>
+    <a n:href="generateVariableSymbolsAndSend!" class="btn btn-primary ajax" data-test="payment-info-email-generate-variable-symbols-and-send">Dogenerovat a následně odeslat</a>
+{/block}
