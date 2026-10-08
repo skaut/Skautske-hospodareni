@@ -57,6 +57,11 @@ class DashboardCest extends BaseAcceptanceCest
         );
         $I->seeElement('[data-test="dashboard-card-payments"]');
         $I->seeElement('[data-test="dashboard-link-payments"]');
+        $I->seeElement('[data-test="dashboard-payment-groups-link"]');
+        Assert::assertSame(
+            '/platby/skupiny',
+            $I->grabAttributeFrom('[data-test="dashboard-payment-groups-link"]', 'href'),
+        );
         $I->seeElement('[data-test="dashboard-payment-actions"] [data-test="create-button-main"]');
         $I->seeElement('[data-test="dashboard-payment-actions"] [data-test="pair-button-main"]');
         $I->clickStable('[data-test="dashboard-payment-actions"] [data-test="create-button-toggle"]');
@@ -125,6 +130,12 @@ class DashboardCest extends BaseAcceptanceCest
         $I->waitForElementVisible('[data-test="unit-cashbook-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/jednotka');
         $I->seeElement('.active [data-test="global-nav-unit"]');
+
+        $I->amOnPage('/nastenka');
+        $I->waitForElementVisible('[data-test="dashboard"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->clickStable('[data-test="dashboard-payment-groups-link"]');
+        $I->waitForElementVisible('[data-test="payments-groups-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeInCurrentUrl('/platby/skupiny');
     }
 
     /** @group dashboard */

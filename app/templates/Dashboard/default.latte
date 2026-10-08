@@ -189,7 +189,16 @@
                         <dl class="mb-3">
                             <div class="d-flex justify-content-between py-2">
                                 <dt class="fw-normal text-body-secondary">Otevřené skupiny</dt>
-                                <dd class="mb-0 fw-bold dashboard-stat-value">{$groupCount}</dd>
+                                <dd class="mb-0 d-flex align-items-center gap-2 navigation-card-actions">
+                                    <span class="fw-bold dashboard-stat-value">{$groupCount}</span>
+                                    <a n:href=":Payments:GroupList:"
+                                       class="btn btn-sm btn-outline-secondary btn-icon"
+                                       aria-label="Zobrazit platební skupiny"
+                                       title="Zobrazit platební skupiny"
+                                       data-test="dashboard-payment-groups-link">
+                                        <i class="fi fi-rr-list" aria-hidden="true"></i>
+                                    </a>
+                                </dd>
                             </div>
                         </dl>
                         <div class="d-flex flex-wrap gap-2 navigation-card-actions" data-test="dashboard-payment-actions">
