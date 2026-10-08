@@ -177,7 +177,7 @@ final class PaymentList extends BaseControl
         }
 
         if (empty($payment->getEmailRecipients())) {
-            $this->presenter->flashMessage('Platba nemá vyplněný e-mail', 'danger');
+            $this->presenter->flashMessage('email nejde odeslat, osoba nemá vyplněný žádný email pro doručení', 'warning');
             $this->finishMutation();
 
             return;

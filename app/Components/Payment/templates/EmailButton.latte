@@ -1,5 +1,6 @@
-<div class="btn-group" title="{if !$canSend}Pro rozeslání emailů musí být přiřazený email a bankovní účet v nastavená platební skupiny{/if}">
-    <button n:class="!$canSend ? disabled, 'btn btn-light btn-sm dropdown-toggle'" type="button" id="emailsDropdown"
+{if $canSend}
+<div class="btn-group">
+    <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="emailsDropdown"
             data-test="payment-group-email-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <i class="fi fi-rr-envelope-open" aria-hidden="true"></i> E-mail <span class="caret"></span>
     </button>
@@ -37,3 +38,10 @@
         {/if}
     </div>
 </div>
+{else}
+    <span class="d-inline-block" tabindex="0" data-bs-toggle="tooltip" title="Pro rozeslání e-mailů musí být přiřazený e-mail odesílatele v nastavení platební skupiny.">
+        <span class="btn btn-light btn-sm disabled" aria-disabled="true" data-test="payment-group-email-toggle">
+            <i class="fi fi-rr-envelope-open" aria-hidden="true"></i> E-mail
+        </span>
+    </span>
+{/if}

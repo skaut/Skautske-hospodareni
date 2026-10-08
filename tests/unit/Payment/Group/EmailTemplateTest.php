@@ -22,6 +22,15 @@ class EmailTemplateTest extends Unit
         $this->assertSame('body', $template->getBody());
     }
 
+    public function testRequiresBankAccountWhenAccountOrQrCodeIsUsedAnywhereInTemplate(): void
+    {
+        $this->assertFalse((new EmailTemplate('Předmět', 'Tělo'))->requiresBankAccount());
+        $this->assertTrue((new EmailTemplate('Údaje %account%', 'Tělo'))->requiresBankAccount());
+        $this->assertTrue((new EmailTemplate('Předmět', 'Údaje %account%'))->requiresBankAccount());
+        $this->assertTrue((new EmailTemplate('QR %qrcode%', 'Tělo'))->requiresBankAccount());
+        $this->assertTrue((new EmailTemplate('Předmět', 'QR %qrcode%'))->requiresBankAccount());
+    }
+
     public function testEvaluate(): void
     {
         $subject = '%groupname% | %name% | %account% | %amount% | %maturity% | %maturityus% | %vs% | %ks% | %note% | %user%';

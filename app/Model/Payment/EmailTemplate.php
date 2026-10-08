@@ -30,8 +30,7 @@ class EmailTemplate
 
     public function evaluate(Group $group, Payment $payment, ?string $bankAccount, string $user, ?string $qrCodeCid = null): EmailTemplate
     {
-        $accountRequired = Strings::contains($this->body, '%qrcode') || Strings::contains($this->body, '%account');
-        if ($bankAccount === null && $accountRequired) {
+        if ($bankAccount === null && $this->requiresBankAccount()) {
             throw new InvalidBankAccount('Bank account required for email template.');
         }
 
@@ -72,6 +71,14 @@ class EmailTemplate
     public function containsQrCode(): bool
     {
         return Strings::contains($this->body, '%qrcode');
+    }
+
+    public function requiresBankAccount(): bool
+    {
+        return Strings::contains($this->subject, '%account%')
+            || Strings::contains($this->body, '%account%')
+            || Strings::contains($this->subject, '%qrcode%')
+            || Strings::contains($this->body, '%qrcode%');
     }
 
     /** @param mixed[] $parameters */
