@@ -146,6 +146,7 @@ class PaymentDetailCest extends PaymentAcceptanceCest
         $I->wantTo('open payment mass add on canonical url');
 
         $this->createGeneralPaymentGroup($groupName);
+        $groupId = $I->grabFromDatabase('pa_group', 'id', ['name' => $groupName]);
 
         $I->seeCurrentUrlMatches('~^/platby/skupiny/\d+/platby(?:\?.*)?$~');
         $I->resizeWindow(1440, 900);
@@ -184,6 +185,53 @@ JS);
         $I->waitForElementVisible('[data-test="payment-mass-add-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->waitForText('Přidat osoby z jednotky', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeCurrentUrlMatches('~^/platby/skupiny/\d+/osoby(?:\?.*)?$~');
+        Assert::assertSame(
+            '/platby/skupiny/'.$groupId.'/platby',
+            $I->grabAttributeFrom('[data-test="payment-mass-add-back"]', 'href'),
+        );
+        Assert::assertSame(
+            '/platby/skupiny/'.$groupId.'/platby',
+            $I->grabAttributeFrom('[data-test="mass-add-form-back"]', 'href'),
+        );
+        $I->seeElement('[data-test="mass-add-form-submit"] + [data-test="mass-add-form-back"]');
+        $I->seeElement('[data-test="mass-add-form-sticky-action"][hidden]');
+    }
+
+    /** @group payment */
+    public function massAddTogglesSubunitsFromCheckbox(): void
+    {
+        $I = $this->I;
+
+        $this->createGeneralPaymentGroup(uniqid('Selenium MassAdd subunits ', true));
+        $I->clickStable('[data-test="payment-add-button-toggle"]');
+        $I->waitForElementVisible('[data-test="payment-add-button-menu"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->clickStable('[data-test="payment-add-button-item-member"]');
+        $I->waitForElementVisible('[data-test="payment-mass-add-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        $toggle = '[data-test="payment-mass-add-include-subunits"]';
+        $I->clickStable('#unitDropdown');
+        $I->waitForElementVisible('#unitDropdown + .dropdown-menu.show', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->dontSeeCheckboxIsChecked($toggle);
+
+        $I->clickStable($toggle);
+        $I->waitForJS(
+            'return document.readyState === "complete" && window.location.search.includes("directMemberOnly=0");',
+            AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
+        );
+        $I->seeCheckboxIsChecked($toggle);
+        $I->dontSeeElement('#unitDropdown + .dropdown-menu.show');
+        $I->see('včetně členů podjednotek');
+
+        $I->clickStable('#unitDropdown');
+        $I->waitForElementVisible('#unitDropdown + .dropdown-menu.show', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->clickStable($toggle);
+        $I->waitForJS(
+            'return document.readyState === "complete" && !window.location.search.includes("directMemberOnly=0");',
+            AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
+        );
+        $I->dontSeeCheckboxIsChecked($toggle);
+        $I->dontSeeElement('#unitDropdown + .dropdown-menu.show');
+        $I->see('bez členů podjednotek');
     }
 
     /** @group payment */
@@ -200,6 +248,16 @@ JS);
         Assert::assertMatchesRegularExpression('~^/platby/skupiny/\d+/osoby$~', $massAddUrl);
         $I->amOnPage($massAddUrl);
         $I->waitForElementVisible('[data-test="payment-mass-add-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        $I->resizeWindow(375, 600);
+        $I->clickStable('[data-mass-add-person-selection]');
+        $I->waitForElementVisible('[data-test="mass-add-form-sticky-action"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeElement('[data-test="mass-add-form-sticky-submit"]');
+
+        $I->executeJS(<<<'JS'
+document.querySelector('[data-mass-add-form-actions]')?.scrollIntoView({block: 'center'});
+JS);
+        $I->waitForElementNotVisible('[data-test="mass-add-form-sticky-action"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
         foreach (['main', 'other', 'father', 'mother'] as $emailType) {
             $I->seeElement('[data-test="mass-email-type-'.$emailType.'"]');
@@ -251,6 +309,54 @@ JS);
 
         Assert::assertTrue($manuallySelected);
         $I->dontSeeCheckboxIsChecked($toggle);
+    }
+
+    /** @group payment */
+    public function massAddFocusesServerValidationErrors(): void
+    {
+        $I = $this->I;
+
+        $this->createGeneralPaymentGroup(uniqid('Selenium MassAdd validation ', true));
+        $I->clickStable('[data-test="payment-add-button-toggle"]');
+        $I->waitForElementVisible('[data-test="payment-add-button-menu"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->clickStable('[data-test="payment-add-button-item-member"]');
+        $I->waitForElementVisible('[data-test="payment-mass-add-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        $I->resizeWindow(375, 600);
+        $I->clickStable('[data-mass-add-person-selection]');
+        $I->waitForElementVisible('[data-test="mass-add-form-sticky-submit"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->executeJS(<<<'JS'
+const dueDate = document.querySelector('[data-mass-add-form] > .table-responsive input[name$="[dueDate]"]');
+if (dueDate instanceof HTMLInputElement) {
+    dueDate.value = '';
+}
+JS);
+        $I->clickStable('[data-test="mass-add-form-sticky-submit"]');
+        $I->waitForElementVisible('[data-test="mass-add-form-errors"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->waitForJS(
+            <<<'JS'
+const error = document.querySelector('[data-test="mass-add-form-errors"]');
+const rect = error?.getBoundingClientRect();
+const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+
+return document.activeElement === error && rect !== undefined && rect !== null && rect.top >= 0 && rect.bottom <= viewportHeight;
+JS,
+            AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
+        );
+
+        $errorState = $I->executeJS(<<<'JS'
+const error = document.querySelector('[data-test="mass-add-form-errors"]');
+const rect = error?.getBoundingClientRect();
+const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+
+return {
+    hasListMarkup: error?.querySelector('ul, li') !== null,
+    fullyVisible: rect !== undefined && rect !== null && rect.top >= 0 && rect.bottom <= viewportHeight,
+};
+JS);
+
+        Assert::assertFalse($errorState['hasListMarkup']);
+        Assert::assertTrue($errorState['fullyVisible']);
     }
 
     /** @group payment */
@@ -626,6 +732,61 @@ JS);
             Assert::assertGreaterThanOrEqual(6, $mobileLayout['rightInset'], $context);
             Assert::assertSame(0, $mobileLayout['smallButtons'], $context);
         }
+    }
+
+    /** @group payment */
+    public function paymentGridColumnSettingsShowsCurrentVisibility(): void
+    {
+        $I = $this->I;
+        $groupId = $this->createSubtypePaymentGroup('event');
+        $I->haveInDatabase('pa_payment', [
+            'group_id' => $groupId,
+            'name' => 'Platba pro nastavení sloupců',
+            'amount' => 50000,
+            'due_date' => ChronosDate::today()->addWeekdays(1)->format('Y-m-d'),
+            'variable_symbol' => '900003',
+            'constant_symbol' => null,
+            'note' => null,
+            'state' => 'preparing',
+        ]);
+
+        $I->amOnPage('/platby/skupiny/'.$groupId.'/platby');
+        $I->resizeWindow(1440, 900);
+        $I->waitForElementVisible('[data-test="payment-group-grid"] .datagrid', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        $settingsButton = '[data-test="payment-group-grid"] .datagrid-settings button[aria-label="Nastavení sloupců"]';
+        $I->seeElement($settingsButton.' .fi-rr-settings');
+
+        $layout = $I->executeJS(<<<'JS'
+const grid = document.querySelector('[data-test="payment-group-grid"]');
+const actions = grid?.querySelector('.datagrid-group-actions');
+const settings = grid?.querySelector('.datagrid-settings');
+const actionsRect = actions?.getBoundingClientRect();
+const settingsRect = settings?.getBoundingClientRect();
+
+return {
+    sameLine: actionsRect !== undefined && settingsRect !== undefined
+        && actionsRect !== null && settingsRect !== null
+        && Math.abs((actionsRect.top + actionsRect.bottom) / 2 - (settingsRect.top + settingsRect.bottom) / 2) <= 1,
+};
+JS);
+        Assert::assertTrue($layout['sameLine']);
+
+        $I->clickStable($settingsButton);
+        $I->waitForElementVisible('[data-test="payment-group-grid"] .dropdown-menu--grid.show', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        $visibility = $I->executeJS(<<<'JS'
+const menu = document.querySelector('[data-test="payment-group-grid"] .dropdown-menu--grid');
+const itemFor = (label) => Array.from(menu?.querySelectorAll('.dropdown-item') ?? [])
+    .find(item => item.textContent?.trim() === label);
+
+return {
+    nameVisible: itemFor('Název/účel')?.querySelector('.datagrid-column-visibility-state--visible') !== null,
+    constantSymbolHidden: itemFor('KS')?.querySelector('.datagrid-column-visibility-state--hidden') !== null,
+};
+JS);
+        Assert::assertTrue($visibility['nameVisible']);
+        Assert::assertTrue($visibility['constantSymbolHidden']);
     }
 
     /** @group payment */

@@ -7,9 +7,10 @@
                         {$unit->getDisplayName()|truncate:20, ""}
                     </a>
                     <div class="dropdown-menu">
-                        <a n:href="this directMemberOnly => !$directMemberOnly" class="dropdown-item">
+                        <a n:href="this directMemberOnly => !$directMemberOnly" class="dropdown-item" data-unit-member-scope-toggle-link>
                             <span class="form-check-inline">
-                                <input type="checkbox" n:attr="[checked => !$directMemberOnly]" class="form-check-input">
+                                <input type="checkbox" n:attr="[checked => !$directMemberOnly]" class="form-check-input"
+                                       aria-label="Včetně podjednotek" data-unit-member-scope-toggle>
                                 Včetně podjednotek
                             </span>
                         </a>
