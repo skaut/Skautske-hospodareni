@@ -172,11 +172,19 @@ final class Environment
             'GOOGLE_CREDENTIALS_FILE',
             $appEnv === 'ci' ? 'ci-google-credentials.json' : 'google-credentials.json',
         );
+        $gotenbergUsername = self::getNullableString('GOTENBERG_USERNAME');
+        $gotenbergPassword = self::getNullableString('GOTENBERG_PASSWORD');
+
+        if (($gotenbergUsername === null) !== ($gotenbergPassword === null)) {
+            throw new RuntimeException('GOTENBERG_USERNAME and GOTENBERG_PASSWORD must be configured together.');
+        }
 
         return [
             'appEnv' => $appEnv,
             'appBaseUrl' => $baseUrl,
             'gotenbergUrl' => self::getString('GOTENBERG_URL', 'http://gotenberg:3000'),
+            'gotenbergUsername' => $gotenbergUsername,
+            'gotenbergPassword' => $gotenbergPassword,
             'sendEmail' => self::getBool('SEND_EMAIL', $appEnv !== 'dev'),
             'errorEmails' => self::getList('ERROR_EMAILS'),
             'environmentMode' => EnvironmentMode::fromAppEnv($appEnv)->value,

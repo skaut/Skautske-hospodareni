@@ -71,6 +71,8 @@ final class EnvironmentTest extends Unit
         self::assertSame('dev', $configuration['appEnv']);
         self::assertSame('http://moje-hospodareni.cz', $configuration['appBaseUrl']);
         self::assertSame('http://gotenberg:3000', $configuration['gotenbergUrl']);
+        self::assertNull($configuration['gotenbergUsername']);
+        self::assertNull($configuration['gotenbergPassword']);
         self::assertFalse($configuration['sendEmail'], 'v dev se maily neposílají');
         self::assertSame([], $configuration['errorEmails']);
         self::assertSame('dev', $configuration['environmentMode']);
@@ -152,6 +154,34 @@ final class EnvironmentTest extends Unit
         self::assertSame('pátek 3. 7.', $configuration['maintenance']['startedAtLabel']);
         self::assertSame('http://gotenberg:3000', $configuration['gotenbergUrl'], 'komentář za hodnotou se odřízne');
         self::assertSame(['admin@example.com', 'dev@example.com'], $configuration['errorEmails']);
+    }
+
+    public function testGotenbergCredentialsAreReadTogether(): void
+    {
+        $this->writeEnv(
+            '.env',
+            $this->requiredVariables()
+            ."GOTENBERG_URL=https://gotenberg.example.test\n"
+            ."GOTENBERG_USERNAME=gotenberg\n"
+            ."GOTENBERG_PASSWORD=test-password\n",
+        );
+
+        Environment::reload($this->workDir);
+        $configuration = Environment::getConfiguration();
+
+        self::assertSame('https://gotenberg.example.test', $configuration['gotenbergUrl']);
+        self::assertSame('gotenberg', $configuration['gotenbergUsername']);
+        self::assertSame('test-password', $configuration['gotenbergPassword']);
+    }
+
+    public function testIncompleteGotenbergCredentialsFail(): void
+    {
+        $this->writeEnv('.env', $this->requiredVariables()."GOTENBERG_USERNAME=gotenberg\n");
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('GOTENBERG_USERNAME and GOTENBERG_PASSWORD must be configured together.');
+
+        Environment::reload($this->workDir);
     }
 
     public function testBooleanVariablesAcceptTextualValuesAndFallBackOnGarbage(): void
@@ -246,6 +276,8 @@ final class EnvironmentTest extends Unit
             'GITHUB_ISSUES_REPOSITORY',
             'GITHUB_ISSUES_TOKEN',
             'GOTENBERG_URL',
+            'GOTENBERG_USERNAME',
+            'GOTENBERG_PASSWORD',
             'MAINTENANCE_ALLOWED_IPS',
             'MAINTENANCE_MODE',
             'MAINTENANCE_STARTED_AT_LABEL',
