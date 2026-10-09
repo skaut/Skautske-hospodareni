@@ -14,7 +14,7 @@ final class CompositeLogger implements ILogger
 
     public function __construct(ILogger ...$loggers)
     {
-        $this->loggers = $loggers;
+        $this->loggers = array_values($loggers);
     }
 
     public function log(mixed $value, string $level = self::INFO): void
