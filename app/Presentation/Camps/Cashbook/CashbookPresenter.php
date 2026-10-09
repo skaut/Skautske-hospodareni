@@ -152,7 +152,7 @@ final class CashbookPresenter extends BasePresenter
                 $values->cat === 'adult',
                 $values->isAccount === 'Y',
             ));
-            if (! $amount instanceof Amount) {
+            if (! $amount instanceof Money) {
                 throw new LogicException('Assertion failed.');
             }
         } catch (ZeroParticipantIncome) {
@@ -168,7 +168,7 @@ final class CashbookPresenter extends BasePresenter
         );
         $categoriesDto = $this->queryBus->handle(new CategoryListQuery($this->getCashbookId()));
 
-        $items = [new ChitItem($amount, $categoriesDto[$categoryId], $purpose)];
+        $items = [new ChitItem(Amount::fromMoney($amount), $categoriesDto[$categoryId], $purpose)];
         try {
             $this->commandBus->handle(new AddChitToCashbook($this->getCashbookId(), $body, $values->isAccount === 'Y' ? PaymentMethod::BANK() : PaymentMethod::CASH(), $items));
         } catch (NegativeCampCategoryTotal) {

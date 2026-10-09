@@ -59,6 +59,15 @@ final class CategoryCatalogTest extends Unit
         );
     }
 
+    public function testBudgetPositionsFollowTheReportOrder(): void
+    {
+        $this->assertSame(0, CategoryCatalog::budgetPosition('Příjem od dětí', Operation::INCOME()));
+        $this->assertSame(2, CategoryCatalog::budgetPosition('Ostatní příjmy', Operation::INCOME()));
+        $this->assertSame(0, CategoryCatalog::budgetPosition('Doprava osob a materiálu', Operation::EXPENSE()));
+        $this->assertSame(8, CategoryCatalog::budgetPosition('Rezerva', Operation::EXPENSE()));
+        $this->assertNull(CategoryCatalog::budgetPosition('Vlastní položka', Operation::EXPENSE()));
+    }
+
     private function staticCategory(int $id, string $name, Operation $operation): Category
     {
         return new Category($id, $name, 'test-'.$id, $operation, [], false, 100);

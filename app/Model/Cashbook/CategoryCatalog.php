@@ -6,6 +6,7 @@ namespace App\Model\Cashbook;
 
 use Nette\StaticClass;
 
+use function array_search;
 use function in_array;
 use function mb_strtolower;
 use function trim;
@@ -192,6 +193,18 @@ final class CategoryCatalog
     public static function reportOrder(Operation $operation): array
     {
         return $operation->equals(Operation::INCOME()) ? self::INCOME_REPORT_ORDER : self::EXPENSE_REPORT_ORDER;
+    }
+
+    public static function budgetPosition(string $name, Operation $operation): ?int
+    {
+        $code = self::codeByDefinition(0, $name, $operation);
+        if ($code === null) {
+            return null;
+        }
+
+        $position = array_search($code, self::reportOrder($operation), true);
+
+        return $position === false ? null : $position;
     }
 
     /**
