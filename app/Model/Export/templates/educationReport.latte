@@ -13,6 +13,9 @@ $chits - paragony akce
     .totalReport td {
         text-align: center;
     }
+    .totalReport h1 {
+        text-align: center;
+    }
 
     table {
         border-spacing: 0;
@@ -21,7 +24,7 @@ $chits - paragony akce
 <div class="totalReport">
     <h1>{$education->getDisplayName()}</h1>
 
-    <h3>Pořadatel akce</h3>
+    <h3>Pořadatel</h3>
     {$education->getUnitName()} - Ev. číslo: {$education->getUnitRegistrationNumber()}
 
     <h3>Základní údaje</h3>
@@ -29,12 +32,11 @@ $chits - paragony akce
     <b>Vedoucí akce: </b> {if $functions->leader !== NULL}{$functions->leader->name}{/if}<br>
 
     {foreach $functions->assistants as $assistant}
-        <b>Zástupce vedoucího: </b> {if $assistant !== NULL}{$assistant->name}{/if}<br>
+        <b>Zástupce vedoucího akce: </b> {if $assistant !== NULL}{$assistant->name}{/if}<br>
     {/foreach}
 
     {var $otherFunctions = [
     'Hospodář' => $functions->accountant,
-    'Tajemník' => $functions->secretary,
     'Zdravotník' => $functions->medic,
     ]}
     {foreach $otherFunctions as $functionName => $person}
@@ -77,19 +79,19 @@ $chits - paragony akce
             <th style="width: 20%;text-align: right;">Kč</th>
         </tr>
 
-        {var $rowsCount = max(count($incomeCategories)+1, count($expenseCategories))}
+        {var $rowsCount = max(count($incomeCategories), count($expenseCategories))}
 
         <tr n:for="$i = 0; $i < $rowsCount; $i++">
             {ifset $incomeCategories[$i]}
-                <td>{$incomeCategories[$i]->name}</td>
-                <td>{$incomeCategories[$i]->total|price}</td>
+                <td>{$incomeCategories[$i]['label']}</td>
+                <td>{$incomeCategories[$i]['amount']|price}</td>
             {else}
                 <td></td>
                 <td></td>
             {/ifset}
             {ifset $expenseCategories[$i]}
-                <td>{$expenseCategories[$i]->name}</td>
-                <td>{$expenseCategories[$i]->total|price}</td>
+                <td>{$expenseCategories[$i]['label']}</td>
+                <td>{$expenseCategories[$i]['amount']|price}</td>
             {else}
                 <td></td>
                 <td></td>
@@ -97,9 +99,9 @@ $chits - paragony akce
         </tr>
 
         <tr>
-            <td>Celkem</td>
+            <td><b>Celkem</b></td>
             <td><b>{$totalIncome|price}</b></td>
-            <td>Celkem</td>
+            <td><b>Celkem</b></td>
             <td><b>{$totalExpense|price}</b></td>
         </tr>
     </table>
@@ -117,15 +119,15 @@ $chits - paragony akce
 
         <tr n:for="$i = 0; $i < $rowsCount; $i++">
             {ifset $virtualIncomeCategories[$i]}
-                <td>{$virtualIncomeCategories[$i]->name}</td>
-                <td>{$virtualIncomeCategories[$i]->total|price}</td>
+                <td>{$virtualIncomeCategories[$i]['label']}</td>
+                <td>{$virtualIncomeCategories[$i]['amount']|price}</td>
             {else}
                 <td></td>
                 <td></td>
             {/ifset}
             {ifset $virtualExpenseCategories[$i]}
-                <td>{$virtualExpenseCategories[$i]->name}</td>
-                <td>{$virtualExpenseCategories[$i]->total|price}</td>
+                <td>{$virtualExpenseCategories[$i]['label']}</td>
+                <td>{$virtualExpenseCategories[$i]['amount']|price}</td>
             {else}
                 <td></td>
                 <td></td>
@@ -133,9 +135,9 @@ $chits - paragony akce
         </tr>
 
         <tr>
-            <td>Celkem</td>
+            <td><b>Celkem</b></td>
             <td><b>{$virtualTotalIncome|price}</b></td>
-            <td>Celkem</td>
+            <td><b>Celkem</b></td>
             <td><b>{$virtualTotalExpense|price}</b></td>
         </tr>
     </table>
@@ -143,6 +145,6 @@ $chits - paragony akce
     <h4>Výsledek hospodaření: {$finalRealBalance |number:2, ',', ' '} Kč</h4>
 
     <h4>Hlášení předkládá</h4>
-    V _________________ dne _____________ &nbsp; &nbsp;Zpracoval:
+    V _________________ dne _____________ &nbsp; &nbsp;Zpracoval: <br /><br />
+    V _________________ dne _____________ &nbsp; &nbsp;Schválil:
 </div>
-
