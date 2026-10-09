@@ -1,0 +1,6 @@
+services:
+    tracy.logger:
+        factory: App\Model\Infrastructure\Log\Tracy\CompositeLogger(
+            Tracy\Logger(%logDir%),
+            Tracy\Bridges\Psr\PsrToTracyLoggerAdapter(@Monolog\Logger),
+        )
