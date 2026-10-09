@@ -20,8 +20,11 @@ use function array_map;
 final class CategoryPairsQueryHandlerTest extends Unit
 {
     private const CATEGORIES = [
-        [1, 'Název 1', Operation::INCOME],
-        [2, 'Název 2', Operation::EXPENSE],
+        [9, 'Převod z pokladny jednotky', Operation::INCOME],
+        [1, 'Od dětí a roverů', Operation::INCOME],
+        [12, 'Neurčeno', Operation::INCOME],
+        [4, 'Doprava osob a materiálu', Operation::EXPENSE],
+        [8, 'Neurčeno', Operation::EXPENSE],
     ];
 
     private const CASHBOOK_TYPE = CashbookType::EVENT;
@@ -32,8 +35,9 @@ final class CategoryPairsQueryHandlerTest extends Unit
         $handler = $this->createHandler();
 
         $this->assertSame([
-            1 => 'Název 1',
-            2 => 'Název 2',
+            9 => 'Převod z pokladny jednotky',
+            1 => 'Od dětí a roverů',
+            4 => 'Doprava osob a materiálu',
         ], $handler(new CategoryPairsQuery(CashbookId::fromString(self::CASHBOOK_ID))));
     }
 
@@ -41,7 +45,10 @@ final class CategoryPairsQueryHandlerTest extends Unit
     {
         $handler = $this->createHandler();
 
-        $this->assertSame([1 => 'Název 1'], $handler(
+        $this->assertSame([
+            9 => 'Převod z pokladny jednotky',
+            1 => 'Od dětí a roverů',
+        ], $handler(
             new CategoryPairsQuery(CashbookId::fromString(self::CASHBOOK_ID), Operation::get(Operation::INCOME)),
         ));
     }

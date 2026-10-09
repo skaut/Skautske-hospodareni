@@ -37,9 +37,9 @@ class CategoriesSummaryQueryHandler
 
         $totalByCategories = $calculator->calculate($cashbook, $categories);
 
-        // filter out camp refund categories
+        // Refund categories only adjust participant income and must not be reported as a separate cost.
         $categories = array_filter($categories, function (ICategory $category) {
-            return ! in_array($category->getId(), [ICategory::CATEGORY_REFUND_CHILD_ID, ICategory::CATEGORY_REFUND_ADULT_ID]);
+            return ! in_array($category->getId(), [ICategory::CATEGORY_REFUND_ID, ICategory::CATEGORY_REFUND_CHILD_ID, ICategory::CATEGORY_REFUND_ADULT_ID]);
         });
 
         $categoriesSummaryById = [];

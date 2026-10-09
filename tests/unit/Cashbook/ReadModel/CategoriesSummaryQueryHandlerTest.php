@@ -67,7 +67,7 @@ final class CategoriesSummaryQueryHandlerTest extends Unit
 
         self::assertSame([1], array_keys($result));
         self::assertSame('Income', $result[1]->getName());
-        self::assertSame('12550', $result[1]->getTotal()->getAmount());
+        self::assertSame('10050', $result[1]->getTotal()->getAmount());
         self::assertTrue($result[1]->isIncome());
     }
 

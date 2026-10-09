@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Model\Cashbook\ReadModel\QueryHandlers;
 
 use App\Model\Cashbook\CashbookNotFound;
-use App\Model\Cashbook\ICategory;
+use App\Model\Cashbook\CategoryCatalog;
+use App\Model\Cashbook\Operation;
 use App\Model\Cashbook\ReadModel\Queries\CategoryPairsQuery;
 use App\Model\Cashbook\Repositories\CategoryRepository;
 use App\Model\Cashbook\Repositories\ICashbookRepository;
-
-use function array_filter;
 
 class CategoryPairsQueryHandler
 {
@@ -29,21 +28,11 @@ class CategoryPairsQueryHandler
 
         $categories = $this->categories->findForCashbook($cashbook->getId(), $cashbook->getType());
 
-        if ($query->getOperationType() !== null) {
-            $categories = array_filter(
-                $categories,
-                function (ICategory $category) use ($query): bool {
-                    return $category->getOperationType()->equals($query->getOperationType());
-                },
-            );
+        if ($query->getOperationType() === null) {
+            return CategoryCatalog::selectablePairs($categories, Operation::INCOME())
+                + CategoryCatalog::selectablePairs($categories, Operation::EXPENSE());
         }
 
-        $pairs = [];
-
-        foreach ($categories as $category) {
-            $pairs[$category->getId()] = $category->getName();
-        }
-
-        return $pairs;
+        return CategoryCatalog::selectablePairs($categories, $query->getOperationType());
     }
 }

@@ -61,9 +61,15 @@ class ExportServiceTest extends Unit
         })->andReturn([
             new CategorySummary(ICategory::CATEGORY_PARTICIPANT_INCOME_ID, 'Přijmy od účastníků', MoneyFactory::fromFloat(700.0), Operation::INCOME(), false),
             new CategorySummary(2, 'Služby', MoneyFactory::fromFloat(50.0), Operation::EXPENSE(), false),
+            new CategorySummary(900, 'Vlastní příjem', MoneyFactory::fromFloat(20.0), Operation::INCOME(), false),
+            new CategorySummary(901, 'Vlastní výdaj', MoneyFactory::fromFloat(30.0), Operation::EXPENSE(), false),
+            new CategorySummary(902, 'Rezerva', MoneyFactory::fromFloat(10.0), Operation::EXPENSE(), false),
             new CategorySummary(9, 'Převod z pokladny střediska', MoneyFactory::fromFloat(200.0), Operation::INCOME(), true),
             new CategorySummary(7, 'Převod do stř. pokladny', MoneyFactory::fromFloat(150.0), Operation::EXPENSE(), true),
         ]);
+        $queryBus->expects('handle')->withArgs(static function ($query) use ($cashbookId): bool {
+            return $query instanceof FinalRealBalanceQuery && $query->getCashbookId()->equals($cashbookId);
+        })->andReturn(MoneyFactory::fromFloat(630.0));
 
         $queryBus->expects('handle')
             ->once()
@@ -84,63 +90,42 @@ class ExportServiceTest extends Unit
             new InvoiceImageStorage(new Filesystem(new InMemoryFilesystemAdapter()), '/tmp'),
         );
 
-        $templateFactory->expects('create')->withArgs(static function (string $templatePath, array $parameters): bool {
-            if ($parameters['participantsCnt'] !== 0) {
-                return false;
-            }
+        $parameters = [];
+        $templateFactory->expects('create')->withArgs(static function (string $templatePath, array $templateParameters) use (&$parameters): bool {
+            $parameters = $templateParameters;
 
-            if ($parameters['personsDays'] !== 0) {
-                return false;
-            }
-
-            $chits = [
-                'virtual' => [
-                    'in' => [9 => ['amount' => 200.0, 'label' => 'Převod z pokladny střediska']],
-                    'out' => [7 => ['amount' => 150.0, 'label' => 'Převod do stř. pokladny']],
-                ],
-                'real' => [
-                    'in' => [1 => ['amount' => 700.0, 'label' => 'Přijmy od účastníků']],
-                    'out' => [
-                        2 => ['amount' => 50.0, 'label' => 'Služby'],
-                    ],
-                ],
-            ];
-            if ($parameters['chits'] !== $chits) {
-                return false;
-            }
-
-            if ($parameters['incomes'] !== [['amount' => 700.0, 'label' => 'Přijmy od účastníků']]) {
-                return false;
-            }
-
-            if ($parameters['expenses'] !== [['amount' => 50.0, 'label' => 'Služby']]) {
-                return false;
-            }
-
-            if ($parameters['totalIncome'] !== 700.0) {
-                return false;
-            }
-
-            if ($parameters['totalExpense'] !== 50.0) {
-                return false;
-            }
-
-            if ($parameters['virtualIncomes'] !== [['amount' => 200.0, 'label' => 'Převod z pokladny střediska']]) {
-                return false;
-            }
-
-            if ($parameters['virtualExpenses'] !== [['amount' => 150.0, 'label' => 'Převod do stř. pokladny']]) {
-                return false;
-            }
-
-            if ($parameters['virtualTotalIncome'] !== 200.0) {
-                return false;
-            }
-
-            return $parameters['virtualTotalExpense'] === 150.0;
-        });
+            return $templatePath === dirname(__DIR__, 4).'/app/Model/Export/templates/eventReport.latte';
+        })->andReturn('');
 
         $exportService->getEventReport($skautisEventId);
+
+        self::assertSame(0, $parameters['participantsCnt']);
+        self::assertSame(0, $parameters['personsDays']);
+        self::assertSame([
+            ['label' => 'Od dětí a roverů', 'amount' => 700.0],
+            ['label' => 'Od dospělých', 'amount' => 0.0],
+            ['label' => 'Ostatní příjmy', 'amount' => 20.0],
+            ['label' => 'Příspěvky samosprávy', 'amount' => 0.0],
+            ['label' => 'Vlastní finanční prostředky', 'amount' => 0.0],
+        ], $parameters['incomes']);
+        self::assertSame([
+            ['label' => 'Doprava osob a materiálu', 'amount' => 0.0],
+            ['label' => 'Ostatní služby', 'amount' => 50.0],
+            ['label' => 'Nájem', 'amount' => 0.0],
+            ['label' => 'Potraviny, stravné', 'amount' => 0.0],
+            ['label' => 'Cestovné', 'amount' => 0.0],
+            ['label' => 'Materiál', 'amount' => 0.0],
+            ['label' => 'Vybavení', 'amount' => 0.0],
+            ['label' => 'Ostatní výdaje', 'amount' => 30.0],
+            ['label' => 'Rezerva', 'amount' => 10.0],
+        ], $parameters['expenses']);
+        self::assertSame(720.0, $parameters['totalIncome']);
+        self::assertSame(90.0, $parameters['totalExpense']);
+        self::assertSame([['label' => 'Převod z pokladny jednotky', 'amount' => 200.0]], $parameters['virtualIncomes']);
+        self::assertSame([['label' => 'Převod do pokladny jednotky', 'amount' => 150.0]], $parameters['virtualExpenses']);
+        self::assertSame(200.0, $parameters['virtualTotalIncome']);
+        self::assertSame(150.0, $parameters['virtualTotalExpense']);
+        self::assertSame(630.0, $parameters['finalRealBalance']);
     }
 
     /**

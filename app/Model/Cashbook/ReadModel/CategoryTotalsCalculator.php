@@ -33,6 +33,8 @@ final class CategoryTotalsCalculator
             $totalByCategories = self::categorySubtract($totalByCategories, fn (): int => self::getCampIncomeCategoryId($categories, ParticipantType::ADULT()), ICategory::CATEGORY_REFUND_ADULT_ID);
         } elseif ($cashbook->getType()->equalsValue(CashbookType::EDUCATION)) {
             $totalByCategories = self::categorySubtract($totalByCategories, fn (): int => self::getEducationIncomeCategoryId($categories), ICategory::CATEGORY_REFUND_ID);
+            $totalByCategories = self::categorySubtract($totalByCategories, fn (): int => self::getEducationIncomeCategoryId($categories), ICategory::CATEGORY_REFUND_CHILD_ID);
+            $totalByCategories = self::categorySubtract($totalByCategories, fn (): int => self::getEducationIncomeCategoryId($categories), ICategory::CATEGORY_REFUND_ADULT_ID);
         } else {
             if (array_key_exists(ICategory::CATEGORY_HPD_ID, $totalByCategories)) {
                 $totalByCategories[ICategory::CATEGORY_PARTICIPANT_INCOME_ID] = ($totalByCategories[ICategory::CATEGORY_PARTICIPANT_INCOME_ID] ?? MoneyFactory::zero())->add($totalByCategories[ICategory::CATEGORY_HPD_ID]);
@@ -40,6 +42,8 @@ final class CategoryTotalsCalculator
             }
 
             $totalByCategories = self::categorySubtract($totalByCategories, fn (): int => ICategory::CATEGORY_PARTICIPANT_INCOME_ID, ICategory::CATEGORY_REFUND_ID);
+            $totalByCategories = self::categorySubtract($totalByCategories, fn (): int => ICategory::CATEGORY_PARTICIPANT_INCOME_ID, ICategory::CATEGORY_REFUND_CHILD_ID);
+            $totalByCategories = self::categorySubtract($totalByCategories, fn (): int => ICategory::CATEGORY_PARTICIPANT_INCOME_ID, ICategory::CATEGORY_REFUND_ADULT_ID);
         }
 
         return $totalByCategories;

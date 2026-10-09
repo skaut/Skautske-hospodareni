@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Model\Skautis\Cashbook\Repositories;
 
-use App\Model\Cashbook\ICategory;
 use App\Model\Cashbook\Operation;
 use App\Model\Utils\MoneyFactory;
 use Codeception\Test\Unit;
@@ -13,7 +12,6 @@ use Skautis\Wsdl\WebServiceInterface;
 use stdClass;
 
 use function array_map;
-use function array_slice;
 use function count;
 use function ksort;
 
@@ -28,7 +26,7 @@ final class CampCategoryRepositoryTest extends Unit
             'IsRevenue' => false,
             'EventCampStatementType' => 'Rezerva',
             'Ammount' => '2000.0',
-            'ID_EventCampStatementType' => ICategory::CAMP_RESERVE_ID,
+            'ID_EventCampStatementType' => 15,
         ],
         [
             'ID' => 1,
@@ -63,12 +61,9 @@ final class CampCategoryRepositoryTest extends Unit
 
         $categories = $repository->findForCamp(self::CAMP_ID);
 
-        $this->assertCount(
-            count(self::CATEGORIES) - 1, // Repository should not contain reserve
-            $categories,
-        );
+        $this->assertCount(count(self::CATEGORIES), $categories);
 
-        $expectedCategories = array_slice(array_map(array_values(...), self::CATEGORIES), 1);
+        $expectedCategories = array_map(array_values(...), self::CATEGORIES);
 
         foreach ($expectedCategories as $index => [$id, $isIncome, $name, $amount]) {
             $category = $categories[$index];
