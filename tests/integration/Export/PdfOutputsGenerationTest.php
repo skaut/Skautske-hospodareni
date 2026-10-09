@@ -351,7 +351,6 @@ final class PdfOutputsGenerationTest extends IntegrationTest
                 'accountant' => $this->person('Hospodář'),
                 'medic' => null,
             ],
-            'chits' => [],
             'incomes' => [['label' => 'Od účastníků', 'amount' => 700.0]],
             'expenses' => [['label' => 'Materiál', 'amount' => 120.0]],
             'totalIncome' => 700.0,
@@ -360,6 +359,7 @@ final class PdfOutputsGenerationTest extends IntegrationTest
             'virtualExpenses' => [['label' => 'Převod do pokladny', 'amount' => 150.0]],
             'virtualTotalIncome' => 200.0,
             'virtualTotalExpense' => 150.0,
+            'finalRealBalance' => 580.0,
         ];
     }
 
@@ -411,12 +411,12 @@ final class PdfOutputsGenerationTest extends IntegrationTest
                 'accountant' => $this->person('Hospodář'),
                 'medic' => null,
             ],
-            'incomeCategories' => [$this->category('Od účastníků', 700.0)],
-            'expenseCategories' => [$this->category('Materiál', 120.0)],
+            'incomeCategories' => [['label' => 'Od účastníků', 'amount' => 700.0]],
+            'expenseCategories' => [['label' => 'Materiál', 'amount' => 120.0]],
             'totalIncome' => 700.0,
             'totalExpense' => 120.0,
-            'virtualIncomeCategories' => [$this->category('Převod z pokladny', 200.0)],
-            'virtualExpenseCategories' => [$this->category('Převod do pokladny', 150.0)],
+            'virtualIncomeCategories' => [['label' => 'Převod z pokladny', 'amount' => 200.0]],
+            'virtualExpenseCategories' => [['label' => 'Převod do pokladny', 'amount' => 150.0]],
             'virtualTotalIncome' => 200.0,
             'virtualTotalExpense' => 150.0,
             'areTotalsConsistentWithSkautis' => true,
@@ -469,21 +469,16 @@ final class PdfOutputsGenerationTest extends IntegrationTest
             'totalDays' => 22,
             'participantsAccepted' => 12,
             'personDaysReal' => 84,
-            'incomeCategories' => [$this->category('Od účastníků', 700.0)],
-            'expenseCategories' => [$this->category('Materiál', 120.0)],
+            'incomeCategories' => [['label' => 'Od účastníků', 'amount' => 700.0]],
+            'expenseCategories' => [['label' => 'Materiál', 'amount' => 120.0]],
             'totalIncome' => 700.0,
             'totalExpense' => 120.0,
-            'virtualIncomeCategories' => [$this->category('Převod z pokladny', 200.0)],
-            'virtualExpenseCategories' => [$this->category('Převod do pokladny', 150.0)],
+            'virtualIncomeCategories' => [['label' => 'Převod z pokladny', 'amount' => 200.0]],
+            'virtualExpenseCategories' => [['label' => 'Převod do pokladny', 'amount' => 150.0]],
             'virtualTotalIncome' => 200.0,
             'virtualTotalExpense' => 150.0,
             'finalRealBalance' => 580.0,
         ];
-    }
-
-    private function category(string $name, float $total): object
-    {
-        return (object) ['name' => $name, 'total' => $total];
     }
 
     /** @return mixed[] */

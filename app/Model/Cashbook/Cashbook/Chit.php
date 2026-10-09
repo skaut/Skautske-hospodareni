@@ -6,6 +6,7 @@ namespace App\Model\Cashbook\Cashbook;
 
 use App\Model\Cashbook\Cashbook;
 use App\Model\Cashbook\Category as CategoryAggregate;
+use App\Model\Cashbook\CategoryCatalog;
 use App\Model\Cashbook\ICategory;
 use App\Model\Cashbook\Operation;
 use App\Model\Common\FilePath;
@@ -210,6 +211,27 @@ class Chit
         return new self($newCashbook, $this->body, $this->paymentMethod, $items->toArray(), $scans);
     }
 
+    /**
+     * @param ICategory[] $sourceCategories
+     * @param ICategory[] $targetCategories
+     */
+    public function copyToCashbookWithCompatibleCategories(Cashbook $newCashbook, array $sourceCategories, array $targetCategories): self
+    {
+        $items = $this->items->map(function (ChitItem $item) use ($sourceCategories, $targetCategories): ChitItem {
+            $sourceCategory = $this->findSourceCategory($item->getCategory(), $sourceCategories);
+            $targetCategory = $sourceCategory === null
+                ? null
+                : CategoryCatalog::findCompatibleCategory($sourceCategory, $targetCategories);
+            if ($targetCategory === null) {
+                $targetCategory = $this->findUndefinedCategory($item->getCategory()->getOperationType(), $targetCategories);
+            }
+
+            return $item->withCategory(new Category($targetCategory->getId(), $targetCategory->getOperationType()));
+        });
+
+        return new self($newCashbook, $this->body, $this->paymentMethod, $items->toArray(), $this->scans->toArray());
+    }
+
     public function withCategory(Category $category, Cashbook $cashbook): self
     {
         $newItems = [];
@@ -245,6 +267,38 @@ class Chit
     private function getFirstItem(): ChitItem
     {
         return $this->items->first();
+    }
+
+    /**
+     * @param ICategory[] $targetCategories
+     */
+    private function findUndefinedCategory(Operation $operation, array $targetCategories): ICategory
+    {
+        $undefinedId = $operation->equals(Operation::INCOME())
+            ? CategoryAggregate::UNDEFINED_INCOME_ID
+            : CategoryAggregate::UNDEFINED_EXPENSE_ID;
+
+        foreach ($targetCategories as $category) {
+            if ($category->getId() === $undefinedId && $category->getOperationType()->equals($operation)) {
+                return $category;
+            }
+        }
+
+        return new CategoryAggregate($undefinedId, 'Neurčeno', 'undefined', $operation, [], false, 0);
+    }
+
+    /**
+     * @param ICategory[] $sourceCategories
+     */
+    private function findSourceCategory(Category $category, array $sourceCategories): ?ICategory
+    {
+        foreach ($sourceCategories as $sourceCategory) {
+            if ($sourceCategory->getId() === $category->getId() && $sourceCategory->getOperationType()->equals($category->getOperationType())) {
+                return $sourceCategory;
+            }
+        }
+
+        return null;
     }
 
     /**

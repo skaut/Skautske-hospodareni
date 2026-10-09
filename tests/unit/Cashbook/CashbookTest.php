@@ -19,6 +19,7 @@ use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use Helpers;
 use Mockery as m;
+use ReflectionClass;
 
 use function assert;
 use function ksort;
@@ -116,6 +117,47 @@ class CashbookTest extends Unit
         foreach ($expectedTotals as $categoryId => $expectedTotal) {
             $this->assertTrue($expectedTotal->equals($totals[$categoryId]));
         }
+    }
+
+    public function testCopyChitsKeepsCompatibleCategoryWithTargetSpecificId(): void
+    {
+        $source = $this->createEventCashbook();
+        $sourceCategory = new Category(6, 'Materiál', 'material', Operation::EXPENSE(), [], false, 100);
+        $source->addChit(
+            new ChitBody(null, new ChronosDate(), null),
+            PaymentMethod::CASH(),
+            [new ChitItem(new Amount('100'), new Cashbook\Category(6, Operation::EXPENSE()), 'materiál')],
+            [6 => $sourceCategory],
+        );
+        $this->assignFirstChitIdentity($source);
+
+        $target = new Cashbook(CashbookId::generate(), CashbookType::get(CashbookType::CAMP));
+        $targetCategory = new CampCategory(501, Operation::EXPENSE(), 'Materiál', MoneyFactory::zero());
+
+        $target->copyChitsFrom([1], $source, [$sourceCategory], [$targetCategory]);
+
+        $this->assertArrayHasKey(501, $target->getCategoryTotals());
+        $this->assertTrue(MoneyFactory::fromDecimal('100.00')->equals($target->getCategoryTotals()[501]));
+    }
+
+    public function testCopyChitsUsesUndefinedCategoryForUnknownCategory(): void
+    {
+        $source = $this->createEventCashbook();
+        $sourceCategory = new CampCategory(501, Operation::EXPENSE(), 'Vlastní táborová položka', MoneyFactory::zero());
+        $source->addChit(
+            new ChitBody(null, new ChronosDate(), null),
+            PaymentMethod::CASH(),
+            [new ChitItem(new Amount('100'), new Cashbook\Category(501, Operation::EXPENSE()), 'historická položka')],
+            [501 => $sourceCategory],
+        );
+        $this->assignFirstChitIdentity($source);
+
+        $target = new Cashbook(CashbookId::generate(), CashbookType::get(CashbookType::CAMP));
+        $undefinedCategory = new Category(ICategory::UNDEFINED_EXPENSE_ID, 'Neurčeno', 'undefined-expense', Operation::EXPENSE(), [], false, 100);
+
+        $target->copyChitsFrom([1], $source, [$sourceCategory], [$undefinedCategory]);
+
+        $this->assertArrayHasKey(ICategory::UNDEFINED_EXPENSE_ID, $target->getCategoryTotals());
     }
 
     public function testAddChitRaisesEvent(): void
@@ -236,6 +278,13 @@ class CashbookTest extends Unit
         ];
         $this->expectException(SingleItemRestriction::class);
         $cashbook->addChit($chitBody, PaymentMethod::CASH(), $items, $categories);
+    }
+
+    private function assignFirstChitIdentity(Cashbook $cashbook): void
+    {
+        $reflection = new ReflectionClass($cashbook);
+        $chits = $reflection->getProperty('chits')->getValue($cashbook);
+        Helpers::assignIdentity($chits->first(), 1);
     }
 
     private function createEventCashbook(?CashbookId $cashbookId = null): Cashbook
