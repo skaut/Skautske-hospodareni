@@ -311,6 +311,9 @@ jobs:
       DB_NAME: ${{ vars.DB_NAME }}
       DB_USER: ${{ vars.DB_USER }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      GOTENBERG_URL: ${{ vars.GOTENBERG_URL }}
+      GOTENBERG_USERNAME: ${{ vars.GOTENBERG_USERNAME }}
+      GOTENBERG_PASSWORD: ${{ secrets.GOTENBERG_PASSWORD }}
       GOOGLE_CREDENTIALS_FILE: ${{ vars.GOOGLE_CREDENTIALS_FILE }}
       GOOGLE_REDIRECT_URI: ${{ vars.GOOGLE_REDIRECT_URI }}
       MAINTENANCE_MODE: ${{ vars.MAINTENANCE_MODE }}
@@ -379,6 +382,9 @@ jobs:
       DB_NAME: ${{ vars.DB_NAME }}
       DB_USER: ${{ vars.DB_USER }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      GOTENBERG_URL: ${{ vars.GOTENBERG_URL }}
+      GOTENBERG_USERNAME: ${{ vars.GOTENBERG_USERNAME }}
+      GOTENBERG_PASSWORD: ${{ secrets.GOTENBERG_PASSWORD }}
       GOOGLE_CREDENTIALS_FILE: ${{ vars.GOOGLE_CREDENTIALS_FILE }}
       GOOGLE_REDIRECT_URI: ${{ vars.GOOGLE_REDIRECT_URI }}
       MAINTENANCE_MODE: ${{ vars.MAINTENANCE_MODE }}
@@ -419,6 +425,9 @@ jobs:
       DB_NAME: h
       DB_USER: h
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      GOTENBERG_URL: ${{ vars.GOTENBERG_URL }}
+      GOTENBERG_USERNAME: ${{ vars.GOTENBERG_USERNAME }}
+      GOTENBERG_PASSWORD: ${{ secrets.GOTENBERG_PASSWORD }}
       GOOGLE_CREDENTIALS_FILE: google-credentials.json
       GOOGLE_REDIRECT_URI: https://h.skauting.cz/google/token
       MAINTENANCE_MODE: ${{ vars.MAINTENANCE_MODE }}

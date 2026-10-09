@@ -22,7 +22,7 @@ set('ssh_multiplexing', false);
 //set('bin/ssh', 'ssh -o IdentitiesOnly=yes -o PreferredAuthentications=publickey -o PubkeyAuthentication=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=/root/.ssh/known_hosts');
 
 // === Shared / writable dirs ===
-set('shared_dirs', []);
+set('shared_dirs', ['log']);
 set('shared_files', ['.env.local', 'app/config/google-credentials.json']);
 
 // === Rsync ===
@@ -119,6 +119,9 @@ task('build:runtime_files', function () {
         'DB_NAME' => requiredEnv('DB_NAME'),
         'DB_USER' => requiredEnv('DB_USER'),
         'DB_PASSWORD' => requiredEnv('DB_PASSWORD'),
+        'GOTENBERG_URL' => requiredEnv('GOTENBERG_URL'),
+        'GOTENBERG_USERNAME' => requiredEnv('GOTENBERG_USERNAME'),
+        'GOTENBERG_PASSWORD' => requiredEnv('GOTENBERG_PASSWORD'),
         'GOOGLE_CREDENTIALS_FILE' => optionalEnv('GOOGLE_CREDENTIALS_FILE') ?? 'google-credentials.json',
         'GOOGLE_REDIRECT_URI' => optionalEnv('GOOGLE_REDIRECT_URI') ?? rtrim(requiredEnv('APP_BASE_URL'), '/').'/google/token',
         'APP_RELEASE_HASH' => optionalEnv('APP_RELEASE_HASH') ?? get('build_hash'),
@@ -160,19 +163,43 @@ task('deploy:runtime_files', function () {
     run('test -f {{deploy_path}}/shared/app/config/google-credentials.json');
 })->desc('Upload shared runtime files');
 
-// --- úkol: vytvoř kořenové sdílené složky a symlinky v release ---
-desc('Symlink root-level shared folders (log, uploads) into the release and update /www');
-task('custom:shared_symlinks', function () {
-    // zajisti existenci kořenových složek
-    run('mkdir -p {{deploy_path}}/log {{deploy_path}}/uploads');
-    run('chmod 0775 {{deploy_path}}/log {{deploy_path}}/uploads');
+desc('Move the legacy root log directory to Deployer shared storage');
+task('deploy:migrate_legacy_log_dir', function () {
+    run(<<<'BASH'
+if [ -d {{deploy_path}}/log ] && [ ! -L {{deploy_path}}/log ]; then
+    if [ -d {{deploy_path}}/shared/log ] && [ -n "$(find {{deploy_path}}/shared/log -mindepth 1 -maxdepth 1 -print -quit)" ]; then
+        echo 'Both legacy and shared log directories contain data. Resolve the conflict before deploying.' >&2
+        exit 1
+    fi
 
-    // ukliď v release, ať ln nepadá, a vytvoř symlinky jako ve skriptu
-    run('rm -rf {{release_path}}/log {{release_path}}/uploads');
-    run('ln -sfn {{deploy_path}}/log {{release_path}}/log');
+    rmdir {{deploy_path}}/shared/log 2>/dev/null || true
+    mv {{deploy_path}}/log {{deploy_path}}/shared/log
+fi
+
+mkdir -p {{deploy_path}}/shared/log
+chmod 0775 {{deploy_path}}/shared/log
+BASH);
+});
+
+desc('Delete log files older than 90 days');
+task('deploy:prune_logs', function () {
+    run('find {{deploy_path}}/shared/log -type f -mtime +89 -delete');
+});
+
+// --- úkol: vytvoř kořenovou sdílenou složku uploads a symlink v release ---
+desc('Symlink root-level uploads into the release and update /www');
+task('custom:shared_symlinks', function () {
+    // zajisti existenci kořenové složky
+    run('mkdir -p {{deploy_path}}/uploads');
+    run('chmod 0775 {{deploy_path}}/uploads');
+
+    // ukliď v release, ať ln nepadá, a vytvoř symlink jako ve skriptu
+    run('rm -rf {{release_path}}/uploads');
     run('ln -sfn {{deploy_path}}/uploads {{release_path}}/uploads');
     run('test -L {{release_path}}/log');
     run('test -L {{release_path}}/uploads');
+    run('test "$(readlink -f {{release_path}}/log)" = "$(readlink -f {{deploy_path}}/shared/log)"');
+    run('test -w {{deploy_path}}/shared/log');
 
     // symlink web rootu mimo releases (idempotentně, přepíše existující)
     run('ln -sfn {{release_path}}/www {{web_root_symlink}}');
@@ -300,7 +327,9 @@ task('deploy', [
     'deploy:release',
     'rsync',
     'deploy:runtime_files',
+    'deploy:migrate_legacy_log_dir',
     'deploy:shared',
+    'deploy:prune_logs',
     'custom:shared_symlinks',
     'app:proxies',
     //'app:migrate', -- nelze na lebedě

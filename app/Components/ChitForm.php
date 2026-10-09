@@ -17,6 +17,7 @@ use App\Model\Cashbook\Cashbook\ChitNumber;
 use App\Model\Cashbook\Cashbook\PaymentMethod;
 use App\Model\Cashbook\Cashbook\Recipient;
 use App\Model\Cashbook\CashbookNotFound;
+use App\Model\Cashbook\CategoryCatalog;
 use App\Model\Cashbook\ChitLocked;
 use App\Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use App\Model\Cashbook\Commands\Cashbook\UpdateChit;
@@ -43,6 +44,7 @@ use LogicException;
 use Nette\Application\BadRequestException;
 use Nette\Forms\Container;
 use Nette\Forms\Control;
+use Nette\Forms\Controls\SelectBox;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Forms\Form;
 use Nette\Http\IResponse;
@@ -50,7 +52,9 @@ use Nette\Utils\ArrayHash;
 use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\WsdlException;
 
+use function array_key_exists;
 use function array_values;
+use function iterator_to_array;
 use function sprintf;
 
 final class ChitForm extends BaseControl
@@ -164,6 +168,7 @@ final class ChitForm extends BaseControl
         }
 
         $this['form']->setDefaults(['items' => $items]);
+        $this->addLegacyCategoryOptions($chit);
 
         $this->redrawControl();
     }
@@ -420,6 +425,43 @@ final class ChitForm extends BaseControl
     private function getCategoryPairsByType(?Operation $operation): array
     {
         return $this->queryBus->handle(new CategoryPairsQuery($this->cashbookId, $operation));
+    }
+
+    private function addLegacyCategoryOptions(Chit $chit): void
+    {
+        $categories = $this->queryBus->handle(new CategoryListQuery($this->cashbookId));
+        $form = $this['form'];
+        if (! $form instanceof BaseForm) {
+            throw new LogicException('Assertion failed.');
+        }
+        $items = $form['items'];
+        if (! $items instanceof Multiplier) {
+            throw new LogicException('Assertion failed.');
+        }
+        $containers = iterator_to_array($items->getContainers(), false);
+
+        foreach ($chit->getItems() as $index => $item) {
+            $categoryId = $item->getCategory()->getId();
+            $categoryControlName = $item->getCategory()->isIncome() ? 'incomeCategories' : 'expenseCategories';
+            $categoryControl = $containers[$index][$categoryControlName];
+            if (! $categoryControl instanceof SelectBox) {
+                throw new LogicException('Assertion failed.');
+            }
+
+            if (array_key_exists($categoryId, $categoryControl->getItems())) {
+                continue;
+            }
+
+            $category = $categories[$categoryId] ?? null;
+            if ($category === null) {
+                throw new LogicException('Category of edited chit not found.');
+            }
+
+            $label = CategoryCatalog::isUndefinedId($categoryId)
+                ? 'Historická nezařazená kategorie'
+                : 'Historická kategorie: '.$category->getName();
+            $categoryControl->setItems($categoryControl->getItems() + [$categoryId => $label]);
+        }
     }
 
     private function buildChitBodyFromValues(ArrayHash $values): ChitBody

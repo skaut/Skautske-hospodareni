@@ -126,7 +126,7 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->click('Nový doklad');
         $this->I->amGoingTo('add income chit');
 
-        $this->fillChitForm(new ChronosDate(), 'Účastnické poplatky', Operation::INCOME(), 'Přijmy od účastníků', 'Testovací skaut 2', '100');
+        $this->fillChitForm(new ChronosDate(), 'Účastnické poplatky', Operation::INCOME(), 'Od dětí a roverů', 'Testovací skaut 2', '100');
         $this->I->scrollTo('input[name="send"]');
         $this->I->waitForElementClickable('input[name="send"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $this->I->clickStable('input[name="send"]');

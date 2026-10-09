@@ -6,7 +6,7 @@ namespace App\Model\Export;
 
 use App\Model\Cashbook\Cashbook\CashbookId;
 use App\Model\Cashbook\Cashbook\PaymentMethod;
-use App\Model\Cashbook\ICategory;
+use App\Model\Cashbook\CategoryCatalog;
 use App\Model\Cashbook\Operation;
 use App\Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use App\Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
@@ -57,17 +57,16 @@ use App\Model\Payment\QrPaymentCode;
 use App\Model\Services\TemplateFactory;
 use App\Model\Unit\UnitService;
 use App\Model\Utils\MoneyFactory;
+use Money\Money;
 use Nette\Utils\ArrayHash;
 use Throwable;
 use UnexpectedValueException;
 
-use function array_column;
+use function array_fill_keys;
 use function array_filter;
 use function array_map;
 use function array_sum;
-use function array_values;
 use function in_array;
-use function is_float;
 use function sprintf;
 
 class ExportService
@@ -186,50 +185,10 @@ class ExportService
 
     public function getEventReport(int $skautisEventId): string
     {
-        $sums = [
-            self::CATEGORY_VIRTUAL => [
-                Operation::INCOME => [],
-                Operation::EXPENSE => [],
-            ],
-            self::CATEGORY_REAL => [
-                Operation::INCOME => [],
-                Operation::EXPENSE => [],
-            ],
-        ];
-
         $cashbookId = $this->queryBus->handle(new EventCashbookIdQuery(new SkautisEventId($skautisEventId)));
         /** @var CategorySummary[] $categoriesSummary */
         $categoriesSummary = $this->queryBus->handle(new CategoriesSummaryQuery($cashbookId));
-
-        foreach ($categoriesSummary as $categorySummary) {
-            if (in_array($categorySummary->getId(), [ICategory::CATEGORY_HPD_ID, ICategory::CATEGORY_REFUND_ID], true)) {
-                continue;
-            }
-
-            $virtual = $categorySummary->isVirtual() ? self::CATEGORY_VIRTUAL : self::CATEGORY_REAL;
-            $operation = $categorySummary->getOperationType()->getValue();
-
-            $sums[$virtual][$operation][$categorySummary->getId()] = [
-                'amount' => MoneyFactory::toFloat($categorySummary->getTotal()),
-                'label' => $categorySummary->getName(),
-            ];
-        }
-
-        $totalIncome = array_sum(
-            array_column($sums[self::CATEGORY_REAL][Operation::INCOME], 'amount'),
-        );
-
-        $totalExpense = array_sum(
-            array_column($sums[self::CATEGORY_REAL][Operation::EXPENSE], 'amount'),
-        );
-
-        $virtualTotalIncome = array_sum(
-            array_column($sums[self::CATEGORY_VIRTUAL][Operation::INCOME], 'amount'),
-        );
-
-        $virtualTotalExpense = array_sum(
-            array_column($sums[self::CATEGORY_VIRTUAL][Operation::EXPENSE], 'amount'),
-        );
+        $reportCategories = $this->normaliseReportCategories($categoriesSummary);
 
         $stats = $this->queryBus->handle(new EventParticipantStatisticsQuery(new SkautisEventId($skautisEventId)));
         if (! $stats instanceof Statistics) {
@@ -242,117 +201,55 @@ class ExportService
             'participantsCnt' => $stats->getPersonsCount(),
             'personsDays' => $stats->getPersonDays(),
             'event' => $events,
-            'chits' => $sums,
             'functions' => $functions,
-            'incomes' => array_values($sums[self::CATEGORY_REAL][Operation::INCOME]),
-            'expenses' => array_values($sums[self::CATEGORY_REAL][Operation::EXPENSE]),
-            'totalIncome' => $totalIncome,
-            'totalExpense' => $totalExpense,
-            'virtualIncomes' => array_values($sums[self::CATEGORY_VIRTUAL][Operation::INCOME]),
-            'virtualExpenses' => array_values($sums[self::CATEGORY_VIRTUAL][Operation::EXPENSE]),
-            'virtualTotalIncome' => $virtualTotalIncome,
-            'virtualTotalExpense' => $virtualTotalExpense,
+            'incomes' => $reportCategories[self::CATEGORY_REAL][Operation::INCOME],
+            'expenses' => $reportCategories[self::CATEGORY_REAL][Operation::EXPENSE],
+            'totalIncome' => $reportCategories[self::CATEGORY_REAL]['totalIncome'],
+            'totalExpense' => $reportCategories[self::CATEGORY_REAL]['totalExpense'],
+            'virtualIncomes' => $reportCategories[self::CATEGORY_VIRTUAL][Operation::INCOME],
+            'virtualExpenses' => $reportCategories[self::CATEGORY_VIRTUAL][Operation::EXPENSE],
+            'virtualTotalIncome' => $reportCategories[self::CATEGORY_VIRTUAL]['totalIncome'],
+            'virtualTotalExpense' => $reportCategories[self::CATEGORY_VIRTUAL]['totalExpense'],
+            'finalRealBalance' => $this->getFinalRealBalance($cashbookId),
         ]);
     }
 
     public function getCampReport(int $skautisCampId, bool $areTotalsConsistentWithSkautis): string
     {
         $cashbookId = $this->queryBus->handle(new CampCashbookIdQuery(new SkautisCampId($skautisCampId)));
+        /** @var CategorySummary[] $categories */
         $categories = $this->queryBus->handle(new CategoriesSummaryQuery($cashbookId));
-
-        $total = [
-            'income' => MoneyFactory::zero(),
-            'expense' => MoneyFactory::zero(),
-            'virtualIncome' => MoneyFactory::zero(),
-            'virtualExpense' => MoneyFactory::zero(),
-        ];
-
-        $incomeCategories = [self::CATEGORY_REAL => [], self::CATEGORY_VIRTUAL => []];
-        $expenseCategories = [self::CATEGORY_REAL => [], self::CATEGORY_VIRTUAL => []];
-
-        foreach ($categories as $category) {
-            if (! $category instanceof CategorySummary) {
-                throw new UnexpectedValueException('Expected categories summary query to return category summaries.');
-            }
-
-            $virtualCategory = $category->isVirtual() ? self::CATEGORY_VIRTUAL : self::CATEGORY_REAL;
-
-            if ($category->isIncome()) {
-                $key = $category->isVirtual() ? 'virtualIncome' : 'income';
-                $total[$key] = $total[$key]->add($category->getTotal());
-                $incomeCategories[$virtualCategory][] = $category;
-            } else {
-                $key = $category->isVirtual() ? 'virtualExpense' : 'expense';
-                $total[$key] = $total[$key]->add($category->getTotal());
-                $expenseCategories[$virtualCategory][] = $category;
-            }
-        }
+        $reportCategories = $this->normaliseReportCategories($categories);
 
         $stats = $this->queryBus->handle(new CampParticipantStatisticsQuery(new SkautisCampId($skautisCampId)));
         if (! $stats instanceof Statistics) {
             throw new UnexpectedValueException('Expected camp participant statistics query to return statistics.');
         }
 
-        $finalRealBalance = MoneyFactory::toFloat($this->queryBus->handle(new FinalRealBalanceQuery($cashbookId)));
-        if (! is_float($finalRealBalance)) {
-            throw new UnexpectedValueException('Expected final real balance to be float.');
-        }
-
         return $this->templateFactory->create(__DIR__.'/templates/campReport.latte', [
             'participantsCnt' => $stats->getPersonsCount(),
             'personsDays' => $stats->getPersonDays(),
             'camp' => $this->queryBus->handle(new CampQuery(new SkautisCampId($skautisCampId))),
-            'incomeCategories' => $incomeCategories[self::CATEGORY_REAL],
-            'expenseCategories' => $expenseCategories[self::CATEGORY_REAL],
-            'totalIncome' => $total['income'],
-            'totalExpense' => $total['expense'],
-            'virtualIncomeCategories' => $incomeCategories[self::CATEGORY_VIRTUAL],
-            'virtualExpenseCategories' => $expenseCategories[self::CATEGORY_VIRTUAL],
-            'virtualTotalIncome' => $total['virtualIncome'],
-            'virtualTotalExpense' => $total['virtualExpense'],
+            'incomeCategories' => $reportCategories[self::CATEGORY_REAL][Operation::INCOME],
+            'expenseCategories' => $reportCategories[self::CATEGORY_REAL][Operation::EXPENSE],
+            'totalIncome' => $reportCategories[self::CATEGORY_REAL]['totalIncome'],
+            'totalExpense' => $reportCategories[self::CATEGORY_REAL]['totalExpense'],
+            'virtualIncomeCategories' => $reportCategories[self::CATEGORY_VIRTUAL][Operation::INCOME],
+            'virtualExpenseCategories' => $reportCategories[self::CATEGORY_VIRTUAL][Operation::EXPENSE],
+            'virtualTotalIncome' => $reportCategories[self::CATEGORY_VIRTUAL]['totalIncome'],
+            'virtualTotalExpense' => $reportCategories[self::CATEGORY_VIRTUAL]['totalExpense'],
             'functions' => $this->queryBus->handle(new CampFunctions(new SkautisCampId($skautisCampId))),
             'areTotalsConsistentWithSkautis' => $areTotalsConsistentWithSkautis,
-            'finalRealBalance' => $finalRealBalance,
+            'finalRealBalance' => $this->getFinalRealBalance($cashbookId),
         ]);
     }
 
     public function getEducationReport(SkautisEducationId $educationId, int $year): string
     {
         $cashbookId = $this->queryBus->handle(new EducationCashbookIdQuery($educationId, $year));
+        /** @var CategorySummary[] $categories */
         $categories = $this->queryBus->handle(new CategoriesSummaryQuery($cashbookId));
-
-        $total = [
-            'income' => MoneyFactory::zero(),
-            'expense' => MoneyFactory::zero(),
-            'virtualIncome' => MoneyFactory::zero(),
-            'virtualExpense' => MoneyFactory::zero(),
-        ];
-
-        $incomeCategories = [self::CATEGORY_REAL => [], self::CATEGORY_VIRTUAL => []];
-        $expenseCategories = [self::CATEGORY_REAL => [], self::CATEGORY_VIRTUAL => []];
-
-        foreach ($categories as $category) {
-            if (! $category instanceof CategorySummary) {
-                throw new UnexpectedValueException('Expected categories summary query to return category summaries.');
-            }
-
-            $virtualCategory = $category->isVirtual() ? self::CATEGORY_VIRTUAL : self::CATEGORY_REAL;
-
-            if ($category->isIncome()) {
-                $key = $category->isVirtual() ? 'virtualIncome' : 'income';
-                $total[$key] = $total[$key]->add($category->getTotal());
-                $incomeCategories[$virtualCategory][] = $category;
-            } else {
-                $key = $category->isVirtual() ? 'virtualExpense' : 'expense';
-                $total[$key] = $total[$key]->add($category->getTotal());
-                $expenseCategories[$virtualCategory][] = $category;
-            }
-        }
-
-        $finalRealBalance = MoneyFactory::toFloat($this->queryBus->handle(new FinalRealBalanceQuery($cashbookId)));
-        if (! is_float($finalRealBalance)) {
-            throw new UnexpectedValueException('Expected final real balance to be float.');
-        }
+        $reportCategories = $this->normaliseReportCategories($categories);
 
         $education = $this->queryBus->handle(new EducationQuery($educationId));
         $terms = $this->queryBus->handle(new EducationTermsQuery($educationId->toInt()));
@@ -383,17 +280,116 @@ class ExportService
                     $participantParticipationStats,
                 ),
             ),
-            'incomeCategories' => $incomeCategories[self::CATEGORY_REAL],
-            'expenseCategories' => $expenseCategories[self::CATEGORY_REAL],
-            'totalIncome' => $total['income'],
-            'totalExpense' => $total['expense'],
-            'virtualIncomeCategories' => $incomeCategories[self::CATEGORY_VIRTUAL],
-            'virtualExpenseCategories' => $expenseCategories[self::CATEGORY_VIRTUAL],
-            'virtualTotalIncome' => $total['virtualIncome'],
-            'virtualTotalExpense' => $total['virtualExpense'],
+            'incomeCategories' => $reportCategories[self::CATEGORY_REAL][Operation::INCOME],
+            'expenseCategories' => $reportCategories[self::CATEGORY_REAL][Operation::EXPENSE],
+            'totalIncome' => $reportCategories[self::CATEGORY_REAL]['totalIncome'],
+            'totalExpense' => $reportCategories[self::CATEGORY_REAL]['totalExpense'],
+            'virtualIncomeCategories' => $reportCategories[self::CATEGORY_VIRTUAL][Operation::INCOME],
+            'virtualExpenseCategories' => $reportCategories[self::CATEGORY_VIRTUAL][Operation::EXPENSE],
+            'virtualTotalIncome' => $reportCategories[self::CATEGORY_VIRTUAL]['totalIncome'],
+            'virtualTotalExpense' => $reportCategories[self::CATEGORY_VIRTUAL]['totalExpense'],
             'functions' => $this->queryBus->handle(new EducationFunctions($educationId)),
-            'finalRealBalance' => $finalRealBalance,
+            'finalRealBalance' => $this->getFinalRealBalance($cashbookId),
         ]);
+    }
+
+    /**
+     * @param CategorySummary[] $categories
+     *
+     * @return array{
+     *     real: array{in: list<array{label: string, amount: float}>, out: list<array{label: string, amount: float}>, totalIncome: float, totalExpense: float},
+     *     virtual: array{in: list<array{label: string, amount: float}>, out: list<array{label: string, amount: float}>, totalIncome: float, totalExpense: float}
+     * }
+     */
+    private function normaliseReportCategories(array $categories): array
+    {
+        $realAmounts = [
+            Operation::INCOME => array_fill_keys(CategoryCatalog::reportOrder(Operation::INCOME()), 0.0),
+            Operation::EXPENSE => array_fill_keys(CategoryCatalog::reportOrder(Operation::EXPENSE()), 0.0),
+        ];
+        $result = [
+            self::CATEGORY_REAL => [
+                Operation::INCOME => [],
+                Operation::EXPENSE => [],
+                'totalIncome' => 0.0,
+                'totalExpense' => 0.0,
+            ],
+            self::CATEGORY_VIRTUAL => [
+                Operation::INCOME => [],
+                Operation::EXPENSE => [],
+                'totalIncome' => 0.0,
+                'totalExpense' => 0.0,
+            ],
+        ];
+
+        foreach ($categories as $category) {
+            if (! $category instanceof CategorySummary) {
+                throw new UnexpectedValueException('Expected categories summary query to return category summaries.');
+            }
+
+            $amount = MoneyFactory::toFloat($category->getTotal());
+
+            if ($category->isVirtual()) {
+                if ($category->isIncome()) {
+                    $result[self::CATEGORY_VIRTUAL]['totalIncome'] += $amount;
+                } else {
+                    $result[self::CATEGORY_VIRTUAL]['totalExpense'] += $amount;
+                }
+                if ($amount === 0.0) {
+                    continue;
+                }
+
+                $code = CategoryCatalog::codeByDefinition($category->getId(), $category->getName(), $category->getOperationType());
+                $row = [
+                    'label' => $code === null ? $category->getName() : CategoryCatalog::label($code),
+                    'amount' => $amount,
+                ];
+                if ($category->isIncome()) {
+                    $result[self::CATEGORY_VIRTUAL][Operation::INCOME][] = $row;
+                } else {
+                    $result[self::CATEGORY_VIRTUAL][Operation::EXPENSE][] = $row;
+                }
+
+                continue;
+            }
+
+            $operation = $category->isIncome() ? Operation::INCOME : Operation::EXPENSE;
+            if ($category->isIncome()) {
+                $result[self::CATEGORY_REAL]['totalIncome'] += $amount;
+            } else {
+                $result[self::CATEGORY_REAL]['totalExpense'] += $amount;
+            }
+            $code = CategoryCatalog::codeByDefinition($category->getId(), $category->getName(), $category->getOperationType());
+            if ($code === null || ! in_array($code, CategoryCatalog::reportOrder($category->getOperationType()), true)) {
+                $code = $category->isIncome() ? CategoryCatalog::INCOME_OTHER : CategoryCatalog::EXPENSE_OTHER;
+            }
+            $realAmounts[$operation][$code] += $amount;
+        }
+
+        foreach (CategoryCatalog::reportOrder(Operation::INCOME()) as $code) {
+            $result[self::CATEGORY_REAL][Operation::INCOME][] = [
+                'label' => CategoryCatalog::label($code),
+                'amount' => $realAmounts[Operation::INCOME][$code],
+            ];
+        }
+        foreach (CategoryCatalog::reportOrder(Operation::EXPENSE()) as $code) {
+            $result[self::CATEGORY_REAL][Operation::EXPENSE][] = [
+                'label' => CategoryCatalog::label($code),
+                'amount' => $realAmounts[Operation::EXPENSE][$code],
+            ];
+        }
+
+        return $result;
+    }
+
+    private function getFinalRealBalance(CashbookId $cashbookId): float
+    {
+        $balance = $this->queryBus->handle(new FinalRealBalanceQuery($cashbookId));
+        if (! $balance instanceof Money) {
+            throw new UnexpectedValueException('Expected final real balance to be money.');
+        }
+
+        return MoneyFactory::toFloat($balance);
     }
 
     public function getInvoice(Invoice $invoice, ?string $stampImageSrc = null, ?string $logoImageSrc = null): string

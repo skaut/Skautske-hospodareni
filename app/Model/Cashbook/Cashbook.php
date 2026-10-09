@@ -242,11 +242,13 @@ class Cashbook extends Aggregate
     }
 
     /**
-     * @param int[] $chitIds
+     * @param int[]            $chitIds
+     * @param ICategory[]|null $sourceCategories
+     * @param ICategory[]|null $targetCategories
      *
      * @throws ChitNotFound
      */
-    public function copyChitsFrom(array $chitIds, Cashbook $sourceCashbook): void
+    public function copyChitsFrom(array $chitIds, Cashbook $sourceCashbook, ?array $sourceCategories = null, ?array $targetCategories = null): void
     {
         $chits = array_map(
             function (int $chitId) use ($sourceCashbook): Chit {
@@ -259,9 +261,11 @@ class Cashbook extends Aggregate
             if (! $chit instanceof Chit) {
                 throw new LogicException('Assertion failed.');
             }
-            $newChit = $this->type->equals($sourceCashbook->type) && ! $this->type->equalsValue(CashbookType::CAMP)
-                ? $chit->copyToCashbook($this)
-                : $chit->copyToCashbookWithUndefinedCategory($this);
+            $newChit = $sourceCategories !== null && $targetCategories !== null
+                ? $chit->copyToCashbookWithCompatibleCategories($this, $sourceCategories, $targetCategories)
+                : ($this->type->equals($sourceCashbook->type) && ! $this->type->equalsValue(CashbookType::CAMP)
+                    ? $chit->copyToCashbook($this)
+                    : $chit->copyToCashbookWithUndefinedCategory($this));
 
             $this->chits->add($newChit);
 
