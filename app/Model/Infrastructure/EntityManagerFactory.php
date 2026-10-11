@@ -106,7 +106,6 @@ final class EntityManagerFactory
 
         // Naming, DQL
         $configuration->setNamingStrategy(new UnderscoreNamingStrategy(CASE_LOWER, true));
-        // $configuration->addCustomStringFunction('field', Field::class);
         $configuration->addCustomStringFunction('field', Dql\FieldFunction::class);
 
         // 2nd level cache

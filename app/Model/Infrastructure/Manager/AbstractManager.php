@@ -36,7 +36,6 @@ use function max;
 abstract class AbstractManager
 {
     protected EntityManagerInterface $em;
-    // private ManagerRegistry $managerRegistry;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
@@ -45,13 +44,6 @@ abstract class AbstractManager
 
     public function setManagerRegistry(EntityManagerInterface $entityManager): void
     {
-        // $this->managerRegistry = $managerRegistry;
-        // $em = $managerRegistry->getManagerForClass($this->getEntityClass());
-
-        //        if (! $em instanceof EntityManagerInterface) {
-        //            throw new LogicException('Could not find an entity manager for class '.static::class);
-        //        }
-
         $this->em = $entityManager;
     }
 
