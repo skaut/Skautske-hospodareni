@@ -45,6 +45,5 @@ SQL;
         $stmt = $this->db->executeQuery($sql, $params, $types);
 
         return $stmt->fetchAllKeyValue();
-        // return array_map('floatval', $stmt->fetchAllAssociative());
     }
 }
