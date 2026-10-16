@@ -41,6 +41,21 @@ final class SkautisRoleTest extends Unit
         $this->assertFalse($role->isTroop());
     }
 
+    public function testAccountantOfOwnUnitOnly(): void
+    {
+        $role = new SkautisRole('hospodarZvlastniJednotka', '', 123, '');
+
+        $this->assertTrue($role->isAccountantOf(123));
+        $this->assertFalse($role->isAccountantOf(456));
+    }
+
+    public function testNonAccountantIsNotAccountantOfUnit(): void
+    {
+        $role = new SkautisRole('vedouciStredisko', '', 123, '');
+
+        $this->assertFalse($role->isAccountantOf(123));
+    }
+
     public function testTroopOfficer(): void
     {
         $role = new SkautisRole('cinovnikOddil', '', 123, '');
