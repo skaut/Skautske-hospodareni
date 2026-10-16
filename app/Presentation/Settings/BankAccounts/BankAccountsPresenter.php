@@ -167,6 +167,15 @@ final class BankAccountsPresenter extends SettingsBasePresenter
         $this->redirect('detail', ['id' => $accountId, 'unitId' => $this->getUnitId(), 'transactionView' => $transactionView]);
     }
 
+    public function actionNew(): void
+    {
+        if ($this->canEdit()) {
+            return;
+        }
+
+        $this->noAccess();
+    }
+
     public function actionEdit(int $id): void
     {
         $this->assertCanEditBankAccount($id);
@@ -386,7 +395,15 @@ final class BankAccountsPresenter extends SettingsBasePresenter
 
     private function canEdit(?int $unitId = null): bool
     {
-        return $this->authorizator->isAllowed(UnitResource::EDIT, $unitId ?? $this->getUnitId());
+        $unitId ??= $this->getUnitId();
+
+        if ($this->authorizator->isAllowed(UnitResource::EDIT, $unitId)) {
+            return true;
+        }
+
+        // Bank accounts of non-OUs (e.g. troops) belong to the parent OU
+        return $this->queryBus->handle(new ActiveSkautisRoleQuery())->isAccountantOf($unitId)
+            && $this->unitService->getOfficialUnitId($unitId) === $unitId;
     }
 
     /**
