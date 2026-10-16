@@ -119,20 +119,52 @@ final class PdfOutputsGenerationTest extends IntegrationTest
 
     public function testTravelCommand(): void
     {
+        $transportType = new class {
+            public function getLabel(): string
+            {
+                return 'auto vlastní';
+            }
+        };
+        $outbound = (object) [
+            'details' => (object) [
+                'date' => new ChronosDate('2026-03-15'),
+                'startPlace' => 'Praha',
+                'endPlace' => 'Kašperské Hory',
+                'transportType' => $transportType,
+            ],
+            'distance' => 85.0,
+            'price' => 547.95,
+        ];
+        $return = (object) [
+            'details' => (object) [
+                'date' => new ChronosDate('2026-03-16'),
+                'startPlace' => 'Kašperské Hory',
+                'endPlace' => 'Praha',
+                'transportType' => $transportType,
+            ],
+            'distance' => 85.0,
+            'price' => 547.95,
+        ];
+
         $this->assertGeneratesPdf(self::TravelDir.'/Command/ex.command.latte', [
             'baseUrl' => '',
             'command' => (object) [
-                'passenger' => (object) ['name' => 'Jan Novák', 'address' => 'Dlouhá 12, Brno', 'contact' => '+420 123 456 789'],
+                'passenger' => (object) ['name' => 'Karel Řidič', 'address' => 'Hlavní 123, Praha', 'contact' => 'karel@example.com'],
                 'unit' => '1. oddíl Kopřivnice',
-                'purpose' => 'Táborová porada',
-                'place' => 'Louňovice',
-                'fellowPassengers' => 'Petr Svoboda',
+                'purpose' => 'Výprava na Šumavu',
+                'place' => 'Kašperské Hory',
+                'fellowPassengers' => '',
+                'fuelPrice' => 36.10,
+                'fuelPricePerKm' => 2.35,
+                'amortizationPerKm' => 4.10,
+                'pricePerKm' => 6.45,
+                'total' => 1095.00,
             ],
-            'types' => ['auto', 'vlak'],
-            'vehicle' => null,
-            'travels' => [],
-            'start' => null,
-            'end' => null,
+            'types' => ['auto vlastní'],
+            'vehicle' => (object) ['consumption' => '4,10', 'label' => 'Škoda Octavia (1AB 2345)'],
+            'travels' => [$outbound, $return],
+            'start' => $outbound,
+            'end' => $return,
         ]);
     }
 

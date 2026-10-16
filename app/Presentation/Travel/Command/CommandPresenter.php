@@ -128,7 +128,7 @@ final class CommandPresenter extends \App\BasePresenter
                     'command' => $command,
                     'travels' => $travels,
                     'types' => array_map(fn (TransportType $t) => $t->getLabel(), $command->getTransportTypes()),
-                    'vehicle' => $vehicleId !== null ? $this->travelService->findVehicle($vehicleId) : null,
+                    'vehicle' => $vehicleId !== null ? $this->travelService->getVehicleDTO($vehicleId) : null,
                     'start' => $travels[0] ?? null,
                     'end' => array_slice($travels, -1)[0] ?? null,
                 ],

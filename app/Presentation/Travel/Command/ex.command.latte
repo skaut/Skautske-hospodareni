@@ -1,17 +1,46 @@
 <style>
-    body { font-family: Tahoma, 'Lucida Grande CE', lucida, sans-serif; font-size: 13px;line-height: 1.5em;}
-    table.bigTable tr td { padding: 5px 2px 2px 5px}
-    .box45 { width: 45%;font-size: 11px;float:left; }
-    .box24 { width: 24%;font-size: 11px;float:left; }
-    .c { text-align: center;}
-    table.smallTable tr td { width: 20%;padding: 0;}
-    table.travels { width: 100%; }
-    table.travels tr td, table.travels tr th { text-align: center;}
-    table.travels tr th { width: 12.5%;}
-    table.bordered { border: 1px solid #000000;border-collapse: collapse;}
-    table.bordered tr, table.bordered tr td, table.bordered tr th { border: 1px solid #000000;}
-    .sekce { border-bottom: 2px solid #000000;padding: 5px 0 0 5px;}
-    .fl { float: left;}
+    body {
+        font-family: Arial, 'Liberation Sans', sans-serif;
+        font-size: 13px;
+        line-height: 1.5em;
+        margin: 0;
+    }
+
+    table { border-spacing: 0; }
+    table.bigTable tr td { padding: 5px 2px 2px 5px; }
+    .box45 { float: left; width: 45%; font-size: 11px; }
+    .box24 { float: left; width: 24%; font-size: 11px; }
+    .c { text-align: center; }
+    table.smallTable tr td { width: 20%; padding: 0; }
+    table.travels { width: 100%; table-layout: fixed; }
+    table.travels tr td, table.travels tr th { text-align: center; }
+    table.travels tr th {
+        width: 12.5%;
+        font-size: 13px;
+        line-height: 1.2em;
+        white-space: nowrap;
+    }
+    table.bordered {
+        border: 1px solid #000000;
+        border-collapse: collapse;
+    }
+    table.bordered tr td, table.bordered tr th { border: 1px solid #000000; }
+    .sekce { border-bottom: 2px solid #000000; padding: 5px 0 0 5px; }
+    .sekce::after { clear: both; content: ''; display: block; }
+    .fl { float: left; }
+    .document-title {
+        padding: 5px 0 10px;
+        font-size: 23px;
+        font-weight: 700;
+        line-height: 1em;
+        text-align: center;
+    }
+    .section-title {
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 1.5em;
+        text-align: center;
+    }
 </style>
       
 <body>
@@ -22,7 +51,7 @@
                 <img src="{$baseUrl}/images/layout/lilie.png" style="" />
             </div>
             <div style="float: left;width: 390px;height: 76px;">
-                <div style="text-align: center;font: 23px bold;padding: 5px 0 10px;">Cestovní příkaz</div>
+                <div class="document-title">Cestovní příkaz</div>
                 <b>1.</b> Příjmení, jméno: <span style="font-size: 15px;font-weight: bold;">{$command->passenger->name}</span><br />
                 <b>2.</b> Bydliště: <b>{$command->passenger->address}</b><br />
             </div>
@@ -56,7 +85,7 @@
             <div class="box45 c" style="margin-top: 8px;">.................................................................................................<br />Datum a podpis pracovníka oprávněného k povolení cesty</div>
         </div>
         <div class="sekce"><!--    SEKCE 4    -->
-            <div style="font: 16px bold; text-align: center;">Vyúčtování pracovní cesty</div>
+            <div class="section-title">Vyúčtování pracovní cesty</div>
             <div style="width: 300px;font-size: 11px;float:left;">
                 <b>7.</b> Zpráva o výsledku pracovní cesty byla podána dne<br />
                 Se způsobem provedení souhlasí:
@@ -96,7 +125,7 @@
         </div>
         <div class="sekce" style=" padding: 0 auto 0 0;"><!--    SEKCE 6    -->
                     <div style="font-size: 0.9em;padding-bottom: 4px;">
-                        <div style="font: 16px bold; text-align: center;">Vyúčtování pracovní cesty</div>
+                        <div class="section-title">Vyúčtování pracovní cesty</div>
                         {if $vehicle !== NULL}
                             <div class="fl" style="width: 130px; padding-left: 5px;">Cena paliva: <b>{$command->fuelPrice|price}</b> Kč/l</div>
                             <div class="fl" style="width: 175px;">Spotřeba dle t.p.: <b>{$vehicle->consumption}</b> l/100km</div>
