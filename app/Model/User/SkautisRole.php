@@ -94,6 +94,11 @@ class SkautisRole
         return Strings::startsWith($this->key, self::ACCOUNTANT_PREFIX);
     }
 
+    public function isAccountantOf(int $unitId): bool
+    {
+        return $this->isAccountant() && $this->unitId === $unitId;
+    }
+
     public function isOfficer(): bool
     {
         return Strings::startsWith($this->key, self::OFFICER_PREFIX);
