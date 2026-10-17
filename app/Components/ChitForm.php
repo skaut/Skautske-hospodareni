@@ -17,10 +17,10 @@ use App\Model\Cashbook\Cashbook\ChitNumber;
 use App\Model\Cashbook\Cashbook\PaymentMethod;
 use App\Model\Cashbook\Cashbook\Recipient;
 use App\Model\Cashbook\CashbookNotFound;
-use App\Model\Cashbook\CategoryCatalog;
 use App\Model\Cashbook\ChitLocked;
 use App\Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use App\Model\Cashbook\Commands\Cashbook\UpdateChit;
+use App\Model\Cashbook\ICategory;
 use App\Model\Cashbook\NegativeCampCategoryTotal;
 use App\Model\Cashbook\Operation;
 use App\Model\Cashbook\ReadModel\Queries\CashbookQuery;
@@ -168,7 +168,7 @@ final class ChitForm extends BaseControl
         }
 
         $this['form']->setDefaults(['items' => $items]);
-        $this->addLegacyCategoryOptions($chit);
+        $this->addStoredCategoryOptions($chit);
 
         $this->redrawControl();
     }
@@ -427,7 +427,7 @@ final class ChitForm extends BaseControl
         return $this->queryBus->handle(new CategoryPairsQuery($this->cashbookId, $operation));
     }
 
-    private function addLegacyCategoryOptions(Chit $chit): void
+    private function addStoredCategoryOptions(Chit $chit): void
     {
         $categories = $this->queryBus->handle(new CategoryListQuery($this->cashbookId));
         $form = $this['form'];
@@ -443,7 +443,7 @@ final class ChitForm extends BaseControl
         foreach ($chit->getItems() as $index => $item) {
             $categoryId = $item->getCategory()->getId();
             $categoryControlName = $item->getCategory()->isIncome() ? 'incomeCategories' : 'expenseCategories';
-            $categoryControl = $containers[$index][$categoryControlName];
+            $categoryControl = $containers[$index][$categoryControlName] ?? null;
             if (! $categoryControl instanceof SelectBox) {
                 throw new LogicException('Assertion failed.');
             }
@@ -457,7 +457,7 @@ final class ChitForm extends BaseControl
                 throw new LogicException('Category of edited chit not found.');
             }
 
-            $label = CategoryCatalog::isUndefinedId($categoryId)
+            $label = $categoryId === ICategory::UNDEFINED_EXPENSE_ID || $categoryId === ICategory::UNDEFINED_INCOME_ID
                 ? 'Historická nezařazená kategorie'
                 : 'Historická kategorie: '.$category->getName();
             $categoryControl->setItems($categoryControl->getItems() + [$categoryId => $label]);
