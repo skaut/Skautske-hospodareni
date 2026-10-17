@@ -10,13 +10,13 @@
                     <i class="fi fi-rr-arrow-left" aria-hidden="true"></i>
                     Zpět na řadu
                 </a>
-                <a n:href="downloadPdf!, id => $invoice->getId()"
-                   class="btn btn-primary btn-sm"
-                   target="_blank"
-                   rel="noopener noreferrer">
-                    <i class="fi fi-rr-file-pdf" aria-hidden="true"></i>
-                    PDF
-                </a>
+                {include '../../../Components/templates/FileActionButton.latte',
+                    label => 'Stáhnout PDF',
+                    downloadUrl => $presenter->link('downloadPdf!', [id => $invoice->getId(), download => true]),
+                    openUrl => $presenter->link('downloadPdf!', [id => $invoice->getId()]),
+                    variant => 'primary',
+                    dataTest => 'invoice-pdf',
+                }
                 <a n:if="$isEditable && $invoice->canBeEdited()"
                    n:href=":Payments:InvoiceList:edit, id => $invoice->getId(), unitId => $unitId"
                    class="btn btn-outline-secondary btn-sm">

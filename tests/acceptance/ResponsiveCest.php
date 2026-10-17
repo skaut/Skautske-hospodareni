@@ -51,7 +51,7 @@ class ResponsiveCest extends BaseAcceptanceCest
 
         $I->wantTo('keep phone layouts free of horizontal overflow and tiny targets');
 
-        $I->resizeWindow(375, 900);
+        $I->resizeWindow(AcceptanceTester::PHONE_WIDTH, AcceptanceTester::PHONE_HEIGHT);
 
         foreach (self::PAGES as $page => $marker) {
             $I->amOnPage($page);
@@ -84,22 +84,19 @@ document.querySelectorAll(selector).forEach(el => {
     }
 });
 
-return {
-    viewport: window.innerWidth,
-    overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-    small: small,
-};
+return small;
 JS);
 
+            $overflow = $I->grabHorizontalOverflowIssues();
             Assert::assertSame(
-                0,
-                $measured['overflow'],
-                sprintf('Vodorovné přetečení na %s (viewport %d px)', $page, $measured['viewport']),
+                [],
+                $overflow,
+                sprintf('Vodorovné přetečení na %s: %s', $page, implode('; ', $overflow)),
             );
             Assert::assertSame(
                 [],
-                $measured['small'],
-                sprintf('Malé dotykové cíle na %s: %s', $page, implode(', ', $measured['small'])),
+                $measured,
+                sprintf('Malé dotykové cíle na %s: %s', $page, implode(', ', $measured)),
             );
         }
     }

@@ -111,11 +111,14 @@
        class="btn btn-sm btn-light"
        data-test="invoice-edit-{$item->getId()}"
        title="Upravit fakturu"><i class="fi fi-rr-edit" aria-hidden="true"></i></a>
-    <a href="{$control->getPresenter()->link('downloadPdf!', ['id' => $item->getId()])}"
-       class="btn btn-sm btn-light"
-       target="_blank"
-       rel="noopener noreferrer"
-       title="Stáhnout PDF"><i class="fi fi-rr-file-pdf" aria-hidden="true"></i></a>
+    {include '../../../Components/templates/FileActionButton.latte',
+        label => 'Stáhnout PDF',
+        downloadUrl => $control->getPresenter()->link('downloadPdf!', ['id' => $item->getId(), 'download' => true]),
+        openUrl => $control->getPresenter()->link('downloadPdf!', ['id' => $item->getId()]),
+        variant => 'light',
+        compact => true,
+        dataTest => 'invoice-pdf-' . $item->getId(),
+    }
 
     {if ($enableInvoiceDuplicateDialog ?? false)}
         <a href="{$control->getPresenter()->link('duplicateInvoiceDialog:open!', ['invoiceId' => $item->getId()])}"

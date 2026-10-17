@@ -150,7 +150,7 @@ final class EventPresenter extends BasePresenter
         $this->redirect('this', ['aid' => $this->aid]);
     }
 
-    public function actionPrintAll(int $aid): void
+    public function actionPrintAll(int $aid, bool $download = false): void
     {
         $cashbookId = $this->getCashbookId($aid);
 
@@ -159,11 +159,10 @@ final class EventPresenter extends BasePresenter
         $template .= $this->exportService->getCashbook($cashbookId, PaymentMethod::CASH()).$this->exportService->getNewPage();
         $template .= $this->queryBus->handle(ExportChits::all($cashbookId));
 
-        $this->pdf->render($template, 'all.pdf');
-        $this->terminate();
+        $this->sendResponse($this->pdf->createResponse($template, 'all.pdf', false, $download));
     }
 
-    public function renderReport(int $aid): void
+    public function renderReport(int $aid, bool $download = false): void
     {
         if (! $this->authorizator->isAllowed(Event::ACCESS_DETAIL, $aid)) {
             $this->flashMessage('Nemáte právo přistupovat k akci', 'warning');
@@ -172,8 +171,7 @@ final class EventPresenter extends BasePresenter
 
         $template = $this->exportService->getEventReport($aid);
 
-        $this->pdf->render($template, 'report.pdf');
-        $this->terminate();
+        $this->sendResponse($this->pdf->createResponse($template, 'report.pdf', false, $download));
     }
 
     protected function createComponentFormEdit(): Form

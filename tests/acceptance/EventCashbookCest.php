@@ -9,6 +9,7 @@ use App\Model\Cashbook\ICategory;
 use App\Model\Cashbook\Operation;
 use Cake\Chronos\ChronosDate;
 use Facebook\WebDriver\WebDriverKeys;
+use PHPUnit\Framework\Assert;
 use RuntimeException;
 use Throwable;
 
@@ -54,8 +55,10 @@ class EventCashbookCest extends BaseAcceptanceCest
     {
         $this->I->click('Akce');
         $this->createEvent();
+        $this->checkEventFileActions();
         $this->goToCashbookPage();
         $this->createExpenseChit();
+        $this->checkChitFileActions();
         $this->editExpenseChit();
         $this->addIncomeChit();
         $this->createTwoLineExpenseChit();
@@ -84,6 +87,52 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->eventCreated = true;
         $this->I->waitForElement('[data-test="event-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $this->I->waitForText('Základní údaje', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, 'nav[aria-label="Navigace akce"]');
+    }
+
+    private function checkEventFileActions(): void
+    {
+        $I = $this->I;
+        $I->amGoingTo('check event report and participant exports');
+
+        $I->seePdfFileAction('event-report');
+        $I->seePdfFileAction('event-print-all');
+        $I->seeNoHorizontalOverflowOnPhone('detail akce', '[data-test="event-report-toggle"]');
+        $I->openPdfFileActionInNewTab('event-report', '/report');
+
+        $I->click('Seznam účastníků');
+        $I->seePdfFileAction('participants-export-pdf');
+        $I->seeDownloadOnlyFileAction('participants-export-excel');
+        $I->seeNoHorizontalOverflowOnPhone('seznam účastníků');
+    }
+
+    private function checkChitFileActions(): void
+    {
+        $I = $this->I;
+        $I->amGoingTo('check chit and cashbook downloads');
+
+        $chitId = (string) $I->grabValueFrom('input[name="chits-cash[]"]');
+        $I->seePdfFileAction('chit-pdf-'.$chitId);
+        $I->seePdfFileAction('cashbook-cash-pdf');
+        $I->seeDownloadOnlyFileAction('cashbook-cash-excel');
+        $I->seeDownloadOnlyFileAction('cashbook-cash-excel-categories');
+        $I->seeDownloadOnlyFileAction('cashbook-cash-scans');
+        $I->seeNoHorizontalOverflowOnPhone('evidence plateb – doklad', '[data-test="chit-pdf-'.$chitId.'-toggle"]');
+        $I->seeNoHorizontalOverflowOnPhone('evidence plateb – pokladní kniha', '[data-test="cashbook-cash-pdf-toggle"]');
+
+        // Hromadný tisk vybraných dokladů: stažení zůstává výchozí akcí, otevření běží v nové kartě.
+        $I->checkOption(sprintf('input[name="chits-cash[]"][value="%s"]', $chitId));
+        $I->seePdfFileAction('chits-mass-pdf-cash');
+        $I->seeNoHorizontalOverflowOnPhone('evidence plateb – vybrané doklady', '[data-test="chits-mass-pdf-cash-toggle"]');
+
+        $downloadUrl = $I->clickAndGrabAjaxRedirect('[data-test="chits-mass-pdf-cash"]');
+        Assert::assertStringContainsString('print-chits', $downloadUrl);
+        Assert::assertStringContainsString('download=1', $downloadUrl);
+        Assert::assertStringStartsWith('attachment;', $I->grabContentDisposition($downloadUrl));
+        $I->seeElement('[data-test="chits-mass-pdf-cash"]');
+
+        $openedUrl = $I->openPdfFileActionInNewTab('chits-mass-pdf-cash', 'print-chits');
+        Assert::assertStringNotContainsString('download=1', $openedUrl);
+        Assert::assertStringStartsWith('inline;', $I->grabContentDisposition($openedUrl));
     }
 
     private function goToCashbookPage(): void

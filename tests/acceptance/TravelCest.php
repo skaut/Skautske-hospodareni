@@ -128,6 +128,11 @@ class TravelCest extends BaseAcceptanceCest
         $I->click($name);
         $I->waitForText('Cestovní příkaz', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/cestaky/prikazy/');
+
+        // --- PDF: stažení je hlavní akce, otevření běží v nové kartě ---
+        $I->seePdfFileAction('command-pdf');
+        $I->seeNoHorizontalOverflowOnPhone('cestovní příkaz', '[data-test="command-pdf-toggle"]');
+        $I->openPdfFileActionInNewTab('command-pdf', '/print');
         $I->click('Smazat');
         try {
             $I->acceptPopup();
@@ -301,6 +306,19 @@ class TravelCest extends BaseAcceptanceCest
         $I->attachFile('#scan-upload-control', 'roadworthy-scan-2.png');
         $I->waitForJS('return document.querySelectorAll(\'[data-test="roadworthy-file"]\').length === 2;', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
+        // PDF sken lze i otevřít v nové kartě (vnořené menu v seznamu souborů), obrázek jen stáhnout.
+        $I->attachFile('#scan-upload-control', 'roadworthy-scan.pdf');
+        $I->waitForJS('return document.querySelectorAll(\'[data-test="roadworthy-file"]\').length === 3;', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeNoHorizontalOverflowOnPhone(
+            'technický průkaz',
+            '[data-test="roadworthy-menu-toggle"]',
+            '[data-test="roadworthy-file-roadworthy-scan-pdf-toggle"]',
+        );
+        $I->clickStable('[data-test="roadworthy-menu-toggle"]');
+        $I->seeDownloadOnlyFileAction('roadworthy-file-roadworthy-scan-1-png');
+        $I->seePdfFileAction('roadworthy-file-roadworthy-scan-pdf');
+        $I->openPdfFileActionInNewTab('roadworthy-file-roadworthy-scan-pdf', 'open=1');
+
         $this->navigateToVehicle($I);
         $this->deleteVehicle($I, $licensePlate);
     }
@@ -347,23 +365,20 @@ class TravelCest extends BaseAcceptanceCest
 
     protected function detailContract(AcceptanceTester $I, string $unitRepresentative): void
     {
+        $I->see('Otevřít v nové kartě', '[data-test="help-content"]');
+        $I->dontSee('tiskárny', '[data-test="help-content"]');
+        $I->seeNoHorizontalOverflowOnPhone('seznam smluv', '[data-test^="contract-pdf-"][data-test$="-toggle"]');
         $this->openLinkAndWaitForElementWithSkautisRetry(
             $I,
             sprintf('[data-test="%s"]', $unitRepresentative),
-            '[data-test="contract-print"]',
+            '[data-test="contract-pdf"]',
         );
         $I->see('Smlouva o proplácení cestovních náhrad');
 
-        // --- Vytisknout -> PDF ve stejném tabu ---
-        $I->waitForElementVisible('[data-test="contract-print"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $urlBefore = $I->grabFromCurrentUrl();
-        $I->clickStable('[data-test="contract-print"]');
-
-        $I->waitForJS('return window.location.href !== '.json_encode($urlBefore).';', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->seeInCurrentUrl('/print');
-
-        $I->moveBack();
-
+        // --- PDF: stažení je hlavní akce, otevření běží v nové kartě ---
+        $I->seePdfFileAction('contract-pdf');
+        $I->seeNoHorizontalOverflowOnPhone('detail smlouvy', '[data-test="contract-pdf-toggle"]');
+        $I->openPdfFileActionInNewTab('contract-pdf', '/print');
         $I->waitForText('Údaje smlouvy', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
     }
 

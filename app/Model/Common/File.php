@@ -33,6 +33,16 @@ final class File
         return $arr[array_key_last($arr)];
     }
 
+    public function getContentType(): string
+    {
+        return $this->path->getContentType();
+    }
+
+    public function isPdf(): bool
+    {
+        return $this->path->isPdf();
+    }
+
     public function getContents(): StreamInterface
     {
         return $this->stream;
