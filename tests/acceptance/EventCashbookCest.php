@@ -116,6 +116,7 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->scrollTo('h4[id="chitList-payment"]');
         $this->I->clickStable('.ui--editChit');
         $this->I->waitForElement('[name="pid"]:not([value=""])', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->I->see('Upravit doklad číslo : ---', '#chitFormHeader');
 
         $this->I->fillFieldStable('input[name="items[0][price]"]', '121');
         $this->I->scrollTo('input[name="send"]');
