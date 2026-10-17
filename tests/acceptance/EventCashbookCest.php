@@ -59,6 +59,7 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->createTwoLineExpenseChit();
         $this->removeChits();
         $this->checkRemoveSecondLineExpenseChit();
+        $this->editImportedParticipantIncomeChit();
         $this->cancelEvent();
     }
 
@@ -194,6 +195,61 @@ class EventCashbookCest extends BaseAcceptanceCest
     {
         $this->I->amGoingTo('cancel the event');
         $this->cleanupEvent($this->I);
+    }
+
+    private function editImportedParticipantIncomeChit(): void
+    {
+        $this->I->amGoingTo('edit imported participant income chit');
+
+        $this->I->click('Seznam účastníků');
+        $this->I->waitForElement('[data-test="event-participant-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->I->clickStable('a[href="#addParticipant"]');
+        $this->I->waitForElement('#addParticipant input[name="firstName"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        $this->I->fillFieldStable('#addParticipant input[name="firstName"]', 'Acceptance', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
+        $this->I->fillFieldStable('#addParticipant input[name="lastName"]', 'HPD participant', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
+        $this->I->fillFieldStable('#addParticipant input[name="street"]', 'Testovací 1', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
+        $this->I->fillFieldStable('#addParticipant input[name="city"]', 'Praha', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
+        $this->I->fillFieldStable('#addParticipant input[name="postcode"]', '11000', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
+        $this->I->checkOption('#addParticipant input[name="sex"][value="male"]');
+        $this->I->clickStable('#addParticipant input[name="send"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
+
+        $this->I->waitForText('HPD participant Acceptance', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '#participants-list');
+        $this->I->clickStable('#participants-list a[title="Upravit účastníka"]');
+        $this->I->waitForElement('input[name="payment"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->I->fillFieldStable('input[name="payment"]', '125', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
+        $this->I->clickStable('input[name="save"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
+        $this->I->waitForText('125', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '#participants-list');
+
+        $this->I->click('Evidence plateb');
+        $this->I->waitForElement('[data-test="event-cashbook-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->I->click('Načíst příjmy od účastníků');
+        $this->I->waitForText('účastnické příspěvky', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        $this->I->clickStable('//tr[.//td[contains(@title, "účastnické příspěvky")]]//a[contains(@class, "ui--editChit")]');
+        $this->I->waitForElement('[name="pid"]:not([value=""])', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->I->seeInField('input[name="items[0][purpose]"]', 'účastnické příspěvky');
+
+        $selectedCategory = $this->I->executeJs(
+            'return document.querySelector("select[name=\'items[0][incomeCategories]\']")?.value;',
+        );
+        if ($selectedCategory !== '11') {
+            throw new RuntimeException('Imported participant income chit does not retain the HPD category in the edit form.');
+        }
+
+        $updatedDate = new ChronosDate('tomorrow');
+        $this->I->fillFieldStable('input[name="date"]', $updatedDate->format('d.m. Y'));
+        $this->I->pressKey('body', [WebDriverKeys::ESCAPE]);
+        $this->I->checkOption('input[name="paymentMethod"][value="bank"]');
+        $this->I->clickStable('input[name="send"]');
+        $this->I->waitForDocumentReady();
+
+        $this->I->waitForJS(
+            'return [...document.querySelectorAll(".card")].some(card => '
+            .'card.querySelector("#chitList-payment")?.textContent.includes("Banka") '
+            .'&& card.textContent.includes("účastnické příspěvky"));',
+            AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
+        );
     }
 
     private function cleanupEvent(AcceptanceTester $I): void
