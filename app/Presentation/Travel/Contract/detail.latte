@@ -10,9 +10,13 @@
                     <i class="fi fi-rr-trash" aria-hidden="true"></i> Smazat
                 </a>
                 {var $justDriver = $contract->unitRepresentative === '' || $contract->since === NULL || $contract->until === NULL}
-                <a data-test="contract-print" n:href="print $contract->id" n:class="$justDriver ? disabled, btn, btn-sm, btn-outline-secondary">
-                    <i class="fi fi-rr-print" aria-hidden="true"></i> Vytisknout
-                </a>
+                {include '../../../Components/templates/FileActionButton.latte',
+                    label => 'Stáhnout PDF',
+                    downloadUrl => $presenter->link('print', [$contract->id, download => true]),
+                    openUrl => $presenter->link('print', [$contract->id]),
+                    disabled => $justDriver,
+                    dataTest => 'contract-pdf',
+                }
             </div>
         </div>
     </div>

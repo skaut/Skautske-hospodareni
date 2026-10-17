@@ -8,9 +8,13 @@ use Cake\Chronos\ChronosDate;
 
 use function basename;
 use function count;
+use function pathinfo;
 use function preg_match;
 use function sprintf;
+use function strtolower;
 use function uniqid;
+
+use const PATHINFO_EXTENSION;
 
 final class FilePath
 {
@@ -48,5 +52,20 @@ final class FilePath
         preg_match('/[0-9a-z]_(.*)/', basename($this->path), $matches);
 
         return count($matches) > 0 ? $matches[1] : basename($this->path);
+    }
+
+    /**
+     * MIME typ podle přípony. Obsah souboru se proti povoleným typům ověřuje už při uložení skenu.
+     */
+    public function getContentType(): string
+    {
+        $extension = strtolower(pathinfo($this->path, PATHINFO_EXTENSION));
+
+        return IScanStorage::ALLOWED_MIME_TYPES[$extension] ?? 'application/octet-stream';
+    }
+
+    public function isPdf(): bool
+    {
+        return $this->getContentType() === IScanStorage::ALLOWED_MIME_TYPES['pdf'];
     }
 }

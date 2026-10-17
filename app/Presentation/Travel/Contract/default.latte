@@ -31,7 +31,13 @@
                         <td>{$c->since?->toNative()|date:"j. n. Y"}</td>
                         <td>{$c->until?->toNative()|date:"j. n. Y"}</td>
                         <td class="text-end">
-                            <a n:href="print $c->id" class="btn btn-sm btn-outline-secondary" title="Vytisknout"><i class="fi fi-rr-print" aria-hidden="true"></i></a>
+                            {include '../../../Components/templates/FileActionButton.latte',
+                                label => 'Stáhnout PDF',
+                                downloadUrl => $presenter->link('print', [$c->id, download => true]),
+                                openUrl => $presenter->link('print', [$c->id]),
+                                compact => true,
+                                dataTest => 'contract-pdf-' . $c->id,
+                            }
                             <a n:href="detail $c->id" class="btn btn-sm btn-light" title="Detail" data-test="{$c->unitRepresentative}"><i class="fi fi-rr-search" aria-hidden="true"></i></a>
                         </td>
                     </tr>

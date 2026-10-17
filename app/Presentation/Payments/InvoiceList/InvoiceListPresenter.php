@@ -284,7 +284,7 @@ final class InvoiceListPresenter extends PaymentsBasePresenter
         }
     }
 
-    public function handleDownloadPdf(int $id): void
+    public function handleDownloadPdf(int $id, bool $download = false): void
     {
         $invoice = $this->invoiceRepository->findAccessibleByUnits($id, $this->getReadableUnitIds());
 
@@ -302,8 +302,7 @@ final class InvoiceListPresenter extends PaymentsBasePresenter
             return;
         }
 
-        $this->pdf->render($template, $invoice->getInvoiceNumber().'.pdf');
-        $this->terminate();
+        $this->sendResponse($this->pdf->createResponse($template, $invoice->getInvoiceNumber().'.pdf', false, $download));
     }
 
     public function handleStampImage(int $id): void

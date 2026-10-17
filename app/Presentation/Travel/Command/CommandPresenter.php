@@ -101,7 +101,7 @@ final class CommandPresenter extends \App\BasePresenter
         ]);
     }
 
-    public function actionPrint(int $id): void
+    public function actionPrint(int $id, bool $download = false): void
     {
         if (! $this->isCommandAccessible($id)) {
             $this->flashMessage('Neoprávněný přístup k záznamu!', 'danger');
@@ -121,7 +121,7 @@ final class CommandPresenter extends \App\BasePresenter
         }
         $template->getLatte()->addExtension(new AccountancyLatteExtension());
 
-        $this->pdf->render(
+        $this->sendResponse($this->pdf->createResponse(
             $template->renderToString(
                 __DIR__.'/ex.command.latte',
                 [
@@ -134,8 +134,9 @@ final class CommandPresenter extends \App\BasePresenter
                 ],
             ),
             'cestovni-prikaz.pdf',
-        );
-        $this->terminate();
+            false,
+            $download,
+        ));
     }
 
     public function handleCloseCommand(int $commandId): void
