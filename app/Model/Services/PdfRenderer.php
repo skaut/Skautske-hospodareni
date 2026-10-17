@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Model\Services;
 
+use App\Http\PdfResponse;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use RuntimeException;
@@ -11,7 +12,6 @@ use RuntimeException;
 use function base64_encode;
 use function file_exists;
 use function file_get_contents;
-use function header;
 use function is_file;
 use function is_string;
 use function ltrim;
@@ -60,18 +60,13 @@ class PdfRenderer
     }
 
     /**
-     * Renders PDF to output stream (inline in browser).
+     * Vyrenderuje PDF jako HTTP odpověď – ke stažení (`$download`) nebo k zobrazení v prohlížeči.
      *
      * @param bool $landscape TRUE for landscape, FALSE for portrait mode
      */
-    public function render(string $template, string $filename, bool $landscape = false): void
+    public function createResponse(string $template, string $filename, bool $landscape = false, bool $download = false): PdfResponse
     {
-        $pdf = $this->renderToString($template, $landscape);
-
-        header('Content-Type: application/pdf');
-        header(sprintf('Content-Disposition: inline; filename="%s"', $filename));
-        header('Cache-Control: no-store, max-age=0');
-        echo $pdf;
+        return new PdfResponse($this->renderToString($template, $landscape), $filename, $download);
     }
 
     /**

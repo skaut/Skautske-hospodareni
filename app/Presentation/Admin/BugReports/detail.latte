@@ -39,15 +39,13 @@
                     <i class="fi fi-rr-envelope" aria-hidden="true"></i>
                     Odepsat
                 </a>
-                <a
-                    n:if="$report->hasScreenshot()"
-                    n:href="downloadScreenshot!, id => $report->getId()"
-                    class="btn btn-outline-secondary btn-sm"
-                    data-test="admin-bug-report-screenshot-download"
-                >
-                    <i class="fi fi-rr-download" aria-hidden="true"></i>
-                    Stáhnout screenshot
-                </a>
+                {if $report->hasScreenshot()}
+                    {include '../../../Components/templates/FileActionButton.latte',
+                        label => 'Stáhnout screenshot',
+                        downloadUrl => $presenter->link('downloadScreenshot!', [id => $report->getId()]),
+                        dataTest => 'admin-bug-report-screenshot-download',
+                    }
+                {/if}
                 <a
                     n:if="$report->hasGitHubIssue()"
                     href="{$report->getGitHubIssueUrl()}"

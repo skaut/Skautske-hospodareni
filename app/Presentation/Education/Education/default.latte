@@ -21,10 +21,14 @@
                 {if trim($location) === ''}<i class="text-body-secondary">Nevyplněno</i>{else}{$location}{/if}
             </div>
             <div class="page-heading-actions d-flex flex-wrap gap-2 align-items-center">
-                <a n:href="Education:report 'aid'=>$aid" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary" n:if="$canAccessReport">
-                    <i class="fi fi-rr-print" aria-hidden="true"></i>
-                    Záverečná zpráva
-                </a>
+                {if $canAccessReport}
+                    {include '../../../Components/templates/FileActionButton.latte',
+                        label => 'Stáhnout závěrečnou zprávu',
+                        downloadUrl => $presenter->link('Education:report', [aid => $aid, download => true]),
+                        openUrl => $presenter->link('Education:report', [aid => $aid]),
+                        dataTest => 'education-report',
+                    }
+                {/if}
                 <a href="{$skautISUrl}Junak/Events/Education/Detail.aspx?ID={$event->getID()}" target="_blank" class="btn btn-sm btn-light">
                     <i class="fi fi-rr-edit" aria-hidden="true"></i>
                     Upravit ve SkautISu

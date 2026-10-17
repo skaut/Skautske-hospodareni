@@ -688,6 +688,10 @@ fieldset:disabled label {
   --tblr-btn-hover-color: var(--tblr-body-color);
   --tblr-btn-hover-bg: var(--tblr-bg-surface-tertiary);
   --tblr-btn-hover-border-color: var(--tblr-border-color);
+  // Otevřené menu (.show) a stisk: stejně jako hover, jinak Tabler kreslí bílou šipku na světle šedé.
+  --tblr-btn-active-color: var(--tblr-body-color);
+  --tblr-btn-active-bg: var(--tblr-bg-surface-tertiary);
+  --tblr-btn-active-border-color: var(--tblr-border-color);
 }
 
 .mass-add-form__actions {

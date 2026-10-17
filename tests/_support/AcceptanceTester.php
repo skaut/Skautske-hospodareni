@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use Codeception\Actor;
 use Facebook\WebDriver\Exception\WebDriverException;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Facebook\WebDriver\WebDriverExpectedCondition;
 use PHPUnit\Framework\Assert;
 
 final class SkautisWsdlPageException extends RuntimeException
@@ -52,6 +54,8 @@ class AcceptanceTester extends Actor
     private const LOGIN_TRIGGER_SELECTOR = '[data-test="login-link"], [data-test="homepage-login"]';
     private const CURRENT_ROLE_SELECTOR = '.ui--current-role';
     public const ELEMENT_LOAD_TIMEOUT = 30;
+    public const PHONE_WIDTH = 375;
+    public const PHONE_HEIGHT = 812;
     public const UNIT_LEADER_ROLE = 'Středisko: vedoucí/admin - 621.66';
     public const UNIT_ID = 27266;
 
@@ -359,6 +363,182 @@ class AcceptanceTester extends Actor
     public function disablePopups(): void
     {
         $this->executeJS('window.confirm = function(msg){return true;};');
+    }
+
+    /**
+     * Sdílené ovládání souboru (FileActionButton) u PDF: šipka u hlavní akce nabízí otevření v nové kartě.
+     * U odkazů ověří i odpověď serveru – hlavní akce PDF stáhne, otevření ho zobrazí v prohlížeči.
+     */
+    public function seePdfFileAction(string $dataTest): void
+    {
+        $download = sprintf('[data-test="%s"]', $dataTest);
+        $open = sprintf('[data-test="%s-open"]', $dataTest);
+
+        $this->waitForElementVisible($download, self::ELEMENT_LOAD_TIMEOUT);
+        $this->seeElement(sprintf('[data-test="%s-toggle"][data-bs-toggle="dropdown"]', $dataTest));
+
+        $downloadUrl = $this->grabAttributeFrom($download, 'href');
+        if ($downloadUrl === null) {
+            // Formulářová tlačítka (hromadný tisk) nebo nedostupný soubor – kontroluje se jen ovládání.
+            $this->seeElementInDOM($open.'[target="_blank"][rel="noopener noreferrer"], '.$open.'[formtarget="_blank"]');
+
+            return;
+        }
+
+        $this->seeElementInDOM($open.'[target="_blank"][rel="noopener noreferrer"]');
+        Assert::assertStringStartsWith('attachment;', $this->grabContentDisposition($downloadUrl), 'Hlavní akce má PDF stáhnout.');
+        Assert::assertStringStartsWith('inline;', $this->grabContentDisposition((string) $this->grabAttributeFrom($open, 'href')), 'Otevření má PDF zobrazit.');
+    }
+
+    /** Excel, ZIP a ostatní formáty nabízejí jen stažení, bez volby otevření. */
+    public function seeDownloadOnlyFileAction(string $dataTest): void
+    {
+        $this->waitForElementVisible(sprintf('[data-test="%s"]', $dataTest), self::ELEMENT_LOAD_TIMEOUT);
+        $this->dontSeeElementInDOM(sprintf('[data-test="%s-toggle"]', $dataTest));
+        $this->dontSeeElementInDOM(sprintf('[data-test="%s-open"]', $dataTest));
+    }
+
+    /**
+     * Otevře PDF přes šipku sdíleného ovládání, počká na novou kartu s očekávanou adresou, zavře ji
+     * a vrátí její adresu. Původní stránka zůstane, kde byla.
+     */
+    public function openPdfFileActionInNewTab(string $dataTest, string $expectedUrlPart): string
+    {
+        $urlBefore = $this->grabFromCurrentUrl();
+        /** @var list<string> $handlesBefore */
+        $handlesBefore = $this->executeInSelenium(static fn (RemoteWebDriver $webDriver): array => $webDriver->getWindowHandles());
+
+        $this->clickStable(sprintf('[data-test="%s-toggle"]', $dataTest));
+        $this->clickStable(sprintf('[data-test="%s-open"]', $dataTest));
+
+        $openedUrl = (string) $this->executeInSelenium(static function (RemoteWebDriver $webDriver) use ($handlesBefore, $expectedUrlPart): string {
+            $originalHandle = $webDriver->getWindowHandle();
+            $webDriver->wait(self::ELEMENT_LOAD_TIMEOUT)->until(
+                static fn (RemoteWebDriver $driver): bool => count($driver->getWindowHandles()) > count($handlesBefore),
+            );
+            $newHandles = array_values(array_diff($webDriver->getWindowHandles(), $handlesBefore));
+            $webDriver->switchTo()->window($newHandles[0]);
+            $webDriver->wait(self::ELEMENT_LOAD_TIMEOUT)->until(WebDriverExpectedCondition::urlContains($expectedUrlPart));
+            $openedUrl = $webDriver->getCurrentURL();
+            $webDriver->close();
+            $webDriver->switchTo()->window($originalHandle);
+
+            return $openedUrl;
+        });
+
+        $this->seeInCurrentUrl($urlBefore);
+
+        return $openedUrl;
+    }
+
+    /**
+     * Klikne na prvek, který odesílá ajaxový požadavek končící přesměrováním (naja `forceRedirect`),
+     * a vrátí cílovou adresu přesměrování z odpovědi.
+     */
+    public function clickAndGrabAjaxRedirect(string $locator): string
+    {
+        $this->executeJS(
+            'window.__ajaxRedirects = [];'
+            .' if (window.__ajaxRedirectSpy !== true) {'
+            .'   window.__ajaxRedirectSpy = true;'
+            .'   const originalFetch = window.fetch;'
+            .'   window.fetch = (...args) => originalFetch(...args).then(response => {'
+            .'     response.clone().json().then(payload => { if (payload.redirect) window.__ajaxRedirects.push(payload.redirect); }).catch(() => {});'
+            .'     return response;'
+            .'   });'
+            .' }',
+        );
+        $this->clickStable($locator);
+        $this->waitForJS('return window.__ajaxRedirects.length > 0;', self::ELEMENT_LOAD_TIMEOUT);
+
+        return (string) $this->executeJS('return window.__ajaxRedirects[0];');
+    }
+
+    /**
+     * Na šířce telefonu stránka nesmí vodorovně přetékat a otevřená menu musí ležet celá ve viewportu.
+     * Lokátory rozbalovacích tlačítek se před měřením postupně otevřou (např. menu a v něm vnořená šipka)
+     * a po měření zase zavřou; velikost okna se vrátí na původní.
+     */
+    public function seeNoHorizontalOverflowOnPhone(string $context, string ...$dropdownToggles): void
+    {
+        $size = $this->executeInSelenium(static fn (RemoteWebDriver $webDriver) => $webDriver->manage()->window()->getSize());
+        $this->resizeWindow(self::PHONE_WIDTH, self::PHONE_HEIGHT);
+
+        foreach ($dropdownToggles as $toggle) {
+            $this->clickStable($toggle);
+            $this->waitForElement($toggle.'[aria-expanded="true"]', self::ELEMENT_LOAD_TIMEOUT);
+        }
+
+        $issues = $this->grabHorizontalOverflowIssues();
+
+        foreach (array_reverse($dropdownToggles) as $toggle) {
+            $this->clickStable($toggle);
+        }
+        $this->resizeWindow($size->getWidth(), $size->getHeight());
+
+        Assert::assertSame([], $issues, sprintf('Rozložení na %d px – %s: %s', self::PHONE_WIDTH, $context, implode('; ', $issues)));
+    }
+
+    /**
+     * Vodorovné přetečení stránky (obsah `.table-responsive` se posouvá uvnitř a nepočítá se)
+     * a otevřená menu, která leží mimo viewport.
+     *
+     * @return list<string>
+     */
+    public function grabHorizontalOverflowIssues(): array
+    {
+        /** @var list<string> $issues */
+        $issues = $this->executeJS(<<<'JS'
+const width = document.documentElement.clientWidth;
+const describe = el => el.tagName.toLowerCase()
+    + (el.dataset.test ? '[data-test=' + el.dataset.test + ']' : '')
+    + (el.className && typeof el.className === 'string' ? '.' + el.className.trim().split(/\s+/).slice(0, 3).join('.') : '');
+const issues = [];
+const overflow = document.documentElement.scrollWidth - width;
+
+if (overflow > 0) {
+    issues.push('stránka přetéká o ' + overflow + ' px');
+    const offenders = [];
+    document.querySelectorAll('body *').forEach(el => {
+        if (el.parentElement && el.parentElement.closest('.table-responsive')) {
+            return; // obsah tabulky se posouvá uvnitř obalu
+        }
+        const style = getComputedStyle(el);
+        const rect = el.getBoundingClientRect();
+        const right = rect.right + Math.max(0, parseFloat(style.marginRight) || 0);
+        if (style.position !== 'fixed' && rect.width > 0 && right > width + 0.5) {
+            offenders.push({ el, right });
+        }
+    });
+    // Nahlásí se nejhlubší přetékající prvky, ne celý řetěz jejich předků.
+    offenders
+        .filter(({ el }) => ! offenders.some(other => other.el !== el && el.contains(other.el)))
+        .forEach(({ el, right }) => issues.push(describe(el) + ' končí na ' + Math.round(right) + ' px'));
+}
+
+document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+    const rect = menu.getBoundingClientRect();
+    if (rect.left < -0.5 || rect.right > width + 0.5) {
+        issues.push('menu ' + describe(menu) + ' leží mimo viewport (' + Math.round(rect.left) + '–' + Math.round(rect.right) + ' px z ' + width + ')');
+    }
+});
+
+return issues.slice(0, 10);
+JS);
+
+        return $issues;
+    }
+
+    /** Content-Disposition odpovědi na adresu v rámci přihlášené relace. */
+    public function grabContentDisposition(string $url): string
+    {
+        return (string) $this->executeAsyncJS(
+            'const done = arguments[arguments.length - 1];'
+            .' fetch(arguments[0], { credentials: "same-origin" })'
+            .'.then(response => done(response.headers.get("content-disposition") ?? "HTTP " + response.status))'
+            .'.catch(error => done("fetch failed: " + error));',
+            [$url],
+        );
     }
 
     public function clickStable(string $locator, int $timeout = self::ELEMENT_LOAD_TIMEOUT, bool $waitForOverlays = true): void

@@ -135,7 +135,12 @@
                     <span n:attr="$attrs">
                         <a n:href="generateVS!" n:class="$nextVS === null ? disabled, btn, btn-light, btn-sm">Dogenerovat VS</a>
                     </span>
-                    <a n:href="export! $group->id" class="btn btn-light btn-sm">Exportovat</a>
+                    {include '../../../Components/templates/FileActionButton.latte',
+                        label => 'Stáhnout Excel',
+                        downloadUrl => $presenter->link('export!', [$group->id]),
+                        variant => 'light',
+                        dataTest => 'payment-group-export',
+                    }
                 </div>
                 <div class="dropdown d-inline-block">
                     <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="addPayments"

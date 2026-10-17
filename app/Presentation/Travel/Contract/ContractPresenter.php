@@ -86,7 +86,7 @@ class ContractPresenter extends \App\Presentation\Travel\TravelBasePresenter
         ]);
     }
 
-    public function actionPrint(int $id): void
+    public function actionPrint(int $id, bool $download = false): void
     {
         $contract = $this->travelService->getContract($id) ?? throw new RuntimeException('Smlouva nebyla nalezena.');
         if (! $this->isContractAccessible($contract)) {
@@ -114,7 +114,7 @@ class ContractPresenter extends \App\Presentation\Travel\TravelBasePresenter
             'unit' => $this->queryBus->handle(new UnitQuery($contract->getUnitId())),
         ]);
 
-        $this->pdf->render((string) $template, 'Smlouva-o-proplaceni-cestovnich-nahrad.pdf');
+        $this->sendResponse($this->pdf->createResponse((string) $template, 'Smlouva-o-proplaceni-cestovnich-nahrad.pdf', false, $download));
     }
 
     public function handleDelete(int $contractId): void

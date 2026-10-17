@@ -6,6 +6,10 @@ Kompletní seznam tiskových (PDF) výstupů. Všechny se renderují přes
 Odkazy jsou **relativní routy** s zástupnými parametry (`<id>`, `<aid>`, `<cashbookId>`, `<method>`) –
 konkrétní hodnoty závisí na přihlášeném uživateli a datech.
 
+Každý výstup jde **stáhnout** i **otevřít v prohlížeči**. Bez parametru se PDF vrací k zobrazení
+(`Content-Disposition: inline`); s parametrem `download=1` jako příloha ke stažení (`attachment`). Odpověď
+sestavuje `PdfRenderer::createResponse()` → [`App\Http\PdfResponse`](../app/Http/PdfResponse.php).
+
 Filtry v šablonách hlídá test [`tests/unit/Export/PdfTemplateFiltersTest.php`](../tests/unit/Export/PdfTemplateFiltersTest.php),
 routy [`tests/unit/App/RouterFactoryTest.php`](../tests/unit/App/RouterFactoryTest.php).
 
@@ -61,3 +65,22 @@ nebo `chits.hpd.latte` (hospodářský doklad).
   vešly na tiskovou plochu A4 (emulace mpdf `shrink_tables_to_fit`).
 - Produkce může používat externí Gotenberg přes `GOTENBERG_URL`. Pokud endpoint chrání HTTP Basic autentizace,
   nastavují se společně `GOTENBERG_USERNAME` a `GOTENBERG_PASSWORD`; heslo patří jen do tajemství nasazení.
+
+## Ovládání stažení v aplikaci
+
+Všechna místa se soubory používají sdílenou šablonu
+[`app/Components/templates/FileActionButton.latte`](../app/Components/templates/FileActionButton.latte):
+
+- **PDF** – dělené tlačítko: hlavní část soubor stáhne (`download=1`), šipka nabídne „Otevřít v nové kartě“
+  (`target="_blank"`, `rel="noopener noreferrer"`).
+- **Excel, ZIP, obrázky a ostatní formáty** – jen „Stáhnout …“, bez možnosti otevření.
+- Komponenta umí odkazy i odesílací tlačítka formulářů (hromadný tisk a export vybraných dokladů, export souhrnu
+  akcí a táborů).
+
+Nahrané skeny (doklady, technické průkazy) vrací [`App\Http\FileStreamResponse`](../app/Http/FileStreamResponse.php).
+Typ se určuje podle přípony (`FilePath::getContentType()`); obsah se proti povoleným typům ověřuje už při nahrání.
+Otevřít v prohlížeči (`?open=1`, `inline`) jde jen PDF – ostatní soubory se vždy vrací jako příloha.
+
+Testy: hlavičky [`tests/unit/Http`](../tests/unit/Http), vykreslení komponenty
+[`tests/unit/Components/FileActionButtonTest.php`](../tests/unit/Components/FileActionButtonTest.php), průchody
+v akceptačních testech cestovního příkazu, smlouvy, faktury, evidence plateb a seznamu účastníků.

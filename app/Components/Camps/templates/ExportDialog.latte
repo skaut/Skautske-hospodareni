@@ -16,7 +16,12 @@
                 <input n:name="campIds:$key" class="form-check-input">
                 <label n:name="campIds:$key" class="form-check-label">{$label}</label>
             </div>
-            <input n:name="download" class="btn btn-primary">
+            {include '../../templates/FileActionButton.latte',
+                label => 'Stáhnout Excel',
+                downloadButton => $form['download'],
+                variant => 'primary',
+                small => false,
+            }
         </form>
     </div>
 {/block}
