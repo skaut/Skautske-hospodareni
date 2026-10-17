@@ -20,16 +20,27 @@
                         <form n:name="formMass" class="formMass cashbook-table__bulk-actions inline-errors">
                             <input type="checkbox" name="chits-all"
                                    class="form-check-input cashbook-table__checkbox" data-dependent-checkboxes="#{$control->getUniqueId()} .dependent-checkbox"/>
-                            <button n:if="$isCash"
-                                    n:name="massPrintSend" title="Vytisknout vybrané"
-                                    class="btn btn-outline-secondary btn-sm cashbook-table__icon-button"
-                                    type="submit">
-                                <i class="fi fi-rr-print" aria-hidden="true"></i>
-                            </button>
+                            {if $isCash}
+                                {include '../../templates/FileActionButton.latte',
+                                    label => 'Stáhnout vybrané doklady PDF',
+                                    downloadButton => $form['massPrintSend'],
+                                    openButton => $form['massOpenPrintSend'],
+                                    compact => true,
+                                    buttonClass => 'cashbook-table__icon-button',
+                                    dataTest => 'chits-mass-pdf-' . $paymentMethod->toString(),
+                                }
+                            {/if}
                             <button n:if="$canMoveChits" n:name="massMoveSend" title="Přesunout vybrané" role="button" data-bs-toggle="modal"
                                class="btn btn-outline-secondary btn-sm cashbook-table__icon-button"><i class="fi fi-rr-forward-fast" aria-hidden="true"></i></button>
-                            <button n:if="$canMassExport" name="massExportSend" title="Exportovat vybrané"
-                                    class="btn btn-outline-secondary btn-sm cashbook-table__icon-button" type="submit"><i class="fi fi-rr-download" aria-hidden="true"></i></button>
+                            {if $canMassExport}
+                                {include '../../templates/FileActionButton.latte',
+                                    label => 'Stáhnout vybrané doklady Excel',
+                                    downloadButton => $form['massExportSend'],
+                                    compact => true,
+                                    buttonClass => 'cashbook-table__icon-button',
+                                    dataTest => 'chits-mass-excel-' . $paymentMethod->toString(),
+                                }
+                            {/if}
                         </form>
                     </th>
                     <th>Ze dne</th>
@@ -53,12 +64,17 @@
                         <td{if $itemsCount > 1} rowspan="{$itemsCount+1}"{/if} class="dependent-checkbox text-nowrap cashbook-table__actions">
                             <input type="checkbox" class="form-check-input cashbook-table__checkbox" name="chits-{$paymentMethod}[]" value={$chit->id}/>
                             <div class="btn-group cashbook-table__row-actions">
-                                <a n:if="$isCash"
-                                        href="{plink :Unit:CashbookExport:printChits $cashbookId, [$chit->id]}"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        class="btn btn-sm btn-light cashbook-table__icon-button"><i
-                                            class="fi fi-rr-print" aria-hidden="true"></i></a>
+                                {if $isCash}
+                                    {include '../../templates/FileActionButton.latte',
+                                        label => 'Stáhnout PDF dokladu',
+                                        downloadUrl => $presenter->link(':Unit:CashbookExport:printChits', [$cashbookId, [$chit->id], download => true]),
+                                        openUrl => $presenter->link(':Unit:CashbookExport:printChits', [$cashbookId, [$chit->id]]),
+                                        variant => 'light',
+                                        compact => true,
+                                        buttonClass => 'cashbook-table__icon-button',
+                                        dataTest => 'chit-pdf-' . $chit->id,
+                                    }
+                                {/if}
                                 {control "chitScan-$chit->id"}
                                 <a n:if="$isEditable && ! $chit->locked" n:href="edit! $chit->id" data-bs-toggle="chitEdit"
                                         class="ajax btn btn-sm btn-primary ui--editChit"><i class="fi fi-rr-edit" aria-hidden="true"></i></a>

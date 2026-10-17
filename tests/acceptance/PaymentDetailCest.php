@@ -30,6 +30,8 @@ class PaymentDetailCest extends PaymentAcceptanceCest
 
         $I->seeCurrentUrlMatches('~^/platby/skupiny/\d+/platby(?:\?.*)?$~');
         $I->waitForElementVisible('[data-test="payment-group-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeDownloadOnlyFileAction('payment-group-export');
+        $I->seeNoHorizontalOverflowOnPhone('platební skupina');
 
         $I->clickStable('[data-test="payment-nav-groups"]');
         $I->waitForText('Platební skupiny', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);

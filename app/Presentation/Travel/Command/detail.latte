@@ -26,9 +26,12 @@
                         <i class="fi fi-rr-document-signed" aria-hidden="true"></i> Smlouva
                     </a>
                 {/if}
-                <a n:href="print $command->id" class="btn btn-sm btn-outline-secondary">
-                    <i class="fi fi-rr-print" aria-hidden="true"></i> Vytisknout
-                </a>
+                {include '../../../Components/templates/FileActionButton.latte',
+                    label => 'Stáhnout PDF',
+                    downloadUrl => $presenter->link('print', [$command->id, download => true]),
+                    openUrl => $presenter->link('print', [$command->id]),
+                    dataTest => 'command-pdf',
+                }
             </div>
         </div>
     </div>

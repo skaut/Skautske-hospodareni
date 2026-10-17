@@ -6,6 +6,7 @@ namespace App\Presentation\Unit\CashbookExport;
 
 use App\BaseSectionPresenter;
 use App\Http\ExcelResponse;
+use App\Http\FileStreamResponse;
 use App\Model\Auth\Resources\Camp;
 use App\Model\Auth\Resources\Education;
 use App\Model\Auth\Resources\Event;
@@ -72,12 +73,11 @@ final class CashbookExportPresenter extends BaseSectionPresenter
     /**
      * @param int[] $chitIds
      */
-    public function actionPrintChits(string $cashbookId, array $chitIds): void
+    public function actionPrintChits(string $cashbookId, array $chitIds, bool $download = false): void
     {
         $chitIds = array_map('\intval', $chitIds);
         $template = $this->queryBus->handle(ExportChits::withChitIds(CashbookId::fromString($cashbookId), $chitIds));
-        $this->pdf->render($template, 'paragony.pdf');
-        $this->terminate();
+        $this->sendResponse($this->pdf->createResponse($template, 'paragony.pdf', false, $download));
     }
 
     /**
@@ -94,22 +94,19 @@ final class CashbookExportPresenter extends BaseSectionPresenter
         $this->sendResponse(new ExcelResponse('Export-vybranych-paragonu', $spreadsheet));
     }
 
-    public function actionPrintAllChits(string $cashbookId): void
+    public function actionPrintAllChits(string $cashbookId, bool $download = false): void
     {
         $template = $this->exportService->getChitlist(CashbookId::fromString($cashbookId));
-        $this->pdf->render($template, 'seznam-dokladu.pdf');
-        $this->terminate();
+        $this->sendResponse($this->pdf->createResponse($template, 'seznam-dokladu.pdf', false, $download));
     }
 
-    public function actionPrintCashbook(string $cashbookId, string $paymentMethod): void
+    public function actionPrintCashbook(string $cashbookId, string $paymentMethod, bool $download = false): void
     {
         $method = PaymentMethod::get($paymentMethod);
 
         $template = $this->exportService->getCashbook(CashbookId::fromString($cashbookId), $method);
         $filename = $method->equals(PaymentMethod::CASH()) ? 'pokladni-kniha' : 'bankovni-transakce';
-        $this->pdf->render($template, $filename.'.pdf');
-
-        $this->terminate();
+        $this->sendResponse($this->pdf->createResponse($template, $filename.'.pdf', false, $download));
     }
 
     public function actionExportCashbook(string $cashbookId, string $paymentMethod): void
@@ -185,9 +182,9 @@ final class CashbookExportPresenter extends BaseSectionPresenter
         $this->sendResponse(new ExcelResponse('seznam-polozek', $spreadsheet));
     }
 
-    public function actionDownloadScan(string $cashbookId, int $chitId, string $path): void
+    public function actionDownloadScan(string $cashbookId, int $chitId, string $path, bool $open = false): void
     {
-        $this->downloadScan($cashbookId, $chitId, $path, false);
+        $this->downloadScan($cashbookId, $chitId, $path, false, $open);
     }
 
     public function actionDownloadScanThumbnail(string $cashbookId, int $chitId, string $path): void
@@ -195,7 +192,7 @@ final class CashbookExportPresenter extends BaseSectionPresenter
         $this->downloadScan($cashbookId, $chitId, $path, true);
     }
 
-    private function downloadScan(string $cashbookId, int $chitId, string $path, bool $thumbnail): void
+    private function downloadScan(string $cashbookId, int $chitId, string $path, bool $thumbnail, bool $open = false): void
     {
         $cashbookId = CashbookId::fromString($cashbookId);
         foreach ($this->queryBus->handle(new ChitScansQuery($cashbookId, $chitId)) as $scan) {
@@ -206,14 +203,13 @@ final class CashbookExportPresenter extends BaseSectionPresenter
                 continue;
             }
 
-            $contents = $scan->getContents();
             if ($thumbnail) {
-                $image = Image::fromString($contents->getContents());
+                $image = Image::fromString($scan->getContents()->getContents());
                 $image->resize(150, 150);
-                $contents = Utils::streamFor($image->toString());
+                $this->sendResponse(new PSR7StreamResponse(Utils::streamFor($image->toString()), $scan->getFileName()));
             }
 
-            $this->sendResponse(new PSR7StreamResponse($contents, $scan->getFileName()));
+            $this->sendResponse(new FileStreamResponse($scan->getContents(), $scan->getFileName(), $scan->getContentType(), ! $open));
         }
 
         throw new BadRequestException('Scan not found', IResponse::S404_NotFound);

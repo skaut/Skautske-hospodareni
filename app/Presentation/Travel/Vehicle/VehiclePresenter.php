@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Presentation\Travel\Vehicle;
 
+use App\Http\FileStreamResponse;
 use App\Model\Common\File;
 use App\Model\DTO\Travel\Vehicle as VehicleDTO;
 use App\Model\Travel\Commands\Vehicle\CreateVehicle;
@@ -18,7 +19,6 @@ use App\Presentation\Travel\TravelBasePresenter;
 use App\Presentation\Travel\Vehicle\Components\RoadworthyControl;
 use App\Presentation\Travel\Vehicle\Factories\IRoadworthyControlFactory;
 use Component\Forms\BaseForm;
-use Contributte\Application\Response\PSR7StreamResponse;
 use LogicException;
 use Nette\Application\AbortException;
 use Nette\Application\Attributes\Persistent;
@@ -58,7 +58,7 @@ class VehiclePresenter extends TravelBasePresenter
         return $vehicle;
     }
 
-    public function actionDownloadScan(int $id, string $path): void
+    public function actionDownloadScan(int $id, string $path, bool $open = false): void
     {
         $this->getVehicle($id);
 
@@ -70,7 +70,7 @@ class VehiclePresenter extends TravelBasePresenter
                 continue;
             }
 
-            $this->sendResponse(new PSR7StreamResponse($scan->getContents(), $scan->getFileName()));
+            $this->sendResponse(new FileStreamResponse($scan->getContents(), $scan->getFileName(), $scan->getContentType(), ! $open));
         }
 
         throw new BadRequestException('Scan not found', IResponse::S404_NotFound);

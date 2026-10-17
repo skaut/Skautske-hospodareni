@@ -90,7 +90,7 @@ final class DetailPresenter extends BasePresenter
         ]);
     }
 
-    public function renderReport(int $aid): void
+    public function renderReport(int $aid, bool $download = false): void
     {
         if (! $this->authorizator->isAllowed(Camp::ACCESS_FUNCTIONS, $aid)) {
             $this->flashMessage('Nemáte právo přistupovat k táboru', 'warning');
@@ -99,8 +99,7 @@ final class DetailPresenter extends BasePresenter
 
         try {
             $template = $this->exportService->getCampReport($aid, $this->areTotalsConsistentWithSkautis($aid));
-            $this->pdf->render($template, 'reportCamp.pdf');
-            $this->terminate();
+            $this->sendResponse($this->pdf->createResponse($template, 'reportCamp.pdf', false, $download));
         } catch (MissingCategory) {
             $this->flashMessage('Chybí základní kategorie. Zapněte si automatické dopočítávání rozpočtu!', 'danger');
             $this->redirect('default', ['aid' => $this->aid, 'missingCategories' => true]);

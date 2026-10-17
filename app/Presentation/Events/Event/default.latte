@@ -28,17 +28,18 @@
             </div>
             <div class="page-heading-actions d-flex flex-wrap gap-2 align-items-center justify-content-between">
                 <div class="d-flex flex-wrap gap-2">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true"
-                                aria-expanded="false">
-                            <i class="fi fi-rr-print" aria-hidden="true"></i> Exportovat
-                        </button>
-                        <div class="dropdown-menu">
-                            <a n:href="Event:report $aid" target="_blank" rel="noopener noreferrer" class="dropdown-item">Záverečná zpráva</a>
-                            <div class="dropdown-divider"></div>
-                            <a n:href="Event:printAll $aid" target="_blank" rel="noopener noreferrer" class="dropdown-item">Vše</a>
-                        </div>
-                    </div>
+                    {include '../../../Components/templates/FileActionButton.latte',
+                        label => 'Stáhnout závěrečnou zprávu',
+                        downloadUrl => $presenter->link('Event:report', [$aid, download => true]),
+                        openUrl => $presenter->link('Event:report', [$aid]),
+                        dataTest => 'event-report',
+                    }
+                    {include '../../../Components/templates/FileActionButton.latte',
+                        label => 'Stáhnout všechny dokumenty',
+                        downloadUrl => $presenter->link('Event:printAll', [$aid, download => true]),
+                        openUrl => $presenter->link('Event:printAll', [$aid]),
+                        dataTest => 'event-print-all',
+                    }
                     <a n:if="$accessEditBase" href="#editBasicInfo" class="btn btn-sm btn-light"
                                       data-bs-toggle="modal"><i class="fi fi-rr-edit" aria-hidden="true"></i> Upravit údaje</a>
                 </div>

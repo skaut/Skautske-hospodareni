@@ -128,12 +128,11 @@ final class EducationPresenter extends BasePresenter
         $this->redrawControl('contentSnip');
     }
 
-    public function renderReport(int $aid): void
+    public function renderReport(int $aid, bool $download = false): void
     {
         $template = $this->exportService->getEducationReport(new SkautisEducationId($aid), ($this->event->getStartDate() ?? throw new LogicException('Vzdělávací akce nemá datum zahájení.'))->year);
 
-        $this->pdf->render($template, 'report.pdf');
-        $this->terminate();
+        $this->sendResponse($this->pdf->createResponse($template, 'report.pdf', false, $download));
     }
 
     private function getCashbookId(int $skautisEducationId, int $year): CashbookId
