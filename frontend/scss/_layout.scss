@@ -8,6 +8,8 @@ html {
   --app-green: #4d8746;
   --app-green-soft: #edf6eb;
   --app-ink: #302821;
+  --app-selection-bg: #a8dfa3;
+  --app-selection-color: #302821;
 
   // Ground for scanned documents and invoice previews. Stays paper white in
   // both themes on purpose - the preview shows a physical document.
@@ -16,6 +18,12 @@ html {
   // Foreground for surfaces that stay light in both themes, such as info and
   // warning badges. Unlike --app-ink this must not flip with the theme.
   --app-ink-on-light: #302821;
+}
+
+::selection {
+  background: var(--app-selection-bg);
+  color: var(--app-selection-color);
+  text-shadow: none;
 }
 
 body {
