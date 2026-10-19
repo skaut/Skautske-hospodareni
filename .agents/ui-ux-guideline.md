@@ -27,6 +27,7 @@ Apply these rules to every new or modified user-facing route. Use the dashboard,
 ## Accessibility, themes, and markup
 
 - Maintain WCAG AA contrast: 4.5:1 for normal text and 3:1 for large text and controls. Every interactive element needs visible `:focus-visible`, hover, disabled, and error states in light and dark themes.
+- Text selection uses the global `::selection` rule and the `--app-selection-bg` and `--app-selection-color` tokens. Keep the selected text clearly distinguishable from the page and maintain at least 4.5:1 contrast in light and dark themes; local templates and components must not override it.
 - At 375 px, do not cause horizontal page overflow; only `.table-responsive` inside a grid is exempt. No action may depend on hover or be outside the viewport.
 - Use semantic HTML (`main`, `nav`, `section`, `aside`, correct heading hierarchy). Avoid inline styles, JavaScript hacks, unnecessary wrappers, and duplicate classes. When modifying a page, assess and clean up the entire template and related local CSS where needed.
 
