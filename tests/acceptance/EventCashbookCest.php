@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace acceptance;
 
 use AcceptanceTester;
+use App\Model\Cashbook\ICategory;
 use App\Model\Cashbook\Operation;
 use Cake\Chronos\ChronosDate;
 use Facebook\WebDriver\WebDriverKeys;
@@ -13,6 +14,7 @@ use Throwable;
 
 use function count;
 use function date;
+use function json_encode;
 use function sprintf;
 use function time;
 
@@ -226,31 +228,58 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->click('Načíst příjmy od účastníků');
         $this->I->waitForText('účastnické příspěvky', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
 
-        $this->I->clickStable('//tr[.//td[contains(@title, "účastnické příspěvky")]]//a[contains(@class, "ui--editChit")]');
-        $this->I->waitForElement('[name="pid"]:not([value=""])', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        // Kliknutí na „Upravit“ musí otevřít formulář s načteným dokladem a jeho kategorií.
+        $this->openImportedParticipantIncomeChitForEdit();
         $this->I->seeInField('input[name="items[0][purpose]"]', 'účastnické příspěvky');
+        $this->I->seeInField('input[name="items[0][price]"]', '125.00');
 
-        $selectedCategory = $this->I->executeJs(
-            'return document.querySelector("select[name=\'items[0][incomeCategories]\']")?.value;',
-        );
-        if ($selectedCategory !== '11') {
-            throw new RuntimeException('Imported participant income chit does not retain the HPD category in the edit form.');
-        }
-
+        // Standardní úprava: datum, pokladna/banka, číslo, Komu/Od, účel i částka.
         $updatedDate = new ChronosDate('tomorrow');
         $this->I->fillFieldStable('input[name="date"]', $updatedDate->format('d.m. Y'));
         $this->I->pressKey('body', [WebDriverKeys::ESCAPE]);
         $this->I->checkOption('input[name="paymentMethod"][value="bank"]');
+        $this->I->fillFieldStable('input[name="num"]', 'HPD1');
+        $this->I->fillFieldStable('input[name="recipient"]', 'Účastníci akce');
+        $this->I->fillFieldStable('input[name="items[0][purpose]"]', 'účastnické příspěvky upravené');
+        $this->I->fillFieldStable('input[name="items[0][price]"]', '130');
         $this->I->clickStable('input[name="send"]');
         $this->I->waitForText('Paragon byl upraven.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $this->openPageAndWaitForElementWithSkautisRetry($this->I, $this->I->grabFromCurrentUrl(), '[data-test="event-cashbook-page"]');
 
+        // Po uložení je doklad v Bance se všemi změněnými údaji.
         $this->I->waitForJS(
             'const bankHeading = [...document.querySelectorAll("#chitList-payment")]'
             .'.find(heading => heading.textContent.includes("Banka"));'
-            .'return bankHeading?.closest(".card")?.textContent.includes("účastnické příspěvky") ?? false;',
+            .'const row = [...(bankHeading?.closest(".card")?.querySelectorAll("tr") ?? [])]'
+            .'.find(tr => tr.textContent.includes("účastnické příspěvky upravené"));'
+            .'return row !== undefined'
+            .' && row.textContent.includes('.json_encode($updatedDate->format('d.m.Y')).')'
+            .' && row.textContent.includes("HPD1")'
+            .' && row.textContent.includes("Účastníci akce")'
+            .' && row.textContent.includes("130,00");',
             AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
         );
+
+        // Uložené hodnoty se načtou i při další úpravě.
+        $this->openImportedParticipantIncomeChitForEdit();
+        $this->I->seeCheckboxIsChecked('input[name="paymentMethod"][value="bank"]');
+        $this->I->seeInField('input[name="num"]', 'HPD1');
+        $this->I->seeInField('input[name="recipient"]', 'Účastníci akce');
+        $this->I->seeInField('input[name="items[0][purpose]"]', 'účastnické příspěvky upravené');
+        $this->I->seeInField('input[name="items[0][price]"]', '130');
+    }
+
+    private function openImportedParticipantIncomeChitForEdit(): void
+    {
+        $this->I->clickStable('//tr[.//td[contains(@title, "účastnické příspěvky")]]//a[contains(@class, "ui--editChit")]');
+        $this->I->waitForElement('[name="pid"]:not([value=""])', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        $selectedCategory = $this->I->executeJs(
+            'return document.querySelector("select[name=\'items[0][incomeCategories]\']")?.value;',
+        );
+        if ($selectedCategory !== (string) ICategory::CATEGORY_HPD_ID) {
+            throw new RuntimeException('Imported participant income chit does not retain the HPD category in the edit form.');
+        }
     }
 
     private function cleanupEvent(AcceptanceTester $I): void
