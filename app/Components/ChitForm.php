@@ -44,7 +44,6 @@ use LogicException;
 use Nette\Application\BadRequestException;
 use Nette\Forms\Container;
 use Nette\Forms\Control;
-use Nette\Forms\Controls\SelectBox;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Forms\Form;
 use Nette\Http\IResponse;
@@ -52,9 +51,9 @@ use Nette\Utils\ArrayHash;
 use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\WsdlException;
 
-use function array_key_exists;
 use function array_values;
-use function iterator_to_array;
+use function ctype_digit;
+use function is_string;
 use function sprintf;
 
 final class ChitForm extends BaseControl
@@ -74,6 +73,9 @@ final class ChitForm extends BaseControl
     private bool $isEditable;
 
     private int $itemsCount = 0;
+
+    /** @var array<string, array<int, string>> */
+    private array $storedCategoryOptions = [];
 
     public function __construct(
         private CashbookId $cashbookId,
@@ -147,6 +149,8 @@ final class ChitForm extends BaseControl
             throw new BadRequestException('Can\'t edit locked chit', IResponse::S403_Forbidden);
         }
 
+        $this->setStoredCategoryOptions($chit);
+
         $form = $this['form'];
 
         $form->setDefaults([
@@ -168,13 +172,14 @@ final class ChitForm extends BaseControl
         }
 
         $this['form']->setDefaults(['items' => $items]);
-        $this->addStoredCategoryOptions($chit);
 
         $this->redrawControl();
     }
 
     protected function createComponentForm(): BaseForm
     {
+        $this->loadStoredCategoryOptionsOfSubmittedChit();
+
         $form = new BaseForm();
 
         $form->addDate('date')
@@ -346,7 +351,7 @@ final class ChitForm extends BaseControl
                 $this->flashMessage('Paragon byl úspěšně přidán do seznamu.');
             }
 
-            $this->reload();
+            $this->reloadCashbook();
 
             return true;
         } catch (InvalidArgumentException|CashbookNotFound $exc) {
@@ -388,6 +393,17 @@ final class ChitForm extends BaseControl
         }
     }
 
+    private function reloadCashbook(): void
+    {
+        if (! $this->getPresenter()->isAjax()) {
+            $this->redirect('this');
+
+            return;
+        }
+
+        $this->getPresenter()->redrawControl();
+    }
+
     private function assertCanUpdateCampBudget(): void
     {
         $cashbook = $this->queryBus->handle(new CashbookQuery($this->cashbookId));
@@ -424,34 +440,41 @@ final class ChitForm extends BaseControl
     /** @return string[] */
     private function getCategoryPairsByType(?Operation $operation): array
     {
-        return $this->queryBus->handle(new CategoryPairsQuery($this->cashbookId, $operation));
+        $categoryPairs = $this->queryBus->handle(new CategoryPairsQuery($this->cashbookId, $operation));
+
+        if ($operation === null) {
+            return $categoryPairs;
+        }
+
+        return $categoryPairs + ($this->storedCategoryOptions[$operation->toString()] ?? []);
     }
 
-    private function addStoredCategoryOptions(Chit $chit): void
+    /**
+     * Uložení úpravy je samostatný požadavek, ve kterém se editChit() nevolá. Kategorie, které upravovaný
+     * doklad už má, musí být v nabídce i tady – jinak by je výběr kategorie odmítl a doklad nešel uložit.
+     */
+    private function loadStoredCategoryOptionsOfSubmittedChit(): void
     {
+        $chitId = $this->getPresenter()->getHttpRequest()->getPost('pid');
+        if (! is_string($chitId) || ! ctype_digit($chitId)) {
+            return;
+        }
+
+        $chit = $this->queryBus->handle(new ChitQuery($this->cashbookId, (int) $chitId));
+        if (! $chit instanceof Chit) {
+            return;
+        }
+
+        $this->setStoredCategoryOptions($chit);
+    }
+
+    private function setStoredCategoryOptions(Chit $chit): void
+    {
+        $this->storedCategoryOptions = [];
         $categories = $this->queryBus->handle(new CategoryListQuery($this->cashbookId));
-        $form = $this['form'];
-        if (! $form instanceof BaseForm) {
-            throw new LogicException('Assertion failed.');
-        }
-        $items = $form['items'];
-        if (! $items instanceof Multiplier) {
-            throw new LogicException('Assertion failed.');
-        }
-        $containers = iterator_to_array($items->getContainers(), false);
 
-        foreach ($chit->getItems() as $index => $item) {
+        foreach ($chit->getItems() as $item) {
             $categoryId = $item->getCategory()->getId();
-            $categoryControlName = $item->getCategory()->isIncome() ? 'incomeCategories' : 'expenseCategories';
-            $categoryControl = $containers[$index][$categoryControlName] ?? null;
-            if (! $categoryControl instanceof SelectBox) {
-                throw new LogicException('Assertion failed.');
-            }
-
-            if (array_key_exists($categoryId, $categoryControl->getItems())) {
-                continue;
-            }
-
             $category = $categories[$categoryId] ?? null;
             if ($category === null) {
                 throw new LogicException('Category of edited chit not found.');
@@ -460,7 +483,8 @@ final class ChitForm extends BaseControl
             $label = $categoryId === ICategory::UNDEFINED_EXPENSE_ID || $categoryId === ICategory::UNDEFINED_INCOME_ID
                 ? 'Historická nezařazená kategorie'
                 : 'Historická kategorie: '.$category->getName();
-            $categoryControl->setItems($categoryControl->getItems() + [$categoryId => $label]);
+            $operation = $item->getCategory()->isIncome() ? Operation::INCOME : Operation::EXPENSE;
+            $this->storedCategoryOptions[$operation][$categoryId] = $label;
         }
     }
 

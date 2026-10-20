@@ -242,12 +242,13 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->pressKey('body', [WebDriverKeys::ESCAPE]);
         $this->I->checkOption('input[name="paymentMethod"][value="bank"]');
         $this->I->clickStable('input[name="send"]');
-        $this->I->waitForDocumentReady();
+        $this->I->waitForText('Paragon byl upraven.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($this->I, $this->I->grabFromCurrentUrl(), '[data-test="event-cashbook-page"]');
 
         $this->I->waitForJS(
-            'return [...document.querySelectorAll(".card")].some(card => '
-            .'card.querySelector("#chitList-payment")?.textContent.includes("Banka") '
-            .'&& card.textContent.includes("účastnické příspěvky"));',
+            'const bankHeading = [...document.querySelectorAll("#chitList-payment")]'
+            .'.find(heading => heading.textContent.includes("Banka"));'
+            .'return bankHeading?.closest(".card")?.textContent.includes("účastnické příspěvky") ?? false;',
             AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
         );
     }
