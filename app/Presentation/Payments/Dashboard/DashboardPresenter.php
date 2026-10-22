@@ -86,6 +86,18 @@ final class DashboardPresenter extends PaymentsBasePresenter
 
     protected function createComponentCreateButton(): CreateButton
     {
-        return $this->createButtonFactory->create();
+        $control = $this->createButtonFactory->create();
+        $control->addCss(['wrap' => 'd-inline-block']);
+
+        return $control;
+    }
+
+    protected function createComponentRecentGroupsCreateButton(): CreateButton
+    {
+        $control = $this->createButtonFactory->create();
+        $control->addCss(['wrap' => 'd-inline-block']);
+        $control->setLabel('Nová skupina');
+
+        return $control;
     }
 }
