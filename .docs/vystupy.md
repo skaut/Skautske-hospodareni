@@ -57,9 +57,14 @@ nebo `chits.hpd.latte` (hospodářský doklad).
 
 ## Poznámky k renderování
 
-- **Faktura** a **cestovní smlouvy** jsou plnohodnotné HTML dokumenty s vlastním `<!DOCTYPE html>` a `<head>`;
+- **Faktura**, **cestovní smlouvy** a **cestovní příkaz** jsou plnohodnotné HTML dokumenty s vlastním `<!DOCTYPE html>` a `<head>`;
   `PdfRenderer` do nich normalizační `<style>` vkládá **do `<head>`** (zachová standards mode).
-- **Reporty**, **seznamy účastníků**, **doklady** a **cestovní příkaz** jsou HTML fragmenty; normalizace se prependuje.
+- **Reporty**, **seznamy účastníků** a **doklady** jsou HTML fragmenty; normalizace se prependuje. Fragment Chromium
+  vykreslí v quirks mode – tabulky v něm nepřebírají velikost písma z `body`, proto ji nová šablona nemá nastavovat
+  jen na `body` (nebo má být plnohodnotným dokumentem).
+- Chromium je na CSS přísnější než mpdf: `font: 16px bold` vyloží doslova („bold“ bere jako název písma), neplatné
+  `padding: 0 auto` zahodí a plovoucí bloky (`float`) nezvětšují výšku rodiče. Rozvržení PDF šablon proto stavět
+  na flexboxu, ne na `float`.
 - Uživatelská data v obrázcích (loga a razítka faktur) se vkládají **inline jako base64** – nikdy nejdou přes veřejnou URL.
 - Horní kontejnery mají vynucené `max-width:100%` + `box-sizing:border-box`, aby se přeširoké šablony (fixní `800px`)
   vešly na tiskovou plochu A4 (emulace mpdf `shrink_tables_to_fit`).
