@@ -7,6 +7,10 @@ namespace App\Model\Export;
 use App\Model\Cashbook\Cashbook\PaymentMethod;
 use App\Model\Services\PdfRenderer;
 use App\Model\Services\TemplateFactory;
+use App\Model\Travel\Travel\TransportType;
+use App\Model\Travel\Vehicle;
+use App\Model\Travel\Vehicle\Metadata;
+use App\Model\Unit\Unit;
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use IntegrationTest;
@@ -134,6 +138,63 @@ final class PdfOutputsGenerationTest extends IntegrationTest
             'start' => null,
             'end' => null,
         ]);
+    }
+
+    /**
+     * Cestovní příkaz s vozidlem a cestami – tak, jak ho skládá CommandPresenter::actionPrint()
+     * (vozidlo je entita, ne DTO). Spotřeba i vozidlo se dřív četly přes magické vlastnosti,
+     * které entita nemá, a v PDF zůstávaly prázdné.
+     */
+    public function testTravelCommandWithVehicleAndTravels(): void
+    {
+        $vehicle = new Vehicle(
+            'Osobní',
+            new Unit(411, '411.01', 'Středisko Testovice', '12345678', 'Testovická 67', 'Betatestov', '67067', '411.01', 'stredisko'),
+            null,
+            '1AB 2345',
+            6.5,
+            new Metadata(new DateTimeImmutable('2026-10-01'), 'Adrian de Azevedo Camacho'),
+        );
+        $travel = static fn (string $from, string $to): object => (object) [
+            'details' => (object) [
+                'date' => new ChronosDate('2026-10-23'),
+                'startPlace' => $from,
+                'endPlace' => $to,
+                'transportType' => TransportType::get(TransportType::CAR),
+            ],
+            'distance' => 67.0,
+            'price' => Money::CZK(30_602),
+        ];
+        $travels = [$travel('Brno', 'Testovice'), $travel('Testovice', 'Brno')];
+
+        $html = $this->templates->create(self::TravelDir.'/Command/ex.command.latte', [
+            'baseUrl' => '',
+            'command' => (object) [
+                'passenger' => (object) ['name' => 'Adrian de Azevedo Camacho', 'address' => 'Testovická 67, Betatestov 670 67', 'contact' => '555 555 555'],
+                'unit' => '411.01',
+                'purpose' => 'Víkendovka do Testovic',
+                'place' => 'Testovice',
+                'fellowPassengers' => '',
+                'fuelPrice' => Money::CZK(3_950),
+                'fuelPricePerKm' => Money::CZK(257),
+                'amortizationPerKm' => Money::CZK(200),
+                'pricePerKm' => Money::CZK(457),
+                'total' => Money::CZK(61_200),
+            ],
+            'types' => ['auto vlastní'],
+            'vehicle' => $vehicle,
+            'travels' => $travels,
+            'start' => $travels[0],
+            'end' => $travels[1],
+        ]);
+
+        // Plnohodnotný dokument: bez doctype by Chromium vykreslil šablonu v quirks mode
+        // a tabulky by nepřevzaly velikost písma.
+        self::assertStringStartsWith('<!DOCTYPE html>', $html);
+        self::assertStringContainsString('auto vlastní – Osobní (1AB 2345)', $html);
+        self::assertStringContainsString('Spotřeba dle t.p.: <b>6,50</b> l/100km', $html);
+        self::assertStringContainsString('Cena PHM 1 km: 2,57 Kč/km', $html);
+        self::assertStringStartsWith('%PDF-', $this->pdf->renderToString($html));
     }
 
     public function testTravelContractOld(): void
