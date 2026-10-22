@@ -288,7 +288,7 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->fillFieldStable('input[name="date"]', $updatedDate->format('d.m. Y'));
         $this->I->pressKey('body', [WebDriverKeys::ESCAPE]);
         $this->I->checkOption('input[name="paymentMethod"][value="bank"]');
-        $this->I->fillFieldStable('input[name="num"]', 'HPD1');
+        $this->I->fillFieldStable('input[name="num"]', 'HPD123');
         $this->I->fillFieldStable('input[name="recipient"]', 'Účastníci akce');
         $this->I->fillFieldStable('input[name="items[0][purpose]"]', 'účastnické příspěvky upravené');
         $this->I->fillFieldStable('input[name="items[0][price]"]', '130');
@@ -304,7 +304,7 @@ class EventCashbookCest extends BaseAcceptanceCest
             .'.find(tr => tr.textContent.includes("účastnické příspěvky upravené"));'
             .'return row !== undefined'
             .' && row.textContent.includes('.json_encode($updatedDate->format('d.m.Y')).')'
-            .' && row.textContent.includes("HPD1")'
+            .' && row.textContent.includes("HPD123")'
             .' && row.textContent.includes("Účastníci akce")'
             .' && row.textContent.includes("130,00");',
             AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
@@ -313,7 +313,7 @@ class EventCashbookCest extends BaseAcceptanceCest
         // Uložené hodnoty se načtou i při další úpravě.
         $this->openImportedParticipantIncomeChitForEdit();
         $this->I->seeCheckboxIsChecked('input[name="paymentMethod"][value="bank"]');
-        $this->I->seeInField('input[name="num"]', 'HPD1');
+        $this->I->seeInField('input[name="num"]', 'HPD123');
         $this->I->seeInField('input[name="recipient"]', 'Účastníci akce');
         $this->I->seeInField('input[name="items[0][purpose]"]', 'účastnické příspěvky upravené');
         $this->I->seeInField('input[name="items[0][price]"]', '130');
